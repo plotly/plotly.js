@@ -85,6 +85,15 @@ describe('Test heatmap', function () {
         var convertColumnXYZ = Plotly.Heatmap.convertColumnXYZ;
         var trace;
 
+        function makeMockAxis() {
+            return {
+                d2c: function(v) { return v; }
+            };
+        }
+
+        var xa = makeMockAxis(),
+            ya = makeMockAxis();
+
         it('should convert x/y/z columns to z(x,y)', function() {
             trace = {
                 x: [1, 1, 1, 2, 2, 2],
@@ -92,7 +101,7 @@ describe('Test heatmap', function () {
                 z: [1, 2, 3, 4, 5, 6]
             };
 
-            convertColumnXYZ(trace);
+            convertColumnXYZ(trace, xa, ya);
             expect(trace.x).toEqual([1, 2]);
             expect(trace.y).toEqual([1, 2, 3]);
             expect(trace.z).toEqual([[1, 4], [2, 5], [3, 6]]);
@@ -105,7 +114,7 @@ describe('Test heatmap', function () {
                 z: [1, 2, 4, 5, 6]
             };
 
-            convertColumnXYZ(trace);
+            convertColumnXYZ(trace, xa, ya);
             expect(trace.x).toEqual([1, 2]);
             expect(trace.y).toEqual([1, 2, 3]);
             expect(trace.z).toEqual([[1, 4], [2, 5], [, 6]]);
@@ -118,7 +127,7 @@ describe('Test heatmap', function () {
                 z: [1, null, 4, 5, 6]
             };
 
-            convertColumnXYZ(trace);
+            convertColumnXYZ(trace, xa, ya);
             expect(trace.x).toEqual([1, 2]);
             expect(trace.y).toEqual([1, 2, 3]);
             expect(trace.z).toEqual([[1, 4], [null, 5], [, 6]]);
@@ -132,7 +141,7 @@ describe('Test heatmap', function () {
                 text: ['a', 'b', 'c', 'd', 'e', 'f', 'g']
             };
 
-            convertColumnXYZ(trace);
+            convertColumnXYZ(trace, xa ,ya);
             expect(trace.text).toEqual([['a', 'd'], ['b', 'e'], ['c', 'f']]);
         });
 
@@ -162,7 +171,7 @@ describe('Test heatmap', function () {
                 ]
             };
 
-            convertColumnXYZ(trace);
+            convertColumnXYZ(trace, xa, ya);
             expect(trace.x).toEqual(
                 [-88596, -65484, -42372, -19260, 3852, 26964, 50076, 73188]);
             expect(trace.y).toEqual(
