@@ -659,7 +659,7 @@ colorbar.attributes = {
     dtick: axesAttrs.dtick,
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
-    ticks: extendFlat(axesAttrs.ticks, {dflt: ''}),
+    ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
@@ -679,7 +679,7 @@ colorbar.attributes = {
         dflt: 'Click to enter colorscale title',
         description: 'Sets the title of the color bar.'
     },
-    titlefont: extendFlat(Plotly.Plots.fontAttrs, {
+    titlefont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: [
             'Sets this color bar\'s title font.'
         ].join(' ')

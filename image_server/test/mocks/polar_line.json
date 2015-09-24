@@ -693,7 +693,7 @@
       "size": 12,
       "color": "#000"
     },
-    "showlegend": false,
+    "showlegend": true,
     "width": 500,
     "height": 400,
     "margin": {

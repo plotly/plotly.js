@@ -1,5 +1,4 @@
 var Plotly = require('../src/plotly');
-var clone = require('clone');
 
 describe('Test graph_obj', function () {
     'use strict';
@@ -563,7 +562,7 @@ describe('Test graph_obj', function () {
         });
 
         it('prepend is the inverse of extend - no maxPoints', function () {
-            var cachedData = clone(gd.data);
+            var cachedData = Plotly.Lib.extendDeep([], gd.data);
 
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
@@ -581,7 +580,7 @@ describe('Test graph_obj', function () {
 
 
         it('extend is the inverse of prepend - no maxPoints', function () {
-            var cachedData = clone(gd.data);
+            var cachedData = Plotly.Lib.extendDeep([], gd.data);
 
             Plotly.prependTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
@@ -600,7 +599,7 @@ describe('Test graph_obj', function () {
 
         it('prepend is the inverse of extend - with maxPoints', function () {
             var maxPoints = 3;
-            var cachedData = clone(gd.data);
+            var cachedData = Plotly.Lib.extendDeep([], gd.data);
 
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]

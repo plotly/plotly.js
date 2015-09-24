@@ -7,6 +7,9 @@ var micropolar = module.exports = {
 var µ = micropolar,
     Plotly = require('../plotly');
 
+var extendDeepAll = Plotly.Lib.extendDeepAll;
+
+
 µ.Axis = function module() {
     var config = {
         data: [],
@@ -169,19 +172,21 @@ var µ = micropolar,
                     datumClone.color = d.geometry === 'LinePlot' ? d.strokeColor : d.color;
                     return datumClone;
                 });
-                var legendConfigMixin1 = µ.util.deepExtend({}, µ.Legend.defaultConfig().legendConfig);
-                var legendConfigMixin2 = µ.util.deepExtend(legendConfigMixin1, {
-                    container: legendContainer,
-                    elements: elements,
-                    reverseOrder: axisConfig.legend.reverseOrder
-                });
-                var legendConfigMixin3 = {
+
+                µ.Legend().config({
                     data: data.map(function(d, i) {
                         return d.name || 'Element' + i;
                     }),
-                    legendConfig: legendConfigMixin2
-                };
-                µ.Legend().config(legendConfigMixin3)();
+                    legendConfig: extendDeepAll({},
+                        µ.Legend.defaultConfig().legendConfig,
+                        {
+                            container: legendContainer,
+                            elements: elements,
+                            reverseOrder: axisConfig.legend.reverseOrder
+                        }
+                    )
+                })();
+
                 var legendBBox = legendContainer.node().getBBox();
                 radius = Math.min(axisConfig.width - legendBBox.width - axisConfig.margin.left - axisConfig.margin.right, axisConfig.height - axisConfig.margin.top - axisConfig.margin.bottom) / 2;
                 radius = Math.max(10, radius);
@@ -353,7 +358,7 @@ var µ = micropolar,
                     var geometry;
                     if (Array.isArray(d)) geometry = d[0].geometryConfig.geometry; else geometry = d.geometryConfig.geometry;
                     var finalGeometryConfig = d.map(function(dB, iB) {
-                        return µ.util.deepExtend(µ[geometry].defaultConfig(), dB);
+                        return extendDeepAll(µ[geometry].defaultConfig(), dB);
                     });
                     µ[geometry]().config(finalGeometryConfig)();
                 });
@@ -490,11 +495,11 @@ var µ = micropolar,
         var xClone = µ.util.cloneJson(_x);
         xClone.data.forEach(function(d, i) {
             if (!config.data[i]) config.data[i] = {};
-            µ.util.deepExtend(config.data[i], µ.Axis.defaultConfig().data[0]);
-            µ.util.deepExtend(config.data[i], d);
+            extendDeepAll(config.data[i], µ.Axis.defaultConfig().data[0]);
+            extendDeepAll(config.data[i], d);
         });
-        µ.util.deepExtend(config.layout, µ.Axis.defaultConfig().layout);
-        µ.util.deepExtend(config.layout, xClone.layout);
+        extendDeepAll(config.layout, µ.Axis.defaultConfig().layout);
+        extendDeepAll(config.layout, xClone.layout);
         return this;
     };
     exports.getLiveConfig = function() {
@@ -654,18 +659,6 @@ var µ = micropolar,
 
 µ.util.cloneJson = function(json) {
     return JSON.parse(JSON.stringify(json));
-};
-
-µ.util.deepExtend = function(destination, source) {
-    for (var property in source) {
-        if (source[property] && source[property].constructor && source[property].constructor === Object) {
-            destination[property] = destination[property] || {};
-            arguments.callee(destination[property], source[property]);
-        } else {
-            destination[property] = source[property];
-        }
-    }
-    return destination;
 };
 
 µ.util.validateKeys = function(obj, keys) {
@@ -942,8 +935,8 @@ var µ = micropolar,
         if (!arguments.length) return config;
         _x.forEach(function(d, i) {
             if (!config[i]) config[i] = {};
-            µ.util.deepExtend(config[i], µ.PolyChart.defaultConfig());
-            µ.util.deepExtend(config[i], d);
+            extendDeepAll(config[i], µ.PolyChart.defaultConfig());
+            extendDeepAll(config[i], d);
         });
         return this;
     };
@@ -1047,7 +1040,7 @@ var µ = micropolar,
         var legendConfig = config.legendConfig;
         var flattenData = config.data.map(function(d, i) {
             return [].concat(d).map(function(dB, iB) {
-                var element = µ.util.deepExtend({}, legendConfig.elements[i]);
+                var element = extendDeepAll({}, legendConfig.elements[i]);
                 element.name = dB;
                 element.color = [].concat(legendConfig.elements[i].color)[iB];
                 return element;
@@ -1148,7 +1141,7 @@ var µ = micropolar,
     }
     exports.config = function(_x) {
         if (!arguments.length) return config;
-        µ.util.deepExtend(config, _x);
+        extendDeepAll(config, _x);
         return this;
     };
     d3.rebind(exports, dispatch, 'on');
@@ -1263,7 +1256,7 @@ var µ = micropolar,
         return exports;
     };
     exports.config = function(_x) {
-        µ.util.deepExtend(config, _x);
+        extendDeepAll(config, _x);
         return exports;
     };
     return exports;
@@ -1279,7 +1272,7 @@ var µ = micropolar,
         var outputConfig = {};
         if (_inputConfig.data) {
             outputConfig.data = _inputConfig.data.map(function(d, i) {
-                var r = µ.util.deepExtend({}, d);
+                var r = extendDeepAll({}, d);
                 var toTranslate = [
                     [ r, [ 'marker', 'color' ], [ 'color' ] ],
                     [ r, [ 'marker', 'opacity' ], [ 'opacity' ] ],
@@ -1333,7 +1326,7 @@ var µ = micropolar,
             }
         }
         if (_inputConfig.layout) {
-            var r = µ.util.deepExtend({}, _inputConfig.layout);
+            var r = extendDeepAll({}, _inputConfig.layout);
             var toTranslate = [
                 [ r, [ 'plot_bgcolor' ], [ 'backgroundColor' ] ],
                 [ r, [ 'showlegend' ], [ 'showLegend' ] ],
