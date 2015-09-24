@@ -45,8 +45,8 @@ describe('plot schema', function() {
 
     it('all nested objects should have the *object* `role`', function() {
         assertPlotSchema(
-            function(attr) {
-                if(!isValObject(attr) && isPlainObject(attr)) {
+            function(attr, attrName) {
+                if(!isValObject(attr) && isPlainObject(attr) && attrName!=='items') {
                     expect(attr.role === 'object').toBe(true);
                 }
             }
