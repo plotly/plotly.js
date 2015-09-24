@@ -110,7 +110,7 @@ pie.attributes = {
             'Determines which trace information appear on the graph.'
         ].join(' ')
     },
-    hoverinfo: extendFlat(Plotly.Plots.attributes.hoverinfo, {
+    hoverinfo: extendFlat({}, Plotly.Plots.attributes.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
     textposition: {
@@ -124,13 +124,13 @@ pie.attributes = {
         ].join(' ')
     },
     // TODO make those arrayOk?
-    textfont: extendFlat(Plotly.Plots.fontAttrs, {
+    textfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
-    insidetextfont: extendFlat(Plotly.Plots.fontAttrs, {
+    insidetextfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the pie.'
     }),
-    outsidetextfont: extendFlat(Plotly.Plots.fontAttrs, {
+    outsidetextfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used for `textinfo` lying outside the pie.'
     }),
 
