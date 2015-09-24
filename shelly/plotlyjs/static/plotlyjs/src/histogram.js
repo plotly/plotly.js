@@ -90,7 +90,10 @@ histogram.attributes = {
         description: 'Sets the aggregation data.'
     },
     marker: {
-        color: {valType: 'data_array'}  // FIXME this overrides 'bar'
+        color: {  // FIXME this overrides 'bar'
+            valType: 'data_array',
+            arrayOk: undefined
+        }
     },
     orientation: barAttrs.orientation,
     histfunc: {

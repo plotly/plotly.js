@@ -973,7 +973,7 @@ drawing.bBox = function(node) {
     node.setAttribute('data-bb',savedBBoxes.length);
     savedBBoxes.push(bb);
 
-    return Plotly.Lib.extendFlat(bb);
+    return Plotly.Lib.extendFlat({}, bb);
 };
 
 /*
