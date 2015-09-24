@@ -9,10 +9,11 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
 var NESTED_MODULE = '_nestedModules',
     COMPOSED_MODULE = '_composedModules',
     IS_SUBPLOT_OBJ = '_isSubplotObj',
-    IS_LINKED_TO_ARRAY = '_isLinkedToArray';
+    IS_LINKED_TO_ARRAY = '_isLinkedToArray',
+    DEPRECATED = '_deprecated';
 
 // list of underscore attributes to keep in schema as is
-var UNDERSCORE_ATTRS = ['_isSubplotObj', '_deprecated'];
+var UNDERSCORE_ATTRS = [IS_SUBPLOT_OBJ, IS_LINKED_TO_ARRAY, DEPRECATED];
 
 var plotSchema = {
     traces: {},
@@ -115,11 +116,12 @@ function getLayoutAttributes() {
     // add IS_SUBPLOT_OBJ attribute
     layoutAttributes = handleSubplotObjs(layoutAttributes);
 
+    layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
+    mergeValTypeAndRole(layoutAttributes);
+
     // generate IS_LINKED_TO_ARRAY structure
     layoutAttributes = handleLinkedToArray(layoutAttributes);
 
-    layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
-    mergeValTypeAndRole(layoutAttributes);
     plotSchema.layout = { layoutAttributes: layoutAttributes };
 }
 
@@ -278,7 +280,7 @@ function handleSubplotObjs(layoutAttributes) {
 
 function handleLinkedToArray(layoutAttributes) {
     Object.keys(layoutAttributes).forEach(function(k) {
-        var attr = clone(layoutAttributes[k]);
+        var attr = extendDeep({}, layoutAttributes[k]);
 
         if(attr[IS_LINKED_TO_ARRAY] !== true) return;
 
@@ -286,11 +288,9 @@ function handleLinkedToArray(layoutAttributes) {
 
         delete attr[IS_LINKED_TO_ARRAY];
 
-        layoutAttributes[k] = {
-            role: 'object',
-            items: {}
-        };
+        layoutAttributes[k] = { items: {} };
         layoutAttributes[k].items[itemName] = attr;
+        layoutAttributes[k].role = 'object';
     });
 
     return layoutAttributes;
