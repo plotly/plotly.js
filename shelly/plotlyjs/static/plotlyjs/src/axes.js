@@ -319,7 +319,7 @@ axes.layoutAttributes = {
         role: 'style',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
-        ]
+        ].join(' ')
     },
     linecolor: {
         valType: 'color',
