@@ -80,7 +80,7 @@ function createPlot (divId) {
 
     toolPanel.createMenuSpacer();
 
-    toolPanel.createMenuButtonGroup(toolPanel.getPanelButtonSpecs());
+    toolPanel.createMenuButtons(toolPanel.getPanelButtonSpecs());
 
     divs.push(graphDiv, toolDiv);
 
