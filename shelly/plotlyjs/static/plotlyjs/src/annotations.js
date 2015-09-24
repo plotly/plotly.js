@@ -77,7 +77,7 @@ annotations.layoutAttributes = {
             'with respect to the horizontal.'
         ].join(' ')
     },
-    font: Plotly.Lib.extendFlat(Plotly.Plots.fontAttrs, {
+    font: Plotly.Lib.extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the annotation text font.'
     }),
     opacity: {

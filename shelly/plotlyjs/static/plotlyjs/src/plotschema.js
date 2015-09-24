@@ -1,9 +1,10 @@
 'use strict';
 
-var Plotly = require('./plotly'),
-    clone = require('clone');
+var Plotly = require('./plotly');
 
 var extendFlat = Plotly.Lib.extendFlat;
+var extendDeep = Plotly.Lib.extendDeep;
+var extendDeepAll = Plotly.Lib.extendDeepAll;
 
 var NESTED_MODULE = '_nestedModules',
     COMPOSED_MODULE = '_composedModules',
@@ -58,8 +59,9 @@ function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
         _module = getModule({type: type}),
         meta = getMeta(type),
-        subplotRegistry = getSubplotRegistry(type),
-        attributes = {},
+        subplotRegistry = getSubplotRegistry(type);
+
+    var attributes = {},
         layoutAttributes = {};
 
     // make 'type' the first attribute in the object
@@ -72,18 +74,18 @@ function getTraceAttributes(type) {
 
     // subplot attributes
     if(subplotRegistry.attributes !== undefined) {
-        attributes = extendFlat(attributes, clone(subplotRegistry.attributes));
+        extendDeep(attributes, subplotRegistry.attributes);
     }
 
     // global attributes (same for all trace types)
-    attributes = extendFlat(attributes, clone(globalAttributes));
+    extendDeep(attributes, globalAttributes);
 
     // 'type' gets overwritten by globalAttributes; reset it here
     attributes.type = type;
 
     attributes = removeUnderscoreAttrs(attributes);
     mergeValTypeAndRole(attributes);
-    plotSchema.traces[type] = extendFlat(
+    plotSchema.traces[type] = extendFlat({},
         meta,
         { attributes: attributes }
     );
@@ -146,7 +148,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
                 );
 
                 Plotly.Lib.nestedProperty(attrsOut, kk)
-                    .set(clone(nestedReference));
+                    .set(extendDeep({}, nestedReference));
             });
             return;
         }
@@ -163,12 +165,14 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
                     composedAttrs, {}, whichAttrs, type
                 );
 
-                attrsOut = extendFlat(attrsOut, clone(composedAttrs));
+                extendDeepAll(attrsOut, composedAttrs);
             });
             return;
         }
 
-        attrsOut[k] = clone(attrsIn[k]);
+        attrsOut[k] = Plotly.Lib.isPlainObject(attrsIn[k]) ?
+            extendDeepAll({}, attrsIn[k]) :
+            attrsIn[k];
     });
 
     return attrsOut;
@@ -239,12 +243,12 @@ function getMeta(type) {
 }
 
 function assignPolarLayoutAttrs(layoutAttributes) {
-    layoutAttributes = extendFlat(layoutAttributes, {
-        radialaxis: clone(polarAxisAttrs.radialaxis),
-        angularaxis: clone(polarAxisAttrs.angularaxis)
+    extendFlat(layoutAttributes, {
+        radialaxis: polarAxisAttrs.radialaxis,
+        angularaxis: polarAxisAttrs.angularaxis
     });
 
-    layoutAttributes = extendFlat(layoutAttributes, clone(polarAxisAttrs.layout));
+    extendFlat(layoutAttributes, polarAxisAttrs.layout);
 
     return layoutAttributes;  // FIXME
 }

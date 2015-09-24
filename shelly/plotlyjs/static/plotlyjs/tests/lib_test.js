@@ -433,50 +433,6 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('extendFlat', function() {
-        var extendFlat = Plotly.Lib.extendFlat;
-
-        it('should extend 2 objects with mutually exclusive keys)', function() {
-            var obj1 = {a: 'A'},
-                obj2 = {b: 'B'},
-                objOut = extendFlat(obj1, obj2);
-            expect(obj1).toEqual({a: 'A'});
-            expect(objOut).toEqual({a: 'A', b: 'B'});
-        });
-
-        it('should extend 2 objects with overlapping keys)', function() {
-            var obj1 = {a: 'A'},
-                obj2 = {a: 'AA'},
-                objOut = extendFlat(obj1, obj2);
-            expect(obj1).toEqual({a: 'A'});
-            expect(objOut).toEqual({a: 'AA'});
-        });
-
-        it('should make a flat copy of the first object if no second object is given', function() {
-            var obj1 = {a: 'A', b: {b: 'B'}},
-                objOut = extendFlat(obj1);
-
-            objOut.a = 'AA';
-            objOut.b.b = 'BB';  // should propagate to obj1
-
-            expect(obj1).toEqual({a: 'A', b: {b: 'BB'}});
-            expect(objOut).toEqual({a: 'AA', b: {b: 'BB'}});
-        });
-
-        it('should handle non-object values', function() {
-            var foo = function() { return 'sup'; },
-                Bar = function() {};
-
-            var obj1 = {a: foo, c: 'sup'},
-                obj2 = {a: 'sup', b: new Bar()},
-                objOut = extendFlat(obj1, obj2);
-
-            expect(obj1).toEqual({a: foo, c: 'sup'});
-            expect(obj2).toEqual({a: 'sup', b: new Bar()});
-            expect(objOut).toEqual({a: 'sup', b: new Bar(), c: 'sup'});
-        });
-    });
-
     describe('coerce', function() {
         var coerce = Plotly.Lib.coerce,
             out;
@@ -594,9 +550,9 @@ describe('Test lib.js:', function() {
         };
         var attributes = {
             fontWithDefault: {
-                family: extendFlat(fontAttrs.family, {dflt: defaultFont.family}),
-                size: extendFlat(fontAttrs.size, {dflt: defaultFont.size}),
-                color: extendFlat(fontAttrs.color, {dflt: defaultFont.color})
+                family: extendFlat({}, fontAttrs.family, {dflt: defaultFont.family}),
+                size: extendFlat({}, fontAttrs.size, {dflt: defaultFont.size}),
+                color: extendFlat({}, fontAttrs.color, {dflt: defaultFont.color})
             },
             fontNoDefault: fontAttrs
         };
@@ -666,47 +622,4 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('isPlainObject', function() {
-        var isPlainObject = Plotly.Lib.isPlainObject;
-
-        function A() {}
-
-        var shouldPass = [
-            {},
-            {a: 'A', 'B': 'b'}
-        ];
-
-        var shouldFail = [
-            A,
-            new A(),
-            document,
-            window,
-            null,
-            undefined,
-            [],
-            'string',
-            true,
-            false,
-            NaN,
-            Infinity,
-            /foo/,
-            '\n',
-            new Array(10),
-            new Date(),
-            new RegExp('foo'),
-            new String('string')
-        ];
-
-        shouldPass.forEach(function(obj) {
-            it('treats ' + JSON.stringify(obj) + ' as a plain object', function () {
-                expect(isPlainObject(obj)).toBe(true);
-            });
-        });
-
-        shouldFail.forEach(function(obj) {
-            it('treats ' + JSON.stringify(obj!==window ? obj: 'window') + ' as NOT a plain object', function () {
-                expect(isPlainObject(obj)).toBe(false);
-            });
-        });
-    });
 });

@@ -34,7 +34,7 @@ module.exports = {
     autocolorscale: traceColorbarAttrs.autocolorscale,
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
-    hoverinfo: Plotly.Lib.extendFlat(Plotly.Plots.attributes.hoverinfo, {
+    hoverinfo: Plotly.Lib.extendFlat({}, Plotly.Plots.attributes.hoverinfo, {
         flags: ['location', 'z', 'text', 'name']
     }),
     _nestedModules: {
