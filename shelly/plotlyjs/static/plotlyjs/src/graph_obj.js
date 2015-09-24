@@ -242,6 +242,8 @@ plots.defaultConfig = {
     autosizable: false,
     // if we DO autosize, do we fill the container or the screen?
     fillFrame: false,
+    // if we DO autosize, set the frame margins in percents of plot size
+    frameMargins: 0,
     // mousewheel or two-finger scroll zooms the plot
     scrollZoom: false,
     // double click interaction (false, 'reset', 'autosize' or 'reset+autosize')
@@ -3428,44 +3430,43 @@ function calculateReservedMargins(margins) {
 
 function plotAutoSize(gd, aobj) {
     var fullLayout = gd._fullLayout,
-        reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
-        reservedHeight,
-        reservedWidth,
-        newheight,
-        newwidth;
+        context = gd._context;
 
-    // if(gd._context.workspace){
-    //     var gdBB = fullLayout._container.node().getBoundingClientRect();
-    //
-    //     // autosized plot on main site: 5% border on all sides
-    //     reservedWidth = reservedMargins.left + reservedMargins.right;
-    //     reservedHeight = reservedMargins.bottom + reservedMargins.top;
-    //     newwidth = Math.round((gdBB.width - reservedWidth)*0.9);
-    //     newheight = Math.round((gdBB.height - reservedHeight)*0.9);
-    // }
+    var newHeight, newWidth;
+
+    // embedded in an iframe - just take the full iframe size
+    // if we get to this point, with no aspect ratio restrictions
     if(gd._context.fillFrame) {
-        // embedded in an iframe - just take the full iframe size
-        // if we get to this point, with no aspect ratio restrictions
-        newwidth = window.innerWidth;
-        newheight = window.innerHeight;
+        newWidth = window.innerWidth;
+        newHeight = window.innerHeight;
 
         // somehow we get a few extra px height sometimes...
         // just hide it
         document.body.style.overflow = 'hidden';
+    }
+    else if(isNumeric(context.frameMargins)) {
+        var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
+            reservedWidth = reservedMargins.left + reservedMargins.right,
+            reservedHeight = reservedMargins.bottom + reservedMargins.top,
+            gdBB = fullLayout._container.node().getBoundingClientRect(),
+            factor = 1 - 2*context.frameMargins;
+
+        newWidth = Math.round(factor * (gdBB.width - reservedWidth));
+        newHeight = Math.round(factor * (gdBB.height - reservedHeight));
     }
     else {
         // plotly.js - let the developers do what they want, either
         // provide height and width for the container div,
         // specify size in layout, or take the defaults,
         // but don't enforce any ratio restrictions
-        newheight = parseFloat(window.getComputedStyle(gd).height) || fullLayout.height;
-        newwidth = parseFloat(window.getComputedStyle(gd).width) || fullLayout.width;
+        newHeight = parseFloat(window.getComputedStyle(gd).height) || fullLayout.height;
+        newWidth = parseFloat(window.getComputedStyle(gd).width) || fullLayout.width;
     }
 
-    if(Math.abs(fullLayout.width - newwidth) > 1 ||
-            Math.abs(fullLayout.height - newheight) > 1) {
-        fullLayout.height = gd.layout.height = newheight;
-        fullLayout.width = gd.layout.width = newwidth;
+    if(Math.abs(fullLayout.width - newWidth) > 1 ||
+            Math.abs(fullLayout.height - newHeight) > 1) {
+        fullLayout.height = gd.layout.height = newHeight;
+        fullLayout.width = gd.layout.width = newWidth;
     }
     // if there's no size change, update layout but
     // delete the autosize attr so we don't redraw
