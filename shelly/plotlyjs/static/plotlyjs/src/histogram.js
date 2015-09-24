@@ -25,7 +25,7 @@ Plotly.Plots.register(Plotly.Bars, 'histogram',
 
 Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
     ['cartesian', '2dMap', 'histogram'], {
-    _hrName: 'histogram_2d',
+    hrName: 'histogram_2d',
     description: [
         'The sample data from which statistics are computed is set in `x`',
         'and `y` (where `x` and `y` represent marginal distributions,',
@@ -42,9 +42,6 @@ Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
 
 function makeBinsAttr(axLetter) {
     return {
-        _hrName: [
-            axLetter, '_bins'
-        ].join(''),
         start: {
             valType: 'number',
             dflt: null,

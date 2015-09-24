@@ -9,11 +9,10 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
 var NESTED_MODULE = '_nestedModules',
     COMPOSED_MODULE = '_composedModules',
     IS_SUBPLOT_OBJ = '_isSubplotObj',
-    IS_LINKED_TO_ARRAY = '_isLinkedToArray',
-    HR_NAME = '_hrName';
+    IS_LINKED_TO_ARRAY = '_isLinkedToArray';
 
 // list of underscore attributes to keep in schema as is
-var UNDERSCORE_ATTRS = ['_isSubplotObj', '_deprecated', '_hrName'];
+var UNDERSCORE_ATTRS = ['_isSubplotObj', '_deprecated'];
 
 var plotSchema = {
     traces: {},
@@ -207,11 +206,6 @@ function mergeValTypeAndRole(attrs) {
         else if(Plotly.Lib.isPlainObject(attr)) {
             // all attrs container objects get role 'object'
             attr.role = 'object';
-
-            // add human-readable attrName for axis object
-            if(attrName.indexOf('axis') !== -1) {
-                attr[HR_NAME] = attrName.split('axis')[0] + '_' + 'axis'
-            }
         }
     }
 

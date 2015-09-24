@@ -157,42 +157,4 @@ describe('plot schema', function() {
             }
         );
     });
-
-    it('axis and bin attributes should have `human-readable name` field', function() {
-        var HR_NAME = '_hrName';
-
-        assertPlotSchema(
-            function(attr, attrName) {
-                if(isValObject(attr) || !isPlainObject(attr)) return;
-
-                if(attrName === 'xbins') {
-                    expect(attr[HR_NAME]).toEqual('x_bins');
-                }
-                else if(attrName === 'ybins') {
-                    expect(attr[HR_NAME]).toEqual('y_bins');
-                }
-                else if(attrName === 'xaxis') {
-                    expect(attr[HR_NAME]).toEqual('x_axis');
-                }
-                else if(attrName === 'yaxis') {
-                    expect(attr[HR_NAME]).toEqual('y_axis');
-                }
-                else if(attrName === 'zaxis') {
-                    expect(attr[HR_NAME]).toEqual('z_axis');
-                }
-                else if(attrName === 'lonaxis') {
-                    expect(attr[HR_NAME]).toEqual('lon_axis');
-                }
-                else if(attrName === 'lataxis') {
-                    expect(attr[HR_NAME]).toEqual('lat_axis');
-                }
-                else if(attrName === 'radialaxis') {
-                    expect(attr[HR_NAME]).toEqual('radial_axis');
-                }
-                else if(attrName === 'angularaxis') {
-                    expect(attr[HR_NAME]).toEqual('angular_axis');
-                }
-            }
-        )
-    });
 });
