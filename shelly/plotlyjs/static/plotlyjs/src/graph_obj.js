@@ -362,32 +362,6 @@ plots.addLinks = function(gd) {
     spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
 };
 
-/**
- * Add or modify a margin requst object by name. Margins in pixels.
- *
- * This allows us to have multiple modules request space in the plot without
- * conflicts. For example:
- *
- * adjustReservedMargins(gd, 'themeBar', {left: 200})
- *
- * ... will idempotent-ly set the left margin to 200 for themeBar.
- *
- * @param gd
- * @param {String} marginName
- * @param {Object} margins
- * @returns {Object}
- */
-plots.adjustReservedMargins = function (gd, marginName, margins) {
-    var margin;
-    gd._boundingBoxMargins = gd._boundingBoxMargins || {};
-    gd._boundingBoxMargins[marginName] = {};
-    ['left', 'right', 'top', 'bottom'].forEach(function(key) {
-        margin = margins[key] || 0;
-        gd._boundingBoxMargins[marginName][key] = margin;
-    });
-    return gd._boundingBoxMargins;
-};
-
 // note that now this function is only adding the brand in
 // iframes and 3rd-party apps
 function positionPlayWithData(gd, container){
