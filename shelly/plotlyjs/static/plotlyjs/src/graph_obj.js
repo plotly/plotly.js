@@ -3455,17 +3455,18 @@ function plotAutoSize(gd, aobj) {
         reservedWidth,
         newheight,
         newwidth;
-    if(gd._context.workspace){
-        setFileAndCommentsSize(gd);
-        var gdBB = fullLayout._container.node().getBoundingClientRect();
-
-        // autosized plot on main site: 5% border on all sides
-        reservedWidth = reservedMargins.left + reservedMargins.right;
-        reservedHeight = reservedMargins.bottom + reservedMargins.top;
-        newwidth = Math.round((gdBB.width - reservedWidth)*0.9);
-        newheight = Math.round((gdBB.height - reservedHeight)*0.9);
-    }
-    else if(gd._context.fillFrame) {
+    // if(gd._context.workspace){
+    //     // setFileAndCommentsSize(gd);
+    //     debugger;
+    //     var gdBB = fullLayout._container.node().getBoundingClientRect();
+    //
+    //     // autosized plot on main site: 5% border on all sides
+    //     reservedWidth = reservedMargins.left + reservedMargins.right;
+    //     reservedHeight = reservedMargins.bottom + reservedMargins.top;
+    //     newwidth = Math.round((gdBB.width - reservedWidth)*0.9);
+    //     newheight = Math.round((gdBB.height - reservedHeight)*0.9);
+    // }
+    if(gd._context.fillFrame) {
         // embedded in an iframe - just take the full iframe size
         // if we get to this point, with no aspect ratio restrictions
         newwidth = window.innerWidth;
@@ -3506,7 +3507,7 @@ function plotAutoSize(gd, aobj) {
 plots.resize = function(gd) {
     gd = getGraphDiv(gd);
 
-    if(gd._context.workspace) setFileAndCommentsSize(gd);
+    // if(gd._context.workspace) setFileAndCommentsSize(gd);
 
     if(gd && $(gd).css('display')!=='none') {
         if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
@@ -3522,7 +3523,7 @@ plots.resize = function(gd) {
         }, 100);
     }
 
-    setGraphContainerScroll(gd);
+    // setGraphContainerScroll(gd);
 };
 
 // Get the container div: we store all variables for this plot as
@@ -3560,17 +3561,13 @@ function makePlotFramework(gd) {
      */
     if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
 
-    var outerContainer = fullLayout._fileandcomments =
-            gd3.selectAll('.file-and-comments');
-    // for embeds and cloneGraphOffscreen
-    if(!outerContainer.node()) outerContainer = gd3;
 
     // Plot container
-    fullLayout._container = outerContainer.selectAll('.plot-container').data([0]);
+    fullLayout._container = gd3.selectAll('.plot-container').data([0]);
     fullLayout._container.enter().insert('div', ':first-child')
         .classed('plot-container',true)
-        .classed('plotly',true)
-        .classed('workspace-plot', gd._context.workspace);
+        .classed('plotly',true);
+        // .classed('workspace-plot', gd._context.workspace);
 
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
@@ -3580,7 +3577,7 @@ function makePlotFramework(gd) {
 
     // Initial autosize
     if(fullLayout.autosize === 'initial') {
-        if(gd._context.workspace) setFileAndCommentsSize(gd);
+        // if(gd._context.workspace) setFileAndCommentsSize(gd);
         plotAutoSize(gd,{});
         fullLayout.autosize = true;
         gd.layout.autosize = true;
@@ -4059,7 +4056,7 @@ function lsInner(gd) {
 
     Plotly.Fx.modeBar(gd);
 
-    setGraphContainerScroll(gd);
+    // setGraphContainerScroll(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
 }
