@@ -34,8 +34,8 @@ module.exports = {
             'to regions on the map.'
         ].join(' ')
     },
-    mode: extendFlat(scatterAttrs.mode, {dflt: 'markers'}),
-    text: extendFlat(scatterAttrs.text, {
+    mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
+    text: extendFlat({}, scatterAttrs.text, {
         description: [
             'Sets text elements associated with each (lon,lat) pair.',
             'or item in `locations`.',
@@ -78,7 +78,7 @@ module.exports = {
     },
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
-    hoverinfo: Plotly.Lib.extendFlat(Plotly.Plots.attributes.hoverinfo, {
+    hoverinfo: Plotly.Lib.extendFlat({}, Plotly.Plots.attributes.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
     }),
     _nestedModules: {

@@ -192,20 +192,6 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
     return subplotData;
 };
 
-// new workspace tab. Perhaps this goes elsewhere, a workspace-only file???
-plots.newTab = function(divid, layout) {
-    Plotly.ToolPanel.makeMenu(document.getElementById(divid));
-    var config = {
-        workspace: true,
-        editable: true,
-        autosizable: true,
-        scrollZoom: true,
-        showLink: false,
-        setBackground: 'opaque'
-    };
-    return Plotly.plot(divid, [], layout, config);
-};
-
 // in some cases the browser doesn't seem to know how big
 // the text is at first, so it needs to draw it,
 // then wait a little, then draw it again
@@ -283,7 +269,7 @@ plots.defaultConfig = {
 };
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = $.extend({}, plots.defaultConfig);
+    if(!gd._context) gd._context = Plotly.Lib.extendFlat({}, plots.defaultConfig);
     var context = gd._context;
 
     if(config) {
@@ -524,7 +510,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // Polar plots
     if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
 
-    if(gd._context.editable) Plotly.ToolPanel.tweakMenu(gd);
+    if(gd._context.editable) gd.toolPanel.tweakMenu();
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
@@ -546,9 +532,6 @@ Plotly.plot = function(gd, data, layout, config) {
         }
     }
     else if(graphwasempty) makePlotFramework(gd);
-
-    // enable or disable formatting buttons
-    $(gd).find('.data-only').attr('disabled', !hasData);
 
     var fullLayout = gd._fullLayout;
 
@@ -938,7 +921,7 @@ function plotPolar(gd, data, layout) {
         };
         title.call(setContenteditable);
 
-        Plotly.ToolPanel.tweakMenu(gd);
+        gd.toolPanel.tweakMenu();
     }
 
     gd._context.setBackground(gd, gd._fullLayout.paper_bgcolor);
@@ -1628,13 +1611,13 @@ var extendFlat = Plotly.Lib.extendFlat;
 
 plots.layoutAttributes = {
     font: {
-        family: extendFlat(plots.fontAttrs.family, {
+        family: extendFlat({}, plots.fontAttrs.family, {
             dflt: '"Open sans", verdana, arial, sans-serif'
         }),
-        size: extendFlat(plots.fontAttrs.size, {
+        size: extendFlat({}, plots.fontAttrs.size, {
             dflt: 12
         }),
-        color: extendFlat(plots.fontAttrs.color, {
+        color: extendFlat({}, plots.fontAttrs.color, {
             dflt: Plotly.Color.defaultLine
         }),
         description: [
@@ -1651,7 +1634,7 @@ plots.layoutAttributes = {
             'Sets the plot\'s title.'
         ].join(' ')
     },
-    titlefont: extendFlat(plots.fontAttrs, {
+    titlefont: extendFlat({}, plots.fontAttrs, {
         description: 'Sets the title font.'
     }),
     autosize: {
@@ -2236,7 +2219,7 @@ function getExtendProperties (gd, update, indices, maxPoints) {
 }
 
 /**
- * A private function to keey Extend and Prepend traces DRY
+ * A private function to key Extend and Prepend traces DRY
  *
  * @param {Object|HTMLDivElement} gd
  * @param {Object} update
@@ -2586,19 +2569,22 @@ Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
 
 // restyle: change styling of an existing plot
 // can be called two ways:
-// restyle(gd,astr,val[,traces])
-//      gd - graph div (dom element)
+//
+// restyle(gd, astr, val [,traces])
+//      gd - graph div (string id or dom element)
 //      astr - attribute string (like 'marker.symbol')
 //      val - value to give this attribute
 //      traces - integer or array of integers for the traces
 //          to alter (all if omitted)
-// relayout(gd,aobj[,traces])
+//
+// restyle(gd, aobj [,traces])
 //      aobj - {astr1:val1, astr2:val2...} allows setting
 //          multiple attributes simultaneously
+//
 // val (or val1, val2... in the object form) can be an array,
-//  to apply different values to each trace
-// if the array is too short, it will wrap around (useful for
-//  style files that want to specify cyclical default values)
+// to apply different values to each trace.
+// If the array is too short, it will wrap around (useful for
+// style files that want to specify cyclical default values).
 Plotly.restyle = function restyle(gd, astr, val, traces) {
     gd = getGraphDiv(gd);
 
@@ -3078,9 +3064,10 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+
     return plotDone.then(function(){
         $(gd).trigger('plotly_restyle',
-                      $.extend(true, [], [redoit, traces]));
+            Plotly.Lib.extendDeep([], [redoit, traces]));
     });
 };
 
@@ -3113,10 +3100,12 @@ function swapXYData(trace) {
 
 // relayout: change layout in an existing plot
 // can be called two ways:
-// relayout(gd,astr,val)
-//      gd - graph div (dom element)
+//
+// relayout(gd, astr, val)
+//      gd - graph div (string id or dom element)
 //      astr - attribute string (like 'xaxis.range[0]')
 //      val - value to give this attribute
+//
 // relayout(gd,aobj)
 //      aobj - {astr1:val1, astr2:val2...}
 //          allows setting multiple attributes simultaneously
@@ -3436,8 +3425,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
     var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+
     return plotDone.then(function(){
-        $(gd).trigger('plotly_relayout', $.extend(true, {}, redoit));
+        $(gd).trigger('plotly_relayout',
+            Plotly.Lib.extendDeep({}, redoit));
     });
 };
 

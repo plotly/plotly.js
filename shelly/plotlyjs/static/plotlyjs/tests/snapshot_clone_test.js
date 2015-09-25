@@ -1,7 +1,7 @@
-'use strict';
 var Plotly = require('../src/plotly');
 
 describe('Test Snapshot.clone', function() {
+    'use strict';
 
     describe('Test clone', function() {
 

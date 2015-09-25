@@ -77,7 +77,7 @@ annotations.layoutAttributes = {
             'with respect to the horizontal.'
         ].join(' ')
     },
-    font: Plotly.Lib.extendFlat(Plotly.Plots.fontAttrs, {
+    font: Plotly.Lib.extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the annotation text font.'
     }),
     opacity: {
@@ -281,6 +281,8 @@ annotations.layoutAttributes = {
 
     _deprecated: {
         ref: {
+            valType: 'string',
+            role: 'info',
             description: [
                 'Obsolete. Set `xref` and `yref` separately instead.'
             ].join(' ')
@@ -453,7 +455,9 @@ annotations.draw = function(gd, index, opt, value) {
         else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
             fullLayout.annotations.splice(index,0,{});
 
-            var rule = Plotly.Lib.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+            var rule = Plotly.Lib.isPlainObject(value) ?
+                    Plotly.Lib.extendFlat({}, value) :
+                    {text: 'New text'};
 
             if (layout.annotations) {
                 layout.annotations.splice(index, 0, rule);

@@ -26,7 +26,7 @@ legend.layoutAttributes = {
         role: 'style',
         description: 'Sets the width (in px) of the border enclosing the legend.'
     },
-    font: Plotly.Lib.extendFlat(Plotly.Plots.fontAttrs, {
+    font: Plotly.Lib.extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used to text the legend items.'
     }),
     traceorder: {

@@ -55,7 +55,7 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the z coordinates.'
     },
-    text: extendFlat(scatterAttrs.text, {
+    text: extendFlat({}, scatterAttrs.text, {
         description: [
             'Sets text elements associated with each (x,y,z) triplet.',
             'If a single string, the same string appears over',
@@ -64,7 +64,7 @@ module.exports = {
             'this trace\'s (x,y,z) coordinates.'
         ].join(' ')
     }),
-    mode: extendFlat(scatterAttrs.mode,  // shouldn't this be on-par with 2D?
+    mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),
     surfaceaxis: {
         valType: 'enumerated',
@@ -102,7 +102,7 @@ module.exports = {
             arrayOk: true,
             description: 'Sets the marker symbol type.'
         },
-        size: extendFlat(scatterMarkerAttrs.size, {dflt: 8}),
+        size: extendFlat({}, scatterMarkerAttrs.size, {dflt: 8}),
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
@@ -116,7 +116,7 @@ module.exports = {
         showscale: scatterMarkerAttrs.showscale,
         line: {
             color: scatterMarkerLineAttrs.color,
-            width: extendFlat(scatterMarkerLineAttrs.width, {arrayOk: false}),
+            width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false}),
             colorscale: scatterMarkerLineAttrs.colorscale,
             cauto: scatterMarkerLineAttrs.cauto,
             cmax: scatterMarkerLineAttrs.cmax,
@@ -125,7 +125,7 @@ module.exports = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
-    textposition: extendFlat(scatterAttrs.textposition, {dflt: 'top center'}),
+    textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
     _nestedModules: {
         'error_x': 'ErrorBars',

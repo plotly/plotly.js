@@ -2,7 +2,7 @@
 
 var Tabs = {
     get: function() {
-        return document.getElementById('yo').children[0];
+        return document.getElementById('main').children[0];
     },
     fresh: function() {
         var anchor = document.getElementById('embedded-graph'),
