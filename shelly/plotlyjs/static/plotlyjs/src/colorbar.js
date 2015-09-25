@@ -351,7 +351,7 @@ var colorbar = module.exports = function(td, id) {
 
             cbAxisOut._pos = xLeft+thickPx +
                 (opts.outlinewidth||0)/2 - (opts.ticks==='outside' ? 1 : 0);
-            cbAxisOut.side = opts.orient;
+            cbAxisOut.side = 'right';
 
             return Plotly.Axes.doTicks(td, cbAxisOut);
         }
@@ -496,8 +496,10 @@ var colorbar = module.exports = function(td, id) {
 
             // setter - for multi-part properties,
             // set only the parts that are provided
-            if(Plotly.Lib.isPlainObject(opts[name])) $.extend(opts[name],v);
-            else opts[name] = v;
+            opts[name] = Plotly.Lib.isPlainObject(opts[name]) ?
+                 Plotly.Lib.extendFlat(opts[name], v) :
+                 v;
+
             return component;
         };
     });
@@ -523,14 +525,17 @@ var axesAttrs = Plotly.Axes.layoutAttributes,
     extendFlat = Plotly.Lib.extendFlat;
 
 colorbar.attributes = {
-    orient: {
-        // which side are the labels on (so left and right make vertical bars, etc.)
-        // TODO: only right is supported currently
-        valType: 'enumerated',
-        role: 'info',
-        values: ['left', 'right', 'top', 'bottom'],
-        dflt: 'right'
-    },
+// TODO: only right is supported currently
+//     orient: {
+//         valType: 'enumerated',
+//         role: 'info',
+//         values: ['left', 'right', 'top', 'bottom'],
+//         dflt: 'right',
+//         description: [
+//             'Determines which side are the labels on',
+//             '(so left and right make vertical bars, etc.)'
+//         ].join(' ')
+//     },
     thicknessmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
@@ -657,7 +662,7 @@ colorbar.attributes = {
     dtick: axesAttrs.dtick,
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
-    ticks: extendFlat(axesAttrs.ticks, {dflt: ''}),
+    ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
@@ -677,7 +682,7 @@ colorbar.attributes = {
         dflt: 'Click to enter colorscale title',
         description: 'Sets the title of the color bar.'
     },
-    titlefont: extendFlat(Plotly.Plots.fontAttrs, {
+    titlefont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: [
             'Sets this color bar\'s title font.'
         ].join(' ')
@@ -686,7 +691,11 @@ colorbar.attributes = {
         valType: 'enumerated',
         values: ['right', 'top', 'bottom'],
         role: 'style',
-        dflt: 'top'
+        dflt: 'top',
+        description: [
+            'Determines the location of the colorbar title',
+            'with respect to the color bar.'
+        ].join(' ')
     }
 };
 
@@ -698,8 +707,6 @@ colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
         return Plotly.Lib.coerce(colorbarIn, colorbarOut,
                                  colorbar.attributes, attr, dflt);
     }
-
-    coerce('orient');
 
     var thicknessmode = coerce('thicknessmode');
     coerce('thickness', thicknessmode === 'fraction' ?
@@ -816,9 +823,13 @@ colorbar.traceColorbarAttributes = {
 
     _deprecated: {
         scl: {
+            valType: 'colorscale',
+            role: 'style',
             description: 'Renamed to `colorscale`.'
         },
         reversescl: {
+            valType: 'boolean',
+            role: 'style',
             description: 'Renamed to `reversescale`.'
         }
     }
