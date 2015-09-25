@@ -42,7 +42,7 @@ axes.layoutAttributes = {
         role: 'info',
         description: 'Sets the title of this axis.'
     },
-    titlefont: extendFlat(Plotly.Plots.fontAttrs, {
+    titlefont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: [
             'Sets this axis\' title font.'
         ].join(' ')
@@ -216,7 +216,7 @@ axes.layoutAttributes = {
         role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
     },
-    tickfont: extendFlat(Plotly.Plots.fontAttrs, {
+    tickfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the tick font.'
     }),
     tickangle: {
@@ -319,7 +319,7 @@ axes.layoutAttributes = {
         role: 'style',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
-        ]
+        ].join(' ')
     },
     linecolor: {
         valType: 'color',
