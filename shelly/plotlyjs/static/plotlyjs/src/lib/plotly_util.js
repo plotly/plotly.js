@@ -4,7 +4,7 @@
 /* global d3:false, MathJax:false, Promise:false */
 
 var util = module.exports = {},
-    Plotly = require('./plotly');
+    Plotly = require('../plotly');
 
 // Append SVG
 /////////////////////////////
@@ -457,20 +457,4 @@ util.makeEditable = function(context, _delegate, options){
     else handlerElement.on('click', handleClick);
 
     return d3.rebind(this, dispatch, 'on');
-};
-
-
-// Varia
-/////////////////////////////
-
-util.deepExtend = function(destination, source) {
-    for (var property in source) {
-        if (source[property] && source[property].constructor && source[property].constructor === Object) {
-            destination[property] = destination[property] || {};
-            util.deepExtend(destination[property], source[property]);
-        } else {
-            destination[property] = source[property];
-        }
-    }
-    return destination;
 };
