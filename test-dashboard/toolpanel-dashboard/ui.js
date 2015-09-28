@@ -50,17 +50,37 @@ function createPlot (divId) {
     };
 
     var data = [trace1, trace2];
+    var toolPanel;
 
     Plotly.newPlot(divId, data);
 
-    graphDiv.toolPanel = new ToolPanel(Plotly, graphDiv, {
+    graphDiv.toolPanel = toolPanel = new ToolPanel(Plotly, graphDiv, {
         standalone: true,
         popoverContainer: containerDiv
     });
 
+    window.toolPanel = graphDiv.toolPanel;
+
     graphDiv.toolPanel.makeMenu({
         toolMenuContainer: toolDiv
     });
+
+    toolPanel.createMenuMultiButton([
+        {
+            labelContent: 'Undo',
+            iconClass: 'icon-rotate-left',
+            handler: toolPanel.undo
+        },
+        {
+            labelContent: 'Redo',
+            iconClass: 'icon-rotate-right',
+            handler: toolPanel.redo
+        }
+    ]);
+
+    toolPanel.createMenuSpacer();
+
+    toolPanel.createMenuButtons(toolPanel.getPanelButtonSpecs());
 
     divs.push(graphDiv, toolDiv);
 
