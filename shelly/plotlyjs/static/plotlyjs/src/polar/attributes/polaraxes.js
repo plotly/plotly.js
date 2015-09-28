@@ -4,7 +4,7 @@ var Plotly = require('../../plotly');
 
 var extendFlat = Plotly.Lib.extendFlat;
 
-var domainAttr = extendFlat(Plotly.Axes.layoutAttributes.domain, {
+var domainAttr = extendFlat({}, Plotly.Axes.layoutAttributes.domain, {
     description: [
         'Polar chart subplots are not supported yet.',
         'This key has currently no effect.'
@@ -75,7 +75,7 @@ function mergeAttrs(axisName, nonCommonAttrs) {
         }
     };
 
-    return extendFlat(nonCommonAttrs, commonAttrs);
+    return extendFlat({}, nonCommonAttrs, commonAttrs);
 }
 
 module.exports = {
