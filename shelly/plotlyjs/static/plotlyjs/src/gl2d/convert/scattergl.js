@@ -6,6 +6,12 @@ var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
 function LineWithMarkers(scene, uid) {
   this.scene = scene;
   this.uid = uid;
+  this.name = '';
+  this.color = 'rgb(0,0,0)';
+
+  this.xData = [];
+  this.yData = [];
+  this.textLabels = [];
 
   this.scatterOptions = {
     positions:    new Float32Array(),
@@ -14,32 +20,43 @@ function LineWithMarkers(scene, uid) {
     color:        [0, 0, 0, 1],
     borderColor:  [0, 0, 0, 1]
   };
-
   this.scatter = createScatter(scene.glplot, this.scatterOptions);
+  this.scatter._trace = this;
 }
 
 var proto = LineWithMarkers.prototype;
+
+proto.handlePick = function(pickResult) {
+  var id = pickResult.pointId;
+  return {
+    trace: this,
+    dataCoord: pickResult.dataCoord,
+    traceCoord: [
+      this.xData[id],
+      this.yData[id]
+    ],
+    name: this.name,
+    color: this.color,
+    text: this.text && this.text[id]
+  };
+};
 
 proto.update = function(options) {
   var x = options.x;
   var y = options.y;
   var i;
 
-  var numPoints = 0;
-  for(i=0; i<x.length; ++i) {
-    if(isNaN(x[i]) || isNaN(y[i])) {
-      continue;
-    }
-    numPoints += 1;
-  }
+  this.name = options.name;
 
+  this.xData = x;
+  this.yData = y;
+  this.textLabels = options.text;
+
+  var numPoints = x.length;
   var positions =
       this.scatterOptions.positions = new Float32Array(2 * numPoints);
   var ptr = 0;
   for(i=0; i<x.length; ++i) {
-    if(isNaN(x[i]) || isNaN(y[i])) {
-      continue;
-    }
     positions[ptr++] = x[i];
     positions[ptr++] = y[i];
   }
@@ -49,6 +66,8 @@ proto.update = function(options) {
 
   var color = options.marker.color;
   var borderColor = options.marker.line.color;
+
+  this.color = color;
 
   var colorArray = str2RGBArray(color);
   var borderColorArray = str2RGBArray(borderColor);
@@ -60,9 +79,9 @@ proto.update = function(options) {
 };
 
 function createLineWithMarkers(scene, data) {
-    var plot = new LineWithMarkers(scene, data.uid);
-    plot.update(data);
-    return plot;
+  var plot = new LineWithMarkers(scene, data.uid);
+  plot.update(data);
+  return plot;
 }
 
 module.exports = createLineWithMarkers;

@@ -31,7 +31,19 @@ function Scene2D(options, fullLayout) {
     canvas.style.position = 'absolute';
     canvas.style.top    = '0px';
     canvas.style.left   = '0px';
-    canvas.style['z-index'] = '100';
+    canvas.style['z-index'] = '90';
+
+    //Create SVG container for hover text
+    var svgContainer = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'svg');
+    svgContainer.style.position = 'absolute';
+    svgContainer.style.top   = svgContainer.style.left   = '0px';
+    svgContainer.style.width = svgContainer.style.height = '100%';
+    svgContainer.style['z-index'] = '91';
+    svgContainer.style['pointer-events'] = 'none';
+    this.svgContainer = svgContainer;
+
 
     //Get webgl context
     var gl;
@@ -50,7 +62,7 @@ function Scene2D(options, fullLayout) {
 
     //Append canvas to conatiner
     container.appendChild(canvas);
-
+    container.appendChild(svgContainer);
 
     //Update options
     this.glplotOptions = createOptions(this);
@@ -218,12 +230,42 @@ proto.draw = function() {
 
     var result = glplot.pick(x / glplot.pixelRatio, y / glplot.pixelRatio);
     if(result) {
-      this.spikes.update({
-        center: result.dataCoord
-      });
+      var nextSelection = result.object._trace.handlePick(result);
+      if(nextSelection &&
+        (!this.lastPickResult ||
+          this.lastPickResult.trace !== nextSelection.trace ||
+          this.lastPickResult.dataCoord[0] !== nextSelection.dataCoord[0] ||
+          this.lastPickResult.dataCoord[1] !== nextSelection.dataCoord[1])) {
+        var selection = this.lastPickResult = nextSelection;
+        this.spikes.update({
+          center: result.dataCoord
+        });
+        selection.screenCoord= [
+          ((glplot.viewBox[2] - glplot.viewBox[0]) *
+          (result.dataCoord[0] - glplot.dataBox[0]) /
+            (glplot.dataBox[2] - glplot.dataBox[0]) + glplot.viewBox[0]) / glplot.pixelRatio,
+          (this.canvas.height - (glplot.viewBox[3] - glplot.viewBox[1]) *
+          (result.dataCoord[1] - glplot.dataBox[1]) /
+            (glplot.dataBox[3] - glplot.dataBox[1]) - glplot.viewBox[1]) / glplot.pixelRatio ];
+        Plotly.Fx.loneHover({
+          x: selection.screenCoord[0],
+          y: selection.screenCoord[1],
+          xLabel: selection.traceCoord[0] + '',
+          yLabel: selection.traceCoord[1] + '',
+          text:   selection.textLabel || '',
+          name:   selection.name,
+          color:  selection.color
+         }, {
+           container: this.svgContainer
+         });
+         this.lastPickResult = {
+           dataCoord: result.dataCoord
+         };
+       }
     } else if(!result && this.lastPickResult) {
       this.spikes.update({});
       this.lastPickResult = null;
+      Plotly.Fx.loneUnhover(this.svgContainer);
     }
 
     glplot.draw();
