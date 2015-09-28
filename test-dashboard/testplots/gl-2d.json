@@ -1,7 +1,10 @@
 {
     "data": [
         {
-            "type": "scattergl"
+            "type": "scattergl",
+            "x":    [ 1, 2, 3,  4 ],
+            "y":    [ 2, 5, 6, -1 ],
+            "mode": "markers"
         }
     ],
     "layout": {

@@ -65,7 +65,6 @@ module.exports = {
     _nestedModules: {
         'error_x': 'ErrorBars',
         'error_y': 'ErrorBars',
-        'error_z': 'ErrorBars',
         'marker.colorbar': 'Colorbar'
     }
 };

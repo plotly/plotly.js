@@ -1,6 +1,7 @@
 'use strict';
 
 var createScatter = require('gl-scatter2d');
+var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
 
 function LineWithMarkers(scene, uid) {
   this.scene = scene;
@@ -46,11 +47,16 @@ proto.update = function(options) {
   this.scatterOptions.size = options.marker.size;
   this.scatterOptions.borderSize = options.marker.line.width;
 
-  /*
   var color = options.marker.color;
-  var opacity = options.marker.opacity;
   var borderColor = options.marker.line.color;
-  */
+
+  var colorArray = str2RGBArray(color);
+  var borderColorArray = str2RGBArray(borderColor);
+
+  this.scatterOptions.color = colorArray;
+  this.scatterOptions.borderColor = borderColorArray;
+
+  this.scatter.update(this.scatterOptions);
 };
 
 function createLineWithMarkers(scene, data) {

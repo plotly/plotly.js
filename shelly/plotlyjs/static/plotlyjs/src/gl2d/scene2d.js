@@ -2,6 +2,7 @@
 
 var Plotly = require('../plotly');
 var createPlot2D = require('gl-plot2d');
+var createSpikes  = require('gl-spikes2d');
 var createLineWithMarkers = require('./convert/scattergl');
 var createOptions = require('./convert/axes2dgl');
 var createCamera  = require('./lib/camera');
@@ -61,12 +62,18 @@ function Scene2D(options, fullLayout) {
     //Create camera
     this.camera = createCamera(this);
 
+    //Trace set
+    this.traces = [];
+
+    //Create axes spikes
+    this.spikes = createSpikes(this.glplot);
+
+    //Last pick result
+    this.pickResult = null;
+
     //Redraw the plot
     this.redraw = this.draw.bind(this);
     this.redraw();
-
-    //Trace set
-    this.traces = [];
 }
 
 module.exports = Scene2D;
@@ -195,14 +202,29 @@ j_loop:
         trace.dispose();
         this.traces.splice(j, 1);
     }
+
+    this.cameraChanged();
 };
 
 proto.draw = function() {
     requestAnimationFrame(this.redraw);
 
-    //Check for resize
     var glplot = this.glplot;
+    var camera = this.camera;
+    var mouseListener = camera.mouseListener;
 
-    //Draw plot
+    var x = mouseListener.x * glplot.pixelRatio;
+    var y = this.canvas.height - glplot.pixelRatio * mouseListener.y;
+
+    var result = glplot.pick(x / glplot.pixelRatio, y / glplot.pixelRatio);
+    if(result) {
+      this.spikes.update({
+        center: result.dataCoord
+      });
+    } else if(!result && this.lastPickResult) {
+      this.spikes.update({});
+      this.lastPickResult = null;
+    }
+
     glplot.draw();
 };
