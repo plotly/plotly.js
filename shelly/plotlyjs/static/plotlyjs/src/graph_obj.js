@@ -10,8 +10,7 @@
 
 var Plotly = require('./plotly'),
     m4FromQuat = require('gl-mat4/fromQuat'),
-    isNumeric = require('./isnumeric'),
-    clone = require('clone');
+    isNumeric = require('./isnumeric');
 
 var plots = module.exports = {};
 // Most of the generic plotting functions get put into Plotly.Plots,
@@ -270,7 +269,7 @@ plots.defaultConfig = {
 };
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Plotly.Lib.extendFlat(plots.defaultConfig);
+    if(!gd._context) gd._context = Plotly.Lib.extendFlat({}, plots.defaultConfig);
     var context = gd._context;
 
     if(config) {
@@ -360,32 +359,6 @@ plots.addLinks = function(gd) {
 
     // separator if we have both sources and tool link
     spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
-};
-
-/**
- * Add or modify a margin requst object by name. Margins in pixels.
- *
- * This allows us to have multiple modules request space in the plot without
- * conflicts. For example:
- *
- * adjustReservedMargins(gd, 'themeBar', {left: 200})
- *
- * ... will idempotent-ly set the left margin to 200 for themeBar.
- *
- * @param gd
- * @param {String} marginName
- * @param {Object} margins
- * @returns {Object}
- */
-plots.adjustReservedMargins = function (gd, marginName, margins) {
-    var margin;
-    gd._boundingBoxMargins = gd._boundingBoxMargins || {};
-    gd._boundingBoxMargins[marginName] = {};
-    ['left', 'right', 'top', 'bottom'].forEach(function(key) {
-        margin = margins[key] || 0;
-        gd._boundingBoxMargins[marginName][key] = margin;
-    });
-    return gd._boundingBoxMargins;
 };
 
 // note that now this function is only adding the brand in
@@ -1612,13 +1585,13 @@ var extendFlat = Plotly.Lib.extendFlat;
 
 plots.layoutAttributes = {
     font: {
-        family: extendFlat(plots.fontAttrs.family, {
+        family: extendFlat({}, plots.fontAttrs.family, {
             dflt: '"Open sans", verdana, arial, sans-serif'
         }),
-        size: extendFlat(plots.fontAttrs.size, {
+        size: extendFlat({}, plots.fontAttrs.size, {
             dflt: 12
         }),
-        color: extendFlat(plots.fontAttrs.color, {
+        color: extendFlat({}, plots.fontAttrs.color, {
             dflt: Plotly.Color.defaultLine
         }),
         description: [
@@ -1635,7 +1608,7 @@ plots.layoutAttributes = {
             'Sets the plot\'s title.'
         ].join(' ')
     },
-    titlefont: extendFlat(plots.fontAttrs, {
+    titlefont: extendFlat({}, plots.fontAttrs, {
         description: 'Sets the title font.'
     }),
     autosize: {
@@ -3067,7 +3040,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_restyle', clone([redoit, traces]));
+        $(gd).trigger('plotly_restyle',
+            Plotly.Lib.extendDeep([], [redoit, traces]));
     });
 };
 
@@ -3427,7 +3401,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_relayout', clone(redoit));
+        $(gd).trigger('plotly_relayout',
+            Plotly.Lib.extendDeep({}, redoit));
     });
 };
 

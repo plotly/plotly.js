@@ -4,14 +4,37 @@ var Plotly = window.Plotly;
 var ToolPanel = window.ToolPanel;
 var divs = [];
 
+function createRemoveButton () {
+    var removeButton = document.createElement('button');
+    removeButton.innerHTML = 'remove toolpanel';
+    removeButton.id = 'removeButton';
+    document.body.appendChild(removeButton);
+
+    removeButton.onclick = function () {
+        divs[0].toolPanel.remove();
+    };
+}
+
 function createPlot (divId) {
     var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
+    var toolDiv = document.createElement('div');
+    containerDiv.style.width = '100%';
+    containerDiv.style.height = '100%';
+    containerDiv.style.clear = 'both';
+
     graphDiv.id = divId;
-    graphDiv.style.width = '45%';
+    graphDiv.style.width = '80%';
     graphDiv.style.display = 'inline-block';
-    graphDiv.style.margin = '10px';
+    graphDiv.style.margin = '0px';
     graphDiv.style.position = 'relative';
+    graphDiv.style.verticalAlign = 'top';
+
+    toolDiv.style.verticalAlign = 'top';
+    toolDiv.style.width = '130px';
+    toolDiv.style.display = 'inline-block';
+
+    containerDiv.appendChild(toolDiv);
     containerDiv.appendChild(graphDiv);
 
     var trace1 = {
@@ -27,20 +50,44 @@ function createPlot (divId) {
     };
 
     var data = [trace1, trace2];
+    var toolPanel;
 
     Plotly.newPlot(divId, data);
 
-    graphDiv.toolPanel = new ToolPanel(Plotly, graphDiv, {
+    graphDiv.toolPanel = toolPanel = new ToolPanel(Plotly, graphDiv, {
         standalone: true,
         popoverContainer: containerDiv
     });
 
-    graphDiv.toolPanel.makeMenu();
+    window.toolPanel = graphDiv.toolPanel;
 
-    divs.push(graphDiv);
+    graphDiv.toolPanel.makeMenu({
+        toolMenuContainer: toolDiv
+    });
+
+    toolPanel.createMenuMultiButton([
+        {
+            labelContent: 'Undo',
+            iconClass: 'icon-rotate-left',
+            handler: toolPanel.undo
+        },
+        {
+            labelContent: 'Redo',
+            iconClass: 'icon-rotate-right',
+            handler: toolPanel.redo
+        }
+    ]);
+
+    toolPanel.createMenuSpacer();
+
+    toolPanel.createMenuButtons(toolPanel.getPanelButtonSpecs());
+
+    divs.push(graphDiv, toolDiv);
 
 }
 
-['one', 'two'].forEach(function (index) {
+['one'].forEach(function (index) {
     createPlot(index);
 });
+
+createRemoveButton();
