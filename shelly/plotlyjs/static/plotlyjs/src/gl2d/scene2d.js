@@ -48,11 +48,11 @@ function Scene2D(options, fullLayout) {
     //Get webgl context
     var gl;
     try {
-      gl = canvas.getContext('webgl', options.glOptions);
+      gl = canvas.getContext('webgl', options.glopts);
     } catch(e) {}
     if(!gl) {
       try {
-        gl = canvas.getContext('experimental-webgl', options.glOptions);
+        gl = canvas.getContext('experimental-webgl', options.glopts);
       } catch(e) {}
     }
     if(!gl) {
@@ -91,6 +91,70 @@ function Scene2D(options, fullLayout) {
 module.exports = Scene2D;
 
 var proto = Scene2D.prototype;
+
+proto.toImage = function(format) {
+
+  if (!format) format = 'png';
+  /*
+  if(this.staticMode) {
+    this.container.appendChild(STATIC_CANVAS);
+  }
+  */
+
+  //Force redraw
+  this.glplot.setDirty(true);
+  this.glplot.draw();
+
+  //Grab context and yank out pixels
+  var gl = this.glplot.gl;
+  var w = gl.drawingBufferWidth;
+  var h = gl.drawingBufferHeight;
+
+  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+
+  var pixels = new Uint8Array(w * h * 4);
+  gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+
+  //Flip pixels
+  for(var j=0,k=h-1; j<k; ++j, --k) {
+      for(var i=0; i<w; ++i) {
+          for(var l=0; l<4; ++l) {
+              var tmp = pixels[4*(w*j+i)+l];
+              pixels[4*(w*j+i)+l] = pixels[4*(w*k+i)+l];
+              pixels[4*(w*k+i)+l] = tmp;
+          }
+      }
+  }
+
+  var canvas = document.createElement('canvas');
+  canvas.width = w;
+  canvas.height = h;
+  var context = canvas.getContext('2d');
+  var imageData = context.createImageData(w, h);
+  imageData.data.set(pixels);
+  context.putImageData(imageData, 0, 0);
+
+  var dataURL;
+
+  switch (format) {
+      case 'jpeg':
+          dataURL = canvas.toDataURL('image/jpeg');
+          break;
+      case 'webp':
+          dataURL = canvas.toDataURL('image/webp');
+          break;
+      default:
+      dataURL = canvas.toDataURL('image/png');
+  }
+
+  /*
+  if(this.staticMode) {
+    this.container.removeChild(STATIC_CANVAS);
+  }
+  */
+
+  return dataURL;
+};
 
 proto.computeTickMarks = function() {
   this.fullLayout.scene2d.xaxis._length =
@@ -137,6 +201,10 @@ proto.cameraChanged = function() {
       this.glplotOptions.dataBox = camera.dataBox;
       this.glplot.update(this.glplotOptions);
   }
+};
+
+proto.destroy = function() {
+  this.glplot.dispose();
 };
 
 proto.plot = function(fullData, fullLayout) {

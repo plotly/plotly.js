@@ -88,7 +88,8 @@ module.exports = function clonePlot(graphObj, options) {
         }
     }
 
-    var sceneIds = Plotly.Plots.getSubplotIds(newLayout, 'gl3d');
+    var sceneIds = Plotly.Plots.getSubplotIds(newLayout, 'gl3d').concat(
+      Plotly.Plots.getSubplotIds(newLayout, 'gl2d'));
 
     if (sceneIds.length) {
         var axesImageOverride = {};
@@ -100,13 +101,14 @@ module.exports = function clonePlot(graphObj, options) {
                 linetickenable: false
             };
         }
-        // presumes webgl plots won't have 2D plots.
         for (i = 0; i < sceneIds.length; i++) {
             var sceneId = sceneIds[i];
             newLayout[sceneId].xaxis = extend(newLayout[sceneId].xaxis, axesImageOverride);
             newLayout[sceneId].yaxis = extend(newLayout[sceneId].yaxis, axesImageOverride);
-            newLayout[sceneId].zaxis = extend(newLayout[sceneId].zaxis, axesImageOverride);
-            newLayout[sceneId]._scene = null;
+            if(newLayout[sceneId].zaxis) {
+              newLayout[sceneId].zaxis = extend(newLayout[sceneId].zaxis, axesImageOverride);
+            }
+            newLayout[sceneId]._scene2d = newLayout[sceneId]._scene = null;
         }
 
         newLayout.glopts = {preserveDrawingBuffer: true};

@@ -20,14 +20,18 @@ module.exports = function toSVG(gd, format) {
 
     /* Grab the 3d scenes and rasterize em. Calculate their positions,
      * then insert them into the SVG element as images */
-    var sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
+    var sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d').concat(
+                    Plotly.Plots.getSubplotIds(fullLayout, 'gl2d')),
         scene,
         imageData;
 
     for(i = 0; i < sceneIds.length; i++) {
         scene = fullLayout[sceneIds[i]];
-        imageData = scene._scene.toImage('png'); // Grab dem pixels!
-        domain = scene.domain;
+        imageData = (scene._scene || scene._scene2d).toImage('png'); // Grab dem pixels!
+        domain = scene.domain || {
+          x: [0, 1],
+          y: [0, 1]
+        };
 
         fullLayout._glimages.append('svg:image')
             .attr({
@@ -40,7 +44,7 @@ module.exports = function toSVG(gd, format) {
                 preserveAspectRatio: 'none'
             });
 
-        scene._scene.destroy();
+        (scene._scene || scene._scene2d).destroy();
     }
 
     // Grab the geos off the geo-container and place them in geoimages

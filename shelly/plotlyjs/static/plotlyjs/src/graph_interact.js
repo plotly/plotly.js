@@ -1328,6 +1328,12 @@ function chooseModebarButtons(fullLayout) {
             ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
             ['hoverClosestGeo']
         ];
+    } else if(fullLayout._hasGL2D) {
+        return [
+            ['toImage'],
+            ['zoom2d', 'pan2d'],
+            ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d']
+        ];
     }
 
     var axList = Plotly.Axes.list({_fullLayout: fullLayout}, null, true),
