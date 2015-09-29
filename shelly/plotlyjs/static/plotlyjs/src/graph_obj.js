@@ -3403,25 +3403,6 @@ Plotly.relayout = function relayout(gd, astr, val) {
     });
 };
 
-function setGraphContainerScroll(gd) {
-    if(!gd || !gd._context || !gd._context.workspace ||
-            !gd._fullLayout || gd.tabtype!=='plot' ||
-            $(gd).css('display')==='none') {
-        return;
-    }
-
-    var $graphContainer = $(gd).find('.plot-container'),
-        isGraphWiderThanContainer =
-            gd._fullLayout.width > parseInt($graphContainer.css('width'),10);
-
-    if (gd._fullLayout.autosize || !isGraphWiderThanContainer) {
-        $graphContainer.removeClass('is-fixed-size');
-    }
-    else if (isGraphWiderThanContainer) {
-        $graphContainer.addClass('is-fixed-size');
-    }
-}
-
 /**
  * Reduce all reserved margin objects to a single required margin reservation.
  *
