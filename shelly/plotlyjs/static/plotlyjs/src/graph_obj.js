@@ -3541,7 +3541,6 @@ function makePlotFramework(gd) {
     fullLayout._container.enter().insert('div', ':first-child')
         .classed('plot-container',true)
         .classed('plotly',true);
-        // .classed('workspace-plot', gd._context.workspace);
 
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
@@ -3736,6 +3735,8 @@ function makePlotFramework(gd) {
     // svg when exporting (after inserting 3D)
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+
+    $(gd).trigger('plotly_framework');
 
     // position and style the containers, make main title
     var frameWorkDone = Plotly.Lib.syncOrAsync([
