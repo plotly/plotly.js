@@ -1,9 +1,6 @@
 'use strict';
 /* jshint camelcase: false */
 
-// ---global functions not yet namespaced
-/* global setFileAndCommentsSize:false */
-
 // ---external global dependencies
 /* global Promise:false, d3:false */
 
@@ -3456,8 +3453,6 @@ function plotAutoSize(gd, aobj) {
         newheight,
         newwidth;
     // if(gd._context.workspace){
-    //     // setFileAndCommentsSize(gd);
-    //     debugger;
     //     var gdBB = fullLayout._container.node().getBoundingClientRect();
     //
     //     // autosized plot on main site: 5% border on all sides
@@ -3506,8 +3501,6 @@ function plotAutoSize(gd, aobj) {
 // check whether to resize a tab (if it's a plot) to the container
 plots.resize = function(gd) {
     gd = getGraphDiv(gd);
-
-    // if(gd._context.workspace) setFileAndCommentsSize(gd);
 
     if(gd && $(gd).css('display')!=='none') {
         if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
@@ -3577,7 +3570,6 @@ function makePlotFramework(gd) {
 
     // Initial autosize
     if(fullLayout.autosize === 'initial') {
-        // if(gd._context.workspace) setFileAndCommentsSize(gd);
         plotAutoSize(gd,{});
         fullLayout.autosize = true;
         gd.layout.autosize = true;
