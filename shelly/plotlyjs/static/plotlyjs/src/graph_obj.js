@@ -434,7 +434,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // hook class for plots main container (in case of plotly.js
     // this won't be #embedded-graph or .js-tab-contents)
-    d3.select(gd).classed('js-plotly-plot',true);
+    d3.select(gd).classed('js-plotly-plot', true);
 
     // off-screen getBoundingClientRect testing space,
     // in #js-plotly-tester (and stored as gd._tester)
@@ -3433,6 +3433,7 @@ function plotAutoSize(gd, aobj) {
         reservedWidth,
         newheight,
         newwidth;
+
     // if(gd._context.workspace){
     //     var gdBB = fullLayout._container.node().getBoundingClientRect();
     //
@@ -3481,23 +3482,22 @@ function plotAutoSize(gd, aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 plots.resize = function(gd) {
-    gd = getGraphDiv(gd);
+    if(!gd || d3.select(gd).style('display') === 'none') return;
 
-    if(gd && $(gd).css('display')!=='none') {
-        if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
-        gd._redrawTimer = setTimeout(function(){
-            if ((gd._fullLayout||{}).autosize) {
-                // autosizing doesn't count as a change that needs saving
-                var oldchanged = gd.changed;
-                // nor should it be included in the undo queue
-                gd.autoplay = true;
-                Plotly.relayout(gd, {autosize: true});
-                gd.changed = oldchanged;
-            }
-        }, 100);
-    }
+    if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
 
-    // setGraphContainerScroll(gd);
+    gd._redrawTimer = setTimeout(function(){
+        if((gd._fullLayout || {}).autosize) {
+            // autosizing doesn't count as a change that needs saving
+            var oldchanged = gd.changed;
+
+            // nor should it be included in the undo queue
+            gd.autoplay = true;
+
+            Plotly.relayout(gd, {autosize: true});
+            gd.changed = oldchanged;
+        }
+    }, 100);
 };
 
 // Get the container div: we store all variables for this plot as
@@ -3535,12 +3535,11 @@ function makePlotFramework(gd) {
      */
     if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
 
-
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);
     fullLayout._container.enter().insert('div', ':first-child')
-        .classed('plot-container',true)
-        .classed('plotly',true);
+        .classed('plot-container', true)
+        .classed('plotly', true);
 
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
@@ -3550,10 +3549,11 @@ function makePlotFramework(gd) {
 
     // Initial autosize
     if(fullLayout.autosize === 'initial') {
-        plotAutoSize(gd,{});
+        plotAutoSize(gd, {});
         fullLayout.autosize = true;
         gd.layout.autosize = true;
     }
+
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
     // right, rather than enter/exit which can muck up the order
@@ -3744,9 +3744,11 @@ function makePlotFramework(gd) {
         function goAxes(){ return Plotly.Axes.doTicks(gd,'redraw'); },
         Plotly.Fx.init
     ], gd);
+
     if(frameWorkDone && frameWorkDone.then) {
         gd._promises.push(frameWorkDone);
     }
+
     return frameWorkDone;
 }
 
@@ -4029,8 +4031,6 @@ function lsInner(gd) {
     plots.titles(gd,'gtitle');
 
     Plotly.Fx.modeBar(gd);
-
-    // setGraphContainerScroll(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
 }
