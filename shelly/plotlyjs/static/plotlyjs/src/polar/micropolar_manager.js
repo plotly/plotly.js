@@ -53,7 +53,7 @@ manager.framework = function(_gd){
         })(configClone, previousConfigClone);
         previousConfigClone = Plotly.micropolar.util.cloneJson(configClone);
     };
-    exports.undo = function(){ undoManager.undo(); }; //Tabs.get().framework.undo()
+    exports.undo = function(){ undoManager.undo(); };
     exports.redo = function(){ undoManager.redo(); };
     return exports;
 };
