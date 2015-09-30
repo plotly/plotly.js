@@ -186,12 +186,12 @@ function compareTicks(a, b) {
 proto.cameraChanged = function() {
   var fullLayout = this.fullLayout;
   var camera = this.camera;
-  fullLayout.scene2d.xaxis.range[0] = camera.dataBox[0];
-  fullLayout.scene2d.yaxis.range[0] = camera.dataBox[1];
-  fullLayout.scene2d.xaxis.range[1] = camera.dataBox[2];
-  fullLayout.scene2d.yaxis.range[1] = camera.dataBox[3];
+  var xrange = fullLayout.scene2d.xaxis.range;
+  var yrange = fullLayout.scene2d.yaxis.range;
 
-  this.glplot.setDataBox(camera.dataBox);
+  this.glplot.setDataBox([
+    xrange[0], yrange[0],
+    xrange[1], yrange[1]]);
 
   var nextTicks = this.computeTickMarks();
   var curTicks = this.glplotOptions.ticks;
@@ -230,11 +230,8 @@ proto.plot = function(fullData, fullLayout) {
         Plotly.Axes.doAutoRange(fullLayout.scene2d[AXES[i]]);
     }
 
-    var camera = this.camera;
-    camera.dataBox[0] = fullLayout.scene2d.xaxis.range[0];
-    camera.dataBox[1] = fullLayout.scene2d.yaxis.range[0];
-    camera.dataBox[2] = fullLayout.scene2d.xaxis.range[1];
-    camera.dataBox[3] = fullLayout.scene2d.yaxis.range[1];
+    var xrange = fullLayout.scene2d.xaxis.range;
+    var yrange = fullLayout.scene2d.yaxis.range;
 
     //Update plot
     var options       = this.glplotOptions;
@@ -242,7 +239,7 @@ proto.plot = function(fullData, fullLayout) {
     options.screenBox = [0,0,width,height];
     options.viewBox   = [0.125*width,0.125*height,0.875*width,0.875*height];
     options.ticks     = this.computeTickMarks();
-    options.dataBox   = camera.dataBox;
+    options.dataBox   = [xrange[0], yrange[0], xrange[1], yrange[1]];
 
     glplot.update(options);
 
@@ -292,6 +289,8 @@ proto.draw = function() {
     var glplot = this.glplot;
     var camera = this.camera;
     var mouseListener = camera.mouseListener;
+
+    this.cameraChanged();
 
     var x = mouseListener.x * glplot.pixelRatio;
     var y = this.canvas.height - glplot.pixelRatio * mouseListener.y;

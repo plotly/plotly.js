@@ -200,6 +200,57 @@ proto.getLogo = function(){
     return group;
 };
 
+proto.handleGL2D = function(ev) {
+  var button = ev.currentTarget,
+      astr = button.getAttribute('data-attr'),
+      val = button.getAttribute('data-val') || true,
+      _this = this,
+      graphInfo = this.graphInfo,
+      fullLayout = this.graphInfo._fullLayout,
+      aobj = {};
+
+  if(astr === 'zoom') {
+      var mag = (val === 'in') ? 0.5 : 2,
+          r0 = (1 + mag) / 2,
+          r1 = (1 - mag) / 2,
+          axList = [fullLayout.scene2d.xaxis, fullLayout.scene2d.yaxis];
+      var ax, axName, initialRange;
+
+      for(var i = 0; i < axList.length; i++) {
+          ax = axList[i];
+          if(!ax.fixedrange) {
+              axName = ax._name;
+              if(val === 'auto') aobj[axName + '.autorange'] = true;
+              else if(val === 'reset') {
+                  if(ax._rangeInitial === undefined) {
+                      aobj['scene2d.' + axName + '.autorange'] = true;
+                  }
+                  else aobj['scene2d.' + axName + '.range'] = ax._rangeInitial.slice();
+              }
+              else {
+                  initialRange = ax.range;
+                  aobj['scene2d.' + axName + '.range'] = [
+                      r0 * initialRange[0] + r1 * initialRange[1],
+                      r0 * initialRange[1] + r1 * initialRange[0]
+                  ];
+              }
+          }
+      }
+  } else {
+      // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
+      if (astr==='hovermode' && (val==='x' || val==='y')) {
+          val = fullLayout._isHoriz ? 'y' : 'x';
+          button.setAttribute('data-val', val);
+      }
+
+      aobj[astr] = val;
+  }
+
+  Plotly.relayout(graphInfo, aobj).then( function() {
+      _this.updateActiveButton();
+  });
+};
+
 /**
  * Apply D3 cartesian mode attributes to layout to update hover functionality
  * @Param {object} ev event object
@@ -213,12 +264,15 @@ proto.handleCartesian = function(ev) {
         fullLayout = this.graphInfo._fullLayout,
         aobj = {};
 
+    if(fullLayout._hasGL2D) {
+      return this.handleGL2D(ev);
+    }
+
     if(astr === 'zoom') {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
             r1 = (1 - mag) / 2,
             axList = Plotly.Axes.list(graphInfo, null, true);
-
         var ax, axName, initialRange;
 
         for(var i = 0; i < axList.length; i++) {
