@@ -30,9 +30,7 @@ function createPlot (divId) {
     graphDiv.style.position = 'relative';
     graphDiv.style.verticalAlign = 'top';
 
-    toolDiv.style.verticalAlign = 'top';
-    toolDiv.style.width = '130px';
-    toolDiv.style.display = 'inline-block';
+    toolDiv.className = 'toolDiv';
 
     containerDiv.appendChild(toolDiv);
     containerDiv.appendChild(graphDiv);
