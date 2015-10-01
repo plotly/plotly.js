@@ -2,7 +2,7 @@
 
 /* global MathJax:false, Promise:false */
 
-var Plotly = require('./plotly'),
+var Plotly = require('../plotly'),
     d3 = require('d3');
 
 var util = module.exports = {};

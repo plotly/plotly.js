@@ -6,7 +6,7 @@
 // ---global functions not yet namespaced
 /* global pullf:false */
 
-var Plotly = require('./plotly'),
+var Plotly = require('../plotly'),
     d3 = require('d3'),
     tinycolor = require('tinycolor2'),
     isNumeric = require('../isnumeric');
