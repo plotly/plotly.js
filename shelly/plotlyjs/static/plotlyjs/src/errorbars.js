@@ -128,6 +128,8 @@ errorBars.attributes = {
 
     _deprecated: {
         opacity: {
+            valType: 'number',
+            role: 'style',
             description: [
                 'Obsolete.',
                 'Use the alpha channel in error bar `color` to set the opacity.'

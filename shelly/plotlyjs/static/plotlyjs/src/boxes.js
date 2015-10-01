@@ -139,18 +139,18 @@ boxes.attributes = {
             role: 'style',
             description: 'Sets the color of the outlier sample points.'
         },
-        symbol: extendFlat(scatterMarkerAttrs.symbol,
+        symbol: extendFlat({}, scatterMarkerAttrs.symbol,
             {arrayOk: false}),
-        opacity: extendFlat(scatterMarkerAttrs.opacity,
+        opacity: extendFlat({}, scatterMarkerAttrs.opacity,
             {arrayOk: false, dflt: 1}),
-        size: extendFlat(scatterMarkerAttrs.size,
+        size: extendFlat({}, scatterMarkerAttrs.size,
             {arrayOk: false}),
-        color: extendFlat(scatterMarkerAttrs.color,
+        color: extendFlat({}, scatterMarkerAttrs.color,
             {arrayOk: false}),
         line: {
-            color: extendFlat(scatterMarkerLineAttrs.color,
+            color: extendFlat({}, scatterMarkerLineAttrs.color,
                 {arrayOk: false, dflt: Plotly.Color.defaultLine}),
-            width: extendFlat(scatterMarkerLineAttrs.width,
+            width: extendFlat({}, scatterMarkerLineAttrs.width,
                 {arrayOk: false, dflt: 0}),
             outliercolor: {
                 valType: 'color',
@@ -809,7 +809,7 @@ boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
 
         // copy out to a new object for each value to label
         val = valAxis.c2p(di[attr], true);
-        pointData2 = $.extend({}, pointData);
+        pointData2 = Plotly.Lib.extendFlat({}, pointData);
         pointData2[valLetter+'0'] = pointData2[valLetter+'1'] = val;
         pointData2[valLetter+'LabelVal'] = di[attr];
         pointData2.attr = attr;

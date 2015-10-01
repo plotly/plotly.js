@@ -53,7 +53,7 @@ shapes.layoutAttributes = {
         ].join(' ')
     },
 
-    xref: extendFlat(Plotly.Annotations.layoutAttributes.xref, {
+    xref: extendFlat({}, Plotly.Annotations.layoutAttributes.xref, {
         description: [
             'Sets the shape\'s x coordinate axis.',
             'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
@@ -80,7 +80,7 @@ shapes.layoutAttributes = {
         ].join(' ')
     },
 
-    yref: extendFlat(Plotly.Annotations.layoutAttributes.yref, {
+    yref: extendFlat({}, Plotly.Annotations.layoutAttributes.yref, {
         description: [
             'Sets the annotation\'s y coordinate axis.',
             'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
@@ -110,7 +110,7 @@ shapes.layoutAttributes = {
     path: {
         valType: 'string',
         role: 'info',
-        dflt: [
+        description: [
             'For `type` *path* - a valid SVG path but with the pixel values',
             'replaced by data values. There are a few restrictions / quirks',
             'only absolute instructions, not relative. So the allowed segments',
@@ -290,7 +290,9 @@ shapes.draw = function(gd, index, opt, value) {
         else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
             fullLayout.shapes.splice(index,0,{});
 
-            var rule = Plotly.Lib.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+            var rule = Plotly.Lib.isPlainObject(value) ?
+                    Plotly.Lib.extendFlat({}, value) :
+                    {text: 'New text'};
 
             if (layout.shapes) {
                 layout.shapes.splice(index, 0, rule);

@@ -933,7 +933,7 @@ drawing.bBox = function(node) {
     // remeasure the same thing many times
     var saveNum = node.attributes['data-bb'];
     if(saveNum && saveNum.value) {
-        return $.extend({}, savedBBoxes[saveNum.value]);
+        return Plotly.Lib.extendFlat({}, savedBBoxes[saveNum.value]);
     }
 
     var test3 = d3.select('#js-plotly-tester'),
@@ -972,7 +972,7 @@ drawing.bBox = function(node) {
     node.setAttribute('data-bb',savedBBoxes.length);
     savedBBoxes.push(bb);
 
-    return Plotly.Lib.extendFlat(bb);
+    return Plotly.Lib.extendFlat({}, bb);
 };
 
 /*

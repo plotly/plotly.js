@@ -9,7 +9,7 @@
 var Plotly = require('./plotly'),
     d3 = require('d3'),
     tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('../isnumeric');
 
 var lib = module.exports = {};
 
@@ -1356,7 +1356,7 @@ lib.stripTrailingSlash = function (str) {
     return str;
 };
 
-var colorscaleNames = Object.keys(require('./colorscale').scales);
+var colorscaleNames = Object.keys(require('../colorscale').scales);
 
 lib.valObjects = {
     data_array: {
@@ -1700,9 +1700,9 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
 };
 
 /**
- * modified version of $.extend to strip out private objs and functions,
+ * modified version of jQuery's extend to strip out private objs and functions,
  * and cut arrays down to first <arraylen> or 1 elements
- * because $.extend is hella slow
+ * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
 lib.minExtend = function(obj1, obj2) {
@@ -1731,22 +1731,6 @@ lib.minExtend = function(obj1, obj2) {
             objOut[k] = v;
         }
     }
-
-    return objOut;
-};
-
-// Flat extend function (only copies values of first level keys)
-lib.extendFlat = function extendFlat(obj1, obj2) {
-    var objOut = {};
-
-    function copyToOut(obj) {
-        var keys = Object.keys(obj);
-        for(var i = 0; i < keys.length; i++) {
-            objOut[keys[i]] = obj[keys[i]];
-        }
-    }
-    if(typeof obj1 === 'object') copyToOut(obj1);
-    if(typeof obj2 === 'object') copyToOut(obj2);
 
     return objOut;
 };
@@ -1807,10 +1791,9 @@ lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
-// more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
-lib.isPlainObject = function(obj) {
-    return (
-        Object.prototype.toString.call(obj) === '[object Object]' &&
-        Object.getPrototypeOf(obj) === Object.prototype
-    );
-};
+lib.isPlainObject = require('./is_plain_object');
+
+var extendModule = require('./extend');
+lib.extendFlat = extendModule.extendFlat;
+lib.extendDeep = extendModule.extendDeep;
+lib.extendDeepAll = extendModule.extendDeepAll;

@@ -1,16 +1,19 @@
 'use strict';
 
-var Plotly = require('./plotly'),
-    objectAssign = require('object-assign');
+var Plotly = require('./plotly');
+
+var extendFlat = Plotly.Lib.extendFlat;
+var extendDeep = Plotly.Lib.extendDeep;
+var extendDeepAll = Plotly.Lib.extendDeepAll;
 
 var NESTED_MODULE = '_nestedModules',
     COMPOSED_MODULE = '_composedModules',
-    IS_SUBPLOT_OBJ = '_isSubplotObj';
+    IS_SUBPLOT_OBJ = '_isSubplotObj',
+    IS_LINKED_TO_ARRAY = '_isLinkedToArray',
+    DEPRECATED = '_deprecated';
 
 // list of underscore attributes to keep in schema as is
-var UNDERSCORE_ATTRS = [
-    '_isLinkedToArray', '_isSubplotObj', '_deprecated'
-];
+var UNDERSCORE_ATTRS = [IS_SUBPLOT_OBJ, IS_LINKED_TO_ARRAY, DEPRECATED];
 
 var plotSchema = {
     traces: {},
@@ -23,6 +26,7 @@ var polarAreaAttrs = require('./polar/attributes/area'),
     polarAxisAttrs = require('./polar/attributes/polaraxes');
 
 var PlotSchema = module.exports = {};
+
 
 PlotSchema.get =  function() {
     Plotly.Plots.allTypes
@@ -55,8 +59,9 @@ function getTraceAttributes(type) {
     var globalAttributes = Plotly.Plots.attributes,
         _module = getModule({type: type}),
         meta = getMeta(type),
-        subplotRegistry = getSubplotRegistry(type),
-        attributes = {},
+        subplotRegistry = getSubplotRegistry(type);
+
+    var attributes = {},
         layoutAttributes = {};
 
     // make 'type' the first attribute in the object
@@ -69,19 +74,18 @@ function getTraceAttributes(type) {
 
     // subplot attributes
     if(subplotRegistry.attributes !== undefined) {
-        attributes = objectAssign(attributes, subplotRegistry.attributes);
+        extendDeep(attributes, subplotRegistry.attributes);
     }
 
     // global attributes (same for all trace types)
-    attributes = objectAssign(attributes, globalAttributes);
+    extendDeep(attributes, globalAttributes);
 
     // 'type' gets overwritten by globalAttributes; reset it here
     attributes.type = type;
 
     attributes = removeUnderscoreAttrs(attributes);
-
     mergeValTypeAndRole(attributes);
-    plotSchema.traces[type] = objectAssign(
+    plotSchema.traces[type] = extendFlat({},
         meta,
         { attributes: attributes }
     );
@@ -99,7 +103,6 @@ function getTraceAttributes(type) {
 
 function getLayoutAttributes() {
     var globalLayoutAttributes = Plotly.Plots.layoutAttributes,
-        subplotsRegistry = Plotly.Plots.subplotsRegistry,
         layoutAttributes = {};
 
     // layout module attributes (+ nested + composed)
@@ -111,20 +114,14 @@ function getLayoutAttributes() {
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
     // add IS_SUBPLOT_OBJ attribute
-    var gl3dRegex = subplotsRegistry.gl3d.attrRegex,
-        geoRegex = subplotsRegistry.geo.attrRegex,
-        xaxisRegex = subplotsRegistry.cartesian.attrRegex.x,
-        yaxisRegex = subplotsRegistry.cartesian.attrRegex.y;
-
-    Object.keys(layoutAttributes).forEach(function(k) {
-        if(gl3dRegex.test(k) || geoRegex.test(k) || xaxisRegex.test(k) || yaxisRegex.test(k)) {
-             layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
-        }
-    });
+    layoutAttributes = handleSubplotObjs(layoutAttributes);
 
     layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
-
     mergeValTypeAndRole(layoutAttributes);
+
+    // generate IS_LINKED_TO_ARRAY structure
+    layoutAttributes = handleLinkedToArray(layoutAttributes);
+
     plotSchema.layout = { layoutAttributes: layoutAttributes };
 }
 
@@ -152,7 +149,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
                 );
 
                 Plotly.Lib.nestedProperty(attrsOut, kk)
-                    .set(nestedReference);
+                    .set(extendDeep({}, nestedReference));
             });
             return;
         }
@@ -169,14 +166,14 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
                     composedAttrs, {}, whichAttrs, type
                 );
 
-                attrsOut = objectAssign(attrsOut, composedAttrs);
+                extendDeepAll(attrsOut, composedAttrs);
             });
             return;
         }
 
         attrsOut[k] = Plotly.Lib.isPlainObject(attrsIn[k]) ?
-            objectAssign({}, attrsIn[k]) :
-            attrsIn[k];  // some underscore attributes are booleans
+            extendDeepAll({}, attrsIn[k]) :
+            attrsIn[k];
     });
 
     return attrsOut;
@@ -242,12 +239,12 @@ function getMeta(type) {
 }
 
 function assignPolarLayoutAttrs(layoutAttributes) {
-    layoutAttributes = objectAssign(layoutAttributes, {
+    extendFlat(layoutAttributes, {
         radialaxis: polarAxisAttrs.radialaxis,
         angularaxis: polarAxisAttrs.angularaxis
     });
 
-    layoutAttributes = objectAssign(layoutAttributes, polarAxisAttrs.layout);
+    extendFlat(layoutAttributes, polarAxisAttrs.layout);
 
     return layoutAttributes;  // FIXME
 }
@@ -262,4 +259,39 @@ function getSubplotRegistry(traceType) {
     if(subplotType === undefined) return {};
 
     return subplotsRegistry[subplotType];
+}
+
+function handleSubplotObjs(layoutAttributes) {
+    var subplotsRegistry = Plotly.Plots.subplotsRegistry;
+
+    var gl3dRegex = subplotsRegistry.gl3d.attrRegex,
+        geoRegex = subplotsRegistry.geo.attrRegex,
+        xaxisRegex = subplotsRegistry.cartesian.attrRegex.x,
+        yaxisRegex = subplotsRegistry.cartesian.attrRegex.y;
+
+    Object.keys(layoutAttributes).forEach(function(k) {
+        if(gl3dRegex.test(k) || geoRegex.test(k) || xaxisRegex.test(k) || yaxisRegex.test(k)) {
+             layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
+        }
+    });
+
+    return layoutAttributes;
+}
+
+function handleLinkedToArray(layoutAttributes) {
+    Object.keys(layoutAttributes).forEach(function(k) {
+        var attr = extendDeep({}, layoutAttributes[k]);
+
+        if(attr[IS_LINKED_TO_ARRAY] !== true) return;
+
+        var itemName = k.substr(0, k.length-1);  // TODO more robust logic
+
+        delete attr[IS_LINKED_TO_ARRAY];
+
+        layoutAttributes[k] = { items: {} };
+        layoutAttributes[k].items[itemName] = attr;
+        layoutAttributes[k].role = 'object';
+    });
+
+    return layoutAttributes;
 }

@@ -27,7 +27,7 @@ describe('Test axes', function () {
                     }
                 }
             };
-            var expectedYaxis = $.extend(true, {}, gd.layout.xaxis),
+            var expectedYaxis = Plotly.Lib.extendDeep({} ,gd.layout.xaxis),
                 expectedXaxis = {
                     title: 'Click to enter X axis title',
                     type: 'date'
@@ -60,7 +60,7 @@ describe('Test axes', function () {
                     }
                 }
             };
-            var expectedLayoutAfter = $.extend(true, {}, gd.layout);
+            var expectedLayoutAfter = Plotly.Lib.extendDeep({}, gd.layout);
             expectedLayoutAfter.xaxis.type = 'linear';
             expectedLayoutAfter.yaxis.type = 'linear';
 

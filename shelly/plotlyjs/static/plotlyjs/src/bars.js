@@ -75,6 +75,9 @@ bars.attributes = {
 
     _deprecated: {
         bardir: {
+            valType: 'enumerated',
+            role: 'info',
+            values: ['v', 'h'],
             description: 'Renamed to `orientation`.'
         }
     }
