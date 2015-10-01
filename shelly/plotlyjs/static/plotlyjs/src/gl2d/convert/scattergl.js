@@ -22,6 +22,7 @@ function LineWithMarkers(scene, uid) {
   };
   this.scatter = createScatter(scene.glplot, this.scatterOptions);
   this.scatter._trace = this;
+  this.bounds = [0,0,0,0];
 }
 
 var proto = LineWithMarkers.prototype;
@@ -76,6 +77,8 @@ proto.update = function(options) {
   this.scatterOptions.borderColor = borderColorArray;
 
   this.scatter.update(this.scatterOptions);
+
+  this.bounds = this.scatter.bounds.slice();
 };
 
 function createLineWithMarkers(scene, data) {

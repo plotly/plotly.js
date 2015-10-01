@@ -8,16 +8,6 @@
         }
     ],
     "layout": {
-        "title": "Scatter 2D WebGL",
-        "scene": {
-            "aspectratio": {
-                "x": 1,
-                "y": 1,
-                "z": 1
-            }
-        },
-        "height": 598,
-        "width": 1080,
-        "autosize": true
+        "title": "Scatter 2D WebGL"
     }
 }

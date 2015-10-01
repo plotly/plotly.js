@@ -10,9 +10,6 @@ var createCamera  = require('./lib/camera');
 var AXES = [ 'xaxis', 'yaxis' ];
 
 function Scene2D(options, fullLayout) {
-
-    console.log('Instantiating Scene2d', options);
-
     var container = this.container = options.container;
     this.fullLayout = fullLayout;
 
@@ -82,6 +79,8 @@ function Scene2D(options, fullLayout) {
 
     //Last pick result
     this.pickResult = null;
+
+    this.bounds = [Infinity,Infinity,-Infinity,-Infinity];
 
     //Redraw the plot
     this.redraw = this.draw.bind(this);
@@ -212,6 +211,7 @@ proto.plot = function(fullData, fullLayout) {
     var glplot     = this.glplot;
     var pixelRatio = this.pixelRatio;
     var i, j;
+    var trace;
 
     this.fullLayout = fullLayout;
 
@@ -225,23 +225,6 @@ proto.plot = function(fullData, fullLayout) {
         canvas.width        = pixelWidth;
         canvas.height       = pixelHeight;
     }
-
-    for(i=0; i<2; ++i) {
-        Plotly.Axes.doAutoRange(fullLayout.scene2d[AXES[i]]);
-    }
-
-    var xrange = fullLayout.scene2d.xaxis.range;
-    var yrange = fullLayout.scene2d.yaxis.range;
-
-    //Update plot
-    var options       = this.glplotOptions;
-    options.merge(fullLayout);
-    options.screenBox = [0,0,width,height];
-    options.viewBox   = [0.125*width,0.125*height,0.875*width,0.875*height];
-    options.ticks     = this.computeTickMarks();
-    options.dataBox   = [xrange[0], yrange[0], xrange[1], yrange[1]];
-
-    glplot.update(options);
 
     if(!fullData) {
         fullData = [];
@@ -275,12 +258,56 @@ j_loop:
                 continue j_loop;
             }
         }
-        var trace = this.traces[j];
+        trace = this.traces[j];
         trace.dispose();
         this.traces.splice(j, 1);
     }
 
-    this.cameraChanged();
+
+    var options       = this.glplotOptions;
+    options.merge(fullLayout);
+    options.screenBox = [0,0,width,height];
+    options.viewBox   = [0.125*width,0.125*height,0.875*width,0.875*height];
+
+    var bounds = this.bounds;
+    bounds[0] = bounds[1] = Infinity;
+    bounds[2] = bounds[3] = -Infinity;
+
+    for(i=0; i<this.traces.length; ++i) {
+      trace = this.traces[i];
+      for(var k=0; k<2; ++k) {
+        bounds[k]   = Math.min(bounds[k], trace.bounds[k]);
+        bounds[k+2] = Math.max(bounds[k+2], trace.bounds[k+2]);
+      }
+    }
+
+    for(i=0; i<2; ++i) {
+        if(bounds[i] > bounds[i+2]) {
+          bounds[i]   = -1;
+          bounds[i+2] = 1;
+        }
+        var ax = fullLayout.scene2d[AXES[i]];
+        ax._min = [{
+          val: bounds[i],
+          pad: 10
+        }];
+        ax._max = [{
+          val: bounds[i+2],
+          pad: 10
+        }];
+        ax._length = options.viewBox[i+2] - options.viewBox[i];
+        Plotly.Axes.doAutoRange(ax);
+    }
+
+    options.ticks     = this.computeTickMarks();
+
+    var xrange = fullLayout.scene2d.xaxis.range;
+    var yrange = fullLayout.scene2d.yaxis.range;
+    options.dataBox   = [xrange[0], yrange[0], xrange[1], yrange[1]];
+
+    console.log(xrange, yrange);
+
+    glplot.update(options);
 };
 
 proto.draw = function() {

@@ -2219,24 +2219,22 @@ function listNames(td, axletter, only2d) {
             }).sort();
     }
 
-    var axis2d = filterAxis(fullLayout);
-    if(only2d) return axis2d;
+    var axis = filterAxis(fullLayout);
+    if(only2d) return axis;
 
-    var axis3d = [];
-    var sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
+    var sceneIds2D = Plotly.Plots.getSubplotIds(fullLayout, 'gl2d') || [];
+    var sceneIds3D = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d') || [];
 
-    if (sceneIds) {
-        sceneIds.forEach( function (sceneId) {
-            axis3d = axis3d.concat(
-                filterAxis(fullLayout[sceneId])
-                    .map(function(axName) {
-                        return sceneId + '.' + axName;
-                    })
-                );
-        });
-    }
+    (sceneIds2D.concat(sceneIds3D)).forEach( function (sceneId) {
+        axis = axis.concat(
+          filterAxis(fullLayout[sceneId])
+              .map(function(axName) {
+                  return sceneId + '.' + axName;
+              })
+          );
+    });
 
-    return axis2d.concat(axis3d);
+    return axis;
 }
 
 // get all axis objects, as restricted in listNames
