@@ -3434,6 +3434,8 @@ function plotAutoSize(gd, aobj) {
 
     var newHeight, newWidth;
 
+    $(gd).trigger('plotly_autosize');
+
     // embedded in an iframe - just take the full iframe size
     // if we get to this point, with no aspect ratio restrictions
     if(gd._context.fillFrame) {
