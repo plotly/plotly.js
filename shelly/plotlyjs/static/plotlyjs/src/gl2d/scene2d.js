@@ -3,6 +3,7 @@
 var Plotly = require('../plotly');
 var createPlot2D = require('gl-plot2d');
 var createSpikes  = require('gl-spikes2d');
+var createSelectBox = require('gl-select-box');
 var createLineWithMarkers = require('./convert/scattergl');
 var createOptions = require('./convert/axes2dgl');
 var createCamera  = require('./lib/camera');
@@ -76,6 +77,11 @@ function Scene2D(options, fullLayout) {
 
     //Create axes spikes
     this.spikes = createSpikes(this.glplot);
+
+    this.selectBox = createSelectBox(this.glplot, {
+      innerFill: false,
+      outerFill: true
+    });
 
     //Last pick result
     this.pickResult = null;
@@ -305,8 +311,6 @@ j_loop:
     var yrange = fullLayout.scene2d.yaxis.range;
     options.dataBox   = [xrange[0], yrange[0], xrange[1], yrange[1]];
 
-    console.log(xrange, yrange);
-
     glplot.update(options);
 };
 
@@ -322,44 +326,59 @@ proto.draw = function() {
     var x = mouseListener.x * glplot.pixelRatio;
     var y = this.canvas.height - glplot.pixelRatio * mouseListener.y;
 
-    var result = glplot.pick(x / glplot.pixelRatio, y / glplot.pixelRatio);
-    if(result) {
-      var nextSelection = result.object._trace.handlePick(result);
-      if(nextSelection &&
-        (!this.lastPickResult ||
-          this.lastPickResult.trace !== nextSelection.trace ||
-          this.lastPickResult.dataCoord[0] !== nextSelection.dataCoord[0] ||
-          this.lastPickResult.dataCoord[1] !== nextSelection.dataCoord[1])) {
-        var selection = this.lastPickResult = nextSelection;
-        this.spikes.update({
-          center: result.dataCoord
-        });
-        selection.screenCoord= [
-          ((glplot.viewBox[2] - glplot.viewBox[0]) *
-          (result.dataCoord[0] - glplot.dataBox[0]) /
-            (glplot.dataBox[2] - glplot.dataBox[0]) + glplot.viewBox[0]) / glplot.pixelRatio,
-          (this.canvas.height - (glplot.viewBox[3] - glplot.viewBox[1]) *
-          (result.dataCoord[1] - glplot.dataBox[1]) /
-            (glplot.dataBox[3] - glplot.dataBox[1]) - glplot.viewBox[1]) / glplot.pixelRatio ];
-        Plotly.Fx.loneHover({
-          x: selection.screenCoord[0],
-          y: selection.screenCoord[1],
-          xLabel: selection.traceCoord[0] + '',
-          yLabel: selection.traceCoord[1] + '',
-          text:   selection.textLabel || '',
-          name:   selection.name,
-          color:  selection.color
-         }, {
-           container: this.svgContainer
-         });
-         this.lastPickResult = {
-           dataCoord: result.dataCoord
-         };
-       }
-    } else if(!result && this.lastPickResult) {
-      this.spikes.update({});
-      this.lastPickResult = null;
-      Plotly.Fx.loneUnhover(this.svgContainer);
+    if(camera.boxEnabled && this.fullLayout.dragmode === 'zoom') {
+
+      this.selectBox.enabled = true;
+      this.selectBox.selectBox = [
+        Math.min(camera.boxStart[0], camera.boxEnd[0]),
+        Math.min(camera.boxStart[1], camera.boxEnd[1]),
+        Math.max(camera.boxStart[0], camera.boxEnd[0]),
+        Math.max(camera.boxStart[1], camera.boxEnd[1])
+      ];
+
+      glplot.setDirty();
+    } else {
+      this.selectBox.enabled = false;
+
+      var result = glplot.pick(x / glplot.pixelRatio, y / glplot.pixelRatio);
+      if(result) {
+        var nextSelection = result.object._trace.handlePick(result);
+        if(nextSelection &&
+          (!this.lastPickResult ||
+            this.lastPickResult.trace !== nextSelection.trace ||
+            this.lastPickResult.dataCoord[0] !== nextSelection.dataCoord[0] ||
+            this.lastPickResult.dataCoord[1] !== nextSelection.dataCoord[1])) {
+          var selection = this.lastPickResult = nextSelection;
+          this.spikes.update({
+            center: result.dataCoord
+          });
+          selection.screenCoord= [
+            ((glplot.viewBox[2] - glplot.viewBox[0]) *
+            (result.dataCoord[0] - glplot.dataBox[0]) /
+              (glplot.dataBox[2] - glplot.dataBox[0]) + glplot.viewBox[0]) / glplot.pixelRatio,
+            (this.canvas.height - (glplot.viewBox[3] - glplot.viewBox[1]) *
+            (result.dataCoord[1] - glplot.dataBox[1]) /
+              (glplot.dataBox[3] - glplot.dataBox[1]) - glplot.viewBox[1]) / glplot.pixelRatio ];
+          Plotly.Fx.loneHover({
+            x: selection.screenCoord[0],
+            y: selection.screenCoord[1],
+            xLabel: selection.traceCoord[0] + '',
+            yLabel: selection.traceCoord[1] + '',
+            text:   selection.textLabel || '',
+            name:   selection.name,
+            color:  selection.color
+           }, {
+             container: this.svgContainer
+           });
+           this.lastPickResult = {
+             dataCoord: result.dataCoord
+           };
+         }
+      } else if(!result && this.lastPickResult) {
+        this.spikes.update({});
+        this.lastPickResult = null;
+        Plotly.Fx.loneUnhover(this.svgContainer);
+      }
     }
 
     glplot.draw();

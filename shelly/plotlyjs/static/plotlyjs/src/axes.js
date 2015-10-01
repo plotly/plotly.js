@@ -1263,7 +1263,7 @@ axes.doAutoRange = function(ax) {
 // save a copy of the initial axis ranges in fullLayout
 // use them in modebar and dblclick events
 axes.saveRangeInitial = function(gd, overwrite) {
-    var axList = Plotly.Axes.list(gd, '', true),
+    var axList = Plotly.Axes.list(gd),
         hasOneAxisChanged = false;
 
     var ax, isNew, hasChanged;

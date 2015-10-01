@@ -220,7 +220,7 @@ proto.handleGL2D = function(ev) {
           ax = axList[i];
           if(!ax.fixedrange) {
               axName = ax._name;
-              if(val === 'auto') aobj[axName + '.autorange'] = true;
+              if(val === 'auto') aobj['scene2d.' + axName + '.autorange'] = true;
               else if(val === 'reset') {
                   if(ax._rangeInitial === undefined) {
                       aobj['scene2d.' + axName + '.autorange'] = true;
@@ -248,6 +248,10 @@ proto.handleGL2D = function(ev) {
 
   Plotly.relayout(graphInfo, aobj).then( function() {
       _this.updateActiveButton();
+      if(astr === 'dragmode') {
+          Plotly.Fx.supplyLayoutDefaults(graphInfo.layout, fullLayout,
+              graphInfo._fullData);
+      }
   });
 };
 

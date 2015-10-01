@@ -12,6 +12,9 @@ function Camera2D(element, plot) {
   this.wheelListener  = null;
   this.lastInputTime  = Date.now();
   this.lastPos        = [0,0];
+  this.boxEnabled     = false;
+  this.boxStart       = [0,0];
+  this.boxEnd         = [0,0];
 }
 
 
@@ -21,9 +24,9 @@ function createCamera(scene) {
   var result = new Camera2D(element, plot);
 
   result.mouseListener = mouseChange(element, function(buttons, x, y) {
-    y = window.innerHeight - y;
     x *= plot.pixelRatio;
     y *= plot.pixelRatio;
+    y = element.height - y;
 
     var xrange = scene.fullLayout.scene2d.xaxis.range;
     var yrange = scene.fullLayout.scene2d.yaxis.range;
@@ -31,20 +34,52 @@ function createCamera(scene) {
     var lastX = result.lastPos[0];
     var lastY = result.lastPos[1];
 
-    if(buttons & 1) {
-      var dx = (lastX - x) * (xrange[1] - xrange[0]) /
-        (plot.viewBox[2] - plot.viewBox[0]);
-      var dy = (lastY - y) * (yrange[1] - yrange[0]) /
-        (plot.viewBox[3] - plot.viewBox[1]);
+    switch(scene.fullLayout.dragmode) {
+      case 'zoom':
+        if(buttons) {
+          var dataX = (x - plot.viewBox[0]) /
+            (plot.viewBox[2]-plot.viewBox[0]) * (xrange[1] - xrange[0]) +
+            xrange[0];
+          var dataY = (y - plot.viewBox[1]) /
+            (plot.viewBox[3]-plot.viewBox[1]) * (yrange[1] - yrange[0]) +
+            yrange[0];
+          if(!result.boxEnabled) {
+            result.boxStart[0] = dataX;
+            result.boxStart[1] = dataY;
+          }
 
-      xrange[0] += dx;
-      xrange[1] += dx;
-      yrange[0] += dy;
-      yrange[1] += dy;
+          result.boxEnd[0] = dataX;
+          result.boxEnd[1] = dataY;
+          result.boxEnabled = true;
+        } else if(result.boxEnabled) {
+          xrange[0] = Math.min(result.boxStart[0], result.boxEnd[0]);
+          xrange[1] = Math.max(result.boxStart[0], result.boxEnd[0]);
+          yrange[0] = Math.min(result.boxStart[1], result.boxEnd[1]);
+          yrange[1] = Math.max(result.boxStart[1], result.boxEnd[1]);
 
-      result.lastInputTime = Date.now();
+          result.boxEnabled = false;
+        }
+      break;
 
-      scene.cameraChanged();
+      case 'pan':
+        result.boxEnabled = false;
+
+        if(buttons) {
+          var dx = (lastX - x) * (xrange[1] - xrange[0]) /
+            (plot.viewBox[2] - plot.viewBox[0]);
+          var dy = (lastY - y) * (yrange[1] - yrange[0]) /
+            (plot.viewBox[3] - plot.viewBox[1]);
+
+          xrange[0] += dx;
+          xrange[1] += dx;
+          yrange[0] += dy;
+          yrange[1] += dy;
+
+          result.lastInputTime = Date.now();
+
+          scene.cameraChanged();
+        }
+      break;
     }
 
     result.lastPos[0] = x;
@@ -52,28 +87,34 @@ function createCamera(scene) {
   });
 
   result.wheelListener = mouseWheel(element, function(dx, dy) {
-
-    var scale = Math.exp(0.1 * dy / (plot.viewBox[3] - plot.viewBox[1]));
-
     var xrange = scene.fullLayout.scene2d.xaxis.range;
     var yrange = scene.fullLayout.scene2d.yaxis.range;
 
     var lastX = result.lastPos[0];
     var lastY = result.lastPos[1];
 
-    var cx = (lastX - plot.viewBox[0]) / (plot.viewBox[2] - plot.viewBox[0]) * (xrange[1] - xrange[0]) + xrange[0];
-    var cy = (plot.viewBox[1] - lastY) / (plot.viewBox[3] - plot.viewBox[1]) * (yrange[1] - yrange[0]) + yrange[0];
+    switch(scene.fullLayout.dragmode) {
+      case 'zoom':
+      break;
 
-    xrange[0] = (xrange[0] - cx) * scale + cx;
-    xrange[1] = (xrange[1] - cy) * scale + cy;
-    yrange[0] = (yrange[0] - cx) * scale + cx;
-    yrange[1] = (yrange[1] - cy) * scale + cy;
+      case 'pan':
+        var scale = Math.exp(0.1 * dy / (plot.viewBox[3] - plot.viewBox[1]));
 
-    result.lastInputTime = Date.now();
-    scene.cameraChanged();
+        var cx = (lastX - plot.viewBox[0]) / (plot.viewBox[2] - plot.viewBox[0]) * (xrange[1] - xrange[0]) + xrange[0];
+        var cy = (plot.viewBox[1] - lastY) / (plot.viewBox[3] - plot.viewBox[1]) * (yrange[1] - yrange[0]) + yrange[0];
+
+        xrange[0] = (xrange[0] - cx) * scale + cx;
+        xrange[1] = (xrange[1] - cy) * scale + cy;
+        yrange[0] = (yrange[0] - cx) * scale + cx;
+        yrange[1] = (yrange[1] - cy) * scale + cy;
+
+        result.lastInputTime = Date.now();
+        scene.cameraChanged();
+      break;
+    }
 
     return true;
   });
-  
+
   return result;
 }
