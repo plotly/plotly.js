@@ -5,6 +5,7 @@ var plotButtons = require('./buttons');
 var plots = {};
 
 plots['gl-2d'] = require('./testplots/gl-2d.json');
+plots['2d-range'] = require('./testplots/2d-range.json');
 plots['bunny-hull'] = require('./testplots/bunny-hull.json');
 plots['ibm-plot'] = require('./testplots/ibm-plot.json');
 plots['marker-color'] = require('./testplots/marker-color.json');
