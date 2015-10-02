@@ -8,7 +8,17 @@ var path = require('path');
 var outpipe = require('outpipe');
 var outfile = path.join(__dirname, '../shelly/plotlyjs/static/plotlyjs/build/plotlyjs-bundle.js');
 
-var testFile = process.argv[2]==='geo' ? './test-geo' : './test';
+var testFile = './test';
+
+switch(process.argv[2]) {
+  case 'geo':
+    testFile = './test-geo';
+  break;
+  case '2d':
+    testFile = './test-2d';
+  break;
+}
+
 console.log('using ' + testFile);
 
 var b = browserify(path.join(__dirname, '../shelly/plotlyjs/static/plotlyjs/src/plotly.js'), {
