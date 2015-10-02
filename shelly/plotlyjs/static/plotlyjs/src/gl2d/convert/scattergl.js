@@ -1,6 +1,7 @@
 'use strict';
 
 var createScatter = require('gl-scatter2d');
+var createLine   = require('gl-line2d');
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
 
 function LineWithMarkers(scene, uid) {
@@ -22,6 +23,21 @@ function LineWithMarkers(scene, uid) {
   };
   this.scatter = createScatter(scene.glplot, this.scatterOptions);
   this.scatter._trace = this;
+
+  this.lineOptions = {
+    positions:  new Float32Array(),
+    color:      [0, 0, 0, 1],
+    width:      1,
+    fill:       [false, false, false, false],
+    fillColor:  [
+      [0, 0, 0, 1],
+      [0, 0, 0, 1],
+      [0, 0, 0, 1],
+      [0, 0, 0, 1]]
+  };
+  this.line = createLine(scene.glplot, this.lineOptions);
+  this.line._trace = this;
+
   this.bounds = [0,0,0,0];
 }
 
@@ -54,31 +70,69 @@ proto.update = function(options) {
   this.textLabels = options.text;
 
   var numPoints = x.length;
-  var positions =
-      this.scatterOptions.positions = new Float32Array(2 * numPoints);
+  var positions = new Float32Array(2 * numPoints);
   var ptr = 0;
   for(i=0; i<x.length; ++i) {
     positions[ptr++] = x[i];
     positions[ptr++] = y[i];
   }
 
-  this.scatterOptions.size = options.marker.size;
-  this.scatterOptions.borderSize = options.marker.line.width;
+  var mode = options.mode;
+  if(mode.indexOf('marker') >= 0) {
+    this.scatterOptions.positions = positions;
+  } else {
+    this.scatterOptions.positions = new Float32Array();
+  }
 
-  var color = options.marker.color;
-  var borderColor = options.marker.line.color;
+  if(mode.indexOf('line') >= 0) {
+    this.lineOptions.positions = positions;
+  } else {
+    this.lineOptions.positions = new Float32Array();
+  }
 
-  this.color = color;
+  if('marker' in options) {
+    this.scatterOptions.size = options.marker.size;
+    this.scatterOptions.borderSize = options.marker.line.width;
 
-  var colorArray = str2RGBArray(color);
-  var borderColorArray = str2RGBArray(borderColor);
+    var color = options.marker.color;
+    var borderColor = options.marker.line.color;
 
-  this.scatterOptions.color = colorArray;
-  this.scatterOptions.borderColor = borderColorArray;
+    this.color = color;
 
+    var colorArray = str2RGBArray(color);
+    var borderColorArray = str2RGBArray(borderColor);
+
+    this.scatterOptions.color = colorArray;
+    this.scatterOptions.borderColor = borderColorArray;
+  }
+  
   this.scatter.update(this.scatterOptions);
 
+  if('line' in options) {
+    this.lineOptions.color = str2RGBArray(options.line.color);
+    this.lineOptions.width = options.line.width;
+  }
+
+  switch(options._input.fill) {
+    case 'tozeroy':
+      this.lineOptions.fill = [false, true, false, false];
+    break;
+    case 'tozerox':
+      this.lineOptions.fill = [true, false, false, false];
+    break;
+    default:
+      this.lineOptions.fill = [false, false, false, false];
+    break;
+  }
+
+  this.line.update(this.lineOptions);
+
   this.bounds = this.scatter.bounds.slice();
+};
+
+proto.dispose = function() {
+  this.line.dispose();
+  this.scatter.dispose();
 };
 
 function createLineWithMarkers(scene, data) {

@@ -1,5 +1,7 @@
 'use strict';
 
+var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
+
 function Axes2DOptions(scene) {
   this.title = '';
 
@@ -22,8 +24,8 @@ function Axes2DOptions(scene) {
     [0,0,0,1],
     [0,0,0,1]
   ];
-  this.tickMarkWidth = [1,1,1,1];
-  this.tickMarkLength = [10,10,10,10];
+  this.tickMarkWidth = [0,0,0,0];
+  this.tickMarkLength = [0,0,0,0];
 
   this.labels = ['x', 'y'];
   this.labelEnable = [true,true,false,false];
@@ -63,8 +65,40 @@ function Axes2DOptions(scene) {
 
 var proto = Axes2DOptions.prototype;
 
+var AXES = [ 'xaxis', 'yaxis' ];
+
 proto.merge = function(options) {
-}
+
+  //Titles are rendered in SVG
+  this.titleEnable = false;
+
+  for(var i=0; i<2; ++i) {
+    var ax = options.scene2d[AXES[i]];
+
+    for(var j=0; j<=2; j+=2) {
+      this.labels[i+j]     = ax.title;
+      this.labelEnable[i+j] = false;
+      this.labelColor[i+j] = str2RGBArray(ax.titlefont.color);
+      this.labelFont[i+j]  = ax.titlefont.family;
+      this.labelSize[i+j]  = ax.titlefont.size;
+
+      this.tickColor[i+j]      = str2RGBArray(ax.tickcolor);
+    }
+
+    this.tickEnable[i]     = ax.showticklabels;
+    this.labelEnable[i]    = ax.showticklabels;
+    this.tickMarkLength[i] = ax.ticklen;
+    this.tickMarkWidth[i]  = ax.tickwidth;
+
+    this.gridLineEnable[i]  = ax.showgrid;
+    this.gridLineColor[i]   = str2RGBArray(ax.gridcolor);
+    this.gridLineWidth[i]   = ax.gridwidth;
+
+    this.zeroLineEnable[i]  = ax.zeroline;
+    this.zeroLineColor[i]   = str2RGBArray(ax.zerolinecolor);
+    this.zeroLineWidth[i]   = ax.zerolinewidth;
+  }
+};
 
 function createAxes2D(scene) {
   return new Axes2DOptions(scene);

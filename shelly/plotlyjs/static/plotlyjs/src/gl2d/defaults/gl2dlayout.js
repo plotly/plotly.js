@@ -35,7 +35,7 @@ Gl2dLayout.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         size: 18
       });
 
-      Plotly.Gl2dAxes.supplyLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
+      Plotly.Gl2dAxes.supplyLayoutDefaults(layoutIn, sceneLayoutOut, {
           font:  layoutOut.font,
           scene2d:  scene,
           data:  fullData

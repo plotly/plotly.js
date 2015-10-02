@@ -311,6 +311,8 @@ j_loop:
     var yrange = fullLayout.scene2d.yaxis.range;
     options.dataBox   = [xrange[0], yrange[0], xrange[1], yrange[1]];
 
+    options.merge(fullLayout);
+
     glplot.update(options);
 };
 
