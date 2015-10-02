@@ -67,6 +67,9 @@ function getTraceAttributes(type) {
     // make 'type' the first attribute in the object
     attributes.type = null;
 
+    // global attributes (same for all trace types)
+    extendDeep(attributes, globalAttributes);
+
     // module attributes (+ nested + composed)
     attributes = coupleAttrs(
         _module.attributes, attributes, 'attributes', type
@@ -76,9 +79,6 @@ function getTraceAttributes(type) {
     if(subplotRegistry.attributes !== undefined) {
         extendDeep(attributes, subplotRegistry.attributes);
     }
-
-    // global attributes (same for all trace types)
-    extendDeep(attributes, globalAttributes);
 
     // 'type' gets overwritten by globalAttributes; reset it here
     attributes.type = type;
