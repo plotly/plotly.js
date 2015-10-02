@@ -63,6 +63,9 @@ proto.update = function(options) {
   var y = options.y;
   var i;
 
+  var xaxis = this.scene.fullLayout.scene2d.xaxis;
+  var yaxis = this.scene.fullLayout.scene2d.yaxis;
+
   this.name = options.name;
 
   this.xData = x;
@@ -73,8 +76,8 @@ proto.update = function(options) {
   var positions = new Float32Array(2 * numPoints);
   var ptr = 0;
   for(i=0; i<x.length; ++i) {
-    positions[ptr++] = x[i];
-    positions[ptr++] = y[i];
+    positions[ptr++] = xaxis.d2l(x[i]);
+    positions[ptr++] = yaxis.d2l(y[i]);
   }
 
   var mode = options.mode;
@@ -105,7 +108,7 @@ proto.update = function(options) {
     this.scatterOptions.color = colorArray;
     this.scatterOptions.borderColor = borderColorArray;
   }
-  
+
   this.scatter.update(this.scatterOptions);
 
   if('line' in options) {

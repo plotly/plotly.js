@@ -13,6 +13,13 @@ function Axes2DOptions(scene) {
   this.dataBox   = [-1,-1,1,1];
 
   this.borderLineEnable = [false,false,false,false];
+  this.borderLineWidth = [1,1,1,1];
+  this.borderLineColor = [
+    [0,0,0,1],
+    [0,0,0,1],
+    [0,0,0,1],
+    [0,0,0,1]
+  ];
 
   this.ticks = [[], []];
   this.tickEnable = [true, true, false, false];
@@ -82,7 +89,12 @@ proto.merge = function(options) {
       this.labelFont[i+j]  = ax.titlefont.family;
       this.labelSize[i+j]  = ax.titlefont.size;
 
-      this.tickColor[i+j]      = str2RGBArray(ax.tickcolor);
+      this.tickColor[i+j] = str2RGBArray(ax.tickcolor);
+      this.tickAngle[i+j] = -ax.tickangle;
+
+      this.borderLineEnable[i+j] = ax.showline;
+      this.borderLineColor[i+j] = str2RGBArray(ax.linecolor);
+      this.borderLineWidth[i+j] = ax.linewidth;
     }
 
     this.tickEnable[i]     = ax.showticklabels;
