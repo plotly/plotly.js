@@ -1,0 +1,2 @@
+{ data: [ { x: [ 1, 2 ], y: [ 1, 2 ], type: 'scattergl' } ],
+  layout: { xaxis: { autorange: 'reversed' } } }
