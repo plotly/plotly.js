@@ -105,6 +105,10 @@ proto.update = function(options) {
     var colorArray = str2RGBArray(color);
     var borderColorArray = str2RGBArray(borderColor);
 
+    var opacity = +options.marker.opacity;
+    colorArray[3] *= opacity;
+    borderColorArray[3] *= opacity;
+
     this.scatterOptions.color = colorArray;
     this.scatterOptions.borderColor = borderColorArray;
   }
@@ -112,7 +116,9 @@ proto.update = function(options) {
   this.scatter.update(this.scatterOptions);
 
   if('line' in options) {
-    this.lineOptions.color = str2RGBArray(options.line.color);
+    var lineColor = str2RGBArray(options.line.color);
+    lineColor[3] *= options.line.opacity;
+    this.lineOptions.color = lineColor;
     this.lineOptions.width = options.line.width;
   }
 
