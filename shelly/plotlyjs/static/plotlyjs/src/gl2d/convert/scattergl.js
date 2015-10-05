@@ -117,9 +117,9 @@ proto.update = function(options) {
 
   if('line' in options) {
     var lineColor = str2RGBArray(options.line.color);
-    lineColor[3] *= options.line.opacity;
+    lineColor[3] *= options.marker.opacity;
     this.lineOptions.color = lineColor;
-    this.lineOptions.width = options.line.width;
+    this.lineOptions.width = 2.0 * options.line.width;
   }
 
   switch(options._input.fill) {
