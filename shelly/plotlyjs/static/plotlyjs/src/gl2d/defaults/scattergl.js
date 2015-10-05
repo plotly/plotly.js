@@ -6,7 +6,7 @@ var ScatterGl = module.exports = {};
 
 ScatterGl.attributes = {};
 
-Plotly.Plots.register(ScatterGl, 'scattergl', ['gl2d']);
+Plotly.Plots.register(ScatterGl, 'scattergl', ['gl2d', 'showLegend']);
 
 ScatterGl.attributes = require('../attributes/scattergl');
 
