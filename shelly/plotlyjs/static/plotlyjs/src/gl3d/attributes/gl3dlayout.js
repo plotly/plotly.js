@@ -7,15 +7,18 @@ var extendFlat = Plotly.Lib.extendFlat;
 function makeVector(x, y, z) {
     return {
         x: {
-            type: 'number',
+            valType: 'number',
+            role: 'info',
             dflt: x
         },
         y: {
-            type: 'number',
+            valType: 'number',
+            role: 'info',
             dflt: y
         },
         z: {
-            type: 'number',
+            valType: 'number',
+            role: 'info',
             dflt: z
         }
     };
@@ -23,7 +26,8 @@ function makeVector(x, y, z) {
 
 module.exports = {
     bgcolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: 'rgba(0,0,0,0)'
     },
     camera: {
@@ -53,17 +57,36 @@ module.exports = {
         })
     },
     domain: {
-        x: [
-            {type: 'number', min: 0, max: 1},
-            {type: 'number', min: 0, max: 1}
-        ],
-        y:[
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
-        ]
+        x: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the horizontal domain of this scene',
+                '(in plot fraction).'
+            ].join(' ')
+        },
+        y: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the vertical domain of this scene',
+                '(in plot fraction).'
+            ].join(' ')
+        }
     },
     aspectmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
+        role: 'info',
         values: ['auto', 'cube', 'data', 'manual'],
         dflt: 'auto',
         description: [
@@ -85,24 +108,36 @@ module.exports = {
     },
     aspectratio: { // must be positive (0's are coerced to 1)
         x: {
-            type: 'number',
+            valType: 'number',
+            role: 'info',
             min: 0
         },
         y: {
-            type: 'number',
+            valType: 'number',
+            role: 'info',
             min: 0
         },
         z: {
-            type: 'number',
+            valType: 'number',
+            role: 'info',
             min: 0
         },
         description: [
             'Sets this scene\'s axis aspectratio.'
         ].join(' ')
     },
+
     _nestedModules: {
         'xaxis': 'Gl3dAxes',
         'yaxis': 'Gl3dAxes',
         'zaxis': 'Gl3dAxes'
+    },
+
+    _deprecated: {
+        cameraposition: {
+            valType: 'info_array',
+            role: 'info',
+            description: 'Obsolete. Use `camera` instead.'
+        }
     }
 };

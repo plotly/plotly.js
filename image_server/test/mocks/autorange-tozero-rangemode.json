@@ -1,0 +1,142 @@
+{
+    "data": [
+        {
+            "x": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+            ],
+            "y": [
+                2110,
+                2352.5,
+                2481.25,
+                3197.55,
+                4110,
+                5202.35,
+                6945.05,
+                10356.6,
+                14114.1,
+                20524.35,
+                27563.300000000003,
+                37908.45,
+                null,
+                null
+            ],
+            "name": "Revenue",
+            "xaxis": "x",
+            "yaxis": "y",
+            "type": "bar",
+            "uid": "33011d"
+        },
+        {
+            "x": [
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6,
+                7,
+                8,
+                9,
+                10,
+                11,
+                12,
+                13
+            ],
+            "y": [
+                0.35,
+                0.35,
+                0.35,
+                0.35,
+                0.35,
+                0.35,
+                0.35,
+                0.35,
+                0.35,
+                0.35,
+                0.35,
+                0.35,
+                null,
+                null
+            ],
+            "mode": "line",
+            "name": "Take Rate",
+            "xaxis": "x",
+            "yaxis": "y2",
+            "type": "scatter",
+            "uid": "31ba98"
+        }
+    ],
+    "layout": {
+        "title": "Revenue and Take Rate",
+        "xaxis": {
+            "type": "category",
+            "autorange": true,
+            "ticks": "outside",
+            "tickfont": {
+                "size": 10,
+                "color": "black"
+            },
+            "tickmode": "linear",
+            "range": [
+                13.855140186915888,
+                -0.8551401869158878
+            ]
+        },
+        "yaxis": {
+            "title": "",
+            "rangemode": "nonnegative",
+            "autorange": true,
+            "showgrid": false,
+            "type": "linear",
+            "range": [
+                0,
+                39903.63157894737
+            ]
+        },
+        "legend": {
+            "x": 1.02,
+            "y": 1.02,
+            "traceorder": "normal",
+            "font": {
+                "family": "sans-serif",
+                "size": 12,
+                "color": "#000"
+            },
+            "bgcolor": "#FFFFFF",
+            "bordercolor": "#FFFFFF",
+            "borderwidth": 2,
+            "xanchor": "left",
+            "yanchor": "bottom"
+        },
+        "yaxis2": {
+            "title": "Take Rate %",
+            "rangemode": "tozero",
+            "autorange": true,
+            "showgrid": false,
+            "overlaying": "y",
+            "side": "right",
+            "type": "linear",
+            "range": [
+                0,
+                1.35
+            ]
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true
+    }
+}

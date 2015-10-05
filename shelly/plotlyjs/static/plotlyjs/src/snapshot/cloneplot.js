@@ -1,7 +1,9 @@
 'use strict';
 
-var extend = require('extend');
 var Plotly = require('../plotly');
+
+var extendFlat = Plotly.Lib.extendFlat;
+var extendDeep = Plotly.Lib.extendDeep;
 
 // Put default plotTile layouts here
 function cloneLayoutOverride (tileClass) {
@@ -56,8 +58,8 @@ module.exports = function clonePlot(graphObj, options) {
     var i;
     var oldData = graphObj.data;
     var oldLayout = graphObj.layout;
-    var newData =  extend(true, [], oldData);
-    var newLayout = extend(true, {}, oldLayout, cloneLayoutOverride(options.tileClass));
+    var newData = extendDeep([], oldData);
+    var newLayout = extendDeep({}, oldLayout, cloneLayoutOverride(options.tileClass));
 
     if (options.width) newLayout.width = options.width;
     if (options.height) newLayout.height = options.height;
@@ -103,10 +105,11 @@ module.exports = function clonePlot(graphObj, options) {
         }
         for (i = 0; i < sceneIds.length; i++) {
             var sceneId = sceneIds[i];
-            newLayout[sceneId].xaxis = extend(newLayout[sceneId].xaxis, axesImageOverride);
-            newLayout[sceneId].yaxis = extend(newLayout[sceneId].yaxis, axesImageOverride);
+
+            extendFlat(newLayout[sceneId].xaxis, axesImageOverride);
+            extendFlat(newLayout[sceneId].yaxis, axesImageOverride);
             if(newLayout[sceneId].zaxis) {
-              newLayout[sceneId].zaxis = extend(newLayout[sceneId].zaxis, axesImageOverride);
+                extendFlat(newLayout[sceneId].zaxis, axesImageOverride);
             }
             newLayout[sceneId]._scene2d = newLayout[sceneId]._scene = null;
         }

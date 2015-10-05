@@ -2,19 +2,38 @@ var Plotly = require('../../plotly'),
     params = require('../lib/params');
 
 module.exports = {
-    domain:  {
-        x: [
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
-        ],
-        y: [
-            {type: 'number', min: 0, max: 1},
-            {type: 'number', min: 0, max: 1}
-        ]
+    domain: {
+        x: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the horizontal domain of this map',
+                '(in plot fraction).'
+            ].join(' ')
+        },
+        y: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the vertical domain of this map',
+                '(in plot fraction).'
+            ].join(' ')
+        }
     },
     resolution: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [110, 50],
+        role: 'info',
         dflt: 110,
         coerceNumber: true,
         description: [
@@ -24,46 +43,61 @@ module.exports = {
         ].join(' ')
     },
     scope: {
-        type: 'enumerated',
+        valType: 'enumerated',
+        role: 'info',
         values: Object.keys(params.scopeDefaults),
         dflt: 'world',
         description: 'Set the scope of the map.'
     },
     projection: {
         type: {
-            type: 'enumerated',
+            valType: 'enumerated',
+            role: 'info',
             values: Object.keys(params.projNames),
             description: 'Sets the projection type.'
         },
         rotation: {
             lon: {
-                type: 'number',
+                valType: 'number',
+                role: 'info',
                 description: [
                     'Rotates the map along parallels',
                     '(in degrees East).'
                 ].join(' ')
             },
             lat: {
-                type: 'number',
+                valType: 'number',
+                role: 'info',
                 description: [
                     'Rotates the map along meridians',
                     '(in degrees North).'
                 ].join(' ')
             },
             roll: {
-                type: 'number',
+                valType: 'number',
+                role: 'info',
                 description: [
                     'Roll the map (in degrees)',
                     'For example, a roll of *180* makes the map appear upside down.'
                 ].join(' ')
             }
         },
-        parallels: [
-            {type: 'number'},
-            {type: 'number'}
-        ],
+        parallels: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'number'},
+                {valType: 'number'}
+            ],
+            description: [
+                'For conic projection types only.',
+                'Sets the parallels (tangent, secant)',
+                'where the cone intersects the sphere.'
+            ].join(' ')
+        },
         scale: {
-            type: 'number',
+            valType: 'number',
+            role: 'info',
             min: 0,
             max: 10,
             dflt: 1,
@@ -71,116 +105,138 @@ module.exports = {
         }
     },
     showcoastlines: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         description: 'Sets whether or not the coastlines are drawn.'
     },
     coastlinecolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: Plotly.Color.defaultLine,
         description: 'Sets the coastline color.'
     },
     coastlinewidth: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets the coastline stroke width (in px).'
     },
     showland: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         dflt: false,
         description: 'Sets whether or not land masses are filled in color.'
     },
     landcolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: params.landColor,
         description: 'Sets the land mass color.'
     },
     showocean: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         dflt: false,
         description: 'Sets whether or not oceans are filled in color.'
     },
     oceancolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: params.waterColor,
         description: 'Sets the ocean color'
     },
     showlakes: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         dflt: false,
         description: 'Sets whether or not lakes are drawn.'
     },
     lakecolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: params.waterColor,
         description: 'Sets the color of the lakes.'
     },
     showrivers: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         dflt: false,
         description: 'Sets whether or not rivers are drawn.'
     },
     rivercolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: params.waterColor,
         description: 'Sets color of the rivers.'
     },
     riverwidth: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets the stroke width (in px) of the rivers.'
     },
     showcountries: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         description: 'Sets whether or not country boundaries are drawn.'
     },
     countrycolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: Plotly.Color.defaultLine,
         description: 'Sets line color of the country boundaries.'
     },
     countrywidth: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets line width (in px) of the country boundaries.'
     },
     showsubunits: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         description: [
             'Sets whether or not boundaries of subunits within countries',
             '(e.g. states, provinces) are drawn.'
         ].join(' ')
     },
     subunitcolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: Plotly.Color.defaultLine,
         description: 'Sets the color of the subunits boundaries.'
     },
     subunitwidth: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets the stroke width (in px) of the subunits boundaries.'
     },
     showframe: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         description: 'Sets whether or not a frame is drawn around the map.'
     },
     framecolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: Plotly.Color.defaultLine,
         description: 'Sets the color the frame.'
     },
     framewidth: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 1,
         description: 'Sets the stroke width (in px) of the frame.'
     },
     bgcolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: Plotly.Color.background,
         description: 'Set the background color of the map'
     },

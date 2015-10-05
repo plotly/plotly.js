@@ -5,7 +5,14 @@ var Plotly = require('../../plotly');
 var ScatterGeo = module.exports = {};
 
 Plotly.Plots.register(ScatterGeo, 'scattergeo',
-    ['geo', 'symbols', 'markerColorscale', 'showLegend']);
+    ['geo', 'symbols', 'markerColorscale', 'showLegend'], {
+    hrName: 'scatter_geo',
+    description: [
+        'The data visualized as scatter point or lines on a geographic map',
+        'is provided either by longitude/latitude pairs in `lon` and `lat`',
+        'respectively or by geographic location IDs or names in `locations`.'
+    ].join(' ')
+});
 
 ScatterGeo.attributes = require('../attributes/scattergeo');
 
@@ -37,6 +44,8 @@ ScatterGeo.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     if(Scatter.hasText(traceOut)) {
         Scatter.textDefaults(traceIn, traceOut, layout, coerce);
     }
+
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'lon+lat+location+text' : undefined);
 };
 
 ScatterGeo.handleLonLatLocDefaults = function(traceIn, traceOut, coerce) {

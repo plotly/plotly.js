@@ -351,7 +351,7 @@ var colorbar = module.exports = function(td, id) {
 
             cbAxisOut._pos = xLeft+thickPx +
                 (opts.outlinewidth||0)/2 - (opts.ticks==='outside' ? 1 : 0);
-            cbAxisOut.side = opts.orient;
+            cbAxisOut.side = 'right';
 
             return Plotly.Axes.doTicks(td, cbAxisOut);
         }
@@ -496,8 +496,10 @@ var colorbar = module.exports = function(td, id) {
 
             // setter - for multi-part properties,
             // set only the parts that are provided
-            if($.isPlainObject(opts[name])) $.extend(opts[name],v);
-            else opts[name] = v;
+            opts[name] = Plotly.Lib.isPlainObject(opts[name]) ?
+                 Plotly.Lib.extendFlat(opts[name], v) :
+                 v;
+
             return component;
         };
     });
@@ -523,16 +525,21 @@ var axesAttrs = Plotly.Axes.layoutAttributes,
     extendFlat = Plotly.Lib.extendFlat;
 
 colorbar.attributes = {
-    orient: {
-        // which side are the labels on (so left and right make vertical bars, etc.)
-        // TODO: only right is supported currently
-        type: 'enumerated',
-        values: ['left', 'right', 'top', 'bottom'],
-        dflt: 'right'
-    },
+// TODO: only right is supported currently
+//     orient: {
+//         valType: 'enumerated',
+//         role: 'info',
+//         values: ['left', 'right', 'top', 'bottom'],
+//         dflt: 'right',
+//         description: [
+//             'Determines which side are the labels on',
+//             '(so left and right make vertical bars, etc.)'
+//         ].join(' ')
+//     },
     thicknessmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['fraction', 'pixels'],
+        role: 'style',
         dflt: 'pixels',
         description: [
             'Determines whether this color bar\'s thickness',
@@ -542,7 +549,8 @@ colorbar.attributes = {
         ].join(' ')
     },
     thickness: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 30,
         description: [
@@ -551,8 +559,9 @@ colorbar.attributes = {
         ].join(' ')
     },
     lenmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['fraction', 'pixels'],
+        role: 'info',
         dflt: 'fraction',
         description: [
             'Determines whether this color bar\'s length',
@@ -562,9 +571,10 @@ colorbar.attributes = {
         ].join(' ')
     },
     len: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: [
             'Sets the length of the color bar',
             'This measure excludes the padding of both ends.',
@@ -573,16 +583,18 @@ colorbar.attributes = {
         ].join(' ')
     },
     x: {
-        type: 'number',
+        valType: 'number',
         dflt: 1.02,
+        role: 'style',
         description: [
             'Sets the x position of the color bar (in plot fraction).'
         ].join(' ')
     },
     xanchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['left', 'center', 'right'],
         dflt: 'left',
+        role: 'style',
         description: [
             'Sets this color bar\'s horizontal position anchor',
             'This anchor binds the `x` position to the *left*, *center*',
@@ -590,21 +602,24 @@ colorbar.attributes = {
         ].join(' ')
     },
     xpad: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 10,
         description: 'Sets the amount of padding (in px) along the x direction.'
     },
     y: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         dflt: 0.5,
         description: [
             'Sets the y position of the color bar (in plot fraction).'
         ].join(' ')
     },
     yanchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
+        role: 'style',
         dflt: 'middle',
         description: [
             'Sets this color bar\'s vertical position anchor',
@@ -613,7 +628,8 @@ colorbar.attributes = {
         ].join(' ')
     },
     ypad: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 10,
         description: 'Sets the amount of padding (in px) along the y direction.'
@@ -625,7 +641,8 @@ colorbar.attributes = {
     // another possible line outside the padding and tick labels
     bordercolor: axesAttrs.linecolor,
     borderwidth: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         dflt: 0,
         description: [
@@ -633,7 +650,8 @@ colorbar.attributes = {
         ].join(' ')
     },
     bgcolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         dflt: 'rgba(0,0,0,0)',
         description: 'Sets the color of padded area.'
     },
@@ -644,7 +662,7 @@ colorbar.attributes = {
     dtick: axesAttrs.dtick,
     tickvals: axesAttrs.tickvals,
     ticktext: axesAttrs.ticktext,
-    ticks: extendFlat(axesAttrs.ticks, {dflt: ''}),
+    ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
@@ -659,20 +677,25 @@ colorbar.attributes = {
     exponentformat: axesAttrs.exponentformat,
     showexponent: axesAttrs.showexponent,
     title: {
-        type: 'string',
+        valType: 'string',
+        role: 'info',
         dflt: 'Click to enter colorscale title',
         description: 'Sets the title of the color bar.'
     },
-    titlefont: {
-        type: 'font',
+    titlefont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: [
             'Sets this color bar\'s title font.'
         ].join(' ')
-    },
+    }),
     titleside: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['right', 'top', 'bottom'],
-        dflt: 'top'
+        role: 'style',
+        dflt: 'top',
+        description: [
+            'Determines the location of the colorbar title',
+            'with respect to the color bar.'
+        ].join(' ')
     }
 };
 
@@ -684,8 +707,6 @@ colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
         return Plotly.Lib.coerce(colorbarIn, colorbarOut,
                                  colorbar.attributes, attr, dflt);
     }
-
-    coerce('orient');
 
     var thicknessmode = coerce('thicknessmode');
     coerce('thickness', thicknessmode === 'fraction' ?
@@ -719,7 +740,7 @@ colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
         {outerTicks: false, font: layout.font, noHover: true});
 
     coerce('title');
-    coerce('titlefont', layout.font);
+    Plotly.Lib.coerceFont(coerce, 'titlefont', layout.font);
     coerce('titleside');
 };
 
@@ -751,7 +772,8 @@ colorbar.traceColorbar = function(gd, cd) {
 
 colorbar.traceColorbarAttributes = {
     zauto: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         dflt: true,
         description: [
             'Determines the whether or not the color domain is computed',
@@ -759,21 +781,25 @@ colorbar.traceColorbarAttributes = {
         ].join(' ')
     },
     zmin: {
-        type: 'number',
+        valType: 'number',
+        role: 'info',
         dflt: null,
         description: 'Sets the lower bound of color domain.'
     },
     zmax: {
-        type: 'number',
+        valType: 'number',
+        role: 'info',
         dflt: null,
         description: 'Sets the upper bound of color domain.'
     },
     colorscale: {
-        type: 'colorscale',
+        valType: 'colorscale',
+        role: 'style',
         description: 'Sets the colorscale.'
     },
     autocolorscale: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'style',
         dflt: true,  // gets overrode in 'heatmap' & 'surface' for backwards comp.
         description: [
             'Determines whether or not the colorscale is picked using the sign of',
@@ -781,15 +807,30 @@ colorbar.traceColorbarAttributes = {
         ].join(' ')
     },
     reversescale: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'style',
         dflt: false,
         description: 'Reverses the colorscale.'
     },
     showscale: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'info',
         dflt: true,
         description: [
             'Determines whether or not a colorbar is displayed for this trace.'
         ].join(' ')
+    },
+
+    _deprecated: {
+        scl: {
+            valType: 'colorscale',
+            role: 'style',
+            description: 'Renamed to `colorscale`.'
+        },
+        reversescl: {
+            valType: 'boolean',
+            role: 'style',
+            description: 'Renamed to `reversescale`.'
+        }
     }
 };

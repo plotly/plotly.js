@@ -13,6 +13,10 @@ if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
 
 var userFileName = process.argv[2];
 
+var touch = function(fileName) {
+    fs.closeSync(fs.openSync(fileName, 'w'));
+};
+
 if (!userFileName) runAll();
 else runSingle(userFileName);
 
@@ -72,7 +76,10 @@ function testMock (fileName, t) {
     }
 
     function onEqualityCheck (err, isEqual) {
-        if (err) return console.error(err, imageFileName);
+        if (err) {
+            touch(diffPath);
+            return console.error(err, imageFileName);
+        }
         if (isEqual) {
             fs.unlinkSync(diffPath);
             console.error(imageFileName + ' is pixel perfect');

@@ -4,11 +4,9 @@ var ScatterGeoAttrs = Plotly.ScatterGeo.attributes,
     ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line,
     traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
-var extendFlat = Plotly.Lib.extendFlat;
-
 module.exports = {
     locations: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the coordinates via location IDs or names.',
             'See `locationmode` for more info.'
@@ -16,11 +14,11 @@ module.exports = {
     },
     locationmode: ScatterGeoAttrs.locationmode,
     z: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the color values.'
     },
     text: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the text elements associated with each location.'
     },
     marker: {
@@ -36,6 +34,9 @@ module.exports = {
     autocolorscale: traceColorbarAttrs.autocolorscale,
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
+    hoverinfo: Plotly.Lib.extendFlat({}, Plotly.Plots.attributes.hoverinfo, {
+        flags: ['location', 'z', 'text', 'name']
+    }),
     _nestedModules: {
         'colorbar': 'Colorbar'
     }

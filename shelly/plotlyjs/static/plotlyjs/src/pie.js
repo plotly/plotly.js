@@ -8,16 +8,25 @@ var pie = module.exports = {},
     isNumeric = require('./isnumeric'),
     tinycolor = require('tinycolor2');
 
-Plotly.Plots.register(pie, 'pie', ['pie', 'showLegend']);
+Plotly.Plots.register(pie, 'pie', ['pie', 'showLegend'], {
+    description: [
+        'A data visualized by the sectors of the pie is set in `values`.',
+        'The sector labels are set in `labels`.',
+        'The sector colors are set in `marker.colors`'
+    ].join(' ')
+});
+
+var extendFlat = Plotly.Lib.extendFlat;
 
 pie.attributes = {
     labels: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the sector labels.'
     },
     // equivalent of x0 and dx, if label is missing
     label0: {
-        type: 'number',
+        valType: 'number',
+        role: 'info',
         dflt: 0,
         description: [
             'Alternate to `labels`.',
@@ -27,19 +36,20 @@ pie.attributes = {
         ].join(' ')
     },
     dlabel: {
-        type: 'number',
+        valType: 'number',
+        role: 'info',
         dflt: 1,
         description: 'Sets the label step. See `label0` for more info.'
     },
 
     values: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the values of the sectors of this pie chart.'
     },
 
     marker: {
         colors: {
-            type: 'data_array',
+            valType: 'data_array',  // TODO 'color_array' ?
             description: [
                 'Sets the color of each sector of this pie chart.',
                 'If not specified, the default trace color set is used',
@@ -49,7 +59,8 @@ pie.attributes = {
 
         line: {
             color: {
-                type: 'color',
+                valType: 'color',
+                role: 'style',
                 dflt: Plotly.Color.defaultLine,
                 arrayOk: true,
                 description: [
@@ -57,7 +68,8 @@ pie.attributes = {
                 ].join(' ')
             },
             width: {
-                type: 'number',
+                valType: 'number',
+                role: 'style',
                 min: 0,
                 dflt: 0,
                 arrayOk: true,
@@ -69,7 +81,7 @@ pie.attributes = {
     },
 
     text: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets text elements associated with each sector.'
     },
 
@@ -78,7 +90,8 @@ pie.attributes = {
 // '(this example involves a map too - may someday be a whole trace type',
 // 'of its own. but the point is the size of the whole pie is important.)'
     scalegroup: {
-        type: 'string',
+        valType: 'string',
+        role: 'info',
         dflt: '',
         description: [
             'If there are multiple pies that should be sized according to',
@@ -89,24 +102,20 @@ pie.attributes = {
 
     // labels (legend is handled by plots.attributes.showlegend and layout.hiddenlabels)
     textinfo: {
-        type: 'flaglist',
+        valType: 'flaglist',
+        role: 'info',
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
         description: [
             'Determines which trace information appear on the graph.'
         ].join(' ')
     },
-    hoverinfo: {
-        type: 'flaglist',
-        flags: ['label', 'text', 'value', 'percent', 'name'],
-        extras: ['all', 'none'],
-        dflt: 'all',
-        description: [
-            'Determines which trace information appear on hover.'
-        ].join(' ')
-    },
+    hoverinfo: extendFlat({}, Plotly.Plots.attributes.hoverinfo, {
+        flags: ['label', 'text', 'value', 'percent', 'name']
+    }),
     textposition: {
-        type: 'enumerated',
+        valType: 'enumerated',
+        role: 'info',
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'auto',
         arrayOk: true,
@@ -114,34 +123,50 @@ pie.attributes = {
             'Specifies the location of the `textinfo`.'
         ].join(' ')
     },
-    textfont: {
-        type: 'font',
+    // TODO make those arrayOk?
+    textfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used for `textinfo`.'
-    },
-    insidetextfont: {
-        type: 'font',
+    }),
+    insidetextfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the pie.'
-    },
-    outsidetextfont: {
-        type: 'font',
+    }),
+    outsidetextfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used for `textinfo` lying outside the pie.'
-    },
+    }),
 
     // position and shape
     domain: {
-        x: [
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
-        ],
-        y: [
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
-        ]
+        x: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the horizontal domain of this pie trace',
+                '(in plot fraction).'
+            ].join(' ')
+        },
+        y: {
+            valType: 'info_array',
+            role: 'info',
+            items: [
+                {valType: 'number', min: 0, max: 1},
+                {valType: 'number', min: 0, max: 1}
+            ],
+            dflt: [0, 1],
+            description: [
+                'Sets the vertical domain of this pie trace',
+                '(in plot fraction).'
+            ].join(' ')
+        }
     },
     // 3D attributes commented out until I finish them in a later PR
     // tilt: {
     //     // degrees to tilt the pie back from straight on
-    //     type: 'number',
+    //     valType: 'number',
     //     min: 0,
     //     max: 90,
     //     dflt: 0
@@ -149,7 +174,7 @@ pie.attributes = {
     // tiltaxis: {
     //     // degrees away from straight up to tilt the pie
     //     // only has an effect if tilt is nonzero
-    //     type: 'number',
+    //     valType: 'number',
     //     min: -360,
     //     max: 360,
     //     dflt: 0
@@ -157,7 +182,7 @@ pie.attributes = {
     // depth: {
     //     // "3D" size, as a fraction of radius
     //     // only has an effect if tilt is nonzero
-    //     type: 'number',
+    //     valType: 'number',
     //     min: 0,
     //     max: 10,
     //     dflt: 0.5
@@ -167,13 +192,14 @@ pie.attributes = {
     //     // with a 3D effect. We could of course get all
     //     // fancy with lighting effects, but maybe this is
     //     // sufficient.
-    //     type: 'number',
+    //     valType: 'number',
     //     min: 0,
     //     max: 1,
     //     dflt: 0.2
     // },
     hole: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         max: 1,
         dflt: 0,
@@ -185,7 +211,8 @@ pie.attributes = {
 
     // ordering and direction
     sort: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'style',
         dflt: true,
         description: [
             'Determines whether or not the sectors of reordered',
@@ -200,8 +227,9 @@ pie.attributes = {
          *
          * see http://visage.co/data-visualization-101-pie-charts/
          */
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['clockwise', 'counterclockwise'],
+        role: 'style',
         dflt: 'counterclockwise',
         description: [
             'Specifies the direction at which succeeding sectors follow',
@@ -209,7 +237,8 @@ pie.attributes = {
         ].join(' ')
     },
     rotation: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: -360,
         max: 360,
         dflt: 0,
@@ -220,7 +249,8 @@ pie.attributes = {
     },
 
     pull: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
         max: 1,
         dflt: 0,
@@ -238,6 +268,8 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, pie.attributes, attr, dflt);
     }
+
+    var coerceFont = Plotly.Lib.coerceFont;
 
     var vals = coerce('values');
     if(!Array.isArray(vals) || !vals.length) {
@@ -266,7 +298,8 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     var textData = coerce('text');
     var textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
-    coerce('hoverinfo');
+
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'label+text+value+percent' : undefined);
 
     if(textInfo && textInfo !== 'none') {
         var textPosition = coerce('textposition'),
@@ -275,16 +308,14 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             hasOutside = hasBoth || textPosition === 'outside';
 
         if(hasInside || hasOutside) {
-            var dfltFont = coerce('textfont', layout.font);
-            if(hasInside) coerce('insidetextfont', dfltFont);
-            if(hasOutside) coerce('outsidetextfont', dfltFont);
+            var dfltFont = coerceFont(coerce, 'textfont', layout.font);
+            if(hasInside) coerceFont(coerce, 'insidetextfont', dfltFont);
+            if(hasOutside) coerceFont(coerce, 'outsidetextfont', dfltFont);
         }
     }
 
-    coerce('domain.x[0]');
-    coerce('domain.x[1]');
-    coerce('domain.y[0]');
-    coerce('domain.y[1]');
+    coerce('domain.x');
+    coerce('domain.y');
 
     // 3D attributes commented out until I finish them in a later PR
     // var tilt = coerce('tilt');
@@ -309,7 +340,7 @@ pie.layoutAttributes = {
      * but it can contain many labels, and can hide slices
      * from several pies simultaneously
      */
-    hiddenlabels: {type: 'data_array'}
+    hiddenlabels: {valType: 'data_array'}
 };
 
 pie.supplyLayoutDefaults = function(layoutIn, layoutOut) {

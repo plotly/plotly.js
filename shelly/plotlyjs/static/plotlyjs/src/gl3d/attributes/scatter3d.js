@@ -12,7 +12,8 @@ var scatterAttrs = Plotly.Scatter.attributes,
 function makeProjectionAttr(axLetter) {
     return {
         show: {
-            type: 'boolean',
+            valType: 'boolean',
+            role: 'info',
             dflt: false,
             description: [
                 'Sets whether or not projections are shown along the',
@@ -20,14 +21,16 @@ function makeProjectionAttr(axLetter) {
             ].join(' ')
         },
         opacity: {
-            type: 'number',
+            valType: 'number',
+            role: 'style',
             min: 0,
             max: 1,
             dflt: 1,
             description: 'Sets the projection color.'
         },
         scale: {
-            type: 'number',
+            valType: 'number',
+            role: 'style',
             min: 0,
             max: 10,
             dflt: 2/3,
@@ -41,25 +44,31 @@ function makeProjectionAttr(axLetter) {
 
 module.exports = {
     x: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the x coordinates.'
     },
     y: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the y coordinates.'
     },
     z: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the z coordinates.'
     },
-    text: {
-        type: 'data_array',
-        description: 'Sets text elements associated with each (x,y,z) triplet.'
-    },
-    mode: extendFlat(scatterAttrs.mode,  // shouldn't this be on-par with 2D?
+    text: extendFlat({}, scatterAttrs.text, {
+        description: [
+            'Sets text elements associated with each (x,y,z) triplet.',
+            'If a single string, the same string appears over',
+            'all the data points.',
+            'If an array of string, the items are mapped in order to the',
+            'this trace\'s (x,y,z) coordinates.'
+        ].join(' ')
+    }),
+    mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),
     surfaceaxis: {
-        type: 'enumerated',
+        valType: 'enumerated',
+        role: 'info',
         values: [-1, 0, 1, 2],
         dflt: -1,
         description: [
@@ -69,7 +78,8 @@ module.exports = {
         ].join(' ')
     },
     surfacecolor: {
-        type: 'color',
+        valType: 'color',
+        role: 'style',
         description: 'Sets the surface fill color.'
     },
     projection: {
@@ -85,13 +95,14 @@ module.exports = {
     marker: {  // Parity with scatter.js?
         color: scatterMarkerAttrs.color,
         symbol: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: Object.keys(MARKER_SYMBOLS),
+            role: 'style',
             dflt: 'circle',
             arrayOk: true,
             description: 'Sets the marker symbol type.'
         },
-        size: extendFlat(scatterMarkerAttrs.size, {dflt: 8}),
+        size: extendFlat({}, scatterMarkerAttrs.size, {dflt: 8}),
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
@@ -105,7 +116,7 @@ module.exports = {
         showscale: scatterMarkerAttrs.showscale,
         line: {
             color: scatterMarkerLineAttrs.color,
-            width: extendFlat(scatterMarkerLineAttrs.width, {arrayOk: false}),
+            width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false}),
             colorscale: scatterMarkerLineAttrs.colorscale,
             cauto: scatterMarkerLineAttrs.cauto,
             cmax: scatterMarkerLineAttrs.cmax,
@@ -114,7 +125,7 @@ module.exports = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
-    textposition: extendFlat(scatterAttrs.textposition, {dflt: 'top center'}),
+    textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
     _nestedModules: {
         'error_x': 'ErrorBars',
