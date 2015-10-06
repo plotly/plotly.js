@@ -6,6 +6,9 @@ var Gl2dAxes = module.exports = {};
 
 Gl2dAxes.axesNames = [ 'xaxis', 'yaxis' ];
 
+Plotly.Plots.registerSubplot('gl2d', ['xaxis', 'yaxis'], ['x', 'y'],
+    Plotly.Axes.traceAttributes);
+
 Gl2dAxes.layoutAttributes = require('../attributes/gl2daxes');
 
 function noop() {}

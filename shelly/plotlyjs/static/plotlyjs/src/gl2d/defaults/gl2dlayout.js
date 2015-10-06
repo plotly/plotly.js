@@ -4,22 +4,6 @@ var Plotly = require('../../plotly');
 
 var Gl2dLayout = module.exports = {};
 
-Plotly.Plots.registerSubplot('gl2d', 'scene2d', 'scene2d', {
-    scene2d: {
-        valType: 'scene2did',
-        role: 'info',
-        dflt: 'scene2d',
-        description: [
-            'Sets a reference between this trace\'s coordinate system and',
-            'a 2D scene.',
-            'If *scene2d* (the default value), the (x,y) coordinates refer to',
-            '`layout.scene2d`.',
-            'If *scene2d2*, the (x,y) coordinates refer to `layout.scene2d2`,',
-            'and so on.'
-        ].join(' ')
-    }
-});
-
 Gl2dLayout.layoutAttributes = require('../attributes/gl2dlayout');
 
 Gl2dLayout.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {

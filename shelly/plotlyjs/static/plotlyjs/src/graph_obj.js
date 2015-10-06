@@ -125,7 +125,7 @@ plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
 
     var regexStart = '^',
         regexEnd = '([2-9]|[1-9][0-9]+)?$',
-        isCartesian = (subplotType === 'cartesian');
+        hasXY = (subplotType === 'cartesian' || subplotsRegistry === 'gl2d');
 
     function makeRegex(mid) {
         return new RegExp(regexStart + mid + regexEnd);
@@ -137,11 +137,11 @@ plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
         idRoot: idRoot,
         attributes: attributes,
         // register the regex representing the set of all valid attribute names
-        attrRegex: isCartesian ?
+        attrRegex: hasXY ?
             { x: makeRegex(attr[0]), y: makeRegex(attr[1]) } :
             makeRegex(attr),
         // register the regex representing the set of all valid attribute ids
-        idRegex: isCartesian ?
+        idRegex: hasXY ?
             { x: makeRegex(idRoot[0]), y: makeRegex(idRoot[1]) } :
             makeRegex(idRoot)
     };
@@ -641,11 +641,10 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
-        if(gd._fullLayout._hasGL3D) plotGl3d(gd);
 
         // ... until subplot of different type play better together
+        if(gd._fullLayout._hasGL3D) plotGl3d(gd);
         if(gd._fullLayout._hasGeo) plotGeo(gd);
-
         if(gd._fullLayout._hasGL2D) plotGl2d(gd);
 
         // in case of traces that were heatmaps or contour maps
@@ -1566,7 +1565,6 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // the traces of a scene are invisible. Also we handle visible/unvisible
     // differently for 3D cases.
     coerceSubplotAttr('gl3d', 'scene');
-    coerceSubplotAttr('gl2d', 'scene2d');
     coerceSubplotAttr('geo', 'geo');
 
     // module-specific attributes --- note: we need to send a trace into
@@ -1588,6 +1586,9 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
         coerceSubplotAttr('cartesian', 'xaxis');
         coerceSubplotAttr('cartesian', 'yaxis');
+
+        coerceSubplotAttr('gl2d', 'xaxis');
+        coerceSubplotAttr('gl2d', 'yaxis');
 
         if(plots.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
