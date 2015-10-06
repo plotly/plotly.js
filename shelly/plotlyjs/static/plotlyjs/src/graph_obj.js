@@ -147,7 +147,14 @@ plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
     };
 };
 
+// TODO separate the 'find subplot' step from the 'get subplot ids' step
 plots.getSubplotIds = function getSubplotIds(layout, type) {
+
+    // layout must be 'fullLayout' here
+    if(type === 'cartesian') {
+        return Object.keys(layout._plots);
+    }
+
     var idRegex = plots.subplotsRegistry[type].idRegex,
         layoutKeys = Object.keys(layout),
         subplotIds = [],
@@ -561,22 +568,23 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function positionAndAutorange() {
-        var i, j, subplots, subplotInfo, modules, module;
-
         if(!recalc) return;
+
+        var subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
+            modules = gd._modules;
 
         // position and range calculations for traces that
         // depend on each other ie bars (stacked or grouped)
         // and boxes (grouped) push each other out of the way
-        subplots = Plotly.Axes.getSubplots(gd);
-        modules = gd._modules;
-        for (i = 0; i < subplots.length; i++) {
-            subplotInfo = gd._fullLayout._plots[subplots[i]];
-            for (j = 0; j < modules.length; j++) {
-                module = modules[j];
-                if (module.setPositions) {
-                    module.setPositions(gd, subplotInfo);
-                }
+
+        var subplotInfo, _module;
+
+        for(var i = 0; i < subplots.length; i++) {
+            subplotInfo = fullLayout._plots[subplots[i]];
+
+            for(var j = 0; j < modules.length; j++) {
+                _module = modules[j];
+                if(_module.setPositions) _module.setPositions(gd, subplotInfo);
             }
         }
 
@@ -611,7 +619,7 @@ Plotly.plot = function(gd, data, layout, config) {
     function drawData(){
         // Now plot the data
         var calcdata = gd.calcdata,
-            subplots = Plotly.Axes.getSubplots(gd),
+            subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
             modules = gd._modules;
 
         var i, j, cd, trace, uid, subplot, subplotInfo,
