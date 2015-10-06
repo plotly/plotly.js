@@ -616,7 +616,7 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
-    function drawData(){
+    function drawData() {
         // Now plot the data
         var calcdata = gd.calcdata,
             subplots = plots.getSubplotIds(fullLayout, 'cartesian'),

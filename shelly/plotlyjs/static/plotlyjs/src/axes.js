@@ -2354,7 +2354,7 @@ axes.listIds = function(td, axletter) {
 
 // get an axis object from its id 'x','x2' etc
 // optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
-axes.getFromId = function(td,id,type) {
+axes.getFromId = function(td, id, type) {
     var fullLayout = td._fullLayout;
 
     if(type==='x') id = id.replace(/y[0-9]*/,'');
