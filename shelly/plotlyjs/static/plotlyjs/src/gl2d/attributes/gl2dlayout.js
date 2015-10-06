@@ -1,11 +1,11 @@
 var Plotly = require('../../plotly');
 
 var axesAttrs = Plotly.Axes.layoutAttributes;
-var extendFlat = Plotly.Lib.extendFlat;
 
 module.exports = {
   title: {
-      type: 'string',
+      valType: 'string',
+      role: 'info',
       description: 'Sets the title of the plot.',
       dflt: ''
   },

@@ -1566,8 +1566,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // the traces of a scene are invisible. Also we handle visible/unvisible
     // differently for 3D cases.
     coerceSubplotAttr('gl3d', 'scene');
-
-    if(plots.traceIs(traceOut, 'gl2d')) scene = coerce('scene2d');
+    coerceSubplotAttr('gl2d', 'scene2d');
     coerceSubplotAttr('geo', 'geo');
 
     // module-specific attributes --- note: we need to send a trace into
@@ -1795,7 +1794,7 @@ plots.layoutAttributes = {
         dflt: false
     },
     _hasGL2D: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false
     },
     _composedModules: {

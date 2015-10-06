@@ -10,15 +10,15 @@ var scatterAttrs = Plotly.Scatter.attributes,
 
 module.exports = {
     x: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the x coordinates.'
     },
     y: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets the y coordinates.'
     },
     text: {
-        type: 'data_array',
+        valType: 'data_array',
         description: 'Sets text elements associated with each (x,y,z) triplet.'
     },
     mode: extendFlat(scatterAttrs.mode,
@@ -31,13 +31,14 @@ module.exports = {
     marker: {
         color: scatterMarkerAttrs.color,
         symbol: {
-            type: 'enumerated',
+            valType: 'enumerated',
             values: [ 'circle' ],
             dflt: 'circle',
             arrayOk: true,
+            role: 'style',
             description: 'Sets the marker symbol type.'
         },
-        size: extendFlat(scatterMarkerAttrs.size, {dflt: 8}),
+        size: extendFlat({}, scatterMarkerAttrs.size, {dflt: 8}),
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
@@ -51,7 +52,7 @@ module.exports = {
         showscale: scatterMarkerAttrs.showscale,
         line: {
             color: scatterMarkerLineAttrs.color,
-            width: extendFlat(scatterMarkerLineAttrs.width, {arrayOk: false}),
+            width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false}),
             colorscale: scatterMarkerLineAttrs.colorscale,
             cauto: scatterMarkerLineAttrs.cauto,
             cmax: scatterMarkerLineAttrs.cmax,
@@ -60,7 +61,7 @@ module.exports = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
-    textposition: extendFlat(scatterAttrs.textposition, {dflt: 'top center'}),
+    textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
     _nestedModules: {
         'error_x': 'ErrorBars',

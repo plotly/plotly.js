@@ -12,7 +12,7 @@ function noop() {}
 
 Gl2dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
   var Axes = Plotly.Axes;
-  console.log('Supply axis defaults');
+
   Gl2dAxes.axesNames.forEach(function(axName) {
     var containerIn  = layoutIn[axName] || {};
     var containerOut =  {

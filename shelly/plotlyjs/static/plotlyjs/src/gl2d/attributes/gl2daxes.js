@@ -42,7 +42,7 @@ module.exports = {
   linecolor: axesAttrs.linecolor,
   linewidth: axesAttrs.linewidth,
   showgrid: axesAttrs.showgrid,
-  gridcolor: extendFlat(axesAttrs.gridcolor,  // shouldn't this be on-par with 2D?
+  gridcolor: extendFlat({}, axesAttrs.gridcolor,  // shouldn't this be on-par with 2D?
       {dflt: 'rgb(204, 204, 204)'}),
   gridwidth: axesAttrs.gridwidth,
   zeroline: axesAttrs.zeroline,
