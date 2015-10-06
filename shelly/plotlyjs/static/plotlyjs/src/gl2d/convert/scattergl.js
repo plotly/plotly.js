@@ -105,15 +105,27 @@ proto.update = function(options) {
     var colorArray = str2RGBArray(color);
     var borderColorArray = str2RGBArray(borderColor);
 
+    var opacity = +options.marker.opacity;
+    colorArray[3] *= opacity;
+    borderColorArray[3] *= opacity;
+
     this.scatterOptions.color = colorArray;
     this.scatterOptions.borderColor = borderColorArray;
+  } else {
+    this.scatterOptions.positions = new Float32Array();
   }
 
   this.scatter.update(this.scatterOptions);
 
   if('line' in options) {
-    this.lineOptions.color = str2RGBArray(options.line.color);
-    this.lineOptions.width = options.line.width;
+    var lineColor = str2RGBArray(options.line.color);
+    if('marker' in options) {
+      lineColor[3] *= options.marker.opacity;
+    }
+    this.lineOptions.color = lineColor;
+    this.lineOptions.width = 2.0 * options.line.width;
+  } else {
+    this.lineOptions.position = new Float32Array();
   }
 
   switch(options._input.fill) {
@@ -130,7 +142,16 @@ proto.update = function(options) {
 
   this.line.update(this.lineOptions);
 
-  this.bounds = this.scatter.bounds.slice();
+  this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
+  for(var i=0; i<2; ++i) {
+    this.bounds[i] = Math.min(this.scatter.bounds[i], this.line.bounds[i]);
+    this.bounds[i+2] = Math.max (this.scatter.bounds[i+2], this.line.bounds[i+2]);
+
+    if(this.bounds[i] === this.bounds[i+2]) {
+      this.bounds[i] -= 1;
+      this.bounds[i+2] += 1;
+    }
+  }
 };
 
 proto.dispose = function() {

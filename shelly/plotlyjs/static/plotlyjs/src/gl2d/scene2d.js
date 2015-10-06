@@ -7,6 +7,7 @@ var createSelectBox = require('gl-select-box');
 var createLineWithMarkers = require('./convert/scattergl');
 var createOptions = require('./convert/axes2dgl');
 var createCamera  = require('./lib/camera');
+var htmlToUnicode = require('../gl3d/lib/html2unicode');
 
 var AXES = [ 'xaxis', 'yaxis' ];
 
@@ -166,10 +167,16 @@ proto.computeTickMarks = function() {
       this.glplot.viewBox[2] - this.glplot.viewBox[0];
   this.fullLayout.scene2d.yaxis._length =
       this.glplot.viewBox[3] - this.glplot.viewBox[1];
-  return [
+  var nextTicks = [
       Plotly.Axes.calcTicks(this.fullLayout.scene2d.xaxis),
       Plotly.Axes.calcTicks(this.fullLayout.scene2d.yaxis)
   ];
+  for(var j=0; j<2; ++j) {
+    for(var i=0; i<nextTicks[j].length; ++i) {
+      nextTicks[j][i].text = htmlToUnicode(nextTicks[j][i].text + '');
+    }
+  }
+  return nextTicks;
 };
 
 function compareTicks(a, b) {

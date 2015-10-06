@@ -1,5 +1,6 @@
 'use strict';
 
+var htmlToUnicode = require('../../gl3d/lib/html2unicode');
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
 
 function Axes2DOptions(scene) {
@@ -83,14 +84,19 @@ proto.merge = function(options) {
     var ax = options.scene2d[AXES[i]];
 
     for(var j=0; j<=2; j+=2) {
-      this.labels[i+j]     = ax.title;
+      this.labels[i+j]     = htmlToUnicode(ax.title);
       this.labelEnable[i+j] = false;
       this.labelColor[i+j] = str2RGBArray(ax.titlefont.color);
       this.labelFont[i+j]  = ax.titlefont.family;
       this.labelSize[i+j]  = ax.titlefont.size;
 
       this.tickColor[i+j] = str2RGBArray(ax.tickcolor);
-      this.tickAngle[i+j] = -ax.tickangle;
+
+      if(ax.tickangle === 'auto') {
+        this.tickAngle[i+j] = 0;
+      } else {
+        this.tickAngle[i+j] = -ax.tickangle;
+      }
 
       this.borderLineEnable[i+j] = ax.showline;
       this.borderLineColor[i+j] = str2RGBArray(ax.linecolor);

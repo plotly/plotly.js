@@ -41,8 +41,10 @@ ScatterGl.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
   }
 
   coerce('text');
-  coerce('mode');
 
+  //Taken from scatter.js  WTF?
+  coerce('mode', len < 20 ? 'lines+markers' : 'lines');
+  
   if(Scatter.hasLines(traceOut)) {
       Scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
   }
