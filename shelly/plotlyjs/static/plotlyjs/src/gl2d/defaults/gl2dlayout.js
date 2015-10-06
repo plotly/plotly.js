@@ -27,8 +27,8 @@ Gl2dLayout.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     if (!layoutOut._hasGL2D) return;
 
     // until they play better together
-    delete layoutOut.xaxis;
-    delete layoutOut.yaxis;
+//     delete layoutOut.xaxis;
+//     delete layoutOut.yaxis;
 
     // Get number of scenes to compute default scene domain
     var scenes = Plotly.Plots.getSubplotIdsInData(fullData, 'gl2d');

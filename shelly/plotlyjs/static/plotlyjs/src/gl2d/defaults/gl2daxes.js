@@ -53,8 +53,8 @@ Gl2dAxes.initAxes = function (td) {
     var fullLayout = td._fullLayout;
 
     // until they play better together
-    delete fullLayout.xaxis;
-    delete fullLayout.yaxis;
+//     delete fullLayout.xaxis;
+//     delete fullLayout.yaxis;
 
     var sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl2d');
 
