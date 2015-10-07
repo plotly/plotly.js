@@ -34,6 +34,19 @@ function createCamera(scene) {
     var lastX = result.lastPos[0];
     var lastY = result.lastPos[1];
 
+    function updateRange(range, start, end) {
+        var range0 = Math.min(start, end),
+            range1 = Math.max(start, end);
+        if(range0 !== range1) {
+            range[0] = range0;
+            range[1] = range1;
+        }
+        else {
+            scene.selectBox.selectBox = [0,0,1,1];
+            scene.glplot.setDirty();
+        }
+    }
+
     switch(scene.fullLayout.dragmode) {
       case 'zoom':
         if(buttons) {
@@ -43,6 +56,7 @@ function createCamera(scene) {
           var dataY = (y - plot.viewBox[1]) /
             (plot.viewBox[3]-plot.viewBox[1]) * (yrange[1] - yrange[0]) +
             yrange[0];
+
           if(!result.boxEnabled) {
             result.boxStart[0] = dataX;
             result.boxStart[1] = dataY;
@@ -50,12 +64,12 @@ function createCamera(scene) {
 
           result.boxEnd[0] = dataX;
           result.boxEnd[1] = dataY;
+
           result.boxEnabled = true;
-        } else if(result.boxEnabled) {
-          xrange[0] = Math.min(result.boxStart[0], result.boxEnd[0]);
-          xrange[1] = Math.max(result.boxStart[0], result.boxEnd[0]);
-          yrange[0] = Math.min(result.boxStart[1], result.boxEnd[1]);
-          yrange[1] = Math.max(result.boxStart[1], result.boxEnd[1]);
+        }
+        else if(result.boxEnabled) {
+          updateRange(xrange, result.boxStart[0], result.boxEnd[0]);
+          updateRange(xrange, result.boxStart[1], result.boxEnd[1]);
 
           result.boxEnabled = false;
         }
