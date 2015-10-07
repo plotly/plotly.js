@@ -1,8 +1,10 @@
 'use strict';
 
 var createScatter = require('gl-scatter2d');
+var createFancyScatter = require('gl-scatter2d-fancy');
 var createLine = require('gl-line2d');
 var createError = require('gl-error2d');
+var MARKER_SYMBOLS = require('../../gl3d/lib/markers.json');
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
 
 function LineWithMarkers(scene, uid) {
@@ -27,13 +29,23 @@ function LineWithMarkers(scene, uid) {
 
   this.scatterOptions = {
     positions:    new Float32Array(),
+    sizes:        [],
+    colors:       [],
+    glyphs:       [],
+    borderWidths: [],
+    borderColors: [],
+
     size:         12,
-    borderSize:   1,
     color:        [0, 0, 0, 1],
+    borderSize:   1,
     borderColor:  [0, 0, 0, 1]
   };
+
   this.scatter = createScatter(scene.glplot, this.scatterOptions);
   this.scatter._trace = this;
+
+  this.fancyScatter = createFancyScatter(scene.glplot, this.scatterOptions);
+  this.fancyScatter._trace = this;
 
   this.lineOptions = {
     positions:  new Float32Array(),
@@ -69,6 +81,66 @@ proto.handlePick = function(pickResult) {
   };
 };
 
+//Check if a marker is fancy
+function checkFancyScatter(marker) {
+  if(Array.isArray(marker.symbol) ||
+     marker.symbol !== 'circle' ||
+     Array.isArray(marker.size) ||
+     Array.isArray(marker.line.width) ||
+     Array.isArray(marker.opacity)) {
+    return true;
+  }
+
+  var color = marker.color;
+  if(Array.isArray(color)) {
+    return true;
+  }
+
+  var lineColor = Array.isArray(marker.line.color);
+  if(Array.isArray(lineColor)) {
+    return true;
+  }
+
+  return false;
+}
+
+
+//Handle the situation where values can be array-like or not array like
+function convertArray(convert, data, count) {
+  if(!Array.isArray(data)) {
+    data = [ data ];
+  }
+  var result = new Array(count);
+  for(var i=0; i<count; ++i) {
+    if(i >= data.length) {
+      result[i] = convert(data[0]);
+    } else {
+      result[i] = convert(data[i]);
+    }
+  }
+  return result;
+}
+
+var convertNumber = convertArray.bind(null, function(x) { return +x; });
+var convertColorBase = convertArray.bind(null, str2RGBArray);
+var convertSymbol = convertArray.bind(null, function(x) {
+  return MARKER_SYMBOLS[x] || '●';
+});
+
+function convertColor(color, opacity, count) {
+  var colors = convertColorBase(color, count);
+  var opacities = convertNumber(opacity, count);
+  var result = new Array(4 * count);
+  for(var i=0; i<count; ++i) {
+    for(var j=0; j<3; ++j) {
+      result[4*i+j] = colors[i][j];
+    }
+    result[4*i+3] = colors[i][3] * opacities[i];
+  }
+  return result;
+}
+
+
 proto.update = function(options) {
   var x = options.x;
   var y = options.y;
@@ -82,22 +154,22 @@ proto.update = function(options) {
   this.xData = x;
   this.yData = y;
   this.textLabels = options.text;
+  var bounds = this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
 
   var numPoints = x.length;
   var positions = new Float32Array(2 * numPoints);
   var ptr = 0;
   for(i=0; i<x.length; ++i) {
-    positions[ptr++] = xaxis.d2l(x[i]);
-    positions[ptr++] = yaxis.d2l(y[i]);
-  }
+    var xx = positions[ptr++] = xaxis.d2l(x[i]);
+    var yy = positions[ptr++] = yaxis.d2l(y[i]);
 
+    bounds[0] = Math.min(bounds[0], xx);
+    bounds[1] = Math.min(bounds[1], yy);
+    bounds[2] = Math.max(bounds[2], xx);
+    bounds[3] = Math.max(bounds[3], yy);
+  }
 
   var mode = options.mode;
-  if(mode.indexOf('marker') >= 0) {
-    this.scatterOptions.positions = positions;
-  } else {
-    this.scatterOptions.positions = new Float32Array();
-  }
 
   if(mode.indexOf('line') >= 0) {
     this.lineOptions.positions = positions;
@@ -105,29 +177,67 @@ proto.update = function(options) {
     this.lineOptions.positions = new Float32Array();
   }
 
-  if('marker' in options) {
-    this.scatterOptions.size = options.marker.size;
-    this.scatterOptions.borderSize = options.marker.line.width;
+  if(('marker' in options) && mode.indexOf('marker') >= 0) {
 
-    var color = options.marker.color;
-    var borderColor = options.marker.line.color;
+    var fancy = checkFancyScatter(options.marker);
+    this.scatterOptions.positions = positions;
 
-    this.color = color;
+    //Check if we need fancy mode (slower, but more features)
+    if(fancy) {
+      console.log('in ~~fancy~~ mode');
 
-    var colorArray = str2RGBArray(color);
-    var borderColorArray = str2RGBArray(borderColor);
+      this.scatterOptions.sizes =
+        convertNumber(options.marker.size, numPoints);
+      this.scatterOptions.glyphs =
+        convertSymbol(options.marker.symbol, numPoints);
+      this.scatterOptions.colors =
+        convertColor(options.marker.color, options.marker.opacity, numPoints);
+      this.scatterOptions.borderWidths =
+        convertNumber(options.marker.line.width, numPoints);
+      this.scatterOptions.borderColor =
+        convertColor(options.marker.line.color, options.marker.opacity, numPoints);
 
-    var opacity = +options.marker.opacity;
-    colorArray[3] *= opacity;
-    borderColorArray[3] *= opacity;
+      this.color = options.marker.color;
 
-    this.scatterOptions.color = colorArray;
-    this.scatterOptions.borderColor = borderColorArray;
+      this.fancyScatter.update(this.scatterOptions);
+
+      this.scatterOptions.positions = new Float32Array();
+      this.scatter.update(this.scatterOptions);
+    } else {
+      console.log('fast mode');
+
+      var color            = options.marker.color;
+      var borderColor      = options.marker.line.color;
+
+      var colorArray       = str2RGBArray(color);
+      var borderColorArray = str2RGBArray(borderColor);
+      var opacity          = +options.marker.opacity;
+      colorArray[3]       *= opacity;
+      borderColorArray[3] *= opacity;
+
+      this.color = color;
+
+      this.scatterOptions.size       = +options.marker.size;
+      this.scatterOptions.borderSize = +options.marker.line.width;
+      this.scatterOptions.color       = colorArray;
+      this.scatterOptions.borderColor = borderColorArray;
+
+      this.scatter.update(this.scatterOptions);
+
+      //Turn off fancy scatter plot
+      this.scatterOptions.positions = new Float32Array();
+      this.scatterOptions.glyphs = [];
+      this.fancyScatter.update(this.scatterOptions);
+    }
   } else {
+    //Don't draw markers
+    console.log('markers disabled');
     this.scatterOptions.positions = new Float32Array();
+    this.scatterOptions.glyphs = [];
+    this.scatter.update(this.scatterOptions);
+    this.fancyScatter.update(this.scatterOptions);
   }
 
-  this.scatter.update(this.scatterOptions);
 
   if('line' in options) {
     var lineColor = str2RGBArray(options.line.color);
@@ -153,22 +263,13 @@ proto.update = function(options) {
   }
 
   this.line.update(this.lineOptions);
-
-  this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
-  for(var i=0; i<2; ++i) {
-    this.bounds[i] = Math.min(this.scatter.bounds[i], this.line.bounds[i]);
-    this.bounds[i+2] = Math.max (this.scatter.bounds[i+2], this.line.bounds[i+2]);
-
-    if(this.bounds[i] === this.bounds[i+2]) {
-      this.bounds[i] -= 1;
-      this.bounds[i+2] += 1;
-    }
-  }
 };
 
 proto.dispose = function() {
   this.line.dispose();
   this.scatter.dispose();
+  this.error.dispose();
+  this.fancyScatter.dispose();
 };
 
 function createLineWithMarkers(scene, data) {

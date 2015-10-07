@@ -30,14 +30,7 @@ module.exports = {
     },
     marker: {
         color: scatterMarkerAttrs.color,
-        symbol: {
-            valType: 'enumerated',
-            values: [ 'circle' ],
-            dflt: 'circle',
-            arrayOk: true,
-            role: 'style',
-            description: 'Sets the marker symbol type.'
-        },
+        symbol: scatterMarkerAttrs.symbol,
         size: extendFlat({}, scatterMarkerAttrs.size, {dflt: 8}),
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
