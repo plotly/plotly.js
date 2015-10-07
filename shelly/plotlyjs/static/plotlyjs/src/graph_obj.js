@@ -151,7 +151,7 @@ plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
 plots.getSubplotIds = function getSubplotIds(layout, type) {
 
     // layout must be 'fullLayout' here
-    if(type === 'cartesian') {
+    if(type === 'cartesian' || type === 'gl2d') {
         return Object.keys(layout._plots);
     }
 
@@ -190,7 +190,17 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
 
     for(var i = 0; i < data.length; i++) {
         trace = data[i];
-        if(trace[attr] === subplotId) subplotData.push(trace);
+
+        if(type === 'gl2d' && plots.traceIs(trace, 'gl2d')) {
+
+            // TODO generalize for multiple subplots
+            if(trace[attr[0]]===subplotId[0] && trace[attr[1]]===subplotId[1]) {
+                subplotData.push(trace);
+            }
+        }
+        else {
+            if(trace[attr] === subplotId) subplotData.push(trace);
+        }
     }
 
     return subplotData;
@@ -815,9 +825,9 @@ function plotGeo(gd) {
 function plotGl2d(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
-        sceneIds = plots.getSubplotIds(fullLayout, 'gl2d');
+        subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
 
-    var i, sceneId, fullSceneData, scene, sceneOptions;
+    var subplotId, fullSubplotData, scene, sceneOptions;
 
     fullLayout._paperdiv.style({
         width: fullLayout.width + 'px',
@@ -826,22 +836,26 @@ function plotGl2d(gd) {
 
     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
-    for (i = 0; i < sceneIds.length; i++) {
-        sceneId = sceneIds[i];
-        fullSceneData = plots.getSubplotData(fullData, 'gl2d', sceneId);
-        scene = fullLayout[sceneId]._scene2d;  // ref. to corresp. Scene instance
+    for(var i = 0; i < subplotIds.length; i++) {
+        subplotId = subplotIds[i];
+        fullSubplotData = plots.getSubplotData(fullData, 'gl2d', subplotId);
+
+        // ref. to corresp. Scene instance
+        scene = fullLayout._plots[subplotId]._scene2d;
 
         // If Scene is not instantiated, create one!
         if(scene === undefined) {
             sceneOptions = {
                 container: gd.querySelector('.gl-container'),
-                id: sceneId
+                id: subplotId
             };
             scene = new Plotly.Scene2D(sceneOptions, fullLayout);
-            fullLayout[sceneId]._scene2d = scene;  // set ref to Scene instance
+
+            // set ref to Scene instance
+            fullLayout._plots[subplotId]._scene2d = scene;
         }
 
-        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
+        scene.plot(fullSubplotData, fullLayout, gd.layout);
     }
 }
 
@@ -3440,12 +3454,18 @@ Plotly.relayout = function relayout(gd, astr, val) {
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) Plotly.Fx.modeBar(gd);
 
-        var sceneIds;
-        if (doSceneDragmode) {
-            sceneIds = plots.getSubplotIds(gd._fullLayout, 'gl3d');
-            for (i = 0; i < sceneIds.length; i++) {
-                scene = gd._fullLayout[sceneIds[i]]._scene;
+        var subplotIds;
+        if(doSceneDragmode) {
+            subplotIds = plots.getSubplotIds(gd._fullLayout, 'gl3d');
+            for(i = 0; i < subplotIds.length; i++) {
+                scene = gd._fullLayout[subplotIds[i]]._scene;
                 scene.handleDragmode(gd._fullLayout.dragmode);
+            }
+
+            subplotIds = plots.getSubplotIds(gd._fullLayout, 'gl2d');
+            for(i = 0; i < subplotIds.length; i++) {
+                scene = gd._fullLayout._plots[subplotIds[i]]._scene2d;
+                scene.fullLayout.dragmode = gd._fullLayout.dragmode;
             }
         }
     }
