@@ -8,16 +8,8 @@ var boxes = module.exports = {},
     isNumeric = require('./isnumeric');
 
 Plotly.Plots.register(boxes, 'box',
-    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend']);
-
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line,
-    extendFlat = Plotly.Lib.extendFlat;
-
-
-boxes.attributes = {
-    overview: [
+    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'], {
+    description: [
         'In vertical (horizontal) box plots,',
         'statistics are computed using `y` (`x`) values.',
         'By supplying an `x` (`y`) array, one box per distinct x (y) value',
@@ -30,41 +22,51 @@ boxes.attributes = {
         'By default, the whiskers correspond to the box\' edges',
         '+/- 1.5 times the interquartile range (IQR = Q3-Q1),',
         'see *boxpoints* for other options.'
-    ].join(' '),
+    ].join(' ')
+});
 
+var scatterAttrs = Plotly.Scatter.attributes,
+    scatterMarkerAttrs = scatterAttrs.marker,
+    scatterMarkerLineAttrs = scatterMarkerAttrs.line,
+    extendFlat = Plotly.Lib.extendFlat;
+
+boxes.attributes = {
     y: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the y sample data or coordinates.',
             'See overview for more info.'
         ].join(' ')
     },
     x: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the x sample data or coordinates.',
             'See overview for more info.'
         ].join(' ')
     },
     x0: {
-        type: 'any',
+        valType: 'any',
+        role: 'info',
         description: [
             'Sets the x coordinate of the box.',
             'See overview for more info.'
         ].join(' ')
     },
     y0: {
-        type: 'any',
+        valType: 'any',
+        role: 'info',
         description: [
             'Sets the y coordinate of the box.',
             'See overview for more info.'
         ].join(' ')
     },
     whiskerwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0.5,
+        role: 'style',
         description: [
             'Sets the width of the whiskers relative to',
             'the box\' width.',
@@ -72,9 +74,10 @@ boxes.attributes = {
         ].join(' ')
     },
     boxpoints: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['all', 'outliers', 'suspectedoutliers', false],
         dflt: 'outliers',
+        role: 'style',
         description: [
             'If *outliers*, only the sample points lying outside the whiskers',
             'are shown',
@@ -86,9 +89,10 @@ boxes.attributes = {
         ].join(' ')
     },
     boxmean: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [true, 'sd', false],
         dflt: false,
+        role: 'style',
         description: [
             'If *true*, the mean of the box(es)\' underlying distribution is',
             'drawn as a dashed line inside the box(es).',
@@ -96,9 +100,10 @@ boxes.attributes = {
         ].join(' ')
     },
     jitter: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
+        role: 'style',
         description: [
             'Sets the amount of jitter in the sample points drawn.',
             'If *0*, the sample points align along the distribution axis.',
@@ -107,9 +112,10 @@ boxes.attributes = {
         ].join(' ')
     },
     pointpos: {
-        type: 'number',
+        valType: 'number',
         min: -2,
         max: 2,
+        role: 'style',
         description: [
             'Sets the position of the sample points in relation to the box(es).',
             'If *0*, the sample points are places over the center of the box(es).',
@@ -118,8 +124,9 @@ boxes.attributes = {
         ].join(' ')
     },
     orientation: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['v', 'h'],
+        role: 'style',
         description: [
             'Sets the orientation of the box(es).',
             'If *v* (*h*), the distribution is visualized along',
@@ -128,31 +135,34 @@ boxes.attributes = {
     },
     marker: {
         outliercolor: {
-            type: 'color',
+            valType: 'color',
             dflt: 'rgba(0,0,0,0)',
+            role: 'style',
             description: 'Sets the color of the outlier sample points.'
         },
-        symbol: extendFlat(scatterMarkerAttrs.symbol,
+        symbol: extendFlat({}, scatterMarkerAttrs.symbol,
             {arrayOk: false}),
-        opacity: extendFlat(scatterMarkerAttrs.opacity,
+        opacity: extendFlat({}, scatterMarkerAttrs.opacity,
             {arrayOk: false, dflt: 1}),
-        size: extendFlat(scatterMarkerAttrs.size,
+        size: extendFlat({}, scatterMarkerAttrs.size,
             {arrayOk: false}),
-        color: extendFlat(scatterMarkerAttrs.color,
+        color: extendFlat({}, scatterMarkerAttrs.color,
             {arrayOk: false}),
         line: {
-            color: extendFlat(scatterMarkerLineAttrs.color,
+            color: extendFlat({}, scatterMarkerLineAttrs.color,
                 {arrayOk: false, dflt: Plotly.Color.defaultLine}),
-            width: extendFlat(scatterMarkerLineAttrs.width,
+            width: extendFlat({}, scatterMarkerLineAttrs.width,
                 {arrayOk: false, dflt: 0}),
             outliercolor: {
-                type: 'color',
+                valType: 'color',
+                role: 'style',
                 description: 'Sets the border line color of the outlier sample points.'
             },
             outlierwidth: {
-                type: 'number',
+                valType: 'number',
                 min: 0,
                 dflt: 1,
+                role: 'style',
                 description: [
                     'Sets the border line width (in px) of the outlier sample points.'
                 ].join(' ')
@@ -161,11 +171,13 @@ boxes.attributes = {
     },
     line: {
         color: {
-            type: 'color',
+            valType: 'color',
+            role: 'style',
             description: 'Sets the color of line bounding the box(es).'
         },
         width: {
-            type: 'number',
+            valType: 'number',
+            role: 'style',
             min: 0,
             dflt: 2,
             description: 'Sets the width (in px) of line bounding the box(es).'
@@ -176,9 +188,10 @@ boxes.attributes = {
 
 boxes.layoutAttributes = {
     boxmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['group', 'overlay'],
         dflt: 'overlay',
+        role: 'info',
         description: [
             'Determines how boxes at the same location coordinate',
             'are displayed on the graph.',
@@ -189,20 +202,22 @@ boxes.layoutAttributes = {
         ].join(' ')
     },
     boxgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0.3,
+        role: 'style',
         description: [
             'Sets the gap (in plot fraction) between boxes of',
             'adjacent location coordinates.'
         ].join(' ')
     },
     boxgroupgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0.3,
+        role: 'style',
         description: [
             'Sets the gap (in plot fraction) between boxes of',
             'the same location coordinate.'
@@ -795,7 +810,7 @@ boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
 
         // copy out to a new object for each value to label
         val = valAxis.c2p(di[attr], true);
-        pointData2 = $.extend({}, pointData);
+        pointData2 = Plotly.Lib.extendFlat({}, pointData);
         pointData2[valLetter+'0'] = pointData2[valLetter+'1'] = val;
         pointData2[valLetter+'LabelVal'] = di[attr];
         pointData2.attr = attr;

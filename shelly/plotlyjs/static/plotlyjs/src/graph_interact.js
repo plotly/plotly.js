@@ -12,12 +12,14 @@ var fx = module.exports = {};
 
 fx.layoutAttributes = {
     dragmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
+        role: 'info',
         values: ['zoom', 'pan', 'orbit', 'turntable'],
         description: 'Determines the mode of drag interactions.'
     },
     hovermode: {
-        type: 'enumerated',
+        valType: 'enumerated',
+        role: 'info',
         values: ['x', 'y', 'closest', false],
         description: 'Determines the mode of hover interactions.'
     }
@@ -89,8 +91,11 @@ fx.init = function(gd) {
         return fullLayout._plots[a].mainplot ? 1 : -1;
     });
     subplots.forEach(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot],
-            xa = plotinfo.x(),
+        var plotinfo = fullLayout._plots[subplot];
+
+        if(!fullLayout._hasCartesian) return;
+
+        var xa = plotinfo.x(),
             ya = plotinfo.y(),
 
             // the y position of the main x axis line
@@ -749,7 +754,7 @@ function createHoverText(hoverData, opts) {
         ya = c0.ya,
         commonAttr = hovermode==='y' ? 'yLabel' : 'xLabel',
         t0 = c0[commonAttr],
-        t00 = (t0||'').split(' ')[0],
+        t00 = (String(t0)||'').split(' ')[0],
         outerContainerBB = outerContainer.node().getBoundingClientRect(),
         outerTop = outerContainerBB.top,
         outerWidth = outerContainerBB.width,

@@ -4,7 +4,14 @@ var Plotly = require('../../plotly');
 
 var Choropleth = module.exports = {};
 
-Plotly.Plots.register(Choropleth, 'choropleth', ['geo', 'noOpacity']);
+Plotly.Plots.register(Choropleth, 'choropleth', ['geo', 'noOpacity'], {
+    description: [
+        'The data that describes the choropleth value-to-color mapping',
+        'is set in `z`.',
+        'The geographic locations corresponding to each value in `z`',
+        'are set in `locations`.'
+    ].join(' ')
+});
 
 Choropleth.attributes = require('../attributes/choropleth');
 
@@ -41,6 +48,8 @@ Choropleth.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     Plotly.Colorscale.handleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
+
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined);
 };
 
 Choropleth.colorbar = Plotly.Colorbar.traceColorbar;

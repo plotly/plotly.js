@@ -20,31 +20,22 @@ module.exports = function toSVG(gd, format) {
 
     /* Grab the 3d scenes and rasterize em. Calculate their positions,
      * then insert them into the SVG element as images */
-    var sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d').concat(
-                    Plotly.Plots.getSubplotIds(fullLayout, 'gl2d')),
-        scene,
-        imageData;
+    var sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
+        scene;
 
     for(i = 0; i < sceneIds.length; i++) {
         scene = fullLayout[sceneIds[i]];
-        imageData = (scene._scene || scene._scene2d).toImage('png'); // Grab dem pixels!
-        domain = scene.domain || {
-          x: [0, 1],
-          y: [0, 1]
-        };
+        insertGlImage(fullLayout, scene._scene, size, scene.domain);
+    }
 
-        fullLayout._glimages.append('svg:image')
-            .attr({
-                xmlns:'http://www.w3.org/2000/svg',
-                'xlink:xlink:href': imageData, // odd d3 quirk, need namespace twice
-                height: size.h * (domain.y[1] - domain.y[0]),
-                width: size.w * (domain.x[1] - domain.x[0]),
-                x: size.l + size.w * domain.x[0],
-                y: size.t + size.h * (1 - domain.y[1]),
-                preserveAspectRatio: 'none'
-            });
+    // similarly for 2d scenes
+    var subplotIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl2d'),
+        subplot;
 
-        (scene._scene || scene._scene2d).destroy();
+    for(i = 0; i < subplotIds.length; i++) {
+        subplot = fullLayout._plots[subplotIds[i]];
+        insertGlImage(fullLayout, subplot._scene2d, size,
+            { x: subplot.xaxis.domain, y: subplot.yaxis.domain });
     }
 
     // Grab the geos off the geo-container and place them in geoimages
@@ -123,3 +114,20 @@ module.exports = function toSVG(gd, format) {
 
     return s;
 };
+
+function insertGlImage(fullLayout, scene, size, sceneDomain) {
+    var imageData = scene.toImage('png');
+
+    fullLayout._glimages.append('svg:image')
+        .attr({
+            xmlns:'http://www.w3.org/2000/svg',
+            'xlink:xlink:href': imageData, // odd d3 quirk, need namespace twice
+            height: size.h * (sceneDomain.y[1] - sceneDomain.y[0]),
+            width: size.w * (sceneDomain.x[1] - sceneDomain.x[0]),
+            x: size.l + size.w * sceneDomain.x[0],
+            y: size.t + size.h * (1 - sceneDomain.y[1]),
+            preserveAspectRatio: 'none'
+        });
+
+   scene.destroy();
+}

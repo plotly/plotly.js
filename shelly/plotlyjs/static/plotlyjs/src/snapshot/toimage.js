@@ -22,8 +22,9 @@ function toImage(gd, opts) {
     document.body.appendChild(clonedGd);
 
     function wait () {
-        var is3d = clonedGd._fullLayout._hasGL3D;
-        var delay = is3d ? 500 : 0;
+        var delay = (clonedGd._fullLayout._hasGL3D || clonedGd._fullLayout._hasGL2D) ?
+            500 :
+            0;
 
         setTimeout(function () {
             var svg = Plotly.Snapshot.toSVG(clonedGd);

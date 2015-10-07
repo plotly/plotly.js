@@ -7,24 +7,57 @@ var axes = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
+axes.traceAttributes = {
+   xaxis: {
+       valType: 'axisid',
+       role: 'info',
+       dflt: 'x',
+       description: [
+           'Sets a reference between this trace\'s x coordinates and',
+           'a 2D cartesian x axis.',
+           'If *x* (the default value), the x coordinates refer to',
+           '`layout.xaxis`.',
+           'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
+       ].join(' ')
+   },
+   yaxis: {
+       valType: 'axisid',
+       role: 'info',
+       dflt: 'y',
+       description: [
+           'Sets a reference between this trace\'s y coordinates and',
+           'a 2D cartesian y axis.',
+           'If *y* (the default value), the y coordinates refer to',
+           '`layout.yaxis`.',
+           'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
+       ].join(' ')
+   }
+};
+
+Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'],
+    axes.traceAttributes);
+
+var extendFlat = Plotly.Lib.extendFlat;
+
 axes.layoutAttributes = {
     title: {
-        type: 'string',
+        valType: 'string',
+        role: 'info',
         description: 'Sets the title of this axis.'
     },
-    titlefont: {
-        type: 'font',
+    titlefont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: [
             'Sets this axis\' title font.'
         ].join(' ')
-    },
+    }),
     type: {
-        type: 'enumerated',
+        valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data
         // it gets turned into linear in td._fullLayout but not copied back
         // to td.data like the others are.
         values: ['-', 'linear', 'log', 'date', 'category'],
         dflt: '-',
+        role: 'info',
         description: [
             'Sets the axis type.',
             'By default, plotly attempts to determined the axis type',
@@ -33,9 +66,10 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     autorange: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [true, false, 'reversed'],
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether or not the range of this axis is',
             'computed in relation to the input data.',
@@ -44,9 +78,10 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     rangemode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
+        role: 'style',
         description: [
             'If *normal*, the range is computed in relation to the extrema',
             'of the input data.',
@@ -56,13 +91,19 @@ axes.layoutAttributes = {
             'regardless of the input data.'
         ].join(' ')
     },
-    range: [
-        {type: 'number'},
-        {type: 'number'}
-    ],
+    range: {
+        valType: 'info_array',
+        role: 'info',
+        items: [
+            {valType: 'number'},
+            {valType: 'number'}
+        ],
+        description: 'Sets the range of this axis.'
+    },
     fixedrange: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false,
+        role: 'info',
         description: [
             'Determines whether or not this axis is zoom-able.',
             'If true, then zoom is disabled.'
@@ -70,8 +111,9 @@ axes.layoutAttributes = {
     },
     // ticks
     tickmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['auto', 'linear', 'array'],
+        role: 'info',
         description: [
             'Sets the tick mode for this axis.',
             'If *auto*, the number of ticks is set via `nticks`.',
@@ -84,29 +126,32 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     nticks: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
         dflt: 0,
+        role: 'style',
         description: [
             'Sets the number of ticks.',
             'Has an effect only if `tickmode` is set to *auto*.'
         ].join(' ')
     },
     tick0: {
-        type: 'number',
+        valType: 'number',
         dflt: 0,
+        role: 'style',
         description: [
             'Sets the placement of the first tick on this axis.',
             'Use with `dtick`.'
        ].join(' ')
     },
     dtick: {
-        type: 'any',
+        valType: 'any',
         dflt: 1,
+        role: 'style',
         description: 'Sets the step in-between ticks on this axis'
     },
     tickvals: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the values at which ticks on this axis appear.',
             'Only has an effect if `tickmode` is set to *array*.',
@@ -114,7 +159,7 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     ticktext: {
-        type: 'data_array',
+        valType: 'data_array',
         description: [
             'Sets the text displayed at the ticks position via `tickvals`.',
             'Only has an effect if `tickmode` is set to *array*.',
@@ -122,8 +167,9 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     ticks: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['outside', 'inside', ''],
+        role: 'style',
         description: [
             'Determines whether ticks are drawn or not.',
             'If **, this axis\' ticks are not drawn.',
@@ -132,9 +178,10 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     mirror: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
         dflt: false,
+        role: 'style',
         description: [
             'Determines if the axis lines or/and ticks are mirrored to',
             'the opposite side of the plotting area.',
@@ -147,34 +194,38 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     ticklen: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 5,
+        role: 'style',
         description: 'Sets the tick length (in px).'
     },
     tickwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: 'Sets the tick width (in px).'
     },
     tickcolor: {
-        type: 'color',
+        valType: 'color',
         dflt: Plotly.Color.defaultLine,
+        role: 'style',
         description: 'Sets the tick color.'
     },
     showticklabels: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
     },
-    tickfont: {
-        type: 'font',
+    tickfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the tick font.'
-    },
+    }),
     tickangle: {
-        type: 'angle',
+        valType: 'angle',
         dflt: 'auto',
+        role: 'style',
         description: [
             'Sets the angle of the tick labels with respect to the horizontal.',
             'For example, a `tickangle` of -90 draws the tick labels',
@@ -182,14 +233,16 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     tickprefix: {
-        type: 'string',
+        valType: 'string',
         dflt: '',
+        role: 'style',
         description: 'Sets a tick label prefix.'
     },
     showtickprefix: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
+        role: 'style',
         description: [
             'If *all*, all tick labels are displayed with a prefix.',
             'If *first*, only the first tick is displayed with a prefix.',
@@ -198,20 +251,23 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     ticksuffix: {
-        type: 'string',
+        valType: 'string',
         dflt: '',
+        role: 'style',
         description: 'Sets a tick label suffix.'
     },
     showticksuffix: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
+        role: 'style',
         description: 'Same as `showtickprefix` but for tick suffixes.'
     },
     showexponent: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
+        role: 'style',
         description: [
             'If *all*, all exponents are shown besides their significands.',
             'If *first*, only the exponent of the first tick is shown.',
@@ -220,9 +276,10 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     exponentformat: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['none', 'e', 'E', 'power', 'SI', 'B'],
         dflt: 'B',
+        role: 'style',
         description: [
             'Determines a formatting rule for the tick exponents.',
             'For example, consider the number 1,000,000,000.',
@@ -235,8 +292,9 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     tickformat: {
-        type: 'string',
+        valType: 'string',
         dflt: '',
+        role: 'style',
         description: [
             'Sets the tick label formatting rule using the',
             'python/d3 number formatting language.',
@@ -246,8 +304,9 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     hoverformat: {
-        type: 'string',
+        valType: 'string',
         dflt: '',
+        role: 'style',
         description: [
             'Sets the hover text formatting rule for data values on this axis,',
             'using the python/d3 number formatting language.',
@@ -258,43 +317,50 @@ axes.layoutAttributes = {
     },
     // lines and grids
     showline: {
-        type: 'boolean',
+        valType: 'boolean',
         dflt: false,
+        role: 'style',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
-        ]
+        ].join(' ')
     },
     linecolor: {
-        type: 'color',
+        valType: 'color',
         dflt: Plotly.Color.defaultLine,
+        role: 'style',
         description: 'Sets the axis line color.'
     },
     linewidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: 'Sets the width (in px) of the axis line.'
     },
     showgrid: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'style',
         description: [
             'Determines whether or not grid lines are drawn.',
             'If *true*, the grid lines are drawn at every tick mark.'
         ].join(' ')
     },
     gridcolor: {
-        type: 'color',
+        valType: 'color',
         dflt: Plotly.Color.lightLine,
+        role: 'style',
         description: 'Sets the color of the grid lines.'
     },
     gridwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         dflt: 1,
+        role: 'style',
         description: 'Sets the width (in px) of the grid lines.'
     },
     zeroline: {
-        type: 'boolean',
+        valType: 'boolean',
+        role: 'style',
         description: [
             'Determines whether or not a line is drawn at along the 0 value',
             'of this axis.',
@@ -302,20 +368,28 @@ axes.layoutAttributes = {
         ].join(' ')
     },
     zerolinecolor: {
-        type: 'color',
+        valType: 'color',
         dflt: Plotly.Color.defaultLine,
+        role: 'style',
         description: 'Sets the line color of the zero line.'
     },
     zerolinewidth: {
-        type: 'number',
+        valType: 'number',
         dflt: 1,
+        role: 'style',
         description: 'Sets the width (in px) of the zero line.'
     },
     // positioning attributes
     // anchor: not used directly, just put here for reference
     // values are any opposite-letter axis id
     anchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
+        role: 'info',
         description: [
             'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
             'the corresponding opposite-letter axis.',
@@ -325,7 +399,9 @@ axes.layoutAttributes = {
     // side: not used directly, as values depend on direction
     // values are top, bottom for x axes, and left, right for y
     side: {
-        type: 'enumerated',
+        valType: 'enumerated',
+        values: ['top', 'bottom', 'left', 'right'],
+        role: 'info',
         description: [
             'Determines whether a x (y) axis is positioned',
             'at the *bottom* (*left*) or *top* (*right*)',
@@ -336,27 +412,54 @@ axes.layoutAttributes = {
     // values are false and any other same-letter axis id that's not
     // itself overlaying anything
     overlaying: {
-        type: 'enumerated',
+        valType: 'enumerated',
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
+        role: 'info',
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
             'the corresponding same-letter axis.',
             'If *false*, this axis does not overlay any same-letter axes.'
         ].join(' ')
     },
-    domain: [
-        {type: 'number', min: 0, max: 1, dflt: 0},
-        {type: 'number', min: 0, max: 1, dflt: 1}
-    ],
+    domain: {
+        valType: 'info_array',
+        role: 'info',
+        items: [
+            {valType: 'number', min: 0, max: 1},
+            {valType: 'number', min: 0, max: 1}
+        ],
+        dflt: [0, 1],
+        description: [
+            'Sets the domain of this axis (in plot fraction).'
+        ].join(' ')
+    },
     position: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
         dflt: 0,
+        role: 'style',
         description: [
             'Sets the position of this axis in the plotting space',
             '(in normalized coordinates).',
             'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
+    },
+
+    _deprecated: {
+        autotick: {
+            valType: 'boolean',
+            role: 'info',
+            description: [
+                'Obsolete.',
+                'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
+                'Set `tickmode` to *linear* for `autotick` *false*.'
+            ].join(' ')
+        }
     }
 };
 
@@ -504,7 +607,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     axes.setConvert(containerOut);
 
     coerce('title', defaultTitle);
-    coerce('titlefont', {
+    Plotly.Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
         color: font.color
@@ -516,10 +619,9 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         autoRange = coerce('autorange', !validRange);
 
     if(autoRange) coerce('rangemode');
-    var range0 = coerce('range[0]', -1),
-        range1 = coerce('range[1]', letter==='x' ? 6 : 4);
-    if(range0===range1) {
-        containerOut.range = [range0 - 1, range0 + 1];
+    var range = coerce('range', [-1, letter==='x' ? 6 : 4]);
+    if(range[0] === range[1]) {
+        containerOut.range = [range[0] - 1, range[0] + 1];
     }
     Plotly.Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
 
@@ -566,7 +668,7 @@ axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, op
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        coerce('tickfont', options.font || {});
+        Plotly.Lib.coerceFont(coerce, 'tickfont', options.font || {});
         coerce('tickangle');
 
         var showAttrDflt = axes.getShowAttrDflt(containerIn);
@@ -621,9 +723,9 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
         letter = options.letter;
 
     var anchor = Plotly.Lib.coerce(containerIn, containerOut,
-        {   // TODO incorporate into layoutAttributes
+        {
             anchor: {
-                type:'enumerated',
+                valType:'enumerated',
                 values: ['free'].concat(counterAxes),
                 dflt: isNumeric(containerIn.position) ? 'free' :
                     (counterAxes[0] || 'free')
@@ -634,9 +736,9 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
     if(anchor==='free') coerce('position');
 
     Plotly.Lib.coerce(containerIn, containerOut,
-        {   // TODO incorporate into layoutAttributes
+        {
             side: {
-                type: 'enumerated',
+                valType: 'enumerated',
                 values: letter==='x' ? ['bottom', 'top'] : ['left', 'right'],
                 dflt: letter==='x' ? 'bottom' : 'left'
             }
@@ -646,9 +748,9 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
     var overlaying = false;
     if(overlayableAxes.length) {
         overlaying = Plotly.Lib.coerce(containerIn, containerOut,
-        {   // TODO incorporate into layoutAttributes
+        {
             overlaying: {
-                type: 'enumerated',
+                valType: 'enumerated',
                 values: [false].concat(overlayableAxes),
                 dflt: false
             }
@@ -661,9 +763,8 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
         // in ax.setscale()... but this means we still need (imperfect) logic
         // in the axes popover to hide domain for the overlaying axis.
         // perhaps I should make a private version _domain that all axes get???
-        var domainStart = coerce('domain[0]'),
-            domainEnd = coerce('domain[1]');
-        if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
+        var domain = coerce('domain');
+        if(domain[0] > domain[1] - 0.01) containerOut.domain = [0,1];
         Plotly.Lib.noneOrAll(containerIn.domain, containerOut.domain, [0, 1]);
     }
 
@@ -677,7 +778,7 @@ axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
         refAttr = axLetter + 'ref',
         attrDef = {};
     attrDef[refAttr] = {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: axlist.concat(['paper']),
         dflt: axlist[0] || 'paper'
     };
@@ -1212,7 +1313,8 @@ axes.doAutoRange = function(ax) {
         }
         if(minmin===maxmax) {
             ax.range = axReverse ?
-                [minmin+1,minmin-1] : [minmin-1,minmin+1];
+                [minmin+1, ax.rangemode!=='normal' ? 0 : minmin-1] :
+                [ax.rangemode!=='normal' ? 0 : minmin-1, minmin+1];
         }
         else if(mbest) {
             if(ax.type==='linear' || ax.type==='-') {
@@ -2222,10 +2324,9 @@ function listNames(td, axletter, only2d) {
     var axis = filterAxis(fullLayout);
     if(only2d) return axis;
 
-    var sceneIds2D = Plotly.Plots.getSubplotIds(fullLayout, 'gl2d') || [];
     var sceneIds3D = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d') || [];
 
-    (sceneIds2D.concat(sceneIds3D)).forEach( function (sceneId) {
+    sceneIds3D.forEach( function (sceneId) {
         axis = axis.concat(
           filterAxis(fullLayout[sceneId])
               .map(function(axName) {
@@ -2253,7 +2354,7 @@ axes.listIds = function(td, axletter) {
 
 // get an axis object from its id 'x','x2' etc
 // optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
-axes.getFromId = function(td,id,type) {
+axes.getFromId = function(td, id, type) {
     var fullLayout = td._fullLayout;
 
     if(type==='x') id = id.replace(/y[0-9]*/,'');
@@ -2772,8 +2873,11 @@ axes.doTicks = function(td, axid, skipTitle) {
     }
     else {
         var alldone = axes.getSubplots(td,ax).map(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot],
-                container = plotinfo[axletter+'axislayer'],
+            var plotinfo = fullLayout._plots[subplot];
+
+            if(!fullLayout._hasCartesian) return;
+
+            var container = plotinfo[axletter + 'axislayer'],
 
                 // [bottom or left, top or right, free, main]
                 linepositions = ax._linepositions[subplot]||[],
