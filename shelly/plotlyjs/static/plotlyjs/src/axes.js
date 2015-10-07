@@ -2874,8 +2874,11 @@ axes.doTicks = function(td, axid, skipTitle) {
     }
     else {
         var alldone = axes.getSubplots(td,ax).map(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot],
-                container = plotinfo[axletter+'axislayer'],
+            var plotinfo = fullLayout._plots[subplot];
+
+            if(!fullLayout._hasCartesian) return;
+
+            var container = plotinfo[axletter + 'axislayer'],
 
                 // [bottom or left, top or right, free, main]
                 linepositions = ax._linepositions[subplot]||[],
