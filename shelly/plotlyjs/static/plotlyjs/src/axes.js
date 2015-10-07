@@ -2324,10 +2324,9 @@ function listNames(td, axletter, only2d) {
     var axis = filterAxis(fullLayout);
     if(only2d) return axis;
 
-    var sceneIds2D = Plotly.Plots.getSubplotIds(fullLayout, 'gl2d') || [];
     var sceneIds3D = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d') || [];
 
-    (sceneIds2D.concat(sceneIds3D)).forEach( function (sceneId) {
+    sceneIds3D.forEach( function (sceneId) {
         axis = axis.concat(
           filterAxis(fullLayout[sceneId])
               .map(function(axName) {

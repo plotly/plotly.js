@@ -63,8 +63,8 @@ proto.update = function(options) {
   var y = options.y;
   var i;
 
-  var xaxis = this.scene.fullLayout.scene2d.xaxis;
-  var yaxis = this.scene.fullLayout.scene2d.yaxis;
+  var xaxis = this.scene.fullLayout.xaxis;
+  var yaxis = this.scene.fullLayout.yaxis;
 
   this.name = options.name;
 

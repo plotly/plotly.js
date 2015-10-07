@@ -163,13 +163,13 @@ proto.toImage = function(format) {
 };
 
 proto.computeTickMarks = function() {
-  this.fullLayout.scene2d.xaxis._length =
+  this.fullLayout.xaxis._length =
       this.glplot.viewBox[2] - this.glplot.viewBox[0];
-  this.fullLayout.scene2d.yaxis._length =
+  this.fullLayout.yaxis._length =
       this.glplot.viewBox[3] - this.glplot.viewBox[1];
   var nextTicks = [
-      Plotly.Axes.calcTicks(this.fullLayout.scene2d.xaxis),
-      Plotly.Axes.calcTicks(this.fullLayout.scene2d.yaxis)
+      Plotly.Axes.calcTicks(this.fullLayout.xaxis),
+      Plotly.Axes.calcTicks(this.fullLayout.yaxis)
   ];
   for(var j=0; j<2; ++j) {
     for(var i=0; i<nextTicks[j].length; ++i) {
@@ -198,8 +198,8 @@ function compareTicks(a, b) {
 proto.cameraChanged = function() {
   var fullLayout = this.fullLayout;
   var camera = this.camera;
-  var xrange = fullLayout.scene2d.xaxis.range;
-  var yrange = fullLayout.scene2d.yaxis.range;
+  var xrange = fullLayout.xaxis.range;
+  var yrange = fullLayout.yaxis.range;
 
   this.glplot.setDataBox([
     xrange[0], yrange[0],
@@ -299,7 +299,7 @@ j_loop:
           bounds[i]   = -1;
           bounds[i+2] = 1;
         }
-        var ax = fullLayout.scene2d[AXES[i]];
+        var ax = fullLayout[AXES[i]];
         ax._min = [{
           val: bounds[i],
           pad: 10
@@ -314,8 +314,8 @@ j_loop:
 
     options.ticks     = this.computeTickMarks();
 
-    var xrange = fullLayout.scene2d.xaxis.range;
-    var yrange = fullLayout.scene2d.yaxis.range;
+    var xrange = fullLayout.xaxis.range;
+    var yrange = fullLayout.yaxis.range;
     options.dataBox   = [xrange[0], yrange[0], xrange[1], yrange[1]];
 
     options.merge(fullLayout);

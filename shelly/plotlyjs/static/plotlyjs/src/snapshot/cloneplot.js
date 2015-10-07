@@ -90,8 +90,7 @@ module.exports = function clonePlot(graphObj, options) {
         }
     }
 
-    var sceneIds = Plotly.Plots.getSubplotIds(newLayout, 'gl3d').concat(
-      Plotly.Plots.getSubplotIds(newLayout, 'gl2d'));
+    var sceneIds = Plotly.Plots.getSubplotIds(newLayout, 'gl3d');
 
     if (sceneIds.length) {
         var axesImageOverride = {};
@@ -108,10 +107,8 @@ module.exports = function clonePlot(graphObj, options) {
 
             extendFlat(newLayout[sceneId].xaxis, axesImageOverride);
             extendFlat(newLayout[sceneId].yaxis, axesImageOverride);
-            if(newLayout[sceneId].zaxis) {
-                extendFlat(newLayout[sceneId].zaxis, axesImageOverride);
-            }
-            newLayout[sceneId]._scene2d = newLayout[sceneId]._scene = null;
+            extendFlat(newLayout[sceneId].zaxis, axesImageOverride);
+            newLayout[sceneId]._scene = null;
         }
 
         newLayout.glopts = {preserveDrawingBuffer: true};

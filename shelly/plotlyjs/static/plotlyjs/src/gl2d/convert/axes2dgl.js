@@ -81,7 +81,7 @@ proto.merge = function(options) {
   this.titleEnable = false;
 
   for(var i=0; i<2; ++i) {
-    var ax = options.scene2d[AXES[i]];
+    var ax = options[AXES[i]];
 
     for(var j=0; j<=2; j+=2) {
       this.labels[i+j]     = htmlToUnicode(ax.title);
