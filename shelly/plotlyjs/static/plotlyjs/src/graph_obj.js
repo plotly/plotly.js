@@ -1195,9 +1195,6 @@ function cleanData(data, existingData) {
         if (trace.scene) {
             trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
         }
-        if (trace.scene2d) {
-            trace.scene2d = Plotly.Gl2dLayout.cleanId(trace.scene2d);
-        }
 
         if(!plots.traceIs(trace, 'pie')) {
             if(Array.isArray(trace.textposition)) {
@@ -1865,7 +1862,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = [
         'Axes', 'Annotations', 'Shapes', 'Fx',
-        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout', 'Gl2dLayout',
+        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout',
         'Pie', 'Legend'
     ];
 
@@ -3594,7 +3591,6 @@ function makePlotFramework(gd) {
      * TODO - find a better place for 3D to initialize axes
      */
     if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
-    if(fullLayout._hasGL2D) Plotly.Gl2dAxes.initAxes(gd);
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);

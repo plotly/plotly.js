@@ -1551,23 +1551,6 @@ lib.valObjects = {
             propOut.set(dflt);
         }
     },
-    scene2did: {
-        description: [
-            'A scene2d id string (e.g. \'scene2d\', \'scene2d2\', \'scene2d3\', ...).'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
-        coerceFunction: function(v, propOut, dflt) {
-            if(typeof v === 'string' && v.substr(0,7)===dflt) {
-                var scenenum = Number(v.substr(7));
-                if(scenenum%1 === 0 && scenenum>1) {
-                    propOut.set(v);
-                    return;
-                }
-              }
-          propOut.set(dflt);
-        }
-    },
     flaglist: {
         description: [
             'A string representing a combination of flags',
