@@ -109,11 +109,8 @@ queue.stopSequence = function(gd) {
  *
  * @param gd
  */
-queue.undo = function undo (gd) {
-    var queueObj,
-        i;
-
-    if(!gd) gd = Tabs.get();  // FIXME
+queue.undo = function undo(gd) {
+    var queueObj, i;
 
     if(gd.framework && gd.framework.isPolar){
         gd.framework.undo();
@@ -145,11 +142,8 @@ queue.undo = function undo (gd) {
  *
  * @param gd
  */
-queue.redo = function redo (gd) {
-    var queueObj,
-        i;
-
-    if(!gd) gd = Tabs.get();  // FIXME
+queue.redo = function redo(gd) {
+    var queueObj, i;
 
     if(gd.framework && gd.framework.isPolar){
         gd.framework.redo();
