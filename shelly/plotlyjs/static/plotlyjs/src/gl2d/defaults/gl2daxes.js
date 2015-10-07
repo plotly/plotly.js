@@ -38,7 +38,7 @@ Gl2dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
     );
 
     coerce('gridcolor');
-    coerce('title', axName[0]);
+    coerce('title', '');
 
     containerOut.setScale = noop;
   });
