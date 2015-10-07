@@ -1,7 +1,8 @@
 'use strict';
 
 var createScatter = require('gl-scatter2d');
-var createLine   = require('gl-line2d');
+var createLine = require('gl-line2d');
+var createError = require('gl-error2d');
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
 
 function LineWithMarkers(scene, uid) {
@@ -13,6 +14,16 @@ function LineWithMarkers(scene, uid) {
   this.xData = [];
   this.yData = [];
   this.textLabels = [];
+
+  this.errorOptions = {
+    positions: new Float32Array(),
+    errors: new Float32Array(),
+    lineWidth: 1,
+    capSize: 0,
+    color: [0,0,0,1]
+  };
+  this.error = createError(scene.glplot, this.errorOptions);
+  this.error._trace = this;
 
   this.scatterOptions = {
     positions:    new Float32Array(),
@@ -79,6 +90,7 @@ proto.update = function(options) {
     positions[ptr++] = xaxis.d2l(x[i]);
     positions[ptr++] = yaxis.d2l(y[i]);
   }
+
 
   var mode = options.mode;
   if(mode.indexOf('marker') >= 0) {
