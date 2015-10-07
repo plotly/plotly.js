@@ -675,7 +675,7 @@ Plotly.plot = function(gd, data, layout, config) {
             // remove old traces, then redraw everything
             // TODO: use enter/exit appropriately in the plot functions
             // so we don't need this - should sometimes be a big speedup
-            subplotInfo.plot.selectAll('g.trace').remove();
+            if(subplotInfo.plot) subplotInfo.plot.selectAll('g.trace').remove();
 
             for(j = 0; j < modules.length; j++) {
                 module = modules[j];
@@ -3610,31 +3610,28 @@ function makePlotFramework(gd) {
 
     // create '_plots' object grouping x/y axes into subplots
     // to be better manage subplots
-    var subplots = Plotly.Axes.getSubplots(gd);
     fullLayout._plots = {};
+    var subplots = Plotly.Axes.getSubplots(gd);
+    var subplot, plotinfo;
 
-    fullLayout._paper.selectAll('g.subplot').data(subplots)
-      .enter().append('g')
-        .classed('subplot', true)
-        .each(function(subplot){
-            var plotinfo = fullLayout._plots[subplot] = {};
+    for(var i = 0; i < subplots.length; i++) {
+        subplot = subplots[i];
+        plotinfo = fullLayout._plots[subplots[i]] = {};
 
-            plotinfo.plotgroup = d3.select(this).classed(subplot, true);
-            plotinfo.id = subplot;
+        plotinfo.id = subplot;
 
-            // references to the axis objects controlling this subplot
-            plotinfo.x = function() {
-                return Plotly.Axes.getFromId(gd, subplot, 'x');
-            };
-            plotinfo.y = function() {
-                return Plotly.Axes.getFromId(gd, subplot, 'y');
-            };
+        // references to the axis objects controlling this subplot
+        plotinfo.x = function() {
+            return Plotly.Axes.getFromId(gd, subplot, 'x');
+        };
+        plotinfo.y = function() {
+            return Plotly.Axes.getFromId(gd, subplot, 'y');
+        };
 
-            // TODO do .x() .y() still matter?
-            plotinfo.xaxis = plotinfo.x();
-            plotinfo.yaxis = plotinfo.y();
-
-        });
+        // TODO do .x() .y() still matter?
+        plotinfo.xaxis = plotinfo.x();
+        plotinfo.yaxis = plotinfo.y();
+    }
 
     if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
 
@@ -3689,69 +3686,74 @@ function makeCartesianPlotFramwork(gd, subplots) {
     // create all the layers in order, so we know they'll stay in order
     var overlays = [];
 
-    subplots.forEach(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot],
-            xa = plotinfo.xaxis,
-            ya = plotinfo.yaxis;
+    fullLayout._paper.selectAll('g.subplot').data(subplots)
+      .enter().append('g')
+        .classed('subplot', true)
+        .each(function(subplot){
+            var plotinfo = fullLayout._plots[subplot];
+            plotinfo.plotgroup = d3.select(this).classed(subplot, true);
 
-        // references to any subplots overlaid on this one
-        plotinfo.overlays = [];
+            var xa = plotinfo.xaxis,
+                ya = plotinfo.yaxis;
 
-        // is this subplot overlaid on another?
-        // ax.overlaying is the id of another axis of the same
-        // dimension that this one overlays to be an overlaid subplot,
-        // the main plot must exist make sure we're not trying to
-        // overlay on an axis that's already overlaying another
-        var xa2 = Plotly.Axes.getFromId(gd, xa.overlaying) || xa;
-        if(xa2 !== xa && xa2.overlaying) {
-            xa2 = xa;
-            xa.overlaying = false;
-        }
+            // references to any subplots overlaid on this one
+            plotinfo.overlays = [];
 
-        var ya2 = Plotly.Axes.getFromId(gd, ya.overlaying) || ya;
-        if(ya2 !== ya && ya2.overlaying) {
-            ya2 = ya;
-            ya.overlaying = false;
-        }
+            // is this subplot overlaid on another?
+            // ax.overlaying is the id of another axis of the same
+            // dimension that this one overlays to be an overlaid subplot,
+            // the main plot must exist make sure we're not trying to
+            // overlay on an axis that's already overlaying another
+            var xa2 = Plotly.Axes.getFromId(gd, xa.overlaying) || xa;
+            if(xa2 !== xa && xa2.overlaying) {
+                xa2 = xa;
+                xa.overlaying = false;
+            }
 
-        var mainplot = xa2._id+ya2._id;
-        if(mainplot!==subplot && subplots.indexOf(mainplot)!==-1) {
-            plotinfo.mainplot = mainplot;
-            overlays.push(plotinfo);
+            var ya2 = Plotly.Axes.getFromId(gd, ya.overlaying) || ya;
+            if(ya2 !== ya && ya2.overlaying) {
+                ya2 = ya;
+                ya.overlaying = false;
+            }
 
-            // for now force overlays to overlay completely... so they
-            // can drag together correctly and share backgrounds.
-            // Later perhaps we make separate axis domain and
-            // tick/line domain or something, so they can still share
-            // the (possibly larger) dragger and background but don't
-            // have to both be drawn over that whole domain
-            xa.domain = xa2.domain.slice();
-            ya.domain = ya2.domain.slice();
-        }
-        else {
-            // main subplot - make the components of
-            // the plot and containers for overlays
-            plotinfo.bg = plotinfo.plotgroup.append('rect')
-                .style('stroke-width',0);
-            plotinfo.gridlayer = plotinfo.plotgroup.append('g');
-            plotinfo.overgrid = plotinfo.plotgroup.append('g');
-            plotinfo.zerolinelayer = plotinfo.plotgroup.append('g');
-            plotinfo.overzero = plotinfo.plotgroup.append('g');
-            plotinfo.plot = plotinfo.plotgroup.append('svg').call(plotLayers);
-            plotinfo.overplot = plotinfo.plotgroup.append('g');
-            plotinfo.xlines = plotinfo.plotgroup.append('path');
-            plotinfo.ylines = plotinfo.plotgroup.append('path');
-            plotinfo.overlines = plotinfo.plotgroup.append('g');
-            plotinfo.xaxislayer = plotinfo.plotgroup.append('g');
-            plotinfo.yaxislayer = plotinfo.plotgroup.append('g');
-            plotinfo.overaxes = plotinfo.plotgroup.append('g');
+            var mainplot = xa2._id+ya2._id;
+            if(mainplot!==subplot && subplots.indexOf(mainplot)!==-1) {
+                plotinfo.mainplot = mainplot;
+                overlays.push(plotinfo);
 
-            // make separate drag layers for each subplot,
-            // but append them to paper rather than the plot groups,
-            // so they end up on top of the rest
-        }
-        plotinfo.draglayer = fullLayout._draggers.append('g');
-    });
+                // for now force overlays to overlay completely... so they
+                // can drag together correctly and share backgrounds.
+                // Later perhaps we make separate axis domain and
+                // tick/line domain or something, so they can still share
+                // the (possibly larger) dragger and background but don't
+                // have to both be drawn over that whole domain
+                xa.domain = xa2.domain.slice();
+                ya.domain = ya2.domain.slice();
+            }
+            else {
+                // main subplot - make the components of
+                // the plot and containers for overlays
+                plotinfo.bg = plotinfo.plotgroup.append('rect')
+                    .style('stroke-width',0);
+                plotinfo.gridlayer = plotinfo.plotgroup.append('g');
+                plotinfo.overgrid = plotinfo.plotgroup.append('g');
+                plotinfo.zerolinelayer = plotinfo.plotgroup.append('g');
+                plotinfo.overzero = plotinfo.plotgroup.append('g');
+                plotinfo.plot = plotinfo.plotgroup.append('svg').call(plotLayers);
+                plotinfo.overplot = plotinfo.plotgroup.append('g');
+                plotinfo.xlines = plotinfo.plotgroup.append('path');
+                plotinfo.ylines = plotinfo.plotgroup.append('path');
+                plotinfo.overlines = plotinfo.plotgroup.append('g');
+                plotinfo.xaxislayer = plotinfo.plotgroup.append('g');
+                plotinfo.yaxislayer = plotinfo.plotgroup.append('g');
+                plotinfo.overaxes = plotinfo.plotgroup.append('g');
+
+                // make separate drag layers for each subplot,
+                // but append them to paper rather than the plot groups,
+                // so they end up on top of the rest
+            }
+            plotinfo.draglayer = fullLayout._draggers.append('g');
+        });
 
     // now make the components of overlaid subplots
     // overlays don't have backgrounds, and append all
