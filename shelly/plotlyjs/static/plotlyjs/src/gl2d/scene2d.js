@@ -46,12 +46,13 @@ function Scene2D(options, fullLayout) {
 
     //Get webgl context
     var gl;
+    var glopts = options.glopts || { premultipliedAlpha: true };
     try {
-      gl = canvas.getContext('webgl', options.glopts);
+      gl = canvas.getContext('webgl', glopts);
     } catch(e) {}
     if(!gl) {
       try {
-        gl = canvas.getContext('experimental-webgl', options.glopts);
+        gl = canvas.getContext('experimental-webgl', glopts);
       } catch(e) {}
     }
     if(!gl) {

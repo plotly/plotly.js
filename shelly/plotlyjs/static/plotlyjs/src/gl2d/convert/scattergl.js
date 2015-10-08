@@ -1,11 +1,16 @@
 'use strict';
 
+var Plotly = require('../../plotly');
+
 var createScatter = require('gl-scatter2d');
 var createFancyScatter = require('gl-scatter2d-fancy');
 var createLine = require('gl-line2d');
 var createError = require('gl-error2d');
-var MARKER_SYMBOLS = require('../../gl3d/lib/markers.json');
+
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
+
+var MARKER_SYMBOLS = require('../../gl3d/lib/markers.json');
+var DASHES = require('../lib/dashes.json');
 
 function LineWithMarkers(scene, uid) {
   this.scene = scene;
@@ -26,6 +31,21 @@ function LineWithMarkers(scene, uid) {
   };
   this.error = createError(scene.glplot, this.errorOptions);
 
+  this.lineOptions = {
+    positions:  new Float32Array(),
+    color:      [0, 0, 0, 1],
+    width:      1,
+    fill:       [false, false, false, false],
+    fillColor:  [
+      [0, 0, 0, 1],
+      [0, 0, 0, 1],
+      [0, 0, 0, 1],
+      [0, 0, 0, 1]],
+    dashes:     [1]
+  };
+  this.line = createLine(scene.glplot, this.lineOptions);
+  this.line._trace = this;
+
   this.scatterOptions = {
     positions:    new Float32Array(),
     sizes:        [],
@@ -45,20 +65,6 @@ function LineWithMarkers(scene, uid) {
 
   this.fancyScatter = createFancyScatter(scene.glplot, this.scatterOptions);
   this.fancyScatter._trace = this;
-
-  this.lineOptions = {
-    positions:  new Float32Array(),
-    color:      [0, 0, 0, 1],
-    width:      1,
-    fill:       [false, false, false, false],
-    fillColor:  [
-      [0, 0, 0, 1],
-      [0, 0, 0, 1],
-      [0, 0, 0, 1],
-      [0, 0, 0, 1]]
-  };
-  this.line = createLine(scene.glplot, this.lineOptions);
-  this.line._trace = this;
 
   this.bounds = [0,0,0,0];
 }
@@ -134,7 +140,7 @@ function convertColor(color, opacity, count) {
     for(var j=0; j<3; ++j) {
       result[4*i+j] = colors[i][j];
     }
-    result[4*i+3] = colors[i][3] * opacities[i];
+    result[4*i+3] = Math.min(colors[i][j], opacities[i]);
   }
   return result;
 }
@@ -161,6 +167,8 @@ proto.update = function(options) {
   var errors = new Float32Array(4 * numPoints);
   var ptr = 0;
   var ptr2 = 0;
+
+
 
   for(i=0; i<x.length; ++i) {
     var xx = positions[ptr++] = xaxis.d2l(x[i]);
@@ -196,6 +204,8 @@ proto.update = function(options) {
 
   if(('marker' in options) && mode.indexOf('marker') >= 0) {
 
+    var markerSizeFunc = Plotly.Scatter.getBubbleSizeFn(options);
+
     var fancy = checkFancyScatter(options.marker);
     this.scatterOptions.positions = positions;
 
@@ -204,15 +214,22 @@ proto.update = function(options) {
       console.log('in ~~fancy~~ mode');
 
       this.scatterOptions.sizes =
-        convertNumber(options.marker.size, numPoints);
+        convertArray(markerSizeFunc, options.marker.size, numPoints);
       this.scatterOptions.glyphs =
         convertSymbol(options.marker.symbol, numPoints);
       this.scatterOptions.colors =
         convertColor(options.marker.color, options.marker.opacity, numPoints);
       this.scatterOptions.borderWidths =
         convertNumber(options.marker.line.width, numPoints);
-      this.scatterOptions.borderColor =
-        convertColor(options.marker.line.color, options.marker.opacity, numPoints);
+      this.scatterOptions.borderColors =
+        convertColor(options.marker.line.color,
+          options.marker.opacity,
+          numPoints);
+
+      for(i=0; i<numPoints; ++i) {
+        this.scatterOptions.sizes[i] *= 4.0;
+        this.scatterOptions.borderWidths[i] *= 0.5;
+      }
 
       this.color = options.marker.color;
 
@@ -234,7 +251,7 @@ proto.update = function(options) {
 
       this.color = color;
 
-      this.scatterOptions.size       = +options.marker.size;
+      this.scatterOptions.size       = 2.0 * markerSizeFunc(options.marker.size);
       this.scatterOptions.borderSize = +options.marker.line.width;
       this.scatterOptions.color       = colorArray;
       this.scatterOptions.borderColor = borderColorArray;
@@ -263,21 +280,37 @@ proto.update = function(options) {
     }
     this.lineOptions.color = lineColor;
     this.lineOptions.width = 2.0 * options.line.width;
+
+    var lineWidth = Math.round(0.5 * this.lineOptions.width);
+    var dashes = (DASHES[options.line.dash] || [1]).slice();
+    for(i=0; i<dashes.length; ++i) {
+      dashes[i] *= lineWidth;
+    }
+    this.lineOptions.dashes = dashes;
+
+
+    switch(options._input.fill) {
+      case 'tozeroy':
+        this.lineOptions.fill = [false, true, false, false];
+      break;
+      case 'tozerox':
+        this.lineOptions.fill = [true, false, false, false];
+      break;
+      default:
+        this.lineOptions.fill = [false, false, false, false];
+      break;
+    }
+
+    var fillColor = [0,0,0,0];
+    if('fillcolor' in options) {
+      fillColor = str2RGBArray(options.fillcolor);
+    }
+    this.lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
+
   } else {
     this.lineOptions.position = new Float32Array();
   }
 
-  switch(options._input.fill) {
-    case 'tozeroy':
-      this.lineOptions.fill = [false, true, false, false];
-    break;
-    case 'tozerox':
-      this.lineOptions.fill = [true, false, false, false];
-    break;
-    default:
-      this.lineOptions.fill = [false, false, false, false];
-    break;
-  }
 
   this.line.update(this.lineOptions);
   this.error.update(this.errorOptions);
