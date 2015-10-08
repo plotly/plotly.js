@@ -4,8 +4,10 @@ var createScatter = require('gl-scatter2d');
 var createFancyScatter = require('gl-scatter2d-fancy');
 var createLine = require('gl-line2d');
 var createError = require('gl-error2d');
-var MARKER_SYMBOLS = require('../../gl3d/lib/markers.json');
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
+
+var MARKER_SYMBOLS = require('../../gl3d/lib/markers.json');
+var DASHES = require('../lib/dashes.json');
 
 function LineWithMarkers(scene, uid) {
   this.scene = scene;
@@ -55,7 +57,8 @@ function LineWithMarkers(scene, uid) {
       [0, 0, 0, 1],
       [0, 0, 0, 1],
       [0, 0, 0, 1],
-      [0, 0, 0, 1]]
+      [0, 0, 0, 1]],
+    dashes:     [1]
   };
   this.line = createLine(scene.glplot, this.lineOptions);
   this.line._trace = this;
@@ -263,6 +266,14 @@ proto.update = function(options) {
     }
     this.lineOptions.color = lineColor;
     this.lineOptions.width = 2.0 * options.line.width;
+
+    var lineWidth = Math.round(0.5 * this.lineOptions.width);
+    var dashes = (DASHES[options.line.dash] || [1]).slice();
+    for(i=0; i<dashes.length; ++i) {
+      dashes[i] *= lineWidth;
+    }
+    this.lineOptions.dashes = dashes;
+
   } else {
     this.lineOptions.position = new Float32Array();
   }
