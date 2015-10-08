@@ -45,7 +45,7 @@ module.exports = {
         showscale: scatterMarkerAttrs.showscale,
         line: {
             color: scatterMarkerLineAttrs.color,
-            width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false}),
+            width: scatterMarkerLineAttrs.width,
             colorscale: scatterMarkerLineAttrs.colorscale,
             cauto: scatterMarkerLineAttrs.cauto,
             cmax: scatterMarkerLineAttrs.cmax,
