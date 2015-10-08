@@ -508,7 +508,7 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         return aNum - bNum;
     }
 
-    if(layoutOut._hasCartesian || !fullData.length) {
+    if(layoutOut._hasCartesian || layoutOut._hasGL2D || !fullData.length) {
         // make sure there's at least one of each and lists are sorted
         if(!xaList.length) xaList = ['xaxis'];
         else xaList.sort(axSort);
@@ -2392,13 +2392,17 @@ axes.getSubplots = function(gd,ax) {
 
     // look for subplots in the data
     (data||[]).forEach(function(trace) {
-        if(trace.visible === false || trace.visible === 'legendonly' ||
-                !Plotly.Plots.traceIs(trace, 'cartesian')) {
-            return;
-        }
         var xid = (trace.xaxis||'x'),
             yid = (trace.yaxis||'y'),
             subplot = xid+yid;
+        if(
+            trace.visible === false ||
+            trace.visible === 'legendonly' ||
+            !(
+                Plotly.Plots.traceIs(trace, 'cartesian') ||
+                Plotly.Plots.traceIs(trace, 'gl2d')
+            )
+        ) return;
         if(subplots.indexOf(subplot)===-1) subplots.push(subplot);
     });
 
