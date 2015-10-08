@@ -25,7 +25,6 @@ function LineWithMarkers(scene, uid) {
     color: [0,0,0,1]
   };
   this.error = createError(scene.glplot, this.errorOptions);
-  this.error._trace = this;
 
   this.scatterOptions = {
     positions:    new Float32Array(),
@@ -148,6 +147,7 @@ proto.update = function(options) {
 
   var xaxis = this.scene.fullLayout.xaxis;
   var yaxis = this.scene.fullLayout.yaxis;
+  var errorVals = Plotly.ErrorBars.calcFromTrace(options, this.scene.fullLayout);
 
   this.name = options.name;
 
@@ -158,15 +158,23 @@ proto.update = function(options) {
 
   var numPoints = x.length;
   var positions = new Float32Array(2 * numPoints);
+  var errors = new Float32Array(4 * numPoints);
   var ptr = 0;
+  var ptr2 = 0;
+
   for(i=0; i<x.length; ++i) {
     var xx = positions[ptr++] = xaxis.d2l(x[i]);
     var yy = positions[ptr++] = yaxis.d2l(y[i]);
 
-    bounds[0] = Math.min(bounds[0], xx);
-    bounds[1] = Math.min(bounds[1], yy);
-    bounds[2] = Math.max(bounds[2], xx);
-    bounds[3] = Math.max(bounds[3], yy);
+    var ex0 = errors[ptr2++] = xx - errorVals[i].xs || 0;
+    var ex1 = errors[ptr2++] = errorVals[i].xh - xx || 0;
+    var ey0 = errors[ptr2++] = yy - errorVals[i].ys || 0;
+    var ey1 = errors[ptr2++] = errorVals[i].yh - yy || 0;
+
+    bounds[0] = Math.min(bounds[0], xx - ex0);
+    bounds[1] = Math.min(bounds[1], yy - ey0);
+    bounds[2] = Math.max(bounds[2], xx + ex1);
+    bounds[3] = Math.max(bounds[3], yy + ey1);
   }
 
   var mode = options.mode;
@@ -176,6 +184,15 @@ proto.update = function(options) {
   } else {
     this.lineOptions.positions = new Float32Array();
   }
+
+  this.errorOptions.positions = positions;
+  this.errorOptions.errors = errors;
+
+  // the below attrs should take array:
+  // one entry for x bars and one for y bars)
+  this.errorOptions.capSize = options.error_y.width;
+  this.errorOptions.lineWidth = options.error_y.thickness / 2;  // ballpark rescaling
+  this.errorOptions.color = convertColor(options.error_y.color, 1, 1);
 
   if(('marker' in options) && mode.indexOf('marker') >= 0) {
 
@@ -263,6 +280,7 @@ proto.update = function(options) {
   }
 
   this.line.update(this.lineOptions);
+  this.error.update(this.errorOptions);
 };
 
 proto.dispose = function() {

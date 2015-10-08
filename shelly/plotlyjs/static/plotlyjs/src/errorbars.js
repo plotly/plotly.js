@@ -235,11 +235,11 @@ errorBars.pushRef2GDC = function(gd, selCurve, astr, val){
 };
 
 // size the error bar itself (for all types except data)
-function errorval(type,dataval,errval) {
-    if(type==='percent') return Math.abs(dataval*errval/100);
-    if(type==='constant') return Math.abs(errval);
-    if(type==='sqrt') return Math.sqrt(Math.abs(dataval));
-    console.log('unrecognized errorbar type',type,errval,dataval);
+function errorval(type, dataval, errval) {
+    if(type === 'percent') return Math.abs(dataval * errval / 100);
+    if(type === 'constant') return Math.abs(errval);
+    if(type === 'sqrt') return Math.sqrt(Math.abs(dataval));
+
     return 0;
 }
 
@@ -249,8 +249,8 @@ errorBars.calc = function(gd) {
 
         if(!Plotly.Plots.traceIs(trace, 'errorBarsOK')) return;
 
-        var xObj = trace.error_x||{},
-            yObj = trace.error_y||{},
+        var xObj = trace.error_x || {},
+            yObj = trace.error_y || {},
             xa = Plotly.Axes.getFromId(gd, trace.xaxis),
             ya = Plotly.Axes.getFromId(gd, trace.yaxis),
             xvis = xObj.visible && ['linear', 'log'].indexOf(xa.type)!==-1,
@@ -296,6 +296,32 @@ errorBars.calc = function(gd) {
         Plotly.Axes.expand(ya, yvals, {padded: true});
         Plotly.Axes.expand(xa, xvals, {padded: true});
     });
+};
+
+errorBars.calcFromTrace = function(trace, layout) {
+    var len = trace.x.length,
+        x = trace.x,
+        y = trace.y;
+
+    // x and y have the same length after supplyDefaults
+
+    var calcdataMock = new Array(len);
+
+    for(var i = 0; i < len; i++) {
+        calcdataMock[i] = {
+            x: x[i],
+            y: y[i]
+        };
+    }
+
+    calcdataMock[0].trace = trace;
+
+    errorBars.calc({
+        calcdata: [calcdataMock],
+        _fullLayout: layout
+    });
+
+    return calcdataMock;
 };
 
 // the main drawing function for errorbars

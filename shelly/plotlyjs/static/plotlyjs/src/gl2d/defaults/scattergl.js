@@ -6,7 +6,16 @@ var ScatterGl = module.exports = {};
 
 ScatterGl.attributes = {};
 
-Plotly.Plots.register(ScatterGl, 'scattergl', ['gl2d', 'showLegend']);
+Plotly.Plots.register(ScatterGl, 'scattergl',
+    ['gl2d', 'showLegend', 'errorBarsOK', 'markerColorscale'], {
+    description: [
+        'The data visualized as scatter point or lines is set in `x` and `y`',
+        'using the WebGl plotting engine.'
+        'Text (appearing either on the chart or on hover only) is via `text`.',
+        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+        'to a numerical arrays.'
+    ].join(' ')
+});
 
 ScatterGl.attributes = require('../attributes/scattergl');
 
