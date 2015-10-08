@@ -543,7 +543,6 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                      attr, dflt);
         }
 
-
         axes.handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         axes.handleAxisPositioningDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
         layoutOut[axName] = axLayoutOut;
@@ -718,8 +717,8 @@ axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axTyp
 };
 
 axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce, options) {
-    var counterAxes = options.counterAxes||[],
-        overlayableAxes = options.overlayableAxes||[],
+    var counterAxes = options.counterAxes || [],
+        overlayableAxes = options.overlayableAxes || [],
         letter = options.letter;
 
     var anchor = Plotly.Lib.coerce(containerIn, containerOut,
@@ -2387,14 +2386,11 @@ axes.getFromTrace = function (td, fullTrace, type) {
 // and at axes and their anchors
 
 axes.getSubplots = function(gd,ax) {
-    var data = gd.data,
+    var data = gd.data || [],
         subplots = [];
 
     // look for subplots in the data
-    (data||[]).forEach(function(trace) {
-        var xid = (trace.xaxis||'x'),
-            yid = (trace.yaxis||'y'),
-            subplot = xid+yid;
+    data.forEach(function(trace) {
         if(
             trace.visible === false ||
             trace.visible === 'legendonly' ||
@@ -2403,6 +2399,11 @@ axes.getSubplots = function(gd,ax) {
                 Plotly.Plots.traceIs(trace, 'gl2d')
             )
         ) return;
+
+        var xid = trace.xaxis || 'x',
+            yid = trace.yaxis || 'y',
+            subplot = xid + yid;
+
         if(subplots.indexOf(subplot)===-1) subplots.push(subplot);
     });
 
@@ -2410,11 +2411,12 @@ axes.getSubplots = function(gd,ax) {
     // so that we at least draw all axes
     axes.list(gd, '', true).forEach(function(ax2) {
         var ax2letter = ax2._id.charAt(0),
-            ax3id = ax2.anchor==='free' ?
-                {x:'y',y:'x'}[ax2letter] : ax2.anchor,
-            ax3 = axes.getFromId(gd,ax3id);
+            ax3id = (ax2.anchor === 'free') ?
+                {x:'y', y:'x'}[ax2letter] :
+                ax2.anchor,
+            ax3 = axes.getFromId(gd, ax3id);
 
-        function hasAx2(sp){ return sp.indexOf(ax2._id)!==-1; }
+        function hasAx2(sp) { return sp.indexOf(ax2._id) !== -1; }
 
         // if a free axis is already represented in the data, ignore it
         if(ax2.anchor==='free' && subplots.some(hasAx2)) return;
@@ -2425,8 +2427,10 @@ axes.getSubplots = function(gd,ax) {
             return;
         }
 
-        var subplot = ax2letter==='x' ?
-            (ax2._id+ax3._id) : (ax3._id+ax2._id);
+        var subplot = (ax2letter === 'x') ?
+            ax2._id + ax3._id :
+            ax3._id + ax2._id;
+
         if(subplots.indexOf(subplot)===-1) subplots.push(subplot);
     });
 
@@ -2440,6 +2444,7 @@ axes.getSubplots = function(gd,ax) {
             }
             return +(amatch[1]||0) - (bmatch[1]||0);
         });
+
     if(ax) {
         var axmatch = new RegExp(ax._id.charAt(0)==='x' ?
             ('^'+ax._id+'y') : (ax._id+'$') );
