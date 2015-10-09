@@ -151,8 +151,8 @@ proto.update = function(options) {
   var y = options.y;
   var i;
 
-  var xaxis = this.scene.fullLayout.xaxis;
-  var yaxis = this.scene.fullLayout.yaxis;
+  var xaxis = this.scene.xaxis;
+  var yaxis = this.scene.yaxis;
   var errorVals = Plotly.ErrorBars.calcFromTrace(options, this.scene.fullLayout);
 
   this.name = options.name;

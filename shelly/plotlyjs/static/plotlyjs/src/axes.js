@@ -2378,13 +2378,14 @@ axes.getFromTrace = function (td, fullTrace, type) {
     return ax;
 };
 
+axes.subplotMatch = /^x([0-9]*)y([0-9]*)$/;
+
 // getSubplots - extract all combinations of axes we need to make plots for
 // as an array of items like 'xy', 'x2y', 'x2y2'...
 // sorted by x (x,x2,x3...) then y
 // optionally restrict to only subplots containing axis object ax
 // looks both for combinations of x and y found in the data
 // and at axes and their anchors
-
 axes.getSubplots = function(gd,ax) {
     var data = gd.data || [],
         subplots = [];
@@ -2434,7 +2435,7 @@ axes.getSubplots = function(gd,ax) {
         if(subplots.indexOf(subplot)===-1) subplots.push(subplot);
     });
 
-    var spmatch = /^x([0-9]*)y([0-9]*)$/;
+    var spmatch = axes.subplotMatch;
     var allSubplots = subplots
         .filter(function(sp) { return sp.match(spmatch); })
         .sort(function(a,b) {

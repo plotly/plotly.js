@@ -13,7 +13,10 @@ var AXES = [ 'xaxis', 'yaxis' ];
 
 function Scene2D(options, fullLayout) {
     var container = this.container = options.container;
+
+    this.id = options.id;
     this.fullLayout = fullLayout;
+    this.updateAxes();
 
     var width       = fullLayout.width;
     var height      = fullLayout.height;
@@ -164,13 +167,13 @@ proto.toImage = function(format) {
 };
 
 proto.computeTickMarks = function() {
-  this.fullLayout.xaxis._length =
+  this.xaxis._length =
       this.glplot.viewBox[2] - this.glplot.viewBox[0];
-  this.fullLayout.yaxis._length =
+  this.yaxis._length =
       this.glplot.viewBox[3] - this.glplot.viewBox[1];
   var nextTicks = [
-      Plotly.Axes.calcTicks(this.fullLayout.xaxis),
-      Plotly.Axes.calcTicks(this.fullLayout.yaxis)
+      Plotly.Axes.calcTicks(this.xaxis),
+      Plotly.Axes.calcTicks(this.yaxis)
   ];
   for(var j=0; j<2; ++j) {
     for(var i=0; i<nextTicks[j].length; ++i) {
@@ -196,11 +199,22 @@ function compareTicks(a, b) {
   return false;
 }
 
+proto.updateAxes = function() {
+    var spmatch = /^x([0-9]*)y([0-9]*)$/,
+        xaxisName = 'xaxis' + this.id.match(spmatch)[1],
+        yaxisName = 'yaxis' + this.id.match(spmatch)[2];
+
+    console.log(xaxisName, yaxisName)
+
+    this.xaxis = this.fullLayout[xaxisName];
+    this.yaxis = this.fullLayout[yaxisName];
+};
+
 proto.cameraChanged = function() {
   var fullLayout = this.fullLayout;
   var camera = this.camera;
-  var xrange = fullLayout.xaxis.range;
-  var yrange = fullLayout.yaxis.range;
+  var xrange = this.xaxis.range;
+  var yrange = this.yaxis.range;
 
   this.glplot.setDataBox([
     xrange[0], yrange[0],
@@ -228,6 +242,7 @@ proto.plot = function(fullData, fullLayout) {
     var trace;
 
     this.fullLayout = fullLayout;
+    this.updateAxes();
 
     var width       = fullLayout.width;
     var height      = fullLayout.height;
@@ -281,7 +296,23 @@ j_loop:
     var options       = this.glplotOptions;
     options.merge(fullLayout);
     options.screenBox = [0,0,width,height];
-    options.viewBox   = [0.125*width,0.125*height,0.875*width,0.875*height];
+
+    var size = fullLayout._size;
+    var domainX = this.xaxis.domain;
+    var domainY = this.yaxis.domain;
+
+    options.viewBox = [
+        size.l + domainX[0] * size.w,
+        size.b + domainY[0] * size.h,
+        (width - size.r) - (1 - domainX[1]) * size.w,
+        (height - size.t) - (1 - domainY[1]) * size.h
+    ];
+
+    this.mouseContainer.style.width = size.w * (domainX[1] - domainX[0]) + 'px';
+    this.mouseContainer.style.height = size.h * (domainY[1] - domainY[0]) + 'px';
+    this.mouseContainer.height = size.h * (domainY[1] - domainY[0]);
+    this.mouseContainer.style.left = size.l + domainX[0] * size.w + 'px';
+    this.mouseContainer.style.top = size.t + (1-domainY[1]) * size.h + 'px';
 
     var bounds = this.bounds;
     bounds[0] = bounds[1] = Infinity;
@@ -300,7 +331,7 @@ j_loop:
           bounds[i]   = -1;
           bounds[i+2] = 1;
         }
-        var ax = fullLayout[AXES[i]];
+        var ax = [this.xaxis, this.yaxis][i];
         ax._min = [{
           val: bounds[i],
           pad: 10
@@ -315,8 +346,8 @@ j_loop:
 
     options.ticks     = this.computeTickMarks();
 
-    var xrange = fullLayout.xaxis.range;
-    var yrange = fullLayout.yaxis.range;
+    var xrange = this.xaxis.range;
+    var yrange = this.yaxis.range;
     options.dataBox   = [xrange[0], yrange[0], xrange[1], yrange[1]];
 
     options.merge(fullLayout);

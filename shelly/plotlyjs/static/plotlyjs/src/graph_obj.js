@@ -192,9 +192,11 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
         trace = data[i];
 
         if(type === 'gl2d' && plots.traceIs(trace, 'gl2d')) {
+            var spmatch = Plotly.Axes.subplotMatch,
+                subplotX = 'x' + subplotId.match(spmatch)[1],
+                subplotY = 'y' + subplotId.match(spmatch)[2];
 
-            // TODO generalize for multiple subplots
-            if(trace[attr[0]]===subplotId[0] && trace[attr[1]]===subplotId[1]) {
+            if(trace[attr[0]]===subplotX && trace[attr[1]]===subplotY) {
                 subplotData.push(trace);
             }
         }

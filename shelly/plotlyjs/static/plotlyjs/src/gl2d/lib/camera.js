@@ -28,8 +28,8 @@ function createCamera(scene) {
     y *= plot.pixelRatio;
     y = element.height - y;
 
-    var xrange = scene.fullLayout.xaxis.range;
-    var yrange = scene.fullLayout.yaxis.range;
+    var xrange = scene.xaxis.range;
+    var yrange = scene.yaxis.range;
 
     var lastX = result.lastPos[0];
     var lastY = result.lastPos[1];
@@ -101,8 +101,8 @@ function createCamera(scene) {
   });
 
   result.wheelListener = mouseWheel(element, function(dx, dy) {
-    var xrange = scene.fullLayout.xaxis.range;
-    var yrange = scene.fullLayout.yaxis.range;
+    var xrange = scene.xaxis.range;
+    var yrange = scene.yaxis.range;
 
     var lastX = result.lastPos[0];
     var lastY = result.lastPos[1];
