@@ -9,8 +9,6 @@ var createOptions = require('./convert/axes2dgl');
 var createCamera  = require('./lib/camera');
 var htmlToUnicode = require('../gl3d/lib/html2unicode');
 
-var AXES = [ 'xaxis', 'yaxis' ];
-
 function Scene2D(options, fullLayout) {
     var container = this.container = options.container;
 
@@ -204,8 +202,6 @@ proto.updateAxes = function() {
         xaxisName = 'xaxis' + this.id.match(spmatch)[1],
         yaxisName = 'yaxis' + this.id.match(spmatch)[2];
 
-    console.log(xaxisName, yaxisName)
-
     this.xaxis = this.fullLayout[xaxisName];
     this.yaxis = this.fullLayout[yaxisName];
 };
@@ -307,12 +303,6 @@ j_loop:
         (width - size.r) - (1 - domainX[1]) * size.w,
         (height - size.t) - (1 - domainY[1]) * size.h
     ];
-
-    this.mouseContainer.style.width = size.w * (domainX[1] - domainX[0]) + 'px';
-    this.mouseContainer.style.height = size.h * (domainY[1] - domainY[0]) + 'px';
-    this.mouseContainer.height = size.h * (domainY[1] - domainY[0]);
-    this.mouseContainer.style.left = size.l + domainX[0] * size.w + 'px';
-    this.mouseContainer.style.top = size.t + (1-domainY[1]) * size.h + 'px';
 
     var bounds = this.bounds;
     bounds[0] = bounds[1] = Infinity;
