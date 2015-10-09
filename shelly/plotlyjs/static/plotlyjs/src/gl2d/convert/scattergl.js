@@ -288,8 +288,7 @@ proto.update = function(options) {
     }
     this.lineOptions.dashes = dashes;
 
-
-    switch(options._input.fill) {
+    switch(options.fill) {
       case 'tozeroy':
         this.lineOptions.fill = [false, true, false, false];
       break;
@@ -301,7 +300,8 @@ proto.update = function(options) {
       break;
     }
 
-    var fillColor = [0,0,0,0];
+    var fillColor = this.lineOptions.color.slice();
+    fillColor[3] *= 0.5;
     if('fillcolor' in options) {
       fillColor = str2RGBArray(options.fillcolor);
     }

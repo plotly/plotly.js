@@ -54,6 +54,8 @@ module.exports = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
+    fill: scatterAttrs.fill,
+    fillcolor: scatterAttrs.fillcolor,
     textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
     _nestedModules: {
