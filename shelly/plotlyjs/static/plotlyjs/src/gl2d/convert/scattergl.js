@@ -22,14 +22,23 @@ function LineWithMarkers(scene, uid) {
   this.yData = [];
   this.textLabels = [];
 
-  this.errorOptions = {
+  this.errorXOptions = {
     positions: new Float32Array(),
     errors: new Float32Array(),
     lineWidth: 1,
     capSize: 0,
     color: [0,0,0,1]
   };
-  this.error = createError(scene.glplot, this.errorOptions);
+  this.errorX = createError(scene.glplot, this.errorXOptions);
+
+  this.errorYOptions = {
+    positions: new Float32Array(),
+    errors: new Float32Array(),
+    lineWidth: 1,
+    capSize: 0,
+    color: [0,0,0,1]
+  };
+  this.errorY = createError(scene.glplot, this.errorYOptions);
 
   this.lineOptions = {
     positions:  new Float32Array(),
@@ -164,20 +173,25 @@ proto.update = function(options) {
 
   var numPoints = x.length;
   var positions = new Float32Array(2 * numPoints);
-  var errors = new Float32Array(4 * numPoints);
+  var errorsX = new Float32Array(4 * numPoints);
+  var errorsY = new Float32Array(4 * numPoints);
   var ptr = 0;
-  var ptr2 = 0;
-
-
+  var ptrX = 0;
+  var ptrY = 0;
 
   for(i=0; i<x.length; ++i) {
     var xx = positions[ptr++] = xaxis.d2l(x[i]);
     var yy = positions[ptr++] = yaxis.d2l(y[i]);
 
-    var ex0 = errors[ptr2++] = xx - errorVals[i].xs || 0;
-    var ex1 = errors[ptr2++] = errorVals[i].xh - xx || 0;
-    var ey0 = errors[ptr2++] = yy - errorVals[i].ys || 0;
-    var ey1 = errors[ptr2++] = errorVals[i].yh - yy || 0;
+    var ex0 = errorsX[ptrX++] = xx - errorVals[i].xs || 0;
+    var ex1 = errorsX[ptrX++] = errorVals[i].xh - xx || 0;
+    errorsX[ptrX++] = 0;
+    errorsX[ptrX++] = 0;
+
+    errorsY[ptrY++] = 0;
+    errorsY[ptrY++] = 0;
+    var ey0 = errorsY[ptrY++] = yy - errorVals[i].ys || 0;
+    var ey1 = errorsY[ptrY++] = errorVals[i].yh - yy || 0;
 
     bounds[0] = Math.min(bounds[0], xx - ex0);
     bounds[1] = Math.min(bounds[1], yy - ey0);
@@ -193,14 +207,17 @@ proto.update = function(options) {
     this.lineOptions.positions = new Float32Array();
   }
 
-  this.errorOptions.positions = positions;
-  this.errorOptions.errors = errors;
+  this.errorXOptions.positions = positions;
+  this.errorXOptions.errors = errorsX;
+  this.errorXOptions.capSize = options.error_x.width;
+  this.errorXOptions.lineWidth = options.error_x.thickness / 2;  // ballpark rescaling
+  this.errorXOptions.color = convertColor(options.error_x.color, 1, 1);
 
-  // the below attrs should take array:
-  // one entry for x bars and one for y bars)
-  this.errorOptions.capSize = options.error_y.width;
-  this.errorOptions.lineWidth = options.error_y.thickness / 2;  // ballpark rescaling
-  this.errorOptions.color = convertColor(options.error_y.color, 1, 1);
+  this.errorYOptions.positions = positions;
+  this.errorYOptions.errors = errorsY;
+  this.errorYOptions.capSize = options.error_y.width;
+  this.errorYOptions.lineWidth = options.error_y.thickness / 2;  // ballpark rescaling
+  this.errorYOptions.color = convertColor(options.error_y.color, 1, 1);
 
   if(('marker' in options) && mode.indexOf('marker') >= 0) {
 
@@ -313,7 +330,8 @@ proto.update = function(options) {
 
 
   this.line.update(this.lineOptions);
-  this.error.update(this.errorOptions);
+  this.errorX.update(this.errorXOptions);
+  this.errorY.update(this.errorYOptions);
 };
 
 proto.dispose = function() {
