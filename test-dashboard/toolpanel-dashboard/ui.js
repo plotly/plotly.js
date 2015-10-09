@@ -61,7 +61,7 @@ function createPlot (divId) {
 
     graphDiv.toolPanel.makeMenu({
         toolMenuContainer: toolDiv,
-        menuDirection: 'narrow'
+        menuStyle: 'narrow'
     });
 
     toolPanel.createMenuMultiButton([
