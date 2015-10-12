@@ -15,7 +15,7 @@ Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], {
         description: [
             'Sets a reference between this trace\'s x coordinates and',
             'a 2D cartesian x axis.',
-            'If *x* (the default value), the x coordinates refer to',
+            'If *x* (the default value) or *x1*, the x coordinates refer to',
             '`layout.xaxis`.',
             'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
         ].join(' ')
@@ -27,7 +27,7 @@ Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], {
         description: [
             'Sets a reference between this trace\'s y coordinates and',
             'a 2D cartesian y axis.',
-            'If *y* (the default value), the y coordinates refer to',
+            'If *y* (the default value) or *y1*, the y coordinates refer to',
             '`layout.yaxis`.',
             'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
         ].join(' ')
