@@ -544,7 +544,7 @@ colorbar.attributes = {
         description: [
             'Determines whether this color bar\'s thickness',
             '(i.e. the measure in the constant color direction)',
-            'is set in units of plot *fraction* or in *pixels.',
+            'is set in units of plot *fraction* or in *pixels*.',
             'Use `thickness` to set the value.'
         ].join(' ')
     },
@@ -596,7 +596,7 @@ colorbar.attributes = {
         dflt: 'left',
         role: 'style',
         description: [
-            'Sets this color bar\'s horizontal position anchor',
+            'Sets this color bar\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
             'or *right* of the color bar.'
         ].join(' ')
