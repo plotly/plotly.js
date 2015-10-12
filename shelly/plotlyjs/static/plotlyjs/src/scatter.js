@@ -144,7 +144,10 @@ scatter.attributes = {
             values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
             dflt: 'solid',
             role: 'style',
-            description: 'Sets the style of the lines.'
+            description: [
+                'Sets the style of the lines. Set to a dash string type',
+                'or a dash length in px.'
+            ].join(' ')
         }
     },
     connectgaps: {
