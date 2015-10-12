@@ -94,7 +94,9 @@ scatter.attributes = {
             'Determines the drawing mode for this scatter trace.',
             'If the provided `mode` includes *text* then the `text` elements',
             'appear at the coordinates. Otherwise, the `text` elements',
-            'appear on hover.'
+            'appear on hover.',
+            'If there are less than ' + scatter.PTS_LINESONLY + ' points,',
+            'then the default is *lines+markers*. Otherwise, *lines*.'
         ].join(' ')
     },
     line: {
