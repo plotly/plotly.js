@@ -585,6 +585,8 @@ colorbar.attributes = {
     x: {
         valType: 'number',
         dflt: 1.02,
+        min: -2,
+        max: 3,
         role: 'style',
         description: [
             'Sets the x position of the color bar (in plot fraction).'
@@ -612,6 +614,8 @@ colorbar.attributes = {
         valType: 'number',
         role: 'style',
         dflt: 0.5,
+        min: -2,
+        max: 3,
         description: [
             'Sets the y position of the color bar (in plot fraction).'
         ].join(' ')
