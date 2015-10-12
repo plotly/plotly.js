@@ -95,7 +95,14 @@ axes.layoutAttributes = {
             {valType: 'number'},
             {valType: 'number'}
         ],
-        description: 'Sets the range of this axis.'
+        description: [
+            'Sets the range of this axis.',
+            'If the axis `type` is *log*, then you must take the log of your desired range',
+            '(e.g. to set the range from 1 to 100, set the range from 0 to 2).',
+            'If the axis `type` is *date*, then you must convert the date to unix time in milliseconds',
+            '(the number of milliseconds since January 1st, 1970). For example, to set the date range from',
+            'January 1st 1970 to November 4th, 2013, set the range from 0 to 1380844800000.0'
+        ]
     },
     fixedrange: {
         valType: 'boolean',
