@@ -3608,30 +3608,8 @@ function makePlotFramework(gd) {
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
-    // create '_plots' object grouping x/y axes into subplots
-    // to be better manage subplots
-    fullLayout._plots = {};
     var subplots = Plotly.Axes.getSubplots(gd);
-    var subplot, plotinfo;
-
-    for(var i = 0; i < subplots.length; i++) {
-        subplot = subplots[i];
-        plotinfo = fullLayout._plots[subplots[i]] = {};
-
-        plotinfo.id = subplot;
-
-        // references to the axis objects controlling this subplot
-        plotinfo.x = function() {
-            return Plotly.Axes.getFromId(gd, subplot, 'x');
-        };
-        plotinfo.y = function() {
-            return Plotly.Axes.getFromId(gd, subplot, 'y');
-        };
-
-        // TODO do .x() .y() still matter?
-        plotinfo.xaxis = plotinfo.x();
-        plotinfo.yaxis = plotinfo.y();
-    }
+    makeSubplots(gd, subplots);
 
     if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
 
@@ -3663,6 +3641,35 @@ function makePlotFramework(gd) {
     }
 
     return frameWorkDone;
+}
+
+// create '_plots' object grouping x/y axes into subplots
+// to be better manage subplots
+function makeSubplots(gd, subplots) {
+    var _plots = gd._fullLayout._plots = {};
+
+    var subplot, plotinfo;
+
+    function getAxisFunc(subplot, axLetter) {
+        return function() {
+            return Plotly.Axes.getFromId(gd, subplot, axLetter);
+        };
+    }
+
+    for(var i = 0; i < subplots.length; i++) {
+        subplot = subplots[i];
+        plotinfo = _plots[subplot] = {};
+
+        plotinfo.id = subplot;
+
+        // references to the axis objects controlling this subplot
+        plotinfo.x = getAxisFunc(subplot, 'x');
+        plotinfo.y = getAxisFunc(subplot, 'y');
+
+        // TODO do .x() .y() still matter?
+        plotinfo.xaxis = plotinfo.x();
+        plotinfo.yaxis = plotinfo.y();
+    }
 }
 
 function makeCartesianPlotFramwork(gd, subplots) {
