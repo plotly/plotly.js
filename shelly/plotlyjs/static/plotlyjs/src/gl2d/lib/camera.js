@@ -19,21 +19,27 @@ function Camera2D(element, plot) {
 
 
 function createCamera(scene) {
-  var element = scene.canvas;
+  var element = scene.mouseContainer;
   var plot = scene.glplot;
+  var fullLayout = scene.fullLayout;
   var result = new Camera2D(element, plot);
 
   result.mouseListener = mouseChange(element, function(buttons, x, y) {
-    x *= plot.pixelRatio;
-    y *= plot.pixelRatio;
-    y = element.height - y;
+    var xaxis = scene.xaxis;
+    var yaxis = scene.yaxis;
+    var viewBox = plot.viewBox;
 
-    var xrange = scene.xaxis.range;
-    var yrange = scene.yaxis.range;
+    var xrange = xaxis.range;
+    var yrange = yaxis.range;
 
     var lastX = result.lastPos[0];
     var lastY = result.lastPos[1];
 
+    x *= plot.pixelRatio;
+    y *= plot.pixelRatio;
+
+    // mouseChange gives y about top; convert to about bottom
+    y = (viewBox[3] - viewBox[1]) - y;
     function updateRange(range, start, end) {
         var range0 = Math.min(start, end),
             range1 = Math.max(start, end);
@@ -47,14 +53,14 @@ function createCamera(scene) {
         }
     }
 
-    switch(scene.fullLayout.dragmode) {
+    switch(fullLayout.dragmode) {
       case 'zoom':
         if(buttons) {
-          var dataX = (x - plot.viewBox[0]) /
-            (plot.viewBox[2]-plot.viewBox[0]) * (xrange[1] - xrange[0]) +
+          var dataX = x /
+              (viewBox[2] - viewBox[0]) * (xrange[1] - xrange[0]) +
             xrange[0];
-          var dataY = (y - plot.viewBox[1]) /
-            (plot.viewBox[3]-plot.viewBox[1]) * (yrange[1] - yrange[0]) +
+          var dataY = y /
+              (viewBox[3] - viewBox[1]) * (yrange[1] - yrange[0]) +
             yrange[0];
 
           if(!result.boxEnabled) {

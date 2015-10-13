@@ -32,9 +32,10 @@ function Scene2D(options, fullLayout) {
     canvas.style.top    = '0px';
     canvas.style.left   = '0px';
     canvas.style['z-index'] = '90';
+    canvas.style['pointer-events'] = 'none';
 
     //Create SVG container for hover text
-    var svgContainer = document.createElementNS(
+    var svgContainer = this.svgContainer = document.createElementNS(
         'http://www.w3.org/2000/svg',
         'svg');
     svgContainer.style.position = 'absolute';
@@ -42,8 +43,10 @@ function Scene2D(options, fullLayout) {
     svgContainer.style.width = svgContainer.style.height = '100%';
     svgContainer.style['z-index'] = '91';
     svgContainer.style['pointer-events'] = 'none';
-    this.svgContainer = svgContainer;
 
+    //Create div to catch the mouse event
+    var mouseContainer = this.mouseContainer = document.createElement('div');
+    mouseContainer.style.position = 'absolute';
 
     //Get webgl context
     var gl;
@@ -64,6 +67,7 @@ function Scene2D(options, fullLayout) {
     //Append canvas to conatiner
     container.appendChild(canvas);
     container.appendChild(svgContainer);
+    container.appendChild(mouseContainer);
 
     //Update options
     this.glplotOptions = createOptions(this);
@@ -304,6 +308,12 @@ j_loop:
         (height - size.t) - (1 - domainY[1]) * size.h
     ];
 
+    this.mouseContainer.style.width = size.w * (domainX[1] - domainX[0]) + 'px';
+    this.mouseContainer.style.height = size.h * (domainY[1] - domainY[0]) + 'px';
+    this.mouseContainer.height = size.h * (domainY[1] - domainY[0]);
+    this.mouseContainer.style.left = size.l + domainX[0] * size.w + 'px';
+    this.mouseContainer.style.top = size.t + (1-domainY[1]) * size.h + 'px';
+
     var bounds = this.bounds;
     bounds[0] = bounds[1] = Infinity;
     bounds[2] = bounds[3] = -Infinity;
@@ -371,7 +381,15 @@ proto.draw = function() {
     } else {
       this.selectBox.enabled = false;
 
-      var result = glplot.pick(x / glplot.pixelRatio, y / glplot.pixelRatio);
+      var size = this.fullLayout._size;
+      var domainX = this.xaxis.domain;
+      var domainY = this.yaxis.domain;
+
+      var result = glplot.pick(
+          (x / glplot.pixelRatio) + size.l + domainX[0] * size.w,
+          (y / glplot.pixelRatio) - (size.t + (1-domainY[1]) * size.h)
+      );
+
       if(result) {
         var nextSelection = result.object._trace.handlePick(result);
         if(nextSelection &&
