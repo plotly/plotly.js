@@ -1569,7 +1569,8 @@ plots.fontAttrs = {
             'The web browser will only be able to apply a font if it is available on the system',
             'which it operates. Provide multiple font families, separated by commas, to indicate',
             'the preference in which to apply fonts if they aren\'t available on the system.',
-            'Plotly\'s image generation is performed on a server, where only a select number of',
+            'The plotly service (at https://plot.ly or on-premise) generates images on a server,',
+            'where only a select number of',
             'fonts are installed and supported.',
             'These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*,',
             '*Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*,'
@@ -1724,7 +1725,7 @@ plots.layoutAttributes = {
             'Determines whether or not a text link citing the data source is',
             'placed at the bottom-right cored of the figure.',
             'Has only an effect only on graphs that have been generated via',
-            'forked graphs from the plotly cloud.'
+            'forked graphs from the plotly service (at https://plot.ly or on-premise).'
         ].join(' ')
     },
     smith: {
