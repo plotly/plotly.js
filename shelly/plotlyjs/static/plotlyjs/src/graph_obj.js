@@ -693,7 +693,7 @@ Plotly.plot = function(gd, data, layout, config) {
             }
 
             // finally do all error bars at once
-            if(Plotly.ErrorBars) {
+            if(gd._fullLayout._hasCartesian && Plotly.ErrorBars) {
                 Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
                 Plotly.Lib.markTime('done ErrorBars');
             }
