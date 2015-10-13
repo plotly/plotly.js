@@ -145,14 +145,31 @@ axes.layoutAttributes = {
         role: 'style',
         description: [
             'Sets the placement of the first tick on this axis.',
-            'Use with `dtick`.'
+            'Use with `dtick`.',
+            'If the axis `type` is *log*, then you must take the log of your starting tick',
+            '(e.g. to set the starting tick to 100, set the `tick0` to 2).',
+            'If the axis `type` is *date*, then you must convert the date to unix time in milliseconds',
+            '(the number of milliseconds since January 1st, 1970).',
+            'For example, to set the starting tick to',
+            'November 4th, 2013, set the range to 1380844800000.0.'
        ].join(' ')
     },
     dtick: {
         valType: 'any',
         dflt: 1,
         role: 'style',
-        description: 'Sets the step in-between ticks on this axis'
+        description: [
+            'Sets the step in-between ticks on this axis',
+            'Use with `tick0`.',
+            'If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n',
+            'is the tick number. For example,',
+            'to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1.',
+            'To set tick marks at 1, 100, 10000, ... set dtick to 2.',
+            'To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433.'
+            'If the axis `type` is *date*, then you must convert the time to milliseconds.',
+            'For example, to set the interval between ticks to one day,',
+            'set `dtick` to 86400000.0.'
+        ].join(' ')
     },
     tickvals: {
         valType: 'data_array',
