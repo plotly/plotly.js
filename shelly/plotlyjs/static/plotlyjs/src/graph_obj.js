@@ -3689,11 +3689,10 @@ function makeCartesianPlotFramwork(gd, subplots) {
     fullLayout._paper.selectAll('g.subplot').data(subplots)
       .enter().append('g')
         .classed('subplot', true)
-        .each(function(subplot){
-            var plotinfo = fullLayout._plots[subplot];
-            plotinfo.plotgroup = d3.select(this).classed(subplot, true);
-
-            var xa = plotinfo.xaxis,
+        .each(function(subplot) {
+            var plotinfo = fullLayout._plots[subplot],
+                plotgroup = plotinfo.plotgroup = d3.select(this).classed(subplot, true),
+                xa = plotinfo.xaxis,
                 ya = plotinfo.yaxis;
 
             // references to any subplots overlaid on this one
@@ -3733,20 +3732,20 @@ function makeCartesianPlotFramwork(gd, subplots) {
             else {
                 // main subplot - make the components of
                 // the plot and containers for overlays
-                plotinfo.bg = plotinfo.plotgroup.append('rect')
-                    .style('stroke-width',0);
-                plotinfo.gridlayer = plotinfo.plotgroup.append('g');
-                plotinfo.overgrid = plotinfo.plotgroup.append('g');
-                plotinfo.zerolinelayer = plotinfo.plotgroup.append('g');
-                plotinfo.overzero = plotinfo.plotgroup.append('g');
-                plotinfo.plot = plotinfo.plotgroup.append('svg').call(plotLayers);
-                plotinfo.overplot = plotinfo.plotgroup.append('g');
-                plotinfo.xlines = plotinfo.plotgroup.append('path');
-                plotinfo.ylines = plotinfo.plotgroup.append('path');
-                plotinfo.overlines = plotinfo.plotgroup.append('g');
-                plotinfo.xaxislayer = plotinfo.plotgroup.append('g');
-                plotinfo.yaxislayer = plotinfo.plotgroup.append('g');
-                plotinfo.overaxes = plotinfo.plotgroup.append('g');
+                plotinfo.bg = plotgroup.append('rect')
+                    .style('stroke-width', 0);
+                plotinfo.gridlayer = plotgroup.append('g');
+                plotinfo.overgrid = plotgroup.append('g');
+                plotinfo.zerolinelayer = plotgroup.append('g');
+                plotinfo.overzero = plotgroup.append('g');
+                plotinfo.plot = plotgroup.append('svg').call(plotLayers);
+                plotinfo.overplot = plotgroup.append('g');
+                plotinfo.xlines = plotgroup.append('path');
+                plotinfo.ylines = plotgroup.append('path');
+                plotinfo.overlines = plotgroup.append('g');
+                plotinfo.xaxislayer = plotgroup.append('g');
+                plotinfo.yaxislayer = plotgroup.append('g');
+                plotinfo.overaxes = plotgroup.append('g');
 
                 // make separate drag layers for each subplot,
                 // but append them to paper rather than the plot groups,
@@ -3754,6 +3753,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
             }
             plotinfo.draglayer = fullLayout._draggers.append('g');
         });
+
 
     // now make the components of overlaid subplots
     // overlays don't have backgrounds, and append all
