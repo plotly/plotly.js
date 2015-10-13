@@ -7,19 +7,46 @@ var axes = module.exports = {},
     Plotly = require('./plotly'),
     isNumeric = require('./isnumeric');
 
+Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], {
+    xaxis: {
+        valType: 'axisid',
+        role: 'info',
+        dflt: 'x',
+        description: [
+            'Sets a reference between this trace\'s x coordinates and',
+            'a 2D cartesian x axis.',
+            'If *x* (the default value), the x coordinates refer to',
+            '`layout.xaxis`.',
+            'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
+    },
+    yaxis: {
+        valType: 'axisid',
+        role: 'info',
+        dflt: 'y',
+        description: [
+            'Sets a reference between this trace\'s y coordinates and',
+            'a 2D cartesian y axis.',
+            'If *y* (the default value), the y coordinates refer to',
+            '`layout.yaxis`.',
+            'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
+    }
+});
+
+var extendFlat = Plotly.Lib.extendFlat;
+
 axes.layoutAttributes = {
     title: {
         valType: 'string',
         role: 'info',
         description: 'Sets the title of this axis.'
     },
-    titlefont: {
-        valType: 'font',
-        role: 'style',
+    titlefont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: [
             'Sets this axis\' title font.'
         ].join(' ')
-    },
+    }),
     type: {
         valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data
@@ -189,11 +216,9 @@ axes.layoutAttributes = {
         role: 'style',
         description: 'Determines whether or not the tick labels are drawn.'
     },
-    tickfont: {
-        valType: 'font',
-        role: 'style',
+    tickfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the tick font.'
-    },
+    }),
     tickangle: {
         valType: 'angle',
         dflt: 'auto',
@@ -294,7 +319,7 @@ axes.layoutAttributes = {
         role: 'style',
         description: [
             'Determines whether or not a line bounding this axis is drawn.'
-        ]
+        ].join(' ')
     },
     linecolor: {
         valType: 'color',
@@ -356,7 +381,11 @@ axes.layoutAttributes = {
     // values are any opposite-letter axis id
     anchor: {
         valType: 'enumerated',
-        values: ['free', '/^x[0-9]/*$', '/^y[0-9]/*$'],
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
         role: 'info',
         description: [
             'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
@@ -381,7 +410,11 @@ axes.layoutAttributes = {
     // itself overlaying anything
     overlaying: {
         valType: 'enumerated',
-        values: [false, '/^x[0-9]/*$', '/^y[0-9]/*$'],
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
         role: 'info',
         description: [
             'If set a same-letter axis id, this axis is overlaid on top of',
@@ -412,6 +445,18 @@ axes.layoutAttributes = {
             '(in normalized coordinates).',
             'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
+    },
+
+    _deprecated: {
+        autotick: {
+            valType: 'boolean',
+            role: 'info',
+            description: [
+                'Obsolete.',
+                'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
+                'Set `tickmode` to *linear* for `autotick` *false*.'
+            ].join(' ')
+        }
     }
 };
 
@@ -559,7 +604,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     axes.setConvert(containerOut);
 
     coerce('title', defaultTitle);
-    coerce('titlefont', {
+    Plotly.Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
         color: font.color
@@ -620,7 +665,7 @@ axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, op
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        coerce('tickfont', options.font || {});
+        Plotly.Lib.coerceFont(coerce, 'tickfont', options.font || {});
         coerce('tickangle');
 
         var showAttrDflt = axes.getShowAttrDflt(containerIn);

@@ -90,7 +90,7 @@ module.exports = {
     zmin: traceColorbarAttrs.zmin,
     zmax: traceColorbarAttrs.zmax,
     colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: Plotly.Lib.extendFlat(traceColorbarAttrs.autocolorscale,
+    autocolorscale: Plotly.Lib.extendFlat({}, traceColorbarAttrs.autocolorscale,
         {dflt: false}),
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,

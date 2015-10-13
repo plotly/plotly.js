@@ -103,7 +103,7 @@ contour.attributes = {
         }
     },
     line: {
-        color: extendFlat(scatterLineAttrs.color, {
+        color: extendFlat({}, scatterLineAttrs.color, {
             description: [
                 'Sets the color of the contour level.',
                 'Has no if `contours.coloring` is set to *lines*.'
@@ -111,7 +111,7 @@ contour.attributes = {
         }),
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash,
-        smoothing: extendFlat(scatterLineAttrs.smoothing, {
+        smoothing: extendFlat({}, scatterLineAttrs.smoothing, {
             description: [
                 'Sets the amount of smoothing for the contour lines,',
                 'where *0* corresponds to no smoothing.'
@@ -125,11 +125,12 @@ contour.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         return Plotly.Lib.coerce(traceIn, traceOut, contour.attributes, attr, dflt);
     }
 
-    var autocontour = coerce('autocontour');
+    var contourstart = coerce('contours.start'),
+        contourend = coerce('contours.end'),
+        validcont = contourstart!==undefined && contourend!==undefined,
+        autocontour = validcont ? coerce('autocontour', false) : coerce('autocontour');
     if(autocontour) coerce('ncontours');
-    coerce('contours.start');
-    coerce('contours.end');
-    coerce('contours.size');
+    else coerce('contours.size');
 
     var coloring = coerce('contours.coloring');
 
@@ -154,8 +155,7 @@ contour.calc = function(gd, trace) {
         contours = trace.contours;
 
     // check if we need to auto-choose contour levels
-    if(trace.autocontour!==false || !contours.size ||
-            contours.start===undefined || contours.end===undefined) {
+    if(trace.autocontour!==false) {
         var dummyAx = {
             type: 'linear',
             range: [trace.zmin, trace.zmax]

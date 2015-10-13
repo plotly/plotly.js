@@ -398,10 +398,39 @@ scatter.attributes = {
         ].join(' ')
     },
     textfont: {
-        valType: 'font',
-        role: 'style',
-        arrayOk: true,
+        family: {
+            valType: 'string',
+            role: 'style',
+            noBlank: true,
+            strict: true,
+            arrayOk: true
+        },
+        size: {
+            valType: 'number',
+            role: 'style',
+            min: 1,
+            arrayOk: true
+        },
+        color: {
+            valType: 'color',
+            role: 'style',
+            arrayOk: true
+        },
         description: 'Sets the text font.'
+    },
+    r: {
+        valType: 'data_array',
+        description: [
+            'For polar chart only.',
+            'Sets the radial coordinates.'
+        ].join('')
+    },
+    t: {
+        valType: 'data_array',
+        description: [
+            'For polar chart only.',
+            'Sets the angular coordinates.'
+        ].join('')
     },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
@@ -566,7 +595,7 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
 // common to 'scatter', 'scatter3d' and 'scattergeo'
 scatter.textDefaults = function(traceIn, traceOut, layout, coerce) {
     coerce('textposition');
-    coerce('textfont', layout.font);
+    Plotly.Lib.coerceFont(coerce, 'textfont', layout.font);
 };
 
 scatter.cleanData = function(fullData) {

@@ -85,7 +85,7 @@ heatmap.attributes = {
     zmin: traceColorbarAttrs.zmin,
     zmax: traceColorbarAttrs.zmax,
     colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: Plotly.Lib.extendFlat(traceColorbarAttrs.autocolorscale,
+    autocolorscale: Plotly.Lib.extendFlat({}, traceColorbarAttrs.autocolorscale,
         {dflt: false}),
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
@@ -227,16 +227,23 @@ heatmap.hasColumns = function(trace) {
     return !Array.isArray(trace.z[0]);
 };
 
-heatmap.convertColumnXYZ = function(trace) {
-    var xCol = trace.x,
-        yCol = trace.y,
+heatmap.convertColumnXYZ = function(trace, xa, ya) {
+    var xCol = trace.x.slice(),
+        yCol = trace.y.slice(),
         zCol = trace.z,
         textCol = trace.text,
         colLen = Math.min(xCol.length, yCol.length, zCol.length),
         hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
 
+    var i;
+
     if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
     if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
+
+    for(i = 0; i < colLen; i++) {
+        xCol[i] = xa.d2c(xCol[i]);
+        yCol[i] = ya.d2c(yCol[i]);
+    }
 
     var xColdv = Plotly.Lib.distinctVals(xCol),
         x = xColdv.vals,
@@ -248,7 +255,7 @@ heatmap.convertColumnXYZ = function(trace) {
 
     if(hasColumnText) text = Plotly.Lib.init2dArray(y.length, x.length);
 
-    for(var i = 0; i < colLen; i++) {
+    for(i = 0; i < colLen; i++) {
         ix = Plotly.Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
         iy = Plotly.Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
 
@@ -297,7 +304,7 @@ heatmap.calc = function(gd, trace) {
         z = binned.z;
     }
     else {
-        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace);
+        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace, xa, ya);
 
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
@@ -1130,7 +1137,7 @@ heatmap.hoverPoints = function(pointData, xval, yval, hovermode, contour) {
         text = trace.text[ny][nx];
     }
 
-    return [$.extend(pointData,{
+    return [Plotly.Lib.extendFlat(pointData, {
         index: [ny, nx],
         // never let a 2D override 1D type as closest point
         distance: Plotly.Fx.MAXDIST+10,

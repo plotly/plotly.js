@@ -16,6 +16,8 @@ Plotly.Plots.register(pie, 'pie', ['pie', 'showLegend'], {
     ].join(' ')
 });
 
+var extendFlat = Plotly.Lib.extendFlat;
+
 pie.attributes = {
     labels: {
         valType: 'data_array',
@@ -108,16 +110,9 @@ pie.attributes = {
             'Determines which trace information appear on the graph.'
         ].join(' ')
     },
-    hoverinfo: {
-        valType: 'flaglist',
-        role: 'info',
-        flags: ['label', 'text', 'value', 'percent', 'name'],
-        extras: ['all', 'none'],
-        dflt: 'all',
-        description: [
-            'Determines which trace information appear on hover.'
-        ].join(' ')
-    },
+    hoverinfo: extendFlat({}, Plotly.Plots.attributes.hoverinfo, {
+        flags: ['label', 'text', 'value', 'percent', 'name']
+    }),
     textposition: {
         valType: 'enumerated',
         role: 'info',
@@ -128,21 +123,16 @@ pie.attributes = {
             'Specifies the location of the `textinfo`.'
         ].join(' ')
     },
-    textfont: {
-        valType: 'font',
-        role: 'style',
+    // TODO make those arrayOk?
+    textfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used for `textinfo`.'
-    },
-    insidetextfont: {
-        valType: 'font',
-        role: 'style',
+    }),
+    insidetextfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the pie.'
-    },
-    outsidetextfont: {
-        valType: 'font',
-        role: 'style',
+    }),
+    outsidetextfont: extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used for `textinfo` lying outside the pie.'
-    },
+    }),
 
     // position and shape
     domain: {
@@ -279,6 +269,8 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         return Plotly.Lib.coerce(traceIn, traceOut, pie.attributes, attr, dflt);
     }
 
+    var coerceFont = Plotly.Lib.coerceFont;
+
     var vals = coerce('values');
     if(!Array.isArray(vals) || !vals.length) {
         traceOut.visible = false;
@@ -306,7 +298,8 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
 
     var textData = coerce('text');
     var textInfo = coerce('textinfo', Array.isArray(textData) ? 'text+percent' : 'percent');
-    coerce('hoverinfo');
+
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'label+text+value+percent' : undefined);
 
     if(textInfo && textInfo !== 'none') {
         var textPosition = coerce('textposition'),
@@ -315,9 +308,9 @@ pie.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
             hasOutside = hasBoth || textPosition === 'outside';
 
         if(hasInside || hasOutside) {
-            var dfltFont = coerce('textfont', layout.font);
-            if(hasInside) coerce('insidetextfont', dfltFont);
-            if(hasOutside) coerce('outsidetextfont', dfltFont);
+            var dfltFont = coerceFont(coerce, 'textfont', layout.font);
+            if(hasInside) coerceFont(coerce, 'insidetextfont', dfltFont);
+            if(hasOutside) coerceFont(coerce, 'outsidetextfont', dfltFont);
         }
     }
 

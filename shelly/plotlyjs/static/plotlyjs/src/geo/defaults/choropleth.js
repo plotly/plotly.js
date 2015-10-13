@@ -48,6 +48,8 @@ Choropleth.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     Plotly.Colorscale.handleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
+
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined);
 };
 
 Choropleth.colorbar = Plotly.Colorbar.traceColorbar;

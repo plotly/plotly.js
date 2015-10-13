@@ -61,6 +61,10 @@ bars.attributes = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
+
+    r: scatterAttrs.r,  // FIXME this shouldn't get included in 'histogram'
+    t: scatterAttrs.t,
+
     _composedModules: {  // composed module coupling
         'histogram': 'Histogram'
     },
@@ -68,6 +72,15 @@ bars.attributes = {
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',
         'marker.colorbar': 'Colorbar'
+    },
+
+    _deprecated: {
+        bardir: {
+            valType: 'enumerated',
+            role: 'info',
+            values: ['v', 'h'],
+            description: 'Renamed to `orientation`.'
+        }
     }
 };
 

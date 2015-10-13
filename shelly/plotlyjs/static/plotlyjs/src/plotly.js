@@ -1,10 +1,11 @@
-exports.micropolar = require('./micropolar');
-exports.micropolar.manager = require('./micropolar_manager');
-
 // order of requires should matter only for interdependencies
 // in attributes definitions. put the common modules first
-exports.Lib = require('./lib');
-exports.util = require('./plotly_util');
+exports.Lib = require('./lib/lib');
+exports.util = require('./lib/plotly_util');
+
+exports.micropolar = require('./polar/micropolar');
+exports.micropolar.manager = require('./polar/micropolar_manager');
+
 exports.Color = require('./color');
 exports.Colorscale = require('./colorscale');
 exports.Drawing = require('./drawing');
@@ -53,6 +54,9 @@ exports.Config = require('./config');
 
 // imaging Routines
 exports.Snapshot = require('./snapshot/snapshot');
+
+// Queue for undo/redo
+exports.Queue = require('./queue');
 
 // promise polyfill, embed rather than requiring dependencies
 require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');

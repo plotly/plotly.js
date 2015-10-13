@@ -10,9 +10,9 @@
 /* global d3:false */
 
 var lib = module.exports = {},
-    Plotly = require('./plotly'),
+    Plotly = require('../plotly'),
     tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('../isnumeric');
 
 /**
  * dateTime2ms - turn a date object or string s of the form
@@ -1357,34 +1357,7 @@ lib.stripTrailingSlash = function (str) {
     return str;
 };
 
-// Helpers for defaults and attribute validation
-var fontAttrs = {
-    family: {
-        valType: 'string',
-        noBlank: true,
-        strict: true
-    },
-    size: {
-        valType: 'number',
-        min: 1
-    },
-    color: {valType: 'color'}
-};
-
-var fontAttrsArrayOk = null;
-function getFontAttrsArrayOk() {
-    if(fontAttrsArrayOk === null) {
-        var arrayOkExtend = {arrayOk: true};
-        fontAttrsArrayOk = {
-            family: lib.extendFlat(fontAttrs.family, arrayOkExtend),
-            size: lib.extendFlat(fontAttrs.size, arrayOkExtend),
-            color: lib.extendFlat(fontAttrs.color, arrayOkExtend)
-        };
-    }
-   return fontAttrsArrayOk;
-}
-
-var colorscaleNames = Object.keys(require('./colorscale').scales);
+var colorscaleNames = Object.keys(require('../colorscale').scales);
 
 lib.valObjects = {
     data_array: {
@@ -1510,29 +1483,6 @@ lib.valObjects = {
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
             propOut.set(Plotly.Colorscale.getScale(v, dflt));
-        }
-    },
-    font: {
-        description: [
-            'An {object} describing a font.',
-            'The valid inner keys are:',
-            '- \'size\' (a number greater than *0*)',
-            '- \'color\' (a color string)',
-            '- \'family\' (a CSS font family name).'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt', 'arrayOk'],
-        coerceFunction: function(v, propOut, dflt, opts) {
-            if(!v) v = {};
-            var vOut = {},
-                _fontAttrs = (opts && opts.arrayOk) ?
-                    getFontAttrsArrayOk() : fontAttrs;
-
-            lib.coerce(v, vOut, _fontAttrs, 'size', dflt.size);
-            lib.coerce(v, vOut, _fontAttrs, 'color', dflt.color);
-            lib.coerce(v, vOut, _fontAttrs, 'family', dflt.family);
-
-            propOut.set(vOut);
         }
     },
     angle: {
@@ -1703,6 +1653,20 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
     return propOut.get();
 };
 
+// shortcut to coerce the three font attributes
+// 'coerce' is a lib.coerce wrapper with implied first three arguments
+lib.coerceFont = function(coerce, attr, dfltObj) {
+    var out = {};
+
+    dfltObj = dfltObj || {};
+
+    out.family = coerce(attr + '.family', dfltObj.family);
+    out.size = coerce(attr + '.size', dfltObj.size);
+    out.color = coerce(attr + '.color', dfltObj.color);
+
+    return out;
+};
+
 lib.noneOrAll = function(containerIn, containerOut, attrList) {
     /**
      * some attributes come together, so if you have one of them
@@ -1737,9 +1701,9 @@ lib.mergeArray = function(traceAttr, cd, cdAttr) {
 };
 
 /**
- * modified version of $.extend to strip out private objs and functions,
+ * modified version of jQuery's extend to strip out private objs and functions,
  * and cut arrays down to first <arraylen> or 1 elements
- * because $.extend is hella slow
+ * because extend-like algorithms are hella slow
  * obj2 is assumed to already be clean of these things (including no arrays)
  */
 lib.minExtend = function(obj1, obj2) {
@@ -1768,22 +1732,6 @@ lib.minExtend = function(obj1, obj2) {
             objOut[k] = v;
         }
     }
-
-    return objOut;
-};
-
-// Flat extend function (only copies values of first level keys)
-lib.extendFlat = function extendFlat(obj1, obj2) {
-    var objOut = {};
-
-    function copyToOut(obj) {
-        var keys = Object.keys(obj);
-        for(var i = 0; i < keys.length; i++) {
-            objOut[keys[i]] = obj[keys[i]];
-        }
-    }
-    if(typeof obj1 === 'object') copyToOut(obj1);
-    if(typeof obj2 === 'object') copyToOut(obj2);
 
     return objOut;
 };
@@ -1844,10 +1792,9 @@ lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
-// more info: http://stackoverflow.com/questions/18531624/isplainobject-thing
-lib.isPlainObject = function(obj) {
-    return (
-        Object.prototype.toString.call(obj) === "[object Object]" &&
-        Object.getPrototypeOf(obj) === Object.prototype
-    );
-};
+lib.isPlainObject = require('./is_plain_object');
+
+var extendModule = require('./extend');
+lib.extendFlat = extendModule.extendFlat;
+lib.extendDeep = extendModule.extendDeep;
+lib.extendDeepAll = extendModule.extendDeepAll;

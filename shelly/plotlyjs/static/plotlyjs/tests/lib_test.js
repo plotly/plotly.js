@@ -433,27 +433,6 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('extendFlat', function() {
-        var extendFlat = Plotly.Lib.extendFlat;
-
-        it('it should extend 2 objects with mutually exclusive keys)', function() {
-            var obj1 = {a: 'A'},
-                obj2 = {b: 'B'},
-                objOut = extendFlat(obj1, obj2);
-            expect(obj1).toEqual({a: 'A'});
-            expect(objOut).toEqual({a: 'A', b: 'B'});
-        });
-
-        it('it should extend 2 objects with overlapping keys)', function() {
-            var obj1 = {a: 'A'},
-                obj2 = {a: 'AA'},
-                objOut = extendFlat(obj1, obj2);
-            expect(obj1).toEqual({a: 'A'});
-            expect(objOut).toEqual({a: 'AA'});
-        });
-
-    });
-
     describe('coerce', function() {
         var coerce = Plotly.Lib.coerce,
             out;
@@ -474,56 +453,6 @@ describe('Test lib.js:', function() {
             expect(aOut).toBe(outObj.a);
             expect(cOut).toBe(cVal);
             expect(cOut).toBe(outObj.b.c);
-        });
-
-        describe('font valType', function() {
-            var defaultFont = {
-                family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
-                size: 314159,
-                color: 'neon pink with sparkles'
-            },
-            fontAttrs = {
-                fontWithDefault: {valType: 'font', dflt: defaultFont},
-                fontNoDefault: {valType: 'font'}
-            };
-
-            it('should insert the full default if no or empty input', function() {
-                expect(coerce(undefined, {}, fontAttrs, 'fontWithDefault'))
-                    .toEqual(defaultFont);
-
-                expect(coerce({}, {}, fontAttrs, 'fontNoDefault', defaultFont))
-                    .toEqual(defaultFont);
-
-                expect(coerce({fontWithDefault: {}}, {}, fontAttrs, 'fontWithDefault'))
-                    .toEqual(defaultFont);
-            });
-
-            it('should fill in defaults for bad inputs', function() {
-                out = coerce({fontWithDefault: {family: '', size: 'a million', color: 42}},
-                    {}, fontAttrs, 'fontWithDefault');
-                expect(out).toEqual(defaultFont);
-            });
-
-            it('should pass through individual valid pieces', function() {
-                var goodFamily = 'A fish', // for now any non-blank string is OK
-                    badFamily = 42,
-                    goodSize = 123.456,
-                    badSize = 'ginormous',
-                    goodColor = 'red',
-                    badColor = 'a dark and stormy night';
-
-                out = coerce({fontWithDefault: {family: goodFamily, size: badSize, color: badColor}},
-                    {}, fontAttrs, 'fontWithDefault');
-                expect(out).toEqual({family: goodFamily, size: defaultFont.size, color: defaultFont.color});
-
-                out = coerce({fontWithDefault: {family: badFamily, size: goodSize, color: badColor}},
-                    {}, fontAttrs, 'fontWithDefault');
-                expect(out).toEqual({family: defaultFont.family, size: goodSize, color: defaultFont.color});
-
-                out = coerce({fontWithDefault: {family: badFamily, size: badSize, color: goodColor}},
-                    {}, fontAttrs, 'fontWithDefault');
-                expect(out).toEqual({family: defaultFont.family, size: defaultFont.size, color: goodColor});
-            });
         });
 
         describe('string valType', function() {
@@ -609,6 +538,81 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('coerceFont', function() {
+        var fontAttrs = Plotly.Plots.fontAttrs,
+            extendFlat = Plotly.Lib.extendFlat,
+            coerceFont = Plotly.Lib.coerceFont;
+
+        var defaultFont = {
+            family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
+            size: 314159,
+            color: 'neon pink with sparkles'
+        };
+        var attributes = {
+            fontWithDefault: {
+                family: extendFlat({}, fontAttrs.family, {dflt: defaultFont.family}),
+                size: extendFlat({}, fontAttrs.size, {dflt: defaultFont.size}),
+                color: extendFlat({}, fontAttrs.color, {dflt: defaultFont.color})
+            },
+            fontNoDefault: fontAttrs
+        };
+            
+        function coerce(attr, dflt) {
+            return Plotly.Lib.coerce(containerIn, {}, attributes, attr, dflt);
+        }
+
+        var containerIn;
+
+        it('should insert the full default if no or empty input', function() {
+            containerIn = undefined;
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual(defaultFont);
+
+            containerIn = {};
+            expect(coerceFont(coerce, 'fontNoDefault', defaultFont))
+                .toEqual(defaultFont);
+
+            containerIn = {fontWithDefault: {}};
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual(defaultFont);
+        });
+
+        it('should fill in defaults for bad inputs', function() {
+            containerIn = {
+                fontWithDefault: {family: '', size: 'a million', color: 42}
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual(defaultFont);
+        });
+
+        it('should pass through individual valid pieces', function() {
+            var goodFamily = 'A fish', // for now any non-blank string is OK
+                badFamily = 42,
+                goodSize = 123.456,
+                badSize = 'ginormous',
+                goodColor = 'red',
+                badColor = 'a dark and stormy night';
+
+            containerIn = {
+                fontWithDefault: {family: goodFamily, size: badSize, color: badColor}
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({family: goodFamily, size: defaultFont.size, color: defaultFont.color});
+
+            containerIn = {
+                fontWithDefault: {family: badFamily, size: goodSize, color: badColor}
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({family: defaultFont.family, size: goodSize, color: defaultFont.color});
+
+            containerIn = {
+                fontWithDefault: {family: badFamily, size: badSize, color: goodColor}
+            };
+            expect(coerceFont(coerce, 'fontWithDefault'))
+                .toEqual({family: defaultFont.family, size: defaultFont.size, color: goodColor});
+        });
+    });
+
     describe('init2dArray', function() {
         it('should initialize a 2d array with the correct dimenstions', function() {
             var array = Plotly.Lib.init2dArray(4, 5);
@@ -618,47 +622,4 @@ describe('Test lib.js:', function() {
         });
     });
 
-    describe('isPlainObject', function() {
-        var isPlainObject = Plotly.Lib.isPlainObject;
-
-        function A() {}
-
-        var shouldPass = [
-            {},
-            {a: 'A', 'B': 'b'}
-        ];
-
-        var shouldFail = [
-            A,
-            new A(),
-            document,
-            window,
-            null,
-            undefined,
-            [],
-            'string',
-            true,
-            false,
-            NaN,
-            Infinity,
-            /foo/,
-            '\n',
-            new Array(10),
-            new Date(),
-            new RegExp('foo'),
-            new String('string')
-        ];
-
-        shouldPass.forEach(function(obj) {
-            it('treats ' + JSON.stringify(obj) + ' as a plain object', function () {
-                expect(isPlainObject(obj)).toBe(true);
-            });
-        });
-
-        shouldFail.forEach(function(obj) {
-            it('treats ' + JSON.stringify(obj!==window ? obj: 'window') + ' as NOT a plain object', function () {
-                expect(isPlainObject(obj)).toBe(false);
-            });
-        });
-    });
 });
