@@ -202,7 +202,7 @@ function compareTicks(a, b) {
 }
 
 proto.updateAxes = function() {
-    var spmatch = /^x([0-9]*)y([0-9]*)$/,
+    var spmatch = Plotly.Axes.subplotMatch,
         xaxisName = 'xaxis' + this.id.match(spmatch)[1],
         yaxisName = 'yaxis' + this.id.match(spmatch)[2];
 
@@ -408,6 +408,7 @@ proto.draw = function() {
             (this.canvas.height - (glplot.viewBox[3] - glplot.viewBox[1]) *
             (result.dataCoord[1] - glplot.dataBox[1]) /
               (glplot.dataBox[3] - glplot.dataBox[1]) - glplot.viewBox[1]) / glplot.pixelRatio ];
+
           Plotly.Fx.loneHover({
             x: selection.screenCoord[0],
             y: selection.screenCoord[1],

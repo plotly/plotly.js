@@ -40,12 +40,14 @@ function createCamera(scene) {
 
     // mouseChange gives y about top; convert to about bottom
     y = (viewBox[3] - viewBox[1]) - y;
+
     function updateRange(range, start, end) {
         var range0 = Math.min(start, end),
             range1 = Math.max(start, end);
         if(range0 !== range1) {
             range[0] = range0;
             range[1] = range1;
+            result.dataBox = range;
         }
         else {
             scene.selectBox.selectBox = [0,0,1,1];
