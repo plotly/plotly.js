@@ -1,11 +1,10 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var bars = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var bars = module.exports = {};
 
 Plotly.Plots.register(bars, 'bar',
     ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'], {

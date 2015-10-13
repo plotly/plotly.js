@@ -1,13 +1,12 @@
 'use strict';
 
-/* global d3:false */
-
-var manager = module.exports = {},
-    Plotly = require('../plotly'),
+var Plotly = require('../plotly'),
+    d3 = require('d3'),
     UndoManager = require('./utils/undo_manager');
 
-var extendDeepAll = Plotly.Lib.extendDeepAll;
+var manager = module.exports = {};
 
+var extendDeepAll = Plotly.Lib.extendDeepAll;
 
 manager.framework = function(_gd){
     var config, previousConfigClone, plot, convertedInput, container;

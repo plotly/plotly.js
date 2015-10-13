@@ -1,11 +1,11 @@
 'use strict';
 
-/* global d3:false */
-
-var colorscale = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     tinycolor = require('tinycolor2'),
     isNumeric = require('./isnumeric');
+
+var colorscale = module.exports = {};
 
 colorscale.scales = {
     'Greys':[[0,'rgb(0,0,0)'],[1,'rgb(255,255,255)']],
