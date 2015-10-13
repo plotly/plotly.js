@@ -11,7 +11,7 @@ var scatter = module.exports = {},
 Plotly.Plots.register(scatter, 'scatter',
     ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
     description: [
-        'The scatter chart types encompass line charts, scatter charts, text charts, and bubble charts.',
+        'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
         'The data visualized as scatter point or lines is set in `x` and `y`.',
         'Text (appearing either on the chart or on hover only) is via `text`.',
         'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
