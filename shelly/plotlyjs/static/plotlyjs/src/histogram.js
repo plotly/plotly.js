@@ -217,8 +217,8 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
     binDirections.forEach(function(binDirection){
         // data being binned - note that even though it's a little weird,
         // it's possible to have bins without data, if there's inferred data
-        var binstrt = coerce(binDirection + 'bins.start'),
-            binend = coerce(binDirection + 'bins.end'),
+        var binstrt = Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, binDirection + 'bins.start'),
+            binend = Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, binDirection + 'bins.end'),
             autobin = binstrt && binend ? 
                 coerce('autobin' + binDirection, false) : 
                 coerce('autobin' + binDirection);
