@@ -29,7 +29,6 @@
     "ndarray-fill": "^1.0.1",
     "ndarray-homography": "^1.0.0",
     "ndarray-ops": "^1.2.2",
-    "promise": "6.1.0",
     "right-now": "^1.0.0",
     "superscript-text": "^1.0.0",
     "through2": "^2.0.0",
