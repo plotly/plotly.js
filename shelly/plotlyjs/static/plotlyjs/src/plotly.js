@@ -1,3 +1,5 @@
+require('es6-promise').polyfill();
+
 // order of requires should matter only for interdependencies
 // in attributes definitions. put the common modules first
 exports.Lib = require('./lib/lib');
@@ -57,10 +59,6 @@ exports.Snapshot = require('./snapshot/snapshot');
 
 // Queue for undo/redo
 exports.Queue = require('./queue');
-
-// promise polyfill, embed rather than requiring dependencies
-require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');
-require('../../../../shelly/static/js/plugins/promise-done-1.0.0.js');
 
 // exports d3 used in the bundle
 exports.d3 = require('d3');
