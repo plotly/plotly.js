@@ -1653,6 +1653,14 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
     return propOut.get();
 };
 
+// use coerce to get attibute value if user input is valid, return attribute default
+// if user input it not valud or retun false if there is no user input.  
+lib.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
+    var propIn = lib.nestedProperty(containerIn, attribute),
+        propOut = lib.coerce(containerIn, containerOut, attributes, attribute, dflt);
+    return propIn.get() ? propOut : false;
+};
+
 // shortcut to coerce the three font attributes
 // 'coerce' is a lib.coerce wrapper with implied first three arguments
 lib.coerceFont = function(coerce, attr, dfltObj) {

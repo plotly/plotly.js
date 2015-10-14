@@ -156,7 +156,9 @@ boxes.attributes = {
             outliercolor: {
                 valType: 'color',
                 role: 'style',
-                description: 'Sets the border line color of the outlier sample points.'
+                description: [
+                    'Sets the border line color of the outlier sample points.',
+                    'Defaults to marker.color'].join(' ')
             },
             outlierwidth: {
                 valType: 'number',
@@ -253,17 +255,10 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
 
     coerce('whiskerwidth');
     coerce('boxmean');
-    
-    var outliercolor = coerce('marker.outliercolor'),
+
+    var outlierColorDflt = Plotly.Lib.coerce2(traceIn, traceOut, boxes.attributes, 'marker.outliercolor'),
         lineoutliercolor = coerce('marker.line.outliercolor'),
-        setoutliercolor;
-    
-    if(outliercolor !== 'rgba(0, 0, 0, 0)' || 
-      (traceIn.marker||{}).outliercolor === 'rgba(0, 0, 0, 0)') {
-        setoutliercolor = true;
-    }
-    
-    var boxpoints = setoutliercolor || 
+        boxpoints = outlierColorDflt || 
                     lineoutliercolor ? coerce('boxpoints', 'suspectedoutliers') : 
                     coerce('boxpoints');
 
@@ -279,7 +274,7 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         coerce('marker.line.width');
 
         if(boxpoints==='suspectedoutliers') {
-            coerce('marker.line.outliercolor', traceOut.marker.color);
+            coerce('marker.line.outliercolor', traceOut.marker.color)
             coerce('marker.line.outlierwidth');
         }
     }
