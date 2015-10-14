@@ -40,7 +40,6 @@ Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
 // histogram has its own calc function,
 // but uses Bars.plot to display
 // and Bars.setPositions for stacking and grouping
-
 function makeBinsAttr(axLetter) {
     return {
         start: {
@@ -220,11 +219,10 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
         // it's possible to have bins without data, if there's inferred data
         var binstrt = coerce(binDirection + 'bins.start'),
             binend = coerce(binDirection + 'bins.end'),
-            validbin = binstrt!==undefined && binend!==undefined,
-            autobin = validbin ? 
+            autobin = binstrt && binend ? 
                 coerce('autobin' + binDirection, false) : 
                 coerce('autobin' + binDirection);
- 
+
         if(autobin) coerce('nbins' + binDirection);
         else coerce(binDirection + 'bins.size');
     });

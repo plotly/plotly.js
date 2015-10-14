@@ -1653,7 +1653,7 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
 };
 
 // use coerce to get attibute value if user input is valid, return attribute default
-// if user input it not valud or retun false if there is no user input.  
+// if user input it not valid or retun false if there is no user input.  
 lib.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
     var propIn = lib.nestedProperty(containerIn, attribute),
         propOut = lib.coerce(containerIn, containerOut, attributes, attribute, dflt);

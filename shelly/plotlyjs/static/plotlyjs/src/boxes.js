@@ -260,7 +260,7 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         boxpoints = outlierColorDflt || 
                     lineoutliercolor ? coerce('boxpoints', 'suspectedoutliers') : 
                     coerce('boxpoints');
-
+                    
     if(boxpoints) {
         coerce('jitter', boxpoints==='all' ? 0.3 : 0);
         coerce('pointpos', boxpoints==='all' ? -1.5 : 0);
