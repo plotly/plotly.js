@@ -1,11 +1,13 @@
 'use strict';
 
 // ---external global dependencies
-/* global d3:false, Promise:false */
+/* Promise:false */
 
-var axes = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var axes = module.exports = {};
 
 Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], {
     xaxis: {

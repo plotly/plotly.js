@@ -1,10 +1,11 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false, MathJax:false, Promise:false */
+/* global MathJax:false, Promise:false */
 
-var util = module.exports = {},
-    Plotly = require('../plotly');
+var Plotly = require('../plotly'),
+    d3 = require('d3');
+
+var util = module.exports = {};
 
 // Append SVG
 /////////////////////////////
