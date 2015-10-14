@@ -8,7 +8,17 @@ var path = require('path');
 var outpipe = require('outpipe');
 var outfile = path.join(__dirname, '../shelly/plotlyjs/static/plotlyjs/build/plotlyjs-bundle.js');
 
-var testFile = process.argv[2]==='geo' ? './test-geo' : './test';
+var testFile = './test';
+
+switch(process.argv[2]) {
+  case 'geo':
+    testFile = './test-geo';
+  break;
+  case '2d':
+    testFile = './test-2d';
+  break;
+}
+
 console.log('using ' + testFile);
 
 var b = browserify(path.join(__dirname, '../shelly/plotlyjs/static/plotlyjs/src/plotly.js'), {
@@ -20,6 +30,7 @@ var b = browserify(path.join(__dirname, '../shelly/plotlyjs/static/plotlyjs/src/
   packageCache: {}
 });
 
+
 var w = watchify(b);
 
 var bytes, time;
@@ -28,6 +39,8 @@ w.on('time', function (t) { time = t });
 
 w.on('update', bundle);
 bundle();
+
+var firstBundle = true;
 
 function bundle () {
     var didError = false;
@@ -51,6 +64,10 @@ function bundle () {
             console.error(bytes + ' bytes written to ' + outfile
                 + ' (' + (time / 1000).toFixed(2) + ' seconds)'
             );
+            if(firstBundle) {
+              open('http://localhost:8080/test-dashboard');
+              firstBundle = false;
+            }
         }
     });
 }
@@ -70,5 +87,3 @@ http.createServer(
 ).listen(8080);
 
 console.log('Listening on :8080');
-
-open('http://localhost:8080/test-dashboard');

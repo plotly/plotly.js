@@ -1,11 +1,10 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var annotations = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var annotations = module.exports = {};
 
 // centerx is a center of scaling tuned for maximum scalability of
 // the arrowhead ie throughout mag=0.3..3 the head is joined smoothly

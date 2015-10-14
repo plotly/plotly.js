@@ -1,8 +1,9 @@
 'use strict';
 
-var color = module.exports = {},
-    tinycolor = require('tinycolor2'),
+var tinycolor = require('tinycolor2'),
     isNumeric = require('./isnumeric');
+
+var color = module.exports = {};
 
 // IMPORTANT - default colors should be in hex for grid.js
 color.defaults = [

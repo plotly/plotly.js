@@ -6,13 +6,12 @@
 // ---global functions not yet namespaced
 /* global pullf:false */
 
-// ---external global dependencies
-/* global d3:false */
-
-var lib = module.exports = {},
-    Plotly = require('../plotly'),
+var Plotly = require('../plotly'),
+    d3 = require('d3'),
     tinycolor = require('tinycolor2'),
     isNumeric = require('../isnumeric');
+
+var lib = module.exports = {};
 
 /**
  * dateTime2ms - turn a date object or string s of the form

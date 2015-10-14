@@ -1,11 +1,12 @@
 'use strict';
 
-var shapes = module.exports = {},
-    Plotly = require('./plotly'),
-    isNumeric = require('./isnumeric'),
-    scatterLineAttrs = Plotly.Scatter.attributes.line;
+var Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
 
-var extendFlat = Plotly.Lib.extendFlat;
+var shapes = module.exports = {};
+
+var extendFlat = Plotly.Lib.extendFlat,
+    scatterLineAttrs = Plotly.Scatter.attributes.line;
 
 shapes.layoutAttributes = {
     _isLinkedToArray: true,
