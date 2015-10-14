@@ -1,11 +1,10 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var bars = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var bars = module.exports = {};
 
 Plotly.Plots.register(bars, 'bar',
     ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
@@ -72,6 +71,15 @@ bars.attributes = {
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',
         'marker.colorbar': 'Colorbar'
+    },
+
+    _deprecated: {
+        bardir: {
+            valType: 'enumerated',
+            role: 'info',
+            values: ['v', 'h'],
+            description: 'Renamed to `orientation`.'
+        }
     }
 };
 

@@ -1,11 +1,11 @@
 'use strict';
+
 /* jshint camelcase: false */
 
-// ---external global dependencies
-/* global d3:false */
+var Plotly = require('./plotly'),
+    d3 = require('d3');
 
-var legend = module.exports = {},
-    Plotly = require('./plotly');
+var legend = module.exports = {};
 
 legend.layoutAttributes = {
     bgcolor: {
@@ -26,7 +26,7 @@ legend.layoutAttributes = {
         role: 'style',
         description: 'Sets the width (in px) of the border enclosing the legend.'
     },
-    font: Plotly.Lib.extendFlat(Plotly.Plots.fontAttrs, {
+    font: Plotly.Lib.extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the font used to text the legend items.'
     }),
     traceorder: {

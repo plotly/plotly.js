@@ -1,9 +1,10 @@
 'use strict';
 
-var histogram = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
     isNumeric = require('./isnumeric'),
     barAttrs = Plotly.Bars.attributes;
+
+var histogram = module.exports = {};
 
 /**
  * histogram errorBarsOK is debatable, but it's put in for backward compat.
@@ -90,7 +91,10 @@ histogram.attributes = {
         description: 'Sets the aggregation data.'
     },
     marker: {
-        color: {valType: 'data_array'}  // FIXME this overrides 'bar'
+        color: {  // FIXME this overrides 'bar'
+            valType: 'data_array',
+            arrayOk: undefined
+        }
     },
     orientation: barAttrs.orientation,
     histfunc: {

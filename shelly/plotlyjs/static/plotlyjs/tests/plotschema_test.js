@@ -9,6 +9,9 @@ describe('plot schema', function() {
     var isValObject = Plotly.PlotSchema.isValObject,
         isPlainObject = Plotly.Lib.isPlainObject;
 
+    var VALTYPES = Object.keys(valObjects),
+        ROLES = ['info', 'style', 'data'];
+
     function assertPlotSchema(callback) {
         var traces = plotSchema.traces;
 
@@ -20,12 +23,10 @@ describe('plot schema', function() {
     }
 
     it('all attributes should have a valid `valType`', function() {
-        var valTypes = Object.keys(valObjects);
-
         assertPlotSchema(
             function(attr) {
                 if(isValObject(attr)) {
-                    expect(valTypes.indexOf(attr.valType) !== -1).toBe(true);
+                    expect(VALTYPES.indexOf(attr.valType) !== -1).toBe(true);
                 }
             }
         );
@@ -33,12 +34,10 @@ describe('plot schema', function() {
     });
 
     it('all attributes should only have valid `role`', function() {
-        var roles = ['info', 'style', 'data'];
-
         assertPlotSchema(
             function(attr) {
                 if(isValObject(attr)) {
-                    expect(roles.indexOf(attr.role) !== -1).toBe(true);
+                    expect(ROLES.indexOf(attr.role) !== -1).toBe(true);
                 }
             }
         );
@@ -46,8 +45,8 @@ describe('plot schema', function() {
 
     it('all nested objects should have the *object* `role`', function() {
         assertPlotSchema(
-            function(attr) {
-                if(!isValObject(attr) && isPlainObject(attr)) {
+            function(attr, attrName) {
+                if(!isValObject(attr) && isPlainObject(attr) && attrName!=='items') {
                     expect(attr.role === 'object').toBe(true);
                 }
             }
@@ -78,7 +77,81 @@ describe('plot schema', function() {
                             .concat(['valType', 'description', 'role']);
 
                     Object.keys(attr).forEach(function(key) {
+                        // handle the histogram marker.color case
+                        if(opts.indexOf(key)===-1 && opts[key]===undefined) return;
+
                         expect(opts.indexOf(key) !== -1).toBe(true);
+                    });
+                }
+            }
+        );
+    });
+
+    it('all subplot objects should contain _isSubplotObj', function() {
+        var IS_SUBPLOT_OBJ = '_isSubplotObj',
+            astrs = ['xaxis', 'yaxis', 'scene', 'geo'],
+            list = [];
+
+        // check if the subplot objects have '_isSubplotObj'
+        astrs.forEach(function(astr) {
+            expect(
+                Plotly.Lib.nestedProperty(
+                    plotSchema.layout.layoutAttributes,
+                    astr + '.' + IS_SUBPLOT_OBJ
+                ).get()
+            ).toBe(true);
+        });
+
+        // check that no other object has '_isSubplotObj'
+        assertPlotSchema(
+            function(attr, attrName) {
+                if(attr[IS_SUBPLOT_OBJ] === true) list.push(attrName);
+            }
+        );
+        expect(list).toEqual(astrs);
+    });
+
+    it('layout.annotations and layout.shapes should contain `items`', function() {
+        var astrs = ['annotations', 'shapes'];
+
+        astrs.forEach(function(astr) {
+            expect(
+                isPlainObject(
+                    Plotly.Lib.nestedProperty(
+                        plotSchema.layout.layoutAttributes, astr
+                    ).get().items
+                )
+            ).toBe(true);
+        });
+    });
+
+    it('valObjects descriptions should be strings', function() {
+        assertPlotSchema(
+            function(attr) {
+                var isValid;
+
+                if(isValObject(attr)) {
+                    // attribute don't have to have a description (for now)
+                    isValid = (typeof attr.description === 'string') ||
+                        (attr.description === undefined);
+
+                    expect(isValid).toBe(true);
+                }
+            }
+        );
+    });
+
+    it('deprecated attributes should have a `valType` and `role`', function() {
+        var DEPRECATED = '_deprecated';
+
+        assertPlotSchema(
+            function(attr) {
+                if(isPlainObject(attr[DEPRECATED])) {
+                    Object.keys(attr[DEPRECATED]).forEach(function(dAttrName) {
+                        var dAttr = attr[DEPRECATED][dAttrName];
+
+                        expect(VALTYPES.indexOf(dAttr.valType) !== -1).toBe(true);
+                        expect(ROLES.indexOf(dAttr.role) !== -1).toBe(true);
                     });
                 }
             }

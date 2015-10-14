@@ -126,9 +126,18 @@ module.exports = {
             'Sets this scene\'s axis aspectratio.'
         ].join(' ')
     },
+
     _nestedModules: {
         'xaxis': 'Gl3dAxes',
         'yaxis': 'Gl3dAxes',
         'zaxis': 'Gl3dAxes'
+    },
+
+    _deprecated: {
+        cameraposition: {
+            valType: 'info_array',
+            role: 'info',
+            description: 'Obsolete. Use `camera` instead.'
+        }
     }
 };

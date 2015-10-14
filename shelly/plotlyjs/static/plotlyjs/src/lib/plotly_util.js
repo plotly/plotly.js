@@ -1,210 +1,11 @@
 'use strict';
-// ---external global dependencies
-/* global d3:false, MathJax:false, FB:false, PLOTLYENV:false,
-   Promise:false */
 
-var util = module.exports = {},
-    Plotly = require('./plotly');
+/* global MathJax:false, Promise:false */
 
-// Script Loader
-/////////////////////////////
+var Plotly = require('../plotly'),
+    d3 = require('d3');
 
-util.scriptLoader = function(d, w){
-    var config = {loadDelay: 0};
-    function exports(_scriptNames){
-        var loadDelay = config.loadDelay;
-        var scriptNames = [].concat(_scriptNames);
-
-        // Generic script injection
-        var newScript, baseScript = d.getElementsByTagName('script')[0];
-        function loadScript(id, src, delay, callback) {
-            if (d.getElementById(id)) {return;}
-            setTimeout(function () {
-                newScript = d.createElement('script');
-                newScript.type = 'text/javascript';
-                newScript.id = id;
-                newScript.async = true;
-                newScript.src = src;
-                baseScript.parentNode.insertBefore(newScript, baseScript);
-                if(callback) callback.call(window);
-            }, delay);
-        }
-
-        var protocol = /^http:/.test(d.location) ? 'http' : 'https';
-        var protocol2 = (protocol === 'https') ? 'https://ssl' : 'http://www';
-
-        if (scriptNames.indexOf('facebook') !== -1){
-            var body = document.querySelector('body');
-            var bodyFirstChild = body.firstChild;
-            var newDiv = document.createElement('div');
-            newDiv.id = 'fb-root';
-            body.insertBefore(newDiv, bodyFirstChild);
-            w.fbAsyncInit = function() {
-                FB.init({
-                    appId      : PLOTLYENV.FACEBOOK_PAGE_APP_ID,
-                    /*channelUrl : 'WWW.YOUR_DOMAIN.COM/channel.html'*/
-                    status     : true,
-                    cookie     : true,
-                    xfbml      : true
-                });
-            };
-            var debug = false;
-            loadScript('facebook-jssdk', '//connect.facebook.net/en_US/all' +
-                (debug ? '/debug' : '') + '.js', loadDelay);
-        }
-
-        if (scriptNames.indexOf('googleAnalytics') !== -1){
-            w._gaq = w._gaq || [];
-            w._gaq.push(['_setAccount', PLOTLYENV.GOOGLEANALYTICS_ACCOUNT]);
-            w._gaq.push(['_setSiteSpeedSampleRate', 10]);
-            w._gaq.push(['_trackPageview']);
-            loadScript('google-analytics', protocol2 + '.google-analytics.com/ga.js', loadDelay);
-        }
-
-        if(scriptNames.indexOf('googlePlus') !== -1){
-            loadScript('google-plus', 'https://apis.google.com/js/plusone.js', loadDelay);
-        }
-
-        if(scriptNames.indexOf('twitter') !== -1){
-            loadScript('twitter-wjs', protocol + '://platform.twitter.com/widgets.js', loadDelay);
-        }
-
-    }
-
-    exports.config = function(_config){
-        config = _config;
-        return this;
-    };
-
-    return exports;
-};
-
-
-// Image exporter
-/////////////////////////////
-
-util.imageExporter = function() {
-
-    var dispatch = d3.dispatch('success', 'error');
-    var imageFormat = 'png',
-        targetSize = {width: 300, height: 150},
-        sourceSize = {width: 300, height: 150},
-        outputType = 'url',
-        debugLevel = 0,
-        canvasContainer,
-        title = 'Converted Image',
-        canvasElId = 'canvasEl',
-        canvasContainerId = 'canvasContainer';
-
-    function exports(_svg) {
-        var xmlString, w, h;
-        if(typeof _svg === 'string'){
-            xmlString = _svg;
-            w = sourceSize.width;
-            h = sourceSize.height;
-        }
-        else if(!!_svg.append || !!_svg.className){
-            var svgNode = (!!_svg.append)? _svg.node() : _svg;
-            var serializer = new XMLSerializer();
-            xmlString = serializer.serializeToString(svgNode);
-            w = svgNode.offsetWidth;
-            h = svgNode.offsetHeight;
-        }
-        else return sendError('wrong input svg (d3 selection or DOM node)');
-
-        if(canvasContainer) canvasContainer.html('');
-        canvasContainer = d3.select('body').append('div')
-            .attr({id: canvasContainerId})
-            .style({position: 'absolute', top: 0, left: 0, 'z-index': 1000});
-        if(debugLevel < 2) canvasContainer.style({visibility: 'hidden'});
-        var canvasEl = canvasContainer.append('canvas').attr({id: canvasElId, width: w, height: h});
-        var canvasNode = canvasEl.node();
-
-        var ctx = canvasNode.getContext('2d');
-        var DOMURL = self.URL || self.webkitURL || self;
-        var img = new Image();
-        var svg = new Blob([xmlString], {type: 'image/svg+xml;charset=utf-8'});
-        var url = DOMURL.createObjectURL(svg);
-        img.onload = function() {
-            ctx.drawImage(img, 0, 0);
-            DOMURL.revokeObjectURL(url);
-            encodeAll();
-        };
-        img.onerror = function() {
-            DOMURL.revokeObjectURL(url);
-            return sendError('img didnt load');
-        };
-        img.src = url;
-
-        function encodeAll(){
-            setTimeout(function(){
-                var imgData;
-                if (imageFormat === 'jpeg') {
-                    imgData = canvasNode.toDataURL('image/jpeg');
-                }
-                else if (imageFormat === 'png') {
-                    imgData = canvasNode.toDataURL('image/png');
-                }
-                else if (imageFormat === 'webp'){
-                    imgData = canvasNode.toDataURL('image/webp');
-                }
-                else if (imageFormat === 'svg') imgData = _svg;
-                else {
-                    return sendError({err: 'Image format is not jpeg, png, or svg', code: 400});
-                }
-
-                if(debugLevel === 0) {
-                    canvasContainer.remove();
-                    canvasEl.remove();
-                }
-                if(imgData){
-                    dispatch.success(imgData);
-                }
-                else sendError({err: 'Image is empty', code: 530});
-            }, 0);
-        }
-    }
-
-    function sendError(_msg){
-        dispatch.error(_msg);
-        if(debugLevel === 1) console.log('Error: ' + _msg);
-        else if(debugLevel === 2) throw(_msg);
-    }
-    d3.rebind(exports, dispatch, 'on');
-    exports.imageFormat = function(_imageFormat){
-        imageFormat = _imageFormat; //png, svg, jpg, pdf
-        return this;
-    };
-    exports.outputType = function(_outputType){
-        outputType = _outputType; //img, link, url, forceDownload, downloadLink
-        return this;
-    };
-    exports.debugLevel = function(_level){
-        debugLevel = _level;
-        return this;
-    };
-    exports.title = function(_title){
-        title = _title;
-        return this;
-    };
-    exports.sourceSize = function(_sourceSize){
-        sourceSize = _sourceSize;
-        return this;
-    };
-    exports.targetSize = function(_targetSize){
-        targetSize = _targetSize;
-        return this;
-    };
-    exports.canvasContainerId = function(_canvasContainerId){
-        canvasContainerId = _canvasContainerId;
-        return this;
-    };
-    exports.canvasElId = function(_canvasElId){
-        canvasElId = _canvasElId;
-        return this;
-    };
-    return exports;
-};
+var util = module.exports = {};
 
 // Append SVG
 /////////////////////////////
@@ -226,108 +27,8 @@ d3.selection.prototype.appendSVG = function(_svgString) {
     return d3.select(this.node().lastChild);
 };
 
-
-// Simple templating
-/////////////////////////////
-
-util.compileTemplate = function(_template, _values){
-    return [].concat(_values).map(function(d){
-        return _template.replace(/{([^}]*)}/g, function(s, key){return d[key] || '';});
-    }).join('\n');
-};
-
-
-// Complex templating
-// @see https://github.com/jashkenas/underscore/blob/master/underscore.js#L1234
-/////////////////////////////
-util.tmpl = function(text, data) {
-    var settings = {
-        evaluate: /<%([\s\S]+?)%>/g,
-        interpolate: /<%=([\s\S]+?)%>/g,
-        escape: /<%-([\s\S]+?)%>/g
-    };
-
-    var escaper = /\\|'|\r|\n|\u2028|\u2029/g;
-
-    var escapes = {
-        '\'': '\'',
-        '\\': '\\',
-        '\r': 'r',
-        '\n': 'n',
-        '\u2028': 'u2028',
-        '\u2029': 'u2029'
-    };
-
-    var escapeChar = function(match) {
-        return '\\' + escapes[match];
-    };
-
-    // Combine delimiters into one regular expression via alternation.
-    var noMatch = /(.)^/;
-    var matcher = new RegExp([
-        (settings.escape || noMatch).source,
-        (settings.interpolate || noMatch).source,
-        (settings.evaluate || noMatch).source
-    ].join('|') + '|$', 'g');
-
-    // Compile the template source, escaping string literals appropriately.
-    var index = 0;
-    var source = '__p+=\'';
-    text.replace(matcher, function(match, escape, interpolate, evaluate, offset) {
-        source += text.slice(index, offset).replace(escaper, escapeChar);
-        index = offset + match.length;
-
-        if (escape) {
-            source += '\'+\n((__t=(' + escape + '))==null?\'\':_.escape(__t))+\n\'';
-        } else if (interpolate) {
-            source += '\'+\n((__t=(' + interpolate + '))==null?\'\':__t)+\n\'';
-        } else if (evaluate) {
-            source += '\';\n' + evaluate + '\n__p+=\'';
-        }
-
-        // Adobe VMs need the match returned to produce the correct offest.
-        return match;
-    });
-    source += '\';\n';
-
-    // If a variable is not specified, place data values in local scope.
-    if (!settings.variable) source = 'with(obj||{}){\n' + source + '}\n';
-
-    source = 'var __t,__p=\'\',__j=Array.prototype.join,' +
-        'print=function(){__p+=__j.call(arguments,\'\');};\n' +
-        source + 'return __p;\n';
-
-    var render;
-    try {
-        render = new Function(settings.variable || 'obj', '_', source);
-    } catch (e) {
-        e.source = source;
-        throw e;
-    }
-
-    if (data) return render(data);
-    var template = function(data) {
-        return render.call(this, data);
-    };
-
-    // Provide the compiled source as a convenience for precompilation.
-    var argument = settings.variable || 'obj';
-    template.source = 'function(' + argument + '){\n' + source + '}';
-
-    return template;
-};
-
-
 // Text utilities
 /////////////////////////////
-
-util.getSVGBBoxFromString = function(_string, _style){
-    var tmp = d3.select('body').append('div').style({visibility: 'none'});
-    var textSelection = tmp.append('svg').append('text').text(_string).style(_style);
-    var bBox = textSelection.node().getBBox();
-    tmp.remove();
-    return bBox;
-};
 
 util.html_entity_decode = function(s) {
     var hiddenDiv = d3.select('body').append('div').style({display: 'none'}).html('');
@@ -344,73 +45,16 @@ util.xml_entity_encode = function(str){
     return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g,'&amp;');
 };
 
-util.toCamelCase = function(_str){
-    return _str.toLowerCase().replace(/-(.)/g, function(match, group1){ return group1.toUpperCase(); });
-};
-
-util.jsHook = function(_el){
-    var jsHook = _el.className.match(/js-[^ ]+/);
-    return (jsHook) ? jsHook[0] : null;
-};
-
-
-// Word wrap
-/////////////////////////////
-
-util.wrap = function(_wrapW){
-    return function(){
-        var that = this;
-
-        function tspanify(){
-            var lineH = this.node().getBBox().height;
-            this.text('')
-                .selectAll('tspan')
-                .data(lineArray)
-                .enter().append('tspan')
-                .attr({
-                    x: 0,
-                    y: function(d, i){ return (i + 1) * lineH; }
-                })
-                .text(function(d){ return d.join(' '); });
-        }
-
-        function checkW(_text){
-            var textTmp = that
-                .style({visibility: 'hidden'})
-                .text(_text);
-            var textW = textTmp.node().getBBox().width;
-            that.style({visibility: 'visible'}).text(text);
-            return textW;
-        }
-
-        var text = this.text();
-        var parentNode = this.node().parentNode;
-        var textSplitted = text.split(' ');
-        var lineArray = [[]];
-        var count = 0;
-        textSplitted.forEach(function(d){
-            if(checkW(lineArray[count].concat(d).join(' '), parentNode) >= _wrapW){
-                count++;
-                lineArray[count] = [];
-            }
-            lineArray[count].push(d);
-        });
-
-        this.call(tspanify);
-    };
-};
-
-util.getSize = function(_selection, _dimension){
-    return _selection.node().getBoundingClientRect()[_dimension];
-};
-
-
 // text converter
 /////////////////////////////
 
+function getSize(_selection, _dimension){
+    return _selection.node().getBoundingClientRect()[_dimension];
+}
+
 util.convertToTspans = function(_context, _callback){
     var str = _context.text();
-    var converted = Plotly.util.convertToSvg(str);
+    var converted = convertToSVG(str);
     var that = _context;
     // Until we get tex integrated more fully (so it can be used along with non-tex)
     // allow some elements to prohibit it by attaching 'data-notex' to the original
@@ -456,7 +100,8 @@ util.convertToTspans = function(_context, _callback){
         ((td && td._promises)||[]).push(new Promise(function(resolve) {
             that.style({visibility: 'hidden'});
             var config = {fontSize: parseInt(that.style('font-size'), 10)};
-            Plotly.util.texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox){
+
+            texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
                 parent.selectAll('svg.' + svgClass).remove();
                 parent.selectAll('g.' + svgClass + '-group').remove();
 
@@ -488,13 +133,13 @@ util.convertToTspans = function(_context, _callback){
                 var fill = that.style('fill') || 'black';
                 newSvg.select('g').attr({fill: fill, stroke: fill});
 
-                var newSvgW = Plotly.util.getSize(newSvg, 'width'),
-                    newSvgH = Plotly.util.getSize(newSvg, 'height'),
+                var newSvgW = getSize(newSvg, 'width'),
+                    newSvgH = getSize(newSvg, 'height'),
                     newX = +that.attr('x') - newSvgW *
                         {start:0, middle:0.5, end:1}[that.attr('text-anchor') || 'start'],
                     // font baseline is about 1/4 fontSize below centerline
                     textHeight = parseInt(that.style('font-size'), 10) ||
-                        Plotly.util.getSize(that, 'height'),
+                        getSize(that, 'height'),
                     dy = -textHeight/4;
 
                 if(svgClass[0] === 'y'){
@@ -533,7 +178,7 @@ function cleanEscapesForTex(s) {
         .replace(/(>|&gt;|&#62;)/g, '\\gt ');
 }
 
-util.texToSVG = function(_texString, _config, _callback){
+function texToSVG(_texString, _config, _callback){
     var randomID = 'math-output-' + Plotly.Lib.randstr([],64);
     var tmpDiv = d3.select('body').append('div')
         .attr({id: randomID})
@@ -555,7 +200,7 @@ util.texToSVG = function(_texString, _config, _callback){
 
         tmpDiv.remove();
     });
-};
+}
 
 var TAG_STYLES = {
     // would like to use baseline-shift but FF doesn't support it yet
@@ -579,7 +224,7 @@ util.plainText = function(_str){
     return (_str||'').replace(STRIP_TAGS, ' ');
 };
 
-util.convertToSvg = function(_str){
+function convertToSVG(_str){
     var htmlEntitiesDecoded = Plotly.util.html_entity_decode(_str);
     var result = htmlEntitiesDecoded
         .split(/(<[^<>]*>)/).map(function(d){
@@ -673,52 +318,9 @@ util.convertToSvg = function(_str){
     }
 
     return result.join('');
-};
+}
 
-util.alignSVGWith = function (_base, _options){
-    return function(){
-        var baseBBox = _base.node().getBBox();
-        var alignH = '50%';
-        var alignTextH = alignH;
-        var anchor = 'middle';
-        var vMargin = 0;
-        var hMargin = _options.horizontalMargin || 0;
-        if(_options.orientation === 'under') vMargin = baseBBox.y + baseBBox.height;
-        else if(_options.orientation === 'over') vMargin = baseBBox.y;
-        else if(_options.orientation === 'inside'){
-            vMargin = baseBBox.y;
-        }
-        if(_options.verticalMargin) vMargin += _options.verticalMargin;
-        if(_options.horizontalAlign === 'center'){
-            alignH = '50%';
-            anchor = 'middle';
-            hMargin = hMargin/4;
-        }
-        else if(_options.horizontalAlign === 'right'){
-            alignH = '0%';
-            anchor = 'start';
-        }
-        else if(_options.horizontalAlign === 'left'){
-            alignH = '100%';
-            anchor = 'end';
-            hMargin = -hMargin;
-        }
-        else if(typeof _options.horizontalAlign === 'number'){
-            alignH = _options.horizontalAlign;
-            anchor = 'middle';
-        }
-        if(_options.orientation === 'inside'){
-            alignTextH = 0;
-        }
-
-        this.attr({x: alignTextH, dx: hMargin, y: vMargin}).style({'text-anchor': anchor})
-            .selectAll('tspan.line').attr({x: alignH, dx: hMargin, y: vMargin});
-
-        return this;
-    };
-};
-
-util.alignHTMLWith = function (_base, container, options){
+function alignHTMLWith(_base, container, options){
     var alignH = options.horizontalAlign,
         alignV = options.verticalAlign || 'top',
         bRect = _base.node().getBoundingClientRect(),
@@ -752,7 +354,7 @@ util.alignHTMLWith = function (_base, container, options){
         });
         return this;
     };
-};
+}
 
 // Editable title
 /////////////////////////////
@@ -809,7 +411,7 @@ util.makeEditable = function(context, _delegate, options){
             })
             .attr({contenteditable: true})
             .text(options.text || that.attr('data-unformatted'))
-            .call(util.alignHTMLWith(that, container, options))
+            .call(alignHTMLWith(that, container, options))
             .on('blur', function(){
                 that.text(this.textContent)
                     .style({opacity: 1});
@@ -843,7 +445,7 @@ util.makeEditable = function(context, _delegate, options){
                 }
                 else{
                     dispatch.input.call(that, this.textContent);
-                    d3.select(this).call(util.alignHTMLWith(that, container, options));
+                    d3.select(this).call(alignHTMLWith(that, container, options));
                 }
             })
             .on('keydown', function(){
@@ -856,72 +458,4 @@ util.makeEditable = function(context, _delegate, options){
     else handlerElement.on('click', handleClick);
 
     return d3.rebind(this, dispatch, 'on');
-};
-
-
-// Varia
-/////////////////////////////
-
-util.deepExtend = function(destination, source) {
-    for (var property in source) {
-        if (source[property] && source[property].constructor && source[property].constructor === Object) {
-            destination[property] = destination[property] || {};
-            util.deepExtend(destination[property], source[property]);
-        } else {
-            destination[property] = source[property];
-        }
-    }
-    return destination;
-};
-
-
-//Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager
-//Copyright (c) 2010-2013 Arthur Clemens, arthur@visiblearea.com
-util.UndoManager = function(){
-    var undoCommands = [],
-            index = -1,
-            isExecuting = false,
-            callback;
-    function execute(command, action){
-        if(!command) return this;
-        isExecuting = true;
-        command[action]();
-        isExecuting = false;
-        return this;
-    }
-    return {
-        add: function(command){
-            if(isExecuting) return this;
-            undoCommands.splice(index + 1, undoCommands.length - index);
-            undoCommands.push(command);
-            index = undoCommands.length - 1;
-            return this;
-        },
-        setCallback: function(callbackFunc){ callback = callbackFunc; },
-        undo: function(){
-            var command = undoCommands[index];
-            if(!command) return this;
-            execute(command, 'undo');
-            index -= 1;
-            if(callback) callback(command.undo);
-            return this;
-        },
-        redo: function(){
-            var command = undoCommands[index + 1];
-            if(!command) return this;
-            execute(command, 'redo');
-            index += 1;
-            if(callback) callback(command.redo);
-            return this;
-        },
-        clear: function(){
-            undoCommands = [];
-            index = -1;
-        },
-        hasUndo: function(){ return index !== -1; },
-        hasRedo: function(){ return index < (undoCommands.length - 1); },
-        getCommands: function(){ return undoCommands; },
-        getPreviousCommand: function(){ return undoCommands[index-1]; },
-        getIndex: function(){ return index; }
-    };
 };

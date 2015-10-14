@@ -1,10 +1,11 @@
+// order of requires should matter only for interdependencies
+// in attributes definitions. put the common modules first
+exports.Lib = require('./lib/lib');
+exports.util = require('./lib/plotly_util');
+
 exports.micropolar = require('./polar/micropolar');
 exports.micropolar.manager = require('./polar/micropolar_manager');
 
-// order of requires should matter only for interdependencies
-// in attributes definitions. put the common modules first
-exports.Lib = require('./lib');
-exports.util = require('./plotly_util');
 exports.Color = require('./color');
 exports.Colorscale = require('./colorscale');
 exports.Drawing = require('./drawing');
@@ -46,7 +47,7 @@ exports.Choropleth = require('./geo/defaults/choropleth');
 exports.Geo = require('./geo/geo');
 
 // plot schema
-exports.PlotSchema= require('./plotschema');
+exports.PlotSchema = require('./plotschema');
 
 // configuration
 exports.Config = require('./config');
@@ -54,6 +55,12 @@ exports.Config = require('./config');
 // imaging Routines
 exports.Snapshot = require('./snapshot/snapshot');
 
+// Queue for undo/redo
+exports.Queue = require('./queue');
+
 // promise polyfill, embed rather than requiring dependencies
 require('../../../../shelly/static/js/plugins/promise-1.0.0.min.js');
 require('../../../../shelly/static/js/plugins/promise-done-1.0.0.js');
+
+// exports d3 used in the bundle
+exports.d3 = require('d3');

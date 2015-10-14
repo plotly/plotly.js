@@ -1,11 +1,10 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var annotations = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var annotations = module.exports = {};
 
 // centerx is a center of scaling tuned for maximum scalability of
 // the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
@@ -77,7 +76,7 @@ annotations.layoutAttributes = {
             'with respect to the horizontal.'
         ].join(' ')
     },
-    font: Plotly.Lib.extendFlat(Plotly.Plots.fontAttrs, {
+    font: Plotly.Lib.extendFlat({}, Plotly.Plots.fontAttrs, {
         description: 'Sets the annotation text font.'
     }),
     opacity: {
@@ -194,7 +193,10 @@ annotations.layoutAttributes = {
     // positioning
     xref: {
         valType: 'enumerated',
-        values: ['paper', '/^x[0-9]/*$'],
+        values: [
+            'paper',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString()
+        ],
         role: 'info',
         description: [
             'Sets the annotation\'s x coordinate axis.',
@@ -234,7 +236,10 @@ annotations.layoutAttributes = {
     },
     yref: {
         valType: 'enumerated',
-        values: ['paper', '/^y[0-9]/*$'],
+        values: [
+            'paper',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
         role: 'info',
         description: [
             'Sets the annotation\'s y coordinate axis.',
@@ -271,6 +276,16 @@ annotations.layoutAttributes = {
             'whereas for paper-referenced, the anchor picked corresponds',
             'to the closest side.'
         ].join(' ')
+    },
+
+    _deprecated: {
+        ref: {
+            valType: 'string',
+            role: 'info',
+            description: [
+                'Obsolete. Set `xref` and `yref` separately instead.'
+            ].join(' ')
+        }
     }
 };
 
@@ -439,7 +454,9 @@ annotations.draw = function(gd, index, opt, value) {
         else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
             fullLayout.annotations.splice(index,0,{});
 
-            var rule = Plotly.Lib.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+            var rule = Plotly.Lib.isPlainObject(value) ?
+                    Plotly.Lib.extendFlat({}, value) :
+                    {text: 'New text'};
 
             if (layout.annotations) {
                 layout.annotations.splice(index, 0, rule);

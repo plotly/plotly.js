@@ -1,10 +1,9 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
+var Plotly = require('./plotly'),
+    d3 = require('d3');
 
-var contour = module.exports = {},
-    Plotly = require('./plotly');
+var contour = module.exports = {};
 
 Plotly.Plots.register(contour, 'contour',
     ['cartesian', '2dMap', 'contour'], {
@@ -103,7 +102,7 @@ contour.attributes = {
         }
     },
     line: {
-        color: extendFlat(scatterLineAttrs.color, {
+        color: extendFlat({}, scatterLineAttrs.color, {
             description: [
                 'Sets the color of the contour level.',
                 'Has no if `contours.coloring` is set to *lines*.'
@@ -111,7 +110,7 @@ contour.attributes = {
         }),
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash,
-        smoothing: extendFlat(scatterLineAttrs.smoothing, {
+        smoothing: extendFlat({}, scatterLineAttrs.smoothing, {
             description: [
                 'Sets the amount of smoothing for the contour lines,',
                 'where *0* corresponds to no smoothing.'

@@ -1,8 +1,11 @@
 'use strict';
 
-var shapes = module.exports = {},
-    Plotly = require('./plotly'),
-    isNumeric = require('./isnumeric'),
+var Plotly = require('./plotly'),
+    isNumeric = require('./isnumeric');
+
+var shapes = module.exports = {};
+
+var extendFlat = Plotly.Lib.extendFlat,
     scatterLineAttrs = Plotly.Scatter.attributes.line;
 
 shapes.layoutAttributes = {
@@ -50,10 +53,7 @@ shapes.layoutAttributes = {
         ].join(' ')
     },
 
-    xref: {
-        valType: 'enumerated',
-        values: ['paper', '/^x[0-9]/*$'],
-        role: 'info',
+    xref: extendFlat({}, Plotly.Annotations.layoutAttributes.xref, {
         description: [
             'Sets the shape\'s x coordinate axis.',
             'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
@@ -62,7 +62,7 @@ shapes.layoutAttributes = {
             'the left side of the plotting area in normalized coordinates',
             'where *0* (*1*) corresponds to the left (right) side.'
         ].join(' ')
-    },
+    }),
     x0: {
         valType: 'any',
         role: 'info',
@@ -80,10 +80,7 @@ shapes.layoutAttributes = {
         ].join(' ')
     },
 
-    yref: {
-        valType: 'enumerated',
-        values: ['paper', '/^y[0-9]/*$'],
-        role: 'info',
+    yref: extendFlat({}, Plotly.Annotations.layoutAttributes.yref, {
         description: [
             'Sets the annotation\'s y coordinate axis.',
             'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
@@ -92,7 +89,7 @@ shapes.layoutAttributes = {
             'the bottom of the plotting area in normalized coordinates',
             'where *0* (*1*) corresponds to the bottom (top).'
         ].join(' ')
-    },
+    }),
     y0: {
         valType: 'any',
         role: 'info',
@@ -113,7 +110,7 @@ shapes.layoutAttributes = {
     path: {
         valType: 'string',
         role: 'info',
-        dflt: [
+        description: [
             'For `type` *path* - a valid SVG path but with the pixel values',
             'replaced by data values. There are a few restrictions / quirks',
             'only absolute instructions, not relative. So the allowed segments',
@@ -293,7 +290,9 @@ shapes.draw = function(gd, index, opt, value) {
         else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
             fullLayout.shapes.splice(index,0,{});
 
-            var rule = Plotly.Lib.isPlainObject(value) ? $.extend({},value) : {text: 'New text'};
+            var rule = Plotly.Lib.isPlainObject(value) ?
+                    Plotly.Lib.extendFlat({}, value) :
+                    {text: 'New text'};
 
             if (layout.shapes) {
                 layout.shapes.splice(index, 0, rule);
