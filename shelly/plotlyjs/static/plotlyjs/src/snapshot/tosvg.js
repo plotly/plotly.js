@@ -1,5 +1,7 @@
 'use strict';
-var Plotly = require('../plotly');
+
+var Plotly = require('../plotly'),
+    d3 = require('d3');
 
 module.exports = function toSVG(gd, format) {
 
@@ -82,7 +84,7 @@ module.exports = function toSVG(gd, format) {
         .attr({'data-unformatted': null})
         .each(function() {
             // hidden text is pre-formatting mathjax, the browser ignores it but it can still confuse batik
-            var txt = window.d3.select(this);
+            var txt = d3.select(this);
             if(txt.style('visibility') === 'hidden') {
                 txt.remove();
                 return;

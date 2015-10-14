@@ -2,10 +2,11 @@
 /* jshint camelcase: false */
 
 // ---external global dependencies
-/* global Promise:false, d3:false */
+/* global Promise:false */
 
 
 var Plotly = require('./plotly'),
+    d3 = require('d3'),
     m4FromQuat = require('gl-mat4/fromQuat'),
     isNumeric = require('./isnumeric');
 
@@ -704,7 +705,7 @@ Plotly.plot = function(gd, data, layout, config) {
             }
 
             // finally do all error bars at once
-            if(Plotly.ErrorBars) {
+            if(gd._fullLayout._hasCartesian && Plotly.ErrorBars) {
                 Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
                 Plotly.Lib.markTime('done ErrorBars');
             }
@@ -3673,30 +3674,8 @@ function makePlotFramework(gd) {
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
-    // create '_plots' object grouping x/y axes into subplots
-    // to be better manage subplots
-    fullLayout._plots = {};
     var subplots = Plotly.Axes.getSubplots(gd);
-    var subplot, plotinfo;
-
-    for(var i = 0; i < subplots.length; i++) {
-        subplot = subplots[i];
-        plotinfo = fullLayout._plots[subplots[i]] = {};
-
-        plotinfo.id = subplot;
-
-        // references to the axis objects controlling this subplot
-        plotinfo.x = function() {
-            return Plotly.Axes.getFromId(gd, subplot, 'x');
-        };
-        plotinfo.y = function() {
-            return Plotly.Axes.getFromId(gd, subplot, 'y');
-        };
-
-        // TODO do .x() .y() still matter?
-        plotinfo.xaxis = plotinfo.x();
-        plotinfo.yaxis = plotinfo.y();
-    }
+    makeSubplots(gd, subplots);
 
     if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
 
@@ -3730,6 +3709,37 @@ function makePlotFramework(gd) {
     return frameWorkDone;
 }
 
+// create '_plots' object grouping x/y axes into subplots
+// to be better manage subplots
+function makeSubplots(gd, subplots) {
+    var _plots = gd._fullLayout._plots = {};
+
+    var subplot, plotinfo;
+
+    function getAxisFunc(subplot, axLetter) {
+        return function() {
+            return Plotly.Axes.getFromId(gd, subplot, axLetter);
+        };
+    }
+
+    for(var i = 0; i < subplots.length; i++) {
+        subplot = subplots[i];
+        plotinfo = _plots[subplot] = {};
+
+        plotinfo.id = subplot;
+
+        // references to the axis objects controlling this subplot
+        plotinfo.x = getAxisFunc(subplot, 'x');
+        plotinfo.y = getAxisFunc(subplot, 'y');
+
+        // TODO investigate why replacing calls to .x and .y
+        // for .xaxis and .yaxis makes the `pseudo_html`
+        // test image fail
+        plotinfo.xaxis = plotinfo.x();
+        plotinfo.yaxis = plotinfo.y();
+    }
+}
+
 function makeCartesianPlotFramwork(gd, subplots) {
     var fullLayout = gd._fullLayout;
 
@@ -3754,11 +3764,10 @@ function makeCartesianPlotFramwork(gd, subplots) {
     fullLayout._paper.selectAll('g.subplot').data(subplots)
       .enter().append('g')
         .classed('subplot', true)
-        .each(function(subplot){
-            var plotinfo = fullLayout._plots[subplot];
-            plotinfo.plotgroup = d3.select(this).classed(subplot, true);
-
-            var xa = plotinfo.xaxis,
+        .each(function(subplot) {
+            var plotinfo = fullLayout._plots[subplot],
+                plotgroup = plotinfo.plotgroup = d3.select(this).classed(subplot, true),
+                xa = plotinfo.xaxis,
                 ya = plotinfo.yaxis;
 
             // references to any subplots overlaid on this one
@@ -3798,20 +3807,20 @@ function makeCartesianPlotFramwork(gd, subplots) {
             else {
                 // main subplot - make the components of
                 // the plot and containers for overlays
-                plotinfo.bg = plotinfo.plotgroup.append('rect')
-                    .style('stroke-width',0);
-                plotinfo.gridlayer = plotinfo.plotgroup.append('g');
-                plotinfo.overgrid = plotinfo.plotgroup.append('g');
-                plotinfo.zerolinelayer = plotinfo.plotgroup.append('g');
-                plotinfo.overzero = plotinfo.plotgroup.append('g');
-                plotinfo.plot = plotinfo.plotgroup.append('svg').call(plotLayers);
-                plotinfo.overplot = plotinfo.plotgroup.append('g');
-                plotinfo.xlines = plotinfo.plotgroup.append('path');
-                plotinfo.ylines = plotinfo.plotgroup.append('path');
-                plotinfo.overlines = plotinfo.plotgroup.append('g');
-                plotinfo.xaxislayer = plotinfo.plotgroup.append('g');
-                plotinfo.yaxislayer = plotinfo.plotgroup.append('g');
-                plotinfo.overaxes = plotinfo.plotgroup.append('g');
+                plotinfo.bg = plotgroup.append('rect')
+                    .style('stroke-width', 0);
+                plotinfo.gridlayer = plotgroup.append('g');
+                plotinfo.overgrid = plotgroup.append('g');
+                plotinfo.zerolinelayer = plotgroup.append('g');
+                plotinfo.overzero = plotgroup.append('g');
+                plotinfo.plot = plotgroup.append('svg').call(plotLayers);
+                plotinfo.overplot = plotgroup.append('g');
+                plotinfo.xlines = plotgroup.append('path');
+                plotinfo.ylines = plotgroup.append('path');
+                plotinfo.overlines = plotgroup.append('g');
+                plotinfo.xaxislayer = plotgroup.append('g');
+                plotinfo.yaxislayer = plotgroup.append('g');
+                plotinfo.overaxes = plotgroup.append('g');
 
                 // make separate drag layers for each subplot,
                 // but append them to paper rather than the plot groups,
