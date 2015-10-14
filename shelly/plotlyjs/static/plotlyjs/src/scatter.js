@@ -532,7 +532,7 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     }
 };
 
-// common to 'scatter', 'scatter3d' and 'scattergeo'
+// common to 'scatter', 'scatter3d', 'scattergeo' and 'scattergl'
 scatter.lineDefaults = function(traceIn, traceOut, defaultColor, coerce) {
     var markerColor = (traceIn.marker || {}).color;
 
@@ -548,7 +548,7 @@ function lineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape==='spline') coerce('line.smoothing');
 }
 
-// common to 'scatter', 'scatter3d' and 'scattergeo'
+// common to 'scatter', 'scatter3d', 'scattergeo' and 'scattergl'
 scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerce) {
     var isBubble = scatter.isBubble(traceIn),
         lineColor = (traceIn.line || {}).color,

@@ -47,8 +47,7 @@ exports.Choropleth = require('./geo/defaults/choropleth');
 exports.Geo = require('./geo/geo');
 
 // GL2D
-exports.Gl2dLayout = require('./gl2d/defaults/gl2dlayout');
-exports.ScatterGl = require('./gl2d/defaults/scattergl');
+exports.ScatterGl = require('./gl2d/scattergl/scattergl');
 exports.Scene2D = require('./gl2d/scene2d');
 
 // plot schema

@@ -228,7 +228,6 @@ proto.update = function(options) {
 
     //Check if we need fancy mode (slower, but more features)
     if(fancy) {
-      console.log('in ~~fancy~~ mode');
 
       this.scatterOptions.sizes =
         convertArray(markerSizeFunc, options.marker.size, numPoints);
@@ -254,8 +253,9 @@ proto.update = function(options) {
 
       this.scatterOptions.positions = new Float32Array();
       this.scatter.update(this.scatterOptions);
-    } else {
-      console.log('fast mode');
+
+    } 
+    else {
 
       var color            = options.marker.color;
       var borderColor      = options.marker.line.color;

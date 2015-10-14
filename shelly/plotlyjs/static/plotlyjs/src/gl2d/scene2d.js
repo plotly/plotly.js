@@ -4,10 +4,13 @@ var Plotly = require('../plotly');
 var createPlot2D = require('gl-plot2d');
 var createSpikes  = require('gl-spikes2d');
 var createSelectBox = require('gl-select-box');
-var createLineWithMarkers = require('./convert/scattergl');
-var createOptions = require('./convert/axes2dgl');
+var createLineWithMarkers = require('./scattergl/convert/');
+var createOptions = require('./lib/gl2daxes');
 var createCamera  = require('./lib/camera');
 var htmlToUnicode = require('../gl3d/lib/html2unicode');
+
+Plotly.Plots.registerSubplot('gl2d', ['xaxis', 'yaxis'], ['x', 'y'],
+    Plotly.Axes.traceAttributes);
 
 function Scene2D(options, fullLayout) {
     var container = this.container = options.container;
