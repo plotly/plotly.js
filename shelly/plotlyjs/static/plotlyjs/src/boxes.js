@@ -157,7 +157,8 @@ boxes.attributes = {
                 role: 'style',
                 description: [
                     'Sets the border line color of the outlier sample points.',
-                    'Defaults to marker.color'].join(' ')
+                    'Defaults to marker.color'
+                ].join(' ')
             },
             outlierwidth: {
                 valType: 'number',
