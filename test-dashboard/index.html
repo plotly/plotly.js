@@ -7,7 +7,7 @@
 
 <body>
 
-  <div id="plot-list"></div>
+  <div id="plot-list" style="overflow:auto; height: 100px;"></div>
   <div id="status-info" style="display: block; position: absolute; top: 150px;"></div>
   <div id="embedded-graph"></div>
   <div id="embedded-image"style="
@@ -19,7 +19,6 @@
 
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 
-  <script type="text/javascript" src="./../shelly/shelly/static/js/plugins/d3.v3.min.js"></script>
   <script type="text/javascript" src="./../shelly/shelly/static/js/plugins/mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
 
   <script>
@@ -28,7 +27,7 @@
     };
   </script>
 
-  <script type="text/javascript" src="./../shelly/plotlyjs/static/plotlyjs/build/plotlyjs-bundle.js"></script>
+  <script type="text/javascript" src="./../shelly/plotlyjs/static/plotlyjs/build/plotlyjs-bundle.js" charset="utf-8"></script>
 
   <script type="text/javascript" src="test-bundle.js"></script>
 

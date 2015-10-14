@@ -13,6 +13,7 @@
     "arraytools": "^1.0.0",
     "browserify": "^6.1.0",
     "convex-hull": "^1.0.3",
+    "d3": "3.3.5",
     "delaunay-triangulate": "^1.1.6",
     "gl-error3d": "^1.0.0",
     "gl-line3d": "^1.0.1",
