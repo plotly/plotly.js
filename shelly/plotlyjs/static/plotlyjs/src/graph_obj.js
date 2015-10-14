@@ -3666,7 +3666,9 @@ function makeSubplots(gd, subplots) {
         plotinfo.x = getAxisFunc(subplot, 'x');
         plotinfo.y = getAxisFunc(subplot, 'y');
 
-        // TODO do .x() .y() still matter?
+        // TODO investigate why replacing calls to .x and .y
+        // for .xaxis and .yaxis makes the `pseudo_html`
+        // test image fail
         plotinfo.xaxis = plotinfo.x();
         plotinfo.yaxis = plotinfo.y();
     }
