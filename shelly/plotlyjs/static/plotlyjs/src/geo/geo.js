@@ -1,9 +1,9 @@
 'use strict';
 
-/* global d3:false */
 /* global PlotlyGeoAssets:false */
 
 var Plotly = require('../plotly'),
+    d3 = require('d3'),
     params = require('./lib/params'),
     addProjectionsToD3 = require('./lib/projections'),
     createGeoScale = require('./lib/set-scale'),
@@ -70,6 +70,9 @@ proto.plot = function(geoData, fullLayout) {
     _this.framework
         .call(_this.zoom)
         .on('dblclick', _this.zoomReset);
+
+    // N.B. the on 'dblclick doesn't in d3 3.5+
+    // https://github.com/mbostock/d3/issues/1985
 
     topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 

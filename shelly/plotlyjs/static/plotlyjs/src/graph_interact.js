@@ -1,10 +1,9 @@
 'use strict';
+
 /* jshint camelcase: false */
 
-// ---external global dependencies
-/* global d3:false */
-
 var Plotly = require('./plotly'),
+    d3 = require('d3'),
     tinycolor = require('tinycolor2'),
     isNumeric = require('./isnumeric');
 
@@ -91,8 +90,11 @@ fx.init = function(gd) {
         return fullLayout._plots[a].mainplot ? 1 : -1;
     });
     subplots.forEach(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot],
-            xa = plotinfo.x(),
+        var plotinfo = fullLayout._plots[subplot];
+
+        if(!fullLayout._hasCartesian) return;
+
+        var xa = plotinfo.x(),
             ya = plotinfo.y(),
 
             // the y position of the main x axis line
