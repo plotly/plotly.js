@@ -30,7 +30,6 @@
                 23.25
             ],
             "type": "box",
-            "boxpoints": "suspectedoutliers",
             "marker": {
                 "outliercolor": "green"
             },
