@@ -775,9 +775,13 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
 // find the list of possible axes to reference with an xref or yref attribute
 // and coerce it to that list
 axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
-    var axlist = axes.listIds(td, axLetter),
+    // data-ref annotations are not supported in gl2d yet
+    var hasGL2D = td._fullLayout._hasGL2D;
+
+    var axlist = hasGL2D ? [] : axes.listIds(td, axLetter),
         refAttr = axLetter + 'ref',
         attrDef = {};
+
     attrDef[refAttr] = {
         valType: 'enumerated',
         values: axlist.concat(['paper']),
