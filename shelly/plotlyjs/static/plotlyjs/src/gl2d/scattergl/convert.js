@@ -17,13 +17,13 @@ var DASHES = require('../lib/dashes.json');
 function LineWithMarkers(scene, uid) {
     this.scene = scene;
     this.uid = uid;
-    this.name = '';
-    this.hoverinfo = 'all';
 
     this.xData = [];
     this.yData = [];
     this.textLabels = [];
-    this.color = 'rgb(0,0,0)';  // FIXME not correct for fancy scatter
+    this.color = 'rgb(0, 0, 0)';
+    this.name = '';
+    this.hoverinfo = 'all';
 
     this.bounds = [0, 0, 0, 0];
 
@@ -89,15 +89,15 @@ proto.handlePick = function(pickResult) {
 
     return {
         trace: this,
-        hoverinfo: this.hoverinfo,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
             this.xData[id],
             this.yData[id]
         ],
+        textLabel: Array.isArray(this.textLabels) ? this.textLabels[id] : this.textLabels,
+        color: Array.isArray(this.color) ? this.color[id] : this.color,
         name: this.name,
-        color: this.color,
-        textLabel: this.textLabels[id]
+        hoverinfo: this.hoverinfo
     };
 };
 
@@ -192,6 +192,10 @@ proto.update = function(options) {
     this.xData = xaxis.makeCalcdata(options, 'x');
     this.yData = yaxis.makeCalcdata(options, 'y');
     this.textLabels = options.text;
+
+    // not quite on-par with 'scatter', but close enough for now
+    this.color = hasMarkers ? options.marker.color : options.line.color;
+
     this.name = options.name;
     this.hoverinfo = options.hoverinfo;
 
@@ -252,8 +256,6 @@ proto.update = function(options) {
                 this.scatterOptions.borderWidths[i] *= 0.5;
             }
 
-            this.color = options.marker.color;
-
             this.fancyScatter.update(this.scatterOptions);
             this.scatterOptions.positions = new Float32Array();
             this.scatter.update(this.scatterOptions);
@@ -267,8 +269,6 @@ proto.update = function(options) {
 
             colorArray[3] *= opacity;
             borderColorArray[3] *= opacity;
-
-            this.color = color;
 
             this.scatterOptions.size = 2.0 * markerSizeFunc(options.marker.size);
             this.scatterOptions.borderSize = +options.marker.line.width;
@@ -296,6 +296,7 @@ proto.update = function(options) {
 
         var lineColor = str2RGBArray(options.line.color);
         if(hasMarkers) lineColor[3] *= options.marker.opacity;
+
 
         var lineWidth = Math.round(0.5 * this.lineOptions.width),
             dashes = (DASHES[options.line.dash] || [1]).slice();
