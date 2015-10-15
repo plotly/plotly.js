@@ -506,23 +506,8 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     }
 
     coerce('fill');
-    if(traceOut.fill!=='none') {
-        var inheritColorFromMarker = false;
-        if(traceOut.marker) {
-            // don't try to inherit a color array
-            var markerColor = traceOut.marker.color,
-                markerLineColor = (traceOut.marker.line||{}).color;
-            if(markerColor && !Array.isArray(markerColor)) {
-                inheritColorFromMarker = markerColor;
-            }
-            else if(markerLineColor && !Array.isArray(markerLineColor)) {
-                inheritColorFromMarker = markerLineColor;
-            }
-        }
-        coerce('fillcolor', Plotly.Color.addOpacity(
-            (traceOut.line||{}).color ||
-            inheritColorFromMarker ||
-            defaultColor, 0.5));
+    if(traceOut.fill !== 'none') {
+        scatter.fillColorDefaults(traceIn, traceOut, defaultColor, coerce);
         if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut, coerce);
     }
 
@@ -596,6 +581,30 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
 scatter.textDefaults = function(traceIn, traceOut, layout, coerce) {
     coerce('textposition');
     Plotly.Lib.coerceFont(coerce, 'textfont', layout.font);
+};
+
+// common to 'scatter' and 'scattergl'
+scatter.fillColorDefaults = function(traceIn, traceOut, defaultColor, coerce) {
+    var inheritColorFromMarker = false;
+
+    if(traceOut.marker) {
+        // don't try to inherit a color array
+        var markerColor = traceOut.marker.color,
+            markerLineColor = (traceOut.marker.line || {}).color;
+
+        if(markerColor && !Array.isArray(markerColor)) {
+            inheritColorFromMarker = markerColor;
+        }
+        else if(markerLineColor && !Array.isArray(markerLineColor)) {
+            inheritColorFromMarker = markerLineColor;
+        }
+    }
+
+    coerce('fillcolor', Plotly.Color.addOpacity(
+        (traceOut.line || {}).color ||
+        inheritColorFromMarker ||
+        defaultColor, 0.5
+    ));
 };
 
 scatter.cleanData = function(fullData) {

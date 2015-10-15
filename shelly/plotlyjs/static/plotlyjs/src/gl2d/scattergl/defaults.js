@@ -20,15 +20,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('mode', len < Scatter.PTS_LINESONLY ? 'lines+markers' : 'lines');
 
-    coerce('fill');
-    coerce('fillcolor');  // TODO add inherit routine for scatter.js
-
     if(Scatter.hasLines(traceOut)) {
-      Scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
+        Scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
     if(Scatter.hasMarkers(traceOut)) {
-      Scatter.markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+        Scatter.markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    }
+
+    coerce('fill');
+    if(traceOut.fill !== 'none') {
+        Scatter.fillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
     if(Plotly.ErrorBars) {
