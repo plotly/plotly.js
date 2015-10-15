@@ -2,12 +2,13 @@
 
 var Plotly = require('../plotly');
 var createPlot2D = require('gl-plot2d');
-var createSpikes  = require('gl-spikes2d');
+var createSpikes = require('gl-spikes2d');
 var createSelectBox = require('gl-select-box');
 var createLineWithMarkers = require('./scattergl/convert/');
 var createOptions = require('./lib/gl2daxes');
-var createCamera  = require('./lib/camera');
+var createCamera = require('./lib/camera');
 var htmlToUnicode = require('../gl3d/lib/html2unicode');
+
 
 Plotly.Plots.registerSubplot('gl2d', ['xaxis', 'yaxis'], ['x', 'y'],
     Plotly.Axes.traceAttributes);
@@ -455,10 +456,8 @@ proto.draw = function() {
     glplot.draw();
 };
 
-// not bad but `gl2d_27` hover still looks weird ...
 proto.hoverFormatter = function(axisName, val) {
     if(val === undefined) return undefined;
-    if(typeof val === 'string') return val;
 
     var axis = this[axisName];
     return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;

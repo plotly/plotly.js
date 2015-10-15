@@ -1202,10 +1202,9 @@ axes.setConvert = function(ax) {
     //          the first letter of ax._id?)
     // in case the expected data isn't there, make a list of
     // integers based on the opposite data
-    ax.makeCalcdata = function(tdc,axletter) {
-        var arrayIn,
-            arrayOut,
-            i;
+    ax.makeCalcdata = function(tdc, axletter) {
+        var arrayIn, arrayOut, i;
+
         if(axletter in tdc) {
             arrayIn = tdc[axletter];
             arrayOut = new Array(arrayIn.length);

@@ -194,8 +194,9 @@ proto.update = function(options) {
   this.name = options.name;
   this.hoverinfo = options.hoverinfo;
 
-  this.xData = x;
-  this.yData = y;
+  this.xData = xaxis.makeCalcdata(options, 'x');
+  this.yData = yaxis.makeCalcdata(options, 'y');
+
   this.textLabels = options.text;
   var bounds = this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
 
