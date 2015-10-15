@@ -691,7 +691,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
             for(j = 0; j < modules.length; j++) {
                 module = modules[j];
-                if(!module.plot) return;
+                if(!module.plot) continue;
 
                 // plot all traces of this type on this subplot at once
                 cdModule = getCdModule(cdSubplot, module);
