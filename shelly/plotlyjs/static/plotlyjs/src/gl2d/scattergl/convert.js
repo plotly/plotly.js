@@ -17,6 +17,7 @@ function LineWithMarkers(scene, uid) {
   this.scene = scene;
   this.uid = uid;
   this.name = '';
+  this.hoverinfo = 'all';
   this.color = 'rgb(0,0,0)';
 
   this.xData = [];
@@ -84,18 +85,19 @@ function LineWithMarkers(scene, uid) {
 var proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(pickResult) {
-  var id = pickResult.pointId;
-  return {
-    trace: this,
-    dataCoord: pickResult.dataCoord,
-    traceCoord: [
-      this.xData[id],
-      this.yData[id]
-    ],
-    name: this.name,
-    color: this.color,
-    text: this.text && this.text[id]
-  };
+    var id = pickResult.pointId;
+    return {
+        trace: this,
+        hoverinfo: this.hoverinfo,
+        dataCoord: pickResult.dataCoord,
+        traceCoord: [
+            this.xData[id],
+            this.yData[id]
+        ],
+        name: this.name,
+        color: this.color,
+        textLabel: this.textLabels[id]
+    };
 };
 
 //Check if a marker is fancy
@@ -190,6 +192,7 @@ proto.update = function(options) {
   var errorVals = Plotly.ErrorBars.calcFromTrace(options, this.scene.fullLayout);
 
   this.name = options.name;
+  this.hoverinfo = options.hoverinfo;
 
   this.xData = x;
   this.yData = y;

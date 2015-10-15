@@ -371,68 +371,91 @@ proto.draw = function() {
     var y = this.canvas.height - glplot.pixelRatio * mouseListener.y;
 
     if(camera.boxEnabled && this.fullLayout.dragmode === 'zoom') {
+        this.selectBox.enabled = true;
 
-      this.selectBox.enabled = true;
-      this.selectBox.selectBox = [
-        Math.min(camera.boxStart[0], camera.boxEnd[0]),
-        Math.min(camera.boxStart[1], camera.boxEnd[1]),
-        Math.max(camera.boxStart[0], camera.boxEnd[0]),
-        Math.max(camera.boxStart[1], camera.boxEnd[1])
-      ];
+        this.selectBox.selectBox = [
+            Math.min(camera.boxStart[0], camera.boxEnd[0]),
+            Math.min(camera.boxStart[1], camera.boxEnd[1]),
+            Math.max(camera.boxStart[0], camera.boxEnd[0]),
+            Math.max(camera.boxStart[1], camera.boxEnd[1])
+        ];
 
-      glplot.setDirty();
-    } else {
-      this.selectBox.enabled = false;
+        glplot.setDirty();
+    }
+    else {
+        this.selectBox.enabled = false;
 
-      var size = this.fullLayout._size;
-      var domainX = this.xaxis.domain;
-      var domainY = this.yaxis.domain;
+        var size = this.fullLayout._size,
+            domainX = this.xaxis.domain,
+            domainY = this.yaxis.domain;
 
-      var result = glplot.pick(
-          (x / glplot.pixelRatio) + size.l + domainX[0] * size.w,
-          (y / glplot.pixelRatio) - (size.t + (1-domainY[1]) * size.h)
-      );
+        var result = glplot.pick(
+            (x / glplot.pixelRatio) + size.l + domainX[0] * size.w,
+            (y / glplot.pixelRatio) - (size.t + (1-domainY[1]) * size.h)
+        );
 
-      if(result) {
-        var nextSelection = result.object._trace.handlePick(result);
-        if(nextSelection &&
-          (!this.lastPickResult ||
-            this.lastPickResult.trace !== nextSelection.trace ||
-            this.lastPickResult.dataCoord[0] !== nextSelection.dataCoord[0] ||
-            this.lastPickResult.dataCoord[1] !== nextSelection.dataCoord[1])) {
-          var selection = this.lastPickResult = nextSelection;
-          this.spikes.update({
-            center: result.dataCoord
-          });
-          selection.screenCoord= [
-            ((glplot.viewBox[2] - glplot.viewBox[0]) *
-            (result.dataCoord[0] - glplot.dataBox[0]) /
-              (glplot.dataBox[2] - glplot.dataBox[0]) + glplot.viewBox[0]) / glplot.pixelRatio,
-            (this.canvas.height - (glplot.viewBox[3] - glplot.viewBox[1]) *
-            (result.dataCoord[1] - glplot.dataBox[1]) /
-              (glplot.dataBox[3] - glplot.dataBox[1]) - glplot.viewBox[1]) / glplot.pixelRatio ];
+        if(result) {
+            var nextSelection = result.object._trace.handlePick(result);
 
-          Plotly.Fx.loneHover({
-            x: selection.screenCoord[0],
-            y: selection.screenCoord[1],
-            xLabel: selection.traceCoord[0] + '',
-            yLabel: selection.traceCoord[1] + '',
-            text:   selection.textLabel || '',
-            name:   selection.name,
-            color:  selection.color
-           }, {
-             container: this.svgContainer
-           });
-           this.lastPickResult = {
-             dataCoord: result.dataCoord
-           };
-         }
-      } else if(!result && this.lastPickResult) {
-        this.spikes.update({});
-        this.lastPickResult = null;
-        Plotly.Fx.loneUnhover(this.svgContainer);
-      }
+            if(nextSelection && (
+                !this.lastPickResult ||
+                this.lastPickResult.trace !== nextSelection.trace ||
+                this.lastPickResult.dataCoord[0] !== nextSelection.dataCoord[0] ||
+                this.lastPickResult.dataCoord[1] !== nextSelection.dataCoord[1])
+            ) {
+                var selection = this.lastPickResult = nextSelection;
+                this.spikes.update({ center: result.dataCoord });
+
+                selection.screenCoord = [
+                    ((glplot.viewBox[2] - glplot.viewBox[0]) *
+                    (result.dataCoord[0] - glplot.dataBox[0]) /
+                        (glplot.dataBox[2] - glplot.dataBox[0]) + glplot.viewBox[0]) /
+                            glplot.pixelRatio,
+                    (this.canvas.height - (glplot.viewBox[3] - glplot.viewBox[1]) *
+                    (result.dataCoord[1] - glplot.dataBox[1]) /
+                        (glplot.dataBox[3] - glplot.dataBox[1]) - glplot.viewBox[1]) /
+                            glplot.pixelRatio
+                ];
+
+                var hoverinfo = selection.hoverinfo;
+                if(hoverinfo !== 'all') {
+                    var parts = hoverinfo.split('+');
+                    if(parts.indexOf('x') === -1) selection.traceCoord[0] = undefined;
+                    if(parts.indexOf('y') === -1) selection.traceCoord[1] = undefined;
+                    if(parts.indexOf('text') === -1) selection.textLabel = undefined;
+                    if(parts.indexOf('name') === -1) selection.name = undefined;
+                }
+
+                Plotly.Fx.loneHover({
+                    x: selection.screenCoord[0],
+                    y: selection.screenCoord[1],
+                    xLabel: this.hoverFormatter('xaxis', selection.traceCoord[0]),
+                    yLabel: this.hoverFormatter('yaxis', selection.traceCoord[1]),
+                    text: selection.textLabel,
+                    name: selection.name,
+                    color: selection.color
+                }, {
+                    container: this.svgContainer
+                });
+
+                 this.lastPickResult = { dataCoord: result.dataCoord };
+            }
+        }
+        else if(!result && this.lastPickResult) {
+            this.spikes.update({});
+            this.lastPickResult = null;
+            Plotly.Fx.loneUnhover(this.svgContainer);
+        }
     }
 
     glplot.draw();
+};
+
+// not bad but `gl2d_27` hover still looks weird ...
+proto.hoverFormatter = function(axisName, val) {
+    if(val === undefined) return undefined;
+    if(typeof val === 'string') return val;
+
+    var axis = this[axisName];
+    return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };
