@@ -5,7 +5,7 @@ var Plotly = require('../../plotly');
 var ScatterGl = module.exports = {};
 
 Plotly.Plots.register(ScatterGl, 'scattergl',
-    ['gl2d', 'showLegend', 'errorBarsOK', 'markerColorscale'], {
+    ['gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend'], {
     description: [
         'The data visualized as scatter point or lines is set in `x` and `y`',
         'using the WebGl plotting engine.',
@@ -20,11 +20,5 @@ ScatterGl.supplyDefaults = require('./defaults');
 
 ScatterGl.colorbar = Plotly.Scatter.colorbar;
 
-ScatterGl.calc = function(gd, trace) {
-    var cd = [{x: false, y: false, trace: trace, t: {}}];
-
-    Plotly.Scatter.arraysToCalcdata(cd);
-    Plotly.Scatter.calcMarkerColorscales(trace);
-
-    return cd;
-};
+// reuse the Scatter3D 'dummy' calc step so that legends know what to do
+ScatterGl.calc = Plotly.Scatter3D.calc;
