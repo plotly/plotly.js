@@ -30,6 +30,7 @@ function LineWithMarkers(scene, uid) {
     color: [0,0,0,1]
   };
   this.errorX = createError(scene.glplot, this.errorXOptions);
+  this.errorX._trace = this;
 
   this.errorYOptions = {
     positions: new Float32Array(),
@@ -39,6 +40,7 @@ function LineWithMarkers(scene, uid) {
     color: [0,0,0,1]
   };
   this.errorY = createError(scene.glplot, this.errorYOptions);
+  this.errorY._trace = this;
 
   this.lineOptions = {
     positions:  new Float32Array(),
@@ -337,7 +339,8 @@ proto.update = function(options) {
 proto.dispose = function() {
   this.line.dispose();
   this.scatter.dispose();
-  this.error.dispose();
+  this.errorX.dispose();
+  this.errorY.dispose();
   this.fancyScatter.dispose();
 };
 
