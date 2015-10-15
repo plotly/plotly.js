@@ -27,22 +27,6 @@ function LineWithMarkers(scene, uid) {
 
     this.bounds = [0, 0, 0, 0];
 
-    this.scatterOptions = {
-        positions: new Float32Array(),
-        sizes: [],
-        colors: [],
-        glyphs: [],
-        borderWidths: [],
-        borderColors: [],
-        size: 12,
-        color: [0, 0, 0, 1],
-        borderSize: 1,
-        borderColor: [0, 0, 0, 1]
-    };
-
-    this.scatter = createScatter(scene.glplot, this.scatterOptions);
-    this.scatter._trace = this;
-
     this.lineOptions = {
       positions:  new Float32Array(),
       color:      [0, 0, 0, 1],
@@ -57,9 +41,6 @@ function LineWithMarkers(scene, uid) {
     };
     this.line = createLine(scene.glplot, this.lineOptions);
     this.line._trace = this;
-
-    this.fancyScatter = createFancyScatter(scene.glplot, this.scatterOptions);
-    this.fancyScatter._trace = this;
 
     this.errorXOptions = {
         positions: new Float32Array(),
@@ -80,6 +61,25 @@ function LineWithMarkers(scene, uid) {
     };
     this.errorY = createError(scene.glplot, this.errorYOptions);
     this.errorY._trace = this;
+
+    this.scatterOptions = {
+        positions: new Float32Array(),
+        sizes: [],
+        colors: [],
+        glyphs: [],
+        borderWidths: [],
+        borderColors: [],
+        size: 12,
+        color: [0, 0, 0, 1],
+        borderSize: 1,
+        borderColor: [0, 0, 0, 1]
+    };
+
+    this.scatter = createScatter(scene.glplot, this.scatterOptions);
+    this.scatter._trace = this;
+
+    this.fancyScatter = createFancyScatter(scene.glplot, this.scatterOptions);
+    this.fancyScatter._trace = this;
 }
 
 var proto = LineWithMarkers.prototype;
@@ -239,64 +239,12 @@ proto.update = function(options) {
 
     positions = positions.slice(0, ptr);
 
-    if(hasMarkers) {
-        this.scatterOptions.positions = positions;
-
-        var markerSizeFunc = Plotly.Scatter.getBubbleSizeFn(options),
-            isFancy = checkFancyScatter(options.marker);
-
-        // check if we need fancy mode (slower, but more features)
-        if(isFancy) {
-            this.scatterOptions.sizes = convertArray(
-                markerSizeFunc, options.marker.size, numPoints);
-            this.scatterOptions.glyphs = convertSymbol(
-                options.marker.symbol, numPoints);
-            this.scatterOptions.colors = convertColorOrColorScale(
-                options.marker, options.marker.opacity, numPoints);
-            this.scatterOptions.borderWidths = convertNumber(
-                options.marker.line.width, numPoints);
-            this.scatterOptions.borderColors = convertColorOrColorScale(
-                options.marker.line, options.marker.opacity, numPoints);
-
-            for(i = 0; i < numPoints; ++i) {
-                this.scatterOptions.sizes[i] *= 4.0;
-                this.scatterOptions.borderWidths[i] *= 0.5;
-            }
-
-            this.fancyScatter.update(this.scatterOptions);
-            this.scatterOptions.positions = new Float32Array();
-            this.scatter.update(this.scatterOptions);
-        }
-        else {
-            var color = options.marker.color,
-                borderColor = options.marker.line.color,
-                colorArray = str2RGBArray(color),
-                borderColorArray = str2RGBArray(borderColor),
-                opacity = +options.marker.opacity;
-
-            colorArray[3] *= opacity;
-            borderColorArray[3] *= opacity;
-
-            this.scatterOptions.size = 2.0 * markerSizeFunc(options.marker.size);
-            this.scatterOptions.borderSize = +options.marker.line.width;
-            this.scatterOptions.color = colorArray;
-            this.scatterOptions.borderColor = borderColorArray;
-
-            this.scatter.update(this.scatterOptions);
-
-            // turn off fancy scatter plot
-            this.scatterOptions.positions = new Float32Array();
-            this.scatterOptions.glyphs = [];
-            this.fancyScatter.update(this.scatterOptions);
-        }
-    }
-    else {
-        // don't draw markers
-        this.scatterOptions.positions = new Float32Array();
-        this.scatterOptions.glyphs = [];
-        this.scatter.update(this.scatterOptions);
-        this.fancyScatter.update(this.scatterOptions);
-    }
+    /* Order is important here to get the correct laying:
+     * - lines
+     * - errorX
+     * - errorY
+     * - markers
+     */
 
     if(hasLines) {
         this.lineOptions.positions = positions;
@@ -360,13 +308,72 @@ proto.update = function(options) {
     }
 
     this.errorY.update(this.errorYOptions);
+
+    if(hasMarkers) {
+        this.scatterOptions.positions = positions;
+
+        var markerSizeFunc = Plotly.Scatter.getBubbleSizeFn(options),
+            isFancy = checkFancyScatter(options.marker);
+
+        // check if we need fancy mode (slower, but more features)
+        if(isFancy) {
+            this.scatterOptions.sizes = convertArray(
+                markerSizeFunc, options.marker.size, numPoints);
+            this.scatterOptions.glyphs = convertSymbol(
+                options.marker.symbol, numPoints);
+            this.scatterOptions.colors = convertColorOrColorScale(
+                options.marker, options.marker.opacity, numPoints);
+            this.scatterOptions.borderWidths = convertNumber(
+                options.marker.line.width, numPoints);
+            this.scatterOptions.borderColors = convertColorOrColorScale(
+                options.marker.line, options.marker.opacity, numPoints);
+
+            for(i = 0; i < numPoints; ++i) {
+                this.scatterOptions.sizes[i] *= 4.0;
+                this.scatterOptions.borderWidths[i] *= 0.5;
+            }
+
+            this.fancyScatter.update(this.scatterOptions);
+            this.scatterOptions.positions = new Float32Array();
+            this.scatter.update(this.scatterOptions);
+        }
+        else {
+            var color = options.marker.color,
+                borderColor = options.marker.line.color,
+                colorArray = str2RGBArray(color),
+                borderColorArray = str2RGBArray(borderColor),
+                opacity = +options.marker.opacity;
+
+            colorArray[3] *= opacity;
+            borderColorArray[3] *= opacity;
+
+            this.scatterOptions.size = 2.0 * markerSizeFunc(options.marker.size);
+            this.scatterOptions.borderSize = +options.marker.line.width;
+            this.scatterOptions.color = colorArray;
+            this.scatterOptions.borderColor = borderColorArray;
+
+            this.scatter.update(this.scatterOptions);
+
+            // turn off fancy scatter plot
+            this.scatterOptions.positions = new Float32Array();
+            this.scatterOptions.glyphs = [];
+            this.fancyScatter.update(this.scatterOptions);
+        }
+    }
+    else {
+        // don't draw markers
+        this.scatterOptions.positions = new Float32Array();
+        this.scatterOptions.glyphs = [];
+        this.scatter.update(this.scatterOptions);
+        this.fancyScatter.update(this.scatterOptions);
+    }
 };
 
 proto.dispose = function() {
     this.line.dispose();
-    this.scatter.dispose();
     this.errorX.dispose();
     this.errorY.dispose();
+    this.scatter.dispose();
     this.fancyScatter.dispose();
 };
 
