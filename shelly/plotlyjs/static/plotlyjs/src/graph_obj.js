@@ -2740,8 +2740,10 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         axlist,
         flagAxForDelete = {};
 
-    // for now, if we detect 3D or geo stuff, just re-do the plot
-    if(fullLayout._hasGL3D || fullLayout._hasGeo) doplot = true;
+    // for now, if we detect gl or geo stuff, just re-do the plot
+    if(fullLayout._hasGL3D || fullLayout._hasGeo || fullLayout._hasGL2D) {
+        doplot = true;
+    }
 
     // make a new empty vals array for undoit
     function a0(){ return traces.map(function(){ return undefined; }); }
