@@ -11,7 +11,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
       return Plotly.Lib.coerce(traceIn, traceOut, ScatterGl.attributes, attr, dflt);
     }
 
-    var len = handleXYDefaults(traceIn, traceOut, coerce);
+    var len = Scatter.handleXYDefaults(traceIn, traceOut, coerce);
     if(!len) {
       traceOut.visible = false;
       return;
@@ -38,17 +38,3 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
     }
 };
-
-function handleXYDefaults(traceIn, traceOut, coerce) {
-    var len = 0,
-        x = coerce('x'),
-        y = coerce('y');
-
-    if(x && y) {
-        len = Math.min(x.length, y.length);
-        if(len < x.length) traceOut.x = x.slice(0, len);
-        if(len < y.length) traceOut.y = y.slice(0, len);
-    }
-
-    return len;
-}

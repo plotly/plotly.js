@@ -10,7 +10,11 @@ var scatterAttrs = Plotly.Scatter.attributes,
 
 module.exports = {
     x: scatterAttrs.x,
+    x0: scatterAttrs.x0,
+    dx: scatterAttrs.dx,
     y: scatterAttrs.y,
+    y0: scatterAttrs.y0,
+    dy: scatterAttrs.dy,
     text: extendFlat({}, scatterAttrs.text, {
         description: [
             'Sets text elements associated with each (x,y) pair to appear on hover.',

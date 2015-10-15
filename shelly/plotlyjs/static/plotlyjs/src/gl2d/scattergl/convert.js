@@ -179,9 +179,7 @@ function _convertColor(colors, opacities, count) {
 }
 
 proto.update = function(options) {
-    var x = options.x,
-        y = options.y,
-        scene = this.scene,
+    var scene = this.scene,
         xaxis = scene.xaxis,
         yaxis = scene.yaxis,
         hasMarkers = Plotly.Scatter.hasMarkers(options),
@@ -189,11 +187,13 @@ proto.update = function(options) {
         hasErrorX = (options.error_x.visible === true),
         hasErrorY = (options.error_y.visible === true);
 
-    this.xData = xaxis.makeCalcdata(options, 'x');
-    this.yData = yaxis.makeCalcdata(options, 'y');
+    var x = this.xData = xaxis.makeCalcdata(options, 'x');
+    var y = this.yData = yaxis.makeCalcdata(options, 'y');
+
     this.textLabels = options.text;
 
     // not quite on-par with 'scatter', but close enough for now
+    // does not handle the colorscale case
     this.color = hasMarkers ? options.marker.color : options.line.color;
 
     this.name = options.name;

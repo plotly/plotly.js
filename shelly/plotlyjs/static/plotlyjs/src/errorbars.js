@@ -299,11 +299,9 @@ errorBars.calc = function(gd) {
 };
 
 errorBars.calcFromTrace = function(trace, layout) {
-    var len = trace.x.length,
-        x = trace.x,
-        y = trace.y;
-
-    // x and y have the same length after supplyDefaults
+    var x = trace.x || [],
+        y = trace.y,
+        len = x.length || y.length;
 
     var calcdataMock = new Array(len);
 
