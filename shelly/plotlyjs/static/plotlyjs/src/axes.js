@@ -1,11 +1,13 @@
 'use strict';
 
 // ---external global dependencies
-/* global d3:false, Promise:false */
+/* Promise:false */
 
-var axes = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var axes = module.exports = {};
 
 Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], {
     xaxis: {
@@ -2354,7 +2356,7 @@ axes.listIds = function(td, axletter) {
 
 // get an axis object from its id 'x','x2' etc
 // optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
-axes.getFromId = function(td,id,type) {
+axes.getFromId = function(td, id, type) {
     var fullLayout = td._fullLayout;
 
     if(type==='x') id = id.replace(/y[0-9]*/,'');
@@ -2873,8 +2875,11 @@ axes.doTicks = function(td, axid, skipTitle) {
     }
     else {
         var alldone = axes.getSubplots(td,ax).map(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot],
-                container = plotinfo[axletter+'axislayer'],
+            var plotinfo = fullLayout._plots[subplot];
+
+            if(!fullLayout._hasCartesian) return;
+
+            var container = plotinfo[axletter + 'axislayer'],
 
                 // [bottom or left, top or right, free, main]
                 linepositions = ax._linepositions[subplot]||[],

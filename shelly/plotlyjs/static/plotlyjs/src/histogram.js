@@ -1,9 +1,10 @@
 'use strict';
 
-var histogram = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
     isNumeric = require('./isnumeric'),
     barAttrs = Plotly.Bars.attributes;
+
+var histogram = module.exports = {};
 
 /**
  * histogram errorBarsOK is debatable, but it's put in for backward compat.
@@ -39,7 +40,6 @@ Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
 // histogram has its own calc function,
 // but uses Bars.plot to display
 // and Bars.setPositions for stacking and grouping
-
 function makeBinsAttr(axLetter) {
     return {
         start: {
@@ -217,13 +217,12 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
     binDirections.forEach(function(binDirection){
         // data being binned - note that even though it's a little weird,
         // it's possible to have bins without data, if there's inferred data
-        var binstrt = coerce(binDirection + 'bins.start'),
-            binend = coerce(binDirection + 'bins.end'),
-            validbin = binstrt!==undefined && binend!==undefined,
-            autobin = validbin ? 
+        var binstrt = Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, binDirection + 'bins.start'),
+            binend = Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, binDirection + 'bins.end'),
+            autobin = binstrt && binend ? 
                 coerce('autobin' + binDirection, false) : 
                 coerce('autobin' + binDirection);
- 
+
         if(autobin) coerce('nbins' + binDirection);
         else coerce(binDirection + 'bins.size');
     });

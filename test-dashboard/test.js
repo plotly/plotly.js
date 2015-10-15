@@ -32,5 +32,6 @@ plots['chrisp-nan-1'] = require('./testplots/chrisp-nan-1.json');
 plots['marker-arrays'] = require('./testplots/marker-arrays.json');
 plots['scatter3d-colorscale'] = require('./testplots/scatter3d-colorscale.json');
 plots['autocolorscale'] = require('./testplots/autocolorscale.json');
+plots['nan-holes'] = require('./testplots/nan-holes.json');
 
 plotButtons(plots, './testplots/');

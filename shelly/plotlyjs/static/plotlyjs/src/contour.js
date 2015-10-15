@@ -1,10 +1,9 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
+var Plotly = require('./plotly'),
+    d3 = require('d3');
 
-var contour = module.exports = {},
-    Plotly = require('./plotly');
+var contour = module.exports = {};
 
 Plotly.Plots.register(contour, 'contour',
     ['cartesian', '2dMap', 'contour'], {
@@ -125,10 +124,9 @@ contour.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         return Plotly.Lib.coerce(traceIn, traceOut, contour.attributes, attr, dflt);
     }
 
-    var contourstart = coerce('contours.start'),
-        contourend = coerce('contours.end'),
-        validcont = contourstart!==undefined && contourend!==undefined,
-        autocontour = validcont ? coerce('autocontour', false) : coerce('autocontour');
+    var contourStart = Plotly.Lib.coerce2(traceIn, traceOut, contour.attributes, 'contours.start'),
+        contourEnd = Plotly.Lib.coerce2(traceIn, traceOut, contour.attributes, 'contours.end'),
+        autocontour = contourStart && contourEnd ? coerce('autocontour', false) : coerce('autocontour');
     if(autocontour) coerce('ncontours');
     else coerce('contours.size');
 
