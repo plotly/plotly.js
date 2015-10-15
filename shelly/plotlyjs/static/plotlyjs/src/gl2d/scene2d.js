@@ -213,7 +213,6 @@ proto.updateAxes = function() {
 };
 
 proto.cameraChanged = function() {
-  var fullLayout = this.fullLayout;
   var camera = this.camera;
   var xrange = this.xaxis.range;
   var yrange = this.yaxis.range;
@@ -265,18 +264,22 @@ proto.plot = function(fullData, fullLayout) {
 
 i_loop:
     for(i=0; i<fullData.length; ++i) {
+        if(fullData[i].visible !== true) continue;
+
         for(j=0; j<this.traces.length; ++j) {
             if(this.traces[j].uid === fullData[i].uid) {
                 this.traces[j].update(fullData[i]);
                 continue i_loop;
             }
         }
+
         var newTrace = null;
         switch(fullData[i].type) {
           case 'scattergl':
               newTrace = createLineWithMarkers(this, fullData[i]);
           break;
         }
+
         if(newTrace) {
             this.traces.push(newTrace);
         }
@@ -285,10 +288,12 @@ i_loop:
 j_loop:
     for(j=this.traces.length-1; j>=0; --j) {
         for(i=0; i<fullData.length; ++i) {
-            if(this.traces[j].uid === fullData[i].uid) {
-                continue j_loop;
-            }
+            if(
+                this.traces[j].uid === fullData[i].uid &&
+                fullData[i].visible === true
+            ) continue j_loop;
         }
+
         trace = this.traces[j];
         trace.dispose();
         this.traces.splice(j, 1);
