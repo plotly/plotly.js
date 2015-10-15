@@ -1,195 +1,488 @@
 'use strict';
 
 // ---external global dependencies
-/* global d3:false, Promise:false */
+/* Promise:false */
 
-var axes = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
 
+var axes = module.exports = {};
+
+Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], {
+    xaxis: {
+        valType: 'axisid',
+        role: 'info',
+        dflt: 'x',
+        description: [
+            'Sets a reference between this trace\'s x coordinates and',
+            'a 2D cartesian x axis.',
+            'If *x* (the default value), the x coordinates refer to',
+            '`layout.xaxis`.',
+            'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
+    },
+    yaxis: {
+        valType: 'axisid',
+        role: 'info',
+        dflt: 'y',
+        description: [
+            'Sets a reference between this trace\'s y coordinates and',
+            'a 2D cartesian y axis.',
+            'If *y* (the default value), the y coordinates refer to',
+            '`layout.yaxis`.',
+            'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
+        ].join(' ')
+    }
+});
+
+var extendFlat = Plotly.Lib.extendFlat;
+
 axes.layoutAttributes = {
-    title: {type: 'string'},
-    titlefont: {type: 'font'},
+    title: {
+        valType: 'string',
+        role: 'info',
+        description: 'Sets the title of this axis.'
+    },
+    titlefont: extendFlat({}, Plotly.Plots.fontAttrs, {
+        description: [
+            'Sets this axis\' title font.'
+        ].join(' ')
+    }),
     type: {
-        type: 'enumerated',
+        valType: 'enumerated',
         // '-' means we haven't yet run autotype or couldn't find any data
         // it gets turned into linear in td._fullLayout but not copied back
         // to td.data like the others are.
         values: ['-', 'linear', 'log', 'date', 'category'],
-        dflt: '-'
+        dflt: '-',
+        role: 'info',
+        description: [
+            'Sets the axis type.',
+            'By default, plotly attempts to determined the axis type',
+            'by looking into the data of the traces that referenced',
+            'the axis in question.'
+        ].join(' ')
     },
     autorange: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [true, false, 'reversed'],
-        dflt: true
+        dflt: true,
+        role: 'style',
+        description: [
+            'Determines whether or not the range of this axis is',
+            'computed in relation to the input data.',
+            'See `rangemode` for more info.',
+            'If `range` is provided, then `autorange` is set to *false*.'
+        ].join(' ')
     },
     rangemode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
-        dflt: 'normal'
+        dflt: 'normal',
+        role: 'style',
+        description: [
+            'If *normal*, the range is computed in relation to the extrema',
+            'of the input data.',
+            'If *tozero*`, the range extends to 0,',
+            'regardless of the input data',
+            'If *nonnegative*, the range is non-negative,',
+            'regardless of the input data.'
+        ].join(' ')
     },
-    range: [
-        {type: 'number'},
-        {type: 'number'}
-    ],
+    range: {
+        valType: 'info_array',
+        role: 'info',
+        items: [
+            {valType: 'number'},
+            {valType: 'number'}
+        ],
+        description: 'Sets the range of this axis.'
+    },
     fixedrange: {
-        type: 'boolean',
-        dflt: false
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        description: [
+            'Determines whether or not this axis is zoom-able.',
+            'If true, then zoom is disabled.'
+        ].join(' ')
     },
     // ticks
-    autotick: {
-        type: 'boolean',
-        dflt: true
+    tickmode: {
+        valType: 'enumerated',
+        values: ['auto', 'linear', 'array'],
+        role: 'info',
+        description: [
+            'Sets the tick mode for this axis.',
+            'If *auto*, the number of ticks is set via `nticks`.',
+            'If *linear*, the placement of the ticks is determined by',
+            'a starting position `tick0` and a tick step `dtick`',
+            '(*linear* is the default value if `tick0` and `dtick` are provided).',
+            'If *array*, the placement of the ticks is set via `tickvals`',
+            'and the tick text is `ticktext`.',
+            '(*array* is the default value if `tickvals` is provided).'
+        ].join(' ')
     },
     nticks: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
-        dflt: 0
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets the number of ticks.',
+            'Has an effect only if `tickmode` is set to *auto*.'
+        ].join(' ')
     },
     tick0: {
-        type: 'number',
-        dflt: 0
+        valType: 'number',
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets the placement of the first tick on this axis.',
+            'Use with `dtick`.'
+       ].join(' ')
     },
     dtick: {
-        type: 'any',
-        dflt: 1
+        valType: 'any',
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the step in-between ticks on this axis'
+    },
+    tickvals: {
+        valType: 'data_array',
+        description: [
+            'Sets the values at which ticks on this axis appear.',
+            'Only has an effect if `tickmode` is set to *array*.',
+            'Used with `ticktext`.'
+        ].join(' ')
+    },
+    ticktext: {
+        valType: 'data_array',
+        description: [
+            'Sets the text displayed at the ticks position via `tickvals`.',
+            'Only has an effect if `tickmode` is set to *array*.',
+            'Used with `ticktext`.'
+        ].join(' ')
     },
     ticks: {
-        type: 'enumerated',
-        values: ['outside', 'inside', '']
+        valType: 'enumerated',
+        values: ['outside', 'inside', ''],
+        role: 'style',
+        description: [
+            'Determines whether ticks are drawn or not.',
+            'If **, this axis\' ticks are not drawn.',
+            'If *outside* (*inside*), this axis\' are drawn outside (inside)',
+            'the axis lines.'
+        ].join(' ')
     },
     mirror: {
-        type: 'enumerated',
-        // all and allticks: only if there are multiple subplots using this axis
+        valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
-        dflt: false
+        dflt: false,
+        role: 'style',
+        description: [
+            'Determines if the axis lines or/and ticks are mirrored to',
+            'the opposite side of the plotting area.',
+            'If *true*, the axis lines are mirrored.',
+            'If *ticks*, the axis lines and ticks are mirrored.',
+            'If *false*, mirroring is disable.',
+            'If *all*, axis lines are mirrored on all shared-axes subplots.',
+            'If *allticks*, axis lines and ticks are mirrored',
+            'on all shared-axes subplots.'
+        ].join(' ')
     },
     ticklen: {
-        type: 'number',
+        valType: 'number',
         min: 0,
-        dflt: 5
+        dflt: 5,
+        role: 'style',
+        description: 'Sets the tick length (in px).'
     },
     tickwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the tick width (in px).'
     },
     tickcolor: {
-        type: 'color',
-        dflt: Plotly.Color.defaultLine
+        valType: 'color',
+        dflt: Plotly.Color.defaultLine,
+        role: 'style',
+        description: 'Sets the tick color.'
     },
     showticklabels: {
-        type: 'boolean',
-        dflt: true
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        description: 'Determines whether or not the tick labels are drawn.'
     },
-    tickfont: {type: 'font'},
+    tickfont: extendFlat({}, Plotly.Plots.fontAttrs, {
+        description: 'Sets the tick font.'
+    }),
     tickangle: {
-        type: 'angle',
-        dflt: 'auto'
+        valType: 'angle',
+        dflt: 'auto',
+        role: 'style',
+        description: [
+            'Sets the angle of the tick labels with respect to the horizontal.',
+            'For example, a `tickangle` of -90 draws the tick labels',
+            'vertically.'
+        ].join(' ')
     },
     tickprefix: {
-        type: 'string',
-        dflt: ''
+        valType: 'string',
+        dflt: '',
+        role: 'style',
+        description: 'Sets a tick label prefix.'
     },
     showtickprefix: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
-        dflt: 'all'
+        dflt: 'all',
+        role: 'style',
+        description: [
+            'If *all*, all tick labels are displayed with a prefix.',
+            'If *first*, only the first tick is displayed with a prefix.',
+            'If *last*, only the last tick is displayed with a suffix.',
+            'If *none*, tick prefixes are hidden.'
+        ].join(' ')
     },
     ticksuffix: {
-        type: 'string',
-        dflt: ''
+        valType: 'string',
+        dflt: '',
+        role: 'style',
+        description: 'Sets a tick label suffix.'
     },
     showticksuffix: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
-        dflt: 'all'
+        dflt: 'all',
+        role: 'style',
+        description: 'Same as `showtickprefix` but for tick suffixes.'
     },
     showexponent: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['all', 'first', 'last', 'none'],
-        dflt: 'all'
+        dflt: 'all',
+        role: 'style',
+        description: [
+            'If *all*, all exponents are shown besides their significands.',
+            'If *first*, only the exponent of the first tick is shown.',
+            'If *last*, only the exponent of the last tick is shown.',
+            'If *none*, no exponents appear.'
+        ].join(' ')
     },
     exponentformat: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['none', 'e', 'E', 'power', 'SI', 'B'],
-        dflt: 'B'
+        dflt: 'B',
+        role: 'style',
+        description: [
+            'Determines a formatting rule for the tick exponents.',
+            'For example, consider the number 1,000,000,000.',
+            'If *none*, it appears as 1,000,000,000.',
+            'If *e*, 1e+9.',
+            'If *E*, 1E+9.',
+            'If *power*, 1x10^9 (with 9 in a super script).',
+            'If *SI*, 1G.',
+            'If *B*, 1B.'
+        ].join(' ')
     },
     tickformat: {
-        type: 'string',
-        dflt: ''
+        valType: 'string',
+        dflt: '',
+        role: 'style',
+        description: [
+            'Sets the tick label formatting rule using the',
+            'python/d3 number formatting language.',
+            'See https://github.com/mbostock/d3/wiki/Formatting#numbers',
+            'or https://docs.python.org/release/3.1.3/library/string.html#formatspec',
+            'for more info.'
+        ].join(' ')
     },
     hoverformat: {
-        type: 'string',
-        dflt: ''
+        valType: 'string',
+        dflt: '',
+        role: 'style',
+        description: [
+            'Sets the hover text formatting rule for data values on this axis,',
+            'using the python/d3 number formatting language.',
+            'See https://github.com/mbostock/d3/wiki/Formatting#numbers',
+            'or https://docs.python.org/release/3.1.3/library/string.html#formatspec',
+            'for more info.'
+        ].join(' ')
     },
     // lines and grids
     showline: {
-        type: 'boolean',
-        dflt: false
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        description: [
+            'Determines whether or not a line bounding this axis is drawn.'
+        ].join(' ')
     },
     linecolor: {
-        type: 'color',
-        dflt: Plotly.Color.defaultLine
+        valType: 'color',
+        dflt: Plotly.Color.defaultLine,
+        role: 'style',
+        description: 'Sets the axis line color.'
     },
     linewidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the width (in px) of the axis line.'
     },
-    showgrid: {type: 'boolean'},
+    showgrid: {
+        valType: 'boolean',
+        role: 'style',
+        description: [
+            'Determines whether or not grid lines are drawn.',
+            'If *true*, the grid lines are drawn at every tick mark.'
+        ].join(' ')
+    },
     gridcolor: {
-        type: 'color',
-        dflt: Plotly.Color.lightLine
+        valType: 'color',
+        dflt: Plotly.Color.lightLine,
+        role: 'style',
+        description: 'Sets the color of the grid lines.'
     },
     gridwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the width (in px) of the grid lines.'
     },
-    zeroline: {type: 'boolean'},
+    zeroline: {
+        valType: 'boolean',
+        role: 'style',
+        description: [
+            'Determines whether or not a line is drawn at along the 0 value',
+            'of this axis.',
+            'If *true*, the zero line is drawn on top of the grid lines.'
+        ].join(' ')
+    },
     zerolinecolor: {
-        type: 'color',
-        dflt: Plotly.Color.defaultLine
+        valType: 'color',
+        dflt: Plotly.Color.defaultLine,
+        role: 'style',
+        description: 'Sets the line color of the zero line.'
     },
     zerolinewidth: {
-        type: 'number',
-        dflt: 1
+        valType: 'number',
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the width (in px) of the zero line.'
     },
     // positioning attributes
     // anchor: not used directly, just put here for reference
     // values are any opposite-letter axis id
-    anchor: {type: 'enumerated'},
+    anchor: {
+        valType: 'enumerated',
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
+        role: 'info',
+        description: [
+            'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
+            'the corresponding opposite-letter axis.',
+            'If set to *free*, this axis\' position is determined by `position`.'
+        ].join(' ')
+    },
     // side: not used directly, as values depend on direction
     // values are top, bottom for x axes, and left, right for y
-    side: {type: 'enumerated'},
+    side: {
+        valType: 'enumerated',
+        values: ['top', 'bottom', 'left', 'right'],
+        role: 'info',
+        description: [
+            'Determines whether a x (y) axis is positioned',
+            'at the *bottom* (*left*) or *top* (*right*)',
+            'of the plotting area.'
+        ].join(' ')
+    },
     // overlaying: not used directly, just put here for reference
     // values are false and any other same-letter axis id that's not
     // itself overlaying anything
-    overlaying: {type: 'enumerated'},
-    domain: [
-        {type: 'number', min: 0, max: 1, dflt: 0},
-        {type: 'number', min: 0, max: 1, dflt: 1}
-    ],
+    overlaying: {
+        valType: 'enumerated',
+        values: [
+            'free',
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
+            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+        ],
+        role: 'info',
+        description: [
+            'If set a same-letter axis id, this axis is overlaid on top of',
+            'the corresponding same-letter axis.',
+            'If *false*, this axis does not overlay any same-letter axes.'
+        ].join(' ')
+    },
+    domain: {
+        valType: 'info_array',
+        role: 'info',
+        items: [
+            {valType: 'number', min: 0, max: 1},
+            {valType: 'number', min: 0, max: 1}
+        ],
+        dflt: [0, 1],
+        description: [
+            'Sets the domain of this axis (in plot fraction).'
+        ].join(' ')
+    },
     position: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
-        dflt: 0
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets the position of this axis in the plotting space',
+            '(in normalized coordinates).',
+            'Only has an effect if `anchor` is set to *free*.'
+        ].join(' ')
+    },
+
+    _deprecated: {
+        autotick: {
+            valType: 'boolean',
+            role: 'info',
+            description: [
+                'Obsolete.',
+                'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
+                'Set `tickmode` to *linear* for `autotick` *false*.'
+            ].join(' ')
+        }
     }
 };
 
+var xAxisMatch = /^xaxis[0-9]*$/,
+    yAxisMatch = /^yaxis[0-9]*$/;
+
 axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     // get the full list of axes already defined
-    var xaList = Object.keys(layoutIn)
-            .filter(function(k){ return k.match(/^xaxis[0-9]*$/); }),
-        yaList = Object.keys(layoutIn)
-            .filter(function(k){ return k.match(/^yaxis[0-9]*$/); }),
+    var layoutKeys = Object.keys(layoutIn),
+        xaList = [],
+        yaList = [],
         outerTicks = {},
-        noGrids = {};
+        noGrids = {},
+        i;
 
-    fullData.forEach(function(trace) {
-        var xaName = axes.id2name(trace.xaxis),
+    for(i = 0; i < layoutKeys.length; i++) {
+        var key = layoutKeys[i];
+        if(xAxisMatch.test(key)) xaList.push(key);
+        else if(yAxisMatch.test(key)) yaList.push(key);
+    }
+
+    for(i = 0; i < fullData.length; i++) {
+        var trace = fullData[i],
+            xaName = axes.id2name(trace.xaxis),
             yaName = axes.id2name(trace.yaxis);
 
         // add axes implied by traces
@@ -197,16 +490,16 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         if(yaName && yaList.indexOf(yaName)===-1) yaList.push(yaName);
 
         // check for default formatting tweaks
-        if(Plotly.Plots.isHeatmap(trace.type)) {
+        if(Plotly.Plots.traceIs(trace, '2dMap')) {
             outerTicks[xaName] = true;
             outerTicks[yaName] = true;
         }
 
-        if(Plotly.Plots.isBar(trace.type) || Plotly.Plots.isBox(trace.type)) {
+        if(Plotly.Plots.traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation==='h' ? yaName : xaName;
             noGrids[positionAxis] = true;
         }
-    });
+    }
 
     function axSort(a,b) {
         var aNum = Number(a.substr(5)||1),
@@ -249,10 +542,9 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                      attr, dflt);
         }
 
-        axes.handleAxisDefaults(axLayoutIn, axLayoutOut,
-                               coerce, defaultOptions);
-        axes.handleAxisPositioningDefaults(axLayoutIn, axLayoutOut,
-                                     coerce, positioningOptions);
+
+        axes.handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
+        axes.handleAxisPositioningDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
         layoutOut[axName] = axLayoutOut;
 
         // so we don't have to repeat autotype unnecessarily,
@@ -271,14 +563,23 @@ axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     }
 };
 
+/**
+ * options: object containing:
+ *      letter: 'x' or 'y'
+ *      title: name of the axis (ie 'Colorbar') to go in default title
+ *      name: axis object name (ie 'xaxis') if one should be stored
+ *      font: the default font to inherit
+ *      outerTicks: boolean, should ticks default to outside?
+ *      showGrid: boolean, should gridlines be shown by default?
+ *      noHover: boolean, this axis doesn't support hover effects?
+ *      data: the plot data to use in choosing auto type
+ */
 axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     var letter = options.letter,
+        font = options.font || {},
         defaultTitle = 'Click to enter ' +
             (options.title || (letter.toUpperCase() + ' axis')) +
-            ' title',
-        font = options.font||{},
-        outerTicks = options.outerTicks,
-        showGrid = options.showGrid;
+            ' title';
 
     // set up some private properties
     if(options.name) {
@@ -305,7 +606,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     axes.setConvert(containerOut);
 
     coerce('title', defaultTitle);
-    coerce('titlefont', {
+    Plotly.Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
         color: font.color
@@ -317,52 +618,17 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         autoRange = coerce('autorange', !validRange);
 
     if(autoRange) coerce('rangemode');
-    var range0 = coerce('range[0]', -1),
-        range1 = coerce('range[1]', letter==='x' ? 6 : 4);
-    if(range0===range1) {
-        containerOut.range = [range0 - 1, range0 + 1];
+    var range = coerce('range', [-1, letter==='x' ? 6 : 4]);
+    if(range[0] === range[1]) {
+        containerOut.range = [range[0] - 1, range[0] + 1];
     }
     Plotly.Lib.noneOrAll(containerIn.range, containerOut.range, [0, 1]);
+
     coerce('fixedrange');
 
-    var autoTick = coerce('autotick');
-    if(axType==='log' || axType==='date') autoTick = containerOut.autotick = true;
-    if(autoTick) coerce('nticks');
+    axes.handleTickValueDefaults(containerIn, containerOut, coerce, axType);
 
-    // TODO date doesn't work yet, right? axType==='date' ? new Date(2000,0,1).getTime() : 0);
-    coerce('tick0', 0);
-    coerce('dtick');
-
-
-    var showTicks = coerce('ticks', outerTicks ? 'outside' : '');
-    if(showTicks) {
-        coerce('ticklen');
-        coerce('tickwidth');
-        coerce('tickcolor');
-    }
-
-    var showTickLabels = coerce('showticklabels');
-    if(showTickLabels) {
-        coerce('tickfont', font);
-        coerce('tickangle');
-
-        var showAttrDflt = axes.getShowAttrDflt(containerIn);
-
-        if(axType==='date') {
-            coerce('tickformat');
-            coerce('hoverformat');
-        }
-        else {
-            coerce('showexponent', showAttrDflt);
-            coerce('exponentformat');
-        }
-
-        var tickPrefix = coerce('tickprefix');
-        if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-        var tickSuffix = coerce('ticksuffix');
-        if(tickSuffix) coerce('showticksuffix', showAttrDflt);
-    }
+    axes.handleTickDefaults(containerIn, containerOut, coerce, axType, options);
 
     var showLine = coerce('showline');
     if(showLine) {
@@ -370,16 +636,16 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
         coerce('linewidth');
     }
 
-    if(showLine || showTicks) coerce('mirror');
+    if(showLine || containerOut.ticks) coerce('mirror');
 
 
-    var showGridLines = coerce('showgrid', showGrid);
+    var showGridLines = coerce('showgrid', options.showGrid);
     if(showGridLines) {
         coerce('gridcolor');
         coerce('gridwidth');
     }
 
-    var showZeroLine = coerce('zeroline', showGrid);
+    var showZeroLine = coerce('zeroline', options.showGrid);
     if(showZeroLine) {
         coerce('zerolinecolor');
         coerce('zerolinewidth');
@@ -388,15 +654,77 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     return containerOut;
 };
 
+/**
+ * options: inherits font, outerTicks, noHover from axes.handleAxisDefaults
+ */
+axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, options) {
+    var showTicks = coerce('ticks', options.outerTicks ? 'outside' : '');
+    if(showTicks) {
+        coerce('ticklen');
+        coerce('tickwidth');
+        coerce('tickcolor');
+    }
+
+    var showTickLabels = coerce('showticklabels');
+    if(showTickLabels) {
+        Plotly.Lib.coerceFont(coerce, 'tickfont', options.font || {});
+        coerce('tickangle');
+
+        var showAttrDflt = axes.getShowAttrDflt(containerIn);
+
+        if(axType !== 'category') {
+            var tickFormat = coerce('tickformat');
+            if(!options.noHover) coerce('hoverformat');
+
+            if(!tickFormat && axType !== 'date') {
+                coerce('showexponent', showAttrDflt);
+                coerce('exponentformat');
+            }
+        }
+
+        var tickPrefix = coerce('tickprefix');
+        if(tickPrefix) coerce('showtickprefix', showAttrDflt);
+
+        var tickSuffix = coerce('ticksuffix');
+        if(tickSuffix) coerce('showticksuffix', showAttrDflt);
+    }
+};
+
+axes.handleTickValueDefaults = function(containerIn, containerOut, coerce, axType) {
+    var tickmodeDefault = 'auto';
+
+    if(containerIn.tickmode === 'array' &&
+            (axType === 'log' || axType === 'date')) {
+        containerIn.tickmode = 'auto';
+    }
+
+    if(Array.isArray(containerIn.tickvals)) tickmodeDefault = 'array';
+    else if(containerIn.dtick && isNumeric(containerIn.dtick)) {
+        tickmodeDefault = 'linear';
+    }
+    var tickmode = coerce('tickmode', tickmodeDefault);
+
+    if(tickmode === 'auto') coerce('nticks');
+    else if(tickmode === 'linear') {
+        coerce('tick0');
+        coerce('dtick');
+    }
+    else {
+        var tickvals = coerce('tickvals');
+        if(tickvals === undefined) containerOut.tickmode = 'auto';
+        else coerce('ticktext');
+    }
+};
+
 axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce, options) {
     var counterAxes = options.counterAxes||[],
         overlayableAxes = options.overlayableAxes||[],
         letter = options.letter;
 
     var anchor = Plotly.Lib.coerce(containerIn, containerOut,
-        {   // TODO incorporate into layoutAttributes
+        {
             anchor: {
-                type:'enumerated',
+                valType:'enumerated',
                 values: ['free'].concat(counterAxes),
                 dflt: isNumeric(containerIn.position) ? 'free' :
                     (counterAxes[0] || 'free')
@@ -407,9 +735,9 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
     if(anchor==='free') coerce('position');
 
     Plotly.Lib.coerce(containerIn, containerOut,
-        {   // TODO incorporate into layoutAttributes
+        {
             side: {
-                type: 'enumerated',
+                valType: 'enumerated',
                 values: letter==='x' ? ['bottom', 'top'] : ['left', 'right'],
                 dflt: letter==='x' ? 'bottom' : 'left'
             }
@@ -419,9 +747,9 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
     var overlaying = false;
     if(overlayableAxes.length) {
         overlaying = Plotly.Lib.coerce(containerIn, containerOut,
-        {   // TODO incorporate into layoutAttributes
+        {
             overlaying: {
-                type: 'enumerated',
+                valType: 'enumerated',
                 values: [false].concat(overlayableAxes),
                 dflt: false
             }
@@ -434,9 +762,8 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
         // in ax.setscale()... but this means we still need (imperfect) logic
         // in the axes popover to hide domain for the overlaying axis.
         // perhaps I should make a private version _domain that all axes get???
-        var domainStart = coerce('domain[0]'),
-            domainEnd = coerce('domain[1]');
-        if(domainStart > domainEnd - 0.01) containerOut.domain = [0,1];
+        var domain = coerce('domain');
+        if(domain[0] > domain[1] - 0.01) containerOut.domain = [0,1];
         Plotly.Lib.noneOrAll(containerIn.domain, containerOut.domain, [0, 1]);
     }
 
@@ -450,13 +777,13 @@ axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
         refAttr = axLetter + 'ref',
         attrDef = {};
     attrDef[refAttr] = {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: axlist.concat(['paper']),
-        dflt: axlist[0]
+        dflt: axlist[0] || 'paper'
     };
 
     // xref, yref
-    return Plotly.Lib.coerce(containerIn, containerOut, attrDef, refAttr, axLetter);
+    return Plotly.Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
 // empty out types for all axes containing these traces
@@ -524,15 +851,10 @@ function setAutoType(ax, data){
         axLetter = id.charAt(0);
 
     // support 3d
-    if (id.indexOf('scene') !== -1) id = axLetter;
+    if(id.indexOf('scene') !== -1) id = axLetter;
 
-    data = data.filter( function(di) {
-        return (di[axLetter+'axis']||axLetter)===id;
-    });
-
-    if(!data.length) return;
-
-    var d0 = data[0];
+    var d0 = getFirstNonEmptyTrace(data, id, axLetter);
+    if(!d0) return;
 
     // first check for histograms, as the count direction
     // should always default to a linear axis
@@ -541,25 +863,55 @@ function setAutoType(ax, data){
         ax.type='linear';
         return;
     }
-    // then check the data supplied for that axis
-    var posLetter = {v:'x', h:'y'}[d0.orientation || 'v'];
-    if(Plotly.Plots.isBox(d0.type) &&
-            axLetter===posLetter &&
-            !(posLetter in d0) &&
-            !(posLetter+'0' in d0)) {
-        // check all boxes on this x axis to see
-        // if they're dates, numbers, or categories
-        ax.type = axes.autoType(
-            data.filter(function(d){ return Plotly.Plots.isBox(d.type); })
-                .map(function(d){
-                    if(posLetter in d) return d.pos[0];
-                    if('name' in d) return d.name;
-                    return 'text';
-                })
-        );
+
+    // check all boxes on this x axis to see
+    // if they're dates, numbers, or categories
+    if(isBoxWithoutPositionCoords(d0, axLetter)) {
+        var posLetter = getBoxPosLetter(d0),
+            boxPositions = [],
+            trace;
+
+        for(var i = 0; i < data.length; i++) {
+            trace = data[i];
+            if(!Plotly.Plots.traceIs(trace, 'box') ||
+               (trace[axLetter + 'axis'] || axLetter) !== id) continue;
+
+            if(trace[posLetter] !== undefined) boxPositions.push(trace[posLetter][0]);
+            else if(trace.name !== undefined) boxPositions.push(trace.name);
+            else boxPositions.push('text');
+        }
+
+        ax.type = axes.autoType(boxPositions);
     }
     else {
         ax.type = axes.autoType(d0[axLetter] || [d0[axLetter+'0']]);
+    }
+}
+
+function getBoxPosLetter(trace) {
+    return {v:'x', h:'y'}[trace.orientation || 'v'];
+}
+
+function isBoxWithoutPositionCoords(trace, axLetter) {
+    var posLetter = getBoxPosLetter(trace);
+    return Plotly.Plots.traceIs(trace, 'box') && axLetter===posLetter &&
+            trace[posLetter]===undefined && trace[posLetter + '0']===undefined;
+}
+
+function getFirstNonEmptyTrace(data, id, axLetter) {
+    var trace;
+
+    for(var i = 0; i < data.length; i++) {
+        trace = data[i];
+
+        if((trace[axLetter + 'axis'] || axLetter) === id) {
+            if(isBoxWithoutPositionCoords(trace, axLetter)) {
+                return trace;
+            }
+            else if((trace[axLetter] || []).length || trace[axLetter + '0']) {
+                return trace;
+            }
+        }
     }
 }
 
@@ -919,8 +1271,6 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
 };
 
 axes.doAutoRange = function(ax) {
-    function pickVal(v){ return v.val; }
-
     if(!ax._length) ax.setScale();
 
     if(ax.autorange && ax._min && ax._max &&
@@ -962,7 +1312,8 @@ axes.doAutoRange = function(ax) {
         }
         if(minmin===maxmax) {
             ax.range = axReverse ?
-                [minmin+1,minmin-1] : [minmin-1,minmin+1];
+                [minmin+1, ax.rangemode!=='normal' ? 0 : minmin-1] :
+                [ax.rangemode!=='normal' ? 0 : minmin-1, minmin+1];
         }
         else if(mbest) {
             if(ax.type==='linear' || ax.type==='-') {
@@ -1008,6 +1359,30 @@ axes.doAutoRange = function(ax) {
             axIn.autorange = ax.autorange;
         }
     }
+};
+
+// save a copy of the initial axis ranges in fullLayout
+// use them in modebar and dblclick events
+axes.saveRangeInitial = function(gd, overwrite) {
+    var axList = Plotly.Axes.list(gd, '', true),
+        hasOneAxisChanged = false;
+
+    var ax, isNew, hasChanged;
+
+    for(var i = 0; i < axList.length; i++) {
+        ax = axList[i];
+
+        isNew = ax._rangeInitial===undefined;
+        hasChanged = isNew ||
+            !(ax.range[0]===ax._rangeInitial[0] && ax.range[1]===ax._rangeInitial[1]);
+
+        if((isNew && ax.autorange===false) || (overwrite && hasChanged)) {
+            ax._rangeInitial = ax.range.slice();
+            hasOneAxisChanged = true;
+        }
+    }
+
+    return hasOneAxisChanged;
 };
 
 // axes.expand: if autoranging, include new data in the outer limits
@@ -1244,8 +1619,10 @@ axes.autoBin = function(data,ax,nbins,is2d) {
 // in any case, set tickround to # of digits to round tick labels to,
 // or codes to this effect for log and date scales
 axes.calcTicks = function calcTicks (ax) {
+    if(ax.tickmode === 'array') return arrayTicks(ax);
+
     // calculate max number of (auto) ticks to display based on plot size
-    if(ax.autotick || !ax.dtick){
+    if(ax.tickmode === 'auto' || !ax.dtick){
         var nt = ax.nticks,
             minPx;
         if(!nt) {
@@ -1308,14 +1685,59 @@ axes.calcTicks = function calcTicks (ax) {
     return ticksOut;
 };
 
+function arrayTicks(ax) {
+    var vals = ax.tickvals,
+        text = ax.ticktext,
+        ticksOut = new Array(vals.length),
+        r0expanded = ax.range[0] * 1.0001 - ax.range[1] * 0.0001,
+        r1expanded = ax.range[1] * 1.0001 - ax.range[0] * 0.0001,
+        tickMin = Math.min(r0expanded, r1expanded),
+        tickMax = Math.max(r0expanded, r1expanded),
+        vali,
+        i,
+        j = 0;
+
+
+    // without a text array, just format the given values as any other ticks
+    // except with more precision to the numbers
+    if(!Array.isArray(text)) text = [];
+
+    for(i = 0; i < vals.length; i++) {
+        vali = ax.d2l(vals[i]);
+        if(vali > tickMin && vali < tickMax) {
+            if(text[i] === undefined) ticksOut[j] = axes.tickText(ax, vali);
+            else ticksOut[j] = tickTextObj(ax, vali, String(text[i]));
+            j++;
+        }
+    }
+
+    if(j < vals.length) ticksOut.splice(j, vals.length - j);
+
+    return ticksOut;
+}
+
+var roundBase10 = [2, 5, 10],
+    roundBase24 = [1, 2, 3, 6, 12],
+    roundBase60 = [1, 2, 5, 10, 15, 30],
+    // 2&3 day ticks are weird, but need something btwn 1&7
+    roundDays = [1, 2, 3, 7, 14],
+    // approx. tick positions for log axes, showing all (1) and just 1, 2, 5 (2)
+    // these don't have to be exact, just close enough to round to the right value
+    roundLog1 = [-0.046, 0, 0.301, 0.477, 0.602, 0.699, 0.778, 0.845, 0.903, 0.954, 1],
+    roundLog2 = [-0.301, 0, 0.301, 0.699, 1];
+
+function roundDTick(roughDTick, base, roundingSet) {
+    return base * Plotly.Lib.roundUp(roughDTick / base, roundingSet);
+}
+
 // autoTicks: calculate best guess at pleasant ticks for this axis
 // inputs:
 //      ax - an axis object
-//      rt - rough tick spacing (to be turned into a nice round number
+//      roughDTick - rough tick spacing (to be turned into a nice round number)
 // outputs (into ax):
 //   tick0: starting point for ticks (not necessarily on the graph)
 //      usually 0 for numeric (=10^0=1 for log) or jan 1, 2000 for dates
-//   dtick: the actual, nice round tick spacing, somewhat larger than rt
+//   dtick: the actual, nice round tick spacing, somewhat larger than roughDTick
 //      if the ticks are spaced linearly (linear scale, categories,
 //          log with only full powers, date ticks < month),
 //          this will just be a number
@@ -1324,139 +1746,133 @@ axes.calcTicks = function calcTicks (ax) {
 //      log with linear ticks: L# where # is the linear tick spacing
 //      log showing powers plus some intermediates:
 //          D1 shows all digits, D2 shows 2 and 5
-axes.autoTicks = function(ax,rt){
-    var base,rtexp;
-    if(ax.type==='date'){
-        ax.tick0 = new Date(2000,0,1).getTime();
-        if(rt>15778800000){
-            // years if rt>6mo
-            rt /= 31557600000;
-            rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            ax.dtick = 'M'+String(12*rtexp*
-                Plotly.Lib.roundUp(rt/rtexp,[2,5,10]));
+axes.autoTicks = function(ax, roughDTick){
+    var base;
+
+    if(ax.type === 'date'){
+        ax.tick0 = new Date(2000, 0, 1).getTime();
+
+        if(roughDTick > 15778800000){
+            // years if roughDTick > 6mo
+            roughDTick /= 31557600000;
+            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            ax.dtick = 'M' + (12 * roundDTick(roughDTick, base, roundBase10));
         }
-        else if(rt>1209600000){
-            // months if rt>2wk
-            rt /= 2629800000;
-            ax.dtick = 'M'+Plotly.Lib.roundUp(rt,[1,2,3,6]);
+        else if(roughDTick > 1209600000){
+            // months if roughDTick > 2wk
+            roughDTick /= 2629800000;
+            ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         }
-        else if(rt>43200000){
-            // days if rt>12h
-            base = 86400000;
+        else if(roughDTick > 43200000){
+            // days if roughDTick > 12h
+            ax.dtick = roundDTick(roughDTick, 86400000, roundDays);
             // get week ticks on sunday
-            ax.tick0 = new Date(2000,0,2).getTime();
-            // 2&3 day ticks are weird, but need something btwn 1&7
-            ax.dtick = base*Plotly.Lib.roundUp(rt/base,[1,2,3,7,14]);
+            ax.tick0 = new Date(2000, 0, 2).getTime();
         }
-        else if(rt>1800000){
-            // hours if rt>30m
-            base = 3600000;
-            ax.dtick = base*Plotly.Lib.roundUp(rt/base,[1,2,3,6,12]);
+        else if(roughDTick > 1800000){
+            // hours if roughDTick > 30m
+            ax.dtick = roundDTick(roughDTick, 3600000, roundBase24);
         }
-        else if(rt>30000){
-            // minutes if rt>30sec
-            base = 60000;
-            ax.dtick = base*Plotly.Lib.roundUp(rt/base,[1,2,5,10,15,30]);
+        else if(roughDTick > 30000){
+            // minutes if roughDTick > 30sec
+            ax.dtick = roundDTick(roughDTick, 60000, roundBase60);
         }
-        else if(rt>500){
-            // seconds if rt>0.5sec
-            base = 1000;
-            ax.dtick = base*Plotly.Lib.roundUp(rt/base,[1,2,5,10,15,30]);
+        else if(roughDTick > 500){
+            // seconds if roughDTick > 0.5sec
+            ax.dtick = roundDTick(roughDTick, 1000, roundBase60);
         }
         else {
             //milliseconds
-            rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            ax.dtick = rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
+            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
     }
-    else if(ax.type==='log'){
-        ax.tick0=0;
-        if(rt>0.7){
-            //only show powers of 10
-            ax.dtick=Math.ceil(rt);
-        }
-        else if(Math.abs(ax.range[1]-ax.range[0])<1){
-            // span is less then one power of 10
-            var nt = 1.5*Math.abs((ax.range[1]-ax.range[0])/rt);
+    else if(ax.type === 'log'){
+        ax.tick0 = 0;
+
+        //only show powers of 10
+        if(roughDTick > 0.7) ax.dtick = Math.ceil(roughDTick);
+        else if(Math.abs(ax.range[1] - ax.range[0]) < 1){
+            // span is less than one power of 10
+            var nt = 1.5 * Math.abs((ax.range[1] - ax.range[0]) / roughDTick);
 
             // ticks on a linear scale, labeled fully
-            rt = Math.abs(Math.pow(10,ax.range[1]) -
-                Math.pow(10,ax.range[0]))/nt;
-            rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-            ax.dtick = 'L' + String(rtexp*
-                Plotly.Lib.roundUp(rt/rtexp,[2,5,10]));
+            roughDTick = Math.abs(Math.pow(10, ax.range[1]) -
+                Math.pow(10, ax.range[0])) / nt;
+            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
         }
         else {
             // include intermediates between powers of 10,
             // labeled with small digits
-            // ax.dtick="D2" (show 2 and 5) or "D1" (show all digits)
-            ax.dtick = (rt>0.3) ? 'D2' : 'D1';
+            // ax.dtick = "D2" (show 2 and 5) or "D1" (show all digits)
+            ax.dtick = (roughDTick > 0.3) ? 'D2' : 'D1';
         }
     }
     else if(ax.type==='category') {
         ax.tick0 = 0;
-        ax.dtick = Math.ceil(Math.max(rt,1));
+        ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
     else{
         // auto ticks always start at 0
         ax.tick0 = 0;
-        rtexp = Math.pow(10,Math.floor(Math.log(rt)/Math.LN10));
-        ax.dtick = rtexp*Plotly.Lib.roundUp(rt/rtexp,[2,5,10]);
+        base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+        ax.dtick = roundDTick(roughDTick, base, roundBase10);
     }
 
     // prevent infinite loops
-    if(ax.dtick===0) ax.dtick = 1;
+    if(ax.dtick === 0) ax.dtick = 1;
 
     // TODO: this is from log axis histograms with autorange off
     if(!isNumeric(ax.dtick) && typeof ax.dtick !=='string') {
         var olddtick = ax.dtick;
         ax.dtick = 1;
-        throw 'ax.dtick error: '+String(olddtick);
+        throw 'ax.dtick error: ' + String(olddtick);
     }
 };
 
 // after dtick is already known, find tickround = precision
 // to display in tick labels
-//   for regular numeric ticks, integer # digits after . to round to
+//   for numeric ticks, integer # digits after . to round to
 //   for date ticks, the last date part to show (y,m,d,H,M,S)
 //      or an integer # digits past seconds
 function autoTickRound(ax) {
-    var dt = ax.dtick,
+    var dtick = ax.dtick,
         maxend;
-    ax._tickexponent = 0;
-    if(!isNumeric(dt) && typeof dt !=='string') { dt = 1; }
 
-    if(ax.type==='category') {
-        ax._tickround = null;
-    }
-    else if(isNumeric(dt) || dt.charAt(0)==='L') {
-        if(ax.type==='date') {
-            if(dt>=86400000) { ax._tickround = 'd'; }
-            else if(dt>=3600000) { ax._tickround = 'H'; }
-            else if(dt>=60000) { ax._tickround = 'M'; }
-            else if(dt>=1000) { ax._tickround = 'S'; }
-            else { ax._tickround = 3-Math.round(Math.log(dt/2)/Math.LN10); }
+    ax._tickexponent = 0;
+    if(!isNumeric(dtick) && typeof dtick !== 'string') dtick = 1;
+
+    if(ax.type === 'category') ax._tickround = null;
+    else if(isNumeric(dtick) || dtick.charAt(0) === 'L') {
+        if(ax.type === 'date') {
+            if(dtick >= 86400000) ax._tickround = 'd';
+            else if(dtick >= 3600000) ax._tickround = 'H';
+            else if(dtick >= 60000) ax._tickround = 'M';
+            else if(dtick >= 1000) ax._tickround = 'S';
+            else ax._tickround = 3 - Math.round(Math.log(dtick / 2) / Math.LN10);
         }
         else {
-            if(!isNumeric(dt)) { dt = Number(dt.substr(1)); }
+            if(!isNumeric(dtick)) dtick = Number(dtick.substr(1));
             // 2 digits past largest digit of dtick
-            ax._tickround = 2-Math.floor(Math.log(dt)/Math.LN10+0.01);
-            maxend = (ax.type==='log') ?
-                Math.pow(10,Math.max(ax.range[0],ax.range[1])) :
-                Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1]));
+            ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
 
-            var rangeexp = Math.floor(Math.log(maxend)/Math.LN10+0.01);
-            if(Math.abs(rangeexp)>3) {
-                ax._tickexponent =
-                    (['SI','B'].indexOf(ax.exponentformat)!==-1) ?
-                    3*Math.round((rangeexp-1)/3) : rangeexp;
+            if(ax.type === 'log') {
+                maxend = Math.pow(10, Math.max(ax.range[0], ax.range[1]));
+            }
+            else maxend = Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1]));
+
+            var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
+            if(Math.abs(rangeexp) > 3) {
+                if(ax.exponentformat === 'SI' || ax.exponentformat === 'B') {
+                    ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
+                }
+                else ax._tickexponent = rangeexp;
             }
         }
     }
-    else if(dt.charAt(0)==='M') {
-        ax._tickround = (dt.length===2) ? 'm' : 'y';
-    }
-    else { ax._tickround = null; }
+    else if(dtick.charAt(0) === 'M') ax._tickround = (dtick.length===2) ? 'm' : 'y';
+    else ax._tickround = null;
 }
 
 // months and years don't have constant millisecond values
@@ -1465,90 +1881,92 @@ function autoTickRound(ax) {
 // for pure powers of 10
 // numeric ticks always have constant differences, other datetime ticks
 // can all be calculated as constant number of milliseconds
-axes.tickIncrement = function(x,dtick,axrev){
-    // includes all dates smaller than month, and pure 10^n in log
-    if(isNumeric(dtick)) { return x+(axrev?-dtick:dtick); }
+axes.tickIncrement = function(x, dtick, axrev){
+    var axSign = axrev ? -1 : 1;
 
-    var tType=dtick.charAt(0);
-    var dtnum=Number(dtick.substr(1)),dtSigned=(axrev?-dtnum:dtnum);
+    // includes all dates smaller than month, and pure 10^n in log
+    if(isNumeric(dtick)) return x + axSign * dtick;
+
+    var tType = dtick.charAt(0),
+        dtSigned = axSign * Number(dtick.substr(1));
+
     // Dates: months (or years)
-    if(tType==='M'){
+    if(tType === 'M'){
         var y = new Date(x);
         // is this browser consistent? setMonth edits a date but
         // returns that date's milliseconds
-        return y.setMonth(y.getMonth()+dtSigned);
+        return y.setMonth(y.getMonth() + dtSigned);
     }
 
     // Log scales: Linear, Digits
-    else if(tType==='L') {
-        return Math.log(Math.pow(10,x)+dtSigned)/Math.LN10;
-    }
+    else if(tType === 'L') return Math.log(Math.pow(10, x) + dtSigned) / Math.LN10;
 
     // log10 of 2,5,10, or all digits (logs just have to be
     // close enough to round)
-    else if(tType==='D') {
-        var tickset=(dtick==='D2') ? [-0.301,0,0.301,0.699,1] :
-            [-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
-        var x2=x+(axrev ? -0.01 : 0.01);
-        var frac=Plotly.Lib.roundUp(mod(x2,1), tickset, axrev);
+    else if(tType === 'D') {
+        var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
+            x2 = x + axSign * 0.01,
+            frac = Plotly.Lib.roundUp(mod(x2, 1), tickset, axrev);
+
         return Math.floor(x2) +
-            Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
+            Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
     }
-    else {
-        throw 'unrecognized dtick '+String(dtick);
-    }
+    else throw 'unrecognized dtick ' + String(dtick);
 };
 
 // calculate the first tick on an axis
 axes.tickFirst = function(ax){
-    var axrev=(ax.range[1]<ax.range[0]),
-        sRound=(axrev ? Math.floor : Math.ceil),
+    var axrev = ax.range[1] < ax.range[0],
+        sRound = axrev ? Math.floor : Math.ceil,
         // add a tiny extra bit to make sure we get ticks
         // that may have been rounded out
-        r0 = ax.range[0]*1.0001 - ax.range[1]*0.0001;
-    if(isNumeric(ax.dtick)) {
-        var tmin = sRound((r0-ax.tick0)/ax.dtick)*ax.dtick+ax.tick0;
+        r0 = ax.range[0] * 1.0001 - ax.range[1] * 0.0001,
+        dtick = ax.dtick,
+        tick0 = ax.tick0;
+    if(isNumeric(dtick)) {
+        var tmin = sRound((r0 - tick0) / dtick) * dtick + tick0;
 
         // make sure no ticks outside the category list
-        if(ax.type==='category') {
-            tmin = Plotly.Lib.constrain(tmin, 0, ax._categories.length-1);
+        if(ax.type === 'category') {
+            tmin = Plotly.Lib.constrain(tmin, 0, ax._categories.length - 1);
         }
         return tmin;
     }
 
-    var tType=ax.dtick.charAt(0),
-        dt=Number(ax.dtick.substr(1)),
-        t0,mdif,t1;
+    var tType = dtick.charAt(0),
+        dtNum = Number(dtick.substr(1)),
+        t0,
+        mdif,
+        t1;
 
     // Dates: months (or years)
-    if(tType==='M'){
-        t0 = new Date(ax.tick0);
+    if(tType === 'M'){
+        t0 = new Date(tick0);
         r0 = new Date(r0);
-        mdif = (r0.getFullYear()-t0.getFullYear())*12 +
-            r0.getMonth()-t0.getMonth();
+        mdif = (r0.getFullYear() - t0.getFullYear()) * 12 +
+            r0.getMonth() - t0.getMonth();
         t1 = t0.setMonth(t0.getMonth() +
-            (Math.round(mdif/dt)+(axrev?1:-1))*dt);
+            (Math.round(mdif / dtNum) + (axrev ? 1 : -1)) * dtNum);
 
-        while(axrev ? t1>r0 : t1<r0) {
-            t1=axes.tickIncrement(t1,ax.dtick,axrev);
+        while(axrev ? t1 > r0 : t1 < r0) {
+            t1 = axes.tickIncrement(t1, dtick, axrev);
         }
         return t1;
     }
 
     // Log scales: Linear, Digits
-    else if(tType==='L') {
+    else if(tType === 'L') {
         return Math.log(sRound(
-            (Math.pow(10,r0)-ax.tick0)/dt)*dt+ax.tick0)/Math.LN10;
+            (Math.pow(10, r0) - tick0) / dtNum) * dtNum + tick0) / Math.LN10;
     }
-    else if(tType==='D') {
-        var tickset=(ax.dtick==='D2')?
-            [-0.301,0,0.301,0.699,1]:
-            [-0.046,0,0.301,0.477,0.602,0.699,0.778,0.845,0.903,0.954,1];
-        var frac=Plotly.Lib.roundUp(mod(r0,1), tickset, axrev);
+    else if(tType === 'D') {
+        var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
+            frac = Plotly.Lib.roundUp(mod(r0, 1), tickset, axrev);
+
         return Math.floor(r0) +
-            Math.log(d3.round(Math.pow(10,frac),1))/Math.LN10;
+            Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
     }
-    else { throw 'unrecognized dtick '+String(ax.dtick); }
+    else throw 'unrecognized dtick ' + String(dtick);
 };
 
 var yearFormat = d3.time.format('%Y'),
@@ -1581,21 +1999,23 @@ function modDateFormat(fmt,x) {
 // prefix is there so the x axis ticks can be dropped a line
 // ax is the axis layout, x is the tick value
 // hover is a (truthy) flag for whether to show numbers with a bit
-// more precision for hovertext - and return just the text
+// more precision for hovertext
 axes.tickText = function(ax, x, hover){
-    var tf = ax.tickfont || ax._td._fullLayout.font,
-        tr = ax._tickround,
-        dt = ax.dtick,
-        fontSize = tf.size,
-        px = 0,
-        py = 0,
-        // completes the full date info, to be included
-        // with only the first tick
-        suffix = '',
-        tt,
+    var out = tickTextObj(ax, x),
         hideexp,
-        hideprefix,
-        hidesuffix;
+        arrayMode = ax.tickmode === 'array',
+        extraPrecision = hover || arrayMode;
+
+    if(arrayMode && Array.isArray(ax.ticktext)) {
+        var minDiff = Math.abs(ax.range[1] - ax.range[0]) / 10000;
+        for(var i = 0; i < ax.ticktext.length; i++) {
+            if(Math.abs(x - ax.d2l(ax.tickvals[i])) < minDiff) break;
+        }
+        if(i < ax.ticktext.length) {
+            out.text = String(ax.ticktext[i]);
+            return out;
+        }
+    }
 
     function isHidden(showAttr) {
         var first_or_last;
@@ -1611,139 +2031,159 @@ axes.tickText = function(ax, x, hover){
         return showAttr!=='all' && x!==first_or_last;
     }
 
-    hideexp = ax.exponentformat!=='none' && isHidden(ax.showexponent);
-    if(hideexp) hideexp = 'hide';
+    hideexp = ax.exponentformat!=='none' && isHidden(ax.showexponent) ? 'hide' : '';
 
-    hideprefix = isHidden(ax.showtickprefix);
-    hidesuffix = isHidden(ax.showticksuffix);
-
-    if(ax.type==='date'){
-        var d = new Date(x);
-        if(hover && ax.hoverformat) {
-            tt = modDateFormat(ax.hoverformat,x);
-        }
-        else if(ax.tickformat) {
-            tt = modDateFormat(ax.tickformat,x);
-            // TODO: potentially hunt for ways to automatically add more
-            // precision to the hover text?
-        }
-        else {
-            if(hover) {
-                if(isNumeric(tr)) tr+=2;
-                else tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr];
-            }
-            if(tr==='y') tt = yearFormat(d);
-            else if(tr==='m') tt = monthFormat(d);
-            else {
-                if(x===ax._tmin && !hover) {
-                    suffix = '<br>'+yearFormat(d);
-                }
-
-                if(tr==='d') tt = dayFormat(d);
-                else if(tr==='H') tt = hourFormat(d);
-                else {
-                    if(x===ax._tmin && !hover) {
-                        suffix = '<br>'+dayFormat(d)+', '+yearFormat(d);
-                    }
-
-                    tt = minuteFormat(d);
-                    if(tr!=='M'){
-                        tt += secondFormat(d);
-                        if(tr!=='S') {
-                            tt += numFormat(mod(x/1000,1),ax,'none',hover)
-                                .substr(1);
-                        }
-                    }
-                }
-            }
-        }
-    }
-    else if(ax.type==='log'){
-        if(hover && (isNumeric(dt) || dt.charAt(0)!=='L')) {
-            dt = 'L3';
-        }
-        if(isNumeric(dt)||((dt.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
-            var p = Math.round(x);
-            if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
-                tt = (p===0) ? '1': (p===1) ? '10' : '10'+String(p).sup();
-                fontSize *= 1.25;
-            }
-            else {
-                tt = numFormat(Math.pow(10,x), ax,'','fakehover');
-                if(dt==='D1' && ax._id.charAt(0)==='y') {
-                    py-=fontSize/6;
-                }
-            }
-        }
-        else if(dt.charAt(0)==='D') {
-            tt = Math.round(Math.pow(10,mod(x,1)));
-            fontSize *= 0.75;
-        }
-        else if(dt.charAt(0)==='L') {
-            tt=numFormat(Math.pow(10,x),ax,hideexp, hover);
-        }
-        else throw 'unrecognized dtick '+String(dt);
-    }
-    else if(ax.type==='category'){
-        var tt0 = ax._categories[Math.round(x)];
-        if(tt0===undefined) tt0='';
-        tt=String(tt0);
-    }
-    else {
-        // don't add an exponent to zero if we're showing all exponents
-        // so the only reason you'd show an exponent on zero is if it's the
-        // ONLY tick to get an exponent (first or last)
-        if(ax.showexponent==='all' && Math.abs(x/dt)<1e-6) {
-            hideexp = 'hide';
-        }
-        tt=numFormat(x,ax,hideexp,hover);
-    }
-    // if 9's are printed on log scale, move the 10's away a bit
-    if((ax.dtick==='D1') && (['0','1'].indexOf(String(tt).charAt(0))!==-1)){
-        if(ax._id.charAt(0)==='y') {
-            px -= fontSize/4;
-        }
-        else {
-            py+=fontSize/2;
-            px+=(ax.range[1]>ax.range[0] ? 1 : -1) *
-                fontSize * (x<0 ? 0.5 : 0.25);
-        }
-    }
-
-    // add exponent suffix
-    tt += suffix;
+    if(ax.type==='date') formatDate(ax, out, hover, extraPrecision);
+    else if(ax.type==='log') formatLog(ax, out, hover, extraPrecision, hideexp);
+    else if(ax.type==='category') formatCategory(ax, out);
+    else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
-    if (!hideprefix) tt = ax.tickprefix + tt;
-    if (!hidesuffix) tt = tt + ax.ticksuffix;
+    if (ax.tickprefix && !isHidden(ax.showtickprefix)) out.text = ax.tickprefix + out.text;
+    if (ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
 
-    // replace standard minus character (which is technically a hyphen)
-    // with a true minus sign
-    if(ax.type!=='category') tt = tt.replace(/-/g,'\u2212');
+    return out;
+};
+
+function tickTextObj(ax, x, text) {
+    var tf = ax.tickfont || ax._td._fullLayout.font;
 
     return {
-        x:x,
-        dx:px,
-        dy:py,
-        text:tt,
-        fontSize: fontSize,
+        x: x,
+        dx: 0,
+        dy: 0,
+        text: text || '',
+        fontSize: tf.size,
         font: tf.family,
         fontColor: tf.color
     };
-};
+}
+
+function formatDate(ax, out, hover, extraPrecision) {
+    var x = out.x,
+        tr = ax._tickround,
+        d = new Date(x),
+        // suffix completes the full date info, to be included
+        // with only the first tick
+        suffix = '',
+        tt;
+    if(hover && ax.hoverformat) {
+        tt = modDateFormat(ax.hoverformat,x);
+    }
+    else if(ax.tickformat) {
+        tt = modDateFormat(ax.tickformat,x);
+        // TODO: potentially hunt for ways to automatically add more
+        // precision to the hover text?
+    }
+    else {
+        if(extraPrecision) {
+            if(isNumeric(tr)) tr+=2;
+            else tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr];
+        }
+        if(tr==='y') tt = yearFormat(d);
+        else if(tr==='m') tt = monthFormat(d);
+        else {
+            if(x===ax._tmin && !hover) {
+                suffix = '<br>'+yearFormat(d);
+            }
+
+            if(tr==='d') tt = dayFormat(d);
+            else if(tr==='H') tt = hourFormat(d);
+            else {
+                if(x===ax._tmin && !hover) {
+                    suffix = '<br>'+dayFormat(d)+', '+yearFormat(d);
+                }
+
+                tt = minuteFormat(d);
+                if(tr!=='M'){
+                    tt += secondFormat(d);
+                    if(tr!=='S') {
+                        tt += numFormat(mod(x/1000,1),ax,'none',hover)
+                            .substr(1);
+                    }
+                }
+            }
+        }
+    }
+    out.text = tt + suffix;
+}
+
+function formatLog(ax, out, hover, extraPrecision, hideexp) {
+    var dtick = ax.dtick,
+        x = out.x;
+    if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0)!=='L')) dtick = 'L3';
+
+    if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
+        out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
+    }
+    else if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
+        if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
+            var p = Math.round(x);
+            if(p === 0) out.text = 1;
+            else if(p === 1) out.text = '10';
+            else if(p > 1) out.text = '10<sup>' + p + '</sup>';
+            else out.text = '10<sup>\u2212' + -p + '</sup>';
+
+            out.fontSize *= 1.25;
+        }
+        else {
+            out.text = numFormat(Math.pow(10,x), ax,'','fakehover');
+            if(dtick==='D1' && ax._id.charAt(0)==='y') {
+                out.dy -= out.fontSize/6;
+            }
+        }
+    }
+    else if(dtick.charAt(0) === 'D') {
+        out.text = String(Math.round(Math.pow(10, mod(x, 1))));
+        out.fontSize *= 0.75;
+    }
+    else throw 'unrecognized dtick ' + String(dtick);
+
+    // if 9's are printed on log scale, move the 10's away a bit
+    if(ax.dtick==='D1') {
+        var firstChar = String(out.text).charAt(0);
+        if(firstChar === '0' || firstChar === '1') {
+            if(ax._id.charAt(0) === 'y') {
+                out.dx -= out.fontSize / 4;
+            }
+            else {
+                out.dy += out.fontSize / 2;
+                out.dx += (ax.range[1] > ax.range[0] ? 1 : -1) *
+                    out.fontSize * (x < 0 ? 0.5 : 0.25);
+            }
+        }
+    }
+}
+
+function formatCategory(ax, out) {
+    var tt = ax._categories[Math.round(out.x)];
+    if(tt === undefined) tt = '';
+    out.text = String(tt);
+}
+
+function formatLinear(ax, out, hover, extraPrecision, hideexp) {
+    // don't add an exponent to zero if we're showing all exponents
+    // so the only reason you'd show an exponent on zero is if it's the
+    // ONLY tick to get an exponent (first or last)
+    if(ax.showexponent==='all' && Math.abs(out.x/ax.dtick)<1e-6) {
+        hideexp = 'hide';
+    }
+    out.text = numFormat(out.x, ax, hideexp, extraPrecision);
+}
 
 // format a number (tick value) according to the axis settings
 // new, more reliable procedure than d3.round or similar:
 // add half the rounding increment, then stringify and truncate
 // also automatically switch to sci. notation
-var SIPREFIXES = ['f','p','n','&mu;','m','','k','M','G','T'];
-function numFormat(v,ax,fmtoverride,hover) {
+var SIPREFIXES = ['f', 'p', 'n', '&mu;', 'm', '', 'k', 'M', 'G', 'T'];
+function numFormat(v, ax, fmtoverride, hover) {
         // negative?
-    var n = (v<0),
+    var isNeg = v < 0,
         // max number of digits past decimal point to show
-        r = ax._tickround,
-        fmt = fmtoverride||ax.exponentformat||'B',
-        d = ax._tickexponent;
+        tickRound = ax._tickround,
+        exponentFormat = fmtoverride || ax.exponentformat || 'B',
+        exponent = ax._tickexponent,
+        tickformat = ax.tickformat;
 
     // special case for hover: set exponent just for this value, and
     // add a couple more digits of precision over tick labels
@@ -1752,20 +2192,23 @@ function numFormat(v,ax,fmtoverride,hover) {
         var ah = {
             exponentformat:ax.exponentformat,
             dtick: ax.showexponent==='none' ? ax.dtick :
-                (isNumeric(v) ? Math.abs(v)||1 : 1),
+                (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent
             // from what we calculate
-            range: ax.showexponent==='none' ? ax.range : [0,v||1]
+            range: ax.showexponent === 'none' ? ax.range : [0, v || 1]
         };
         autoTickRound(ah);
-        r = (Number(ah._tickround)||0)+2;
-        d = ah._tickexponent;
+        tickRound = (Number(ah._tickround) || 0) + 4;
+        exponent = ah._tickexponent;
+        if(ax.hoverformat) tickformat = ax.hoverformat;
     }
 
-    // 'epsilon' - rounding increment
-    var e = Math.pow(10,-r)/2;
+    if(tickformat) return d3.format(tickformat)(v).replace(/-/g,'\u2212');
 
-    // fmt codes:
+    // 'epsilon' - rounding increment
+    var e = Math.pow(10, -tickRound) / 2;
+
+    // exponentFormat codes:
     // 'e' (1.2e+6, default)
     // 'E' (1.2E+6)
     // 'SI' (1.2M)
@@ -1774,60 +2217,70 @@ function numFormat(v,ax,fmtoverride,hover) {
     // 'power' (1.2x10^6)
     // 'hide' (1.2, use 3rd argument=='hide' to eg
     //      only show exponent on last tick)
-    if(fmt==='none') { d=0; }
+    if(exponentFormat === 'none') exponent = 0;
 
     // take the sign out, put it back manually at the end
     // - makes cases easier
     v = Math.abs(v);
-    if(v<e) {
+    if(v < e) {
         // 0 is just 0, but may get exponent if it's the last tick
         v = '0';
-        n = false;
+        isNeg = false;
     }
     else {
         v += e;
         // take out a common exponent, if any
-        if(d) {
-            v *= Math.pow(10,-d);
-            r += d;
+        if(exponent) {
+            v *= Math.pow(10, -exponent);
+            tickRound += exponent;
         }
         // round the mantissa
-        if(r===0) { v=String(Math.floor(v)); }
-        else if(r<0) {
+        if(tickRound === 0) v = String(Math.floor(v));
+        else if(tickRound < 0) {
             v = String(Math.round(v));
-            v = v.substr(0,v.length+r);
-            for(var i=r; i<0; i++) { v+='0'; }
+            v = v.substr(0, v.length + tickRound);
+            for(var i = tickRound; i < 0; i++) v += '0';
         }
         else {
             v = String(v);
-            var dp = v.indexOf('.')+1;
-            if(dp) { v = v.substr(0,dp+r).replace(/\.?0+$/,''); }
+            var dp = v.indexOf('.') + 1;
+            if(dp) v = v.substr(0, dp + tickRound).replace(/\.?0+$/, '');
         }
         // insert appropriate decimal point and thousands separator
-        v = numSeparate(v,ax._td._fullLayout.separators);
+        v = numSeparate(v, ax._td._fullLayout.separators);
     }
 
     // add exponent
-    if(d && fmt!=='hide') {
-        if(fmt==='e' || ((fmt==='SI'||fmt==='B') && (d>12 || d<-15))) {
-            v += 'e'+(d>0 ? '+' : '')+d;
+    if(exponent && exponentFormat !== 'hide') {
+        var signedExponent;
+        if(exponent < 0) signedExponent = '\u2212' + -exponent;
+        else if(exponentFormat !== 'power') signedExponent = '+' + exponent;
+        else signedExponent = String(exponent);
+
+        if(exponentFormat === 'e' ||
+                ((exponentFormat === 'SI' || exponentFormat === 'B') &&
+                 (exponent > 12 || exponent < -15))) {
+            v += 'e' + signedExponent;
         }
-        else if(fmt==='E') {
-            v += 'E'+(d>0 ? '+' : '')+d;
+        else if(exponentFormat === 'E') {
+            v += 'E' + signedExponent;
         }
-        else if(fmt==='power') {
-            v += '&times;10'+String(d).sup();
+        else if(exponentFormat === 'power') {
+            v += '&times;10<sup>' + signedExponent + '</sup>';
         }
-        else if(fmt==='B' && d===9) {
+        else if(exponentFormat === 'B' && exponent === 9) {
             v += 'B';
         }
-        else if(fmt==='SI' || fmt==='B') {
-            v += SIPREFIXES[d/3+5];
+        else if(exponentFormat === 'SI' || exponentFormat === 'B') {
+            v += SIPREFIXES[exponent / 3 + 5];
         }
-        else { console.log('unknown exponent format '+fmt); }
     }
+
     // put sign back in and return
-    return (n?'-':'')+v;
+    // replace standard minus character (which is technically a hyphen)
+    // with a true minus sign
+    if(isNeg) return '\u2212' + v;
+    return v;
 }
 
 // add arbitrary decimal point and thousands separator
@@ -1903,7 +2356,7 @@ axes.listIds = function(td, axletter) {
 
 // get an axis object from its id 'x','x2' etc
 // optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
-axes.getFromId = function(td,id,type) {
+axes.getFromId = function(td, id, type) {
     var fullLayout = td._fullLayout;
 
     if(type==='x') id = id.replace(/y[0-9]*/,'');
@@ -1916,7 +2369,7 @@ axes.getFromId = function(td,id,type) {
 axes.getFromTrace = function (td, fullTrace, type) {
     var fullLayout = td._fullLayout;
     var ax = null;
-    if (Plotly.Plots.isGL3D(fullTrace.type)) {
+    if (Plotly.Plots.traceIs(fullTrace, 'gl3d')) {
         var scene = fullTrace.scene;
         if (scene.substr(0,5)==='scene') {
             ax = fullLayout[scene][type + 'axis'];
@@ -1942,7 +2395,7 @@ axes.getSubplots = function(gd,ax) {
     // look for subplots in the data
     (data||[]).forEach(function(trace) {
         if(trace.visible === false || trace.visible === 'legendonly' ||
-                Plotly.Plots.isGL3D(trace.type)) {
+                !Plotly.Plots.traceIs(trace, 'cartesian')) {
             return;
         }
         var xid = (trace.xaxis||'x'),
@@ -2092,15 +2545,17 @@ axes.doTicks = function(td, axid, skipTitle) {
 
     // make sure we only have allowed options for exponents
     // (others can make confusing errors)
-    if(['none','e','E','power','SI','B'].indexOf(ax.exponentformat)===-1) {
-        ax.exponentformat = 'e';
-    }
-    if(['all','first','last','none'].indexOf(ax.showexponent)===-1) {
-        ax.showexponent = 'all';
+    if(!ax.tickformat) {
+        if(['none','e','E','power','SI','B'].indexOf(ax.exponentformat)===-1) {
+            ax.exponentformat = 'e';
+        }
+        if(['all','first','last','none'].indexOf(ax.showexponent)===-1) {
+            ax.showexponent = 'all';
+        }
     }
 
     // in case a val turns into string somehow
-    ax.range = ax.range.map(Number);
+    ax.range = [+ax.range[0], +ax.range[1]];
 
     // set scaling to pixels
     ax.setScale();
@@ -2362,6 +2817,12 @@ axes.doTicks = function(td, axid, skipTitle) {
         return done;
     }
 
+    function traceHasBarsOrFill(trace, subplot) {
+        if(trace.visible !== true || trace.xaxis + trace.yaxis !== subplot) return false;
+        if(Plotly.Plots.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axletter]) return true;
+        return trace.fill && trace.fill.charAt(trace.fill.length - 1) === axletter;
+    }
+
     function drawGrid(plotinfo, counteraxis, subplot) {
         var gridcontainer = plotinfo.gridlayer,
             zlcontainer = plotinfo.zerolinelayer,
@@ -2385,14 +2846,13 @@ axes.doTicks = function(td, axid, skipTitle) {
         grid.exit().remove();
 
         // zero line
-        var hasBarsOrFill = (td.data || []).filter(function(tdc) {
-            return tdc.visible === true &&
-                ((tdc.xaxis || 'x') + (tdc.yaxis || 'y') === subplot) &&
-                ((Plotly.Plots.isBar(tdc.type) &&
-                    (tdc.orientation || 'v') === {x: 'h', y: 'v'}[axletter]) ||
-                ((tdc.type || 'scatter') === 'scatter' && tdc.fill &&
-                    tdc.fill.charAt(tdc.fill.length - 1) === axletter));
-        }).length;
+        var hasBarsOrFill = false;
+        for(var i = 0; i < td._fullData.length; i++) {
+            if(traceHasBarsOrFill(td._fullData[i], subplot)) {
+                hasBarsOrFill = true;
+                break;
+            }
+        }
         var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
             (ax.type==='linear' || ax.type==='-') && gridvals.length &&
             (hasBarsOrFill || clipEnds({x:0}) || !ax.showline);
@@ -2415,8 +2875,11 @@ axes.doTicks = function(td, axid, skipTitle) {
     }
     else {
         var alldone = axes.getSubplots(td,ax).map(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot],
-                container = plotinfo[axletter+'axislayer'],
+            var plotinfo = fullLayout._plots[subplot];
+
+            if(!fullLayout._hasCartesian) return;
+
+            var container = plotinfo[axletter + 'axislayer'],
 
                 // [bottom or left, top or right, free, main]
                 linepositions = ax._linepositions[subplot]||[],
@@ -2574,7 +3037,7 @@ function swapAxisGroup(gd, xIds, yIds) {
         var ann = gd._fullLayout.annotations[i];
         if(xIds.indexOf(ann.xref) !== -1 &&
                 yIds.indexOf(ann.yref) !== -1) {
-            Plotly.Lib.swapXYAttrs(layout.annotations[i],['?']);
+            Plotly.Lib.swapAttrs(layout.annotations[i],['?']);
         }
     }
 }

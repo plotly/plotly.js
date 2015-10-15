@@ -1,106 +1,226 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var boxes = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
 
-// For coerce-level coupling
+var boxes = module.exports = {};
+
+Plotly.Plots.register(boxes, 'box',
+    ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'], {
+    description: [
+        'In vertical (horizontal) box plots,',
+        'statistics are computed using `y` (`x`) values.',
+        'By supplying an `x` (`y`) array, one box per distinct x (y) value',
+        'is drawn',
+        'If no `x` (`y`) {array} is provided, a single box is drawn.',
+        'That box position is then positioned with',
+        'with `name` or with `x0` (`y0`) if provided.',
+        'Each box spans from quartile 1 (Q1) to quartile 3 (Q3).',
+        'The second quartile (Q2) is marked by a line inside the box.',
+        'By default, the whiskers correspond to the box\' edges',
+        '+/- 1.5 times the interquartile range (IQR = Q3-Q1),',
+        'see *boxpoints* for other options.'
+    ].join(' ')
+});
+
 var scatterAttrs = Plotly.Scatter.attributes,
     scatterMarkerAttrs = scatterAttrs.marker,
-    scatterLineAttrs = scatterAttrs.line,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line,
     extendFlat = Plotly.Lib.extendFlat;
 
 boxes.attributes = {
-    y: {type: 'data_array'},
-    y0: {type: 'any'},
-    x: {type: 'data_array'},
-    x0: {type: 'any'},
+    y: {
+        valType: 'data_array',
+        description: [
+            'Sets the y sample data or coordinates.',
+            'See overview for more info.'
+        ].join(' ')
+    },
+    x: {
+        valType: 'data_array',
+        description: [
+            'Sets the x sample data or coordinates.',
+            'See overview for more info.'
+        ].join(' ')
+    },
+    x0: {
+        valType: 'any',
+        role: 'info',
+        description: [
+            'Sets the x coordinate of the box.',
+            'See overview for more info.'
+        ].join(' ')
+    },
+    y0: {
+        valType: 'any',
+        role: 'info',
+        description: [
+            'Sets the y coordinate of the box.',
+            'See overview for more info.'
+        ].join(' ')
+    },
     whiskerwidth: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
-        dflt: 0.5
+        dflt: 0.5,
+        role: 'style',
+        description: [
+            'Sets the width of the whiskers relative to',
+            'the box\' width.',
+            'For example, with 1, the whiskers are as wide as the box(es).'
+        ].join(' ')
     },
     boxpoints: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['all', 'outliers', 'suspectedoutliers', false],
-        dflt: 'outliers'
+        dflt: 'outliers',
+        role: 'style',
+        description: [
+            'If *outliers*, only the sample points lying outside the whiskers',
+            'are shown',
+            'If *suspectedoutliers*, the outlier points are shown and',
+            'points either less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1',
+            'are highlighted (see `outliercolor`)',
+            'If *all*, all sample points are shown',
+            'If *false*, only the box(es) are shown with no sample points'
+        ].join(' ')
     },
     boxmean: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: [true, 'sd', false],
-        dflt: false
+        dflt: false,
+        role: 'style',
+        description: [
+            'If *true*, the mean of the box(es)\' underlying distribution is',
+            'drawn as a dashed line inside the box(es).',
+            'If *sd* the standard deviation is also drawn.'
+        ].join(' ')
     },
     jitter: {
-        type: 'number',
+        valType: 'number',
         min: 0,
-        max: 1
+        max: 1,
+        role: 'style',
+        description: [
+            'Sets the amount of jitter in the sample points drawn.',
+            'If *0*, the sample points align along the distribution axis.',
+            'If *1*, the sample points are drawn in a random jitter of width',
+            'equal to the width of the box(es).'
+        ].join(' ')
     },
     pointpos: {
-        type: 'number',
+        valType: 'number',
         min: -2,
-        max: 2
+        max: 2,
+        role: 'style',
+        description: [
+            'Sets the position of the sample points in relation to the box(es).',
+            'If *0*, the sample points are places over the center of the box(es).',
+            'Positive (negative) values correspond to positions to the',
+            'right (left) for vertical boxes and above (below) for horizontal boxes'
+        ].join(' ')
     },
     orientation: {
-        type: 'enumerated',
-        values: ['v', 'h']
+        valType: 'enumerated',
+        values: ['v', 'h'],
+        role: 'style',
+        description: [
+            'Sets the orientation of the box(es).',
+            'If *v* (*h*), the distribution is visualized along',
+            'the vertical (horizontal).'
+        ].join(' ')
     },
     marker: {
         outliercolor: {
-            type: 'color',
-            dflt: 'rgba(0,0,0,0)'
+            valType: 'color',
+            dflt: 'rgba(0,0,0,0)',
+            role: 'style',
+            description: 'Sets the color of the outlier sample points.'
         },
-        symbol: extendFlat(scatterMarkerAttrs.symbol,
-                           {arrayOk: false}),
-        opacity: extendFlat(scatterMarkerAttrs.opacity,
-                            {arrayOk: false, dflt: 1}),
-        size: extendFlat(scatterMarkerAttrs.size,
-                         {arrayOk: false}),
-        color: extendFlat(scatterMarkerAttrs.color,
-                          {arrayOk: false}),
+        symbol: extendFlat({}, scatterMarkerAttrs.symbol,
+            {arrayOk: false}),
+        opacity: extendFlat({}, scatterMarkerAttrs.opacity,
+            {arrayOk: false, dflt: 1}),
+        size: extendFlat({}, scatterMarkerAttrs.size,
+            {arrayOk: false}),
+        color: extendFlat({}, scatterMarkerAttrs.color,
+            {arrayOk: false}),
         line: {
-            color: extendFlat(scatterMarkerLineAttrs.color,
-                              {arrayOk: false, dflt: Plotly.Color.defaultLine}),
-            width: extendFlat(scatterMarkerLineAttrs.width,
-                              {arrayOk: false, dflt: 0}),
+            color: extendFlat({}, scatterMarkerLineAttrs.color,
+                {arrayOk: false, dflt: Plotly.Color.defaultLine}),
+            width: extendFlat({}, scatterMarkerLineAttrs.width,
+                {arrayOk: false, dflt: 0}),
             outliercolor: {
-                type: 'color'
+                valType: 'color',
+                role: 'style',
+                description: 'Sets the border line color of the outlier sample points.'
             },
             outlierwidth: {
-                type: 'number',
+                valType: 'number',
                 min: 0,
-                dflt: 1
+                dflt: 1,
+                role: 'style',
+                description: [
+                    'Sets the border line width (in px) of the outlier sample points.'
+                ].join(' ')
             }
         }
     },
     line: {
-        color: scatterLineAttrs.color,
-        width: scatterLineAttrs.width
+        color: {
+            valType: 'color',
+            role: 'style',
+            description: 'Sets the color of line bounding the box(es).'
+        },
+        width: {
+            valType: 'number',
+            role: 'style',
+            min: 0,
+            dflt: 2,
+            description: 'Sets the width (in px) of line bounding the box(es).'
+        }
     },
     fillcolor: scatterAttrs.fillcolor
 };
 
 boxes.layoutAttributes = {
     boxmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['group', 'overlay'],
-        dflt: 'overlay'
+        dflt: 'overlay',
+        role: 'info',
+        description: [
+            'Determines how boxes at the same location coordinate',
+            'are displayed on the graph.',
+            'If *group*, the boxes are plotted next to one another',
+            'centered around the shared location.',
+            'If *overlay*, the boxes are plotted over one another,',
+            'you might need to set *opacity* to see them multiple boxes.'
+        ].join(' ')
     },
     boxgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
-        dflt: 0.3
+        dflt: 0.3,
+        role: 'style',
+        description: [
+            'Sets the gap (in plot fraction) between boxes of',
+            'adjacent location coordinates.'
+        ].join(' ')
     },
     boxgroupgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
-        dflt: 0.3
+        dflt: 0.3,
+        role: 'style',
+        description: [
+            'Sets the gap (in plot fraction) between boxes of',
+            'the same location coordinate.'
+        ].join(' ')
     }
 };
 
@@ -109,11 +229,6 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         return Plotly.Lib.coerce(traceIn, traceOut, boxes.attributes, attr, dflt);
     }
 
-    // In vertical (horizontal) box plots:
-    // if you supply an x (y) array, you will get one box
-    // per distinct x (y) value
-    // if not, we make a single box and position / label it with x0 (y0)
-    // (or name, if no x0 (y0) is found)
     var y = coerce('y'),
         x = coerce('x'),
         defaultOrientation;
@@ -162,10 +277,13 @@ boxes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         return Plotly.Lib.coerce(layoutIn, layoutOut, boxes.layoutAttributes, attr, dflt);
     }
 
-    var hasBoxes = fullData.some(function(trace) {
-        return Plotly.Plots.isBox(trace.type);
-    });
-
+    var hasBoxes;
+    for(var i = 0; i < fullData.length; i++) {
+        if(Plotly.Plots.traceIs(fullData[i], 'box')) {
+            hasBoxes = true;
+            break;
+        }
+    }
     if(!hasBoxes) return;
 
     coerce('boxmode');
@@ -268,7 +386,7 @@ boxes.calc = function(gd, trace) {
         var v, l, cdi, i;
 
         for (i = 0; i < valBinned.length; ++i) {
-            v = valBinned[i].sort(function(a, b){ return a - b; });
+            v = valBinned[i].sort(Plotly.Lib.sorterAsc);
             l = v.length;
             cdi = cd[i];
 
@@ -332,7 +450,7 @@ boxes.setPositions = function(gd, plotinfo) {
             t = cd[0].t;
             trace = cd[0].trace;
 
-            if (trace.visible === true && Plotly.Plots.isBox(trace.type) &&
+            if (trace.visible === true && Plotly.Plots.traceIs(trace, 'box') &&
                     !t.emptybox &&
                     trace.orientation === orientation &&
                     trace.xaxis === xa._id &&
@@ -590,8 +708,8 @@ boxes.plot = function(gd, plotinfo, cdbox) {
     });
 };
 
-boxes.style = function(gp) {
-    var s = gp.selectAll('g.trace.boxes');
+boxes.style = function(gd) {
+    var s = d3.select(gd).selectAll('g.trace.boxes');
 
     s.style('opacity', function(d){ return d[0].trace.opacity; })
         .each(function(d){
@@ -691,7 +809,7 @@ boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
 
         // copy out to a new object for each value to label
         val = valAxis.c2p(di[attr], true);
-        pointData2 = $.extend({}, pointData);
+        pointData2 = Plotly.Lib.extendFlat({}, pointData);
         pointData2[valLetter+'0'] = pointData2[valLetter+'1'] = val;
         pointData2[valLetter+'LabelVal'] = di[attr];
         pointData2.attr = attr;

@@ -1,27 +1,31 @@
 'use strict';
+
 /* jshint camelcase: false */
 
-// ---external global dependencies
-/* global d3:false */
-
-var fx = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     tinycolor = require('tinycolor2'),
     isNumeric = require('./isnumeric');
 
+var fx = module.exports = {};
+
 fx.layoutAttributes = {
     dragmode: {
-        type: 'enumerated',
-        values: ['zoom', 'pan', 'rotate']
+        valType: 'enumerated',
+        role: 'info',
+        values: ['zoom', 'pan', 'orbit', 'turntable'],
+        description: 'Determines the mode of drag interactions.'
     },
     hovermode: {
-        type: 'enumerated',
-        values: ['x', 'y', 'closest', false]
+        valType: 'enumerated',
+        role: 'info',
+        values: ['x', 'y', 'closest', false],
+        description: 'Determines the mode of hover interactions.'
     }
 };
 
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
-    var isHoriz;
+    var isHoriz, hovermodeDflt;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(layoutIn, layoutOut,
@@ -29,17 +33,17 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                  attr, dflt);
     }
 
-    coerce('dragmode', layoutOut._hasGL3D ? 'rotate' : 'zoom');
+    coerce('dragmode', layoutOut._hasGL3D ? 'turntable' : 'zoom');
 
-    if (layoutOut._hasGL3D) {
-        coerce('hovermode', 'closest');
-    }
-    else {
+    if(layoutOut._hasCartesian) {
         // flag for 'horizontal' plots:
         // determines the state of the modebar 'compare' hovermode button
         isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
-        coerce('hovermode', isHoriz ? 'y' : 'x');
+        hovermodeDflt = isHoriz ? 'y' : 'x';
     }
+    else hovermodeDflt = 'closest';
+
+    coerce('hovermode', hovermodeDflt);
 };
 
 fx.isHoriz = function(fullData) {
@@ -69,10 +73,9 @@ fx.MINZOOM = 20;
 var DRAGGERSIZE = 20;
 
 fx.init = function(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData;
+    var fullLayout = gd._fullLayout;
 
-    if (fullLayout._hasGL3D || gd._context.staticPlot) return;
+    if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
 
     var subplots = Object.keys(fullLayout._plots).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number
@@ -87,8 +90,11 @@ fx.init = function(gd) {
         return fullLayout._plots[a].mainplot ? 1 : -1;
     });
     subplots.forEach(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot],
-            xa = plotinfo.x(),
+        var plotinfo = fullLayout._plots[subplot];
+
+        if(!fullLayout._hasCartesian) return;
+
+        var xa = plotinfo.x(),
             ya = plotinfo.y(),
 
             // the y position of the main x axis line
@@ -113,7 +119,26 @@ fx.init = function(gd) {
                     fullLayout._lasthover = maindrag;
                     fullLayout._hoversubplot = subplot;
                 })
-                .mouseout(function(evt){
+                .mouseout(function(evt) {
+                /*
+                 * !!! TERRIBLE HACK !!!
+                 *
+                 * For some reason, a 'mouseout' event is fired in IE on clicks
+                 * on the maindrag container before reaching the 'click' handler.
+                 *
+                 * This results in a call to `fx.unhover` before `fx.click` where
+                 * `unhover` sets `gd._hoverdata` to `undefined` causing the call
+                 * to `fx.click` to return early.
+                 *
+                 * The hack below makes the 'mouseout' handler bypass
+                 * `fx.unhover` in IE.
+                 *
+                 * Note that the 'mouseout' handler is called only when the mouse
+                 * cursor gets lost. Most 'unhover' calls happen from 'mousemove':
+                 * these are not affected by the hack below.
+                 */
+                    if( Plotly.Lib.isIE() ) return;
+
                     fx.unhover(gd,evt);
                 })
                 .click(function(evt){ fx.click(gd,evt); });
@@ -678,6 +703,7 @@ fx.loneHover = function(hoverItem, opts) {
         zLabel: hoverItem.zLabel,
         text: hoverItem.text,
         name: hoverItem.name,
+        idealAlign: hoverItem.idealAlign,
 
         // filler to make createHoverText happy
         trace: {
@@ -689,20 +715,30 @@ fx.loneHover = function(hoverItem, opts) {
         index: 0
     };
 
-    var container3 = d3.select(opts.container);
+    var container3 = d3.select(opts.container),
+        outerContainer3 = opts.outerContainer ?
+            d3.select(opts.outerContainer) : container3;
 
     var fullOpts = {
         hovermode: 'closest',
         rotateLabels: false,
         bgColor: opts.bgColor || Plotly.Color.background,
         container: container3,
-        outerContainer: container3
+        outerContainer: outerContainer3
     };
 
     var hoverLabel = createHoverText([pointData], fullOpts);
     alignHoverText(hoverLabel, fullOpts.rotateLabels);
 
     return hoverLabel.node();
+};
+
+fx.loneUnhover = function(containerOrSelection) {
+    var selection = containerOrSelection instanceof d3.selection ?
+            containerOrSelection :
+            d3.select(containerOrSelection);
+
+    selection.selectAll('g.hovertext').remove();
 };
 
 function createHoverText(hoverData, opts) {
@@ -717,7 +753,7 @@ function createHoverText(hoverData, opts) {
         ya = c0.ya,
         commonAttr = hovermode==='y' ? 'yLabel' : 'xLabel',
         t0 = c0[commonAttr],
-        t00 = (t0||'').split(' ')[0],
+        t00 = (String(t0)||'').split(' ')[0],
         outerContainerBB = outerContainer.node().getBoundingClientRect(),
         outerTop = outerContainerBB.top,
         outerWidth = outerContainerBB.width,
@@ -928,7 +964,10 @@ function createHoverText(hoverData, opts) {
             hty = ya._offset+(d.y0+d.y1)/2,
             dx = Math.abs(d.x1-d.x0),
             dy = Math.abs(d.y1-d.y0),
-            txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width;
+            txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width,
+            anchorStartOK,
+            anchorEndOK;
+
         d.ty0 = outerTop-tbb.top;
         d.bx = tbb.width+2*HOVERTEXTPAD;
         d.by = tbb.height+2*HOVERTEXTPAD;
@@ -936,30 +975,32 @@ function createHoverText(hoverData, opts) {
         d.txwidth = tbb.width;
         d.tx2width = tx2width;
         d.offset = 0;
+
         if(rotateLabels) {
             d.pos = htx;
-            hty += dy/2;
-            if(hty+txTotalWidth > outerHeight) {
+            anchorStartOK = hty + dy / 2 + txTotalWidth <= outerHeight;
+            anchorEndOK = hty - dy / 2 - txTotalWidth >= 0;
+            if((d.idealAlign === 'top' || !anchorStartOK) && anchorEndOK) {
+                hty -= dy / 2;
                 d.anchor = 'end';
-                hty -= dy;
-                if(hty-txTotalWidth<0) {
-                    d.anchor = 'middle';
-                    hty +=dy/2;
-                }
-            }
+            } else if(anchorStartOK) {
+                hty += dy / 2;
+                d.anchor = 'start';
+            } else d.anchor = 'middle';
         }
         else {
             d.pos = hty;
-            htx += dx/2;
-            if(htx+txTotalWidth > outerWidth) {
+            anchorStartOK = htx + dx / 2 + txTotalWidth <= outerWidth;
+            anchorEndOK = htx - dx / 2 - txTotalWidth >= 0;
+            if((d.idealAlign === 'left' || !anchorStartOK) && anchorEndOK) {
+                htx -= dx / 2;
                 d.anchor = 'end';
-                htx -=dx;
-                if(htx-txTotalWidth<0) {
-                    d.anchor = 'middle';
-                    htx += dx/2;
-                }
-            }
+            } else if(anchorStartOK) {
+                htx += dx / 2;
+                d.anchor = 'start';
+            } else d.anchor = 'middle';
         }
+
         tx.attr('text-anchor',d.anchor);
         if(tx2width) tx2.attr('text-anchor',d.anchor);
         g.attr('transform','translate('+htx+','+hty+')'+
@@ -1279,9 +1320,17 @@ fx.modeBar = function(gd){
 function chooseModebarButtons(fullLayout) {
     if(fullLayout._hasGL3D) {
         return [
-            ['rotate3d', 'zoom3d', 'pan3d'],
+            ['toImage'],
+            ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
             ['resetCameraDefault3d', 'resetCameraLastSave3d'],
             ['hoverClosest3d']
+        ];
+    }
+    else if(fullLayout._hasGeo) {
+        return [
+            ['toImage'],
+            ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
+            ['hoverClosestGeo']
         ];
     }
 
@@ -1297,13 +1346,18 @@ function chooseModebarButtons(fullLayout) {
         }
     }
 
-    if(allFixed) buttons = [];
+    if(allFixed) buttons = [['toImage']];
     else buttons = [
+        ['toImage'],
         ['zoom2d', 'pan2d'],
-        ['zoomIn2d', 'zoomOut2d', 'autoScale2d']
+        ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d']
     ];
 
-    buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+    if(fullLayout._hasCartesian) {
+        buttons.push(['hoverClosest2d', 'hoverCompare2d']);
+    } else if(fullLayout._hasPie) {
+        buttons.push(['hoverClosestPie']);
+    }
 
     return buttons;
 }
@@ -1548,8 +1602,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     function zoomDone(dragged, numClicks) {
         if(Math.min(box.h, box.w) < fx.MINDRAG * 2) {
-            // doubleclick - autoscale
-            if(numClicks === 2) dragAutoRange();
+            if(numClicks === 2) doubleClick();
             else pauseForDrag(gd);
 
             return removeZoombox(gd);
@@ -1570,7 +1623,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function dragDone(dragged, numClicks) {
         var singleEnd = (ns + ew).length === 1;
         if(dragged) dragTail();
-        else if(numClicks === 2 && !singleEnd) dragAutoRange();
+        else if(numClicks === 2 && !singleEnd) doubleClick();
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya[0] : xa[0],
                 end = (ns==='s' || ew==='w') ? 0 : 1,
@@ -1785,13 +1838,35 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         redrawObjs(fullLayout.shapes || [], Plotly.Shapes);
     }
 
-    // dragAutoRange - set one or both axes to autorange on doubleclick
-    function dragAutoRange() {
-        var attrs={},
-            axList = (xActive ? xa : []).concat(yActive ? ya : []);
+    function doubleClick() {
+        var doubleClickConfig = gd._context.doubleClick,
+            axList = (xActive ? xa : []).concat(yActive ? ya : []),
+            attrs = {};
 
-        for(var i = 0; i < axList.length; i++) {
-            if(!axList[i].fixedrange) attrs[axList[i]._name + '.autorange'] = true;
+        var ax, i;
+
+        if(doubleClickConfig === 'autosize') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(!ax.fixedrange) attrs[ax._name + '.autorange'] = true;
+            }
+        }
+        else if(doubleClickConfig === 'reset') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+            }
+        }
+        else if(doubleClickConfig === 'reset+autosize') {
+            for(i = 0; i < axList.length; i++) {
+                ax = axList[i];
+                if(ax.fixedrange) continue;
+                if(ax._rangeInitial === undefined ||
+                    ax.range[0]===ax._rangeInitial[0] && ax.range[1]===ax._rangeInitial[1]) {
+                    attrs[ax._name + '.autorange'] = true;
+                }
+                else attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+            }
         }
 
         Plotly.relayout(gd, attrs);

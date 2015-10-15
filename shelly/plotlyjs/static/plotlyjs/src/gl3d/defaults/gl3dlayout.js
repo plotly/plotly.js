@@ -2,70 +2,33 @@
 
 var Plotly = require('../../plotly');
 
-var Gl3dLayout = {};
+var Gl3dLayout = module.exports = {};
 
-module.exports = Gl3dLayout;
-
-Gl3dLayout.layoutAttributes = {
-    bgcolor: {
-        type: 'color',
-        dflt: 'rgba(0,0,0,0)'
-    },
-    cameraposition: {
-        type: 'data_array'
-    },
-    domain: {
-        x: [
-            {type: 'number', min: 0, max: 1},
-            {type: 'number', min: 0, max: 1}
-        ],
-        y:[
-            {type: 'number', min: 0, max: 1, dflt: 0},
-            {type: 'number', min: 0, max: 1, dflt: 1}
-        ]
-    },
-    _nestedModules: {  // nested module coupling
-        'xaxis': 'Gl3dAxes',
-        'yaxis': 'Gl3dAxes',
-        'zaxis': 'Gl3dAxes'
-    },
-    aspectmode: {
-        type: 'enumerated',
-        values: ['auto', 'cube', 'data', 'manual'],
-        dflt: 'auto'
-    },
-    aspectratio: { // must be positive (0's are coerced to 1)
-        x: {
-            type: 'number',
-            min: 0
-        },
-        y: {
-            type: 'number',
-            min: 0
-        },
-        z: {
-            type: 'number',
-            min: 0
-        }
+Plotly.Plots.registerSubplot('gl3d', 'scene', 'scene', {
+    scene: {
+        valType: 'sceneid',
+        role: 'info',
+        dflt: 'scene',
+        description: [
+            'Sets a reference between this trace\'s 3D coordinate system and',
+            'a 3D scene.',
+            'If *scene* (the default value), the (x,y,z) coordinates refer to',
+            '`layout.scene`.',
+            'If *scene2*, the (x,y,z) coordinates refer to `layout.scene2`,',
+            'and so on.'
+        ].join(' ')
     }
-};
+});
+
+Gl3dLayout.layoutAttributes = require('../attributes/gl3dlayout');
 
 Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
 
     if (!layoutOut._hasGL3D) return;
 
-    var scenes = [];
+    var scenes = Plotly.Plots.getSubplotIdsInData(fullData, 'gl3d');
     var attributes = Gl3dLayout.layoutAttributes;
     var i;
-
-    for (i = 0; i < fullData.length; ++i) {
-        var d = fullData[i];
-        if (Plotly.Plots.isGL3D(d.type)) {
-            if (scenes.indexOf(d.scene) === -1) {
-                scenes.push(d.scene);
-            }
-        }
-    }
 
     // until they play better together
     delete layoutOut.xaxis;
@@ -93,18 +56,23 @@ Gl3dLayout.supplyLayoutDefaults = function (layoutIn, layoutOut, fullData) {
          * attributes like aspectratio can be written back dynamically.
          */
         var sceneLayoutIn;
-        if (scene in layoutIn) sceneLayoutIn = layoutIn[scene];
+        if(layoutIn[scene] !== undefined) sceneLayoutIn = layoutIn[scene];
         else layoutIn[scene] = sceneLayoutIn = {};
 
         var sceneLayoutOut = layoutOut[scene] || {};
 
-
         coerce('bgcolor');
-        coerce('cameraposition');
-        coerce('domain.x[0]', i / scenesLength);
-        coerce('domain.x[1]', (i+1) / scenesLength);
-        coerce('domain.y[0]');
-        coerce('domain.y[1]');
+
+        var cameraKeys = Object.keys(attributes.camera);
+
+        for(var j = 0; j < cameraKeys.length; j++) {
+            coerce('camera.' + cameraKeys[j] + '.x');
+            coerce('camera.' + cameraKeys[j] + '.y');
+            coerce('camera.' + cameraKeys[j] + '.z');
+        }
+
+        coerce('domain.x', [i / scenesLength, (i+1) / scenesLength]);
+        coerce('domain.y');
 
         /*
          * coerce to positive number (min 0) but also do not accept 0 (>0 not >=0)

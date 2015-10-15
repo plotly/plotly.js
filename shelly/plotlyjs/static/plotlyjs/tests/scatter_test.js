@@ -106,6 +106,61 @@ describe('Test scatter', function () {
 
     });
 
+    describe('getBubbleSizeFn', function() {
+        var getBubbleSizeFn = Plotly.Scatter.getBubbleSizeFn,
+            markerSizes = [
+                0, '1', 2.21321321, 'not-a-number',
+                100, 1000.213213, 1e7, undefined, null, -100
+            ],
+            trace = { marker: {} };
+
+        var sizeFn, expected;
+
+        it('should scale w.r.t. bubble diameter when sizemode=diameter', function() {
+            trace.marker.sizemode = 'diameter';
+            sizeFn = getBubbleSizeFn(trace);
+
+            expected = [
+                0, 0.5, 1.106606605, 0, 50, 500.1066065, 5000000, 0, 0, 0
+            ];
+            expect(markerSizes.map(sizeFn)).toEqual(expected);
+        });
+
+        it('should scale w.r.t. bubble area when sizemode=area', function() {
+            trace.marker.sizemode = 'area';
+            sizeFn = getBubbleSizeFn(trace);
+
+            expected = [
+                0, 0.7071067811865476, 1.051953708582274, 0, 7.0710678118654755,
+                22.363063441755916, 2236.06797749979, 0, 0, 0
+            ];
+            expect(markerSizes.map(sizeFn)).toEqual(expected);
+        });
+
+        it('should adjust scaling according to sizeref', function() {
+            trace.marker.sizemode = 'diameter';
+            trace.marker.sizeref = 0.1;
+            sizeFn = getBubbleSizeFn(trace);
+
+            expected = [
+                0, 5, 11.06606605, 0, 500, 5001.066065, 50000000, 0, 0, 0
+            ];
+            expect(markerSizes.map(sizeFn)).toEqual(expected);
+        });
+
+        it('should adjust the small sizes according to sizemin', function() {
+            trace.marker.sizemode = 'diameter';
+            trace.marker.sizeref = 10;
+            trace.marker.sizemin = 5;
+            sizeFn = getBubbleSizeFn(trace);
+
+            expected = [
+                0, 5, 5, 0, 5, 50.01066065, 500000, 0, 0, 0
+            ];
+            expect(markerSizes.map(sizeFn)).toEqual(expected);
+        });
+    });
+
     describe('linePoints', function() {
         // test axes are unit-scaled and 100 units long
         var ax = {_length: 100, c2p: Plotly.Lib.identity},
@@ -203,4 +258,5 @@ describe('Test scatter', function () {
 
         // TODO: test coarser decimation outside plot, and removing very near duplicates from the four of a cluster
     });
+
 });

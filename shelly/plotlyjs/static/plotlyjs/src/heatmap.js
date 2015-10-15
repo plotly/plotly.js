@@ -1,70 +1,111 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var heatmap = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric'),
-    scatterAttrs = Plotly.Scatter.attributes;
+    isNumeric = require('./isnumeric');
+
+var heatmap = module.exports = {};
+
+Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap'], {
+    description: [
+        'The data that describes the heatmap value-to-color mapping',
+        'is set in `z`.',
+        'Data in `z` can either be a {2D array} of values (ragged or not)',
+        'or a 1D array of values.',
+
+        'In the case where `z` is a {2D array},',
+        'say that `z` has N rows and M columns.',
+        'Then, by default, the resulting heatmap will have N partitions along',
+        'the y axis and M partitions along the x axis.',
+        'In other words, the i-th row/ j-th column cell in `z`',
+        'is mapped to the i-th partition of the y axis',
+        '(starting from the bottom of the plot) and the j-th partition',
+        'of the x-axis (starting from the left of the plot).',
+        'This behavior can be flipped by using `transpose`.',
+        'Moreover, `x` (`y`) can be provided with M or M+1 (N or N+1) elements',
+        'If M (N), then the coordinates correspond to the center of the',
+        'heatmap cells and the cells have equal width.',
+        'If M+1 (N+1), then the coordinates correspond to the edges of the',
+        'heatmap cells.',
+
+        'In the case where `z` is a 1D {array}, the x and y coordinates must be',
+        'provided in `x` and `y` respectively to form data triplets.'
+    ].join(' ')
+});
+
+var scatterAttrs = Plotly.Scatter.attributes,
+    traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
 heatmap.attributes = {
-    z: {type: 'data_array'},
+    z: {
+        valType: 'data_array',
+        description: 'Sets the z data.'
+    },
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
     dx: scatterAttrs.dx,
     y: scatterAttrs.y,
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
-    text: {type: 'data_array'},
+    text: {
+        valType: 'data_array',
+        description: 'Sets the text elements associated with each z value.'
+    },
     transpose: {
-        type: 'boolean',
-        dflt: false
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        description: 'Transposes the z data.'
     },
     xtype: {
-        type: 'enumerated',
-        values: ['array', 'scaled']
+        valType: 'enumerated',
+        values: ['array', 'scaled'],
+        role: 'info',
+        description: [
+            'If *array*, the heatmap\'s x coordinates are given by *x*',
+            '(the default behavior when `x` is provided).',
+            'If *scaled*, the heatmap\'s x coordinates are given by *x0* and *dx*',
+            '(the default behavior when `x` is not provided).'
+        ].join(' ')
     },
     ytype: {
-        type: 'enumerated',
-        values: ['array', 'scaled']
+        valType: 'enumerated',
+        values: ['array', 'scaled'],
+        role: 'info',
+        description: [
+            'If *array*, the heatmap\'s y coordinates are given by *y*',
+            '(the default behavior when `y` is provided)',
+            'If *scaled*, the heatmap\'s y coordinates are given by *y0* and *dy*',
+            '(the default behavior when `y` is not provided)'
+        ].join(' ')
     },
-    zauto: {
-        type: 'boolean',
-        dflt: true
-    },
-    zmin: {
-        type: 'number',
-        dflt: null
-    },
-    zmax: {
-        type: 'number',
-        dflt: null
-    },
-    colorscale: {
-        type: 'colorscale'
-    },
-    autocolorscale: {
-        type: 'boolean',
-        dflt: false
-    },
-    reversescale: {
-        type: 'boolean',
-        dflt: false
-    },
-    showscale: {
-        type: 'boolean',
-        dflt: true
-    },
+    zauto: traceColorbarAttrs.zauto,
+    zmin: traceColorbarAttrs.zmin,
+    zmax: traceColorbarAttrs.zmax,
+    colorscale: traceColorbarAttrs.colorscale,
+    autocolorscale: Plotly.Lib.extendFlat({}, traceColorbarAttrs.autocolorscale,
+        {dflt: false}),
+    reversescale: traceColorbarAttrs.reversescale,
+    showscale: traceColorbarAttrs.showscale,
     zsmooth: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['fast', 'best', false],
-        dflt: false
+        dflt: false,
+        role: 'style',
+        description: [
+            'Picks a smoothing algorithm use to smooth `z` data.'
+        ].join(' ')
     },
     connectgaps: {
-        type: 'boolean',
-        dflt: false
+        valType: 'boolean',
+        dflt: false,
+        role: 'info',
+        description: [
+            'Determines whether or not gaps',
+            '(i.e. {nan} or missing values)',
+            'in the `z` data are filled in.'
+        ].join(' ')
     },
     _nestedModules: {  // nested module coupling
         'colorbar': 'Colorbar'
@@ -76,38 +117,15 @@ heatmap.attributes = {
 };
 
 heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
+    var isContour = Plotly.Plots.traceIs(traceOut, 'contour');
+
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
     }
 
-    function isValidZ(z) {
-        var allRowsAreArrays = true,
-            oneRowIsFilled = false,
-            noNumbers = true;
+    if(!isContour) coerce('zsmooth');
 
-        var zi;
-
-        if (!(Array.isArray(z) && z.length)) return false;
-
-        for (var i = 0; i < z.length; i++) {
-            zi = z[i];
-            if (!Array.isArray(zi)) allRowsAreArrays = false;
-            if (!oneRowIsFilled && zi.length) oneRowIsFilled = true;
-            for(var j = 0; j < zi.length; j++) {
-            // Check that there is at least one numeric element...
-                if($.isNumeric(zi[j])) {
-                    noNumbers = false;
-                    break;
-                }
-            }
-        }
-        // ... otherwise set array as invalid:
-        if(noNumbers) return false;
-
-        return (allRowsAreArrays && oneRowIsFilled);
-    }
-
-    if(Plotly.Plots.isHist2D(traceOut.type)) {
+    if(Plotly.Plots.traceIs(traceOut, 'histogram')) {
         // x, y, z, marker.color, and x0, dx, y0, dy are coerced
         // in Histogram.supplyDefaults
         // (along with histogram-specific attributes)
@@ -115,92 +133,140 @@ heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         if(traceOut.visible === false) return;
     }
     else {
-        var z = coerce('z');
-        if(!isValidZ(z)) {
+        var len = heatmap.handleXYZDefaults(traceIn, traceOut, coerce);
+        if(!len) {
             traceOut.visible = false;
             return;
         }
 
-        coerce('transpose');
-
-        var x = coerce('x'),
-            xtype = x ? coerce('xtype', 'array') : 'scaled';
-        if(xtype==='scaled') {
-            coerce('x0');
-            coerce('dx');
-        }
-
-        var y = coerce('y'),
-            ytype = y ? coerce('ytype', 'array') : 'scaled';
-        if(ytype==='scaled') {
-            coerce('y0');
-            coerce('dy');
-        }
-
-        coerce('connectgaps');
         coerce('text');
+
+        var hasColumns = heatmap.hasColumns(traceOut);
+
+        if(!hasColumns) coerce('transpose');
+        coerce('connectgaps', hasColumns &&
+            (isContour || traceOut.zsmooth !== false));
     }
 
-    coerce('zauto');
-    coerce('zmin');
-    coerce('zmax');
-
-    if(!Plotly.Plots.isContour(traceOut.type) || (traceOut.contours||{}).coloring!=='none') {
-        coerce('colorscale');
-        coerce('autocolorscale');
-        var reverseScale = coerce('reversescale'),
-            showScale = coerce('showscale');
-
-        // apply the colorscale reversal here, so we don't have to
-        // do it in separate modules later
-        if(reverseScale) {
-            traceOut.colorscale = traceOut.colorscale.map(flipScale).reverse();
-        }
-
-        if(showScale) {
-            Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-        }
+    if(!isContour || (traceOut.contours || {}).coloring!=='none') {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+        );
     }
-
-    if(!Plotly.Plots.isContour(traceOut.type)) coerce('zsmooth');
 };
 
-function flipScale(si){ return [1 - si[0], si[1]]; }
+heatmap.handleXYZDefaults = function(traceIn, traceOut, coerce) {
+    var z = coerce('z');
+    var x, y;
 
+    if(z===undefined || !z.length) return 0;
 
-heatmap.calcColorscale = function(trace, z) {
+    if(heatmap.hasColumns(traceIn)) {
+        x = coerce('x');
+        y = coerce('y');
 
-    // This function has side effects on trace.
+        // column z must be accompanied by 'x' and 'y' arrays
+        if(!x || !y) return 0;
+    }
+    else {
+        x = coordDefaults('x', coerce);
+        y = coordDefaults('y', coerce);
 
-    // auto-z for heatmap
-    if(trace.zauto!==false || !('zmin' in trace)) {
-        trace.zmin = Plotly.Lib.aggNums(Math.min, null, z);
+        // TODO put z validation elsewhere
+        if(!isValidZ(z)) return 0;
     }
 
-    if(trace.zauto!==false || !('zmax' in trace)) {
-        trace.zmax = Plotly.Lib.aggNums(Math.max, null, z);
+    return traceOut.z.length;
+};
+
+function coordDefaults(coordStr, coerce) {
+    var coord = coerce(coordStr),
+        coordType = coord ?
+            coerce(coordStr + 'type', 'array') :
+            'scaled';
+
+    if(coordType === 'scaled') {
+        coerce(coordStr + '0');
+        coerce('d' + coordStr);
     }
 
-    if(trace.zmin===trace.zmax) {
-        trace.zmin -= 0.5;
-        trace.zmax += 0.5;
-    }
+    return coord;
+}
 
-    if(trace.autocolorscale) {
-        if(trace.zmin * trace.zmax < 0) {
-            // Data values are > 0 and < 0.
-            trace.colorscale = Plotly.Color.scales.RdBu;
-        } else if(trace.zmin >= 0) {
-            // Non-negative signed data
-            trace.colorscale = Plotly.Color.scales.Reds;
-        } else {
-            // Non-positive signed data
-            trace.colorscale = Plotly.Color.scales.Blues;
+function isValidZ(z) {
+    var allRowsAreArrays = true,
+        oneRowIsFilled = false,
+        hasOneNumber = false,
+        zi;
+
+    // without this step:
+    // hasOneNumber = false breaks contour but not heatmap
+    // allRowsAreArrays = false breaks contour but not heatmap
+    // oneRowIsFilled = false breaks both
+
+    for(var i = 0; i < z.length; i++) {
+        zi = z[i];
+        if(!Array.isArray(zi)) {
+            allRowsAreArrays = false;
+            break;
+        }
+        if(zi.length > 0) oneRowIsFilled = true;
+        for(var j = 0; j < zi.length; j++) {
+            if(isNumeric(zi[j])) {
+                hasOneNumber = true;
+                break;
+            }
         }
     }
 
+    return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
+}
+
+heatmap.hasColumns = function(trace) {
+    return !Array.isArray(trace.z[0]);
 };
 
+heatmap.convertColumnXYZ = function(trace, xa, ya) {
+    var xCol = trace.x.slice(),
+        yCol = trace.y.slice(),
+        zCol = trace.z,
+        textCol = trace.text,
+        colLen = Math.min(xCol.length, yCol.length, zCol.length),
+        hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
+
+    var i;
+
+    if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
+    if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
+
+    for(i = 0; i < colLen; i++) {
+        xCol[i] = xa.d2c(xCol[i]);
+        yCol[i] = ya.d2c(yCol[i]);
+    }
+
+    var xColdv = Plotly.Lib.distinctVals(xCol),
+        x = xColdv.vals,
+        yColdv = Plotly.Lib.distinctVals(yCol),
+        y = yColdv.vals,
+        z = Plotly.Lib.init2dArray(y.length, x.length);
+
+    var ix, iy, text;
+
+    if(hasColumnText) text = Plotly.Lib.init2dArray(y.length, x.length);
+
+    for(i = 0; i < colLen; i++) {
+        ix = Plotly.Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
+        iy = Plotly.Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
+
+        z[iy][ix] = zCol[i];
+        if(hasColumnText) text[iy][ix] = textCol[i];
+    }
+
+    trace.x = x;
+    trace.y = y;
+    trace.z = z;
+    if(hasColumnText) trace.text = text;
+};
 
 heatmap.calc = function(gd, trace) {
     // prepare the raw data
@@ -208,7 +274,9 @@ heatmap.calc = function(gd, trace) {
     Plotly.Lib.markTime('start convert x&y');
     var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
-        zsmooth = Plotly.Plots.isContour(trace.type) ? 'best' : trace.zsmooth,
+        isContour = Plotly.Plots.traceIs(trace, 'contour'),
+        isHist = Plotly.Plots.traceIs(trace, 'histogram'),
+        zsmooth = isContour ? 'best' : trace.zsmooth,
         x,
         x0,
         dx,
@@ -224,7 +292,7 @@ heatmap.calc = function(gd, trace) {
 
     Plotly.Lib.markTime('done convert x&y');
 
-    if(Plotly.Plots.isHist2D(trace.type)) {
+    if(isHist) {
         var binned = Plotly.Histogram.calc2d(gd, trace);
         x = binned.x;
         x0 = binned.x0;
@@ -235,29 +303,18 @@ heatmap.calc = function(gd, trace) {
         z = binned.z;
     }
     else {
+        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace, xa, ya);
+
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
-        x0 = trace.x0||0;
-        dx = trace.dx||1;
-
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
-        y0 = trace.y0||0;
-        dy = trace.dy||1;
+        x0 = trace.x0 || 0;
+        dx = trace.dx || 1;
+        y0 = trace.y0 || 0;
+        dy = trace.dy || 1;
 
-        if(trace.transpose) {
-            var maxcols = Plotly.Lib.aggNums(Math.max,0,
-                    trace.z.map(function(r){return r.length;}));
-            z = [];
-            for(var c = 0; c < maxcols; c++) {
-                var newrow = [];
-                for(var r = 0; r < trace.z.length; r++) {
-                    newrow.push(cleanZ(trace.z[r][c]));
-                }
-                z.push(newrow);
-            }
-        }
-        else z = trace.z.map(function(row){return row.map(cleanZ); });
+        z = heatmap.cleanZ(trace);
 
-        if(Plotly.Plots.isContour(trace.type) || trace.connectgaps) {
+        if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
             trace._interpz = interp2d(z, trace._emptypoints, trace._interpz);
         }
@@ -273,7 +330,7 @@ heatmap.calc = function(gd, trace) {
         if(xa.type==='log' || ya.type==='log') {
             noZsmooth('log axis found');
         }
-        else if(!Plotly.Plots.isHist2D(trace.type)) {
+        else if(!isHist) {
             if(x.length) {
                 var avgdx = (x[x.length-1]-x[0]) / (x.length-1),
                     maxErrX = Math.abs(avgdx/100);
@@ -298,45 +355,71 @@ heatmap.calc = function(gd, trace) {
     }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = Plotly.Lib.aggNums(Math.max,null,
-            z.map(function(row) { return row.length; })),
+    var xlen = heatmap.maxRowLength(z),
         xIn = trace.xtype==='scaled' ? '' : trace.x,
-        xArray = makeBoundArray(trace.type, xIn, x0, dx, xlen, xa),
+        xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa),
         yIn = trace.ytype==='scaled' ? '' : trace.y,
-        yArray = makeBoundArray(trace.type, yIn, y0, dy, z.length, ya);
+        yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
+
     Plotly.Axes.expand(xa, xArray);
     Plotly.Axes.expand(ya, yArray);
 
     var cd0 = {x: xArray, y: yArray, z: z};
 
     // auto-z and autocolorscale if applicable
-    heatmap.calcColorscale(trace, z);
+    Plotly.Colorscale.calc(trace, z, '', 'z');
 
-    trace._input.zmin = trace.zmin;
-    trace._input.zmax = trace.zmax;
-
-    trace._input.colorscale = trace.colorscale;
-
-    if(Plotly.Plots.isContour(trace.type) && trace.contours &&
-            trace.contours.coloring==='heatmap') {
-        var hmtype = trace.type==='contour' ? 'heatmap' : 'histogram2d';
-        cd0.xfill = makeBoundArray(hmtype, xIn, x0, dx, xlen, xa);
-        cd0.yfill = makeBoundArray(hmtype, yIn, y0, dy, z.length, ya);
+    if(isContour && trace.contours && trace.contours.coloring==='heatmap') {
+        var hmType = trace.type === 'contour' ? 'heatmap' : 'histogram2d';
+        cd0.xfill = makeBoundArray(hmType, xIn, x0, dx, xlen, xa);
+        cd0.yfill = makeBoundArray(hmType, yIn, y0, dy, z.length, ya);
     }
 
     return [cd0];
 };
 
-function cleanZ(v) {
-    if(!v && v!==0) return undefined;
-    v = Number(v);
-    if(isNaN(v)) return undefined;
-    return v;
+function cleanZvalue(v) {
+    if(!isNumeric(v)) return undefined;
+    return +v;
 }
 
-function makeBoundArray(type, arrayIn, v0In, dvIn, numbricks, ax) {
-    var arrayOut = [], v0, dv, i;
-    if(Array.isArray(arrayIn) && (!Plotly.Plots.isHist2D(type)) && (ax.type!=='category')) {
+heatmap.cleanZ = function(trace) {
+    var zOld = trace.z;
+
+    var rowlen, collen, getCollen, old2new, i, j;
+
+    if(trace.transpose) {
+        rowlen = 0;
+        for(i = 0; i < zOld.length; i++) rowlen = Math.max(rowlen, zOld[i].length);
+        if(rowlen === 0) return false;
+        getCollen = function(zOld) { return zOld.length; };
+        old2new = function(zOld, i, j) { return zOld[j][i]; };
+    }
+    else {
+        rowlen = zOld.length;
+        getCollen = function(zOld, i) { return zOld[i].length; };
+        old2new = function(zOld, i, j) { return zOld[i][j]; };
+    }
+
+    var zNew = new Array(rowlen);
+
+    for(i = 0; i < rowlen; i++) {
+        collen = getCollen(zOld, i);
+        zNew[i] = new Array(collen);
+        for(j = 0; j < collen; j++) zNew[i][j] = cleanZvalue(old2new(zOld, i, j));
+    }
+
+    return zNew;
+};
+
+function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
+    var arrayOut = [],
+        isContour = Plotly.Plots.traceIs(trace, 'contour'),
+        isHist = Plotly.Plots.traceIs(trace, 'histogram'),
+        v0,
+        dv,
+        i;
+    if(Array.isArray(arrayIn) && !isHist && (ax.type!=='category')) {
         arrayIn = arrayIn.map(ax.d2c);
         var len = arrayIn.length;
 
@@ -345,7 +428,7 @@ function makeBoundArray(type, arrayIn, v0In, dvIn, numbricks, ax) {
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
-            if(Plotly.Plots.isContour(type)) arrayOut = arrayIn.slice(0,numbricks);
+            if(isContour) arrayOut = arrayIn.slice(0, numbricks);
             else if(numbricks === 1) arrayOut = [arrayIn[0]-0.5,arrayIn[0]+0.5];
             else {
                 arrayOut = [1.5*arrayIn[0]-0.5*arrayIn[1]];
@@ -364,24 +447,21 @@ function makeBoundArray(type, arrayIn, v0In, dvIn, numbricks, ax) {
                 }
             }
         }
-        // hopefully length==numbricks+1, but do something regardless:
-        // given vals are brick boundaries
-        else return arrayIn.slice(0, numbricks+1);
+        else {
+            // hopefully length==numbricks+1, but do something regardless:
+            // given vals are brick boundaries
+            return isContour ?
+                arrayIn.slice(0, numbricks) :  // we must be strict for contours
+                arrayIn.slice(0, numbricks + 1);
+       }
     }
     else {
         dv = dvIn || 1;
         if(v0In===undefined) v0 = 0;
-        else if(Plotly.Plots.isHist2D(type) || ax.type==='category') {
-            v0 = v0In;
-        }
+        else if(isHist || ax.type==='category') v0 = v0In;
         else v0 = ax.d2c(v0In);
 
-        if(Plotly.Plots.isContour(type)) {
-            for(i=0; i<numbricks; i++) arrayOut.push(v0+dv*i);
-        }
-        else {
-            for(i=0; i<=numbricks; i++) arrayOut.push(v0+dv*(i-0.5));
-        }
+        for(i = isContour ? 0 : -0.5; i < numbricks; i++) arrayOut.push(v0 + dv * i);
     }
     return arrayOut;
 }
@@ -631,10 +711,11 @@ function plotOne(gd, plotinfo, cd) {
     var z = cd[0].z,
         min = trace.zmin,
         max = trace.zmax,
-        scl = Plotly.Color.getScale(trace.colorscale),
+        scl = Plotly.Colorscale.getScale(trace.colorscale),
         x = cd[0].x,
         y = cd[0].y,
-        zsmooth = Plotly.Plots.isContour(trace.type) ? 'best' : trace.zsmooth,
+        isContour = Plotly.Plots.traceIs(trace, 'contour'),
+        zsmooth = isContour ? 'best' : trace.zsmooth,
 
         // get z dims
         m = z.length,
@@ -697,7 +778,7 @@ function plotOne(gd, plotinfo, cd) {
 
     // for contours with heatmap fill, we generate the boundaries based on
     // brick centers but then use the brick edges for drawing the bricks
-    if(Plotly.Plots.isContour(trace.type)) {
+    if(isContour) {
         // TODO: for 'best' smoothing, we really should use the given brick
         // centers as well as brick bounds in calculating values, in case of
         // nonuniform brick sizes
@@ -967,33 +1048,10 @@ function plotOne(gd, plotinfo, cd) {
     Plotly.Lib.markTime('done showing png');
 }
 
-heatmap.colorbar = function(gd,cd) {
-    var trace = cd[0].trace,
-        cbId = 'cb'+trace.uid,
-        scl = Plotly.Color.getScale(trace.colorscale),
-        zmin = trace.zmin,
-        zmax = trace.zmax;
+heatmap.colorbar = Plotly.Colorbar.traceColorbar;
 
-    if (!isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
-    if (!isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
-
-    gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
-    if(!trace.showscale){
-        Plotly.Plots.autoMargin(gd, cbId);
-        return;
-    }
-
-    var cb = cd[0].t.cb = Plotly.Colorbar(gd,cbId);
-    cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v){ return zmin + v[0]*(zmax-zmin); }))
-            .range(scl.map(function(v){ return v[1]; })))
-        .filllevels({start: zmin, end: zmax, size: (zmax-zmin)/254})
-        .options(trace.colorbar)();
-    Plotly.Lib.markTime('done colorbar');
-};
-
-heatmap.style = function(gp) {
-    gp.selectAll('image').style('opacity',function(d){ return d.trace.opacity; });
+heatmap.style = function(gd) {
+    d3.select(gd).selectAll('image').style('opacity',function(d){ return d.trace.opacity; });
 };
 
 heatmap.hoverPoints = function(pointData, xval, yval, hovermode, contour) {
@@ -1078,7 +1136,7 @@ heatmap.hoverPoints = function(pointData, xval, yval, hovermode, contour) {
         text = trace.text[ny][nx];
     }
 
-    return [$.extend(pointData,{
+    return [Plotly.Lib.extendFlat(pointData, {
         index: [ny, nx],
         // never let a 2D override 1D type as closest point
         distance: Plotly.Fx.MAXDIST+10,

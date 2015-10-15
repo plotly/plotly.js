@@ -1,11 +1,10 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
+    isNumeric = require('./isnumeric');
 
-var Plotly = require('./plotly');
-
-var colorbar = module.exports = function(td,id) {
+var colorbar = module.exports = function(td, id) {
     // opts: options object, containing everything from attributes
     // plus a few others that are the equivalent of the colorbar "data"
     var opts = {};
@@ -47,25 +46,25 @@ var colorbar = module.exports = function(td,id) {
 
         var l0 = opts.levels.end + opts.levels.size/100,
             ls = opts.levels.size,
-            zr0 = (1.001*zrange[0]-0.001*zrange[1]),
-            zr1 = (1.001*zrange[1]-0.001*zrange[0]);
-        for(l=opts.levels.start; (l-l0)*ls<0; l+=ls) {
-            if(l>zr0 && l<zr1) linelevels.push(l);
+            zr0 = (1.001 * zrange[0] - 0.001 * zrange[1]),
+            zr1 = (1.001 * zrange[1] - 0.001 * zrange[0]);
+        for(l = opts.levels.start; (l - l0) * ls < 0; l += ls) {
+            if(l > zr0 && l < zr1) linelevels.push(l);
         }
 
         if(typeof opts.fillcolor === 'function') {
             if(opts.filllevels) {
-                l0 = opts.filllevels.end + opts.filllevels.size/100;
+                l0 = opts.filllevels.end + opts.filllevels.size / 100;
                 ls = opts.filllevels.size;
-                for(l=opts.filllevels.start; (l-l0)*ls<0; l+=ls) {
-                    if(l>zrange[0] && l<zrange[1]) filllevels.push(l);
+                for(l = opts.filllevels.start; (l - l0) * ls < 0; l += ls) {
+                    if(l > zrange[0] && l < zrange[1]) filllevels.push(l);
                 }
             }
             else {
                 filllevels = linelevels.map(function(v){
-                    return v-opts.levels.size/2;
+                    return v-opts.levels.size / 2;
                 });
-                filllevels.push(filllevels[filllevels.length-1] +
+                filllevels.push(filllevels[filllevels.length - 1] +
                     opts.levels.size);
             }
         }
@@ -117,10 +116,12 @@ var colorbar = module.exports = function(td,id) {
             cbAxisIn = {
                 type: 'linear',
                 range: zrange,
-                autotick: opts.autotick,
+                tickmode: opts.tickmode,
                 nticks: opts.nticks,
                 tick0: opts.tick0,
                 dtick: opts.dtick,
+                tickvals: opts.tickvals,
+                ticktext: opts.ticktext,
                 ticks: opts.ticks,
                 ticklen: opts.ticklen,
                 tickwidth: opts.tickwidth,
@@ -128,6 +129,7 @@ var colorbar = module.exports = function(td,id) {
                 showticklabels: opts.showticklabels,
                 tickfont: opts.tickfont,
                 tickangle: opts.tickangle,
+                tickformat: opts.tickformat,
                 exponentformat: opts.exponentformat,
                 showexponent: opts.showexponent,
                 showtickprefix: opts.showtickprefix,
@@ -139,7 +141,12 @@ var colorbar = module.exports = function(td,id) {
                 anchor: 'free',
                 position: 1
             },
-            cbAxisOut = {};
+            cbAxisOut = {},
+            axisOptions = {
+                letter: 'y',
+                font: fullLayout.font,
+                noHover: true
+            };
 
         // Coerce w.r.t. Axes layoutAttributes:
         // re-use axes.js logic without updating _fullData
@@ -151,9 +158,9 @@ var colorbar = module.exports = function(td,id) {
 
         // Prepare the Plotly axis object
         Plotly.Axes.handleAxisDefaults(cbAxisIn, cbAxisOut,
-                                       coerce, {letter: 'y'});
+                                       coerce, axisOptions);
         Plotly.Axes.handleAxisPositioningDefaults(cbAxisIn, cbAxisOut,
-                                                  coerce, {letter: 'y'});
+                                                  coerce, axisOptions);
 
         cbAxisOut._id = 'y' + id;
         cbAxisOut._td = td;
@@ -172,8 +179,8 @@ var colorbar = module.exports = function(td,id) {
                 (opts.titleside==='top' ? lenFrac-ypadFrac : ypadFrac);
         }
 
-        if(opts.line.color && opts.autotick!==false) {
-            cbAxisOut.autotick = false;
+        if(opts.line.color && opts.tickmode === 'auto') {
+            cbAxisOut.tickmode = 'linear';
             cbAxisOut.tick0 = opts.levels.start;
             var dtick = opts.levels.size;
             // expand if too many contours, so we don't get too many ticks
@@ -231,7 +238,7 @@ var colorbar = module.exports = function(td,id) {
         if(['top','bottom'].indexOf(opts.titleside)!==-1) {
             // draw the title so we know how much room it needs
             // when we squish the axis
-            Plotly.Plots.titles(td,cbAxisOut._id+'title');
+            Plotly.Plots.titles(td, cbAxisOut._id + 'title');
         }
 
         function drawAxis(){
@@ -342,9 +349,9 @@ var colorbar = module.exports = function(td,id) {
 
             cbAxisOut._pos = xLeft+thickPx +
                 (opts.outlinewidth||0)/2 - (opts.ticks==='outside' ? 1 : 0);
-            cbAxisOut.side = opts.orient;
+            cbAxisOut.side = 'right';
 
-            return Plotly.Axes.doTicks(td,cbAxisOut);
+            return Plotly.Axes.doTicks(td, cbAxisOut);
         }
 
         function positionCB(){
@@ -411,7 +418,7 @@ var colorbar = module.exports = function(td,id) {
                 'translate('+(fullLayout._size.l-xoffset)+','+fullLayout._size.t+')');
 
             //auto margin adjustment
-            Plotly.Plots.autoMargin(td,id,{
+            Plotly.Plots.autoMargin(td, id,{
                 x: opts.x,
                 y: opts.y,
                 l: outerwidth*({right:1, center:0.5}[opts.xanchor]||0),
@@ -427,10 +434,9 @@ var colorbar = module.exports = function(td,id) {
             Plotly.Plots.previousPromises,
             positionCB
         ], td);
-        if(cbDone && cbDone.then) (td._promises||[]).push(cbDone);
+        if(cbDone && cbDone.then) (td._promises || []).push(cbDone);
 
         // dragging...
-        // TODO: abstract this dragging code for everything we drag in svg?
         if(td._context.editable) {
             var t0,
                 xf,
@@ -488,8 +494,10 @@ var colorbar = module.exports = function(td,id) {
 
             // setter - for multi-part properties,
             // set only the parts that are provided
-            if($.isPlainObject(opts[name])) $.extend(opts[name],v);
-            else opts[name] = v;
+            opts[name] = Plotly.Lib.isPlainObject(opts[name]) ?
+                 Plotly.Lib.extendFlat(opts[name], v) :
+                 v;
+
             return component;
         };
     });
@@ -515,71 +523,114 @@ var axesAttrs = Plotly.Axes.layoutAttributes,
     extendFlat = Plotly.Lib.extendFlat;
 
 colorbar.attributes = {
-    orient: {
-        // which side are the labels on (so left and right make vertical bars, etc.)
-        // TODO: only right is supported currently
-        type: 'enumerated',
-        values: ['left', 'right', 'top', 'bottom'],
-        dflt: 'right'
-    },
+// TODO: only right is supported currently
+//     orient: {
+//         valType: 'enumerated',
+//         role: 'info',
+//         values: ['left', 'right', 'top', 'bottom'],
+//         dflt: 'right',
+//         description: [
+//             'Determines which side are the labels on',
+//             '(so left and right make vertical bars, etc.)'
+//         ].join(' ')
+//     },
     thicknessmode: {
-        // sizing has two modes: 'fraction' and 'pixels'
-        // the size in the constant color direction
-        // this is the actual bar thickness.
-        // padding, ticks, and labels are additional
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['fraction', 'pixels'],
-        dflt: 'pixels'
+        role: 'style',
+        dflt: 'pixels',
+        description: [
+            'Determines whether this color bar\'s thickness',
+            '(i.e. the measure in the constant color direction)',
+            'is set in units of plot *fraction* or in *pixels.',
+            'Use `thickness` to set the value.'
+        ].join(' ')
     },
     thickness: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
-        dflt: 30
+        dflt: 30,
+        description: [
+            'Sets the thickness of the color bar',
+            'This measure excludes the size of the padding, ticks and labels.'
+        ].join(' ')
     },
     lenmode: {
-        // the total size in the color variation direction
-        // the colorbar length is this length MINUS padding on both ends
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['fraction', 'pixels'],
-        dflt: 'fraction'
+        role: 'info',
+        dflt: 'fraction',
+        description: [
+            'Determines whether this color bar\'s length',
+            '(i.e. the measure in the color variation direction)',
+            'is set in units of plot *fraction* or in *pixels.',
+            'Use `len` to set the value.'
+        ].join(' ')
     },
     len: {
-        type: 'number',
+        valType: 'number',
         min: 0,
-        dflt: 1
+        dflt: 1,
+        role: 'style',
+        description: [
+            'Sets the length of the color bar',
+            'This measure excludes the padding of both ends.',
+            'That is, the color bar length is this length minus the',
+            'padding on both ends.'
+        ].join(' ')
     },
-    // anchors are x:left|center|right, y:top|middle|bottom
     x: {
-        // positioning is in fraction of plot size
-        type: 'number',
-        dflt: 1.02
+        valType: 'number',
+        dflt: 1.02,
+        role: 'style',
+        description: [
+            'Sets the x position of the color bar (in plot fraction).'
+        ].join(' ')
     },
     xanchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['left', 'center', 'right'],
-        dflt: 'left'
+        dflt: 'left',
+        role: 'style',
+        description: [
+            'Sets this color bar\'s horizontal position anchor',
+            'This anchor binds the `x` position to the *left*, *center*',
+            'or *right* of the color bar.'
+        ].join(' ')
     },
     xpad: {
-        // padding is in pixels
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
-        dflt: 10
+        dflt: 10,
+        description: 'Sets the amount of padding (in px) along the x direction.'
     },
     y: {
-        // positioning is in fraction of plot size
-        type: 'number',
-        dflt: 0.5
+        valType: 'number',
+        role: 'style',
+        dflt: 0.5,
+        description: [
+            'Sets the y position of the color bar (in plot fraction).'
+        ].join(' ')
     },
     yanchor: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
-        dflt: 'middle'
+        role: 'style',
+        dflt: 'middle',
+        description: [
+            'Sets this color bar\'s vertical position anchor',
+            'This anchor binds the `y` position to the *top*, *middle*',
+            'or *bottom* of the color bar.'
+        ].join(' ')
     },
     ypad: {
-        // padding is in pixels
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
-        dflt: 10
+        dflt: 10,
+        description: 'Sets the amount of padding (in px) along the y direction.'
     },
     // a possible line around the bar itself
     outlinecolor: axesAttrs.linecolor,
@@ -588,27 +639,35 @@ colorbar.attributes = {
     // another possible line outside the padding and tick labels
     bordercolor: axesAttrs.linecolor,
     borderwidth: {
-        type: 'number',
+        valType: 'number',
+        role: 'style',
         min: 0,
-        dflt: 0
+        dflt: 0,
+        description: [
+            'Sets the width (in px) or the border enclosing this color bar.'
+        ].join(' ')
     },
-    // color of the padded area
     bgcolor: {
-        type: 'color',
-        dflt: 'rgba(0,0,0,0)'
+        valType: 'color',
+        role: 'style',
+        dflt: 'rgba(0,0,0,0)',
+        description: 'Sets the color of padded area.'
     },
     // tick and title properties named and function exactly as in axes
-    autotick: axesAttrs.autotick,
+    tickmode: axesAttrs.tickmode,
     nticks: axesAttrs.nticks,
     tick0: axesAttrs.tick0,
     dtick: axesAttrs.dtick,
-    ticks: extendFlat(axesAttrs.ticks, {dflt: ''}),
+    tickvals: axesAttrs.tickvals,
+    ticktext: axesAttrs.ticktext,
+    ticks: extendFlat({}, axesAttrs.ticks, {dflt: ''}),
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,
     tickcolor: axesAttrs.tickcolor,
     showticklabels: axesAttrs.showticklabels,
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
+    tickformat: axesAttrs.tickformat,
     tickprefix: axesAttrs.tickprefix,
     showtickprefix: axesAttrs.showtickprefix,
     ticksuffix: axesAttrs.ticksuffix,
@@ -616,32 +675,48 @@ colorbar.attributes = {
     exponentformat: axesAttrs.exponentformat,
     showexponent: axesAttrs.showexponent,
     title: {
-        type: 'string',
-        dflt: 'Click to enter colorscale title'
+        valType: 'string',
+        role: 'info',
+        dflt: 'Click to enter colorscale title',
+        description: 'Sets the title of the color bar.'
     },
-    titlefont: axesAttrs.titlefont,
+    titlefont: extendFlat({}, Plotly.Plots.fontAttrs, {
+        description: [
+            'Sets this color bar\'s title font.'
+        ].join(' ')
+    }),
     titleside: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['right', 'top', 'bottom'],
-        dflt: 'top'
+        role: 'style',
+        dflt: 'top',
+        description: [
+            'Determines the location of the colorbar title',
+            'with respect to the color bar.'
+        ].join(' ')
     }
 };
 
-colorbar.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
-    var containerOut = traceOut.colorbar = {},
-        containerIn = traceIn.colorbar || {};
+colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
+    var colorbarOut = containerOut.colorbar = {},
+        colorbarIn = containerIn.colorbar || {};
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(containerIn, containerOut, colorbar.attributes, attr, dflt);
+        return Plotly.Lib.coerce(colorbarIn, colorbarOut,
+                                 colorbar.attributes, attr, dflt);
     }
 
-    coerce('orient');
     var thicknessmode = coerce('thicknessmode');
-    coerce('thickness', thicknessmode==='fraction' ?
-        30/(layout.width-layout.margin.l-layout.margin.r) : 30);
+    coerce('thickness', thicknessmode === 'fraction' ?
+        30 / (layout.width - layout.margin.l - layout.margin.r) :
+        30
+    );
+
     var lenmode = coerce('lenmode');
-    coerce('len', lenmode==='fraction' ?
-        1 : layout.height-layout.margin.t-layout.margin.b);
+    coerce('len', lenmode === 'fraction' ?
+        1 :
+        layout.height - layout.margin.t - layout.margin.b
+    );
 
     coerce('x');
     coerce('xanchor');
@@ -649,7 +724,7 @@ colorbar.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('y');
     coerce('yanchor');
     coerce('ypad');
-    Plotly.Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
+    Plotly.Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
 
     coerce('outlinecolor');
     coerce('outlinewidth');
@@ -657,38 +732,103 @@ colorbar.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     coerce('borderwidth');
     coerce('bgcolor');
 
-    var autotick = coerce('autotick');
-    if(autotick) coerce('nticks');
-    else {
-        coerce('tick0');
-        coerce('dtick');
-    }
+    Plotly.Axes.handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
-    var ticks = coerce('ticks');
-    if(ticks) {
-        coerce('ticklen');
-        coerce('tickwidth');
-        coerce('tickcolor');
-    }
-
-    var showTickLabels = coerce('showticklabels');
-    if(showTickLabels) {
-        coerce('tickfont', layout.font);
-        coerce('tickangle');
-
-        var showAttrDflt = Plotly.Axes.getShowAttrDflt(containerIn);
-
-        var showexponent = coerce('showexponent', showAttrDflt);
-        if(showexponent!=='none') coerce('exponentformat');
-
-        var tickPrefix = coerce('tickprefix');
-        if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-        var tickSuffix = coerce('ticksuffix');
-        if(tickSuffix) coerce('showticksuffix', showAttrDflt);
-    }
+    Plotly.Axes.handleTickDefaults(colorbarIn, colorbarOut, coerce, 'linear',
+        {outerTicks: false, font: layout.font, noHover: true});
 
     coerce('title');
-    coerce('titlefont', layout.font);
+    Plotly.Lib.coerceFont(coerce, 'titlefont', layout.font);
     coerce('titleside');
+};
+
+colorbar.traceColorbar = function(gd, cd) {
+    var trace = cd[0].trace,
+        cbId = 'cb' + trace.uid,
+        scl = Plotly.Colorscale.getScale(trace.colorscale),
+        zmin = trace.zmin,
+        zmax = trace.zmax;
+
+    if(!isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
+    if(!isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
+
+    gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
+    if(!trace.showscale){
+        Plotly.Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var cb = cd[0].t.cb = colorbar(gd, cbId);
+    cb.fillcolor(d3.scale.linear()
+            .domain(scl.map(function(v){ return zmin + v[0]*(zmax-zmin); }))
+            .range(scl.map(function(v){ return v[1]; })))
+        .filllevels({start: zmin, end: zmax, size: (zmax-zmin)/254})
+        .options(trace.colorbar)();
+
+    Plotly.Lib.markTime('done colorbar');
+};
+
+colorbar.traceColorbarAttributes = {
+    zauto: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: [
+            'Determines the whether or not the color domain is computed',
+            'with respect to the input data.'
+        ].join(' ')
+    },
+    zmin: {
+        valType: 'number',
+        role: 'info',
+        dflt: null,
+        description: 'Sets the lower bound of color domain.'
+    },
+    zmax: {
+        valType: 'number',
+        role: 'info',
+        dflt: null,
+        description: 'Sets the upper bound of color domain.'
+    },
+    colorscale: {
+        valType: 'colorscale',
+        role: 'style',
+        description: 'Sets the colorscale.'
+    },
+    autocolorscale: {
+        valType: 'boolean',
+        role: 'style',
+        dflt: true,  // gets overrode in 'heatmap' & 'surface' for backwards comp.
+        description: [
+            'Determines whether or not the colorscale is picked using the sign of',
+            'the input z values.'
+        ].join(' ')
+    },
+    reversescale: {
+        valType: 'boolean',
+        role: 'style',
+        dflt: false,
+        description: 'Reverses the colorscale.'
+    },
+    showscale: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: [
+            'Determines whether or not a colorbar is displayed for this trace.'
+        ].join(' ')
+    },
+
+    _deprecated: {
+        scl: {
+            valType: 'colorscale',
+            role: 'style',
+            description: 'Renamed to `colorscale`.'
+        },
+        reversescl: {
+            valType: 'boolean',
+            role: 'style',
+            description: 'Renamed to `reversescale`.'
+        }
+    }
 };

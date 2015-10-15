@@ -2,100 +2,15 @@
 
 var Plotly = require('../../plotly');
 
-var Mesh3D = {};
+var Mesh3D = module.exports = {};
 
-module.exports = Mesh3D;
+Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
+    description: [
+        ''
+    ].join(' ')
+});
 
-var  heatmapAttrs = Plotly.Heatmap.attributes;
-
-Mesh3D.attributes = {
-    x: {type: 'data_array'},
-    y: {type: 'data_array'},
-    z: {type: 'data_array'},
-
-    i: {type: 'data_array'},
-    j: {type: 'data_array'},
-    k: {type: 'data_array'},
-
-    intensity: {type: 'data_array'},
-
-    //Color field
-    color: { type: 'color' },
-    vertexcolor: { type: 'data_array' },  //FIXME: this should be a color array
-    facecolor: { type: 'data_array' },
-
-    //Opacity
-    opacity: {
-      type: 'number',
-      min: 0,
-      max: 1,
-      dflt: 1
-    },
-
-    //Flat shaded mode
-    flatshading: {
-      type: 'boolean',
-      dflt: false
-    },
-
-    contour: {
-        show: {
-            type: 'boolean',
-            dflt: false
-        },
-        color: {
-            type: 'color',
-            dflt: '#000'
-        },
-        width: {
-            type: 'number',
-            min: 1,
-            max: 16,
-            dflt: 2
-        }
-    },
-
-    colorscale:   heatmapAttrs.colorscale,
-    showscale:    heatmapAttrs.showscale,
-    reversescale: heatmapAttrs.reversescale,
-
-    lighting: {
-        ambient: {
-            type: 'number',
-            min: 0.00,
-            max: 1.0,
-            dflt: 0.8
-        },
-        diffuse: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.8
-        },
-        specular: {
-            type: 'number',
-            min: 0.00,
-            max: 2.00,
-            dflt: 0.05
-        },
-        roughness: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.5
-        },
-        fresnel: {
-            type: 'number',
-            min: 0.00,
-            max: 5.00,
-            dflt: 0.2
-        }
-    },
-
-    _nestedModules: {  // nested module coupling
-        'colorbar': 'Colorbar'
-    }
-};
+Mesh3D.attributes = require('../attributes/mesh3d');
 
 Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
   var self = this;
@@ -120,17 +35,19 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
   var coords  = readComponents(['x', 'y', 'z']);
   var indices = readComponents(['i', 'j', 'k']);
 
-  if(!coords || !indices) {
+  if(!coords) {
     traceOut.visible = false;
     return;
   }
 
-  //Convert all face indices to ints
-  indices.forEach(function(index) {
-    for(var i=0; i<index.length; ++i) {
-      index[i] |= 0;
-    }
-  });
+  if(indices) {
+    //Otherwise, convert all face indices to ints
+    indices.forEach(function(index) {
+      for(var i=0; i<index.length; ++i) {
+        index[i] |= 0;
+      }
+    });
+  }
 
   //Coerce remaining properties
   [ 'lighting.ambient',
@@ -143,7 +60,10 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     'contour.width',
     'colorscale',
     'reversescale',
-    'flatshading'
+    'flatshading',
+    'alphahull',
+    'delaunayaxis',
+    'opacity'
   ].forEach(function(x) { coerce(x); });
 
   if('intensity' in traceIn) {
@@ -167,8 +87,8 @@ Mesh3D.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
   }
 
   if(traceOut.showscale) {
-      Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+      Plotly.Colorbar.supplyDefaults(traceIn, traceOut, layout);
   }
 };
 
-Mesh3D.colorbar = Plotly.Heatmap.colorbar.bind(Plotly.Heatmap);
+Mesh3D.colorbar = Plotly.Colorbar.traceColorbar;

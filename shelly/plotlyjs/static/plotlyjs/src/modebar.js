@@ -1,5 +1,7 @@
 'use strict';
-/* global d3:false */
+
+var Plotly = require('./plotly'),
+    d3 = require('d3');
 
 /**
  * UI controller for interactive plots
@@ -16,7 +18,7 @@ function ModeBar (config) {
 
     var _this = this;
 
-    this.Plotly = config.Plotly;
+    this._snapshotInProgress = false;
     this.graphInfo = config.graphInfo;
     this.element = document.createElement('div');
 
@@ -55,14 +57,15 @@ function ModeBar (config) {
     config.container.appendChild(this.element);
 
     this.updateActiveButton();
-
 }
+
+var proto = ModeBar.prototype;
 
 /**
  * Empty div for containing a group of buttons
  * @Return {HTMLelement}
  */
-ModeBar.prototype.createGroup = function () {
+proto.createGroup = function () {
     var group = document.createElement('div');
     group.className = 'modebar-group';
 
@@ -78,22 +81,25 @@ ModeBar.prototype.createGroup = function () {
  * @Param {function} config.click
  * @Return {HTMLelement}
  */
-ModeBar.prototype.createButton = function (config) {
+proto.createButton = function (config) {
     var _this = this,
         button = document.createElement('a');
 
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
 
-    button.setAttribute('data-attr', config.attr);
-    button.setAttribute('data-val', config.val);
+    if (config.attr !== undefined) button.setAttribute('data-attr', config.attr);
+    if (config.val !== undefined) button.setAttribute('data-val', config.val);
     button.setAttribute('data-title', config.title);
     button.setAttribute('data-gravity', config.gravity || 'n');
     button.addEventListener('click', function () {
             config.click.apply(_this, arguments);
         });
 
-    button.appendChild(this.createIcon(this.Plotly.Icons[config.icon]));
+    button.setAttribute('data-toggle', config.toggle);
+    if(config.toggle) button.classList.add('active');
+
+    button.appendChild(this.createIcon(Plotly.Icons[config.icon]));
 
     return button;
 };
@@ -105,8 +111,8 @@ ModeBar.prototype.createButton = function (config) {
  * @Param {string} thisIcon.path
  * @Return {HTMLelement}
  */
-ModeBar.prototype.createIcon = function (thisIcon) {
-    var iconDef = this.Plotly.Icons,
+proto.createIcon = function (thisIcon) {
+    var iconDef = Plotly.Icons,
         iconHeight = iconDef.ascent - iconDef.descent,
         svgNS = 'http://www.w3.org/2000/svg',
         icon = document.createElementNS(svgNS, 'svg'),
@@ -128,14 +134,29 @@ ModeBar.prototype.createIcon = function (thisIcon) {
  * @Param {object} graphInfo plot object containing data and layout
  * @Return {HTMLelement}
  */
-ModeBar.prototype.updateActiveButton = function () {
-    var graphInfo = this.graphInfo;
-    this.buttonElements.forEach( function (button) {
+proto.updateActiveButton = function(buttonClicked) {
+    var fullLayout = this.graphInfo._fullLayout,
+        dataAttrClicked = (buttonClicked !== undefined) ?
+            buttonClicked.getAttribute('data-attr') :
+            null;
+
+    this.buttonElements.forEach(function(button) {
         var thisval = button.getAttribute('data-val') || true,
             dataAttr = button.getAttribute('data-attr'),
-            curval = graphInfo._fullLayout[dataAttr];
+            isToggleButton = button.getAttribute('data-toggle')==='true',
+            button3 = d3.select(button);
 
-        d3.select(button).classed('active', curval===thisval);
+        // Use 'data-toggle' and 'buttonClicked' to toggle buttons
+        // that have no one-to-one equivalent in fullLayout
+        if(isToggleButton) {
+            if(dataAttr === dataAttrClicked) {
+                button3.classed('active', !button3.classed('active'));
+            }
+        }
+        else {
+            button3.classed('active', fullLayout[dataAttr]===thisval);
+        }
+
     });
 };
 
@@ -145,7 +166,7 @@ ModeBar.prototype.updateActiveButton = function () {
  * @Param {object} buttons 2d array of grouped button names
  * @Return {boolean}
  */
-ModeBar.prototype.hasButtons = function (buttons) {
+proto.hasButtons = function (buttons) {
     var currentButtons = this.buttons;
 
     if (buttons.length !== currentButtons.length) return false;
@@ -163,7 +184,7 @@ ModeBar.prototype.hasButtons = function (buttons) {
 /**
  * @return {HTMLDivElement} The logo image wrapped in a group
  */
-ModeBar.prototype.getLogo = function(){
+proto.getLogo = function(){
     var group = this.createGroup(),
         a = document.createElement('a');
 
@@ -172,7 +193,7 @@ ModeBar.prototype.getLogo = function(){
     a.setAttribute('data-title', 'Produced with Plotly');
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
-    a.appendChild(this.createIcon(this.Plotly.Icons.plotlylogo));
+    a.appendChild(this.createIcon(Plotly.Icons.plotlylogo));
 
     group.appendChild(a);
     return group;
@@ -182,31 +203,36 @@ ModeBar.prototype.getLogo = function(){
  * Apply D3 cartesian mode attributes to layout to update hover functionality
  * @Param {object} ev event object
  */
-ModeBar.prototype.handleCartesian = function(ev) {
+proto.handleCartesian = function(ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
         _this = this,
         graphInfo = this.graphInfo,
         fullLayout = this.graphInfo._fullLayout,
-        Plotly = this.Plotly,
         aobj = {};
 
     if(astr === 'zoom') {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
             r1 = (1 - mag) / 2,
-            axList = Plotly.Axes.list(graphInfo, null, true),
-            i,
-            axName,
-            initialRange;
+            axList = Plotly.Axes.list(graphInfo, null, true);
 
-        for(i = 0; i < axList.length; i++) {
-            if(!axList[i].fixedrange) {
-                axName = axList[i]._name;
+        var ax, axName, initialRange;
+
+        for(var i = 0; i < axList.length; i++) {
+            ax = axList[i];
+            if(!ax.fixedrange) {
+                axName = ax._name;
                 if(val === 'auto') aobj[axName + '.autorange'] = true;
+                else if(val === 'reset') {
+                    if(ax._rangeInitial === undefined) {
+                        aobj[axName + '.autorange'] = true;
+                    }
+                    else aobj[axName + '.range'] = ax._rangeInitial.slice();
+                }
                 else {
-                    initialRange = axList[i].range;
+                    initialRange = ax.range;
                     aobj[axName + '.range'] = [
                         r0 * initialRange[0] + r1 * initialRange[1],
                         r0 * initialRange[1] + r1 * initialRange[0]
@@ -241,11 +267,10 @@ ModeBar.prototype.handleCartesian = function(ev) {
  * Toggle the data hover mode
  * @Param {object} ev event object
  */
-ModeBar.prototype.handleHover3d = function(ev) {
+proto.handleHover3d = function(ev) {
     var button = ev.currentTarget,
         val = JSON.parse(button.getAttribute('data-val')) || false,
         _this = this,
-        Plotly = this.Plotly,
         graphInfo = this.graphInfo,
         fullLayout = graphInfo._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
@@ -287,7 +312,7 @@ ModeBar.prototype.handleHover3d = function(ev) {
     }
 
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
-        _this.updateActiveButton();
+        _this.updateActiveButton(button);
     });
 
 };
@@ -296,26 +321,18 @@ ModeBar.prototype.handleHover3d = function(ev) {
  * Reconfigure keyboard bindings for webgl3D camera control on drag
  * @Param {object} ev event object
  */
-ModeBar.prototype.handleDrag3d = function(ev) {
+proto.handleDrag3d = function(ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
         _this = this,
-        Plotly = this.Plotly,
         graphInfo = this.graphInfo,
-        fullLayout = graphInfo._fullLayout,
-        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
         layoutUpdate = {};
 
     layoutUpdate[attr] = val;
 
-    var i, scene;
-
-    for (i = 0;  i < sceneIds.length; i++) {
-        scene = fullLayout[sceneIds[i]]._scene;
-        if (scene.camera) scene.camera.keyBindingMode = val;
-    }
-
+    // Dragmode will go through the relayout->doplot->scene.plot()
+    // routine where the dragmode will be set in scene.plot()
     Plotly.relayout(graphInfo, layoutUpdate).then( function() {
         _this.updateActiveButton();
     });
@@ -326,25 +343,26 @@ ModeBar.prototype.handleDrag3d = function(ev) {
  * Reset the position of the webgl3D camera
  * @Param {object} ev event object
  */
-ModeBar.prototype.handleCamera3d = function(ev) {
+proto.handleCamera3d = function(ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
-        Plotly = this.Plotly,
         layout = this.graphInfo.layout,
         fullLayout = this.graphInfo._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
-    var i, sceneId, sceneLayout, scene, cameraposition;
+    var i, sceneId, sceneLayout, fullSceneLayout, scene, cameraPos;
 
     for (i = 0;  i < sceneIds.length; i++) {
         sceneId = sceneIds[i];
         sceneLayout = layout[sceneId];
-        scene = fullLayout[sceneId]._scene;
+        fullSceneLayout = fullLayout[sceneId];
+        scene = fullSceneLayout._scene;
 
-        if (attr === 'resetDefault') scene.setCameraToDefault();
+        if (!sceneLayout || attr==='resetDefault') scene.setCameraToDefault();
         else if (attr === 'resetLastSave') {
-            cameraposition = sceneLayout ? sceneLayout.cameraposition : false;
-            if (cameraposition) scene.setCameraPosition(cameraposition);
+
+            cameraPos = sceneLayout.camera;
+            if (cameraPos) scene.setCamera(cameraPos);
             else scene.setCameraToDefault();
         }
     }
@@ -354,17 +372,104 @@ ModeBar.prototype.handleCamera3d = function(ev) {
      */
 };
 
-ModeBar.prototype.cleanup = function(){
+proto.handleGeo = function(ev) {
+    var button = ev.currentTarget,
+        attr = button.getAttribute('data-attr'),
+        val = button.getAttribute('data-val') || true,
+        fullLayout = this.graphInfo._fullLayout,
+        geoIds = Plotly.Plots.getSubplotIds(fullLayout, 'geo');
+
+    var geo, scale, newScale;
+
+    for(var i = 0;  i < geoIds.length; i++) {
+        geo = fullLayout[geoIds[i]]._geo;
+
+        if(attr === 'zoom') {
+            scale = geo.projection.scale();
+            newScale = val==='in' ? 2 * scale : 0.5 * scale;
+            geo.projection.scale(newScale);
+            geo.zoom.scale(newScale);
+            geo.render();
+        }
+        else if(attr === 'reset') geo.zoomReset();
+        else if(attr === 'hovermode') geo.showHover = !geo.showHover;
+    }
+
+    this.updateActiveButton(button);
+};
+
+proto.handleHoverPie = function() {
+    var _this = this,
+        graphInfo = _this.graphInfo,
+        newHover = graphInfo._fullLayout.hovermode ?
+            false :
+            'closest';
+
+    Plotly.relayout(graphInfo, 'hovermode', newHover).then(function() {
+        _this.updateActiveButton();
+    });
+};
+
+proto.cleanup = function(){
     this.element.innerHTML = '';
     var modebarParent = this.element.parentNode;
     if (modebarParent) modebarParent.removeChild(this.element);
+};
+
+proto.toImage = function() {
+
+    var format = 'png';
+    var _this = this;
+
+    if ( Plotly.Lib.isIE() ) {
+        Plotly.Lib.notifier('Snapshotting is unavailable in Internet Explorer. ' +
+                            'Consider exporting your images using the Plotly Cloud', 'long');
+        return;
+    }
+
+    if (this._snapshotInProgress) {
+        Plotly.Lib.notifier('Snapshotting is still in progress - please hold', 'long');
+        return;
+    }
+
+    this._snapshotInProgress = true;
+    Plotly.Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
+
+    var ev = Plotly.Snapshot.toImage(this.graphInfo, {format: format});
+
+    var filename = this.graphInfo.fn || "newplot";
+    filename += '.' + format;
+
+    ev.once('success', function(result) {
+
+        _this._snapshotInProgress = false;
+
+        var downloadLink = document.createElement("a");
+        downloadLink.href = result;
+        downloadLink.download = filename; // only supported by FF and Chrome
+
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        document.body.removeChild(downloadLink);
+
+        ev.clean();
+    });
+
+    ev.once('error', function (err) {
+        _this._snapshotInProgress = false;
+
+        Plotly.Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');
+        console.error(err);
+
+        ev.clean();
+    });
 };
 
 /**
  *
  * @Property config specification hash of button parameters
  */
-ModeBar.prototype.config = function config() {
+proto.config = function config() {
     return {
         zoom2d: {
             title: 'Zoom',
@@ -401,6 +506,13 @@ ModeBar.prototype.config = function config() {
             icon: 'autoscale',
             click: this.handleCartesian
         },
+        resetScale2d: {
+            title: 'Reset axes',
+            attr: 'zoom',
+            val: 'reset',
+            icon: 'home',
+            click: this.handleCartesian
+        },
         hoverClosest2d: {
             title: 'Show closest data on hover',
             attr: 'hovermode',
@@ -417,6 +529,12 @@ ModeBar.prototype.config = function config() {
             gravity: 'ne',
             click: this.handleCartesian
         },
+        toImage: {
+            title: 'download plot as a png',
+            icon: 'camera',
+            click: this.toImage
+        },
+        // gl3d
         zoom3d: {
             title: 'Zoom',
             attr: 'dragmode',
@@ -431,11 +549,18 @@ ModeBar.prototype.config = function config() {
             icon: 'pan',
             click: this.handleDrag3d
         },
-        rotate3d: {
-            title: 'Rotate',
+        orbitRotation: {
+            title: 'orbital rotation',
             attr: 'dragmode',
-            val: 'rotate',
-            icon: 'undo',
+            val: 'orbit',
+            icon: '3d_rotate',
+            click: this.handleDrag3d
+        },
+        tableRotation: {
+            title: 'turntable rotation',
+            attr: 'dragmode',
+            val: 'turntable',
+            icon: 'z-axis',
             click: this.handleDrag3d
         },
         resetCameraDefault3d: {
@@ -447,16 +572,57 @@ ModeBar.prototype.config = function config() {
         resetCameraLastSave3d: {
             title: 'Reset camera to last save',
             attr: 'resetLastSave',
-            icon: 'camera-retro',
+            icon: 'movie',
             click: this.handleCamera3d
         },
         hoverClosest3d: {
             title: 'Toggle show closest data on hover',
             attr: 'hovermode',
             val: null,
+            toggle: true,
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHover3d
+        },
+        // geo
+        zoomInGeo: {
+            title: 'Zoom in',
+            attr: 'zoom',
+            val: 'in',
+            icon: 'zoom_plus',
+            click: this.handleGeo
+        },
+        zoomOutGeo: {
+            title: 'Zoom out',
+            attr: 'zoom',
+            val: 'out',
+            icon: 'zoom_minus',
+            click: this.handleGeo
+        },
+        resetGeo: {
+            title: 'Reset',
+            attr: 'reset',
+            val: null,
+            icon: 'autoscale',
+            click: this.handleGeo
+        },
+        hoverClosestGeo: {
+            title: 'Toggle show closest data on hover',
+            attr: 'hovermode',
+            val: null,
+            toggle: true,
+            icon: 'tooltip_basic',
+            gravity: 'ne',
+            click: this.handleGeo
+        },
+        // pie
+        hoverClosestPie: {
+            title: 'Toggle show closest data on hover',
+            attr: 'hovermode',
+            val: 'closest',
+            icon: 'tooltip_basic',
+            gravity: 'ne',
+            click: this.handleHoverPie
         }
     };
 };

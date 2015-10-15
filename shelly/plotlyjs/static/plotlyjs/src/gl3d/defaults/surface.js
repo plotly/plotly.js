@@ -2,114 +2,22 @@
 
 var Plotly = require('../../plotly');
 
-var Surface = {};
+var Surface = module.exports = {};
 
-module.exports = Surface;
+Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity'], {
+    description: [
+        'The data the describes the coordinates of the surface is set in `z`.',
+        'Data in `z` should be a {2D array}.',
 
-var  heatmapAttrs = Plotly.Heatmap.attributes,
-    contourAttributes =  {
-        show: {
-            type: 'boolean',
-            dflt: false
-        },
-        project: {
-            x: {
-                type: 'boolean',
-                dflt: false
-            },
-            y: {
-                type: 'boolean',
-                dflt: false
-            },
-            z: {
-                type: 'boolean',
-                dflt: false
-            }
-        },
-        color: {
-            type: 'color',
-            dflt: '#000'
-        },
-        usecolormap: {
-            type: 'boolean',
-            dflt: false
-        },
-        width: {
-            type: 'number',
-            min: 1,
-            max: 16,
-            dflt: 2
-        },
-        highlight: {
-            type: 'boolean',
-            dflt: false
-        },
-        highlightColor: {
-            type: 'color',
-            dflt: '#000'
-        },
-        highlightWidth: {
-            type: 'number',
-            min: 1,
-            max: 16,
-            dflt: 2
-        }
-    };
+        'Coordinates in `x` and `y` can either be 1D {arrays}',
+        'or {2D arrays} (e.g. to graph parametric surfaces).',
 
+        'If not provided in `x` and `y`, the x and y coordinates are assumed',
+        'to be linear starting at 0 with a unit step.'
+    ].join(' ')
+});
 
-Surface.attributes = {
-    x: {type: 'data_array'},
-    y: {type: 'data_array'},
-    z: {type: 'data_array'},
-    colorscale: heatmapAttrs.colorscale,
-    showscale: heatmapAttrs.showscale,
-    reversescale: heatmapAttrs.reversescale,
-    contours: {
-        x: contourAttributes,
-        y: contourAttributes,
-        z: contourAttributes
-    },
-    hidesurface: {
-      type: 'boolean',
-      dflt: false
-    },
-    lighting: {
-        ambient: {
-            type: 'number',
-            min: 0.00,
-            max: 1.0,
-            dflt: 0.8
-        },
-        diffuse: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.8
-        },
-        specular: {
-            type: 'number',
-            min: 0.00,
-            max: 2.00,
-            dflt: 0.05
-        },
-        roughness: {
-            type: 'number',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.5
-        },
-        fresnel: {
-            type: 'number',
-            min: 0.00,
-            max: 5.00,
-            dflt: 0.2
-        }
-    },
-    _nestedModules: {  // nested module coupling
-        'colorbar': 'Colorbar'
-    }
-};
-
+Surface.attributes = require('../attributes/surface');
 
 Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     var i, j, _this = this;
@@ -138,6 +46,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         }
     }
 
+    coerce('text');
     if (!Array.isArray(traceOut.y)) {
         traceOut.y = [];
         for (i = 0; i < ylen; ++i) {
@@ -151,6 +60,7 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
     coerce('lighting.roughness');
     coerce('lighting.fresnel');
     coerce('hidesurface');
+    coerce('opacity');
 
     coerce('colorscale');
 
@@ -179,26 +89,16 @@ Surface.supplyDefaults = function (traceIn, traceOut, defaultColor, layout) {
         }
     }
 
-    var reverseScale = coerce('reversescale'),
-        showScale = coerce('showscale');
-
-    // apply the colorscale reversal here, so we don't have to
-    // do it in separate modules later
-    if(reverseScale) {
-        traceOut.colorscale = traceOut.colorscale.map(this.flipScale).reverse();
-    }
-
-    if(showScale) {
-        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-    }
-
-
+    Plotly.Colorscale.handleDefaults(
+        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+    );
 };
 
-Surface.flipScale = function (si) {
-    return [1 - si[0], si[1]];
-};
+Surface.colorbar = Plotly.Colorbar.traceColorbar;
 
-Surface.colorbar = function(gd, cd) {
-    Plotly.Heatmap.colorbar(gd, cd);
+Surface.calc = function(gd, trace) {
+
+    // auto-z and autocolorscale if applicable
+    Plotly.Colorscale.calc(trace, trace.z, '', 'z');
+
 };

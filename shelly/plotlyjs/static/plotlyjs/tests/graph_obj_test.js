@@ -63,6 +63,7 @@ describe('Test graph_obj', function () {
                     {'name': 'd'}
                 ]
             };
+            Plotly.Queue = null;
             spyOn(Plotly, 'redraw');
         });
 
@@ -561,7 +562,7 @@ describe('Test graph_obj', function () {
         });
 
         it('prepend is the inverse of extend - no maxPoints', function () {
-            var cachedData = $.extend(true, [], gd.data);
+            var cachedData = Plotly.Lib.extendDeep([], gd.data);
 
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
@@ -579,7 +580,7 @@ describe('Test graph_obj', function () {
 
 
         it('extend is the inverse of prepend - no maxPoints', function () {
-            var cachedData = $.extend(true, [], gd.data);
+            var cachedData = Plotly.Lib.extendDeep([], gd.data);
 
             Plotly.prependTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
@@ -598,7 +599,7 @@ describe('Test graph_obj', function () {
 
         it('prepend is the inverse of extend - with maxPoints', function () {
             var maxPoints = 3;
-            var cachedData = $.extend(true, [], gd.data);
+            var cachedData = Plotly.Lib.extendDeep([], gd.data);
 
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
@@ -612,84 +613,6 @@ describe('Test graph_obj', function () {
             Plotly.prependTraces.apply(null, undoArgs);
 
             expect(gd.data).toEqual(cachedData);
-        });
-
-    });
-
-
-    describe('Plotly.Plots.supplyLayoutGlobalDefaults should', function() {
-        var layoutIn,
-            layoutOut,
-            expected;
-
-        var supplyLayoutDefaults = Plotly.Plots.supplyLayoutGlobalDefaults;
-
-        beforeEach(function() {
-            layoutOut = {};
-        });
-
-        it('should sanitize margins when they are wider than the plot', function() {
-            layoutIn = {
-                width: 500,
-                height: 500,
-                margin: {
-                    l: 400,
-                    r: 200
-                }
-            };
-            expected = {
-                l: 332,
-                r: 166,
-                t: 100,
-                b: 80,
-                pad: 0,
-                autoexpand: true
-            };
-
-            supplyLayoutDefaults(layoutIn, layoutOut);
-            expect(layoutOut.margin).toEqual(expected);
-        });
-
-        it('should sanitize margins when they are taller than the plot', function() {
-            layoutIn = {
-                width: 500,
-                height: 500,
-                margin: {
-                    l: 400,
-                    r: 200,
-                    t: 300,
-                    b: 500
-                }
-            };
-            expected = {
-                l: 332,
-                r: 166,
-                t: 187,
-                b: 311,
-                pad: 0,
-                autoexpand: true
-            };
-
-            supplyLayoutDefaults(layoutIn, layoutOut);
-            expect(layoutOut.margin).toEqual(expected);
-        });
-
-    });
-
-    describe('Plotly.Plots.getSubplotIds', function() {
-        var getSubplotIds = Plotly.Plots.getSubplotIds;
-
-        var ids, layout;
-
-        it('it should return scene ids', function() {
-            layout = {
-                scene: {},
-                scene2: {},
-                scene3: {}
-            };
-
-            ids = getSubplotIds(layout, 'gl3d');
-            expect(ids).toEqual(['scene', 'scene2', 'scene3']);
         });
 
     });

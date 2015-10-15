@@ -1,0 +1,35 @@
+{
+  "data": [
+    {
+      "values": [
+        10,
+        11,
+        12,
+        13,
+        14,
+        15,
+        16,
+        17,
+        18,
+        19,
+        20
+      ],
+      "hole": 0.5,
+      "rotation": 45,
+      "marker": {
+        "line": {
+          "color": "#fff",
+          "width": 3
+        }
+      },
+      "pull": 0.2,
+      "type": "pie"
+    }
+  ],
+  "layout": {
+    "height": 400,
+    "width": 500,
+    "paper_bgcolor": "#ddd",
+    "showlegend": false
+  }
+}

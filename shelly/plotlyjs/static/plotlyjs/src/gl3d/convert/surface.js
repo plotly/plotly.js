@@ -16,12 +16,50 @@ function SurfaceTrace(scene, surface, uid) {
   this.surface  = surface;
   this.data     = null;
   this.showContour = [false,false,false];
+  this.dataScale = 1.0;
 }
 
 var proto = SurfaceTrace.prototype;
 
 proto.handlePick = function(selection) {
   if(selection.object === this.surface) {
+    var selectIndex = [
+      Math.min(Math.round(selection.data.index[0]/this.dataScale-1)|0, this.data.z[0].length-1),
+      Math.min(Math.round(selection.data.index[1]/this.dataScale-1)|0, this.data.z.length-1) ];
+    var traceCoordinate = [0,0,0];
+    if(Array.isArray(this.data.x[0])) {
+      traceCoordinate[0] = this.data.x[selectIndex[1]][selectIndex[0]];
+    } else {
+      traceCoordinate[0] = this.data.x[selectIndex[0]];
+    }
+    if(Array.isArray(this.data.y[0])) {
+      traceCoordinate[1] = this.data.y[selectIndex[1]][selectIndex[0]];
+    } else {
+      traceCoordinate[1] = this.data.y[selectIndex[1]];
+    }
+    traceCoordinate[2] = this.data.z[selectIndex[1]][selectIndex[0]];
+    selection.traceCoordinate = traceCoordinate;
+
+    var sceneLayout = this.scene.fullSceneLayout;
+    selection.dataCoordinate = [
+      sceneLayout.xaxis.d2l(traceCoordinate[0])*this.scene.dataScale[0] - this.scene.dataCenter[0],
+      sceneLayout.yaxis.d2l(traceCoordinate[1])*this.scene.dataScale[1] - this.scene.dataCenter[1],
+      sceneLayout.zaxis.d2l(traceCoordinate[2])*this.scene.dataScale[2] - this.scene.dataCenter[2]
+    ];
+
+    var text = this.data.text;
+    if(text && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]]!==undefined) {
+        selection.textLabel = text[selectIndex[1]][selectIndex[0]];
+    }
+    else selection.textLabel = '';
+
+    selection.data.dataCoordinate = selection.dataCoordinate.slice();
+
+    this.surface.highlight(selection.data);
+
+    //Snap spikes to data coordinate
+    this.scene.glplot.spikes.position = selection.dataCoordinate;
+
     return true;
   }
 };
@@ -69,7 +107,7 @@ function padField(field) {
 }
 
 function refine(coords) {
-    var minScale = Math.min(coords[0].shape[0], coords[0].shape[1]);
+    var minScale = Math.max(coords[0].shape[0], coords[0].shape[1]);
     if(minScale < MIN_RESOLUTION) {
         var scaleF = MIN_RESOLUTION / minScale;
         var nshape = [
@@ -84,7 +122,9 @@ function refine(coords) {
                                               0, 0, 1]);
             coords[i] = scaledImg;
         }
+        return scaleF;
     }
+    return 1.0;
 }
 
 proto.setContourLevels = function() {
@@ -114,6 +154,8 @@ proto.update = function(data) {
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
+        scaleFactor = scene.dataScale,
+        offset = scene.dataCenter,
         xlen = z[0].length,
         ylen = z.length,
         coords = [
@@ -125,6 +167,9 @@ proto.update = function(data) {
         yc = coords[1],
         contourLevels = scene.contourLevels;
 
+    //Save data
+    this.data = data;
+
     /*
      * Fill and transpose zdata.
      * Consistent with 'heatmap' and 'contour', plotly 'surface'
@@ -133,35 +178,35 @@ proto.update = function(data) {
      * which is the transpose of 'gl-surface-plot'.
      */
     fill(coords[2], function(row, col) {
-        return zaxis.d2l(z[col][row]);
+        return zaxis.d2l(z[col][row]) * scaleFactor[2]  - offset[2];
     });
 
     // coords x
     if (Array.isArray(x[0])) {
         fill(xc, function(row, col) {
-            return xaxis.d2l(x[col][row]);
+            return xaxis.d2l(x[col][row]) * scaleFactor[0] - offset[0];
         });
     } else {
         // ticks x
         fill(xc, function(row) {
-            return xaxis.d2l(x[row]);
+            return xaxis.d2l(x[row]) * scaleFactor[0] - offset[0];
         });
     }
 
     // coords y
     if (Array.isArray(y[0])) {
         fill(yc, function(row, col) {
-            return yaxis.d2l(y[col][row]);
+            return yaxis.d2l(y[col][row]) * scaleFactor[1] - offset[1];
         });
     } else {
         // ticks y
         fill(yc, function(row, col) {
-            return yaxis.d2l(y[col]);
+            return yaxis.d2l(y[col]) * scaleFactor[1] - offset[1];
         });
     }
 
     //Refine if necessary
-    refine(coords);
+    this.dataScale = refine(coords);
 
     var params = {
         colormap:       colormap,
@@ -232,6 +277,8 @@ proto.update = function(data) {
     surface.highlightEnable  = highlightEnable;
     surface.contourEnable    = contourEnable;
     surface.visible          = data.visible;
+
+    surface.snapToData = true;
 
     if ('lighting' in data) {
         surface.ambientLight   = data.lighting.ambient;

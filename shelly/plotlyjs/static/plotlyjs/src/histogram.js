@@ -1,68 +1,178 @@
 'use strict';
 
-var histogram = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
     isNumeric = require('./isnumeric'),
-    scatterAttrs = Plotly.Scatter.attributes,
     barAttrs = Plotly.Bars.attributes;
+
+var histogram = module.exports = {};
+
+/**
+ * histogram errorBarsOK is debatable, but it's put in for backward compat.
+ * there are use cases for it - sqrt for a simple histogram works right now,
+ * constant and % work but they're not so meaningful. I guess it could be cool
+ * to allow quadrature combination of errors in summed histograms...
+ */
+Plotly.Plots.register(Plotly.Bars, 'histogram',
+    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'], {
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'for vertically spanning histograms and',
+        'in `y` for horizontally spanning histograms.',
+
+        'Binning options are set `xbins` and `ybins` respectively',
+        'if no aggregation data is provided.'
+    ].join(' ')
+});
+
+Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
+    ['cartesian', '2dMap', 'histogram'], {
+    hrName: 'histogram_2d',
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'and `y` (where `x` and `y` represent marginal distributions,',
+        'binning is set in `xbins` and `ybins` in this case)',
+        'or `z` (where `z` represent the 2D distribution and binning set,',
+        'binning is set by `x` and `y` in this case).',
+        'The resulting distribution is visualized as a heatmap.'
+    ].join(' ')
+});
 
 // histogram has its own calc function,
 // but uses Bars.plot to display
 // and Bars.setPositions for stacking and grouping
 
-var defaultBins = {
-    start: {
-        type: 'number',
-        dflt: 0
-    },
-    end: {
-        type: 'number',
-        dflt: 1
-    },
-    size: {
-        type: 'any', // for date axes
-        dflt: 1
-    }
-};
+function makeBinsAttr(axLetter) {
+    return {
+        start: {
+            valType: 'number',
+            dflt: null,
+            role: 'style',
+            description: [
+                'Sets the starting value for the', axLetter,
+                'axis bins.'
+            ].join(' ')
+        },
+        end: {
+            valType: 'number',
+            dflt: null,
+            role: 'style',
+            description: [
+                'Sets the end value for the', axLetter,
+                'axis bins.'
+            ].join(' ')
+        },
+        size: {
+            valType: 'any', // for date axes
+            dflt: 1,
+            role: 'style',
+            description: [
+                'Sets the step in-between value each', axLetter,
+                'axis bin.'
+            ].join(' ')
+        }
+    };
+}
 
 histogram.attributes = {
-    z: {type: 'data_array'},
-    x: scatterAttrs.x,
-    y: scatterAttrs.y,
+    x: {
+        valType: 'data_array',
+        description: [
+            'Sets the sample data to be binned on the x axis.'
+        ].join(' ')
+    },
+    y: {
+        valType: 'data_array',
+        description: [
+            'Sets the sample data to be binned on the y axis.'
+        ].join(' ')
+    },
+    z: {
+        valType: 'data_array',
+        description: 'Sets the aggregation data.'
+    },
     marker: {
-        color: {type: 'data_array'}
+        color: {  // FIXME this overrides 'bar'
+            valType: 'data_array',
+            arrayOk: undefined
+        }
     },
     orientation: barAttrs.orientation,
     histfunc: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['count', 'sum', 'avg', 'min', 'max'],
-        dflt: 'count'
+        role: 'style',
+        dflt: 'count',
+        description: [
+            'Specifies the binning function used for this histogram trace.',
+
+            'If *count*, the histogram values are computed by counting the',
+            'number of values lying inside each bin.',
+
+            'If *sum*, *avg*, *min*, *max*,',
+            'the histogram values are computed using',
+            'the sum, the average, the minimum or the maximum',
+            'of the values lying inside each bin respectively.'
+        ].join(' ')
     },
     histnorm: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['', 'percent', 'probability', 'density', 'probability density'],
-        dflt: ''
+        dflt: '',
+        role: 'style',
+        description: [
+            'Specifies the type of normalization used for this histogram trace.',
+
+            'If **, the span of each bar corresponds to the number of',
+            'occurrences (i.e. the number of data points lying inside the bins).',
+
+            'If *percent*, the span of each bar corresponds to the percentage',
+            'of occurrences with respect to the total number of sample points',
+            '(here, the sum of all bin area equals 100%).',
+
+            'If *density*, the span of each bar corresponds to the number of',
+            'occurrences in a bin divided by the size of the bin interval',
+            '(here, the sum of all bin area equals the',
+            'total number of sample points).',
+
+            'If *probability density*, the span of each bar corresponds to the',
+            'probability that an event will fall into the corresponding bin',
+            '(here, the sum of all bin area equals 1).'
+        ].join(' ')
     },
     autobinx: {
-        type: 'boolean',
-        dflt: true
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        description: [
+            'Determines whether or not the x axis bin attributes are picked',
+            'by an algorithm.'
+        ].join(' ')
     },
     nbinsx: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
-        dflt: 0
+        dflt: 0,
+        role: 'style',
+        description: 'Sets the number of x axis bins.'
     },
-    xbins: defaultBins,
+    xbins: makeBinsAttr('x'),
     autobiny: {
-        type: 'boolean',
-        dflt: true
+        valType: 'boolean',
+        dflt: true,
+        role: 'style',
+        description: [
+            'Determines whether or not the y axis bin attributes are picked',
+            'by an algorithm.'
+        ].join(' ')
     },
     nbinsy: {
-        type: 'integer',
+        valType: 'integer',
         min: 0,
-        dflt: 0
+        dflt: 0,
+        role: 'style',
+        description: 'Sets the number of y axis bins.'
     },
-    ybins: defaultBins
+    ybins: makeBinsAttr('y')
 };
 
 histogram.supplyDefaults = function(traceIn, traceOut) {
@@ -75,7 +185,7 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
         x = coerce('x'),
         y = coerce('y');
 
-    if(Plotly.Plots.isHist2D(traceOut.type)) {
+    if(Plotly.Plots.traceIs(traceOut, '2dMap')) {
         // we could try to accept x0 and dx, etc...
         // but that's a pretty weird use case.
         // for now require both x and y explicitly specified.
@@ -108,14 +218,15 @@ histogram.supplyDefaults = function(traceIn, traceOut) {
     binDirections.forEach(function(binDirection){
         // data being binned - note that even though it's a little weird,
         // it's possible to have bins without data, if there's inferred data
-        var autobin = coerce('autobin' + binDirection);
-
+        var binstrt = coerce(binDirection + 'bins.start'),
+            binend = coerce(binDirection + 'bins.end'),
+            validbin = binstrt!==undefined && binend!==undefined,
+            autobin = validbin ? 
+                coerce('autobin' + binDirection, false) : 
+                coerce('autobin' + binDirection);
+ 
         if(autobin) coerce('nbins' + binDirection);
-        else {
-            coerce(binDirection + 'bins.start');
-            coerce(binDirection + 'bins.end');
-            coerce(binDirection + 'bins.size');
-        }
+        else coerce(binDirection + 'bins.size');
     });
 };
 
@@ -128,6 +239,7 @@ var binFunctions = {
     sum: function(n, i, size, counterData) {
         var v = counterData[i];
         if(isNumeric(v)) {
+            v = Number(v);
             size[n] += v;
             return v;
         }
@@ -137,6 +249,7 @@ var binFunctions = {
     avg: function(n, i, size, counterData, counts) {
         var v = counterData[i];
         if(isNumeric(v)) {
+            v = Number(v);
             size[n] += v;
             counts[n]++;
         }
@@ -146,6 +259,7 @@ var binFunctions = {
     min: function(n, i, size, counterData) {
         var v = counterData[i];
         if(isNumeric(v)) {
+            v = Number(v);
             if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
@@ -161,6 +275,7 @@ var binFunctions = {
     max: function(n, i, size, counterData) {
         var v = counterData[i];
         if(isNumeric(v)) {
+            v = Number(v);
             if(!isNumeric(size[n])) {
                 size[n] = v;
                 return v;
@@ -251,10 +366,10 @@ histogram.calc = function(gd, trace) {
         binfunc = binFunctions.count,
         normfunc = normFunctions[norm],
         doavg = false,
-        counter0;
+        rawCounterData;
 
-    if((counterdata in trace) && func!=='count') {
-        counter0 = pa.makeCalcdata(trace, counterdata);
+    if(Array.isArray(trace[counterdata]) && func!=='count') {
+        rawCounterData = trace[counterdata];
         doavg = func==='avg';
         binfunc = binFunctions[func];
     }
@@ -282,7 +397,7 @@ histogram.calc = function(gd, trace) {
     // bin the data
     for(i=0; i<pos0.length; i++) {
         n = Plotly.Lib.findBin(pos0[i], bins);
-        if(n>=0 && n<nMax) total += binfunc(n, i, size, counter0, counts);
+        if(n>=0 && n<nMax) total += binfunc(n, i, size, rawCounterData, counts);
     }
 
     // average and/or normalize the data, if needed
@@ -375,20 +490,18 @@ histogram.calc2d = function(gd, trace) {
         normfunc = normFunctions[norm],
         doavg = false,
         xinc = [],
-        yinc = [],
-        counter0;
+        yinc = [];
 
     // set a binning function other than count?
     // for binning functions: check first for 'z',
     // then 'mc' in case we had a colored scatter plot
     // and want to transfer these colors to the 2D histo
     // TODO: this is why we need a data picker in the popover...
-    var counterdata = ('z' in trace) ?
+    var rawCounterData = ('z' in trace) ?
         trace.z :
         (('marker' in trace && Array.isArray(trace.marker.color)) ?
             trace.marker.color : '');
-    if(counterdata && func!=='count') {
-        counter0 = counterdata.map(Number);
+    if(rawCounterData && func!=='count') {
         doavg = func==='avg';
         binfunc = binFunctions[func];
     }
@@ -446,7 +559,7 @@ histogram.calc2d = function(gd, trace) {
         n = Plotly.Lib.findBin(x[i],xbins);
         m = Plotly.Lib.findBin(y[i],ybins);
         if(n>=0 && n<nx && m>=0 && m<ny) {
-            total += binfunc(n, i, z[m], counter0, counts[m]);
+            total += binfunc(n, i, z[m], rawCounterData, counts[m]);
         }
     }
     // normalize, if needed

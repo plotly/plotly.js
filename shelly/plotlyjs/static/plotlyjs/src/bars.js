@@ -1,14 +1,21 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var bars = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
 
-// mark this module as allowing error bars
-bars.errorBarsOK = true;
+var bars = module.exports = {};
+
+Plotly.Plots.register(bars, 'bar',
+    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
+    description: [
+        'The data visualized by the span of the bars is set in `y`',
+        'if `orientation` is set th *v* (the default)',
+        'and the labels are set in `x`.',
+
+        'By setting `orientation` to *h*, the roles are interchanged.'
+    ].join(' ')
+});
 
 // For coerce-level coupling
 var scatterAttrs = Plotly.Scatter.attributes,
@@ -24,8 +31,14 @@ bars.attributes = {
     dy: scatterAttrs.dy,
     text: scatterAttrs.text,
     orientation: {
-        type: 'enumerated',
-        values: ['v', 'h']
+        valType: 'enumerated',
+        role: 'info',
+        values: ['v', 'h'],
+        description: [
+            'Sets the orientation of the bars.',
+            'With *v* (*h*), the value of the each bar spans',
+            'along the vertical (horizontal).'
+        ].join(' ')
     },
     marker: {
         color: scatterMarkerAttrs.color,
@@ -33,49 +46,95 @@ bars.attributes = {
         cauto: scatterMarkerAttrs.cauto,
         cmax: scatterMarkerAttrs.cmax,
         cmin: scatterMarkerAttrs.cmin,
+        autocolorscale: scatterMarkerAttrs.autocolorscale,
+        reversescale: scatterMarkerAttrs.reversescale,
+        showscale: scatterMarkerAttrs.showscale,
         line: {
             color: scatterMarkerLineAttrs.color,
             colorscale: scatterMarkerLineAttrs.colorscale,
             cauto: scatterMarkerLineAttrs.cauto,
             cmax: scatterMarkerLineAttrs.cmax,
             cmin: scatterMarkerLineAttrs.cmin,
-            width: scatterMarkerLineAttrs.width
+            width: scatterMarkerLineAttrs.width,
+            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
+            reversescale: scatterMarkerLineAttrs.reversescale
         }
+    },
+
+    r: scatterAttrs.r,  // FIXME this shouldn't get included in 'histogram'
+    t: scatterAttrs.t,
+
+    _composedModules: {  // composed module coupling
+        'histogram': 'Histogram'
     },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
-        'error_x': 'ErrorBars'
+        'error_x': 'ErrorBars',
+        'marker.colorbar': 'Colorbar'
     },
-    _composedModules: {  // composed module coupling
-        'histogram': 'Histogram'
+
+    _deprecated: {
+        bardir: {
+            valType: 'enumerated',
+            role: 'info',
+            values: ['v', 'h'],
+            description: 'Renamed to `orientation`.'
+        }
     }
 };
 
 bars.layoutAttributes = {
     barmode: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['stack', 'group', 'overlay'],
-        dflt: 'group'
+        dflt: 'group',
+        role: 'info',
+        description: [
+            'Determines how bars at the same location coordinate',
+            'are displayed on the graph.',
+            'With *stack*, the bars are stacked on top of one another',
+            'With *group*, the bars are plotted next to one another',
+            'centered around the shared location.',
+            'With *overlay*, the bars are plotted over one another,',
+            'you might need to an *opacity* to see multiple bars.'
+        ].join(' ')
     },
     barnorm: {
-        type: 'enumerated',
+        valType: 'enumerated',
         values: ['', 'fraction', 'percent'],
-        dflt: ''
+        dflt: '',
+        role: 'info',
+        description: [
+            'Sets the normalization for bar traces on the graph.',
+            'With *fraction*, the value of each bar is divide by the sum of the',
+            'values at the location coordinate.',
+            'With *percent*, the results form *fraction* are presented in percents.'
+        ].join(' ')
     },
     bargap: {
-        type: 'number',
-        min: 0,
-        max: 1
-    },
-    bargroupgap: {
-        type: 'number',
+        valType: 'number',
         min: 0,
         max: 1,
-        dflt: 0
+        role: 'style',
+        description: [
+            'Sets the gap (in plot fraction) between bars of',
+            'adjacent location coordinates.'
+        ].join(' ')
     },
+    bargroupgap: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets the gap (in plot fraction) between bars of',
+            'the same location coordinate.'
+        ].join(' ')
+    }
 };
 
-bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
+bars.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
     }
@@ -96,14 +155,28 @@ bars.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
     }
 
-    Plotly.Scatter.colorScalableDefaults('marker.', coerce, defaultColor);
-    Plotly.Scatter.colorScalableDefaults('marker.line.', coerce, Plotly.Color.defaultLine);
+    coerce('marker.color', defaultColor);
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
+        );
+    }
+
+    coerce('marker.line.color', Plotly.Color.defaultLine);
+    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker.line')) {
+        Plotly.Colorscale.handleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
+        );
+    }
+
     coerce('marker.line.width', 0);
     coerce('text');
 
     // override defaultColor for error bars with defaultLine
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'y'});
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'x', inherit: 'y'});
+    if(Plotly.ErrorBars) {
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'y'});
+        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'x', inherit: 'y'});
+    }
 };
 
 bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
@@ -120,7 +193,7 @@ bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         subploti;
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
-        if(Plotly.Plots.isBar(trace.type)) hasBars = true;
+        if(Plotly.Plots.traceIs(trace, 'bar')) hasBars = true;
         else continue;
 
         // if we have at least 2 grouped bar traces on the same subplot,
@@ -146,6 +219,8 @@ bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     coerce('bargap', shouldBeGapless && !gappedAnyway ? 0 : 0.2);
     coerce('bargroupgap');
 };
+
+bars.colorbar = Plotly.Scatter.colorbar;
 
 bars.calc = function(gd, trace) {
     if(trace.type==='histogram') return Plotly.Histogram.calc(gd,trace);
@@ -176,6 +251,14 @@ bars.calc = function(gd, trace) {
         }
     }
 
+    // auto-z and autocolorscale if applicable
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
+        Plotly.Colorscale.calc(trace, trace.marker.color, 'marker', 'c');
+    }
+    if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
+        Plotly.Colorscale.calc(trace, trace.marker.line.color, 'marker.line', 'c');
+    }
+
     return cd;
 };
 
@@ -198,7 +281,7 @@ bars.setPositions = function(gd, plotinfo) {
 
         gd._fullData.forEach(function(trace,i) {
             if(trace.visible === true &&
-                    Plotly.Plots.isBar(trace.type) &&
+                    Plotly.Plots.traceIs(trace, 'bar') &&
                     trace.orientation === dir &&
                     trace.xaxis === xa._id &&
                     trace.yaxis === ya._id) {
@@ -461,9 +544,10 @@ bars.plot = function(gd, plotinfo, cdbar) {
         });
 };
 
-bars.style = function(gp, fullLayout) {
-    var s = gp.selectAll('g.trace.bars'),
-        barcount = s.size();
+bars.style = function(gd) {
+    var s = d3.select(gd).selectAll('g.trace.bars'),
+        barcount = s.size(),
+        fullLayout = gd._fullLayout;
 
     // trace styling
     s.style('opacity',function(d){ return d[0].trace.opacity; })
@@ -586,7 +670,7 @@ bars.hoverPoints = function(pointData, xval, yval, hovermode) {
 
     if(di.tx) pointData.text = di.tx;
 
-    Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+    if(Plotly.ErrorBars) Plotly.ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
 };
