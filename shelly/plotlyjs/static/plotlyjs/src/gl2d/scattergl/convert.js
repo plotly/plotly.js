@@ -213,8 +213,13 @@ proto.update = function(options) {
     var i, xx, yy, ex0, ex1, ey0, ey1;
 
     for(i = 0; i < x.length; ++i) {
-        xx = positions[ptr++] = xaxis.d2l(x[i]);
-        yy = positions[ptr++] = yaxis.d2l(y[i]);
+        xx = xaxis.d2l(x[i]);
+        yy = yaxis.d2l(y[i]);
+
+        if(isNaN(xx) || isNaN(yy)) continue;
+
+        positions[ptr++] = xx;
+        positions[ptr++] = yy;
 
         ex0 = errorsX[ptrX++] = xx - errorVals[i].xs || 0;
         ex1 = errorsX[ptrX++] = errorVals[i].xh - xx || 0;
@@ -231,6 +236,8 @@ proto.update = function(options) {
         bounds[2] = Math.max(bounds[2], xx + ex1);
         bounds[3] = Math.max(bounds[3], yy + ey1);
     }
+
+    positions = positions.slice(0, ptr);
 
     if(hasMarkers) {
         this.scatterOptions.positions = positions;
