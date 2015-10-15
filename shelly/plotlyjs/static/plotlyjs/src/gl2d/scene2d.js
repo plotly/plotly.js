@@ -34,7 +34,6 @@ function Scene2D(options, fullLayout) {
     canvas.style.position = 'absolute';
     canvas.style.top    = '0px';
     canvas.style.left   = '0px';
-    canvas.style['z-index'] = '90';
     canvas.style['pointer-events'] = 'none';
 
     //Create SVG container for hover text
@@ -44,7 +43,7 @@ function Scene2D(options, fullLayout) {
     svgContainer.style.position = 'absolute';
     svgContainer.style.top   = svgContainer.style.left   = '0px';
     svgContainer.style.width = svgContainer.style.height = '100%';
-    svgContainer.style['z-index'] = '91';
+    svgContainer.style['z-index'] = 20;
     svgContainer.style['pointer-events'] = 'none';
 
     //Create div to catch the mouse event
