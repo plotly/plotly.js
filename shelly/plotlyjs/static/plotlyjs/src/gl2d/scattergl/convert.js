@@ -8,6 +8,7 @@ var createLine = require('gl-line2d');
 var createError = require('gl-error2d');
 
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
+var formatColor = require('../../gl3d/lib/format-color');
 
 var MARKER_SYMBOLS = require('../../gl3d/lib/markers.json');
 var DASHES = require('../lib/dashes.json');
@@ -123,39 +124,61 @@ function checkFancyScatter(marker) {
 
 //Handle the situation where values can be array-like or not array like
 function convertArray(convert, data, count) {
-  if(!Array.isArray(data)) {
-    data = [ data ];
-  }
-  var result = new Array(count);
-  for(var i=0; i<count; ++i) {
-    if(i >= data.length) {
-      result[i] = convert(data[0]);
-    } else {
-      result[i] = convert(data[i]);
+    if(!Array.isArray(data)) data = [data];
+
+    return _convertArray(convert, data, count);
+}
+
+function _convertArray(convert, data, count) {
+    var result = new Array(count);
+
+    for(var i = 0; i < count; ++i) {
+        result[i] = (i >= data.length) ?
+            convert(data[0]) :
+            convert(data[i]);
     }
-  }
-  return result;
+
+    return result;
 }
 
 var convertNumber = convertArray.bind(null, function(x) { return +x; });
 var convertColorBase = convertArray.bind(null, str2RGBArray);
 var convertSymbol = convertArray.bind(null, function(x) {
-  return MARKER_SYMBOLS[x] || '●';
+    return MARKER_SYMBOLS[x] || '●';
 });
 
 function convertColor(color, opacity, count) {
-  var colors = convertColorBase(color, count);
-  var opacities = convertNumber(opacity, count);
-  var result = new Array(4 * count);
-  for(var i=0; i<count; ++i) {
-    for(var j=0; j<3; ++j) {
-      result[4*i+j] = colors[i][j];
-    }
-    result[4*i+3] = Math.min(colors[i][j], opacities[i]);
-  }
-  return result;
+    return _convertColor(
+        convertColorBase(color, count),
+        convertNumber(opacity, count),
+        count
+    );
 }
 
+function convertColorOrColorScale(containerIn, opacity, count) {
+    var colors = formatColor(containerIn, opacity, count);
+
+    colors = Array.isArray(colors[0]) ?
+        colors :
+        _convertArray(Plotly.Lib.identity, [colors], count);
+
+    return _convertColor(
+        colors,
+        convertNumber(opacity, count),
+        count
+    );
+}
+
+function _convertColor(colors, opacities, count) {
+    var result = new Array(4 * count);
+
+    for(var i = 0; i < count; ++i) {
+        for(var j = 0; j < 3; ++j) result[4*i+j] = colors[i][j];
+        result[4*i+3] = colors[i][j] * opacities[i];
+    }
+
+    return result;
+}
 
 proto.update = function(options) {
   var x = options.x;
@@ -231,18 +254,16 @@ proto.update = function(options) {
     //Check if we need fancy mode (slower, but more features)
     if(fancy) {
 
-      this.scatterOptions.sizes =
-        convertArray(markerSizeFunc, options.marker.size, numPoints);
-      this.scatterOptions.glyphs =
-        convertSymbol(options.marker.symbol, numPoints);
-      this.scatterOptions.colors =
-        convertColor(options.marker.color, options.marker.opacity, numPoints);
-      this.scatterOptions.borderWidths =
-        convertNumber(options.marker.line.width, numPoints);
-      this.scatterOptions.borderColors =
-        convertColor(options.marker.line.color,
-          options.marker.opacity,
-          numPoints);
+      this.scatterOptions.sizes = convertArray(
+          markerSizeFunc, options.marker.size, numPoints);
+      this.scatterOptions.glyphs = convertSymbol(
+          options.marker.symbol, numPoints);
+      this.scatterOptions.colors = convertColorOrColorScale(
+          options.marker, options.marker.opacity, numPoints);
+      this.scatterOptions.borderWidths = convertNumber(
+          options.marker.line.width, numPoints);
+      this.scatterOptions.borderColors = convertColorOrColorScale(
+          options.marker.line, options.marker.opacity, numPoints);
 
       for(i=0; i<numPoints; ++i) {
         this.scatterOptions.sizes[i] *= 4.0;
@@ -256,7 +277,7 @@ proto.update = function(options) {
       this.scatterOptions.positions = new Float32Array();
       this.scatter.update(this.scatterOptions);
 
-    } 
+    }
     else {
 
       var color            = options.marker.color;
@@ -282,9 +303,9 @@ proto.update = function(options) {
       this.scatterOptions.glyphs = [];
       this.fancyScatter.update(this.scatterOptions);
     }
-  } else {
+  }
+  else {
     //Don't draw markers
-    console.log('markers disabled');
     this.scatterOptions.positions = new Float32Array();
     this.scatterOptions.glyphs = [];
     this.scatter.update(this.scatterOptions);
