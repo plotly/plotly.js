@@ -114,11 +114,11 @@ var proto = Scene2D.prototype;
 proto.toImage = function(format) {
     if(!format) format = 'png';
 
-  /*
-  if(this.staticMode) {
-    this.container.appendChild(STATIC_CANVAS);
-  }
-  */
+    /*
+    if(this.staticMode) {
+        this.container.appendChild(STATIC_CANVAS);
+    }
+    */
 
     // force redraw
     this.glplot.setDirty(true);
@@ -169,7 +169,7 @@ proto.toImage = function(format) {
 
     /*
     if(this.staticMode) {
-      this.container.removeChild(STATIC_CANVAS);
+        this.container.removeChild(STATIC_CANVAS);
     }
     */
 
@@ -253,10 +253,10 @@ proto.plot = function(fullData, fullLayout) {
     this.fullLayout = fullLayout;
     this.updateAxes();
 
-    var width = fullLayout.width;
-    var height = fullLayout.height;
-    var pixelWidth = Math.ceil(pixelRatio * width) |0;
-    var pixelHeight = Math.ceil(pixelRatio * height) |0;
+    var width = fullLayout.width,
+        height = fullLayout.height,
+        pixelWidth = Math.ceil(pixelRatio * width) |0,
+        pixelHeight = Math.ceil(pixelRatio * height) |0;
 
     // check for resize
     var canvas = this.canvas;

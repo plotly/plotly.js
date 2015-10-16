@@ -217,6 +217,7 @@ proto.handleCartesian = function(ev) {
             r0 = (1 + mag) / 2,
             r1 = (1 - mag) / 2,
             axList = Plotly.Axes.list(graphInfo, null, true);
+
         var ax, axName, initialRange;
 
         for(var i = 0; i < axList.length; i++) {

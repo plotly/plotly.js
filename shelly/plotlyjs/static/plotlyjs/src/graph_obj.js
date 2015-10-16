@@ -1372,10 +1372,6 @@ plots.attributes = {
             'The trace name appear as the legend item and on hover.'
         ].join(' ')
     },
-    scene2d: {
-        type: 'scene2did',
-        dflt: 'scene2d'
-    },
     uid: {
         valType: 'string',
         role: 'info',
@@ -1875,8 +1871,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = [
         'Axes', 'Annotations', 'Shapes', 'Fx',
-        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout',
-        'Pie', 'Legend'
+        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout', 'Pie', 'Legend'
     ];
 
     var i, module;
