@@ -87,7 +87,7 @@ function Scene2D(options, fullLayout) {
     this.camera = createCamera(this);
 
     // trace set
-    this.traces = [];
+    this.traces = {};
 
     // create axes spikes
     this.spikes = createSpikes(this.glplot);
@@ -250,7 +250,7 @@ proto.plot = function(fullData, fullLayout) {
     var glplot = this.glplot,
         pixelRatio = this.pixelRatio;
 
-    var i, j, trace;
+    var i, j;
 
     this.fullLayout = fullLayout;
     this.updateAxes();
@@ -270,41 +270,34 @@ proto.plot = function(fullData, fullLayout) {
     if(!fullData) fullData = [];
     else if(!Array.isArray(fullData)) fullData = [fullData];
 
-i_loop:
+    // update traces
+    var traceData, trace;
     for(i = 0; i < fullData.length; ++i) {
-        if(fullData[i].visible !== true) continue;
+        traceData = fullData[i];
+        trace = this.traces[traceData.uid];
 
-        for(j = 0; j < this.traces.length; ++j) {
-            if(this.traces[j].uid === fullData[i].uid) {
-                this.traces[j].update(fullData[i]);
-                continue i_loop;
+        if(trace) trace.update(traceData);
+        else {
+            switch(traceData.type) {
+                case 'scattergl':
+                    trace = createLineWithMarkers(this, traceData);
+                break;
             }
         }
-
-        var newTrace = null;
-        switch(fullData[i].type) {
-            case 'scattergl':
-                newTrace = createLineWithMarkers(this, fullData[i]);
-            break;
-        }
-
-        if(newTrace) {
-            this.traces.push(newTrace);
-        }
+        this.traces[traceData.uid] = trace;
     }
 
-j_loop:
-    for(j = this.traces.length - 1; j >= 0; --j) {
-        for(i = 0; i < fullData.length; ++i) {
-            if(
-                this.traces[j].uid === fullData[i].uid &&
-                fullData[i].visible === true
-            ) continue j_loop;
+    // remove empty traces
+    var traceIds = Object.keys(this.traces);
+trace_id_loop:
+    for(i = 0; i < traceIds.length; ++i) {
+        for(j = 0; j < fullData.length; ++j) {
+            if(fullData[j].uid === traceIds[i]) continue trace_id_loop;
         }
 
-        trace = this.traces[j];
+        trace = this.traces[traceIds[i]];
         trace.dispose();
-        this.traces.splice(j, 1);
+        delete this.traces[traceIds[i]];
     }
 
     var options = this.glplotOptions;
@@ -332,8 +325,9 @@ j_loop:
     bounds[0] = bounds[1] = Infinity;
     bounds[2] = bounds[3] = -Infinity;
 
-    for(i = 0; i < this.traces.length; ++i) {
-        trace = this.traces[i];
+    traceIds = Object.keys(this.traces);
+    for(i = 0; i < traceIds.length; ++i) {
+        trace = this.traces[traceIds[i]];
         for(var k = 0; k < 2; ++k) {
             bounds[k] = Math.min(bounds[k], trace.bounds[k]);
             bounds[k+2] = Math.max(bounds[k+2], trace.bounds[k+2]);

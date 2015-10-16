@@ -253,6 +253,11 @@ proto.update = function(options) {
      * - markers
      */
 
+    // make sure that 'legendonly' traces don't get drawn
+    if(options.visible === 'legendonly') {
+        hasMarkers = hasLines = hasErrorX = hasErrorY = false;
+    }
+
     if(hasLines) {
         this.lineOptions.positions = positions;
 
@@ -285,7 +290,7 @@ proto.update = function(options) {
         this.lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
     }
     else {
-        this.lineOptions.position = new Float32Array();
+        this.lineOptions.positions = new Float32Array();
     }
 
     this.line.update(this.lineOptions);
