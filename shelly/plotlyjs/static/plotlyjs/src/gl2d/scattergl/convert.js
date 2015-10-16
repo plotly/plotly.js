@@ -28,16 +28,16 @@ function LineWithMarkers(scene, uid) {
     this.bounds = [0, 0, 0, 0];
 
     this.lineOptions = {
-      positions:  new Float32Array(),
-      color:      [0, 0, 0, 1],
-      width:      1,
-      fill:       [false, false, false, false],
+      positions: new Float32Array(),
+      color: [0, 0, 0, 1],
+      width: 1,
+      fill: [false, false, false, false],
       fillColor:  [
-        [0, 0, 0, 1],
-        [0, 0, 0, 1],
-        [0, 0, 0, 1],
-        [0, 0, 0, 1]],
-      dashes:     [1]
+          [0, 0, 0, 1],
+          [0, 0, 0, 1],
+          [0, 0, 0, 1],
+          [0, 0, 0, 1]],
+      dashes: [1]
     };
     this.line = createLine(scene.glplot, this.lineOptions);
     this.line._trace = this;
@@ -107,9 +107,8 @@ function checkFancyScatter(marker) {
          marker.symbol !== 'circle' ||
          Array.isArray(marker.size) ||
          Array.isArray(marker.line.width) ||
-         Array.isArray(marker.opacity)) {
-        return true;
-    }
+         Array.isArray(marker.opacity)
+    ) return true;
 
     var color = marker.color;
     if(Array.isArray(color)) return true;
@@ -120,7 +119,7 @@ function checkFancyScatter(marker) {
     return false;
 }
 
-//Handle the situation where values can be array-like or not array like
+// handle the situation where values can be array-like or not array like
 function convertArray(convert, data, count) {
     if(!Array.isArray(data)) data = [data];
 

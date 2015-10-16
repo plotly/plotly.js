@@ -7,9 +7,9 @@ function Axes2DOptions(scene) {
     this.gl = scene.gl;
     this.pixelRatio = scene.pixelRatio;
 
-    this.screenBox = [0,0,1,1];
-    this.viewBox = [0,0,1,1];
-    this.dataBox = [-1,-1,1,1];
+    this.screenBox = [0, 0, 1, 1];
+    this.viewBox = [0 ,0, 1, 1];
+    this.dataBox = [-1, -1, 1, 1];
 
     this.borderLineEnable = [false, false, false, false];
     this.borderLineWidth = [1, 1, 1, 1];
@@ -22,8 +22,8 @@ function Axes2DOptions(scene) {
 
     this.ticks = [[], []];
     this.tickEnable = [true, true, false, false];
-    this.tickPad = [15,15,15,15];
-    this.tickAngle = [0,0,0,0];
+    this.tickPad = [15, 15, 15, 15];
+    this.tickAngle = [0, 0, 0, 0];
     this.tickColor = [
         [0, 0, 0, 1],
         [0, 0, 0, 1],
@@ -37,7 +37,7 @@ function Axes2DOptions(scene) {
     this.labelEnable = [true, true, false, false];
     this.labelAngle  = [0, Math.PI/2, 0, 3.0*Math.PI/2];
     this.labelPad = [15, 15, 15, 15];
-    this.labelSize = [12,12];
+    this.labelSize = [12, 12];
     this.labelFont = ['sans-serif', 'sans-serif'];
     this.labelColor = [
         [0, 0, 0, 1],

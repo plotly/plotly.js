@@ -20,72 +20,76 @@ function Scene2D(options, fullLayout) {
     this.fullLayout = fullLayout;
     this.updateAxes();
 
-    var width       = fullLayout.width;
-    var height      = fullLayout.height;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
 
-    //Get pixel ratio
+    // get pixel ratio
     var pixelRatio = this.pixelRatio = options.pixelRatio || window.devicePixelRatio;
 
-    //Create canvas and append to container
+    // create canvas and append to container
     var canvas = this.canvas = document.createElement('canvas');
-    canvas.width        = Math.ceil(pixelRatio * width) |0;
-    canvas.height       = Math.ceil(pixelRatio * height)|0;
-    canvas.style.width  = '100%';
+    canvas.width = Math.ceil(pixelRatio * width) |0;
+    canvas.height = Math.ceil(pixelRatio * height) |0;
+    canvas.style.width = '100%';
     canvas.style.height = '100%';
     canvas.style.position = 'absolute';
-    canvas.style.top    = '0px';
-    canvas.style.left   = '0px';
+    canvas.style.top = '0px';
+    canvas.style.left = '0px';
     canvas.style['pointer-events'] = 'none';
 
-    //Create SVG container for hover text
+    // create SVG container for hover text
     var svgContainer = this.svgContainer = document.createElementNS(
         'http://www.w3.org/2000/svg',
         'svg');
     svgContainer.style.position = 'absolute';
-    svgContainer.style.top   = svgContainer.style.left   = '0px';
+    svgContainer.style.top = svgContainer.style.left = '0px';
     svgContainer.style.width = svgContainer.style.height = '100%';
     svgContainer.style['z-index'] = 20;
     svgContainer.style['pointer-events'] = 'none';
 
-    //Create div to catch the mouse event
+    // create div to catch the mouse event
     var mouseContainer = this.mouseContainer = document.createElement('div');
     mouseContainer.style.position = 'absolute';
 
-    //Get webgl context
-    var gl;
+    // get webgl context
     var glopts = options.glopts || { premultipliedAlpha: true };
+    var gl;
+
     try {
-      gl = canvas.getContext('webgl', glopts);
+        gl = canvas.getContext('webgl', glopts);
     } catch(e) {}
+
     if(!gl) {
-      try {
-        gl = canvas.getContext('experimental-webgl', glopts);
-      } catch(e) {}
+        try {
+            gl = canvas.getContext('experimental-webgl', glopts);
+        } catch(e) {}
     }
+
     if(!gl) {
       throw new Error('webgl not supported!');
     }
+
     this.gl = gl;
 
-    //Append canvas to conatiner
+    // append canvas to conatiner
     container.appendChild(canvas);
     container.appendChild(svgContainer);
     container.appendChild(mouseContainer);
 
-    //Update options
+    // update options
     this.glplotOptions = createOptions(this);
     this.glplotOptions.merge(fullLayout);
 
-    //Create the plot
+    // create the plot
     this.glplot = createPlot2D(this.glplotOptions);
 
-    //Create camera
+    // create camera
     this.camera = createCamera(this);
 
-    //Trace set
+    // trace set
     this.traces = [];
 
-    //Create axes spikes
+    // create axes spikes
     this.spikes = createSpikes(this.glplot);
 
     this.selectBox = createSelectBox(this.glplot, {
@@ -93,12 +97,12 @@ function Scene2D(options, fullLayout) {
       outerFill: true
     });
 
-    //Last pick result
+    // last pick result
     this.pickResult = null;
 
-    this.bounds = [Infinity,Infinity,-Infinity,-Infinity];
+    this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
 
-    //Redraw the plot
+    // redraw the plot
     this.redraw = this.draw.bind(this);
     this.redraw();
 }
@@ -108,100 +112,103 @@ module.exports = Scene2D;
 var proto = Scene2D.prototype;
 
 proto.toImage = function(format) {
+    if(!format) format = 'png';
 
-  if (!format) format = 'png';
   /*
   if(this.staticMode) {
     this.container.appendChild(STATIC_CANVAS);
   }
   */
 
-  //Force redraw
-  this.glplot.setDirty(true);
-  this.glplot.draw();
+    // force redraw
+    this.glplot.setDirty(true);
+    this.glplot.draw();
 
-  //Grab context and yank out pixels
-  var gl = this.glplot.gl;
-  var w = gl.drawingBufferWidth;
-  var h = gl.drawingBufferHeight;
+    // grab context and yank out pixels
+    var gl = this.glplot.gl,
+        w = gl.drawingBufferWidth,
+        h = gl.drawingBufferHeight;
 
-  gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+    gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 
-  var pixels = new Uint8Array(w * h * 4);
-  gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
+    var pixels = new Uint8Array(w * h * 4);
+    gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-  //Flip pixels
-  for(var j=0,k=h-1; j<k; ++j, --k) {
-      for(var i=0; i<w; ++i) {
-          for(var l=0; l<4; ++l) {
-              var tmp = pixels[4*(w*j+i)+l];
-              pixels[4*(w*j+i)+l] = pixels[4*(w*k+i)+l];
-              pixels[4*(w*k+i)+l] = tmp;
-          }
-      }
-  }
+    // flip pixels
+    for(var j=0,k=h-1; j<k; ++j, --k) {
+        for(var i=0; i<w; ++i) {
+            for(var l=0; l<4; ++l) {
+                var tmp = pixels[4*(w*j+i)+l];
+                pixels[4*(w*j+i)+l] = pixels[4*(w*k+i)+l];
+                pixels[4*(w*k+i)+l] = tmp;
+            }
+        }
+    }
 
-  var canvas = document.createElement('canvas');
-  canvas.width = w;
-  canvas.height = h;
-  var context = canvas.getContext('2d');
-  var imageData = context.createImageData(w, h);
-  imageData.data.set(pixels);
-  context.putImageData(imageData, 0, 0);
+    var canvas = document.createElement('canvas');
+    canvas.width = w;
+    canvas.height = h;
 
-  var dataURL;
+    var context = canvas.getContext('2d');
+    var imageData = context.createImageData(w, h);
+    imageData.data.set(pixels);
+    context.putImageData(imageData, 0, 0);
 
-  switch (format) {
-      case 'jpeg':
-          dataURL = canvas.toDataURL('image/jpeg');
-          break;
-      case 'webp':
-          dataURL = canvas.toDataURL('image/webp');
-          break;
-      default:
-      dataURL = canvas.toDataURL('image/png');
-  }
+    var dataURL;
 
-  /*
-  if(this.staticMode) {
-    this.container.removeChild(STATIC_CANVAS);
-  }
-  */
+    switch (format) {
+        case 'jpeg':
+            dataURL = canvas.toDataURL('image/jpeg');
+            break;
+        case 'webp':
+            dataURL = canvas.toDataURL('image/webp');
+            break;
+        default:
+        dataURL = canvas.toDataURL('image/png');
+    }
 
-  return dataURL;
+    /*
+    if(this.staticMode) {
+      this.container.removeChild(STATIC_CANVAS);
+    }
+    */
+
+    return dataURL;
 };
 
 proto.computeTickMarks = function() {
-  this.xaxis._length =
-      this.glplot.viewBox[2] - this.glplot.viewBox[0];
-  this.yaxis._length =
-      this.glplot.viewBox[3] - this.glplot.viewBox[1];
-  var nextTicks = [
-      Plotly.Axes.calcTicks(this.xaxis),
-      Plotly.Axes.calcTicks(this.yaxis)
-  ];
-  for(var j=0; j<2; ++j) {
-    for(var i=0; i<nextTicks[j].length; ++i) {
-      nextTicks[j][i].text = htmlToUnicode(nextTicks[j][i].text + '');
+    this.xaxis._length =
+        this.glplot.viewBox[2] - this.glplot.viewBox[0];
+    this.yaxis._length =
+        this.glplot.viewBox[3] - this.glplot.viewBox[1];
+
+    var nextTicks = [
+        Plotly.Axes.calcTicks(this.xaxis),
+        Plotly.Axes.calcTicks(this.yaxis)
+    ];
+
+    for(var j = 0; j < 2; ++j) {
+        for(var i = 0; i < nextTicks[j].length; ++i) {
+            nextTicks[j][i].text = htmlToUnicode(nextTicks[j][i].text + '');
+        }
     }
-  }
-  return nextTicks;
+
+    return nextTicks;
 };
 
 function compareTicks(a, b) {
-  for(var i=0; i<2; ++i) {
-    var aticks = a[i];
-    var bticks = b[i];
-    if(aticks.length !== bticks.length) {
-      return true;
+    for(var i = 0; i < 2; ++i) {
+        var aticks = a[i],
+            bticks = b[i];
+
+        if(aticks.length !== bticks.length) return true;
+
+        for(var j = 0; j < aticks.length; ++j) {
+            if(aticks[j].x !== bticks[j].x) return true;
+        }
     }
-    for(var j=0; j<aticks.length; ++j) {
-      if(aticks[j].x !== bticks[j].x) {
-        return true;
-      }
-    }
-  }
-  return false;
+
+    return false;
 }
 
 proto.updateAxes = function() {
@@ -214,60 +221,58 @@ proto.updateAxes = function() {
 };
 
 proto.cameraChanged = function() {
-  var camera = this.camera;
-  var xrange = this.xaxis.range;
-  var yrange = this.yaxis.range;
+    var camera = this.camera,
+        xrange = this.xaxis.range,
+        yrange = this.yaxis.range;
 
-  this.glplot.setDataBox([
-    xrange[0], yrange[0],
-    xrange[1], yrange[1]]);
+    this.glplot.setDataBox([
+        xrange[0], yrange[0],
+        xrange[1], yrange[1]
+    ]);
 
-  var nextTicks = this.computeTickMarks();
-  var curTicks = this.glplotOptions.ticks;
+    var nextTicks = this.computeTickMarks();
+    var curTicks = this.glplotOptions.ticks;
 
-  if(compareTicks(nextTicks, curTicks)) {
-      this.glplotOptions.ticks = nextTicks;
-      this.glplotOptions.dataBox = camera.dataBox;
-      this.glplot.update(this.glplotOptions);
-  }
+    if(compareTicks(nextTicks, curTicks)) {
+        this.glplotOptions.ticks = nextTicks;
+        this.glplotOptions.dataBox = camera.dataBox;
+        this.glplot.update(this.glplotOptions);
+    }
 };
 
 proto.destroy = function() {
-  this.glplot.dispose();
+    this.glplot.dispose();
 };
 
 proto.plot = function(fullData, fullLayout) {
-    //Check for resize
-    var glplot     = this.glplot;
-    var pixelRatio = this.pixelRatio;
-    var i, j;
-    var trace;
+    var glplot = this.glplot,
+        pixelRatio = this.pixelRatio;
+
+    var i, j, trace;
 
     this.fullLayout = fullLayout;
     this.updateAxes();
 
-    var width       = fullLayout.width;
-    var height      = fullLayout.height;
-    var pixelWidth  = Math.ceil(pixelRatio * width) |0;
-    var pixelHeight = Math.ceil(pixelRatio * height)|0;
+    var width = fullLayout.width;
+    var height = fullLayout.height;
+    var pixelWidth = Math.ceil(pixelRatio * width) |0;
+    var pixelHeight = Math.ceil(pixelRatio * height) |0;
 
+    // check for resize
     var canvas = this.canvas;
     if(canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
-        canvas.width        = pixelWidth;
-        canvas.height       = pixelHeight;
+        canvas.width = pixelWidth;
+        canvas.height = pixelHeight;
     }
 
-    if(!fullData) {
-        fullData = [];
-    } else if(!Array.isArray(fullData)) {
-        fullData = [fullData];
-    }
+    if(!fullData) fullData = [];
+    else if(!Array.isArray(fullData)) fullData = [fullData];
 
 i_loop:
-    for(i=0; i<fullData.length; ++i) {
+    for(i = 0; i < fullData.length; ++i) {
         if(fullData[i].visible !== true) continue;
 
-        for(j=0; j<this.traces.length; ++j) {
+        for(j = 0; j < this.traces.length; ++j) {
             if(this.traces[j].uid === fullData[i].uid) {
                 this.traces[j].update(fullData[i]);
                 continue i_loop;
@@ -276,9 +281,9 @@ i_loop:
 
         var newTrace = null;
         switch(fullData[i].type) {
-          case 'scattergl':
-              newTrace = createLineWithMarkers(this, fullData[i]);
-          break;
+            case 'scattergl':
+                newTrace = createLineWithMarkers(this, fullData[i]);
+            break;
         }
 
         if(newTrace) {
@@ -287,8 +292,8 @@ i_loop:
     }
 
 j_loop:
-    for(j=this.traces.length-1; j>=0; --j) {
-        for(i=0; i<fullData.length; ++i) {
+    for(j = this.traces.length - 1; j >= 0; --j) {
+        for(i = 0; i < fullData.length; ++i) {
             if(
                 this.traces[j].uid === fullData[i].uid &&
                 fullData[i].visible === true
@@ -300,10 +305,9 @@ j_loop:
         this.traces.splice(j, 1);
     }
 
-
-    var options       = this.glplotOptions;
+    var options = this.glplotOptions;
     options.merge(fullLayout);
-    options.screenBox = [0,0,width,height];
+    options.screenBox = [0, 0, width, height];
 
     var size = fullLayout._size;
     var domainX = this.xaxis.domain;
@@ -326,37 +330,39 @@ j_loop:
     bounds[0] = bounds[1] = Infinity;
     bounds[2] = bounds[3] = -Infinity;
 
-    for(i=0; i<this.traces.length; ++i) {
-      trace = this.traces[i];
-      for(var k=0; k<2; ++k) {
-        bounds[k]   = Math.min(bounds[k], trace.bounds[k]);
-        bounds[k+2] = Math.max(bounds[k+2], trace.bounds[k+2]);
-      }
+    for(i = 0; i < this.traces.length; ++i) {
+        trace = this.traces[i];
+        for(var k = 0; k < 2; ++k) {
+            bounds[k] = Math.min(bounds[k], trace.bounds[k]);
+            bounds[k+2] = Math.max(bounds[k+2], trace.bounds[k+2]);
+        }
     }
 
-    for(i=0; i<2; ++i) {
+    for(i = 0; i < 2; ++i) {
         if(bounds[i] > bounds[i+2]) {
-          bounds[i]   = -1;
-          bounds[i+2] = 1;
+            bounds[i] = -1;
+            bounds[i+2] = 1;
         }
+
         var ax = [this.xaxis, this.yaxis][i];
         ax._min = [{
-          val: bounds[i],
-          pad: 10
+            val: bounds[i],
+            pad: 10
         }];
         ax._max = [{
-          val: bounds[i+2],
-          pad: 10
+            val: bounds[i+2],
+            pad: 10
         }];
         ax._length = options.viewBox[i+2] - options.viewBox[i];
+
         Plotly.Axes.doAutoRange(ax);
     }
 
-    options.ticks     = this.computeTickMarks();
+    options.ticks = this.computeTickMarks();
 
     var xrange = this.xaxis.range;
     var yrange = this.yaxis.range;
-    options.dataBox   = [xrange[0], yrange[0], xrange[1], yrange[1]];
+    options.dataBox = [xrange[0], yrange[0], xrange[1], yrange[1]];
 
     options.merge(fullLayout);
 
@@ -366,9 +372,9 @@ j_loop:
 proto.draw = function() {
     requestAnimationFrame(this.redraw);
 
-    var glplot = this.glplot;
-    var camera = this.camera;
-    var mouseListener = camera.mouseListener;
+    var glplot = this.glplot,
+        camera = this.camera,
+        mouseListener = camera.mouseListener;
 
     this.cameraChanged();
 
