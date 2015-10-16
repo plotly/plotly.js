@@ -77,7 +77,7 @@ function createCamera(scene) {
                 }
                 else if(result.boxEnabled) {
                     updateRange(xrange, result.boxStart[0], result.boxEnd[0]);
-                    updateRange(xrange, result.boxStart[1], result.boxEnd[1]);
+                    updateRange(yrange, result.boxStart[1], result.boxEnd[1]);
 
                     result.boxEnabled = false;
                 }
