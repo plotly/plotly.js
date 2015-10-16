@@ -186,6 +186,7 @@ proto.update = function(options) {
         hasErrorX = (options.error_x.visible === true),
         hasErrorY = (options.error_y.visible === true);
 
+    // makeCalcdata runs d2c (data-to-coordinate) on every point
     var x = this.xData = xaxis.makeCalcdata(options, 'x');
     var y = this.yData = yaxis.makeCalcdata(options, 'y');
 
@@ -209,11 +210,18 @@ proto.update = function(options) {
         ptrX = 0,
         ptrY = 0;
 
+    var getX = (xaxis.type === 'log') ?
+            function(x) { return xaxis.d2l(x); } :
+            function(x) { return x; };
+    var getY = (yaxis.type === 'log') ?
+            function(y) { return yaxis.d2l(y); } :
+            function(y) { return y; };
+
     var i, xx, yy, ex0, ex1, ey0, ey1;
 
-    for(i = 0; i < x.length; ++i) {
-        xx = xaxis.d2l(x[i]);
-        yy = yaxis.d2l(y[i]);
+    for(i = 0; i < numPoints; ++i) {
+        xx = getX(x[i]);
+        yy = getY(y[i]);
 
         if(isNaN(xx) || isNaN(yy)) continue;
 
