@@ -111,6 +111,8 @@ module.exports = Scene2D;
 
 var proto = Scene2D.prototype;
 
+var AXES = ['xaxis', 'yaxis'];
+
 proto.toImage = function(format) {
     if(!format) format = 'png';
 
@@ -344,7 +346,7 @@ j_loop:
             bounds[i+2] = 1;
         }
 
-        var ax = [this.xaxis, this.yaxis][i];
+        var ax = this[AXES[i]];
         ax._min = [{
             val: bounds[i],
             pad: 10
