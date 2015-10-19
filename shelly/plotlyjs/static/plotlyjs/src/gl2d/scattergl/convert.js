@@ -152,8 +152,8 @@ function convertColor(color, opacity, count) {
     );
 }
 
-function convertColorOrColorScale(containerIn, opacity, count) {
-    var colors = formatColor(containerIn, opacity, count);
+function convertColorOrColorScale(containerIn, markerOpacity, traceOpacity, count) {
+    var colors = formatColor(containerIn, markerOpacity, count);
 
     colors = Array.isArray(colors[0]) ?
         colors :
@@ -161,7 +161,7 @@ function convertColorOrColorScale(containerIn, opacity, count) {
 
     return _convertColor(
         colors,
-        convertNumber(opacity, count),
+        convertNumber(traceOpacity, count),
         count
     );
 }
@@ -334,11 +334,11 @@ proto.update = function(options) {
             this.scatterOptions.glyphs = convertSymbol(
                 options.marker.symbol, numPoints);
             this.scatterOptions.colors = convertColorOrColorScale(
-                options.marker, options.marker.opacity, numPoints);
+                options.marker, options.marker.opacity, options.opacity, numPoints);
             this.scatterOptions.borderWidths = convertNumber(
                 options.marker.line.width, numPoints);
             this.scatterOptions.borderColors = convertColorOrColorScale(
-                options.marker.line, options.marker.opacity, numPoints);
+                options.marker.line, options.marker.opacity, options.opacity, numPoints);
 
             for(i = 0; i < numPoints; ++i) {
                 this.scatterOptions.sizes[i] *= 4.0;
