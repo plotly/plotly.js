@@ -21,15 +21,12 @@ function Camera2D(element, plot) {
 function createCamera(scene) {
     var element = scene.mouseContainer,
         plot = scene.glplot,
-        fullLayout = scene.fullLayout,
         result = new Camera2D(element, plot);
 
     result.mouseListener = mouseChange(element, function(buttons, x, y) {
-        var xaxis = scene.xaxis,
-            yaxis = scene.yaxis,
-            viewBox = plot.viewBox,
-            xrange = xaxis.range,
-            yrange = yaxis.range;
+        var xrange = scene.xaxis.range,
+            yrange = scene.yaxis.range,
+            viewBox = plot.viewBox;
 
         var lastX = result.lastPos[0],
             lastY = result.lastPos[1];
@@ -55,7 +52,7 @@ function createCamera(scene) {
             }
         }
 
-        switch(fullLayout.dragmode) {
+        switch(scene.fullLayout.dragmode) {
             case 'zoom':
                 if(buttons) {
                     var dataX = x /
@@ -110,7 +107,8 @@ function createCamera(scene) {
 
     result.wheelListener = mouseWheel(element, function(dx, dy) {
         var xrange = scene.xaxis.range,
-            yrange = scene.yaxis.range;
+            yrange = scene.yaxis.range,
+            viewBox = plot.viewBox;
 
         var lastX = result.lastPos[0],
             lastY = result.lastPos[1];
@@ -120,18 +118,18 @@ function createCamera(scene) {
               break;
 
             case 'pan':
-                var scale = Math.exp(0.1 * dy / (plot.viewBox[3] - plot.viewBox[1]));
+                var scale = Math.exp(0.1 * dy / (viewBox[3] - viewBox[1]));
 
-                var cx = (lastX - plot.viewBox[0]) /
-                        (plot.viewBox[2] - plot.viewBox[0]) * (xrange[1] - xrange[0]) +
+                var cx = lastX /
+                        (viewBox[2] - viewBox[0]) * (xrange[1] - xrange[0]) +
                     xrange[0];
-                var cy = (plot.viewBox[1] - lastY) /
-                        (plot.viewBox[3] - plot.viewBox[1]) * (yrange[1] - yrange[0]) +
+                var cy = lastY /
+                        (viewBox[3] - viewBox[1]) * (yrange[1] - yrange[0]) +
                     yrange[0];
 
                 xrange[0] = (xrange[0] - cx) * scale + cx;
-                xrange[1] = (xrange[1] - cy) * scale + cy;
-                yrange[0] = (yrange[0] - cx) * scale + cx;
+                xrange[1] = (xrange[1] - cx) * scale + cx;
+                yrange[0] = (yrange[0] - cy) * scale + cy;
                 yrange[1] = (yrange[1] - cy) * scale + cy;
 
                 result.lastInputTime = Date.now();

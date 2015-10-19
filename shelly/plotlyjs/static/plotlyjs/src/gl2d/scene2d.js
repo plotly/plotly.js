@@ -304,9 +304,9 @@ trace_id_loop:
     options.merge(fullLayout);
     options.screenBox = [0, 0, width, height];
 
-    var size = fullLayout._size;
-    var domainX = this.xaxis.domain;
-    var domainY = this.yaxis.domain;
+    var size = fullLayout._size,
+        domainX = this.xaxis.domain,
+        domainY = this.yaxis.domain;
 
     options.viewBox = [
         size.l + domainX[0] * size.w,
