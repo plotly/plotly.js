@@ -163,7 +163,7 @@ function convertColor(color, opacity, count) {
     );
 }
 
-function convertColorOrColorScale(containerIn, markerOpacity, traceOpacity, count) {
+function convertColorScale(containerIn, markerOpacity, traceOpacity, count) {
     var colors = formatColor(containerIn, markerOpacity, count);
 
     colors = Array.isArray(colors[0]) ?
@@ -233,14 +233,14 @@ proto.updateFast = function(options) {
     var x = this.xData = options.x;
     var y = this.yData = options.y;
 
-    var numPoints = x.length,
-        positions = new Float32Array(2 * numPoints),
+    var len = x.length,
+        positions = new Float32Array(2 * len),
         bounds = this.bounds,
         ptr = 0;
 
     var xx, yy;
 
-    for(var i = 0; i < numPoints; ++i) {
+    for(var i = 0; i < len; ++i) {
         xx = x[i];
         yy = y[i];
 
@@ -305,12 +305,10 @@ proto.updateFancy = function(options) {
     var errorVals = Plotly.ErrorBars.calcFromTrace(options, scene.fullLayout);
 
     // Init arrays
-    var numPoints = x.length,
-        positions = new Float32Array(2 * numPoints),
-        markerColors = new Array(numPoints),
-        markerSizes = new Array(numPoints),
-        errorsX = new Float32Array(4 * numPoints),
-        errorsY = new Float32Array(4 * numPoints),
+    var len = x.length,
+        positions = new Float32Array(2 * len),
+        errorsX = new Float32Array(4 * len),
+        errorsY = new Float32Array(4 * len),
         ptr = 0,
         ptrX = 0,
         ptrY = 0;
@@ -322,9 +320,9 @@ proto.updateFancy = function(options) {
             function(y) { return yaxis.d2l(y); } :
             function(y) { return y; };
 
-    var i, xx, yy, ex0, ex1, ey0, ey1, mc, ms;
+    var i, xx, yy, ex0, ex1, ey0, ey1;
 
-    for(i = 0; i < numPoints; ++i) {
+    for(i = 0; i < len; ++i) {
         xx = getX(x[i]);
         yy = getY(y[i]);
 
@@ -358,22 +356,43 @@ proto.updateFancy = function(options) {
     if(this.hasMarkers) {
         this.scatterOptions.positions = positions;
 
-        var markerSizeFunc = Plotly.Scatter.getBubbleSizeFn(options);
-        this.scatterOptions.sizes = convertArray(
-            markerSizeFunc, options.marker.size, numPoints);
+        // TODO rewrite convert function so that
+        // we don't have to loop through the data another time
 
-        this.scatterOptions.glyphs = convertSymbol(
-            options.marker.symbol, numPoints);
-        this.scatterOptions.colors = convertColorOrColorScale(
-            options.marker, options.marker.opacity, options.opacity, numPoints);
-        this.scatterOptions.borderWidths = convertNumber(
-            options.marker.line.width, numPoints);
-        this.scatterOptions.borderColors = convertColorOrColorScale(
-            options.marker.line, options.marker.opacity, options.opacity, numPoints);
+        var truncLen = ptr / 2;
+        this.scatterOptions.sizes = new Array(truncLen);
+        this.scatterOptions.glyphs = new Array(truncLen);
+        this.scatterOptions.borderWidths = new Array(truncLen);
+        this.scatterOptions.colors = new Array(truncLen * 4);
+        this.scatterOptions.borderColors = new Array(truncLen * 4);
 
-        for(i = 0; i < numPoints; ++i) {
-            this.scatterOptions.sizes[i] *= 4.0;
-            this.scatterOptions.borderWidths[i] *= 0.5;
+        var markerSizeFunc = Plotly.Scatter.getBubbleSizeFn(options),
+            markerOpts = options.marker,
+            markerOpacity = markerOpts.opacity,
+            traceOpacity = options.opacity,
+            sizes = convertArray(markerSizeFunc, markerOpts.size, len),
+            colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len),
+            glyphs = convertSymbol(markerOpts.symbol, len),
+            borderWidths = convertNumber(markerOpts.line.width, len),
+            borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len),
+            pStyle = 0;
+
+        for(i = 0; i < len; ++i) {
+            xx = getX(x[i]);
+            yy = getY(y[i]);
+
+            if(isNaN(xx) || isNaN(yy)) continue;
+
+            this.scatterOptions.sizes[pStyle] = 4.0 * sizes[i];
+            this.scatterOptions.glyphs[pStyle] = glyphs[i];
+            this.scatterOptions.borderWidths[pStyle] = 0.5 * borderWidths[i];
+
+            for(var j = 0; j < 4; ++j) {
+                this.scatterOptions.colors[4*pStyle+j] = colors[4*i+j];
+                this.scatterOptions.borderColors[4*pStyle+j] = borderColors[4*i+j];
+            }
+
+            pStyle++;
         }
 
         this.fancyScatter.update(this.scatterOptions);
