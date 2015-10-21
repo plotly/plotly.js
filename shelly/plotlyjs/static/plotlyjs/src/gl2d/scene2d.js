@@ -341,14 +341,11 @@ trace_id_loop:
         }
 
         var ax = this[AXES[i]];
-        ax._min = [{
-            val: bounds[i],
-            pad: 10
-        }];
-        ax._max = [{
-            val: bounds[i+2],
-            pad: 10
-        }];
+
+        // if Plotly.Axes.expand hasn't been called yet
+        if(ax._min.length === 0) ax._min = [{ val: bounds[i], pad: 10 }];
+        if(ax._max.length === 0) ax._max = [{ val: bounds[i+2], pad: 10 }];
+
         ax._length = options.viewBox[i+2] - options.viewBox[i];
 
         Plotly.Axes.doAutoRange(ax);

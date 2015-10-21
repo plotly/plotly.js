@@ -229,6 +229,8 @@ proto.update = function(options) {
     }
 };
 
+// TODO must truncate xData and yData too to the get hover ids right!
+
 proto.updateFast = function(options) {
     var x = this.xData = options.x;
     var y = this.yData = options.y;
@@ -320,7 +322,7 @@ proto.updateFancy = function(options) {
             function(y) { return yaxis.d2l(y); } :
             function(y) { return y; };
 
-    var i, xx, yy, ex0, ex1, ey0, ey1;
+    var i, j, xx, yy, ex0, ex1, ey0, ey1;
 
     for(i = 0; i < len; ++i) {
         xx = getX(x[i]);
@@ -387,7 +389,7 @@ proto.updateFancy = function(options) {
             this.scatterOptions.glyphs[pStyle] = glyphs[i];
             this.scatterOptions.borderWidths[pStyle] = 0.5 * borderWidths[i];
 
-            for(var j = 0; j < 4; ++j) {
+            for(j = 0; j < 4; ++j) {
                 this.scatterOptions.colors[4*pStyle+j] = colors[4*i+j];
                 this.scatterOptions.borderColors[4*pStyle+j] = borderColors[4*i+j];
             }
@@ -396,6 +398,11 @@ proto.updateFancy = function(options) {
         }
 
         this.fancyScatter.update(this.scatterOptions);
+
+        // not quite on-par with 'scatter', but close enough for now
+        var expandOpts = { padded: true, ppad: sizes };
+        Plotly.Axes.expand(xaxis, x, expandOpts);
+        Plotly.Axes.expand(yaxis, y, expandOpts);
     }
     else {
         this.scatterOptions.positions = new Float32Array();
