@@ -25,6 +25,7 @@ function LineWithMarkers(scene, uid) {
     this.name = '';
     this.hoverinfo = 'all';
 
+    this.idToIndex = [];
     this.bounds = [0, 0, 0, 0];
 
     this.hasLines = false;
@@ -87,17 +88,21 @@ function LineWithMarkers(scene, uid) {
 var proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(pickResult) {
-    var id = pickResult.pointId;
+    var index = this.idToIndex[pickResult.pointId];
 
     return {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            this.xData[id],
-            this.yData[id]
+            this.xData[index],
+            this.yData[index]
         ],
-        textLabel: Array.isArray(this.textLabels) ? this.textLabels[id] : this.textLabels,
-        color: Array.isArray(this.color) ? this.color[id] : this.color,
+        textLabel: Array.isArray(this.textLabels) ?
+            this.textLabels[index] :
+            this.textLabels,
+        color: Array.isArray(this.color) ?
+            this.color[index] :
+            this.color,
         name: this.name,
         hoverinfo: this.hoverinfo
     };
@@ -229,15 +234,16 @@ proto.update = function(options) {
     }
 };
 
-// TODO must truncate xData and yData too to the get hover ids right!
 
 proto.updateFast = function(options) {
     var x = this.xData = options.x;
     var y = this.yData = options.y;
 
     var len = x.length,
+        idToIndex = new Array(len),
         positions = new Float32Array(2 * len),
         bounds = this.bounds,
+        pId = 0,
         ptr = 0;
 
     var xx, yy;
@@ -247,6 +253,8 @@ proto.updateFast = function(options) {
         yy = y[i];
 
         if(isNaN(xx) || isNaN(yy)) continue;
+
+        idToIndex[pId++] = i;
 
         positions[ptr++] = xx;
         positions[ptr++] = yy;
@@ -258,6 +266,7 @@ proto.updateFast = function(options) {
     }
 
     positions = positions.slice(0, ptr);
+    this.idToIndex = idToIndex;
 
     this.updateLines(options, positions);
     this.updateError('X', options);
@@ -306,11 +315,12 @@ proto.updateFancy = function(options) {
     // get error values
     var errorVals = Plotly.ErrorBars.calcFromTrace(options, scene.fullLayout);
 
-    // Init arrays
     var len = x.length,
+        idToIndex = new Array(len),
         positions = new Float32Array(2 * len),
         errorsX = new Float32Array(4 * len),
         errorsY = new Float32Array(4 * len),
+        pId = 0,
         ptr = 0,
         ptrX = 0,
         ptrY = 0;
@@ -329,6 +339,8 @@ proto.updateFancy = function(options) {
         yy = getY(y[i]);
 
         if(isNaN(xx) || isNaN(yy)) continue;
+
+        idToIndex[pId++] = i;
 
         positions[ptr++] = xx;
         positions[ptr++] = yy;
@@ -350,6 +362,7 @@ proto.updateFancy = function(options) {
     }
 
     positions = positions.slice(0, ptr);
+    this.idToIndex = idToIndex;
 
     this.updateLines(options, positions);
     this.updateError('X', options, positions, errorsX);
@@ -361,12 +374,11 @@ proto.updateFancy = function(options) {
         // TODO rewrite convert function so that
         // we don't have to loop through the data another time
 
-        var truncLen = ptr / 2;
-        this.scatterOptions.sizes = new Array(truncLen);
-        this.scatterOptions.glyphs = new Array(truncLen);
-        this.scatterOptions.borderWidths = new Array(truncLen);
-        this.scatterOptions.colors = new Array(truncLen * 4);
-        this.scatterOptions.borderColors = new Array(truncLen * 4);
+        this.scatterOptions.sizes = new Array(pId);
+        this.scatterOptions.glyphs = new Array(pId);
+        this.scatterOptions.borderWidths = new Array(pId);
+        this.scatterOptions.colors = new Array(pId * 4);
+        this.scatterOptions.borderColors = new Array(pId * 4);
 
         var markerSizeFunc = Plotly.Scatter.getBubbleSizeFn(options),
             markerOpts = options.marker,
@@ -377,24 +389,19 @@ proto.updateFancy = function(options) {
             glyphs = convertSymbol(markerOpts.symbol, len),
             borderWidths = convertNumber(markerOpts.line.width, len),
             borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len),
-            pStyle = 0;
+            index;
 
-        for(i = 0; i < len; ++i) {
-            xx = getX(x[i]);
-            yy = getY(y[i]);
+        for(i = 0; i < pId; ++i) {
+            index = idToIndex[i];
 
-            if(isNaN(xx) || isNaN(yy)) continue;
-
-            this.scatterOptions.sizes[pStyle] = 4.0 * sizes[i];
-            this.scatterOptions.glyphs[pStyle] = glyphs[i];
-            this.scatterOptions.borderWidths[pStyle] = 0.5 * borderWidths[i];
+            this.scatterOptions.sizes[i] = 4.0 * sizes[index];
+            this.scatterOptions.glyphs[i] = glyphs[index];
+            this.scatterOptions.borderWidths[i] = 0.5 * borderWidths[index];
 
             for(j = 0; j < 4; ++j) {
-                this.scatterOptions.colors[4*pStyle+j] = colors[4*i+j];
-                this.scatterOptions.borderColors[4*pStyle+j] = borderColors[4*i+j];
+                this.scatterOptions.colors[4*i+j] = colors[4*index+j];
+                this.scatterOptions.borderColors[4*i+j] = borderColors[4*index+j];
             }
-
-            pStyle++;
         }
 
         this.fancyScatter.update(this.scatterOptions);
