@@ -467,7 +467,7 @@ proto.updateError = function(axLetter, options, positions, errors) {
         errorObjOptions.color = convertColor(errorOptions.color, 1, 1);
     }
     else {
-        errorObj.positions = new Float32Array();
+        errorObjOptions.positions = new Float32Array();
     }
 
     errorObj.update(errorObjOptions);
