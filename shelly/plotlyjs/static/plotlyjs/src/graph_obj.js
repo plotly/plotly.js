@@ -3158,6 +3158,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(gd.framework && gd.framework.isPolar) return;
 
     var layout = gd.layout,
+        fullLayout = gd._fullLayout,
         aobj = {},
         dolegend = false,
         doticks = false,
@@ -3227,7 +3228,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     // for editing annotations or shapes - is it on autoscaled axes?
     function refAutorange(obj, axletter) {
         var axName = Plotly.Axes.id2name(obj[axletter+'ref']||axletter);
-        return (gd._fullLayout[axName]||{}).autorange;
+        return (fullLayout[axName]||{}).autorange;
     }
 
     var hw = ['height', 'width'];
@@ -3246,7 +3247,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // trunk nodes (everything except the leaf)
             ptrunk = p.parts.slice(0, pend).join('.'),
             parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
-            parentFull = Plotly.Lib.nestedProperty(gd._fullLayout, ptrunk).get();
+            parentFull = Plotly.Lib.nestedProperty(fullLayout, ptrunk).get();
 
         redoit[ai] = vi;
 
@@ -3361,6 +3362,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // 3d or geo at this point just needs to redraw.
             if (p.parts[0].indexOf('scene') === 0) doplot = true;
             else if (p.parts[0].indexOf('geo') === 0) doplot = true;
+            else if(ai.indexOf('axis') !== -1 && fullLayout._hasGL2D) doplot = true;
             else if(ai === 'hiddenlabels') docalc = true;
             else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
             else if(ai.indexOf('title')!==-1) doticks = true;
@@ -3457,16 +3459,16 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         var subplotIds;
         if(doSceneDragmode) {
-            subplotIds = plots.getSubplotIds(gd._fullLayout, 'gl3d');
+            subplotIds = plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
-                scene = gd._fullLayout[subplotIds[i]]._scene;
-                scene.handleDragmode(gd._fullLayout.dragmode);
+                scene = fullLayout[subplotIds[i]]._scene;
+                scene.handleDragmode(fullLayout.dragmode);
             }
 
-            subplotIds = plots.getSubplotIds(gd._fullLayout, 'gl2d');
+            subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
             for(i = 0; i < subplotIds.length; i++) {
-                scene = gd._fullLayout._plots[subplotIds[i]]._scene2d;
-                scene.fullLayout.dragmode = gd._fullLayout.dragmode;
+                scene = _fullLayout._plots[subplotIds[i]]._scene2d;
+                scene.fullLayout.dragmode = fullLayout.dragmode;
             }
         }
     }
