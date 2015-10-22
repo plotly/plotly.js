@@ -273,7 +273,7 @@ proto.updateFast = function(options) {
         this.scatterOptions.positions = positions;
 
         var markerColor = str2RGBArray(options.marker.color),
-            borderColor = str2RGBArray(borderColor),
+            borderColor = str2RGBArray(options.marker.line.color),
             opacity = (+options.opacity) * (+options.marker.opacity);
 
         markerColor[3] *= opacity;
