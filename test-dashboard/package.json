@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "glob": "^5.0.15",
-    "plotly": "^1.0.2"
+    "plotly": "^1.0.2",
+    "progress": "^1.1.8"
   }
 }
