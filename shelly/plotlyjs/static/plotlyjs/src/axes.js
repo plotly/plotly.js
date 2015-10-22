@@ -630,7 +630,25 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     axes.handleTickDefaults(containerIn, containerOut, coerce, axType, options);
 
-    var showLine = coerce('showline');
+    var showLine,
+        showGridLines,
+        showZeroLine;
+
+    Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'linecolor') ? 
+    showLine=coerce('showline', true) :
+    Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'linewidth') ?
+    showLine=coerce('showline', true) : showLine=coerce('showline')
+
+    Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'gridcolor') ? 
+    showGridLines=coerce('showgrid', true) :
+    Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'gridwidth') ?
+    showGridLines=coerce('showgrid', true) : showGridLines=coerce('showgrid', options.showGrid)
+
+    Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'zerolinecolor') ? 
+    showZeroLine=coerce('zeroline', true) :
+    Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'zerolinewidth') ?
+    showZeroLine=coerce('zeroline', true) : showZeroLine=coerce('zeroline', options.showGrid)
+
     if(showLine) {
         coerce('linecolor');
         coerce('linewidth');
@@ -638,19 +656,16 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     if(showLine || containerOut.ticks) coerce('mirror');
 
-
-    var showGridLines = coerce('showgrid', options.showGrid);
     if(showGridLines) {
         coerce('gridcolor');
         coerce('gridwidth');
     }
 
-    var showZeroLine = coerce('zeroline', options.showGrid);
     if(showZeroLine) {
         coerce('zerolinecolor');
         coerce('zerolinewidth');
     }
-
+    console.log(containerOut);
     return containerOut;
 };
 
