@@ -90,8 +90,11 @@ fx.init = function(gd) {
         return fullLayout._plots[a].mainplot ? 1 : -1;
     });
     subplots.forEach(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot],
-            xa = plotinfo.x(),
+        var plotinfo = fullLayout._plots[subplot];
+
+        if(!fullLayout._hasCartesian) return;
+
+        var xa = plotinfo.x(),
             ya = plotinfo.y(),
 
             // the y position of the main x axis line
@@ -118,25 +121,25 @@ fx.init = function(gd) {
                 })
                 .mouseout(function(evt) {
                 /*
-                 * !!! TERRIBLE HACK !!!
-                 *
-                 * For some reason, a 'mouseout' event is fired in IE on clicks
+                 * IMPORTANT: `fx.unhover(gd, evt)` has been commented out below
+                 * because in some browsers a 'mouseout' event is fired on clicks
                  * on the maindrag container before reaching the 'click' handler.
                  *
                  * This results in a call to `fx.unhover` before `fx.click` where
                  * `unhover` sets `gd._hoverdata` to `undefined` causing the call
                  * to `fx.click` to return early.
                  *
-                 * The hack below makes the 'mouseout' handler bypass
-                 * `fx.unhover` in IE.
-                 *
                  * Note that the 'mouseout' handler is called only when the mouse
-                 * cursor gets lost. Most 'unhover' calls happen from 'mousemove':
-                 * these are not affected by the hack below.
+                 * cursor gets lost. Most 'unhover' calls happen from 'mousemove';
+                 * these are not affected by the change below.
+                 *
+                 * Browsers where this behavior has been noticed:
+                 * - Chrome 46.0.2490.71
+                 * - Firefox 41.0.2
+                 * - IE 9, 10, 11
                  */
-                    if( Plotly.Lib.isIE() ) return;
-
-                    fx.unhover(gd,evt);
+                    // fx.unhover(gd, evt);
+                    return;
                 })
                 .click(function(evt){ fx.click(gd,evt); });
             // corner draggers

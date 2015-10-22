@@ -30,9 +30,7 @@ function createPlot (divId) {
     graphDiv.style.position = 'relative';
     graphDiv.style.verticalAlign = 'top';
 
-    toolDiv.style.verticalAlign = 'top';
-    toolDiv.style.width = '130px';
-    toolDiv.style.display = 'inline-block';
+    toolDiv.className = 'toolDiv';
 
     containerDiv.appendChild(toolDiv);
     containerDiv.appendChild(graphDiv);
@@ -62,7 +60,8 @@ function createPlot (divId) {
     window.toolPanel = graphDiv.toolPanel;
 
     graphDiv.toolPanel.makeMenu({
-        toolMenuContainer: toolDiv
+        toolMenuContainer: toolDiv,
+        menuStyle: 'narrow'
     });
 
     toolPanel.createMenuMultiButton([

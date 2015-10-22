@@ -264,15 +264,23 @@ function getSubplotRegistry(traceType) {
 function handleSubplotObjs(layoutAttributes) {
     var subplotsRegistry = Plotly.Plots.subplotsRegistry;
 
-    var gl3dRegex = subplotsRegistry.gl3d.attrRegex,
-        geoRegex = subplotsRegistry.geo.attrRegex,
-        xaxisRegex = subplotsRegistry.cartesian.attrRegex.x,
-        yaxisRegex = subplotsRegistry.cartesian.attrRegex.y;
-
     Object.keys(layoutAttributes).forEach(function(k) {
-        if(gl3dRegex.test(k) || geoRegex.test(k) || xaxisRegex.test(k) || yaxisRegex.test(k)) {
-             layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
-        }
+        Object.keys(subplotsRegistry).forEach(function(subplotType) {
+            var subplotRegistry = subplotsRegistry[subplotType],
+                isSubplotObj;
+
+            if(subplotType === 'cartesian') {
+                isSubplotObj = (
+                    subplotRegistry.attrRegex.x.test(k) ||
+                    subplotRegistry.attrRegex.y.test(k)
+                );
+            }
+            else {
+                isSubplotObj = subplotRegistry.attrRegex.test(k);
+            }
+
+            if(isSubplotObj) layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
+        });
     });
 
     return layoutAttributes;
