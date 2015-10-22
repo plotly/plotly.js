@@ -123,8 +123,9 @@ proto.merge = function(options) {
         if(hasAxisInDfltPos || mirrorTicks) this.tickEnable[i] = ax.showticklabels;
         if(hasAxisInAltrPos || mirrorTicks) this.tickEnable[i+2] = ax.showticklabels;
 
-        this.tickMarkLength[i] = ax.ticklen;
-        this.tickMarkWidth[i] = ax.tickwidth;
+        // TODO
+        this.tickMarkLength[i^1] = ax.ticklen;
+        this.tickMarkWidth[i^1] = ax.tickwidth;
 
         this.gridLineEnable[i] = ax.showgrid;
         this.gridLineColor[i] = str2RGBArray(ax.gridcolor);
