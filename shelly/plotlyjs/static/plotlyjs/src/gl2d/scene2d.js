@@ -102,6 +102,9 @@ function Scene2D(options, fullLayout) {
 
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
 
+    // flag to stop render loop
+    this.stopped = false;
+
     // redraw the plot
     this.redraw = this.draw.bind(this);
     this.redraw();
@@ -116,11 +119,7 @@ var AXES = ['xaxis', 'yaxis'];
 proto.toImage = function(format) {
     if(!format) format = 'png';
 
-    /*
-    if(this.staticMode) {
-        this.container.appendChild(STATIC_CANVAS);
-    }
-    */
+    this.stopped = true;
 
     // force redraw
     this.glplot.setDirty(true);
@@ -168,12 +167,6 @@ proto.toImage = function(format) {
         default:
         dataURL = canvas.toDataURL('image/png');
     }
-
-    /*
-    if(this.staticMode) {
-        this.container.removeChild(STATIC_CANVAS);
-    }
-    */
 
     return dataURL;
 };
@@ -363,6 +356,7 @@ trace_id_loop:
 };
 
 proto.draw = function() {
+    if(this.stopped) return;
     requestAnimationFrame(this.redraw);
 
     var glplot = this.glplot,
