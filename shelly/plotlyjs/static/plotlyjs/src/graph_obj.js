@@ -3467,7 +3467,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
             subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
             for(i = 0; i < subplotIds.length; i++) {
-                scene = _fullLayout._plots[subplotIds[i]]._scene2d;
+                scene = fullLayout._plots[subplotIds[i]]._scene2d;
                 scene.fullLayout.dragmode = fullLayout.dragmode;
             }
         }
