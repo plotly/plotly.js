@@ -30,8 +30,14 @@ function Axes2DOptions(scene) {
         [0, 0, 0, 1],
         [0, 0, 0, 1]
     ];
-    this.tickMarkWidth = [0, 0, 0, 0];
     this.tickMarkLength = [0, 0, 0, 0];
+    this.tickMarkWidth = [0, 0, 0, 0];
+    this.tickMarkColor = [
+        [0, 0, 0, 1],
+        [0, 0, 0, 1],
+        [0, 0, 0, 1],
+        [0, 0, 0, 1]
+    ];
 
     this.labels = ['x', 'y'];
     this.labelEnable = [true, true, false, false];
@@ -84,14 +90,15 @@ proto.merge = function(options) {
 
     var axisName, ax, axTitle;
     var hasAxisInDfltPos, hasAxisInAltrPos, mirrorLines, mirrorTicks;
+    var i, j;
 
-    for(var i = 0; i < 2; ++i) {
+    for(i = 0; i < 2; ++i) {
         axisName = AXES[i];
         ax = options[axisName];
 
         axTitle = /Click to enter .+ title/.test(ax.title) ?  '' : ax.title;
 
-        for(var j = 0; j <= 2; j += 2) {
+        for(j = 0; j <= 2; j += 2) {
             this.labelEnable[i+j] = false;
             this.labels[i+j] = htmlToUnicode(axTitle);
             this.labelColor[i+j] = str2RGBArray(ax.titlefont.color);
@@ -100,9 +107,13 @@ proto.merge = function(options) {
             this.labelPad[i+j] = this.getLabelPad(axisName, ax);
 
             this.tickEnable[i+j] = false;
-            this.tickColor[i+j] = str2RGBArray(ax.tickcolor);
+            this.tickColor[i+j] = str2RGBArray((ax.tickfont || {}).color);
             this.tickAngle[i+j] = (ax.tickangle === 'auto') ? 0 : -ax.tickangle;
             this.tickPad[i+j] = this.getTickPad(axisName, ax);
+
+            this.tickMarkLength[i+j] = 0;
+            this.tickMarkWidth[i+j] = ax.tickwidth || 0;
+            this.tickMarkColor[i+j] = str2RGBArray(ax.tickcolor);
 
             this.borderLineEnable[i+j] = false;
             this.borderLineColor[i+j] = str2RGBArray(ax.linecolor);
@@ -114,18 +125,20 @@ proto.merge = function(options) {
         mirrorLines = (ax.mirror);
         mirrorTicks = (ax.mirror === 'ticks') || (ax.mirror === 'allticks');
 
-        if(hasAxisInDfltPos) this.labelEnable[i] = ax.showticklabels;
-        else if(hasAxisInAltrPos) this.labelEnable[i+2] = ax.showticklabels;
+        // axis title and tick label can only appear of one side of the scene
+        // grid lines and ticks can appear on both sides of the scene
+
+        if(hasAxisInDfltPos) this.labelEnable[i] = true;
+        else if(hasAxisInAltrPos) this.labelEnable[i+2] = true;
+
+        if(hasAxisInDfltPos) this.tickEnable[i] = ax.showticklabels;
+        else if(hasAxisInAltrPos) this.tickEnable[i+2] = ax.showticklabels;
 
         if(hasAxisInDfltPos || mirrorLines) this.borderLineEnable[i] = ax.showline;
         if(hasAxisInAltrPos || mirrorLines) this.borderLineEnable[i+2] = ax.showline;
 
-        if(hasAxisInDfltPos || mirrorTicks) this.tickEnable[i] = ax.showticklabels;
-        if(hasAxisInAltrPos || mirrorTicks) this.tickEnable[i+2] = ax.showticklabels;
-
-        // TODO
-        this.tickMarkLength[i^1] = ax.ticklen;
-        this.tickMarkWidth[i^1] = ax.tickwidth;
+        if(hasAxisInDfltPos || mirrorTicks) this.tickMarkLength[i] = this.getTickMarkLength(ax);
+        if(hasAxisInAltrPos || mirrorTicks) this.tickMarkLength[i+2] = this.getTickMarkLength(ax);
 
         this.gridLineEnable[i] = ax.showgrid;
         this.gridLineColor[i] = str2RGBArray(ax.gridcolor);
@@ -136,9 +149,13 @@ proto.merge = function(options) {
         this.zeroLineWidth[i] = ax.zerolinewidth;
     }
 
-    this.reFormatBorderOptions('borderLineEnable');
-    this.reFormatBorderOptions('borderLineWidth');
-    this.reFormatBorderOptions('borderLineColor');
+    var optionsToReFormat = [
+        'borderLineEnable', 'borderLineWidth', 'borderLineColor',
+        'tickMarkLength', 'tickMarkWidth', 'tickMarkColor'
+    ];
+    for(i = 0; i < optionsToReFormat.length; i++) {
+        this.reFormatOption(optionsToReFormat[i]);
+    }
 };
 
 proto.getLabelPad = function(axisName, ax) {
@@ -156,15 +173,9 @@ proto.getLabelPad = function(axisName, ax) {
     }[axisName];
 };
 
-// TODO ??
-proto.getTickPad = function(axisName, ax) {
-    return 15;
-};
-
 // has an axis in default position (i.e. bottom/left) ?
 proto.hasAxisInDfltPos = function(axisName, ax) {
     var axSide = ax.side;
-
     return {
         xaxis: (axSide === 'bottom'),
         yaxis: (axSide === 'left')
@@ -174,18 +185,30 @@ proto.hasAxisInDfltPos = function(axisName, ax) {
 // has an axis in alternate position (i.e. top/right) ?
 proto.hasAxisInAltrPos = function(axisName, ax) {
     var axSide = ax.side;
-
     return {
         xaxis: (axSide === 'top'),
         yaxis: (axSide === 'right')
     }[axisName];
 };
 
-// need to rotate gl-vis border options by 90 degree to be on-par cartesian
-proto.reFormatBorderOptions = function(optName) {
+// TODO
+proto.getTickPad = function() {
+    return 15;
+};
+
+proto.getTickMarkLength = function(ax) {
+    if(!ax.ticks) return 0;
+
+    var ticklen = ax.ticklen;
+    return (ax.ticks === 'inside') ? -ticklen : ticklen;
+};
+
+// rotate some gl-vis options by 90 degree to be on-par cartesian
+proto.reFormatOption = function(optName) {
     var val = this[optName];
     this[optName] = [ val[1], val[0], val[3], val[2] ];
 };
+
 
 function createAxes2D(scene) {
     return new Axes2DOptions(scene);
