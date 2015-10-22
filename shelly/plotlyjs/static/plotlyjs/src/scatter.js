@@ -1239,35 +1239,38 @@ scatter.style = function(gd) {
         .call(Plotly.Drawing.fillGroupStyle);
 };
 
-function traceColor(trace, di) {
+scatter.getTraceColor = function(trace, di) {
     var lc, tc;
+
     // TODO: text modes
-    if(trace.mode==='lines') {
+
+    if(trace.mode === 'lines') {
         lc = trace.line.color;
         return (lc && Plotly.Color.opacity(lc)) ?
             lc : trace.fillcolor;
     }
-    else if(trace.mode==='none') {
+    else if(trace.mode === 'none') {
         return trace.fill ? trace.fillcolor : '';
     }
-
     else {
-        var mc = di.mcc || (trace.marker||{}).color,
-            mlc = di.mlcc || ((trace.marker||{}).line||{}).color;
+        var mc = di.mcc || (trace.marker || {}).color,
+            mlc = di.mlcc || ((trace.marker || {}).line || {}).color;
+
         tc = (mc && Plotly.Color.opacity(mc)) ? mc :
             (mlc && Plotly.Color.opacity(mlc) &&
-                (di.mlw || ((trace.marker||{}).line||{}).width)) ? mlc : '';
+                (di.mlw || ((trace.marker || {}).line || {}).width)) ? mlc : '';
+
         if(tc) {
             // make sure the points aren't TOO transparent
-            if(Plotly.Color.opacity(tc)<0.3) {
+            if(Plotly.Color.opacity(tc) < 0.3) {
                 return Plotly.Color.addOpacity(tc, 0.3);
             }
             else return tc;
         }
         else {
-            lc = (trace.line||{}).color;
+            lc = (trace.line || {}).color;
             return (lc && Plotly.Color.opacity(lc) &&
-                Plotly.Scatter.hasLines(trace) && trace.line.width) ?
+                scatter.hasLines(trace) && trace.line.width) ?
                     lc : trace.fillcolor;
         }
     }
@@ -1309,7 +1312,7 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
         yc = ya.c2p(di.y, true),
         rad = di.mrc||1;
 
-    pointData.color = traceColor(trace, di);
+    pointData.color = scatter.getTraceColor(trace, di);
 
     pointData.x0 = xc - rad;
     pointData.x1 = xc + rad;

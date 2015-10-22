@@ -214,14 +214,8 @@ proto.update = function(options) {
     }
 
     this.textLabels = options.text;
-
-    // not quite on-par with 'scatter', but close enough for now
-    // does not handle the colorscale case
-    this.color = this.hasMarkers ?  options.marker.color : options.line.color;
-
     this.name = options.name;
     this.hoverinfo = options.hoverinfo;
-
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
 
     if(this.isFancy(options)) {
@@ -232,8 +226,11 @@ proto.update = function(options) {
         console.log('fast update')
         this.updateFast(options);
     }
-};
 
+    // not quite on-par with 'scatter', but close enough for now
+    // does not handle the colorscale case
+    this.color = Plotly.Scatter.getTraceColor(options, {});
+};
 
 proto.updateFast = function(options) {
     var x = this.xData = options.x;
