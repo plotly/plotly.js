@@ -671,7 +671,7 @@ axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, op
     var tickLen = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'ticklen'),
         tickWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'tickwidth'),
         tickColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'tickcolor'), 
-        showTicks = coerce('ticks', options.outerTicks || tickLen || tickWidth || tickColor ? 'outside' : '');
+        showTicks = coerce('ticks', (options.outerTicks || tickLen || tickWidth || tickColor) ? 'outside' : '');
     if(!showTicks) {
         delete containerOut.ticklen;
         delete containerOut.tickwidth;
