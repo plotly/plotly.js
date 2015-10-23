@@ -73,10 +73,10 @@ var Events = {
          * Now run all the node style event handlers
          */
         var ev = plotObj._ev;
-        if (!ev) return;
+        if (!ev) return jQueryHandlerValue;
 
         var handlers = ev._events[event];
-        if (!handlers) return;
+        if (!handlers) return jQueryHandlerValue;
 
         /*
          * handlers can be function or an array of functions

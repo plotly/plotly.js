@@ -100,6 +100,59 @@ describe('Events', function () {
             expect(result).toBe('pong');
         });
 
+        it('triggers jQuery handlers when no node events initialized', function() {
+            var eventBaton = 0;
+
+            Events.init(plotDiv);
+
+            $(plotDiv).bind('ping', function() {
+                eventBaton++;
+                return 'ping';
+            });
+
+            /*
+             * This will not be called
+             */
+            plotDiv.on('pong', function() {
+                eventBaton++;
+                return 'ping';
+            });
+
+            $(plotDiv).bind('ping', function() {
+                eventBaton++;
+                return 'pong';
+            });
+
+            var result = Events.triggerHandler(plotDiv, 'ping');
+
+            expect(eventBaton).toBe(2);
+            expect(result).toBe('pong');
+        });
+
+        it('triggers jQuery handlers when no matching node events bound', function() {
+            var eventBaton = 0;
+
+            $(plotDiv).bind('ping', function() {
+                eventBaton++;
+                return 'ping';
+            });
+
+            $(plotDiv).bind('ping', function() {
+                eventBaton++;
+                return 'ping';
+            });
+
+            $(plotDiv).bind('ping', function() {
+                eventBaton++;
+                return 'pong';
+            });
+
+            var result = Events.triggerHandler(plotDiv, 'ping');
+
+            expect(eventBaton).toBe(3);
+            expect(result).toBe('pong');
+        });
+
 
         it('triggers jQuery + nodejs handlers and returns last jQuery value', function() {
             var eventBaton = 0;
