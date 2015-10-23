@@ -634,7 +634,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     var lineColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'linecolor'),
         lineWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'linewidth'),
-        showLine = coerce('showline', lineColor || lineWidth);
+        showLine = coerce('showline', !!lineColor || !!lineWidth);
     
     if(!showLine) {
         delete containerOut.linecolor;
@@ -645,7 +645,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     var gridColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'gridcolor'),
         gridWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'gridwidth'),
-        showGridLines = coerce('showgrid', options.showGrid || gridColor || gridWidth);
+        showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
     
     if(!showGridLines) {
         delete containerOut.gridcolor;
@@ -654,7 +654,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     var zeroLineColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'zerolinecolor'),
         zeroLineWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'zerolinewidth'),
-        showZeroLine = coerce('zeroline', options.showGrid || zeroLineColor || zeroLineWidth);
+        showZeroLine = coerce('zeroline', options.showGrid || !!zeroLineColor || !!zeroLineWidth);
     
     if(!showZeroLine) {
         delete containerOut.zerolinecolor;
@@ -671,7 +671,7 @@ axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, op
     var tickLen = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'ticklen'),
         tickWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'tickwidth'),
         tickColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'tickcolor'), 
-        showTicks = coerce('ticks', options.outerTicks ? 'outside' : '' || tickLen || tickWidth || tickColor);
+        showTicks = coerce('ticks', options.outerTicks || tickLen || tickWidth || tickColor ? 'outside' : '');
     if(!showTicks) {
         delete containerOut.ticklen;
         delete containerOut.tickwidth;
