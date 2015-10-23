@@ -100,7 +100,7 @@ describe('Events', function () {
             expect(result).toBe('pong');
         });
 
-        it('triggers jQuery handlers when no node events initialized', function() {
+        it('triggers jQuery handlers when no matching node events bound', function() {
             var eventBaton = 0;
 
             Events.init(plotDiv);
@@ -129,7 +129,7 @@ describe('Events', function () {
             expect(result).toBe('pong');
         });
 
-        it('triggers jQuery handlers when no matching node events bound', function() {
+        it('triggers jQuery handlers when no node events initialized', function() {
             var eventBaton = 0;
 
             $(plotDiv).bind('ping', function() {
