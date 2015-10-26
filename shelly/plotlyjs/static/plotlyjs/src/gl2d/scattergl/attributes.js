@@ -39,7 +39,7 @@ module.exports = {
         dash: {
             valType: 'enumerated',
             values: Object.keys(require('../lib/dashes.json')),
-            dftl: 'solid',
+            dflt: 'solid',
             role: 'style',
             description: 'Sets the style of the lines.'
         }
