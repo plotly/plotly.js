@@ -9,6 +9,7 @@ var createError = require('gl-error2d');
 
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
 var formatColor = require('../../gl3d/lib/format-color');
+var isNumeric = require('../../isnumeric');
 
 var MARKER_SYMBOLS = require('../../gl3d/lib/markers.json');
 var DASHES = require('../lib/dashes.json');
@@ -249,7 +250,7 @@ proto.updateFast = function(options) {
         xx = x[i];
         yy = y[i];
 
-        if(isNaN(xx) || isNaN(yy)) continue;
+        if(!isNumeric(xx) || !isNumeric(yy)) continue;
 
         idToIndex[pId++] = i;
 
