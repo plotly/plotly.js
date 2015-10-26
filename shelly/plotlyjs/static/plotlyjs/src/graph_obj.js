@@ -1590,6 +1590,9 @@ plots.fontAttrs = {
     }
 };
 
+// TODO make this a plot attribute?
+plots.fontWeight = 'normal';
+
 var extendFlat = Plotly.Lib.extendFlat;
 
 plots.layoutAttributes = {
@@ -4259,7 +4262,8 @@ plots.titles = function(gd, title) {
                 'font-family': font,
                 'font-size': d3.round(fontSize,2)+'px',
                 fill: Plotly.Color.rgb(fontColor),
-                opacity: opacity*Plotly.Color.opacity(fontColor)
+                opacity: opacity*Plotly.Color.opacity(fontColor),
+                'font-weight': plots.fontWeight
             })
             .attr(options)
             .call(Plotly.util.convertToTspans)
