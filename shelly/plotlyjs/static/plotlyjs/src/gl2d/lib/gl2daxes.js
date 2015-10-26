@@ -149,10 +149,8 @@ proto.merge = function(options) {
         this.zeroLineWidth[i] = ax.zerolinewidth;
     }
 
-    var optionsToReFormat = [
-        'borderLineEnable', 'borderLineWidth', 'borderLineColor',
-        'tickMarkLength', 'tickMarkWidth', 'tickMarkColor'
-    ];
+    // TODO fix this in gl-plot2d
+    var optionsToReFormat = ['tickMarkLength', 'tickMarkWidth'];
     for(i = 0; i < optionsToReFormat.length; i++) {
         this.reFormatOption(optionsToReFormat[i]);
     }
