@@ -109,7 +109,7 @@ proto.merge = function(options) {
             this.tickEnable[i+j] = false;
             this.tickColor[i+j] = str2RGBArray((ax.tickfont || {}).color);
             this.tickAngle[i+j] = (ax.tickangle === 'auto') ? 0 : -ax.tickangle;
-            this.tickPad[i+j] = this.getTickPad(axisName, ax);
+            this.tickPad[i+j] = this.getTickPad(ax);
 
             this.tickMarkLength[i+j] = 0;
             this.tickMarkWidth[i+j] = ax.tickwidth || 0;
@@ -189,9 +189,8 @@ proto.hasAxisInAltrPos = function(axisName, ax) {
     }[axisName];
 };
 
-// TODO
-proto.getTickPad = function() {
-    return 15;
+proto.getTickPad = function(ax) {
+    return (ax.ticks === 'outside') ? 10 + ax.ticklen : 15;
 };
 
 proto.getTickMarkLength = function(ax) {
