@@ -8,7 +8,8 @@
 var Plotly = require('./plotly'),
     d3 = require('d3'),
     m4FromQuat = require('gl-mat4/fromQuat'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('./isnumeric'),
+    Events = require('./events');
 
 var plots = module.exports = {};
 // Most of the generic plotting functions get put into Plotly.Plots,
@@ -387,7 +388,7 @@ function positionPlayWithData(gd, container){
 
     if(gd._context.sendData) {
         link.on('click',function(){
-            $(gd).trigger('plotly_beforeexport');
+            gd.emit('plotly_beforeexport');
 
             var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
 
@@ -402,7 +403,7 @@ function positionPlayWithData(gd, container){
             hiddenform.find('form').submit();
             hiddenform.remove();
 
-            $(gd).trigger('plotly_afterexport');
+            gd.emit('plotly_afterexport');
             return false;
         });
     }
@@ -431,7 +432,12 @@ Plotly.plot = function(gd, data, layout, config) {
 
     gd = getGraphDiv(gd);
 
-    var okToPlot = $(gd).triggerHandler('plotly_beforeplot', [data, layout, config]);
+    /*
+     * Events.init is idempotent and bails early if gd has already been init'd
+     */
+    Events.init(gd);
+
+    var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
     if(okToPlot===false) return;
 
     // if there's no data or layout, and this isn't yet a plotly plot
@@ -727,7 +733,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // so mark it as done and let other procedures call a replot
         gd._replotting = false;
         Plotly.Lib.markTime('done plot');
-        $(gd).trigger('plotly_afterplot');
+        gd.emit('plotly_afterplot');
     }
 
     var donePlotting = Plotly.Lib.syncOrAsync([
@@ -1255,7 +1261,7 @@ Plotly.redraw = function(gd) {
     }
     gd.calcdata = undefined;
     return Plotly.plot(gd).then(function () {
-        $(gd).trigger('plotly_redraw');
+        gd.emit('plotly_redraw');
     });
 };
 
@@ -3049,7 +3055,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_restyle',
+        gd.emit('plotly_restyle',
             Plotly.Lib.extendDeep([], [redoit, traces]));
     });
 };
@@ -3410,7 +3416,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_relayout',
+        gd.emit('plotly_relayout',
             Plotly.Lib.extendDeep({}, redoit));
     });
 };
@@ -3444,7 +3450,7 @@ function plotAutoSize(gd, aobj) {
 
     var newHeight, newWidth;
 
-    $(gd).trigger('plotly_autosize');
+    gd.emit('plotly_autosize');
 
     // embedded in an iframe - just take the full iframe size
     // if we get to this point, with no aspect ratio restrictions
@@ -3629,7 +3635,7 @@ function makePlotFramework(gd) {
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 
-    $(gd).trigger('plotly_framework');
+    gd.emit('plotly_framework');
 
     // position and style the containers, make main title
     var frameWorkDone = Plotly.Lib.syncOrAsync([
