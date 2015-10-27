@@ -148,12 +148,6 @@ proto.merge = function(options) {
         this.zeroLineColor[i] = str2RGBArray(ax.zerolinecolor);
         this.zeroLineWidth[i] = ax.zerolinewidth;
     }
-
-    // TODO fix this in gl-plot2d
-    var optionsToReFormat = ['tickMarkLength', 'tickMarkWidth'];
-    for(i = 0; i < optionsToReFormat.length; i++) {
-        this.reFormatOption(optionsToReFormat[i]);
-    }
 };
 
 proto.getLabelPad = function(axisName, ax) {
@@ -198,12 +192,6 @@ proto.getTickMarkLength = function(ax) {
 
     var ticklen = ax.ticklen;
     return (ax.ticks === 'inside') ? -ticklen : ticklen;
-};
-
-// rotate some gl-vis options by 90 degree to be on-par cartesian
-proto.reFormatOption = function(optName) {
-    var val = this[optName];
-    this[optName] = [ val[1], val[0], val[3], val[2] ];
 };
 
 
