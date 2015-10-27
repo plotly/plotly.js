@@ -246,10 +246,12 @@ proto.updateFast = function(options) {
 
     var xx, yy;
 
+    // TODO add 'very fast' mode that bypasses this loop
     for(var i = 0; i < len; ++i) {
         xx = x[i];
         yy = y[i];
 
+        // check for isNaN is faster but doesn't skip over nulls
         if(!isNumeric(xx) || !isNumeric(yy)) continue;
 
         idToIndex[pId++] = i;
