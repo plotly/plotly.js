@@ -93,8 +93,8 @@ function Scene2D(options, fullLayout) {
     this.spikes = createSpikes(this.glplot);
 
     this.selectBox = createSelectBox(this.glplot, {
-      innerFill: false,
-      outerFill: true
+        innerFill: false,
+        outerFill: true
     });
 
     // last pick result
@@ -336,6 +336,7 @@ trace_id_loop:
         var ax = this[AXES[i]];
 
         // if Plotly.Axes.expand hasn't been called yet
+        // TODO is this correct?
         if(ax._min.length === 0) ax._min = [{ val: bounds[i], pad: 10 }];
         if(ax._max.length === 0) ax._max = [{ val: bounds[i+2], pad: 10 }];
 

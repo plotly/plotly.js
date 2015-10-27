@@ -150,6 +150,29 @@ proto.merge = function(options) {
     }
 };
 
+
+};
+
+// has an axis in default position (i.e. bottom/left) ?
+proto.hasAxisInDfltPos = function(axisName, ax) {
+    var axSide = ax.side;
+
+    return {
+        xaxis: (axSide === 'bottom'),
+        yaxis: (axSide === 'left')
+    }[axisName];
+};
+
+// has an axis in alternate position (i.e. top/right) ?
+proto.hasAxisInAltrPos = function(axisName, ax) {
+    var axSide = ax.side;
+
+    return {
+        xaxis: (axSide === 'top'),
+        yaxis: (axSide === 'right')
+    }[axisName];
+};
+
 proto.getLabelPad = function(axisName, ax) {
     var offsetBase = 1.5,
         fontSize = ax.titlefont.size,
@@ -165,24 +188,6 @@ proto.getLabelPad = function(axisName, ax) {
     }[axisName];
 };
 
-// has an axis in default position (i.e. bottom/left) ?
-proto.hasAxisInDfltPos = function(axisName, ax) {
-    var axSide = ax.side;
-    return {
-        xaxis: (axSide === 'bottom'),
-        yaxis: (axSide === 'left')
-    }[axisName];
-};
-
-// has an axis in alternate position (i.e. top/right) ?
-proto.hasAxisInAltrPos = function(axisName, ax) {
-    var axSide = ax.side;
-    return {
-        xaxis: (axSide === 'top'),
-        yaxis: (axSide === 'right')
-    }[axisName];
-};
-
 proto.getTickPad = function(ax) {
     return (ax.ticks === 'outside') ? 10 + ax.ticklen : 15;
 };
@@ -191,6 +196,7 @@ proto.getTickMarkLength = function(ax) {
     if(!ax.ticks) return 0;
 
     var ticklen = ax.ticklen;
+
     return (ax.ticks === 'inside') ? -ticklen : ticklen;
 };
 
