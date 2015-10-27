@@ -13,6 +13,7 @@ var isNumeric = require('../../isnumeric');
 
 var MARKER_SYMBOLS = require('../../gl3d/lib/markers.json');
 var DASHES = require('../lib/dashes.json');
+var AXES = ['xaxis', 'yaxis'];
 
 
 function LineWithMarkers(scene, uid) {
@@ -272,6 +273,8 @@ proto.updateFast = function(options) {
     this.updateError('X', options);
     this.updateError('Y', options);
 
+    var markerSize;
+
     if(this.hasMarkers) {
         this.scatterOptions.positions = positions;
 
@@ -285,7 +288,8 @@ proto.updateFast = function(options) {
         borderColor[3] *= opacity;
         this.scatterOptions.borderColor = borderColor;
 
-        this.scatterOptions.size = options.marker.size;
+        markerSize = options.marker.size;
+        this.scatterOptions.size = markerSize;
         this.scatterOptions.borderSize = options.marker.line.width;
 
         this.scatter.update(this.scatterOptions);
@@ -300,6 +304,9 @@ proto.updateFast = function(options) {
     this.scatterOptions.positions = new Float32Array();
     this.scatterOptions.glyphs = [];
     this.fancyScatter.update(this.scatterOptions);
+
+    // add item for autorange routine
+    this.expandAxesFast(bounds, markerSize);
 };
 
 proto.updateFancy = function(options) {
@@ -368,6 +375,8 @@ proto.updateFancy = function(options) {
     this.updateError('X', options, positions, errorsX);
     this.updateError('Y', options, positions, errorsY);
 
+    var sizes;
+
     if(this.hasMarkers) {
         this.scatterOptions.positions = positions;
 
@@ -384,12 +393,13 @@ proto.updateFancy = function(options) {
             markerOpts = options.marker,
             markerOpacity = markerOpts.opacity,
             traceOpacity = options.opacity,
-            sizes = convertArray(markerSizeFunc, markerOpts.size, len),
             colors = convertColorScale(markerOpts, markerOpacity, traceOpacity, len),
             glyphs = convertSymbol(markerOpts.symbol, len),
             borderWidths = convertNumber(markerOpts.line.width, len),
             borderColors = convertColorScale(markerOpts.line, markerOpacity, traceOpacity, len),
             index;
+
+        sizes = convertArray(markerSizeFunc, markerOpts.size, len);
 
         for(i = 0; i < pId; ++i) {
             index = idToIndex[i];
@@ -405,11 +415,6 @@ proto.updateFancy = function(options) {
         }
 
         this.fancyScatter.update(this.scatterOptions);
-
-        // not quite on-par with 'scatter', but close enough for now
-        var expandOpts = { padded: true, ppad: sizes };
-        Plotly.Axes.expand(xaxis, x, expandOpts);
-        Plotly.Axes.expand(yaxis, y, expandOpts);
     }
     else {
         this.scatterOptions.positions = new Float32Array();
@@ -421,6 +426,9 @@ proto.updateFancy = function(options) {
     this.scatterOptions.positions = new Float32Array();
     this.scatterOptions.glyphs = [];
     this.scatter.update(this.scatterOptions);
+
+    // add item for autorange routine
+    this.expandAxesFancy(x, y, sizes);
 };
 
 proto.updateLines = function(options, positions) {
@@ -478,6 +486,33 @@ proto.updateError = function(axLetter, options, positions, errors) {
     }
 
     errorObj.update(errorObjOptions);
+};
+
+proto.expandAxesFast = function(bounds, markerSize) {
+    var pad = markerSize || 10;
+    var ax, min, max;
+
+    for(var i = 0; i < 2; i++) {
+        ax = this.scene[AXES[i]];
+
+        min = ax._min;
+        if(!min) min = [];
+        min.push({ val: bounds[i], pad: pad});
+
+        max = ax._max;
+        if(!max) max = [];
+        max.push({ val: bounds[i+2], pad: pad});
+    }
+};
+
+// not quite on-par with 'scatter' (scatter fill in several other expand options),
+// but close enough for now
+proto.expandAxesFancy = function(x, y, ppad) {
+    var scene = this.scene,
+        expandOpts = { padded: true, ppad: ppad };
+
+    Plotly.Axes.expand(scene.xaxis, x, expandOpts);
+    Plotly.Axes.expand(scene.yaxis, y, expandOpts);
 };
 
 proto.dispose = function() {

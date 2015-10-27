@@ -171,6 +171,8 @@ proto.hasSharedAxis = function(ax) {
         subplotIds = Plotly.Plots.getSubplotIds(scene.fullLayout, 'gl2d'),
         list = Plotly.Axes.findSubplotsWithAxis(subplotIds, ax);
 
+    // if index === 0, then the subplot is already drawn as subplots
+    // are drawn in order.
     return (list.indexOf(scene.id) !== 0);
 };
 
