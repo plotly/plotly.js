@@ -155,6 +155,95 @@ describe('Test axes', function () {
         });
     });
 
+    describe('supplyLayoutDefaults', function() {
+        var layoutIn = {},
+            layoutOut = {},
+            fullData=[];
+
+        var supplyLayoutDefaults = Plotly.Axes.supplyLayoutDefaults;
+
+        it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.linewidth).toBe(undefined);
+            expect(layoutOut.xaxis.linecolor).toBe(undefined);
+            expect(layoutOut.yaxis.linewidth).toBe(undefined);
+            expect(layoutOut.yaxis.linecolor).toBe(undefined);
+        });
+
+        it('should set default linewidth and linecolor if showline is true', function() {
+            layoutIn = {
+                xaxis: {showline: true}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.linewidth).toBe(1);
+            expect(layoutOut.xaxis.linecolor).toBe(Plotly.Color.defaultLine);
+        });
+
+        it('should set linewidth to default if linecolor is supplied and valid', function() {
+            layoutIn = {
+                xaxis: {linecolor:'black'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.linecolor).toBe('black');
+            expect(layoutOut.xaxis.linewidth).toBe(1);
+        });
+
+        it('should set linecolor to default if linewidth is supplied and valid', function() {
+            layoutIn = {
+                yaxis: {linewidth:2}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.linewidth).toBe(2);
+            expect(layoutOut.yaxis.linecolor).toBe(Plotly.Color.defaultLine);
+        });
+
+        it('should set default gridwidth and gridcolor', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.gridwidth).toBe(1);
+            expect(layoutOut.xaxis.gridcolor).toBe(Plotly.Color.lightLine);
+            expect(layoutOut.yaxis.gridwidth).toBe(1);
+            expect(layoutOut.yaxis.gridcolor).toBe(Plotly.Color.lightLine);
+        });
+
+        it('should set gridcolor/gridwidth to undefined if showgrid is false', function() {
+            layoutIn = {
+                yaxis: {showgrid: false}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.gridwidth).toBe(undefined);
+            expect(layoutOut.yaxis.gridcolor).toBe(undefined);
+        });
+
+        it('should set default zerolinecolor/zerolinewidth', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.zerolinewidth).toBe(1);
+            expect(layoutOut.xaxis.zerolinecolor).toBe(Plotly.Color.defaultLine);
+            expect(layoutOut.yaxis.zerolinewidth).toBe(1);
+            expect(layoutOut.yaxis.zerolinecolor).toBe(Plotly.Color.defaultLine);
+        });
+
+        it('should set zerolinecolor/zerolinewidth to undefined if zeroline is false', function() {
+            layoutIn = {
+                xaxis: {zeroline: false}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.zerolinewidth).toBe(undefined);
+            expect(layoutOut.xaxis.zerolinecolor).toBe(undefined);
+        });
+    });
+
     describe('handleTickValueDefaults', function() {
         function handleTickValueDefaults(axIn, axOut, axType) {
             function coerce(attr, dflt) {
