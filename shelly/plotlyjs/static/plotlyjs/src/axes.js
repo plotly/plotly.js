@@ -2391,7 +2391,7 @@ axes.subplotMatch = /^x([0-9]*)y([0-9]*)$/;
 // optionally restrict to only subplots containing axis object ax
 // looks both for combinations of x and y found in the data
 // and at axes and their anchors
-axes.getSubplots = function(gd,ax) {
+axes.getSubplots = function(gd, ax) {
     var data = gd.data || [],
         subplots = [];
 
@@ -2451,13 +2451,18 @@ axes.getSubplots = function(gd,ax) {
             return +(amatch[1]||0) - (bmatch[1]||0);
         });
 
-    if(ax) {
-        var axmatch = new RegExp(ax._id.charAt(0)==='x' ?
-            ('^'+ax._id+'y') : (ax._id+'$') );
-        return allSubplots
-            .filter(function(sp) { return sp.match(axmatch); });
-    }
-    else { return allSubplots; }
+    if(ax) return axes.findSubplotsWithAxis(allSubplots, ax);
+
+    return allSubplots;
+};
+
+// find all subplots with axis 'ax'
+axes.findSubplotsWithAxis = function(subplots, ax) {
+    var axMatch = new RegExp(
+        ax._id.charAt(0) === 'x' ?  ('^' + ax._id + 'y') : (ax._id + '$')
+    );
+
+    return subplots.filter(function(sp) { return sp.match(axMatch); });
 };
 
 // makeClipPaths: prepare clipPaths for all single axes and all possible xy pairings
