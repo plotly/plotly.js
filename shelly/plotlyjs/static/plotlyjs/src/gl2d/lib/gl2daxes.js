@@ -1,9 +1,11 @@
 'use strict';
 
+var Plotly = require('../../plotly');
 var htmlToUnicode = require('../../gl3d/lib/html2unicode');
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
 
 function Axes2DOptions(scene) {
+    this.scene = scene;
     this.gl = scene.gl;
     this.pixelRatio = scene.pixelRatio;
 
@@ -88,13 +90,16 @@ proto.merge = function(options) {
     this.titleEnable = false;
     this.backgroundColor = str2RGBArray(options.plot_bgcolor);
 
-    var axisName, ax, axTitle;
-    var hasAxisInDfltPos, hasAxisInAltrPos, mirrorLines, mirrorTicks;
+    var axisName, ax, axTitle, axMirror;
+    var hasAxisInDfltPos, hasAxisInAltrPos, hasSharedAxis, mirrorLines, mirrorTicks;
     var i, j;
 
     for(i = 0; i < 2; ++i) {
         axisName = AXES[i];
-        ax = options[axisName];
+
+        // get options relevant to this subplot,
+        // '_name' is e.g. xaxis, xaxis2, yaxis, yaxis4 ...
+        ax = options[this.scene[axisName]._name];
 
         axTitle = /Click to enter .+ title/.test(ax.title) ?  '' : ax.title;
 
@@ -120,19 +125,29 @@ proto.merge = function(options) {
             this.borderLineWidth[i+j] = ax.linewidth || 0;
         }
 
-        hasAxisInDfltPos = this.hasAxisInDfltPos(axisName, ax);
-        hasAxisInAltrPos = this.hasAxisInAltrPos(axisName, ax);
-        mirrorLines = (ax.mirror);
-        mirrorTicks = (ax.mirror === 'ticks') || (ax.mirror === 'allticks');
+        hasSharedAxis = this.hasSharedAxis(ax);
+        hasAxisInDfltPos = this.hasAxisInDfltPos(axisName, ax) && !hasSharedAxis;
+        hasAxisInAltrPos = this.hasAxisInAltrPos(axisName, ax) && !hasSharedAxis;
 
-        // axis title and tick label can only appear of one side of the scene
-        // grid lines and ticks can appear on both sides of the scene
+        axMirror = ax.mirror || false
+        mirrorLines = hasSharedAxis ?
+            (String(axMirror).indexOf('all') !== -1) :  // 'all' or 'allticks'
+            !!axMirror;                                 // all but false
+        mirrorTicks = hasSharedAxis ?
+            (axMirror === 'allticks') :
+            (String(axMirror).indexOf('ticks') !== -1); // 'ticks' or 'allticks'
+
+        // Axis titles and tick labels can only appear of one side of the scene
+        //  and are never show on subplots that share existing axes.
 
         if(hasAxisInDfltPos) this.labelEnable[i] = true;
         else if(hasAxisInAltrPos) this.labelEnable[i+2] = true;
 
         if(hasAxisInDfltPos) this.tickEnable[i] = ax.showticklabels;
         else if(hasAxisInAltrPos) this.tickEnable[i+2] = ax.showticklabels;
+
+        // Grid lines and ticks can appear on both sides of the scene
+        //  and can appear on subplot that share existing axes via `ax.mirror`.
 
         if(hasAxisInDfltPos || mirrorLines) this.borderLineEnable[i] = ax.showline;
         if(hasAxisInAltrPos || mirrorLines) this.borderLineEnable[i+2] = ax.showline;
@@ -150,7 +165,13 @@ proto.merge = function(options) {
     }
 };
 
+// is an axis shared with an already-drawn subplot ?
+proto.hasSharedAxis = function(ax) {
+    var scene = this.scene,
+        subplotIds = Plotly.Plots.getSubplotIds(scene.fullLayout, 'gl2d'),
+        list = Plotly.Axes.findSubplotsWithAxis(subplotIds, ax);
 
+    return (list.indexOf(scene.id) !== 0);
 };
 
 // has an axis in default position (i.e. bottom/left) ?
