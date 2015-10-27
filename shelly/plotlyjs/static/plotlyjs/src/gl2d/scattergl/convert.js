@@ -277,7 +277,7 @@ proto.updateFast = function(options) {
 
         var markerColor = str2RGBArray(options.marker.color),
             borderColor = str2RGBArray(options.marker.line.color),
-            opacity = (+options.opacity) * (+options.marker.opacity);
+            opacity = (options.opacity) * (options.marker.opacity);
 
         markerColor[3] *= opacity;
         this.scatterOptions.color = markerColor;
@@ -286,7 +286,7 @@ proto.updateFast = function(options) {
         this.scatterOptions.borderColor = borderColor;
 
         this.scatterOptions.size = options.marker.size;
-        this.scatterOptions.borderSize = +options.marker.line.width;
+        this.scatterOptions.borderSize = options.marker.line.width;
 
         this.scatter.update(this.scatterOptions);
     }
