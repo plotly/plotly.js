@@ -1,11 +1,13 @@
 'use strict';
 
 // ---external global dependencies
-/* global d3:false, Promise:false */
+/* Promise:false */
 
-var axes = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var axes = module.exports = {};
 
 Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], {
     xaxis: {
@@ -628,25 +630,35 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 
     axes.handleTickDefaults(containerIn, containerOut, coerce, axType, options);
 
-    var showLine = coerce('showline');
-    if(showLine) {
-        coerce('linecolor');
-        coerce('linewidth');
+
+
+    var lineColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'linecolor'),
+        lineWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'linewidth'),
+        showLine = coerce('showline', !!lineColor || !!lineWidth);
+    
+    if(!showLine) {
+        delete containerOut.linecolor;
+        delete containerOut.linewidth;
     }
 
     if(showLine || containerOut.ticks) coerce('mirror');
 
-
-    var showGridLines = coerce('showgrid', options.showGrid);
-    if(showGridLines) {
-        coerce('gridcolor');
-        coerce('gridwidth');
+    var gridColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'gridcolor'),
+        gridWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'gridwidth'),
+        showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
+    
+    if(!showGridLines) {
+        delete containerOut.gridcolor;
+        delete containerOut.gridwidth;
     }
 
-    var showZeroLine = coerce('zeroline', options.showGrid);
-    if(showZeroLine) {
-        coerce('zerolinecolor');
-        coerce('zerolinewidth');
+    var zeroLineColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'zerolinecolor'),
+        zeroLineWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'zerolinewidth'),
+        showZeroLine = coerce('zeroline', options.showGrid || !!zeroLineColor || !!zeroLineWidth);
+    
+    if(!showZeroLine) {
+        delete containerOut.zerolinecolor;
+        delete containerOut.zerolinewidth;
     }
 
     return containerOut;
@@ -656,11 +668,14 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
  * options: inherits font, outerTicks, noHover from axes.handleAxisDefaults
  */
 axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, options) {
-    var showTicks = coerce('ticks', options.outerTicks ? 'outside' : '');
-    if(showTicks) {
-        coerce('ticklen');
-        coerce('tickwidth');
-        coerce('tickcolor');
+    var tickLen = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'ticklen'),
+        tickWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'tickwidth'),
+        tickColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'tickcolor'), 
+        showTicks = coerce('ticks', (options.outerTicks || tickLen || tickWidth || tickColor) ? 'outside' : '');
+    if(!showTicks) {
+        delete containerOut.ticklen;
+        delete containerOut.tickwidth;
+        delete containerOut.tickcolor;
     }
 
     var showTickLabels = coerce('showticklabels');
@@ -2354,7 +2369,7 @@ axes.listIds = function(td, axletter) {
 
 // get an axis object from its id 'x','x2' etc
 // optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
-axes.getFromId = function(td,id,type) {
+axes.getFromId = function(td, id, type) {
     var fullLayout = td._fullLayout;
 
     if(type==='x') id = id.replace(/y[0-9]*/,'');
@@ -2873,8 +2888,11 @@ axes.doTicks = function(td, axid, skipTitle) {
     }
     else {
         var alldone = axes.getSubplots(td,ax).map(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot],
-                container = plotinfo[axletter+'axislayer'],
+            var plotinfo = fullLayout._plots[subplot];
+
+            if(!fullLayout._hasCartesian) return;
+
+            var container = plotinfo[axletter + 'axislayer'],
 
                 // [bottom or left, top or right, free, main]
                 linepositions = ax._linepositions[subplot]||[],

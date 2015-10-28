@@ -1,12 +1,11 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var pie = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric'),
     tinycolor = require('tinycolor2');
+
+var pie = module.exports = {};
 
 Plotly.Plots.register(pie, 'pie', ['pie', 'showLegend'], {
     description: [

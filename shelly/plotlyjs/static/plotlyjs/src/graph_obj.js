@@ -1,16 +1,15 @@
 'use strict';
 /* jshint camelcase: false */
 
-// ---global functions not yet namespaced
-/* global setFileAndCommentsSize:false */
-
 // ---external global dependencies
-/* global Promise:false, d3:false */
+/* global Promise:false */
 
 
 var Plotly = require('./plotly'),
+    d3 = require('d3'),
     m4FromQuat = require('gl-mat4/fromQuat'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('./isnumeric'),
+    Events = require('./events');
 
 var plots = module.exports = {};
 // Most of the generic plotting functions get put into Plotly.Plots,
@@ -150,7 +149,15 @@ plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
     };
 };
 
+// TODO separate the 'find subplot' step from the 'get subplot ids' step
 plots.getSubplotIds = function getSubplotIds(layout, type) {
+    if(plots.subplotsRegistry[type] === undefined) return [];
+
+    // layout must be 'fullLayout' here
+    if(type === 'cartesian') {
+        return Object.keys(layout._plots);
+    }
+
     var idRegex = plots.subplotsRegistry[type].idRegex,
         layoutKeys = Object.keys(layout),
         subplotIds = [],
@@ -165,6 +172,8 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
 };
 
 plots.getSubplotIdsInData = function getSubplotsInData(data, type) {
+    if(plots.subplotsRegistry[type] === undefined) return [];
+
     var attr = plots.subplotsRegistry[type].attr,
         subplotIds = [],
         trace;
@@ -180,6 +189,8 @@ plots.getSubplotIdsInData = function getSubplotsInData(data, type) {
 };
 
 plots.getSubplotData = function getSubplotData(data, type, subplotId) {
+    if(plots.subplotsRegistry[type] === undefined) return [];
+
     var attr = plots.subplotsRegistry[type].attr,
         subplotData = [],
         trace;
@@ -245,6 +256,8 @@ plots.defaultConfig = {
     autosizable: false,
     // if we DO autosize, do we fill the container or the screen?
     fillFrame: false,
+    // if we DO autosize, set the frame margins in percents of plot size
+    frameMargins: 0,
     // mousewheel or two-finger scroll zooms the plot
     scrollZoom: false,
     // double click interaction (false, 'reset', 'autosize' or 'reset+autosize')
@@ -375,7 +388,7 @@ function positionPlayWithData(gd, container){
 
     if(gd._context.sendData) {
         link.on('click',function(){
-            $(gd).trigger('plotly_beforeexport');
+            gd.emit('plotly_beforeexport');
 
             var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
 
@@ -390,7 +403,7 @@ function positionPlayWithData(gd, container){
             hiddenform.find('form').submit();
             hiddenform.remove();
 
-            $(gd).trigger('plotly_afterexport');
+            gd.emit('plotly_afterexport');
             return false;
         });
     }
@@ -419,7 +432,12 @@ Plotly.plot = function(gd, data, layout, config) {
 
     gd = getGraphDiv(gd);
 
-    var okToPlot = $(gd).triggerHandler('plotly_beforeplot', [data, layout, config]);
+    /*
+     * Events.init is idempotent and bails early if gd has already been init'd
+     */
+    Events.init(gd);
+
+    var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
     if(okToPlot===false) return;
 
     // if there's no data or layout, and this isn't yet a plotly plot
@@ -437,7 +455,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // hook class for plots main container (in case of plotly.js
     // this won't be #embedded-graph or .js-tab-contents)
-    d3.select(gd).classed('js-plotly-plot',true);
+    d3.select(gd).classed('js-plotly-plot', true);
 
     // off-screen getBoundingClientRect testing space,
     // in #js-plotly-tester (and stored as gd._tester)
@@ -483,8 +501,6 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // Polar plots
     if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
-
-    if(gd._context.editable) gd.toolPanel.tweakMenu();
 
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
@@ -562,22 +578,23 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function positionAndAutorange() {
-        var i, j, subplots, subplotInfo, modules, module;
-
         if(!recalc) return;
+
+        var subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
+            modules = gd._modules;
 
         // position and range calculations for traces that
         // depend on each other ie bars (stacked or grouped)
         // and boxes (grouped) push each other out of the way
-        subplots = Plotly.Axes.getSubplots(gd);
-        modules = gd._modules;
-        for (i = 0; i < subplots.length; i++) {
-            subplotInfo = gd._fullLayout._plots[subplots[i]];
-            for (j = 0; j < modules.length; j++) {
-                module = modules[j];
-                if (module.setPositions) {
-                    module.setPositions(gd, subplotInfo);
-                }
+
+        var subplotInfo, _module;
+
+        for(var i = 0; i < subplots.length; i++) {
+            subplotInfo = fullLayout._plots[subplots[i]];
+
+            for(var j = 0; j < modules.length; j++) {
+                _module = modules[j];
+                if(_module.setPositions) _module.setPositions(gd, subplotInfo);
             }
         }
 
@@ -609,10 +626,10 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
-    function drawData(){
+    function drawData() {
         // Now plot the data
         var calcdata = gd.calcdata,
-            subplots = Plotly.Axes.getSubplots(gd),
+            subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
             modules = gd._modules;
 
         var i, j, cd, trace, uid, subplot, subplotInfo,
@@ -668,7 +685,7 @@ Plotly.plot = function(gd, data, layout, config) {
             // remove old traces, then redraw everything
             // TODO: use enter/exit appropriately in the plot functions
             // so we don't need this - should sometimes be a big speedup
-            subplotInfo.plot.selectAll('g.trace').remove();
+            if(subplotInfo.plot) subplotInfo.plot.selectAll('g.trace').remove();
 
             for(j = 0; j < modules.length; j++) {
                 module = modules[j];
@@ -686,7 +703,7 @@ Plotly.plot = function(gd, data, layout, config) {
             }
 
             // finally do all error bars at once
-            if(Plotly.ErrorBars) {
+            if(gd._fullLayout._hasCartesian && Plotly.ErrorBars) {
                 Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
                 Plotly.Lib.markTime('done ErrorBars');
             }
@@ -716,7 +733,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // so mark it as done and let other procedures call a replot
         gd._replotting = false;
         Plotly.Lib.markTime('done plot');
-        $(gd).trigger('plotly_afterplot');
+        gd.emit('plotly_afterplot');
     }
 
     var donePlotting = Plotly.Lib.syncOrAsync([
@@ -894,8 +911,6 @@ function plotPolar(gd, data, layout) {
                 });
         };
         title.call(setContenteditable);
-
-        gd.toolPanel.tweakMenu();
     }
 
     gd._context.setBackground(gd, gd._fullLayout.paper_bgcolor);
@@ -1246,7 +1261,7 @@ Plotly.redraw = function(gd) {
     }
     gd.calcdata = undefined;
     return Plotly.plot(gd).then(function () {
-        $(gd).trigger('plotly_redraw');
+        gd.emit('plotly_redraw');
     });
 };
 
@@ -3040,7 +3055,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_restyle',
+        gd.emit('plotly_restyle',
             Plotly.Lib.extendDeep([], [redoit, traces]));
     });
 };
@@ -3401,29 +3416,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_relayout',
+        gd.emit('plotly_relayout',
             Plotly.Lib.extendDeep({}, redoit));
     });
 };
-
-function setGraphContainerScroll(gd) {
-    if(!gd || !gd._context || !gd._context.workspace ||
-            !gd._fullLayout || gd.tabtype!=='plot' ||
-            $(gd).css('display')==='none') {
-        return;
-    }
-
-    var $graphContainer = $(gd).find('.plot-container'),
-        isGraphWiderThanContainer =
-            gd._fullLayout.width > parseInt($graphContainer.css('width'),10);
-
-    if (gd._fullLayout.autosize || !isGraphWiderThanContainer) {
-        $graphContainer.removeClass('is-fixed-size');
-    }
-    else if (isGraphWiderThanContainer) {
-        $graphContainer.addClass('is-fixed-size');
-    }
-}
 
 /**
  * Reduce all reserved margin objects to a single required margin reservation.
@@ -3450,44 +3446,45 @@ function calculateReservedMargins(margins) {
 
 function plotAutoSize(gd, aobj) {
     var fullLayout = gd._fullLayout,
-        reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
-        reservedHeight,
-        reservedWidth,
-        newheight,
-        newwidth;
-    if(gd._context.workspace){
-        setFileAndCommentsSize(gd);
-        var gdBB = fullLayout._container.node().getBoundingClientRect();
+        context = gd._context;
 
-        // autosized plot on main site: 5% border on all sides
-        reservedWidth = reservedMargins.left + reservedMargins.right;
-        reservedHeight = reservedMargins.bottom + reservedMargins.top;
-        newwidth = Math.round((gdBB.width - reservedWidth)*0.9);
-        newheight = Math.round((gdBB.height - reservedHeight)*0.9);
-    }
-    else if(gd._context.fillFrame) {
-        // embedded in an iframe - just take the full iframe size
-        // if we get to this point, with no aspect ratio restrictions
-        newwidth = window.innerWidth;
-        newheight = window.innerHeight;
+    var newHeight, newWidth;
+
+    gd.emit('plotly_autosize');
+
+    // embedded in an iframe - just take the full iframe size
+    // if we get to this point, with no aspect ratio restrictions
+    if(gd._context.fillFrame) {
+        newWidth = window.innerWidth;
+        newHeight = window.innerHeight;
 
         // somehow we get a few extra px height sometimes...
         // just hide it
         document.body.style.overflow = 'hidden';
+    }
+    else if(isNumeric(context.frameMargins) && context.frameMargins > 0) {
+        var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
+            reservedWidth = reservedMargins.left + reservedMargins.right,
+            reservedHeight = reservedMargins.bottom + reservedMargins.top,
+            gdBB = fullLayout._container.node().getBoundingClientRect(),
+            factor = 1 - 2*context.frameMargins;
+
+        newWidth = Math.round(factor * (gdBB.width - reservedWidth));
+        newHeight = Math.round(factor * (gdBB.height - reservedHeight));
     }
     else {
         // plotly.js - let the developers do what they want, either
         // provide height and width for the container div,
         // specify size in layout, or take the defaults,
         // but don't enforce any ratio restrictions
-        newheight = parseFloat(window.getComputedStyle(gd).height) || fullLayout.height;
-        newwidth = parseFloat(window.getComputedStyle(gd).width) || fullLayout.width;
+        newHeight = parseFloat(window.getComputedStyle(gd).height) || fullLayout.height;
+        newWidth = parseFloat(window.getComputedStyle(gd).width) || fullLayout.width;
     }
 
-    if(Math.abs(fullLayout.width - newwidth) > 1 ||
-            Math.abs(fullLayout.height - newheight) > 1) {
-        fullLayout.height = gd.layout.height = newheight;
-        fullLayout.width = gd.layout.width = newwidth;
+    if(Math.abs(fullLayout.width - newWidth) > 1 ||
+            Math.abs(fullLayout.height - newHeight) > 1) {
+        fullLayout.height = gd.layout.height = newHeight;
+        fullLayout.width = gd.layout.width = newWidth;
     }
     // if there's no size change, update layout but
     // delete the autosize attr so we don't redraw
@@ -3504,25 +3501,22 @@ function plotAutoSize(gd, aobj) {
 
 // check whether to resize a tab (if it's a plot) to the container
 plots.resize = function(gd) {
-    gd = getGraphDiv(gd);
+    if(!gd || d3.select(gd).style('display') === 'none') return;
 
-    if(gd._context.workspace) setFileAndCommentsSize(gd);
+    if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
 
-    if(gd && $(gd).css('display')!=='none') {
-        if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
-        gd._redrawTimer = setTimeout(function(){
-            if ((gd._fullLayout||{}).autosize) {
-                // autosizing doesn't count as a change that needs saving
-                var oldchanged = gd.changed;
-                // nor should it be included in the undo queue
-                gd.autoplay = true;
-                Plotly.relayout(gd, {autosize: true});
-                gd.changed = oldchanged;
-            }
-        }, 100);
-    }
+    gd._redrawTimer = setTimeout(function(){
+        if((gd._fullLayout || {}).autosize) {
+            // autosizing doesn't count as a change that needs saving
+            var oldchanged = gd.changed;
 
-    setGraphContainerScroll(gd);
+            // nor should it be included in the undo queue
+            gd.autoplay = true;
+
+            Plotly.relayout(gd, {autosize: true});
+            gd.changed = oldchanged;
+        }
+    }, 100);
 };
 
 // Get the container div: we store all variables for this plot as
@@ -3552,7 +3546,6 @@ function getGraphDiv(gd) {
 // -------------------------------------------------------
 function makePlotFramework(gd) {
     var gd3 = d3.select(gd),
-        subplots = Plotly.Axes.getSubplots(gd),
         fullLayout = gd._fullLayout;
 
     /*
@@ -3560,17 +3553,11 @@ function makePlotFramework(gd) {
      */
     if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
 
-    var outerContainer = fullLayout._fileandcomments =
-            gd3.selectAll('.file-and-comments');
-    // for embeds and cloneGraphOffscreen
-    if(!outerContainer.node()) outerContainer = gd3;
-
     // Plot container
-    fullLayout._container = outerContainer.selectAll('.plot-container').data([0]);
+    fullLayout._container = gd3.selectAll('.plot-container').data([0]);
     fullLayout._container.enter().insert('div', ':first-child')
-        .classed('plot-container',true)
-        .classed('plotly',true)
-        .classed('workspace-plot', gd._context.workspace);
+        .classed('plot-container', true)
+        .classed('plotly', true);
 
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
@@ -3580,11 +3567,11 @@ function makePlotFramework(gd) {
 
     // Initial autosize
     if(fullLayout.autosize === 'initial') {
-        if(gd._context.workspace) setFileAndCommentsSize(gd);
-        plotAutoSize(gd,{});
+        plotAutoSize(gd, {});
         fullLayout.autosize = true;
         gd.layout.autosize = true;
     }
+
     // Make the graph containers
     // start fresh each time we get here, so we know the order comes out
     // right, rather than enter/exit which can muck up the order
@@ -3629,6 +3616,75 @@ function makePlotFramework(gd) {
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
+    var subplots = Plotly.Axes.getSubplots(gd);
+    makeSubplots(gd, subplots);
+
+    if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
+
+    // single shape and pie layers for the whole plot
+    fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
+    fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
+
+    // fill in image server scrape-svg
+    fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
+    fullLayout._geoimages = fullLayout._paper.append('g').classed('geoimages', true);
+
+    // lastly info (legend, annotations) and hover layers go on top
+    // these are in a different svg element normally, but get collapsed into a single
+    // svg when exporting (after inserting 3D)
+    fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
+    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+
+    gd.emit('plotly_framework');
+
+    // position and style the containers, make main title
+    var frameWorkDone = Plotly.Lib.syncOrAsync([
+        layoutStyles,
+        function goAxes(){ return Plotly.Axes.doTicks(gd,'redraw'); },
+        Plotly.Fx.init
+    ], gd);
+
+    if(frameWorkDone && frameWorkDone.then) {
+        gd._promises.push(frameWorkDone);
+    }
+
+    return frameWorkDone;
+}
+
+// create '_plots' object grouping x/y axes into subplots
+// to be better manage subplots
+function makeSubplots(gd, subplots) {
+    var _plots = gd._fullLayout._plots = {};
+
+    var subplot, plotinfo;
+
+    function getAxisFunc(subplot, axLetter) {
+        return function() {
+            return Plotly.Axes.getFromId(gd, subplot, axLetter);
+        };
+    }
+
+    for(var i = 0; i < subplots.length; i++) {
+        subplot = subplots[i];
+        plotinfo = _plots[subplot] = {};
+
+        plotinfo.id = subplot;
+
+        // references to the axis objects controlling this subplot
+        plotinfo.x = getAxisFunc(subplot, 'x');
+        plotinfo.y = getAxisFunc(subplot, 'y');
+
+        // TODO investigate why replacing calls to .x and .y
+        // for .xaxis and .yaxis makes the `pseudo_html`
+        // test image fail
+        plotinfo.xaxis = plotinfo.x();
+        plotinfo.yaxis = plotinfo.y();
+    }
+}
+
+function makeCartesianPlotFramwork(gd, subplots) {
+    var fullLayout = gd._fullLayout;
+
     // Layers to keep plot types in the right order.
     // from back to front:
     // 1. heatmaps, 2D histos and contour maps
@@ -3646,23 +3702,16 @@ function makePlotFramework(gd) {
 
     // create all the layers in order, so we know they'll stay in order
     var overlays = [];
-    fullLayout._plots = {};
+
     fullLayout._paper.selectAll('g.subplot').data(subplots)
       .enter().append('g')
-        .classed('subplot',true)
-        .each(function(subplot){
-            var plotinfo = fullLayout._plots[subplot] = {},
-                plotgroup = d3.select(this).classed(subplot,true);
-            plotinfo.id = subplot;
-            // references to the axis objects controlling this subplot
-            plotinfo.x = function() {
-                return Plotly.Axes.getFromId(gd,subplot,'x');
-            };
-            plotinfo.y = function() {
-                return Plotly.Axes.getFromId(gd,subplot,'y');
-            };
-            var xa = plotinfo.x(),
-                ya = plotinfo.y();
+        .classed('subplot', true)
+        .each(function(subplot) {
+            var plotinfo = fullLayout._plots[subplot],
+                plotgroup = plotinfo.plotgroup = d3.select(this).classed(subplot, true),
+                xa = plotinfo.xaxis,
+                ya = plotinfo.yaxis;
+
             // references to any subplots overlaid on this one
             plotinfo.overlays = [];
 
@@ -3701,7 +3750,7 @@ function makePlotFramework(gd) {
                 // main subplot - make the components of
                 // the plot and containers for overlays
                 plotinfo.bg = plotgroup.append('rect')
-                    .style('stroke-width',0);
+                    .style('stroke-width', 0);
                 plotinfo.gridlayer = plotgroup.append('g');
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');
@@ -3721,6 +3770,7 @@ function makePlotFramework(gd) {
             }
             plotinfo.draglayer = fullLayout._draggers.append('g');
         });
+
 
     // now make the components of overlaid subplots
     // overlays don't have backgrounds, and append all
@@ -3742,6 +3792,7 @@ function makePlotFramework(gd) {
     // common attributes for all subplots, overlays or not
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
+
         plotinfo.plot
             .attr('preserveAspectRatio', 'none')
             .style('fill', 'none');
@@ -3752,31 +3803,6 @@ function makePlotFramework(gd) {
             .style('fill', 'none')
             .classed('crisp', true);
     });
-
-    // single shape and pie layers for the whole plot
-    fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
-    fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
-
-    // fill in image server scrape-svg
-    fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
-    fullLayout._geoimages = fullLayout._paper.append('g').classed('geoimages', true);
-
-    // lastly info (legend, annotations) and hover layers go on top
-    // these are in a different svg element normally, but get collapsed into a single
-    // svg when exporting (after inserting 3D)
-    fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
-    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
-
-    // position and style the containers, make main title
-    var frameWorkDone = Plotly.Lib.syncOrAsync([
-        layoutStyles,
-        function goAxes(){ return Plotly.Axes.doTicks(gd,'redraw'); },
-        Plotly.Fx.init
-    ], gd);
-    if(frameWorkDone && frameWorkDone.then) {
-        gd._promises.push(frameWorkDone);
-    }
-    return frameWorkDone;
 }
 
 // called by legend and colorbar routines to see if we need to
@@ -4058,8 +4084,6 @@ function lsInner(gd) {
     plots.titles(gd,'gtitle');
 
     Plotly.Fx.modeBar(gd);
-
-    setGraphContainerScroll(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
 }

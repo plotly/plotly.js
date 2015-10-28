@@ -1,13 +1,12 @@
 'use strict';
 
-/* global d3:false */
-
-var manager = module.exports = {},
-    Plotly = require('../plotly'),
+var Plotly = require('../plotly'),
+    d3 = require('d3'),
     UndoManager = require('./utils/undo_manager');
 
-var extendDeepAll = Plotly.Lib.extendDeepAll;
+var manager = module.exports = {};
 
+var extendDeepAll = Plotly.Lib.extendDeepAll;
 
 manager.framework = function(_gd){
     var config, previousConfigClone, plot, convertedInput, container;
@@ -53,7 +52,7 @@ manager.framework = function(_gd){
         })(configClone, previousConfigClone);
         previousConfigClone = Plotly.micropolar.util.cloneJson(configClone);
     };
-    exports.undo = function(){ undoManager.undo(); }; //Tabs.get().framework.undo()
+    exports.undo = function(){ undoManager.undo(); };
     exports.redo = function(){ undoManager.redo(); };
     return exports;
 };
