@@ -412,6 +412,17 @@ proto.handleHoverPie = function() {
     });
 };
 
+proto.handleHoverGl2d = function(ev) {
+    var _this = this,
+        button  = ev.currentTarget,
+        graphInfo = _this.graphInfo,
+        newHover = graphInfo._fullLayout.hovermode ?  false : 'closest';
+
+    Plotly.relayout(graphInfo, 'hovermode', newHover).then(function() {
+        _this.updateActiveButton(button);
+    });
+};
+
 proto.cleanup = function(){
     this.element.innerHTML = '';
     var modebarParent = this.element.parentNode;
@@ -625,6 +636,16 @@ proto.config = function config() {
             icon: 'tooltip_basic',
             gravity: 'ne',
             click: this.handleHoverPie
+        },
+        // gl2d
+        hoverClosestGl2d: {
+            title: 'Toggle show closest data on hover',
+            attr: 'hovermode',
+            val: null,
+            toggle: true,
+            icon: 'tooltip_basic',
+            gravity: 'ne',
+            click: this.handleHoverGl2d
         }
     };
 };
