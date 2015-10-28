@@ -248,6 +248,7 @@ proto.updateFast = function(options) {
     var xx, yy;
 
     // TODO add 'very fast' mode that bypasses this loop
+    // TODO bypass this on modebar +/- zoom
     for(var i = 0; i < len; ++i) {
         xx = x[i];
         yy = y[i];
