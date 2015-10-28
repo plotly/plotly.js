@@ -842,32 +842,26 @@ function plotGl2d(gd) {
         fullData = gd._fullData,
         subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
 
-    var subplotId, fullSubplotData, scene, sceneOptions;
-
-    fullLayout._paperdiv.style({
-        width: fullLayout.width + 'px',
-        height: fullLayout.height + 'px'
-    });
-
-    gd._context.setBackground(gd, fullLayout.paper_bgcolor);
-
     for(var i = 0; i < subplotIds.length; i++) {
-        subplotId = subplotIds[i];
-        fullSubplotData = plots.getSubplotData(fullData, 'gl2d', subplotId);
+        var subplotId = subplotIds[i],
+            subplotObj = fullLayout._plots[subplotId],
+            fullSubplotData = plots.getSubplotData(fullData, 'gl2d', subplotId);
+        var scene;
 
         // ref. to corresp. Scene instance
-        scene = fullLayout._plots[subplotId]._scene2d;
+        scene = subplotObj._scene2d;
 
         // If Scene is not instantiated, create one!
         if(scene === undefined) {
-            sceneOptions = {
-                container: gd.querySelector('.gl-container'),
-                id: subplotId
-            };
-            scene = new Plotly.Scene2D(sceneOptions, fullLayout);
+            scene = new Plotly.Scene2D({
+                    container: gd.querySelector('.gl-container'),
+                    id: subplotId
+                },
+                fullLayout
+            );
 
             // set ref to Scene instance
-            fullLayout._plots[subplotId]._scene2d = scene;
+            subplotObj._scene2d = scene;
         }
 
         scene.plot(fullSubplotData, fullLayout, gd.layout);
@@ -990,7 +984,7 @@ function cleanLayout(layout) {
         delete layout.yaxis1;
     }
 
-    var axList = Plotly.Axes.list({_fullLayout:layout});
+    var axList = Plotly.Axes.list({_fullLayout: layout});
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         if(ax.anchor && ax.anchor !== 'free') {
