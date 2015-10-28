@@ -2406,67 +2406,88 @@ axes.subplotMatch = /^x([0-9]*)y([0-9]*)$/;
 // looks both for combinations of x and y found in the data
 // and at axes and their anchors
 axes.getSubplots = function(gd, ax) {
-    var data = gd.data || [],
-        subplots = [];
+    var subplots = [];
+    var i, j, sp;
 
     // look for subplots in the data
-    data.forEach(function(trace) {
-        if(
-            trace.visible === false ||
-            trace.visible === 'legendonly' ||
-            !(
-                Plotly.Plots.traceIs(trace, 'cartesian') ||
-                Plotly.Plots.traceIs(trace, 'gl2d')
-            )
-        ) return;
+    var data = gd.data || [];
 
-        var xid = trace.xaxis || 'x',
-            yid = trace.yaxis || 'y',
-            subplot = xid + yid;
+    for(i = 0; i < data.length; i++) {
+        var trace = data[i];
 
-        if(subplots.indexOf(subplot)===-1) subplots.push(subplot);
-    });
+        if(trace.visible === false || trace.visible === 'legendonly' ||
+            !(Plotly.Plots.traceIs(trace, 'cartesian') ||
+                Plotly.Plots.traceIs(trace, 'gl2d'))
+        ) continue;
 
-    // look for subplots in the axes/anchors,
-    // so that we at least draw all axes
-    axes.list(gd, '', true).forEach(function(ax2) {
-        var ax2letter = ax2._id.charAt(0),
-            ax3id = (ax2.anchor === 'free') ?
-                {x:'y', y:'x'}[ax2letter] :
+        var xId = trace.xaxis || 'x',
+            yId = trace.yaxis || 'y';
+        sp = xId + yId;
+
+        if(subplots.indexOf(sp) === -1) subplots.push(sp);
+    }
+
+    // look for subplots in the axes/anchors, so that we at least draw all axes
+    var axesList = axes.list(gd, '', true);
+
+    function hasAx2(sp, ax2) {
+        return sp.indexOf(ax2._id) !== -1;
+    }
+
+    for(i = 0; i < axesList.length; i++) {
+        var ax2 = axesList[i],
+            ax2Letter = ax2._id.charAt(0),
+            ax3Id = (ax2.anchor === 'free') ?
+                ((ax2Letter === 'x') ? 'y' : 'x') :
                 ax2.anchor,
-            ax3 = axes.getFromId(gd, ax3id);
-
-        function hasAx2(sp) { return sp.indexOf(ax2._id) !== -1; }
+            ax3 = axes.getFromId(gd, ax3Id);
 
         // if a free axis is already represented in the data, ignore it
-        if(ax2.anchor==='free' && subplots.some(hasAx2)) return;
+        var foundAx2 = false;
+        for(j = 0; j < subplots.length; j++) {
+             if(hasAx2(subplots[j], ax2)) {
+                 foundAx2 = true;
+                 break;
+             }
+         }
+        if(ax2.anchor === 'free' && foundAx2) return;
 
         if(!ax3) {
-            console.log('warning: couldnt find anchor ' + ax3id +
-                ' for axis ' + ax2._id);
+            console.log([
+                'Warning: couldnt find anchor', ax3Id,
+                'for axis', ax2._id
+            ].join(' '));
             return;
         }
 
-        var subplot = (ax2letter === 'x') ?
+        sp = (ax2Letter === 'x') ?
             ax2._id + ax3._id :
             ax3._id + ax2._id;
 
-        if(subplots.indexOf(subplot)===-1) subplots.push(subplot);
+        if(subplots.indexOf(sp) === -1) subplots.push(sp);
+    }
+
+    // filter invalid subplots
+    var spMatch = axes.subplotMatch,
+        allSubplots = [];
+
+    for(i = 0; i < subplots.length; i++) {
+        sp = subplots[i];
+        if(spMatch.test(sp)) allSubplots.push(sp);
+    }
+
+    allSubplots.sort(function(a, b) {
+        var aMatch = a.match(spMatch),
+            bMatch = b.match(spMatch);
+
+        if(aMatch[1] === bMatch[1]) {
+            return +(aMatch[2]||1) - (bMatch[2]||1);
+        }
+
+        return +(aMatch[1]||0) - (bMatch[1]||0);
     });
 
-    var spmatch = axes.subplotMatch;
-    var allSubplots = subplots
-        .filter(function(sp) { return sp.match(spmatch); })
-        .sort(function(a,b) {
-            var amatch = a.match(spmatch), bmatch = b.match(spmatch);
-            if(amatch[1]===bmatch[1]) {
-                return +(amatch[2]||1) - (bmatch[2]||1);
-            }
-            return +(amatch[1]||0) - (bmatch[1]||0);
-        });
-
     if(ax) return axes.findSubplotsWithAxis(allSubplots, ax);
-
     return allSubplots;
 };
 
