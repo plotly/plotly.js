@@ -145,11 +145,12 @@ function convertArray(convert, data, count) {
 }
 
 function _convertArray(convert, data, count) {
-    var result = new Array(count);
+    var result = new Array(count),
+        data0 = data[0];
 
     for(var i = 0; i < count; ++i) {
         result[i] = (i >= data.length) ?
-            convert(data[0]) :
+            convert(data0) :
             convert(data[i]);
     }
 
