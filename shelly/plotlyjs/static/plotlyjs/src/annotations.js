@@ -603,7 +603,7 @@ annotations.draw = function(gd, index, opt, value) {
         .style('opacity', options.opacity)
         .on('click', function() {
             gd._dragging = false;
-            $(gd).trigger('plotly_clickannotation', {
+            gd.emit('plotly_clickannotation', {
                 index: index,
                 annotation: optionsIn,
                 fullAnnotation: options
