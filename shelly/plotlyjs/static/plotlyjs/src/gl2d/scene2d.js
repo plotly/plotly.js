@@ -216,6 +216,12 @@ proto.updateAxes = function(options) {
     this.xaxis = options[xaxisName];
     this.yaxis = options[yaxisName];
 };
+
+proto.updateFx = function(options) {
+    var fullLayout = this.fullLayout;
+
+    fullLayout.dragmode = options.dragmode;
+    fullLayout.hovermode = options.hovermode;
 };
 
 proto.cameraChanged = function() {
@@ -360,14 +366,15 @@ proto.draw = function() {
 
     var glplot = this.glplot,
         camera = this.camera,
-        mouseListener = camera.mouseListener;
+        mouseListener = camera.mouseListener,
+        fullLayout = this.fullLayout;
 
     this.cameraChanged();
 
     var x = mouseListener.x * glplot.pixelRatio;
     var y = this.canvas.height - glplot.pixelRatio * mouseListener.y;
 
-    if(camera.boxEnabled && this.fullLayout.dragmode === 'zoom') {
+    if(camera.boxEnabled && fullLayout.dragmode === 'zoom') {
         this.selectBox.enabled = true;
 
         this.selectBox.selectBox = [
@@ -382,7 +389,7 @@ proto.draw = function() {
     else {
         this.selectBox.enabled = false;
 
-        var size = this.fullLayout._size,
+        var size = fullLayout._size,
             domainX = this.xaxis.domain,
             domainY = this.yaxis.domain;
 
@@ -391,7 +398,7 @@ proto.draw = function() {
             (y / glplot.pixelRatio) - (size.t + (1-domainY[1]) * size.h)
         );
 
-        if(result) {
+        if(result && fullLayout.hovermode) {
             var nextSelection = result.object._trace.handlePick(result);
 
             if(nextSelection && (

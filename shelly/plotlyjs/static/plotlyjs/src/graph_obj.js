@@ -3440,6 +3440,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
     else if(ak.length) {
         // if we didn't need to redraw entirely, just do the needed parts
         plots.supplyDefaults(gd);
+        fullLayout = gd._fullLayout;
+
         if(dolegend) {
             seq.push(function doLegend(){
                 Plotly.Legend.draw(gd);
@@ -3460,7 +3462,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(domodebar) Plotly.Fx.modeBar(gd);
 
         var subplotIds;
-        if(doSceneDragmode) {
+        if(doSceneDragmode || domodebar) {
             subplotIds = plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout[subplotIds[i]]._scene;
@@ -3470,7 +3472,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout._plots[subplotIds[i]]._scene2d;
-                scene.fullLayout.dragmode = fullLayout.dragmode;
+                scene.updateFx(fullLayout);
             }
         }
     }
