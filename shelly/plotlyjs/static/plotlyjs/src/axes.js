@@ -2494,10 +2494,16 @@ axes.getSubplots = function(gd, ax) {
 // find all subplots with axis 'ax'
 axes.findSubplotsWithAxis = function(subplots, ax) {
     var axMatch = new RegExp(
-        ax._id.charAt(0) === 'x' ?  ('^' + ax._id + 'y') : (ax._id + '$')
+        (ax._id.charAt(0) === 'x') ?  ('^' + ax._id + 'y') : (ax._id + '$')
     );
+    var subplotsWithAxis = [];
 
-    return subplots.filter(function(sp) { return sp.match(axMatch); });
+    for(var i = 0; i < subplots.length; i++) {
+        var sp = subplots[i];
+        if(axMatch.test(sp)) subplotsWithAxis.push(sp);
+    }
+
+    return subplotsWithAxis;
 };
 
 // makeClipPaths: prepare clipPaths for all single axes and all possible xy pairings
