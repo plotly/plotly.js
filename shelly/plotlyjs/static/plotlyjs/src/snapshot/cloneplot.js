@@ -134,7 +134,7 @@ module.exports = function clonePlot(graphObj, options) {
         plotTile.config.setBackground = options.setBackground || 'opaque';
     }
 
-    // attaching the default Layout the the td, so you can grab it later
+    // attaching the default Layout the td, so you can grab it later
     plotTile.td.defaultLayout = cloneLayoutOverride(options.tileClass);
 
     return plotTile;

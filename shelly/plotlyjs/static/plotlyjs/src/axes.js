@@ -637,7 +637,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     var lineColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'linecolor'),
         lineWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'linewidth'),
         showLine = coerce('showline', !!lineColor || !!lineWidth);
-    
+
     if(!showLine) {
         delete containerOut.linecolor;
         delete containerOut.linewidth;
@@ -648,7 +648,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     var gridColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'gridcolor'),
         gridWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'gridwidth'),
         showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
-    
+
     if(!showGridLines) {
         delete containerOut.gridcolor;
         delete containerOut.gridwidth;
@@ -657,7 +657,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
     var zeroLineColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'zerolinecolor'),
         zeroLineWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'zerolinewidth'),
         showZeroLine = coerce('zeroline', options.showGrid || !!zeroLineColor || !!zeroLineWidth);
-    
+
     if(!showZeroLine) {
         delete containerOut.zerolinecolor;
         delete containerOut.zerolinewidth;
@@ -672,7 +672,7 @@ axes.handleAxisDefaults = function(containerIn, containerOut, coerce, options) {
 axes.handleTickDefaults = function(containerIn, containerOut, coerce, axType, options) {
     var tickLen = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'ticklen'),
         tickWidth = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'tickwidth'),
-        tickColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'tickcolor'), 
+        tickColor = Plotly.Lib.coerce2(containerIn, containerOut, axes.layoutAttributes, 'tickcolor'),
         showTicks = coerce('ticks', (options.outerTicks || tickLen || tickWidth || tickColor) ? 'outside' : '');
     if(!showTicks) {
         delete containerOut.ticklen;
@@ -788,12 +788,11 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
 // find the list of possible axes to reference with an xref or yref attribute
 // and coerce it to that list
 axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
-    // data-ref annotations are not supported in gl2d yet
-    var hasGL2D = td._fullLayout._hasGL2D;
-
-    var axlist = hasGL2D ? [] : axes.listIds(td, axLetter),
+    var axlist = td._fullLayout._hasGL2D ? [] : axes.listIds(td, axLetter),
         refAttr = axLetter + 'ref',
         attrDef = {};
+
+    // data-ref annotations are not supported in gl2d yet
 
     attrDef[refAttr] = {
         valType: 'enumerated',

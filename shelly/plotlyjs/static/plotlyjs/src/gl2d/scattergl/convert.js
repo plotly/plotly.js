@@ -221,11 +221,9 @@ proto.update = function(options) {
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
 
     if(this.isFancy(options)) {
-        console.log('fancy update')
         this.updateFancy(options);
     }
     else {
-        console.log('fast update')
         this.updateFast(options);
     }
 
@@ -502,11 +500,11 @@ proto.expandAxesFast = function(bounds, markerSize) {
 
         min = ax._min;
         if(!min) min = [];
-        min.push({ val: bounds[i], pad: pad});
+        min.push({ val: bounds[i], pad: pad });
 
         max = ax._max;
         if(!max) max = [];
-        max.push({ val: bounds[i+2], pad: pad});
+        max.push({ val: bounds[i+2], pad: pad });
     }
 };
 
