@@ -129,7 +129,7 @@ proto.merge = function(options) {
         hasAxisInDfltPos = this.hasAxisInDfltPos(axisName, ax) && !hasSharedAxis;
         hasAxisInAltrPos = this.hasAxisInAltrPos(axisName, ax) && !hasSharedAxis;
 
-        axMirror = ax.mirror || false
+        axMirror = ax.mirror || false;
         mirrorLines = hasSharedAxis ?
             (String(axMirror).indexOf('all') !== -1) :  // 'all' or 'allticks'
             !!axMirror;                                 // all but false
@@ -180,20 +180,16 @@ proto.hasSharedAxis = function(ax) {
 proto.hasAxisInDfltPos = function(axisName, ax) {
     var axSide = ax.side;
 
-    return {
-        xaxis: (axSide === 'bottom'),
-        yaxis: (axSide === 'left')
-    }[axisName];
+    if(axisName === 'xaxis') return (axSide === 'bottom');
+    else if(axisName === 'yaxis') return (axSide === 'left');
 };
 
 // has an axis in alternate position (i.e. top/right) ?
 proto.hasAxisInAltrPos = function(axisName, ax) {
     var axSide = ax.side;
 
-    return {
-        xaxis: (axSide === 'top'),
-        yaxis: (axSide === 'right')
-    }[axisName];
+    if(axisName === 'xaxis') return (axSide === 'top');
+    else if(axisName === 'yaxis') return (axSide === 'right');
 };
 
 proto.getLabelPad = function(axisName, ax) {
@@ -201,14 +197,16 @@ proto.getLabelPad = function(axisName, ax) {
         fontSize = ax.titlefont.size,
         showticklabels = ax.showticklabels;
 
-    return {
-        xaxis: (ax.side === 'top') ?
+    if(axisName === 'xaxis') {
+        return (ax.side === 'top') ?
             -10 + fontSize * (offsetBase + (showticklabels ? 1 : 0)) :
-            -10 + fontSize * (offsetBase + (showticklabels ? 0.5 : 0)),
-        yaxis: (ax.side === 'right') ?
+            -10 + fontSize * (offsetBase + (showticklabels ? 0.5 : 0));
+    }
+    else if(axisName === 'yaxis') {
+        return (ax.side === 'right') ?
             10 + fontSize * (offsetBase + (showticklabels ? 1 : 0.5)) :
-            10 + fontSize * (offsetBase + (showticklabels ? 0.5 : 0))
-    }[axisName];
+            10 + fontSize * (offsetBase + (showticklabels ? 0.5 : 0));
+    }
 };
 
 proto.getTickPad = function(ax) {
