@@ -18,7 +18,7 @@ function Scene2D(options, fullLayout) {
 
     this.id = options.id;
     this.fullLayout = fullLayout;
-    this.updateAxes();
+    this.updateAxes(fullLayout);
 
     var width = fullLayout.width;
     var height = fullLayout.height;
@@ -208,13 +208,14 @@ function compareTicks(a, b) {
     return false;
 }
 
-proto.updateAxes = function() {
+proto.updateAxes = function(options) {
     var spmatch = Plotly.Axes.subplotMatch,
         xaxisName = 'xaxis' + this.id.match(spmatch)[1],
         yaxisName = 'yaxis' + this.id.match(spmatch)[2];
 
-    this.xaxis = this.fullLayout[xaxisName];
-    this.yaxis = this.fullLayout[yaxisName];
+    this.xaxis = options[xaxisName];
+    this.yaxis = options[yaxisName];
+};
 };
 
 proto.cameraChanged = function() {
@@ -248,7 +249,7 @@ proto.plot = function(fullData, fullLayout) {
     var i, j;
 
     this.fullLayout = fullLayout;
-    this.updateAxes();
+    this.updateAxes(fullLayout);
 
     var width = fullLayout.width,
         height = fullLayout.height,
