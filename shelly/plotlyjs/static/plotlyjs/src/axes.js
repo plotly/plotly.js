@@ -2322,36 +2322,38 @@ function numSeparate(nStr, separators) {
 }
 
 // get all axis object names
-// optionally restricted to only x or y or z by string axletter
+// optionally restricted to only x or y or z by string axLetter
 // and optionally 2D axes only, not those inside 3D scenes
-function listNames(td, axletter, only2d) {
+function listNames(td, axLetter, only2d) {
     var fullLayout = td._fullLayout;
-    if (!fullLayout) return [];
-    function filterAxis (obj) {
-        return Object.keys(obj)
-            .filter( function(k) {
-                if(axletter && k.charAt(0) !== axletter) {
-                    return false;
-                }
-                return k.match(/^[xyz]axis[0-9]*/g);
-            }).sort();
+    if(!fullLayout) return [];
+
+    function filterAxis(obj, extra) {
+        var keys = Object.keys(obj),
+            axMatch = /^[xyz]axis[0-9]*/,
+            out = [];
+
+        for(var i = 0; i < keys.length; i++) {
+            var k = keys[i];
+            if(axLetter && k.charAt(0) !== axLetter) continue;
+            if(axMatch.test(k)) out.push(extra + k);
+        }
+
+        return out.sort();
     }
 
-    var axis = filterAxis(fullLayout);
-    if(only2d) return axis;
+    var names = filterAxis(fullLayout, '');
+    if(only2d) return names;
 
     var sceneIds3D = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d') || [];
+    for(var i = 0; i < sceneIds3D.length; i++) {
+        var sceneId = sceneIds3D[i];
+        names = names.concat(
+            filterAxis(fullLayout[sceneId], sceneId + '.')
+        );
+    }
 
-    sceneIds3D.forEach( function (sceneId) {
-        axis = axis.concat(
-          filterAxis(fullLayout[sceneId])
-              .map(function(axName) {
-                  return sceneId + '.' + axName;
-              })
-          );
-    });
-
-    return axis;
+    return names;
 }
 
 // get all axis objects, as restricted in listNames
