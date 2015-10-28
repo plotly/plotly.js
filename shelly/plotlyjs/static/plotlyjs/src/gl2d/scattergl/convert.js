@@ -474,6 +474,10 @@ proto.updateError = function(axLetter, options, positions, errors) {
         errorOptions = options['error_' + axLetter.toLowerCase()],
         errorObjOptions = this['error' + axLetter + 'Options'];
 
+    if(axLetter.toLowerCase() === 'x' && errorOptions.copy_ystyle) {
+        errorOptions = options.error_y;
+    }
+
     if(this['hasError' + axLetter]) {
         errorObjOptions.positions = positions;
         errorObjOptions.errors = errors;
