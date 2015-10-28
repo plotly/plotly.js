@@ -149,11 +149,14 @@ plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
     };
 };
 
-// TODO separate the 'find subplot' step from the 'get subplot ids' step
+// TODO separate the 'find subplot' step (which looks in layout)
+// from the 'get subplot ids' step (which looks in fullLayout._plots)
 plots.getSubplotIds = function getSubplotIds(layout, type) {
     if(plots.subplotsRegistry[type] === undefined) return [];
 
     // layout must be 'fullLayout' here
+    if(type === 'cartesian' && !layout._hasCartesian) return [];
+    if(type === 'gl2d' && !layout._hasGL2D) return [];
     if(type === 'cartesian' || type === 'gl2d') {
         return Object.keys(layout._plots);
     }
