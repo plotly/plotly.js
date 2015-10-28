@@ -2449,8 +2449,8 @@ axes.getSubplots = function(gd, ax) {
                  foundAx2 = true;
                  break;
              }
-         }
-        if(ax2.anchor === 'free' && foundAx2) return;
+        }
+        if(ax2.anchor === 'free' && foundAx2) continue;
 
         if(!ax3) {
             console.log([
