@@ -24,7 +24,8 @@ function Scene2D(options, fullLayout) {
     var height = fullLayout.height;
 
     // get pixel ratio
-    var pixelRatio = this.pixelRatio = options.pixelRatio || window.devicePixelRatio;
+//     var pixelRatio = this.pixelRatio = options.pixelRatio || window.devicePixelRatio;
+    var pixelRatio = this.pixelRatio = 2;
 
     // create canvas and append to container
     var canvas = this.canvas = document.createElement('canvas');
@@ -54,6 +55,8 @@ function Scene2D(options, fullLayout) {
     // get webgl context
     var glopts = options.glopts || { premultipliedAlpha: true };
     var gl;
+
+    glopts.preserveDrawingBuffer = true;
 
     try {
         gl = canvas.getContext('webgl', glopts);
