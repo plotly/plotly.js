@@ -3686,7 +3686,9 @@ function makePlotFramework(gd) {
         .classed('draglayer', true);
 
     var subplots = Plotly.Axes.getSubplots(gd);
-    makeSubplots(gd, subplots);
+    if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
+        makeSubplots(gd, subplots);
+    }
 
     if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
 
@@ -3724,7 +3726,6 @@ function makePlotFramework(gd) {
 // to be better manage subplots
 function makeSubplots(gd, subplots) {
     var _plots = gd._fullLayout._plots = {};
-
     var subplot, plotinfo;
 
     function getAxisFunc(subplot, axLetter) {

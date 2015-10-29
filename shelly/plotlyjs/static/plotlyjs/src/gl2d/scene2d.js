@@ -71,7 +71,7 @@ function Scene2D(options, fullLayout) {
 
     this.gl = gl;
 
-    // append canvas to conatiner
+    // append canvas to container
     container.appendChild(canvas);
     container.appendChild(svgContainer);
     container.appendChild(mouseContainer);
