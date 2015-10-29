@@ -11,9 +11,9 @@ function getRedrawFunc(gd) {
         var fullLayout = gd._fullLayout;
 
         // doesn't work presently (and not needed) for polar or 3d
-        if(fullLayout._hasGL3D || fullLayout._hasGL2D || fullLayout._hasPolar) {
-            return;
-        }
+        if(fullLayout._hasGL3D || fullLayout._hasGL2D ||
+            (gd.data && gd.data[0] && gd.data[0].r)
+        ) return;
 
         Plotly.Annotations.drawAll(gd);
         Plotly.Legend.draw(gd, fullLayout.showlegend);
