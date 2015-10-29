@@ -60,9 +60,9 @@ function createPlot (divId, type) {
     containerDiv.appendChild(graphDiv);
 
     var data = [
-        createTrace('polar'),
-        createTrace('polar'),
-        createTrace('polar')
+        createTrace(type),
+        createTrace(type),
+        createTrace(type)
     ];
 
     var toolPanel;
