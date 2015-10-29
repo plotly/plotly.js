@@ -15,7 +15,31 @@ function createRemoveButton () {
     };
 }
 
-function createPlot (divId) {
+function createTrace (type) {
+
+    function rand() {
+        return Math.random() * 360;
+    }
+
+    var traces = {
+        polar: {
+            r: [1, 2, 3, 4],
+            t: [rand(), rand(), rand(), rand()],
+            type: 'scatter',
+            name: new Date()
+        },
+        line: {
+            x: [1, 2, 3, 4],
+            y: [rand(), rand(), rand(), rand()],
+            type: 'scatter',
+            name: new Date()
+        }
+    };
+
+    return traces[type] || traces.line;
+}
+
+function createPlot (divId, type) {
     var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
     var toolDiv = document.createElement('div');
@@ -35,19 +59,12 @@ function createPlot (divId) {
     containerDiv.appendChild(toolDiv);
     containerDiv.appendChild(graphDiv);
 
-    var trace1 = {
-        x: [1, 2, 3, 4],
-        y: [10, 15, 13, 17],
-        type: 'scatter'
-    };
+    var data = [
+        createTrace('polar'),
+        createTrace('polar'),
+        createTrace('polar')
+    ];
 
-    var trace2 = {
-        x: [1, 2, 3, 4],
-        y: [16, 5, 11, 9],
-        type: 'scatter'
-    };
-
-    var data = [trace1, trace2];
     var toolPanel;
 
     Plotly.newPlot(divId, data);
@@ -86,7 +103,7 @@ function createPlot (divId) {
 }
 
 ['one'].forEach(function (index) {
-    createPlot(index);
+    createPlot(index, 'polar');
 });
 
 createRemoveButton();
