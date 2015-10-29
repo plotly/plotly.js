@@ -289,8 +289,8 @@ plots.defaultConfig = {
     displayModeBar: 'hover',
     // add the plotly logo on the end of the modebar
     displaylogo: true,
-    // increase the pixel ratio for 3D plot images
-    plot3dPixelRatio: 2,
+    // increase the pixel ratio for Gl plot images
+    plotGlPixelRatio: 2,
     // fn to add the background color to a different container
     // or 'opaque' to ensure there's white behind it
     setBackground: defaultSetBackground
@@ -313,6 +313,11 @@ function setPlotContext(gd, config) {
         // cause a remake of the modebar any time we change context
         if(gd._fullLayout && gd._fullLayout._modebar) {
             delete gd._fullLayout._modebar;
+        }
+
+        // map plot3dPixelRatio to plotGlPixelRatio for backward compatibility
+        if(config.plot3dPixelRatio && !context.plotGlPixelRatio) {
+            context.plotGlPixelRatio = context.plot3dPixelRatio;
         }
     }
 
@@ -793,7 +798,7 @@ function plotGl3d(gd) {
                 container: gd.querySelector('.gl-container'),
                 id: sceneId,
                 staticPlot: gd._context.staticPlot,
-                plot3dPixelRatio: gd._context.plot3dPixelRatio
+                plotGlPixelRatio: gd._context.plotGlPixelRatio
             };
             scene = new Plotly.Scene(sceneOptions, fullLayout);
             fullLayout[sceneId]._scene = scene;  // set ref to Scene instance

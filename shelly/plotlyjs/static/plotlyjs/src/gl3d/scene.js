@@ -221,7 +221,7 @@ function Scene(options, fullLayout) {
     this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
     this.container        = sceneContainer;
     this.staticMode       = !!options.staticPlot;
-    this.pixelRatio       = options.plot3dPixelRatio || 2;
+    this.pixelRatio       = options.plotGlPixelRatio || 2;
 
     //Coordinate rescaling
     this.dataScale    = [1,1,1];

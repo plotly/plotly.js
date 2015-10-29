@@ -122,8 +122,12 @@ module.exports = function clonePlot(graphObj, options) {
         layout: newLayout,
         data: newData,
         config: {
-            staticPlot: options.staticPlot === undefined ? true : options.staticPlot,
-            plot3dPixelRatio: options.plot3dPixelRatio === undefined ? 2 : options.plot3dPixelRatio,
+            staticPlot: (options.staticPlot === undefined) ?
+                true :
+                options.staticPlot,
+            plotGlPixelRatio: (options.plotGlPixelRatio === undefined) ?
+                2 :
+                options.plotGlPixelRatio,
             displaylogo: options.displaylogo || false,
             showLink: options.showLink || false,
             showTips: options.showTips || false
