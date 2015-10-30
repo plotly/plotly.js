@@ -1653,6 +1653,9 @@ plots.fontAttrs = {
     }
 };
 
+// TODO make this a plot attribute?
+plots.fontWeight = 'normal';
+
 var extendFlat = Plotly.Lib.extendFlat;
 
 plots.layoutAttributes = {
@@ -2926,9 +2929,14 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
 
                 if(oldVal === 'pie') {
+                    Plotly.Lib.nestedProperty(cont, 'marker.color')
+                        .set(Plotly.Lib.nestedProperty(cont, 'marker.colors').get());
+
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
                 } else if(plots.traceIs(cont, 'cartesian')) {
+                    Plotly.Lib.nestedProperty(cont, 'marker.colors')
+                        .set(Plotly.Lib.nestedProperty(cont, 'marker.color').get());
                     //look for axes that are no longer in use and delete them
                     flagAxForDelete[cont.xaxis || 'x'] = true;
                     flagAxForDelete[cont.yaxis || 'y'] = true;
@@ -4336,7 +4344,8 @@ plots.titles = function(gd, title) {
                 'font-family': font,
                 'font-size': d3.round(fontSize,2)+'px',
                 fill: Plotly.Color.rgb(fontColor),
-                opacity: opacity*Plotly.Color.opacity(fontColor)
+                opacity: opacity*Plotly.Color.opacity(fontColor),
+                'font-weight': plots.fontWeight
             })
             .attr(options)
             .call(Plotly.util.convertToTspans)
