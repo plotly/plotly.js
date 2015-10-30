@@ -2476,6 +2476,7 @@ axes.getSubplots = function(gd, ax) {
         if(spMatch.test(sp)) allSubplots.push(sp);
     }
 
+    // sort the subplot ids
     allSubplots.sort(function(a, b) {
         var aMatch = a.match(spMatch),
             bMatch = b.match(spMatch);

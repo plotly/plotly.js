@@ -108,10 +108,10 @@ module.exports = function clonePlot(graphObj, options) {
             extendFlat(newLayout[sceneId].xaxis, axesImageOverride);
             extendFlat(newLayout[sceneId].yaxis, axesImageOverride);
             extendFlat(newLayout[sceneId].zaxis, axesImageOverride);
+
+            // TODO what does this do?
             newLayout[sceneId]._scene = null;
         }
-
-        newLayout.glopts = {preserveDrawingBuffer: true};
     }
 
     var td = document.createElement('div');
