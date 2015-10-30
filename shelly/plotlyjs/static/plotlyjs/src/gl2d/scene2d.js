@@ -8,78 +8,25 @@ var createLineWithMarkers = require('./scattergl/convert/');
 var createOptions = require('./lib/gl2daxes');
 var createCamera = require('./lib/camera');
 var htmlToUnicode = require('../gl3d/lib/html2unicode');
+var showNoWebGlMsg = require('../gl3d/lib/show_no_webgl_msg');
+
+var AXES = ['xaxis', 'yaxis'];
+var STATIC_CANVAS, STATIC_CONTEXT;
 
 
 Plotly.Plots.registerSubplot('gl2d', ['xaxis', 'yaxis'], ['x', 'y'],
     Plotly.Axes.traceAttributes);
 
 function Scene2D(options, fullLayout) {
-    var container = this.container = options.container;
-
+    this.container = options.container;
     this.pixelRatio = options.plotGlPixelRatio ||  window.devicePixelRatio;
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
+
     this.fullLayout = fullLayout;
     this.updateAxes(fullLayout);
 
-    var width = fullLayout.width;
-    var height = fullLayout.height;
-
-    // get pixel ratio
-//     var pixelRatio = this.pixelRatio = options.pixelRatio || window.devicePixelRatio;
-    var pixelRatio = this.pixelRatio = 2;
-
-    // create canvas and append to container
-    var canvas = this.canvas = document.createElement('canvas');
-    canvas.width = Math.ceil(pixelRatio * width) |0;
-    canvas.height = Math.ceil(pixelRatio * height) |0;
-    canvas.style.width = '100%';
-    canvas.style.height = '100%';
-    canvas.style.position = 'absolute';
-    canvas.style.top = '0px';
-    canvas.style.left = '0px';
-    canvas.style['pointer-events'] = 'none';
-
-    // create SVG container for hover text
-    var svgContainer = this.svgContainer = document.createElementNS(
-        'http://www.w3.org/2000/svg',
-        'svg');
-    svgContainer.style.position = 'absolute';
-    svgContainer.style.top = svgContainer.style.left = '0px';
-    svgContainer.style.width = svgContainer.style.height = '100%';
-    svgContainer.style['z-index'] = 20;
-    svgContainer.style['pointer-events'] = 'none';
-
-    // create div to catch the mouse event
-    var mouseContainer = this.mouseContainer = document.createElement('div');
-    mouseContainer.style.position = 'absolute';
-
-    // get webgl context
-    var glopts = options.glopts || { premultipliedAlpha: true };
-    var gl;
-
-    glopts.preserveDrawingBuffer = true;
-
-    try {
-        gl = canvas.getContext('webgl', glopts);
-    } catch(e) {}
-
-    if(!gl) {
-        try {
-            gl = canvas.getContext('experimental-webgl', glopts);
-        } catch(e) {}
-    }
-
-    if(!gl) {
-      throw new Error('webgl not supported!');
-    }
-
-    this.gl = gl;
-
-    // append canvas to container
-    container.appendChild(canvas);
-    container.appendChild(svgContainer);
-    container.appendChild(mouseContainer);
+    this.makeFramework();
 
     // update options
     this.glplotOptions = createOptions(this);
@@ -119,12 +66,88 @@ module.exports = Scene2D;
 
 var proto = Scene2D.prototype;
 
-var AXES = ['xaxis', 'yaxis'];
+proto.makeFramework = function() {
+    // create canvas and gl context
+    if(this.staticPlot) {
+        if(!STATIC_CONTEXT) {
+            STATIC_CANVAS = document.createElement('canvas');
+
+            try {
+                STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
+                    preserveDrawingBuffer: true,
+                    premultipliedAlpha: true
+                });
+            } catch(e) {
+              throw new Error([
+                  'Error creating static canvas/context for image server'
+              ].join(' '));
+            }
+        }
+
+        this.canvas = STATIC_CANVAS;
+        this.gl = STATIC_CONTEXT;
+    }
+    else {
+        var liveCanvas = document.createElement('canvas'),
+            glOpts = { premultipliedAlpha: true };
+        var gl;
+
+        try {
+            gl = liveCanvas.getContext('webgl', glOpts);
+        } catch(e) {}
+
+        if(!gl) {
+            try {
+                gl = liveCanvas.getContext('experimental-webgl', glOpts);
+            } catch(e) {}
+        }
+
+        if(!gl) showNoWebGlMsg(this);
+
+        this.canvas = liveCanvas;
+        this.gl = gl;
+    }
+
+    // position the canvas
+    var canvas = this.canvas,
+        pixelRatio = this.pixelRatio,
+        fullLayout = this.fullLayout;
+
+    canvas.width = Math.ceil(pixelRatio * fullLayout.width) |0;
+    canvas.height = Math.ceil(pixelRatio * fullLayout.height) |0;
+    canvas.style.width = '100%';
+    canvas.style.height = '100%';
+    canvas.style.position = 'absolute';
+    canvas.style.top = '0px';
+    canvas.style.left = '0px';
+    canvas.style['pointer-events'] = 'none';
+
+    // create SVG container for hover text
+    var svgContainer = this.svgContainer = document.createElementNS(
+        'http://www.w3.org/2000/svg',
+        'svg');
+    svgContainer.style.position = 'absolute';
+    svgContainer.style.top = svgContainer.style.left = '0px';
+    svgContainer.style.width = svgContainer.style.height = '100%';
+    svgContainer.style['z-index'] = 20;
+    svgContainer.style['pointer-events'] = 'none';
+
+    // create div to catch the mouse event
+    var mouseContainer = this.mouseContainer = document.createElement('div');
+    mouseContainer.style.position = 'absolute';
+
+    // append canvas, hover svg and mouse div to container
+    var container = this.container;
+    container.appendChild(canvas);
+    container.appendChild(svgContainer);
+    container.appendChild(mouseContainer);
+};
 
 proto.toImage = function(format) {
     if(!format) format = 'png';
 
     this.stopped = true;
+    if(this.staticPlot) this.container.appendChild(STATIC_CANVAS);
 
     // force redraw
     this.glplot.setDirty(true);
@@ -172,6 +195,8 @@ proto.toImage = function(format) {
         default:
         dataURL = canvas.toDataURL('image/png');
     }
+
+    if(this.staticPlot) this.container.removeChild(STATIC_CANVAS);
 
     return dataURL;
 };
@@ -361,7 +386,6 @@ trace_id_loop:
     options.dataBox = [xrange[0], yrange[0], xrange[1], yrange[1]];
 
     options.merge(fullLayout);
-
     glplot.update(options);
 };
 
