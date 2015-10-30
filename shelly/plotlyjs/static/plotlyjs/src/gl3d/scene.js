@@ -11,6 +11,7 @@ var createPlot          = require('gl-plot3d'),
     createCamera        = require('./lib/camera'),
     str2RGBAarray       = require('./lib/str2rgbarray'),
     project             = require('./lib/project'),
+    showNoWebGlMsg      = require('./lib/show_no_webgl_msg'),
     Plotly              = require('../plotly');
 
 var STATIC_CANVAS, STATIC_CONTEXT;
@@ -115,35 +116,13 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
       try {
           scene.glplot = createPlot(glplotOptions);
       } catch (e) {
-
-          /*
-           * createPlot will throw when webgl is not enabled in the client.
-           * Lets return an instance of the module with all functions noop'd.
-           * The destroy method - which will remove the container from the DOM
-           * is overridden with a function that removes the container only.
-           */
-          var noop = function () {};
-          for (var prop in scene) if (typeof scene[prop] === 'function') scene[prop] = noop;
-          scene.destroy = function () {
-              scene.container.parentNode.removeChild(scene.container);
-          };
-
-          var div = document.createElement('div');
-          div.textContent = 'Webgl is not supported by your browser - visit http://get.webgl.org for more info';
-          div.style.cursor = 'pointer';
-          div.style.fontSize = '24px';
-          div.style.color = Plotly.Color.defaults[0];
-
-          scene.container.appendChild(div);
-          scene.container.style.background = '#FFFFFF';
-          scene.container.onclick = function () {
-              window.open('http://get.webgl.org');
-          };
-
-          /*
-           * return before setting up camera and onrender methods
-           */
-          return false;
+        /*
+        * createPlot will throw when webgl is not enabled in the client.
+        * Lets return an instance of the module with all functions noop'd.
+        * The destroy method - which will remove the container from the DOM
+        * is overridden with a function that removes the container only.
+        */
+        showNoWebGlMsg(scene);
       }
 
       if(!scene.staticMode) {
