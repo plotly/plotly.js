@@ -29,11 +29,9 @@ module.exports = function showWebGlMsg(scene) {
     scene.container.appendChild(div);
     scene.container.style.background = '#FFFFFF';
     scene.container.onclick = function () {
-      window.open('http://get.webgl.org');
+        window.open('http://get.webgl.org');
     };
 
-    /*
-    * return before setting up camera and onrender methods
-    */
+    // return before setting up camera and onrender methods
     return false;
 };

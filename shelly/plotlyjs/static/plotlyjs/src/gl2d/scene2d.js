@@ -67,6 +67,7 @@ module.exports = Scene2D;
 var proto = Scene2D.prototype;
 
 proto.makeFramework = function() {
+
     // create canvas and gl context
     if(this.staticPlot) {
         if(!STATIC_CONTEXT) {
