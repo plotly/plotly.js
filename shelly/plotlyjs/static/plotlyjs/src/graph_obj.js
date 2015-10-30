@@ -860,7 +860,9 @@ function plotGl2d(gd) {
         if(scene === undefined) {
             scene = new Plotly.Scene2D({
                     container: gd.querySelector('.gl-container'),
-                    id: subplotId
+                    id: subplotId,
+                    staticPlot: gd._context.staticPlot,
+                    plotGlPixelRatio: gd._context.plotGlPixelRatio
                 },
                 fullLayout
             );

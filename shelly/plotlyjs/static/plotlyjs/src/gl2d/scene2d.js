@@ -16,7 +16,9 @@ Plotly.Plots.registerSubplot('gl2d', ['xaxis', 'yaxis'], ['x', 'y'],
 function Scene2D(options, fullLayout) {
     var container = this.container = options.container;
 
+    this.pixelRatio = options.plotGlPixelRatio ||  window.devicePixelRatio;
     this.id = options.id;
+    this.staticPlot = !!options.staticPlot;
     this.fullLayout = fullLayout;
     this.updateAxes(fullLayout);
 
