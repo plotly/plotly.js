@@ -43,9 +43,9 @@ function createPlot (divId, type) {
     var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
     var toolDiv = document.createElement('div');
+
     containerDiv.style.width = '100%';
     containerDiv.style.height = '100%';
-    containerDiv.style.clear = 'both';
 
     graphDiv.id = divId;
     graphDiv.style.width = '50%';
@@ -55,7 +55,7 @@ function createPlot (divId, type) {
 
     toolDiv.className = 'toolDiv';
     toolDiv.style.display = 'inline-block';
-
+    toolDiv.style.position = 'relative';
 
     containerDiv.appendChild(graphDiv);
     containerDiv.appendChild(toolDiv);
@@ -72,8 +72,7 @@ function createPlot (divId, type) {
 
     graphDiv.toolPanel = toolPanel = new ToolPanel(Plotly, graphDiv, {
         standalone: true,
-        popoverContainer: containerDiv,
-        slideoutDirection: 'left'
+        slideoutDirection: 'right'
     });
 
     window.toolPanel = graphDiv.toolPanel;
@@ -105,7 +104,7 @@ function createPlot (divId, type) {
 }
 
 ['one'].forEach(function (index) {
-    createPlot(index, 'line');
+    createPlot(index, 'polar');
 });
 
 createRemoveButton();
