@@ -102,16 +102,16 @@ module.exports = function clonePlot(graphObj, options) {
                 linetickenable: false
             };
         }
-        // presumes webgl plots won't have 2D plots.
         for (i = 0; i < sceneIds.length; i++) {
             var sceneId = sceneIds[i];
+
             extendFlat(newLayout[sceneId].xaxis, axesImageOverride);
             extendFlat(newLayout[sceneId].yaxis, axesImageOverride);
             extendFlat(newLayout[sceneId].zaxis, axesImageOverride);
+
+            // TODO what does this do?
             newLayout[sceneId]._scene = null;
         }
-
-        newLayout.glopts = {preserveDrawingBuffer: true};
     }
 
     var td = document.createElement('div');
@@ -122,8 +122,12 @@ module.exports = function clonePlot(graphObj, options) {
         layout: newLayout,
         data: newData,
         config: {
-            staticPlot: options.staticPlot === undefined ? true : options.staticPlot,
-            plot3dPixelRatio: options.plot3dPixelRatio === undefined ? 2 : options.plot3dPixelRatio,
+            staticPlot: (options.staticPlot === undefined) ?
+                true :
+                options.staticPlot,
+            plotGlPixelRatio: (options.plotGlPixelRatio === undefined) ?
+                2 :
+                options.plotGlPixelRatio,
             displaylogo: options.displaylogo || false,
             showLink: options.showLink || false,
             showTips: options.showTips || false
@@ -134,7 +138,7 @@ module.exports = function clonePlot(graphObj, options) {
         plotTile.config.setBackground = options.setBackground || 'opaque';
     }
 
-    // attaching the default Layout the the td, so you can grab it later
+    // attaching the default Layout the td, so you can grab it later
     plotTile.td.defaultLayout = cloneLayoutOverride(options.tileClass);
 
     return plotTile;

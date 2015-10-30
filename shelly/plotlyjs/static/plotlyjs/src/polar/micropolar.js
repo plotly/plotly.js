@@ -1,11 +1,9 @@
-/* global d3:false */
+var Plotly = require('../plotly'),
+    d3 = require('d3');
 
-var micropolar = module.exports = {
+var µ = module.exports = {
     version: '0.2.2'
 };
-
-var µ = micropolar,
-    Plotly = require('../plotly');
 
 var extendDeepAll = Plotly.Lib.extendDeepAll;
 

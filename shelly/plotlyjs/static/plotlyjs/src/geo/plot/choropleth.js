@@ -1,8 +1,7 @@
 'use strict';
 
-/* global d3:false */
-
 var Plotly = require('../../plotly'),
+    d3 = require('d3'),
     params = require('../lib/params'),
     getTopojsonFeatures = require('../lib/topojson-utils').getTopojsonFeatures,
     locationToFeature = require('../lib/location-utils').locationToFeature,

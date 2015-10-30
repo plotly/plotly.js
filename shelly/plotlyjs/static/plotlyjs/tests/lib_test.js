@@ -494,6 +494,57 @@ describe('Test lib.js:', function() {
             });
         });
 
+    describe('coerce2', function() {
+        var coerce2 = Plotly.Lib.coerce2,
+            out;
+
+        it('should set a value and return the value it sets when user input is valid', function() {
+            var colVal = 'red',
+                sizeVal = 14,
+                attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                                      testSize: {valType: 'number', dflt: 20}}},
+                obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
+                outObj = {},
+                colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
+                sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');               
+
+            expect(colOut).toBe(colVal);
+            expect(colOut).toBe(outObj.testMarker.testColor);
+            expect(sizeOut).toBe(sizeVal);
+            expect(sizeOut).toBe(outObj.testMarker.testSize);
+        });
+
+        it('should set and return the default if the user input is not valid', function() {
+            var colVal = 'r',
+                sizeVal = 'aaaaah!',
+                attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                                      testSize: {valType: 'number', dflt: 20}}},
+                obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
+                outObj = {},
+                colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
+                sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');                
+
+            expect(colOut).toBe('rgba(0, 0, 0, 0)');
+            expect(sizeOut).toBe(outObj.testMarker.testSize);
+            expect(sizeOut).toBe(20);
+            expect(sizeOut).toBe(outObj.testMarker.testSize);
+        });
+
+        it('should return false if there is no user input', function() {
+            var colVal = null,
+                sizeVal = null, 
+                attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                                      testSize: {valType: 'number', dflt: 20}}},
+                obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
+                outObj = {},
+                colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
+                sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');                 
+
+            expect(colOut).toBe(false);
+            expect(sizeOut).toBe(false);
+        });
+    });
+
         describe('info_array valType', function() {
             var infoArrayAttrs = {
                     range: {

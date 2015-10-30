@@ -2,12 +2,14 @@
 /* jshint camelcase: false */
 
 // ---external global dependencies
-/* global Promise:false, d3:false */
+/* global Promise:false */
 
 
 var Plotly = require('./plotly'),
+    d3 = require('d3'),
     m4FromQuat = require('gl-mat4/fromQuat'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('./isnumeric'),
+    Events = require('./events');
 
 var plots = module.exports = {};
 // Most of the generic plotting functions get put into Plotly.Plots,
@@ -125,7 +127,7 @@ plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
 
     var regexStart = '^',
         regexEnd = '([2-9]|[1-9][0-9]+)?$',
-        isCartesian = (subplotType === 'cartesian');
+        hasXY = (subplotType === 'cartesian' || subplotsRegistry === 'gl2d');
 
     function makeRegex(mid) {
         return new RegExp(regexStart + mid + regexEnd);
@@ -137,17 +139,28 @@ plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
         idRoot: idRoot,
         attributes: attributes,
         // register the regex representing the set of all valid attribute names
-        attrRegex: isCartesian ?
+        attrRegex: hasXY ?
             { x: makeRegex(attr[0]), y: makeRegex(attr[1]) } :
             makeRegex(attr),
         // register the regex representing the set of all valid attribute ids
-        idRegex: isCartesian ?
+        idRegex: hasXY ?
             { x: makeRegex(idRoot[0]), y: makeRegex(idRoot[1]) } :
             makeRegex(idRoot)
     };
 };
 
+// TODO separate the 'find subplot' step (which looks in layout)
+// from the 'get subplot ids' step (which looks in fullLayout._plots)
 plots.getSubplotIds = function getSubplotIds(layout, type) {
+    if(plots.subplotsRegistry[type] === undefined) return [];
+
+    // layout must be 'fullLayout' here
+    if(type === 'cartesian' && !layout._hasCartesian) return [];
+    if(type === 'gl2d' && !layout._hasGL2D) return [];
+    if(type === 'cartesian' || type === 'gl2d') {
+        return Object.keys(layout._plots);
+    }
+
     var idRegex = plots.subplotsRegistry[type].idRegex,
         layoutKeys = Object.keys(layout),
         subplotIds = [],
@@ -162,6 +175,8 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
 };
 
 plots.getSubplotIdsInData = function getSubplotsInData(data, type) {
+    if(plots.subplotsRegistry[type] === undefined) return [];
+
     var attr = plots.subplotsRegistry[type].attr,
         subplotIds = [],
         trace;
@@ -177,13 +192,27 @@ plots.getSubplotIdsInData = function getSubplotsInData(data, type) {
 };
 
 plots.getSubplotData = function getSubplotData(data, type, subplotId) {
+    if(plots.subplotsRegistry[type] === undefined) return [];
+
     var attr = plots.subplotsRegistry[type].attr,
         subplotData = [],
         trace;
 
     for(var i = 0; i < data.length; i++) {
         trace = data[i];
-        if(trace[attr] === subplotId) subplotData.push(trace);
+
+        if(type === 'gl2d' && plots.traceIs(trace, 'gl2d')) {
+            var spmatch = Plotly.Axes.subplotMatch,
+                subplotX = 'x' + subplotId.match(spmatch)[1],
+                subplotY = 'y' + subplotId.match(spmatch)[2];
+
+            if(trace[attr[0]]===subplotX && trace[attr[1]]===subplotY) {
+                subplotData.push(trace);
+            }
+        }
+        else {
+            if(trace[attr] === subplotId) subplotData.push(trace);
+        }
     }
 
     return subplotData;
@@ -260,8 +289,8 @@ plots.defaultConfig = {
     displayModeBar: 'hover',
     // add the plotly logo on the end of the modebar
     displaylogo: true,
-    // increase the pixel ratio for 3D plot images
-    plot3dPixelRatio: 2,
+    // increase the pixel ratio for Gl plot images
+    plotGlPixelRatio: 2,
     // fn to add the background color to a different container
     // or 'opaque' to ensure there's white behind it
     setBackground: defaultSetBackground
@@ -284,6 +313,11 @@ function setPlotContext(gd, config) {
         // cause a remake of the modebar any time we change context
         if(gd._fullLayout && gd._fullLayout._modebar) {
             delete gd._fullLayout._modebar;
+        }
+
+        // map plot3dPixelRatio to plotGlPixelRatio for backward compatibility
+        if(config.plot3dPixelRatio && !context.plotGlPixelRatio) {
+            context.plotGlPixelRatio = context.plot3dPixelRatio;
         }
     }
 
@@ -374,7 +408,7 @@ function positionPlayWithData(gd, container){
 
     if(gd._context.sendData) {
         link.on('click',function(){
-            $(gd).trigger('plotly_beforeexport');
+            gd.emit('plotly_beforeexport');
 
             var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
 
@@ -389,7 +423,7 @@ function positionPlayWithData(gd, container){
             hiddenform.find('form').submit();
             hiddenform.remove();
 
-            $(gd).trigger('plotly_afterexport');
+            gd.emit('plotly_afterexport');
             return false;
         });
     }
@@ -418,7 +452,12 @@ Plotly.plot = function(gd, data, layout, config) {
 
     gd = getGraphDiv(gd);
 
-    var okToPlot = $(gd).triggerHandler('plotly_beforeplot', [data, layout, config]);
+    /*
+     * Events.init is idempotent and bails early if gd has already been init'd
+     */
+    Events.init(gd);
+
+    var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
     if(okToPlot===false) return;
 
     // if there's no data or layout, and this isn't yet a plotly plot
@@ -559,22 +598,23 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function positionAndAutorange() {
-        var i, j, subplots, subplotInfo, modules, module;
-
         if(!recalc) return;
+
+        var subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
+            modules = gd._modules;
 
         // position and range calculations for traces that
         // depend on each other ie bars (stacked or grouped)
         // and boxes (grouped) push each other out of the way
-        subplots = Plotly.Axes.getSubplots(gd);
-        modules = gd._modules;
-        for (i = 0; i < subplots.length; i++) {
-            subplotInfo = gd._fullLayout._plots[subplots[i]];
-            for (j = 0; j < modules.length; j++) {
-                module = modules[j];
-                if (module.setPositions) {
-                    module.setPositions(gd, subplotInfo);
-                }
+
+        var subplotInfo, _module;
+
+        for(var i = 0; i < subplots.length; i++) {
+            subplotInfo = fullLayout._plots[subplots[i]];
+
+            for(var j = 0; j < modules.length; j++) {
+                _module = modules[j];
+                if(_module.setPositions) _module.setPositions(gd, subplotInfo);
             }
         }
 
@@ -606,10 +646,10 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
-    function drawData(){
+    function drawData() {
         // Now plot the data
         var calcdata = gd.calcdata,
-            subplots = Plotly.Axes.getSubplots(gd),
+            subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
             modules = gd._modules;
 
         var i, j, cd, trace, uid, subplot, subplotInfo,
@@ -639,10 +679,11 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
-        if(gd._fullLayout._hasGL3D) plot3D(gd);
 
         // ... until subplot of different type play better together
+        if(gd._fullLayout._hasGL3D) plotGl3d(gd);
         if(gd._fullLayout._hasGeo) plotGeo(gd);
+        if(gd._fullLayout._hasGL2D) plotGl2d(gd);
 
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
@@ -665,11 +706,11 @@ Plotly.plot = function(gd, data, layout, config) {
             // remove old traces, then redraw everything
             // TODO: use enter/exit appropriately in the plot functions
             // so we don't need this - should sometimes be a big speedup
-            subplotInfo.plot.selectAll('g.trace').remove();
+            if(subplotInfo.plot) subplotInfo.plot.selectAll('g.trace').remove();
 
             for(j = 0; j < modules.length; j++) {
                 module = modules[j];
-                if(!module.plot) return;
+                if(!module.plot) continue;
 
                 // plot all traces of this type on this subplot at once
                 cdModule = getCdModule(cdSubplot, module);
@@ -683,7 +724,7 @@ Plotly.plot = function(gd, data, layout, config) {
             }
 
             // finally do all error bars at once
-            if(Plotly.ErrorBars) {
+            if(gd._fullLayout._hasCartesian && Plotly.ErrorBars) {
                 Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
                 Plotly.Lib.markTime('done ErrorBars');
             }
@@ -713,7 +754,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // so mark it as done and let other procedures call a replot
         gd._replotting = false;
         Plotly.Lib.markTime('done plot');
-        $(gd).trigger('plotly_afterplot');
+        gd.emit('plotly_afterplot');
     }
 
     var donePlotting = Plotly.Lib.syncOrAsync([
@@ -732,7 +773,7 @@ Plotly.plot = function(gd, data, layout, config) {
         donePlotting : Promise.resolve();
 };
 
-function plot3D(gd) {
+function plotGl3d(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
         sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
@@ -757,7 +798,7 @@ function plot3D(gd) {
                 container: gd.querySelector('.gl-container'),
                 id: sceneId,
                 staticPlot: gd._context.staticPlot,
-                plot3dPixelRatio: gd._context.plot3dPixelRatio
+                plotGlPixelRatio: gd._context.plotGlPixelRatio
             };
             scene = new Plotly.Scene(sceneOptions, fullLayout);
             fullLayout[sceneId]._scene = scene;  // set ref to Scene instance
@@ -798,6 +839,39 @@ function plotGeo(gd) {
         }
 
         geo.plot(fullGeoData, fullLayout);
+    }
+}
+
+function plotGl2d(gd) {
+    var fullLayout = gd._fullLayout,
+        fullData = gd._fullData,
+        subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplotId = subplotIds[i],
+            subplotObj = fullLayout._plots[subplotId],
+            fullSubplotData = plots.getSubplotData(fullData, 'gl2d', subplotId);
+        var scene;
+
+        // ref. to corresp. Scene instance
+        scene = subplotObj._scene2d;
+
+        // If Scene is not instantiated, create one!
+        if(scene === undefined) {
+            scene = new Plotly.Scene2D({
+                    container: gd.querySelector('.gl-container'),
+                    id: subplotId,
+                    staticPlot: gd._context.staticPlot,
+                    plotGlPixelRatio: gd._context.plotGlPixelRatio
+                },
+                fullLayout
+            );
+
+            // set ref to Scene instance
+            subplotObj._scene2d = scene;
+        }
+
+        scene.plot(fullSubplotData, fullLayout, gd.layout);
     }
 }
 
@@ -917,7 +991,7 @@ function cleanLayout(layout) {
         delete layout.yaxis1;
     }
 
-    var axList = Plotly.Axes.list({_fullLayout:layout});
+    var axList = Plotly.Axes.list({_fullLayout: layout});
     for(i = 0; i < axList.length; i++) {
         var ax = axList[i];
         if(ax.anchor && ax.anchor !== 'free') {
@@ -1241,7 +1315,7 @@ Plotly.redraw = function(gd) {
     }
     gd.calcdata = undefined;
     return Plotly.plot(gd).then(function () {
-        $(gd).trigger('plotly_redraw');
+        gd.emit('plotly_redraw');
     });
 };
 
@@ -1387,6 +1461,7 @@ plots.supplyDefaults = function(gd) {
         else if(plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
         else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
         else if(plots.traceIs(fullTrace, 'pie')) newFullLayout._hasPie = true;
+        else if(plots.traceIs(fullTrace, 'gl2d')) newFullLayout._hasGL2D = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         module = fullTrace._module;
@@ -1519,7 +1594,6 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // the traces of a scene are invisible. Also we handle visible/unvisible
     // differently for 3D cases.
     coerceSubplotAttr('gl3d', 'scene');
-
     coerceSubplotAttr('geo', 'geo');
 
     // module-specific attributes --- note: we need to send a trace into
@@ -1541,6 +1615,9 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
         coerceSubplotAttr('cartesian', 'xaxis');
         coerceSubplotAttr('cartesian', 'yaxis');
+
+        coerceSubplotAttr('gl2d', 'xaxis');
+        coerceSubplotAttr('gl2d', 'yaxis');
 
         if(plots.traceIs(traceOut, 'showLegend')) {
             coerce('showlegend');
@@ -1587,6 +1664,9 @@ plots.fontAttrs = {
         role: 'style'
     }
 };
+
+// TODO make this a plot attribute?
+plots.fontWeight = 'normal';
 
 var extendFlat = Plotly.Lib.extendFlat;
 
@@ -1758,6 +1838,10 @@ plots.layoutAttributes = {
         valType: 'boolean',
         dflt: false
     },
+    _hasGL2D: {
+        valType: 'boolean',
+        dflt: false
+    },
     _composedModules: {
         '*': 'Fx'
     },
@@ -1811,6 +1895,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('_hasGL3D');
     coerce('_hasGeo');
     coerce('_hasPie');
+    coerce('_hasGL2D');
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
@@ -2680,8 +2765,10 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         axlist,
         flagAxForDelete = {};
 
-    // for now, if we detect 3D or geo stuff, just re-do the plot
-    if(fullLayout._hasGL3D || fullLayout._hasGeo) doplot = true;
+    // for now, if we detect gl or geo stuff, just re-do the plot
+    if(fullLayout._hasGL3D || fullLayout._hasGeo || fullLayout._hasGL2D) {
+        doplot = true;
+    }
 
     // make a new empty vals array for undoit
     function a0(){ return traces.map(function(){ return undefined; }); }
@@ -2854,9 +2941,14 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
 
                 if(oldVal === 'pie') {
+                    Plotly.Lib.nestedProperty(cont, 'marker.color')
+                        .set(Plotly.Lib.nestedProperty(cont, 'marker.colors').get());
+
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
                 } else if(plots.traceIs(cont, 'cartesian')) {
+                    Plotly.Lib.nestedProperty(cont, 'marker.colors')
+                        .set(Plotly.Lib.nestedProperty(cont, 'marker.color').get());
                     //look for axes that are no longer in use and delete them
                     flagAxForDelete[cont.xaxis || 'x'] = true;
                     flagAxForDelete[cont.yaxis || 'y'] = true;
@@ -3047,7 +3139,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_restyle',
+        gd.emit('plotly_restyle',
             Plotly.Lib.extendDeep([], [redoit, traces]));
     });
 };
@@ -3096,6 +3188,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(gd.framework && gd.framework.isPolar) return;
 
     var layout = gd.layout,
+        fullLayout = gd._fullLayout,
         aobj = {},
         dolegend = false,
         doticks = false,
@@ -3165,7 +3258,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     // for editing annotations or shapes - is it on autoscaled axes?
     function refAutorange(obj, axletter) {
         var axName = Plotly.Axes.id2name(obj[axletter+'ref']||axletter);
-        return (gd._fullLayout[axName]||{}).autorange;
+        return (fullLayout[axName]||{}).autorange;
     }
 
     var hw = ['height', 'width'];
@@ -3184,7 +3277,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // trunk nodes (everything except the leaf)
             ptrunk = p.parts.slice(0, pend).join('.'),
             parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
-            parentFull = Plotly.Lib.nestedProperty(gd._fullLayout, ptrunk).get();
+            parentFull = Plotly.Lib.nestedProperty(fullLayout, ptrunk).get();
 
         redoit[ai] = vi;
 
@@ -3299,6 +3392,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // 3d or geo at this point just needs to redraw.
             if (p.parts[0].indexOf('scene') === 0) doplot = true;
             else if (p.parts[0].indexOf('geo') === 0) doplot = true;
+            else if(fullLayout._hasGL2D &&
+                (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
+            ) doplot = true;
             else if(ai === 'hiddenlabels') docalc = true;
             else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
             else if(ai.indexOf('title')!==-1) doticks = true;
@@ -3374,6 +3470,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
     else if(ak.length) {
         // if we didn't need to redraw entirely, just do the needed parts
         plots.supplyDefaults(gd);
+        fullLayout = gd._fullLayout;
+
         if(dolegend) {
             seq.push(function doLegend(){
                 Plotly.Legend.draw(gd);
@@ -3393,12 +3491,18 @@ Plotly.relayout = function relayout(gd, astr, val) {
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) Plotly.Fx.modeBar(gd);
 
-        var sceneIds;
-        if (doSceneDragmode) {
-            sceneIds = plots.getSubplotIds(gd._fullLayout, 'gl3d');
-            for (i = 0; i < sceneIds.length; i++) {
-                scene = gd._fullLayout[sceneIds[i]]._scene;
-                scene.handleDragmode(gd._fullLayout.dragmode);
+        var subplotIds;
+        if(doSceneDragmode || domodebar) {
+            subplotIds = plots.getSubplotIds(fullLayout, 'gl3d');
+            for(i = 0; i < subplotIds.length; i++) {
+                scene = fullLayout[subplotIds[i]]._scene;
+                scene.handleDragmode(fullLayout.dragmode);
+            }
+
+            subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
+            for(i = 0; i < subplotIds.length; i++) {
+                scene = fullLayout._plots[subplotIds[i]]._scene2d;
+                scene.updateFx(fullLayout);
             }
         }
     }
@@ -3408,7 +3512,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function(){
-        $(gd).trigger('plotly_relayout',
+        gd.emit('plotly_relayout',
             Plotly.Lib.extendDeep({}, redoit));
     });
 };
@@ -3442,7 +3546,7 @@ function plotAutoSize(gd, aobj) {
 
     var newHeight, newWidth;
 
-    $(gd).trigger('plotly_autosize');
+    gd.emit('plotly_autosize');
 
     // embedded in an iframe - just take the full iframe size
     // if we get to this point, with no aspect ratio restrictions
@@ -3538,7 +3642,6 @@ function getGraphDiv(gd) {
 // -------------------------------------------------------
 function makePlotFramework(gd) {
     var gd3 = d3.select(gd),
-        subplots = Plotly.Axes.getSubplots(gd),
         fullLayout = gd._fullLayout;
 
     /*
@@ -3609,6 +3712,76 @@ function makePlotFramework(gd) {
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
+    var subplots = Plotly.Axes.getSubplots(gd);
+    if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
+        makeSubplots(gd, subplots);
+    }
+
+    if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
+
+    // single shape and pie layers for the whole plot
+    fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
+    fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
+
+    // fill in image server scrape-svg
+    fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
+    fullLayout._geoimages = fullLayout._paper.append('g').classed('geoimages', true);
+
+    // lastly info (legend, annotations) and hover layers go on top
+    // these are in a different svg element normally, but get collapsed into a single
+    // svg when exporting (after inserting 3D)
+    fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
+    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
+
+    gd.emit('plotly_framework');
+
+    // position and style the containers, make main title
+    var frameWorkDone = Plotly.Lib.syncOrAsync([
+        layoutStyles,
+        function goAxes(){ return Plotly.Axes.doTicks(gd,'redraw'); },
+        Plotly.Fx.init
+    ], gd);
+
+    if(frameWorkDone && frameWorkDone.then) {
+        gd._promises.push(frameWorkDone);
+    }
+
+    return frameWorkDone;
+}
+
+// create '_plots' object grouping x/y axes into subplots
+// to be better manage subplots
+function makeSubplots(gd, subplots) {
+    var _plots = gd._fullLayout._plots = {};
+    var subplot, plotinfo;
+
+    function getAxisFunc(subplot, axLetter) {
+        return function() {
+            return Plotly.Axes.getFromId(gd, subplot, axLetter);
+        };
+    }
+
+    for(var i = 0; i < subplots.length; i++) {
+        subplot = subplots[i];
+        plotinfo = _plots[subplot] = {};
+
+        plotinfo.id = subplot;
+
+        // references to the axis objects controlling this subplot
+        plotinfo.x = getAxisFunc(subplot, 'x');
+        plotinfo.y = getAxisFunc(subplot, 'y');
+
+        // TODO investigate why replacing calls to .x and .y
+        // for .xaxis and .yaxis makes the `pseudo_html`
+        // test image fail
+        plotinfo.xaxis = plotinfo.x();
+        plotinfo.yaxis = plotinfo.y();
+    }
+}
+
+function makeCartesianPlotFramwork(gd, subplots) {
+    var fullLayout = gd._fullLayout;
+
     // Layers to keep plot types in the right order.
     // from back to front:
     // 1. heatmaps, 2D histos and contour maps
@@ -3626,23 +3799,16 @@ function makePlotFramework(gd) {
 
     // create all the layers in order, so we know they'll stay in order
     var overlays = [];
-    fullLayout._plots = {};
+
     fullLayout._paper.selectAll('g.subplot').data(subplots)
       .enter().append('g')
-        .classed('subplot',true)
-        .each(function(subplot){
-            var plotinfo = fullLayout._plots[subplot] = {},
-                plotgroup = d3.select(this).classed(subplot,true);
-            plotinfo.id = subplot;
-            // references to the axis objects controlling this subplot
-            plotinfo.x = function() {
-                return Plotly.Axes.getFromId(gd,subplot,'x');
-            };
-            plotinfo.y = function() {
-                return Plotly.Axes.getFromId(gd,subplot,'y');
-            };
-            var xa = plotinfo.x(),
-                ya = plotinfo.y();
+        .classed('subplot', true)
+        .each(function(subplot) {
+            var plotinfo = fullLayout._plots[subplot],
+                plotgroup = plotinfo.plotgroup = d3.select(this).classed(subplot, true),
+                xa = plotinfo.xaxis,
+                ya = plotinfo.yaxis;
+
             // references to any subplots overlaid on this one
             plotinfo.overlays = [];
 
@@ -3681,7 +3847,7 @@ function makePlotFramework(gd) {
                 // main subplot - make the components of
                 // the plot and containers for overlays
                 plotinfo.bg = plotgroup.append('rect')
-                    .style('stroke-width',0);
+                    .style('stroke-width', 0);
                 plotinfo.gridlayer = plotgroup.append('g');
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');
@@ -3722,6 +3888,7 @@ function makePlotFramework(gd) {
     // common attributes for all subplots, overlays or not
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
+
         plotinfo.plot
             .attr('preserveAspectRatio', 'none')
             .style('fill', 'none');
@@ -3732,35 +3899,6 @@ function makePlotFramework(gd) {
             .style('fill', 'none')
             .classed('crisp', true);
     });
-
-    // single shape and pie layers for the whole plot
-    fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
-    fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
-
-    // fill in image server scrape-svg
-    fullLayout._glimages = fullLayout._paper.append('g').classed('glimages', true);
-    fullLayout._geoimages = fullLayout._paper.append('g').classed('geoimages', true);
-
-    // lastly info (legend, annotations) and hover layers go on top
-    // these are in a different svg element normally, but get collapsed into a single
-    // svg when exporting (after inserting 3D)
-    fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
-    fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
-
-    $(gd).trigger('plotly_framework');
-
-    // position and style the containers, make main title
-    var frameWorkDone = Plotly.Lib.syncOrAsync([
-        layoutStyles,
-        function goAxes(){ return Plotly.Axes.doTicks(gd,'redraw'); },
-        Plotly.Fx.init
-    ], gd);
-
-    if(frameWorkDone && frameWorkDone.then) {
-        gd._promises.push(frameWorkDone);
-    }
-
-    return frameWorkDone;
 }
 
 // called by legend and colorbar routines to see if we need to
@@ -4218,7 +4356,8 @@ plots.titles = function(gd, title) {
                 'font-family': font,
                 'font-size': d3.round(fontSize,2)+'px',
                 fill: Plotly.Color.rgb(fontColor),
-                opacity: opacity*Plotly.Color.opacity(fontColor)
+                opacity: opacity*Plotly.Color.opacity(fontColor),
+                'font-weight': plots.fontWeight
             })
             .attr(options)
             .call(Plotly.util.convertToTspans)

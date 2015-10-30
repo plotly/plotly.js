@@ -155,6 +155,95 @@ describe('Test axes', function () {
         });
     });
 
+    describe('supplyLayoutDefaults', function() {
+        var layoutIn = {},
+            layoutOut = {},
+            fullData = [];
+
+        var supplyLayoutDefaults = Plotly.Axes.supplyLayoutDefaults;
+
+        it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.linewidth).toBe(undefined);
+            expect(layoutOut.xaxis.linecolor).toBe(undefined);
+            expect(layoutOut.yaxis.linewidth).toBe(undefined);
+            expect(layoutOut.yaxis.linecolor).toBe(undefined);
+        });
+
+        it('should set default linewidth and linecolor if showline is true', function() {
+            layoutIn = {
+                xaxis: {showline: true}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.linewidth).toBe(1);
+            expect(layoutOut.xaxis.linecolor).toBe(Plotly.Color.defaultLine);
+        });
+
+        it('should set linewidth to default if linecolor is supplied and valid', function() {
+            layoutIn = {
+                xaxis: {linecolor:'black'}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.linecolor).toBe('black');
+            expect(layoutOut.xaxis.linewidth).toBe(1);
+        });
+
+        it('should set linecolor to default if linewidth is supplied and valid', function() {
+            layoutIn = {
+                yaxis: {linewidth:2}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.linewidth).toBe(2);
+            expect(layoutOut.yaxis.linecolor).toBe(Plotly.Color.defaultLine);
+        });
+
+        it('should set default gridwidth and gridcolor', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.gridwidth).toBe(1);
+            expect(layoutOut.xaxis.gridcolor).toBe(Plotly.Color.lightLine);
+            expect(layoutOut.yaxis.gridwidth).toBe(1);
+            expect(layoutOut.yaxis.gridcolor).toBe(Plotly.Color.lightLine);
+        });
+
+        it('should set gridcolor/gridwidth to undefined if showgrid is false', function() {
+            layoutIn = {
+                yaxis: {showgrid: false}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.yaxis.gridwidth).toBe(undefined);
+            expect(layoutOut.yaxis.gridcolor).toBe(undefined);
+        });
+
+        it('should set default zerolinecolor/zerolinewidth', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.zerolinewidth).toBe(1);
+            expect(layoutOut.xaxis.zerolinecolor).toBe(Plotly.Color.defaultLine);
+            expect(layoutOut.yaxis.zerolinewidth).toBe(1);
+            expect(layoutOut.yaxis.zerolinecolor).toBe(Plotly.Color.defaultLine);
+        });
+
+        it('should set zerolinecolor/zerolinewidth to undefined if zeroline is false', function() {
+            layoutIn = {
+                xaxis: {zeroline: false}
+            };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.xaxis.zerolinewidth).toBe(undefined);
+            expect(layoutOut.xaxis.zerolinecolor).toBe(undefined);
+        });
+    });
+
     describe('handleTickValueDefaults', function() {
         function handleTickValueDefaults(axIn, axOut, axType) {
             function coerce(attr, dflt) {
@@ -307,6 +396,137 @@ describe('Test axes', function () {
             expect(gd._fullLayout.yaxis._rangeInitial).toEqual([0, 0.5]);
             expect(gd._fullLayout.xaxis2._rangeInitial).toEqual([0.2, 0.4]);
             expect(gd._fullLayout.yaxis2._rangeInitial).toEqual([0.5, 1]);
+        });
+    });
+
+    describe('list', function() {
+        var listFunc = Plotly.Axes.list;
+        var gd;
+
+        it('returns empty array when no fullLayout is present', function() {
+            gd = {};
+
+            expect(listFunc(gd)).toEqual([]);
+        });
+
+        it('returns array of axes in fullLayout', function() {
+            gd = {
+                _fullLayout: {
+                    xaxis: { _id: 'x' },
+                    yaxis: { _id: 'y' },
+                    yaxis2: { _id: 'y2' }
+                }
+            };
+
+            expect(listFunc(gd))
+                .toEqual([{ _id: 'x' }, { _id: 'y' }, { _id: 'y2' }]);
+        });
+
+        it('returns array of axes, including the ones in scenes', function() {
+            gd = {
+                _fullLayout: {
+                    scene: {
+                        xaxis: { _id: 'x' },
+                        yaxis: { _id: 'y' },
+                        zaxis: { _id: 'z' }
+                    },
+                    scene2: {
+                        xaxis: { _id: 'x' },
+                        yaxis: { _id: 'y' },
+                        zaxis: { _id: 'z' }
+                    }
+                }
+            };
+
+            expect(listFunc(gd))
+                .toEqual([
+                    { _id: 'x' }, { _id: 'y' }, { _id: 'z' },
+                    { _id: 'x' }, { _id: 'y' }, { _id: 'z' }
+                ]);
+        });
+
+        it('returns array of axes, excluding the ones in scenes with only2d option', function() {
+            gd = {
+                _fullLayout: {
+                    scene: {
+                        xaxis: { _id: 'x' },
+                        yaxis: { _id: 'y' },
+                        zaxis: { _id: 'z' }
+                    },
+                    xaxis2: { _id: 'x2' },
+                    yaxis2: { _id: 'y2' }
+                }
+            };
+
+            expect(listFunc(gd, '' , true))
+                .toEqual([{ _id: 'x2' }, { _id: 'y2' }]);
+        });
+
+        it('returns array of axes, of particular ax letter with axLetter option', function() {
+            gd = {
+                _fullLayout: {
+                    scene: {
+                        xaxis: { _id: 'x' },
+                        yaxis: { _id: 'y' },
+                        zaxis: { _id: 'z'
+                        }
+                    },
+                    xaxis2: { _id: 'x2' },
+                    yaxis2: { _id: 'y2' }
+                }
+            };
+
+            expect(listFunc(gd, 'x'))
+                .toEqual([{ _id: 'x2' }, { _id: 'x' }]);
+        });
+
+    });
+
+    describe('getSubplots', function() {
+        var getSubplots = Plotly.Axes.getSubplots;
+        var gd;
+
+        it('returns list of subplots ids (from data only)', function() {
+            gd = {
+                data: [
+                    { type: 'scatter' },
+                    { type: 'scattergl', xaxis: 'x2', yaxis: 'y2' }
+                ]
+            };
+
+            expect(getSubplots(gd))
+                .toEqual(['xy', 'x2y2']);
+        });
+
+        it('returns list of subplots ids (from fullLayout only)', function() {
+            gd = {
+                _fullLayout: {
+                    xaxis: { _id: 'x', anchor: 'y' },
+                    yaxis: { _id: 'y', anchor: 'x' },
+                    xaxis2: { _id: 'x2', anchor: 'y2' },
+                    yaxis2: { _id: 'y2', anchor: 'x2' }
+                }
+            };
+
+            expect(getSubplots(gd))
+                .toEqual(['xy', 'x2y2']);
+        });
+
+        it('returns list of subplots ids of particular axis with ax option', function() {
+            gd = {
+                data: [
+                    { type: 'scatter' },
+                    { type: 'scattergl', xaxis: 'x3', yaxis: 'y3' }
+                ],
+                _fullLayout: {
+                    xaxis2: { _id: 'x2', anchor: 'y2' },
+                    yaxis2: { _id: 'y2', anchor: 'x2' },
+                    yaxis3: { _id: 'y3', anchor: 'free' }
+                }
+            };
+
+            expect(getSubplots(gd, { _id: 'x' }))
+                .toEqual(['xy']);
         });
     });
 });

@@ -1,11 +1,11 @@
 'use strict';
+
 /* jshint camelcase: false */
 
-// ---external global dependencies
-/* global d3:false */
+var Plotly = require('./plotly'),
+    d3 = require('d3');
 
-var legend = module.exports = {},
-    Plotly = require('./plotly');
+var legend = module.exports = {};
 
 legend.layoutAttributes = {
     bgcolor: {

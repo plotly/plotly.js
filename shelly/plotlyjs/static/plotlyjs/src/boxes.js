@@ -1,11 +1,10 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var boxes = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var boxes = module.exports = {};
 
 Plotly.Plots.register(boxes, 'box',
     ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'], {
@@ -136,7 +135,7 @@ boxes.attributes = {
     marker: {
         outliercolor: {
             valType: 'color',
-            dflt: 'rgba(0,0,0,0)',
+            dflt: 'rgba(0, 0, 0, 0)',
             role: 'style',
             description: 'Sets the color of the outlier sample points.'
         },
@@ -156,7 +155,10 @@ boxes.attributes = {
             outliercolor: {
                 valType: 'color',
                 role: 'style',
-                description: 'Sets the border line color of the outlier sample points.'
+                description: [
+                    'Sets the border line color of the outlier sample points.',
+                    'Defaults to marker.color'
+                ].join(' ')
             },
             outlierwidth: {
                 valType: 'number',
@@ -253,7 +255,13 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
 
     coerce('whiskerwidth');
     coerce('boxmean');
-    var boxpoints = coerce('boxpoints');
+
+    var outlierColorDflt = Plotly.Lib.coerce2(traceIn, traceOut, boxes.attributes, 'marker.outliercolor'),
+        lineoutliercolor = coerce('marker.line.outliercolor'),
+        boxpoints = outlierColorDflt || 
+                    lineoutliercolor ? coerce('boxpoints', 'suspectedoutliers') : 
+                    coerce('boxpoints');
+                    
     if(boxpoints) {
         coerce('jitter', boxpoints==='all' ? 0.3 : 0);
         coerce('pointpos', boxpoints==='all' ? -1.5 : 0);
@@ -266,8 +274,7 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
         coerce('marker.line.width');
 
         if(boxpoints==='suspectedoutliers') {
-            coerce('marker.outliercolor');
-            coerce('marker.line.outliercolor', traceOut.marker.color);
+            coerce('marker.line.outliercolor', traceOut.marker.color)
             coerce('marker.line.outlierwidth');
         }
     }
