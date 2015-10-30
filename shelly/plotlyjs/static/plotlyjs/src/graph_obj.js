@@ -1914,8 +1914,9 @@ plots.purge = function(gd) {
     // clean up the gl and geo containers
     // TODO unify subplot creation/update with d3.selection.order
     // and/or subplot ids
-    gd._fullLayout._glcontainer.remove();
-    gd._fullLayout._geocontainer.remove();
+    var fullLayout = gd._fullLayout || {};
+    if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
+    if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
 
     // data and layout
     delete gd.data;
