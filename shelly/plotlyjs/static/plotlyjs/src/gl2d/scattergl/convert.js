@@ -196,6 +196,20 @@ function _convertColor(colors, opacities, count) {
     return result;
 }
 
+/**
+ * Truncate a Float32Array to some length. A wrapper to support environments
+ * (e.g. node-webkit) that do not implement Float32Array.prototype.slice
+ */
+function truncate(float32ArrayIn, len) {
+    if(Float32Array.slice === undefined) {
+        var float32ArrayOut  = new Float32Array(len);
+        for(var i = 0; i < len; i++) float32ArrayOut[i] = float32ArrayIn[i];
+        return float32ArrayOut;
+    }
+
+    return float32ArrayIn.slice(0, len);
+}
+
 /* Order is important here to get the correct laying:
  * - lines
  * - errorX
@@ -266,7 +280,7 @@ proto.updateFast = function(options) {
         bounds[3] = Math.max(bounds[3], yy);
     }
 
-    positions = positions.slice(0, ptr);
+    positions = truncate(positions, ptr);
     this.idToIndex = idToIndex;
 
     this.updateLines(options, positions);
@@ -368,7 +382,7 @@ proto.updateFancy = function(options) {
         bounds[3] = Math.max(bounds[3], yy + ey1);
     }
 
-    positions = positions.slice(0, ptr);
+    positions = truncate(positions, ptr);
     this.idToIndex = idToIndex;
 
     this.updateLines(options, positions);
