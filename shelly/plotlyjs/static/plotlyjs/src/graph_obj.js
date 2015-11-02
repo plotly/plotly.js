@@ -1640,7 +1640,19 @@ plots.fontAttrs = {
         valType: 'string',
         role: 'style',
         noBlank: true,
-        strict: true
+        strict: true,
+        description: [
+            'HTML font family - the typeface that will be applied by the web browser.',
+            'The web browser will only be able to apply a font if it is available on the system',
+            'which it operates. Provide multiple font families, separated by commas, to indicate',
+            'the preference in which to apply fonts if they aren\'t available on the system.',
+            'The plotly service (at https://plot.ly or on-premise) generates images on a server,',
+            'where only a select number of',
+            'fonts are installed and supported.',
+            'These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*,',
+            '*Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*,',
+            '*PT Sans Narrow*, *Raleway*, *Times New Roman*.'
+        ].join(' ')
     },
     size: {
         valType: 'number',
@@ -1652,6 +1664,9 @@ plots.fontAttrs = {
         role: 'style'
     }
 };
+
+// TODO make this a plot attribute?
+plots.fontWeight = 'normal';
 
 var extendFlat = Plotly.Lib.extendFlat;
 
@@ -1790,7 +1805,7 @@ plots.layoutAttributes = {
             'Determines whether or not a text link citing the data source is',
             'placed at the bottom-right cored of the figure.',
             'Has only an effect only on graphs that have been generated via',
-            'forked graphs from the plotly cloud.'
+            'forked graphs from the plotly service (at https://plot.ly or on-premise).'
         ].join(' ')
     },
     smith: {
@@ -1908,6 +1923,13 @@ plots.purge = function(gd) {
     // note: we DO NOT remove _context because it doesn't change when we insert
     // a new plot, and may have been set outside of our scope.
 
+    // clean up the gl and geo containers
+    // TODO unify subplot creation/update with d3.selection.order
+    // and/or subplot ids
+    var fullLayout = gd._fullLayout || {};
+    if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
+    if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
+
     // data and layout
     delete gd.data;
     delete gd.layout;
@@ -1918,6 +1940,7 @@ plots.purge = function(gd) {
     delete gd.empty;
 
     delete gd.fid;
+
 
     delete gd.undoqueue; // action queue
     delete gd.undonum;
@@ -2926,9 +2949,14 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
 
                 if(oldVal === 'pie') {
+                    Plotly.Lib.nestedProperty(cont, 'marker.color')
+                        .set(Plotly.Lib.nestedProperty(cont, 'marker.colors').get());
+
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
                 } else if(plots.traceIs(cont, 'cartesian')) {
+                    Plotly.Lib.nestedProperty(cont, 'marker.colors')
+                        .set(Plotly.Lib.nestedProperty(cont, 'marker.color').get());
                     //look for axes that are no longer in use and delete them
                     flagAxForDelete[cont.xaxis || 'x'] = true;
                     flagAxForDelete[cont.yaxis || 'y'] = true;
@@ -4336,7 +4364,8 @@ plots.titles = function(gd, title) {
                 'font-family': font,
                 'font-size': d3.round(fontSize,2)+'px',
                 fill: Plotly.Color.rgb(fontColor),
-                opacity: opacity*Plotly.Color.opacity(fontColor)
+                opacity: opacity*Plotly.Color.opacity(fontColor),
+                'font-weight': plots.fontWeight
             })
             .attr(options)
             .call(Plotly.util.convertToTspans)
