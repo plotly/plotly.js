@@ -1,13 +1,11 @@
 'use strict';
 
-// ---external global dependencies
-/* global d3:false */
-
-var heatmap = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric'),
-    scatterAttrs = Plotly.Scatter.attributes;
+    isNumeric = require('./isnumeric');
+
+var heatmap = module.exports = {};
 
 Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap'], {
     description: [
@@ -36,7 +34,8 @@ Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap'], {
     ].join(' ')
 });
 
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+var scatterAttrs = Plotly.Scatter.attributes,
+    traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
 heatmap.attributes = {
     z: {

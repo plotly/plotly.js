@@ -1,11 +1,11 @@
 'use strict';
+
 /* jshint camelcase: false */
 
-// ---external global dependencies
-/* global d3:false */
+var Plotly = require('./plotly'),
+    d3 = require('d3');
 
-var legend = module.exports = {},
-    Plotly = require('./plotly');
+var legend = module.exports = {};
 
 legend.layoutAttributes = {
     bgcolor: {
@@ -73,7 +73,7 @@ legend.layoutAttributes = {
         dflt: 'left',
         role: 'info',
         description: [
-            'Sets the legend\'s horizontal position anchor',
+            'Sets the legend\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
             'or *right* of the legend.'
         ].join(' ')

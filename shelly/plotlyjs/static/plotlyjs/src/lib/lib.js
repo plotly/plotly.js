@@ -6,13 +6,12 @@
 // ---global functions not yet namespaced
 /* global pullf:false */
 
-// ---external global dependencies
-/* global d3:false */
-
-var lib = module.exports = {},
-    Plotly = require('../plotly'),
+var Plotly = require('../plotly'),
+    d3 = require('d3'),
     tinycolor = require('tinycolor2'),
     isNumeric = require('../isnumeric');
+
+var lib = module.exports = {};
 
 /**
  * dateTime2ms - turn a date object or string s of the form
@@ -1651,6 +1650,14 @@ lib.coerce = function(containerIn, containerOut, attributes, attribute, dflt) {
     lib.valObjects[opts.valType].coerceFunction(v, propOut, dflt, opts);
 
     return propOut.get();
+};
+
+// use coerce to get attibute value if user input is valid, return attribute default
+// if user input it not valid or retun false if there is no user input.  
+lib.coerce2 = function(containerIn, containerOut, attributes, attribute, dflt) {
+    var propIn = lib.nestedProperty(containerIn, attribute),
+        propOut = lib.coerce(containerIn, containerOut, attributes, attribute, dflt);
+    return propIn.get() ? propOut : false;
 };
 
 // shortcut to coerce the three font attributes
