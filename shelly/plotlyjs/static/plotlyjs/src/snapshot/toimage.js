@@ -22,8 +22,7 @@ function toImage(gd, opts) {
     document.body.appendChild(clonedGd);
 
     function wait () {
-        var is3d = clonedGd._fullLayout._hasGL3D;
-        var delay = is3d ? 500 : 0;
+        var delay = Snapshot.getDelay(clonedGd._fullLayout);
 
         setTimeout(function () {
             var svg = Plotly.Snapshot.toSVG(clonedGd);
@@ -53,24 +52,13 @@ function toImage(gd, opts) {
         }, delay);
     }
 
+    var redrawFunc = Snapshot.getRedrawFunc(clonedGd);
 
     Plotly.plot(clonedGd, clone.data, clone.layout, clone.config)
-    // TODO: the following is Plotly.Plots.redrawText but without the waiting.
-    // we shouldn't need to do this, but in *occasional* cases we do. Figure
-    // out why and take it out.
-        .then(function() {
-
-            // doesn't work presently (and not needed) for polar or 3d
-            if(clonedGd._fullLayout._hasGL3D ||
-               (clonedGd.data && clonedGd.data[0] && clonedGd.data[0].r)) {
-                return;
-            }
-            Plotly.Annotations.drawAll(clonedGd);
-            Plotly.Legend.draw(clonedGd, clonedGd._fullLayout.showlegend);
-            (clonedGd.calcdata||[]).forEach(function(d){
-                if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
-            });
-        })
+        // TODO: the following is Plotly.Plots.redrawText but without the waiting.
+        // we shouldn't need to do this, but in *occasional* cases we do. Figure
+        // out why and take it out.
+        .then(redrawFunc)
         .then(wait)
         .catch( function (err) {
             ev.emit('error', err);

@@ -69,7 +69,7 @@ describe('Test Snapshot.clone', function() {
 
             var config = {
                 staticPlot: true,
-                plot3dPixelRatio: 2,
+                plotGlPixelRatio: 2,
                 displaylogo: false,
                 showLink: false,
                 showTips: false,
