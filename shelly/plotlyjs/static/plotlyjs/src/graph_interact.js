@@ -5,7 +5,8 @@
 var Plotly = require('./plotly'),
     d3 = require('d3'),
     tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('./isnumeric'),
+    Events = require('./events');
 
 var fx = module.exports = {};
 
@@ -371,7 +372,7 @@ function hover(gd, evt, subplot){
             // fire the beforehover event and quit if it returns false
             // note that we're only calling this on real mouse events, so
             // manual calls to fx.hover will always run.
-            if($(gd).triggerHandler('plotly_beforehover',evt)===false) {
+            if(Events.triggerHandler(gd, 'plotly_beforehover', evt)===false) {
                 return;
             }
 
@@ -522,7 +523,7 @@ function hover(gd, evt, subplot){
 
     alignHoverText(hoverLabels, rotateLabels);
 
-    // lastly, trigger custom hover/unhover events
+    // lastly, emit custom hover/unhover events
     var oldhoverdata = gd._hoverdata,
         newhoverdata = [];
 
@@ -547,13 +548,13 @@ function hover(gd, evt, subplot){
 
     if(!hoverChanged(gd, evt, oldhoverdata)) return;
 
-    // trigger the custom hover handler. Bind this like:
+    // emit the custom hover handler. Bind this like:
     // $(gd).on('hover.plotly',
     //    function(event,extras){ do something with extras.data });
     if(oldhoverdata) {
-        $(gd).trigger('plotly_unhover', {points: oldhoverdata});
+        gd.emit('plotly_unhover', {points: oldhoverdata});
     }
-    $(gd).trigger('plotly_hover', {
+    gd.emit('plotly_hover', {
         points: gd._hoverdata,
         xaxes: xaArray,
         yaxes: yaArray,
@@ -1222,7 +1223,7 @@ function alignHoverText(hoverLabels, rotateLabels) {
 }
 
 function hoverChanged(gd, evt, oldhoverdata) {
-    // don't trigger any events if nothing changed or
+    // don't emit any events if nothing changed or
     // if fx.hover was called manually
     if(!evt.target) return false;
     if(!oldhoverdata || oldhoverdata.length!==gd._hoverdata.length) return true;
@@ -1238,17 +1239,17 @@ function hoverChanged(gd, evt, oldhoverdata) {
     return false;
 }
 
-// remove hover effects on mouse out, and trigger unhover event
+// remove hover effects on mouse out, and emit unhover event
 function unhover(gd, evt){
     var fullLayout = gd._fullLayout;
     if(!evt) evt = {};
     if(evt.target &&
-            $(gd).triggerHandler('plotly_beforehover',evt)===false) {
+       Events.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
         return;
     }
     fullLayout._hoverlayer.selectAll('g').remove();
     if(evt.target && gd._hoverdata) {
-        $(gd).trigger('plotly_unhover', {points: gd._hoverdata});
+        gd.emit('plotly_unhover', {points: gd._hoverdata});
     }
     gd._hoverdata = undefined;
 }
@@ -1256,7 +1257,7 @@ function unhover(gd, evt){
 // on click
 fx.click = function(gd,evt){
     if(gd._hoverdata && evt && evt.target) {
-        $(gd).trigger('plotly_click', {points: gd._hoverdata});
+        gd.emit('plotly_click', {points: gd._hoverdata});
         // why do we get a double event without this???
         evt.stopImmediatePropagation();
     }
@@ -1346,8 +1347,12 @@ function chooseModebarButtons(fullLayout) {
 
     if(fullLayout._hasCartesian) {
         buttons.push(['hoverClosest2d', 'hoverCompare2d']);
-    } else if(fullLayout._hasPie) {
+    }
+    else if(fullLayout._hasPie) {
         buttons.push(['hoverClosestPie']);
+    }
+    else if(fullLayout._hasGL2D) {
+        buttons.push(['hoverClosestGl2d']);
     }
 
     return buttons;

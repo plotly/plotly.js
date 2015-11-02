@@ -54,7 +54,6 @@ Gl3dAxes.supplyLayoutDefaults = function(layoutIn, layoutOut, options) {
 
         coerce('showaxeslabels');
     }
-
 };
 
 Gl3dAxes.setConvert = function (containerOut) {
