@@ -1923,6 +1923,13 @@ plots.purge = function(gd) {
     // note: we DO NOT remove _context because it doesn't change when we insert
     // a new plot, and may have been set outside of our scope.
 
+    // clean up the gl and geo containers
+    // TODO unify subplot creation/update with d3.selection.order
+    // and/or subplot ids
+    var fullLayout = gd._fullLayout || {};
+    if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
+    if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
+
     // data and layout
     delete gd.data;
     delete gd.layout;
@@ -1933,6 +1940,7 @@ plots.purge = function(gd) {
     delete gd.empty;
 
     delete gd.fid;
+
 
     delete gd.undoqueue; // action queue
     delete gd.undonum;
