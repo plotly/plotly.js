@@ -114,26 +114,30 @@ fx.init = function(gd) {
             // mousemove events for all data hover effects
             var maindrag = dragBox(gd, plotinfo, 0, 0,
                 xa._length, ya._length,'ns','ew');
-            $(maindrag)
-                .mousemove(function(evt){
-                    fx.hover(gd,evt,subplot);
-                    fullLayout._lasthover = maindrag;
-                    fullLayout._hoversubplot = subplot;
-                })
-                .mouseout(function(evt) {
-                /*
-                 * IMPORTANT:
-                 * We must check for the presence of the drag cover here.
-                 * If we don't, a 'mouseout' event is trigger on the
-                 * maindrag before each 'click' event, which has the effect
-                 * of cancelling the click event.
-                 */
-                    if(fullLayout._dragCover) return;
-                    fx.unhover(gd, evt);
-                })
-                .click(function(evt) {
-                    fx.click(gd, evt);
-                });
+
+            maindrag.onmousemove = function(evt) {
+                fx.hover(gd, evt, subplot);
+                fullLayout._lasthover = maindrag;
+                fullLayout._hoversubplot = subplot;
+            };
+
+            /*
+             * IMPORTANT:
+             * We must check for the presence of the drag cover here.
+             * If we don't, a 'mouseout' event is trigger on the
+             * maindrag before each 'click' event, which has the effect
+             * of clearing the hoverdata; thus, cancelling the click event.
+             */
+            maindrag.onmouseout = function(evt) {
+                if(gd._dragging) return;
+
+                fx.unhover(gd, evt);
+            };
+
+            maindrag.onclick = function(evt) {
+                fx.click(gd, evt);
+            };
+
             // corner draggers
             dragBox(gd, plotinfo, -DRAGGERSIZE, -DRAGGERSIZE,
                 DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
@@ -2070,7 +2074,6 @@ fx.dragElement = function(options) {
         if(options.prepFn) options.prepFn(e, startX, startY);
 
         dragCover = coverSlip();
-        gd._fullLayout._dragCover = dragCover;
 
         dragCover.onmousemove = onMove;
         dragCover.onmouseup = onDone;
@@ -2096,7 +2099,6 @@ fx.dragElement = function(options) {
         dragCover.onmouseup = null;
         dragCover.onmouseout = null;
         Plotly.Lib.removeElement(dragCover);
-        delete gd._fullLayout._dragCover;
 
         if(!gd._dragging) {
             gd._dragged = false;
