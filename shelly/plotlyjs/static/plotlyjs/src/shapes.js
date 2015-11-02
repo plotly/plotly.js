@@ -10,28 +10,6 @@ var extendFlat = Plotly.Lib.extendFlat,
 
 shapes.layoutAttributes = {
     _isLinkedToArray: true,
-    opacity: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        dflt: 1,
-        role: 'info',
-        description: 'Sets the opacity of the shape.'
-    },
-    line: {
-        color: scatterLineAttrs.color,
-        width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
-        role: 'info'
-    },
-    fillcolor: {
-        valType: 'color',
-        dflt: 'rgba(0,0,0,0)',
-        role: 'info',
-        description: [
-            'Sets the color filling the shape\'s interior.'
-        ].join(' ')
-    },
     type: {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
@@ -131,6 +109,29 @@ shapes.layoutAttributes = {
             'strings, we can\'t use either to separate date from time parts.',
             'Therefore we\'ll use underscore for this purpose:',
             '2015-02-21_13:45:56.789'
+        ].join(' ')
+    },
+
+    opacity: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 1,
+        role: 'info',
+        description: 'Sets the opacity of the shape.'
+    },
+    line: {
+        color: scatterLineAttrs.color,
+        width: scatterLineAttrs.width,
+        dash: scatterLineAttrs.dash,
+        role: 'info'
+    },
+    fillcolor: {
+        valType: 'color',
+        dflt: 'rgba(0,0,0,0)',
+        role: 'info',
+        description: [
+            'Sets the color filling the shape\'s interior.'
         ].join(' ')
     }
 };

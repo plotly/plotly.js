@@ -33,7 +33,7 @@ exports.ModeBar = require('./modebar');
 exports.Icons = require('../build/ploticon');
 require('../build/plotcss');
 
-// 3D
+// GL3D
 exports.Gl3dLayout = require('./gl3d/defaults/gl3dlayout');
 exports.Gl3dAxes = require('./gl3d/defaults/gl3daxes');
 exports.Scatter3D = require('./gl3d/defaults/scatter3d');
@@ -47,6 +47,10 @@ exports.GeoAxes = require('./geo/defaults/geoaxes');
 exports.ScatterGeo = require('./geo/defaults/scattergeo');
 exports.Choropleth = require('./geo/defaults/choropleth');
 exports.Geo = require('./geo/geo');
+
+// GL2D
+exports.ScatterGl = require('./gl2d/scattergl/scattergl');
+exports.Scene2D = require('./gl2d/scene2d');
 
 // plot schema
 exports.PlotSchema = require('./plotschema');
@@ -62,3 +66,8 @@ exports.Queue = require('./queue');
 
 // exports d3 used in the bundle
 exports.d3 = require('d3');
+
+// custom styling injected via envify/uglifyify
+if(process.env.PLOTLY_CUSTOM_STYLE === "open-office-2015") {
+    require('./styles/open_office_2015')();
+}
