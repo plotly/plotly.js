@@ -73,13 +73,14 @@ function createPlot (divId, type) {
     graphDiv.toolPanel = toolPanel = new ToolPanel(Plotly, graphDiv, {
         standalone: true,
         slideoutDirection: 'right'
+        popoverContainer: containerDiv,
+        menuStyle: 'descriptive'
     });
 
     window.toolPanel = graphDiv.toolPanel;
 
     graphDiv.toolPanel.makeMenu({
-        toolMenuContainer: toolDiv,
-        menuStyle: 'classic'
+        toolMenuContainer: toolDiv
     });
 
     toolPanel.createMenuMultiButton([
