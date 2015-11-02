@@ -11,7 +11,8 @@ var scatter = module.exports = {};
 Plotly.Plots.register(scatter, 'scatter',
     ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
     description: [
-        'The data visualized as scatter point or lines is set in `x` and `y`',
+        'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
+        'The data visualized as scatter point or lines is set in `x` and `y`.',
         'Text (appearing either on the chart or on hover only) is via `text`.',
         'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
         'to a numerical arrays.'
@@ -93,7 +94,9 @@ scatter.attributes = {
             'Determines the drawing mode for this scatter trace.',
             'If the provided `mode` includes *text* then the `text` elements',
             'appear at the coordinates. Otherwise, the `text` elements',
-            'appear on hover.'
+            'appear on hover.',
+            'If there are less than ' + scatter.PTS_LINESONLY + ' points,',
+            'then the default is *lines+markers*. Otherwise, *lines*.'
         ].join(' ')
     },
     line: {
@@ -141,7 +144,10 @@ scatter.attributes = {
             values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
             dflt: 'solid',
             role: 'style',
-            description: 'Sets the style of the lines.'
+            description: [
+                'Sets the style of the lines. Set to a dash string type',
+                'or a dash length in px.'
+            ].join(' ')
         }
     },
     connectgaps: {
@@ -329,7 +335,7 @@ scatter.attributes = {
                 valType: 'colorscale',
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Sets the colorscale.'
                 ].join(' ')
             },
@@ -338,7 +344,7 @@ scatter.attributes = {
                 dflt: true,
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Determines the whether or not the color domain is computed',
                     'with respect to the input data.'
                 ].join(' ')
@@ -348,7 +354,7 @@ scatter.attributes = {
                 dflt: null,
                 role: 'info',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Sets the upper bound of the color domain.'
                 ].join(' ')
             },
@@ -357,7 +363,7 @@ scatter.attributes = {
                 dflt: null,
                 role: 'info',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Sets the lower bound of the color domain.'
                 ].join(' ')
             },
@@ -366,7 +372,7 @@ scatter.attributes = {
                 dflt: true,
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Determines whether or not the colorscale is picked using',
                     'the sign of values inside `marker.line.color`.'
                 ].join(' ')
@@ -376,7 +382,7 @@ scatter.attributes = {
                 dflt: false,
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Reverses the colorscale.'
                 ].join(' ')
             }
