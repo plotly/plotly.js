@@ -1,3 +1,5 @@
+var d3 = require('d3');
+
 function addProjectionToD3() {
   d3.geo.project = function(object, projection) {
     var stream = projection.stream;

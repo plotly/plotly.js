@@ -1,17 +1,18 @@
 'use strict';
+
 /* jshint camelcase: false */
 
-// ---external global dependencies
-/* global d3:false */
-
-var scatter = module.exports = {},
-    Plotly = require('./plotly'),
+var Plotly = require('./plotly'),
+    d3 = require('d3'),
     isNumeric = require('./isnumeric');
+
+var scatter = module.exports = {};
 
 Plotly.Plots.register(scatter, 'scatter',
     ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
     description: [
-        'The data visualized as scatter point or lines is set in `x` and `y`',
+        'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
+        'The data visualized as scatter point or lines is set in `x` and `y`.',
         'Text (appearing either on the chart or on hover only) is via `text`.',
         'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
         'to a numerical arrays.'
@@ -93,7 +94,9 @@ scatter.attributes = {
             'Determines the drawing mode for this scatter trace.',
             'If the provided `mode` includes *text* then the `text` elements',
             'appear at the coordinates. Otherwise, the `text` elements',
-            'appear on hover.'
+            'appear on hover.',
+            'If there are less than ' + scatter.PTS_LINESONLY + ' points,',
+            'then the default is *lines+markers*. Otherwise, *lines*.'
         ].join(' ')
     },
     line: {
@@ -141,7 +144,10 @@ scatter.attributes = {
             values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
             dflt: 'solid',
             role: 'style',
-            description: 'Sets the style of the lines.'
+            description: [
+                'Sets the style of the lines. Set to a dash string type',
+                'or a dash length in px.'
+            ].join(' ')
         }
     },
     connectgaps: {
@@ -329,7 +335,7 @@ scatter.attributes = {
                 valType: 'colorscale',
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Sets the colorscale.'
                 ].join(' ')
             },
@@ -338,7 +344,7 @@ scatter.attributes = {
                 dflt: true,
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Determines the whether or not the color domain is computed',
                     'with respect to the input data.'
                 ].join(' ')
@@ -348,7 +354,7 @@ scatter.attributes = {
                 dflt: null,
                 role: 'info',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Sets the upper bound of the color domain.'
                 ].join(' ')
             },
@@ -357,7 +363,7 @@ scatter.attributes = {
                 dflt: null,
                 role: 'info',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Sets the lower bound of the color domain.'
                 ].join(' ')
             },
@@ -366,7 +372,7 @@ scatter.attributes = {
                 dflt: true,
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Determines whether or not the colorscale is picked using',
                     'the sign of values inside `marker.line.color`.'
                 ].join(' ')
@@ -376,7 +382,7 @@ scatter.attributes = {
                 dflt: false,
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.color.line` is set to a numerical array.',
+                    'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Reverses the colorscale.'
                 ].join(' ')
             }
@@ -506,23 +512,8 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     }
 
     coerce('fill');
-    if(traceOut.fill!=='none') {
-        var inheritColorFromMarker = false;
-        if(traceOut.marker) {
-            // don't try to inherit a color array
-            var markerColor = traceOut.marker.color,
-                markerLineColor = (traceOut.marker.line||{}).color;
-            if(markerColor && !Array.isArray(markerColor)) {
-                inheritColorFromMarker = markerColor;
-            }
-            else if(markerLineColor && !Array.isArray(markerLineColor)) {
-                inheritColorFromMarker = markerLineColor;
-            }
-        }
-        coerce('fillcolor', Plotly.Color.addOpacity(
-            (traceOut.line||{}).color ||
-            inheritColorFromMarker ||
-            defaultColor, 0.5));
+    if(traceOut.fill !== 'none') {
+        scatter.fillColorDefaults(traceIn, traceOut, defaultColor, coerce);
         if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut, coerce);
     }
 
@@ -532,7 +523,7 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     }
 };
 
-// common to 'scatter', 'scatter3d' and 'scattergeo'
+// common to 'scatter', 'scatter3d', 'scattergeo' and 'scattergl'
 scatter.lineDefaults = function(traceIn, traceOut, defaultColor, coerce) {
     var markerColor = (traceIn.marker || {}).color;
 
@@ -548,7 +539,7 @@ function lineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape==='spline') coerce('line.smoothing');
 }
 
-// common to 'scatter', 'scatter3d' and 'scattergeo'
+// common to 'scatter', 'scatter3d', 'scattergeo' and 'scattergl'
 scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerce) {
     var isBubble = scatter.isBubble(traceIn),
         lineColor = (traceIn.line || {}).color,
@@ -596,6 +587,30 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
 scatter.textDefaults = function(traceIn, traceOut, layout, coerce) {
     coerce('textposition');
     Plotly.Lib.coerceFont(coerce, 'textfont', layout.font);
+};
+
+// common to 'scatter' and 'scattergl'
+scatter.fillColorDefaults = function(traceIn, traceOut, defaultColor, coerce) {
+    var inheritColorFromMarker = false;
+
+    if(traceOut.marker) {
+        // don't try to inherit a color array
+        var markerColor = traceOut.marker.color,
+            markerLineColor = (traceOut.marker.line || {}).color;
+
+        if(markerColor && !Array.isArray(markerColor)) {
+            inheritColorFromMarker = markerColor;
+        }
+        else if(markerLineColor && !Array.isArray(markerLineColor)) {
+            inheritColorFromMarker = markerLineColor;
+        }
+    }
+
+    coerce('fillcolor', Plotly.Color.addOpacity(
+        (traceOut.line || {}).color ||
+        inheritColorFromMarker ||
+        defaultColor, 0.5
+    ));
 };
 
 scatter.cleanData = function(fullData) {
@@ -1230,35 +1245,38 @@ scatter.style = function(gd) {
         .call(Plotly.Drawing.fillGroupStyle);
 };
 
-function traceColor(trace, di) {
+scatter.getTraceColor = function(trace, di) {
     var lc, tc;
+
     // TODO: text modes
-    if(trace.mode==='lines') {
+
+    if(trace.mode === 'lines') {
         lc = trace.line.color;
         return (lc && Plotly.Color.opacity(lc)) ?
             lc : trace.fillcolor;
     }
-    else if(trace.mode==='none') {
+    else if(trace.mode === 'none') {
         return trace.fill ? trace.fillcolor : '';
     }
-
     else {
-        var mc = di.mcc || (trace.marker||{}).color,
-            mlc = di.mlcc || ((trace.marker||{}).line||{}).color;
+        var mc = di.mcc || (trace.marker || {}).color,
+            mlc = di.mlcc || ((trace.marker || {}).line || {}).color;
+
         tc = (mc && Plotly.Color.opacity(mc)) ? mc :
             (mlc && Plotly.Color.opacity(mlc) &&
-                (di.mlw || ((trace.marker||{}).line||{}).width)) ? mlc : '';
+                (di.mlw || ((trace.marker || {}).line || {}).width)) ? mlc : '';
+
         if(tc) {
             // make sure the points aren't TOO transparent
-            if(Plotly.Color.opacity(tc)<0.3) {
+            if(Plotly.Color.opacity(tc) < 0.3) {
                 return Plotly.Color.addOpacity(tc, 0.3);
             }
             else return tc;
         }
         else {
-            lc = (trace.line||{}).color;
+            lc = (trace.line || {}).color;
             return (lc && Plotly.Color.opacity(lc) &&
-                Plotly.Scatter.hasLines(trace) && trace.line.width) ?
+                scatter.hasLines(trace) && trace.line.width) ?
                     lc : trace.fillcolor;
         }
     }
@@ -1300,7 +1318,7 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
         yc = ya.c2p(di.y, true),
         rad = di.mrc||1;
 
-    pointData.color = traceColor(trace, di);
+    pointData.color = scatter.getTraceColor(trace, di);
 
     pointData.x0 = xc - rad;
     pointData.x1 = xc + rad;
