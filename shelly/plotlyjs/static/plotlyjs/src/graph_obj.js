@@ -338,7 +338,7 @@ plots.addLinks = function(gd) {
         spacespan = linkContainer.select('.js-link-spacer'),
         sourcespan = linkContainer.select('.js-sourcelinks');
 
-    if(gd._context.showSources) gd._context.showSources();
+    if(gd._context.showSources) gd._context.showSources(gd);
 
     // 'view in plotly' link for embedded plots
     if(gd._context.showLink) positionPlayWithData(gd, toolspan);
