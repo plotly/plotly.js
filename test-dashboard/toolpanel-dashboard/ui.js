@@ -72,9 +72,10 @@ function createPlot (divId, type) {
 
     graphDiv.toolPanel = toolPanel = new ToolPanel(Plotly, graphDiv, {
         standalone: true,
-        slideoutDirection: 'right'
+        slideoutDirection: 'right',
         popoverContainer: containerDiv,
-        menuStyle: 'descriptive'
+        menuStyle: 'minimal',
+        orientation: 'horizontal'
     });
 
     window.toolPanel = graphDiv.toolPanel;
