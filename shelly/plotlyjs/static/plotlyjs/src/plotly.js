@@ -2,11 +2,14 @@ require('es6-promise').polyfill();
 
 // order of requires should matter only for interdependencies
 // in attributes definitions. put the common modules first
+
 exports.Lib = require('./lib/lib');
 exports.util = require('./lib/plotly_util');
 
-exports.micropolar = require('./polar/micropolar');
-exports.micropolar.manager = require('./polar/micropolar_manager');
+// icons, css and configuration
+exports.Icons = require('../build/ploticon');
+require('../build/plotcss');
+exports.MathJaxConfig = require('./fonts/mathjax_config');
 
 exports.Color = require('./color');
 exports.Colorscale = require('./colorscale');
@@ -30,8 +33,10 @@ exports.Annotations = require('./annotations');
 exports.Shapes = require('./shapes');
 exports.Legend = require('./legend');
 exports.ModeBar = require('./modebar');
-exports.Icons = require('../build/ploticon');
-require('../build/plotcss');
+
+// polar
+exports.micropolar = require('./polar/micropolar');
+exports.micropolar.manager = require('./polar/micropolar_manager');
 
 // GL3D
 exports.Gl3dLayout = require('./gl3d/defaults/gl3dlayout');
@@ -55,8 +60,6 @@ exports.Scene2D = require('./gl2d/scene2d');
 // plot schema
 exports.PlotSchema = require('./plotschema');
 
-// configuration
-exports.Config = require('./config');
 
 // imaging Routines
 exports.Snapshot = require('./snapshot/snapshot');
