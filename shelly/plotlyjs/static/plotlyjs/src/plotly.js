@@ -10,7 +10,7 @@ exports.util = require('./lib/plotly_util');
 exports.Icons = require('../build/ploticon');
 require('../build/plotcss');
 exports.MathJaxConfig = require('./fonts/mathjax_config');
-exports.defaultConfig = require('./config');
+exports.defaultConfig = require('./plot_config');
 
 exports.Color = require('./color');
 exports.Colorscale = require('./colorscale');
