@@ -175,18 +175,25 @@ fx.init = function(gd) {
     // in case you mousemove over some hovertext, send it to fx.hover too
     // we do this so that we can put the hover text in front of everything,
     // but still be able to interact with everything as if it isn't there
-    $(fullLayout._hoverlayer.node())
-        .off('mousemove click')
-        .on('mousemove',function(evt){
-            evt.target = fullLayout._lasthover;
-            fx.hover(gd,evt,fullLayout._hoversubplot);
-        })
-        .on('click',function(evt){
-            evt.target = fullLayout._lasthover;
-            fx.click(gd,evt);
-        });
+    var hoverLayer = fullLayout._hoverlayer.node();
+
+    function mousemoveHandler(evt) {
+        evt.target = fullLayout._lasthover;
+        fx.hover(gd, evt, fullLayout._hoversubplot);
+    }
+
+    function clickHandler(evt) {
+        evt.target = fullLayout._lasthover;
+        fx.click(gd, evt);
+    }
+
+    hoverLayer.removeEventListener('mousemove', mousemoveHandler);
+    hoverLayer.removeEventListener('click', clickHandler);
+    hoverLayer.addEventListener('mousemove', mousemoveHandler);
+    hoverLayer.addEventListener('click', clickHandler);
+
     // also delegate mousedowns... TODO: does this actually work?
-    fullLayout._hoverlayer.node().onmousedown = function(evt){
+    hoverLayer.onmousedown = function(evt) {
         fullLayout._lasthover.onmousedown(evt);
     };
 };
