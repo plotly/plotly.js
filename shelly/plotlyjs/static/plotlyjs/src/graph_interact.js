@@ -78,7 +78,7 @@ fx.init = function(gd) {
 
     if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
 
-    var subplots = Object.keys(fullLayout._plots).sort(function(a,b) {
+    var subplots = Object.keys(fullLayout._plots || {}).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number
         if( (fullLayout._plots[a].mainplot && true) ===
                 (fullLayout._plots[b].mainplot && true) ) {
@@ -1356,8 +1356,12 @@ function chooseModebarButtons(fullLayout) {
 
     if(fullLayout._hasCartesian) {
         buttons.push(['hoverClosest2d', 'hoverCompare2d']);
-    } else if(fullLayout._hasPie) {
+    }
+    else if(fullLayout._hasPie) {
         buttons.push(['hoverClosestPie']);
+    }
+    else if(fullLayout._hasGL2D) {
+        buttons.push(['hoverClosestGl2d']);
     }
 
     return buttons;

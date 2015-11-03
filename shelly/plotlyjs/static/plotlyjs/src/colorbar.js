@@ -542,7 +542,7 @@ colorbar.attributes = {
         description: [
             'Determines whether this color bar\'s thickness',
             '(i.e. the measure in the constant color direction)',
-            'is set in units of plot *fraction* or in *pixels.',
+            'is set in units of plot *fraction* or in *pixels*.',
             'Use `thickness` to set the value.'
         ].join(' ')
     },
@@ -583,6 +583,8 @@ colorbar.attributes = {
     x: {
         valType: 'number',
         dflt: 1.02,
+        min: -2,
+        max: 3,
         role: 'style',
         description: [
             'Sets the x position of the color bar (in plot fraction).'
@@ -594,7 +596,7 @@ colorbar.attributes = {
         dflt: 'left',
         role: 'style',
         description: [
-            'Sets this color bar\'s horizontal position anchor',
+            'Sets this color bar\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
             'or *right* of the color bar.'
         ].join(' ')
@@ -610,6 +612,8 @@ colorbar.attributes = {
         valType: 'number',
         role: 'style',
         dflt: 0.5,
+        min: -2,
+        max: 3,
         description: [
             'Sets the y position of the color bar (in plot fraction).'
         ].join(' ')

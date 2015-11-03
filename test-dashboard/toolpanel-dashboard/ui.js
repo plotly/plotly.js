@@ -31,6 +31,7 @@ function createPlot (divId) {
     graphDiv.style.verticalAlign = 'top';
 
     toolDiv.className = 'toolDiv';
+    toolDiv.style.width = '500px';
 
     containerDiv.appendChild(toolDiv);
     containerDiv.appendChild(graphDiv);
@@ -54,14 +55,14 @@ function createPlot (divId) {
 
     graphDiv.toolPanel = toolPanel = new ToolPanel(Plotly, graphDiv, {
         standalone: true,
-        popoverContainer: containerDiv
+        popoverContainer: containerDiv,
+        menuStyle: 'descriptive'
     });
 
     window.toolPanel = graphDiv.toolPanel;
 
     graphDiv.toolPanel.makeMenu({
-        toolMenuContainer: toolDiv,
-        menuStyle: 'narrow'
+        toolMenuContainer: toolDiv
     });
 
     toolPanel.createMenuMultiButton([
