@@ -1893,7 +1893,6 @@ plots.purge = function(gd) {
 
     delete gd.fid;
 
-
     delete gd.undoqueue; // action queue
     delete gd.undonum;
     delete gd.autoplay; // are we doing an action that doesn't go in undo queue?
