@@ -271,7 +271,6 @@ function setPlotContext(gd, config) {
 
     //staticPlot forces a bunch of others:
     if(context.staticPlot) {
-        context.workspace = false;
         context.editable = false;
         context.autosizable = false;
         context.scrollZoom = false;

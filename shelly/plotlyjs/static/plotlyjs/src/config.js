@@ -13,10 +13,6 @@ module.exports = {
     // no interactivity, for export or image generation
     staticPlot: false,
 
-    // we're in the workspace, so need toolbar etc
-    // TODO describe functionality instead?
-    workspace: false,
-
     // we can edit titles, move annotations, etc
     editable: false,
 

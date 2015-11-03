@@ -76,6 +76,10 @@ exports.d3 = require('d3');
 // override defaultConfig
 exports.defaultConfig.showSources = require('./addons/show_sources');
 
+// add 'workspace' config argument, which is used in workspace code
+// to determine whether a graphDiv is in the workspace.
+exports.defaultConfig.workspace = false;
+
 // custom styling injected via envify/uglifyify
 if(process.env.PLOTLY_CUSTOM_STYLE === "open-office-2015") {
     require('./styles/open_office_2015')();
