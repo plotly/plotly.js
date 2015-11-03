@@ -124,7 +124,7 @@ fx.init = function(gd) {
             /*
              * IMPORTANT:
              * We must check for the presence of the drag cover here.
-             * If we don't, a 'mouseout' event is trigger on the
+             * If we don't, a 'mouseout' event is triggered on the
              * maindrag before each 'click' event, which has the effect
              * of clearing the hoverdata; thus, cancelling the click event.
              */
