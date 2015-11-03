@@ -78,7 +78,7 @@ fx.init = function(gd) {
 
     if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
 
-    var subplots = Object.keys(fullLayout._plots).sort(function(a,b) {
+    var subplots = Object.keys(fullLayout._plots || {}).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number
         if( (fullLayout._plots[a].mainplot && true) ===
                 (fullLayout._plots[b].mainplot && true) ) {
