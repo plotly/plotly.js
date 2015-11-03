@@ -1,5 +1,4 @@
 'use strict';
-/* jshint camelcase: false */
 
 // ---external global dependencies
 /* global Promise:false */
@@ -241,63 +240,13 @@ plots.redrawText = function(gd) {
     });
 };
 
-// where and how the background gets set can be overridden by context
-// so we define the default (plotlyjs) behavior here
-function defaultSetBackground(gd, bgColor) {
-    try {
-        gd._fullLayout._paper.style('background', bgColor);
-    }
-    catch(e) { console.log(e); }
-}
-
 function opaqueSetBackground(gd, bgColor) {
     gd._fullLayout._paperdiv.style('background', 'white');
     defaultSetBackground(gd, bgColor);
 }
 
-// this will be transfered over to gd and overridden by
-// config args to Plotly.plot
-// the defaults are the appropriate settings for plotly.js,
-// so we get the right experience without any config argument
-plots.defaultConfig = {
-    // no interactivity, for export or image generation
-    staticPlot: false,
-    // we're in the workspace, so need toolbar etc
-    // TODO describe functionality instead?
-    workspace: false,
-    // we can edit titles, move annotations, etc
-    editable: false,
-    // plot will respect layout.autosize=true and infer its container size
-    autosizable: false,
-    // if we DO autosize, do we fill the container or the screen?
-    fillFrame: false,
-    // if we DO autosize, set the frame margins in percents of plot size
-    frameMargins: 0,
-    // mousewheel or two-finger scroll zooms the plot
-    scrollZoom: false,
-    // double click interaction (false, 'reset', 'autosize' or 'reset+autosize')
-    doubleClick: 'reset+autosize',
-    // new users see some hints about interactivity
-    showTips: true,
-    // link to open this plot in plotly
-    showLink: true,
-    // if we show a link, does it contain data or just link to a plotly file?
-    sendData: true,
-    // text appearing in the sendData link
-    linkText: 'Edit chart',
-    // display the modebar (true, false, or 'hover')
-    displayModeBar: 'hover',
-    // add the plotly logo on the end of the modebar
-    displaylogo: true,
-    // increase the pixel ratio for Gl plot images
-    plotGlPixelRatio: 2,
-    // fn to add the background color to a different container
-    // or 'opaque' to ensure there's white behind it
-    setBackground: defaultSetBackground
-};
-
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Plotly.Lib.extendFlat({}, plots.defaultConfig);
+    if(!gd._context) gd._context = Plotly.Lib.extendFlat({}, Plotly.defaultConfig);
     var context = gd._context;
 
     if(config) {
