@@ -3,7 +3,6 @@
 // ---external global dependencies
 /* global Promise:false */
 
-
 var Plotly = require('./plotly'),
     d3 = require('d3'),
     m4FromQuat = require('gl-mat4/fromQuat'),
@@ -242,7 +241,7 @@ plots.redrawText = function(gd) {
 
 function opaqueSetBackground(gd, bgColor) {
     gd._fullLayout._paperdiv.style('background', 'white');
-    defaultSetBackground(gd, bgColor);
+    Plotly.defaultConfig.setBackground(gd, bgColor);
 }
 
 function setPlotContext(gd, config) {
@@ -283,14 +282,20 @@ function setPlotContext(gd, config) {
     }
 }
 
-// the 'view in plotly' and source links - note that now plot() calls this
-// so it can regenerate whenever it replots
+/**
+ * Adds the 'Edit chart' link.
+ * Note that now Plotly.plot() calls this so it can regenerate whenever it replots
+ *
+ * Add source links to your graph inside the 'showSources' config argument.
+ */
 plots.addLinks = function(gd) {
     var fullLayout = gd._fullLayout;
-    var linkContainer = fullLayout._paper.selectAll('text.js-plot-link-container').data([0]);
+
+    var linkContainer = fullLayout._paper
+        .selectAll('text.js-plot-link-container').data([0]);
 
     linkContainer.enter().append('text')
-        .classed('js-plot-link-container',true)
+        .classed('js-plot-link-container', true)
         .style({
             'font-family':'"Open Sans",Arial,sans-serif',
             'font-size':'12px',
@@ -299,9 +304,9 @@ plots.addLinks = function(gd) {
         })
         .each(function(){
             var links = d3.select(this);
-            links.append('tspan').classed('js-link-to-tool',true);
-            links.append('tspan').classed('js-link-spacer',true);
-            links.append('tspan').classed('js-sourcelinks',true);
+            links.append('tspan').classed('js-link-to-tool', true);
+            links.append('tspan').classed('js-link-spacer', true);
+            links.append('tspan').classed('js-sourcelinks', true);
         });
 
     // The text node inside svg
@@ -320,7 +325,8 @@ plots.addLinks = function(gd) {
         // Align the text at the left
         attrs['text-anchor'] = 'start';
         attrs.x = 5;
-    } else {
+    }
+    else {
         // Align the text at the right
         attrs['text-anchor'] = 'end';
         attrs.x = fullLayout._paper.attr('width') - 7;
@@ -328,16 +334,14 @@ plots.addLinks = function(gd) {
 
     linkContainer.attr(attrs);
 
-
     var toolspan = linkContainer.select('.js-link-to-tool'),
         spacespan = linkContainer.select('.js-link-spacer'),
         sourcespan = linkContainer.select('.js-sourcelinks');
 
-    // data source links
-    Plotly.Lib.showSources(gd);
+    if(gd._context.showSources) gd._context.showSources();
 
     // 'view in plotly' link for embedded plots
-    if(gd._context.showLink) positionPlayWithData(gd,toolspan);
+    if(gd._context.showLink) positionPlayWithData(gd, toolspan);
 
     // separator if we have both sources and tool link
     spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');

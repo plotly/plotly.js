@@ -61,7 +61,6 @@ exports.Scene2D = require('./gl2d/scene2d');
 // plot schema
 exports.PlotSchema = require('./plotschema');
 
-
 // imaging Routines
 exports.Snapshot = require('./snapshot/snapshot');
 
@@ -70,6 +69,12 @@ exports.Queue = require('./queue');
 
 // exports d3 used in the bundle
 exports.d3 = require('d3');
+
+// --- above will be in the plotly.js repo,
+// below will be in the streambed plotlyjs only
+
+// override defaultConfig
+exports.defaultConfig.showSource = require('./addons/show_sources');
 
 // custom styling injected via envify/uglifyify
 if(process.env.PLOTLY_CUSTOM_STYLE === "open-office-2015") {
