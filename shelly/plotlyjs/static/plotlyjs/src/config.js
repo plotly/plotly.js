@@ -47,8 +47,8 @@ module.exports = {
     // text appearing in the sendData link
     linkText: 'Edit chart',
 
-    // false or function adding source to linkText <text>
-    showSource: false,
+    // false or function adding source(s) to linkText <text>
+    showSources: false,
 
     // display the modebar (true, false, or 'hover')
     displayModeBar: 'hover',

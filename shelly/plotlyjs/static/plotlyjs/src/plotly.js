@@ -74,7 +74,7 @@ exports.d3 = require('d3');
 // below will be in the streambed plotlyjs only
 
 // override defaultConfig
-exports.defaultConfig.showSource = require('./addons/show_sources');
+exports.defaultConfig.showSources = require('./addons/show_sources');
 
 // custom styling injected via envify/uglifyify
 if(process.env.PLOTLY_CUSTOM_STYLE === "open-office-2015") {
