@@ -97,20 +97,47 @@ describe('Test Plotly.Plots', function () {
 
     describe('Plotly.Plots.getSubplotIds', function() {
         var getSubplotIds = Plotly.Plots.getSubplotIds;
+        var layout;
 
-        var ids, layout;
-
-        it('it should return scene ids', function() {
+        it('returns scene ids', function() {
             layout = {
                 scene: {},
                 scene2: {},
                 scene3: {}
             };
 
-            ids = getSubplotIds(layout, 'gl3d');
-            expect(ids).toEqual(['scene', 'scene2', 'scene3']);
+            expect(getSubplotIds(layout, 'gl3d'))
+                .toEqual(['scene', 'scene2', 'scene3']);
+
+            expect(getSubplotIds(layout, 'cartesian'))
+                .toEqual([]);
+
+            expect(getSubplotIds(layout, 'no-valid-subplot-type'))
+                .toEqual([]);
         });
 
+        it('returns cartesian ids', function() {
+            layout = {
+                _plots: { xy: {}, x2y2: {} }
+            };
+
+            expect(getSubplotIds(layout, 'cartesian'))
+                .toEqual([]);
+
+            layout._hasCartesian = true;
+            expect(getSubplotIds(layout, 'cartesian'))
+                .toEqual(['xy', 'x2y2']);
+            expect(getSubplotIds(layout, 'gl2d'))
+                .toEqual([]);
+
+            delete layout._hasCartesian;
+            layout._hasGL2D = true;
+            expect(getSubplotIds(layout, 'gl2d'))
+                .toEqual(['xy', 'x2y2']);
+            expect(getSubplotIds(layout, 'cartesian'))
+                .toEqual([]);
+
+        });
     });
 
     describe('Plotly.Plots.getSubplotIdsInData', function() {
