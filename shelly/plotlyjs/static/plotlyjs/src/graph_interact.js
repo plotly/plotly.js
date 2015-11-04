@@ -1,12 +1,12 @@
 'use strict';
+
 /* jshint camelcase: false */
 
-// ---external global dependencies
-/* global d3:false */
-
 var Plotly = require('./plotly'),
+    d3 = require('d3'),
     tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric');
+    isNumeric = require('./isnumeric'),
+    Events = require('./events');
 
 var fx = module.exports = {};
 
@@ -78,7 +78,7 @@ fx.init = function(gd) {
 
     if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
 
-    var subplots = Object.keys(fullLayout._plots).sort(function(a,b) {
+    var subplots = Object.keys(fullLayout._plots || {}).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number
         if( (fullLayout._plots[a].mainplot && true) ===
                 (fullLayout._plots[b].mainplot && true) ) {
@@ -91,8 +91,11 @@ fx.init = function(gd) {
         return fullLayout._plots[a].mainplot ? 1 : -1;
     });
     subplots.forEach(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot],
-            xa = plotinfo.x(),
+        var plotinfo = fullLayout._plots[subplot];
+
+        if(!fullLayout._hasCartesian) return;
+
+        var xa = plotinfo.x(),
             ya = plotinfo.y(),
 
             // the y position of the main x axis line
@@ -111,35 +114,30 @@ fx.init = function(gd) {
             // mousemove events for all data hover effects
             var maindrag = dragBox(gd, plotinfo, 0, 0,
                 xa._length, ya._length,'ns','ew');
-            $(maindrag)
-                .mousemove(function(evt){
-                    fx.hover(gd,evt,subplot);
-                    fullLayout._lasthover = maindrag;
-                    fullLayout._hoversubplot = subplot;
-                })
-                .mouseout(function(evt) {
-                /*
-                 * !!! TERRIBLE HACK !!!
-                 *
-                 * For some reason, a 'mouseout' event is fired in IE on clicks
-                 * on the maindrag container before reaching the 'click' handler.
-                 *
-                 * This results in a call to `fx.unhover` before `fx.click` where
-                 * `unhover` sets `gd._hoverdata` to `undefined` causing the call
-                 * to `fx.click` to return early.
-                 *
-                 * The hack below makes the 'mouseout' handler bypass
-                 * `fx.unhover` in IE.
-                 *
-                 * Note that the 'mouseout' handler is called only when the mouse
-                 * cursor gets lost. Most 'unhover' calls happen from 'mousemove':
-                 * these are not affected by the hack below.
-                 */
-                    if( Plotly.Lib.isIE() ) return;
 
-                    fx.unhover(gd,evt);
-                })
-                .click(function(evt){ fx.click(gd,evt); });
+            maindrag.onmousemove = function(evt) {
+                fx.hover(gd, evt, subplot);
+                fullLayout._lasthover = maindrag;
+                fullLayout._hoversubplot = subplot;
+            };
+
+            /*
+             * IMPORTANT:
+             * We must check for the presence of the drag cover here.
+             * If we don't, a 'mouseout' event is triggered on the
+             * maindrag before each 'click' event, which has the effect
+             * of clearing the hoverdata; thus, cancelling the click event.
+             */
+            maindrag.onmouseout = function(evt) {
+                if(gd._dragging) return;
+
+                fx.unhover(gd, evt);
+            };
+
+            maindrag.onclick = function(evt) {
+                fx.click(gd, evt);
+            };
+
             // corner draggers
             dragBox(gd, plotinfo, -DRAGGERSIZE, -DRAGGERSIZE,
                 DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
@@ -378,7 +376,7 @@ function hover(gd, evt, subplot){
             // fire the beforehover event and quit if it returns false
             // note that we're only calling this on real mouse events, so
             // manual calls to fx.hover will always run.
-            if($(gd).triggerHandler('plotly_beforehover',evt)===false) {
+            if(Events.triggerHandler(gd, 'plotly_beforehover', evt)===false) {
                 return;
             }
 
@@ -529,7 +527,7 @@ function hover(gd, evt, subplot){
 
     alignHoverText(hoverLabels, rotateLabels);
 
-    // lastly, trigger custom hover/unhover events
+    // lastly, emit custom hover/unhover events
     var oldhoverdata = gd._hoverdata,
         newhoverdata = [];
 
@@ -554,13 +552,13 @@ function hover(gd, evt, subplot){
 
     if(!hoverChanged(gd, evt, oldhoverdata)) return;
 
-    // trigger the custom hover handler. Bind this like:
+    // emit the custom hover handler. Bind this like:
     // $(gd).on('hover.plotly',
     //    function(event,extras){ do something with extras.data });
     if(oldhoverdata) {
-        $(gd).trigger('plotly_unhover', {points: oldhoverdata});
+        gd.emit('plotly_unhover', {points: oldhoverdata});
     }
-    $(gd).trigger('plotly_hover', {
+    gd.emit('plotly_hover', {
         points: gd._hoverdata,
         xaxes: xaArray,
         yaxes: yaArray,
@@ -1229,7 +1227,7 @@ function alignHoverText(hoverLabels, rotateLabels) {
 }
 
 function hoverChanged(gd, evt, oldhoverdata) {
-    // don't trigger any events if nothing changed or
+    // don't emit any events if nothing changed or
     // if fx.hover was called manually
     if(!evt.target) return false;
     if(!oldhoverdata || oldhoverdata.length!==gd._hoverdata.length) return true;
@@ -1245,17 +1243,17 @@ function hoverChanged(gd, evt, oldhoverdata) {
     return false;
 }
 
-// remove hover effects on mouse out, and trigger unhover event
+// remove hover effects on mouse out, and emit unhover event
 function unhover(gd, evt){
     var fullLayout = gd._fullLayout;
     if(!evt) evt = {};
     if(evt.target &&
-            $(gd).triggerHandler('plotly_beforehover',evt)===false) {
+       Events.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
         return;
     }
     fullLayout._hoverlayer.selectAll('g').remove();
     if(evt.target && gd._hoverdata) {
-        $(gd).trigger('plotly_unhover', {points: gd._hoverdata});
+        gd.emit('plotly_unhover', {points: gd._hoverdata});
     }
     gd._hoverdata = undefined;
 }
@@ -1263,7 +1261,7 @@ function unhover(gd, evt){
 // on click
 fx.click = function(gd,evt){
     if(gd._hoverdata && evt && evt.target) {
-        $(gd).trigger('plotly_click', {points: gd._hoverdata});
+        gd.emit('plotly_click', {points: gd._hoverdata});
         // why do we get a double event without this???
         evt.stopImmediatePropagation();
     }
@@ -1353,8 +1351,12 @@ function chooseModebarButtons(fullLayout) {
 
     if(fullLayout._hasCartesian) {
         buttons.push(['hoverClosest2d', 'hoverCompare2d']);
-    } else if(fullLayout._hasPie) {
+    }
+    else if(fullLayout._hasPie) {
         buttons.push(['hoverClosestPie']);
+    }
+    else if(fullLayout._hasGL2D) {
+        buttons.push(['hoverClosestGl2d']);
     }
 
     return buttons;
