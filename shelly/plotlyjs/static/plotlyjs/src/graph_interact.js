@@ -176,20 +176,15 @@ fx.init = function(gd) {
     // but still be able to interact with everything as if it isn't there
     var hoverLayer = fullLayout._hoverlayer.node();
 
-    function mousemoveHandler(evt) {
+    hoverLayer.onmousemove = function(evt) {
         evt.target = fullLayout._lasthover;
         fx.hover(gd, evt, fullLayout._hoversubplot);
-    }
+    };
 
-    function clickHandler(evt) {
+    hoverLayer.onclick = function(evt) {
         evt.target = fullLayout._lasthover;
         fx.click(gd, evt);
-    }
-
-    hoverLayer.removeEventListener('mousemove', mousemoveHandler);
-    hoverLayer.removeEventListener('click', clickHandler);
-    hoverLayer.addEventListener('mousemove', mousemoveHandler);
-    hoverLayer.addEventListener('click', clickHandler);
+    };
 
     // also delegate mousedowns... TODO: does this actually work?
     hoverLayer.onmousedown = function(evt) {
