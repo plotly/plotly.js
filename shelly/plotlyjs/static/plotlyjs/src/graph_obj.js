@@ -364,16 +364,29 @@ function positionPlayWithData(gd, container){
 
             var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
 
-            var hiddenform = $(
-                '<div id="hiddenform" style="display:none;">' +
-                '<form action="' + baseUrl + '/external" ' +
-                    'method="post" target="_blank">'+
-                '<input type="text" name="data" /></form></div>'
-            ).appendTo(gd);
+            var hiddenformDiv = d3.select(gd)
+                .append('div')
+                .attr('id', 'hiddenform')
+                .style('display', 'none');
 
-            hiddenform.find('input').val(plots.graphJson(gd,false,'keepdata'));
-            hiddenform.find('form').submit();
-            hiddenform.remove();
+            var hiddenform = hiddenformDiv
+                .append('form')
+                .attr({
+                    action: baseUrl + '/external',
+                    method: 'post',
+                    target: '_blank'
+                });
+
+            var hiddenformInput = hiddenform
+                .append('input')
+                .attr({
+                    type: 'text',
+                    name: 'data'
+                });
+
+            hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
+            hiddenform.node().submit();
+            hiddenformDiv.remove();
 
             gd.emit('plotly_afterexport');
             return false;
