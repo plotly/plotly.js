@@ -78,7 +78,7 @@ fx.init = function(gd) {
 
     if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
 
-    var subplots = Object.keys(fullLayout._plots).sort(function(a,b) {
+    var subplots = Object.keys(fullLayout._plots || {}).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number
         if( (fullLayout._plots[a].mainplot && true) ===
                 (fullLayout._plots[b].mainplot && true) ) {
@@ -114,35 +114,30 @@ fx.init = function(gd) {
             // mousemove events for all data hover effects
             var maindrag = dragBox(gd, plotinfo, 0, 0,
                 xa._length, ya._length,'ns','ew');
-            $(maindrag)
-                .mousemove(function(evt){
-                    fx.hover(gd,evt,subplot);
-                    fullLayout._lasthover = maindrag;
-                    fullLayout._hoversubplot = subplot;
-                })
-                .mouseout(function(evt) {
-                /*
-                 * IMPORTANT: `fx.unhover(gd, evt)` has been commented out below
-                 * because in some browsers a 'mouseout' event is fired on clicks
-                 * on the maindrag container before reaching the 'click' handler.
-                 *
-                 * This results in a call to `fx.unhover` before `fx.click` where
-                 * `unhover` sets `gd._hoverdata` to `undefined` causing the call
-                 * to `fx.click` to return early.
-                 *
-                 * Note that the 'mouseout' handler is called only when the mouse
-                 * cursor gets lost. Most 'unhover' calls happen from 'mousemove';
-                 * these are not affected by the change below.
-                 *
-                 * Browsers where this behavior has been noticed:
-                 * - Chrome 46.0.2490.71
-                 * - Firefox 41.0.2
-                 * - IE 9, 10, 11
-                 */
-                    // fx.unhover(gd, evt);
-                    return;
-                })
-                .click(function(evt){ fx.click(gd,evt); });
+
+            maindrag.onmousemove = function(evt) {
+                fx.hover(gd, evt, subplot);
+                fullLayout._lasthover = maindrag;
+                fullLayout._hoversubplot = subplot;
+            };
+
+            /*
+             * IMPORTANT:
+             * We must check for the presence of the drag cover here.
+             * If we don't, a 'mouseout' event is triggered on the
+             * maindrag before each 'click' event, which has the effect
+             * of clearing the hoverdata; thus, cancelling the click event.
+             */
+            maindrag.onmouseout = function(evt) {
+                if(gd._dragging) return;
+
+                fx.unhover(gd, evt);
+            };
+
+            maindrag.onclick = function(evt) {
+                fx.click(gd, evt);
+            };
+
             // corner draggers
             dragBox(gd, plotinfo, -DRAGGERSIZE, -DRAGGERSIZE,
                 DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');

@@ -15,53 +15,73 @@ function createRemoveButton () {
     };
 }
 
-function createPlot (divId) {
+function createTrace (type) {
+
+    function rand() {
+        return Math.random() * 360;
+    }
+
+    var traces = {
+        polar: {
+            r: [1, 2, 3, 4],
+            t: [rand(), rand(), rand(), rand()],
+            type: 'scatter',
+            name: new Date()
+        },
+        line: {
+            x: [1, 2, 3, 4],
+            y: [rand(), rand(), rand(), rand()],
+            type: 'scatter',
+            name: new Date()
+        }
+    };
+
+    return traces[type] || traces.line;
+}
+
+function createPlot (divId, type) {
     var containerDiv = document.getElementById('main');
     var graphDiv = document.createElement('div');
     var toolDiv = document.createElement('div');
+
     containerDiv.style.width = '100%';
     containerDiv.style.height = '100%';
-    containerDiv.style.clear = 'both';
 
     graphDiv.id = divId;
-    graphDiv.style.width = '80%';
+    graphDiv.style.width = '50%';
     graphDiv.style.display = 'inline-block';
     graphDiv.style.margin = '0px';
-    graphDiv.style.position = 'relative';
     graphDiv.style.verticalAlign = 'top';
 
     toolDiv.className = 'toolDiv';
+    toolDiv.style.display = 'inline-block';
+    toolDiv.style.position = 'relative';
 
-    containerDiv.appendChild(toolDiv);
     containerDiv.appendChild(graphDiv);
+    containerDiv.appendChild(toolDiv);
 
-    var trace1 = {
-        x: [1, 2, 3, 4],
-        y: [10, 15, 13, 17],
-        type: 'scatter'
-    };
+    var data = [
+        createTrace(type),
+        createTrace(type),
+        createTrace(type)
+    ];
 
-    var trace2 = {
-        x: [1, 2, 3, 4],
-        y: [16, 5, 11, 9],
-        type: 'scatter'
-    };
-
-    var data = [trace1, trace2];
     var toolPanel;
 
     Plotly.newPlot(divId, data);
 
     graphDiv.toolPanel = toolPanel = new ToolPanel(Plotly, graphDiv, {
         standalone: true,
-        popoverContainer: containerDiv
+        slideoutDirection: 'right',
+        popoverContainer: containerDiv,
+        menuStyle: 'minimal',
+        orientation: 'horizontal'
     });
 
     window.toolPanel = graphDiv.toolPanel;
 
     graphDiv.toolPanel.makeMenu({
-        toolMenuContainer: toolDiv,
-        menuStyle: 'narrow'
+        toolMenuContainer: toolDiv
     });
 
     toolPanel.createMenuMultiButton([
@@ -86,7 +106,7 @@ function createPlot (divId) {
 }
 
 ['one'].forEach(function (index) {
-    createPlot(index);
+    createPlot(index, 'polar');
 });
 
 createRemoveButton();
