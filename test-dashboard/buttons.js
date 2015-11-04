@@ -82,7 +82,7 @@ function plotButtons(plots, figDir) {
         /*
          * Replot with staticPlot
          */
-        Plotly.plot(gd, data, layout, {staticPlot: true, plot3dPixelRatio: 2}).then( function () {
+        Plotly.plot(gd, data, layout, {staticPlot: true, plotGlPixelRatio: 2}).then( function () {
             Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
                   var scene = gd._fullLayout[key]._scene;
                   var dataURL = scene.toImage();
