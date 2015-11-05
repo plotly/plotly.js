@@ -1,9 +1,7 @@
 'use strict';
-/* jshint camelcase: false */
 
 // ---external global dependencies
 /* global Promise:false */
-
 
 var Plotly = require('./plotly'),
     d3 = require('d3'),
@@ -241,63 +239,13 @@ plots.redrawText = function(gd) {
     });
 };
 
-// where and how the background gets set can be overridden by context
-// so we define the default (plotlyjs) behavior here
-function defaultSetBackground(gd, bgColor) {
-    try {
-        gd._fullLayout._paper.style('background', bgColor);
-    }
-    catch(e) { console.log(e); }
-}
-
 function opaqueSetBackground(gd, bgColor) {
     gd._fullLayout._paperdiv.style('background', 'white');
-    defaultSetBackground(gd, bgColor);
+    Plotly.defaultConfig.setBackground(gd, bgColor);
 }
 
-// this will be transfered over to gd and overridden by
-// config args to Plotly.plot
-// the defaults are the appropriate settings for plotly.js,
-// so we get the right experience without any config argument
-plots.defaultConfig = {
-    // no interactivity, for export or image generation
-    staticPlot: false,
-    // we're in the workspace, so need toolbar etc
-    // TODO describe functionality instead?
-    workspace: false,
-    // we can edit titles, move annotations, etc
-    editable: false,
-    // plot will respect layout.autosize=true and infer its container size
-    autosizable: false,
-    // if we DO autosize, do we fill the container or the screen?
-    fillFrame: false,
-    // if we DO autosize, set the frame margins in percents of plot size
-    frameMargins: 0,
-    // mousewheel or two-finger scroll zooms the plot
-    scrollZoom: false,
-    // double click interaction (false, 'reset', 'autosize' or 'reset+autosize')
-    doubleClick: 'reset+autosize',
-    // new users see some hints about interactivity
-    showTips: true,
-    // link to open this plot in plotly
-    showLink: true,
-    // if we show a link, does it contain data or just link to a plotly file?
-    sendData: true,
-    // text appearing in the sendData link
-    linkText: 'Edit chart',
-    // display the modebar (true, false, or 'hover')
-    displayModeBar: 'hover',
-    // add the plotly logo on the end of the modebar
-    displaylogo: true,
-    // increase the pixel ratio for Gl plot images
-    plotGlPixelRatio: 2,
-    // fn to add the background color to a different container
-    // or 'opaque' to ensure there's white behind it
-    setBackground: defaultSetBackground
-};
-
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Plotly.Lib.extendFlat({}, plots.defaultConfig);
+    if(!gd._context) gd._context = Plotly.Lib.extendFlat({}, Plotly.defaultConfig);
     var context = gd._context;
 
     if(config) {
@@ -323,7 +271,6 @@ function setPlotContext(gd, config) {
 
     //staticPlot forces a bunch of others:
     if(context.staticPlot) {
-        context.workspace = false;
         context.editable = false;
         context.autosizable = false;
         context.scrollZoom = false;
@@ -334,14 +281,20 @@ function setPlotContext(gd, config) {
     }
 }
 
-// the 'view in plotly' and source links - note that now plot() calls this
-// so it can regenerate whenever it replots
+/**
+ * Adds the 'Edit chart' link.
+ * Note that now Plotly.plot() calls this so it can regenerate whenever it replots
+ *
+ * Add source links to your graph inside the 'showSources' config argument.
+ */
 plots.addLinks = function(gd) {
     var fullLayout = gd._fullLayout;
-    var linkContainer = fullLayout._paper.selectAll('text.js-plot-link-container').data([0]);
+
+    var linkContainer = fullLayout._paper
+        .selectAll('text.js-plot-link-container').data([0]);
 
     linkContainer.enter().append('text')
-        .classed('js-plot-link-container',true)
+        .classed('js-plot-link-container', true)
         .style({
             'font-family':'"Open Sans",Arial,sans-serif',
             'font-size':'12px',
@@ -350,9 +303,9 @@ plots.addLinks = function(gd) {
         })
         .each(function(){
             var links = d3.select(this);
-            links.append('tspan').classed('js-link-to-tool',true);
-            links.append('tspan').classed('js-link-spacer',true);
-            links.append('tspan').classed('js-sourcelinks',true);
+            links.append('tspan').classed('js-link-to-tool', true);
+            links.append('tspan').classed('js-link-spacer', true);
+            links.append('tspan').classed('js-sourcelinks', true);
         });
 
     // The text node inside svg
@@ -371,7 +324,8 @@ plots.addLinks = function(gd) {
         // Align the text at the left
         attrs['text-anchor'] = 'start';
         attrs.x = 5;
-    } else {
+    }
+    else {
         // Align the text at the right
         attrs['text-anchor'] = 'end';
         attrs.x = fullLayout._paper.attr('width') - 7;
@@ -379,16 +333,14 @@ plots.addLinks = function(gd) {
 
     linkContainer.attr(attrs);
 
-
     var toolspan = linkContainer.select('.js-link-to-tool'),
         spacespan = linkContainer.select('.js-link-spacer'),
         sourcespan = linkContainer.select('.js-sourcelinks');
 
-    // data source links
-    Plotly.Lib.showSources(gd);
+    if(gd._context.showSources) gd._context.showSources(gd);
 
     // 'view in plotly' link for embedded plots
-    if(gd._context.showLink) positionPlayWithData(gd,toolspan);
+    if(gd._context.showLink) positionPlayWithData(gd, toolspan);
 
     // separator if we have both sources and tool link
     spacespan.text((toolspan.text() && sourcespan.text()) ? ' - ' : '');
@@ -412,16 +364,29 @@ function positionPlayWithData(gd, container){
 
             var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
 
-            var hiddenform = $(
-                '<div id="hiddenform" style="display:none;">' +
-                '<form action="' + baseUrl + '/external" ' +
-                    'method="post" target="_blank">'+
-                '<input type="text" name="data" /></form></div>'
-            ).appendTo(gd);
+            var hiddenformDiv = d3.select(gd)
+                .append('div')
+                .attr('id', 'hiddenform')
+                .style('display', 'none');
 
-            hiddenform.find('input').val(plots.graphJson(gd,false,'keepdata'));
-            hiddenform.find('form').submit();
-            hiddenform.remove();
+            var hiddenform = hiddenformDiv
+                .append('form')
+                .attr({
+                    action: baseUrl + '/external',
+                    method: 'post',
+                    target: '_blank'
+                });
+
+            var hiddenformInput = hiddenform
+                .append('input')
+                .attr({
+                    type: 'text',
+                    name: 'data'
+                });
+
+            hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
+            hiddenform.node().submit();
+            hiddenformDiv.remove();
 
             gd.emit('plotly_afterexport');
             return false;
