@@ -1,7 +1,5 @@
 'use strict';
 
-/* jshint camelcase: false */
-
 var Plotly = require('./plotly'),
     d3 = require('d3'),
     tinycolor = require('tinycolor2'),
@@ -90,6 +88,7 @@ fx.init = function(gd) {
         }
         return fullLayout._plots[a].mainplot ? 1 : -1;
     });
+
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
 
@@ -172,21 +171,23 @@ fx.init = function(gd) {
         }
     });
 
-    // in case you mousemove over some hovertext, send it to fx.hover too
+    // In case you mousemove over some hovertext, send it to fx.hover too
     // we do this so that we can put the hover text in front of everything,
     // but still be able to interact with everything as if it isn't there
-    $(fullLayout._hoverlayer.node())
-        .off('mousemove click')
-        .on('mousemove',function(evt){
-            evt.target = fullLayout._lasthover;
-            fx.hover(gd,evt,fullLayout._hoversubplot);
-        })
-        .on('click',function(evt){
-            evt.target = fullLayout._lasthover;
-            fx.click(gd,evt);
-        });
+    var hoverLayer = fullLayout._hoverlayer.node();
+
+    hoverLayer.onmousemove = function(evt) {
+        evt.target = fullLayout._lasthover;
+        fx.hover(gd, evt, fullLayout._hoversubplot);
+    };
+
+    hoverLayer.onclick = function(evt) {
+        evt.target = fullLayout._lasthover;
+        fx.click(gd, evt);
+    };
+
     // also delegate mousedowns... TODO: does this actually work?
-    fullLayout._hoverlayer.node().onmousedown = function(evt){
+    hoverLayer.onmousedown = function(evt) {
         fullLayout._lasthover.onmousedown(evt);
     };
 };
@@ -552,11 +553,13 @@ function hover(gd, evt, subplot){
 
     if(!hoverChanged(gd, evt, oldhoverdata)) return;
 
-    // emit the custom hover handler. Bind this like:
-    // $(gd).on('hover.plotly',
-    //    function(event,extras){ do something with extras.data });
+    /* Emit the custom hover handler. Bind this like:
+     *  gd.on('hover.plotly', function(extras) {
+     *      // do something with extras.data
+     *  });
+     */
     if(oldhoverdata) {
-        gd.emit('plotly_unhover', {points: oldhoverdata});
+        gd.emit('plotly_unhover', { points: oldhoverdata });
     }
     gd.emit('plotly_hover', {
         points: gd._hoverdata,
