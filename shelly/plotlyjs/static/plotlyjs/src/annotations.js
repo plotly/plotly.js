@@ -771,7 +771,8 @@ annotations.draw = function(gd, index, opt, value) {
         // add the arrow
         // uses options[arrowwidth,arrowcolor,arrowhead] for styling
         var drawArrow = function(dx, dy){
-            $(gd).find('.annotation-arrow-g[data-index="' + index + '"]')
+            d3.select(gd)
+                .selectAll('.annotation-arrow-g[data-index="' + index + '"]')
                 .remove();
             // find where to start the arrow:
             // at the border of the textbox, if that border is visible,
