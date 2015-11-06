@@ -1,9 +1,7 @@
 var fs = require('fs');
 
-fs.readFile(__dirname + '/build/plotlyjs-style.css', {encoding: 'utf8'}, function(err, data) {
-    'use strict';
-    if(err) throw err;
 
+module.exports = function pullCSS(data, pathOut) {
     var rules = {};
 
     data.split(/\s*\}\s*/).forEach(function(chunk) {
@@ -21,6 +19,7 @@ fs.readFile(__dirname + '/build/plotlyjs-style.css', {encoding: 'utf8'}, functio
                     'found: ' + selectorList);
             }
         });
+
         selectorList = selectorList
             .replace(/[\.]js-plotly-plot [\.]plotly/g, 'X')
             .replace(/[\.]plotly-notifier/g, 'Y');
@@ -34,18 +33,24 @@ fs.readFile(__dirname + '/build/plotlyjs-style.css', {encoding: 'utf8'}, functio
         rules[selectorList] = rules[selectorList] || '' + rule;
     });
 
-    var rulesStr = JSON.stringify(rules, null, 4)
-            .replace(/\"(\w+)\":/g, '$1:');
+    var rulesStr = JSON.stringify(rules, null, 4).replace(/\"(\w+)\":/g, '$1:');
 
-    fs.writeFile(__dirname + '/build/plotcss.js',
-        '\'use strict\';\n\nvar Plotly = require(\'../src/plotly\');\nvar rules = ' + rulesStr + ';\n\n' +
-        'for(var selector in rules) {\n' +
-        '    var fullSelector = selector.replace(/^,/,\' ,\')\n' +
-        '        .replace(/X/g, \'.js-plotly-plot .plotly\')\n' +
-        '        .replace(/Y/g, \'.plotly-notifier\');\n' +
-        '    Plotly.Lib.addStyleRule(fullSelector, rules[selector]);\n' +
-        '}\n',
-        function(err2) { if(err2) throw err2; }
-    );
+    var outStr = [
+        '\'use strict\';',
+        '',
+        'var Plotly = require(\'../plotly\');',
+        'var rules = ' + rulesStr + ';',
+        '',
+        'for(var selector in rules) {',
+        '    var fullSelector = selector.replace(/^,/,\' ,\')',
+        '        .replace(/X/g, \'.js-plotly-plot .plotly\')',
+        '        .replace(/Y/g, \'.plotly-notifier\');',
+        '    Plotly.Lib.addStyleRule(fullSelector, rules[selector]);',
+        '}',
+        ''
+    ].join('\n');
 
-});
+    fs.writeFile(pathOut, outStr, function(err) {
+        if(err) throw err;
+    });
+};
