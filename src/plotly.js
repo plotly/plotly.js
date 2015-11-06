@@ -7,8 +7,9 @@ exports.Lib = require('./lib/lib');
 exports.util = require('./lib/plotly_util');
 
 // icons, css and configuration
-exports.Icons = require('../build/ploticon');
-require('../build/plotcss');
+exports.Icons = require('./fonts/ploticon');
+require('./css/plotcss');
+
 exports.MathJaxConfig = require('./fonts/mathjax_config');
 exports.defaultConfig = require('./plot_config');
 
@@ -69,18 +70,3 @@ exports.Queue = require('./queue');
 
 // exports d3 used in the bundle
 exports.d3 = require('d3');
-
-// --- above will be in the plotly.js repo,
-// below will be in the streambed plotlyjs only
-
-// override defaultConfig
-exports.defaultConfig.showSources = require('./addons/show_sources');
-
-// add 'workspace' config argument, which is used in workspace code
-// to determine whether a graphDiv is in the workspace.
-exports.defaultConfig.workspace = false;
-
-// custom styling injected via envify/uglifyify
-if(process.env.PLOTLY_CUSTOM_STYLE === "open-office-2015") {
-    require('./styles/open_office_2015')();
-}
