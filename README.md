@@ -11,6 +11,7 @@ To get started, check out <https://plot.ly/javascript/getting-started/>!
 * [Documentation](#documentation)
 * [Contributing](#contributing)
 * [Community](#community)
+* [Clients for R, Python, and MATLAB](#clients-for-r-python-and-matlab)
 * [Creators](#creators)
 * [Copyright and license](#copyright-and-license)
 
@@ -22,6 +23,12 @@ Several quick start options are available:
 * [Download the latest release](https://github.com/plotly/plotly.js/releases/v1.0.0/plotly.js.zip).
 * Clone the repo: `git clone https://github.com/plotly/plotly.js.git`.
 * Install with [npm](https://www.npmjs.com): `npm install plotly`.
+* Use the plotly.js CDN hosted by Fastly:
+
+```
+<!-- Latest compiled and minified plotly.js JavaScript -->
+<script type="text/javascript" src="http://cdn.plot.ly/plotly-latest.min.js">
+```
 
 Read the [Getting started page](https://plot.ly/javascript/getting-started/) for examples.
 
@@ -34,16 +41,6 @@ Have a bug or a feature request? Please first read the [issue guidelines](https:
 Plotly.js documentation, in the repo documentation, is built with [Jekyll](http://jekyllrb.com) and publicly hosted on GitHub Pages at <https://plot.ly/javascript/getting-started/>. The docs may also be run locally.
 
 You can also suggest new documentation examples by submitting a [Codepen](http://codepen.io/tag/plotly/) on community.plot.ly (tagged [`plotly-js`](community.plot.ly/c/plotly-js).
-
-### Running documentation locally
-
-1. If necessary, [install Jekyll](http://jekyllrb.com/docs/installation) (requires v3.0.x).
-   **Note for Windows users:** Read [this unofficial guide](http://jekyll-windows.juthilo.com/) to get Jekyll up and running without problems.
-2. Make sure that you're on the ```source``` branch.
-3. From the root `/documentation` directory, run `jekyll serve` in the command line.
-4. Open `http://localhost:8000` in your browser, and voilà.
-
-Learn more about using Jekyll by reading its [documentation](http://jekyllrb.com/docs/home/).
 
 ## Contributing
 
@@ -64,6 +61,26 @@ For transparency into our release cycle and in striving to maintain backward com
 
 See [the Releases section of our GitHub project](https://github.com/plotly/plotly.js/releases) for changelogs for each release version of plotly.js.
 
+## Clients for R, Python, and MATLAB
+
+Open-source clients to the plotly.js API for R, Python and MATLAB are available at these links:
+
+**R / RStudio**
+
+* <https://twitter.com/fat>
+* <https://github.com/fat>
+
+**Python / Pandas / IPython notebook**
+
+* <https://github.com/plotly/plotly.py>
+* <https://plot.ly/python/getting-started/>
+
+**MATLAB**
+
+* <https://github.com/plotly/matlab-api>
+* <https://plot.ly/python/getting-started/>
+
+plotly.js charts can also be created and saved online for free at <https://plot.ly/plot>
 
 ## Creators
 
