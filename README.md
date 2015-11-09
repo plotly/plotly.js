@@ -67,8 +67,8 @@ Open-source clients to the plotly.js API for R, Python and MATLAB are available 
 
 **R / RStudio**
 
-* <https://twitter.com/fat>
-* <https://github.com/fat>
+* <https://github.com/ropensci/plotly>
+* <https://plot.ly/r/getting-started/>
 
 **Python / Pandas / IPython notebook**
 
@@ -90,8 +90,8 @@ plotly.js charts can also be created and saved online for free at <https://plot.
 
 **Étienne Tétreault-Pinard**
 
-* <https://twitter.com/fat>
-* <https://github.com/fat>
+* <https://twitter.com/etpinard>
+* <https://github.com/etpinard>
 
 **Mikola Lysenko**
 
