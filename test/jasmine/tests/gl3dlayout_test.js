@@ -1,7 +1,7 @@
-'use strict';
-var Plotly = require('../src/plotly');
+var Plotly = require('@src/plotly');
 
 describe('Test Gl3dLayout', function () {
+    'use strict';
 
     describe('supplyLayoutDefaults', function() {
         var layoutIn,

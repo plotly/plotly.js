@@ -1,5 +1,5 @@
-var Plotly = require('../src/plotly'),
-    params = require('../src/geo/lib/params');
+var Plotly = require('@src/plotly'),
+    params = require('@src/geo/lib/params');
 
 describe('Test geoaxes', function () {
     'use strict';

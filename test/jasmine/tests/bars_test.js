@@ -1,6 +1,6 @@
-var Plotly = require('../src/plotly');
+var Plotly = require('@src/plotly');
 
-describe('Test boxes', function () {
+describe('Test bars', function () {
     'use strict';
 
     describe('supplyDefaults', function() {
@@ -9,7 +9,7 @@ describe('Test boxes', function () {
 
         var defaultColor = '#444';
 
-        var supplyDefaults = Plotly.Boxes.supplyDefaults;
+        var supplyDefaults = Plotly.Bars.supplyDefaults;
 
         beforeEach(function() {
             traceOut = {};
@@ -54,30 +54,6 @@ describe('Test boxes', function () {
             };
             supplyDefaults(traceIn, traceOut, defaultColor);
             expect(traceOut.visible).toBe(false);
-        });
-
-        it('should set orientation to v by default', function() {
-            traceIn = {
-                y: [1, 2, 3]
-            };
-            supplyDefaults(traceIn, traceOut, defaultColor);
-            expect(traceOut.orientation).toBe('v');
-
-            traceIn = {
-                x: [1, 1, 1],
-                y: [1, 2, 3]
-            };
-            supplyDefaults(traceIn, traceOut, defaultColor);
-            expect(traceOut.orientation).toBe('v');
-        });
-
-        it('should set orientation to h when only x is supplied', function() {
-            traceIn = {
-                x: [1, 2, 3]
-            };
-            supplyDefaults(traceIn, traceOut, defaultColor);
-            expect(traceOut.orientation).toBe('h');
-
         });
 
     });

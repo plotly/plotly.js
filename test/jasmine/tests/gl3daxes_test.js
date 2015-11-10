@@ -1,4 +1,4 @@
-var Plotly = require('../src/plotly');
+var Plotly = require('@src/plotly');
 
 describe('Test Gl3dAxes', function () {
     'use strict';

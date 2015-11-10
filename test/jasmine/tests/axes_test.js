@@ -1,4 +1,4 @@
-var Plotly = require('../src/plotly');
+var Plotly = require('@src/plotly');
 
 describe('Test axes', function () {
     'use strict';
