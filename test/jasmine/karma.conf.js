@@ -1,9 +1,6 @@
 // Karma configuration
-// Generated on Wed Sep 10 2014 15:06:40 GMT-0700 (PDT)
 
-var shellyStatic = '../../../shelly/static/js/';
-
-function func(config){
+function func(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
@@ -23,8 +20,7 @@ func.defaultConfig = {
 
     // list of files / patterns to load in the browser
     files: [
-        shellyStatic + 'plugins/jquery-1.8.3.min.js',
-        //'../../../streaming/static/streaming/build/streamhead-bundle.js',
+        'assets/jquery-1.8.3.min.js',
         'tests/*_test.js'
     ],
 
@@ -61,6 +57,7 @@ func.defaultConfig = {
     singleRun: false,
 
     browserify: {
+        transform: ['./transform.js'],
         extensions: ['.js'],
         watch: true,
         debug: true

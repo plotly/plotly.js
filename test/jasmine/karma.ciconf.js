@@ -1,7 +1,6 @@
 // Karma configuration
-// Generated on Mon Sep 15 2014 15:00:51 GMT-0400 (EDT)
 
-function func(config){
+function func(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
