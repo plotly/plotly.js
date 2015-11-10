@@ -25,8 +25,13 @@ module.exports = function pullFontSVG(data, pathOut) {
         // turn remaining double quotes into single
         var charStr = JSON.stringify(chars, null, 4).replace(/\"/g, '\'');
 
-        var outStr = '/*jshint quotmark:true */\n\'use strict\';\n\n' +
-            'module.exports = ' + charStr + ';\n';
+        var outStr = [
+            '/* jshint quotmark:true */',
+            '',
+            '\'use strict\';',
+            '',
+            'module.exports = ' + charStr + ';'
+        ].join('\n');
 
         fs.writeFile(pathOut, outStr, function(err) {
             if(err) throw err;
