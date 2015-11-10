@@ -1,7 +1,7 @@
 'use strict';
 
-var Plotly = require('./plotly'),
-    isNumeric = require('./isnumeric');
+var Plotly = require('./plotly');
+var isNumeric = require('fast-isnumeric');
 
 var shapes = module.exports = {};
 
