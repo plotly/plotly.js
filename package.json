@@ -43,9 +43,14 @@
   ],
   "scripts": {
     "preprocess": "node tasks/preprocess.js",
-    "build": "node tasks/build.js",
-    "test": "node tasks/test.js",
-    "watch": "node tasks/watch.js"
+    "bundle": "node tasks/bundle.js",
+    "build": "npm run preprocess && npm run bundle",
+    "watch": "node tasks/watch_plotly.js",
+    "test-jasmine": "karma start test/jasmine/karma.conf.js",
+    "test-image": "echo TODO",
+    "test": "npm run test-jasmine && npm test-image",
+    "start-test_dashboard": "node devtools/test_dashboard/server.js",
+    "start-image_viewer": "node devtools/image_viewer/server.js"
   },
   "dependencies": {
     "3d-view": "^2.0.0",
