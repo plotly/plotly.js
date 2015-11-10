@@ -24,6 +24,9 @@ module.exports = {
     pathToSCSS: path.join(pathToSrc, 'css/style.scss'),
     pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
 
+    pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
+    pathToImageViewerBundle: path.join(pathToBuild, 'image_viewer-bundle.js'),
+
     uglifyOptions: {
         fromString: true,
         mangle: true,
