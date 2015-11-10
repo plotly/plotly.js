@@ -87,5 +87,19 @@
     "uglify-js": "^2.5.0",
     "xml2js": "^0.4.15"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "brfs": "^1.4.1",
+    "browserify-transform-tools": "^1.5.0",
+    "ecstatic": "^1.2.0",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.13.15",
+    "karma-browserify": "^4.4.0",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-coverage": "^0.5.3",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-jasmine": "^0.3.6",
+    "open": "0.0.5",
+    "prettysize": "0.0.3",
+    "watchify": "^3.6.0"
+  }
 }
