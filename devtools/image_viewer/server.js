@@ -1,23 +1,34 @@
-'use strict';
-
-var http = require('http');
-var ecstatic = require('ecstatic');
-var browserify = require('browserify');
-var open = require('open');
 var fs = require('fs');
+var http = require('http');
+var path = require('path');
 var exec = require('child_process').exec;
 
-var bundleName = 'test-images-viewer-bundle.js',
-    listName = 'list-of-incorrect-images.txt';
+var browserify = require('browserify');
+var ecstatic = require('ecstatic');
+var _open = require('open');
 
-fs.unlink(bundleName, function(err) {
+var constants = require('../../tasks/util/constants');
+
+
+// TODO make this an optional argument
+var PORT = '9090';
+
+console.log('Listening on :' + PORT + '\n');
+
+var listName = 'list-of-incorrect-images.txt';
+
+// build image viewer bundle
+fs.unlink(constants.pathToImageViewerBundle, function() {
     exec('ls ../test-images-diffs/ > ' + listName, function() {
-        var b = browserify('./viewer.js', {
-                    debug: true,
-                    verbose: true
-                });
+        var b = browserify(path.join(__dirname, './viewer.js'), { debug: true });
+
         b.transform('brfs');
-        b.bundle().pipe(fs.createWriteStream(bundleName));
+        b.bundle(function(err) {
+            if(err) throw err;
+
+            _open('http://localhost:' + PORT + '/devtools/image_viewer');
+        })
+        .pipe(fs.createWriteStream(constants.pathToImageViewerBundle));
 
         fs.readFile(listName, 'utf8', function(err, data) {
             console.log('In ' + listName + ':\n' + data);
@@ -25,9 +36,7 @@ fs.unlink(bundleName, function(err) {
     });
 });
 
+// boot up server
 http.createServer(
-    ecstatic({ root: '../.'  })
-).listen(9090);
-
-console.log('Listening on :9090\n');
-open('http://localhost:9090/test-images-viewer');
+    ecstatic({ root: constants.pathToRoot })
+).listen(PORT);
