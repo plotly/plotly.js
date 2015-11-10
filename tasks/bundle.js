@@ -1,10 +1,10 @@
 var fs = require('fs');
+
 var browserify = require('browserify');
 var UglifyJS = require('uglify-js');
 
 var compressAttributes = require('./util/compress_attributes');
 var constants = require('./util/constants');
-
 
 /*
  * This script takes one argument
@@ -13,6 +13,7 @@ var constants = require('./util/constants');
  * to include source map in the plotly.js bundle
  *
  */
+
 var arg = process.argv[2];
 var DEV = (arg === 'dev') || (arg === '--dev');
 
