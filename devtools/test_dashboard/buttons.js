@@ -1,5 +1,3 @@
-'use strict';
-
 var plotlist = document.getElementById('plot-list');
 var anchor = document.getElementById('embedded-graph');
 var image = document.getElementById('embedded-image');
@@ -111,7 +109,7 @@ function plotButtons(plots, figDir) {
     plotlist.appendChild(pummelButton);
 
     var i = 0;
-    var mock = require('./testplots/marker-color.json');
+    var mock = require('./testplots-3d/marker-color.json');
     var statusDiv = document.getElementById('status-info');
 
     pummelButton.addEventListener('click', function () {
