@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "The premier javascript graphing library",
   "license": "MIT",
+  "main": "./src/plotly.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/plotly/plotly.js.git"
@@ -14,11 +15,18 @@
   "contributors": [
     {
       "name": "Alex Johnson",
-      "email": "alex@plot.ly"
+      "email": "alex@plot.ly",
+      "url": "http://environment.harvard.edu/about/fellows/alex-johnson"
+    },
+    {
+      "name": "Mikola Lysenko",
+      "email": "mikolalysenko@gmail.com",
+      "url": "http://0fps.net"
     },
     {
       "name": "Étienne Tétreault-Pinard",
-      "email": "etienne@plot.ly"
+      "email": "etienne@plot.ly",
+      "url": "https://github.com/etpinard"
     },
     {
       "name": "Ben Postlethwaite",
