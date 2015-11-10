@@ -38,7 +38,7 @@ module.exports = function pullCSS(data, pathOut) {
     var outStr = [
         '\'use strict\';',
         '',
-        'var Plotly = require(\'../plotly\');',
+        'var Plotly = require(\'../src/plotly\');',
         'var rules = ' + rulesStr + ';',
         '',
         'for(var selector in rules) {',

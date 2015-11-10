@@ -1,1 +1,6 @@
 node_modules
+
+build/*
+!build/README.md
+
+npm-debug.log
