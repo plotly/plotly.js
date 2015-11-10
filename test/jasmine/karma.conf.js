@@ -57,7 +57,7 @@ func.defaultConfig = {
     singleRun: false,
 
     browserify: {
-        transform: ['./transform.js'],
+        transform: ['../../tasks/util/shortcut_paths.js'],
         extensions: ['.js'],
         watch: true,
         debug: true
