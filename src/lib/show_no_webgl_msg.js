@@ -1,6 +1,6 @@
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plotly = require('../plotly');
 
 /**
  * Prints a no webgl error message into the scene container

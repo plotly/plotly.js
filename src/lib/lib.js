@@ -1156,7 +1156,7 @@ lib.stripTrailingSlash = function (str) {
     return str;
 };
 
-var colorscaleNames = Object.keys(require('../colorscale').scales);
+var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 
 lib.valObjects = {
     data_array: {

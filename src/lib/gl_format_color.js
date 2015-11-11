@@ -1,6 +1,6 @@
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plotly = require('../plotly');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 var str2RgbaArray = require('./str2rgbarray');

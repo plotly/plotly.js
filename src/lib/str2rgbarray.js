@@ -1,7 +1,7 @@
 'use strict';
 
-var tinycolor = require('tinycolor2'),
-    arrtools = require('arraytools');
+var tinycolor = require('tinycolor2');
+var arrtools = require('arraytools');
 
 function str2RgbaArray(color) {
     color = tinycolor(color);

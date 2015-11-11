@@ -2,7 +2,7 @@
 
 var topojsonUtils = module.exports = {};
 
-var locationmodeToLayer = require('./params').locationmodeToLayer,
+var locationmodeToLayer = require('../constants/geo_constants').locationmodeToLayer,
     topojsonFeature = require('topojson').feature;
 
 
