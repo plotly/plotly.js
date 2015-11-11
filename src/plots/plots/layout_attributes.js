@@ -181,11 +181,13 @@ module.exports = {
     _composedModules: {
         '*': 'Fx'
     },
+
+    // TODO merge with moduleLayoutDefaults in plots.js
     _nestedModules: {
         'xaxis': 'Axes',
         'yaxis': 'Axes',
-        'scene': 'Gl3dLayout',  // TODO should be Scene
-        'geo': 'Geo',
+        'scene': 'Gl3dLayout',
+        'geo': 'GeoLayout',
         'legend': 'Legend',
         'annotations': 'Annotations',
         'shapes': 'Shapes'

@@ -2577,7 +2577,7 @@ function makePlotFramework(gd) {
     /*
      * TODO - find a better place for 3D to initialize axes
      */
-    if(fullLayout._hasGL3D) Plotly.Gl3dAxes.initAxes(gd);
+    if(fullLayout._hasGL3D) Plotly.Gl3dLayout.initAxes(gd);
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);

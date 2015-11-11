@@ -1,6 +1,6 @@
 'use strict';
 
-/*
+/**
  * This will be transfered over to gd and overridden by
  * config args to Plotly.plot.
  *

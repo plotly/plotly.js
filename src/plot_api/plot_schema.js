@@ -22,8 +22,8 @@ var plotSchema = {
 };
 
 // FIXME polar attribute are not part of Plotly yet
-var polarAreaAttrs = require('../plots/polar/attributes/area'),
-    polarAxisAttrs = require('../plots/polar/attributes/polaraxes');
+var polarAreaAttrs = require('../plots/polar/area_attributes'),
+    polarAxisAttrs = require('../plots/polar/axis_attributes');
 
 var PlotSchema = module.exports = {};
 
