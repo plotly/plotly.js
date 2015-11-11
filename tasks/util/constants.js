@@ -15,7 +15,7 @@ module.exports = {
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
 
-    pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'geo/geo-assets.js'),
+    pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
 
     pathToFontSVG: path.join(pathToSrc, 'fonts/ploticon/ploticon.svg'),
