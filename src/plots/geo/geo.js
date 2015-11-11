@@ -73,10 +73,7 @@ proto.plot = function(geoData, fullLayout) {
 
     _this.framework
         .call(_this.zoom)
-        .on('dblclick', _this.zoomReset);
-
-    // N.B. the on 'dblclick doesn't in d3 3.5+
-    // https://github.com/mbostock/d3/issues/1985
+        .on('dblclick.zoom', _this.zoomReset);
 
     topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
