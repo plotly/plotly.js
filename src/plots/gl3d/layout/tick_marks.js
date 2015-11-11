@@ -4,8 +4,8 @@
 
 module.exports = computeTickMarks;
 
-var Plotly  = require('../../plotly');
-var convertHTML = require('./html2unicode');
+var Plotly  = require('../../../plotly');
+var convertHTML = require('../../../lib/html2unicode');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 

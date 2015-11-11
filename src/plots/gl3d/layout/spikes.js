@@ -1,6 +1,6 @@
 'use strict';
 
-var str2RGBArray = require('../lib/str2rgbarray');
+var str2RGBArray = require('../../../lib/str2rgbarray');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 

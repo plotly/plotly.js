@@ -1,20 +1,25 @@
 /* jshint shadow: true */
 'use strict';
 
-var createPlot          = require('gl-plot3d'),
-    createAxesOptions   = require('./convert/axes'),
-    createSpikeOptions  = require('./convert/spikes'),
-    createScatterTrace  = require('./convert/scatter'),
-    createSurfaceTrace  = require('./convert/surface'),
-    createMeshTrace     = require('./convert/mesh'),
-    computeTickMarks    = require('./lib/tick-marks'),
-    createCamera        = require('./lib/camera'),
-    str2RGBAarray       = require('./lib/str2rgbarray'),
-    project             = require('./lib/project'),
-    showNoWebGlMsg      = require('./lib/show_no_webgl_msg'),
-    Plotly              = require('../plotly');
+var Plotly = require('../../plotly');
+var createPlot = require('gl-plot3d');
+
+var createAxesOptions  = require('./layout/convert');
+var createSpikeOptions = require('./layout/spikes');
+var computeTickMarks = require('./layout/tick_marks');
+
+var createScatterTrace = require('../../traces/scatter3d/convert');
+var createSurfaceTrace = require('../../traces/surface/convert');
+var createMeshTrace = require('../../traces/mesh3d/convert');
+
+var createCamera = require('./camera');
+var project = require('./project');
+
+var str2RGBAarray = require('../../lib/str2rgbarray');
+var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
 var STATIC_CANVAS, STATIC_CONTEXT;
+
 
 function render(scene) {
 
@@ -297,7 +302,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Update axes functions BEFORE updating traces
     for (i = 0; i < 3; ++i) {
         var axis = fullSceneLayout[axisProperties[i]];
-        Plotly.Gl3dAxes.setConvert(axis);
+        Plotly.Gl3dLayout.setConvert(axis);
     }
 
     //Convert scene data

@@ -1,8 +1,7 @@
 'use strict';
 
-var Plotly = require('../../plotly');
-
-var extendFlat = Plotly.Lib.extendFlat;
+var gl3dAxisAttrs = require('./axis_attributes');
+var extendFlat = require('../../../lib/extend').extendFlat;
 
 function makeVector(x, y, z) {
     return {
@@ -127,11 +126,9 @@ module.exports = {
         ].join(' ')
     },
 
-    _nestedModules: {
-        'xaxis': 'Gl3dAxes',
-        'yaxis': 'Gl3dAxes',
-        'zaxis': 'Gl3dAxes'
-    },
+    xaxis: gl3dAxisAttrs,
+    yaxis: gl3dAxisAttrs,
+    zaxis: gl3dAxisAttrs,
 
     _deprecated: {
         cameraposition: {

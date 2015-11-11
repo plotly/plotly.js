@@ -1,7 +1,6 @@
-var Plotly = require('../../plotly');
+var axesAttrs = require('../../cartesian/attributes');
+var extendFlat = require('../../../lib/extend').extendFlat;
 
-var axesAttrs = Plotly.Axes.layoutAttributes;
-var extendFlat = Plotly.Lib.extendFlat;
 
 module.exports = {
     showspikes: {
@@ -54,7 +53,6 @@ module.exports = {
     showaxeslabels: {
         valType: 'boolean',
         role: 'info',
-        dflt: 'rgba(204, 204, 204, 0.5)',
         dflt: true,
         description: 'Sets whether or not this axis is labeled'
     },

@@ -1,9 +1,10 @@
 'use strict';
 
-var arrtools = require('arraytools'),
-    convertHTML = require('../lib/html2unicode'),
-    arrayCopy1D = arrtools.copy1D,
-    str2RgbaArray = require('../lib/str2rgbarray');
+var arrtools = require('arraytools');
+var convertHTML = require('../../../lib/html2unicode');
+var str2RgbaArray = require('../../../lib/str2rgbarray');
+
+var arrayCopy1D = arrtools.copy1D;
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
