@@ -1,4 +1,4 @@
-var Plotly = require('../../plotly');
+var colorAttrs = require('../../../components/color/attributes');
 
 module.exports = {
     range: {
@@ -33,7 +33,7 @@ module.exports = {
     gridcolor: {
         valType: 'color',
         role: 'style',
-        dflt: Plotly.Color.lightLine,
+        dflt: colorAttrs.lightLine,
         description: [
             'Sets the graticule\'s stroke color.'
         ].join(' ')

@@ -1,20 +1,15 @@
 'use strict';
 
-var Plotly = require('../../plotly'),
-    params = require('../lib/params');
+var Plotly = require('../../../plotly');
+var constants = require('../../../constants/geo_constants');
+var axisAttributes = require('./axis_attributes');
 
-var GeoAxes = module.exports = {};
 
-GeoAxes.layoutAttributes = require('../attributes/geoaxes');
-
-GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
-    var axesNames = params.axesNames;
-
-    var axisIn, axisOut, axisName, rangeDflt, range, show;
+module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut) {
+    var axesNames = constants.axesNames;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(axisIn, axisOut,
-                                 GeoAxes.layoutAttributes, attr, dflt);
+        return Plotly.Lib.coerce(axisIn, axisOut, axisAttributes, attr, dflt);
     }
 
     function getRangeDflt(axisName) {
@@ -26,7 +21,7 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
             projLayout = geoLayoutOut.projection;
             projType = projLayout.type;
             projRotation = projLayout.rotation;
-            dfltSpans = params[axisName + 'Span'];
+            dfltSpans = constants[axisName + 'Span'];
 
             halfSpan = dfltSpans[projType]!==undefined ?
                 dfltSpans[projType] / 2 :
@@ -37,24 +32,24 @@ GeoAxes.supplyLayoutDefaults = function(geoLayoutIn, geoLayoutOut) {
 
             return [rotateAngle - halfSpan, rotateAngle + halfSpan];
         }
-        else return params.scopeDefaults[scope][axisName + 'Range'];
+        else return constants.scopeDefaults[scope][axisName + 'Range'];
     }
 
     for(var i = 0; i < axesNames.length; i++) {
-        axisName = axesNames[i];
-        axisIn = geoLayoutIn[axisName] || {};
-        axisOut = {};
+        var axisName = axesNames[i];
+        var axisIn = geoLayoutIn[axisName] || {};
+        var axisOut = {};
 
-        rangeDflt = getRangeDflt(axisName);
+        var rangeDflt = getRangeDflt(axisName);
 
-        range = coerce('range', rangeDflt);
+        var range = coerce('range', rangeDflt);
 
         Plotly.Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
 
         coerce('tick0', range[0]);
         coerce('dtick', axisName==='lonaxis' ? 30 : 10);
 
-        show = coerce('showgrid');
+        var show = coerce('showgrid');
         if(show) {
             coerce('gridcolor');
             coerce('gridwidth');

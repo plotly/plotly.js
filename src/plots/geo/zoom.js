@@ -4,12 +4,8 @@ var d3 = require('d3');
 
 var radians = Math.PI / 180,
     degrees = 180 / Math.PI,
-    zoomstartStyle = {
-        cursor: 'pointer'
-    },
-    zoomendStyle = {
-        cursor: 'auto'
-    };
+    zoomstartStyle = { cursor: 'pointer' },
+    zoomendStyle = { cursor: 'auto' };
 
 
 function createGeoZoom(geo, geoLayout) {

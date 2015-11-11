@@ -2,7 +2,7 @@
 
 var d3 = require('d3');
 
-var clipPad = require('./params').clipPad;
+var clipPad = require('../../constants/geo_constants').clipPad;
 
 function createGeoScale(geoLayout, graphSize) {
     var projLayout = geoLayout.projection,

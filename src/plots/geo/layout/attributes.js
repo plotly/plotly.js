@@ -1,5 +1,7 @@
-var Plotly = require('../../plotly'),
-    params = require('../lib/params');
+var colorAttrs = require('../../../components/color/attributes');
+var constants = require('../../../constants/geo_constants');
+var geoAxesAttrs = require('./axis_attributes');
+
 
 module.exports = {
     domain: {
@@ -45,7 +47,7 @@ module.exports = {
     scope: {
         valType: 'enumerated',
         role: 'info',
-        values: Object.keys(params.scopeDefaults),
+        values: Object.keys(constants.scopeDefaults),
         dflt: 'world',
         description: 'Set the scope of the map.'
     },
@@ -53,7 +55,7 @@ module.exports = {
         type: {
             valType: 'enumerated',
             role: 'info',
-            values: Object.keys(params.projNames),
+            values: Object.keys(constants.projNames),
             description: 'Sets the projection type.'
         },
         rotation: {
@@ -112,7 +114,7 @@ module.exports = {
     coastlinecolor: {
         valType: 'color',
         role: 'style',
-        dflt: Plotly.Color.defaultLine,
+        dflt: colorAttrs.defaultLine,
         description: 'Sets the coastline color.'
     },
     coastlinewidth: {
@@ -131,7 +133,7 @@ module.exports = {
     landcolor: {
         valType: 'color',
         role: 'style',
-        dflt: params.landColor,
+        dflt: constants.landColor,
         description: 'Sets the land mass color.'
     },
     showocean: {
@@ -143,7 +145,7 @@ module.exports = {
     oceancolor: {
         valType: 'color',
         role: 'style',
-        dflt: params.waterColor,
+        dflt: constants.waterColor,
         description: 'Sets the ocean color'
     },
     showlakes: {
@@ -155,7 +157,7 @@ module.exports = {
     lakecolor: {
         valType: 'color',
         role: 'style',
-        dflt: params.waterColor,
+        dflt: constants.waterColor,
         description: 'Sets the color of the lakes.'
     },
     showrivers: {
@@ -167,7 +169,7 @@ module.exports = {
     rivercolor: {
         valType: 'color',
         role: 'style',
-        dflt: params.waterColor,
+        dflt: constants.waterColor,
         description: 'Sets color of the rivers.'
     },
     riverwidth: {
@@ -185,7 +187,7 @@ module.exports = {
     countrycolor: {
         valType: 'color',
         role: 'style',
-        dflt: Plotly.Color.defaultLine,
+        dflt: colorAttrs.defaultLine,
         description: 'Sets line color of the country boundaries.'
     },
     countrywidth: {
@@ -206,7 +208,7 @@ module.exports = {
     subunitcolor: {
         valType: 'color',
         role: 'style',
-        dflt: Plotly.Color.defaultLine,
+        dflt: colorAttrs.defaultLine,
         description: 'Sets the color of the subunits boundaries.'
     },
     subunitwidth: {
@@ -224,7 +226,7 @@ module.exports = {
     framecolor: {
         valType: 'color',
         role: 'style',
-        dflt: Plotly.Color.defaultLine,
+        dflt: colorAttrs.defaultLine,
         description: 'Sets the color the frame.'
     },
     framewidth: {
@@ -237,11 +239,9 @@ module.exports = {
     bgcolor: {
         valType: 'color',
         role: 'style',
-        dflt: Plotly.Color.background,
+        dflt: colorAttrs.background,
         description: 'Set the background color of the map'
     },
-    _nestedModules: {
-        'lonaxis': 'GeoAxes',
-        'lataxis': 'GeoAxes'
-    }
+    lonaxis: geoAxesAttrs,
+    lataxis: geoAxesAttrs
 };

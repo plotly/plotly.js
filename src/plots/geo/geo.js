@@ -2,17 +2,21 @@
 
 /* global PlotlyGeoAssets:false */
 
-var Plotly = require('../plotly'),
-    d3 = require('d3'),
-    params = require('./lib/params'),
-    addProjectionsToD3 = require('./lib/projections'),
-    createGeoScale = require('./lib/set-scale'),
-    createGeoZoom = require('./lib/zoom'),
-    createGeoZoomReset = require('./lib/zoom-reset'),
-    plotScatterGeo = require('./plot/scattergeo'),
-    plotChoropleth = require('./plot/choropleth'),
-    topojsonUtils = require('./lib/topojson-utils'),
-    topojsonFeature = require('topojson').feature;
+var Plotly = require('../../plotly');
+var d3 = require('d3');
+
+var addProjectionsToD3 = require('./projections');
+var createGeoScale = require('./set_scale');
+var createGeoZoom = require('./zoom');
+var createGeoZoomReset = require('./zoom_reset');
+
+var plotScatterGeo = require('../../traces/scattergeo/plot');
+var plotChoropleth = require('../../traces/choropleth/plot');
+
+var constants = require('../../constants/geo_constants');
+var topojsonUtils = require('../../lib/topojson_utils');
+var topojsonFeature = require('topojson').feature;
+
 
 function Geo(options, fullLayout) {
 
@@ -129,13 +133,13 @@ proto.makeProjection = function(geoLayout) {
 
     if(isNew) {
         this.projectionType = projType;
-        projection = this.projection = d3.geo[params.projNames[projType]]();
+        projection = this.projection = d3.geo[constants.projNames[projType]]();
     }
     else projection = this.projection;
 
     projection
         .translate(projLayout._translate0)
-        .precision(params.precision);
+        .precision(constants.precision);
 
     if(!geoLayout._isAlbersUsa) {
         projection
@@ -146,7 +150,7 @@ proto.makeProjection = function(geoLayout) {
     if(geoLayout._clipAngle) {
         this.clipAngle = geoLayout._clipAngle;  // needed in proto.render
         projection
-            .clipAngle(geoLayout._clipAngle - params.clipPad);
+            .clipAngle(geoLayout._clipAngle - constants.clipPad);
     }
     else this.clipAngle = null;  // for graph edits
 
@@ -249,7 +253,7 @@ proto.drawTopo = function(selection, layerName, geoLayout) {
 
     var topojson = this.topojson,
         datum = layerName==='frame' ?
-            params.sphereSVG :
+            constants.sphereSVG :
             topojsonFeature(topojson, topojson.objects[layerName]);
 
     selection.append('g')
@@ -273,7 +277,7 @@ proto.drawGraticule = function(selection, axisName, geoLayout) {
 
     if(axisLayout.showgrid !== true) return;
 
-    var scopeDefaults = params.scopeDefaults[geoLayout.scope],
+    var scopeDefaults = constants.scopeDefaults[geoLayout.scope],
         lonaxisRange = scopeDefaults.lonaxisRange,
         lataxisRange = scopeDefaults.lataxisRange,
         step = axisName==='lonaxis' ?
@@ -290,8 +294,8 @@ proto.drawGraticule = function(selection, axisName, geoLayout) {
 
 proto.drawLayout = function(geoLayout) {
     var gBaseLayer = this.framework.select('g.baselayer'),
-        baseLayers = params.baseLayers,
-        axesNames = params.axesNames,
+        baseLayers = constants.baseLayers,
+        axesNames = constants.axesNames,
         layerName;
 
     // TODO move to more d3-idiomatic pattern (that's work on replot)
@@ -311,7 +315,7 @@ proto.drawLayout = function(geoLayout) {
 };
 
 function styleFillLayer(selection, layerName, geoLayout) {
-    var layerAdj = params.layerNameToAdjective[layerName];
+    var layerAdj = constants.layerNameToAdjective[layerName];
 
     selection.select('.' + layerName)
         .selectAll('path')
@@ -320,7 +324,7 @@ function styleFillLayer(selection, layerName, geoLayout) {
 }
 
 function styleLineLayer(selection, layerName, geoLayout) {
-    var layerAdj = params.layerNameToAdjective[layerName];
+    var layerAdj = constants.layerNameToAdjective[layerName];
 
     selection.select('.' + layerName)
         .selectAll('path')
@@ -338,8 +342,8 @@ function styleGraticule(selection, axisName, geoLayout) {
 }
 
 proto.styleLayer = function(selection, layerName, geoLayout) {
-    var fillLayers = params.fillLayers,
-        lineLayers = params.lineLayers;
+    var fillLayers = constants.fillLayers,
+        lineLayers = constants.lineLayers;
 
     if(fillLayers.indexOf(layerName)!==-1) {
         styleFillLayer(selection, layerName, geoLayout);
@@ -351,8 +355,8 @@ proto.styleLayer = function(selection, layerName, geoLayout) {
 
 proto.styleLayout = function(geoLayout) {
     var gBaseLayer = this.framework.select('g.baselayer'),
-        baseLayers = params.baseLayers,
-        axesNames = params.axesNames,
+        baseLayers = constants.baseLayers,
+        axesNames = constants.axesNames,
         layerName;
 
     for(var i = 0; i < baseLayers.length; i++) {

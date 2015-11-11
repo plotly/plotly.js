@@ -1,74 +1,52 @@
 'use strict';
 
-var Plotly = require('../../plotly'),
-    params = require('../lib/params');
+var Plotly = require('../../../plotly');
+var constants = require('../../../constants/geo_constants');
+var layoutAttributes = require('./attributes');
+var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 
-var GeoLayout = module.exports = {};
 
-Plotly.Plots.registerSubplot('geo', 'geo', 'geo', {
-    geo: {
-        valType: 'geoid',
-        role: 'info',
-        dflt: 'geo',
-        description: [
-            'Sets a reference between this trace\'s geospatial coordinates and',
-            'a geographic map.',
-            'If *geo* (the default value), the geospatial coordinates refer to',
-            '`layout.geo`.',
-            'If *geo2*, the geospatial coordinates refer to `layout.geo2`,',
-            'and so on.'
-        ].join(' ')
-    }
-});
-
-GeoLayout.layoutAttributes = require('../attributes/geolayout');
-
-GeoLayout.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var geos = Plotly.Plots.getSubplotIdsInData(fullData, 'geo'),
         geosLength = geos.length;
     
-    var geo, geoLayoutIn, geoLayoutOut;
-
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(geoLayoutIn, geoLayoutOut,
-                                 GeoLayout.layoutAttributes, attr, dflt);
+        return Plotly.Lib.coerce(geoLayoutIn, geoLayoutOut, layoutAttributes, attr, dflt);
     }
 
     for(var i = 0; i < geosLength; i++) {
-        geo = geos[i];
-        geoLayoutIn = layoutIn[geo] || {};
-        geoLayoutOut = {};
+        var geo = geos[i];
+        var geoLayoutIn = layoutIn[geo] || {};
+        var geoLayoutOut = {};
 
         coerce('domain.x');
         coerce('domain.y', [i / geosLength, (i + 1) / geosLength]);
 
-        GeoLayout.handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce);
+        handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce);
         layoutOut[geo] = geoLayoutOut;
     }
 };
 
-GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
-    var scope, resolution, projType,
-        scopeParams, dfltProjRotate, dfltProjParallels,
-        isScoped, isAlbersUsa, isConic, show;
+function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
+    var show;
 
-    scope = coerce('scope');
-    isScoped = scope!=='world';
-    scopeParams = params.scopeDefaults[scope];
+    var scope = coerce('scope');
+    var isScoped = (scope !== 'world');
+    var scopeParams = constants.scopeDefaults[scope];
 
-    resolution = coerce('resolution');
+    var resolution = coerce('resolution');
 
-    projType = coerce('projection.type', scopeParams.projType);
-    isAlbersUsa = projType==='albers usa';
-    isConic = projType.indexOf('conic')!==-1;
+    var projType = coerce('projection.type', scopeParams.projType);
+    var isAlbersUsa = projType==='albers usa';
+    var isConic = projType.indexOf('conic')!==-1;
 
     if(isConic) {
-        dfltProjParallels = scopeParams.projParallels || [0, 60];
+        var dfltProjParallels = scopeParams.projParallels || [0, 60];
         coerce('projection.parallels', dfltProjParallels);
     }
 
     if(!isAlbersUsa) {
-        dfltProjRotate = scopeParams.projRotate || [0, 0, 0];
+        var dfltProjRotate = scopeParams.projRotate || [0, 0, 0];
         coerce('projection.rotation.lon', dfltProjRotate[0]);
         coerce('projection.rotation.lat', dfltProjRotate[1]);
         coerce('projection.rotation.roll', dfltProjRotate[2]);
@@ -124,11 +102,11 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
 
     coerce('bgcolor');
 
-    Plotly.GeoAxes.supplyLayoutDefaults(geoLayoutIn, geoLayoutOut);
+    supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut);
 
     // bind a few helper variables
     geoLayoutOut._isHighRes = resolution===50;
-    geoLayoutOut._clipAngle = params.lonaxisSpan[projType] / 2;
+    geoLayoutOut._clipAngle = constants.lonaxisSpan[projType] / 2;
     geoLayoutOut._isAlbersUsa = isAlbersUsa;
     geoLayoutOut._isConic = isConic;
     geoLayoutOut._isScoped = isScoped;
@@ -139,4 +117,4 @@ GeoLayout.handleGeoDefaults = function(geoLayoutIn, geoLayoutOut, coerce) {
         -rotation.lat || 0,
         rotation.roll || 0
     ];
-};
+}
