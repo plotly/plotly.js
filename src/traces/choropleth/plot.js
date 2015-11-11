@@ -48,7 +48,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         gChoropleth = framework.select('g.choroplethlayer'),
         gBaseLayer = framework.select('g.baselayer'),
         gBaseLayerOverChoropleth = framework.select('g.baselayeroverchoropleth'),
-        baseLayersOverChoropleth = params.baseLayersOverChoropleth,
+        baseLayersOverChoropleth = constants.baseLayersOverChoropleth,
         layerName;
 
     // TODO move to more d3-idiomatic pattern (that's work on replot)
