@@ -1,18 +1,20 @@
 'use strict';
 
-var Plotly = require('../plotly');
+var Plotly = require('../../plotly');
 var createPlot2D = require('gl-plot2d');
 var createSpikes = require('gl-spikes2d');
 var createSelectBox = require('gl-select-box');
-var createLineWithMarkers = require('./scattergl/convert/');
-var createOptions = require('./lib/gl2daxes');
-var createCamera = require('./lib/camera');
-var htmlToUnicode = require('../gl3d/lib/html2unicode');
-var showNoWebGlMsg = require('../gl3d/lib/show_no_webgl_msg');
+
+var createOptions = require('./convert');
+var createCamera = require('./camera');
+
+var createLineWithMarkers = require('../../traces/scattergl/convert');
+
+var htmlToUnicode = require('../../lib/html2unicode');
+var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
 var AXES = ['xaxis', 'yaxis'];
 var STATIC_CANVAS, STATIC_CONTEXT;
-
 
 Plotly.Plots.registerSubplot('gl2d', ['xaxis', 'yaxis'], ['x', 'y'],
     Plotly.Axes.traceAttributes);

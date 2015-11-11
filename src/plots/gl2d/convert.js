@@ -1,8 +1,9 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var htmlToUnicode = require('../../gl3d/lib/html2unicode');
-var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
+
+var htmlToUnicode = require('../../lib/html2unicode');
+var str2RGBArray = require('../../lib/str2rgbarray');
 
 function Axes2DOptions(scene) {
     this.scene = scene;
