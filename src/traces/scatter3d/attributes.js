@@ -1,13 +1,12 @@
 'use strict';
 
-var Plotly = require('../../plotly');
+var scatterAttrs = require('../scatter/attributes');
 var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
+var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterLineAttrs = scatterAttrs.line,
+var scatterLineAttrs = scatterAttrs.line,
     scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line,
-    extendFlat = Plotly.Lib.extendFlat;
+    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 function makeProjectionAttr(axLetter) {
     return {

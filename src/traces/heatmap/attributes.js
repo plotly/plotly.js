@@ -1,7 +1,8 @@
-var Plotly = require('../../plotly');
+var scatterAttrs = require('../scatter/attributes');
+var traceColorbarAttrs = require('../../components/colorbar/trace_attributes');
 
-var scatterAttrs = Plotly.Scatter.attributes;
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+var extendFlat = require('../../lib/extend').extendFlat;
+
 
 module.exports = {
     z: {
@@ -50,7 +51,7 @@ module.exports = {
     zmin: traceColorbarAttrs.zmin,
     zmax: traceColorbarAttrs.zmax,
     colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: Plotly.Lib.extendFlat({}, traceColorbarAttrs.autocolorscale,
+    autocolorscale: extendFlat({}, traceColorbarAttrs.autocolorscale,
         {dflt: false}),
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
@@ -81,4 +82,3 @@ module.exports = {
         'histogram2dcontour': 'Histogram'
     }
 };
-

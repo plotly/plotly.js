@@ -5,8 +5,8 @@ var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 var str2RgbaArray = require('./str2rgbarray');
 
-var colorDflt = Plotly.Color.defaultLine,
-    opacityDflt = 1;
+var colorDflt = require('../components/color/attributes').defaultLine;
+var opacityDflt = 1;
 
 function calculateColor(colorIn, opacityIn) {
     var colorOut = str2RgbaArray(colorIn);

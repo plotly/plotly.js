@@ -1,9 +1,6 @@
-'use strict';
-
-var Plotly = require('../../plotly');
-
-var axesAttrs = Plotly.Axes.layoutAttributes;
-var extendFlat = Plotly.Lib.extendFlat;
+var axesAttrs = require('../../plots/cartesian/attributes');
+var fontAttrs = require('../../plots/plots/font_attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
 // TODO: only right is supported currently
@@ -167,7 +164,7 @@ module.exports = {
         dflt: 'Click to enter colorscale title',
         description: 'Sets the title of the color bar.'
     },
-    titlefont: extendFlat({}, Plotly.Plots.fontAttrs, {
+    titlefont: extendFlat({}, fontAttrs, {
         description: [
             'Sets this color bar\'s title font.'
         ].join(' ')

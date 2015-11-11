@@ -1,8 +1,4 @@
-'use strict';
-
-var Plotly = require('../../plotly');
-
-var barAttrs = Plotly.Bars.attributes;
+var barAttrs = require('../bars/attributes');
 
 
 module.exports = {

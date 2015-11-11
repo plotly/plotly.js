@@ -1,13 +1,9 @@
-'use strict';
-
-var Plotly = require('../../plotly');
-var extendFlat = Plotly.Lib.extendFlat;
-
+var scatterAttrs = require('../scatter/attributes');
 var DASHES = require('../../constants/gl2d_dashes.json');
 var MARKERS = require('../../constants/gl_markers.json');
+var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterLineAttrs = scatterAttrs.line,
+var scatterLineAttrs = scatterAttrs.line,
     scatterMarkerAttrs = scatterAttrs.marker,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 

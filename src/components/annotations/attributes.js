@@ -1,9 +1,7 @@
-'use strict';
-
 var Plotly = require('../../plotly');
 var ARROWPATHS = require('./arrow_paths');
-
-var extendFlat = Plotly.Lib.extendFlat;
+var fontAttrs = require('../../plots/plots/font_attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
     _isLinkedToArray: true,
@@ -28,7 +26,7 @@ module.exports = {
             'with respect to the horizontal.'
         ].join(' ')
     },
-    font: extendFlat({}, Plotly.Plots.fontAttrs, {
+    font: extendFlat({}, fontAttrs, {
         description: 'Sets the annotation text font.'
     }),
     opacity: {

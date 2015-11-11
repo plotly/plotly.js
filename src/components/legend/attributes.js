@@ -1,7 +1,6 @@
-'use strict';
-
-var Plotly = require('../../plotly');
-var extendFlat = Plotly.Lib.extendFlat;
+var fontAttrs = require('../../plots/plots/font_attributes');
+var colorAttrs = require('../color/attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
 
 module.exports = {
@@ -12,7 +11,7 @@ module.exports = {
     },
     bordercolor: {
         valType: 'color',
-        dflt: Plotly.Color.defaultLine,
+        dflt: colorAttrs.defaultLine,
         role: 'style',
         description: 'Sets the color of the border enclosing the legend.'
     },
@@ -23,7 +22,7 @@ module.exports = {
         role: 'style',
         description: 'Sets the width (in px) of the border enclosing the legend.'
     },
-    font: extendFlat({}, Plotly.Plots.fontAttrs, {
+    font: extendFlat({}, fontAttrs, {
         description: 'Sets the font used to text the legend items.'
     }),
     traceorder: {

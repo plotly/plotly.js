@@ -1,8 +1,8 @@
 'use strict';
 
-var Plotly = require('../../plotly');
+var traceColorbarAttrs = require('../../components/colorbar/trace_attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
 
 function makeContourProjAttr(axLetter) {
     return {
@@ -90,7 +90,7 @@ module.exports = {
     zmin: traceColorbarAttrs.zmin,
     zmax: traceColorbarAttrs.zmax,
     colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: Plotly.Lib.extendFlat({}, traceColorbarAttrs.autocolorscale,
+    autocolorscale: extendFlat({}, traceColorbarAttrs.autocolorscale,
         {dflt: false}),
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,

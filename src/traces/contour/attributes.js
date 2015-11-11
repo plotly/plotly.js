@@ -1,7 +1,7 @@
-var Plotly = require('../../plotly');
+var scatterAttrs = require('../scatter/attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
-var extendFlat = Plotly.Lib.extendFlat;
-var scatterLineAttrs = Plotly.Scatter.attributes.line;
+var scatterLineAttrs = scatterAttrs.line;
 
 module.exports = {
     _composedModules: {  // composed module coupling

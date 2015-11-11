@@ -1,7 +1,8 @@
-var Plotly = require('../../plotly');
+var annAttrs = require('../annotations/attributes');
+var scatterAttrs = require('../../traces/scatter/attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterLineAttrs = Plotly.Scatter.attributes.line;
-var extendFlat = Plotly.Lib.extendFlat;
+var scatterLineAttrs = scatterAttrs.line;
 
 module.exports = {
     _isLinkedToArray: true,
@@ -27,7 +28,7 @@ module.exports = {
         ].join(' ')
     },
 
-    xref: extendFlat({}, Plotly.Annotations.layoutAttributes.xref, {
+    xref: extendFlat({}, annAttrs.xref, {
         description: [
             'Sets the shape\'s x coordinate axis.',
             'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
@@ -54,7 +55,7 @@ module.exports = {
         ].join(' ')
     },
 
-    yref: extendFlat({}, Plotly.Annotations.layoutAttributes.yref, {
+    yref: extendFlat({}, annAttrs.yref, {
         description: [
             'Sets the annotation\'s y coordinate axis.',
             'If set to an y axis id (e.g. *y* or *y2*), the `y` position',

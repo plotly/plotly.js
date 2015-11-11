@@ -1,8 +1,8 @@
-var Plotly = require('../../plotly');
-var extendFlat = Plotly.Lib.extendFlat;
+var scatterAttrs = require('../scatter/attributes');
+var colorAttrs = require('../../components/color/attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterMarkerAttrs = scatterAttrs.marker,
+var scatterMarkerAttrs = scatterAttrs.marker,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 
@@ -126,7 +126,7 @@ module.exports = {
             {arrayOk: false}),
         line: {
             color: extendFlat({}, scatterMarkerLineAttrs.color,
-                {arrayOk: false, dflt: Plotly.Color.defaultLine}),
+                {arrayOk: false, dflt: colorAttrs.defaultLine}),
             width: extendFlat({}, scatterMarkerLineAttrs.width,
                 {arrayOk: false, dflt: 0}),
             outliercolor: {

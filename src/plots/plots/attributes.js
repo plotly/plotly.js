@@ -1,11 +1,8 @@
-var Plotly = require('../../plotly');
-var plots = require('./plots');
-
 module.exports = {
     type: {
         valType: 'enumerated',
         role: 'info',
-        values: plots.allTypes,
+        values: [],     // listed dynamically
         dflt: 'scatter'
     },
     visible: {

@@ -1,8 +1,4 @@
-'use strict';
-
-var Plotly = require('../../plotly');
-
-var scatterAttrs = Plotly.Scatter.attributes,
+var scatterAttrs = require('../scatter/attributes'),
     scatterMarkerAttrs = scatterAttrs.marker,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 

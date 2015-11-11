@@ -1,6 +1,4 @@
-var Plotly = require('../../plotly');
-
-var traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+var traceColorbarAttrs = require('../../components/colorbar/trace_attributes');
 
 module.exports = {
     x: {valType: 'data_array'},

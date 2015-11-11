@@ -12,6 +12,7 @@ var modules = plots.modules = {},
     subplotsRegistry = plots.subplotsRegistry = {};
 
 plots.attributes = require('./attributes');
+plots.attributes.type.values = allTypes;
 plots.fontAttrs = require('./font_attributes');
 plots.layoutAttributes = require('./layout_attributes');
 

@@ -1,8 +1,9 @@
-var Plotly = require('../../plotly');
+var ScatterGeoAttrs = require('../scattergeo/attributes');
+var traceColorbarAttrs = require('../../components/colorbar/trace_attributes');
+var plotAttrs = require('../../plots/plots/attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
-var ScatterGeoAttrs = Plotly.ScatterGeo.attributes,
-    ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line,
-    traceColorbarAttrs = Plotly.Colorbar.traceColorbarAttributes;
+var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 
 module.exports = {
     locations: {
@@ -34,7 +35,7 @@ module.exports = {
     autocolorscale: traceColorbarAttrs.autocolorscale,
     reversescale: traceColorbarAttrs.reversescale,
     showscale: traceColorbarAttrs.showscale,
-    hoverinfo: Plotly.Lib.extendFlat({}, Plotly.Plots.attributes.hoverinfo, {
+    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['location', 'z', 'text', 'name']
     }),
     _nestedModules: {

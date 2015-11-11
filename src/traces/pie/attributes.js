@@ -1,6 +1,9 @@
-var Plotly = require('../../plotly');
+var colorAttrs = require('../../components/color/attributes');
+var fontAttrs = require('../../plots/plots/font_attributes');
+var plotAttrs = require('../../plots/plots/attributes');
 
-var extendFlat = Plotly.Lib.extendFlat;
+var extendFlat = require('../../lib/extend').extendFlat;
+
 
 module.exports = {
     labels: {
@@ -45,7 +48,7 @@ module.exports = {
             color: {
                 valType: 'color',
                 role: 'style',
-                dflt: Plotly.Color.defaultLine,
+                dflt: colorAttrs.defaultLine,
                 arrayOk: true,
                 description: [
                     'Sets the color of the line enclosing each sector.'
@@ -94,7 +97,7 @@ module.exports = {
             'Determines which trace information appear on the graph.'
         ].join(' ')
     },
-    hoverinfo: extendFlat({}, Plotly.Plots.attributes.hoverinfo, {
+    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
     }),
     textposition: {
@@ -108,13 +111,13 @@ module.exports = {
         ].join(' ')
     },
     // TODO make those arrayOk?
-    textfont: extendFlat({}, Plotly.Plots.fontAttrs, {
+    textfont: extendFlat({}, fontAttrs, {
         description: 'Sets the font used for `textinfo`.'
     }),
-    insidetextfont: extendFlat({}, Plotly.Plots.fontAttrs, {
+    insidetextfont: extendFlat({}, fontAttrs, {
         description: 'Sets the font used for `textinfo` lying inside the pie.'
     }),
-    outsidetextfont: extendFlat({}, Plotly.Plots.fontAttrs, {
+    outsidetextfont: extendFlat({}, fontAttrs, {
         description: 'Sets the font used for `textinfo` lying outside the pie.'
     }),
 

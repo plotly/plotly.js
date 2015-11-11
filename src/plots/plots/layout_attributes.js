@@ -1,19 +1,21 @@
 var Plotly = require('../../plotly');
-var plots = require('./plots');
+
+var fontAttrs = require('./font_attributes');
+var colorAttrs = require('../../components/color/attributes');
 
 var extendFlat = Plotly.Lib.extendFlat;
 
 
 module.exports = {
     font: {
-        family: extendFlat({}, plots.fontAttrs.family, {
+        family: extendFlat({}, fontAttrs.family, {
             dflt: '"Open sans", verdana, arial, sans-serif'
         }),
-        size: extendFlat({}, plots.fontAttrs.size, {
+        size: extendFlat({}, fontAttrs.size, {
             dflt: 12
         }),
-        color: extendFlat({}, plots.fontAttrs.color, {
-            dflt: Plotly.Color.defaultLine
+        color: extendFlat({}, fontAttrs.color, {
+            dflt: colorAttrs.defaultLine
         }),
         description: [
             'Sets the global font.',
@@ -29,7 +31,7 @@ module.exports = {
             'Sets the plot\'s title.'
         ].join(' ')
     },
-    titlefont: extendFlat({}, plots.fontAttrs, {
+    titlefont: extendFlat({}, fontAttrs, {
         description: 'Sets the title font.'
     }),
     autosize: {
@@ -108,7 +110,7 @@ module.exports = {
     paper_bgcolor: {
         valType: 'color',
         role: 'style',
-        dflt: Plotly.Color.background,
+        dflt: colorAttrs.background,
         description: 'Sets the color of paper where the graph is drawn.'
     },
     plot_bgcolor: {
@@ -116,7 +118,7 @@ module.exports = {
         // because it needs to know if there are (2D) axes or not
         valType: 'color',
         role: 'style',
-        dflt: Plotly.Color.background,
+        dflt: colorAttrs.background,
         description: [
             'Sets the color of plotting area in-between x and y axes.'
         ].join(' ')
@@ -183,7 +185,7 @@ module.exports = {
         'xaxis': 'Axes',
         'yaxis': 'Axes',
         'scene': 'Gl3dLayout',  // TODO should be Scene
-        'geo': 'GeoLayout',     // TODO should be Geo
+        'geo': 'Geo',
         'legend': 'Legend',
         'annotations': 'Annotations',
         'shapes': 'Shapes'

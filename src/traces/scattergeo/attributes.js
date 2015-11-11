@@ -1,11 +1,11 @@
-var Plotly = require('../../plotly');
+var scatterAttrs = require('../scatter/attributes');
+var plotAttrs = require('../../plots/plots/attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterMarkerAttrs = scatterAttrs.marker,
+var scatterMarkerAttrs = scatterAttrs.marker,
     scatterLineAttrs = scatterAttrs.line,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
-var extendFlat = Plotly.Lib.extendFlat;
 
 module.exports = {
     lon: {
@@ -78,7 +78,7 @@ module.exports = {
     },
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
-    hoverinfo: Plotly.Lib.extendFlat({}, Plotly.Plots.attributes.hoverinfo, {
+    hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
     }),
     _nestedModules: {
