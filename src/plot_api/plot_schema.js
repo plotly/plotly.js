@@ -1,6 +1,6 @@
 'use strict';
 
-var Plotly = require('./plotly');
+var Plotly = require('../plotly');
 
 var extendFlat = Plotly.Lib.extendFlat;
 var extendDeep = Plotly.Lib.extendDeep;
@@ -22,8 +22,8 @@ var plotSchema = {
 };
 
 // FIXME polar attribute are not part of Plotly yet
-var polarAreaAttrs = require('./polar/attributes/area'),
-    polarAxisAttrs = require('./polar/attributes/polaraxes');
+var polarAreaAttrs = require('../plots/polar/attributes/area'),
+    polarAxisAttrs = require('../plots/polar/attributes/polaraxes');
 
 var PlotSchema = module.exports = {};
 
