@@ -1,7 +1,5 @@
-var Plotly = require('../../plotly');
-
-var scatterAttrs = Plotly.Scatter.attributes,
-    scatterMarkerAttrs = scatterAttrs.marker;
+var scatterAttrs = require('../../traces/scatter/attributes');
+var scatterMarkerAttrs = scatterAttrs.marker;
 
 module.exports = {
     r: scatterAttrs.r,

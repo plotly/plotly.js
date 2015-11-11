@@ -1,10 +1,9 @@
 'use strict';
 
-var Plotly = require('../../plotly');
+var axesAttrs = require('../cartesian/attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
 
-var extendFlat = Plotly.Lib.extendFlat;
-
-var domainAttr = extendFlat({}, Plotly.Axes.layoutAttributes.domain, {
+var domainAttr = extendFlat({}, axesAttrs.domain, {
     description: [
         'Polar chart subplots are not supported yet.',
         'This key has currently no effect.'

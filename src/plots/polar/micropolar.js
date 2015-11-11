@@ -1,12 +1,12 @@
-var Plotly = require('../plotly'),
-    d3 = require('d3');
+var Plotly = require('../../plotly');
+var d3 = require('d3');
 
 var µ = module.exports = {
-    version: '0.2.2'
+    version: '0.2.2',
+    manager: require('./micropolar_manager')
 };
 
 var extendDeepAll = Plotly.Lib.extendDeepAll;
-
 
 µ.Axis = function module() {
     var config = {
