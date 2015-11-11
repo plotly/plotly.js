@@ -1,6 +1,6 @@
 'use strict';
 
-var Plotly = require('./plotly');
+var Plotly = require('../plotly');
 
 /**
  * Copy arg array *without* removing `undefined` values from objects.

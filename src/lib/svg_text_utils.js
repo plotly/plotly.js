@@ -1,14 +1,13 @@
 'use strict';
 
-/* global MathJax:false, Promise:false */
+/* global MathJax:false */
 
-var Plotly = require('../plotly'),
-    d3 = require('d3');
+var Plotly = require('../plotly');
+var d3 = require('d3');
 
 var util = module.exports = {};
 
 // Append SVG
-/////////////////////////////
 
 d3.selection.prototype.appendSVG = function(_svgString) {
     var skeleton = '<svg xmlns="http://www.w3.org/2000/svg" ' +
@@ -28,7 +27,6 @@ d3.selection.prototype.appendSVG = function(_svgString) {
 };
 
 // Text utilities
-/////////////////////////////
 
 util.html_entity_decode = function(s) {
     var hiddenDiv = d3.select('body').append('div').style({display: 'none'}).html('');
@@ -46,7 +44,6 @@ util.xml_entity_encode = function(str){
 };
 
 // text converter
-/////////////////////////////
 
 function getSize(_selection, _dimension){
     return _selection.node().getBoundingClientRect()[_dimension];
@@ -171,7 +168,6 @@ util.convertToTspans = function(_context, _callback){
 
 
 // MathJax
-/////////////////////////////
 
 function cleanEscapesForTex(s) {
     return s.replace(/(<|&lt;|&#60;)/g, '\\lt ')
@@ -357,7 +353,6 @@ function alignHTMLWith(_base, container, options){
 }
 
 // Editable title
-/////////////////////////////
 
 util.makeEditable = function(context, _delegate, options){
     if(!options) options = {};
