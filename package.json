@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The premier javascript graphing library",
   "license": "MIT",
-  "main": "./src/plotly.js",
+  "main": "./src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/plotly/plotly.js.git"

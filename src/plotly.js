@@ -58,6 +58,3 @@ exports.Snapshot = require('./snapshot/snapshot');
 
 // queue for undo/redo
 exports.Queue = require('./lib/queue');
-
-// export d3 used in the bundle
-exports.d3 = require('d3');
