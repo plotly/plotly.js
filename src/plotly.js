@@ -12,7 +12,7 @@ exports.MathJaxConfig = require('./fonts/mathjax_config');
 exports.defaultConfig = require('./plot_config');
 
 // plots
-exports.Plots = require('./plots/plots/plots');
+exports.Plots = require('./plots/plots');
 exports.Axes = require('./plots/cartesian/axes');
 exports.Fx = require('./plots/cartesian/graph_interact');
 exports.Scene = require('./plots/gl3d/scene');

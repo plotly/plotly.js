@@ -1,7 +1,7 @@
-var Plotly = require('../../plotly');
+var Plotly = require('../plotly');
 
 var fontAttrs = require('./font_attributes');
-var colorAttrs = require('../../components/color/attributes');
+var colorAttrs = require('../components/color/attributes');
 
 var extendFlat = Plotly.Lib.extendFlat;
 
