@@ -199,10 +199,8 @@ Plotly.plot = function(gd, data, layout, config) {
         Plotly.Lib.markTime('done with bar/box adjustments');
 
         // calc and autorange for errorbars
-        if(Plotly.ErrorBars) {
-            Plotly.ErrorBars.calc(gd);
-            Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
-        }
+        Plotly.ErrorBars.calc(gd);
+        Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
 
         // TODO: autosize extra for text markers
         return Plotly.Lib.syncOrAsync([
@@ -302,7 +300,7 @@ Plotly.plot = function(gd, data, layout, config) {
             }
 
             // finally do all error bars at once
-            if(gd._fullLayout._hasCartesian && Plotly.ErrorBars) {
+            if(gd._fullLayout._hasCartesian) {
                 Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
                 Plotly.Lib.markTime('done ErrorBars');
             }
