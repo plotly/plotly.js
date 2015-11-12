@@ -17,7 +17,7 @@ var AXES = ['xaxis', 'yaxis'];
 var STATIC_CANVAS, STATIC_CONTEXT;
 
 Plotly.Plots.registerSubplot('gl2d', ['xaxis', 'yaxis'], ['x', 'y'],
-    Plotly.Axes.traceAttributes);
+    Plotly.Axes.attributes);
 
 function Scene2D(options, fullLayout) {
     this.container = options.container;

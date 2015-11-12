@@ -1,7 +1,7 @@
 'use strict';
 
 var Plotly = require('../../../plotly');
-var layoutAttributes = require('./attributes');
+var layoutAttributes = require('./layout_attributes');
 var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
 

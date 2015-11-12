@@ -1,6 +1,6 @@
 var ScatterGeoAttrs = require('../scattergeo/attributes');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
-var plotAttrs = require('../../plots/plots/attributes');
+var plotAttrs = require('../../plots/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;

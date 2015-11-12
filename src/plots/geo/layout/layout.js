@@ -1,9 +1,9 @@
 'use strict';
 
 var Plotly = require('../../../plotly');
-var traceAttributes = require('./trace_attributes');
+var attributes = require('./attributes');
 
-Plotly.Plots.registerSubplot('geo', 'geo', 'geo', traceAttributes);
+Plotly.Plots.registerSubplot('geo', 'geo', 'geo', attributes);
 
-exports.layoutAttributes = require('./attributes');
+exports.layoutAttributes = require('./layout_attributes');
 exports.supplyLayoutDefaults = require('./defaults');

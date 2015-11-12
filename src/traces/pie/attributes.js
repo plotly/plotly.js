@@ -1,6 +1,6 @@
 var colorAttrs = require('../../components/color/attributes');
-var fontAttrs = require('../../plots/plots/font_attributes');
-var plotAttrs = require('../../plots/plots/attributes');
+var fontAttrs = require('../../plots/font_attributes');
+var plotAttrs = require('../../plots/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
