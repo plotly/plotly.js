@@ -1,5 +1,5 @@
 var scatterAttrs = require('../scatter/attributes');
-var traceColorbarAttrs = require('../../components/colorbar/trace_attributes');
+var colorscaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -47,14 +47,14 @@ module.exports = {
             '(the default behavior when `y` is not provided)'
         ].join(' ')
     },
-    zauto: traceColorbarAttrs.zauto,
-    zmin: traceColorbarAttrs.zmin,
-    zmax: traceColorbarAttrs.zmax,
-    colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: extendFlat({}, traceColorbarAttrs.autocolorscale,
+    zauto: colorscaleAttrs.zauto,
+    zmin: colorscaleAttrs.zmin,
+    zmax: colorscaleAttrs.zmax,
+    colorscale: colorscaleAttrs.colorscale,
+    autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale,
         {dflt: false}),
-    reversescale: traceColorbarAttrs.reversescale,
-    showscale: traceColorbarAttrs.showscale,
+    reversescale: colorscaleAttrs.reversescale,
+    showscale: colorscaleAttrs.showscale,
     zsmooth: {
         valType: 'enumerated',
         values: ['fast', 'best', false],

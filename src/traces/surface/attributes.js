@@ -1,6 +1,6 @@
 'use strict';
 
-var traceColorbarAttrs = require('../../components/colorbar/trace_attributes');
+var colorscaleAttrs = require('../../components/colorscale/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 
@@ -86,14 +86,14 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the text elements associated with each z value.'
     },
-    zauto: traceColorbarAttrs.zauto,
-    zmin: traceColorbarAttrs.zmin,
-    zmax: traceColorbarAttrs.zmax,
-    colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: extendFlat({}, traceColorbarAttrs.autocolorscale,
+    zauto: colorscaleAttrs.zauto,
+    zmin: colorscaleAttrs.zmin,
+    zmax: colorscaleAttrs.zmax,
+    colorscale: colorscaleAttrs.colorscale,
+    autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale,
         {dflt: false}),
-    reversescale: traceColorbarAttrs.reversescale,
-    showscale: traceColorbarAttrs.showscale,
+    reversescale: colorscaleAttrs.reversescale,
+    showscale: colorscaleAttrs.showscale,
     contours: {
         x: makeContourAttr('x'),
         y: makeContourAttr('y'),

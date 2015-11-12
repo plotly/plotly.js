@@ -1,5 +1,5 @@
 var ScatterGeoAttrs = require('../scattergeo/attributes');
-var traceColorbarAttrs = require('../../components/colorbar/trace_attributes');
+var colorscaleAttrs = require('../../components/colorscale/attributes');
 var plotAttrs = require('../../plots/plots/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -28,13 +28,13 @@ module.exports = {
             width: ScatterGeoMarkerLineAttrs.width
         }
     },
-    zauto: traceColorbarAttrs.zauto,
-    zmin: traceColorbarAttrs.zmin,
-    zmax: traceColorbarAttrs.zmax,
-    colorscale: traceColorbarAttrs.colorscale,
-    autocolorscale: traceColorbarAttrs.autocolorscale,
-    reversescale: traceColorbarAttrs.reversescale,
-    showscale: traceColorbarAttrs.showscale,
+    zauto: colorscaleAttrs.zauto,
+    zmin: colorscaleAttrs.zmin,
+    zmax: colorscaleAttrs.zmax,
+    colorscale: colorscaleAttrs.colorscale,
+    autocolorscale: colorscaleAttrs.autocolorscale,
+    reversescale: colorscaleAttrs.reversescale,
+    showscale: colorscaleAttrs.showscale,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['location', 'z', 'text', 'name']
     }),

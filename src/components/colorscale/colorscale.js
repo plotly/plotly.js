@@ -10,6 +10,8 @@ var colorscale = module.exports = {};
 colorscale.scales = require('./scales');
 colorscale.defaultScale = colorscale.scales.RdBu;
 
+colorscale.attributes = require('./attributes');
+
 function isValidScaleArray(scl) {
     var isValid = true,
         highestVal = 0,
