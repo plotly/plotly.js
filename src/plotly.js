@@ -1,9 +1,20 @@
+/*
+ * Pack internal modules unto an object.
+ *
+ * This object is require'ed in as 'Plotly' in numerous src and test files.
+ * Require'ing 'Plotly' bypasses circular dependencies.
+ *
+ * Future development should move away from this pattern.
+ *
+ */
+
+// promise polyfill
 require('es6-promise').polyfill();
 
 exports.Lib = require('./lib/lib');
 exports.util = require('./lib/svg_text_utils');
 
-// plot icons svg and css
+// plot icons svg and plot css
 exports.Icons = require('../build/ploticon');
 require('../build/plotcss');
 

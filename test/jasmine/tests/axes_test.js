@@ -27,7 +27,7 @@ describe('Test axes', function () {
                     }
                 }
             };
-            var expectedYaxis = Plotly.Lib.extendDeep({} ,gd.layout.xaxis),
+            var expectedYaxis = Plotly.Lib.extendDeep({}, gd.layout.xaxis),
                 expectedXaxis = {
                     title: 'Click to enter X axis title',
                     type: 'date'
