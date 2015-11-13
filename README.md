@@ -25,9 +25,9 @@ Several quick start options are available:
 * Install with [npm](https://www.npmjs.com): `npm install plotly`.
 * Use the plotly.js CDN hosted by Fastly:
 
-```
+```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
-<script type="text/javascript" src="http://cdn.plot.ly/plotly-latest.min.js">
+<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js">
 ```
 
 Read the [Getting started page](https://plot.ly/javascript/getting-started/) for examples.
@@ -51,7 +51,7 @@ Please read through our [contributing guidelines](https://github.com/plotly/plot
 Get updates on plotly.js's development and chat with the project maintainers and community members.
 
 * Follow [@plotlygraphs on Twitter](https://twitter.com/plotlygraphs).
-* Implementation help may be found at Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)) or community.plot.ly (tagged [`plotly-js`](community.plot.ly/c/plotly-js).
+* Implementation help may be found at Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)) or community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js).
 * Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/browse/keyword/plotly) or similar delivery mechanisms for maximum discoverability.
 * Direct developer email support can be purchased through a [Plotly Pro](https://plot.ly/products/cloud/) plan.
 
@@ -63,48 +63,27 @@ See [the Releases section of our GitHub project](https://github.com/plotly/plotl
 
 ## Clients for R, Python, and MATLAB
 
-Open-source clients to the plotly.js API for R, Python and MATLAB are available at these links:
+Open-source clients to the plotly.js APIs are available at these links:
 
-**R / RStudio**
+|   | GitHub repo | Getting started |
+|---|--------|---------|
+|**R / RStudio**| [ropensci/plotly](https://github.com/ropensci/plotly) | [plot.ly/r/getting-started](https://plot.ly/r/getting-started) |
+|**Python / Pandas / IPython notebook**| [plotly/plotly.py](https://github.com/plotly/plotly.py) | [plot.ly/python/getting-started](https://plot.ly/python/getting-started) |
+|**MATLAB**| [plotly/matlab-api](https://github.com/plotly/matlab-api) | [plot.ly/matlab/getting-started](https://plot.ly/matlab/getting-started) |
+|**node.js**| [plotly/plotly-nodejs](https://github.com/plotly/plotly-nodejs) | [plot.ly/nodejs/getting-started/](https://plot.ly/nodejs/getting-started/) |
+|**Julia**| [plotly/Plotly.jl](https://github.com/plotly/Plotly.jl) | [plot.ly/julia/getting-started/](https://plot.ly/julia/getting-started/) |
 
-* <https://github.com/ropensci/plotly>
-* <https://plot.ly/r/getting-started/>
-
-**Python / Pandas / IPython notebook**
-
-* <https://github.com/plotly/plotly.py>
-* <https://plot.ly/python/getting-started/>
-
-**MATLAB**
-
-* <https://github.com/plotly/matlab-api>
-* <https://plot.ly/python/getting-started/>
-
-plotly.js charts can also be created and saved online for free at <https://plot.ly/plot>
+plotly.js charts can also be created and saved online for free at [plot.ly/plot](https://plot.ly/plot).
 
 ## Creators
 
-**Alex C. Johnson**
-
-* <https://github.com/alexcjohnson>
-
-**Étienne Tétreault-Pinard**
-
-* <https://twitter.com/etpinard>
-* <https://github.com/etpinard>
-
-**Mikola Lysenko**
-
-* <https://twitter.com/MikolaLysenko>
-* <https://github.com/mikolalysenko>
-
-**Ben Postlethwaite**
-
-* <https://github.com/bpostlethwaite>
-
-**Chris Parmer**
-
-* <https://github.com/chriddyp>
+|   | Github | Twitter |
+|---|--------|---------|
+|**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | |
+|**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) |
+|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) |
+|**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | |
+|**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | |
 
 ## Copyright and license
 
