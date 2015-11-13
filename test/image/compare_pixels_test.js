@@ -5,7 +5,7 @@ var request = require('request');
 var path = require('path');
 
 var constants = require('../../tasks/util/constants');
-var getOptions = require('../../tasks/util/get_image_requests_options');
+var getOptions = require('../../tasks/util/get_image_request_options');
 
 // packages inside the image server docker
 var test = require('tape');
@@ -29,7 +29,7 @@ function runAll () {
     test('testing mocks', function (t) {
 
         console.error('### beginning pixel comparison tests ###');
-        var files = fs.readdirSync('./mocks');
+        var files = fs.readdirSync(constants.pathToTestImageMocks);
 
         t.plan(files.length - 1); // -1 is for font-wishlist...
         for (var i = 0; i < files.length; i ++) {
@@ -57,6 +57,7 @@ function testMock (fileName, t) {
         scale: 1
     };
 
+
     var imageFileName = fileName.split('.')[0] + '.png';
     var savedImagePath = path.join(constants.pathToTestImages, imageFileName);
     var diffPath = path.join(constants.pathToTestImagesDiff, 'diff-' + imageFileName);
@@ -71,6 +72,7 @@ function testMock (fileName, t) {
             tolerance: 0.0
         };
 
+	console.log(savedImagePath)
         if(statusCode === 485) {
             console.error(imageFileName, '- skip');
         }
