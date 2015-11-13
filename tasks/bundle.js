@@ -4,6 +4,7 @@ var browserify = require('browserify');
 var UglifyJS = require('uglify-js');
 
 var compressAttributes = require('./util/compress_attributes');
+var appendVersion = require('./util/append_version');
 var constants = require('./util/constants');
 
 /*
@@ -24,7 +25,10 @@ try {
     fs.statSync(constants.pathToFontSVGBuild).isFile();
 }
 catch(e) {
-    throw new Error('Please run `npm run preprocess` first');
+    throw new Error([
+        'build/ is missing a or more files',
+        'Please run `npm run preprocess` first'
+    ].join('\n'));
 }
 
 
@@ -41,22 +45,32 @@ browserify(constants.pathToPlotlySrc, {
     if(!DEV) {
         fs.writeFile(
             constants.pathToPlotlyDistMin,
-            UglifyJS.minify(buf.toString(), constants.uglifyOptions).code
+            UglifyJS.minify(buf.toString(), constants.uglifyOptions).code,
+            function() {
+                appendVersion(
+                    constants.pathToPlotlyDistMin, {object: 'Plotly'}
+                );
+            }
         );
     }
 })
-.pipe(fs.createWriteStream(constants.pathToPlotlyDist));
+.pipe(fs.createWriteStream(constants.pathToPlotlyDist))
+.on('finish', function() {
+    appendVersion(constants.pathToPlotlyDist, {object: 'Plotly', DEV: DEV});
+});
 
 
 // Browserify the geo assets
 browserify(constants.pathToPlotlyGeoAssetsSrc, {
     standalone: 'PlotlyGeoAssets'
 })
-.bundle(function(err, buf) {
+.bundle(function(err) {
     if(err) throw err;
 })
-.pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist));
-
+.pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist))
+.on('finish', function() {
+    appendVersion(constants.pathToPlotlyGeoAssetsDist, {object: 'PlotlyGeoAssets'});
+});
 
     
 // Browserify the plotly.js with meta
@@ -64,7 +78,10 @@ browserify(constants.pathToPlotlySrc, {
     debug: DEV,
     standalone: 'Plotly'
 })
-.bundle(function(err, buf) {
+.bundle(function(err) {
     if(err) throw err;
 })
-.pipe(fs.createWriteStream(constants.pathToPlotlyDistWithMeta));
+.pipe(fs.createWriteStream(constants.pathToPlotlyDistWithMeta))
+.on('finish', function() {
+    appendVersion(constants.pathToPlotlyDistWithMeta, {object: 'Plotly', DEV: DEV});
+});
