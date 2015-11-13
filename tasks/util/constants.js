@@ -1,9 +1,15 @@
 var path = require('path');
 
-var pathToSrc = path.join(__dirname, '../../src/');
-var pathToDist = path.join(__dirname, '../../dist/');
+var pathToRoot = path.join(__dirname, '../../');
+var pathToSrc = path.join(pathToRoot, 'src/');
+var pathToDist = path.join(pathToRoot, 'dist/');
+var pathToBuild = path.join(pathToRoot, 'build/');
 
 module.exports = {
+    pathToRoot: pathToRoot,
+    pathToSrc: pathToSrc,
+    pathToMocks: path.join(pathToRoot, 'test/image/mocks'),
+
     pathToPlotlySrc: path.join(pathToSrc, 'plotly.js'),
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
@@ -13,21 +19,24 @@ module.exports = {
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
 
     pathToFontSVG: path.join(pathToSrc, 'fonts/ploticon/ploticon.svg'),
-    pathToFontSVGBuild: path.join(pathToSrc, 'fonts/ploticon.js'),
-    
-    pathToSCSS: path.join(pathToSrc, 'css/scss/style.scss'),
-    pathToCSSBuild: path.join(pathToSrc, 'css/plotcss.js'),
+    pathToFontSVGBuild: path.join(pathToBuild, 'ploticon.js'),
+
+    pathToSCSS: path.join(pathToSrc, 'css/style.scss'),
+    pathToCSSBuild: path.join(pathToBuild, 'plotcss.js'),
+
+    pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
+    pathToImageViewerBundle: path.join(pathToBuild, 'image_viewer-bundle.js'),
 
     uglifyOptions: {
         fromString: true,
         mangle: true,
         compress: {
             warnings: false,
-            screw_ie8: true 
+            screw_ie8: true
         },
         output: {
             beautify: false,
-            ascii_only: true 
+            ascii_only: true
         }
    }
 };

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "description": "The premier javascript graphing library",
   "license": "MIT",
+  "main": "./src/plotly.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/plotly/plotly.js.git"
@@ -14,11 +15,18 @@
   "contributors": [
     {
       "name": "Alex Johnson",
-      "email": "alex@plot.ly"
+      "email": "alex@plot.ly",
+      "url": "http://environment.harvard.edu/about/fellows/alex-johnson"
+    },
+    {
+      "name": "Mikola Lysenko",
+      "email": "mikolalysenko@gmail.com",
+      "url": "http://0fps.net"
     },
     {
       "name": "Étienne Tétreault-Pinard",
-      "email": "etienne@plot.ly"
+      "email": "etienne@plot.ly",
+      "url": "https://github.com/etpinard"
     },
     {
       "name": "Ben Postlethwaite",
@@ -35,9 +43,14 @@
   ],
   "scripts": {
     "preprocess": "node tasks/preprocess.js",
-    "build": "node tasks/build.js",
-    "test": "node tasks/test.js",
-    "watch": "node tasks/watch.js"
+    "bundle": "node tasks/bundle.js",
+    "build": "npm run preprocess && npm run bundle",
+    "watch": "node tasks/watch_plotly.js",
+    "test-jasmine": "karma start test/jasmine/karma.conf.js",
+    "test-image": "echo TODO",
+    "test": "npm run test-jasmine && npm test-image",
+    "start-test_dashboard": "node devtools/test_dashboard/server.js",
+    "start-image_viewer": "node devtools/image_viewer/server.js"
   },
   "dependencies": {
     "3d-view": "^2.0.0",
@@ -48,6 +61,7 @@
     "d3": "3.5.6",
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
+    "fast-isnumeric": "^1.1.1",
     "gl-error2d": "^1.0.0",
     "gl-error3d": "^1.0.0",
     "gl-line2d": "^1.2.1",
@@ -78,5 +92,19 @@
     "uglify-js": "^2.5.0",
     "xml2js": "^0.4.15"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "brfs": "^1.4.1",
+    "browserify-transform-tools": "^1.5.0",
+    "ecstatic": "^1.2.0",
+    "jasmine-core": "^2.3.4",
+    "karma": "^0.13.15",
+    "karma-browserify": "^4.4.0",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-coverage": "^0.5.3",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-jasmine": "^0.3.6",
+    "open": "0.0.5",
+    "prettysize": "0.0.3",
+    "watchify": "^3.6.0"
+  }
 }

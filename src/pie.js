@@ -1,9 +1,9 @@
 'use strict';
 
-var Plotly = require('./plotly'),
-    d3 = require('d3'),
-    isNumeric = require('./isnumeric'),
-    tinycolor = require('tinycolor2');
+var Plotly = require('./plotly');
+var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
+var tinycolor = require('tinycolor2');
 
 var pie = module.exports = {};
 

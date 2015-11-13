@@ -1,13 +1,10 @@
 'use strict';
 
-// ---external global dependencies
-/* global Promise:false */
-
-var Plotly = require('./plotly'),
-    d3 = require('d3'),
-    m4FromQuat = require('gl-mat4/fromQuat'),
-    isNumeric = require('./isnumeric'),
-    Events = require('./events');
+var Plotly = require('./plotly');
+var d3 = require('d3');
+var m4FromQuat = require('gl-mat4/fromQuat');
+var isNumeric = require('fast-isnumeric');
+var Events = require('./events');
 
 var plots = module.exports = {};
 // Most of the generic plotting functions get put into Plotly.Plots,

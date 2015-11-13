@@ -1,9 +1,9 @@
 'use strict';
 
-var tinycolor = require('tinycolor2'),
-    isNumeric = require('../../isnumeric'),
-    str2RgbaArray = require('./str2rgbarray'),
-    Plotly = require('../../plotly');
+var Plotly = require('../../plotly');
+var tinycolor = require('tinycolor2');
+var isNumeric = require('fast-isnumeric');
+var str2RgbaArray = require('./str2rgbarray');
 
 var colorDflt = Plotly.Color.defaultLine,
     opacityDflt = 1;

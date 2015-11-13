@@ -1,7 +1,7 @@
 'use strict';
 
-var tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric');
+var tinycolor = require('tinycolor2');
+var isNumeric = require('fast-isnumeric');
 
 var color = module.exports = {};
 
