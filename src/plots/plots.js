@@ -336,43 +336,15 @@ function positionPlayWithData(gd, container){
     var link = container.append('a')
         .attr({
             'xlink:xlink:href': '#',
+
             'class': 'link--impt link--embedview',
             'font-weight':'bold'
         })
         .text(gd._context.linkText + ' ' + String.fromCharCode(187));
 
     if(gd._context.sendData) {
-        link.on('click',function(){
-            gd.emit('plotly_beforeexport');
-
-            var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
-
-            var hiddenformDiv = d3.select(gd)
-                .append('div')
-                .attr('id', 'hiddenform')
-                .style('display', 'none');
-
-            var hiddenform = hiddenformDiv
-                .append('form')
-                .attr({
-                    action: baseUrl + '/external',
-                    method: 'post',
-                    target: '_blank'
-                });
-
-            var hiddenformInput = hiddenform
-                .append('input')
-                .attr({
-                    type: 'text',
-                    name: 'data'
-                });
-
-            hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
-            hiddenform.node().submit();
-            hiddenformDiv.remove();
-
-            gd.emit('plotly_afterexport');
-            return false;
+        link.on('click', function(){
+            plots.sendDataToCloud(gd)
         });
     }
     else {
@@ -383,6 +355,38 @@ function positionPlayWithData(gd, container){
             'xlink:xlink:href': '/' + path[2].split('.')[0] + '/' + path[1] + query
         });
     }
+}
+plots.sendDataToCloud = function(gd) {
+        gd.emit('plotly_beforeexport');
+
+        var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
+
+        var hiddenformDiv = d3.select(gd)
+            .append('div')
+            .attr('id', 'hiddenform')
+            .style('display', 'none');
+
+        var hiddenform = hiddenformDiv
+            .append('form')
+            .attr({
+                action: baseUrl + '/external',
+                method: 'post',
+                target: '_blank'
+            });
+
+        var hiddenformInput = hiddenform
+            .append('input')
+            .attr({
+                type: 'text',
+                name: 'data'
+            });
+
+        hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
+        hiddenform.node().submit();
+        hiddenformDiv.remove();
+
+        gd.emit('plotly_afterexport');
+        return false;
 }
 
 plots.supplyDefaults = function(gd) {

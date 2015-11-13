@@ -478,6 +478,11 @@ proto.toImage = function() {
     });
 };
 
+proto.sendDataToCloud = function() {
+    var gd = this.graphInfo;
+    Plotly.Plots.sendDataToCloud(gd)
+};
+
 /**
  *
  * @Property config specification hash of button parameters
@@ -546,6 +551,11 @@ proto.config = function config() {
             title: 'download plot as a png',
             icon: 'camera',
             click: this.toImage
+        },
+        sendDataToCloud: {
+            title: 'save and edit plot in cloud',
+            icon: 'disk',
+            click: this.sendDataToCloud
         },
         // gl3d
         zoom3d: {
