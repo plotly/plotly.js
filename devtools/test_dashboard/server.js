@@ -17,13 +17,13 @@ var PORT = '8080';
 var testFile;
 switch(process.argv[2]) {
     case 'geo':
-        testFile = './test-geo';
+        testFile = 'test_geo';
     break;
-    case '2d':
-        testFile = './test-2d';
+    case 'gl2d':
+        testFile = 'test_gl2d';
     break;
     default:
-        testFile = './test-3d';
+        testFile = 'test_gl3d';
 }
 
 console.log('Using ' + testFile);
