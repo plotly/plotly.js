@@ -1,15 +1,20 @@
 'use strict';
 
-var test = require('tape');
-var request = require('request');
 var fs = require('fs');
+var request = require('request');
 var path = require('path');
-var getOptions = require('./tools/get-options');
-var gm = require('gm');
-var statusMsg485 = require('../server_app/config/statusmsgs')['485'];
 
-if (!fs.existsSync('./test-images-diffs')) fs.mkdirSync('./test-images-diffs');
-if (!fs.existsSync('./test-images')) fs.mkdirSync('./test-images');
+var constants = require('../../tasks/util/constants');
+var getOptions = require('../../tasks/util/get_image_requests_options');
+
+// packages inside the image server docker
+var test = require('tape');
+var gm = require('gm');
+
+
+// make artifact folders
+if(!fs.existsSync(constants.pathToTestImagesDiff)) fs.mkdirSync(constants.pathToTestImagesDiff);
+if(!fs.existsSync(constants.pathToTestImages)) fs.mkdirSync(constants.pathToTestImages);
 
 var userFileName = process.argv[2];
 
@@ -41,12 +46,11 @@ function runSingle (userFileName) {
     });
 }
 
-
 function testMock (fileName, t) {
     if (path.extname(fileName) !== '.json') return;
     if (fileName === 'font-wishlist.json' && !userFileName) return;
 
-    var figure = require('./mocks/' + fileName);
+    var figure = require(path.join(constants.pathToTestImageMocks, fileName));
     var bodyMock = {
         figure: figure,
         format: 'png',
@@ -54,8 +58,8 @@ function testMock (fileName, t) {
     };
 
     var imageFileName = fileName.split('.')[0] + '.png';
-    var savedImagePath = 'test-images/' + imageFileName;
-    var diffPath = 'test-images-diffs/' + 'diff-' + imageFileName;
+    var savedImagePath = path.join(constants.pathToTestImages, imageFileName);
+    var diffPath = path.join(constants.pathToTestImagesDiff, 'diff-' + imageFileName);
     var savedImageStream = fs.createWriteStream(savedImagePath);
     var options = getOptions(bodyMock, 'http://localhost:9010/');
     var statusCode;
@@ -68,10 +72,15 @@ function testMock (fileName, t) {
         };
 
         if(statusCode === 485) {
-            console.error(imageFileName, '-', statusMsg485, '- skip');
+            console.error(imageFileName, '- skip');
         }
         else {
-            gm.compare(savedImagePath, 'test-images-baseline/' + imageFileName, options, onEqualityCheck);
+            gm.compare(
+                savedImagePath,
+                path.join(constants.pathToTestImageBaselines, imageFileName),
+                options,
+                onEqualityCheck
+            );
         }
     }
 
