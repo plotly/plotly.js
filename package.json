@@ -43,6 +43,7 @@
   ],
   "scripts": {
     "preprocess": "node tasks/preprocess.js",
+    "postinstall": "npm run preprocess",
     "bundle": "node tasks/bundle.js",
     "build": "npm run preprocess && npm run bundle",
     "watch": "node tasks/watch_plotly.js",
