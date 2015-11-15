@@ -57,7 +57,10 @@ module.exports = {
 
     // function to add the background color to a different container
     // or 'opaque' to ensure there's white behind it
-    setBackground: defaultSetBackground
+    setBackground: defaultSetBackground,
+
+    // URL to topojson files used in geo charts
+    topojsonURL: 'https://cdn.plot.ly/'
 
 };
 
