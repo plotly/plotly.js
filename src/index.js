@@ -19,11 +19,11 @@ exports.addTraces = Plotly.addTraces;
 exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
 
-// unofficial plot methods, use at your own risk
+// unofficial 'beta' plot methods, use at your own risk
 exports.Plots = Plotly.Plots;
 exports.Fx = Plotly.Fx;
-
-// TODO expose snapshot and plot_schema
+exports.Snapshot = Plotly.Snapshot;
+exports.PlotSchema = Plotly.PlotSchema;
 
 // export d3 used in the bundle
 exports.d3 = require('d3');
