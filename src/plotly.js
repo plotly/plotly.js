@@ -7,8 +7,8 @@ exports.Lib = require('./lib/lib');
 exports.util = require('./lib/plotly_util');
 
 // icons, css and configuration
-exports.Icons = require('./fonts/ploticon');
-require('./css/plotcss');
+exports.Icons = require('../build/ploticon');
+require('../build/plotcss');
 
 exports.MathJaxConfig = require('./fonts/mathjax_config');
 exports.defaultConfig = require('./plot_config');

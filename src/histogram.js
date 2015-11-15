@@ -1,8 +1,8 @@
 'use strict';
 
-var Plotly = require('./plotly'),
-    isNumeric = require('./isnumeric'),
-    barAttrs = Plotly.Bars.attributes;
+var Plotly = require('./plotly');
+var isNumeric = require('fast-isnumeric');
+var barAttrs = Plotly.Bars.attributes;
 
 var histogram = module.exports = {};
 

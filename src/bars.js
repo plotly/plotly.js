@@ -1,8 +1,8 @@
 'use strict';
 
-var Plotly = require('./plotly'),
-    d3 = require('d3'),
-    isNumeric = require('./isnumeric');
+var Plotly = require('./plotly');
+var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
 
 var bars = module.exports = {};
 

@@ -1,8 +1,5 @@
-'use strict';
-
-/* global d3:false */
-
 var fs = require('fs');
+var d3 = require('d3');
 
 var $plotlist = document.getElementById('plot-list'),
     $images = document.getElementById('plot-images'),

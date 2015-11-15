@@ -1,67 +1,39 @@
 <!DOCTYPE html>
 <head>
-
-  <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:600,400,300,200|Droid+Sans|PT+Sans+Narrow|Gravitas+One|Droid+Sans+Mono|Droid+Serif|Raleway|Old+Standard+TT" />
-
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Open+Sans:600,400,300,200|Droid+Sans|PT+Sans+Narrow|Gravitas+One|Droid+Sans+Mono|Droid+Serif|Raleway|Old+Standard+TT" />
 </head>
-
 <body>
 
-  <div id="plot-list" style="overflow:auto; height: 100px;"></div>
-  <div id="status-info" style="display: block; position: absolute; top: 150px;"></div>
-  <div id="embedded-graph"></div>
-  <div id="embedded-image"style="
-    display: block;
-    position: absolute;
-    top: 800px;
-  ">
-  </div>
+    <div id="plot-list" style="overflow:auto; height:100px;"></div>
+    <div id="status-info" style="display:block; position:absolute; top:150px;"></div>
+    <div id="embedded-graph"></div>
+    <div id="embedded-image" style="display:block; position:absolute; top:800px;"></div>
 
-  <script type="text/javascript" src="./../shelly/shelly/static/js/plugins/mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
+    <script type="text/javascript" src="../../dist/extras/mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
 
-  <script>
-    PLOTLYENV = {
-        TOPOJSON_URL: '../shelly/plotlyjs/static/plotlyjs/src/geo/topojson/'
-    };
-  </script>
+    <script type="text/javascript" src="../../dist/plotly.js" charset="utf-8"></script>
+    <script>PLOTLYENV = { TOPOJSON_URL: '../../src/assets/topojson/' };</script>
 
-  <script type="text/javascript" src="./../shelly/plotlyjs/static/plotlyjs/build/plotlyjs-bundle.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../../build/test_dashboard-bundle.js"></script>
 
-  <script type="text/javascript" src="test-bundle.js"></script>
-
-  <script>
-    MathJax.Hub.Config({
-    messageStyle: 'none',
-    skipStartupTypeset: true,
-    displayAlign: "left",
-    tex2jax: {
-    inlineMath: [["$","$"],["\\(","\\)"]]
-    }
-    });
-  </script>
-
-  <script>
+    <!-- helper functions to manipulate graph div -->
+    <script>
     var Tabs = {
-        get: function() {
+        getGraph: function() {
             return document.getElementById('embedded-graph').children[0];
         },
         fresh: function() {
             var anchor = document.getElementById('embedded-graph'),
-                plotDiv = Tabs.get();
-            if(plotDiv) anchor.removeChild(plotDiv);
-            plotDiv = document.createElement('div');
-            anchor.appendChild(plotDiv);
-            return plotDiv;
+                graphDiv = Tabs.getGraph();
+
+            if(graphDiv) anchor.removeChild(graphDiv);
+            graphDiv = document.createElement('div');
+            anchor.appendChild(graphDiv);
+
+            return graphDiv;
         }
     };
-
-    Tabs.getGraph = Tabs.get;
-
-    var Themes = {
-        reTileLock: null
-    };
-  </script>
-
+    </script>
 
 </body>
 </html>

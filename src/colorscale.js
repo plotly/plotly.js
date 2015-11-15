@@ -1,9 +1,9 @@
 'use strict';
 
-var Plotly = require('./plotly'),
-    d3 = require('d3'),
-    tinycolor = require('tinycolor2'),
-    isNumeric = require('./isnumeric');
+var Plotly = require('./plotly');
+var d3 = require('d3');
+var tinycolor = require('tinycolor2');
+var isNumeric = require('fast-isnumeric');
 
 var colorscale = module.exports = {};
 

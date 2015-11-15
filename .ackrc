@@ -1,0 +1,6 @@
+--ignore-directory=is:dist
+--ignore-directory=is:build
+--ignore-directory=is:assets
+
+--ignore-file=ext:svg
+--ignore-file=ext:log

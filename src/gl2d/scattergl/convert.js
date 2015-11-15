@@ -9,7 +9,7 @@ var createError = require('gl-error2d');
 
 var str2RGBArray = require('../../gl3d/lib/str2rgbarray');
 var formatColor = require('../../gl3d/lib/format-color');
-var isNumeric = require('../../isnumeric');
+var isNumeric = require('fast-isnumeric');
 
 var MARKER_SYMBOLS = require('../../gl3d/lib/markers.json');
 var DASHES = require('../lib/dashes.json');
