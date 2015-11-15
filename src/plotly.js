@@ -20,7 +20,7 @@ require('../build/plotcss');
 
 // configuration
 exports.MathJaxConfig = require('./fonts/mathjax_config');
-exports.defaultConfig = require('./plot_config');
+exports.defaultConfig = require('./plot_api/plot_config');
 
 // plots
 exports.Plots = require('./plots/plots');
