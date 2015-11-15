@@ -22,6 +22,7 @@ function Geo(options, fullLayout) {
 
     this.id = options.id;
     this.container = options.container;
+    this.topojsonURL = options.topojsonURL;
 
     // add a few projection types to d3.geo,
     // a subset of https://github.com/d3/d3-geo-projection
@@ -85,7 +86,10 @@ proto.plot = function(geoData, fullLayout) {
             _this.onceTopojsonIsLoaded(geoData, geoLayout);
         }
         else {
-            topojsonPath = topojsonUtils.getTopojsonPath(_this.topojsonName);
+            topojsonPath = topojsonUtils.getTopojsonPath(
+                _this.topojsonURL,
+                _this.topojsonName
+            );
 
             // N.B this is async
             d3.json(topojsonPath, function(error, topojson) {

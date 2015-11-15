@@ -471,7 +471,8 @@ function plotGeo(gd) {
             geo = new Plotly.Geo(
                 {
                     id: geoId,
-                    container: fullLayout._geocontainer.node()
+                    container: fullLayout._geocontainer.node(),
+                    topojsonURL: gd._context.topojsonURL
                 },
                 fullLayout
             );
