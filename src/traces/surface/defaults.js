@@ -1,7 +1,7 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var Surface = require('./surface');
+var Surface = require('./');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
