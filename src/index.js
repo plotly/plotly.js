@@ -18,6 +18,7 @@ exports.prependTraces = Plotly.prependTraces;
 exports.addTraces = Plotly.addTraces;
 exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
+exports.setPlotConfig = require('./plot_api/set_plot_config');
 
 // unofficial 'beta' plot methods, use at your own risk
 exports.Plots = Plotly.Plots;
