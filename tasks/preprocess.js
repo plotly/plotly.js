@@ -23,8 +23,8 @@ fs.readFile(constants.pathToFontSVG, function(err, data) {
     pullFontSVG(data.toString(), constants.pathToFontSVGBuild);
 });
 
-// copy topojson from sane-topojson to dist/
-fs.copy(constants.pathToTopojsonSrc, constants.pathToTopojsonDest,
+// copy topojson files from sane-topojson to dist/
+fs.copy(constants.pathToTopojsonSrc, constants.pathToTopojsonDist,
     { clobber: true },
     function(err) {
         if(err) throw err;
