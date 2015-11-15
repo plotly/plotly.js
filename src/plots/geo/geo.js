@@ -81,8 +81,8 @@ proto.plot = function(geoData, fullLayout) {
     if(_this.topojson===null || topojsonNameNew!==_this.topojsonName) {
         _this.topojsonName = topojsonNameNew;
 
-        if(PlotlyGeoAssets.topojsons[_this.topojsonName] !== undefined) {
-            _this.topojson = PlotlyGeoAssets.topojsons[_this.topojsonName];
+        if(PlotlyGeoAssets.topojson[_this.topojsonName] !== undefined) {
+            _this.topojson = PlotlyGeoAssets.topojson[_this.topojsonName];
             _this.onceTopojsonIsLoaded(geoData, geoLayout);
         }
         else {
@@ -94,7 +94,7 @@ proto.plot = function(geoData, fullLayout) {
             // N.B this is async
             d3.json(topojsonPath, function(error, topojson) {
                 _this.topojson = topojson;
-                PlotlyGeoAssets.topojsons[_this.topojsonName] = topojson;
+                PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
                 _this.onceTopojsonIsLoaded(geoData, geoLayout);
             });
         }

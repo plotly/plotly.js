@@ -455,10 +455,10 @@ function plotGeo(gd) {
 
     var i, geoId, fullGeoData, geo;
 
-    // if plotlyjs-geo-assets-bundle is not included,
-    // initialize object to keep reference to every loaded topojsons
+    // if 'plotly-geo-assets.js' is not included,
+    // initialize object to keep reference to every loaded topojson
     if(window.PlotlyGeoAssets === undefined) {
-        window.PlotlyGeoAssets = { topojsons : {} };
+        window.PlotlyGeoAssets = { topojson : {} };
     }
 
     for (i = 0; i < geoIds.length; i++) {
