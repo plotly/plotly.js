@@ -1,4 +1,4 @@
-var axesAttrs = require('../../cartesian/attributes');
+var axesAttrs = require('../../cartesian/layout_attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 
 

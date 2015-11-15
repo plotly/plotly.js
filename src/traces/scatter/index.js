@@ -95,10 +95,8 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut, coerce);
     }
 
-    if(Plotly.ErrorBars) {
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
-    }
+    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
+    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
 // common to 'scatter', 'scatter3d', 'scattergeo' and 'scattergl'
@@ -367,13 +365,10 @@ scatter.calc = function(gd, trace) {
     }
 
     // if no error bars, markers or text, or fill to y=0 remove x padding
-    else if(
-            (Plotly.ErrorBars===undefined || !trace.error_y.visible) &&
-            (
-                ['tonexty', 'tozeroy'].indexOf(trace.fill)!==-1 ||
-                (!scatter.hasMarkers(trace) && !scatter.hasText(trace))
-            )
-        ) {
+    else if(!trace.error_y.visible && (
+            ['tonexty', 'tozeroy'].indexOf(trace.fill)!==-1 ||
+            (!scatter.hasMarkers(trace) && !scatter.hasText(trace))
+        )) {
         xOptions.padded = false;
         xOptions.ppad = 0;
     }
@@ -909,7 +904,7 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
     if(di.tx) pointData.text = di.tx;
     else if(trace.text) pointData.text = trace.text;
 
-    if(Plotly.ErrorBars) Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+    Plotly.ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
 };

@@ -6,12 +6,11 @@ var isNumeric = require('fast-isnumeric');
 
 var axes = module.exports = {};
 
-axes.traceAttributes = require('./trace_attributes');
+axes.attributes = require('./attributes');
 
-Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'],
-    axes.traceAttributes);
+Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], axes.attributes);
 
-axes.layoutAttributes = require('./attributes');
+axes.layoutAttributes = require('./layout_attributes');
 
 var xAxisMatch = /^xaxis[0-9]*$/,
     yAxisMatch = /^yaxis[0-9]*$/;

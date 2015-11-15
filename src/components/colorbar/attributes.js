@@ -1,5 +1,5 @@
-var axesAttrs = require('../../plots/cartesian/attributes');
-var fontAttrs = require('../../plots/plots/font_attributes');
+var axesAttrs = require('../../plots/cartesian/layout_attributes');
+var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {

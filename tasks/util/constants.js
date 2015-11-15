@@ -10,7 +10,7 @@ module.exports = {
     pathToSrc: pathToSrc,
     pathToMocks: path.join(pathToRoot, 'test/image/mocks'),
 
-    pathToPlotlySrc: path.join(pathToSrc, 'plotly.js'),
+    pathToPlotlySrc: path.join(pathToSrc, 'index.js'),
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),

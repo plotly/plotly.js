@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "description": "The premier javascript graphing library",
   "license": "MIT",
-  "main": "./src/plotly.js",
+  "main": "./src/index.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/plotly/plotly.js.git"
@@ -43,6 +43,7 @@
   ],
   "scripts": {
     "preprocess": "node tasks/preprocess.js",
+    "postinstall": "npm run preprocess",
     "bundle": "node tasks/bundle.js",
     "build": "npm run preprocess && npm run bundle",
     "watch": "node tasks/watch_plotly.js",

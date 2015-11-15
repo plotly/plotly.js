@@ -2,7 +2,7 @@
 
 var Plotly = require('../../../plotly');
 var constants = require('../../../constants/geo_constants');
-var layoutAttributes = require('./attributes');
+var layoutAttributes = require('./layout_attributes');
 var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 
 

@@ -592,5 +592,3 @@ colorbar.traceColorbar = function(gd, cd) {
 
     Plotly.Lib.markTime('done colorbar');
 };
-
-colorbar.traceColorbarAttributes = require('./trace_attributes');

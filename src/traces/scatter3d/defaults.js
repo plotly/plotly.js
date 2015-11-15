@@ -1,7 +1,7 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var Scatter3D = require('./scatter3d');
+var Scatter3D = require('./');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -45,11 +45,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    if(Plotly.ErrorBars) {
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
-    }
+    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
+    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
+    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
 };
 
 function handleXYZDefaults(traceIn, traceOut, coerce) {

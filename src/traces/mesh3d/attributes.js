@@ -1,4 +1,4 @@
-var traceColorbarAttrs = require('../../components/colorbar/trace_attributes');
+var colorscaleAttrs = require('../../components/colorscale/attributes');
 
 module.exports = {
     x: {valType: 'data_array'},
@@ -74,9 +74,9 @@ module.exports = {
         }
     },
 
-    colorscale: traceColorbarAttrs.colorscale,
-    reversescale: traceColorbarAttrs.reversescale,
-    showscale: traceColorbarAttrs.showscale,
+    colorscale: colorscaleAttrs.colorscale,
+    reversescale: colorscaleAttrs.reversescale,
+    showscale: colorscaleAttrs.showscale,
 
     lighting: {
         ambient: {

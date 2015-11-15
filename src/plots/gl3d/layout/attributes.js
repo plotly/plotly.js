@@ -1,140 +1,15 @@
-'use strict';
-
-var gl3dAxisAttrs = require('./axis_attributes');
-var extendFlat = require('../../../lib/extend').extendFlat;
-
-function makeVector(x, y, z) {
-    return {
-        x: {
-            valType: 'number',
-            role: 'info',
-            dflt: x
-        },
-        y: {
-            valType: 'number',
-            role: 'info',
-            dflt: y
-        },
-        z: {
-            valType: 'number',
-            role: 'info',
-            dflt: z
-        }
-    };
-}
-
 module.exports = {
-    bgcolor: {
-        valType: 'color',
-        role: 'style',
-        dflt: 'rgba(0,0,0,0)'
-    },
-    camera: {
-        up: extendFlat(makeVector(0, 0, 1), {
-            description: [
-                'Sets the (x,y,z) components of the \'up\' camera vector.',
-                'This vector determines the up direction of this scene',
-                'with respect to the page.',
-                'The default is *{x: 0, y: 0, z: 1}* which means that',
-                'the z axis points up.'
-            ].join(' ')
-        }),
-        center: extendFlat(makeVector(0, 0, 0), {
-            description: [
-                'Sets the (x,y,z) components of the \'center\' camera vector',
-                'This vector determines the translation (x,y,z) space',
-                'about the center of this scene.',
-                'By default, there is no such translation.'
-            ].join(' ')
-        }),
-        eye: extendFlat(makeVector(1.25, 1.25, 1.25), {
-            description: [
-                'Sets the (x,y,z) components of the \'eye\' camera vector.',
-                'This vector determines the view point about the origin',
-                'of this scene.'
-            ].join(' ')
-        })
-    },
-    domain: {
-        x: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the horizontal domain of this scene',
-                '(in plot fraction).'
-            ].join(' ')
-        },
-        y: {
-            valType: 'info_array',
-            role: 'info',
-            items: [
-                {valType: 'number', min: 0, max: 1},
-                {valType: 'number', min: 0, max: 1}
-            ],
-            dflt: [0, 1],
-            description: [
-                'Sets the vertical domain of this scene',
-                '(in plot fraction).'
-            ].join(' ')
-        }
-    },
-    aspectmode: {
-        valType: 'enumerated',
+    scene: {
+        valType: 'sceneid',
         role: 'info',
-        values: ['auto', 'cube', 'data', 'manual'],
-        dflt: 'auto',
+        dflt: 'scene',
         description: [
-            'If *cube*, this scene\'s axes are drawn as a cube,',
-            'regardless of the axes\' ranges.',
-
-            'If *data*, this scene\'s axes are drawn',
-            'in proportion with the axes\' ranges.',
-
-            'If *manual*, this scene\'s axes are drawn',
-            'in proportion with the input of *aspectratio*',
-            '(the default behavior if *aspectratio* is provided).',
-
-            'If *auto*, this scene\'s axes are drawn',
-            'using the results of *data* except when one axis',
-            'is more than four times the size of the two others,',
-            'where in that case the results of *cube* are used.'
+            'Sets a reference between this trace\'s 3D coordinate system and',
+            'a 3D scene.',
+            'If *scene* (the default value), the (x,y,z) coordinates refer to',
+            '`layout.scene`.',
+            'If *scene2*, the (x,y,z) coordinates refer to `layout.scene2`,',
+            'and so on.'
         ].join(' ')
-    },
-    aspectratio: { // must be positive (0's are coerced to 1)
-        x: {
-            valType: 'number',
-            role: 'info',
-            min: 0
-        },
-        y: {
-            valType: 'number',
-            role: 'info',
-            min: 0
-        },
-        z: {
-            valType: 'number',
-            role: 'info',
-            min: 0
-        },
-        description: [
-            'Sets this scene\'s axis aspectratio.'
-        ].join(' ')
-    },
-
-    xaxis: gl3dAxisAttrs,
-    yaxis: gl3dAxisAttrs,
-    zaxis: gl3dAxisAttrs,
-
-    _deprecated: {
-        cameraposition: {
-            valType: 'info_array',
-            role: 'info',
-            description: 'Obsolete. Use `camera` instead.'
-        }
     }
 };

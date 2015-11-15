@@ -1,14 +1,14 @@
 'use strict';
 
 var Plotly = require('../../../plotly');
-var traceAttributes = require('./trace_attributes');
+var attributes = require('./attributes');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
 var noop = function () {};
 
-Plotly.Plots.registerSubplot('gl3d', 'scene', 'scene', traceAttributes);
+Plotly.Plots.registerSubplot('gl3d', 'scene', 'scene', attributes);
 
-exports.layoutAttributes = require('./attributes');
+exports.layoutAttributes = require('./layout_attributes');
 
 exports.supplyLayoutDefaults = require('./defaults');
 

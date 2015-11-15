@@ -1,5 +1,5 @@
 var scatterAttrs = require('../scatter/attributes');
-var plotAttrs = require('../../plots/plots/attributes');
+var plotAttrs = require('../../plots/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterMarkerAttrs = scatterAttrs.marker,

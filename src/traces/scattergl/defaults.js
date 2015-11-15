@@ -1,7 +1,7 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var ScatterGl = require('./scattergl');
+var ScatterGl = require('./');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -33,8 +33,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         Scatter.fillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
-    if(Plotly.ErrorBars) {
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-        Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
-    }
+    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
+    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };

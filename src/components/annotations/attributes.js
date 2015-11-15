@@ -1,6 +1,6 @@
 var Plotly = require('../../plotly');
 var ARROWPATHS = require('./arrow_paths');
-var fontAttrs = require('../../plots/plots/font_attributes');
+var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {

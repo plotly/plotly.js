@@ -1,6 +1,6 @@
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plotly = require('../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
@@ -703,14 +703,11 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var modulesWithErrorBars = Plotly.ErrorBars ?
-            gd._modules.concat(Plotly.ErrorBars) : gd._modules,
-        i,
-        module;
+    var modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars);
 
-    for (i = 0; i < modulesWithErrorBars.length; i++) {
-        module = modulesWithErrorBars[i];
-        if (module.style) module.style(gd);
+    for(var i = 0; i < modulesWithErrorBars.length; i++) {
+        var _module = modulesWithErrorBars[i];
+        if(_module.style) _module.style(gd);
     }
 };
 

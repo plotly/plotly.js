@@ -1,7 +1,7 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var Mesh3D = require('./mesh3d');
+var Mesh3D = require('./');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
