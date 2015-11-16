@@ -4,12 +4,17 @@ general:
       - image-test
 
 machine:
+  node:
+    version: 4.2.1 
   services:
     - docker
+    
 
 dependencies:
   pre: 
     - docker pull plotly/imageserver:0.2.1
+    - npm install
+    - npm run watch
 
 test:
   override:
