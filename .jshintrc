@@ -2,7 +2,8 @@
   // environments
   "browser": true,  // Define globals exposed by modern browsers.
   "jquery": false,  // Define globals exposed by jQuery.
-  "node": true,  // Define globals exposed by Node.js.
+  "node": true,     // Define globals exposed by Node.js.
+  "jasmine": true,  // Define globals exposed by jasmine
 
   // enforcing (true means bug us about it)
   "camelcase": false,  // Force all variable names to use either camelCase style or UPPER_CASE with underscores.
@@ -15,10 +16,8 @@
   "indent": 4,  // Enforce tab width of 4 spaces.
   "latedef": "nofunc",  // Prohibit use of a variable before it is defined.
   "maxcomplexity": false, // This option lets you control cyclomatic complexity throughout your code.
-  "maxdepth": 5,  // This option lets you control how nested do you want your blocks to be
+  "maxdepth": 6,  // This option lets you control how nested do you want your blocks to be
   "maxlen": 120,  // Enforce line length to 120 characters
-  "maxparams": 5,  // This option lets you set the max number of formal parameters allowed per function
-  "maxstatements": 60, // This option lets you set the max number of statements allowed per function
   "newcap": true,  // Require capitalized names for constructor functions.
   "noarg": true,  // This option prohibits the use of arguments.caller and arguments.callee.
   "noempty": true,  // This option warns when you have an empty block in your code.
@@ -30,7 +29,6 @@
   "trailing": true,  // Prohibit trailing whitespace.
   "undef": true,  // Prohibit use of explicitly undeclared variables.
   "unused": true,  // Warn when variables are defined but never used.
-
 
   // relaxing (true means DON'T bug us about it)
   "asi": false,  // This option suppresses warnings about missing semicolons.
@@ -61,15 +59,6 @@
 
   // global pre defined variables
   "predef": [
-    "angular",
-    "afterEach",
-    "beforeEach",
-    "describe",
-    "encodeURIComponent",
-    "expect",
-    "inject",
-    "it",
-    "spyOn",
     "JSON",
     "Uint8Array",
     "Uint16Array",
@@ -78,9 +67,6 @@
     "Int16Array",
     "Int32Array",
     "Float32Array",
-    "Float64Array",
-    "require",
-    "module",
-    "document"
+    "Float64Array"
   ]
 }
