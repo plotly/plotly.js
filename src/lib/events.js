@@ -1,5 +1,7 @@
 'use strict';
 
+/* global $:false */
+
 var EventEmitter = require('events').EventEmitter;
 
 var Events = {

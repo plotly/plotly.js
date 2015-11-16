@@ -1,3 +1,5 @@
+'use strict';
+
 var barAttrs = require('../bars/attributes');
 
 

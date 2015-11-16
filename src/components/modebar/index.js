@@ -450,14 +450,14 @@ proto.toImage = function() {
 
     var ev = Plotly.Snapshot.toImage(this.graphInfo, {format: format});
 
-    var filename = this.graphInfo.fn || "newplot";
+    var filename = this.graphInfo.fn || 'newplot';
     filename += '.' + format;
 
     ev.once('success', function(result) {
 
         _this._snapshotInProgress = false;
 
-        var downloadLink = document.createElement("a");
+        var downloadLink = document.createElement('a');
         downloadLink.href = result;
         downloadLink.download = filename; // only supported by FF and Chrome
 
