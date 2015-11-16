@@ -32,6 +32,7 @@ module.exports = {
     pathToTestImageBaselines: path.join(pathToImageTest, 'baselines/'),
     pathToTestImages: path.join(pathToBuild, 'test_images/'),
     pathToTestImagesDiff: path.join(pathToBuild, 'test_images_diff/'),
+    pathToTestImagesDiffList: path.join(pathToBuild, 'list_of_incorrect_images.txt'),
 
     uglifyOptions: {
         fromString: true,
