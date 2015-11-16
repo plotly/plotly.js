@@ -13,8 +13,8 @@ Under your `plotly.js` folder, run
 
 ```bash
 $ docker run -d --name your_container_name \
-      -v $PWD:/var/www/streambed/image_server/plotly.js \
-      -p 9010:9010 -p 2022:22 plotly/imageserver:[version]
+                      -v $PWD:/var/www/streambed/image_server/plotly.js \
+		      -p 9010:9010 -p 2022:22 plotly/imageserver:[version]
 ```
 
 ### Run the test
@@ -22,7 +22,7 @@ $ docker run -d --name your_container_name \
 Under your `plotly.js` folder, run
 
 ```bash
-npm run test-image
+$ docker exec -i your_container_name /bin/bash -c "cd /var/www/streambed/image_server/plotly.js && npm run test-image"
 ``` 
 
 ### SSH into docker
@@ -57,6 +57,7 @@ $ ssh-keygen -f "/home/jh/.ssh/known_hosts" -R [localhost]:2022
 
 to remove host information.
 
+
 ### list all images
 
 ```bash
@@ -80,3 +81,4 @@ docker stop [container hash]
 ```bash
 docker rm [container hash]
 ```
+>>>>>>> d81c60098a8948cf60739b6c0ebe839aa9794152
