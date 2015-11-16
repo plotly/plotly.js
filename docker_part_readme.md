@@ -5,8 +5,6 @@
 The premier high-level javascript graphing library
 
 
-
-
 ## Test Plotly.js with Plot.ly Image-Server docker container
 
 ### Run container
@@ -20,6 +18,8 @@ $ docker run -d --name your_container_name \
 ```
 
 ### Run the test
+
+Under your `plotly.js` folder, run
 
 ```bash
 $ docker exec -i your_container_name /bin/bash -c "cd /var/www/streambed/image_server/plotly.js && npm run test-image"
@@ -57,3 +57,28 @@ $ ssh-keygen -f "/home/jh/.ssh/known_hosts" -R [localhost]:2022
 
 to remove host information.
 
+
+### list all images
+
+```bash
+docker images
+```
+
+### list all container
+
+```bash
+docker ps -a
+```
+
+### stop container
+
+```bash
+docker stop [container hash]
+```
+
+### remover container
+
+```bash
+docker rm [container hash]
+```
+>>>>>>> d81c60098a8948cf60739b6c0ebe839aa9794152
