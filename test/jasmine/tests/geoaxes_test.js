@@ -1,10 +1,8 @@
-var Plotly = require('@src/plotly'),
-    params = require('@src/geo/lib/params');
+var params = require('@src/constants/geo_constants');
+var supplyLayoutDefaults = require('@src/plots/geo/layout/axis_defaults');
 
 describe('Test geoaxes', function () {
     'use strict';
-
-    var GeoAxes = Plotly.GeoAxes;
 
     describe('supplyLayoutDefaults', function() {
         var geoLayoutIn,
@@ -31,7 +29,7 @@ describe('Test geoaxes', function () {
                 geoLayoutIn = {};
                 geoLayoutOut = {scope: scope};
 
-                GeoAxes.supplyLayoutDefaults(geoLayoutIn, geoLayoutOut);
+                supplyLayoutDefaults(geoLayoutIn, geoLayoutOut);
                 expect(geoLayoutOut.lonaxis.range).toEqual(dfltLonaxisRange);
                 expect(geoLayoutOut.lataxis.range).toEqual(dfltLataxisRange);
                 expect(geoLayoutOut.lonaxis.tick0).toEqual(dfltLonaxisRange[0]);
@@ -43,7 +41,7 @@ describe('Test geoaxes', function () {
                 };
                 geoLayoutOut = {scope: scope};
 
-                GeoAxes.supplyLayoutDefaults(geoLayoutIn, geoLayoutOut);
+                supplyLayoutDefaults(geoLayoutIn, geoLayoutOut);
                 expect(geoLayoutOut.lonaxis.range).toEqual(customLonaxisRange);
                 expect(geoLayoutOut.lataxis.range).toEqual(customLataxisRange);
                 expect(geoLayoutOut.lonaxis.tick0).toEqual(customLonaxisRange[0]);
@@ -55,7 +53,7 @@ describe('Test geoaxes', function () {
             var expectedLonaxisRange, expectedLataxisRange;
 
             function testOne() {
-                GeoAxes.supplyLayoutDefaults(geoLayoutIn, geoLayoutOut);
+                supplyLayoutDefaults(geoLayoutIn, geoLayoutOut);
                 expect(geoLayoutOut.lonaxis.range).toEqual(expectedLonaxisRange);
                 expect(geoLayoutOut.lataxis.range).toEqual(expectedLataxisRange);
             }

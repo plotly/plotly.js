@@ -1,6 +1,6 @@
 var plotButtons = require('./buttons');
 
-var figDir = '../../test/image/baseline/geo_';
+var figDir = '../../test/image/baselines/geo_';
 
 var plots = {};
 

@@ -1,0 +1,52 @@
+'use strict';
+
+var Plotly = require('../../../plotly');
+var layoutAttributes = require('./axis_attributes');
+
+var axesNames = ['xaxis', 'yaxis', 'zaxis'];
+var noop = function() {};
+
+
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
+    var Axes = Plotly.Axes;
+    var containerIn, containerOut;
+
+    function coerce(attr, dflt) {
+        return Plotly.Lib.coerce(containerIn, containerOut, layoutAttributes, attr, dflt);
+    }
+
+    for (var j = 0; j < axesNames.length; j++) {
+        var axName = axesNames[j];
+        containerIn = layoutIn[axName] || {};
+
+        containerOut = {
+            _id: axName[0] + options.scene,
+            _name: axName
+        };
+
+        layoutOut[axName] = containerOut = Axes.handleAxisDefaults(
+            containerIn,
+            containerOut,
+            coerce,
+            {
+                font: options.font,
+                letter: axName[0],
+                data: options.data,
+                showGrid: true
+            });
+
+        coerce('gridcolor');
+        coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
+
+        containerOut.setScale = noop;
+
+        if (coerce('showspikes')) {
+            coerce('spikesides');
+            coerce('spikethickness');
+            coerce('spikecolor');
+        }
+        if (coerce('showbackground')) coerce('backgroundcolor');
+
+        coerce('showaxeslabels');
+    }
+};

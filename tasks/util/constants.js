@@ -10,12 +10,12 @@ module.exports = {
     pathToSrc: pathToSrc,
     pathToMocks: path.join(pathToRoot, 'test/image/mocks'),
 
-    pathToPlotlySrc: path.join(pathToSrc, 'plotly.js'),
+    pathToPlotlySrc: path.join(pathToSrc, 'index.js'),
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
 
-    pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'geo/geo-assets.js'),
+    pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
 
     pathToFontSVG: path.join(pathToSrc, 'fonts/ploticon/ploticon.svg'),

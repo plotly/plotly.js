@@ -5,7 +5,7 @@
  */
 
 
-var Events = require('@src/events');
+var Events = require('@src/lib/events');
 
 describe('Events', function () {
     'use strict';
