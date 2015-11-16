@@ -1,3 +1,7 @@
+general:
+  branches:
+    only:
+      - image-test
 
 machine:
   services:
