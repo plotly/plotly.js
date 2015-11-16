@@ -2,6 +2,9 @@ general:
   branches:
     only:
       - image-test
+  artifacts:
+      - "build/test_images/" # relative to the build directory
+      - "build/test_images_diff/" # relative to the build directory
 
 machine:
   node:
