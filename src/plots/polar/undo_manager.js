@@ -1,3 +1,5 @@
+// jshint ignore: start
+
 'use strict';
 
 //Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager

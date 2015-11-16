@@ -11,6 +11,10 @@ var constants = require('./constants');
 /**
  * Make a plotly.js browserify bundle function watched by watchify.
  *
+ * N.B. This module is meant for dev builds; the output bundle is placed
+ *      in plotly.js/build/
+ *      Use `npm run build` for dist builds.
+ *
  * @param {function} onFirstBundleCallback executed when first bundle is completed
  *
  */
@@ -47,10 +51,10 @@ module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
             }
         })
         .pipe(
-            fs.createWriteStream(constants.pathToPlotlyDist)
+            fs.createWriteStream(constants.pathToPlotlyBuild)
         )
         .on('finish', function() {
-            appendVersion(constants.pathToPlotlyDist, {object: 'Plotly', DEV: true});
+            appendVersion(constants.pathToPlotlyBuild, {object: 'Plotly', DEV: true});
         });
     }
 

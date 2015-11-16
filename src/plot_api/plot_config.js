@@ -35,7 +35,7 @@ module.exports = {
     showTips: true,
 
     // link to open this plot in plotly
-    showLink: true,
+    showLink: false,
 
     // if we show a link, does it contain data or just link to a plotly file?
     sendData: true,
@@ -57,7 +57,10 @@ module.exports = {
 
     // function to add the background color to a different container
     // or 'opaque' to ensure there's white behind it
-    setBackground: defaultSetBackground
+    setBackground: defaultSetBackground,
+
+    // URL to topojson files used in geo charts
+    topojsonURL: 'https://cdn.plot.ly/'
 
 };
 

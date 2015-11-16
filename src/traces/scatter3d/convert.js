@@ -70,7 +70,9 @@ function constructDelaunay(points, color, axis) {
     var v = (axis+2)%3;
     var filteredPoints = [];
     var filteredIds    = [];
-    for(var i=0; i<points.length; ++i) {
+    var i;
+
+    for(i=0; i<points.length; ++i) {
         var p = points[i];
         if(isNaN(p[u]) || !isFinite(p[u]) ||
            isNaN(p[v]) || !isFinite(p[v])) {
@@ -80,7 +82,7 @@ function constructDelaunay(points, color, axis) {
         filteredIds.push(i);
     }
     var cells = triangulate(filteredPoints);
-    for(var i=0; i<cells.length; ++i) {
+    for(i=0; i<cells.length; ++i) {
         var c = cells[i];
         for(var j=0; j<c.length; ++j) {
             c[j] = filteredIds[c[j]];

@@ -1,4 +1,4 @@
-var fs = require('fs');
+var fs = require('fs-extra');
 
 var sass = require('node-sass');
 
@@ -21,4 +21,11 @@ sass.render({
 // convert font svg into js
 fs.readFile(constants.pathToFontSVG, function(err, data) {
     pullFontSVG(data.toString(), constants.pathToFontSVGBuild);
+});
+
+// copy topojson files from sane-topojson to dist/
+fs.copy(constants.pathToTopojsonSrc, constants.pathToTopojsonDist,
+    { clobber: true },
+    function(err) {
+        if(err) throw err;
 });

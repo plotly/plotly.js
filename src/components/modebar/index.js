@@ -450,14 +450,14 @@ proto.toImage = function() {
 
     var ev = Plotly.Snapshot.toImage(this.graphInfo, {format: format});
 
-    var filename = this.graphInfo.fn || "newplot";
+    var filename = this.graphInfo.fn || 'newplot';
     filename += '.' + format;
 
     ev.once('success', function(result) {
 
         _this._snapshotInProgress = false;
 
-        var downloadLink = document.createElement("a");
+        var downloadLink = document.createElement('a');
         downloadLink.href = result;
         downloadLink.download = filename; // only supported by FF and Chrome
 
@@ -476,6 +476,11 @@ proto.toImage = function() {
 
         ev.clean();
     });
+};
+
+proto.sendDataToCloud = function() {
+    var gd = this.graphInfo;
+    Plotly.Plots.sendDataToCloud(gd)
 };
 
 /**
@@ -546,6 +551,11 @@ proto.config = function config() {
             title: 'download plot as a png',
             icon: 'camera',
             click: this.toImage
+        },
+        sendDataToCloud: {
+            title: 'save and edit plot in cloud',
+            icon: 'disk',
+            click: this.sendDataToCloud
         },
         // gl3d
         zoom3d: {
