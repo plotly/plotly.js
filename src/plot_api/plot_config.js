@@ -35,7 +35,7 @@ module.exports = {
     showTips: true,
 
     // link to open this plot in plotly
-    showLink: true,
+    showLink: false,
 
     // if we show a link, does it contain data or just link to a plotly file?
     sendData: true,

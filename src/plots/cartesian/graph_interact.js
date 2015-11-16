@@ -1319,7 +1319,7 @@ fx.modeBar = function(gd){
 function chooseModebarButtons(fullLayout) {
     if(fullLayout._hasGL3D) {
         return [
-            ['toImage'],
+            ['toImage', 'sendDataToCloud'],
             ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
             ['resetCameraDefault3d', 'resetCameraLastSave3d'],
             ['hoverClosest3d']
@@ -1327,7 +1327,7 @@ function chooseModebarButtons(fullLayout) {
     }
     else if(fullLayout._hasGeo) {
         return [
-            ['toImage'],
+            ['toImage', 'sendDataToCloud'],
             ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
             ['hoverClosestGeo']
         ];
@@ -1345,9 +1345,9 @@ function chooseModebarButtons(fullLayout) {
         }
     }
 
-    if(allFixed) buttons = [['toImage']];
+    if(allFixed) buttons = [['toImage', 'sendDataToCloud']];
     else buttons = [
-        ['toImage'],
+        ['toImage', 'sendDataToCloud'],
         ['zoom2d', 'pan2d'],
         ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d']
     ];
