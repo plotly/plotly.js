@@ -1,13 +1,11 @@
-'use strict';
-
 var fs = require('fs');
-var request = require('request');
 var path = require('path');
 
 var constants = require('../../tasks/util/constants');
 var getOptions = require('../../tasks/util/get_image_request_options');
 
 // packages inside the image server docker
+var request = require('request');
 var test = require('tape');
 var gm = require('gm');
 
@@ -72,7 +70,6 @@ function testMock (fileName, t) {
             tolerance: 0.0
         };
 
-	console.log(savedImagePath)
         if(statusCode === 485) {
             console.error(imageFileName, '- skip');
         }
