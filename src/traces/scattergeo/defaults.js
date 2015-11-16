@@ -1,7 +1,7 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var ScatterGeo = require('./scattergeo');
+var ScatterGeo = require('./');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {

@@ -6,7 +6,7 @@ var browserify = require('browserify');
 var ecstatic = require('ecstatic');
 var _open = require('open');
 
-var makeWatchifiedBundle = require('../../tasks/watch_plotly');
+var makeWatchifiedBundle = require('../../tasks/util/make_watchified_bundle');
 var shortcutPaths = require('../../tasks/util/shortcut_paths');
 var constants = require('../../tasks/util/constants');
 

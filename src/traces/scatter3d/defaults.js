@@ -1,7 +1,7 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var Scatter3D = require('./scatter3d');
+var Scatter3D = require('./');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {

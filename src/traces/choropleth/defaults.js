@@ -1,7 +1,7 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var Choropleth = require('./choropleth');
+var Choropleth = require('./');
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var locations, len, z;
