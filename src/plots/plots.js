@@ -336,14 +336,13 @@ function positionPlayWithData(gd, container){
     var link = container.append('a')
         .attr({
             'xlink:xlink:href': '#',
-
             'class': 'link--impt link--embedview',
             'font-weight':'bold'
         })
         .text(gd._context.linkText + ' ' + String.fromCharCode(187));
 
     if(gd._context.sendData) {
-        link.on('click', function(){
+        link.on('click', function() {
             plots.sendDataToCloud(gd)
         });
     }
