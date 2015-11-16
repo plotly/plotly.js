@@ -1,0 +1,13 @@
+
+machine:
+  services:
+    - docker
+
+dependencies:
+  pre: 
+    - docker pull plotly/imageserver:0.2.0
+
+test:
+  override:
+    - docker run -d --name myimageserver -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010 plotly/imageserver:0.2.0; sleep 10
+    - docker exec -i myimageserver /bin/bash -c "./var/www/streambed/image_server/plotly.js/tasks/test_images.sh"
