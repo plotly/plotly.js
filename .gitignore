@@ -3,7 +3,4 @@ node_modules
 build/*
 !build/README.md
 
-dist/*
-!dist/README.md
-
 npm-debug.log

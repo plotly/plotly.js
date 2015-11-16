@@ -25,6 +25,7 @@ exports.Plots = Plotly.Plots;
 exports.Fx = Plotly.Fx;
 exports.Snapshot = Plotly.Snapshot;
 exports.PlotSchema = Plotly.PlotSchema;
+exports.Queue = Plotly.Queue;
 
 // export d3 used in the bundle
 exports.d3 = require('d3');

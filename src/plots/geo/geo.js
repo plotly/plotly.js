@@ -22,6 +22,7 @@ function Geo(options, fullLayout) {
 
     this.id = options.id;
     this.container = options.container;
+    this.topojsonURL = options.topojsonURL;
 
     // add a few projection types to d3.geo,
     // a subset of https://github.com/d3/d3-geo-projection
@@ -73,27 +74,27 @@ proto.plot = function(geoData, fullLayout) {
 
     _this.framework
         .call(_this.zoom)
-        .on('dblclick', _this.zoomReset);
-
-    // N.B. the on 'dblclick doesn't in d3 3.5+
-    // https://github.com/mbostock/d3/issues/1985
+        .on('dblclick.zoom', _this.zoomReset);
 
     topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
     if(_this.topojson===null || topojsonNameNew!==_this.topojsonName) {
         _this.topojsonName = topojsonNameNew;
 
-        if(PlotlyGeoAssets.topojsons[_this.topojsonName] !== undefined) {
-            _this.topojson = PlotlyGeoAssets.topojsons[_this.topojsonName];
+        if(PlotlyGeoAssets.topojson[_this.topojsonName] !== undefined) {
+            _this.topojson = PlotlyGeoAssets.topojson[_this.topojsonName];
             _this.onceTopojsonIsLoaded(geoData, geoLayout);
         }
         else {
-            topojsonPath = topojsonUtils.getTopojsonPath(_this.topojsonName);
+            topojsonPath = topojsonUtils.getTopojsonPath(
+                _this.topojsonURL,
+                _this.topojsonName
+            );
 
             // N.B this is async
             d3.json(topojsonPath, function(error, topojson) {
                 _this.topojson = topojson;
-                PlotlyGeoAssets.topojsons[_this.topojsonName] = topojson;
+                PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
                 _this.onceTopojsonIsLoaded(geoData, geoLayout);
             });
         }

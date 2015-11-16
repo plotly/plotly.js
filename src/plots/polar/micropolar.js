@@ -1,3 +1,5 @@
+// jshint ignore: start
+
 var Plotly = require('../../plotly');
 var d3 = require('d3');
 

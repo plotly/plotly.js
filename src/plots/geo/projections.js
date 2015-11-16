@@ -1,3 +1,14 @@
+// jshint ignore: start
+
+/**
+ * Forked from https://github.com/d3/d3-geo-projection
+ * Pasted from https://github.com/etpinard/d3-geo-projection
+ *
+ * Containing only the 'most useful' projection types
+ * and compatible with CommonJs
+ *
+ */
+
 var d3 = require('d3');
 
 function addProjectionToD3() {
@@ -61,7 +72,7 @@ function addProjectionToD3() {
       d3_geo_projectPoints.push([ x, y ]);
     },
     lineEnd: function() {
-      if (d3_geo_projectPoints.length) d3_geo_projectLines.push(d3_geo_projectPoints), 
+      if (d3_geo_projectPoints.length) d3_geo_projectLines.push(d3_geo_projectPoints),
       d3_geo_projectPoints = [];
     },
     result: function() {
@@ -188,7 +199,7 @@ function addProjectionToD3() {
     };
     var projection = d3.geo.projection(forward), stream_ = projection.stream;
     projection.stream = function(stream) {
-      var rotate = projection.rotate(), rotateStream = stream_(stream), sphereStream = (projection.rotate([ 0, 0 ]), 
+      var rotate = projection.rotate(), rotateStream = stream_(stream), sphereStream = (projection.rotate([ 0, 0 ]),
       stream_(stream));
       projection.rotate(rotate);
       rotateStream.sphere = function() {

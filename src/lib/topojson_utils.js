@@ -13,11 +13,8 @@ topojsonUtils.getTopojsonName = function(geoLayout) {
     ].join('');
 };
 
-topojsonUtils.getTopojsonPath = function(topojsonName) {
-    var topojsonUrl = (window.PLOTLYENV &&
-                       window.PLOTLYENV.TOPOJSON_URL) || './topojson/';
-
-    return topojsonUrl + topojsonName + '.json';
+topojsonUtils.getTopojsonPath = function(topojsonURL, topojsonName) {
+    return topojsonURL + topojsonName + '.json';
 };
 
 topojsonUtils.getTopojsonFeatures = function(trace, topojson) {

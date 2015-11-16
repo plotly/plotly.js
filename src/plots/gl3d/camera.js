@@ -221,7 +221,7 @@ function createCamera(element, options) {
     return true;
   });
 
-  mouseWheel(element, function(dx, dy, dz) {
+  mouseWheel(element, function(dx, dy) {
     var flipX = camera.flipX ? 1 : -1;
     var flipY = camera.flipY ? 1 : -1;
     var t = now();

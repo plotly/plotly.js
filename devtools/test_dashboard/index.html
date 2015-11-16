@@ -11,12 +11,15 @@
 
     <script type="text/javascript" src="../../dist/extras/mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>
 
-    <script type="text/javascript" src="../../dist/plotly.js" charset="utf-8"></script>
-    <script>PLOTLYENV = { TOPOJSON_URL: '../../src/assets/topojson/' };</script>
+    <!-- use dev plotly.js build -->
+    <script type="text/javascript" src="../../build/plotly.js" charset="utf-8"></script>
+
+    <!-- use local topojson files -->
+    <script>Plotly.setPlotConfig({ topojsonURL: '../../dist/topojson/' });</script>
 
     <script type="text/javascript" src="../../build/test_dashboard-bundle.js"></script>
 
-    <!-- helper functions to manipulate graph div -->
+    <!-- helper functions to manipulate the graph div -->
     <script>
     var Tabs = {
         getGraph: function() {
