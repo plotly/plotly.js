@@ -43,7 +43,8 @@ var rules = {
     "X [data-title]:hover:before,X [data-title]:hover:after": "display:block;opacity:1;",
     "X [data-title]:before": "content:'';position:absolute;background:transparent;border:6px solid transparent;z-index:1002;margin-top:-12px;border-bottom-color:#69738a;margin-right:-6px;",
     "X [data-title]:after": "content:attr(data-title);background:#69738a;color:white;padding:8px 10px;font-size:12px;line-height:12px;white-space:nowrap;margin-right:-18px;border-radius:2px;",
-    Y: "position:fixed;top:50px;right:20px;z-index:10000;",
+    Y: "font-family:'Open Sans';position:fixed;top:50px;right:20px;z-index:10000;font-size:10pt;max-width:180px;",
+    "Y p": "margin:0;",
     "Y .notifier-note": "min-width:180px;max-width:250px;border:1px solid #fff;z-index:3000;margin:0;background-color:#8c97af;background-color:rgba(140,151,175,0.9);color:#fff;padding:10px;",
     "Y .notifier-close": "color:#fff;opacity:0.8;float:right;padding:0 5px;background:none;border:none;font-size:20px;font-weight:bold;line-height:20px;",
     "Y .notifier-close:hover": "color:#444;text-decoration:none;cursor:pointer;"
@@ -123,6 +124,10 @@ module.exports = {
     'movie': {
         'width': 1000,
         'path': 'm938 413l-188-125c0 37-17 71-44 94 64 38 107 107 107 187 0 121-98 219-219 219-121 0-219-98-219-219 0-61 25-117 66-156h-115c30 33 49 76 49 125 0 103-84 187-187 187s-188-84-188-187c0-57 26-107 65-141-38-22-65-62-65-109v-250c0-70 56-126 125-126h500c69 0 125 56 125 126l188-126c34 0 62 28 62 63v375c0 35-28 63-62 63z m-750 0c-69 0-125 56-125 125s56 125 125 125 125-56 125-125-56-125-125-125z m406-1c-87 0-157 70-157 157 0 86 70 156 157 156s156-70 156-156-70-157-156-157z'
+    },
+    'disk': {
+        'width': 857.1,
+        'path': 'm214-7h429v214h-429v-214z m500 0h72v500q0 8-6 21t-11 20l-157 156q-5 6-19 12t-22 5v-232q0-22-15-38t-38-16h-322q-22 0-37 16t-16 38v232h-72v-714h72v232q0 22 16 38t37 16h465q22 0 38-16t15-38v-232z m-214 518v178q0 8-5 13t-13 5h-107q-7 0-13-5t-5-13v-178q0-8 5-13t13-5h107q7 0 13 5t5 13z m357-18v-518q0-22-15-38t-38-16h-750q-23 0-38 16t-16 38v750q0 22 16 38t38 16h517q23 0 50-12t42-26l156-157q16-15 27-42t11-49z'
     }
 };
 },{}],3:[function(require,module,exports){
@@ -53590,6 +53595,11 @@ proto.toImage = function() {
     });
 };
 
+proto.sendDataToCloud = function() {
+    var gd = this.graphInfo;
+    Plotly.Plots.sendDataToCloud(gd)
+};
+
 /**
  *
  * @Property config specification hash of button parameters
@@ -53658,6 +53668,11 @@ proto.config = function config() {
             title: 'download plot as a png',
             icon: 'camera',
             click: this.toImage
+        },
+        sendDataToCloud: {
+            title: 'save and edit plot in cloud',
+            icon: 'disk',
+            click: this.sendDataToCloud
         },
         // gl3d
         zoom3d: {
@@ -60761,7 +60776,7 @@ module.exports = {
     showTips: true,
 
     // link to open this plot in plotly
-    showLink: true,
+    showLink: false,
 
     // if we show a link, does it contain data or just link to a plotly file?
     sendData: true,
@@ -65319,7 +65334,7 @@ fx.modeBar = function(gd){
 function chooseModebarButtons(fullLayout) {
     if(fullLayout._hasGL3D) {
         return [
-            ['toImage'],
+            ['toImage', 'sendDataToCloud'],
             ['orbitRotation', 'tableRotation', 'zoom3d', 'pan3d'],
             ['resetCameraDefault3d', 'resetCameraLastSave3d'],
             ['hoverClosest3d']
@@ -65327,7 +65342,7 @@ function chooseModebarButtons(fullLayout) {
     }
     else if(fullLayout._hasGeo) {
         return [
-            ['toImage'],
+            ['toImage', 'sendDataToCloud'],
             ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
             ['hoverClosestGeo']
         ];
@@ -65345,9 +65360,9 @@ function chooseModebarButtons(fullLayout) {
         }
     }
 
-    if(allFixed) buttons = [['toImage']];
+    if(allFixed) buttons = [['toImage', 'sendDataToCloud']];
     else buttons = [
-        ['toImage'],
+        ['toImage', 'sendDataToCloud'],
         ['zoom2d', 'pan2d'],
         ['zoomIn2d', 'zoomOut2d', 'resetScale2d', 'autoScale2d']
     ];
@@ -71686,37 +71701,8 @@ function positionPlayWithData(gd, container){
         .text(gd._context.linkText + ' ' + String.fromCharCode(187));
 
     if(gd._context.sendData) {
-        link.on('click',function(){
-            gd.emit('plotly_beforeexport');
-
-            var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
-
-            var hiddenformDiv = d3.select(gd)
-                .append('div')
-                .attr('id', 'hiddenform')
-                .style('display', 'none');
-
-            var hiddenform = hiddenformDiv
-                .append('form')
-                .attr({
-                    action: baseUrl + '/external',
-                    method: 'post',
-                    target: '_blank'
-                });
-
-            var hiddenformInput = hiddenform
-                .append('input')
-                .attr({
-                    type: 'text',
-                    name: 'data'
-                });
-
-            hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
-            hiddenform.node().submit();
-            hiddenformDiv.remove();
-
-            gd.emit('plotly_afterexport');
-            return false;
+        link.on('click', function() {
+            plots.sendDataToCloud(gd)
         });
     }
     else {
@@ -71727,6 +71713,38 @@ function positionPlayWithData(gd, container){
             'xlink:xlink:href': '/' + path[2].split('.')[0] + '/' + path[1] + query
         });
     }
+}
+plots.sendDataToCloud = function(gd) {
+        gd.emit('plotly_beforeexport');
+
+        var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
+
+        var hiddenformDiv = d3.select(gd)
+            .append('div')
+            .attr('id', 'hiddenform')
+            .style('display', 'none');
+
+        var hiddenform = hiddenformDiv
+            .append('form')
+            .attr({
+                action: baseUrl + '/external',
+                method: 'post',
+                target: '_blank'
+            });
+
+        var hiddenformInput = hiddenform
+            .append('input')
+            .attr({
+                type: 'text',
+                name: 'data'
+            });
+
+        hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
+        hiddenform.node().submit();
+        hiddenformDiv.remove();
+
+        gd.emit('plotly_afterexport');
+        return false;
 }
 
 plots.supplyDefaults = function(gd) {
