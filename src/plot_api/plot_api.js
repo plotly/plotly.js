@@ -1359,7 +1359,9 @@ Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
     Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    Plotly.Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
+    if (Plotly.Queue) {
+        Plotly.Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
+    }
 };
 
 Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) {
@@ -1384,7 +1386,9 @@ Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) 
     Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    Plotly.Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
+    if (Plotly.Queue) {
+        Plotly.Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
+    }
 };
 
 /**
@@ -1428,7 +1432,7 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
     // i.e., we can simply redraw and be done
     if (typeof newIndices === 'undefined') {
         Plotly.redraw(gd);
-        Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return;
     }
 
@@ -1451,10 +1455,10 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
 
     // if we're here, the user has defined specific places to place the new traces
     // this requires some extra work that moveTraces will do
-    Plotly.Queue.startSequence(gd);
-    Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if (Plotly.Queue) Plotly.Queue.startSequence(gd);
+    if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
     Plotly.moveTraces(gd, currentIndices, newIndices);
-    Plotly.Queue.stopSequence(gd);
+    if (Plotly.Queue) Plotly.Queue.stopSequence(gd);
 };
 
 /**
@@ -1494,7 +1498,8 @@ Plotly.deleteTraces = function deleteTraces (gd, indices) {
     }
 
     Plotly.redraw(gd);
-    Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 };
 
 /**
@@ -1588,8 +1593,10 @@ Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
     }
 
     gd.data = newData;
+
     Plotly.redraw(gd);
-    Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 };
 
 // -----------------------------------------------------
@@ -2026,7 +2033,9 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     // now all attribute mods are done, as are redo and undo
     // so we can save them
-    Plotly.Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
+    if(Plotly.Queue) {
+        Plotly.Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
+    }
 
     // do we need to force a recalc?
     var autorangeOn = false;
@@ -2404,7 +2413,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
     }
     // now all attribute mods are done, as are
     // redo and undo so we can save them
-    Plotly.Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
+    if(Plotly.Queue) {
+        Plotly.Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
+    }
 
     // calculate autosizing - if size hasn't changed,
     // will remove h&w so we don't need to redraw
