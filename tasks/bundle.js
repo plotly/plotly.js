@@ -13,6 +13,9 @@ var constants = require('./util/constants');
  * Run `npm run build -- dev` or `npm run build -- --dev`
  * to include source map in the plotly.js bundle
  *
+ * N.B. This script is meant for dist builds; the output bundles are placed
+ *      in plotly.js/dist/.
+ *      Use `npm run watch` for dev builds.
  */
 
 var arg = process.argv[2];

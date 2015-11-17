@@ -109,7 +109,7 @@ function plotButtons(plots, figDir) {
     plotlist.appendChild(pummelButton);
 
     var i = 0;
-    var mock = require('./testplots-3d/marker-color.json');
+    var mock = require('@mocks/gl3d_marker-color.json');
     var statusDiv = document.getElementById('status-info');
 
     pummelButton.addEventListener('click', function () {

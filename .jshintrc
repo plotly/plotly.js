@@ -1,0 +1,72 @@
+{
+  // environments
+  "browser": true,  // Define globals exposed by modern browsers.
+  "jquery": false,  // Define globals exposed by jQuery.
+  "node": true,     // Define globals exposed by Node.js.
+  "jasmine": true,  // Define globals exposed by jasmine
+
+  // enforcing (true means bug us about it)
+  "camelcase": false,  // Force all variable names to use either camelCase style or UPPER_CASE with underscores.
+  "curly": false,  // This option requires you to always put curly braces around blocks in loops and conditionals.
+  "eqeqeq": true,  // Prohibit use of == and != in favor of === and !==.
+  "es3": true,  // This option tells JSHint that your code needs to adhere to ECMAScript 3 spec (old browsers)
+  "forin": false,  // This option requires all for in loops to filter object's items.
+  "freeze": true,  // This options prohibits overwriting prototypes of native objects such as Array, Date and so on.
+  "immed": true,  // This option prohibits the use of immediate function invocations without wrapping them in parentheses.
+  "indent": 4,  // Enforce tab width of 4 spaces.
+  "latedef": "nofunc",  // Prohibit use of a variable before it is defined.
+  "maxcomplexity": false, // This option lets you control cyclomatic complexity throughout your code.
+  "maxdepth": 6,  // This option lets you control how nested do you want your blocks to be
+  "maxlen": 120,  // Enforce line length to 120 characters
+  "newcap": true,  // Require capitalized names for constructor functions.
+  "noarg": true,  // This option prohibits the use of arguments.caller and arguments.callee.
+  "noempty": true,  // This option warns when you have an empty block in your code.
+  "nonbsp": true,  // This option warns about "non-breaking whitespace" characters.
+  "nonew": true,  // This option prohibits the use of constructor functions for side-effects.
+  "plusplus": false,  // This option prohibits the use of unary increment and decrement operators.
+  "quotmark": "single",  // Enforce use of single quotation marks for strings.
+  "strict": true,  // Enforce placing 'use strict' at the top function scope
+  "trailing": true,  // Prohibit trailing whitespace.
+  "undef": true,  // Prohibit use of explicitly undeclared variables.
+  "unused": true,  // Warn when variables are defined but never used.
+
+  // relaxing (true means DON'T bug us about it)
+  "asi": false,  // This option suppresses warnings about missing semicolons.
+  "boss": false,  // This option suppresses warnings about the use of assignments in cases where comparisons are expected.
+  "debug": false,  // This option suppresses warnings about the debugger statements in your code.
+  "eqnull": true,  // Suppress warnings about == null comparisons.
+  "esnext": true,  // This option tells JSHint that your code uses ECMAScript 6 specific syntax.
+  "evil": false,  // This option suppresses warnings about the use of eval.
+  "expr": false,  // This option suppresses warnings about the use of expressions where normally you would expect to see assignments or function calls.
+  "funcscope": false,  // This option suppresses warnings about declaring variables inside of control structures while accessing them later from the outside.
+  "globalstrict": false,  // This option suppresses warnings about the use of global strict mode.
+  "iterator": false,  // This option suppresses warnings about the __iterator__ property.
+  "lastsemic": false,  // This option suppresses warnings about missing semicolons
+  "laxbreak": false,  // This option suppresses most of the warnings about possibly unsafe line breakings in your code.
+  "laxcomma": false,  // This option suppresses warnings about comma-first coding style
+  "loopfunc": false,  // This option suppresses warnings about functions inside of loops.
+  "maxerr": 500,  // This options allows you to set the maximum amount of warnings JSHint will produce before giving up.
+  "moz": false,  // This options tells JSHint that your code uses Mozilla JavaScript extensions.
+  "multistr": false,  // This option suppresses warnings about multi-line strings.
+  "notypeof": false,  // This option suppresses warnings about invalid typeof operator values.
+  "proto": false,  // This option suppresses warnings about the __proto__ property.
+  "scripturl": false,  // This option suppresses warnings about the use of script-targeted URLs—such as javascript:...
+  "shadow": false,  // This option suppresses warnings about variable shadowing
+  "sub": false,  // This option suppresses warnings about using [] notation when it can be expressed in dot notation
+  "supernew": false,  // This option suppresses warnings about "weird" constructions like new function () { ... } and new Object;
+  "validthis": false,  // This option suppresses warnings about possible strict violations when the code is running in strict mode
+  "noyield": false,  // This option suppresses warnings about generator functions with no yield statement in them.
+
+  // global pre defined variables
+  "predef": [
+    "JSON",
+    "Uint8Array",
+    "Uint16Array",
+    "Uint32Array",
+    "Int8Array",
+    "Int16Array",
+    "Int32Array",
+    "Float32Array",
+    "Float64Array"
+  ]
+}

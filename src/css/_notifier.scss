@@ -1,8 +1,15 @@
 .plotly-notifier {
+    font-family: 'Open Sans'; // Because not all contexts have this specified.
     position: fixed;
     top: 50px;
     right: 20px;
     z-index: 10000;
+    font-size: 10pt;
+    max-width: 180px;
+
+    p {
+        margin: 0;
+    }
 
     .notifier-note {
         min-width: 180px;
@@ -37,5 +44,3 @@
         }
     }
 }
-
-

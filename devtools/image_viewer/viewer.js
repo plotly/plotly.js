@@ -1,17 +1,23 @@
 var fs = require('fs');
+
 var d3 = require('d3');
+
+var constants = require('../../tasks/util/constants');
+
 
 var $plotlist = document.getElementById('plot-list'),
     $images = document.getElementById('plot-images'),
     $mock = document.getElementById('plot-mock');
 
-var dirBaseline = '../test-images-baseline/',
-    dirTest = '../test-images/',
-    dirDiff = '../test-images-diffs/',
-    dirMocks = '../mocks/';
+var dirBaseline = constants.pathToTestImageBaselines,
+    dirTest = constants.pathToTestImages,
+    dirDiff = constants.pathToTestImagesDiff,
+    dirMocks = constants.pathToTestImageMocks;
 
+// N.B. brfs only understand hard-coded paths
 var imageNames = fs.readFileSync(
-        __dirname + '/list-of-incorrect-images.txt', 'utf8'
+       __dirname + '/../../build/list_of_incorrect_images.txt',
+        'utf8'
     )
     .split('\n')
     .filter(function(x) { return x; })

@@ -1,72 +1,70 @@
+/*
+ * Pack internal modules unto an object.
+ *
+ * This object is require'ed in as 'Plotly' in numerous src and test files.
+ * Require'ing 'Plotly' bypasses circular dependencies.
+ *
+ * Future development should move away from this pattern.
+ *
+ */
+
+// promise polyfill
 require('es6-promise').polyfill();
 
-// order of requires should matter only for interdependencies
-// in attributes definitions. put the common modules first
+// lib functions
+exports.Lib = require('./lib');
+exports.util = require('./lib/svg_text_utils');
+exports.Queue = require('./lib/queue');
 
-exports.Lib = require('./lib/lib');
-exports.util = require('./lib/plotly_util');
-
-// icons, css and configuration
+// plot icons svg and plot css
 exports.Icons = require('../build/ploticon');
 require('../build/plotcss');
 
+// configuration
 exports.MathJaxConfig = require('./fonts/mathjax_config');
-exports.defaultConfig = require('./plot_config');
+exports.defaultConfig = require('./plot_api/plot_config');
 
-exports.Color = require('./color');
-exports.Colorscale = require('./colorscale');
-exports.Drawing = require('./drawing');
-// then the plot structure
-exports.Plots = require('./graph_obj');
-exports.Axes = require('./axes');
-exports.Colorbar = require('./colorbar');
-exports.Fx = require('./graph_interact');
-// then trace modules - scatter has to come first
-exports.Scatter = require('./scatter');
-exports.Bars = require('./bars');
-exports.Boxes = require('./boxes');
-exports.ErrorBars = require('./errorbars');
-exports.Heatmap = require('./heatmap');
-exports.Histogram = require('./histogram');
-exports.Pie = require('./pie');
-exports.Contour = require('./contour');
-// and extra plot components
-exports.Annotations = require('./annotations');
-exports.Shapes = require('./shapes');
-exports.Legend = require('./legend');
-exports.ModeBar = require('./modebar');
+// plots
+exports.Plots = require('./plots/plots');
+exports.Axes = require('./plots/cartesian/axes');
+exports.Fx = require('./plots/cartesian/graph_interact');
+exports.Scene = require('./plots/gl3d/scene');
+exports.Gl3dLayout = require('./plots/gl3d/layout');
+exports.Geo = require('./plots/geo/geo');
+exports.GeoLayout = require('./plots/geo/layout');
+exports.Scene2D = require('./plots/gl2d/scene2d');
+exports.micropolar = require('./plots/polar/micropolar');
 
-// polar
-exports.micropolar = require('./polar/micropolar');
-exports.micropolar.manager = require('./polar/micropolar_manager');
+// components
+exports.Color = require('./components/color');
+exports.Drawing = require('./components/drawing');
+exports.Colorscale = require('./components/colorscale');
+exports.Colorbar = require('./components/colorbar');
+exports.ErrorBars = require('./components/errorbars');
+exports.Annotations = require('./components/annotations');
+exports.Shapes = require('./components/shapes');
+exports.Titles = require('./components/titles');
+exports.Legend = require('./components/legend');
+exports.ModeBar = require('./components/modebar');
 
-// GL3D
-exports.Gl3dLayout = require('./gl3d/defaults/gl3dlayout');
-exports.Gl3dAxes = require('./gl3d/defaults/gl3daxes');
-exports.Scatter3D = require('./gl3d/defaults/scatter3d');
-exports.Surface = require('./gl3d/defaults/surface');
-exports.Mesh3D = require('./gl3d/defaults/mesh3d');
-exports.Scene = require('./gl3d/scene');
+// traces
+exports.Scatter = require('./traces/scatter');
+exports.Bars = require('./traces/bars');
+exports.Boxes = require('./traces/boxes');
+exports.Heatmap = require('./traces/heatmap');
+exports.Histogram = require('./traces/histogram');
+exports.Pie = require('./traces/pie');
+exports.Contour = require('./traces/contour');
+exports.Scatter3D = require('./traces/scatter3d');
+exports.Surface = require('./traces/surface');
+exports.Mesh3D = require('./traces/mesh3d');
+exports.ScatterGeo = require('./traces/scattergeo');
+exports.Choropleth = require('./traces/choropleth');
+exports.ScatterGl = require('./traces/scattergl');
 
-// Geo
-exports.GeoLayout = require('./geo/defaults/geolayout');
-exports.GeoAxes = require('./geo/defaults/geoaxes');
-exports.ScatterGeo = require('./geo/defaults/scattergeo');
-exports.Choropleth = require('./geo/defaults/choropleth');
-exports.Geo = require('./geo/geo');
+// plot api
+require('./plot_api/plot_api');
+exports.PlotSchema = require('./plot_api/plot_schema');
 
-// GL2D
-exports.ScatterGl = require('./gl2d/scattergl/scattergl');
-exports.Scene2D = require('./gl2d/scene2d');
-
-// plot schema
-exports.PlotSchema = require('./plotschema');
-
-// imaging Routines
-exports.Snapshot = require('./snapshot/snapshot');
-
-// Queue for undo/redo
-exports.Queue = require('./queue');
-
-// exports d3 used in the bundle
-exports.d3 = require('d3');
+// imaging routines
+exports.Snapshot = require('./snapshot');
