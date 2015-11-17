@@ -1,3 +1,12 @@
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
 var Plotly = require('../../plotly');
 
 var PTS_LINESONLY = 20;  // TODO put in constants/
