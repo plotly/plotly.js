@@ -8,27 +8,28 @@ Test plotly.js with Plotly Image-Server docker container.
 Under your `plotly.js` folder, run
 
 ```bash
-$ docker run -d --name imagetest \
+docker run -d --name imagetest \
     -v $PWD:/var/www/streambed/image_server/plotly.js \
     -p 9010:9010 -p 2022:22 plotly/imageserver:[version]
 ```
 
 where `[version]` is the latest Plotly Image-Server docker container version
 as listed on
-[hub.docker.com](https://hub.docker.com/r/plotly/imageserver/tags/).
+[hub.docker.com](https://hub.docker.com/r/plotly/imageserver/tags/) and
+`imagetest` is the name of the docker container.
 
 ### Run the tests
 
 Under your `plotly.js` folder, run
 
 ```bash
-$ npm run test-image
+npm run test-image
 ```
 
 ### SSH into docker
 
 ```bash
-$ ssh -p 2022 root@localhost # with password `root`
+ssh -p 2022 root@localhost # with password `root`
 ```
 
 If you got this error:
@@ -52,7 +53,7 @@ Host key verification failed.
 simply run
 
 ```bash
-$ ssh-keygen -f "${HOME}/.ssh/known_hosts" -R [localhost]:2022
+ssh-keygen -f "${HOME}/.ssh/known_hosts" -R [localhost]:2022
 ```
 
 to remove host information.

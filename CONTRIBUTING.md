@@ -22,47 +22,51 @@ cd plotly.js
 npm install
 ```
 
-**Step 2** Build plotly.js
-
-```
-npm run build
-```
-
-The build script combines:
-
-- `npm run preprocess`, which converts `scss` and `svg` assets to `js` and
-- `npm run bundle`, which runs
-  [browserify](https://github.com/substack/node-browserify) on the source files
-
-**Step 3** Start test dashboard
+**Step 2** Start the test dashboard
 
 ```
 npm run start-test_dashboard
 ```
 
 This command bundles up the source files with source maps, starts
-[watchify](https://github.com/substack/watchify) file watcher (making the your
+a [watchify](https://github.com/substack/watchify) file watcher (making the your
 dev plotly.js bundle update every time a source file is saved) and opens up
 a tab in your browser.
 
+**Step 3** Open up the console and start developing
+
+Make some modification to the source, refresh the page and check the results
+by for example pasting in the console:
+
+```js
+Plotly.plot(Tabs.fresh(), [{x:[1,2,3], y:[2,1,2]}]);
+```
+
+**Other npm scripts**:
+
+- `npm run preprocess`: pre-processes the css and svg source file in js. This
+  script is run automatically on `npm install`.
+- `npm run watch`: starts a watchify file watcher just like the test dashboard but
+  without booting up a server.
+- `npm run lint`: runs jshint on all source files
+
 ### Testing
 
-```
-npm test
-```
+Both jasmine and image test are run on
+[CircleCI](https://circleci.com/gh/plotly/plotly.js) on every pushes to this
+repo.
 
 Jasmine tests are run in a browser using
-[karma](https://github.com/karma-runner/karma)
+[karma](https://github.com/karma-runner/karma). To run them locally:
 
 ```
 npm run test-jasmine
 ```
 
-Image pixel comparison tests are run in a docker container
+Image pixel comparison tests are run in a docker container. For more
+information on how to run them locally, please refer to [image test
+README](https://github.com/plotly/plotly.js/blob/master/test/image/README.md).
 
-```
-npm run test-image
-```
 
 ### Repo organization
 
