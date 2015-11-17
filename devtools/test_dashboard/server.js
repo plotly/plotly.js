@@ -19,11 +19,11 @@ switch(process.argv[2]) {
     case 'geo':
         testFile = 'test_geo';
     break;
-    case 'gl2d':
-        testFile = 'test_gl2d';
+    case 'gl3d':
+        testFile = 'test_gl3d';
     break;
     default:
-        testFile = 'test_gl3d';
+        testFile = 'test_gl2d';
 }
 
 console.log('Using ' + testFile);
