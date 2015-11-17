@@ -52,8 +52,8 @@ Plotly.plot(Tabs.fresh(), [{x:[1,2,3], y:[2,1,2]}]);
 
 ### Testing
 
-Both jasmine and image test are run on
-[CircleCI](https://circleci.com/gh/plotly/plotly.js) on every pushes to this
+Both jasmine and image tests are run on
+[CircleCI](https://circleci.com/gh/plotly/plotly.js) on every push to this
 repo.
 
 Jasmine tests are run in a browser using
