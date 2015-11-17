@@ -1,4 +1,4 @@
-# [plotly.js](https://plot.ly/javascript)
+# [![image](http://images.plot.ly/logo/plotlyjs-logo-280wide.png)](https://plot.ly/javascript/)
 
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
