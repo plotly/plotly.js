@@ -3,4 +3,6 @@ build/*
 
 devtools
 test
+dist/extras/mathjax
+
 circle.yml
