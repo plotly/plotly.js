@@ -46,7 +46,7 @@
     "postinstall": "npm run preprocess",
     "bundle": "node tasks/bundle.js",
     "build": "npm run preprocess && npm run bundle",
-    "cibuild": "npm run preprocess && npm run cibundle.js",
+    "cibuild": "npm run preprocess && node tasks/cibundle.js",
     "watch": "node tasks/watch_plotly.js",
     "lint": "cd src && jshint . || true",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",

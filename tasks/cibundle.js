@@ -26,7 +26,7 @@ browserify(constants.pathToPlotlySrc, {
 })
 .pipe(fs.createWriteStream(constants.pathToPlotlyBuild))
 .on('finish', function() {
-    appendVersion(constants.pathToPlotlyDist, {object: 'Plotly'});
+    appendVersion(constants.pathToPlotlyBuild, {object: 'Plotly'});
 });
 
 
