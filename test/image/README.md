@@ -1,7 +1,6 @@
 # plotly.js image testing
------
 
-Test plotly.js with Plotly Image-Server docker container.
+Test plotly.js with the Plotly Image-Server docker container.
 
 ### Run the container
 
