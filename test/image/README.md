@@ -73,11 +73,13 @@ docker ps -a
 ### Stop container
 
 ```bash
-docker stop [container hash]
+docker stop [container_id]
 ```
 
 ### Remove container
 
 ```bash
-docker rm [container hash]
+docker rm [container_id]
 ```
+
+For more comprehensive information about docker, please refer to [docker document](http://docs.docker.com/)
