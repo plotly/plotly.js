@@ -17,7 +17,7 @@ dependencies:
   pre: 
     - docker pull plotly/imageserver:0.2.1
     - npm install
-    - npm run watch
+    - npm run cibuild
 
 test:
   override:
