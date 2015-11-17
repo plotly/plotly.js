@@ -50,6 +50,7 @@
     "watch": "node tasks/watch_plotly.js",
     "lint": "cd src && jshint . || true",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
+    "citest-jasmine": "karma start test/jasmine/karma.ciconf.js",
     "test-image": "./tasks/test_image.sh",
     "test": "npm run test-jasmine && npm test-image",
     "start-test_dashboard": "node devtools/test_dashboard/server.js",
