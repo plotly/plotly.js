@@ -1,5 +1,7 @@
 # [![image](http://images.plot.ly/logo/plotlyjs-logo-280wide.png)](https://plot.ly/javascript/)
 
+[![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js) 
+[![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
 plotly.js is a high-level, declarative charting library. plotly.js ships with 20
