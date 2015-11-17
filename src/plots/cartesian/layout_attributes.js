@@ -336,7 +336,7 @@ module.exports = {
     },
     gridcolor: {
         valType: 'color',
-        dflt: 'red',
+        dflt: colorAttrs.lightLine,
         role: 'style',
         description: 'Sets the color of the grid lines.'
     },
