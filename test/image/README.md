@@ -4,7 +4,7 @@ Test plotly.js with the Plotly Image-Server docker container.
 
 ### Run the container
 
-Under your `plotly.js` folder, run
+Inside your `plotly.js` directory, run
 
 ```bash
 docker run -d --name imagetest \
@@ -19,7 +19,7 @@ as listed on
 
 ### Run the tests
 
-Under your `plotly.js` folder, run
+Inside your `plotly.js` directory, run
 
 ```bash
 npm run test-image
