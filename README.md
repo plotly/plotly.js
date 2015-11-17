@@ -96,4 +96,4 @@ Code and documentation copyright 2015 Plotly, Inc.
 
 Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
 
-Docs released under the [Creative Commons](https://github.com/plotly/documentation/blob/source/LICENSE).
+Docs released under the [Creative Commons license](https://github.com/plotly/documentation/blob/source/LICENSE).
