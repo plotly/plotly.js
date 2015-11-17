@@ -22,6 +22,5 @@ dependencies:
 test:
   override:
     - docker run -d --name myimageserver -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/imageserver:0.2.1; sleep 10
-    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' myimageserver)" -- bash -c "monit restart nw1 && sleep 5"
-    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' myimageserver)" -- bash -c "cd /var/www/streambed/image_server/plotly.js && node test/image/compare_pixels_test.js"
+    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' myimageserver)" -- bash -c "monit restart nw1 && sleep 5 && cd /var/www/streambed/image_server/plotly.js && node test/image/compare_pixels_test.js"
     - npm run citest-jasmine
