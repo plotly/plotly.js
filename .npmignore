@@ -1,0 +1,6 @@
+build/*
+!build/README.md
+
+devtools
+test
+circle.yml
