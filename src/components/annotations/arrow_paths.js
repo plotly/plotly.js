@@ -1,4 +1,13 @@
 /**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+/**
  * centerx is a center of scaling tuned for maximum scalability of
  * the arrowhead ie throughout mag=0.3..3 the head is joined smoothly
  * to the line, but the endpoint moves.
