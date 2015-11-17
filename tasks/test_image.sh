@@ -28,4 +28,4 @@ CMD=(
     "node test/image/compare_pixels_test.js $1"
 )
 
-#docker exec -i $CONTAINER_NAME /bin/bash -c "${CMD[*]}"
+docker exec -i $CONTAINER_NAME /bin/bash -c "${CMD[*]}"
