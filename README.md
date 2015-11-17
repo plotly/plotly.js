@@ -74,8 +74,8 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**R / RStudio**| [ropensci/plotly](https://github.com/ropensci/plotly) | [plot.ly/r/getting-started](https://plot.ly/r/getting-started) |
 |**Python / Pandas / IPython notebook**| [plotly/plotly.py](https://github.com/plotly/plotly.py) | [plot.ly/python/getting-started](https://plot.ly/python/getting-started) |
 |**MATLAB**| [plotly/matlab-api](https://github.com/plotly/matlab-api) | [plot.ly/matlab/getting-started](https://plot.ly/matlab/getting-started) |
-|**node.js**| [plotly/plotly-nodejs](https://github.com/plotly/plotly-nodejs) | [plot.ly/nodejs/getting-started/](https://plot.ly/nodejs/getting-started) |
-|**Julia**| [plotly/Plotly.jl](https://github.com/plotly/Plotly.jl) | [plot.ly/julia/getting-started/](https://plot.ly/julia/getting-started) |
+|**node.js**| [plotly/plotly-nodejs](https://github.com/plotly/plotly-nodejs) | [plot.ly/nodejs/getting-started](https://plot.ly/nodejs/getting-started) |
+|**Julia**| [plotly/Plotly.jl](https://github.com/plotly/Plotly.jl) | [plot.ly/julia/getting-started](https://plot.ly/julia/getting-started) |
 
 plotly.js charts can also be created and saved online for free at [plot.ly/plot](https://plot.ly/plot).
 
@@ -94,6 +94,6 @@ plotly.js charts can also be created and saved online for free at [plot.ly/plot]
 
 Code and documentation copyright 2015 Plotly, Inc.
 
-Code released under [the MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE). 
+Code released under the [MIT license](https://github.com/plotly/plotly.js/blob/master/LICENSE).
 
-Docs released under [Creative Commons](https://github.com/plotly/documentation/blob/source/LICENSE).
+Docs released under the [Creative Commons](https://github.com/plotly/documentation/blob/source/LICENSE).
