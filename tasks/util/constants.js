@@ -2,6 +2,7 @@ var path = require('path');
 
 var pathToRoot = path.join(__dirname, '../../');
 var pathToSrc = path.join(pathToRoot, 'src/');
+var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
@@ -29,6 +30,12 @@ module.exports = {
 
     pathToTestDashboardBundle: path.join(pathToBuild, 'test_dashboard-bundle.js'),
     pathToImageViewerBundle: path.join(pathToBuild, 'image_viewer-bundle.js'),
+
+    pathToTestImageMocks: path.join(pathToImageTest, 'mocks/'),
+    pathToTestImageBaselines: path.join(pathToImageTest, 'baselines/'),
+    pathToTestImages: path.join(pathToBuild, 'test_images/'),
+    pathToTestImagesDiff: path.join(pathToBuild, 'test_images_diff/'),
+    pathToTestImagesDiffList: path.join(pathToBuild, 'list_of_incorrect_images.txt'),
 
     uglifyOptions: {
         fromString: true,

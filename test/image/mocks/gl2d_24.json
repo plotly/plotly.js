@@ -1,0 +1,210 @@
+{
+    "data": [
+        {
+            "x": [
+                1,
+                2,
+                3
+            ],
+            "y": [
+                4,
+                5,
+                6
+            ],
+            "name": "Experiment",
+            "marker": {
+                "color": "rgb(54,144,192)",
+                "size": 12,
+                "symbol": "square",
+                "line": {
+                    "color": "darkblue",
+                    "width": 3
+                },
+                "opacity": 1
+            },
+            "line": {
+                "color": "rgb(3,78,123)",
+                "width": 6,
+                "dash": "dot"
+            },
+            "type": "scattergl"
+        },
+        {
+            "x": [
+                1,
+                2,
+                3
+            ],
+            "y": [
+                2,
+                10,
+                12
+            ],
+            "name": "Control",
+            "marker": {
+                "color": "fuchsia",
+                "size": 16,
+                "symbol": "cross",
+                "line": {
+                    "color": "",
+                    "width": 0
+                },
+                "opacity": 0.9
+            },
+            "line": {
+                "color": "purple",
+                "width": 4,
+                "dash": "dashdot"
+            },
+            "type": "scattergl"
+        }
+    ],
+    "layout": {
+        "title": "Click to enter Plot title",
+        "titlefont": {
+            "color": "",
+            "family": "",
+            "size": 0
+        },
+        "font": {
+            "family": "'Open sans', verdana, arial, sans-serif",
+            "size": 12,
+            "color": "#444"
+        },
+        "showlegend": true,
+        "autosize": true,
+        "width": 1276,
+        "height": 506,
+        "xaxis": {
+            "title": "Click to enter X axis title",
+            "titlefont": {
+                "color": "",
+                "family": "",
+                "size": 0
+            },
+            "range": [
+                0.8886587260486795,
+                3.1113412739513207
+            ],
+            "domain": [
+                0,
+                1
+            ],
+            "type": "linear",
+            "rangemode": "normal",
+            "showgrid": true,
+            "zeroline": true,
+            "showline": false,
+            "autotick": true,
+            "nticks": 0,
+            "ticks": "",
+            "showticklabels": true,
+            "tick0": 0,
+            "dtick": 0.5,
+            "ticklen": 5,
+            "tickwidth": 1,
+            "tickcolor": "#444",
+            "tickangle": "auto",
+            "tickfont": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "exponentformat": "B",
+            "showexponent": "all",
+            "gridcolor": "#eee",
+            "gridwidth": 1,
+            "zerolinecolor": "#444",
+            "zerolinewidth": 1,
+            "linecolor": "#444",
+            "linewidth": 1,
+            "anchor": "y",
+            "position": 0,
+            "mirror": false,
+            "overlaying": false,
+            "autorange": true
+        },
+        "yaxis": {
+            "title": "Click to enter Y axis title",
+            "titlefont": {
+                "color": "",
+                "family": "",
+                "size": 0
+            },
+            "range": [
+                1.4444444444444444,
+                12.555555555555555
+            ],
+            "domain": [
+                0,
+                1
+            ],
+            "type": "linear",
+            "rangemode": "normal",
+            "showgrid": true,
+            "zeroline": true,
+            "showline": false,
+            "autotick": true,
+            "nticks": 0,
+            "ticks": "",
+            "showticklabels": true,
+            "tick0": 0,
+            "dtick": 2,
+            "ticklen": 5,
+            "tickwidth": 1,
+            "tickcolor": "#444",
+            "tickangle": "auto",
+            "tickfont": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "exponentformat": "B",
+            "showexponent": "all",
+            "gridcolor": "#eee",
+            "gridwidth": 1,
+            "zerolinecolor": "#444",
+            "zerolinewidth": 1,
+            "linecolor": "#444",
+            "linewidth": 1,
+            "anchor": "x",
+            "position": 0,
+            "mirror": false,
+            "overlaying": false,
+            "autorange": true
+        },
+        "legend": {
+            "x": 1.02,
+            "y": 1,
+            "traceorder": "normal",
+            "font": {
+                "family": "",
+                "size": 0,
+                "color": ""
+            },
+            "bgcolor": "#fff",
+            "bordercolor": "#444",
+            "borderwidth": 0,
+            "xanchor": "left",
+            "yanchor": "top"
+        },
+        "margin": {
+            "l": 80,
+            "r": 80,
+            "b": 80,
+            "t": 100,
+            "pad": 0,
+            "autoexpand": true
+        },
+        "paper_bgcolor": "#fff",
+        "plot_bgcolor": "#fff",
+        "hovermode": "x",
+        "dragmode": "zoom",
+        "barmode": "group",
+        "bargap": 0.2,
+        "bargroupgap": 0,
+        "boxmode": "overlay",
+        "separators": ".,",
+        "hidesources": false
+    }
+}

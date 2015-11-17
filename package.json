@@ -46,13 +46,16 @@
     "postinstall": "npm run preprocess",
     "bundle": "node tasks/bundle.js",
     "build": "npm run preprocess && npm run bundle",
+    "cibuild": "node tasks/cibundle.js",
     "watch": "node tasks/watch_plotly.js",
     "lint": "cd src && jshint . || true",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
-    "test-image": "echo TODO",
+    "citest-jasmine": "karma start test/jasmine/karma.ciconf.js",
+    "test-image": "./tasks/test_image.sh",
     "test": "npm run test-jasmine && npm test-image",
     "start-test_dashboard": "node devtools/test_dashboard/server.js",
-    "start-image_viewer": "node devtools/image_viewer/server.js"
+    "start-image_viewer": "node devtools/image_viewer/server.js",
+    "baseline": "./tasks/baseline.sh"
   },
   "dependencies": {
     "3d-view": "^2.0.0",
