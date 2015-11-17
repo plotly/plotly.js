@@ -33,7 +33,9 @@
     "test": "npm run test-jasmine && npm test-image",
     "start-test_dashboard": "node devtools/test_dashboard/server.js",
     "start-image_viewer": "node devtools/image_viewer/server.js",
-    "baseline": "./tasks/baseline.sh"
+    "baseline": "./tasks/baseline.sh",
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags"
   },
   "dependencies": {
     "3d-view": "^2.0.0",
