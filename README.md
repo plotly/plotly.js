@@ -7,7 +7,7 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 
 ## Table of contents
 
-* [Quick start](#quick-start)
+* [Quick start options](#quick-start-options)
 * [Bugs and feature requests](#bugs-and-feature-requests)
 * [Documentation](#documentation)
 * [Contributing](#contributing)
@@ -17,15 +17,22 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 * [Copyright and license](#copyright-and-license)
 
 
-## Quick start
+## Quick start options
 
-Several quick start options are available:
+#### Download the latest release
+[Latest Release on Github](https://github.com/plotly/plotly.js/releases/)
 
-* [Download the latest release](https://github.com/plotly/plotly.js/releases/).
-* Clone the repo: `git clone https://github.com/plotly/plotly.js.git`.
-* Install with [npm](https://www.npmjs.com): `npm install plotly.js`.
-* Use the plotly.js CDN hosted by Fastly:
+#### Clone the repo
+```bash
+git clone https://github.com/plotly/plotly.js.git
+```
 
+#### Install with `npm`
+```bash
+npm install plotly.js
+```
+
+#### Use the plotly.js CDN hosted by Fastly:
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js">
