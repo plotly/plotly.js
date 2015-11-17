@@ -16,7 +16,7 @@ machine:
 dependencies:
   pre: 
     - docker pull plotly/imageserver:0.2.0
-    - npm install
+  post:
     - npm run cibuild
 
 test:
