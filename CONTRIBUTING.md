@@ -35,7 +35,7 @@ a tab in your browser.
 
 **Step 3** Open up the console and start developing
 
-Make some modification to the source, refresh the page and check the results
+Make some modifications to the source, refresh the page and check the results
 by for example pasting in the console:
 
 ```js
