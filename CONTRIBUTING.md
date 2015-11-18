@@ -43,6 +43,9 @@ by for example pasting in the console:
 Plotly.plot(Tabs.fresh(), [{x:[1,2,3], y:[2,1,2]}]);
 ```
 
+- `Tabs.fresh()` creates a fresh graph div and return it and
+- `Tabs.getGraph()` returns the current graph div.
+
 **Other npm scripts**:
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
