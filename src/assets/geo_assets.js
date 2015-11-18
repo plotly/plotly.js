@@ -9,4 +9,7 @@
 
 var saneTopojson = require('sane-topojson');
 
+// export version using browserify-versionify
+exports.version = 'see package.json';
+
 exports.topojson = saneTopojson;
