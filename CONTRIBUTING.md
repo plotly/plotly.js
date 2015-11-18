@@ -74,4 +74,10 @@ README](https://github.com/plotly/plotly.js/blob/master/test/image/README.md).
 
 ### Repo organization
 
+
+
 ### Coding style
+
+- 4-space indentation
+- semi-colons are required
+- trailing commas
