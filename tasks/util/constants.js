@@ -1,10 +1,23 @@
+var fs = require('fs');
 var path = require('path');
 
 var pathToRoot = path.join(__dirname, '../../');
+var pathToRootParent = path.join(__dirname, '../../../../');
 var pathToSrc = path.join(pathToRoot, 'src/');
 var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
+
+var pathToTopojsonSrc;
+
+// npm3 flattens modules, so they won't be accessible through the old nested npm2 paths
+// attempt a synchronous filestat check, and on error, use the npm3 path
+try {
+    pathToTopojsonSrc = path.join(pathToRoot, 'node_modules/sane-topojson/dist/');
+    fs.statSync(pathToTopojsonSrc);
+} catch (e) {
+    pathToTopojsonSrc = path.join(pathToRootParent, 'node_modules/sane-topojson/dist/');
+}
 
 module.exports = {
     pathToRoot: pathToRoot,
@@ -17,7 +30,7 @@ module.exports = {
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
 
-    pathToTopojsonSrc: path.join(pathToRoot, 'node_modules/sane-topojson/dist/'),
+    pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
     pathToPlotlyGeoAssetsSrc: path.join(pathToSrc, 'assets/geo_assets.js'),
     pathToPlotlyGeoAssetsDist: path.join(pathToDist, 'plotly-geo-assets.js'),
