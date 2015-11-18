@@ -16,9 +16,6 @@
 
 var Plotly = require('./plotly');
 
-// export version using browserify-versionify
-exports.version = 'see package.json';
-
 // plot api
 exports.plot = Plotly.plot;
 exports.newPlot = Plotly.newPlot;

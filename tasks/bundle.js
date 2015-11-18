@@ -1,14 +1,10 @@
 var fs = require('fs');
 
 var browserify = require('browserify');
-var versionify = require('browserify-versionify');
 var UglifyJS = require('uglify-js');
 
 var compressAttributes = require('./util/compress_attributes');
 var constants = require('./util/constants');
-
-var versionifyArg = [versionify, {placeholder: 'see package.json'}];
-
 
 /*
  * This script takes one argument
@@ -42,7 +38,7 @@ catch(e) {
 browserify(constants.pathToPlotlySrc, {
     debug: DEV,
     standalone: 'Plotly',
-    transform: [compressAttributes, versionifyArg]
+    transform: [compressAttributes]
 })
 .bundle(function(err, buf) {
     if(err) throw err;
@@ -60,8 +56,7 @@ browserify(constants.pathToPlotlySrc, {
 
 // Browserify the geo assets
 browserify(constants.pathToPlotlyGeoAssetsSrc, {
-    standalone: 'PlotlyGeoAssets',
-    transform: [versionifyArg]
+    standalone: 'PlotlyGeoAssets'
 })
 .bundle(function(err) {
     if(err) throw err;
@@ -72,8 +67,7 @@ browserify(constants.pathToPlotlyGeoAssetsSrc, {
 // Browserify the plotly.js with meta
 browserify(constants.pathToPlotlySrc, {
     debug: DEV,
-    standalone: 'Plotly',
-    transform: [versionifyArg]
+    standalone: 'Plotly'
 })
 .bundle(function(err) {
     if(err) throw err;

@@ -42,7 +42,6 @@
     "alpha-shape": "^1.0.0",
     "arraytools": "^1.0.0",
     "browserify": "^12.0.1",
-    "browserify-versionify": "^1.0.6",
     "convex-hull": "^1.0.3",
     "d3": "3.5.6",
     "delaunay-triangulate": "^1.1.6",
