@@ -9,4 +9,7 @@
 
 var saneTopojson = require('sane-topojson');
 
+// export the version found in the package.json
+exports.version = require('../../package.json').version;
+
 exports.topojson = saneTopojson;
