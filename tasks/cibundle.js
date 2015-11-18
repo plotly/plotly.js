@@ -3,7 +3,6 @@ var fs = require('fs');
 var browserify = require('browserify');
 
 var compressAttributes = require('./util/compress_attributes');
-var appendVersion = require('./util/append_version');
 var constants = require('./util/constants');
 
 /*
@@ -24,10 +23,7 @@ browserify(constants.pathToPlotlySrc, {
 .bundle(function(err) {
     if(err) throw err;
 })
-.pipe(fs.createWriteStream(constants.pathToPlotlyBuild))
-.on('finish', function() {
-    appendVersion(constants.pathToPlotlyBuild, {object: 'Plotly'});
-});
+.pipe(fs.createWriteStream(constants.pathToPlotlyBuild));
 
 
 // Browserify the geo assets
@@ -37,7 +33,4 @@ browserify(constants.pathToPlotlyGeoAssetsSrc, {
 .bundle(function(err) {
     if(err) throw err;
 })
-.pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist))
-.on('finish', function() {
-    appendVersion(constants.pathToPlotlyGeoAssetsDist, {object: 'PlotlyGeoAssets'});
-});
+.pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist));
