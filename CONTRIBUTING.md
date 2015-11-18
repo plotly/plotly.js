@@ -28,10 +28,11 @@ npm install
 npm run start-test_dashboard
 ```
 
-This command bundles up the source files with source maps, starts
-a [watchify](https://github.com/substack/watchify) file watcher (making the your
-dev plotly.js bundle update every time a source file is saved) and opens up
-a tab in your browser.
+This command bundles up the source files with source maps using
+[browserify](https://github.com/substack/node-browserify), starts a
+[watchify](https://github.com/substack/watchify) file watcher (making the your
+dev plotly.js bundle update every time a source file is saved) and opens up a
+tab in your browser.
 
 **Step 3** Open up the console and start developing
 
