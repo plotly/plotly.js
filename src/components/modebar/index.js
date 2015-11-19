@@ -12,6 +12,7 @@
 var Plotly = require('../../plotly');
 var d3 = require('d3');
 
+var modebarConfig = require('./modebar_config');
 /**
  * UI controller for interactive plots
  * @Class
@@ -44,7 +45,7 @@ function ModeBar (config) {
         var group = _this.createGroup();
 
         buttonGroup.forEach( function (buttonName) {
-            var buttonConfig = _this.config()[buttonName];
+            var buttonConfig = modebarConfig[buttonName];
 
             if (!buttonConfig) {
                 throw new Error(buttonName + ' not specfied in modebar configuration');
@@ -83,11 +84,7 @@ proto.createGroup = function () {
 
 /**
  * Create a new button div and set constant and configurable attributes
- * @Param {object} config
- * @Param {string} config.attr
- * @Param {string} config.val
- * @Param {string} config.title
- * @Param {function} config.click
+ * @Param {object} config (see ./modebar_config,js for more info)
  * @Return {HTMLelement}
  */
 proto.createButton = function (config) {
@@ -97,13 +94,20 @@ proto.createButton = function (config) {
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
 
-    if (config.attr !== undefined) button.setAttribute('data-attr', config.attr);
-    if (config.val !== undefined) button.setAttribute('data-val', config.val);
     button.setAttribute('data-title', config.title);
     button.setAttribute('data-gravity', config.gravity || 'n');
+
+    if(config.attr !== undefined) button.setAttribute('data-attr', config.attr);
+
+    var val = config.val;
+    if(val !== undefined) {
+        if(typeof val === 'function') val = val(this.graphInfo);
+        button.setAttribute('data-val', val);
+    }
+
     button.addEventListener('click', function () {
-            config.click.apply(_this, arguments);
-        });
+        _this[config.click].apply(_this, arguments);
+    });
 
     button.setAttribute('data-toggle', config.toggle);
     if(config.toggle) button.classList.add('active');
@@ -492,181 +496,6 @@ proto.sendDataToCloud = function() {
     Plotly.Plots.sendDataToCloud(gd)
 };
 
-/**
- *
- * @Property config specification hash of button parameters
- */
-proto.config = function config() {
-    return {
-        zoom2d: {
-            title: 'Zoom',
-            attr: 'dragmode',
-            val: 'zoom',
-            icon: 'zoombox',
-            click: this.handleCartesian
-        },
-        pan2d: {
-            title: 'Pan',
-            attr: 'dragmode',
-            val: 'pan',
-            icon: 'pan',
-            click: this.handleCartesian
-        },
-        zoomIn2d: {
-            title: 'Zoom in',
-            attr: 'zoom',
-            val: 'in',
-            icon: 'zoom_plus',
-            click: this.handleCartesian
-        },
-        zoomOut2d: {
-            title: 'Zoom out',
-            attr: 'zoom',
-            val: 'out',
-            icon: 'zoom_minus',
-            click: this.handleCartesian
-        },
-        autoScale2d: {
-            title: 'Autoscale',
-            attr: 'zoom',
-            val: 'auto',
-            icon: 'autoscale',
-            click: this.handleCartesian
-        },
-        resetScale2d: {
-            title: 'Reset axes',
-            attr: 'zoom',
-            val: 'reset',
-            icon: 'home',
-            click: this.handleCartesian
-        },
-        hoverClosest2d: {
-            title: 'Show closest data on hover',
-            attr: 'hovermode',
-            val: 'closest',
-            icon: 'tooltip_basic',
-            gravity: 'ne',
-            click: this.handleCartesian
-        },
-        hoverCompare2d: {
-            title: 'Compare data on hover',
-            attr: 'hovermode',
-            val: this.graphInfo._fullLayout._isHoriz ? 'y' : 'x',
-            icon: 'tooltip_compare',
-            gravity: 'ne',
-            click: this.handleCartesian
-        },
-        toImage: {
-            title: 'download plot as a png',
-            icon: 'camera',
-            click: this.toImage
-        },
-        sendDataToCloud: {
-            title: 'save and edit plot in cloud',
-            icon: 'disk',
-            click: this.sendDataToCloud
-        },
-        // gl3d
-        zoom3d: {
-            title: 'Zoom',
-            attr: 'dragmode',
-            val: 'zoom',
-            icon: 'zoombox',
-            click: this.handleDrag3d
-        },
-        pan3d: {
-            title: 'Pan',
-            attr: 'dragmode',
-            val: 'pan',
-            icon: 'pan',
-            click: this.handleDrag3d
-        },
-        orbitRotation: {
-            title: 'orbital rotation',
-            attr: 'dragmode',
-            val: 'orbit',
-            icon: '3d_rotate',
-            click: this.handleDrag3d
-        },
-        tableRotation: {
-            title: 'turntable rotation',
-            attr: 'dragmode',
-            val: 'turntable',
-            icon: 'z-axis',
-            click: this.handleDrag3d
-        },
-        resetCameraDefault3d: {
-            title: 'Reset camera to default',
-            attr: 'resetDefault',
-            icon: 'home',
-            click: this.handleCamera3d
-        },
-        resetCameraLastSave3d: {
-            title: 'Reset camera to last save',
-            attr: 'resetLastSave',
-            icon: 'movie',
-            click: this.handleCamera3d
-        },
-        hoverClosest3d: {
-            title: 'Toggle show closest data on hover',
-            attr: 'hovermode',
-            val: null,
-            toggle: true,
-            icon: 'tooltip_basic',
-            gravity: 'ne',
-            click: this.handleHover3d
-        },
-        // geo
-        zoomInGeo: {
-            title: 'Zoom in',
-            attr: 'zoom',
-            val: 'in',
-            icon: 'zoom_plus',
-            click: this.handleGeo
-        },
-        zoomOutGeo: {
-            title: 'Zoom out',
-            attr: 'zoom',
-            val: 'out',
-            icon: 'zoom_minus',
-            click: this.handleGeo
-        },
-        resetGeo: {
-            title: 'Reset',
-            attr: 'reset',
-            val: null,
-            icon: 'autoscale',
-            click: this.handleGeo
-        },
-        hoverClosestGeo: {
-            title: 'Toggle show closest data on hover',
-            attr: 'hovermode',
-            val: null,
-            toggle: true,
-            icon: 'tooltip_basic',
-            gravity: 'ne',
-            click: this.handleGeo
-        },
-        // pie
-        hoverClosestPie: {
-            title: 'Toggle show closest data on hover',
-            attr: 'hovermode',
-            val: 'closest',
-            icon: 'tooltip_basic',
-            gravity: 'ne',
-            click: this.handleHoverPie
-        },
-        // gl2d
-        hoverClosestGl2d: {
-            title: 'Toggle show closest data on hover',
-            attr: 'hovermode',
-            val: null,
-            toggle: true,
-            icon: 'tooltip_basic',
-            gravity: 'ne',
-            click: this.handleHoverGl2d
-        }
-    };
 };
 
 module.exports = ModeBar;
