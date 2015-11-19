@@ -16,20 +16,16 @@ var modebarConfig = require('./modebar_config');
 /**
  * UI controller for interactive plots
  * @Class
- * @Param {object} config
- * @Param {object} config.buttons    nested arrays of grouped buttons to initialize
- * @Param {object} config.container  container div to append modebar
- * @Param {object} config.Plotly     main plotly namespace module
- * @Param {object} config.graphInfo  primary plot object containing data and layout
+ * @Param {object} opts
+ * @Param {object} opts.buttons    nested arrays of grouped buttons to initialize
+ * @Param {object} opts.container  container div to append modebar
+ * @Param {object} opts.graphInfo  primary plot object containing data and layout
  */
-function ModeBar (config) {
-
-    if (!(this instanceof ModeBar)) return new ModeBar();
-
+function ModeBar(opts) {
     var _this = this;
 
     this._snapshotInProgress = false;
-    this.graphInfo = config.graphInfo;
+    this.graphInfo = opts.graphInfo;
     this.element = document.createElement('div');
 
     if(this.graphInfo._context.displayModeBar === 'hover') {
@@ -38,7 +34,7 @@ function ModeBar (config) {
         this.element.className = 'modebar';
     }
 
-    this.buttons = config.buttons;
+    this.buttons = opts.buttons;
     this.buttonElements = [];
 
     this.buttons.forEach( function (buttonGroup) {
@@ -64,7 +60,7 @@ function ModeBar (config) {
         this.element.appendChild(this.getLogo());
     }
 
-    config.container.appendChild(this.element);
+    opts.container.appendChild(this.element);
 
     this.updateActiveButton();
 }
@@ -493,9 +489,7 @@ proto.toImage = function() {
 
 proto.sendDataToCloud = function() {
     var gd = this.graphInfo;
-    Plotly.Plots.sendDataToCloud(gd)
-};
-
+    Plotly.Plots.sendDataToCloud(gd);
 };
 
 module.exports = ModeBar;

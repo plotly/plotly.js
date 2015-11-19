@@ -1287,7 +1287,6 @@ fx.modeBar = function(gd){
         var modebar = new Plotly.ModeBar({
             buttons: buttons,
             container: fullLayout._paperdiv.node(),
-            Plotly: Plotly,
             graphInfo: gd
         });
 
