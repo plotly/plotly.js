@@ -12,7 +12,10 @@
 var Plotly = require('../../plotly');
 var d3 = require('d3');
 
+var Icons = require('../../../build/ploticon');
 var modebarConfig = require('./modebar_config');
+
+
 /**
  * UI controller for interactive plots
  * @Class
@@ -108,7 +111,7 @@ proto.createButton = function (config) {
     button.setAttribute('data-toggle', config.toggle);
     if(config.toggle) button.classList.add('active');
 
-    button.appendChild(this.createIcon(Plotly.Icons[config.icon]));
+    button.appendChild(this.createIcon(Icons[config.icon]));
 
     return button;
 };
@@ -121,8 +124,7 @@ proto.createButton = function (config) {
  * @Return {HTMLelement}
  */
 proto.createIcon = function (thisIcon) {
-    var iconDef = Plotly.Icons,
-        iconHeight = iconDef.ascent - iconDef.descent,
+    var iconHeight = Icons.ascent - Icons.descent,
         svgNS = 'http://www.w3.org/2000/svg',
         icon = document.createElementNS(svgNS, 'svg'),
         path = document.createElementNS(svgNS, 'path');
@@ -132,7 +134,7 @@ proto.createIcon = function (thisIcon) {
     icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
 
     path.setAttribute('d', thisIcon.path);
-    path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + iconDef.ascent + ')');
+    path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + Icons.ascent + ')');
     icon.appendChild(path);
 
     return icon;
@@ -202,7 +204,7 @@ proto.getLogo = function(){
     a.setAttribute('data-title', 'Produced with Plotly');
     a.className = 'modebar-btn plotlyjsicon modebar-btn--logo';
 
-    a.appendChild(this.createIcon(Plotly.Icons.plotlylogo));
+    a.appendChild(this.createIcon(Icons.plotlylogo));
 
     group.appendChild(a);
     return group;
