@@ -32,7 +32,7 @@ var plots = Plotly.Plots;
  *      object describing the overall display of the plot,
  *      all the stuff that doesn't pertain to any individual trace
  * @param {object} config
- *      configuration options
+ *      configuration options (see ./plot_config.js for more info)
  *
  */
 Plotly.plot = function(gd, data, layout, config) {

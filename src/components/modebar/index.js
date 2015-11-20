@@ -200,6 +200,7 @@ proto.updateActiveButton = function(buttonClicked) {
 
 /**
  * Check if modebar is configured as button configuration argument
+ *
  * @Param {object} buttons 2d array of grouped button names
  * @Return {boolean}
  */
