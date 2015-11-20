@@ -11,6 +11,7 @@
 
 var Plotly = require('../plotly');
 var Events = require('../lib/events');
+var manageModebar = require('../components/modebar/manage');
 
 var d3 = require('d3');
 var m4FromQuat = require('gl-mat4/fromQuat');
@@ -398,11 +399,6 @@ function setPlotContext(gd, config) {
                 else context[key] = config[key];
             }
         });
-
-        // cause a remake of the modebar any time we change context
-        if(gd._fullLayout && gd._fullLayout._modebar) {
-            delete gd._fullLayout._modebar;
-        }
 
         // map plot3dPixelRatio to plotGlPixelRatio for backward compatibility
         if(config.plot3dPixelRatio && !context.plotGlPixelRatio) {
@@ -2468,8 +2464,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
                 return plots.previousPromises(gd);
             });
         }
+
         // this is decoupled enough it doesn't need async regardless
-        if(domodebar) Plotly.Fx.modeBar(gd);
+        if(domodebar) manageModebar(gd);
 
         var subplotIds;
         if(doSceneDragmode || domodebar) {
@@ -3006,7 +3003,7 @@ function lsInner(gd) {
 
     Plotly.Titles.draw(gd, 'gtitle');
 
-    Plotly.Fx.modeBar(gd);
+    manageModebar(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
 }
