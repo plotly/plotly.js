@@ -495,3 +495,22 @@ proto.sendDataToCloud = function() {
 };
 
 module.exports = ModeBar;
+function createModebar(gd, buttons) {
+    var fullLayout = gd._fullLayout;
+
+    var modebar = new ModeBar({
+        graphInfo: gd,
+        container: fullLayout._paperdiv.node(),
+        buttons: buttons
+    });
+
+    if(fullLayout._privateplot) {
+        d3.select(modebar.element).append('span')
+            .classed('badge-private float--left', true)
+            .text('PRIVATE');
+    }
+
+    return modebar;
+}
+
+module.exports = createModebar;
