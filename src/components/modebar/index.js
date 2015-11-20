@@ -206,6 +206,8 @@ proto.updateActiveButton = function(buttonClicked) {
 proto.hasButtons = function (buttons) {
     var currentButtons = this.buttons;
 
+    if(!currentButtons) return false;
+
     if (buttons.length !== currentButtons.length) return false;
 
     for (var i = 0; i < buttons.length; ++i) {
