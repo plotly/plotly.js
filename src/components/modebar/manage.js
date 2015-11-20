@@ -33,13 +33,20 @@ module.exports = function manageModebar(gd) {
         return;
     }
 
-    var buttons = chooseButtons(fullLayout, context.modebarButtons);
+    if(!Array.isArray(context.modebarButtonsToRemove)) {
+        throw new Error([
+            '*modebarButtonsToRemove* configuration options',
+            'must be an array.'
+        ].join(' '));
+    }
+
+    var buttons = chooseButtons(fullLayout, context.modebarButtonsToRemove);
 
     if(modebar) modebar.update(gd, buttons);
     else fullLayout._modebar = createModebar(gd, buttons);
 };
 
-function chooseButtons(fullLayout) {
+function chooseButtons(fullLayout, buttonsToRemove) {
     var buttons = findButtons('all');
 
     if(fullLayout._hasGL3D) buttons = buttons.concat(findButtons('gl3d'));
@@ -58,6 +65,7 @@ function chooseButtons(fullLayout) {
 
     if(fullLayout._hasPie) buttons = buttons.concat(findButtons('pie'));
 
+    buttons = filterButtons(buttons, buttonsToRemove);
     buttons = groupButtons(buttons);
 
     return buttons;
@@ -87,6 +95,21 @@ function areAllAxesFixed(fullLayout) {
     }
 
     return allFixed;
+}
+
+// Remove buttons according to modebarButtonsToRemove plot config options
+function filterButtons(buttons, buttonsToRemove) {
+    var out = [];
+
+    for(var i = 0; i < buttons.length; i++) {
+        var button = buttons[i];
+
+        if(buttonsToRemove.indexOf(button) !== -1) continue;
+
+        out.push(button);
+    }
+
+    return out;
 }
 
 function groupButtons(buttons) {
