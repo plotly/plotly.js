@@ -25,29 +25,65 @@ var buttonsConfig = require('./buttons_config');
  * @Param {object} opts.graphInfo  primary plot object containing data and layout
  */
 function ModeBar(opts) {
-    var _this = this;
-
     this._snapshotInProgress = false;
-    this.graphInfo = opts.graphInfo;
+    this.container = opts.container;
     this.element = document.createElement('div');
 
-    if(this.graphInfo._context.displayModeBar === 'hover') {
+    this.update(opts.graphInfo, opts.buttons);
+
+    this.container.appendChild(this.element);
+}
+
+var proto = ModeBar.prototype;
+
+/**
+ * Update modebar (buttons and logo)
+ *
+ * @param {object} graphInfo  primary plot object containing data and layout
+ * @param {array of arrays} buttons nested arrays of grouped buttons to initialize
+ *
+ */
+proto.update = function(graphInfo, buttons) {
+    this.graphInfo = graphInfo;
+
+    var context = this.graphInfo._context;
+
+    if(context.displayModeBar === 'hover') {
         this.element.className = 'modebar modebar--hover';
-    } else {
-        this.element.className = 'modebar';
+    }
+    else this.element.className = 'modebar';
+
+    var needsNewButtons = !this.hasButtons(buttons),
+        needsNewLogo = (this.hasLogo !== context.displaylogo);
+
+    if(needsNewButtons || needsNewLogo) {
+        this.removeAllButtons();
+
+        this.updateButtons(buttons);
+
+        if(context.displaylogo) {
+            this.element.appendChild(this.getLogo());
+            this.hasLogo = true;
+        }
     }
 
-    this.buttons = opts.buttons;
+    this.updateActiveButton();
+};
+
+proto.updateButtons = function(buttons) {
+    var _this = this;
+
+    this.buttons = buttons;
     this.buttonElements = [];
 
-    this.buttons.forEach( function (buttonGroup) {
+    this.buttons.forEach(function(buttonGroup) {
         var group = _this.createGroup();
 
-        buttonGroup.forEach( function (buttonName) {
-            var buttonConfig = modebarConfig[buttonName];
+        buttonGroup.forEach(function(buttonName) {
+            var buttonConfig = buttonsConfig[buttonName];
 
             if (!buttonConfig) {
-                throw new Error(buttonName + ' not specfied in modebar configuration');
+                throw new Error(buttonName + 'not specfied in modebar configuration');
             }
 
             var button = _this.createButton(buttonConfig);
@@ -58,17 +94,7 @@ function ModeBar(opts) {
 
         _this.element.appendChild(group);
     });
-
-    if (this.graphInfo._context.displaylogo) {
-        this.element.appendChild(this.getLogo());
-    }
-
-    opts.container.appendChild(this.element);
-
-    this.updateActiveButton();
-}
-
-var proto = ModeBar.prototype;
+};
 
 /**
  * Empty div for containing a group of buttons
