@@ -13,7 +13,7 @@ var Plotly = require('../../plotly');
 var d3 = require('d3');
 
 var Icons = require('../../../build/ploticon');
-var modebarConfig = require('./modebar_config');
+var buttonsConfig = require('./buttons_config');
 
 
 /**

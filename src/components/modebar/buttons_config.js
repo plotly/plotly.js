@@ -12,6 +12,8 @@
 /**
  * Modebar buttons configuration
  *
+ * @param {string} category button category depending on e.g. plot type
+ * @param {string} group button group ('ext', 'drag', 'zoom', 'hover')
  * @param {string} title text that appears while hovering over the button
  * @param {string} icon name of the svg icon associated with the button
  * @param {string} [gravity] icon positioning
@@ -28,11 +30,15 @@ module.exports = {
 
     // for all plot types
     toImage: {
+        category: 'all',
+        group: 'ext',
         title: 'download plot as a png',
         icon: 'camera',
         click: 'toImage'
     },
     sendDataToCloud: {
+        category: 'all',
+        group: 'ext',
         title: 'save and edit plot in cloud',
         icon: 'disk',
         click: 'sendDataToCloud'
@@ -40,6 +46,8 @@ module.exports = {
 
     // cartesian and gl2d
     zoom2d: {
+        category: '2d',
+        group: 'drag',
         title: 'Zoom',
         attr: 'dragmode',
         val: 'zoom',
@@ -47,6 +55,8 @@ module.exports = {
         click: 'handleCartesian'
     },
     pan2d: {
+        category: '2d',
+        group: 'drag',
         title: 'Pan',
         attr: 'dragmode',
         val: 'pan',
@@ -54,6 +64,8 @@ module.exports = {
         click: 'handleCartesian'
     },
     zoomIn2d: {
+        category: '2d',
+        group: 'zoom',
         title: 'Zoom in',
         attr: 'zoom',
         val: 'in',
@@ -61,6 +73,8 @@ module.exports = {
         click: 'handleCartesian'
     },
     zoomOut2d: {
+        category: '2d',
+        group: 'zoom',
         title: 'Zoom out',
         attr: 'zoom',
         val: 'out',
@@ -68,6 +82,8 @@ module.exports = {
         click: 'handleCartesian'
     },
     autoScale2d: {
+        category: '2d',
+        group: 'zoom',
         title: 'Autoscale',
         attr: 'zoom',
         val: 'auto',
@@ -75,6 +91,8 @@ module.exports = {
         click: 'handleCartesian'
     },
     resetScale2d: {
+        category: '2d',
+        group: 'zoom',
         title: 'Reset axes',
         attr: 'zoom',
         val: 'reset',
@@ -84,6 +102,8 @@ module.exports = {
 
     // cartesian only
     hoverClosest2d: {
+        category: 'cartesian',
+        group: 'hover',
         title: 'Show closest data on hover',
         attr: 'hovermode',
         val: 'closest',
@@ -92,6 +112,8 @@ module.exports = {
         click: 'handleCartesian'
     },
     hoverCompare2d: {
+        category: 'cartesian',
+        group: 'hover',
         title: 'Compare data on hover',
         attr: 'hovermode',
         val: function(graphInfo) {
@@ -104,6 +126,8 @@ module.exports = {
 
     // gl3d
     zoom3d: {
+        category: 'gl3d',
+        group: 'drag',
         title: 'Zoom',
         attr: 'dragmode',
         val: 'zoom',
@@ -111,6 +135,8 @@ module.exports = {
         click: 'handleDrag3d'
     },
     pan3d: {
+        category: 'gl3d',
+        group: 'drag',
         title: 'Pan',
         attr: 'dragmode',
         val: 'pan',
@@ -118,6 +144,8 @@ module.exports = {
         click: 'handleDrag3d'
     },
     orbitRotation: {
+        category: 'gl3d',
+        group: 'drag',
         title: 'orbital rotation',
         attr: 'dragmode',
         val: 'orbit',
@@ -125,6 +153,8 @@ module.exports = {
         click: 'handleDrag3d'
     },
     tableRotation: {
+        category: 'gl3d',
+        group: 'drag',
         title: 'turntable rotation',
         attr: 'dragmode',
         val: 'turntable',
@@ -132,18 +162,24 @@ module.exports = {
         click: 'handleDrag3d'
     },
     resetCameraDefault3d: {
+        category: 'gl3d',
+        group: 'zoom',
         title: 'Reset camera to default',
         attr: 'resetDefault',
         icon: 'home',
         click: 'handleCamera3d'
     },
     resetCameraLastSave3d: {
+        category: 'gl3d',
+        group: 'zoom',
         title: 'Reset camera to last save',
         attr: 'resetLastSave',
         icon: 'movie',
         click: 'handleCamera3d'
     },
     hoverClosest3d: {
+        category: 'gl3d',
+        group: 'hover',
         title: 'Toggle show closest data on hover',
         attr: 'hovermode',
         val: null,
@@ -155,6 +191,8 @@ module.exports = {
 
     // geo
     zoomInGeo: {
+        category: 'geo',
+        group: 'zoom',
         title: 'Zoom in',
         attr: 'zoom',
         val: 'in',
@@ -162,6 +200,8 @@ module.exports = {
         click: 'handleGeo'
     },
     zoomOutGeo: {
+        category: 'geo',
+        group: 'zoom',
         title: 'Zoom out',
         attr: 'zoom',
         val: 'out',
@@ -169,6 +209,8 @@ module.exports = {
         click: 'handleGeo'
     },
     resetGeo: {
+        category: 'geo',
+        group: 'zoom',
         title: 'Reset',
         attr: 'reset',
         val: null,
@@ -176,6 +218,8 @@ module.exports = {
         click: 'handleGeo'
     },
     hoverClosestGeo: {
+        category: 'geo',
+        group: 'hover',
         title: 'Toggle show closest data on hover',
         attr: 'hovermode',
         val: null,
@@ -187,6 +231,8 @@ module.exports = {
 
     // gl2d only
     hoverClosestGl2d: {
+        category: 'gl2d',
+        group: 'hover',
         title: 'Toggle show closest data on hover',
         attr: 'hovermode',
         val: null,
@@ -198,6 +244,8 @@ module.exports = {
 
     // pie traces only
     hoverClosestPie: {
+        category: 'pie',
+        group: 'hover',
         title: 'Toggle show closest data on hover',
         attr: 'hovermode',
         val: 'closest',
