@@ -47,23 +47,40 @@ module.exports = function manageModebar(gd) {
 };
 
 function chooseButtons(fullLayout, buttonsToRemove) {
-    var buttons = findButtons('all');
+    var buttons = findButtons({category: 'all'}),
+        buttons2d = findButtons({category: '2d'});
 
-    if(fullLayout._hasGL3D) buttons = buttons.concat(findButtons('gl3d'));
+    // TODO how to plots of multiple types?
 
-    if(fullLayout._hasGeo) buttons = buttons.concat(findButtons('geo'));
+    if(fullLayout._hasGL3D) {
+        buttons = buttons.concat(findButtons({category: 'gl3d'}));
+    }
 
-    if(fullLayout._hasCartesian && !areAllAxesFixed(fullLayout)) {
-        buttons = buttons.concat(findButtons('2d'));
-        buttons = buttons.concat(findButtons('cartesian'));
+    if(fullLayout._hasGeo) {
+        buttons = buttons.concat(findButtons({category: 'geo'}));
+    }
+
+    if(fullLayout._hasCartesian) {
+        if(areAllAxesFixed(fullLayout)) {
+            buttons = buttons.concat(findButtons({
+                category: 'cartesian',
+                group: 'hover'
+            }));
+        }
+        else {
+            buttons = buttons.concat(buttons2d);
+            buttons = buttons.concat(findButtons({category: 'cartesian'}));
+        }
     }
 
     if(fullLayout._hasGL2D) {
-        buttons = buttons.concat(findButtons('2d'));
-        buttons = buttons.concat(findButtons('gl2d'));
+        buttons = buttons.concat(buttons2d);
+        buttons = buttons.concat(findButtons({category: 'gl2d'}));
     }
 
-    if(fullLayout._hasPie) buttons = buttons.concat(findButtons('pie'));
+    if(fullLayout._hasPie) {
+        buttons = buttons.concat(findButtons({category: 'pie'}));
+    }
 
     buttons = filterButtons(buttons, buttonsToRemove);
     buttons = groupButtons(buttons);
@@ -71,13 +88,21 @@ function chooseButtons(fullLayout, buttonsToRemove) {
     return buttons;
 }
 
-function findButtons(category, list) {
-    var buttonNames = Object.keys(buttonsConfig);
+// Find buttons in buttonsConfig by category or group
+function findButtons(opts) {
+    var buttonNames = Object.keys(buttonsConfig),
+        category = opts.category,
+        group = opts.group;
+
     var out = [];
 
     for(var i = 0; i < buttonNames.length; i++) {
         var buttonName = buttonNames[i];
-        if(buttonsConfig[buttonName].category === category) out.push(buttonName);
+
+        if(category && buttonsConfig[buttonName].category !== category) continue;
+        if(group && buttonsConfig[buttonName].group !== group) continue;
+
+        out.push(buttonName);
     }
 
     return out;
