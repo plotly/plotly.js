@@ -223,7 +223,7 @@ proto.hasButtons = function (buttons) {
 /**
  * @return {HTMLDivElement} The logo image wrapped in a group
  */
-proto.getLogo = function(){
+proto.getLogo = function() {
     var group = this.createGroup(),
         a = document.createElement('a');
 
@@ -523,6 +523,11 @@ proto.removeAllButtons = function() {
 
     this.hasLogo = false;
 };
+
+proto.destroy = function() {
+    Plotly.Lib.removeElement(this.container.querySelector('.modebar'));
+};
+
 function createModebar(gd, buttons) {
     var fullLayout = gd._fullLayout;
 
