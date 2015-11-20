@@ -460,12 +460,6 @@ proto.handleHoverGl2d = function(ev) {
     });
 };
 
-proto.cleanup = function(){
-    this.element.innerHTML = '';
-    var modebarParent = this.element.parentNode;
-    if (modebarParent) modebarParent.removeChild(this.element);
-};
-
 proto.toImage = function() {
 
     var format = 'png';
@@ -520,7 +514,13 @@ proto.sendDataToCloud = function() {
     Plotly.Plots.sendDataToCloud(gd);
 };
 
-module.exports = ModeBar;
+proto.removeAllButtons = function() {
+    while(this.element.firstChild) {
+        this.element.removeChild(this.element.firstChild);
+    }
+
+    this.hasLogo = false;
+};
 function createModebar(gd, buttons) {
     var fullLayout = gd._fullLayout;
 
