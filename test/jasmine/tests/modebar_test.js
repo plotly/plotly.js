@@ -7,6 +7,8 @@ var manageModebar = require('@src/components/modebar/manage');
 describe('Modebar', function() {
     'use strict';
 
+    function noop() {};
+
     function getMockContainerTree() {
         var root = document.createElement('div');
         root.className = 'plot-container';
@@ -44,7 +46,14 @@ describe('Modebar', function() {
     }
 
 
-    var buttons = [['toImage', 'sendDataToCloud']];
+    var buttons = [[{
+        name: 'button 1',
+        click: noop
+    }, {
+        name: 'button 2',
+        click: noop
+    }]];
+
     var modebar = createModebar(getMockGraphInfo(), buttons);
 
     describe('createModebar', function() {
@@ -53,6 +62,32 @@ describe('Modebar', function() {
             expect(countButtons(modebar)).toEqual(3);
             expect(countLogo(modebar)).toEqual(1);
         });
+
+        it('throws when button config does not have name', function() {
+            expect(function() {
+                createModebar(getMockGraphInfo(), [[
+                    { click: function() { console.log('not gonna work'); } }
+                ]]);
+            }).toThrowError();
+        });
+
+        it('throws when button name is not unique', function() {
+            expect(function() {
+                createModebar(getMockGraphInfo(), [[
+                    { name: 'A', click: function() { console.log('not gonna'); } },
+                    { name: 'A', click: function() { console.log('... work'); } }
+                ]]);
+            }).toThrowError();
+        });
+
+        it('throws when button config does not have a click handler', function() {
+            expect(function() {
+                createModebar(getMockGraphInfo(), [[
+                    { name: 'not gonna work' }
+                ]]);
+            }).toThrowError();
+        });
+
     });
 
     describe('modebar.removeAllButtons', function() {
@@ -76,13 +111,25 @@ describe('Modebar', function() {
 
     describe('manageModebar', function() {
 
+        function getButtons(list) {
+            for(var i = 0; i < list.length; i++) {
+                for(var j = 0; j < list[i].length; j++) {
+                    list[i][j] = {
+                        name: list[i][j],
+                        click: noop
+                    };
+                }
+            }
+            return list;
+        }
+
         it('creates modebar (cartesian version)', function() {
-            var buttons = [
+            var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoom2d', 'pan2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
-                ['hoverClosest2d', 'hoverCompare2d']
-            ];
+                ['hoverClosestCartesian', 'hoverCompareCartesian']
+            ]);
 
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
@@ -98,10 +145,10 @@ describe('Modebar', function() {
         });
 
         it('creates modebar (cartesian fixed-axes version)', function() {
-            var buttons = [
+            var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['hoverClosest2d', 'hoverCompare2d']
-            ];
+                ['hoverClosestCartesian', 'hoverCompareCartesian']
+            ]);
 
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
@@ -116,12 +163,12 @@ describe('Modebar', function() {
         });
 
         it('creates modebar (gl3d version)', function() {
-            var buttons = [
+            var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
                 ['resetCameraDefault3d', 'resetCameraLastSave3d'],
                 ['hoverClosest3d']
-            ];
+            ]);
 
             var gd = getMockGraphInfo();
             gd._fullLayout._hasGL3D = true;
@@ -136,11 +183,11 @@ describe('Modebar', function() {
         });
 
         it('creates modebar (geo version)', function() {
-            var buttons = [
+            var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
                 ['hoverClosestGeo']
-            ];
+            ]);
 
             var gd = getMockGraphInfo();
             gd._fullLayout._hasGeo = true;
@@ -155,15 +202,16 @@ describe('Modebar', function() {
         });
 
         it('creates modebar (gl2d version)', function() {
-            var buttons = [
+            var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoom2d', 'pan2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
                 ['hoverClosestGl2d']
-            ];
+            ]);
 
             var gd = getMockGraphInfo();
             gd._fullLayout._hasGL2D = true;
+            gd._fullLayout.xaxis = {fixedrange: false};
 
             manageModebar(gd);
             var modebar = gd._fullLayout._modebar;
@@ -175,10 +223,10 @@ describe('Modebar', function() {
         });
 
         it('creates modebar (pie version)', function() {
-            var buttons = [
+            var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['hoverClosestPie']
-            ];
+            ]);
 
             var gd = getMockGraphInfo();
             gd._fullLayout._hasPie = true;
