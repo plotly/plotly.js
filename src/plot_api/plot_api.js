@@ -368,7 +368,7 @@ function getGraphDiv(gd) {
         gdElement = document.getElementById(gd);
 
         if(gdElement === null) {
-            div = d3.select("body").append("div").attr("id",gd);
+            div = d3.select("body").append("div").attr("id",gd).attr("class","js-plotly-plot");
             gdElement = div[0][0];
         }
 
