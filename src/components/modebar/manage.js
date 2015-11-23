@@ -40,72 +40,62 @@ module.exports = function manageModebar(gd) {
         ].join(' '));
     }
 
-    var buttons = chooseButtons(fullLayout, context.modebarButtonsToRemove);
+    var buttonGroups = getButtonGroups(fullLayout, context.modebarButtonsToRemove);
 
-    if(modebar) modebar.update(gd, buttons);
-    else fullLayout._modebar = createModebar(gd, buttons);
+    if(modebar) modebar.update(gd, buttonGroups);
+    else fullLayout._modebar = createModebar(gd, buttonGroups);
 };
 
-function chooseButtons(fullLayout, buttonsToRemove) {
-    var buttons = findButtons({category: 'all'}),
-        buttons2d = findButtons({category: '2d'});
+// logic behind which buttons are displayed by default
+function getButtonGroups(fullLayout, buttonsToRemove) {
+    var groups = [];
 
-    // TODO how to plots of multiple types?
+    function addGroup(newGroup) {
+        var out = [];
+
+        for(var i = 0; i < newGroup.length; i++) {
+            var button = newGroup[i];
+            if(buttonsToRemove.indexOf(button) !== -1) continue;
+            out.push(modebarButtons[button]);
+        }
+
+        groups.push(out);
+    }
+
+    // buttons common to all plot types
+    addGroup(['toImage', 'sendDataToCloud']);
 
     if(fullLayout._hasGL3D) {
-        buttons = buttons.concat(findButtons({category: 'gl3d'}));
+        addGroup(['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation']);
+        addGroup(['resetCameraDefault3d', 'resetCameraLastSave3d']);
+        addGroup(['hoverClosest3d']);
     }
 
     if(fullLayout._hasGeo) {
-        buttons = buttons.concat(findButtons({category: 'geo'}));
+        addGroup(['zoomInGeo', 'zoomOutGeo', 'resetGeo']);
+        addGroup(['hoverClosestGeo']);
     }
 
-    if(fullLayout._hasCartesian) {
-        if(areAllAxesFixed(fullLayout)) {
-            buttons = buttons.concat(findButtons({
-                category: 'cartesian',
-                group: 'hover'
-            }));
-        }
-        else {
-            buttons = buttons.concat(buttons2d);
-            buttons = buttons.concat(findButtons({category: 'cartesian'}));
-        }
+    var hasCartesian = fullLayout._hasCartesian,
+        hasGL2D = fullLayout._hasGL2D,
+        allAxesFixed = areAllAxesFixed(fullLayout);
+
+    if((hasCartesian || hasGL2D) && !allAxesFixed) {
+        addGroup(['zoom2d', 'pan2d']);
+        addGroup(['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']);
     }
 
-    if(fullLayout._hasGL2D) {
-        buttons = buttons.concat(buttons2d);
-        buttons = buttons.concat(findButtons({category: 'gl2d'}));
+    if(hasCartesian) {
+        addGroup(['hoverClosestCartesian', 'hoverCompareCartesian']);
     }
-
+    if(hasGL2D) {
+        addGroup(['hoverClosestGl2d']);
+    }
     if(fullLayout._hasPie) {
-        buttons = buttons.concat(findButtons({category: 'pie'}));
+        addGroup(['hoverClosestPie']);
     }
 
-    buttons = filterButtons(buttons, buttonsToRemove);
-    buttons = groupButtons(buttons);
-
-    return buttons;
-}
-
-// Find buttons in buttonsConfig by category or group
-function findButtons(opts) {
-    var buttonNames = Object.keys(buttonsConfig),
-        category = opts.category,
-        group = opts.group;
-
-    var out = [];
-
-    for(var i = 0; i < buttonNames.length; i++) {
-        var buttonName = buttonNames[i];
-
-        if(category && buttonsConfig[buttonName].category !== category) continue;
-        if(group && buttonsConfig[buttonName].group !== group) continue;
-
-        out.push(buttonName);
-    }
-
-    return out;
+    return groups;
 }
 
 function areAllAxesFixed(fullLayout) {
@@ -120,41 +110,4 @@ function areAllAxesFixed(fullLayout) {
     }
 
     return allFixed;
-}
-
-// Remove buttons according to modebarButtonsToRemove plot config options
-function filterButtons(buttons, buttonsToRemove) {
-    var out = [];
-
-    for(var i = 0; i < buttons.length; i++) {
-        var button = buttons[i];
-
-        if(buttonsToRemove.indexOf(button) !== -1) continue;
-
-        out.push(button);
-    }
-
-    return out;
-}
-
-function groupButtons(buttons) {
-    var hashObj = {};
-    var i;
-
-    for(i = 0; i < buttons.length; i++) {
-        var button = buttons[i],
-            group = buttonsConfig[button].group;
-
-        if(hashObj[group] === undefined) hashObj[group] = [button];
-        else hashObj[group].push(button);
-    }
-
-    var groups = Object.keys(hashObj);
-    var out = [];
-
-    for(i = 0; i < groups.length; i++) {
-        out.push(hashObj[groups[i]]);
-    }
-
-    return out;
 }
