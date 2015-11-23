@@ -75,12 +75,20 @@ proto.updateButtons = function(buttons) {
 
     this.buttons = buttons;
     this.buttonElements = [];
+    this.buttonsNames = [];
 
     this.buttons.forEach(function(buttonGroup) {
         var group = _this.createGroup();
 
         buttonGroup.forEach(function(buttonConfig) {
+            var buttonName = buttonConfig.name;
+            if(!buttonName) {
+                throw new Error('must provide button \'name\' in button config');
             }
+            if(_this.buttonsNames.indexOf(buttonName) !== -1) {
+                throw new Error('button name \'', + buttonName + '\' is taken');
+            }
+            _this.buttonsNames.push(buttonName);
 
             var button = _this.createButton(buttonConfig);
             _this.buttonElements.push(button);
@@ -192,11 +200,10 @@ proto.updateActiveButton = function(buttonClicked) {
     });
 };
 
-
 /**
  * Check if modebar is configured as button configuration argument
  *
- * @Param {object} buttons 2d array of grouped button names
+ * @Param {object} buttons 2d array of grouped button config objects
  * @Return {boolean}
  */
 proto.hasButtons = function (buttons) {
@@ -209,7 +216,7 @@ proto.hasButtons = function (buttons) {
     for (var i = 0; i < buttons.length; ++i) {
         if (buttons[i].length !== currentButtons[i].length) return false;
         for (var j = 0; j < buttons[i].length; j++) {
-            if (buttons[i][j] !== currentButtons[i][j]) return false;
+            if (buttons[i][j].name !== currentButtons[i][j].name) return false;
         }
     }
 
