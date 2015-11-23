@@ -122,7 +122,7 @@ proto.createButton = function (config) {
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
 
-    button.setAttribute('data-title', config.title);
+    button.setAttribute('data-title', config.title || '');
     button.setAttribute('data-gravity', config.gravity || 'n');
 
     if(config.attr !== undefined) button.setAttribute('data-attr', config.attr);
@@ -133,14 +133,20 @@ proto.createButton = function (config) {
         button.setAttribute('data-val', val);
     }
 
-    button.addEventListener('click', function () {
-        _this[config.click].apply(_this, arguments);
-    });
+    var click = config.click;
+    if(typeof click !== 'function') {
+        throw new Error('must provide button \'click\' function in button config');
+    }
+    else {
+        button.addEventListener('click', function(ev) {
+            config.click(_this, ev);
+        });
+    }
 
-    button.setAttribute('data-toggle', config.toggle);
+    button.setAttribute('data-toggle', config.toggle || false);
     if(config.toggle) button.classList.add('active');
 
-    button.appendChild(this.createIcon(Icons[config.icon]));
+    button.appendChild(this.createIcon(Icons[config.icon || 'tooltip_basic']));
 
     return button;
 };
@@ -183,7 +189,7 @@ proto.updateActiveButton = function(buttonClicked) {
     this.buttonElements.forEach(function(button) {
         var thisval = button.getAttribute('data-val') || true,
             dataAttr = button.getAttribute('data-attr'),
-            isToggleButton = button.getAttribute('data-toggle')==='true',
+            isToggleButton = (button.getAttribute('data-toggle') === 'true'),
             button3 = d3.select(button);
 
         // Use 'data-toggle' and 'buttonClicked' to toggle buttons
