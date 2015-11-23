@@ -12,7 +12,7 @@
 var Plotly = require('../../plotly');
 
 var createModebar = require('./');
-var buttonsConfig = require('./buttons_config');
+var modebarButtons = require('./buttons');
 
 /**
  * Modebar wrapper around 'create' and 'update',
