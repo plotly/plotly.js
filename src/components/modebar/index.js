@@ -19,7 +19,7 @@ var Icons = require('../../../build/ploticon');
  * UI controller for interactive plots
  * @Class
  * @Param {object} opts
- * @Param {object} opts.buttons    nested arrays of grouped buttons to initialize
+ * @Param {object} opts.buttons    nested arrays of grouped buttons config objects
  * @Param {object} opts.container  container div to append modebar
  * @Param {object} opts.graphInfo  primary plot object containing data and layout
  */
@@ -52,6 +52,7 @@ proto.update = function(graphInfo, buttons) {
     }
     else this.element.className = 'modebar';
 
+    // if buttons or logo have changed, redraw modebar interior
     var needsNewButtons = !this.hasButtons(buttons),
         needsNewLogo = (this.hasLogo !== context.displaylogo);
 
@@ -78,15 +79,10 @@ proto.updateButtons = function(buttons) {
     this.buttons.forEach(function(buttonGroup) {
         var group = _this.createGroup();
 
-        buttonGroup.forEach(function(buttonName) {
-            var buttonConfig = buttonsConfig[buttonName];
-
-            if (!buttonConfig) {
-                throw new Error(buttonName + 'not specfied in modebar configuration');
+        buttonGroup.forEach(function(buttonConfig) {
             }
 
             var button = _this.createButton(buttonConfig);
-
             _this.buttonElements.push(button);
             group.appendChild(button);
         });
@@ -108,7 +104,7 @@ proto.createGroup = function () {
 
 /**
  * Create a new button div and set constant and configurable attributes
- * @Param {object} config (see ./modebar_config,js for more info)
+ * @Param {object} config (see ./buttons.js for more info)
  * @Return {HTMLelement}
  */
 proto.createButton = function (config) {
