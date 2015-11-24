@@ -148,7 +148,7 @@ proto.createButton = function (config) {
     button.setAttribute('data-toggle', config.toggle || false);
     if(config.toggle) button.classList.add('active');
 
-    button.appendChild(this.createIcon(config.icon || Icons.tooltip_basic));
+    button.appendChild(this.createIcon(config.icon || Icons.question));
     button.setAttribute('data-gravity', config.gravity || 'n');
 
     return button;
