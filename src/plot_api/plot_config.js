@@ -58,9 +58,13 @@ module.exports = {
     // display the mode bar (true, false, or 'hover')
     displayModeBar: 'hover',
 
-    // remove modebar button by name
+    // remove mode bar button by name
     // (see ./components/modebar/buttons.js for the list of names)
     modeBarButtonsToRemove: [],
+
+    // add mode bar button using config objects
+    // (see ./components/modebar/buttons.js for list of arguments)
+    modeBarButtonsToAdd: [],
 
     // add the plotly logo on the end of the mode bar
     displaylogo: true,

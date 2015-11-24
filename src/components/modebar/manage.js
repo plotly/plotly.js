@@ -40,16 +40,26 @@ module.exports = function manageModeBar(gd) {
         ].join(' '));
     }
 
-//     if(!Array.isArray(context.m))
+    if(!Array.isArray(context.modeBarButtonsToAdd)) {
+        throw new Error([
+            '*modeBarButtonsToAdd* configuration options',
+            'must be an array.'
+        ].join(' '));
+    }
 
-    var buttonGroups = getButtonGroups(fullLayout, context.modeBarButtonsToRemove);
+
+        buttonGroups = getButtonGroups(
+            fullLayout,
+            context.modeBarButtonsToRemove,
+            context.modeBarButtonsToAdd
+        );
 
     if(modeBar) modeBar.update(gd, buttonGroups);
     else fullLayout._modeBar = createModeBar(gd, buttonGroups);
 };
 
 // logic behind which buttons are displayed by default
-function getButtonGroups(fullLayout, buttonsToRemove) {
+function getButtonGroups(fullLayout, buttonsToRemove, buttonsToAdd) {
     var groups = [];
 
     function addGroup(newGroup) {
@@ -96,6 +106,8 @@ function getButtonGroups(fullLayout, buttonsToRemove) {
     if(fullLayout._hasPie) {
         addGroup(['hoverClosestPie']);
     }
+
+    if(buttonsToAdd.length) groups.push(buttonsToAdd);
 
     return groups;
 }
