@@ -50,7 +50,7 @@ module.exports = function manageModeBar(gd) {
     var customButtons = context.modeBarButtons;
     var buttonGroups;
 
-    if(Array.isArray(customButtons) && customButtons.length > 1) {
+    if(Array.isArray(customButtons) && customButtons.length) {
         buttonGroups = fillCustomButton(customButtons);
     }
     else {
