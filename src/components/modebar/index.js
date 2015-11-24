@@ -121,8 +121,10 @@ proto.createButton = function (config) {
     button.setAttribute('rel', 'tooltip');
     button.className = 'modebar-btn';
 
-    button.setAttribute('data-title', config.title || '');
-    button.setAttribute('data-gravity', config.gravity || 'n');
+    var title = config.title;
+    if(title !== null && title !== false && title !== '') {
+        button.setAttribute('data-title', title || config.name);
+    }
 
     if(config.attr !== undefined) button.setAttribute('data-attr', config.attr);
 
@@ -147,6 +149,7 @@ proto.createButton = function (config) {
     if(config.toggle) button.classList.add('active');
 
     button.appendChild(this.createIcon(config.icon || Icons.tooltip_basic));
+    button.setAttribute('data-gravity', config.gravity || 'n');
 
     return button;
 };

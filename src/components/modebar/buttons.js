@@ -23,7 +23,8 @@ var modebarButtons = module.exports = {};
  * @param {string} name
  *      name / id of the buttons (for tracking)
  * @param {string} title
- *      text that appears while hovering over the button
+ *      text that appears while hovering over the button,
+ *      enter null, false or '' for no hover text
  * @param {string} icon
  *      svg icon associated with the button
  * @param {string} [gravity]
@@ -68,7 +69,6 @@ modebarButtons.toImage = {
         filename += '.' + format;
 
         ev.once('success', function(result) {
-
             gd._snapshotInProgress = false;
 
             var downloadLink = document.createElement('a');

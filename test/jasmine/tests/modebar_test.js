@@ -7,7 +7,7 @@ var manageModebar = require('@src/components/modebar/manage');
 describe('Modebar', function() {
     'use strict';
 
-    function noop() {};
+    function noop() {}
 
     function getMockContainerTree() {
         var root = document.createElement('div');
@@ -45,6 +45,10 @@ describe('Modebar', function() {
         return d3.select(modebar.element).selectAll('a.plotlyjsicon')[0].length;
     }
 
+    function checkBtnAttr(modebar, index, attr) {
+        var buttons = d3.select(modebar.element).selectAll('a.modebar-btn');
+        return d3.select(buttons[0][index]).attr(attr);
+    }
 
     var buttons = [[{
         name: 'button 1',
@@ -88,6 +92,32 @@ describe('Modebar', function() {
             }).toThrowError();
         });
 
+        it('defaults title to name when missing', function() {
+            var modebar = createModebar(getMockGraphInfo(), [[
+                { name: 'the title too', click: noop }
+            ]]);
+
+            expect(checkBtnAttr(modebar, 0, 'data-title')).toEqual('the title too');
+        });
+
+        it('hides title to when title is set to null or \'\' or false', function() {
+            var modebar;
+
+            modebar = createModebar(getMockGraphInfo(), [[
+                { name: 'button', title: null, click: noop }
+            ]]);
+            expect(checkBtnAttr(modebar, 0, 'data-title')).toBe(null);
+
+            modebar = createModebar(getMockGraphInfo(), [[
+                { name: 'button', title: '', click: noop }
+            ]]);
+            expect(checkBtnAttr(modebar, 0, 'data-title')).toBe(null);
+
+            modebar = createModebar(getMockGraphInfo(), [[
+                { name: 'button', title: false, click: noop }
+            ]]);
+            expect(checkBtnAttr(modebar, 0, 'data-title')).toBe(null);
+        });
     });
 
     describe('modebar.removeAllButtons', function() {
