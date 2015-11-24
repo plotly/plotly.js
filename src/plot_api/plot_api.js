@@ -2172,7 +2172,6 @@ Plotly.relayout = function relayout(gd, astr, val) {
         doplot = false,
         docalc = false,
         domodebar = false,
-        doSceneDragmode = false,
         newkey, axes, keys, xyref, scene, axisAttr;
 
     if(typeof astr === 'string') aobj[astr] = val;
@@ -2406,8 +2405,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
              * height, width, autosize get dealt with below. Except for the case of
              * of subplots - scenes - which require scene.handleDragmode to be called.
              */
-            else if(ai==='hovermode') domodebar = true;
-            else if (ai === 'dragmode') doSceneDragmode = true;
+            else if(['hovermode', 'dragmode'].indexOf(ai) !== -1) domodebar = true;
             else if(['hovermode','dragmode','height',
                     'width','autosize'].indexOf(ai)===-1) {
                 doplot = true;
@@ -2466,10 +2464,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
         }
 
         // this is decoupled enough it doesn't need async regardless
-        if(domodebar) manageModebar(gd);
+        if(domodebar) {
+            manageModebar(gd);
 
-        var subplotIds;
-        if(doSceneDragmode || domodebar) {
+            var subplotIds;
             subplotIds = plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout[subplotIds[i]]._scene;
