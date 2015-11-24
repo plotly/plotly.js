@@ -1,10 +1,10 @@
 var d3 = require('d3');
 
-var createModebar = require('@src/components/modebar');
-var manageModebar = require('@src/components/modebar/manage');
+var createModeBar = require('@src/components/modebar');
+var manageModeBar = require('@src/components/modebar/manage');
 
 
-describe('Modebar', function() {
+describe('ModeBar', function() {
     'use strict';
 
     function noop() {}
@@ -28,25 +28,25 @@ describe('Modebar', function() {
             _context: {
                 displaylogo: true,
                 displayModeBar: true,
-                modebarButtonsToRemove: []
+                modeBarButtonsToRemove: []
             }
         };
     }
 
-    function countGroups(modebar) {
-        return d3.select(modebar.element).selectAll('div.modebar-group')[0].length;
+    function countGroups(modeBar) {
+        return d3.select(modeBar.element).selectAll('div.modebar-group')[0].length;
     }
 
-    function countButtons(modebar) {
-        return d3.select(modebar.element).selectAll('a.modebar-btn')[0].length;
+    function countButtons(modeBar) {
+        return d3.select(modeBar.element).selectAll('a.modebar-btn')[0].length;
     }
 
-    function countLogo(modebar) {
-        return d3.select(modebar.element).selectAll('a.plotlyjsicon')[0].length;
+    function countLogo(modeBar) {
+        return d3.select(modeBar.element).selectAll('a.plotlyjsicon')[0].length;
     }
 
-    function checkBtnAttr(modebar, index, attr) {
-        var buttons = d3.select(modebar.element).selectAll('a.modebar-btn');
+    function checkBtnAttr(modeBar, index, attr) {
+        var buttons = d3.select(modeBar.element).selectAll('a.modebar-btn');
         return d3.select(buttons[0][index]).attr(attr);
     }
 
@@ -58,18 +58,18 @@ describe('Modebar', function() {
         click: noop
     }]];
 
-    var modebar = createModebar(getMockGraphInfo(), buttons);
+    var modeBar = createModeBar(getMockGraphInfo(), buttons);
 
     describe('createModebar', function() {
-        it('creates a modebar', function() {
-            expect(countGroups(modebar)).toEqual(2);
-            expect(countButtons(modebar)).toEqual(3);
-            expect(countLogo(modebar)).toEqual(1);
+        it('creates a mode bar', function() {
+            expect(countGroups(modeBar)).toEqual(2);
+            expect(countButtons(modeBar)).toEqual(3);
+            expect(countLogo(modeBar)).toEqual(1);
         });
 
         it('throws when button config does not have name', function() {
             expect(function() {
-                createModebar(getMockGraphInfo(), [[
+                createModeBar(getMockGraphInfo(), [[
                     { click: function() { console.log('not gonna work'); } }
                 ]]);
             }).toThrowError();
@@ -77,7 +77,7 @@ describe('Modebar', function() {
 
         it('throws when button name is not unique', function() {
             expect(function() {
-                createModebar(getMockGraphInfo(), [[
+                createModeBar(getMockGraphInfo(), [[
                     { name: 'A', click: function() { console.log('not gonna'); } },
                     { name: 'A', click: function() { console.log('... work'); } }
                 ]]);
@@ -86,60 +86,60 @@ describe('Modebar', function() {
 
         it('throws when button config does not have a click handler', function() {
             expect(function() {
-                createModebar(getMockGraphInfo(), [[
+                createModeBar(getMockGraphInfo(), [[
                     { name: 'not gonna work' }
                 ]]);
             }).toThrowError();
         });
 
         it('defaults title to name when missing', function() {
-            var modebar = createModebar(getMockGraphInfo(), [[
+            var modeBar = createModeBar(getMockGraphInfo(), [[
                 { name: 'the title too', click: noop }
             ]]);
 
-            expect(checkBtnAttr(modebar, 0, 'data-title')).toEqual('the title too');
+            expect(checkBtnAttr(modeBar, 0, 'data-title')).toEqual('the title too');
         });
 
         it('hides title to when title is set to null or \'\' or false', function() {
-            var modebar;
+            var modeBar;
 
-            modebar = createModebar(getMockGraphInfo(), [[
+            modeBar = createModeBar(getMockGraphInfo(), [[
                 { name: 'button', title: null, click: noop }
             ]]);
-            expect(checkBtnAttr(modebar, 0, 'data-title')).toBe(null);
+            expect(checkBtnAttr(modeBar, 0, 'data-title')).toBe(null);
 
-            modebar = createModebar(getMockGraphInfo(), [[
+            modeBar = createModeBar(getMockGraphInfo(), [[
                 { name: 'button', title: '', click: noop }
             ]]);
-            expect(checkBtnAttr(modebar, 0, 'data-title')).toBe(null);
+            expect(checkBtnAttr(modeBar, 0, 'data-title')).toBe(null);
 
-            modebar = createModebar(getMockGraphInfo(), [[
+            modeBar = createModeBar(getMockGraphInfo(), [[
                 { name: 'button', title: false, click: noop }
             ]]);
-            expect(checkBtnAttr(modebar, 0, 'data-title')).toBe(null);
+            expect(checkBtnAttr(modeBar, 0, 'data-title')).toBe(null);
         });
     });
 
-    describe('modebar.removeAllButtons', function() {
-        it('removes all modebar buttons', function() {
-            modebar.removeAllButtons();
+    describe('modeBar.removeAllButtons', function() {
+        it('removes all mode bar buttons', function() {
+            modeBar.removeAllButtons();
 
-            expect(modebar.element.innerHTML).toEqual('');
-            expect(modebar.hasLogo).toBe(false);
+            expect(modeBar.element.innerHTML).toEqual('');
+            expect(modeBar.hasLogo).toBe(false);
         });
     });
 
-    describe('modebar.destroy', function() {
-        it('removes the modebar entirely', function() {
-            var modebarParent = modebar.element.parentNode;
+    describe('modeBar.destroy', function() {
+        it('removes the mode bar entirely', function() {
+            var modeBarParent = modeBar.element.parentNode;
 
-            modebar.destroy();
+            modeBar.destroy();
 
-            expect(modebarParent.querySelector('.modebar')).toBeNull();
+            expect(modeBarParent.querySelector('.modebar')).toBeNull();
         });
     });
 
-    describe('manageModebar', function() {
+    describe('manageModeBar', function() {
 
         function getButtons(list) {
             for(var i = 0; i < list.length; i++) {
@@ -153,7 +153,7 @@ describe('Modebar', function() {
             return list;
         }
 
-        it('creates modebar (cartesian version)', function() {
+        it('creates mode bar (cartesian version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoom2d', 'pan2d'],
@@ -165,16 +165,16 @@ describe('Modebar', function() {
             gd._fullLayout._hasCartesian = true;
             gd._fullLayout.xaxis = {fixedrange: false};
 
-            manageModebar(gd);
-            var modebar = gd._fullLayout._modebar;
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
 
-            expect(modebar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modebar)).toEqual(5);
-            expect(countButtons(modebar)).toEqual(11);
-            expect(countLogo(modebar)).toEqual(1);
+            expect(modeBar.hasButtons(buttons)).toBe(true);
+            expect(countGroups(modeBar)).toEqual(5);
+            expect(countButtons(modeBar)).toEqual(11);
+            expect(countLogo(modeBar)).toEqual(1);
         });
 
-        it('creates modebar (cartesian fixed-axes version)', function() {
+        it('creates mode bar (cartesian fixed-axes version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['hoverClosestCartesian', 'hoverCompareCartesian']
@@ -183,16 +183,16 @@ describe('Modebar', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
 
-            manageModebar(gd);
-            var modebar = gd._fullLayout._modebar;
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
 
-            expect(modebar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modebar)).toEqual(3);
-            expect(countButtons(modebar)).toEqual(5);
-            expect(countLogo(modebar)).toEqual(1);
+            expect(modeBar.hasButtons(buttons)).toBe(true);
+            expect(countGroups(modeBar)).toEqual(3);
+            expect(countButtons(modeBar)).toEqual(5);
+            expect(countLogo(modeBar)).toEqual(1);
         });
 
-        it('creates modebar (gl3d version)', function() {
+        it('creates mode bar (gl3d version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation'],
@@ -203,16 +203,16 @@ describe('Modebar', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._hasGL3D = true;
 
-            manageModebar(gd);
-            var modebar = gd._fullLayout._modebar;
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
 
-            expect(modebar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modebar)).toEqual(5);
-            expect(countButtons(modebar)).toEqual(10);
-            expect(countLogo(modebar)).toEqual(1);
+            expect(modeBar.hasButtons(buttons)).toBe(true);
+            expect(countGroups(modeBar)).toEqual(5);
+            expect(countButtons(modeBar)).toEqual(10);
+            expect(countLogo(modeBar)).toEqual(1);
         });
 
-        it('creates modebar (geo version)', function() {
+        it('creates mode bar (geo version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoomInGeo', 'zoomOutGeo', 'resetGeo'],
@@ -222,16 +222,16 @@ describe('Modebar', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._hasGeo = true;
 
-            manageModebar(gd);
-            var modebar = gd._fullLayout._modebar;
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
 
-            expect(modebar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modebar)).toEqual(4);
-            expect(countButtons(modebar)).toEqual(7);
-            expect(countLogo(modebar)).toEqual(1);
+            expect(modeBar.hasButtons(buttons)).toBe(true);
+            expect(countGroups(modeBar)).toEqual(4);
+            expect(countButtons(modeBar)).toEqual(7);
+            expect(countLogo(modeBar)).toEqual(1);
         });
 
-        it('creates modebar (gl2d version)', function() {
+        it('creates mode bar (gl2d version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['zoom2d', 'pan2d'],
@@ -243,16 +243,16 @@ describe('Modebar', function() {
             gd._fullLayout._hasGL2D = true;
             gd._fullLayout.xaxis = {fixedrange: false};
 
-            manageModebar(gd);
-            var modebar = gd._fullLayout._modebar;
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
 
-            expect(modebar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modebar)).toEqual(5);
-            expect(countButtons(modebar)).toEqual(10);
-            expect(countLogo(modebar)).toEqual(1);
+            expect(modeBar.hasButtons(buttons)).toBe(true);
+            expect(countGroups(modeBar)).toEqual(5);
+            expect(countButtons(modeBar)).toEqual(10);
+            expect(countLogo(modeBar)).toEqual(1);
         });
 
-        it('creates modebar (pie version)', function() {
+        it('creates mode bar (pie version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
                 ['hoverClosestPie']
@@ -261,65 +261,65 @@ describe('Modebar', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._hasPie = true;
 
-            manageModebar(gd);
-            var modebar = gd._fullLayout._modebar;
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
 
-            expect(modebar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modebar)).toEqual(3);
-            expect(countButtons(modebar)).toEqual(4);
-            expect(countLogo(modebar)).toEqual(1);
+            expect(modeBar.hasButtons(buttons)).toBe(true);
+            expect(countGroups(modeBar)).toEqual(3);
+            expect(countButtons(modeBar)).toEqual(4);
+            expect(countLogo(modeBar)).toEqual(1);
         });
 
-        it('throws an error if modebarButtonsToRemove isn\'t an array', function() {
+        it('throws an error if modeBarButtonsToRemove isn\'t an array', function() {
             var gd = getMockGraphInfo();
-            gd._context.modebarButtonsToRemove = 'not gonna work';
+            gd._context.modeBarButtonsToRemove = 'not gonna work';
 
-            expect(function() { manageModebar(gd); }).toThrowError();
+            expect(function() { manageModeBar(gd); }).toThrowError();
         });
 
-        it('displays or not modebar according to displayModeBar config arg', function() {
+        it('displays or not mode bar according to displayModeBar config arg', function() {
             var gd = getMockGraphInfo();
-            manageModebar(gd);
-            expect(gd._fullLayout._modebar).toBeDefined();
+            manageModeBar(gd);
+            expect(gd._fullLayout._modeBar).toBeDefined();
 
             gd._context.displayModeBar = false;
-            manageModebar(gd);
-            expect(gd._fullLayout._modebar).not.toBeDefined();
+            manageModeBar(gd);
+            expect(gd._fullLayout._modeBar).not.toBeDefined();
         });
 
         it('displays or not logo according to displaylogo config arg', function() {
             var gd = getMockGraphInfo();
-            manageModebar(gd);
-            expect(countLogo(gd._fullLayout._modebar)).toEqual(1);
+            manageModeBar(gd);
+            expect(countLogo(gd._fullLayout._modeBar)).toEqual(1);
 
             gd._context.displaylogo = false;
-            manageModebar(gd);
-            expect(countLogo(gd._fullLayout._modebar)).toEqual(0);
+            manageModeBar(gd);
+            expect(countLogo(gd._fullLayout._modeBar)).toEqual(0);
         });
 
-        it('updates modebar buttons if plot type changes', function() {
+        it('updates mode bar buttons if plot type changes', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
             gd._fullLayout.xaxis = {fixedrange: false};
 
-            manageModebar(gd);  // gives 11 buttons
+            manageModeBar(gd);  // gives 11 buttons
             gd._fullLayout._hasCartesian = false;
             gd._fullLayout._hasGL3D = true;
-            manageModebar(gd);
+            manageModeBar(gd);
 
-            expect(countButtons(gd._fullLayout._modebar)).toEqual(10);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(10);
         });
 
-        it('updates modebar buttons if plot type changes', function() {
+        it('updates mode bar buttons if plot type changes', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
             gd._fullLayout.xaxis = {fixedrange: false};
 
-            manageModebar(gd);  // gives 11 buttons
-            gd._context.modebarButtonsToRemove = ['toImage', 'sendDataToCloud'];
-            manageModebar(gd);
+            manageModeBar(gd);  // gives 11 buttons
+            gd._context.modeBarButtonsToRemove = ['toImage', 'sendDataToCloud'];
+            manageModeBar(gd);
 
-            expect(countButtons(gd._fullLayout._modebar)).toEqual(9);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(9);
         });
 
     });

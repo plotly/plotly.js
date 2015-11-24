@@ -11,39 +11,41 @@
 
 var Plotly = require('../../plotly');
 
-var createModebar = require('./');
-var modebarButtons = require('./buttons');
+var createModeBar = require('./');
+var modeBarButtons = require('./buttons');
 
 /**
- * Modebar wrapper around 'create' and 'update',
- * chooses buttons to pass to Modebar constructor based on
+ * ModeBar wrapper around 'create' and 'update',
+ * chooses buttons to pass to ModeBar constructor based on
  * plot type and plot config.
  *
  * @param {object} gd main plot object
  *
  */
-module.exports = function manageModebar(gd) {
+module.exports = function manageModeBar(gd) {
     var fullLayout = gd._fullLayout,
         context = gd._context,
-        modebar = fullLayout._modebar;
+        modeBar = fullLayout._modeBar;
 
-    if(!context.displayModeBar && modebar) {
-        modebar.destroy();
-        delete fullLayout._modebar;
+    if(!context.displayModeBar && modeBar) {
+        modeBar.destroy();
+        delete fullLayout._modeBar;
         return;
     }
 
-    if(!Array.isArray(context.modebarButtonsToRemove)) {
+    if(!Array.isArray(context.modeBarButtonsToRemove)) {
         throw new Error([
-            '*modebarButtonsToRemove* configuration options',
+            '*modeBarButtonsToRemove* configuration options',
             'must be an array.'
         ].join(' '));
     }
 
-    var buttonGroups = getButtonGroups(fullLayout, context.modebarButtonsToRemove);
+//     if(!Array.isArray(context.m))
 
-    if(modebar) modebar.update(gd, buttonGroups);
-    else fullLayout._modebar = createModebar(gd, buttonGroups);
+    var buttonGroups = getButtonGroups(fullLayout, context.modeBarButtonsToRemove);
+
+    if(modeBar) modeBar.update(gd, buttonGroups);
+    else fullLayout._modeBar = createModeBar(gd, buttonGroups);
 };
 
 // logic behind which buttons are displayed by default
@@ -56,7 +58,7 @@ function getButtonGroups(fullLayout, buttonsToRemove) {
         for(var i = 0; i < newGroup.length; i++) {
             var button = newGroup[i];
             if(buttonsToRemove.indexOf(button) !== -1) continue;
-            out.push(modebarButtons[button]);
+            out.push(modeBarButtons[button]);
         }
 
         groups.push(out);

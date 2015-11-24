@@ -935,7 +935,7 @@ axes.doAutoRange = function(ax) {
 };
 
 // save a copy of the initial axis ranges in fullLayout
-// use them in modebar and dblclick events
+// use them in mode bar and dblclick events
 axes.saveRangeInitial = function(gd, overwrite) {
     var axList = axes.list(gd, '', true),
         hasOneAxisChanged = false;

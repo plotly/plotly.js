@@ -20,7 +20,7 @@ var Icons = require('../../../build/ploticon');
  * @Class
  * @Param {object} opts
  * @Param {object} opts.buttons    nested arrays of grouped buttons config objects
- * @Param {object} opts.container  container div to append modebar
+ * @Param {object} opts.container  container div to append modeBar
  * @Param {object} opts.graphInfo  primary plot object containing data and layout
  */
 function ModeBar(opts) {
@@ -35,7 +35,7 @@ function ModeBar(opts) {
 var proto = ModeBar.prototype;
 
 /**
- * Update modebar (buttons and logo)
+ * Update modeBar (buttons and logo)
  *
  * @param {object} graphInfo  primary plot object containing data and layout
  * @param {array of arrays} buttons nested arrays of grouped buttons to initialize
@@ -210,7 +210,7 @@ proto.updateActiveButton = function(buttonClicked) {
 };
 
 /**
- * Check if modebar is configured as button configuration argument
+ * Check if modeBar is configured as button configuration argument
  *
  * @Param {object} buttons 2d array of grouped button config objects
  * @Return {boolean}
@@ -262,22 +262,22 @@ proto.destroy = function() {
     Plotly.Lib.removeElement(this.container.querySelector('.modebar'));
 };
 
-function createModebar(gd, buttons) {
+function createModeBar(gd, buttons) {
     var fullLayout = gd._fullLayout;
 
-    var modebar = new ModeBar({
+    var modeBar = new ModeBar({
         graphInfo: gd,
         container: fullLayout._paperdiv.node(),
         buttons: buttons
     });
 
     if(fullLayout._privateplot) {
-        d3.select(modebar.element).append('span')
+        d3.select(modeBar.element).append('span')
             .classed('badge-private float--left', true)
             .text('PRIVATE');
     }
 
-    return modebar;
+    return modeBar;
 }
 
-module.exports = createModebar;
+module.exports = createModeBar;

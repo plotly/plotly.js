@@ -45,7 +45,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
     if(layoutOut._hasCartesian) {
         // flag for 'horizontal' plots:
-        // determines the state of the modebar 'compare' hovermode button
+        // determines the state of the mode bar 'compare' hovermode button
         isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
         hovermodeDflt = isHoriz ? 'y' : 'x';
     }

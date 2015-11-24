@@ -11,7 +11,7 @@
 
 var Plotly = require('../plotly');
 var Events = require('../lib/events');
-var manageModebar = require('../components/modebar/manage');
+var manageModeBar = require('../components/modebar/manage');
 
 var d3 = require('d3');
 var m4FromQuat = require('gl-mat4/fromQuat');
@@ -2465,7 +2465,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) {
-            manageModebar(gd);
+            manageModeBar(gd);
 
             var subplotIds;
             subplotIds = plots.getSubplotIds(fullLayout, 'gl3d');
@@ -3001,7 +3001,7 @@ function lsInner(gd) {
 
     Plotly.Titles.draw(gd, 'gtitle');
 
-    manageModebar(gd);
+    manageModeBar(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
 }
