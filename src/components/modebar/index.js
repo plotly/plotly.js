@@ -159,17 +159,17 @@ proto.createButton = function (config) {
  * @Return {HTMLelement}
  */
 proto.createIcon = function (thisIcon) {
-    var iconHeight = Icons.ascent - Icons.descent,
+    var iconHeight = thisIcon.ascent - thisIcon.descent,
         svgNS = 'http://www.w3.org/2000/svg',
         icon = document.createElementNS(svgNS, 'svg'),
         path = document.createElementNS(svgNS, 'path');
 
     icon.setAttribute('height', '1em');
-    icon.setAttribute('width', (thisIcon.width / iconHeight)+'em');
+    icon.setAttribute('width', (thisIcon.width / iconHeight) + 'em');
     icon.setAttribute('viewBox', [0, 0, thisIcon.width, iconHeight].join(' '));
 
     path.setAttribute('d', thisIcon.path);
-    path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + Icons.ascent + ')');
+    path.setAttribute('transform', 'matrix(1 0 0 -1 0 ' + thisIcon.ascent + ')');
     icon.appendChild(path);
 
     return icon;
