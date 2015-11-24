@@ -4,7 +4,6 @@ var browserify = require('browserify');
 var watchify = require('watchify');
 
 var compressAttributes = require('./compress_attributes');
-var appendVersion = require('./append_version');
 var formatBundleMsg = require('./format_bundle_msg');
 var constants = require('./constants');
 
@@ -53,9 +52,6 @@ module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
         .pipe(
             fs.createWriteStream(constants.pathToPlotlyBuild)
         )
-        .on('finish', function() {
-            appendVersion(constants.pathToPlotlyBuild, {object: 'Plotly', DEV: true});
-        });
     }
 
     return bundle;

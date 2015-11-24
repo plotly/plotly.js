@@ -4,7 +4,6 @@ var browserify = require('browserify');
 var UglifyJS = require('uglify-js');
 
 var compressAttributes = require('./util/compress_attributes');
-var appendVersion = require('./util/append_version');
 var constants = require('./util/constants');
 
 /*
@@ -48,19 +47,11 @@ browserify(constants.pathToPlotlySrc, {
     if(!DEV) {
         fs.writeFile(
             constants.pathToPlotlyDistMin,
-            UglifyJS.minify(buf.toString(), constants.uglifyOptions).code,
-            function() {
-                appendVersion(
-                    constants.pathToPlotlyDistMin, {object: 'Plotly'}
-                );
-            }
+            UglifyJS.minify(buf.toString(), constants.uglifyOptions).code
         );
     }
 })
-.pipe(fs.createWriteStream(constants.pathToPlotlyDist))
-.on('finish', function() {
-    appendVersion(constants.pathToPlotlyDist, {object: 'Plotly', DEV: DEV});
-});
+.pipe(fs.createWriteStream(constants.pathToPlotlyDist));
 
 
 // Browserify the geo assets
@@ -70,10 +61,7 @@ browserify(constants.pathToPlotlyGeoAssetsSrc, {
 .bundle(function(err) {
     if(err) throw err;
 })
-.pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist))
-.on('finish', function() {
-    appendVersion(constants.pathToPlotlyGeoAssetsDist, {object: 'PlotlyGeoAssets'});
-});
+.pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist));
 
     
 // Browserify the plotly.js with meta
@@ -84,7 +72,4 @@ browserify(constants.pathToPlotlySrc, {
 .bundle(function(err) {
     if(err) throw err;
 })
-.pipe(fs.createWriteStream(constants.pathToPlotlyDistWithMeta))
-.on('finish', function() {
-    appendVersion(constants.pathToPlotlyDistWithMeta, {object: 'Plotly', DEV: DEV});
-});
+.pipe(fs.createWriteStream(constants.pathToPlotlyDistWithMeta));

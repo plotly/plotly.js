@@ -296,8 +296,11 @@ var TEXTOFFSETSIGN = {start:1, end:-1, middle:0, bottom:1, top:-1},
     LINEEXPAND = 1.3;
 drawing.textPointStyle = function(s, trace) {
     s.each(function(d){
-        var p = d3.select(this);
-        if(!d.tx && !trace.text) {
+        var p = d3.select(this),
+            text = d.tx || trace.text;
+        if(!text || Array.isArray(text)) {
+            // isArray test handles the case of (intentionally) missing
+            // or empty text within a text array
             p.remove();
             return;
         }
@@ -320,7 +323,7 @@ drawing.textPointStyle = function(s, trace) {
                 fontSize,
                 d.tc || trace.textfont.color)
             .attr('text-anchor',h)
-            .text(d.tx || trace.text)
+            .text(text)
             .call(Plotly.util.convertToTspans);
         var pgroup = d3.select(this.parentNode),
             tspans = p.selectAll('tspan.line'),
