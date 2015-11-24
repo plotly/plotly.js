@@ -28,7 +28,8 @@ describe('ModeBar', function() {
             _context: {
                 displaylogo: true,
                 displayModeBar: true,
-                modeBarButtonsToRemove: []
+                modeBarButtonsToRemove: [],
+                modeBarButtonsToAdd: []
             }
         };
     }
@@ -144,10 +145,9 @@ describe('ModeBar', function() {
         function getButtons(list) {
             for(var i = 0; i < list.length; i++) {
                 for(var j = 0; j < list[i].length; j++) {
-                    list[i][j] = {
-                        name: list[i][j],
-                        click: noop
-                    };
+
+                    // minimal button config object
+                    list[i][j] = { name: list[i][j], click: noop };
                 }
             }
             return list;
@@ -277,6 +277,13 @@ describe('ModeBar', function() {
             expect(function() { manageModeBar(gd); }).toThrowError();
         });
 
+        it('throws an error if modeBarButtonsToAdd isn\'t an array', function() {
+            var gd = getMockGraphInfo();
+            gd._context.modeBarButtonsToAdd = 'not gonna work';
+
+            expect(function() { manageModeBar(gd); }).toThrowError();
+        });
+
         it('displays or not mode bar according to displayModeBar config arg', function() {
             var gd = getMockGraphInfo();
             manageModeBar(gd);
@@ -297,12 +304,18 @@ describe('ModeBar', function() {
             expect(countLogo(gd._fullLayout._modeBar)).toEqual(0);
         });
 
-        it('updates mode bar buttons if plot type changes', function() {
+        // gives 11 buttons in 5 groups by default
+        function setupGraphInfo() {
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
             gd._fullLayout.xaxis = {fixedrange: false};
+            return gd;
+        }
 
-            manageModeBar(gd);  // gives 11 buttons
+        it('updates mode bar buttons if plot type changes', function() {
+            var gd = setupGraphInfo();
+            manageModeBar(gd);
+
             gd._fullLayout._hasCartesian = false;
             gd._fullLayout._hasGL3D = true;
             manageModeBar(gd);
@@ -310,16 +323,87 @@ describe('ModeBar', function() {
             expect(countButtons(gd._fullLayout._modeBar)).toEqual(10);
         });
 
-        it('updates mode bar buttons if plot type changes', function() {
-            var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
-            gd._fullLayout.xaxis = {fixedrange: false};
+        it('updates mode bar buttons if modeBarButtonsToRemove changes', function() {
+            var gd = setupGraphInfo();
+            manageModeBar(gd);
 
-            manageModeBar(gd);  // gives 11 buttons
             gd._context.modeBarButtonsToRemove = ['toImage', 'sendDataToCloud'];
             manageModeBar(gd);
 
             expect(countButtons(gd._fullLayout._modeBar)).toEqual(9);
+        });
+
+        it('updates mode bar buttons if modeBarButtonsToAdd changes', function() {
+            var gd = setupGraphInfo();
+            manageModeBar(gd);
+
+            gd._context.modeBarButtonsToAdd = [{
+                name: 'some button',
+                click: noop
+            }];
+            manageModeBar(gd);
+
+            expect(countGroups(gd._fullLayout._modeBar)).toEqual(6);
+            expect(countButtons(gd._fullLayout._modeBar)).toEqual(12);
+        });
+
+        it('sets up buttons with modeBarButtonsToAdd and modeBarButtonToRemove', function() {
+            var gd = setupGraphInfo();
+            gd._context.modeBarButtonsToRemove = [
+                'toImage', 'pan2d', 'hoverCompareCartesian'
+            ];
+            gd._context.modeBarButtonsToAdd = [
+                { name: 'some button', click: noop },
+                { name: 'some other button', click: noop }
+            ];
+
+            manageModeBar(gd);
+
+            var modeBar = gd._fullLayout._modeBar;
+            expect(countGroups(modeBar)).toEqual(6);
+            expect(countButtons(modeBar)).toEqual(10);
+        });
+
+        it('sets up buttons with fully custom modeBarButtons', function() {
+            var gd = setupGraphInfo();
+            gd._context.modeBarButtons = [[
+                { name: 'some button', click: noop },
+                { name: 'some other button', click: noop }
+            ], [
+                { name: 'some button in another group', click: noop },
+                { name: 'some other button in another group', click: noop }
+            ]];
+
+            manageModeBar(gd);
+
+            var modeBar = gd._fullLayout._modeBar;
+            expect(countGroups(modeBar)).toEqual(3);
+            expect(countButtons(modeBar)).toEqual(5);
+        });
+
+        it('sets up buttons with custom modeBarButtons + default name', function() {
+            var gd = setupGraphInfo();
+            gd._context.modeBarButtons = [[
+                { name: 'some button', click: noop },
+                { name: 'some other button', click: noop }
+            ], [
+                'toImage', 'pan2d', 'hoverCompareCartesian'
+            ]];
+
+            manageModeBar(gd);
+
+            var modeBar = gd._fullLayout._modeBar;
+            expect(countGroups(modeBar)).toEqual(3);
+            expect(countButtons(modeBar)).toEqual(6);
+        });
+
+        it('throw error when modeBarButtons contains invalid name', function() {
+            var gd = setupGraphInfo();
+            gd._context.modeBarButtons = [[
+                'toImage', 'pan2d', 'no gonna work'
+            ]];
+
+            expect(function() { manageModeBar(gd); }).toThrowError();
         });
 
     });
