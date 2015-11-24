@@ -12,6 +12,7 @@
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Snapshot = require('../../snapshot');
+var Icons = require('../../../build/ploticon');
 
 
 var modebarButtons = module.exports = {};
@@ -24,7 +25,7 @@ var modebarButtons = module.exports = {};
  * @param {string} title
  *      text that appears while hovering over the button
  * @param {string} icon
- *      name of the svg icon associated with the button
+ *      svg icon associated with the button
  * @param {string} [gravity]
  *      icon positioning
  * @param {function} click
@@ -43,7 +44,7 @@ var modebarButtons = module.exports = {};
 modebarButtons.toImage = {
     name: 'toImage',
     title: 'Download plot as a png',
-    icon: 'camera',
+    icon: Icons.camera,
     click: function(gd) {
         var format = 'png';
 
@@ -95,7 +96,7 @@ modebarButtons.toImage = {
 modebarButtons.sendDataToCloud = {
     name: 'sendDataToCloud',
     title: 'Save and edit plot in cloud',
-    icon: 'disk',
+    icon: Icons.disk,
     click: function(gd) {
         Plotly.Plots.sendDataToCloud(gd);
     }
@@ -106,7 +107,7 @@ modebarButtons.zoom2d = {
     title: 'Zoom',
     attr: 'dragmode',
     val: 'zoom',
-    icon: 'zoombox',
+    icon: Icons.zoombox,
     click: handleCartesian
 };
 
@@ -115,7 +116,7 @@ modebarButtons.pan2d = {
     title: 'Pan',
     attr: 'dragmode',
     val: 'pan',
-    icon: 'pan',
+    icon: Icons.pan,
     click: handleCartesian
 };
 
@@ -124,7 +125,7 @@ modebarButtons.zoomIn2d = {
     title: 'Zoom in',
     attr: 'zoom',
     val: 'in',
-    icon: 'zoom_plus',
+    icon: Icons.zoom_plus,
     click: handleCartesian
 };
 
@@ -133,7 +134,7 @@ modebarButtons.zoomOut2d = {
     title: 'Zoom out',
     attr: 'zoom',
     val: 'out',
-    icon: 'zoom_minus',
+    icon: Icons.zoom_minus,
     click: handleCartesian
 };
 
@@ -142,7 +143,7 @@ modebarButtons.autoScale2d = {
     title: 'Autoscale',
     attr: 'zoom',
     val: 'auto',
-    icon: 'autoscale',
+    icon: Icons.autoscale,
     click: handleCartesian
 };
 
@@ -151,7 +152,7 @@ modebarButtons.resetScale2d = {
     title: 'Reset axes',
     attr: 'zoom',
     val: 'reset',
-    icon: 'home',
+    icon: Icons.home,
     click: handleCartesian
 };
 
@@ -160,7 +161,7 @@ modebarButtons.hoverClosestCartesian = {
     title: 'Show closest data on hover',
     attr: 'hovermode',
     val: 'closest',
-    icon: 'tooltip_basic',
+    icon: Icons.tooltip_basic,
     gravity: 'ne',
     click: handleCartesian
 };
@@ -172,7 +173,7 @@ modebarButtons.hoverCompareCartesian = {
     val: function(graphInfo) {
         return graphInfo._fullLayout._isHoriz ? 'y' : 'x';
     },
-    icon: 'tooltip_compare',
+    icon: Icons.tooltip_compare,
     gravity: 'ne',
     click: handleCartesian
 };
@@ -241,7 +242,7 @@ modebarButtons.zoom3d = {
     title: 'Zoom',
     attr: 'dragmode',
     val: 'zoom',
-    icon: 'zoombox',
+    icon: Icons.zoombox,
     click: handleDrag3d
 };
 
@@ -250,7 +251,7 @@ modebarButtons.pan3d = {
     title: 'Pan',
     attr: 'dragmode',
     val: 'pan',
-    icon: 'pan',
+    icon: Icons.pan,
     click: handleDrag3d
 };
 
@@ -259,7 +260,7 @@ modebarButtons.orbitRotation = {
     title: 'orbital rotation',
     attr: 'dragmode',
     val: 'orbit',
-    icon: '3d_rotate',
+    icon: Icons['3d_rotate'],
     click: handleDrag3d
 };
 
@@ -268,7 +269,7 @@ modebarButtons.tableRotation = {
     title: 'turntable rotation',
     attr: 'dragmode',
     val: 'turntable',
-    icon: 'z-axis',
+    icon: Icons['z-axis'],
     click: handleDrag3d
 };
 
@@ -291,7 +292,7 @@ modebarButtons.resetCameraDefault3d = {
     name: 'resetCameraDefault3d',
     title: 'Reset camera to default',
     attr: 'resetDefault',
-    icon: 'home',
+    icon: Icons.home,
     click: handleCamera3d
 };
 
@@ -299,7 +300,7 @@ modebarButtons.resetCameraLastSave3d = {
     name: 'resetCameraLastSave3d',
     title: 'Reset camera to last save',
     attr: 'resetLastSave',
-    icon: 'movie',
+    icon: Icons.movie,
     click: handleCamera3d
 };
 
@@ -337,7 +338,7 @@ modebarButtons.hoverClosest3d = {
     attr: 'hovermode',
     val: null,
     toggle: true,
-    icon: 'tooltip_basic',
+    icon: Icons.tooltip_basic,
     gravity: 'ne',
     click: function(gd, ev) {
         var button = ev.currentTarget,
@@ -389,7 +390,7 @@ modebarButtons.zoomInGeo = {
     title: 'Zoom in',
     attr: 'zoom',
     val: 'in',
-    icon: 'zoom_plus',
+    icon: Icons.zoom_plus,
     click: handleGeo
 };
 
@@ -398,7 +399,7 @@ modebarButtons.zoomOutGeo = {
     title: 'Zoom in',
     attr: 'zoom',
     val: 'out',
-    icon: 'zoom_minus',
+    icon: Icons.zoom_minus,
     click: handleGeo
 };
 
@@ -407,7 +408,7 @@ modebarButtons.resetGeo = {
     title: 'Reset',
     attr: 'reset',
     val: null,
-    icon: 'autoscale',
+    icon: Icons.autoscale,
     click: handleGeo
 };
 
@@ -417,7 +418,7 @@ modebarButtons.hoverClosestGeo = {
     attr: 'hovermode',
     val: null,
     toggle: true,
-    icon: 'tooltip_basic',
+    icon: Icons.tooltip_basic,
     gravity: 'ne',
     click: handleGeo
 };
@@ -450,7 +451,7 @@ modebarButtons.hoverClosestGl2d = {
     attr: 'hovermode',
     val: null,
     toggle: true,
-    icon: 'tooltip_basic',
+    icon: Icons.tooltip_basic,
     gravity: 'ne',
     click: toggleHover
 };
@@ -460,7 +461,7 @@ modebarButtons.hoverClosestPie = {
     title: 'Toggle show closest data on hover',
     attr: 'hovermode',
     val: 'closest',
-    icon: 'tooltip_basic',
+    icon: Icons.tooltip_basic,
     gravity: 'ne',
     click: toggleHover
 };
