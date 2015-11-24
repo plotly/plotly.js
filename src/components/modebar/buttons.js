@@ -28,7 +28,9 @@ var modebarButtons = module.exports = {};
  * @param {string} [gravity]
  *      icon positioning
  * @param {function} click
- *      click handler associated with the button
+ *      click handler associated with the button, a function of
+ *      'gd' (the main graph object) and
+ *      'ev' (the event object)
  * @param {string} [attr]
  *      attribute associated with button,
  *      use this with 'val' to keep track of the state
@@ -42,7 +44,7 @@ modebarButtons.toImage = {
     name: 'toImage',
     title: 'Download plot as a png',
     icon: 'camera',
-    click: function(modebar) {
+    click: function(gd) {
         var format = 'png';
 
         if (Lib.isIE()) {
@@ -51,22 +53,22 @@ modebarButtons.toImage = {
             return;
         }
 
-        if (modebar._snapshotInProgress) {
+        if (gd._snapshotInProgress) {
             Lib.notifier('Snapshotting is still in progress - please hold', 'long');
             return;
         }
 
-        modebar._snapshotInProgress = true;
+        gd._snapshotInProgress = true;
         Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
 
-        var ev = Snapshot.toImage(modebar.graphInfo, {format: format});
+        var ev = Snapshot.toImage(gd, {format: format});
 
-        var filename = modebar.graphInfo.fn || 'newplot';
+        var filename = gd.fn || 'newplot';
         filename += '.' + format;
 
         ev.once('success', function(result) {
 
-            modebar._snapshotInProgress = false;
+            gd._snapshotInProgress = false;
 
             var downloadLink = document.createElement('a');
             downloadLink.href = result;
@@ -80,7 +82,7 @@ modebarButtons.toImage = {
         });
 
         ev.once('error', function (err) {
-            modebar._snapshotInProgress = false;
+            gd._snapshotInProgress = false;
 
             Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');
             console.error(err);
@@ -94,8 +96,7 @@ modebarButtons.sendDataToCloud = {
     name: 'sendDataToCloud',
     title: 'Save and edit plot in cloud',
     icon: 'disk',
-    click: function(modebar) {
-        var gd = modebar.graphInfo;
+    click: function(gd) {
         Plotly.Plots.sendDataToCloud(gd);
     }
 };
@@ -176,19 +177,18 @@ modebarButtons.hoverCompareCartesian = {
     click: handleCartesian
 };
 
-function handleCartesian(modebar, ev) {
+function handleCartesian(gd, ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
-        graphInfo = modebar.graphInfo,
-        fullLayout = graphInfo._fullLayout,
+        fullLayout = gd._fullLayout,
         aobj = {};
 
     if(astr === 'zoom') {
         var mag = (val === 'in') ? 0.5 : 2,
             r0 = (1 + mag) / 2,
             r1 = (1 - mag) / 2,
-            axList = Plotly.Axes.list(graphInfo, null, true);
+            axList = Plotly.Axes.list(gd, null, true);
 
         var ax, axName, initialRange;
 
@@ -212,7 +212,8 @@ function handleCartesian(modebar, ev) {
                 }
             }
         }
-    } else {
+    }
+    else {
         // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
         if (astr==='hovermode' && (val==='x' || val==='y')) {
             val = fullLayout._isHoriz ? 'y' : 'x';
@@ -222,8 +223,7 @@ function handleCartesian(modebar, ev) {
         aobj[astr] = val;
     }
 
-    Plotly.relayout(graphInfo, aobj).then( function() {
-        modebar.updateActiveButton();
+    Plotly.relayout(gd, aobj).then( function() {
         if(astr === 'dragmode') {
             if(fullLayout._hasCartesian) {
                 Plotly.Fx.setCursor(
@@ -231,8 +231,7 @@ function handleCartesian(modebar, ev) {
                     {pan:'move', zoom:'crosshair'}[val]
                 );
             }
-            Plotly.Fx.supplyLayoutDefaults(graphInfo.layout, fullLayout,
-                graphInfo._fullData);
+            Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
         }
     });
 }
@@ -273,11 +272,10 @@ modebarButtons.tableRotation = {
     click: handleDrag3d
 };
 
-function handleDrag3d(modebar, ev) {
+function handleDrag3d(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
-        graphInfo = modebar.graphInfo,
         layoutUpdate = {};
 
     layoutUpdate[attr] = val;
@@ -286,9 +284,7 @@ function handleDrag3d(modebar, ev) {
      * Dragmode will go through the relayout -> doplot -> scene.plot()
      * routine where the dragmode will be set in scene.plot()
      */
-    Plotly.relayout(graphInfo, layoutUpdate).then( function() {
-        modebar.updateActiveButton();
-    });
+    Plotly.relayout(gd, layoutUpdate);
 }
 
 modebarButtons.resetCameraDefault3d = {
@@ -307,11 +303,11 @@ modebarButtons.resetCameraLastSave3d = {
     click: handleCamera3d
 };
 
-function handleCamera3d(modebar, ev) {
+function handleCamera3d(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
-        layout = modebar.graphInfo.layout,
-        fullLayout = modebar.graphInfo._fullLayout,
+        layout = gd.layout,
+        fullLayout = gd._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
     for(var i = 0;  i < sceneIds.length; i++) {
@@ -343,11 +339,10 @@ modebarButtons.hoverClosest3d = {
     toggle: true,
     icon: 'tooltip_basic',
     gravity: 'ne',
-    click: function(modebar, ev) {
+    click: function(gd, ev) {
         var button = ev.currentTarget,
             val = JSON.parse(button.getAttribute('data-val')) || false,
-            graphInfo = modebar.graphInfo,
-            fullLayout = graphInfo._fullLayout,
+            fullLayout = gd._fullLayout,
             sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
         var axes = ['xaxis', 'yaxis', 'zaxis'],
@@ -385,9 +380,7 @@ modebarButtons.hoverClosest3d = {
             button.setAttribute('data-val', JSON.stringify(currentSpikes));
         }
 
-        Plotly.relayout(graphInfo, layoutUpdate).then(function() {
-            modebar.updateActiveButton(button);
-        });
+        Plotly.relayout(gd, layoutUpdate);
     }
 };
 
@@ -429,11 +422,11 @@ modebarButtons.hoverClosestGeo = {
     click: handleGeo
 };
 
-function handleGeo(modebar, ev) {
+function handleGeo(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
-        fullLayout = modebar.graphInfo._fullLayout,
+        fullLayout = gd._fullLayout,
         geoIds = Plotly.Plots.getSubplotIds(fullLayout, 'geo');
 
     for(var i = 0;  i < geoIds.length; i++) {
@@ -449,8 +442,6 @@ function handleGeo(modebar, ev) {
         else if(attr === 'reset') geo.zoomReset();
         else if(attr === 'hovermode') geo.showHover = !geo.showHover;
     }
-
-    modebar.updateActiveButton(button);
 }
 
 modebarButtons.hoverClosestGl2d = {
@@ -461,17 +452,7 @@ modebarButtons.hoverClosestGl2d = {
     toggle: true,
     icon: 'tooltip_basic',
     gravity: 'ne',
-    click: function(modebar, ev) {
-        var button  = ev.currentTarget,
-            graphInfo = modebar.graphInfo,
-            newHover = graphInfo._fullLayout.hovermode ?
-                false :
-                'closest';
-
-        Plotly.relayout(graphInfo, 'hovermode', newHover).then(function() {
-            modebar.updateActiveButton(button);
-        });
-    }
+    click: toggleHover
 };
 
 modebarButtons.hoverClosestPie = {
@@ -481,15 +462,11 @@ modebarButtons.hoverClosestPie = {
     val: 'closest',
     icon: 'tooltip_basic',
     gravity: 'ne',
-    click: function(modebar) {
-        var graphInfo = modebar.graphInfo,
-            newHover = graphInfo._fullLayout.hovermode ?
-                false :
-                'closest';
-
-        Plotly.relayout(graphInfo, 'hovermode', newHover).then(function() {
-            modebar.updateActiveButton();
-        });
-
-    }
+    click: toggleHover
 };
+
+function toggleHover(gd) {
+    var newHover = gd._fullLayout.hovermode ?  false : 'closest';
+
+    Plotly.relayout(gd, 'hovermode', newHover);
+}

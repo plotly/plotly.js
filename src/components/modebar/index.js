@@ -24,7 +24,6 @@ var Icons = require('../../../build/ploticon');
  * @Param {object} opts.graphInfo  primary plot object containing data and layout
  */
 function ModeBar(opts) {
-    this._snapshotInProgress = false;
     this.container = opts.container;
     this.element = document.createElement('div');
 
@@ -139,7 +138,8 @@ proto.createButton = function (config) {
     }
     else {
         button.addEventListener('click', function(ev) {
-            config.click(_this, ev);
+            config.click(_this.graphInfo, ev);
+            _this.updateActiveButton(ev.currentTarget);
         });
     }
 
