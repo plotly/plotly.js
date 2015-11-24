@@ -36,7 +36,7 @@ var modebarButtons = module.exports = {};
  *      attribute associated with button,
  *      use this with 'val' to keep track of the state
  * @param {*} [val]
- *      initial 'attr' value, can be a function of graphInfo
+ *      initial 'attr' value, can be a function of gd
  * @param {boolean} [toggle]
  *      is the button a toggle button?
  */
@@ -170,8 +170,8 @@ modebarButtons.hoverCompareCartesian = {
     name: 'hoverCompareCartesian',
     title: 'Compare data on hover',
     attr: 'hovermode',
-    val: function(graphInfo) {
-        return graphInfo._fullLayout._isHoriz ? 'y' : 'x';
+    val: function(gd) {
+        return gd._fullLayout._isHoriz ? 'y' : 'x';
     },
     icon: Icons.tooltip_compare,
     gravity: 'ne',
