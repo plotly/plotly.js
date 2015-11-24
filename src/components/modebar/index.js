@@ -122,9 +122,8 @@ proto.createButton = function (config) {
     button.className = 'modebar-btn';
 
     var title = config.title;
-    if(title !== null && title !== false && title !== '') {
-        button.setAttribute('data-title', title || config.name);
-    }
+    if(title === undefined) title = config.name;
+    if(title || title === 0) button.setAttribute('data-title', title);
 
     if(config.attr !== undefined) button.setAttribute('data-attr', config.attr);
 

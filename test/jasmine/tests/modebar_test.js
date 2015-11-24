@@ -101,7 +101,7 @@ describe('ModeBar', function() {
             expect(checkBtnAttr(modeBar, 0, 'data-title')).toEqual('the title too');
         });
 
-        it('hides title to when title is set to null or \'\' or false', function() {
+        it('hides title to when title is falsy but not 0', function() {
             var modeBar;
 
             modeBar = createModeBar(getMockGraphInfo(), [[
@@ -118,6 +118,11 @@ describe('ModeBar', function() {
                 { name: 'button', title: false, click: noop }
             ]]);
             expect(checkBtnAttr(modeBar, 0, 'data-title')).toBe(null);
+
+            modeBar = createModeBar(getMockGraphInfo(), [[
+                { name: 'button', title: 0, click: noop }
+            ]]);
+            expect(checkBtnAttr(modeBar, 0, 'data-title')).toEqual('0');
         });
     });
 
