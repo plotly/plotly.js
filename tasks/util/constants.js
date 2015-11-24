@@ -1,6 +1,8 @@
 var fs = require('fs');
 var path = require('path');
 
+var pkg = require('../../package.json');
+
 var pathToRoot = path.join(__dirname, '../../');
 var pathToRootParent = path.join(__dirname, '../../../../');
 var pathToSrc = path.join(pathToRoot, 'src/');
@@ -61,5 +63,15 @@ module.exports = {
             beautify: false,
             ascii_only: true
         }
-   }
+    },
+
+    licenseDist: [
+        '/**',
+        '* plotly.js v' + pkg.version,
+        '* Copyright 2012-2015, Plotly, Inc.',
+        '* All rights reserved.',
+        '* Licensed under the MIT license',
+        '*/',
+        ''
+    ].join('\n')
 };
