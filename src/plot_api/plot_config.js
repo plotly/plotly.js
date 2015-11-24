@@ -66,6 +66,12 @@ module.exports = {
     // (see ./components/modebar/buttons.js for list of arguments)
     modeBarButtonsToAdd: [],
 
+    // fully custom mode bar buttons as nested array,
+    // where the outer arrays represents button groups, and
+    // the inner arrays have buttons config objects or names of default buttons
+    // (see ./components/modebar/buttons.js for more info)
+    modeBarButtons: false,
+
     // add the plotly logo on the end of the mode bar
     displaylogo: true,
 

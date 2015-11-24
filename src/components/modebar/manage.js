@@ -47,12 +47,19 @@ module.exports = function manageModeBar(gd) {
         ].join(' '));
     }
 
+    var customButtons = context.modeBarButtons;
+    var buttonGroups;
 
+    if(Array.isArray(customButtons) && customButtons.length > 1) {
+        buttonGroups = fillCustomButton(customButtons);
+    }
+    else {
         buttonGroups = getButtonGroups(
             fullLayout,
             context.modeBarButtonsToRemove,
             context.modeBarButtonsToAdd
         );
+    }
 
     if(modeBar) modeBar.update(gd, buttonGroups);
     else fullLayout._modeBar = createModeBar(gd, buttonGroups);
@@ -124,4 +131,28 @@ function areAllAxesFixed(fullLayout) {
     }
 
     return allFixed;
+}
+
+// fill in custom buttons referring to default mode bar buttons
+function fillCustomButton(customButtons) {
+    for(var i = 0; i < customButtons.length; i++) {
+        var buttonGroup = customButtons[i];
+
+        for(var j = 0; j < buttonGroup.length; j++) {
+            var button = buttonGroup[j];
+
+            if(typeof button === 'string')
+                if(modeBarButtons[button] !== undefined) {
+                    customButtons[i][j] = modeBarButtons[button];
+                }
+                else {
+                    throw new Error([
+                        '*modeBarButtons* configuration options',
+                        'invalid button name'
+                    ].join(' '));
+                }
+            }
+        }
+
+    return customButtons;
 }
