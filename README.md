@@ -96,6 +96,7 @@ plotly.js charts can also be created and saved online for free at [plot.ly/plot]
 |**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | |
 |**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | |
 |**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | |
+|**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | |
 
 ## Copyright and license
 
