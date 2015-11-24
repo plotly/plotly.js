@@ -85,6 +85,25 @@
             ],
             "type": "scatter",
             "uid": "f8361c"
+        },
+        {
+            "x": [
+                0,
+                1,
+                2
+            ],
+            "y": [
+                1.5,
+                1.5,
+                1.5
+            ],
+            "mode": "text",
+            "name": "missing text",
+            "text": [
+                "a",
+                "",
+                "b"
+            ]
         }
     ],
     "layout": {
