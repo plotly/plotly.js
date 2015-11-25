@@ -55,10 +55,24 @@ module.exports = {
     // false or function adding source(s) to linkText <text>
     showSources: false,
 
-    // display the modebar (true, false, or 'hover')
+    // display the mode bar (true, false, or 'hover')
     displayModeBar: 'hover',
 
-    // add the plotly logo on the end of the modebar
+    // remove mode bar button by name
+    // (see ./components/modebar/buttons.js for the list of names)
+    modeBarButtonsToRemove: [],
+
+    // add mode bar button using config objects
+    // (see ./components/modebar/buttons.js for list of arguments)
+    modeBarButtonsToAdd: [],
+
+    // fully custom mode bar buttons as nested array,
+    // where the outer arrays represents button groups, and
+    // the inner arrays have buttons config objects or names of default buttons
+    // (see ./components/modebar/buttons.js for more info)
+    modeBarButtons: false,
+
+    // add the plotly logo on the end of the mode bar
     displaylogo: true,
 
     // increase the pixel ratio for Gl plot images

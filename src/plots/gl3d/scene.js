@@ -539,7 +539,7 @@ proto.destroy = function() {
 };
 
 
-// for reset camera button in modebar
+// for reset camera button in mode bar
 proto.setCameraToDefault = function setCameraToDefault () {
     // as in Gl3dLayout.layoutAttributes
     this.glplot.camera.lookAt(

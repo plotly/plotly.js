@@ -32,6 +32,9 @@ exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
 exports.setPlotConfig = require('./plot_api/set_plot_config');
 
+// plot icons
+exports.Icons = require('../build/ploticon');
+
 // unofficial 'beta' plot methods, use at your own risk
 exports.Plots = Plotly.Plots;
 exports.Fx = Plotly.Fx;

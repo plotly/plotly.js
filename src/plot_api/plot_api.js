@@ -11,6 +11,7 @@
 
 var Plotly = require('../plotly');
 var Events = require('../lib/events');
+var manageModeBar = require('../components/modebar/manage');
 
 var d3 = require('d3');
 var m4FromQuat = require('gl-mat4/fromQuat');
@@ -31,7 +32,7 @@ var plots = Plotly.Plots;
  *      object describing the overall display of the plot,
  *      all the stuff that doesn't pertain to any individual trace
  * @param {object} config
- *      configuration options
+ *      configuration options (see ./plot_config.js for more info)
  *
  */
 Plotly.plot = function(gd, data, layout, config) {
@@ -398,11 +399,6 @@ function setPlotContext(gd, config) {
                 else context[key] = config[key];
             }
         });
-
-        // cause a remake of the modebar any time we change context
-        if(gd._fullLayout && gd._fullLayout._modebar) {
-            delete gd._fullLayout._modebar;
-        }
 
         // map plot3dPixelRatio to plotGlPixelRatio for backward compatibility
         if(config.plot3dPixelRatio && !context.plotGlPixelRatio) {
@@ -2176,7 +2172,6 @@ Plotly.relayout = function relayout(gd, astr, val) {
         doplot = false,
         docalc = false,
         domodebar = false,
-        doSceneDragmode = false,
         newkey, axes, keys, xyref, scene, axisAttr;
 
     if(typeof astr === 'string') aobj[astr] = val;
@@ -2410,8 +2405,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
              * height, width, autosize get dealt with below. Except for the case of
              * of subplots - scenes - which require scene.handleDragmode to be called.
              */
-            else if(ai==='hovermode') domodebar = true;
-            else if (ai === 'dragmode') doSceneDragmode = true;
+            else if(['hovermode', 'dragmode'].indexOf(ai) !== -1) domodebar = true;
             else if(['hovermode','dragmode','height',
                     'width','autosize'].indexOf(ai)===-1) {
                 doplot = true;
@@ -2468,11 +2462,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
                 return plots.previousPromises(gd);
             });
         }
-        // this is decoupled enough it doesn't need async regardless
-        if(domodebar) Plotly.Fx.modeBar(gd);
 
-        var subplotIds;
-        if(doSceneDragmode || domodebar) {
+        // this is decoupled enough it doesn't need async regardless
+        if(domodebar) {
+            manageModeBar(gd);
+
+            var subplotIds;
             subplotIds = plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout[subplotIds[i]]._scene;
@@ -3006,7 +3001,7 @@ function lsInner(gd) {
 
     Plotly.Titles.draw(gd, 'gtitle');
 
-    Plotly.Fx.modeBar(gd);
+    manageModeBar(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
 }

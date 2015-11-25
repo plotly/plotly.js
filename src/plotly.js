@@ -25,8 +25,7 @@ exports.Lib = require('./lib');
 exports.util = require('./lib/svg_text_utils');
 exports.Queue = require('./lib/queue');
 
-// plot icons svg and plot css
-exports.Icons = require('../build/ploticon');
+// plot css
 require('../build/plotcss');
 
 // configuration
