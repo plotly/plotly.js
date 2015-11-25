@@ -114,7 +114,15 @@ function getButtonGroups(fullLayout, buttonsToRemove, buttonsToAdd) {
         addGroup(['hoverClosestPie']);
     }
 
-    if(buttonsToAdd.length) groups.push(buttonsToAdd);
+    // append buttonsToAdd to the groups
+    if(buttonsToAdd.length) {
+        if(Array.isArray(buttonsToAdd[0])) {
+            for(var i = 0; i < buttonsToAdd.length; i++) {
+                groups.push(buttonsToAdd[i]);
+            }
+        }
+        else groups.push(buttonsToAdd);
+    }
 
     return groups;
 }

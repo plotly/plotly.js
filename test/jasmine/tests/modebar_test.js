@@ -369,6 +369,26 @@ describe('ModeBar', function() {
             expect(countButtons(modeBar)).toEqual(10);
         });
 
+        it('sets up buttons with modeBarButtonsToAdd and modeBarButtonToRemove (2)', function() {
+            var gd = setupGraphInfo();
+            gd._context.modeBarButtonsToRemove = [
+                'toImage', 'pan2d', 'hoverCompareCartesian'
+            ];
+            gd._context.modeBarButtonsToAdd = [[
+                { name: 'some button', click: noop },
+                { name: 'some other button', click: noop }
+            ], [
+                { name: 'some button 2', click: noop },
+                { name: 'some other button 2', click: noop }
+            ]];
+
+            manageModeBar(gd);
+
+            var modeBar = gd._fullLayout._modeBar;
+            expect(countGroups(modeBar)).toEqual(7);
+            expect(countButtons(modeBar)).toEqual(12);
+        });
+
         it('sets up buttons with fully custom modeBarButtons', function() {
             var gd = setupGraphInfo();
             gd._context.modeBarButtons = [[
