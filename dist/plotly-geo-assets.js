@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.0.0
+* plotly.js v1.1.0
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -55,9 +55,123 @@ exports['usa_110m'] = require('./dist/usa_110m.json');
 exports['usa_50m'] = require('./dist/usa_50m.json');
 
 },{"./dist/africa_110m.json":1,"./dist/africa_50m.json":2,"./dist/asia_110m.json":3,"./dist/asia_50m.json":4,"./dist/europe_110m.json":5,"./dist/europe_50m.json":6,"./dist/north-america_110m.json":7,"./dist/north-america_50m.json":8,"./dist/south-america_110m.json":9,"./dist/south-america_50m.json":10,"./dist/usa_110m.json":11,"./dist/usa_50m.json":12,"./dist/world_110m.json":13,"./dist/world_50m.json":14}],16:[function(require,module,exports){
+module.exports={
+  "name": "plotly.js",
+  "version": "1.1.0",
+  "description": "The open source javascript graphing library that powers plotly",
+  "license": "MIT",
+  "main": "./src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/plotly/plotly.js.git"
+  },
+  "bugs": {
+    "url": "https://github.com/plotly/plotly.js/issues"
+  },
+  "author": "Plotly, Inc.",
+  "keywords": [
+    "graphing",
+    "plotting",
+    "data",
+    "visualization",
+    "plotly"
+  ],
+  "scripts": {
+    "preprocess": "node tasks/preprocess.js",
+    "postinstall": "npm run preprocess",
+    "bundle": "node tasks/bundle.js",
+    "header": "node tasks/header.js",
+    "build": "npm run preprocess && npm run bundle && npm run header",
+    "cibuild": "node tasks/cibundle.js",
+    "watch": "node tasks/watch_plotly.js",
+    "lint": "cd src && jshint . || true",
+    "test-jasmine": "karma start test/jasmine/karma.conf.js",
+    "citest-jasmine": "karma start test/jasmine/karma.ciconf.js",
+    "test-image": "./tasks/test_image.sh",
+    "test": "npm run test-jasmine && npm test-image",
+    "start-test_dashboard": "node devtools/test_dashboard/server.js",
+    "start-image_viewer": "node devtools/image_viewer/server.js",
+    "baseline": "./tasks/baseline.sh",
+    "version": "npm run build && git add -A dist",
+    "postversion": "git push && git push --tags"
+  },
+  "dependencies": {
+    "3d-view": "^2.0.0",
+    "alpha-shape": "^1.0.0",
+    "arraytools": "^1.0.0",
+    "convex-hull": "^1.0.3",
+    "d3": "3.5.6",
+    "delaunay-triangulate": "^1.1.6",
+    "es6-promise": "^3.0.2",
+    "fast-isnumeric": "^1.1.1",
+    "fs-extra": "^0.26.2",
+    "gl-error2d": "^1.0.0",
+    "gl-error3d": "^1.0.0",
+    "gl-line2d": "^1.2.1",
+    "gl-line3d": "^1.0.1",
+    "gl-mat4": "^1.1.2",
+    "gl-mesh3d": "^1.0.4",
+    "gl-plot2d": "^1.1.6",
+    "gl-plot3d": "^1.3.0",
+    "gl-scatter2d": "^1.0.5",
+    "gl-scatter2d-fancy": "^1.1.1",
+    "gl-scatter3d": "^1.0.4",
+    "gl-select-box": "^1.0.1",
+    "gl-spikes2d": "^1.0.1",
+    "gl-surface3d": "^1.0.6",
+    "mouse-change": "^1.1.1",
+    "mouse-wheel": "^1.0.2",
+    "ndarray": "^1.0.16",
+    "ndarray-fill": "^1.0.1",
+    "ndarray-homography": "^1.0.0",
+    "ndarray-ops": "^1.2.2",
+    "node-sass": "^3.4.1",
+    "right-now": "^1.0.0",
+    "robust-orientation": "^1.1.3",
+    "sane-topojson": "^1.2.0",
+    "superscript-text": "^1.0.0",
+    "tinycolor2": "1.1.2",
+    "topojson": "^1.6.19",
+    "xml2js": "^0.4.15"
+  },
+  "devDependencies": {
+    "brfs": "^1.4.1",
+    "browserify": "^12.0.1",
+    "browserify-transform-tools": "^1.5.0",
+    "ecstatic": "^1.2.0",
+    "jasmine-core": "^2.3.4",
+    "jshint": "^2.8.0",
+    "karma": "^0.13.15",
+    "karma-browserify": "^4.4.0",
+    "karma-chrome-launcher": "^0.2.1",
+    "karma-coverage": "^0.5.3",
+    "karma-firefox-launcher": "^0.1.6",
+    "karma-jasmine": "^0.3.6",
+    "open": "0.0.5",
+    "prepend-file": "^1.3.0",
+    "prettysize": "0.0.3",
+    "through2": "^2.0.0",
+    "uglify-js": "^2.5.0",
+    "watchify": "^3.6.0"
+  }
+}
+
+},{}],17:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
 var saneTopojson = require('sane-topojson');
+
+// export the version found in the package.json
+exports.version = require('../../package.json').version;
 
 exports.topojson = saneTopojson;
 
-},{"sane-topojson":15}]},{},[16])(16)
-});PlotlyGeoAssets.version='1.0.0';
+},{"../../package.json":16,"sane-topojson":15}]},{},[17])(17)
+});
