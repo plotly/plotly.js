@@ -1,7 +1,20 @@
-# plotly.js changelog.
+# plotly.js changelog
 
 For more context information, please read through the
 [release notes](https://github.com/plotly/plotly.js/releases).
+
+### [1.1.0] -- 2015-11-25
+
+### Added 
+- Add three plot config options: `modeBarButtonsToRemove`,
+  `modeBarButtonsToAdd` and `modeBarButtons` which combine
+  to add the ability to remove specific mode bar buttons add
+  custom mode bar buttons and fully customize the mode bar.
+
+### Fixed
+- Fix installation from npm3 [#12]
+- Fix UMD in plotly.js dist files [#18]
+- Fix for blank elements in a text array [#31]
 
 ## [1.0.0] -- 2015-11-17
 
