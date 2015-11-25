@@ -52,7 +52,6 @@ Plotly.plot(Tabs.fresh(), [{x:[1,2,3], y:[2,1,2]}]);
   script is run automatically on `npm install`.
 - `npm run watch`: starts a watchify file watcher just like the test dashboard but
   without booting up a server.
-- `npm run lint`: runs jshint on all source files
 
 ### Testing
 
@@ -71,9 +70,27 @@ Image pixel comparison tests are run in a docker container. For more
 information on how to run them locally, please refer to [image test
 README](https://github.com/plotly/plotly.js/blob/master/test/image/README.md).
 
+Running the test locally outputs the generated png images in `build/test_images/` and the png diffs in `build/test_images_diff/` (two git-ignored directories).
+
+To view the image pixel comparison test results, run
+
+```
+npm run start-image_viewer
+```
+which shows the baseline image, the generated image, the diff and the json mocks of test cases that failed.
+
+To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
+
 
 ### Repo organization
 
+- Distributed files are in `dist/`
+- Sources files are in `src/`, including the index. 
+- Build and repo management scripts are in `./tasks/`
+- All tasks can be run using [`npm run-srcript`](https://docs.npmjs.com/cli/run-script)
+- Tests are `test/`, they are partitioned into `image` and `jasmine` tests
+- Test dashboard and image viewer code is in `devtools/`
+- Non-distributed, git-ignored built files are in `build/` 
 
 
 ### Coding style
@@ -81,3 +98,5 @@ README](https://github.com/plotly/plotly.js/blob/master/test/image/README.md).
 - 4-space indentation
 - semi-colons are required
 - trailing commas
+
+Check if ok, with `npm run lint`
