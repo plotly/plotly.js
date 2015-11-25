@@ -28,10 +28,11 @@ npm install
 npm run start-test_dashboard
 ```
 
-This command bundles up the source files with source maps, starts
-a [watchify](https://github.com/substack/watchify) file watcher (making the your
-dev plotly.js bundle update every time a source file is saved) and opens up
-a tab in your browser.
+This command bundles up the source files with source maps using
+[browserify](https://github.com/substack/node-browserify), starts a
+[watchify](https://github.com/substack/watchify) file watcher (making the your
+dev plotly.js bundle update every time a source file is saved) and opens up a
+tab in your browser.
 
 **Step 3** Open up the console and start developing
 
@@ -42,13 +43,15 @@ by for example pasting in the console:
 Plotly.plot(Tabs.fresh(), [{x:[1,2,3], y:[2,1,2]}]);
 ```
 
+- `Tabs.fresh()` creates a fresh graph div and return it and
+- `Tabs.getGraph()` returns the current graph div.
+
 **Other npm scripts**:
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
   script is run automatically on `npm install`.
 - `npm run watch`: starts a watchify file watcher just like the test dashboard but
   without booting up a server.
-- `npm run lint`: runs jshint on all source files
 
 ### Testing
 
@@ -67,7 +70,33 @@ Image pixel comparison tests are run in a docker container. For more
 information on how to run them locally, please refer to [image test
 README](https://github.com/plotly/plotly.js/blob/master/test/image/README.md).
 
+Running the test locally outputs the generated png images in `build/test_images/` and the png diffs in `build/test_images_diff/` (two git-ignored directories).
+
+To view the image pixel comparison test results, run
+
+```
+npm run start-image_viewer
+```
+which shows the baseline image, the generated image, the diff and the json mocks of test cases that failed.
+
+To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
+
 
 ### Repo organization
 
+- Distributed files are in `dist/`
+- Sources files are in `src/`, including the index. 
+- Build and repo management scripts are in `./tasks/`
+- All tasks can be run using [`npm run-srcript`](https://docs.npmjs.com/cli/run-script)
+- Tests are `test/`, they are partitioned into `image` and `jasmine` tests
+- Test dashboard and image viewer code is in `devtools/`
+- Non-distributed, git-ignored built files are in `build/` 
+
+
 ### Coding style
+
+- 4-space indentation
+- semi-colons are required
+- trailing commas
+
+Check if ok, with `npm run lint`
