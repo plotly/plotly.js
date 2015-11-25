@@ -32,7 +32,7 @@ Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap'], {
         '(starting from the bottom of the plot) and the j-th partition',
         'of the x-axis (starting from the left of the plot).',
         'This behavior can be flipped by using `transpose`.',
-        'Moreover, `x` (`y`) can be provided with M or M+1 (N or N+1) elements',
+        'Moreover, `x` (`y`) can be provided with M or M+1 (N or N+1) elements.',
         'If M (N), then the coordinates correspond to the center of the',
         'heatmap cells and the cells have equal width.',
         'If M+1 (N+1), then the coordinates correspond to the edges of the',
