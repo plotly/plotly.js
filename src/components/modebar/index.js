@@ -85,7 +85,7 @@ proto.updateButtons = function(buttons) {
                 throw new Error('must provide button \'name\' in button config');
             }
             if(_this.buttonsNames.indexOf(buttonName) !== -1) {
-                throw new Error('button name \'', + buttonName + '\' is taken');
+                throw new Error('button name \'' + buttonName + '\' is taken');
             }
             _this.buttonsNames.push(buttonName);
 
@@ -140,6 +140,8 @@ proto.createButton = function (config) {
     else {
         button.addEventListener('click', function(ev) {
             config.click(_this.graphInfo, ev);
+
+            // only needed for 'hoverClosestGeo' which does not call relayout
             _this.updateActiveButton(ev.currentTarget);
         });
     }
