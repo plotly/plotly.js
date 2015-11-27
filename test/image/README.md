@@ -14,8 +14,7 @@ $ docker-compose up -d
 ```
 
 In the `docker-compose.yml` file, `latest` is the latest Plotly Image-Server docker container version
-as listed on
-[hub.docker.com](https://hub.docker.com/r/plotly/imageserver/tags/) and
+as listed on [hub.docker.com](https://hub.docker.com/r/plotly/imageserver/tags/) and
 `imagetest` is the name of the docker container.
 
 
