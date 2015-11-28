@@ -1,25 +1,16 @@
-var fs = require('fs');
 var path = require('path');
 
 var pkg = require('../../package.json');
 
 var pathToRoot = path.join(__dirname, '../../');
-var pathToRootParent = path.join(__dirname, '../../../../');
 var pathToSrc = path.join(pathToRoot, 'src/');
 var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
 
-var pathToTopojsonSrc;
-
-// npm3 flattens modules, so they won't be accessible through the old nested npm2 paths
-// attempt a synchronous filestat check, and on error, use the npm3 path
-try {
-    pathToTopojsonSrc = path.join(pathToRoot, 'node_modules/sane-topojson/dist/');
-    fs.statSync(pathToTopojsonSrc);
-} catch (e) {
-    pathToTopojsonSrc = path.join(pathToRootParent, 'node_modules/sane-topojson/dist/');
-}
+var pathToTopojsonSrc = path.join(
+    path.dirname(require.resolve('sane-topojson')), 'dist/'
+);
 
 module.exports = {
     pathToRoot: pathToRoot,
