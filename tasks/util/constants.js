@@ -15,7 +15,6 @@ var pathToTopojsonSrc = path.join(
 module.exports = {
     pathToRoot: pathToRoot,
     pathToSrc: pathToSrc,
-    pathToMocks: path.join(pathToRoot, 'test/image/mocks'),
 
     pathToPlotlySrc: path.join(pathToSrc, 'index.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
