@@ -26,7 +26,6 @@ else runSingle(userFileName);
 function runAll () {
     test('testing mocks', function (t) {
 
-        console.error('### beginning pixel comparison tests ###');
         var files = fs.readdirSync(constants.pathToTestImageMocks);
 
         // -1 for font-wishlist and
@@ -70,7 +69,6 @@ function testMock (fileName, t) {
     var diffPath = path.join(constants.pathToTestImagesDiff, 'diff-' + imageFileName);
     var savedImageStream = fs.createWriteStream(savedImagePath);
     var options = getOptions(bodyMock, 'http://localhost:9010/');
-    var statusCode;
 
     function checkImage () {
         var options = {
@@ -79,17 +77,12 @@ function testMock (fileName, t) {
             tolerance: 0.0
         };
 
-        if(statusCode === 485) {
-            console.error(imageFileName, '- skip');
-        }
-        else {
-            gm.compare(
-                savedImagePath,
-                path.join(constants.pathToTestImageBaselines, imageFileName),
-                options,
-                onEqualityCheck
-            );
-        }
+        gm.compare(
+            savedImagePath,
+            path.join(constants.pathToTestImageBaselines, imageFileName),
+            options,
+            onEqualityCheck
+        );
     }
 
     function onEqualityCheck (err, isEqual) {
@@ -99,16 +92,12 @@ function testMock (fileName, t) {
         }
         if (isEqual) {
             fs.unlinkSync(diffPath);
-            console.error(imageFileName + ' is pixel perfect');
         }
 
-        t.ok(isEqual, savedImagePath + ' should be pixel perfect');
+        t.ok(isEqual, imageFileName + ' should be pixel perfect');
     }
 
     request(options)
-        .on('response', function(response) {
-            statusCode = response.statusCode;
-        })
         .pipe(savedImageStream)
         .on('close', checkImage);
 }
