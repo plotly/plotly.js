@@ -2,20 +2,21 @@
 
 Test plotly.js with the Plotly Image-Server docker container.
 
-### Run the container
 
+### Run the container with `docker compose`
+
+Plotly.js uses `docker-compose` to ease the creation/stopping/deletion of testing docker container,
+please refer [installing docker-compose](https://docs.docker.com/compose/install/) for installation.
 Inside your `plotly.js` directory, run
 
 ```bash
-docker run -d --name imagetest \
-    -v $PWD:/var/www/streambed/image_server/plotly.js \
-    -p 9010:9010 -p 2022:22 plotly/imageserver:[version]
+$ docker-compose up -d
 ```
 
-where `[version]` is the latest Plotly Image-Server docker container version
-as listed on
-[hub.docker.com](https://hub.docker.com/r/plotly/imageserver/tags/) and
+In the `docker-compose.yml` file, `latest` is the latest Plotly Image-Server docker container version
+as listed on [hub.docker.com](https://hub.docker.com/r/plotly/imageserver/tags/) and
 `imagetest` is the name of the docker container.
+
 
 ### Run the tests
 
@@ -70,16 +71,20 @@ docker images
 docker ps -a
 ```
 
-### Stop container
+### Stop your testing container
+
+Inside your `plotly.js` directory, run
 
 ```bash
-docker stop [container_id]
+docker-compose stop
 ```
 
-### Remove container
+### Remove your testing container
+
+Inside your `plotly.js` directory, run
 
 ```bash
-docker rm [container_id]
+docker-compose rm -f
 ```
 
 For more comprehensive information about docker, please refer to [docker document](http://docs.docker.com/)
