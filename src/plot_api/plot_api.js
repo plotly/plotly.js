@@ -940,7 +940,7 @@ Plotly.redraw = function(gd) {
 Plotly.newPlot = function (gd, data, layout, config) {
     gd = getGraphDiv(gd);
     plots.purge(gd);
-    Plotly.plot(gd, data, layout, config);
+    return Plotly.plot(gd, data, layout, config);
 };
 
 function doCalcdata(gd) {
