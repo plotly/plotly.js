@@ -31,7 +31,8 @@ function runAll () {
 
         // -1 for font-wishlist and
         // -38 for the gl2d mocks
-        t.plan(files.length - 39);
+        // -1 for gl3d_bunny-hull
+        t.plan(files.length - 40);
 
         for (var i = 0; i < files.length; i ++) {
             testMock(files[i], t);
@@ -53,6 +54,9 @@ function testMock (fileName, t) {
 
     // TODO fix race condition in gl2d image generation
     if(fileName.indexOf('gl2d_') !== -1) return;
+
+    // TODO fix run-to-run randomness
+    if(fileName === 'gl3d_bunny-hull.json') return;
 
     var figure = require(path.join(constants.pathToTestImageMocks, fileName));
     var bodyMock = {
