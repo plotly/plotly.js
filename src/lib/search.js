@@ -34,7 +34,7 @@ exports.findBin = function(val, bins, linelow) {
             c = 0,
             n,
             test;
-        if(bins[bins.length - 1] > bins[0]) {
+        if(bins[bins.length - 1] >= bins[0]) {
             test = linelow ? lessThan : lessOrEqual;
         } else {
             test = linelow ? greaterOrEqual : greaterThan;
