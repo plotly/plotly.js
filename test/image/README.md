@@ -71,6 +71,9 @@ docker images
 docker ps -a
 ```
 
+whereas `docker ps` lists only the started containers.
+
+
 ### Stop your testing container
 
 Inside your `plotly.js` directory, run
@@ -87,4 +90,4 @@ Inside your `plotly.js` directory, run
 docker-compose rm -f
 ```
 
-For more comprehensive information about docker, please refer to [docker document](http://docs.docker.com/)
+For more comprehensive information about docker, please refer to the [docker docs](http://docs.docker.com/).

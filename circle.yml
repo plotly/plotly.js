@@ -1,17 +1,17 @@
 general:
   artifacts:
-      - "build/test_images/" # relative to the build directory
-      - "build/test_images_diff/" # relative to the build directory
+      - "build/test_images/"
+      - "build/test_images_diff/"
 
 machine:
   node:
-    version: 4.2.1 
+    version: 4.2.1
   services:
     - docker
-    
+
 
 dependencies:
-  pre: 
+  pre:
     - docker pull plotly/imageserver:latest
   post:
     - npm run cibuild
