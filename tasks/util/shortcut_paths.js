@@ -22,7 +22,8 @@ module.exports = transformTools.makeRequireTransform('requireTransform',
         Object.keys(shortcutsConfig).forEach(function(k) {
             if(pathIn.indexOf(k) !== -1) {
                 var tail = pathIn.split(k)[1];
-                pathOut = 'require(\''+ shortcutsConfig[k] + tail + '\')';
+                var newPath = path.join(shortcutsConfig[k], tail).replace(/\\/g, '/');
+                pathOut = 'require(\''+ newPath + '\')';
             }
         });
 
