@@ -484,7 +484,7 @@ function plotGeo(gd) {
             fullLayout[geoId]._geo = geo;
         }
 
-        geo.plot(fullGeoData, fullLayout);
+        geo.plot(fullGeoData, fullLayout, gd._promises);
     }
 }
 

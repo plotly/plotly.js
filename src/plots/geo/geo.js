@@ -60,7 +60,7 @@ module.exports = Geo;
 
 var proto = Geo.prototype;
 
-proto.plot = function(geoData, fullLayout) {
+proto.plot = function(geoData, fullLayout, promises) {
     var _this = this,
         geoLayout = fullLayout[_this.id],
         graphSize = fullLayout._size;
@@ -100,12 +100,16 @@ proto.plot = function(geoData, fullLayout) {
                 _this.topojsonName
             );
 
-            // N.B this is async
-            d3.json(topojsonPath, function(error, topojson) {
-                _this.topojson = topojson;
-                PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
-                _this.onceTopojsonIsLoaded(geoData, geoLayout);
-            });
+            promises.push(new Promise(function(resolve) {
+                d3.json(topojsonPath, function(error, topojson) {
+
+                    _this.topojson = topojson;
+                    PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
+
+                    _this.onceTopojsonIsLoaded(geoData, geoLayout);
+                    resolve();
+                });
+            }));
         }
     }
     else _this.onceTopojsonIsLoaded(geoData, geoLayout);
