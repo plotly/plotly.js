@@ -3,7 +3,15 @@
 For more context information, please read through the
 [release notes](https://github.com/plotly/plotly.js/releases).
 
-### [1.1.0] -- 2015-11-25
+## [1.1.1] -- 2015-12-01
+
+### Fixed
+- Fix `displayModeBar` plot config logic [#57]
+- Fix length-1 bins count as ascending in `Lib.findBin` [#47]
+- Fix jasmine test runner on windows [#46]
+
+
+## [1.1.0] -- 2015-11-25
 
 ### Added 
 - Add three plot config options: `modeBarButtonsToRemove`,
