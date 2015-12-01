@@ -5,6 +5,15 @@
 Search for existing and closed issues. If your problem or idea is not addressed
 yet, [please open a new issue](https://github.com/plotly/plotly.js/issues/new).
 
+Bug reports must be accompanied with a reproducible example. We recommend using
+[codepen](http://codepen.io/), [jsfiddle](https://jsfiddle.net/) or
+[jsbin](https://jsbin.com) to share your example.
+
+Note that GitHub issues are reserved for bug reports and feature requests only.
+Implementation questions should be asked on Stack Overflow (tagged
+[`plotly`](https://stackoverflow.com/questions/tagged/plotly)) or on
+community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)).
+
 ### Development
 
 **Prerequisites**:
