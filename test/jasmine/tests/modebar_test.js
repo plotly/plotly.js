@@ -291,6 +291,14 @@ describe('ModeBar', function() {
 
         it('displays or not mode bar according to displayModeBar config arg', function() {
             var gd = getMockGraphInfo();
+            gd._context.displayModeBar = false;
+
+            manageModeBar(gd);
+            expect(gd._fullLayout._modeBar).not.toBeDefined();
+        });
+
+        it('updates mode bar according to displayModeBar config arg', function() {
+            var gd = getMockGraphInfo();
             manageModeBar(gd);
             expect(gd._fullLayout._modeBar).toBeDefined();
 
