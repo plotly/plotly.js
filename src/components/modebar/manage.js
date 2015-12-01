@@ -27,9 +27,11 @@ module.exports = function manageModeBar(gd) {
         context = gd._context,
         modeBar = fullLayout._modeBar;
 
-    if(!context.displayModeBar && modeBar) {
-        modeBar.destroy();
-        delete fullLayout._modeBar;
+    if(!context.displayModeBar) {
+        if(modeBar) {
+            modeBar.destroy();
+            delete fullLayout._modeBar;
+        }
         return;
     }
 
