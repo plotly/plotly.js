@@ -44,7 +44,7 @@ Read the [Getting started page](https://plot.ly/javascript/getting-started/) for
 
 ## Bugs and feature requests
 
-Have a bug or a feature request? Please first read the [issues guidelines](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md).
+Have a bug or a feature request? Please first read the [issues guidelines](https://github.com/plotly/plotly.js/blob/master/CONTRIBUTING.md#opening-issues).
 
 ## Documentation
 
