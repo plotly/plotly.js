@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.1.0
+* plotly.js v1.1.1
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -57,7 +57,7 @@ exports['usa_50m'] = require('./dist/usa_50m.json');
 },{"./dist/africa_110m.json":1,"./dist/africa_50m.json":2,"./dist/asia_110m.json":3,"./dist/asia_50m.json":4,"./dist/europe_110m.json":5,"./dist/europe_50m.json":6,"./dist/north-america_110m.json":7,"./dist/north-america_50m.json":8,"./dist/south-america_110m.json":9,"./dist/south-america_50m.json":10,"./dist/usa_110m.json":11,"./dist/usa_50m.json":12,"./dist/world_110m.json":13,"./dist/world_50m.json":14}],16:[function(require,module,exports){
 module.exports={
   "name": "plotly.js",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./src/index.js",
@@ -142,7 +142,7 @@ module.exports={
     "jasmine-core": "^2.3.4",
     "jshint": "^2.8.0",
     "karma": "^0.13.15",
-    "karma-browserify": "^4.4.0",
+    "karma-browserify": "^4.4.1",
     "karma-chrome-launcher": "^0.2.1",
     "karma-coverage": "^0.5.3",
     "karma-firefox-launcher": "^0.1.6",
