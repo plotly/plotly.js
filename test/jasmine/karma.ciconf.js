@@ -14,7 +14,7 @@ function func(config) {
 
     func.defaultConfig.autoWatch = false;
 
-    func.defaultConfig.browsers = ['Firefox'];
+    func.defaultConfig.browsers = ['Chrome'];
 
     config.set(func.defaultConfig);
 }
