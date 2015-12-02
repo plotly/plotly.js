@@ -3,21 +3,12 @@ var d3 = require('d3');
 var Plotly = require('@src/index');
 var Fx = require('@src/plots/cartesian/graph_interact');
 
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+
 
 describe('Test plot structure', function () {
     'use strict';
-
-    function createGraphDiv() {
-        var gd = document.createElement('div');
-        gd.id = 'graph';
-        document.body.appendChild(gd);
-        return gd;
-    }
-
-    function destroyGraphDiv() {
-        var gd = document.getElementById('graph');
-        document.body.removeChild(gd);
-    }
 
     afterEach(destroyGraphDiv);
 
