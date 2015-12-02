@@ -7,6 +7,10 @@ function func(config) {
     func.defaultConfig.logLevel = config.LOG_INFO;
 
     // Continuous Integration mode
+
+    // exclude the WebGL interaction test on circle runs
+    func.defaultConfig.exclude = ['tests/gl_plot_interact_test.js'];
+
     // if true, Karma captures browsers, runs the tests and exits
     func.defaultConfig.singleRun = true;
 
@@ -15,6 +19,7 @@ function func(config) {
     func.defaultConfig.autoWatch = false;
 
     func.defaultConfig.browsers = ['Firefox'];
+
 
     config.set(func.defaultConfig);
 }

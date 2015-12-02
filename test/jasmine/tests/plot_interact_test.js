@@ -98,32 +98,6 @@ describe('Test plot structure', function () {
 
     });
 
-    describe('gl3d plots', function() {
-        var mock = require('@mocks/gl3d_marker-arrays.json');
-
-        beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
-        });
-
-        it('has one *canvas* node', function() {
-            var nodes = d3.selectAll('canvas');
-            expect(nodes[0].length).toEqual(1);
-        });
-    });
-
-    describe('gl2d plots', function() {
-        var mock = require('@mocks/gl2d_10.json');
-
-        beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
-        });
-
-        it('has one *canvas* node', function() {
-            var nodes = d3.selectAll('canvas');
-            expect(nodes[0].length).toEqual(1);
-        });
-    });
-
     describe('geo plots', function() {
         var mock = require('@mocks/geo_first.json');
 
