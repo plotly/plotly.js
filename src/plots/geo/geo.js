@@ -104,7 +104,7 @@ proto.plot = function(geoData, fullLayout, promises) {
                 d3.json(topojsonPath, function(error, topojson) {
                     if(error) {
                         if(error.status === 404) {
-                            reject(Error([
+                            reject(new Error([
                                 'plotly.js could not find topojson file at',
                                 topojsonPath, '.',
                                 'Make sure the *topojsonURL* plot config option',
@@ -112,7 +112,7 @@ proto.plot = function(geoData, fullLayout, promises) {
                             ].join(' ')));
                         }
                         else {
-                            reject(Error([
+                            reject(new Error([
                                 'unexpected error while fetching topojson file at',
                                 topojsonPath
                             ].join(' ')));
