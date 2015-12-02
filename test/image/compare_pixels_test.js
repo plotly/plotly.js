@@ -30,12 +30,12 @@ function runAll () {
 
         /*
          * Some test cases exhibit run-to-run randomness;
-         * skip over a few test cases for now
+         * skip over these few test cases for now.
          *
          * More info:
          * https://github.com/plotly/plotly.js/issues/62
          *
-         * 40 test case are removed:
+         * 40 test cases are removed:
          * - font-wishlist (1 test case)
          * - all gl2d (38)
          * - gl2d_bunny-hull (1)

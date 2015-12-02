@@ -25,7 +25,6 @@ function func(config) {
 
     func.defaultConfig.browsers = ['Firefox'];
 
-
     config.set(func.defaultConfig);
 }
 
