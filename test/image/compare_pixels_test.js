@@ -26,12 +26,21 @@ else runSingle(userFileName);
 function runAll () {
     test('testing mocks', function (t) {
 
-        console.error('### beginning pixel comparison tests ###');
         var files = fs.readdirSync(constants.pathToTestImageMocks);
 
-        // -1 for font-wishlist and
-        // -38 for the gl2d mocks
-        t.plan(files.length - 39);
+        /*
+         * Some test cases exhibit run-to-run randomness;
+         * skip over these few test cases for now.
+         *
+         * More info:
+         * https://github.com/plotly/plotly.js/issues/62
+         *
+         * 40 test cases are removed:
+         * - font-wishlist (1 test case)
+         * - all gl2d (38)
+         * - gl2d_bunny-hull (1)
+         */
+        t.plan(files.length - 40);
 
         for (var i = 0; i < files.length; i ++) {
             testMock(files[i], t);
@@ -54,6 +63,9 @@ function testMock (fileName, t) {
     // TODO fix race condition in gl2d image generation
     if(fileName.indexOf('gl2d_') !== -1) return;
 
+    // TODO fix run-to-run randomness
+    if(fileName === 'gl3d_bunny-hull.json') return;
+
     var figure = require(path.join(constants.pathToTestImageMocks, fileName));
     var bodyMock = {
         figure: figure,
@@ -66,7 +78,6 @@ function testMock (fileName, t) {
     var diffPath = path.join(constants.pathToTestImagesDiff, 'diff-' + imageFileName);
     var savedImageStream = fs.createWriteStream(savedImagePath);
     var options = getOptions(bodyMock, 'http://localhost:9010/');
-    var statusCode;
 
     function checkImage () {
         var options = {
@@ -75,17 +86,12 @@ function testMock (fileName, t) {
             tolerance: 0.0
         };
 
-        if(statusCode === 485) {
-            console.error(imageFileName, '- skip');
-        }
-        else {
-            gm.compare(
-                savedImagePath,
-                path.join(constants.pathToTestImageBaselines, imageFileName),
-                options,
-                onEqualityCheck
-            );
-        }
+        gm.compare(
+            savedImagePath,
+            path.join(constants.pathToTestImageBaselines, imageFileName),
+            options,
+            onEqualityCheck
+        );
     }
 
     function onEqualityCheck (err, isEqual) {
@@ -95,16 +101,12 @@ function testMock (fileName, t) {
         }
         if (isEqual) {
             fs.unlinkSync(diffPath);
-            console.error(imageFileName + ' is pixel perfect');
         }
 
-        t.ok(isEqual, savedImagePath + ' should be pixel perfect');
+        t.ok(isEqual, imageFileName + ' should be pixel perfect');
     }
 
     request(options)
-        .on('response', function(response) {
-            statusCode = response.statusCode;
-        })
         .pipe(savedImageStream)
         .on('close', checkImage);
 }

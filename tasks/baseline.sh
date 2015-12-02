@@ -2,23 +2,12 @@
 #
 # TODO adapt this for Windows
 #
-# TODO add package.json config arguments to configure:
-#       - container name,
-#       - ports and
-#       - imageserver version
-#
 # ===============================================================================
 
-CONTAINER_NAME="imagetest"
-IMAGE_NAME="registry.plot.ly:5000/imageserver"
-IMAGE_VERSION="1.3.0"
+CONTAINER_NAME="imagetest"  # same as in docker-compose.yml
 
-# Run docker container:
-#
-# docker run -d --name $CONTAINER_NAME \
-#     -v $PWD/plotly.js:/var/www/streambed/image_server/plotly.js \
-#     -p 9010:9010 -p 2022:22 \
-#     $IMAGE_NAME:[$IMAGE_VERSION]
+# create/run/start docker container with:
+#   $ docker-compose up -d
 
 CMD=(
     "cd /var/www/streambed/image_server/plotly.js &&"
