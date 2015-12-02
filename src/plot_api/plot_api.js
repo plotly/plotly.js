@@ -178,7 +178,7 @@ Plotly.plot = function(gd, data, layout, config) {
         return plots.previousPromises(gd);
     }
 
-    function marginPushersAgain(){
+    function marginPushersAgain() {
         // in case the margins changed, draw margin pushers again
         var seq = JSON.stringify(fullLayout._size)===oldmargins ?
             [] : [marginPushers, layoutStyles];
@@ -335,7 +335,7 @@ Plotly.plot = function(gd, data, layout, config) {
         return plots.previousPromises(gd);
     }
 
-    function cleanUp(){
+    function cleanUp() {
         // now we're REALLY TRULY done plotting...
         // so mark it as done and let other procedures call a replot
         gd._replotting = false;
@@ -484,7 +484,7 @@ function plotGeo(gd) {
             fullLayout[geoId]._geo = geo;
         }
 
-        geo.plot(fullGeoData, fullLayout);
+        geo.plot(fullGeoData, fullLayout, gd._promises);
     }
 }
 
@@ -570,7 +570,7 @@ function plotPolar(gd, data, layout) {
     if(txt === '' || !txt) opacity = 0;
     var placeholderText = 'Click to enter title';
 
-    var titleLayout = function(){
+    var titleLayout = function() {
         this.call(Plotly.util.convertToTspans);
         //TODO: html/mathjax
         //TODO: center title
@@ -586,17 +586,17 @@ function plotPolar(gd, data, layout) {
             title.attr({'data-unformatted': placeholderText})
                 .text(placeholderText)
                 .style({opacity: opacity})
-                .on('mouseover.opacity',function(){
+                .on('mouseover.opacity',function() {
                     d3.select(this).transition().duration(100)
                         .style('opacity',1);
                 })
-                .on('mouseout.opacity',function(){
+                .on('mouseout.opacity',function() {
                     d3.select(this).transition().duration(1000)
                         .style('opacity',0);
                 });
         }
 
-        var setContenteditable = function(){
+        var setContenteditable = function() {
             this.call(Plotly.util.makeEditable)
                 .on('edit', function(text){
                     gd.framework({layout: {title: text}});
@@ -605,7 +605,7 @@ function plotPolar(gd, data, layout) {
                         .call(titleLayout);
                     this.call(setContenteditable);
                 })
-                .on('cancel', function(){
+                .on('cancel', function() {
                     var txt = this.attr('data-unformatted');
                     this.text(txt).call(titleLayout);
                 });
@@ -940,7 +940,7 @@ Plotly.redraw = function(gd) {
 Plotly.newPlot = function (gd, data, layout, config) {
     gd = getGraphDiv(gd);
     plots.purge(gd);
-    Plotly.plot(gd, data, layout, config);
+    return Plotly.plot(gd, data, layout, config);
 };
 
 function doCalcdata(gd) {
@@ -1747,7 +1747,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     }
 
     // make a new empty vals array for undoit
-    function a0(){ return traces.map(function(){ return undefined; }); }
+    function a0() { return traces.map(function() { return undefined; }); }
 
     // for autoranging multiple axes
     function addToAxlist(axid) {
@@ -1764,11 +1764,11 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // attr can be an array to set several at once (all to the same val)
     function doextra(attr,val,i) {
         if(Array.isArray(attr)) {
-            attr.forEach(function(a){ doextra(a,val,i); });
+            attr.forEach(function(a) { doextra(a,val,i); });
             return;
         }
         // quit if explicitly setting this elsewhere
-        if(attr in aobj) { return; }
+        if(attr in aobj) return;
 
         var extraparam;
         if(attr.substr(0, 6) === 'LAYOUT') {
@@ -2055,7 +2055,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // a complete layout redraw takes care of plot and
     var seq;
     if(dolayout) {
-        seq = [function changeLayout(){
+        seq = [function changeLayout() {
             var copyLayout = gd.layout;
             gd.layout = undefined;
             return Plotly.plot(gd, '', copyLayout);
@@ -2068,7 +2068,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         plots.supplyDefaults(gd);
         seq = [plots.previousPromises];
         if(dostyle) {
-            seq.push(function doStyle(){
+            seq.push(function doStyle() {
                 // first see if we need to do arraysToCalcdata
                 // call it regardless of what change we made, in case
                 // supplyDefaults brought in an array that was already
@@ -2085,7 +2085,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             });
         }
         if(docolorbars) {
-            seq.push(function doColorBars(){
+            seq.push(function doColorBars() {
                 gd.calcdata.forEach(function(cd) {
                     if((cd[0].t || {}).cb) {
                         var trace = cd[0].trace,
@@ -2114,7 +2114,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
-    return plotDone.then(function(){
+    return plotDone.then(function() {
         gd.emit('plotly_restyle',
             Plotly.Lib.extendDeep([], [redoit, traces]));
     });
@@ -2432,7 +2432,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         seq = [plots.previousPromises];
 
     if(doplot || docalc) {
-        seq.push(function layoutReplot(){
+        seq.push(function layoutReplot() {
             // force plot() to redo the layout
             gd.layout = undefined;
             // force it to redo calcdata?
@@ -2447,7 +2447,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         fullLayout = gd._fullLayout;
 
         if(dolegend) {
-            seq.push(function doLegend(){
+            seq.push(function doLegend() {
                 Plotly.Legend.draw(gd);
                 return plots.previousPromises(gd);
             });
@@ -2456,7 +2456,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(dolayoutstyle) seq.push(layoutStyles);
 
         if(doticks) {
-            seq.push(function(){
+            seq.push(function() {
                 Plotly.Axes.doTicks(gd,'redraw');
                 Plotly.Titles.draw(gd, 'gtitle');
                 return plots.previousPromises(gd);
@@ -2486,7 +2486,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
-    return plotDone.then(function(){
+    return plotDone.then(function() {
         gd.emit('plotly_relayout',
             Plotly.Lib.extendDeep({}, redoit));
     });
@@ -2671,7 +2671,7 @@ function makePlotFramework(gd) {
     // position and style the containers, make main title
     var frameWorkDone = Plotly.Lib.syncOrAsync([
         layoutStyles,
-        function goAxes(){ return Plotly.Axes.doTicks(gd,'redraw'); },
+        function goAxes() { return Plotly.Axes.doTicks(gd,'redraw'); },
         Plotly.Fx.init
     ], gd);
 

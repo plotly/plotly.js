@@ -60,7 +60,7 @@ module.exports = Geo;
 
 var proto = Geo.prototype;
 
-proto.plot = function(geoData, fullLayout) {
+proto.plot = function(geoData, fullLayout, promises) {
     var _this = this,
         geoLayout = fullLayout[_this.id],
         graphSize = fullLayout._size;
@@ -100,17 +100,39 @@ proto.plot = function(geoData, fullLayout) {
                 _this.topojsonName
             );
 
-            // N.B this is async
-            d3.json(topojsonPath, function(error, topojson) {
-                _this.topojson = topojson;
-                PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
-                _this.onceTopojsonIsLoaded(geoData, geoLayout);
-            });
+            promises.push(new Promise(function(resolve, reject) {
+                d3.json(topojsonPath, function(error, topojson) {
+                    if(error) {
+                        if(error.status === 404) {
+                            reject(new Error([
+                                'plotly.js could not find topojson file at',
+                                topojsonPath, '.',
+                                'Make sure the *topojsonURL* plot config option',
+                                'is set properly.'
+                            ].join(' ')));
+                        }
+                        else {
+                            reject(new Error([
+                                'unexpected error while fetching topojson file at',
+                                topojsonPath
+                            ].join(' ')));
+                        }
+                        return;
+                    }
+
+                    _this.topojson = topojson;
+                    PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
+
+                    _this.onceTopojsonIsLoaded(geoData, geoLayout);
+                    resolve();
+                });
+            }));
         }
     }
     else _this.onceTopojsonIsLoaded(geoData, geoLayout);
 
-    // TODO handle topojson-is-loading case (for streaming)
+    // TODO handle topojson-is-loading case
+    // to avoid making multiple request while streaming
 };
 
 proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
