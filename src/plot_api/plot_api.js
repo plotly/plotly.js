@@ -369,7 +369,8 @@ function getGraphDiv(gd) {
         gdElement = document.getElementById(gd);
 
         if(gdElement === null) {
-            throw new Error('No DOM element with id \'' + gd + '\' exits on the page.');
+            div = d3.select("body").append("div").attr("id",gd).attr("class","js-plotly-plot");
+            gdElement = div[0][0];
         }
 
         return gdElement;
