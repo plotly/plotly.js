@@ -131,7 +131,8 @@ proto.plot = function(geoData, fullLayout, promises) {
     }
     else _this.onceTopojsonIsLoaded(geoData, geoLayout);
 
-    // TODO handle topojson-is-loading case (for streaming)
+    // TODO handle topojson-is-loading case
+    // to avoid making multiple request while streaming
 };
 
 proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
