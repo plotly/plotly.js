@@ -28,9 +28,18 @@ function runAll () {
 
         var files = fs.readdirSync(constants.pathToTestImageMocks);
 
-        // -1 for font-wishlist and
-        // -38 for the gl2d mocks
-        // -1 for gl3d_bunny-hull
+        /*
+         * Some test cases exhibit run-to-run randomness;
+         * skip over a few test cases for now
+         *
+         * More info:
+         * https://github.com/plotly/plotly.js/issues/62
+         *
+         * 40 test case are removed:
+         * - font-wishlist (1 test case)
+         * - all gl2d (38)
+         * - gl2d_bunny-hull (1)
+         */
         t.plan(files.length - 40);
 
         for (var i = 0; i < files.length; i ++) {

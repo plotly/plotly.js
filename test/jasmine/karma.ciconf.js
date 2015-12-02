@@ -8,7 +8,12 @@ function func(config) {
 
     // Continuous Integration mode
 
-    // exclude the WebGL interaction test on circle runs
+    /*
+     * WebGL interaction test cases fail on the CircleCI
+     * most likely due to a WebGL/driver issue;
+     * exclude them from the CircleCI test bundle.
+     *
+     */
     func.defaultConfig.exclude = ['tests/gl_plot_interact_test.js'];
 
     // if true, Karma captures browsers, runs the tests and exits

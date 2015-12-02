@@ -3,7 +3,7 @@ var d3 = require('d3');
 var Plotly = require('@src/index');
 
 /*
- * The following test cases fail on the CircleCI
+ * WebGL interaction test cases fail on the CircleCI
  * most likely due to a WebGL/driver issue
  *
  */
