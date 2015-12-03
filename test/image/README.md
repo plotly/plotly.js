@@ -1,24 +1,46 @@
 # plotly.js image testing
 
-Test plotly.js with the Plotly Image-Server docker container.
+Test plotly.js with Plotly's image testing docker container.
+
+Requirements:
+- `docker` | [installation guidelines](http://docs.docker.com/engine/installation/)
+- `docker-machine` (for Mac and Windows users only) | [installation guidelines](https://docs.docker.com/machine/install-machine/)
+- `docker-compose` | [installation guidelines](https://docs.docker.com/compose/install/)
+
+### Step 0: Start the docker machine (Mac and Windows users only)
+
+Boot up docker machine (named `default`):
+
+```bash
+docker-machine start default
+```
+
+Set up the docker environment for `docker-compose`:
+
+```bash
+eval $(docker-machine env default)
+```
+
+the above evaluates the output of `docker-machine env default`.
 
 
-### Run the container with `docker compose`
+### Step 1: Run the testing container
 
-Plotly.js uses `docker-compose` to ease the creation/stopping/deletion of testing docker container,
-please refer [installing docker-compose](https://docs.docker.com/compose/install/) for installation.
+Plotly.js uses `docker-compose` to ease the creation/stopping/deletion of testing docker container.
+
+
 Inside your `plotly.js` directory, run
 
 ```bash
-$ docker-compose up -d
+docker-compose up -d
 ```
 
 In the `docker-compose.yml` file, `latest` is the latest Plotly Image-Server docker container version
 as listed on [hub.docker.com](https://hub.docker.com/r/plotly/imageserver/tags/) and
-`imagetest` is the name of the docker container.
+`imagetest` is the name of the docker container. The `-d` flag tells docker to start the containers in the background and leave them running.
 
 
-### Run the tests
+### Step 2: Run the tests
 
 Inside your `plotly.js` directory, run
 
@@ -26,7 +48,19 @@ Inside your `plotly.js` directory, run
 npm run test-image
 ```
 
-### SSH into docker
+if some tests fail, compare their outputs using `npm run start-image_viewer`.
+
+### Step 3: Stop your testing container
+
+Once done testing, inside your `plotly.js` directory, run
+
+```bash
+docker-compose stop
+```
+
+### Docker tricks 
+
+##### SSH into docker container
 
 ```bash
 ssh -p 2022 root@localhost # with password `root`
@@ -58,14 +92,19 @@ ssh-keygen -f "${HOME}/.ssh/known_hosts" -R [localhost]:2022
 
 to remove host information.
 
+##### List docker machines
 
-### List all images
+```bash
+docker-machine ls
+```
+
+##### List all images
 
 ```bash
 docker images
 ```
 
-### List all containers
+##### List all containers
 
 ```bash
 docker ps -a
@@ -73,21 +112,20 @@ docker ps -a
 
 whereas `docker ps` lists only the started containers.
 
-
-### Stop your testing container
-
-Inside your `plotly.js` directory, run
-
-```bash
-docker-compose stop
-```
-
-### Remove your testing container
+##### Remove your testing container
 
 Inside your `plotly.js` directory, run
 
 ```bash
 docker-compose rm -f
+```
+
+#### Remove your docker machine
+
+If named `default`:
+
+```bash
+docker-machine kill default
 ```
 
 For more comprehensive information about docker, please refer to the [docker docs](http://docs.docker.com/).
