@@ -23,8 +23,8 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | bug | bug reports confirmed by a plotly team member |
 | enhancement | planned feature or task |
 | community | issue expected to be fixed by non-plotly contributors |
-| duplicate | *self-explantory* |
-| wontfix | *self-explantory* |
+| duplicate | *self-explanatory* |
+| wontfix | *self-explanatory* |
 
 ### Development
 
