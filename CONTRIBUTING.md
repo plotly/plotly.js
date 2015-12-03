@@ -14,6 +14,18 @@ Implementation questions should be asked on Stack Overflow (tagged
 [`plotly`](https://stackoverflow.com/questions/tagged/plotly)) or on
 community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)).
 
+### Issue labels
+
+We use the following [labels](https://github.com/plotly/plotly.js/labels) to track issues:
+
+| Label | Purpose |
+|--------|---------|
+| bug | bug reports confirmed by a plotly team member |
+| enhancement | planned feature or task |
+| community | issue expected to be fixed by non-plotly contributors |
+| duplicate | *self-explantory* |
+| wontfix | *self-explantory* |
+
 ### Development
 
 **Prerequisites**:
