@@ -117,7 +117,7 @@ function calculateErrorParams(errors) {
         if(e && e.copy_zstyle !== false) e = errors[2];
         if(!e) continue;
 
-        capSize[i] = e.width / 100.0;  //Ballpark rescaling, attempt to make consistent with plot.ly
+        capSize[i] = e.width / 2;  // ballpark rescaling
         color[i] = str2RgbaArray(e.color);
         lineWidth = e.thickness;
 
