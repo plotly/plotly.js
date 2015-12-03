@@ -12,7 +12,7 @@ describe('Test plot structure', function () {
 
     afterEach(destroyGraphDiv);
 
-    describe('cartesian plots', function() {        
+    describe('cartesian plots', function() {
         describe('scatter traces', function() {
             var mock = require('@mocks/14.json');
 
@@ -46,7 +46,7 @@ describe('Test plot structure', function () {
                 expect(nodes[0].length).toEqual(Npts);
             });
         });
-    
+
         describe('pie traces', function() {
             var mock = require('@mocks/pie_simple.json');
 
