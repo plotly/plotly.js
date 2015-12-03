@@ -152,7 +152,7 @@ pie.calc = function(gd, trace) {
 
         color = tinycolor(trace.marker.colors[i]);
         if(color.isValid()) {
-            color = Plotly.Color.tinyRGB(color);
+            color = Plotly.Color.addOpacity(color, color.getAlpha())
             if(!colorMap[label]) {
                 colorMap[label] = color;
             }
