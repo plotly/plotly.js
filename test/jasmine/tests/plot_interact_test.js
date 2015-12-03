@@ -12,7 +12,7 @@ describe('Test plot structure', function () {
 
     afterEach(destroyGraphDiv);
 
-    describe('cartesian plots', function() {
+    describe('cartesian plots', function() {        
         describe('scatter traces', function() {
             var mock = require('@mocks/14.json');
 
@@ -45,29 +45,8 @@ describe('Test plot structure', function () {
 
                 expect(nodes[0].length).toEqual(Npts);
             });
-
-            it('responds to hover', function() {
-                var gd = document.getElementById('graph');
-
-                var evt = {
-                    clientX: gd.layout.width/ 2,
-                    clientY: gd.layout.height / 2
-                };
-
-                Fx.hover('graph', evt, 'xy');
-
-                var hoverTrace = gd._hoverdata[0];
-
-                expect(hoverTrace.curveNumber).toEqual(0);
-                expect(hoverTrace.pointNumber).toEqual(17);
-                expect(hoverTrace.x).toEqual(0.388);
-                expect(hoverTrace.y).toEqual(1);
-
-                expect(d3.selectAll('g.axistext')[0].length).toEqual(1);
-                expect(d3.selectAll('g.hovertext')[0].length).toEqual(1);
-            });
         });
-
+    
         describe('pie traces', function() {
             var mock = require('@mocks/pie_simple.json');
 
@@ -86,7 +65,6 @@ describe('Test plot structure', function () {
                 expect(nodes[0].length).toEqual(Npts);
             });
         });
-
     });
 
     describe('geo plots', function() {
