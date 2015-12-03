@@ -106,20 +106,23 @@ function constructDelaunay(points, color, axis) {
 
 function calculateErrorParams(errors) {
     /*jshint camelcase: false */
-    var capSize = [0.0, 0.0, 0.0], i, e;
-    var color = [[0,0,0],[0,0,0],[0,0,0]];
-    var lineWidth = [0.0, 0.0, 0.0];
-    for(i=0; i<3; ++i) {
-        e = errors[i];
-        if (e && e.copy_zstyle !== false) {
-            e = errors[2];
-        }
+
+    var capSize = [0.0, 0.0, 0.0],
+        color = [[0,0,0], [0,0,0], [0,0,0]],
+        lineWidth = [0.0, 0.0, 0.0];
+
+    for(var i = 0; i < 3; i++) {
+        var e = errors[i];
+
+        if(e && e.copy_zstyle !== false) e = errors[2];
         if(!e) continue;
+
         capSize[i] = e.width / 100.0;  //Ballpark rescaling, attempt to make consistent with plot.ly
         color[i] = str2RgbaArray(e.color);
         lineWidth = e.thickness;
 
     }
+
     return {capSize: capSize, color: color, lineWidth: lineWidth};
 }
 
@@ -173,7 +176,6 @@ function convertPlotlyOptions(scene, data) {
         zaxis = sceneLayout.zaxis,
         marker = data.marker,
         line = data.line,
-        errorParams = calculateErrorParams([ data.error_x, data.error_y, data.error_z ]),
         xc, x = data.x || [],
         yc, y = data.y || [],
         zc, z = data.z || [],
@@ -242,12 +244,13 @@ function convertPlotlyOptions(scene, data) {
     }
 
     params.errorBounds    = calculateError(data);
-    params.errorColor     = errorParams.color;
+    var errorParams = calculateErrorParams([data.error_x, data.error_y, data.error_z]);
+    params.errorColor = errorParams.color;
     params.errorLineWidth = errorParams.lineWidth;
-    params.errorCapSize   = errorParams.capSize;
+    params.errorCapSize = errorParams.capSize;
 
-    params.delaunayAxis       = data.surfaceaxis;
-    params.delaunayColor      = str2RgbaArray(data.surfacecolor);
+    params.delaunayAxis = data.surfaceaxis;
+    params.delaunayColor = str2RgbaArray(data.surfacecolor);
 
     return params;
 }
