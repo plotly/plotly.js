@@ -26,8 +26,7 @@ the above evaluates the output of `docker-machine env default`.
 
 ### Step 1: Run the testing container
 
-Plotly.js uses `docker-compose` to ease the creation/stopping/deletion of testing docker container.
-
+Plotly.js uses `docker-compose` to ease the creation/stopping/deletion of the testing docker container.
 
 Inside your `plotly.js` directory, run
 
@@ -39,8 +38,7 @@ In the `docker-compose.yml` file, `latest` is the latest Plotly Image-Server doc
 as listed on [hub.docker.com](https://hub.docker.com/r/plotly/imageserver/tags/) and
 `imagetest` is the name of the docker container. The `-d` flag tells docker to start the containers in the background and leave them running.
 
-
-### Step 2: Run the tests
+### Step 2: Run the image tests
 
 Inside your `plotly.js` directory, run
 
@@ -49,6 +47,16 @@ npm run test-image
 ```
 
 if some tests fail, compare their outputs using `npm run start-image_viewer`.
+
+### Step 2b: Make a new baseline image
+
+Inside your `plotly.js` directory, run
+
+```bash
+npm run baseline -- mock.json
+```
+
+where `mock.json` is the name of a `{"data": [], "layout": {}}` json file found in [`test/image/mocks/`](https://github.com/plotly/plotly.js/tree/master/test/image/mocks). The `"data"` and `"layout"` field are passed to `Plotly.plot` to produce an image saved in [`test/image/baslines`](https://github.com/plotly/plotly.js/tree/master/test/image/baselines).
 
 ### Step 3: Stop your testing container
 
@@ -126,7 +134,7 @@ Inside your `plotly.js` directory, run
 docker-compose rm -f
 ```
 
-#### Remove your docker machine
+##### Remove your docker machine
 
 If named `default`:
 
