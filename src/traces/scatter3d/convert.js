@@ -243,7 +243,8 @@ function convertPlotlyOptions(scene, data) {
         }
     }
 
-    params.errorBounds    = calculateError(data);
+    params.errorBounds = calculateError(data, scaleFactor);
+
     var errorParams = calculateErrorParams([data.error_x, data.error_y, data.error_z]);
     params.errorColor = errorParams.color;
     params.errorLineWidth = errorParams.lineWidth;

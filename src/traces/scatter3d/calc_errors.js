@@ -9,7 +9,7 @@
 
 'use strict';
 
-function calculateAxisErrors(data, params) {
+function calculateAxisErrors(data, params, scaleFactor) {
     if(!params || !params.visible) return null;
 
     function option(name, value) {
@@ -36,24 +36,31 @@ function calculateAxisErrors(data, params) {
         var x = +data[i];
 
         switch(type) {
-        case 'percent':
-            h = Math.abs(x) * value / 100.0;
-            l = Math.abs(x) * minusValue / 100.0;
-            result[i] = [ -l, h ];
-            break;
+            case 'percent':
+                result[i] = [
+                    -Math.abs(x) * (minusValue / 100.0) * scaleFactor,
+                    Math.abs(x) * (value / 100.0) * scaleFactor
+                ];
+                break;
 
-        case 'constant':
-            result[i] = [ -minusValue, value ];
-            break;
+            case 'constant':
+                result[i] = [
+                    -minusValue * scaleFactor,
+                    value * scaleFactor
+                ];
+                break;
 
-        case 'sqrt':
-            r = Math.sqrt(Math.abs(x));
-            result[i] = [ -r, r ];
-            break;
+            case 'sqrt':
+                var r = Math.sqrt(Math.abs(x)) * scaleFactor;
+                result[i] = [-r, r];
+                break;
 
-        case 'data':
-            result[i] = [ (+minusError[i]) - x, (+error[i]) - x ];
-            break;
+            case 'data':
+                result[i] = [
+                    -(+minusError[i]) * scaleFactor,
+                    (+error[i]) * scaleFactor
+                ];
+                break;
         }
     }
 
@@ -67,11 +74,12 @@ function dataLength(array) {
     return 0;
 }
 
-function calculateErrors(data) {
+function calculateErrors(data, scaleFactor) {
     var errors = [
-        calculateAxisErrors(data.x, data.error_x),
-        calculateAxisErrors(data.y, data.error_y),
-        calculateAxisErrors(data.z, data.error_z) ],
+        calculateAxisErrors(data.x, data.error_x, scaleFactor[0]),
+        calculateAxisErrors(data.y, data.error_y, scaleFactor[1]),
+        calculateAxisErrors(data.z, data.error_z, scaleFactor[2])
+    ];
 
     var n = dataLength(errors);
     if(n === 0) return null;
