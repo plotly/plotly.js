@@ -369,7 +369,7 @@ function getGraphDiv(gd) {
         gdElement = document.getElementById(gd);
 
         if(gdElement === null) {
-            throw new Error('No DOM element with id \'' + gd + '\' exits on the page.');
+            throw new Error('No DOM element with id \'' + gd + '\' exists on the page.');
         }
 
         return gdElement;
