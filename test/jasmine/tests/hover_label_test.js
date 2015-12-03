@@ -148,7 +148,9 @@ describe('hover info', function() {
             expect(d3.selectAll('g.axistext').size()).toEqual(1);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
             expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('<tspan class="line" dy="0em" x="9" y="-3.9453125">1</tspan><tspan class="line" dy="1.3em" x="9" y="-3.9453125">hover text</tspan>');
+            expect(d3.selectAll('g.hovertext').select('text').selectAll('tspan').size()).toEqual(2);
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1')
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text')
         });
     });
 
@@ -176,7 +178,9 @@ describe('hover info', function() {
 
             expect(d3.selectAll('g.axistext').size()).toEqual(0);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('<tspan class="line" dy="0em" x="9" y="-3.9453125">1</tspan><tspan class="line" dy="1.3em" x="9" y="-3.9453125">hover text</tspan>');
+            expect(d3.selectAll('g.hovertext').selectAll('tspan').size()).toEqual(2);
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1')
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text')
         });
     });
 
@@ -233,7 +237,9 @@ describe('hover info', function() {
 
             expect(d3.selectAll('g.axistext').size()).toEqual(0);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').select('text').html()).toEqual('<tspan class="line" dy="0em" x="9" y="-3.9453125">hover</tspan><tspan class="line" dy="1.3em" x="9" y="-3.9453125">text</tspan>');
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('hover')
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('text')
+            expect(d3.selectAll('g.hovertext').select('text').selectAll('tspan').size()).toEqual(2);
         });
     });
 });
