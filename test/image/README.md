@@ -58,6 +58,12 @@ Once done testing, inside your `plotly.js` directory, run
 docker-compose stop
 ```
 
+Mac and Windows user should also kill their docker-machine (named `default`) once done testing:
+
+```bash
+docker-machine kill default
+```
+
 ### Docker tricks 
 
 ##### SSH into docker container
