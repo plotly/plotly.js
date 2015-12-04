@@ -30,7 +30,7 @@
                     0
                 ],
                 "color": "green",
-                "thinkness": 5
+                "thickness": 10
             },
             "error_x": {
                 "type": "constant",

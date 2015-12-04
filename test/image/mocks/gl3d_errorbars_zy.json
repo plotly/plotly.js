@@ -21,7 +21,7 @@
                 "type": "percent",
                 "value": 20,
                 "color": "red",
-                "width": 0.5
+                "width": 5
             },
             "error_y": {
                 "type": "constant",
