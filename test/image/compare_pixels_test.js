@@ -107,6 +107,7 @@ function testMock (fileName, t) {
     }
 
     request(options)
+	.on('response', function() { console.log('pong') })
         .pipe(savedImageStream)
         .on('close', checkImage);
 }

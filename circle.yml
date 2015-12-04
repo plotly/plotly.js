@@ -12,10 +12,10 @@ machine:
 
 dependencies:
   pre:
-    - docker pull plotly/imageserver:latest
+    - docker pull plotly/imageserver:candidate
   post:
     - npm run cibuild
-    - docker run -d --name myimageserver -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/imageserver:latest; sleep 20
+    - docker run -d --name myimageserver -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/imageserver:candidate
 
 test:
   override:
