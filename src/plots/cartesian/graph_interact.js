@@ -778,8 +778,9 @@ function createHoverText(hoverData, opts) {
     var i, traceHoverinfo;
     for (i = 0; i < hoverData.length; i++) {
         traceHoverinfo = hoverData[i].trace.hoverinfo;
-        if (traceHoverinfo.indexOf('all')===-1 &&
-                traceHoverinfo.indexOf(hovermode)===-1) {
+        var parts = traceHoverinfo.split('+');
+        if (parts.indexOf('all') === -1 &&
+            parts.indexOf(hovermode) === -1) {
             showCommonLabel = false;
             break;
         }
