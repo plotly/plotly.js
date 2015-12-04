@@ -67,52 +67,6 @@ errorBars.supplyDefaults = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-errorBars.pushRef2GDC = function(gd, selCurve, astr, val){
-    // Copy the error bar data into gdc
-    // This is called from the style-box, where
-    // either the reference trace was selected.
-    // This function copies the data from the referenced trace
-    // into the gdc object
-    // selCurve: the selected curve (i.e. gdc = gd[selCurve])
-    // astr: the string that was modified
-    var iRef,
-        various = false,
-        parts = astr.split('.'),
-        container = parts[0],
-        attr = parts[1],
-        letter = container.charAt(container.length-1);
-    if(attr==='type'){
-        if(selCurve==='various'){
-            various = true;
-            selCurve = 0;
-        }
-        // if the 'trace' type was just selected
-        iRef = Number(gd.calcdata[Number(selCurve)][0].trace['error_' + letter].traceref)||0;
-    }
-    else if(attr==='traceref' || attr==='tracerefminus'){
-        if(selCurve==='various') various = true;
-        // if the trace reference was just modified
-        iRef = Number(val)||0;
-    }
-
-    // now copy the appropriate referenced error bar data into gdc
-    // TODO: do this through restyle so we can undo it
-    // the error bar data that we're referencing
-    var newdata = gd.data[iRef][letter].map(Number);
-
-    function setarrays(i) {
-        var eb = gd.data[i][container];
-        eb[attr==='tracerefminus' ? 'arrayminus' : 'array'] = newdata;
-    }
-
-    if(!various) setarrays(Number(selCurve));
-    else{
-        // copy all of the data
-        // TODO: this won't work right if we just select some traces, right?
-        for(var i=0; i<gd.data.length; i++){ setarrays(i); }
-    }
-};
-
 // size the error bar itself (for all types except data)
 function errorval(type, dataval, errval) {
     if(type === 'percent') return Math.abs(dataval * errval / 100);
