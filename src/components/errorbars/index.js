@@ -19,69 +19,7 @@ errorBars.attributes = require('./attributes');
 
 errorBars.supplyDefaults = require('./defaults');
 
-// size the error bar itself (for all types except data)
-function errorval(type, dataval, errval) {
-    if(type === 'percent') return Math.abs(dataval * errval / 100);
-    if(type === 'constant') return Math.abs(errval);
-    if(type === 'sqrt') return Math.sqrt(Math.abs(dataval));
-
-    return 0;
-}
-
-errorBars.calc = function(gd) {
-    (gd.calcdata||[]).forEach(function(cdi){
-        var trace = cdi[0].trace;
-
-        if(!Plotly.Plots.traceIs(trace, 'errorBarsOK')) return;
-
-        var xObj = trace.error_x || {},
-            yObj = trace.error_y || {},
-            xa = Plotly.Axes.getFromId(gd, trace.xaxis),
-            ya = Plotly.Axes.getFromId(gd, trace.yaxis),
-            xvis = xObj.visible && ['linear', 'log'].indexOf(xa.type)!==-1,
-            yvis = yObj.visible && ['linear', 'log'].indexOf(ya.type)!==-1;
-
-        if(!xvis && !yvis) return;
-
-        var xvals = [],
-            yvals = [];
-
-        cdi.forEach(function(d,j) {
-            try {
-                if(isNumeric(ya.c2l(d.y)) && isNumeric(xa.c2l(d.x))){
-                    [
-                        {letter:'x', obj: xObj, visible: xvis, vals: xvals},
-                        {letter:'y', obj: yObj, visible: yvis, vals: yvals}
-                    ].forEach(function(o){
-                        if(o.visible) {
-                            var dataVal = d[o.letter],
-                                obj = o.obj,
-                                ep, en;
-                            if(o.obj.type==='data') {
-                                ep = Number(obj.array[j]);
-                                en = (obj.symmetric || !('arrayminus' in obj)) ?
-                                    ep : Number(obj.arrayminus[j]);
-                            }
-                            else {
-                                ep = errorval(obj.type, dataVal, obj.value);
-                                en = (obj.symmetric || !('valueminus' in obj)) ?
-                                    ep : errorval(obj.type, dataVal, obj.valueminus);
-                            }
-                            if(isNumeric(ep) && isNumeric(en)) {
-                                var shoe = d[o.letter + 'h'] = dataVal + ep;
-                                var hat = d[o.letter + 's'] = dataVal - en;
-                                o.vals.push(shoe, hat);
-                            }
-                        }
-                    });
-                }
-            }
-            catch(e) { console.log(e); }
-        });
-        Plotly.Axes.expand(ya, yvals, {padded: true});
-        Plotly.Axes.expand(xa, xvals, {padded: true});
-    });
-};
+errorBars.calc = require('./calc');
 
 errorBars.calcFromTrace = function(trace, layout) {
     var x = trace.x || [],
