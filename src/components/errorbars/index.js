@@ -17,55 +17,7 @@ var errorBars = module.exports = {};
 
 errorBars.attributes = require('./attributes');
 
-errorBars.supplyDefaults = function(traceIn, traceOut, defaultColor, opts) {
-    var objName = 'error_' + opts.axis,
-        containerOut = traceOut[objName] = {},
-        containerIn = traceIn[objName] || {};
-
-    function coerce (attr, dflt) {
-        return Plotly.Lib.coerce(containerIn, containerOut, errorBars.attributes, attr, dflt);
-    }
-
-    var visible = coerce('visible', 'array' in containerIn || 'value' in containerIn);
-    if(visible) {
-        var type = coerce('type', 'array' in containerIn ? 'data' : 'percent'),
-            symmetric = true;
-        if(type!=='sqrt') {
-            symmetric = coerce('symmetric',
-                !((type==='data' ? 'arrayminus' : 'valueminus') in containerIn));
-        }
-
-        if(type==='data') {
-            var array = coerce('array');
-            if(!array) containerOut.array = [];
-            coerce('traceref');
-            if(!symmetric) {
-                var arrayminus = coerce('arrayminus');
-                if(!arrayminus) containerOut.arrayminus = [];
-                coerce('tracerefminus');
-            }
-        }
-        else if(type==='percent' || type==='constant') {
-            coerce('value');
-            if(!symmetric) coerce('valueminus');
-        }
-
-        var copyAttr = 'copy_'+opts.inherit+'style';
-        if(opts.inherit) {
-            var inheritObj = traceOut['error_' + opts.inherit];
-            if((inheritObj||{}).visible) {
-                coerce(copyAttr, !(containerIn.color ||
-                                   isNumeric(containerIn.thickness) ||
-                                   isNumeric(containerIn.width)));
-            }
-        }
-        if(!opts.inherit || !containerOut[copyAttr]) {
-            coerce('color', defaultColor);
-            coerce('thickness');
-            coerce('width', Plotly.Plots.traceIs(traceOut, 'gl3d') ? 0 : 4);
-        }
-    }
-};
+errorBars.supplyDefaults = require('./defaults');
 
 // size the error bar itself (for all types except data)
 function errorval(type, dataval, errval) {
