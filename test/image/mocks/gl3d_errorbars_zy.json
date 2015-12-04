@@ -1,0 +1,53 @@
+{
+    "data": [
+        {
+            "type": "scatter3d",
+            "x": [
+                1,
+                2,
+                3
+            ],
+            "y": [
+                1,
+                2,
+                3
+            ],
+            "z": [
+                200,
+                100,
+                200
+            ],
+            "error_z": {
+                "type": "percent",
+                "value": 20,
+                "color": "red",
+                "width": 5
+            },
+            "error_y": {
+                "type": "constant",
+                "value": 0.25,
+                "valueminus": 0.1
+            },
+            "uid": "a8f51d"
+        }
+    ],
+    "layout": {
+        "scene": {
+            "camera": {
+                "eye": {
+                    "x": 3,
+                    "y": 0.2,
+                    "z": 0.2
+                }
+            },
+            "aspectratio": {
+                "x": 2,
+                "y": 2,
+                "z": 1
+            }
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true
+    }
+}

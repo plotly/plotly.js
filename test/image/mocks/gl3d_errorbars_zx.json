@@ -1,0 +1,65 @@
+{
+    "data": [
+        {
+            "type": "scatter3d",
+            "mode": "markers",
+            "x": [
+                1,
+                2,
+                3
+            ],
+            "y": [
+                1,
+                2,
+                3
+            ],
+            "z": [
+                2000,
+                1000,
+                2000
+            ],
+            "error_z": {
+                "array": [
+                    1000,
+                    500,
+                    1000
+                ],
+                "arrayminus": [
+                    0,
+                    500,
+                    0
+                ],
+                "color": "green",
+                "thickness": 10
+            },
+            "error_x": {
+                "type": "constant",
+                "value": 0.1,
+                "color": "black"
+            },
+            "marker": {
+                "symbol": "square"
+            },
+            "uid": "0c6e64"
+        }
+    ],
+    "layout": {
+        "scene": {
+            "camera": {
+                "eye": {
+                    "x": 0.2,
+                    "y": 3.5,
+                    "z": 0.4
+                }
+            },
+            "aspectratio": {
+                "x": 2,
+                "y": 2,
+                "z": 1
+            }
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true
+    }
+}
