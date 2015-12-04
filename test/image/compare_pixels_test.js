@@ -42,7 +42,7 @@ function runAll () {
          */
         t.plan(files.length - 40);
 
-        for (var i = 0; i < files.length; i ++) {
+        for (var i = 0; i < 20; i ++) {
             testMock(files[i], t);
         }
 
