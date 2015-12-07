@@ -31,7 +31,7 @@ else runSingle(userFileName);
 function runAll () {
     test('testing mocks', function (t) {
 
-        var files = fs.readdirSync(constants.pathToTestImageMocks);
+        var allMocks = fs.readdirSync(constants.pathToTestImageMocks);
 
         /*
          * Some test cases exhibit run-to-run randomness;
@@ -45,10 +45,16 @@ function runAll () {
          * - all gl2d (38)
          * - gl2d_bunny-hull (1)
          */
-        t.plan(files.length - 40);
+        t.plan(allMocks.length - 40);
 
-        for (var i = 0; i < 20; i ++) {
-            testMock(files[i], t);
+        var BASE_TIMEOUT = 500,
+            BATCH_SIZE = 5,
+            cnt = 0;
+
+        for(var i = 0; i < allMocks.length; i++) {
+            setTimeout(function() {
+                testMock(allMocks[cnt++], t);
+            }, BASE_TIMEOUT * Math.floor(i / BATCH_SIZE) * BATCH_SIZE);
         }
 
     });
