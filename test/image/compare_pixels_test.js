@@ -9,18 +9,23 @@ var request = require('request');
 var test = require('tape');
 var gm = require('gm');
 
-
-// make artifact folders
-if(!fs.existsSync(constants.pathToTestImagesDiff)) fs.mkdirSync(constants.pathToTestImagesDiff);
-if(!fs.existsSync(constants.pathToTestImages)) fs.mkdirSync(constants.pathToTestImages);
-
-var userFileName = process.argv[2];
-
 var touch = function(fileName) {
     fs.closeSync(fs.openSync(fileName, 'w'));
 };
 
-if (!userFileName) runAll();
+
+// make artifact folders
+if(!fs.existsSync(constants.pathToTestImagesDiff)) {
+    fs.mkdirSync(constants.pathToTestImagesDiff);
+}
+if(!fs.existsSync(constants.pathToTestImages)) {
+    fs.mkdirSync(constants.pathToTestImages);
+}
+
+var userFileName = process.argv[2];
+
+// run the test(s)
+if(!userFileName) runAll();
 else runSingle(userFileName);
 
 function runAll () {
@@ -107,7 +112,6 @@ function testMock (fileName, t) {
     }
 
     request(options)
-	.on('response', function() { console.log('pong') })
         .pipe(savedImageStream)
         .on('close', checkImage);
 }
