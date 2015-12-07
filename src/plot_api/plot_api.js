@@ -2517,7 +2517,8 @@ function calculateReservedMargins(margins) {
 
 function plotAutoSize(gd, aobj) {
     var fullLayout = gd._fullLayout,
-        context = gd._context;
+        context = gd._context,
+        computedStyle;
 
     var newHeight, newWidth;
 
@@ -2548,8 +2549,9 @@ function plotAutoSize(gd, aobj) {
         // provide height and width for the container div,
         // specify size in layout, or take the defaults,
         // but don't enforce any ratio restrictions
-        newHeight = parseFloat(window.getComputedStyle(gd).height) || fullLayout.height;
-        newWidth = parseFloat(window.getComputedStyle(gd).width) || fullLayout.width;
+        computedStyle = window.getComputedStyle(gd);
+        newHeight = parseFloat(computedStyle.height) || fullLayout.height;
+        newWidth = parseFloat(computedStyle.width) || fullLayout.width;
     }
 
     if(Math.abs(fullLayout.width - newWidth) > 1 ||
