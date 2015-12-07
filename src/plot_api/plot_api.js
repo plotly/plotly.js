@@ -2517,7 +2517,7 @@ function calculateReservedMargins(margins) {
 
 function plotAutoSize(gd, aobj) {
     var fullLayout = gd._fullLayout,
-        context = gd._context
+        context = gd._context,
         computedStyle;
 
     var newHeight, newWidth;
