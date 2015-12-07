@@ -94,11 +94,13 @@ plotly.js charts can also be created and saved online for free at [plot.ly/plot]
 |---|--------|---------|
 |**Alex C. Johnson**| [@alexcjohnson](https://github.com/alexcjohnson) | |
 |**Étienne Tétreault-Pinard**| [@etpinard](https://github.com/etpinard) | [@etpinard](https://twitter.com/etpinard) |
-|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) |
+|**Mikola Lysenko**| [@mikolalysenko](https://github.com/mikolalysenko) | [@MikolaLysenko](https://twitter.com/MikolaLysenko) | |
+|**Miklos Tusz**| [@mdtusz](https://github.com/mdtusz) | [@mdtusz](https://twitter.com/mdtusz)|
+|**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | |
 |**Ben Postlethwaite**| [@bpostlethwaite](https://github.com/bpostlethwaite) | |
 |**Chris Parmer**| [@chriddyp](https://github.com/chriddyp) | |
-|**Chelsea Douglas**| [@cldougl](https://github.com/cldougl) | |
 |**Alex Vados**| [@alexander-daniel](https://github.com/alexander-daniel) | |
+
 
 ## Copyright and license
 
