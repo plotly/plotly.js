@@ -356,7 +356,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
     return (donePlotting && donePlotting.then) ?
-        donePlotting : Promise.resolve();
+        donePlotting : Promise.resolve(gd);
 };
 
 // Get the container div: we store all variables for this plot as
@@ -926,6 +926,7 @@ Plotly.redraw = function(gd) {
     gd.calcdata = undefined;
     return Plotly.plot(gd).then(function () {
         gd.emit('plotly_redraw');
+        return gd;
     });
 };
 
@@ -1361,12 +1362,14 @@ Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
                                 return target.splice(0, target.length - maxPoints);
                             });
 
-    Plotly.redraw(gd);
+    var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     if (Plotly.Queue) {
         Plotly.Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
     }
+
+    return promise;
 };
 
 Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) {
@@ -1388,12 +1391,14 @@ Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) 
                                 return target.splice(maxPoints, target.length);
                             });
 
-    Plotly.redraw(gd);
+    var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
     if (Plotly.Queue) {
         Plotly.Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
     }
+
+    return promise;
 };
 
 /**
@@ -1436,9 +1441,9 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
     // if the user didn't define newIndices, they just want the traces appended
     // i.e., we can simply redraw and be done
     if (typeof newIndices === 'undefined') {
-        Plotly.redraw(gd);
+        var promise = Plotly.redraw(gd);
         if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
-        return;
+        return promise;
     }
 
     // make sure indices is property defined
@@ -1462,8 +1467,9 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
     // this requires some extra work that moveTraces will do
     if (Plotly.Queue) Plotly.Queue.startSequence(gd);
     if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
-    Plotly.moveTraces(gd, currentIndices, newIndices);
+    var promise = Plotly.moveTraces(gd, currentIndices, newIndices);
     if (Plotly.Queue) Plotly.Queue.stopSequence(gd);
+    return promise;
 };
 
 /**
@@ -1502,9 +1508,11 @@ Plotly.deleteTraces = function deleteTraces (gd, indices) {
         traces.push(deletedTrace);
     }
 
-    Plotly.redraw(gd);
+    var promise = Plotly.redraw(gd);
 
     if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return promise;
 };
 
 /**
@@ -1599,9 +1607,11 @@ Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
 
     gd.data = newData;
 
-    Plotly.redraw(gd);
+    var promise = Plotly.redraw(gd);
 
     if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return promise;
 };
 
 // -----------------------------------------------------
@@ -1640,7 +1650,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     }
     else {
         console.log('restyle fail',astr,val,traces);
-        return;
+        return new Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
@@ -2115,8 +2125,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function() {
-        gd.emit('plotly_restyle',
-            Plotly.Lib.extendDeep([], [redoit, traces]));
+        gd.emit('plotly_restyle', Plotly.Lib.extendDeep([], [redoit, traces]));
+        return gd;
     });
 };
 
@@ -2161,7 +2171,9 @@ function swapXYData(trace) {
 Plotly.relayout = function relayout(gd, astr, val) {
     gd = getGraphDiv(gd);
 
-    if(gd.framework && gd.framework.isPolar) return;
+    if(gd.framework && gd.framework.isPolar) {
+        return new Promise.resolve(gd);
+    }
 
     var layout = gd.layout,
         fullLayout = gd._fullLayout,
@@ -2178,7 +2190,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     else if(Plotly.Lib.isPlainObject(astr)) aobj = astr;
     else {
         console.log('relayout fail',astr,val);
-        return;
+        return new Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
@@ -2484,11 +2496,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
     var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
 
-    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+    if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
         gd.emit('plotly_relayout',
             Plotly.Lib.extendDeep({}, redoit));
+            return gd;
     });
 };
 
@@ -2517,7 +2530,8 @@ function calculateReservedMargins(margins) {
 
 function plotAutoSize(gd, aobj) {
     var fullLayout = gd._fullLayout,
-        context = gd._context;
+        context = gd._context,
+        computedStyle;
 
     var newHeight, newWidth;
 
@@ -2548,8 +2562,9 @@ function plotAutoSize(gd, aobj) {
         // provide height and width for the container div,
         // specify size in layout, or take the defaults,
         // but don't enforce any ratio restrictions
-        newHeight = parseFloat(window.getComputedStyle(gd).height) || fullLayout.height;
-        newWidth = parseFloat(window.getComputedStyle(gd).width) || fullLayout.width;
+        computedStyle = window.getComputedStyle(gd);
+        newHeight = parseFloat(computedStyle.height) || fullLayout.height;
+        newWidth = parseFloat(computedStyle.width) || fullLayout.width;
     }
 
     if(Math.abs(fullLayout.width - newWidth) > 1 ||

@@ -51,7 +51,7 @@ describe('Test graph_obj', function () {
 
     });
 
-    describe('Plotly.deleteTraces should', function () {
+    describe('Plotly.deleteTraces', function () {
         var gd;
 
         beforeEach(function () {
@@ -63,11 +63,10 @@ describe('Test graph_obj', function () {
                     {'name': 'd'}
                 ]
             };
-            Plotly.Queue = null;
             spyOn(Plotly, 'redraw');
         });
 
-        it('throw an error when indices are omitted', function () {
+        it('should throw an error when indices are omitted', function () {
 
             expect(function () {
                 Plotly.deleteTraces(gd);
@@ -75,7 +74,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('throw an error when indices are out of bounds', function () {
+        it('should throw an error when indices are out of bounds', function () {
 
             expect(function () {
                 Plotly.deleteTraces(gd, 10);
@@ -83,7 +82,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('throw an error when indices are repeated', function () {
+        it('should throw an error when indices are repeated', function () {
 
             expect(function () {
                 Plotly.deleteTraces(gd, [0, 0]);
@@ -91,52 +90,46 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('work when indices are negative', function () {
-            var expected = {
-                data: [
-                    {'name': 'a'},
-                    {'name': 'b'},
-                    {'name': 'c'}
-                ]
-            };
+        it('should work when indices are negative', function () {
+            var expectedData = [
+                {'name': 'a'},
+                {'name': 'b'},
+                {'name': 'c'}
+            ];
 
             Plotly.deleteTraces(gd, -1);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).toHaveBeenCalled();
 
         });
 
-        it('work when multiple traces are deleted', function () {
-            var expected = {
-                data: [
-                    {'name': 'b'},
-                    {'name': 'c'}
-                ]
-            };
+        it('should work when multiple traces are deleted', function () {
+            var expectedData = [
+                {'name': 'b'},
+                {'name': 'c'}
+            ];
 
             Plotly.deleteTraces(gd, [0, 3]);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).toHaveBeenCalled();
 
         });
 
-        it('work when indices are not sorted', function () {
-            var expected = {
-                data: [
-                    {'name': 'b'},
-                    {'name': 'c'}
-                ]
-            };
+        it('should work when indices are not sorted', function () {
+            var expectedData = [
+                {'name': 'b'},
+                {'name': 'c'}
+            ];
 
             Plotly.deleteTraces(gd, [3, 0]);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).toHaveBeenCalled();
 
         });
 
     });
 
-    describe('Plotly.addTraces should', function () {
+    describe('Plotly.addTraces', function () {
         var gd;
 
         beforeEach(function () {
@@ -150,7 +143,7 @@ describe('Test graph_obj', function () {
             spyOn(Plotly, 'moveTraces');
         });
 
-        it('throw an error when traces is not an object or an array of objects', function () {
+        it('should throw an error when traces is not an object or an array of objects', function () {
             var expected = JSON.parse(JSON.stringify(gd));
             expect(function () {
                 Plotly.addTraces(gd, 1, 2);
@@ -169,7 +162,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('throw an error when traces and newIndices arrays are unequal', function () {
+        it('should throw an error when traces and newIndices arrays are unequal', function () {
 
             expect(function () {
                 Plotly.addTraces(gd, [{}, {}], 2);
@@ -177,7 +170,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('throw an error when newIndices are out of bounds', function () {
+        it('should throw an error when newIndices are out of bounds', function () {
             var expected = JSON.parse(JSON.stringify(gd));
 
             expect(function () {
@@ -188,65 +181,60 @@ describe('Test graph_obj', function () {
             expect(gd).toEqual(expected);
         });
 
-        it('work when newIndices is undefined', function () {
-            var expected = {
-                data: [
-                    {'name': 'a'},
-                    {'name': 'b'},
-                    {'name': 'c'},
-                    {'name': 'd'}
-                ]
-            };
+        it('should work when newIndices is undefined', function () {
+            var expectedData = [
+                {'name': 'a'},
+                {'name': 'b'},
+                {'name': 'c'},
+                {'name': 'd'}
+            ];
 
             Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}]);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).toHaveBeenCalled();
             expect(Plotly.moveTraces).not.toHaveBeenCalled();
 
         });
 
-        it('work when newIndices is defined', function () {
-            var expected = {
-                data: [
-                    {'name': 'a'},
-                    {'name': 'b'},
-                    {'name': 'c'},
-                    {'name': 'd'}
-                ]
-            };
+        it('should work when newIndices is defined', function () {
+            var expectedData = [
+                {'name': 'a'},
+                {'name': 'b'},
+                {'name': 'c'},
+                {'name': 'd'}
+            ];
+
             Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}], [1, 3]);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).not.toHaveBeenCalled();
             expect(Plotly.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [1, 3]);
 
         });
 
-        it('work when newIndices has negative indices', function () {
-            var expected = {
-                data: [
-                    {'name': 'a'},
-                    {'name': 'b'},
-                    {'name': 'c'},
-                    {'name': 'd'}
-                ]
-            };
+        it('should work when newIndices has negative indices', function () {
+            var expectedData = [
+                {'name': 'a'},
+                {'name': 'b'},
+                {'name': 'c'},
+                {'name': 'd'}
+            ];
+
             Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}], [-3, -1]);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).not.toHaveBeenCalled();
             expect(Plotly.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [-3, -1]);
 
         });
 
-        it('work when newIndices is an integer', function () {
-            var expected = {
-                data: [
-                    {'name': 'a'},
-                    {'name': 'b'},
-                    {'name': 'c'}
-                ]
-            };
+        it('should work when newIndices is an integer', function () {
+            var expectedData = [
+                {'name': 'a'},
+                {'name': 'b'},
+                {'name': 'c'}
+            ];
+
             Plotly.addTraces(gd, {'name': 'c'}, 0);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).not.toHaveBeenCalled();
             expect(Plotly.moveTraces).toHaveBeenCalledWith(gd, [-1], [0]);
 
@@ -323,68 +311,64 @@ describe('Test graph_obj', function () {
         });
 
         it('accept integers in place of arrays', function () {
-            var expected = {
-                data: [
-                    {'name': 'b'},
-                    {'name': 'a'},
-                    {'name': 'c'},
-                    {'name': 'd'}
-                ]
-            };
+            var expectedData = [
+                {'name': 'b'},
+                {'name': 'a'},
+                {'name': 'c'},
+                {'name': 'd'}
+            ];
+
             Plotly.moveTraces(gd, 0, 1);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).toHaveBeenCalled();
 
         });
 
         it('handle unsorted currentIndices', function () {
-            var expected = {
-                data: [
-                    {'name': 'd'},
-                    {'name': 'a'},
-                    {'name': 'c'},
-                    {'name': 'b'}
-                ]
-            };
+            var expectedData = [
+                {'name': 'd'},
+                {'name': 'a'},
+                {'name': 'c'},
+                {'name': 'b'}
+            ];
+
             Plotly.moveTraces(gd, [3, 1], [0, 3]);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).toHaveBeenCalled();
 
         });
 
         it('work when newIndices are undefined.', function () {
-            var expected = {
-                data: [
-                    {'name': 'b'},
-                    {'name': 'c'},
-                    {'name': 'd'},
-                    {'name': 'a'}
-                ]
-            };
+            var expectedData = [
+                {'name': 'b'},
+                {'name': 'c'},
+                {'name': 'd'},
+                {'name': 'a'}
+            ];
+
             Plotly.moveTraces(gd, [3, 0]);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).toHaveBeenCalled();
 
         });
 
         it('accept negative indices.', function () {
-            var expected = {
-                data: [
-                    {'name': 'a'},
-                    {'name': 'c'},
-                    {'name': 'b'},
-                    {'name': 'd'}
-                ]
-            };
+            var expectedData = [
+                {'name': 'a'},
+                {'name': 'c'},
+                {'name': 'b'},
+                {'name': 'd'}
+            ];
+
             Plotly.moveTraces(gd, 1, -2);
-            expect(gd).toEqual(expected);
+            expect(gd.data).toEqual(expectedData);
             expect(Plotly.redraw).toHaveBeenCalled();
 
         });
     });
 
 
-    describe('Plotly.ExtendTraces should', function() {
+    describe('Plotly.ExtendTraces', function() {
         var gd;
         beforeEach(function () {
             gd = {
@@ -406,7 +390,7 @@ describe('Test graph_obj', function () {
             spyOn(Plotly.Queue, 'add');
         });
 
-        it('throw an error when gd.data isn\'t an array.', function () {
+        it('should throw an error when gd.data isn\'t an array.', function () {
 
             expect(function () {
                 Plotly.extendTraces({}, {x: [[1]]}, [0]);
@@ -418,7 +402,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('throw an error when update is not an object', function () {
+        it('should throw an error when update is not an object', function () {
 
             expect(function () {
                 Plotly.extendTraces(gd, undefined, [0], 8);
@@ -431,7 +415,7 @@ describe('Test graph_obj', function () {
         });
 
 
-        it('throw an error when indices are omitted', function () {
+        it('should throw an error when indices are omitted', function () {
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]});
@@ -439,7 +423,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('thow an error when a current index is out of bounds', function () {
+        it('should thow an error when a current index is out of bounds', function () {
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]}, [-gd.data.length - 1]);
@@ -447,7 +431,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('not thow an error when negative index wraps to positive', function () {
+        it('should not thow an error when negative index wraps to positive', function () {
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]}, [-1]);
@@ -455,7 +439,7 @@ describe('Test graph_obj', function () {
 
         });
 
-       it('thow an error when number of Indices does not match Update arrays', function () {
+       it('should thow an error when number of Indices does not match Update arrays', function () {
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1, 2], [2, 3]] }, [0]);
@@ -467,7 +451,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('thow an error when maxPoints is an Object but does not match Update', function () {
+        it('should thow an error when maxPoints is an Object but does not match Update', function () {
 
             expect(function () {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {y: [1]});
@@ -481,7 +465,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('throw an error when update keys mismatch trace keys', function () {
+        it('should throw an error when update keys mismatch trace keys', function () {
 
             // lets update y on both traces, but only 1 trace has "y"
             gd.data[1].y = [1,2,3];
@@ -494,7 +478,7 @@ describe('Test graph_obj', function () {
 
         });
 
-        it('extend traces with update keys', function () {
+        it('should extend traces with update keys', function () {
 
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
@@ -508,7 +492,7 @@ describe('Test graph_obj', function () {
             expect(Plotly.redraw).toHaveBeenCalled();
         });
 
-        it('extend and window traces with update keys', function () {
+        it('should extend and window traces with update keys', function () {
             var maxPoints = 3;
 
             Plotly.extendTraces(gd, {
@@ -521,7 +505,7 @@ describe('Test graph_obj', function () {
             ]);
         });
 
-        it('extend and window traces with update keys', function () {
+        it('should extend and window traces with update keys', function () {
             var maxPoints = 3;
 
             Plotly.extendTraces(gd, {
@@ -534,7 +518,7 @@ describe('Test graph_obj', function () {
             ]);
         });
 
-        it('extend and window traces using full maxPoint object', function () {
+        it('should extend and window traces using full maxPoint object', function () {
             var maxPoints = {x: [2, 3], 'marker.size': [1, 2]};
 
             Plotly.extendTraces(gd, {
@@ -547,7 +531,7 @@ describe('Test graph_obj', function () {
             ]);
         });
 
-        it('truncates arrays when maxPoints is zero', function () {
+        it('should truncate arrays when maxPoints is zero', function () {
 
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
@@ -614,7 +598,5 @@ describe('Test graph_obj', function () {
 
             expect(gd.data).toEqual(cachedData);
         });
-
     });
-
 });
