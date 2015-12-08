@@ -40,12 +40,20 @@ function runAll () {
          * More info:
          * https://github.com/plotly/plotly.js/issues/62
          *
-         * 40 test cases are removed:
+         * 41 test cases are removed:
          * - font-wishlist (1 test case)
          * - all gl2d (38)
-         * - gl2d_bunny-hull (1)
+         * - gl3d_bunny-hull (1)
+         * - polar_scatter (1)
          */
-        t.plan(allMocks.length - 40);
+        var mocks = allMocks.filter(function(mock) {
+            return !(
+                mock === 'font-wishlist.json' ||
+                mock.indexOf('gl2d') !== -1 ||
+                mock === 'gl3d_bunny-hull.json' ||
+                mock === 'polar_scatter.json'
+            );
+        });
 
         var BASE_TIMEOUT = 500,
             BATCH_SIZE = 5,
@@ -55,6 +63,8 @@ function runAll () {
             setTimeout(function() {
                 testMock(allMocks[cnt++], t);
             }, BASE_TIMEOUT * Math.floor(i / BATCH_SIZE) * BATCH_SIZE);
+        t.plan(mocks.length);
+
         }
 
     });
@@ -68,15 +78,6 @@ function runSingle (userFileName) {
 }
 
 function testMock (fileName, t) {
-    if(path.extname(fileName) !== '.json') return;
-    if(fileName === 'font-wishlist.json' && !userFileName) return;
-
-    // TODO fix race condition in gl2d image generation
-    if(fileName.indexOf('gl2d_') !== -1) return;
-
-    // TODO fix run-to-run randomness
-    if(fileName === 'gl3d_bunny-hull.json') return;
-
     var figure = require(path.join(constants.pathToTestImageMocks, fileName));
     var bodyMock = {
         figure: figure,
