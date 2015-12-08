@@ -12,8 +12,8 @@ CONTAINER_NAME="imagetest"  # same as in docker-compose.yml
 CMD=(
     "cd /var/www/streambed/image_server/plotly.js &&"
     "cp -f test/image/index.html ../server_app/index.html &&"
-    "monit restart nw1 &&"
-    "sleep 5 &&"
+    "supervisorctl restart nw1 &&"
+    "wget --server-response --spider --tries=8 --retry-connrefused http://localhost:9010/ping &&"
     "node test/image/make_baseline.js $1"
 )
 

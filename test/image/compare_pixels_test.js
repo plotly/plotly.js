@@ -9,24 +9,29 @@ var request = require('request');
 var test = require('tape');
 var gm = require('gm');
 
-
-// make artifact folders
-if(!fs.existsSync(constants.pathToTestImagesDiff)) fs.mkdirSync(constants.pathToTestImagesDiff);
-if(!fs.existsSync(constants.pathToTestImages)) fs.mkdirSync(constants.pathToTestImages);
-
-var userFileName = process.argv[2];
-
 var touch = function(fileName) {
     fs.closeSync(fs.openSync(fileName, 'w'));
 };
 
-if (!userFileName) runAll();
+
+// make artifact folders
+if(!fs.existsSync(constants.pathToTestImagesDiff)) {
+    fs.mkdirSync(constants.pathToTestImagesDiff);
+}
+if(!fs.existsSync(constants.pathToTestImages)) {
+    fs.mkdirSync(constants.pathToTestImages);
+}
+
+var userFileName = process.argv[2];
+
+// run the test(s)
+if(!userFileName) runAll();
 else runSingle(userFileName);
 
 function runAll () {
     test('testing mocks', function (t) {
 
-        var files = fs.readdirSync(constants.pathToTestImageMocks);
+        var allMocks = fs.readdirSync(constants.pathToTestImageMocks);
 
         /*
          * Some test cases exhibit run-to-run randomness;
@@ -35,15 +40,34 @@ function runAll () {
          * More info:
          * https://github.com/plotly/plotly.js/issues/62
          *
-         * 40 test cases are removed:
+         * 41 test cases are removed:
          * - font-wishlist (1 test case)
          * - all gl2d (38)
-         * - gl2d_bunny-hull (1)
+         * - gl3d_bunny-hull (1)
+         * - polar_scatter (1)
          */
-        t.plan(files.length - 40);
+        var mocks = allMocks.filter(function(mock) {
+            return !(
+                mock === 'font-wishlist.json' ||
+                mock.indexOf('gl2d') !== -1 ||
+                mock === 'gl3d_bunny-hull.json' ||
+                mock === 'polar_scatter.json'
+            );
+        });
 
-        for (var i = 0; i < files.length; i ++) {
-            testMock(files[i], t);
+        var BASE_TIMEOUT = 500,  // base timeout time
+            BATCH_SIZE = 5,      // size of each test 'batch'
+            cnt = 0;
+
+        function testFunction() {
+            testMock(mocks[cnt++], t);
+        }
+
+        t.plan(mocks.length);
+
+        for(var i = 0; i < mocks.length; i++) {
+            setTimeout(testFunction,
+                BASE_TIMEOUT * Math.floor(i / BATCH_SIZE) * BATCH_SIZE);
         }
 
     });
@@ -57,15 +81,6 @@ function runSingle (userFileName) {
 }
 
 function testMock (fileName, t) {
-    if(path.extname(fileName) !== '.json') return;
-    if(fileName === 'font-wishlist.json' && !userFileName) return;
-
-    // TODO fix race condition in gl2d image generation
-    if(fileName.indexOf('gl2d_') !== -1) return;
-
-    // TODO fix run-to-run randomness
-    if(fileName === 'gl3d_bunny-hull.json') return;
-
     var figure = require(path.join(constants.pathToTestImageMocks, fileName));
     var bodyMock = {
         figure: figure,
