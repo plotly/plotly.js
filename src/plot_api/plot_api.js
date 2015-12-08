@@ -20,6 +20,7 @@ var isNumeric = require('fast-isnumeric');
 var plots = Plotly.Plots;
 
 Plotly.plot = require('./plot');
+Plotly.redraw = require('./redraw');
 
 // Get the container div: we store all variables for this plot as
 // properties of this div
@@ -575,22 +576,6 @@ function emptyContainer(outer, innerStr) {
         (typeof outer[innerStr] === 'object') &&
         (Object.keys(outer[innerStr]).length === 0);
 }
-
-// convenience function to force a full redraw, mostly for use by plotly.js
-Plotly.redraw = function(gd) {
-    gd = getGraphDiv(gd);
-
-    if(!Plotly.Lib.isPlotDiv(gd)) {
-        console.log('This element is not a Plotly Plot', gd);
-        return;
-    }
-
-    gd.calcdata = undefined;
-    return Plotly.plot(gd).then(function () {
-        gd.emit('plotly_redraw');
-        return gd;
-    });
-};
 
 /**
  * Convenience function to make idempotent plot option obvious to users.
