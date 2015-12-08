@@ -55,16 +55,19 @@ function runAll () {
             );
         });
 
-        var BASE_TIMEOUT = 500,
-            BATCH_SIZE = 5,
+        var BASE_TIMEOUT = 500,  // base timeout time
+            BATCH_SIZE = 5,      // size of each test 'batch'
             cnt = 0;
 
-        for(var i = 0; i < allMocks.length; i++) {
-            setTimeout(function() {
-                testMock(allMocks[cnt++], t);
-            }, BASE_TIMEOUT * Math.floor(i / BATCH_SIZE) * BATCH_SIZE);
+        function testFunction() {
+            testMock(mocks[cnt++], t);
+        }
+
         t.plan(mocks.length);
 
+        for(var i = 0; i < mocks.length; i++) {
+            setTimeout(testFunction,
+                BASE_TIMEOUT * Math.floor(i / BATCH_SIZE) * BATCH_SIZE);
         }
 
     });
