@@ -1,13 +1,25 @@
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
 var Lib = require('../lib');
+
+var Helpers = require('./helpers');
 var plot = require('./plot');
 
+var isPlotDiv = require('@src/plotly').Lib.isPlotDiv;
 module.exports = redraw;
 
-// convenience function to force a full redraw, mostly for use by plotly.js
-function redraw(gd) {
-    gd = getGraphDiv(gd);
 
-    if(!Lib.isPlotDiv(gd)) {
+function redraw(gd) {
+    gd = Helpers.getGraphDiv(gd);
+
+    // if(!Lib.isPlotDiv(gd)) {
+    if(!isPlotDiv(gd)) {
         console.log('This element is not a Plotly Plot', gd);
         return;
     }
@@ -17,24 +29,4 @@ function redraw(gd) {
         gd.emit('plotly_redraw');
         return gd;
     });
-};
-
-
-function getGraphDiv(gd) {
-    var gdElement;
-
-    if(typeof gd === 'string') {
-        gdElement = document.getElementById(gd);
-
-        if(gdElement === null) {
-            throw new Error('No DOM element with id \'' + gd + '\' exists on the page.');
-        }
-
-        return gdElement;
-    }
-    else if(gd===null || gd===undefined) {
-        throw new Error('DOM element provided is null or undefined');
-    }
-
-    return gd;  // otherwise assume that gd is a DOM element
 }

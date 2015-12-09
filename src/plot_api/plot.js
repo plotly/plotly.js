@@ -42,8 +42,11 @@ var Util = require('../lib/svg_text_utils');
 // Extra help
 var defaultConfig = require('./plot_config');
 var isNumeric = require('fast-isnumeric');
+var Helpers = require('./helpers');
+
 
 module.exports = plot;
+
 
 /**
  * Main plot-creation function
@@ -61,11 +64,10 @@ module.exports = plot;
  *      configuration options (see ./plot_config.js for more info)
  *
  */
-
 function plot(gd, data, layout, config) {
     Lib.markTime('in plot');
 
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     /*
      * Events.init is idempotent and bails early if gd has already been init'd
@@ -388,30 +390,6 @@ function plot(gd, data, layout, config) {
     return (donePlotting && donePlotting.then) ?
         donePlotting : Promise.resolve(gd);
 };
-
-
-
-// Get the container div: we store all variables for this plot as
-// properties of this div
-// some callers send this in by DOM element, others by id (string)
-function getGraphDiv(gd) {
-    var gdElement;
-
-    if(typeof gd === 'string') {
-        gdElement = document.getElementById(gd);
-
-        if(gdElement === null) {
-            throw new Error('No DOM element with id \'' + gd + '\' exists on the page.');
-        }
-
-        return gdElement;
-    }
-    else if(gd===null || gd===undefined) {
-        throw new Error('DOM element provided is null or undefined');
-    }
-
-    return gd;  // otherwise assume that gd is a DOM element
-}
 
 
 function setPlotContext(gd, config) {

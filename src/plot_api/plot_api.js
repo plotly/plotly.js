@@ -19,30 +19,37 @@ var isNumeric = require('fast-isnumeric');
 
 var plots = Plotly.Plots;
 
+var Helpers = require('./helpers');
+var Queue = require('../lib/queue');
+
 Plotly.plot = require('./plot');
-Plotly.redraw = require('./redraw');
+var redraw = require('./redraw');
+Plotly.redraw = redraw;
+Plotly.newPlot = require('./new_plot');
+// Plotly.extendTraces = require('./extend_traces');
+// Plotly.prependTraces = require('./prepend_traces');
 
 // Get the container div: we store all variables for this plot as
 // properties of this div
 // some callers send this in by DOM element, others by id (string)
-function getGraphDiv(gd) {
-    var gdElement;
+// function getGraphDiv(gd) {
+//     var gdElement;
 
-    if(typeof gd === 'string') {
-        gdElement = document.getElementById(gd);
+//     if(typeof gd === 'string') {
+//         gdElement = document.getElementById(gd);
 
-        if(gdElement === null) {
-            throw new Error('No DOM element with id \'' + gd + '\' exists on the page.');
-        }
+//         if(gdElement === null) {
+//             throw new Error('No DOM element with id \'' + gd + '\' exists on the page.');
+//         }
 
-        return gdElement;
-    }
-    else if(gd===null || gd===undefined) {
-        throw new Error('DOM element provided is null or undefined');
-    }
+//         return gdElement;
+//     }
+//     else if(gd===null || gd===undefined) {
+//         throw new Error('DOM element provided is null or undefined');
+//     }
 
-    return gd;  // otherwise assume that gd is a DOM element
-}
+//     return gd;  // otherwise assume that gd is a DOM element
+// }
 
 function opaqueSetBackground(gd, bgColor) {
     gd._fullLayout._paperdiv.style('background', 'white');
@@ -577,19 +584,21 @@ function emptyContainer(outer, innerStr) {
         (Object.keys(outer[innerStr]).length === 0);
 }
 
-/**
- * Convenience function to make idempotent plot option obvious to users.
- *
- * @param gd
- * @param {Object[]} data
- * @param {Object} layout
- * @param {Object} config
- */
-Plotly.newPlot = function (gd, data, layout, config) {
-    gd = getGraphDiv(gd);
-    plots.purge(gd);
-    return Plotly.plot(gd, data, layout, config);
-};
+// convenience function to force a full redraw, mostly for use by plotly.js
+// Plotly.redraw = function(gd) {
+//     gd = getGraphDiv(gd);
+
+//     if(!Plotly.Lib.isPlotDiv(gd)) {
+//         console.log('This element is not a Plotly Plot', gd);
+//         return;
+//     }
+
+//     gd.calcdata = undefined;
+//     return Plotly.plot(gd).then(function () {
+//         gd.emit('plotly_redraw');
+//         return gd;
+//     });
+// };
 
 function doCalcdata(gd) {
     var axList = Plotly.Axes.list(gd),
@@ -973,67 +982,51 @@ function spliceTraces (gd, update, indices, maxPoints, lengthenArray, spliceArra
     return {update: undoUpdate, maxPoints: undoPoints};
 }
 
-/**
- * extend && prepend traces at indices with update arrays, window trace lengths to maxPoints
- *
- * Extend and Prepend have identical APIs. Prepend inserts an array at the head while Extend
- * inserts an array off the tail. Prepend truncates the tail of the array - counting maxPoints
- * from the head, whereas Extend truncates the head of the array, counting backward maxPoints
- * from the tail.
- *
- * If maxPoints is undefined, nonNumeric, negative or greater than extended trace length no
- * truncation / windowing will be performed. If its zero, well the whole trace is truncated.
- *
- * @param {Object|HTMLDivElement} gd The graph div
- * @param {Object} update The key:array map of target attributes to extend
- * @param {Number|Number[]} indices The locations of traces to be extended
- * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
- *
- */
-Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
-    gd = getGraphDiv(gd);
+var extendTraces = require('./extend_traces');
+Plotly.extendTraces = extendTraces;
 
-    var undo = spliceTraces(gd, update, indices, maxPoints,
+// function extendTraces (gd, update, indices, maxPoints) {
+//     gd = Helpers.getGraphDiv(gd);
 
-                           /*
-                            * The Lengthen operation extends trace from end with insert
-                            */
-                            function(target, insert) {
-                                return target.concat(insert);
-                            },
+//     var undo = Helpers.spliceTraces(gd, update, indices, maxPoints,
 
-                            /*
-                             * Window the trace keeping maxPoints, counting back from the end
-                             */
-                            function(target, maxPoints) {
-                                return target.splice(0, target.length - maxPoints);
-                            });
+                           
+//                             // The Lengthen operation extends trace from end with insert 
+//                             function(target, insert) {
+//                                 return target.concat(insert);
+//                             },
 
-    var promise = Plotly.redraw(gd);
+                            
+//                              //  Window the trace keeping maxPoints, counting back from the end
+//                             function(target, maxPoints) {
+//                                 return target.splice(0, target.length - maxPoints);
+//                             });
 
-    var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if (Plotly.Queue) {
-        Plotly.Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
-    }
+//     var promise = Plotly.redraw(gd);
 
-    return promise;
-};
+//     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
+//     if (Queue) {
+//         Queue.add(gd, prependTraces, undoArgs, extendTraces, arguments);
+//     }
 
-Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) {
-    gd = getGraphDiv(gd);
+//     return promise;
+// };
 
-    var undo = spliceTraces(gd, update, indices, maxPoints,
+// var prependTraces = require('./prepend_traces');
+Plotly.prependTraces = prependTraces;
 
-                           /*
-                            * The Lengthen operation extends trace by appending insert to start
-                            */
+function prependTraces (gd, update, indices, maxPoints) {
+    gd = Helpers.getGraphDiv(gd);
+
+    var undo = Helpers.spliceTraces(gd, update, indices, maxPoints,
+
+                            // The Lengthen operation extends trace by appending insert to start
                             function(target, insert) {
                                 return insert.concat(target);
                             },
 
-                            /*
-                             * Window the trace keeping maxPoints, counting forward from the start
-                             */
+                            
+                            // Window the trace keeping maxPoints, counting forward from the start 
                             function(target, maxPoints) {
                                 return target.splice(maxPoints, target.length);
                             });
@@ -1041,8 +1034,8 @@ Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) 
     var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if (Plotly.Queue) {
-        Plotly.Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
+    if (Queue) {
+        Queue.add(gd, extendTraces, undoArgs, prependTraces, arguments);
     }
 
     return promise;
@@ -1058,7 +1051,7 @@ Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) 
  *
  */
 Plotly.addTraces = function addTraces (gd, traces, newIndices) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     var currentIndices = [],
         undoFunc = Plotly.deleteTraces,
@@ -1127,7 +1120,7 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
  * @param {Number|Number[]} indices The indices
  */
 Plotly.deleteTraces = function deleteTraces (gd, indices) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     var traces = [],
         undoFunc = Plotly.addTraces,
@@ -1194,7 +1187,7 @@ Plotly.deleteTraces = function deleteTraces (gd, indices) {
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
 Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     var newData = [],
         movingTraceMap = [],
@@ -1285,7 +1278,7 @@ Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
 // If the array is too short, it will wrap around (useful for
 // style files that want to specify cyclical default values).
 Plotly.restyle = function restyle(gd, astr, val, traces) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     var i, fullLayout = gd._fullLayout,
         aobj = {};
@@ -1816,7 +1809,7 @@ function swapXYData(trace) {
 //      aobj - {astr1:val1, astr2:val2...}
 //          allows setting multiple attributes simultaneously
 Plotly.relayout = function relayout(gd, astr, val) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     if(gd.framework && gd.framework.isPolar) {
         return new Promise.resolve(gd);

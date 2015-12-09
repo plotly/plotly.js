@@ -368,7 +368,7 @@ describe('Test graph_obj', function () {
     });
 
 
-    describe('Plotly.ExtendTraces', function() {
+    fdescribe('Plotly.ExtendTraces', function() {
         var gd;
         beforeEach(function () {
             gd = {
