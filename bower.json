@@ -1,0 +1,26 @@
+{
+  "name": "plotly.js",
+  "description": "The open source javascript graphing library that powers plotly",
+  "main": "./dist/plotly.min.js",
+  "authors": [
+    "Plotly, Inc."
+  ],
+  "license": "MIT",
+  "keywords": [
+    "graphing",
+    "plotting",
+    "data",
+    "visualization",
+    "plotly"
+  ],
+  "homepage": "https://plot.ly",
+  "ignore": [
+    "**/.*",
+    "bower_components",
+    "build",
+    "devtools",
+    "node_modules",
+    "tasks",
+    "test"
+  ]
+}
