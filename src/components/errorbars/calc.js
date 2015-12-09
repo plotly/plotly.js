@@ -14,7 +14,7 @@ var isNumeric = require('fast-isnumeric');
 var Plots = require('../../plots/plots');
 var Axes = require('../../plots/cartesian/axes');
 
-var computeError = require('./compute_error');
+var makeComputeError = require('./compute_error');
 
 
 module.exports = function calc(gd) {
@@ -26,33 +26,36 @@ module.exports = function calc(gd) {
 
         if(!Plots.traceIs(trace, 'errorBarsOK')) continue;
 
-        var xObj = trace.error_x || {},
-            yObj = trace.error_y || {},
+        var xOpts = trace.error_x || {},
+            yOpts = trace.error_y || {},
             xa = Axes.getFromId(gd, trace.xaxis),
             ya = Axes.getFromId(gd, trace.yaxis),
-            xVis = (xObj.visible && ['linear', 'log'].indexOf(xa.type) !== -1),
-            yVis = (yObj.visible && ['linear', 'log'].indexOf(ya.type) !== -1);
+            xVis = (xOpts.visible && ['linear', 'log'].indexOf(xa.type) !== -1),
+            yVis = (yOpts.visible && ['linear', 'log'].indexOf(ya.type) !== -1);
 
         if(!xVis && !yVis) continue;
 
         var xVals = [],
             yVals = [];
 
+        var computeErrorY = makeComputeError(yOpts),
+            computeErrorX = makeComputeError(xOpts);
+
         for(var j = 0; j < calcTrace.length; j++) {
             var calcPt = calcTrace[j],
-                calcX = calcPt.x,
-                calcY = calcPt.y;
+                calcY = calcPt.y,
+                calcX = calcPt.x;
 
             if(!isNumeric(ya.c2l(calcY)) || !isNumeric(xa.c2l(calcX))) continue;
 
-            var errorY = computeError(calcY, j, yObj);
+            var errorY = computeErrorY(calcY, j);
             if(isNumeric(errorY[0]) && isNumeric(errorY[1])) {
                 calcPt.ys = calcY - errorY[0];
                 calcPt.yh = calcY + errorY[1];
                 yVals.push(calcPt.ys, calcPt.yh);
             }
 
-            var errorX = computeError(calcX, j, xObj);
+            var errorX = computeErrorX(calcX, j);
             if(isNumeric(errorX[0]) && isNumeric(errorX[1])) {
                 calcPt.xs = calcX - errorX[0];
                 calcPt.xh = calcX + errorX[1];

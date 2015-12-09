@@ -9,16 +9,17 @@
 
 'use strict';
 
-var computeError = require('../../components/errorbars/compute_error');
+var makeComputeError = require('../../components/errorbars/compute_error');
 
 
 function calculateAxisErrors(data, params, scaleFactor) {
     if(!params || !params.visible) return null;
 
+    var computeError = makeComputeError(params);
     var result = new Array(data.length);
 
     for(var i = 0; i < data.length; i++) {
-        var errors = computeError(+data[i], i, params);
+        var errors = computeError(+data[i], i);
 
         result[i] = [
             -errors[0] * scaleFactor,
