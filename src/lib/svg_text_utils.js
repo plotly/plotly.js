@@ -256,7 +256,7 @@ function convertToSVG(_str){
                     else if(extra.substr(0,4).toLowerCase() !== 'href') return '<a>';
                     else {
                         var dummyAnchor = document.createElement('a');
-                        dummyAnchor.href = extra.split('href=')[1].replace(/["']/g, '');
+                        dummyAnchor.href = extra.substr(4).replace(/["'=]/g, '');
 
                         if(PROTOCOLS.indexOf(dummyAnchor.protocol) === -1) return '<a>';
 
