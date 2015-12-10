@@ -13,13 +13,13 @@
 /**
  * Error bar computing function generator
  *
- * N.B. This function does not clean the dataPt entries, non-numeric
- * entries result in undefined *error*
+ * N.B. The generated function does not clean the dataPt entries. Non-numeric
+ * entries result in undefined error magnitudes.
  *
  * @param {object} opts error bar attributes
  *
  * @return {function} :
- *      @param {numeric} dataVal error magnitude in the negative direction
+ *      @param {numeric} dataPt data point from where to compute the error magnitude
  *      @param {number} index index of dataPt in its corresponding data array
  *      @return {array}
  *        - error[0] : error magnitude in the negative direction
@@ -46,20 +46,20 @@ module.exports = function makeComputeError(opts) {
         }
     }
     else {
-        var value = opts.value,
-            valueminus = opts.valueminus;
+        var computeErrorValue = makeComputeErrorValue(type, opts.value),
+            computeErrorValueMinus = makeComputeErrorValue(type, opts.valueminus);
 
-        if(symmetric || valueminus === undefined) {
+        if(symmetric || opts.valueminus === undefined) {
             return function computeError(dataPt) {
-                var val = getErrorVal(type, dataPt, value);
+                var val = computeErrorValue(dataPt);
                 return [val, val];
             };
         }
         else {
             return function computeError(dataPt) {
                 return [
-                    getErrorVal(type, dataPt, valueminus),
-                    getErrorVal(type, dataPt, value)
+                    computeErrorValueMinus(dataPt),
+                    computeErrorValue(dataPt)
                 ];
             };
         }
@@ -70,13 +70,25 @@ module.exports = function makeComputeError(opts) {
  * Compute error bar magnitude (for all types except data)
  *
  * @param {string} type error bar type
- * @param {numeric} dataPt
- *      data point from where to compute the error magnitude
- * @param {numeric} [value] error bar value
+ * @param {numeric} value error bar value
  *
+ * @return {function} :
+ *      @param {numeric} dataPt
  */
-function getErrorVal(type, dataPt, value) {
-    if(type === 'percent') return Math.abs(dataPt * value / 100);
-    if(type === 'constant') return Math.abs(value);
-    if(type === 'sqrt') return Math.sqrt(Math.abs(dataPt));
+function makeComputeErrorValue(type, value) {
+    if(type === 'percent') {
+        return function(dataPt) {
+            return Math.abs(dataPt * value / 100);
+        };
+    }
+    if(type === 'constant') {
+        return function() {
+            return Math.abs(value);
+        };
+    }
+    if(type === 'sqrt') {
+        return function(dataPt) {
+            return Math.sqrt(Math.abs(dataPt));
+        };
+    }
 }
