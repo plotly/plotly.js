@@ -26,44 +26,36 @@ module.exports = function calc(gd) {
 
         if(!Plots.traceIs(trace, 'errorBarsOK')) continue;
 
-        var xOpts = trace.error_x || {},
-            yOpts = trace.error_y || {},
-            xa = Axes.getFromId(gd, trace.xaxis),
-            ya = Axes.getFromId(gd, trace.yaxis),
-            xVis = (xOpts.visible && ['linear', 'log'].indexOf(xa.type) !== -1),
-            yVis = (yOpts.visible && ['linear', 'log'].indexOf(ya.type) !== -1);
+        var xa = Axes.getFromId(gd, trace.xaxis),
+            ya = Axes.getFromId(gd, trace.yaxis);
 
-        if(!xVis && !yVis) continue;
-
-        var xVals = [],
-            yVals = [];
-
-        var computeErrorY = makeComputeError(yOpts),
-            computeErrorX = makeComputeError(xOpts);
-
-        for(var j = 0; j < calcTrace.length; j++) {
-            var calcPt = calcTrace[j],
-                calcY = calcPt.y,
-                calcX = calcPt.x;
-
-            if(!isNumeric(ya.c2l(calcY)) || !isNumeric(xa.c2l(calcX))) continue;
-
-            var errorY = computeErrorY(calcY, j);
-            if(isNumeric(errorY[0]) && isNumeric(errorY[1])) {
-                calcPt.ys = calcY - errorY[0];
-                calcPt.yh = calcY + errorY[1];
-                yVals.push(calcPt.ys, calcPt.yh);
-            }
-
-            var errorX = computeErrorX(calcX, j);
-            if(isNumeric(errorX[0]) && isNumeric(errorX[1])) {
-                calcPt.xs = calcX - errorX[0];
-                calcPt.xh = calcX + errorX[1];
-                xVals.push(calcPt.xs, calcPt.xh);
-            }
-        }
-
-        Axes.expand(ya, yVals, {padded: true});
-        Axes.expand(xa, xVals, {padded: true});
+        calcOneAxis(calcTrace, trace, xa, 'x');
+        calcOneAxis(calcTrace, trace, ya, 'y');
     }
 };
+
+function calcOneAxis(calcTrace, trace, axis, coord) {
+    var opts = trace['error_' + coord] || {},
+        isVisible = (opts.visible && ['linear', 'log'].indexOf(axis.type) !== -1),
+        vals = [];
+
+    if(!isVisible) return;
+
+    var computeError = makeComputeError(opts);
+
+    for(var i = 0; i < calcTrace.length; i++) {
+        var calcPt = calcTrace[i],
+            calcCoord = calcPt[coord];
+
+        if(!isNumeric(axis.c2l(calcCoord))) continue;
+
+        var errors = computeError(calcCoord, i);
+        if(isNumeric(errors[0]) && isNumeric(errors[1])) {
+            var shoe = calcPt[coord + 's'] = calcCoord - errors[0],
+                hat = calcPt[coord + 'h'] = calcCoord + errors[1];
+            vals.push(shoe, hat);
+        }
+    }
+
+    Axes.expand(axis, vals, {padded: true});
+}
