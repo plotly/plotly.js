@@ -33,30 +33,36 @@ module.exports = function makeComputeError(opts) {
         var array = opts.array,
             arrayminus = opts.arrayminus;
 
-        return (symmetric || arrayminus === undefined) ?
-            function computeError(dataPt, index) {
+        if(symmetric || arrayminus === undefined) {
+            return function computeError(dataPt, index) {
                 var val = +(array[index]);
                 return [val, val];
-            } :
-            function computeError(dataPt, index) {
+            };
+        }
+        else {
+            return function computeError(dataPt, index) {
                 return [+arrayminus[index], +array[index]];
             };
+        }
     }
     else {
         var value = opts.value,
             valueminus = opts.valueminus;
 
-        return (symmetric || valueminus === undefined) ?
-            function computeError(dataPt) {
+        if(symmetric || valueminus === undefined) {
+            return function computeError(dataPt) {
                 var val = getErrorVal(type, dataPt, value);
                 return [val, val];
-            } :
-            function computeError(dataPt) {
+            };
+        }
+        else {
+            return function computeError(dataPt) {
                 return [
                     getErrorVal(type, dataPt, valueminus),
                     getErrorVal(type, dataPt, value)
                 ];
             };
+        }
     }
 };
 
