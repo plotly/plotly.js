@@ -35,7 +35,7 @@ docker-compose up -d
 ```
 
 In the `docker-compose.yml` file, `latest` is the latest Plotly Image-Server docker container version
-as listed on [hub.docker.com](https://hub.docker.com/r/plotly/imageserver/tags/) and
+as listed on [hub.docker.com](https://hub.docker.com/r/plotly/testbed/tags/) and
 `imagetest` is the name of the docker container. The `-d` flag tells docker to start the containers in the background and leave them running.
 
 ### Step 2: Run the image tests

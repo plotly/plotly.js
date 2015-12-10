@@ -13,7 +13,7 @@
 
 dev:
   container_name: imagetest
-  image: plotly/imageserver:latest
+  image: plotly/testbed:latest
   volumes: 
     - .:/var/www/streambed/image_server/plotly.js
   ports:
