@@ -114,7 +114,7 @@ module.exports = function toSVG(gd, format) {
             // Is this an IE thing? Any other attributes or style elements that can have quotes in them?
             // TODO: this looks like a noop right now - what happened to it?
             var ff = txt.style('font-family');
-            if(ff && ff.indexOf('"') !== -1) txt.style('font-family', ff.replace(/"/g, '"'));
+            if(ff && ff.indexOf('"') !== -1) txt.style('font-family', ff.replace(/"/g, '\\\''));
         });
 
     if(format === 'pdf' || format === 'eps') {
