@@ -2060,7 +2060,7 @@ function coverSlip() {
     cStyle.right = 0;
     cStyle.top = 0;
     cStyle.bottom = 0;
-    cStyle['z-index'] = 999999999;
+    cStyle.zIndex = 999999999;
     cStyle.background = 'none';
 
     document.body.appendChild(cover);
