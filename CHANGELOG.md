@@ -3,6 +3,18 @@
 For more context information, please read through the
 [release notes](https://github.com/plotly/plotly.js/releases).
 
+## [1.2.1] -- 2015-12-14
+
+### Changed
+- Improve XSS check in anchor href [#100]
+
+### Fixed
+- Fix Fifefox 42 to-image failures [#104]
+- Fix error bar with type 'sqrt' logic making them visible without 
+  specifying the 'value' field [#91]
+- Fix cartesian zoom/drag cover attributes for Firefox 31 [#92]
+
+
 ## [1.2.0] -- 2015-12-07
 
 ### Added
@@ -19,6 +31,7 @@ For more context information, please read through the
 - Typo fixed in `No DOM element` error message [#64]
 - Fix hover labels with hoverinfo 'text' [#70]
 - Fix scaling for gl3d error bars [#74]
+
 
 ## [1.1.1] -- 2015-12-01
 
