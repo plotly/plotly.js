@@ -345,7 +345,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
       }
     }
 
-    //Save scale and offset factors
+    //Save scale
     this.dataScale = dataScale;
 
     //Update traces
