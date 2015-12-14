@@ -373,6 +373,12 @@ pie.plot = function(gd, cdpie) {
                     }
                 }
 
+                function handleClick (evt) {
+                    gd._hoverdata = pt;
+                    gd._hoverdata.trace = slices[0][0].__data__.trace;
+                    Plotly.Fx.click(gd, { target: true });
+                }
+
                 slicePath.enter().append('path')
                     .classed('surface', true)
                     .style({'pointer-events': 'all'});
@@ -381,7 +387,8 @@ pie.plot = function(gd, cdpie) {
 
                 sliceTop
                     .on('mouseover', handleMouseOver)
-                    .on('mouseout', handleMouseOut);
+                    .on('mouseout', handleMouseOut)
+                    .on('click', handleClick);
 
                 if(trace.pull) {
                     var pull = +(Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
