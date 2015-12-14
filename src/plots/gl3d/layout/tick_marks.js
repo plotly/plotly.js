@@ -49,8 +49,8 @@ function computeTickMarks(scene) {
         if (Math.abs(axes._length) === Infinity) {
             ticks[i] = [];
         } else {
-            axes.range[0] = (glRange[i].lo + scene.dataCenter[i]) / scene.dataScale[i];
-            axes.range[1] = (glRange[i].hi + scene.dataCenter[i]) / scene.dataScale[i];
+            axes.range[0] = (glRange[i].lo) / scene.dataScale[i];
+            axes.range[1] = (glRange[i].hi) / scene.dataScale[i];
             axes._m       = 1.0 / (scene.dataScale[i] * glRange[i].pixelsPerDataUnit);
 
             if(axes.range[0] === axes.range[1]) {
@@ -69,7 +69,7 @@ function computeTickMarks(scene) {
             }
             var dataTicks = Plotly.Axes.calcTicks(axes);
             for(var j=0; j<dataTicks.length; ++j) {
-              dataTicks[j].x = dataTicks[j].x * scene.dataScale[i] - scene.dataCenter[i];
+              dataTicks[j].x = dataTicks[j].x * scene.dataScale[i];
               dataTicks[j].text = convertHTML(dataTicks[j].text);
             }
             ticks[i] = dataTicks;

@@ -52,9 +52,9 @@ proto.handlePick = function(selection) {
 
     var sceneLayout = this.scene.fullSceneLayout;
     selection.dataCoordinate = [
-      sceneLayout.xaxis.d2l(traceCoordinate[0])*this.scene.dataScale[0] - this.scene.dataCenter[0],
-      sceneLayout.yaxis.d2l(traceCoordinate[1])*this.scene.dataScale[1] - this.scene.dataCenter[1],
-      sceneLayout.zaxis.d2l(traceCoordinate[2])*this.scene.dataScale[2] - this.scene.dataCenter[2]
+      sceneLayout.xaxis.d2l(traceCoordinate[0])*this.scene.dataScale[0],
+      sceneLayout.yaxis.d2l(traceCoordinate[1])*this.scene.dataScale[1],
+      sceneLayout.zaxis.d2l(traceCoordinate[2])*this.scene.dataScale[2]
     ];
 
     var text = this.data.text;
@@ -165,7 +165,6 @@ proto.update = function(data) {
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
         scaleFactor = scene.dataScale,
-        offset = scene.dataCenter,
         xlen = z[0].length,
         ylen = z.length,
         coords = [
@@ -188,30 +187,30 @@ proto.update = function(data) {
      * which is the transpose of 'gl-surface-plot'.
      */
     fill(coords[2], function(row, col) {
-        return zaxis.d2l(z[col][row]) * scaleFactor[2]  - offset[2];
+        return zaxis.d2l(z[col][row]) * scaleFactor[2];
     });
 
     // coords x
     if (Array.isArray(x[0])) {
         fill(xc, function(row, col) {
-            return xaxis.d2l(x[col][row]) * scaleFactor[0] - offset[0];
+            return xaxis.d2l(x[col][row]) * scaleFactor[0];
         });
     } else {
         // ticks x
         fill(xc, function(row) {
-            return xaxis.d2l(x[row]) * scaleFactor[0] - offset[0];
+            return xaxis.d2l(x[row]) * scaleFactor[0];
         });
     }
 
     // coords y
     if (Array.isArray(y[0])) {
         fill(yc, function(row, col) {
-            return yaxis.d2l(y[col][row]) * scaleFactor[1] - offset[1];
+            return yaxis.d2l(y[col][row]) * scaleFactor[1];
         });
     } else {
         // ticks y
         fill(yc, function(row, col) {
-            return yaxis.d2l(y[col]) * scaleFactor[1] - offset[1];
+            return yaxis.d2l(y[col]) * scaleFactor[1];
         });
     }
 
