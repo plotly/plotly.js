@@ -288,8 +288,8 @@ plots.addLinks = function(gd) {
     linkContainer.enter().append('text')
         .classed('js-plot-link-container', true)
         .style({
-            'font-family':'"Open Sans",Arial,sans-serif',
-            'font-size':'12px',
+            'font-family':'"Open Sans", Arial, sans-serif',
+            'font-size': '12px',
             'fill': Plotly.Color.defaultLine,
             'pointer-events': 'all'
         })

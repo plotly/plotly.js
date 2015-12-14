@@ -18,7 +18,7 @@ var extendFlat = Plotly.Lib.extendFlat;
 module.exports = {
     font: {
         family: extendFlat({}, fontAttrs.family, {
-            dflt: '"Open sans", verdana, arial, sans-serif'
+            dflt: '"Open Sans", verdana, arial, sans-serif'
         }),
         size: extendFlat({}, fontAttrs.size, {
             dflt: 12
