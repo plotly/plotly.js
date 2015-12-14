@@ -9,59 +9,22 @@
 
 'use strict';
 
+var makeComputeError = require('../../components/errorbars/compute_error');
+
+
 function calculateAxisErrors(data, params, scaleFactor) {
     if(!params || !params.visible) return null;
 
-    function option(name, value) {
-        if(name in params) return params[name];
-        return value;
-    }
-
-    var result = new Array(data.length),
-        type = option('type', 'percent'),
-        symmetric = option('symmetric', true),
-        value = +option('value', 10),
-        minusValue = +option('valueminus', 10),
-        error = option('array', null),
-        minusError = option('arrayminus', null);
-
-    if(symmetric) {
-        minusValue = value;
-        minusError = error;
-    }
-
-    if(type === 'data' && (!error || !minusError)) return null;
+    var computeError = makeComputeError(params);
+    var result = new Array(data.length);
 
     for(var i = 0; i < data.length; i++) {
-        var x = +data[i];
+        var errors = computeError(+data[i], i);
 
-        switch(type) {
-            case 'percent':
-                result[i] = [
-                    -Math.abs(x) * (minusValue / 100.0) * scaleFactor,
-                    Math.abs(x) * (value / 100.0) * scaleFactor
-                ];
-                break;
-
-            case 'constant':
-                result[i] = [
-                    -minusValue * scaleFactor,
-                    value * scaleFactor
-                ];
-                break;
-
-            case 'sqrt':
-                var r = Math.sqrt(Math.abs(x)) * scaleFactor;
-                result[i] = [-r, r];
-                break;
-
-            case 'data':
-                result[i] = [
-                    -(+minusError[i]) * scaleFactor,
-                    (+error[i]) * scaleFactor
-                ];
-                break;
-        }
+        result[i] = [
+            -errors[0] * scaleFactor,
+            errors[1] * scaleFactor
+        ];
     }
 
     return result;

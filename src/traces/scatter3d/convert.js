@@ -23,7 +23,6 @@ var formatColor = require('../../lib/gl_format_color');
 var DASH_PATTERNS = require('../../constants/gl3d_dashes.json');
 var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
 
-// TODO use ErrorBars.calcFromTrace instead
 var calculateError = require('./calc_errors');
 
 function LineWithMarkers(scene, uid) {

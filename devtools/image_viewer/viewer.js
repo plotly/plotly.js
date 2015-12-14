@@ -1,18 +1,19 @@
 var fs = require('fs');
+var path = require('path');
 
 var d3 = require('d3');
-
-var constants = require('../../tasks/util/constants');
-
 
 var $plotlist = document.getElementById('plot-list'),
     $images = document.getElementById('plot-images'),
     $mock = document.getElementById('plot-mock');
 
-var dirBaseline = constants.pathToTestImageBaselines,
-    dirTest = constants.pathToTestImages,
-    dirDiff = constants.pathToTestImagesDiff,
-    dirMocks = constants.pathToTestImageMocks;
+var pathToRoot = path.join(__dirname, '../../'),
+    pathToImageTest = path.join(pathToRoot, 'test/image'),
+    pathToBuild = path.join(pathToRoot, 'build/'),
+    dirMocks = path.join(pathToImageTest, 'mocks/'),
+    dirBaseline = path.join(pathToImageTest, 'baselines/'),
+    dirTest = path.join(pathToBuild, 'test_images/'),
+    dirDiff = path.join(pathToBuild, 'test_images_diff/');
 
 // N.B. brfs only understand hard-coded paths
 var imageNames = fs.readFileSync(
