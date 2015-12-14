@@ -16,6 +16,9 @@ var PORT = '8080';
 
 var testFile;
 switch(process.argv[2]) {
+    case 'cartesian':
+        testFile = 'test_cartesian';
+    break;
     case 'geo':
         testFile = 'test_geo';
     break;
