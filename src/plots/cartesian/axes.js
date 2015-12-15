@@ -649,9 +649,9 @@ axes.autoTicks = function(ax, roughDTick){
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
     else{
-        // auto ticks always start at 0
+        // auto ticks always start at 0 and increment
         ax.tick0 = 0;
-        base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+        base = Math.pow(ax.exponentbase, Math.floor(Math.log(roughDTick) / Math.log(ax.exponentbase)));
         ax.dtick = roundDTick(roughDTick, base, roundBase10);
     }
 
@@ -1013,12 +1013,13 @@ function formatLinear(ax, out, hover, extraPrecision, hideexp) {
 // also automatically switch to sci. notation
 var SIPREFIXES = ['f', 'p', 'n', '&mu;', 'm', '', 'k', 'M', 'G', 'T'];
 function numFormat(v, ax, fmtoverride, hover) {
-        // negative?
+    // negative?
     var isNeg = v < 0,
         // max number of digits past decimal point to show
         tickRound = ax._tickround,
         exponentFormat = fmtoverride || ax.exponentformat || 'B',
         exponent = ax._tickexponent,
+        base = ax.exponentbase || 10,
         tickformat = ax.tickformat;
 
     // special case for hover: set exponent just for this value, and
@@ -1027,6 +1028,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
             exponentformat:ax.exponentformat,
+            exponentbase: ax.exponentbase,
             dtick: ax.showexponent==='none' ? ax.dtick :
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent

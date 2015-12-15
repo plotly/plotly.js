@@ -288,6 +288,15 @@ module.exports = {
             'If *B*, 1B.'
         ].join(' ')
     },
+    exponentbase: {
+        valType: 'number',
+        min: 0,
+        dflt: 10
+        role: 'style',
+        description: [
+            'Determines the base for axes and exponent labels.'
+        ].join(' ')
+    },
     tickformat: {
         valType: 'string',
         dflt: '',

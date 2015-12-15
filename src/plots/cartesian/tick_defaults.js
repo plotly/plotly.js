@@ -42,7 +42,18 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
 
             if(!tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
-                coerce('exponentformat');
+
+                var expBase = coerce('exponentbase'),
+                    expFmtDflt = coerce('exponentformat');
+
+                if (expBase !== 2 && expBase !== 10) expFmtDflt = 'power';
+                if (expBase === 2 && expFmtDflt !== 'SI') expFmtDflt = 'power';
+                if (expBase === 'e'){
+                    containerOut.exponentbase = Math.E;
+                    containerOut.type = 'log';
+                }
+
+                containerOut.exponentformat = expFmtDflt;
             }
         }
 
