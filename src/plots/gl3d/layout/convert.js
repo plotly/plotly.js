@@ -101,7 +101,7 @@ proto.merge = function(sceneLayout) {
         //////// TICKS /////////
         /// tick lines
         if ('ticks' in axes && !!axes.ticks) opts.lineTickEnable[i] = true;
-        else                                 opts.lineTickEnable[i] = false;
+        else opts.lineTickEnable[i] = false;
 
         if ('ticklen' in axes) {
             opts.lineTickLength[i] = opts._defaultLineTickLength[i] = axes.ticklen;
