@@ -319,10 +319,9 @@ proto.update = function(data) {
         this.linePlot = null;
     }
 
+    // N.B. marker.opacity must be a scalar for performance
     var scatterOpacity = data.opacity;
-    if(data.marker && typeof data.marker.opacity === 'number') {
-      scatterOpacity *= data.marker.opacity;
-    }
+    if(data.marker && data.marker.opacity) scatterOpacity *= data.marker.opacity;
 
     scatterOptions = {
         gl:           gl,

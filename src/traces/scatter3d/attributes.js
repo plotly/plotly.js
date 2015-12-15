@@ -114,7 +114,17 @@ module.exports = {
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
-        opacity: scatterMarkerAttrs.opacity,
+        opacity: extendFlat({}, scatterMarkerAttrs.opacity, {
+            arrayOk: false,
+            description: [
+                'Sets the marker opacity.',
+                'Note that the marker opacity for scatter3d traces',
+                'must be a scalar value for performance reasons.',
+                'To set a blending opacity value',
+                '(i.e. which is not transparent), set *marker.color*',
+                'to an rgba color and use its alpha channel.'
+            ].join(' ')
+        }),
         colorscale: scatterMarkerAttrs.colorscale,
         cauto: scatterMarkerAttrs.cauto,
         cmax: scatterMarkerAttrs.cmax,
