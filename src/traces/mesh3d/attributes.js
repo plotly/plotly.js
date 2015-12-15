@@ -61,7 +61,7 @@ module.exports = {
             'If *>0*, the alpha-shape algorithm is used',
             'If *0*,  the convex-hull algorithm is used',
             'An alternative to the `i`, `j`, `k` indices triplets.'
-        ]
+        ].join(' ')
     },
 
     intensity: {
