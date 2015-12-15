@@ -697,7 +697,7 @@ function autoTickRound(ax) {
             }
             else maxend = Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1]));
 
-            var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
+            var rangeexp = Math.floor(Math.log(maxend) / Math.log(ax.exponentbase) + 0.01);
             if(Math.abs(rangeexp) > 3) {
                 if(ax.exponentformat === 'SI' || ax.exponentformat === 'B') {
                     ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
@@ -1064,12 +1064,18 @@ function numFormat(v, ax, fmtoverride, hover) {
         // 0 is just 0, but may get exponent if it's the last tick
         v = '0';
         isNeg = false;
-    }
-    else {
+    } else {
         v += e;
         // take out a common exponent, if any
-        if(exponent) {
-            v *= Math.pow(10, -exponent);
+        // Special case for base 2 to follow "SI"
+        if(exponent && base === 2) {
+            v = v/1024;
+
+            // To make 1024 -> 1k
+            exponent -= 9;
+            tickRound += exponent;
+        } else {
+            v *= Math.pow(base, -exponent);
             tickRound += exponent;
         }
         // round the mantissa
@@ -1091,26 +1097,26 @@ function numFormat(v, ax, fmtoverride, hover) {
     // add exponent
     if(exponent && exponentFormat !== 'hide') {
         var signedExponent;
-        if(exponent < 0) signedExponent = '\u2212' + -exponent;
-        else if(exponentFormat !== 'power') signedExponent = '+' + exponent;
-        else signedExponent = String(exponent);
+        if(exponent < 0){
+            signedExponent = '\u2212' + -exponent;
+        } else if(exponentFormat !== 'power') {
+            signedExponent = '+' + exponent;
+        } else {
+            signedExponent = String(exponent);
+        }
 
         if(exponentFormat === 'e' ||
                 ((exponentFormat === 'SI' || exponentFormat === 'B') &&
                  (exponent > 12 || exponent < -15))) {
             v += 'e' + signedExponent;
-        }
-        else if(exponentFormat === 'E') {
+        } else if(exponentFormat === 'E' && base === 10) {
             v += 'E' + signedExponent;
-        }
-        else if(exponentFormat === 'power') {
-            v += '&times;10<sup>' + signedExponent + '</sup>';
-        }
-        else if(exponentFormat === 'B' && exponent === 9) {
+        } else if(exponentFormat === 'B' && exponent === 9 && base === 10) {
             v += 'B';
-        }
-        else if(exponentFormat === 'SI' || exponentFormat === 'B') {
+        } else if((exponentFormat === 'SI' || exponentFormat === 'B') && (base === 2 || base === 10)) {
             v += SIPREFIXES[exponent / 3 + 5];
+        } else {
+            v += '&times;' + base + '<sup>' + signedExponent + '</sup>';
         }
     }
 

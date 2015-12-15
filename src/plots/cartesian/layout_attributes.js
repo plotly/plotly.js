@@ -290,8 +290,8 @@ module.exports = {
     },
     exponentbase: {
         valType: 'number',
-        min: 0,
-        dflt: 10
+        min: 2,
+        dflt: 10,
         role: 'style',
         description: [
             'Determines the base for axes and exponent labels.'
