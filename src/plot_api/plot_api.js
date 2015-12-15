@@ -19,367 +19,37 @@ var isNumeric = require('fast-isnumeric');
 
 var plots = Plotly.Plots;
 
-/**
- * Main plot-creation function
- *
- * Note: will call makePlotFramework if necessary to create the framework
- *
- * @param {string id or DOM element} gd
- *      the id or DOM element of the graph container div
- * @param {array of objects} data
- *      array of traces, containing the data and display information for each trace
- * @param {object} layout
- *      object describing the overall display of the plot,
- *      all the stuff that doesn't pertain to any individual trace
- * @param {object} config
- *      configuration options (see ./plot_config.js for more info)
- *
- */
-Plotly.plot = function(gd, data, layout, config) {
-    Plotly.Lib.markTime('in plot');
+var Helpers = require('./helpers');
+var Queue = require('../lib/queue');
 
-    gd = getGraphDiv(gd);
-
-    /*
-     * Events.init is idempotent and bails early if gd has already been init'd
-     */
-    Events.init(gd);
-
-    var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
-    if(okToPlot===false) return;
-
-    // if there's no data or layout, and this isn't yet a plotly plot
-    // container, log a warning to help plotly.js users debug
-    if(!data && !layout && !Plotly.Lib.isPlotDiv(gd)) {
-        console.log('Warning: calling Plotly.plot as if redrawing ' +
-            'but this container doesn\'t yet have a plot.', gd);
-    }
-
-    // transfer configuration options to gd until we move over to
-    // a more OO like model
-    setPlotContext(gd, config);
-
-    if(!layout) layout = {};
-
-    // hook class for plots main container (in case of plotly.js
-    // this won't be #embedded-graph or .js-tab-contents)
-    d3.select(gd).classed('js-plotly-plot', true);
-
-    // off-screen getBoundingClientRect testing space,
-    // in #js-plotly-tester (and stored as gd._tester)
-    // so we can share cached text across tabs
-    Plotly.Drawing.makeTester(gd);
-
-    // collect promises for any async actions during plotting
-    // any part of the plotting code can push to gd._promises, then
-    // before we move to the next step, we check that they're all
-    // complete, and empty out the promise list again.
-    gd._promises = [];
-
-    // if there is already data on the graph, append the new data
-    // if you only want to redraw, pass a non-array for data
-    var graphwasempty = ((gd.data||[]).length===0 && Array.isArray(data));
-    if(Array.isArray(data)) {
-        cleanData(data, gd.data);
-
-        if(graphwasempty) gd.data=data;
-        else gd.data.push.apply(gd.data,data);
-
-        // for routines outside graph_obj that want a clean tab
-        // (rather than appending to an existing one) gd.empty
-        // is used to determine whether to make a new tab
-        gd.empty=false;
-    }
-
-    if(!gd.layout || graphwasempty) gd.layout = cleanLayout(layout);
-
-    // if the user is trying to drag the axes, allow new data and layout
-    // to come in but don't allow a replot.
-    if(gd._dragging) {
-        // signal to drag handler that after everything else is done
-        // we need to replot, because something has changed
-        gd._replotPending = true;
-        return;
-    } else {
-        // we're going ahead with a replot now
-        gd._replotPending = false;
-    }
-
-    plots.supplyDefaults(gd);
-
-    // Polar plots
-    if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
-
-    // so we don't try to re-call Plotly.plot from inside
-    // legend and colorbar, if margins changed
-    gd._replotting = true;
-    var hasData = gd._fullData.length>0;
-
-    // Make or remake the framework (ie container and axes) if we need to
-    // note: if they container already exists and has data,
-    //  the new layout gets ignored (as it should)
-    //  but if there's no data there yet, it's just a placeholder...
-    //  then it should destroy and remake the plot
-    if (hasData) {
-        var subplots = Plotly.Axes.getSubplots(gd).join(''),
-            oldSubplots = Object.keys(gd._fullLayout._plots || {}).join('');
-
-        if(gd.framework!==makePlotFramework || graphwasempty || (oldSubplots!==subplots)) {
-            gd.framework = makePlotFramework;
-            makePlotFramework(gd);
-        }
-    }
-    else if(graphwasempty) makePlotFramework(gd);
-
-    var fullLayout = gd._fullLayout;
-
-    // prepare the data and find the autorange
-
-    // generate calcdata, if we need to
-    // to force redoing calcdata, just delete it before calling Plotly.plot
-    var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
-    if(recalc) {
-        doCalcdata(gd);
-
-        if(gd._context.doubleClick!==false || gd._context.displayModeBar!==false) {
-            Plotly.Axes.saveRangeInitial(gd);
-        }
-    }
-
-    // in case it has changed, attach fullData traces to calcdata
-    for (var i = 0; i < gd.calcdata.length; i++) {
-        gd.calcdata[i][0].trace = gd._fullData[i];
-    }
-
-    /*
-     * start async-friendly code - now we're actually drawing things
-     */
-
-    var oldmargins = JSON.stringify(fullLayout._size);
-
-    // draw anything that can affect margins.
-    // currently this is legend and colorbars
-    function marginPushers() {
-        var calcdata = gd.calcdata;
-        var i, cd, trace;
-
-        Plotly.Legend.draw(gd);
-
-        for (i = 0; i < calcdata.length; i++) {
-            cd = calcdata[i];
-            trace = cd[0].trace;
-            if (trace.visible !== true || !trace._module.colorbar) {
-                plots.autoMargin(gd, 'cb'+trace.uid);
-            }
-            else trace._module.colorbar(gd, cd);
-        }
-
-        plots.doAutoMargin(gd);
-        return plots.previousPromises(gd);
-    }
-
-    function marginPushersAgain() {
-        // in case the margins changed, draw margin pushers again
-        var seq = JSON.stringify(fullLayout._size)===oldmargins ?
-            [] : [marginPushers, layoutStyles];
-        return Plotly.Lib.syncOrAsync(seq.concat(Plotly.Fx.init),gd);
-    }
-
-    function positionAndAutorange() {
-        if(!recalc) return;
-
-        var subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
-            modules = gd._modules;
-
-        // position and range calculations for traces that
-        // depend on each other ie bars (stacked or grouped)
-        // and boxes (grouped) push each other out of the way
-
-        var subplotInfo, _module;
-
-        for(var i = 0; i < subplots.length; i++) {
-            subplotInfo = fullLayout._plots[subplots[i]];
-
-            for(var j = 0; j < modules.length; j++) {
-                _module = modules[j];
-                if(_module.setPositions) _module.setPositions(gd, subplotInfo);
-            }
-        }
-
-        Plotly.Lib.markTime('done with bar/box adjustments');
-
-        // calc and autorange for errorbars
-        Plotly.ErrorBars.calc(gd);
-        Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
-
-        // TODO: autosize extra for text markers
-        return Plotly.Lib.syncOrAsync([
-            Plotly.Shapes.calcAutorange,
-            Plotly.Annotations.calcAutorange,
-            doAutoRange
-        ], gd);
-    }
-
-    function doAutoRange() {
-        var axList = Plotly.Axes.list(gd, '', true);
-        for(var i = 0; i < axList.length; i++) {
-            Plotly.Axes.doAutoRange(axList[i]);
-        }
-    }
-
-    function drawAxes() {
-        // draw ticks, titles, and calculate axis scaling (._b, ._m)
-        return Plotly.Axes.doTicks(gd, 'redraw');
-    }
-
-    function drawData() {
-        // Now plot the data
-        var calcdata = gd.calcdata,
-            subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
-            modules = gd._modules;
-
-        var i, j, cd, trace, uid, subplot, subplotInfo,
-            cdSubplot, cdError, cdModule, module;
-
-        function getCdSubplot(calcdata, subplot) {
-            var cdSubplot = [];
-            var i, cd, trace;
-            for (i = 0; i < calcdata.length; i++) {
-                cd = calcdata[i];
-                trace = cd[0].trace;
-                if (trace.xaxis+trace.yaxis === subplot) cdSubplot.push(cd);
-            }
-            return cdSubplot;
-        }
-
-        function getCdModule(cdSubplot, module) {
-            var cdModule = [];
-            var i, cd, trace;
-            for (i = 0; i < cdSubplot.length; i++) {
-                cd = cdSubplot[i];
-                trace = cd[0].trace;
-                if (trace._module===module && trace.visible===true) cdModule.push(cd);
-            }
-            return cdModule;
-        }
-
-        // clean up old scenes that no longer have associated data
-        // will this be a performance hit?
-
-        // ... until subplot of different type play better together
-        if(gd._fullLayout._hasGL3D) plotGl3d(gd);
-        if(gd._fullLayout._hasGeo) plotGeo(gd);
-        if(gd._fullLayout._hasGL2D) plotGl2d(gd);
-
-        // in case of traces that were heatmaps or contour maps
-        // previously, remove them and their colorbars explicitly
-        for (i = 0; i < calcdata.length; i++) {
-            cd = calcdata[i];
-            trace = cd[0].trace;
-            if (trace.visible !== true || !trace._module.colorbar) {
-                uid = trace.uid;
-                fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid+',#clip'+uid)
-                    .remove();
-            }
-        }
-
-        for (i = 0; i < subplots.length; i++) {
-            subplot = subplots[i];
-            subplotInfo = gd._fullLayout._plots[subplot];
-            cdSubplot = getCdSubplot(calcdata, subplot);
-            cdError = [];
-
-            // remove old traces, then redraw everything
-            // TODO: use enter/exit appropriately in the plot functions
-            // so we don't need this - should sometimes be a big speedup
-            if(subplotInfo.plot) subplotInfo.plot.selectAll('g.trace').remove();
-
-            for(j = 0; j < modules.length; j++) {
-                module = modules[j];
-                if(!module.plot) continue;
-
-                // plot all traces of this type on this subplot at once
-                cdModule = getCdModule(cdSubplot, module);
-                module.plot(gd, subplotInfo, cdModule);
-                Plotly.Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
-
-                // collect the traces that may have error bars
-                if(cdModule[0] && cdModule[0][0].trace && plots.traceIs(cdModule[0][0].trace, 'errorBarsOK')) {
-                    cdError = cdError.concat(cdModule);
-                }
-            }
-
-            // finally do all error bars at once
-            if(gd._fullLayout._hasCartesian) {
-                Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
-                Plotly.Lib.markTime('done ErrorBars');
-            }
-        }
-
-        // now draw stuff not on subplots (ie, pies)
-        // TODO: gotta be a better way to handle this
-        var cdPie = getCdModule(calcdata, Plotly.Pie);
-        if(cdPie.length) Plotly.Pie.plot(gd, cdPie);
-
-        // styling separate from drawing
-        plots.style(gd);
-        Plotly.Lib.markTime('done plots.style');
-
-        // show annotations and shapes
-        Plotly.Shapes.drawAll(gd);
-        Plotly.Annotations.drawAll(gd);
-
-        // source links
-        plots.addLinks(gd);
-
-        return plots.previousPromises(gd);
-    }
-
-    function cleanUp() {
-        // now we're REALLY TRULY done plotting...
-        // so mark it as done and let other procedures call a replot
-        gd._replotting = false;
-        Plotly.Lib.markTime('done plot');
-        gd.emit('plotly_afterplot');
-    }
-
-    var donePlotting = Plotly.Lib.syncOrAsync([
-        plots.previousPromises,
-        marginPushers,
-        layoutStyles,
-        marginPushersAgain,
-        positionAndAutorange,
-        drawAxes,
-        drawData
-    ], gd, cleanUp);
-
-    // even if everything we did was synchronous, return a promise
-    // so that the caller doesn't care which route we took
-    return (donePlotting && donePlotting.then) ?
-        donePlotting : Promise.resolve(gd);
-};
+Plotly.plot = require('./plot');
+var redraw = require('./redraw');
+Plotly.redraw = redraw;
+Plotly.newPlot = require('./new_plot');
+// Plotly.extendTraces = require('./extend_traces');
+// Plotly.prependTraces = require('./prepend_traces');
 
 // Get the container div: we store all variables for this plot as
 // properties of this div
 // some callers send this in by DOM element, others by id (string)
-function getGraphDiv(gd) {
-    var gdElement;
+// function getGraphDiv(gd) {
+//     var gdElement;
 
-    if(typeof gd === 'string') {
-        gdElement = document.getElementById(gd);
+//     if(typeof gd === 'string') {
+//         gdElement = document.getElementById(gd);
 
-        if(gdElement === null) {
-            throw new Error('No DOM element with id \'' + gd + '\' exists on the page.');
-        }
+//         if(gdElement === null) {
+//             throw new Error('No DOM element with id \'' + gd + '\' exists on the page.');
+//         }
 
-        return gdElement;
-    }
-    else if(gd===null || gd===undefined) {
-        throw new Error('DOM element provided is null or undefined');
-    }
+//         return gdElement;
+//     }
+//     else if(gd===null || gd===undefined) {
+//         throw new Error('DOM element provided is null or undefined');
+//     }
 
-    return gd;  // otherwise assume that gd is a DOM element
-}
+//     return gd;  // otherwise assume that gd is a DOM element
+// }
 
 function opaqueSetBackground(gd, bgColor) {
     gd._fullLayout._paperdiv.style('background', 'white');
@@ -915,34 +585,20 @@ function emptyContainer(outer, innerStr) {
 }
 
 // convenience function to force a full redraw, mostly for use by plotly.js
-Plotly.redraw = function(gd) {
-    gd = getGraphDiv(gd);
+// Plotly.redraw = function(gd) {
+//     gd = getGraphDiv(gd);
 
-    if(!Plotly.Lib.isPlotDiv(gd)) {
-        console.log('This element is not a Plotly Plot', gd);
-        return;
-    }
+//     if(!Plotly.Lib.isPlotDiv(gd)) {
+//         console.log('This element is not a Plotly Plot', gd);
+//         return;
+//     }
 
-    gd.calcdata = undefined;
-    return Plotly.plot(gd).then(function () {
-        gd.emit('plotly_redraw');
-        return gd;
-    });
-};
-
-/**
- * Convenience function to make idempotent plot option obvious to users.
- *
- * @param gd
- * @param {Object[]} data
- * @param {Object} layout
- * @param {Object} config
- */
-Plotly.newPlot = function (gd, data, layout, config) {
-    gd = getGraphDiv(gd);
-    plots.purge(gd);
-    return Plotly.plot(gd, data, layout, config);
-};
+//     gd.calcdata = undefined;
+//     return Plotly.plot(gd).then(function () {
+//         gd.emit('plotly_redraw');
+//         return gd;
+//     });
+// };
 
 function doCalcdata(gd) {
     var axList = Plotly.Axes.list(gd),
@@ -1326,67 +982,51 @@ function spliceTraces (gd, update, indices, maxPoints, lengthenArray, spliceArra
     return {update: undoUpdate, maxPoints: undoPoints};
 }
 
-/**
- * extend && prepend traces at indices with update arrays, window trace lengths to maxPoints
- *
- * Extend and Prepend have identical APIs. Prepend inserts an array at the head while Extend
- * inserts an array off the tail. Prepend truncates the tail of the array - counting maxPoints
- * from the head, whereas Extend truncates the head of the array, counting backward maxPoints
- * from the tail.
- *
- * If maxPoints is undefined, nonNumeric, negative or greater than extended trace length no
- * truncation / windowing will be performed. If its zero, well the whole trace is truncated.
- *
- * @param {Object|HTMLDivElement} gd The graph div
- * @param {Object} update The key:array map of target attributes to extend
- * @param {Number|Number[]} indices The locations of traces to be extended
- * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
- *
- */
-Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
-    gd = getGraphDiv(gd);
+var extendTraces = require('./extend_traces');
+Plotly.extendTraces = extendTraces;
 
-    var undo = spliceTraces(gd, update, indices, maxPoints,
+// function extendTraces (gd, update, indices, maxPoints) {
+//     gd = Helpers.getGraphDiv(gd);
 
-                           /*
-                            * The Lengthen operation extends trace from end with insert
-                            */
-                            function(target, insert) {
-                                return target.concat(insert);
-                            },
+//     var undo = Helpers.spliceTraces(gd, update, indices, maxPoints,
 
-                            /*
-                             * Window the trace keeping maxPoints, counting back from the end
-                             */
-                            function(target, maxPoints) {
-                                return target.splice(0, target.length - maxPoints);
-                            });
+                           
+//                             // The Lengthen operation extends trace from end with insert 
+//                             function(target, insert) {
+//                                 return target.concat(insert);
+//                             },
 
-    var promise = Plotly.redraw(gd);
+                            
+//                              //  Window the trace keeping maxPoints, counting back from the end
+//                             function(target, maxPoints) {
+//                                 return target.splice(0, target.length - maxPoints);
+//                             });
 
-    var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if (Plotly.Queue) {
-        Plotly.Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
-    }
+//     var promise = Plotly.redraw(gd);
 
-    return promise;
-};
+//     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
+//     if (Queue) {
+//         Queue.add(gd, prependTraces, undoArgs, extendTraces, arguments);
+//     }
 
-Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) {
-    gd = getGraphDiv(gd);
+//     return promise;
+// };
 
-    var undo = spliceTraces(gd, update, indices, maxPoints,
+// var prependTraces = require('./prepend_traces');
+Plotly.prependTraces = prependTraces;
 
-                           /*
-                            * The Lengthen operation extends trace by appending insert to start
-                            */
+function prependTraces (gd, update, indices, maxPoints) {
+    gd = Helpers.getGraphDiv(gd);
+
+    var undo = Helpers.spliceTraces(gd, update, indices, maxPoints,
+
+                            // The Lengthen operation extends trace by appending insert to start
                             function(target, insert) {
                                 return insert.concat(target);
                             },
 
-                            /*
-                             * Window the trace keeping maxPoints, counting forward from the start
-                             */
+                            
+                            // Window the trace keeping maxPoints, counting forward from the start 
                             function(target, maxPoints) {
                                 return target.splice(maxPoints, target.length);
                             });
@@ -1394,8 +1034,8 @@ Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) 
     var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if (Plotly.Queue) {
-        Plotly.Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
+    if (Queue) {
+        Queue.add(gd, extendTraces, undoArgs, prependTraces, arguments);
     }
 
     return promise;
@@ -1411,7 +1051,7 @@ Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) 
  *
  */
 Plotly.addTraces = function addTraces (gd, traces, newIndices) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     var currentIndices = [],
         undoFunc = Plotly.deleteTraces,
@@ -1480,7 +1120,7 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
  * @param {Number|Number[]} indices The indices
  */
 Plotly.deleteTraces = function deleteTraces (gd, indices) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     var traces = [],
         undoFunc = Plotly.addTraces,
@@ -1547,7 +1187,7 @@ Plotly.deleteTraces = function deleteTraces (gd, indices) {
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
 Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     var newData = [],
         movingTraceMap = [],
@@ -1638,7 +1278,7 @@ Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
 // If the array is too short, it will wrap around (useful for
 // style files that want to specify cyclical default values).
 Plotly.restyle = function restyle(gd, astr, val, traces) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     var i, fullLayout = gd._fullLayout,
         aobj = {};
@@ -2169,7 +1809,7 @@ function swapXYData(trace) {
 //      aobj - {astr1:val1, astr2:val2...}
 //          allows setting multiple attributes simultaneously
 Plotly.relayout = function relayout(gd, astr, val) {
-    gd = getGraphDiv(gd);
+    gd = Helpers.getGraphDiv(gd);
 
     if(gd.framework && gd.framework.isPolar) {
         return new Promise.resolve(gd);
