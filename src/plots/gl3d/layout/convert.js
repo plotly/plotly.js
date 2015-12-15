@@ -91,7 +91,9 @@ proto.merge = function(sceneLayout) {
         if ('gridcolor' in axes) opts.gridColor[i]  = str2RgbaArray(axes.gridcolor);
         if ('gridwidth' in axes) opts.gridWidth[i]  = axes.gridwidth;
 
-        if ('zeroline' in axes)      opts.zeroEnable[i]    = axes.zeroline;
+        // Remove zeroline if axis type is log //
+        if (axes.type === 'log') opts.zeroEnable[i]        = false;
+        else if ('zeroline' in axes) opts.zeroEnable[i]    = axes.zeroline;
         if ('zerolinecolor' in axes) opts.zeroLineColor[i] = str2RgbaArray(axes.zerolinecolor);
         if ('zerolinewidth' in axes) opts.zeroLineWidth[i] = axes.zerolinewidth;
 
