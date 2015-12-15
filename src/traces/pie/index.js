@@ -374,7 +374,7 @@ pie.plot = function(gd, cdpie) {
                 }
 
                 function handleClick (evt) {
-                    gd._hoverdata = pt;
+                    gd._hoverdata = [pt];
                     gd._hoverdata.trace = cd.trace;
                     Plotly.Fx.click(gd, { target: true });
                 }
