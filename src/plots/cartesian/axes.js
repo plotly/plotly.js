@@ -1097,13 +1097,10 @@ function numFormat(v, ax, fmtoverride, hover) {
     // add exponent
     if(exponent && exponentFormat !== 'hide') {
         var signedExponent;
-        if(exponent < 0){
-            signedExponent = '\u2212' + -exponent;
-        } else if(exponentFormat !== 'power') {
-            signedExponent = '+' + exponent;
-        } else {
-            signedExponent = String(exponent);
-        }
+
+        if(exponent < 0) signedExponent = '\u2212' + -exponent;
+        else if(exponentFormat !== 'power') signedExponent = '+' + exponent;
+        else signedExponent = String(exponent);
 
         if(exponentFormat === 'e' ||
                 ((exponentFormat === 'SI' || exponentFormat === 'B') &&
