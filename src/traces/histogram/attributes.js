@@ -9,7 +9,7 @@
 
 'use strict';
 
-var barAttrs = require('../bars/attributes');
+var barAttrs = require('../bar/attributes');
 
 
 module.exports = {

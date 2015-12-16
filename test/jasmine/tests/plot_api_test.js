@@ -8,7 +8,7 @@ describe('Test graph_obj', function () {
             spyOn(Plotly.Plots, 'previousPromises');
             spyOn(Plotly, 'plot');
             spyOn(Plotly.Scatter, 'arraysToCalcdata');
-            spyOn(Plotly.Bars, 'arraysToCalcdata');
+            spyOn(Plotly.Bar, 'arraysToCalcdata');
             spyOn(Plotly.Plots, 'style');
             spyOn(Plotly.Legend, 'draw');
         });
@@ -28,14 +28,14 @@ describe('Test graph_obj', function () {
             mockDefaultsAndCalc(gd);
             Plotly.restyle(gd, {'marker.color': 'red'});
             expect(Plotly.Scatter.arraysToCalcdata).toHaveBeenCalled();
-            expect(Plotly.Bars.arraysToCalcdata).not.toHaveBeenCalled();
+            expect(Plotly.Bar.arraysToCalcdata).not.toHaveBeenCalled();
             expect(Plotly.Plots.style).toHaveBeenCalled();
             expect(Plotly.plot).not.toHaveBeenCalled();
             // "docalc" deletes gd.calcdata - make sure this didn't happen
             expect(gd.calcdata).toBeDefined();
         });
 
-        it('calls Bars.arraysToCalcdata and Plots.style on bar styling', function() {
+        it('calls Bar.arraysToCalcdata and Plots.style on bar styling', function() {
             var gd = {
                 data: [{x: [1,2,3], y: [1,2,3], type: 'bar'}],
                 layout: {}
@@ -43,7 +43,7 @@ describe('Test graph_obj', function () {
             mockDefaultsAndCalc(gd);
             Plotly.restyle(gd, {'marker.color': 'red'});
             expect(Plotly.Scatter.arraysToCalcdata).not.toHaveBeenCalled();
-            expect(Plotly.Bars.arraysToCalcdata).toHaveBeenCalled();
+            expect(Plotly.Bar.arraysToCalcdata).toHaveBeenCalled();
             expect(Plotly.Plots.style).toHaveBeenCalled();
             expect(Plotly.plot).not.toHaveBeenCalled();
             expect(gd.calcdata).toBeDefined();

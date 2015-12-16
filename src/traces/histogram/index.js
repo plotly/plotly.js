@@ -13,8 +13,8 @@ var Plotly = require('../../plotly');
 
 /** 
  * Histogram has its own calc function,
- * but uses Bars.plot to display
- * and Bars.setPositions for stacking and grouping
+ * but uses bar's plot to display
+ * and bar's setPositions for stacking and grouping
  */
 
 /**
@@ -38,20 +38,20 @@ Plotly.Plots.register(exports, 'histogram',
 
 exports.attributes = require('./attributes');
 
-exports.layoutAttributes = require('../bars/layout_attributes');
+exports.layoutAttributes = require('../bar/layout_attributes');
 
-exports.supplyDefaults = require('../bars/defaults');
+exports.supplyDefaults = require('../bar/defaults');
 
-exports.supplyLayoutDefaults = require('../bars/layout_defaults');
+exports.supplyLayoutDefaults = require('../bar/layout_defaults');
 
 exports.calc = require('./calc');
 
-exports.setPositions = require('../bars/set_positions');
+exports.setPositions = require('../bar/set_positions');
 
-exports.plot = require('../bars/plot');
+exports.plot = require('../bar/plot');
 
-exports.style = require('../bars/style');
+exports.style = require('../bar/style');
 
 exports.colorbar = require('../scatter/colorbar');
 
-exports.hoverPoints = require('../bars/hover');
+exports.hoverPoints = require('../bar/hover');

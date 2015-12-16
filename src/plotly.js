@@ -57,7 +57,7 @@ exports.ModeBar = require('./components/modebar');
 
 // traces
 exports.Scatter = require('./traces/scatter');
-exports.Bars = require('./traces/bars');
+exports.Bar = require('./traces/bar');
 exports.Boxes = require('./traces/boxes');
 exports.Heatmap = require('./traces/heatmap');
 exports.Histogram = require('./traces/histogram');

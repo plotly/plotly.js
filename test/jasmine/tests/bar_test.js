@@ -1,6 +1,6 @@
-var Bars = require('@src/traces/bars');
+var Bar = require('@src/traces/bar');
 
-describe('Test bars', function () {
+describe('Test bar', function () {
     'use strict';
 
     describe('supplyDefaults', function() {
@@ -9,7 +9,7 @@ describe('Test bars', function () {
 
         var defaultColor = '#444';
 
-        var supplyDefaults = Bars.supplyDefaults;
+        var supplyDefaults = Bar.supplyDefaults;
 
         beforeEach(function() {
             traceOut = {};
