@@ -23,6 +23,8 @@ var Plotly = require('../../plotly');
  * constant and % work but they're not so meaningful. I guess it could be cool
  * to allow quadrature combination of errors in summed histograms...
  */
+
+Plotly.Plots.register(exports, 'histogram',
     ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'], {
     description: [
         'The sample data from which statistics are computed is set in `x`',
@@ -34,4 +36,22 @@ var Plotly = require('../../plotly');
     ].join(' ')
 });
 
+exports.attributes = require('./attributes');
 
+exports.layoutAttributes = require('../bars/layout_attributes');
+
+exports.supplyDefaults = require('../bars/defaults');
+
+exports.supplyLayoutDefaults = require('../bars/layout_defaults');
+
+exports.calc = require('./calc');
+
+exports.setPositions = require('../bars/set_positions');
+
+exports.plot = require('../bars/plot');
+
+exports.style = require('../bars/style');
+
+exports.colorbar = require('../scatter/colorbar');
+
+exports.hoverPoints = require('../bars/hover');
