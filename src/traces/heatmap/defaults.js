@@ -11,11 +11,11 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Colorscale = require('../../components/colorscale');
 
+var histogramSupplyDefaults = require('../histogram/defaults');
 var attributes = require('./attributes');
 var hasColumns = require('./has_columns');
 
@@ -33,7 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         // x, y, z, marker.color, and x0, dx, y0, dy are coerced
         // in Histogram.supplyDefaults
         // (along with histogram-specific attributes)
-        Plotly.Histogram.supplyDefaults(traceIn, traceOut);
+        histogramSupplyDefaults(traceIn, traceOut);
         if(traceOut.visible === false) return;
     }
     else {
