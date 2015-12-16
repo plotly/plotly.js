@@ -1,4 +1,4 @@
-var Plotly = require('@src/plotly');
+var Box = require('@src/traces/box');
 
 describe('Test boxes', function () {
     'use strict';
@@ -9,7 +9,7 @@ describe('Test boxes', function () {
 
         var defaultColor = '#444';
 
-        var supplyDefaults = Plotly.Boxes.supplyDefaults;
+        var supplyDefaults = Box.supplyDefaults;
 
         beforeEach(function() {
             traceOut = {};
