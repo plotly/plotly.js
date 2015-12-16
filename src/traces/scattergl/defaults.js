@@ -9,18 +9,20 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var ScatterGl = require('./');
+var Lib = require('../../lib');
+var Scatter = require('../scatter');
+
+var handleXYDefaults = require('../scatter/xy_defaults');
+var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
+var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    var Scatter = Plotly.Scatter;
-
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, ScatterGl.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = Scatter.handleXYDefaults(traceIn, traceOut, coerce);
+    var len = handleXYDefaults(traceIn, traceOut, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -42,6 +44,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         Scatter.fillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
