@@ -1,0 +1,51 @@
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+
+
+module.exports = function colorbar(gd, cd) {
+    var trace = cd[0].trace,
+        marker = trace.marker,
+        cbId = 'cb' + trace.uid;
+
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+
+    // TODO unify Scatter.colorbar and Heatmap.colorbar
+    // TODO make Plotly[module].colorbar support multiple colorbar per trace
+
+    if(marker===undefined || !marker.showscale){
+        Plotly.Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var scl = Plotly.Colorscale.getScale(marker.colorscale),
+        vals = marker.color,
+        cmin = marker.cmin,
+        cmax = marker.cmax;
+
+    if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
+    if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
+
+    var cb = cd[0].t.cb = Plotly.Colorbar(gd, cbId);
+
+    cb.fillcolor(d3.scale.linear()
+            .domain(scl.map(function(v){ return cmin + v[0] * (cmax - cmin); }))
+            .range(scl.map(function(v){ return v[1]; })))
+        .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
+        .options(marker.colorbar)();
+
+    Lib.markTime('done colorbar');
+};

@@ -32,44 +32,14 @@ scatter.PTS_LINESONLY = 20;
 
 scatter.attributes = require('./attributes');
 
-scatter.handleXYDefaults = function(traceIn, traceOut, coerce) {
-    var len,
-        x = coerce('x'),
-        y = coerce('y');
-
-    if(x) {
-        if(y) {
-            len = Math.min(x.length, y.length);
-            // TODO: not sure we should do this here... but I think
-            // the way it works in calc is wrong, because it'll delete data
-            // which could be a problem eg in streaming / editing if x and y
-            // come in at different times
-            // so we need to revisit calc before taking this out
-            if(len<x.length) traceOut.x = x.slice(0, len);
-            if(len<y.length) traceOut.y = y.slice(0, len);
-        }
-        else {
-            len = x.length;
-            coerce('y0');
-            coerce('dy');
-        }
-    }
-    else {
-        if(!y) return 0;
-
-        len = traceOut.y.length;
-        coerce('x0');
-        coerce('dx');
-    }
-    return len;
-};
+var handleXYDefaults = require('./xy_defaults');
 
 scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
     }
 
-    var len = scatter.handleXYDefaults(traceIn, traceOut, coerce),
+    var len = handleXYDefaults(traceIn, traceOut, coerce),
         // TODO: default mode by orphan points...
         defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
     if(!len) {
@@ -246,39 +216,7 @@ scatter.isBubble = function(trace) {
                 Array.isArray(trace.marker.size));
 };
 
-scatter.colorbar = function(gd, cd) {
-    var trace = cd[0].trace,
-        marker = trace.marker,
-        cbId = 'cb' + trace.uid;
-
-    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
-
-    // TODO unify Scatter.colorbar and Heatmap.colorbar
-    // TODO make Plotly[module].colorbar support multiple colorbar per trace
-
-    if(marker===undefined || !marker.showscale){
-        Plotly.Plots.autoMargin(gd, cbId);
-        return;
-    }
-
-    var scl = Plotly.Colorscale.getScale(marker.colorscale),
-        vals = marker.color,
-        cmin = marker.cmin,
-        cmax = marker.cmax;
-
-    if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
-    if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
-
-    var cb = cd[0].t.cb = Plotly.Colorbar(gd, cbId);
-
-    cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v){ return cmin + v[0] * (cmax - cmin); }))
-            .range(scl.map(function(v){ return v[1]; })))
-        .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
-        .options(marker.colorbar)();
-
-    Plotly.Lib.markTime('done colorbar');
-};
+scatter.colorbar = require('./colorbar');
 
 // used in the drawing step for 'scatter' and 'scattegeo' and
 // in the convert step for 'scatter3d'
