@@ -37,7 +37,7 @@ npm install plotly.js
 #### Use the plotly.js CDN hosted by Fastly:
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
-<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js">
+<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 ```
 
 Read the [Getting started page](https://plot.ly/javascript/getting-started/) for examples.
