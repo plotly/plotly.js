@@ -941,7 +941,6 @@ Plotly.redraw = function(gd) {
 Plotly.newPlot = function (gd, data, layout, config) {
     gd = getGraphDiv(gd);
     plots.purge(gd);
-    gd.removeAllListeners();
     return Plotly.plot(gd, data, layout, config);
 };
 
