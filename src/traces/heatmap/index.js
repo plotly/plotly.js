@@ -46,7 +46,7 @@ exports.calc = require('./calc');
 
 exports.plot = require('./plot');
 
-exports.colorbar = Plotly.Colorbar.traceColorbar;
+exports.colorbar = require('./colorbar');
 
 exports.style = require('./style');
 

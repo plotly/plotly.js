@@ -30,7 +30,7 @@ Surface.attributes = require('./attributes');
 
 Surface.supplyDefaults = require('./defaults');
 
-Surface.colorbar = Plotly.Colorbar.traceColorbar;
+Surface.colorbar = require('../heatmap/colorbar');
 
 Surface.calc = function(gd, trace) {
 
