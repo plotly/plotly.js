@@ -1276,7 +1276,7 @@ fx.click = function(gd,evt){
     if(gd._hoverdata && evt && evt.target) {
         gd.emit('plotly_click', {points: gd._hoverdata});
         // why do we get a double event without this???
-        evt.stopImmediatePropagation();
+        if(evt.stopImmediatePropagation) evt.stopImmediatePropagation();
     }
 };
 
