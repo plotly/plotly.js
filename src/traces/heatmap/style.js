@@ -17,4 +17,3 @@ module.exports = function style(gd) {
             return d.trace.opacity;
         });
 };
-

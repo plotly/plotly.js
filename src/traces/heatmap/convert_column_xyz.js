@@ -53,5 +53,3 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
     trace.z = z;
     if(hasColumnText) trace.text = text;
 };
-
-

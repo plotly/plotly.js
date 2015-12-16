@@ -198,4 +198,3 @@ module.exports = function setPositions(gd, plotinfo) {
         }
     });
 };
-
