@@ -14,6 +14,7 @@ var isNumeric = require('fast-isnumeric');
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 
+var histogram2dCalc = require('../histogram2d/calc');
 var hasColumns = require('./has_columns');
 var convertColumnXYZ = require('./convert_column_xyz');
 var maxRowLength = require('./max_row_length');
@@ -45,7 +46,7 @@ module.exports = function calc(gd, trace) {
     Lib.markTime('done convert x&y');
 
     if(isHist) {
-        var binned = Plotly.Histogram.calc2d(gd, trace);
+        var binned = histogram2dCalc(gd, trace);
         x = binned.x;
         x0 = binned.x0;
         dx = binned.dx;
