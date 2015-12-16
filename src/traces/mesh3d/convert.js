@@ -76,15 +76,15 @@ proto.update = function(data) {
     this.data = data;
 
     //Unpack position data
-    function toDataCoords(axis, coord, scale, offset) {
+    function toDataCoords(axis, coord, scale) {
       return coord.map(function(x) {
-        return axis.d2l(x) * scale - offset;
+        return axis.d2l(x) * scale;
       });
     }
     var positions = zip3(
-      toDataCoords(layout.xaxis, data.x, scene.dataScale[0], scene.dataCenter[0]),
-      toDataCoords(layout.yaxis, data.y, scene.dataScale[1], scene.dataCenter[1]),
-      toDataCoords(layout.zaxis, data.z, scene.dataScale[2], scene.dataCenter[2]));
+      toDataCoords(layout.xaxis, data.x, scene.dataScale[0]),
+      toDataCoords(layout.yaxis, data.y, scene.dataScale[1]),
+      toDataCoords(layout.zaxis, data.z, scene.dataScale[2]));
 
 
     var cells;

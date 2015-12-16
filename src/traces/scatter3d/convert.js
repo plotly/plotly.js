@@ -169,7 +169,6 @@ function convertPlotlyOptions(scene, data) {
         points = [],
         sceneLayout = scene.fullSceneLayout,
         scaleFactor = scene.dataScale,
-        offset = scene.dataCenter,
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
@@ -184,9 +183,9 @@ function convertPlotlyOptions(scene, data) {
     //Convert points
     for (i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
-        xc = xaxis.d2l(x[i]) * scaleFactor[0] - offset[0];
-        yc = yaxis.d2l(y[i]) * scaleFactor[1] - offset[1];
-        zc = zaxis.d2l(z[i]) * scaleFactor[2] - offset[2];
+        xc = xaxis.d2l(x[i]) * scaleFactor[0];
+        yc = yaxis.d2l(y[i]) * scaleFactor[1];
+        zc = zaxis.d2l(z[i]) * scaleFactor[2];
 
         points[i] = [xc, yc, zc];
     }

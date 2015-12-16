@@ -218,7 +218,6 @@ function Scene(options, fullLayout) {
 
     //Coordinate rescaling
     this.dataScale    = [1,1,1];
-    this.dataCenter   = [0,0,0];
 
     this.contourLevels = [ [], [], [] ];
 
@@ -334,24 +333,20 @@ proto.plot = function(sceneData, fullLayout, layout) {
       computeTraceBounds(this, data, dataBounds);
     }
     var dataScale = [1,1,1];
-    var dataCenter = [0,0,0];
     for(var j=0; j<3; ++j) {
       if(dataBounds[0][j] > dataBounds[1][j]) {
         dataScale[j] = 1.0;
-        dataCenter[j] = 0.0;
       } else {
         if(dataBounds[1][j] === dataBounds[0][j]) {
           dataScale[j] = 1.0;
         } else {
           dataScale[j] = 1.0/(dataBounds[1][j] - dataBounds[0][j]);
         }
-        dataCenter[j] = 0.5 * (dataBounds[0][j] + dataBounds[1][j]) * dataScale[j];
       }
     }
 
-    //Save scale and offset factors
+    //Save scale
     this.dataScale = dataScale;
-    this.dataCenter = dataCenter;
 
     //Update traces
     for(var i = 0; i < sceneData.length; ++i) {
@@ -422,9 +417,9 @@ trace_id_loop:
             for(j = 0; j < this.glplot.objects.length; ++j) {
                 var objBounds = this.glplot.objects[j].bounds;
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i],
-                  (objBounds[0][i] + dataCenter[i]) / dataScale[i]);
+                  objBounds[0][i] / dataScale[i]);
                 sceneBounds[1][i] = Math.max(sceneBounds[1][i],
-                  (objBounds[1][i] + dataCenter[i]) / dataScale[i]);
+                  objBounds[1][i] / dataScale[i]);
             }
             if('rangemode' in axis && axis.rangemode === 'tozero') {
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0);
@@ -450,8 +445,8 @@ trace_id_loop:
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
 
         //Update plot bounds
-        this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i] - dataCenter[i];
-        this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i] - dataCenter[i];
+        this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i];
+        this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i];
     }
 
     var axesScaleRatio = [1, 1, 1];
