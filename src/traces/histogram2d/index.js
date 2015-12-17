@@ -24,9 +24,9 @@ Plotly.Plots.register(exports, 'histogram2d',
     ].join(' ')
 });
 
-exports.attributes = require('../heatmap/attributes');
+exports.attributes = require('./attributes');
 
-exports.supplyDefaults = require('../heatmap/defaults');
+exports.supplyDefaults = require('./defaults');
 
 exports.calc = require('../heatmap/calc');
 

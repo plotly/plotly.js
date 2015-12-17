@@ -12,7 +12,7 @@
 var Plotly = require('../../plotly');
 
 /** 
- * Histogram has its own calc function,
+ * Histogram has its own attribute, defaults and calc steps,
  * but uses bar's plot to display
  * and bar's setPositions for stacking and grouping
  */
@@ -40,7 +40,7 @@ exports.attributes = require('./attributes');
 
 exports.layoutAttributes = require('../bar/layout_attributes');
 
-exports.supplyDefaults = require('../bar/defaults');
+exports.supplyDefaults = require('./defaults');
 
 exports.supplyLayoutDefaults = require('../bar/layout_defaults');
 

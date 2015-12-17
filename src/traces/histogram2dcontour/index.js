@@ -24,9 +24,9 @@ Plotly.Plots.register(exports, 'histogram2dcontour',
     ].join(' ')
 });
 
-exports.attributes = require('../contour/attributes');
+exports.attributes = require('./attributes');
 
-exports.supplyDefaults = require('../contour/defaults');
+exports.supplyDefaults = require('./defaults');
 
 exports.calc = require('../contour/calc');
 
