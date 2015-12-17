@@ -682,6 +682,9 @@ plots.purge = function(gd) {
     if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
     if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
 
+    // remove modebar
+    if(fullLayout._modeBar) fullLayout._modeBar.destroy();
+
     // data and layout
     delete gd.data;
     delete gd.layout;
