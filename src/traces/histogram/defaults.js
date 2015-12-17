@@ -9,60 +9,42 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var Color = require('../../components/color');
 
+var handleBinDefaults = require('./bin_defaults');
+var handleStyleDefaults = require('../bar/style_defaults');
+var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 var attributes = require('./attributes');
 
 
-module.exports = function(traceIn, traceOut) {
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var binDirections = ['x'],
-        hasAggregationData,
-        x = coerce('x'),
+    var x = coerce('x'),
         y = coerce('y');
 
-    if(Plotly.Plots.traceIs(traceOut, '2dMap')) {
-        // we could try to accept x0 and dx, etc...
-        // but that's a pretty weird use case.
-        // for now require both x and y explicitly specified.
-        if(!(x && x.length && y && y.length)) {
-            traceOut.visible = false;
-            return;
-        }
+    coerce('text');
 
-        // if marker.color is an array, we can use it in aggregation instead of z
-        hasAggregationData = coerce('z') || coerce('marker.color');
+    var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
+        sample = traceOut[orientation==='v' ? 'x' : 'y'];
 
-        binDirections = ['x','y'];
-    } else {
-        var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
-            sample = traceOut[orientation==='v' ? 'x' : 'y'];
-
-        if(!(sample && sample.length)) {
-            traceOut.visible = false;
-            return;
-        }
-
-        if(orientation==='h') binDirections = ['y'];
-
-        hasAggregationData = traceOut[orientation==='h' ? 'x' : 'y'];
+    if(!(sample && sample.length)) {
+        traceOut.visible = false;
+        return;
     }
 
+    var hasAggregationData = traceOut[orientation==='h' ? 'x' : 'y'];
     if(hasAggregationData) coerce('histfunc');
-    coerce('histnorm');
 
-    binDirections.forEach(function(binDirection) {
-        // data being binned - note that even though it's a little weird,
-        // it's possible to have bins without data, if there's inferred data
-        var binstrt = coerce(binDirection + 'bins.start'),
-            binend = coerce(binDirection + 'bins.end'),
-            autobin = coerce('autobin' + binDirection, !(binstrt && binend));
+    var binDirections = (orientation==='h') ? ['y'] : ['x'];
+    handleBinDefaults(traceIn, traceOut, coerce, binDirections);
 
-        if(autobin) coerce('nbins' + binDirection);
-        else coerce(binDirection + 'bins.size');
-    });
+    handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
+
+    // override defaultColor for error bars with defaultLine
+    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
