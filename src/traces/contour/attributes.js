@@ -7,16 +7,35 @@
 */
 
 
+var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line;
 
 module.exports = {
-    _composedModules: {  // composed module coupling
-        'contour': 'Heatmap',
-        'histogram2dcontour': 'Heatmap'
-    },
+    z: heatmapAttrs.z,
+    x: heatmapAttrs.x,
+    x0: heatmapAttrs.x0,
+    dx: heatmapAttrs.dx,
+    y: heatmapAttrs.y,
+    y0: heatmapAttrs.y0,
+    dy: heatmapAttrs.dy,
+    text: heatmapAttrs.text,
+    transpose: heatmapAttrs.transpose,
+    xtype: heatmapAttrs.xtype,
+    ytype: heatmapAttrs.ytype,
+
+    zauto: heatmapAttrs.zauto,
+    zmin: heatmapAttrs.zmin,
+    zmax: heatmapAttrs.zmax,
+    colorscale: heatmapAttrs.colorscale,
+    autocolorscale: heatmapAttrs.autocolorscale,
+    reversescale: heatmapAttrs.reversescale,
+    showscale: heatmapAttrs.showscale,
+
+    connectgaps: heatmapAttrs.connectgaps,
+
     autocontour: {
         valType: 'boolean',
         dflt: true,
@@ -34,6 +53,7 @@ module.exports = {
         role: 'style',
         description: 'Sets the number of contour levels.'
     },
+
     contours: {
         start: {
             valType: 'number',
@@ -77,6 +97,7 @@ module.exports = {
             ].join(' ')
         }
     },
+
     line: {
         color: extendFlat({}, scatterLineAttrs.color, {
             description: [
@@ -92,6 +113,9 @@ module.exports = {
                 'where *0* corresponds to no smoothing.'
             ].join(' ')
         })
+    },
+
+    _nestedModules: {
+        'colorbar': 'Colorbar'
     }
 };
-

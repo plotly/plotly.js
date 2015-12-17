@@ -1,4 +1,4 @@
-var Plotly = require('@src/plotly');
+var supplyDefaults = require('@src/traces/histogram/defaults');
 
 describe('Test histogram', function () {
     'use strict';
@@ -6,8 +6,6 @@ describe('Test histogram', function () {
     describe('supplyDefaults', function() {
         var traceIn,
             traceOut;
-
-        var supplyDefaults = Plotly.Histogram.supplyDefaults;
 
         beforeEach(function() {
             traceOut = {};

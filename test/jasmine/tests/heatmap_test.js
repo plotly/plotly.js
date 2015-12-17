@@ -1,4 +1,7 @@
 var Plotly = require('@src/plotly');
+var Heatmap = require('@src/traces/heatmap');
+var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
+
 
 describe('Test heatmap', function () {
     'use strict';
@@ -12,7 +15,7 @@ describe('Test heatmap', function () {
                 font: Plotly.Plots.layoutAttributes.font
             };
 
-        var supplyDefaults = Plotly.Heatmap.supplyDefaults;
+        var supplyDefaults = Heatmap.supplyDefaults;
 
         beforeEach(function() {
             traceOut = {};
@@ -82,7 +85,6 @@ describe('Test heatmap', function () {
     });
 
     describe('convertColumnXYZ', function() {
-        var convertColumnXYZ = Plotly.Heatmap.convertColumnXYZ;
         var trace;
 
         function makeMockAxis() {

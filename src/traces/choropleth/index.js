@@ -26,7 +26,7 @@ Choropleth.attributes = require('./attributes');
 
 Choropleth.supplyDefaults = require('./defaults');
 
-Choropleth.colorbar = Plotly.Colorbar.traceColorbar;
+Choropleth.colorbar = require('../heatmap/colorbar');
 
 Choropleth.calc = function(gd, trace) {
 
