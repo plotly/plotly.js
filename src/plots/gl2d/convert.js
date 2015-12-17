@@ -123,7 +123,9 @@ proto.merge = function(options) {
 
             this.tickEnable[i+j] = false;
             this.tickColor[i+j] = str2RGBArray((ax.tickfont || {}).color);
-            this.tickAngle[i+j] = (ax.tickangle === 'auto') ? 0 : -ax.tickangle;
+            this.tickAngle[i+j] = (ax.tickangle === 'auto') ?
+                0 :
+                Math.PI * -ax.tickangle / 180;
             this.tickPad[i+j] = this.getTickPad(ax);
 
             this.tickMarkLength[i+j] = 0;
