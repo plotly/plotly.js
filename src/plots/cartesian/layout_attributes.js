@@ -294,7 +294,13 @@ module.exports = {
         dflt: 10,
         role: 'style',
         description: [
-            'Determines the base for axes and exponent labels.'
+            'Determines the base for axes and exponent labels.',
+            '\"SI\" exponent formatting is available for bases of 2 and 10,',
+            'but otherwise, the exponent format will be overridden',
+            'and forced to use \"power\". This attribute will also affect',
+            'gridline spacing - placing them in accordance with their logical',
+            'base increments. E.g. if exponentbase is set to 2, a gridline',
+            'may be set at 1024 instead of 1000.'
         ].join(' ')
     },
     tickformat: {
