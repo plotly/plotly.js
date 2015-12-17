@@ -715,6 +715,9 @@ plots.purge = function(gd) {
     delete gd.numboxes;
     delete gd._hoverTimer;
     delete gd._lastHoverTime;
+
+    // remove all event listeners
+    if(gd.removeAllListeners) gd.removeAllListeners();
 };
 
 plots.style = function(gd) {
