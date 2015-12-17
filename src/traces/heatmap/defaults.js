@@ -9,122 +9,30 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-
-var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 var Colorscale = require('../../components/colorscale');
 
-var histogramSupplyDefaults = require('../histogram/defaults');
-var attributes = require('./attributes');
 var hasColumns = require('./has_columns');
+var handleXYZDefaults = require('./xyz_defaults');
+var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    var isContour = Plots.traceIs(traceOut, 'contour');
-
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    if(!isContour) coerce('zsmooth');
-
-    if(Plots.traceIs(traceOut, 'histogram')) {
-        // x, y, z, marker.color, and x0, dx, y0, dy are coerced
-        // in Histogram.supplyDefaults
-        // (along with histogram-specific attributes)
-        histogramSupplyDefaults(traceIn, traceOut);
-        if(traceOut.visible === false) return;
-    }
-    else {
-        var len = handleXYZDefaults(traceIn, traceOut, coerce);
-        if(!len) {
-            traceOut.visible = false;
-            return;
-        }
-
-        coerce('text');
-
-        var _hasColumns = hasColumns(traceOut);
-
-        if(!_hasColumns) coerce('transpose');
-        coerce('connectgaps', _hasColumns &&
-            (isContour || traceOut.zsmooth !== false));
+    var len = handleXYZDefaults(traceIn, traceOut, coerce);
+    if(!len) {
+        traceOut.visible = false;
+        return;
     }
 
-    if(!isContour || (traceOut.contours || {}).coloring!=='none') {
-        Colorscale.handleDefaults(
-            traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
-        );
-    }
+    coerce('text');
+    coerce('zsmooth');
+    coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
+
+    Colorscale.handleDefaults(
+        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+    );
 };
-
-function handleXYZDefaults(traceIn, traceOut, coerce) {
-    var z = coerce('z');
-    var x, y;
-
-    if(z===undefined || !z.length) return 0;
-
-    if(hasColumns(traceIn)) {
-        x = coerce('x');
-        y = coerce('y');
-
-        // column z must be accompanied by 'x' and 'y' arrays
-        if(!x || !y) return 0;
-    }
-    else {
-        x = coordDefaults('x', coerce);
-        y = coordDefaults('y', coerce);
-
-        // TODO put z validation elsewhere
-        if(!isValidZ(z)) return 0;
-    }
-
-    return traceOut.z.length;
-}
-
-function coordDefaults(coordStr, coerce) {
-    var coord = coerce(coordStr),
-        coordType = coord ?
-            coerce(coordStr + 'type', 'array') :
-            'scaled';
-
-    if(coordType === 'scaled') {
-        coerce(coordStr + '0');
-        coerce('d' + coordStr);
-    }
-
-    return coord;
-}
-
-function isValidZ(z) {
-    var allRowsAreArrays = true,
-        oneRowIsFilled = false,
-        hasOneNumber = false,
-        zi;
-
-    /*
-     * Without this step:
-     *
-     * hasOneNumber = false breaks contour but not heatmap
-     * allRowsAreArrays = false breaks contour but not heatmap
-     * oneRowIsFilled = false breaks both
-     */
-
-    for(var i = 0; i < z.length; i++) {
-        zi = z[i];
-        if(!Array.isArray(zi)) {
-            allRowsAreArrays = false;
-            break;
-        }
-        if(zi.length > 0) oneRowIsFilled = true;
-        for(var j = 0; j < zi.length; j++) {
-            if(isNumeric(zi[j])) {
-                hasOneNumber = true;
-                break;
-            }
-        }
-    }
-
-    return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
-}
