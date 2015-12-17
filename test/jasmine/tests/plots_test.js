@@ -1,4 +1,6 @@
 var Plotly = require('@src/plotly');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 describe('Test Plotly.Plots', function () {
     'use strict';
@@ -297,5 +299,51 @@ describe('Test Plotly.Plots', function () {
             });
         });
 
+    });
+
+    describe('Plotly.Plots.purge', function () {
+        var gd;
+
+        beforeEach(function (done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {}).then(done);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should unset everything in the gd except _context', function () {
+            var expectedKeys = [
+                '_ev', 'on', 'once', 'removeListener', 'removeAllListeners',
+                'emit', '_context', '_replotPending', '_mouseDownTime',
+                '_hmpixcount', '_hmlumcount'
+            ];
+
+            Plotly.Plots.purge(gd);
+            expect(Object.keys(gd)).toEqual(expectedKeys);
+            expect(gd.data).toBeUndefined();
+            expect(gd.layout).toBeUndefined();
+            expect(gd._fullData).toBeUndefined();
+            expect(gd._fullLayout).toBeUndefined();
+            expect(gd.calcdata).toBeUndefined();
+            expect(gd.framework).toBeUndefined();
+            expect(gd.empty).toBeUndefined();
+            expect(gd.fid).toBeUndefined();
+            expect(gd.undoqueue).toBeUndefined();
+            expect(gd.undonum).toBeUndefined();
+            expect(gd.autoplay).toBeUndefined();
+            expect(gd.changed).toBeUndefined();
+            expect(gd._modules).toBeUndefined();
+            expect(gd._tester).toBeUndefined();
+            expect(gd._testref).toBeUndefined();
+            expect(gd._promises).toBeUndefined();
+            expect(gd._redrawTimer).toBeUndefined();
+            expect(gd._replotting).toBeUndefined();
+            expect(gd.firstscatter).toBeUndefined();
+            expect(gd.hmlumcount).toBeUndefined();
+            expect(gd.hmpixcount).toBeUndefined();
+            expect(gd.numboxes).toBeUndefined();
+            expect(gd._hoverTimer).toBeUndefined();
+            expect(gd._lastHoverTime).toBeUndefined();
+        });
     });
 });
