@@ -18,7 +18,7 @@ var Color = require('../../components/color');
 var arraysToCalcdata = require('./arrays_to_calcdata');
 
 
-module.exports = function(gd, plotinfo, cdbar) {
+module.exports = function plot(gd, plotinfo, cdbar) {
     var xa = plotinfo.x(),
         ya = plotinfo.y(),
         fullLayout = gd._fullLayout;
