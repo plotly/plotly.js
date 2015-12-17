@@ -109,7 +109,9 @@ proto.merge = function(sceneLayout) {
         if ('tickcolor' in axes) opts.lineTickColor[i] = str2RgbaArray(axes.tickcolor);
         if ('tickwidth' in axes) opts.lineTickWidth[i] = axes.tickwidth;
         if ('tickangle' in axes) {
-            opts.tickAngle[i] = axes.tickangle === 'auto' ? 0 : axes.tickangle;
+            opts.tickAngle[i] = (axes.tickangle === 'auto') ?
+                0 :
+                Math.PI * -axes.tickangle / 180;
         }
         //// tick labels
         if ('showticklabels' in axes) opts.tickEnable[i] = axes.showticklabels;
