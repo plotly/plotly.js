@@ -550,16 +550,19 @@
       "xaxis": {
         "showbackground": true,
         "type": "linear",
-        "backgroundcolor": "rgb(255, 127, 14)"
+        "backgroundcolor": "rgb(255, 127, 14)",
+        "tickangle": 180
       },
       "yaxis": {
         "showbackground": true,
         "type": "linear",
-        "backgroundcolor": "rgb(255, 0, 0)"
+        "backgroundcolor": "rgb(255, 0, 0)",
+        "tickangle": -45
       },
       "zaxis": {
         "showbackground": true,
-        "backgroundcolor": "rgb(44, 160, 44)"
+        "backgroundcolor": "rgb(44, 160, 44)",
+        "tickangle": 30
       }
     }
   }
