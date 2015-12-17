@@ -10,6 +10,10 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
+var extendFlat = require('../../lib').extendFlat;
+
+var barMarkerAttrs = barAttrs.marker;
+var barMarkerLineAttrs = barMarkerAttrs.line;
 
 
 module.exports = {
@@ -25,17 +29,10 @@ module.exports = {
             'Sets the sample data to be binned on the y axis.'
         ].join(' ')
     },
-    z: {
-        valType: 'data_array',
-        description: 'Sets the aggregation data.'
-    },
-    marker: {
-        color: {  // FIXME this overrides 'bar'
-            valType: 'data_array',
-            arrayOk: undefined
-        }
-    },
+
+    text: barAttrs.text,
     orientation: barAttrs.orientation,
+
     histfunc: {
         valType: 'enumerated',
         values: ['count', 'sum', 'avg', 'min', 'max'],
@@ -78,6 +75,7 @@ module.exports = {
             '(here, the sum of all bin area equals 1).'
         ].join(' ')
     },
+
     autobinx: {
         valType: 'boolean',
         dflt: true,
@@ -95,6 +93,7 @@ module.exports = {
         description: 'Sets the number of x axis bins.'
     },
     xbins: makeBinsAttr('x'),
+
     autobiny: {
         valType: 'boolean',
         dflt: true,
@@ -111,7 +110,38 @@ module.exports = {
         role: 'style',
         description: 'Sets the number of y axis bins.'
     },
-    ybins: makeBinsAttr('y')
+    ybins: makeBinsAttr('y'),
+
+    marker: {
+        color: barMarkerAttrs.color,
+        colorscale: barMarkerAttrs.colorscale,
+        cauto: barMarkerAttrs.cauto,
+        cmax: barMarkerAttrs.cmax,
+        cmin: barMarkerAttrs.cmin,
+        autocolorscale: barMarkerAttrs.autocolorscale,
+        reversescale: barMarkerAttrs.reversescale,
+        showscale: barMarkerAttrs.showscale,
+        line: {
+            color: barMarkerLineAttrs.color,
+            colorscale: barMarkerLineAttrs.colorscale,
+            cauto: barMarkerLineAttrs.cauto,
+            cmax: barMarkerLineAttrs.cmax,
+            cmin: barMarkerLineAttrs.cmin,
+            autocolorscale: barMarkerLineAttrs.autocolorscale,
+            reversescale: barMarkerLineAttrs.reversescale,
+            width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})
+        }
+    },
+
+    _nestedModules: {
+        'error_y': 'ErrorBars',
+        'error_x': 'ErrorBars',
+        'marker.colorbar': 'Colorbar'
+    },
+
+    _deprecated: {
+        bardir: barAttrs._deprecated.bardir
+    }
 };
 
 function makeBinsAttr(axLetter) {

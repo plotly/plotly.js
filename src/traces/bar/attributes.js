@@ -51,12 +51,9 @@ module.exports = {
         }
     },
 
-    r: scatterAttrs.r,  // FIXME this shouldn't get included in 'histogram'
+    r: scatterAttrs.r,
     t: scatterAttrs.t,
 
-    _composedModules: {  // composed module coupling
-        'histogram': 'Histogram'
-    },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',
