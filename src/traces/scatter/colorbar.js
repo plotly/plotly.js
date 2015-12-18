@@ -14,6 +14,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var getColorscale = require('../../components/colorscale/get_scale');
 
 
 module.exports = function colorbar(gd, cd) {
@@ -31,7 +32,7 @@ module.exports = function colorbar(gd, cd) {
         return;
     }
 
-    var scl = Plotly.Colorscale.getScale(marker.colorscale),
+    var scl = getColorscale(marker.colorscale),
         vals = marker.color,
         cmin = marker.cmin,
         cmax = marker.cmax;

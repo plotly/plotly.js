@@ -11,9 +11,7 @@
 
 var Plotly = require('../../plotly');
 
-var Choropleth = module.exports = {};
-
-Plotly.Plots.register(Choropleth, 'choropleth', ['geo', 'noOpacity'], {
+Plotly.Plots.register(exports, 'choropleth', ['geo', 'noOpacity'], {
     description: [
         'The data that describes the choropleth value-to-color mapping',
         'is set in `z`.',
@@ -22,14 +20,10 @@ Plotly.Plots.register(Choropleth, 'choropleth', ['geo', 'noOpacity'], {
     ].join(' ')
 });
 
-Choropleth.attributes = require('./attributes');
+exports.attributes = require('./attributes');
 
-Choropleth.supplyDefaults = require('./defaults');
+exports.supplyDefaults = require('./defaults');
 
-Choropleth.colorbar = require('../heatmap/colorbar');
+exports.colorbar = require('../heatmap/colorbar');
 
-Choropleth.calc = function(gd, trace) {
-
-    Plotly.Colorscale.calc(trace, trace.z, '', 'z');
-
-};
+exports.calc = require('../surface/calc');

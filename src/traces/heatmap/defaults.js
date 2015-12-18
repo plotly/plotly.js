@@ -10,10 +10,10 @@
 'use strict';
 
 var Lib = require('../../lib');
-var Colorscale = require('../../components/colorscale');
 
 var hasColumns = require('./has_columns');
 var handleXYZDefaults = require('./xyz_defaults');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
 
 
@@ -32,7 +32,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('zsmooth');
     coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
 
-    Colorscale.handleDefaults(
-        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
-    );
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };

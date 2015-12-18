@@ -9,11 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 var nestedProperty = require('./nested_property');
 
+var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 
 
@@ -140,7 +140,7 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            propOut.set(Plotly.Colorscale.getScale(v, dflt));
+            propOut.set(getColorscale(v, dflt));
         }
     },
     angle: {

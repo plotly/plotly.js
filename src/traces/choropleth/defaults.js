@@ -9,24 +9,28 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var Choropleth = require('./');
+var Lib = require('../../lib');
+
+var colorscaleDefaults = require('../../components/colorscale/defaults');
+var attributes = require('./attributes');
+
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    var locations, len, z;
-
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, Choropleth.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    locations = coerce('locations');
+    var locations = coerce('locations');
+
+    var len;
     if(locations) len = locations.length;
+
     if(!locations || !len) {
         traceOut.visible = false;
         return;
     }
 
-    z = coerce('z');
+    var z = coerce('z');
     if(!Array.isArray(z)) {
         traceOut.visible = false;
         return;
@@ -41,7 +45,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('marker.line.color');
     coerce('marker.line.width');
 
-    Plotly.Colorscale.handleDefaults(
+    colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
 

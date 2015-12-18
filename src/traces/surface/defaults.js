@@ -9,15 +9,17 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var Surface = require('./');
+var Lib = require('../../lib');
+
+var colorscaleDefaults = require('../../components/colorscale/defaults');
+var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var i, j;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, Surface.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
     var z = coerce('z');
@@ -83,7 +85,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    Plotly.Colorscale.handleDefaults(
+    colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
 };

@@ -14,11 +14,12 @@ var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var getColorscale = require('../../components/colorscale/get_scale');
 
 module.exports = function colorbar(gd, cd) {
     var trace = cd[0].trace,
         cbId = 'cb' + trace.uid,
-        scl = Plotly.Colorscale.getScale(trace.colorscale),
+        scl = getColorscale(trace.colorscale),
         zmin = trace.zmin,
         zmax = trace.zmax;
 

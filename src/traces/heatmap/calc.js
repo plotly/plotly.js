@@ -15,6 +15,7 @@ var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 
 var histogram2dCalc = require('../histogram2d/calc');
+var colorscaleCalc = require('../../components/colorscale/calc');
 var hasColumns = require('./has_columns');
 var convertColumnXYZ = require('./convert_column_xyz');
 var maxRowLength = require('./max_row_length');
@@ -120,7 +121,7 @@ module.exports = function calc(gd, trace) {
     var cd0 = {x: xArray, y: yArray, z: z};
 
     // auto-z and autocolorscale if applicable
-    Plotly.Colorscale.calc(trace, z, '', 'z');
+    colorscaleCalc(trace, z, '', 'z');
 
     if(isContour && trace.contours && trace.contours.coloring==='heatmap') {
         var hmType = trace.type === 'contour' ? 'heatmap' : 'histogram2d';

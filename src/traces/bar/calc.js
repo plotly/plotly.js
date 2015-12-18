@@ -12,6 +12,8 @@
 var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
+var hasColorscale = require('../../components/colorscale/has_colorscale');
+var colorscaleCalc = require('../../components/colorscale/calc');
 
 
 module.exports = function calc(gd, trace) {
@@ -44,11 +46,11 @@ module.exports = function calc(gd, trace) {
     }
 
     // auto-z and autocolorscale if applicable
-    if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
-        Plotly.Colorscale.calc(trace, trace.marker.color, 'marker', 'c');
+    if(hasColorscale(trace, 'marker')) {
+        colorscaleCalc(trace, trace.marker.color, 'marker', 'c');
     }
-    if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
-        Plotly.Colorscale.calc(trace, trace.marker.line.color, 'marker.line', 'c');
+    if(hasColorscale(trace, 'marker.line')) {
+        colorscaleCalc(trace, trace.marker.line.color, 'marker.line', 'c');
     }
 
     return cd;
