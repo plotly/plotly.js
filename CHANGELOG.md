@@ -3,6 +3,12 @@
 For more context information, please read through the
 [release notes](https://github.com/plotly/plotly.js/releases).
 
+To see all merged commits on the master branch that will be part of the next plotly.js release, go to:
+
+https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
+
+where X.Y.Z is the semver of most recent plotly.js release.
+
 ## [1.2.1] -- 2015-12-14
 
 ### Changed
