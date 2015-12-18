@@ -289,8 +289,8 @@ module.exports = {
         ].join(' ')
     },
     exponentbase: {
-        valType: 'number',
-        min: 2,
+        valType: 'enumerated',
+        values: [2, '2', 'e', 8, '8', 10, '10', 16, '16'],
         dflt: 10,
         role: 'style',
         description: [

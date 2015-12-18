@@ -632,9 +632,9 @@ axes.autoTicks = function(ax, roughDTick){
             var nt = 1.5 * Math.abs((ax.range[1] - ax.range[0]) / roughDTick);
 
             // ticks on a linear scale, labeled fully
-            roughDTick = Math.abs(Math.pow(10, ax.range[1]) -
-                Math.pow(10, ax.range[0])) / nt;
-            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            roughDTick = Math.abs(Math.pow(ax.exponentbase, ax.range[1]) -
+                Math.pow(ax.exponentbase, ax.range[0])) / nt;
+            base = Math.pow(ax.exponentbase, Math.floor(Math.log(roughDTick) / Math.log(ax.exponentbase)));
             ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
         }
         else {
@@ -693,7 +693,7 @@ function autoTickRound(ax) {
             ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.log(ax.exponentbase) + 0.01);
 
             if(ax.type === 'log') {
-                maxend = Math.pow(10, Math.max(ax.range[0], ax.range[1]));
+                maxend = Math.pow(ax.exponentbase, Math.max(ax.range[0], ax.range[1]));
             }
             else maxend = Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1]));
 
@@ -1019,7 +1019,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         tickRound = ax._tickround,
         exponentFormat = fmtoverride || ax.exponentformat || 'B',
         exponent = ax._tickexponent,
-        base = ax.exponentbase || 10,
+        base = +ax.exponentbase || 10,
         isBase10 = (base === 10),
         tickformat = ax.tickformat;
 
@@ -1045,7 +1045,8 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(tickformat) return d3.format(tickformat)(v).replace(/-/g,'\u2212');
 
     // 'epsilon' - rounding increment
-    var e = Math.pow(base, -tickRound) / 2;
+    var e = isBase10 ? Math.pow(base, -tickRound) / 2 : 0;
+    // var e = 0;
 
     // exponentFormat codes:
     // 'e' (1.2e+6, default)
@@ -1061,6 +1062,7 @@ function numFormat(v, ax, fmtoverride, hover) {
     // take the sign out, put it back manually at the end
     // - makes cases easier
     v = Math.abs(v);
+
     if(v < e) {
         // 0 is just 0, but may get exponent if it's the last tick
         v = '0';
@@ -1069,16 +1071,11 @@ function numFormat(v, ax, fmtoverride, hover) {
         v += e;
         // take out a common exponent, if any
         // Special case for base 2 to follow "SI"
-        if(exponent && base === 2 && exponentFormat === 'SI') {
-            v = v / 1024;
-
-            // To make 1024 -> 1k
-            exponent -= 9;
-            tickRound += exponent;
-        } else {
+        if(exponent){
             v *= Math.pow(base, -exponent);
             tickRound += exponent;
         }
+
         // round the mantissa
         if(tickRound === 0) v = String(Math.floor(v));
         else if(tickRound < 0) {
@@ -1112,6 +1109,13 @@ function numFormat(v, ax, fmtoverride, hover) {
         } else if(exponentFormat === 'B' && exponent === 9) {
             v += 'B';
         } else if(exponentFormat === 'SI' || exponentFormat === 'B') {
+            if(base === 2 && exponent >= 10){
+                v = v * Math.pow(base, (exponent - 10));
+                exponent -= 9;
+            } else if(base === 2 && exponent < 10){
+                v = v * Math.pow(base, (exponent));
+                exponent = 0;
+            }
             v += SIPREFIXES[exponent / 3 + 5];
         } else {
             v += '&times;' + base + '<sup>' + signedExponent + '</sup>';
