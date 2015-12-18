@@ -373,8 +373,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
     // piggyback off autotick code to make "nice" bin sizes
     var dummyax = {
         type: ax.type==='log' ? 'linear' : ax.type,
-        range:[datamin, datamax],
-        exponentbase: ax.exponentbase
+        range:[datamin, datamax]
     };
     axes.autoTicks(dummyax, size0);
     var binstart = axes.tickIncrement(
@@ -691,7 +690,7 @@ function autoTickRound(ax) {
         else {
             if(!isNumeric(dtick)) dtick = Number(dtick.substr(1));
             // 2 digits past largest digit of dtick
-            ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
+            ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.log(ax.exponentbase) + 0.01);
 
             if(ax.type === 'log') {
                 maxend = Math.pow(10, Math.max(ax.range[0], ax.range[1]));
@@ -1021,6 +1020,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         exponentFormat = fmtoverride || ax.exponentformat || 'B',
         exponent = ax._tickexponent,
         base = ax.exponentbase || 10,
+        isBase10 = (base === 10),
         tickformat = ax.tickformat;
 
     // special case for hover: set exponent just for this value, and
@@ -1045,7 +1045,7 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(tickformat) return d3.format(tickformat)(v).replace(/-/g,'\u2212');
 
     // 'epsilon' - rounding increment
-    var e = Math.pow(10, -tickRound) / 2;
+    var e = Math.pow(base, -tickRound) / 2;
 
     // exponentFormat codes:
     // 'e' (1.2e+6, default)
@@ -1069,8 +1069,8 @@ function numFormat(v, ax, fmtoverride, hover) {
         v += e;
         // take out a common exponent, if any
         // Special case for base 2 to follow "SI"
-        if(exponent && base === 2) {
-            v = v/1024;
+        if(exponent && base === 2 && exponentFormat === 'SI') {
+            v = v / 1024;
 
             // To make 1024 -> 1k
             exponent -= 9;
@@ -1105,13 +1105,13 @@ function numFormat(v, ax, fmtoverride, hover) {
 
         if(exponentFormat === 'e' ||
                 ((exponentFormat === 'SI' || exponentFormat === 'B') &&
-                 (exponent > 12 || exponent < -15))) {
+                 (exponent > 12 || exponent < -15)) && isBase10) {
             v += 'e' + signedExponent;
-        } else if(exponentFormat === 'E' && base === 10) {
+        } else if(exponentFormat === 'E') {
             v += 'E' + signedExponent;
-        } else if(exponentFormat === 'B' && exponent === 9 && base === 10) {
+        } else if(exponentFormat === 'B' && exponent === 9) {
             v += 'B';
-        } else if((exponentFormat === 'SI' || exponentFormat === 'B') && (base === 2 || base === 10)) {
+        } else if(exponentFormat === 'SI' || exponentFormat === 'B') {
             v += SIPREFIXES[exponent / 3 + 5];
         } else {
             v += '&times;' + base + '<sup>' + signedExponent + '</sup>';
