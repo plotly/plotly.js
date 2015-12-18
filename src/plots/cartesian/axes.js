@@ -361,8 +361,8 @@ axes.autoBin = function(data,ax,nbins,is2d) {
         // the size get smaller than the 'nice' rounded down minimum
         // difference between values
         var distinctData = Plotly.Lib.distinctVals(data),
-            msexp = Math.pow(10, Math.floor(
-                Math.log(distinctData.minDiff) / Math.LN10)),
+            msexp = Math.pow(ax.exponentbase, Math.floor(
+                Math.log(distinctData.minDiff) / Math.log(ax.exponentbase))),
             // TODO: there are some date cases where this will fail...
             minSize = msexp*Plotly.Lib.roundUp(
                 distinctData.minDiff/msexp, [0.9, 1.9, 4.9, 9.9], true);
@@ -792,14 +792,14 @@ axes.tickFirst = function(ax){
     // Log scales: Linear, Digits
     else if(tType === 'L') {
         return Math.log(sRound(
-            (Math.pow(10, r0) - tick0) / dtNum) * dtNum + tick0) / Math.LN10;
+            (Math.pow(ax.exponentbase, r0) - tick0) / dtNum) * dtNum + tick0) / Math.log(ax.exponentbase);
     }
     else if(tType === 'D') {
         var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
             frac = Plotly.Lib.roundUp(mod(r0, 1), tickset, axrev);
 
         return Math.floor(r0) +
-            Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
+            Math.log(d3.round(Math.pow(ax.exponentbase, frac), 1)) / Math.log(ax.exponentbase);
     }
     else throw 'unrecognized dtick ' + String(dtick);
 };
@@ -946,31 +946,32 @@ function formatDate(ax, out, hover, extraPrecision) {
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
     var dtick = ax.dtick,
+        base = ax.exponentbase,
         x = out.x;
     if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0)!=='L')) dtick = 'L3';
 
     if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
-        out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
+        out.text = numFormat(Math.pow(base, x), ax, hideexp, extraPrecision);
     }
     else if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
         if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
             var p = Math.round(x);
             if(p === 0) out.text = 1;
-            else if(p === 1) out.text = '10';
-            else if(p > 1) out.text = '10<sup>' + p + '</sup>';
-            else out.text = '10<sup>\u2212' + -p + '</sup>';
+            else if(p === 1) out.text = base;
+            else if(p > 1) out.text = base + '<sup>' + p + '</sup>';
+            else out.text = base + '<sup>\u2212' + -p + '</sup>';
 
             out.fontSize *= 1.25;
         }
         else {
-            out.text = numFormat(Math.pow(10,x), ax,'','fakehover');
+            out.text = numFormat(Math.pow(base,x), ax,'','fakehover');
             if(dtick==='D1' && ax._id.charAt(0)==='y') {
                 out.dy -= out.fontSize/6;
             }
         }
     }
     else if(dtick.charAt(0) === 'D') {
-        out.text = String(Math.round(Math.pow(10, mod(x, 1))));
+        out.text = String(Math.round(Math.pow(base, mod(x, 1))));
         out.fontSize *= 0.75;
     }
     else throw 'unrecognized dtick ' + String(dtick);
