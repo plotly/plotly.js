@@ -15,6 +15,7 @@ var isNumeric = require('fast-isnumeric');
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var getColorscale = require('../../components/colorscale/get_scale');
+var drawColorbar = require('../../components/colorbar/draw');
 
 
 module.exports = function colorbar(gd, cd) {
@@ -40,7 +41,7 @@ module.exports = function colorbar(gd, cd) {
     if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
     if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
 
-    var cb = cd[0].t.cb = Plotly.Colorbar(gd, cbId);
+    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
 
     cb.fillcolor(d3.scale.linear()
             .domain(scl.map(function(v){ return cmin + v[0] * (cmax - cmin); }))
