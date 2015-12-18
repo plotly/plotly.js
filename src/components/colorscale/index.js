@@ -109,10 +109,6 @@ colorscale.hasColorscale = function(trace, containerStr) {
     );
 };
 
-colorscale.hasColorbar = function(container) {
-    return typeof container.colorbar==='object' && container.colorbar!==null;
-};
-
 colorscale.handleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
     var prefix = opts.prefix,
         cLetter = opts.cLetter,
