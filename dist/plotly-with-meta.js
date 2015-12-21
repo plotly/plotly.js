@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.2.1
+* plotly.js v1.3.0
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -63,7 +63,7 @@ for(var selector in rules) {
     Plotly.Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/plotly":336}],2:[function(require,module,exports){
+},{"../src/plotly":348}],2:[function(require,module,exports){
 /* jshint quotmark:true */
 
 'use strict';
@@ -48417,7 +48417,7 @@ function simplifyPolygon(cells, positions, minArea) {
 },{"robust-orientation":195,"simplicial-complex":277}],279:[function(require,module,exports){
 module.exports={
   "name": "plotly.js",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./src/index.js",
@@ -48828,7 +48828,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":316,"../../plotly":336,"../../plots/font_attributes":342,"./arrow_paths":280}],282:[function(require,module,exports){
+},{"../../lib/extend":328,"../../plotly":348,"../../plots/font_attributes":354,"./arrow_paths":280}],282:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -49750,7 +49750,7 @@ function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     return {x: x1 + a * t, y: y1 + d * t};
 }
 
-},{"../../plotly":336,"./arrow_paths":280,"./attributes":281,"d3":53,"fast-isnumeric":58}],283:[function(require,module,exports){
+},{"../../plotly":348,"./arrow_paths":280,"./attributes":281,"d3":53,"fast-isnumeric":58}],283:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50117,7 +50117,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":316,"../../plots/cartesian/layout_attributes":341,"../../plots/font_attributes":342}],286:[function(require,module,exports){
+},{"../../lib/extend":328,"../../plots/cartesian/layout_attributes":353,"../../plots/font_attributes":354}],286:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50129,16 +50129,80 @@ module.exports = {
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Axes = require('../../plots/cartesian/axes');
+var Lib = require('../../lib');
+
+var attributes = require('./attributes');
+
+
+module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
+    var colorbarOut = containerOut.colorbar = {},
+        colorbarIn = containerIn.colorbar || {};
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(colorbarIn, colorbarOut, attributes, attr, dflt);
+    }
+
+    var thicknessmode = coerce('thicknessmode');
+    coerce('thickness', (thicknessmode === 'fraction') ?
+        30 / (layout.width - layout.margin.l - layout.margin.r) :
+        30
+    );
+
+    var lenmode = coerce('lenmode');
+    coerce('len', (lenmode === 'fraction') ?
+        1 :
+        layout.height - layout.margin.t - layout.margin.b
+    );
+
+    coerce('x');
+    coerce('xanchor');
+    coerce('xpad');
+    coerce('y');
+    coerce('yanchor');
+    coerce('ypad');
+    Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
+
+    coerce('outlinecolor');
+    coerce('outlinewidth');
+    coerce('bordercolor');
+    coerce('borderwidth');
+    coerce('bgcolor');
+
+    Axes.handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
+
+    Axes.handleTickDefaults(colorbarIn, colorbarOut, coerce, 'linear',
+        {outerTicks: false, font: layout.font, noHover: true});
+
+    coerce('title');
+    Lib.coerceFont(coerce, 'titlefont', layout.font);
+    coerce('titleside');
+};
+
+},{"../../lib":332,"../../plots/cartesian/axes":351,"./attributes":285}],287:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
 var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+
+var attributes = require('./attributes');
 
 
-var colorbar = module.exports = function(td, id) {
+module.exports = function draw(gd, id) {
     // opts: options object, containing everything from attributes
     // plus a few others that are the equivalent of the colorbar "data"
     var opts = {};
-    Object.keys(colorbar.attributes).forEach(function(k) {
+    Object.keys(attributes).forEach(function(k) {
         opts[k] = null;
     });
     // fillcolor can be a d3 scale, domain is z values, range is colors
@@ -50158,7 +50222,7 @@ var colorbar = module.exports = function(td, id) {
     opts.filllevels = null;
 
     function component(){
-        var fullLayout = td._fullLayout;
+        var fullLayout = gd._fullLayout;
         if((typeof opts.fillcolor !== 'function') &&
                 (typeof opts.line.color !== 'function')) {
             fullLayout._infolayer.selectAll('g.'+id).remove();
@@ -50293,7 +50357,7 @@ var colorbar = module.exports = function(td, id) {
                                                   coerce, axisOptions);
 
         cbAxisOut._id = 'y' + id;
-        cbAxisOut._td = td;
+        cbAxisOut._td = gd;
 
         // position can't go in through supplyDefaults
         // because that restricts it to [0,1]
@@ -50368,7 +50432,7 @@ var colorbar = module.exports = function(td, id) {
         if(['top','bottom'].indexOf(opts.titleside)!==-1) {
             // draw the title so we know how much room it needs
             // when we squish the axis
-            Plotly.Titles.draw(td, cbAxisOut._id + 'title');
+            Plotly.Titles.draw(gd, cbAxisOut._id + 'title');
         }
 
         function drawAxis(){
@@ -50481,7 +50545,7 @@ var colorbar = module.exports = function(td, id) {
                 (opts.outlinewidth||0)/2 - (opts.ticks==='outside' ? 1 : 0);
             cbAxisOut.side = 'right';
 
-            return Plotly.Axes.doTicks(td, cbAxisOut);
+            return Plotly.Axes.doTicks(gd, cbAxisOut);
         }
 
         function positionCB(){
@@ -50548,7 +50612,7 @@ var colorbar = module.exports = function(td, id) {
                 'translate('+(fullLayout._size.l-xoffset)+','+fullLayout._size.t+')');
 
             //auto margin adjustment
-            Plotly.Plots.autoMargin(td, id,{
+            Plotly.Plots.autoMargin(gd, id,{
                 x: opts.x,
                 y: opts.y,
                 l: outerwidth*({right:1, center:0.5}[opts.xanchor]||0),
@@ -50563,11 +50627,12 @@ var colorbar = module.exports = function(td, id) {
             drawAxis,
             Plotly.Plots.previousPromises,
             positionCB
-        ], td);
-        if(cbDone && cbDone.then) (td._promises || []).push(cbDone);
+        ], gd);
+
+        if(cbDone && cbDone.then) (gd._promises || []).push(cbDone);
 
         // dragging...
-        if(td._context.editable) {
+        if(gd._context.editable) {
             var t0,
                 xf,
                 yf;
@@ -50579,7 +50644,7 @@ var colorbar = module.exports = function(td, id) {
                     Plotly.Fx.setCursor(container);
                 },
                 moveFn: function(dx, dy) {
-                    var gs = td._fullLayout._size;
+                    var gs = gd._fullLayout._size;
 
                     container.attr('transform',
                         t0+' ' + 'translate('+dx+','+dy+')');
@@ -50599,14 +50664,14 @@ var colorbar = module.exports = function(td, id) {
                     if(dragged && xf!==undefined && yf!==undefined) {
                         var idNum = id.substr(2),
                             traceNum;
-                        td._fullData.some(function(trace) {
+                        gd._fullData.some(function(trace) {
                             if(trace.uid===idNum) {
                                 traceNum = trace.index;
                                 return true;
                             }
                         });
 
-                        Plotly.restyle(td,
+                        Plotly.restyle(gd,
                             {'colorbar.x': xf, 'colorbar.y': yf},
                             traceNum);
                     }
@@ -50649,80 +50714,48 @@ var colorbar = module.exports = function(td, id) {
     return component;
 };
 
-colorbar.attributes = require('./attributes');
+},{"../../plotly":348,"./attributes":285,"d3":53}],288:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-colorbar.supplyDefaults = function(containerIn, containerOut, layout) {
-    var colorbarOut = containerOut.colorbar = {},
-        colorbarIn = containerIn.colorbar || {};
 
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(colorbarIn, colorbarOut,
-                                 colorbar.attributes, attr, dflt);
-    }
+'use strict';
 
-    var thicknessmode = coerce('thicknessmode');
-    coerce('thickness', thicknessmode === 'fraction' ?
-        30 / (layout.width - layout.margin.l - layout.margin.r) :
-        30
+
+module.exports = function hasColorbar(container) {
+    return (
+        typeof container.colorbar === 'object' &&
+        container.colorbar !== null
     );
-
-    var lenmode = coerce('lenmode');
-    coerce('len', lenmode === 'fraction' ?
-        1 :
-        layout.height - layout.margin.t - layout.margin.b
-    );
-
-    coerce('x');
-    coerce('xanchor');
-    coerce('xpad');
-    coerce('y');
-    coerce('yanchor');
-    coerce('ypad');
-    Plotly.Lib.noneOrAll(colorbarIn, colorbarOut, ['x', 'y']);
-
-    coerce('outlinecolor');
-    coerce('outlinewidth');
-    coerce('bordercolor');
-    coerce('borderwidth');
-    coerce('bgcolor');
-
-    Plotly.Axes.handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
-
-    Plotly.Axes.handleTickDefaults(colorbarIn, colorbarOut, coerce, 'linear',
-        {outerTicks: false, font: layout.font, noHover: true});
-
-    coerce('title');
-    Plotly.Lib.coerceFont(coerce, 'titlefont', layout.font);
-    coerce('titleside');
 };
 
-colorbar.traceColorbar = function(gd, cd) {
-    var trace = cd[0].trace,
-        cbId = 'cb' + trace.uid,
-        scl = Plotly.Colorscale.getScale(trace.colorscale),
-        zmin = trace.zmin,
-        zmax = trace.zmax;
+},{}],289:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-    if(!isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
-    if(!isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
 
-    gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
-    if(!trace.showscale){
-        Plotly.Plots.autoMargin(gd, cbId);
-        return;
-    }
+'use strict';
 
-    var cb = cd[0].t.cb = colorbar(gd, cbId);
-    cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v){ return zmin + v[0]*(zmax-zmin); }))
-            .range(scl.map(function(v){ return v[1]; })))
-        .filllevels({start: zmin, end: zmax, size: (zmax-zmin)/254})
-        .options(trace.colorbar)();
 
-    Plotly.Lib.markTime('done colorbar');
-};
+exports.attributes = require('./attributes');
 
-},{"../../plotly":336,"./attributes":285,"d3":53,"fast-isnumeric":58}],287:[function(require,module,exports){
+exports.supplyDefaults = require('./defaults');
+
+exports.draw = require('./draw');
+
+exports.hasColorbar = require('./has_colorbar');
+
+},{"./attributes":285,"./defaults":286,"./draw":287,"./has_colorbar":288}],290:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50797,7 +50830,7 @@ module.exports = {
     }
 };
 
-},{}],288:[function(require,module,exports){
+},{}],291:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50809,50 +50842,186 @@ module.exports = {
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var d3 = require('d3');
-var tinycolor = require('tinycolor2');
-var isNumeric = require('fast-isnumeric');
+var Lib = require('../../lib');
 
-var colorscale = module.exports = {};
+var scales = require('./scales');
+var flipScale = require('./flip_scale');
 
-colorscale.scales = require('./scales');
-colorscale.defaultScale = colorscale.scales.RdBu;
 
-colorscale.attributes = require('./attributes');
+module.exports = function calc(trace, vals, containerStr, cLetter) {
+    var container, inputContainer;
 
-function isValidScaleArray(scl) {
-    var isValid = true,
-        highestVal = 0,
-        si;
-
-    if(!Array.isArray(scl)) return false;
-    else {
-        if(+scl[0][0]!==0 || +scl[scl.length-1][0]!==1) return false;
-        for (var i = 0; i < scl.length; i++) {
-            si = scl[i];
-            if(si.length!==2 || +si[0]<highestVal || !tinycolor(si[1]).isValid()) {
-                isValid = false;
-                break;
-            }
-            highestVal = +si[0];
-        }
-        return isValid;
+    if(containerStr) {
+        container = Lib.nestedProperty(trace, containerStr).get();
+        inputContainer = Lib.nestedProperty(trace._input, containerStr).get();
+    } else {
+        container = trace;
+        inputContainer = trace._input;
     }
-}
 
-colorscale.isValidScale = function(scl) {
-    if(colorscale.scales[scl] !== undefined) return true;
-    else return isValidScaleArray(scl);
+    var auto = container[cLetter + 'auto'],
+        min = container[cLetter + 'min'],
+        max = container[cLetter + 'max'],
+        scl = container.colorscale;
+
+    if(auto!==false || min===undefined) {
+        min = Lib.aggNums(Math.min, null, vals);
+    }
+
+    if(auto!==false || max===undefined) {
+        max = Lib.aggNums(Math.max, null, vals);
+    }
+
+    if(min === max) {
+        min -= 0.5;
+        max += 0.5;
+    }
+
+    container[cLetter + 'min'] = min;
+    container[cLetter + 'max'] = max;
+
+    inputContainer[cLetter + 'min'] = min;
+    inputContainer[cLetter + 'max'] = max;
+
+    if(container.autocolorscale) {
+        if(min * max < 0) scl = scales.RdBu;
+        else if(min >= 0) scl = scales.Reds;
+        else scl = scales.Blues;
+
+        // reversescale is handled at the containerOut level
+        inputContainer.colorscale = scl;
+        if(container.reversescale) scl = flipScale(scl);
+        container.colorscale = scl;
+    }
 };
 
-colorscale.getScale = function(scl, dflt) {
-    if(!dflt) dflt = colorscale.defaultScale;
+},{"../../lib":332,"./flip_scale":294,"./scales":301}],292:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+var scales = require('./scales');
+
+
+module.exports = scales.RdBu;
+
+},{"./scales":301}],293:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var isNumeric = require('fast-isnumeric');
+
+var Lib = require('../../lib');
+
+var hasColorbar = require('../colorbar/has_colorbar');
+var colorbarDefaults = require('../colorbar/defaults');
+var isValidScale = require('./is_valid_scale');
+var flipScale = require('./flip_scale');
+
+
+module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, opts) {
+    var prefix = opts.prefix,
+        cLetter = opts.cLetter,
+        containerStr = prefix.slice(0, prefix.length-1),
+        containerIn = prefix ?
+            Lib.nestedProperty(traceIn, containerStr).get() || {} :
+            traceIn,
+        containerOut = prefix ?
+            Lib.nestedProperty(traceOut, containerStr).get() || {} :
+            traceOut,
+        minIn = containerIn[cLetter + 'min'],
+        maxIn = containerIn[cLetter + 'max'],
+        sclIn = containerIn.colorscale;
+
+    var validMinMax = isNumeric(minIn) && isNumeric(maxIn) && (minIn < maxIn);
+    coerce(prefix + cLetter + 'auto', !validMinMax);
+    coerce(prefix + cLetter + 'min');
+    coerce(prefix + cLetter + 'max');
+
+    // handles both the trace case (autocolorscale is false by default) and
+    // the marker and marker.line case (autocolorscale is true by default)
+    var autoColorscaleDftl;
+    if(sclIn!==undefined) autoColorscaleDftl = !isValidScale(sclIn);
+    coerce(prefix + 'autocolorscale', autoColorscaleDftl);
+    var sclOut = coerce(prefix + 'colorscale');
+
+    // reversescale is handled at the containerOut level
+    var reverseScale = coerce(prefix + 'reversescale');
+    if(reverseScale) containerOut.colorscale = flipScale(sclOut);
+
+    // ... until Scatter.colorbar can handle marker line colorbars
+    if(prefix === 'marker.line.') return;
+
+    // handle both the trace case where the dflt is listed in attributes and
+    // the marker case where the dflt is determined by hasColorbar
+    var showScaleDftl;
+    if(prefix) showScaleDftl = hasColorbar(containerIn);
+    var showScale = coerce(prefix + 'showscale', showScaleDftl);
+
+    if(showScale) colorbarDefaults(containerIn, containerOut, layout);
+};
+
+},{"../../lib":332,"../colorbar/defaults":286,"../colorbar/has_colorbar":288,"./flip_scale":294,"./is_valid_scale":298,"fast-isnumeric":58}],294:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+module.exports = function flipScale(scl) {
+    var N = scl.length,
+        sclNew = new Array(N),
+        si;
+
+    for(var i = N-1, j = 0; i >= 0; i--, j++) {
+        si = scl[i];
+        sclNew[j] = [1 - si[0], si[1]];
+    }
+
+    return sclNew;
+};
+
+},{}],295:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var scales = require('./scales');
+var defaultScale = require('./default_scale');
+var isValidScaleArray = require('./is_valid_scale_array');
+
+
+module.exports = function getScale(scl, dflt) {
+    if(!dflt) dflt = defaultScale;
     if(!scl) return dflt;
 
     function parseScale() {
         try {
-            scl = colorscale.scales[scl] || JSON.parse(scl);
+            scl = scales[scl] || JSON.parse(scl);
         }
         catch(e) {
             scl = dflt;
@@ -50869,22 +51038,28 @@ colorscale.getScale = function(scl, dflt) {
     return scl;
 };
 
-colorscale.flipScale = function(scl) {
-    var N = scl.length,
-        sclNew = new Array(N),
-        si;
+},{"./default_scale":292,"./is_valid_scale_array":299,"./scales":301}],296:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-    for(var i = N-1, j = 0; i >= 0; i--, j++) {
-        si = scl[i];
-        sclNew[j] = [1 - si[0], si[1]];
-    }
 
-    return sclNew;
-};
+'use strict';
 
-colorscale.hasColorscale = function(trace, containerStr) {
+var isNumeric = require('fast-isnumeric');
+
+var Lib = require('../../lib');
+
+var isValidScale = require('./is_valid_scale');
+
+
+module.exports = function hasColorscale(trace, containerStr) {
     var container = containerStr ?
-            Plotly.Lib.nestedProperty(trace, containerStr).get() || {} :
+            Lib.nestedProperty(trace, containerStr).get() || {} :
             trace,
         color = container.color,
         isArrayWithOneNumber = false;
@@ -50903,106 +51078,120 @@ colorscale.hasColorscale = function(trace, containerStr) {
             isArrayWithOneNumber ||
             container.showscale===true ||
             (isNumeric(container.cmin) && isNumeric(container.cmax)) ||
-            colorscale.isValidScale(container.colorscale) ||
+            isValidScale(container.colorscale) ||
             (typeof container.colorbar==='object' && container.colorbar!==null)
         )
     );
 };
 
-colorscale.hasColorbar = function(container) {
-    return typeof container.colorbar==='object' && container.colorbar!==null;
+},{"../../lib":332,"./is_valid_scale":298,"fast-isnumeric":58}],297:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+exports.scales = require('./scales');
+
+exports.defaultScale = require('./default_scale');
+
+exports.attributes = require('./attributes');
+
+exports.handleDefaults = require('./defaults');
+
+exports.calc = require('./calc');
+
+exports.hasColorscale = require('./has_colorscale');
+
+exports.isValidScale = require('./is_valid_scale');
+
+exports.getScale = require('./get_scale');
+
+exports.flipScale = require('./flip_scale');
+
+exports.makeScaleFunction = require('./make_scale_function');
+
+},{"./attributes":290,"./calc":291,"./default_scale":292,"./defaults":293,"./flip_scale":294,"./get_scale":295,"./has_colorscale":296,"./is_valid_scale":298,"./make_scale_function":300,"./scales":301}],298:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var scales = require('./scales');
+var isValidScaleArray = require('./is_valid_scale_array');
+
+
+module.exports = function isValidScale(scl) {
+    if(scales[scl] !== undefined) return true;
+    else return isValidScaleArray(scl);
 };
 
-colorscale.handleDefaults = function(traceIn, traceOut, layout, coerce, opts) {
-    var prefix = opts.prefix,
-        cLetter = opts.cLetter,
-        containerStr = prefix.slice(0, prefix.length-1),
-        containerIn = prefix ?
-            Plotly.Lib.nestedProperty(traceIn, containerStr).get() || {} :
-            traceIn,
-        containerOut = prefix ?
-            Plotly.Lib.nestedProperty(traceOut, containerStr).get() || {} :
-            traceOut,
-        minIn = containerIn[cLetter + 'min'],
-        maxIn = containerIn[cLetter + 'max'],
-        sclIn = containerIn.colorscale;
+},{"./is_valid_scale_array":299,"./scales":301}],299:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-    var validMinMax, autoColorscaleDftl, showScaleDftl, sclOut, reverseScale, showScale;
 
-    validMinMax = isNumeric(minIn) && isNumeric(maxIn) && minIn < maxIn;
-    coerce(prefix + cLetter + 'auto', !validMinMax);
-    coerce(prefix + cLetter + 'min');
-    coerce(prefix + cLetter + 'max');
+'use strict';
 
-    // handles both the trace case (autocolorscale is false by default) and
-    // the marker and marker.line case (autocolorscale is true by default)
-    if(sclIn!==undefined) autoColorscaleDftl = !colorscale.isValidScale(sclIn);
-    coerce(prefix + 'autocolorscale', autoColorscaleDftl);
-    sclOut = coerce(prefix + 'colorscale');
+var tinycolor = require('tinycolor2');
 
-    // reversescale is handled at the containerOut level
-    reverseScale = coerce(prefix + 'reversescale');
-    if(reverseScale) containerOut.colorscale = colorscale.flipScale(sclOut);
 
-    // ... until Scatter.colorbar can handle marker line colorbars
-    if(prefix === 'marker.line.') return;
+module.exports = function isValidScaleArray(scl) {
+    var isValid = true,
+        highestVal = 0,
+        si;
 
-    // handle both the trace case where the dflt is listed in attributes and
-    // the marker case where the dflt is determined by hasColorbar
-    if(prefix) showScaleDftl = colorscale.hasColorbar(containerIn);
-    showScale = coerce(prefix + 'showscale', showScaleDftl);
-
-    if(showScale) Plotly.Colorbar.supplyDefaults(containerIn, containerOut, layout);
-};
-
-colorscale.calc = function(trace, vals, containerStr, cLetter) {
-    var container, inputContainer;
-
-    if(containerStr) {
-        container = Plotly.Lib.nestedProperty(trace, containerStr).get();
-        inputContainer = Plotly.Lib.nestedProperty(trace._input, containerStr).get();
-    } else {
-        container = trace;
-        inputContainer = trace._input;
-    }
-
-    var auto = container[cLetter + 'auto'],
-        min = container[cLetter + 'min'],
-        max = container[cLetter + 'max'],
-        scl = container.colorscale;
-
-    if(auto!==false || min===undefined) {
-        min = Plotly.Lib.aggNums(Math.min, null, vals);
-    }
-
-    if(auto!==false || max===undefined) {
-        max = Plotly.Lib.aggNums(Math.max, null, vals);
-    }
-
-    if(min === max) {
-        min -= 0.5;
-        max += 0.5;
-    }
-
-    container[cLetter + 'min'] = min;
-    container[cLetter + 'max'] = max;
-
-    inputContainer[cLetter + 'min'] = min;
-    inputContainer[cLetter + 'max'] = max;
-
-    if(container.autocolorscale) {
-        if(min * max < 0) scl = colorscale.scales.RdBu;
-        else if(min >= 0) scl = colorscale.scales.Reds;
-        else scl = colorscale.scales.Blues;
-
-        // reversescale is handled at the containerOut level
-        inputContainer.colorscale = scl;
-        if(container.reversescale) scl = colorscale.flipScale(scl);
-        container.colorscale = scl;
+    if(!Array.isArray(scl)) return false;
+    else {
+        if(+scl[0][0]!==0 || +scl[scl.length-1][0]!==1) return false;
+        for (var i = 0; i < scl.length; i++) {
+            si = scl[i];
+            if(si.length!==2 || +si[0]<highestVal || !tinycolor(si[1]).isValid()) {
+                isValid = false;
+                break;
+            }
+            highestVal = +si[0];
+        }
+        return isValid;
     }
 };
 
-colorscale.makeScaleFunction = function(scl, cmin, cmax) {
+},{"tinycolor2":213}],300:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+var tinycolor = require('tinycolor2');
+var isNumeric = require('fast-isnumeric');
+
+var Color = require('../color');
+
+
+module.exports = function makeScaleFunction(scl, cmin, cmax) {
     var N = scl.length,
         domain = new Array(N),
         range = new Array(N),
@@ -51022,11 +51211,11 @@ colorscale.makeScaleFunction = function(scl, cmin, cmax) {
     return function(v) {
         if(isNumeric(v)) return sclFunc(v);
         else if(tinycolor(v).isValid()) return v;
-        else return Plotly.Color.defaultLine;
+        else return Color.defaultLine;
     };
 };
 
-},{"../../plotly":336,"./attributes":287,"./scales":289,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],289:[function(require,module,exports){
+},{"../color":284,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],301:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -51119,7 +51308,7 @@ module.exports = {
         [1,'#fde725']]
 };
 
-},{}],290:[function(require,module,exports){
+},{}],302:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -51670,7 +51859,7 @@ drawing.setClipUrl = function(s, localId) {
     s.attr('clip-path', 'url(' + url + ')');
 };
 
-},{"../../plotly":336,"./symbol_defs":291,"d3":53,"fast-isnumeric":58}],291:[function(require,module,exports){
+},{"../../plotly":348,"./symbol_defs":303,"d3":53,"fast-isnumeric":58}],303:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52146,7 +52335,7 @@ module.exports = {
     }
 };
 
-},{"d3":53}],292:[function(require,module,exports){
+},{"d3":53}],304:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52286,7 +52475,7 @@ module.exports = {
     }
 };
 
-},{}],293:[function(require,module,exports){
+},{}],305:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52349,7 +52538,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     Axes.expand(axis, vals, {padded: true});
 }
 
-},{"../../plots/cartesian/axes":339,"../../plots/plots":370,"./compute_error":294,"fast-isnumeric":58}],294:[function(require,module,exports){
+},{"../../plots/cartesian/axes":351,"../../plots/plots":382,"./compute_error":306,"fast-isnumeric":58}],306:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52445,7 +52634,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],295:[function(require,module,exports){
+},{}],307:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52522,7 +52711,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":320,"../../plots/plots":370,"./attributes":292,"fast-isnumeric":58}],296:[function(require,module,exports){
+},{"../../lib":332,"../../plots/plots":382,"./attributes":304,"fast-isnumeric":58}],308:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52699,7 +52888,7 @@ errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
     }
 };
 
-},{"../../plotly":336,"./attributes":292,"./calc":293,"./defaults":295,"d3":53,"fast-isnumeric":58}],297:[function(require,module,exports){
+},{"../../plotly":348,"./attributes":304,"./calc":305,"./defaults":307,"d3":53,"fast-isnumeric":58}],309:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52806,7 +52995,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":316,"../../plots/font_attributes":342,"../color/attributes":283}],298:[function(require,module,exports){
+},{"../../lib/extend":328,"../../plots/font_attributes":354,"../color/attributes":283}],310:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -53486,7 +53675,7 @@ legend.repositionLegend = function(td, traces){
     });
 };
 
-},{"../../plotly":336,"./attributes":297,"d3":53}],299:[function(require,module,exports){
+},{"../../plotly":348,"./attributes":309,"d3":53}],311:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -53962,7 +54151,7 @@ function toggleHover(gd) {
     Plotly.relayout(gd, 'hovermode', newHover);
 }
 
-},{"../../../build/ploticon":2,"../../lib":320,"../../plotly":336,"../../snapshot":377}],300:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":332,"../../plotly":348,"../../snapshot":389}],312:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -54248,7 +54437,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../../build/ploticon":2,"../../plotly":336,"d3":53}],301:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../plotly":348,"d3":53}],313:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -54418,7 +54607,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plotly":336,"./":300,"./buttons":299}],302:[function(require,module,exports){
+},{"../../plotly":348,"./":312,"./buttons":311}],314:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -54563,7 +54752,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":316,"../../traces/scatter/attributes":403,"../annotations/attributes":281}],303:[function(require,module,exports){
+},{"../../lib/extend":328,"../../traces/scatter/attributes":455,"../annotations/attributes":281}],315:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55038,7 +55227,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../plotly":336,"./attributes":302,"fast-isnumeric":58}],304:[function(require,module,exports){
+},{"../../plotly":348,"./attributes":314,"fast-isnumeric":58}],316:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55353,9 +55542,9 @@ Titles.draw = function(gd, title) {
     el.classed('js-placeholder',isplaceholder);
 };
 
-},{"../../plotly":336,"d3":53,"fast-isnumeric":58}],305:[function(require,module,exports){
+},{"../../plotly":348,"d3":53,"fast-isnumeric":58}],317:[function(require,module,exports){
 module.exports={"DZA":"algeria","AGO":"angola","EGY":"egypt","BGD":"bangladesh|^(?=.*east).*paki?stan","NER":"\\bniger(?!ia)","LIE":"liechtenstein","NAM":"namibia","BGR":"bulgaria","BOL":"bolivia","GHA":"ghana|gold.?coast","CCK":"\\bcocos|keeling","PAK":"^(?!.*east).*paki?stan","CPV":"verde","JOR":"jordan","LBR":"liberia","LBY":"libya","MYS":"malaysia","IOT":"british.?indian.?ocean","PRI":"puerto.?rico","MYT":"mayotte","PRK":"^(?=.*democrat).*\\bkorea|^(?=.*people).*\\bkorea|^(?=.*north).*\\bkorea|\\bd\\.?p\\.?r\\.?k","PSE":"palestin|\\bgaza|west.?bank","TZA":"tanzania","BWA":"botswana|bechuana","KHM":"cambodia|kampuchea|khmer|^p\\.?r\\.?k\\.?$","UMI":"minor.?outlying.?is","TTO":"trinidad|tobago","PRY":"paraguay","HKG":"hong.?kong","SAU":"\\bsa\\w*.?arabia","LBN":"lebanon","SVN":"slovenia","BFA":"burkina|\\bfaso|upper.?volta","SVK":"^(?!.*cze).*slovak","MRT":"mauritania","HRV":"croatia","CHL":"\\bchile","CHN":"^(?!.*\\bmac)(?!.*\\bhong)(?!.*\\btai).*china|^p\\.?r\\.?c\\.?$","KNA":"kitts|\\bnevis","JAM":"jamaica","SMR":"san.?marino","GIB":"gibraltar","DJI":"djibouti","GIN":"^(?!.*eq)(?!.*span)(?!.*bissau)(?!.*portu)(?!.*new).*guinea","FIN":"finland","URY":"uruguay","VAT":"holy.?see|vatican|papal.?st","STP":"\\bs(a|\u00e3)o.?tom(e|\u00e9)","SYC":"seychell","NPL":"nepal","CXR":"christmas","LAO":"\\blaos?\\b","YEM":"^(?!.*arab)(?!.*north)(?!.*sana)(?!.*peo)(?!.*dem)(?!.*south)(?!.*aden)(?!.*\\bp\\.?d\\.?r).*yemen","BVT":"bouvet","ZAF":"\\bs\\w*.?africa","KIR":"kiribati","PHL":"philippines","SXM":"^(?!.*martin)(?!.*saba).*maarten","ROU":"r(o|u|ou)mania","VIR":"^(?=.*\\bu\\.?\\s?s).*virgin|^(?=.*states).*virgin","SYR":"syria","MAC":"maca(o|u)","NFK":"norfolk","NIC":"nicaragua","MLT":"\\bmalta","KAZ":"kazak","TCA":"turks","PYF":"french.?polynesia|tahiti","NIU":"niue","DMA":"dominica(?!n)","GBR":"united.?kingdom|britain|^u\\.?k\\.?$","BEN":"benin|dahome","GUF":"^(?=.*french).*guiana","BEL":"^(?!.*luxem).*belgium","MSR":"montserrat","TGO":"togo","DEU":"^(?!.*east).*germany|^(?=.*\\bfed.*\\brep).*german","GUM":"\\bguam","LKA":"sri.?lanka|ceylon","SSD":"\\bs\\w*.?sudan","FLK":"falkland|malvinas","PCN":"pitcairn","BES":"^(?=.*bonaire).*eustatius|^(?=.*carib).*netherlands|\\bbes.?islands","GUY":"guyana|british.?guiana","CRI":"costa.?rica","COK":"\\bcook","MAR":"morocco|\\bmaroc","MNP":"mariana","LSO":"lesotho|basuto","HUN":"^(?!.*austr).*hungary","TKM":"turkmen","SUR":"surinam|dutch.?guiana","NLD":"^(?!.*\\bant)(?!.*\\bcarib).*netherlands","BMU":"bermuda","HMD":"heard.*mcdonald","TCD":"\\bchad","GEO":"^(?!.*south).*georgia","MNE":"^(?!.*serbia).*montenegro","MNG":"mongolia","MHL":"marshall","MTQ":"martinique","CSK":"czechoslovakia","BLZ":"belize|^(?=.*british).*honduras","DDR":"german.?democratic.?republic|^(d|g)\\.?d\\.?r\\.?$|^(?=.*east).*germany","MMR":"myanmar|burma","AFG":"afghan","BDI":"burundi","VGB":"^(?=.*\\bu\\.?\\s?k).*virgin|^(?=.*brit).*virgin|^(?=.*kingdom).*virgin","BLR":"belarus|byelo","BLM":"barth(e|\u00e9)lemy","GRD":"grenada","TKL":"tokelau","GRC":"greece|hellenic|hellas","GRL":"greenland","SHN":"helena","AND":"andorra","MOZ":"mozambique","TJK":"tajik","THA":"thailand|\\bsiam","HTI":"haiti","MEX":"\\bmexic","ANT":"^(?=.*\\bant).*(nether|dutch)","ZWE":"zimbabwe|^(?!.*northern).*rhodesia","LCA":"\\blucia","IND":"india(?!.*ocea)","LVA":"latvia","BTN":"bhutan","VCT":"vincent","VNM":"^(?!.*republic).*viet.?nam|^(?=.*socialist).*viet.?nam","NOR":"norway","CZE":"^(?=.*rep).*czech|czechia|bohemia","ATF":"french.?southern|\\bfr.*\\bso.*\\ban.*\\b\\bt","ATG":"antigua","FJI":"fiji","HND":"^(?!.*brit).*honduras","MUS":"mauritius","DOM":"dominican","LUX":"^(?!.*belg).*luxem","ISR":"israel","YUG":"yugoslavia","FSM":"micronesia","PER":"peru","REU":"r(e|\u00e9)union","IDN":"indonesia","VUT":"vanuatu|new.?hebrides","MKD":"macedonia|^f\\.?y\\.?r\\.?o\\.?m\\.?$","COD":"\\bdem.*congo|congo.*\\bdem|congo.*\\bdr|\\bdr.*congo|\\bd\\.?r\\.?c|\\bd\\.?r\\.?o\\.?c|\\br\\.?d\\.?c|belgian.?congo|congo.?free.?state|kinshasa|zaire|l\\w{1,2}opoldville","COG":"^(?!.*\\bdem)(?!.*\\bdr)(?!.*kinshasa)(?!.*zaire)(?!.*belg)(?!.*l\\w{1,2}opoldville)(?!.*free).*\\bcongo","ISL":"iceland","GLP":"guadeloupe","ETH":"ethiopia|abyssinia","COM":"comoro","COL":"colombia","NGA":"nigeria","TLS":"^(?=.*leste).*timor|^(?=.*east).*timor","TWN":"taiwan|taipei|formosa","PRT":"portugal","MDA":"moldov|b(a|e)ssarabia","GGY":"guernsey","MDG":"madagascar|malagasy","ATA":"antarctica","ECU":"ecuador","SEN":"senegal","ESH":"sahara","MDV":"maldive","ASM":"^(?=.*americ).*samoa","SPM":"miquelon","CUW":"^(?!.*bonaire).*\\bcura(c|\u00e7)ao","FRA":"^(?!.*\\bdep)(?!.*martinique).*france|french.?republic|\\bgaul","LTU":"lithuania","RWA":"rwanda","ZMB":"zambia|northern.?rhodesia","GMB":"gambia","WLF":"futuna|wallis","JEY":"jersey","FRO":"faroe|faeroe","GTM":"guatemala","DNK":"denmark","IMN":"^(?=.*isle).*\\bman","MAF":"^(?=.*collectivity).*martin|^(?=.*france).*martin(?!ique)|^(?=.*french).*martin(?!ique)","AUS":"australia","AUT":"^(?!.*hungary).*austria|\\baust.*\\bemp","SJM":"svalbard","VEN":"venezuela","PLW":"palau","KEN":"kenya|british.?east.?africa|east.?africa.?prot","TUR":"turkey","ALB":"albania","OMN":"\\boman|trucial","TUV":"tuvalu","ALA":"\\b(a|\u00e5)land","BRN":"brunei","TUN":"tunisia","RUS":"\\brussia|soviet.?union|u\\.?s\\.?s\\.?r|socialist.?republics","BRB":"barbados","BRA":"brazil","CIV":"ivoire|ivory","SRB":"^(?!.*monte).*serbia","GNQ":"guine.*eq|eq.*guine|^(?=.*span).*guinea","USA":"^(?!.*islands).*united.?states|^u\\.?s\\.?a\\.?$|^u\\.?s\\.?$","QAT":"qatar","WSM":"^(?!.*amer).*samoa","AZE":"azerbaijan","GNB":"bissau|^(?=.*portu).*guinea","SWZ":"swaziland","TON":"tonga","CAN":"canada","UKR":"ukrain","KOR":"^(?!.*democrat)(?!.*people)(?!.*north).*\\bkorea|\\br\\.?o\\.?k\\b","AIA":"anguill?a","CAF":"\\bcen.*\\baf|^c\\.?a\\.?r\\.?$","CHE":"switz|swiss","CYP":"cyprus","BIH":"herzegovina|bosnia","SGP":"singapore","SGS":"south.?georgia|sandwich","SOM":"somali","UZB":"uzbek","CMR":"cameroon","POL":"poland","EAZ":"zanz","KWT":"kuwait","ERI":"eritrea","GAB":"gabon","CYM":"cayman","ARE":"emirates|^u\\.?a\\.?e\\.?$|united.?arab.?em","EST":"estonia","MWI":"malawi|nyasa","ESP":"spain","IRQ":"\\biraq|mesopotamia","SLV":"el.?salvador","MLI":"\\bmali\\b","YMD":"^(?=.*peo).*yemen|^(?!.*rep)(?=.*dem).*yemen|^(?=.*south).*yemen|^(?=.*aden).*yemen|^(?=.*\\bp\\.?d\\.?r).*yemen","IRL":"ireland","IRN":"\\biran|persia","ABW":"^(?!.*bonaire).*\\baruba","SLE":"sierra","PAN":"panama","SDN":"^(?!.*\\bs(?!u)).*sudan","SLB":"solomon","NZL":"new.?zealand","MCO":"monaco","ITA":"italy","JPN":"japan","KGZ":"kyrgyz|kirghiz","UGA":"uganda","NCL":"new.?caledonia","PNG":"papua|\\bp.*\\bn.*\\bguin.*|^p\\.?n\\.?g\\.?$|new.?guinea","ARG":"argentin","SWE":"sweden","BHS":"bahamas","BHR":"bahrain","ARM":"armenia","NRU":"nauru","CUB":"\\bcuba"}
-},{}],306:[function(require,module,exports){
+},{}],318:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55512,7 +55701,7 @@ params.layerNameToAdjective = {
 // base layers drawn over choropleth
 params.baseLayersOverChoropleth = ['rivers', 'lakes'];
 
-},{}],307:[function(require,module,exports){
+},{}],319:[function(require,module,exports){
 module.exports={
     "solid": [1],
     "dot": [1,1],
@@ -55522,7 +55711,7 @@ module.exports={
     "longdashdot": [8,1,1,1]
 }
 
-},{}],308:[function(require,module,exports){
+},{}],320:[function(require,module,exports){
 module.exports={
   "solid":        [[], 0],
   "dot":          [[0.5,1], 200],
@@ -55531,7 +55720,7 @@ module.exports={
   "dashdot":      [[0.5,0.625,0.875,1], 50],
   "longdashdot":  [[0.5,0.7,0.8,1], 10]
 }
-},{}],309:[function(require,module,exports){
+},{}],321:[function(require,module,exports){
 module.exports={
     "circle": "●",
     "circle-open": "○",
@@ -55543,7 +55732,7 @@ module.exports={
     "x": "❌"
 }
 
-},{}],310:[function(require,module,exports){
+},{}],322:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55575,7 +55764,7 @@ if (typeof MathJax !== 'undefined'){
     exports.MathJax = false;
 }
 
-},{}],311:[function(require,module,exports){
+},{}],323:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55623,7 +55812,7 @@ exports.Queue = Plotly.Queue;
 // export d3 used in the bundle
 exports.d3 = require('d3');
 
-},{"../build/ploticon":2,"../package.json":279,"./plot_api/set_plot_config":335,"./plotly":336,"d3":53}],312:[function(require,module,exports){
+},{"../build/ploticon":2,"../package.json":279,"./plot_api/set_plot_config":347,"./plotly":348,"d3":53}],324:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55640,7 +55829,7 @@ module.exports = function arrayToCalcItem(traceAttr, calcItem, calcAttr, i) {
     if(Array.isArray(traceAttr)) calcItem[calcAttr] = traceAttr[i];
 };
 
-},{}],313:[function(require,module,exports){
+},{}],325:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55652,11 +55841,11 @@ module.exports = function arrayToCalcItem(traceAttr, calcItem, calcAttr, i) {
 
 'use strict';
 
-var Plotly = require('../plotly');
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 var nestedProperty = require('./nested_property');
 
+var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 
 
@@ -55783,7 +55972,7 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            propOut.set(Plotly.Colorscale.getScale(v, dflt));
+            propOut.set(getColorscale(v, dflt));
         }
     },
     angle: {
@@ -55985,7 +56174,7 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     return out;
 };
 
-},{"../components/colorscale/scales":289,"../plotly":336,"./nested_property":323,"fast-isnumeric":58,"tinycolor2":213}],314:[function(require,module,exports){
+},{"../components/colorscale/get_scale":295,"../components/colorscale/scales":301,"./nested_property":335,"fast-isnumeric":58,"tinycolor2":213}],326:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56321,7 +56510,7 @@ exports.parseDate = function(v) {
     return out;
 };
 
-},{"d3":53,"fast-isnumeric":58}],315:[function(require,module,exports){
+},{"d3":53,"fast-isnumeric":58}],327:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56443,7 +56632,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":57}],316:[function(require,module,exports){
+},{"events":57}],328:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56523,7 +56712,7 @@ function _extend(inputs, isDeep, keepAllKeys) {
     return target;
 }
 
-},{"./is_plain_object.js":321}],317:[function(require,module,exports){
+},{"./is_plain_object.js":333}],329:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56585,7 +56774,7 @@ function countryNameToISO3(countryName) {
     console.warn('unrecognized country name: ' + countryName + '.');
 }
 
-},{"../constants/country-name_to_iso3.json":305,"../plotly":336}],318:[function(require,module,exports){
+},{"../constants/country-name_to_iso3.json":317,"../plotly":348}],330:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56662,7 +56851,7 @@ function formatColor(containerIn, opacityIn, len) {
 
 module.exports = formatColor;
 
-},{"../components/color/attributes":283,"../plotly":336,"./str2rgbarray":329,"fast-isnumeric":58,"tinycolor2":213}],319:[function(require,module,exports){
+},{"../components/color/attributes":283,"../plotly":348,"./str2rgbarray":341,"fast-isnumeric":58,"tinycolor2":213}],331:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56732,7 +56921,7 @@ function convertHTMLToUnicode(html) {
 
 module.exports = convertHTMLToUnicode;
 
-},{"superscript-text":199}],320:[function(require,module,exports){
+},{"superscript-text":199}],332:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57168,7 +57357,7 @@ lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
-},{"./coerce":313,"./dates":314,"./extend":316,"./is_plain_object":321,"./matrix":322,"./nested_property":323,"./notifier":324,"./search":326,"./stats":328,"d3":53}],321:[function(require,module,exports){
+},{"./coerce":325,"./dates":326,"./extend":328,"./is_plain_object":333,"./matrix":334,"./nested_property":335,"./notifier":336,"./search":338,"./stats":340,"d3":53}],333:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57188,7 +57377,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],322:[function(require,module,exports){
+},{}],334:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57298,7 +57487,7 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-},{}],323:[function(require,module,exports){
+},{}],335:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57554,7 +57743,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"fast-isnumeric":58}],324:[function(require,module,exports){
+},{"fast-isnumeric":58}],336:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57631,7 +57820,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"d3":53,"fast-isnumeric":58}],325:[function(require,module,exports){
+},{"d3":53,"fast-isnumeric":58}],337:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57834,7 +58023,7 @@ queue.plotDo = function (gd, func, args) {
 
 module.exports = queue;
 
-},{"../plotly":336}],326:[function(require,module,exports){
+},{"../plotly":348}],338:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57943,7 +58132,7 @@ exports.roundUp = function(val, arrayIn, reverse){
     return arrayIn[low];
 };
 
-},{"fast-isnumeric":58}],327:[function(require,module,exports){
+},{"fast-isnumeric":58}],339:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57991,7 +58180,7 @@ module.exports = function showWebGlMsg(scene) {
     return false;
 };
 
-},{"../plotly":336}],328:[function(require,module,exports){
+},{"../plotly":348}],340:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -58087,7 +58276,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"fast-isnumeric":58}],329:[function(require,module,exports){
+},{"fast-isnumeric":58}],341:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -58109,7 +58298,7 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"arraytools":32,"tinycolor2":213}],330:[function(require,module,exports){
+},{"arraytools":32,"tinycolor2":213}],342:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -58585,7 +58774,7 @@ util.makeEditable = function(context, _delegate, options){
     return d3.rebind(this, dispatch, 'on');
 };
 
-},{"../plotly":336,"d3":53}],331:[function(require,module,exports){
+},{"../plotly":348,"d3":53}],343:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -58621,7 +58810,7 @@ topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
     return topojsonFeature(topojson, obj).features;
 };
 
-},{"../constants/geo_constants":306,"topojson":214}],332:[function(require,module,exports){
+},{"../constants/geo_constants":318,"topojson":214}],344:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -61645,7 +61834,7 @@ function lsInner(gd) {
     return gd._promises.length && Promise.all(gd._promises);
 }
 
-},{"../components/modebar/manage":301,"../lib/events":315,"../plotly":336,"d3":53,"fast-isnumeric":58,"gl-mat4/fromQuat":75}],333:[function(require,module,exports){
+},{"../components/modebar/manage":313,"../lib/events":327,"../plotly":348,"d3":53,"fast-isnumeric":58,"gl-mat4/fromQuat":75}],345:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -61744,7 +61933,7 @@ function defaultSetBackground(gd, bgColor) {
     catch(e) { console.log(e); }
 }
 
-},{}],334:[function(require,module,exports){
+},{}],346:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -62006,12 +62195,13 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 }
 
 function getSubplotRegistry(traceType) {
+    if(traceType === 'area') return {};  // FIXME
+
     var subplotsRegistry = Plotly.Plots.subplotsRegistry,
         subplotType = Object.keys(subplotsRegistry).filter(function(subplotType) {
             return Plotly.Plots.traceIs({type: traceType}, subplotType);
         })[0];
 
-    if(traceType === 'area') return {};  // FIXME
     if(subplotType === undefined) return {};
 
     return subplotsRegistry[subplotType];
@@ -62060,7 +62250,7 @@ function handleLinkedToArray(layoutAttributes) {
     return layoutAttributes;
 }
 
-},{"../plotly":336,"../plots/polar/area_attributes":371,"../plots/polar/axis_attributes":372}],335:[function(require,module,exports){
+},{"../plotly":348,"../plots/polar/area_attributes":383,"../plots/polar/axis_attributes":384}],347:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -62085,7 +62275,7 @@ module.exports = function setPlotConfig(configObj) {
     return Plotly.Lib.extendFlat(Plotly.defaultConfig, configObj);
 };
 
-},{"../plotly":336}],336:[function(require,module,exports){
+},{"../plotly":348}],348:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -62145,10 +62335,12 @@ exports.ModeBar = require('./components/modebar');
 
 // traces
 exports.Scatter = require('./traces/scatter');
-exports.Bars = require('./traces/bars');
-exports.Boxes = require('./traces/boxes');
+exports.Bar = require('./traces/bar');
+exports.Box = require('./traces/box');
 exports.Heatmap = require('./traces/heatmap');
 exports.Histogram = require('./traces/histogram');
+exports.Histogram2d = require('./traces/histogram2d');
+exports.Histogram2dContour = require('./traces/histogram2dcontour');
 exports.Pie = require('./traces/pie');
 exports.Contour = require('./traces/contour');
 exports.Scatter3D = require('./traces/scatter3d');
@@ -62165,7 +62357,7 @@ exports.PlotSchema = require('./plot_api/plot_schema');
 // imaging routines
 exports.Snapshot = require('./snapshot');
 
-},{"../build/plotcss":1,"./components/annotations":282,"./components/color":284,"./components/colorbar":286,"./components/colorscale":288,"./components/drawing":290,"./components/errorbars":296,"./components/legend":298,"./components/modebar":300,"./components/shapes":303,"./components/titles":304,"./fonts/mathjax_config":310,"./lib":320,"./lib/queue":325,"./lib/svg_text_utils":330,"./plot_api/plot_api":332,"./plot_api/plot_config":333,"./plot_api/plot_schema":334,"./plots/cartesian/axes":339,"./plots/cartesian/graph_interact":340,"./plots/geo/geo":343,"./plots/geo/layout":348,"./plots/gl2d/scene2d":356,"./plots/gl3d/layout":363,"./plots/gl3d/scene":368,"./plots/plots":370,"./plots/polar/micropolar":373,"./snapshot":377,"./traces/bars":382,"./traces/boxes":385,"./traces/choropleth":389,"./traces/contour":392,"./traces/heatmap":394,"./traces/histogram":396,"./traces/mesh3d":400,"./traces/pie":402,"./traces/scatter":404,"./traces/scatter3d":409,"./traces/scattergeo":412,"./traces/scattergl":417,"./traces/surface":421,"es6-promise":56}],337:[function(require,module,exports){
+},{"../build/plotcss":1,"./components/annotations":282,"./components/color":284,"./components/colorbar":289,"./components/colorscale":297,"./components/drawing":302,"./components/errorbars":308,"./components/legend":310,"./components/modebar":312,"./components/shapes":315,"./components/titles":316,"./fonts/mathjax_config":322,"./lib":332,"./lib/queue":337,"./lib/svg_text_utils":342,"./plot_api/plot_api":344,"./plot_api/plot_config":345,"./plot_api/plot_schema":346,"./plots/cartesian/axes":351,"./plots/cartesian/graph_interact":352,"./plots/geo/geo":355,"./plots/geo/layout":360,"./plots/gl2d/scene2d":368,"./plots/gl3d/layout":375,"./plots/gl3d/scene":380,"./plots/plots":382,"./plots/polar/micropolar":385,"./snapshot":389,"./traces/bar":398,"./traces/box":406,"./traces/choropleth":410,"./traces/contour":417,"./traces/heatmap":428,"./traces/histogram":439,"./traces/histogram2d":444,"./traces/histogram2dcontour":448,"./traces/mesh3d":452,"./traces/pie":454,"./traces/scatter":457,"./traces/scatter3d":463,"./traces/scattergeo":466,"./traces/scattergl":471,"./traces/surface":476,"es6-promise":56}],349:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -62267,7 +62459,7 @@ module.exports = {
     }
 };
 
-},{}],338:[function(require,module,exports){
+},{}],350:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -62304,7 +62496,7 @@ module.exports = {
    }
 };
 
-},{}],339:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -64995,7 +65187,7 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
 // rather than built-in % which gives a negative value for negative v
 function mod(v,d){ return ((v%d) + d) % d; }
 
-},{"../../plotly":336,"./attributes":338,"./layout_attributes":341,"d3":53,"fast-isnumeric":58}],340:[function(require,module,exports){
+},{"../../plotly":348,"./attributes":350,"./layout_attributes":353,"d3":53,"fast-isnumeric":58}],352:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -66274,7 +66466,7 @@ fx.click = function(gd,evt){
     if(gd._hoverdata && evt && evt.target) {
         gd.emit('plotly_click', {points: gd._hoverdata});
         // why do we get a double event without this???
-        evt.stopImmediatePropagation();
+        if(evt.stopImmediatePropagation) evt.stopImmediatePropagation();
     }
 };
 
@@ -67088,7 +67280,7 @@ fx.inbox = function(v0,v1){
     return Infinity;
 };
 
-},{"../../lib/events":315,"../../plotly":336,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],341:[function(require,module,exports){
+},{"../../lib/events":327,"../../plotly":348,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],353:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -67552,7 +67744,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":283,"../../lib/extend":316,"../../plotly":336,"../font_attributes":342}],342:[function(require,module,exports){
+},{"../../components/color/attributes":283,"../../lib/extend":328,"../../plotly":348,"../font_attributes":354}],354:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -67592,7 +67784,7 @@ module.exports = {
     }
 };
 
-},{}],343:[function(require,module,exports){
+},{}],355:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68056,7 +68248,7 @@ function createMockAxis(fullLayout) {
     return mockAxis;
 }
 
-},{"../../constants/geo_constants":306,"../../lib/topojson_utils":331,"../../plotly":336,"../../traces/choropleth/plot":390,"../../traces/scattergeo/plot":413,"./projections":350,"./set_scale":351,"./zoom":352,"./zoom_reset":353,"d3":53,"topojson":214}],344:[function(require,module,exports){
+},{"../../constants/geo_constants":318,"../../lib/topojson_utils":343,"../../plotly":348,"../../traces/choropleth/plot":411,"../../traces/scattergeo/plot":467,"./projections":362,"./set_scale":363,"./zoom":364,"./zoom_reset":365,"d3":53,"topojson":214}],356:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68082,7 +68274,7 @@ module.exports = {
     }
 };
 
-},{}],345:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68143,7 +68335,7 @@ module.exports = {
     }
 };
 
-},{"../../../components/color/attributes":283}],346:[function(require,module,exports){
+},{"../../../components/color/attributes":283}],358:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68215,7 +68407,7 @@ module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut)
     }
 };
 
-},{"../../../constants/geo_constants":306,"../../../plotly":336,"./axis_attributes":345}],347:[function(require,module,exports){
+},{"../../../constants/geo_constants":318,"../../../plotly":348,"./axis_attributes":357}],359:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68346,7 +68538,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     ];
 }
 
-},{"../../../constants/geo_constants":306,"../../../plotly":336,"./axis_defaults":346,"./layout_attributes":349}],348:[function(require,module,exports){
+},{"../../../constants/geo_constants":318,"../../../plotly":348,"./axis_defaults":358,"./layout_attributes":361}],360:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68366,7 +68558,7 @@ Plotly.Plots.registerSubplot('geo', 'geo', 'geo', attributes);
 exports.layoutAttributes = require('./layout_attributes');
 exports.supplyLayoutDefaults = require('./defaults');
 
-},{"../../../plotly":336,"./attributes":344,"./defaults":347,"./layout_attributes":349}],349:[function(require,module,exports){
+},{"../../../plotly":348,"./attributes":356,"./defaults":359,"./layout_attributes":361}],361:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68624,7 +68816,7 @@ module.exports = {
     lataxis: geoAxesAttrs
 };
 
-},{"../../../components/color/attributes":283,"../../../constants/geo_constants":306,"./axis_attributes":345}],350:[function(require,module,exports){
+},{"../../../components/color/attributes":283,"../../../constants/geo_constants":318,"./axis_attributes":357}],362:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69039,7 +69231,7 @@ function addProjectionToD3() {
 
 module.exports = addProjectionToD3;
 
-},{"d3":53}],351:[function(require,module,exports){
+},{"d3":53}],363:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69190,7 +69382,7 @@ function getBounds(projection, rangeBox) {
     return d3.geo.path().projection(projection).bounds(rangeBox);
 }
 
-},{"../../constants/geo_constants":306,"d3":53}],352:[function(require,module,exports){
+},{"../../constants/geo_constants":318,"d3":53}],364:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69616,7 +69808,7 @@ function d3_eventDispatch(target) {
     return dispatch;
 }
 
-},{"d3":53}],353:[function(require,module,exports){
+},{"d3":53}],365:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69652,7 +69844,7 @@ function createGeoZoomReset(geo, geoLayout) {
 
 module.exports = createGeoZoomReset;
 
-},{"../../plotly":336}],354:[function(require,module,exports){
+},{"../../plotly":348}],366:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69807,7 +69999,7 @@ function createCamera(scene) {
     return result;
 }
 
-},{"mouse-change":173,"mouse-wheel":177}],355:[function(require,module,exports){
+},{"mouse-change":173,"mouse-wheel":177}],367:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69933,7 +70125,9 @@ proto.merge = function(options) {
 
             this.tickEnable[i+j] = false;
             this.tickColor[i+j] = str2RGBArray((ax.tickfont || {}).color);
-            this.tickAngle[i+j] = (ax.tickangle === 'auto') ? 0 : -ax.tickangle;
+            this.tickAngle[i+j] = (ax.tickangle === 'auto') ?
+                0 :
+                Math.PI * -ax.tickangle / 180;
             this.tickPad[i+j] = this.getTickPad(ax);
 
             this.tickMarkLength[i+j] = 0;
@@ -70048,7 +70242,7 @@ function createAxes2D(scene) {
 
 module.exports = createAxes2D;
 
-},{"../../lib/html2unicode":319,"../../lib/str2rgbarray":329,"../../plotly":336}],356:[function(require,module,exports){
+},{"../../lib/html2unicode":331,"../../lib/str2rgbarray":341,"../../plotly":348}],368:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70555,7 +70749,7 @@ proto.hoverFormatter = function(axisName, val) {
     return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };
 
-},{"../../lib/html2unicode":319,"../../lib/show_no_webgl_msg":327,"../../plotly":336,"../../traces/scattergl/convert":415,"./camera":354,"./convert":355,"gl-plot2d":106,"gl-select-box":136,"gl-spikes2d":147}],357:[function(require,module,exports){
+},{"../../lib/html2unicode":331,"../../lib/show_no_webgl_msg":339,"../../plotly":348,"../../traces/scattergl/convert":469,"./camera":366,"./convert":367,"gl-plot2d":106,"gl-select-box":136,"gl-spikes2d":147}],369:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70803,7 +70997,7 @@ function createCamera(element, options) {
   return camera;
 }
 
-},{"3d-view":22,"mouse-change":173,"mouse-wheel":177,"right-now":191}],358:[function(require,module,exports){
+},{"3d-view":22,"mouse-change":173,"mouse-wheel":177,"right-now":191}],370:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70829,7 +71023,7 @@ module.exports = {
     }
 };
 
-},{}],359:[function(require,module,exports){
+},{}],371:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70940,7 +71134,7 @@ module.exports = {
     zerolinewidth: axesAttrs.zerolinewidth
 };
 
-},{"../../../lib/extend":316,"../../cartesian/layout_attributes":341}],360:[function(require,module,exports){
+},{"../../../lib/extend":328,"../../cartesian/layout_attributes":353}],372:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71003,7 +71197,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     }
 };
 
-},{"../../../plotly":336,"./axis_attributes":359}],361:[function(require,module,exports){
+},{"../../../plotly":348,"./axis_attributes":371}],373:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71024,43 +71218,43 @@ var arrayCopy1D = arrtools.copy1D;
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
 function AxesOptions() {
-    this.bounds         = [ [-10, -10, -10],
-                            [ 10,  10,  10] ];
+    this.bounds = [ [-10, -10, -10],
+                    [ 10,  10,  10] ];
 
-    this.ticks          = [ [], [], [] ];
-    this.tickEnable     = [ true, true, true ];
-    this.tickFont       = [ 'sans-serif', 'sans-serif', 'sans-serif' ];
-    this.tickSize       = [ 12, 12, 12 ];
-    this.tickAngle      = [ 0, 0, 0 ];
-    this.tickColor      = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
-    this.tickPad        = [ 18, 18, 18 ];
+    this.ticks = [ [], [], [] ];
+    this.tickEnable = [ true, true, true ];
+    this.tickFont = [ 'sans-serif', 'sans-serif', 'sans-serif' ];
+    this.tickSize = [ 12, 12, 12 ];
+    this.tickAngle = [ 0, 0, 0 ];
+    this.tickColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.tickPad = [ 18, 18, 18 ];
 
-    this.labels         = [ 'x', 'y', 'z' ];
-    this.labelEnable    = [ true, true, true ];
-    this.labelFont      = ['Open Sans','Open Sans','Open Sans'];
-    this.labelSize      = [ 20, 20, 20 ];
-    this.labelAngle     = [ 0, 0, 0 ];
-    this.labelColor     = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
-    this.labelPad       = [ 30, 30, 30 ];
+    this.labels = [ 'x', 'y', 'z' ];
+    this.labelEnable = [ true, true, true ];
+    this.labelFont = ['Open Sans','Open Sans','Open Sans'];
+    this.labelSize = [ 20, 20, 20 ];
+    this.labelAngle = [ 0, 0, 0 ];
+    this.labelColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.labelPad = [ 30, 30, 30 ];
 
-    this.lineEnable     = [ true, true, true ];
-    this.lineMirror     = [ false, false, false ];
-    this.lineWidth      = [ 1, 1, 1 ];
-    this.lineColor      = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.lineEnable = [ true, true, true ];
+    this.lineMirror = [ false, false, false ];
+    this.lineWidth = [ 1, 1, 1 ];
+    this.lineColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
 
     this.lineTickEnable = [ true, true, true ];
     this.lineTickMirror = [ false, false, false ];
     this.lineTickLength = [ 10, 10, 10 ];
-    this.lineTickWidth  = [ 1, 1, 1 ];
-    this.lineTickColor  = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.lineTickWidth = [ 1, 1, 1 ];
+    this.lineTickColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
 
-    this.gridEnable     = [ true, true, true ];
-    this.gridWidth      = [ 1, 1, 1 ];
-    this.gridColor      = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.gridEnable = [ true, true, true ];
+    this.gridWidth = [ 1, 1, 1 ];
+    this.gridColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
 
-    this.zeroEnable     = [ true, true, true ];
-    this.zeroLineColor  = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
-    this.zeroLineWidth  = [ 2, 2, 2 ];
+    this.zeroEnable = [ true, true, true ];
+    this.zeroLineColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.zeroLineWidth = [ 2, 2, 2 ];
 
     this.backgroundEnable = [ true, true, true ];
     this.backgroundColor  = [ [0.8, 0.8, 0.8, 0.5],
@@ -71068,9 +71262,9 @@ function AxesOptions() {
                               [0.8, 0.8, 0.8, 0.5] ];
 
     // some default values are stored for applying model transforms
-    this._defaultTickPad         = arrayCopy1D(this.tickPad);
-    this._defaultLabelPad        = arrayCopy1D(this.labelPad);
-    this._defaultLineTickLength  = arrayCopy1D(this.lineTickLength);
+    this._defaultTickPad = arrayCopy1D(this.tickPad);
+    this._defaultLabelPad = arrayCopy1D(this.labelPad);
+    this._defaultLineTickLength = arrayCopy1D(this.lineTickLength);
 }
 
 var proto = AxesOptions.prototype;
@@ -71084,27 +71278,30 @@ proto.merge = function(sceneLayout) {
         opts.labels[i] = convertHTML(axes.title);
         if ('titlefont' in axes) {
             if (axes.titlefont.color)  opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
-            if (axes.titlefont.family) opts.labelFont[i]  = axes.titlefont.family;
-            if (axes.titlefont.size)   opts.labelSize[i]  = axes.titlefont.size;
+            if (axes.titlefont.family) opts.labelFont[i] = axes.titlefont.family;
+            if (axes.titlefont.size)   opts.labelSize[i] = axes.titlefont.size;
         }
 
         /////// LINES ////////
         if ('showline' in axes)  opts.lineEnable[i] = axes.showline;
-        if ('linecolor' in axes) opts.lineColor[i]  = str2RgbaArray(axes.linecolor);
-        if ('linewidth' in axes) opts.lineWidth[i]  = axes.linewidth;
+        if ('linecolor' in axes) opts.lineColor[i] = str2RgbaArray(axes.linecolor);
+        if ('linewidth' in axes) opts.lineWidth[i] = axes.linewidth;
 
         if ('showgrid' in axes)  opts.gridEnable[i] = axes.showgrid;
-        if ('gridcolor' in axes) opts.gridColor[i]  = str2RgbaArray(axes.gridcolor);
-        if ('gridwidth' in axes) opts.gridWidth[i]  = axes.gridwidth;
+        if ('gridcolor' in axes) opts.gridColor[i] = str2RgbaArray(axes.gridcolor);
+        if ('gridwidth' in axes) opts.gridWidth[i] = axes.gridwidth;
 
-        if ('zeroline' in axes)      opts.zeroEnable[i]    = axes.zeroline;
+        // Remove zeroline if axis type is log
+        // otherwise the zeroline is incorrectly drawn at 1 on log axes
+        if (axes.type === 'log') opts.zeroEnable[i] = false;
+        else if ('zeroline' in axes) opts.zeroEnable[i] = axes.zeroline;
         if ('zerolinecolor' in axes) opts.zeroLineColor[i] = str2RgbaArray(axes.zerolinecolor);
         if ('zerolinewidth' in axes) opts.zeroLineWidth[i] = axes.zerolinewidth;
 
         //////// TICKS /////////
         /// tick lines
         if ('ticks' in axes && !!axes.ticks) opts.lineTickEnable[i] = true;
-        else                                 opts.lineTickEnable[i] = false;
+        else opts.lineTickEnable[i] = false;
 
         if ('ticklen' in axes) {
             opts.lineTickLength[i] = opts._defaultLineTickLength[i] = axes.ticklen;
@@ -71112,14 +71309,16 @@ proto.merge = function(sceneLayout) {
         if ('tickcolor' in axes) opts.lineTickColor[i] = str2RgbaArray(axes.tickcolor);
         if ('tickwidth' in axes) opts.lineTickWidth[i] = axes.tickwidth;
         if ('tickangle' in axes) {
-            opts.tickAngle[i] = axes.tickangle === 'auto' ? 0 : axes.tickangle;
+            opts.tickAngle[i] = (axes.tickangle === 'auto') ?
+                0 :
+                Math.PI * -axes.tickangle / 180;
         }
         //// tick labels
         if ('showticklabels' in axes) opts.tickEnable[i] = axes.showticklabels;
         if ('tickfont' in axes) {
-            if (axes.tickfont.color)  opts.tickColor[i]  = str2RgbaArray(axes.tickfont.color);
-            if (axes.tickfont.family) opts.tickFont[i]   = axes.tickfont.family;
-            if (axes.tickfont.size)   opts.tickSize[i]   = axes.tickfont.size;
+            if (axes.tickfont.color) opts.tickColor[i] = str2RgbaArray(axes.tickfont.color);
+            if (axes.tickfont.family) opts.tickFont[i] = axes.tickfont.family;
+            if (axes.tickfont.size) opts.tickSize[i] = axes.tickfont.size;
         }
 
         if ('mirror' in axes) {
@@ -71137,8 +71336,8 @@ proto.merge = function(sceneLayout) {
 
         ////// grid background
         if ('showbackground' in axes && axes.showbackground !== false) {
-            opts.backgroundEnable[i]    = true;
-            opts.backgroundColor[i]     = str2RgbaArray(axes.backgroundcolor);
+            opts.backgroundEnable[i] = true;
+            opts.backgroundColor[i] = str2RgbaArray(axes.backgroundcolor);
         } else opts.backgroundEnable[i] = false;
     }
 };
@@ -71152,7 +71351,7 @@ function createAxesOptions(plotlyOptions) {
 
 module.exports = createAxesOptions;
 
-},{"../../../lib/html2unicode":319,"../../../lib/str2rgbarray":329,"arraytools":32}],362:[function(require,module,exports){
+},{"../../../lib/html2unicode":331,"../../../lib/str2rgbarray":341,"arraytools":32}],374:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71258,7 +71457,7 @@ module.exports = function supplyLayoutDefaults (layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../../plotly":336,"./axis_defaults":360,"./layout_attributes":364}],363:[function(require,module,exports){
+},{"../../../plotly":348,"./axis_defaults":372,"./layout_attributes":376}],375:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71317,7 +71516,7 @@ exports.initAxes = function (td) {
     }
 };
 
-},{"../../../plotly":336,"./attributes":358,"./defaults":362,"./layout_attributes":364}],364:[function(require,module,exports){
+},{"../../../plotly":348,"./attributes":370,"./defaults":374,"./layout_attributes":376}],376:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71468,7 +71667,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":316,"./axis_attributes":359}],365:[function(require,module,exports){
+},{"../../../lib/extend":328,"./axis_attributes":371}],377:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71514,7 +71713,7 @@ function createSpikeOptions(layout) {
 
 module.exports = createSpikeOptions;
 
-},{"../../../lib/str2rgbarray":329}],366:[function(require,module,exports){
+},{"../../../lib/str2rgbarray":341}],378:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71566,8 +71765,8 @@ function computeTickMarks(scene) {
         if (Math.abs(axes._length) === Infinity) {
             ticks[i] = [];
         } else {
-            axes.range[0] = (glRange[i].lo + scene.dataCenter[i]) / scene.dataScale[i];
-            axes.range[1] = (glRange[i].hi + scene.dataCenter[i]) / scene.dataScale[i];
+            axes.range[0] = (glRange[i].lo) / scene.dataScale[i];
+            axes.range[1] = (glRange[i].hi) / scene.dataScale[i];
             axes._m       = 1.0 / (scene.dataScale[i] * glRange[i].pixelsPerDataUnit);
 
             if(axes.range[0] === axes.range[1]) {
@@ -71586,7 +71785,7 @@ function computeTickMarks(scene) {
             }
             var dataTicks = Plotly.Axes.calcTicks(axes);
             for(var j=0; j<dataTicks.length; ++j) {
-              dataTicks[j].x = dataTicks[j].x * scene.dataScale[i] - scene.dataCenter[i];
+              dataTicks[j].x = dataTicks[j].x * scene.dataScale[i];
               dataTicks[j].text = convertHTML(dataTicks[j].text);
             }
             ticks[i] = dataTicks;
@@ -71609,7 +71808,7 @@ function computeTickMarks(scene) {
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
 
-},{"../../../lib/html2unicode":319,"../../../plotly":336}],367:[function(require,module,exports){
+},{"../../../lib/html2unicode":331,"../../../plotly":348}],379:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71640,7 +71839,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],368:[function(require,module,exports){
+},{}],380:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71861,7 +72060,6 @@ function Scene(options, fullLayout) {
 
     //Coordinate rescaling
     this.dataScale    = [1,1,1];
-    this.dataCenter   = [0,0,0];
 
     this.contourLevels = [ [], [], [] ];
 
@@ -71977,24 +72175,20 @@ proto.plot = function(sceneData, fullLayout, layout) {
       computeTraceBounds(this, data, dataBounds);
     }
     var dataScale = [1,1,1];
-    var dataCenter = [0,0,0];
     for(var j=0; j<3; ++j) {
       if(dataBounds[0][j] > dataBounds[1][j]) {
         dataScale[j] = 1.0;
-        dataCenter[j] = 0.0;
       } else {
         if(dataBounds[1][j] === dataBounds[0][j]) {
           dataScale[j] = 1.0;
         } else {
           dataScale[j] = 1.0/(dataBounds[1][j] - dataBounds[0][j]);
         }
-        dataCenter[j] = 0.5 * (dataBounds[0][j] + dataBounds[1][j]) * dataScale[j];
       }
     }
 
-    //Save scale and offset factors
+    //Save scale
     this.dataScale = dataScale;
-    this.dataCenter = dataCenter;
 
     //Update traces
     for(var i = 0; i < sceneData.length; ++i) {
@@ -72065,9 +72259,9 @@ trace_id_loop:
             for(j = 0; j < this.glplot.objects.length; ++j) {
                 var objBounds = this.glplot.objects[j].bounds;
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i],
-                  (objBounds[0][i] + dataCenter[i]) / dataScale[i]);
+                  objBounds[0][i] / dataScale[i]);
                 sceneBounds[1][i] = Math.max(sceneBounds[1][i],
-                  (objBounds[1][i] + dataCenter[i]) / dataScale[i]);
+                  objBounds[1][i] / dataScale[i]);
             }
             if('rangemode' in axis && axis.rangemode === 'tozero') {
                 sceneBounds[0][i] = Math.min(sceneBounds[0][i], 0);
@@ -72093,8 +72287,8 @@ trace_id_loop:
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
 
         //Update plot bounds
-        this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i] - dataCenter[i];
-        this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i] - dataCenter[i];
+        this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i];
+        this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i];
     }
 
     var axesScaleRatio = [1, 1, 1];
@@ -72332,7 +72526,7 @@ proto.toImage = function (format) {
 
 module.exports = Scene;
 
-},{"../../lib/show_no_webgl_msg":327,"../../lib/str2rgbarray":329,"../../plotly":336,"../../traces/mesh3d/convert":398,"../../traces/scatter3d/convert":407,"../../traces/surface/convert":419,"./camera":357,"./layout/convert":361,"./layout/spikes":365,"./layout/tick_marks":366,"./project":367,"gl-plot3d":124}],369:[function(require,module,exports){
+},{"../../lib/show_no_webgl_msg":339,"../../lib/str2rgbarray":341,"../../plotly":348,"../../traces/mesh3d/convert":450,"../../traces/scatter3d/convert":461,"../../traces/surface/convert":474,"./camera":369,"./layout/convert":373,"./layout/spikes":377,"./layout/tick_marks":378,"./project":379,"gl-plot3d":124}],381:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -72538,7 +72732,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":283,"../plotly":336,"./font_attributes":342}],370:[function(require,module,exports){
+},{"../components/color/attributes":283,"../plotly":348,"./font_attributes":354}],382:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -73194,7 +73388,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = [
         'Axes', 'Annotations', 'Shapes', 'Fx',
-        'Bars', 'Boxes', 'Gl3dLayout', 'GeoLayout', 'Pie', 'Legend'
+        'Bar', 'Box', 'Gl3dLayout', 'GeoLayout', 'Pie', 'Legend'
     ];
 
     var i, module;
@@ -73222,6 +73416,9 @@ plots.purge = function(gd) {
     var fullLayout = gd._fullLayout || {};
     if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
     if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
+
+    // remove modebar
+    if(fullLayout._modeBar) fullLayout._modeBar.destroy();
 
     // data and layout
     delete gd.data;
@@ -73253,6 +73450,9 @@ plots.purge = function(gd) {
     delete gd.numboxes;
     delete gd._hoverTimer;
     delete gd._lastHoverTime;
+
+    // remove all event listeners
+    if(gd.removeAllListeners) gd.removeAllListeners();
 };
 
 plots.style = function(gd) {
@@ -73509,7 +73709,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
     return (output==='object') ? obj : JSON.stringify(obj);
 };
 
-},{"../plotly":336,"./attributes":337,"./font_attributes":342,"./layout_attributes":369,"d3":53,"fast-isnumeric":58}],371:[function(require,module,exports){
+},{"../plotly":348,"./attributes":349,"./font_attributes":354,"./layout_attributes":381,"d3":53,"fast-isnumeric":58}],383:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -73533,7 +73733,7 @@ module.exports = {
     }
 };
 
-},{"../../traces/scatter/attributes":403}],372:[function(require,module,exports){
+},{"../../traces/scatter/attributes":455}],384:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -73683,7 +73883,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":316,"../cartesian/layout_attributes":341}],373:[function(require,module,exports){
+},{"../../lib/extend":328,"../cartesian/layout_attributes":353}],385:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75109,7 +75309,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
     return exports;
 };
 
-},{"../../plotly":336,"./micropolar_manager":374,"d3":53}],374:[function(require,module,exports){
+},{"../../plotly":348,"./micropolar_manager":386,"d3":53}],386:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75194,7 +75394,7 @@ manager.fillLayout = function(_gd) {
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };
 
-},{"../../plotly":336,"./undo_manager":375,"d3":53}],375:[function(require,module,exports){
+},{"../../plotly":348,"./undo_manager":387,"d3":53}],387:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75263,7 +75463,7 @@ module.exports = function UndoManager() {
     };
 };
 
-},{}],376:[function(require,module,exports){
+},{}],388:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75419,7 +75619,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../plotly":336}],377:[function(require,module,exports){
+},{"../plotly":348}],389:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75465,7 +75665,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"../plotly":336,"./cloneplot":376,"./svgtoimg":378,"./toimage":379,"./tosvg":380}],378:[function(require,module,exports){
+},{"../plotly":348,"./cloneplot":388,"./svgtoimg":390,"./toimage":391,"./tosvg":392}],390:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75537,7 +75737,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"events":57}],379:[function(require,module,exports){
+},{"events":57}],391:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75619,7 +75819,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../plotly":336,"events":57}],380:[function(require,module,exports){
+},{"../plotly":348,"events":57}],392:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75788,7 +75988,35 @@ function insertGlImage(fullLayout, scene, opts) {
    scene.destroy();
 }
 
-},{"../plotly":336,"d3":53}],381:[function(require,module,exports){
+},{"../plotly":348,"d3":53}],393:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var mergeArray = require('../../lib').mergeArray;
+
+
+// arrayOk attributes, merge them into calcdata array
+module.exports = function arraysToCalcdata(cd) {
+    var trace = cd[0].trace,
+        marker = trace.marker,
+        markerLine = marker.line;
+
+    mergeArray(trace.text, cd, 'tx');
+    mergeArray(marker.opacity, cd, 'mo');
+    mergeArray(marker.color, cd, 'mc');
+    mergeArray(markerLine.color, cd, 'mlc');
+    mergeArray(markerLine.width, cd, 'mlw');
+};
+
+},{"../../lib":332}],394:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75842,12 +76070,9 @@ module.exports = {
         }
     },
 
-    r: scatterAttrs.r,  // FIXME this shouldn't get included in 'histogram'
+    r: scatterAttrs.r,
     t: scatterAttrs.t,
 
-    _composedModules: {  // composed module coupling
-        'histogram': 'Histogram'
-    },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
         'error_x': 'ErrorBars',
@@ -75864,7 +76089,108 @@ module.exports = {
     }
 };
 
-},{"../scatter/attributes":403}],382:[function(require,module,exports){
+},{"../scatter/attributes":455}],395:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+var hasColorscale = require('../../components/colorscale/has_colorscale');
+var colorscaleCalc = require('../../components/colorscale/calc');
+
+
+module.exports = function calc(gd, trace) {
+    // depending on bar direction, set position and size axes
+    // and data ranges
+    // note: this logic for choosing orientation is
+    // duplicated in graph_obj->setstyles
+
+    var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
+        ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
+        orientation = trace.orientation || ((trace.x && !trace.y) ? 'h' : 'v'),
+        pos, size, i;
+
+    if(orientation==='h') {
+        size = xa.makeCalcdata(trace, 'x');
+        pos = ya.makeCalcdata(trace, 'y');
+    }
+    else {
+        size = ya.makeCalcdata(trace, 'y');
+        pos = xa.makeCalcdata(trace, 'x');
+    }
+
+    // create the "calculated data" to plot
+    var serieslen = Math.min(pos.length, size.length),
+        cd = [];
+    for(i=0; i<serieslen; i++) {
+        if((isNumeric(pos[i]) && isNumeric(size[i]))) {
+            cd.push({p: pos[i], s: size[i], b: 0});
+        }
+    }
+
+    // auto-z and autocolorscale if applicable
+    if(hasColorscale(trace, 'marker')) {
+        colorscaleCalc(trace, trace.marker.color, 'marker', 'c');
+    }
+    if(hasColorscale(trace, 'marker.line')) {
+        colorscaleCalc(trace, trace.marker.line.color, 'marker.line', 'c');
+    }
+
+    return cd;
+};
+
+},{"../../components/colorscale/calc":291,"../../components/colorscale/has_colorscale":296,"../../plotly":348,"fast-isnumeric":58}],396:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Lib = require('../../lib');
+var Color = require('../../components/color');
+
+var handleXYDefaults = require('../scatter/xy_defaults');
+var handleStyleDefaults = require('../bar/style_defaults');
+var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
+var attributes = require('./attributes');
+
+
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    var len = handleXYDefaults(traceIn, traceOut, coerce);
+    if(!len) {
+        traceOut.visible = false;
+        return;
+    }
+
+    coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
+    coerce('text');
+
+    handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
+
+    // override defaultColor for error bars with defaultLine
+    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
+};
+
+},{"../../components/color":284,"../../components/errorbars/defaults":307,"../../lib":332,"../bar/style_defaults":404,"../scatter/xy_defaults":458,"./attributes":394}],397:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75877,12 +76203,98 @@ module.exports = {
 'use strict';
 
 var Plotly = require('../../plotly');
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
+var Color = require('../../components/color');
 
-var bars = module.exports = {};
 
-Plotly.Plots.register(bars, 'bar',
+module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
+    var cd = pointData.cd,
+        trace = cd[0].trace,
+        t = cd[0].t,
+        xa = pointData.xa,
+        ya = pointData.ya,
+        barDelta = (hovermode==='closest') ?
+            t.barwidth/2 : t.dbar*(1-xa._td._fullLayout.bargap)/2,
+        barPos;
+
+    if(hovermode!=='closest') barPos = function(di) { return di.p; };
+    else if(trace.orientation==='h') barPos = function(di) { return di.y; };
+    else barPos = function(di) { return di.x; };
+
+    var dx, dy;
+    if(trace.orientation==='h') {
+        dx = function(di){
+            // add a gradient so hovering near the end of a
+            // bar makes it a little closer match
+            return Plotly.Fx.inbox(di.b-xval, di.x-xval) + (di.x-xval)/(di.x-di.b);
+        };
+        dy = function(di){
+            var centerPos = barPos(di) - yval;
+            return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+        };
+    }
+    else {
+        dy = function(di){
+            return Plotly.Fx.inbox(di.b-yval, di.y-yval) + (di.y-yval)/(di.y-di.b);
+        };
+        dx = function(di){
+            var centerPos = barPos(di) - xval;
+            return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+        };
+    }
+
+    var distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy);
+    Plotly.Fx.getClosest(cd, distfn, pointData);
+
+    // skip the rest (for this trace) if we didn't find a close point
+    if(pointData.index===false) return;
+
+    // the closest data point
+    var di = cd[pointData.index],
+        mc = di.mcc || trace.marker.color,
+        mlc = di.mlcc || trace.marker.line.color,
+        mlw = di.mlw || trace.marker.line.width;
+    if(Color.opacity(mc)) pointData.color = mc;
+    else if(Color.opacity(mlc) && mlw) pointData.color = mlc;
+
+    if(trace.orientation==='h') {
+        pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
+        pointData.xLabelVal = di.s;
+
+        pointData.y0 = ya.c2p(barPos(di) - barDelta, true);
+        pointData.y1 = ya.c2p(barPos(di) + barDelta, true);
+        pointData.yLabelVal = di.p;
+    }
+    else {
+        pointData.y0 = pointData.y1 = ya.c2p(di.y,true);
+        pointData.yLabelVal = di.s;
+
+        pointData.x0 = xa.c2p(barPos(di) - barDelta, true);
+        pointData.x1 = xa.c2p(barPos(di) + barDelta, true);
+        pointData.xLabelVal = di.p;
+    }
+
+    if(di.tx) pointData.text = di.tx;
+
+    Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+
+    return [pointData];
+};
+
+},{"../../components/color":284,"../../plotly":348}],398:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../../plotly');
+
+Plotly.Plots.register(exports, 'bar',
     ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
     description: [
         'The data visualized by the span of the bars is set in `y`',
@@ -75893,57 +76305,110 @@ Plotly.Plots.register(bars, 'bar',
     ].join(' ')
 });
 
+exports.attributes = require('./attributes');
 
-bars.attributes = require('./attributes');
+exports.layoutAttributes = require('./layout_attributes');
 
-bars.layoutAttributes = require('./layout_attributes');
+exports.supplyDefaults = require('./defaults');
 
-bars.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, bars.attributes, attr, dflt);
+exports.supplyLayoutDefaults = require('./layout_defaults');
+
+exports.calc = require('./calc');
+
+exports.setPositions = require('./set_positions');
+
+exports.colorbar = require('../scatter/colorbar');
+
+exports.arraysToCalcdata = require('./arrays_to_calcdata');
+
+exports.plot = require('./plot');
+
+exports.style = require('./style');
+
+exports.hoverPoints = require('./hover');
+
+},{"../../plotly":348,"../scatter/colorbar":456,"./arrays_to_calcdata":393,"./attributes":394,"./calc":395,"./defaults":396,"./hover":397,"./layout_attributes":399,"./layout_defaults":400,"./plot":401,"./set_positions":402,"./style":403}],399:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+module.exports = {
+    barmode: {
+        valType: 'enumerated',
+        values: ['stack', 'group', 'overlay'],
+        dflt: 'group',
+        role: 'info',
+        description: [
+            'Determines how bars at the same location coordinate',
+            'are displayed on the graph.',
+            'With *stack*, the bars are stacked on top of one another',
+            'With *group*, the bars are plotted next to one another',
+            'centered around the shared location.',
+            'With *overlay*, the bars are plotted over one another,',
+            'you might need to an *opacity* to see multiple bars.'
+        ].join(' ')
+    },
+    barnorm: {
+        valType: 'enumerated',
+        values: ['', 'fraction', 'percent'],
+        dflt: '',
+        role: 'info',
+        description: [
+            'Sets the normalization for bar traces on the graph.',
+            'With *fraction*, the value of each bar is divide by the sum of the',
+            'values at the location coordinate.',
+            'With *percent*, the results form *fraction* are presented in percents.'
+        ].join(' ')
+    },
+    bargap: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        role: 'style',
+        description: [
+            'Sets the gap (in plot fraction) between bars of',
+            'adjacent location coordinates.'
+        ].join(' ')
+    },
+    bargroupgap: {
+        valType: 'number',
+        min: 0,
+        max: 1,
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets the gap (in plot fraction) between bars of',
+            'the same location coordinate.'
+        ].join(' ')
     }
-
-    if(traceOut.type==='histogram') {
-        // x, y, and orientation are coerced in Histogram.supplyDefaults
-        // (along with histogram-specific attributes)
-        Plotly.Histogram.supplyDefaults(traceIn, traceOut);
-        if(!traceOut.visible) return;
-    }
-    else {
-        var len = Plotly.Scatter.handleXYDefaults(traceIn, traceOut, coerce);
-        if(!len) {
-            traceOut.visible = false;
-            return;
-        }
-
-        coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
-    }
-
-    coerce('marker.color', defaultColor);
-    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
-        Plotly.Colorscale.handleDefaults(
-            traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
-        );
-    }
-
-    coerce('marker.line.color', Plotly.Color.defaultLine);
-    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker.line')) {
-        Plotly.Colorscale.handleDefaults(
-            traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
-        );
-    }
-
-    coerce('marker.line.width', 0);
-    coerce('text');
-
-    // override defaultColor for error bars with defaultLine
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'y'});
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, Plotly.Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+},{}],400:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+
+var layoutAttributes = require('./layout_attributes');
+
+
+module.exports = function(layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(layoutIn, layoutOut, bars.layoutAttributes, attr, dflt);
+        return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
     var hasBars = false,
@@ -75953,6 +76418,7 @@ bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
         i,
         trace,
         subploti;
+
     for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
         if(Plotly.Plots.traceIs(trace, 'bar')) hasBars = true;
@@ -75982,53 +76448,138 @@ bars.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     coerce('bargroupgap');
 };
 
-bars.colorbar = Plotly.Scatter.colorbar;
+},{"../../lib":332,"../../plotly":348,"./layout_attributes":399}],401:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-bars.calc = function(gd, trace) {
-    if(trace.type==='histogram') return Plotly.Histogram.calc(gd,trace);
 
-    // depending on bar direction, set position and size axes
-    // and data ranges
-    // note: this logic for choosing orientation is
-    // duplicated in graph_obj->setstyles
-    var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
-        ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
-        orientation = trace.orientation || ((trace.x && !trace.y) ? 'h' : 'v'),
-        pos, size, i;
-    if(orientation==='h') {
-        size = xa.makeCalcdata(trace, 'x');
-        pos = ya.makeCalcdata(trace, 'y');
-    }
-    else {
-        size = ya.makeCalcdata(trace, 'y');
-        pos = xa.makeCalcdata(trace, 'x');
-    }
+'use strict';
 
-    // create the "calculated data" to plot
-    var serieslen = Math.min(pos.length, size.length),
-        cd = [];
-    for(i=0; i<serieslen; i++) {
-        if((isNumeric(pos[i]) && isNumeric(size[i]))) {
-            cd.push({p: pos[i], s: size[i], b: 0});
-        }
-    }
+var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
 
-    // auto-z and autocolorscale if applicable
-    if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
-        Plotly.Colorscale.calc(trace, trace.marker.color, 'marker', 'c');
-    }
-    if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
-        Plotly.Colorscale.calc(trace, trace.marker.line.color, 'marker.line', 'c');
-    }
+var Lib = require('../../lib');
+var Color = require('../../components/color');
 
-    return cd;
+var arraysToCalcdata = require('./arrays_to_calcdata');
+
+
+module.exports = function plot(gd, plotinfo, cdbar) {
+    var xa = plotinfo.x(),
+        ya = plotinfo.y(),
+        fullLayout = gd._fullLayout;
+
+    var bartraces = plotinfo.plot.select('.barlayer')
+        .selectAll('g.trace.bars')
+            .data(cdbar)
+      .enter().append('g')
+        .attr('class','trace bars');
+
+    bartraces.append('g')
+        .attr('class','points')
+        .each(function(d){
+            var t = d[0].t,
+                trace = d[0].trace;
+
+            arraysToCalcdata(d);
+
+            d3.select(this).selectAll('path')
+                .data(Lib.identity)
+              .enter().append('path')
+                .each(function(di){
+                    // now display the bar
+                    // clipped xf/yf (2nd arg true): non-positive
+                    // log values go off-screen by plotwidth
+                    // so you see them continue if you drag the plot
+                    var x0,x1,y0,y1;
+                    if(trace.orientation==='h') {
+                        y0 = ya.c2p(t.poffset+di.p, true);
+                        y1 = ya.c2p(t.poffset+di.p+t.barwidth, true);
+                        x0 = xa.c2p(di.b, true);
+                        x1 = xa.c2p(di.s+di.b, true);
+                    }
+                    else {
+                        x0 = xa.c2p(t.poffset+di.p, true);
+                        x1 = xa.c2p(t.poffset+di.p+t.barwidth, true);
+                        y1 = ya.c2p(di.s+di.b, true);
+                        y0 = ya.c2p(di.b, true);
+                    }
+
+                    if(!isNumeric(x0) || !isNumeric(x1) ||
+                            !isNumeric(y0) || !isNumeric(y1) ||
+                            x0===x1 || y0===y1) {
+                        d3.select(this).remove();
+                        return;
+                    }
+                    var lw = (di.mlw+1 || trace.marker.line.width+1 ||
+                            (di.trace ? di.trace.marker.line.width : 0)+1)-1,
+                        offset = d3.round((lw/2)%1,2);
+                    function roundWithLine(v) {
+                        // if there are explicit gaps, don't round,
+                        // it can make the gaps look crappy
+                        return (fullLayout.bargap===0 && fullLayout.bargroupgap===0) ?
+                            d3.round(Math.round(v)-offset, 2) : v;
+                    }
+                    function expandToVisible(v,vc) {
+                        // if it's not in danger of disappearing entirely,
+                        // round more precisely
+                        return Math.abs(v-vc)>=2 ? roundWithLine(v) :
+                        // but if it's very thin, expand it so it's
+                        // necessarily visible, even if it might overlap
+                        // its neighbor
+                        (v>vc ? Math.ceil(v) : Math.floor(v));
+                    }
+                    if(!gd._context.staticPlot) {
+                        // if bars are not fully opaque or they have a line
+                        // around them, round to integer pixels, mainly for
+                        // safari so we prevent overlaps from its expansive
+                        // pixelation. if the bars ARE fully opaque and have
+                        // no line, expand to a full pixel to make sure we
+                        // can see them
+                        var op = Color.opacity(di.mc || trace.marker.color),
+                            fixpx = (op<1 || lw>0.01) ?
+                                roundWithLine : expandToVisible;
+                        x0 = fixpx(x0,x1);
+                        x1 = fixpx(x1,x0);
+                        y0 = fixpx(y0,y1);
+                        y1 = fixpx(y1,y0);
+                    }
+                    d3.select(this).attr('d',
+                        'M'+x0+','+y0+'V'+y1+'H'+x1+'V'+y0+'Z');
+                });
+        });
 };
 
-// bar chart stacking/grouping positioning and autoscaling calculations
-// for each direction separately calculate the ranges and positions
-// note that this handles histograms too
-// now doing this one subplot at a time
-bars.setPositions = function(gd, plotinfo) {
+},{"../../components/color":284,"../../lib":332,"./arrays_to_calcdata":393,"d3":53,"fast-isnumeric":58}],402:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+
+/*
+ * Bar chart stacking/grouping positioning and autoscaling calculations
+ * for each direction separately calculate the ranges and positions
+ * note that this handles histograms too
+ * now doing this one subplot at a time
+ */
+
+module.exports = function setPositions(gd, plotinfo) {
     var fullLayout = gd._fullLayout,
         xa = plotinfo.x(),
         ya = plotinfo.y(),
@@ -76064,7 +76615,7 @@ bars.setPositions = function(gd, plotinfo) {
             bl1.forEach(function(i){
                 gd.calcdata[i].forEach(function(v){ pvals.push(v.p); });
             });
-            var dv = Plotly.Lib.distinctVals(pvals),
+            var dv = Lib.distinctVals(pvals),
                 pv2 = dv.vals,
                 barDiff = dv.minDiff;
 
@@ -76206,107 +76757,25 @@ bars.setPositions = function(gd, plotinfo) {
     });
 };
 
-// arrayOk attributes, merge them into calcdata array
-bars.arraysToCalcdata = function(cd) {
-    var trace = cd[0].trace,
-        marker = trace.marker,
-        markerLine = marker.line;
+},{"../../lib":332,"../../plotly":348,"fast-isnumeric":58}],403:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-    Plotly.Lib.mergeArray(trace.text, cd, 'tx');
-    Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
-    Plotly.Lib.mergeArray(marker.color, cd, 'mc');
-    Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');
-    Plotly.Lib.mergeArray(markerLine.width, cd, 'mlw');
-};
 
-bars.plot = function(gd, plotinfo, cdbar) {
-    var xa = plotinfo.x(),
-        ya = plotinfo.y(),
-        fullLayout = gd._fullLayout;
+'use strict';
 
-    var bartraces = plotinfo.plot.select('.barlayer')
-        .selectAll('g.trace.bars')
-            .data(cdbar)
-      .enter().append('g')
-        .attr('class','trace bars');
+var d3 = require('d3');
 
-    bartraces.append('g')
-        .attr('class','points')
-        .each(function(d){
-            var t = d[0].t,
-                trace = d[0].trace;
+var Plotly = require('../../plotly');
+var Color = require('../../components/color');
 
-            bars.arraysToCalcdata(d);
 
-            d3.select(this).selectAll('path')
-                .data(Plotly.Lib.identity)
-              .enter().append('path')
-                .each(function(di){
-                    // now display the bar
-                    // clipped xf/yf (2nd arg true): non-positive
-                    // log values go off-screen by plotwidth
-                    // so you see them continue if you drag the plot
-                    var x0,x1,y0,y1;
-                    if(trace.orientation==='h') {
-                        y0 = ya.c2p(t.poffset+di.p, true);
-                        y1 = ya.c2p(t.poffset+di.p+t.barwidth, true);
-                        x0 = xa.c2p(di.b, true);
-                        x1 = xa.c2p(di.s+di.b, true);
-                    }
-                    else {
-                        x0 = xa.c2p(t.poffset+di.p, true);
-                        x1 = xa.c2p(t.poffset+di.p+t.barwidth, true);
-                        y1 = ya.c2p(di.s+di.b, true);
-                        y0 = ya.c2p(di.b, true);
-                    }
-
-                    if(!isNumeric(x0) || !isNumeric(x1) ||
-                            !isNumeric(y0) || !isNumeric(y1) ||
-                            x0===x1 || y0===y1) {
-                        d3.select(this).remove();
-                        return;
-                    }
-                    var lw = (di.mlw+1 || trace.marker.line.width+1 ||
-                            (di.trace ? di.trace.marker.line.width : 0)+1)-1,
-                        offset = d3.round((lw/2)%1,2);
-                    function roundWithLine(v) {
-                        // if there are explicit gaps, don't round,
-                        // it can make the gaps look crappy
-                        return (fullLayout.bargap===0 && fullLayout.bargroupgap===0) ?
-                            d3.round(Math.round(v)-offset, 2) : v;
-                    }
-                    function expandToVisible(v,vc) {
-                        // if it's not in danger of disappearing entirely,
-                        // round more precisely
-                        return Math.abs(v-vc)>=2 ? roundWithLine(v) :
-                        // but if it's very thin, expand it so it's
-                        // necessarily visible, even if it might overlap
-                        // its neighbor
-                        (v>vc ? Math.ceil(v) : Math.floor(v));
-                    }
-                    if(!gd._context.staticPlot) {
-                        // if bars are not fully opaque or they have a line
-                        // around them, round to integer pixels, mainly for
-                        // safari so we prevent overlaps from its expansive
-                        // pixelation. if the bars ARE fully opaque and have
-                        // no line, expand to a full pixel to make sure we
-                        // can see them
-                        var op = Plotly.Color.opacity(
-                                di.mc || trace.marker.color),
-                            fixpx = (op<1 || lw>0.01) ?
-                                roundWithLine : expandToVisible;
-                        x0 = fixpx(x0,x1);
-                        x1 = fixpx(x1,x0);
-                        y0 = fixpx(y0,y1);
-                        y1 = fixpx(y1,y0);
-                    }
-                    d3.select(this).attr('d',
-                        'M'+x0+','+y0+'V'+y1+'H'+x1+'V'+y0+'Z');
-                });
-        });
-};
-
-bars.style = function(gd) {
+module.exports = function style(gd) {
     var s = d3.select(gd).selectAll('g.trace.bars'),
         barcount = s.size(),
         fullLayout = gd._fullLayout;
@@ -76344,18 +76813,18 @@ bars.style = function(gd) {
                 p = d3.select(this);
 
             if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-            else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
+            else if(Array.isArray(marker.color)) fillColor = Color.defaultLine;
             else fillColor = marker.color;
 
             p.style('stroke-width', lineWidth + 'px')
-                .call(Plotly.Color.fill, fillColor);
+                .call(Color.fill, fillColor);
             if(lineWidth) {
                 if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
                 // weird case: array wasn't long enough to apply to every point
-                else if(Array.isArray(markerLine.color)) lineColor = Plotly.Color.defaultLine;
+                else if(Array.isArray(markerLine.color)) lineColor = Color.defaultLine;
                 else lineColor = markerLine.color;
 
-                p.call(Plotly.Color.stroke, lineColor);
+                p.call(Color.stroke, lineColor);
             }
         });
         // TODO: text markers on bars, either extra text or just bar values
@@ -76364,80 +76833,7 @@ bars.style = function(gd) {
     });
 };
 
-bars.hoverPoints = function(pointData, xval, yval, hovermode) {
-    var cd = pointData.cd,
-        trace = cd[0].trace,
-        t = cd[0].t,
-        xa = pointData.xa,
-        ya = pointData.ya,
-        barDelta = (hovermode==='closest') ?
-            t.barwidth/2 : t.dbar*(1-xa._td._fullLayout.bargap)/2,
-        barPos;
-    if(hovermode!=='closest') barPos = function(di) { return di.p; };
-    else if(trace.orientation==='h') barPos = function(di) { return di.y; };
-    else barPos = function(di) { return di.x; };
-
-    var dx, dy;
-    if(trace.orientation==='h') {
-        dx = function(di){
-            // add a gradient so hovering near the end of a
-            // bar makes it a little closer match
-            return Plotly.Fx.inbox(di.b-xval, di.x-xval) + (di.x-xval)/(di.x-di.b);
-        };
-        dy = function(di){
-            var centerPos = barPos(di) - yval;
-            return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
-        };
-    }
-    else {
-        dy = function(di){
-            return Plotly.Fx.inbox(di.b-yval, di.y-yval) + (di.y-yval)/(di.y-di.b);
-        };
-        dx = function(di){
-            var centerPos = barPos(di) - xval;
-            return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
-        };
-    }
-
-    var distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy);
-    Plotly.Fx.getClosest(cd, distfn, pointData);
-
-    // skip the rest (for this trace) if we didn't find a close point
-    if(pointData.index===false) return;
-
-    // the closest data point
-    var di = cd[pointData.index],
-        mc = di.mcc || trace.marker.color,
-        mlc = di.mlcc || trace.marker.line.color,
-        mlw = di.mlw || trace.marker.line.width;
-    if(Plotly.Color.opacity(mc)) pointData.color = mc;
-    else if(Plotly.Color.opacity(mlc) && mlw) pointData.color = mlc;
-
-    if(trace.orientation==='h') {
-        pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
-        pointData.xLabelVal = di.s;
-
-        pointData.y0 = ya.c2p(barPos(di) - barDelta, true);
-        pointData.y1 = ya.c2p(barPos(di) + barDelta, true);
-        pointData.yLabelVal = di.p;
-    }
-    else {
-        pointData.y0 = pointData.y1 = ya.c2p(di.y,true);
-        pointData.yLabelVal = di.s;
-
-        pointData.x0 = xa.c2p(barPos(di) - barDelta, true);
-        pointData.x1 = xa.c2p(barPos(di) + barDelta, true);
-        pointData.xLabelVal = di.p;
-    }
-
-    if(di.tx) pointData.text = di.tx;
-
-    Plotly.ErrorBars.hoverInfo(di, trace, pointData);
-
-    return [pointData];
-};
-
-},{"../../plotly":336,"./attributes":381,"./layout_attributes":383,"d3":53,"fast-isnumeric":58}],383:[function(require,module,exports){
+},{"../../components/color":284,"../../plotly":348,"d3":53}],404:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -76447,58 +76843,34 @@ bars.hoverPoints = function(pointData, xval, yval, hovermode) {
 */
 
 
-module.exports = {
-    barmode: {
-        valType: 'enumerated',
-        values: ['stack', 'group', 'overlay'],
-        dflt: 'group',
-        role: 'info',
-        description: [
-            'Determines how bars at the same location coordinate',
-            'are displayed on the graph.',
-            'With *stack*, the bars are stacked on top of one another',
-            'With *group*, the bars are plotted next to one another',
-            'centered around the shared location.',
-            'With *overlay*, the bars are plotted over one another,',
-            'you might need to an *opacity* to see multiple bars.'
-        ].join(' ')
-    },
-    barnorm: {
-        valType: 'enumerated',
-        values: ['', 'fraction', 'percent'],
-        dflt: '',
-        role: 'info',
-        description: [
-            'Sets the normalization for bar traces on the graph.',
-            'With *fraction*, the value of each bar is divide by the sum of the',
-            'values at the location coordinate.',
-            'With *percent*, the results form *fraction* are presented in percents.'
-        ].join(' ')
-    },
-    bargap: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        role: 'style',
-        description: [
-            'Sets the gap (in plot fraction) between bars of',
-            'adjacent location coordinates.'
-        ].join(' ')
-    },
-    bargroupgap: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        dflt: 0,
-        role: 'style',
-        description: [
-            'Sets the gap (in plot fraction) between bars of',
-            'the same location coordinate.'
-        ].join(' ')
+'use strict';
+
+var Color = require('../../components/color');
+var hasColorscale = require('../../components/colorscale/has_colorscale');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
+
+
+module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout) {
+    coerce('marker.color', defaultColor);
+
+    if(hasColorscale(traceIn, 'marker')) {
+        colorscaleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
+        );
     }
+
+    coerce('marker.line.color', Color.defaultLine);
+
+    if(hasColorscale(traceIn, 'marker.line')) {
+        colorscaleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
+        );
+    }
+
+    coerce('marker.line.width');
 };
 
-},{}],384:[function(require,module,exports){
+},{"../../components/color":284,"../../components/colorscale/defaults":293,"../../components/colorscale/has_colorscale":296}],405:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -76675,7 +77047,7 @@ module.exports = {
     fillcolor: scatterAttrs.fillcolor
 };
 
-},{"../../components/color/attributes":283,"../../lib/extend":316,"../scatter/attributes":403}],385:[function(require,module,exports){
+},{"../../components/color/attributes":283,"../../lib/extend":328,"../scatter/attributes":455}],406:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77319,7 +77691,7 @@ boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
     return closeData;
 };
 
-},{"../../plotly":336,"./attributes":384,"./layout_attributes":386,"d3":53,"fast-isnumeric":58}],386:[function(require,module,exports){
+},{"../../plotly":348,"./attributes":405,"./layout_attributes":407,"d3":53,"fast-isnumeric":58}],407:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77368,7 +77740,7 @@ module.exports = {
     }
 };
 
-},{}],387:[function(require,module,exports){
+},{}],408:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77423,7 +77795,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":287,"../../lib/extend":316,"../../plots/attributes":337,"../scattergeo/attributes":410}],388:[function(require,module,exports){
+},{"../../components/colorscale/attributes":290,"../../lib/extend":328,"../../plots/attributes":349,"../scattergeo/attributes":464}],409:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77435,24 +77807,28 @@ module.exports = {
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var Choropleth = require('./');
+var Lib = require('../../lib');
+
+var colorscaleDefaults = require('../../components/colorscale/defaults');
+var attributes = require('./attributes');
+
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    var locations, len, z;
-
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, Choropleth.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    locations = coerce('locations');
+    var locations = coerce('locations');
+
+    var len;
     if(locations) len = locations.length;
+
     if(!locations || !len) {
         traceOut.visible = false;
         return;
     }
 
-    z = coerce('z');
+    var z = coerce('z');
     if(!Array.isArray(z)) {
         traceOut.visible = false;
         return;
@@ -77467,14 +77843,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('marker.line.color');
     coerce('marker.line.width');
 
-    Plotly.Colorscale.handleDefaults(
+    colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
 
     coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined);
 };
 
-},{"../../plotly":336,"./":389}],389:[function(require,module,exports){
+},{"../../components/colorscale/defaults":293,"../../lib":332,"./attributes":408}],410:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77488,9 +77864,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 var Plotly = require('../../plotly');
 
-var Choropleth = module.exports = {};
-
-Plotly.Plots.register(Choropleth, 'choropleth', ['geo', 'noOpacity'], {
+Plotly.Plots.register(exports, 'choropleth', ['geo', 'noOpacity'], {
     description: [
         'The data that describes the choropleth value-to-color mapping',
         'is set in `z`.',
@@ -77499,19 +77873,15 @@ Plotly.Plots.register(Choropleth, 'choropleth', ['geo', 'noOpacity'], {
     ].join(' ')
 });
 
-Choropleth.attributes = require('./attributes');
+exports.attributes = require('./attributes');
 
-Choropleth.supplyDefaults = require('./defaults');
+exports.supplyDefaults = require('./defaults');
 
-Choropleth.colorbar = Plotly.Colorbar.traceColorbar;
+exports.colorbar = require('../heatmap/colorbar');
 
-Choropleth.calc = function(gd, trace) {
+exports.calc = require('../surface/calc');
 
-    Plotly.Colorscale.calc(trace, trace.z, '', 'z');
-
-};
-
-},{"../../plotly":336,"./attributes":387,"./defaults":388}],390:[function(require,module,exports){
+},{"../../plotly":348,"../heatmap/colorbar":423,"../surface/calc":473,"./attributes":408,"./defaults":409}],411:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77526,9 +77896,12 @@ Choropleth.calc = function(gd, trace) {
 var Plotly = require('../../plotly');
 var d3 = require('d3');
 
+var Color = require('../../components/color');
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var arrayToCalcItem = require('../../lib/array_to_calc_item');
+var getColorscale = require('../../components/colorscale/get_scale');
+var makeScaleFunction = require('../../components/colorscale/make_scale_function');
 
 var constants = require('../../constants/geo_constants');
 
@@ -77644,14 +78017,14 @@ plotChoropleth.style = function(geo) {
                 markerLine = marker.line || {},
                 zmin = trace.zmin,
                 zmax = trace.zmax,
-                scl = Plotly.Colorscale.getScale(trace.colorscale),
-                sclFunc = Plotly.Colorscale.makeScaleFunction(scl, zmin, zmax);
+                scl = getColorscale(trace.colorscale),
+                sclFunc = makeScaleFunction(scl, zmin, zmax);
 
             s.selectAll('path.choroplethlocation')
                 .each(function(d) {
                     d3.select(this)
                         .attr('fill', function(d) { return sclFunc(d.z); })
-                        .call(Plotly.Color.stroke, d.mlc || markerLine.color)
+                        .call(Color.stroke, d.mlc || markerLine.color)
                         .call(Plotly.Drawing.dashLine, '', d.mlw || markerLine.width);
                 });
         });
@@ -77700,7 +78073,7 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     };
 }
 
-},{"../../constants/geo_constants":306,"../../lib/array_to_calc_item":312,"../../lib/geo_location_utils":317,"../../lib/topojson_utils":331,"../../plotly":336,"d3":53}],391:[function(require,module,exports){
+},{"../../components/color":284,"../../components/colorscale/get_scale":295,"../../components/colorscale/make_scale_function":300,"../../constants/geo_constants":318,"../../lib/array_to_calc_item":324,"../../lib/geo_location_utils":329,"../../lib/topojson_utils":343,"../../plotly":348,"d3":53}],412:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77710,16 +78083,35 @@ function makeCleanHoverLabelsFunc(geo, trace) {
 */
 
 
+var heatmapAttrs = require('../heatmap/attributes');
 var scatterAttrs = require('../scatter/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line;
 
 module.exports = {
-    _composedModules: {  // composed module coupling
-        'contour': 'Heatmap',
-        'histogram2dcontour': 'Heatmap'
-    },
+    z: heatmapAttrs.z,
+    x: heatmapAttrs.x,
+    x0: heatmapAttrs.x0,
+    dx: heatmapAttrs.dx,
+    y: heatmapAttrs.y,
+    y0: heatmapAttrs.y0,
+    dy: heatmapAttrs.dy,
+    text: heatmapAttrs.text,
+    transpose: heatmapAttrs.transpose,
+    xtype: heatmapAttrs.xtype,
+    ytype: heatmapAttrs.ytype,
+
+    zauto: heatmapAttrs.zauto,
+    zmin: heatmapAttrs.zmin,
+    zmax: heatmapAttrs.zmax,
+    colorscale: heatmapAttrs.colorscale,
+    autocolorscale: heatmapAttrs.autocolorscale,
+    reversescale: heatmapAttrs.reversescale,
+    showscale: heatmapAttrs.showscale,
+
+    connectgaps: heatmapAttrs.connectgaps,
+
     autocontour: {
         valType: 'boolean',
         dflt: true,
@@ -77737,6 +78129,7 @@ module.exports = {
         role: 'style',
         description: 'Sets the number of contour levels.'
     },
+
     contours: {
         start: {
             valType: 'number',
@@ -77780,6 +78173,7 @@ module.exports = {
             ].join(' ')
         }
     },
+
     line: {
         color: extendFlat({}, scatterLineAttrs.color, {
             description: [
@@ -77795,11 +78189,14 @@ module.exports = {
                 'where *0* corresponds to no smoothing.'
             ].join(' ')
         })
+    },
+
+    _nestedModules: {
+        'colorbar': 'Colorbar'
     }
 };
 
-
-},{"../../lib/extend":316,"../scatter/attributes":403}],392:[function(require,module,exports){
+},{"../../lib/extend":328,"../heatmap/attributes":421,"../scatter/attributes":455}],413:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77812,71 +78209,14 @@ module.exports = {
 'use strict';
 
 var Plotly = require('../../plotly');
-var d3 = require('d3');
+var heatmapCalc = require('../heatmap/calc');
 
-var contour = module.exports = {};
 
-Plotly.Plots.register(contour, 'contour',
-    ['cartesian', '2dMap', 'contour'], {
-    description: [
-        'The data from which contour lines are computed is set in `z`.',
-        'Data in `z` must be a {2D array} of numbers.',
-
-        'Say that `z` has N rows and M columns, then by default,',
-        'these N rows correspond to N y coordinates',
-        '(set in `y` or auto-generated) and the M columns',
-        'correspond to M x coordinates (set in `x` or auto-generated).',
-
-        'By setting `transpose` to *true*, the above behavior is flipped.'
-    ].join(' ')
-});
-
-Plotly.Plots.register(contour, 'histogram2dcontour',
-    ['cartesian', '2dMap', 'contour', 'histogram'], {
-    hrName: 'histogram_2d_contour',
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'and `y` (where `x` and `y` represent marginal distributions,',
-        'binning is set in `xbins` and `ybins` in this case)',
-        'or `z` (where `z` represent the 2D distribution and binning set,',
-        'binning is set by `x` and `y` in this case).',
-        'The resulting distribution is visualized as a contour plot.'
-    ].join(' ')
-});
-
-contour.attributes = require('./attributes');
-
-contour.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, contour.attributes, attr, dflt);
-    }
-
-    var contourStart = Plotly.Lib.coerce2(traceIn, traceOut, contour.attributes, 'contours.start'),
-        contourEnd = Plotly.Lib.coerce2(traceIn, traceOut, contour.attributes, 'contours.end'),
-        autocontour = contourStart && contourEnd ? coerce('autocontour', false) : coerce('autocontour');
-    if(autocontour) coerce('ncontours');
-    else coerce('contours.size');
-
-    var coloring = coerce('contours.coloring');
-
-    if(coloring==='fill') coerce('contours.showlines');
-
-    if(traceOut.contours.showlines!==false) {
-        if(coloring!=='lines') coerce('line.color', '#000');
-        coerce('line.width', 0.5);
-        coerce('line.dash');
-    }
-
-    coerce('line.smoothing');
-
-    Plotly.Heatmap.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-};
-
-contour.calc = function(gd, trace) {
+module.exports = function calc(gd, trace) {
     // most is the same as heatmap calc, then adjust it
     // though a few things inside heatmap calc still look for
     // contour maps, because the makeBoundArray calls are too entangled
-    var cd = Plotly.Heatmap.calc(gd, trace),
+    var cd = heatmapCalc(gd, trace),
         contours = trace.contours;
 
     // check if we need to auto-choose contour levels
@@ -77905,7 +78245,227 @@ contour.calc = function(gd, trace) {
     return cd;
 };
 
-contour.plot = function(gd, plotinfo, cdcontours) {
+},{"../../plotly":348,"../heatmap/calc":422}],414:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+
+var Plotly = require('../../plotly');
+var getColorscale = require('../../components/colorscale/get_scale');
+var drawColorbar = require('../../components/colorbar/draw');
+
+
+module.exports = function colorbar(gd, cd) {
+    var trace = cd[0].trace,
+        cbId = 'cb' + trace.uid;
+
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+
+    if(trace.showscale===false){
+        Plotly.Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var cb = drawColorbar(gd, cbId);
+    cd[0].t.cb = cb;
+
+    var contours = trace.contours,
+        line = trace.line,
+        cs = contours.size||1,
+        nc = Math.floor((contours.end + cs/10 - contours.start)/cs)+1,
+        scl = getColorscale(trace.colorscale),
+        extraLevel = contours.coloring==='lines' ? 0 : 1,
+        colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
+        colorDomain = scl.map(function(si){
+                return (si[0]*(nc+extraLevel-1)-(extraLevel/2)) * cs +
+                    contours.start;
+            }),
+        colorRange = scl.map(function(si){ return si[1]; });
+
+    // colorbar fill and lines
+    if(contours.coloring==='heatmap') {
+        if(trace.zauto && trace.autocontour===false) {
+            trace.zmin = contours.start-cs/2;
+            trace.zmax = trace.zmin+nc*cs;
+        }
+        cb.filllevels({
+            start: trace.zmin,
+            end: trace.zmax,
+            size: (trace.zmax-trace.zmin)/254
+        });
+        colorDomain = scl.map(function(si){
+            return si[0]*(trace.zmax-trace.zmin) + trace.zmin;
+        });
+
+        // do the contours extend beyond the colorscale?
+        // if so, extend the colorscale with constants
+        var zRange = d3.extent([trace.zmin, trace.zmax, contours.start,
+                contours.start + cs*(nc-1)]),
+            zmin = zRange[trace.zmin<trace.zmax ? 0 : 1],
+            zmax = zRange[trace.zmin<trace.zmax ? 1 : 0];
+        if(zmin!==trace.zmin) {
+            colorDomain.splice(0, 0, zmin);
+            colorRange.splice(0, 0, colorRange[0]);
+        }
+        if(zmax!==trace.zmax) {
+            colorDomain.push(zmax);
+            colorRange.push(colorRange[colorRange.length-1]);
+        }
+    }
+
+    colormap.domain(colorDomain).range(colorRange);
+
+    cb.fillcolor(contours.coloring==='fill' || contours.coloring==='heatmap' ?
+            colormap : '')
+        .line({
+            color: contours.coloring==='lines' ? colormap : line.color,
+            width: contours.showlines!==false ? line.width : 0,
+            dash: line.dash
+        })
+        .levels({
+            start: contours.start,
+            end: contours.end,
+            size: cs
+        })
+        .options(trace.colorbar)();
+};
+
+},{"../../components/colorbar/draw":287,"../../components/colorscale/get_scale":295,"../../plotly":348,"d3":53}],415:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Lib = require('../../lib');
+
+var hasColumns = require('../heatmap/has_columns');
+var handleXYZDefaults = require('../heatmap/xyz_defaults');
+var handleStyleDefaults = require('../contour/style_defaults');
+var attributes = require('./attributes');
+
+
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    var len = handleXYZDefaults(traceIn, traceOut, coerce);
+    if(!len) {
+        traceOut.visible = false;
+        return;
+    }
+
+    coerce('text');
+    coerce('connectgaps', hasColumns(traceOut));
+
+    var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start'),
+        contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end'),
+        autocontour = coerce('autocontour', !(contourStart && contourEnd));
+
+    if(autocontour) coerce('ncontours');
+    else coerce('contours.size');
+
+    handleStyleDefaults(traceIn, traceOut, coerce, layout);
+};
+
+},{"../../lib":332,"../contour/style_defaults":420,"../heatmap/has_columns":426,"../heatmap/xyz_defaults":432,"./attributes":412}],416:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var heatmapHoverPoints = require('../heatmap/hover');
+
+
+module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
+    return heatmapHoverPoints(pointData, xval, yval, hovermode, true);
+};
+
+},{"../heatmap/hover":427}],417:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../../plotly');
+
+Plotly.Plots.register(exports, 'contour',
+    ['cartesian', '2dMap', 'contour'], {
+    description: [
+        'The data from which contour lines are computed is set in `z`.',
+        'Data in `z` must be a {2D array} of numbers.',
+
+        'Say that `z` has N rows and M columns, then by default,',
+        'these N rows correspond to N y coordinates',
+        '(set in `y` or auto-generated) and the M columns',
+        'correspond to M x coordinates (set in `x` or auto-generated).',
+
+        'By setting `transpose` to *true*, the above behavior is flipped.'
+    ].join(' ')
+});
+
+exports.attributes = require('./attributes');
+
+exports.supplyDefaults = require('./defaults');
+
+exports.calc = require('./calc');
+
+exports.plot = require('./plot');
+
+exports.style = require('./style');
+
+exports.colorbar = require('./colorbar');
+
+exports.hoverPoints = require('./hover');
+
+},{"../../plotly":348,"./attributes":412,"./calc":413,"./colorbar":414,"./defaults":415,"./hover":416,"./plot":418,"./style":419}],418:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+
+var heatmapPlot = require('../heatmap/plot');
+
+
+module.exports = function plot(gd, plotinfo, cdcontours) {
     for(var i = 0; i < cdcontours.length; i++) {
         plotOne(gd, plotinfo, cdcontours[i]);
     }
@@ -77939,7 +78499,7 @@ var BOTTOMSTART = [1,9,13,104,713],
     SADDLEREMAINDER = {1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11};
 
 function plotOne(gd, plotinfo, cd) {
-    Plotly.Lib.markTime('in Contour.plot');
+    Lib.markTime('in Contour.plot');
     var trace = cd[0].trace,
         x = cd[0].x,
         y = cd[0].y,
@@ -77964,7 +78524,8 @@ function plotOne(gd, plotinfo, cd) {
             trace._input.zmax = trace.zmax =
                 trace.zmin + pathinfo.length * contours.size;
         }
-        Plotly.Heatmap.plot(gd, plotinfo, [cd]);
+
+        heatmapPlot(gd, plotinfo, [cd]);
     }
     // in case this used to be a heatmap (or have heatmap fill)
     else fullLayout._paper.selectAll('.hm'+uid).remove();
@@ -78592,7 +79153,26 @@ function makeClipMask(cd0) {
     return z;
 }
 
-contour.style = function(gd) {
+},{"../../lib":332,"../../plotly":348,"../heatmap/plot":430,"d3":53}],419:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+
+var Plotly = require('../../plotly');
+var getColorscale = require('../../components/colorscale/get_scale');
+var heatmapStyle = require('../heatmap/style');
+
+
+module.exports = function style(gd) {
     d3.select(gd).selectAll('g.contour')
         .style('opacity',function(d){ return d.trace.opacity; })
         .each(function(d) {
@@ -78603,7 +79183,7 @@ contour.style = function(gd) {
                 colorLines = contours.coloring==='lines',
                 cs = contours.size||1,
                 nc = Math.floor((contours.end + cs/10 - contours.start)/cs) + 1,
-                scl = Plotly.Colorscale.getScale(trace.colorscale),
+                scl = getColorscale(trace.colorscale),
                 extraLevel = colorLines ? 0 : 1,
                 colormap = d3.scale.linear()
                     .domain(scl.map(function(si){
@@ -78627,89 +79207,47 @@ contour.style = function(gd) {
                     return colormap(contours.start + (i+0.5)*cs);
                 });
         });
-    Plotly.Heatmap.style(gd);
+
+    heatmapStyle(gd);
 };
 
-contour.colorbar = function(gd, cd) {
-    var trace = cd[0].trace,
-        cbId = 'cb'+trace.uid;
+},{"../../components/colorscale/get_scale":295,"../../plotly":348,"../heatmap/style":431,"d3":53}],420:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-    gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
-    if(trace.showscale===false){
-        Plotly.Plots.autoMargin(gd, cbId);
-        return;
+
+'use strict';
+
+var colorscaleDefaults = require('../../components/colorscale/defaults');
+
+
+module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout) {
+    var coloring = coerce('contours.coloring');
+
+    var showLines;
+    if(coloring === 'fill') showLines = coerce('contours.showlines');
+
+    if(showLines !== false) {
+        if(coloring !== 'lines') coerce('line.color', '#000');
+        coerce('line.width', 0.5);
+        coerce('line.dash');
     }
 
-    // instantiate the colorbar (will be drawn and styled in contour.style)
-    var cb = Plotly.Colorbar(gd, cbId);
-    cd[0].t.cb = cb;
+    coerce('line.smoothing');
 
-    var contours = trace.contours,
-        line = trace.line,
-        cs = contours.size||1,
-        nc = Math.floor((contours.end + cs/10 - contours.start)/cs)+1,
-        scl = Plotly.Colorscale.getScale(trace.colorscale),
-        extraLevel = contours.coloring==='lines' ? 0 : 1,
-        colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
-        colorDomain = scl.map(function(si){
-                return (si[0]*(nc+extraLevel-1)-(extraLevel/2)) * cs +
-                    contours.start;
-            }),
-        colorRange = scl.map(function(si){ return si[1]; });
-
-    // colorbar fill and lines
-    if(contours.coloring==='heatmap') {
-        if(trace.zauto && trace.autocontour===false) {
-            trace.zmin = contours.start-cs/2;
-            trace.zmax = trace.zmin+nc*cs;
-        }
-        cb.filllevels({
-            start: trace.zmin,
-            end: trace.zmax,
-            size: (trace.zmax-trace.zmin)/254
-        });
-        colorDomain = scl.map(function(si){
-            return si[0]*(trace.zmax-trace.zmin) + trace.zmin;
-        });
-
-        // do the contours extend beyond the colorscale?
-        // if so, extend the colorscale with constants
-        var zRange = d3.extent([trace.zmin, trace.zmax, contours.start,
-                contours.start + cs*(nc-1)]),
-            zmin = zRange[trace.zmin<trace.zmax ? 0 : 1],
-            zmax = zRange[trace.zmin<trace.zmax ? 1 : 0];
-        if(zmin!==trace.zmin) {
-            colorDomain.splice(0, 0, zmin);
-            colorRange.splice(0, 0, colorRange[0]);
-        }
-        if(zmax!==trace.zmax) {
-            colorDomain.push(zmax);
-            colorRange.push(colorRange[colorRange.length-1]);
-        }
+    if((traceOut.contours || {}).coloring !== 'none') {
+        colorscaleDefaults(
+            traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+        );
     }
-
-    colormap.domain(colorDomain).range(colorRange);
-
-    cb.fillcolor(contours.coloring==='fill' || contours.coloring==='heatmap' ?
-            colormap : '')
-        .line({
-            color: contours.coloring==='lines' ? colormap : line.color,
-            width: contours.showlines!==false ? line.width : 0,
-            dash: line.dash
-        })
-        .levels({
-            start: contours.start,
-            end: contours.end,
-            size: cs
-        })
-        .options(trace.colorbar)();
 };
 
-contour.hoverPoints = function(pointData, xval, yval, hovermode) {
-    return Plotly.Heatmap.hoverPoints(pointData, xval, yval, hovermode, true);
-};
-
-},{"../../plotly":336,"./attributes":391,"d3":53}],393:[function(require,module,exports){
+},{"../../components/colorscale/defaults":293}],421:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -78795,16 +79333,13 @@ module.exports = {
             'in the `z` data are filled in.'
         ].join(' ')
     },
-    _nestedModules: {  // nested module coupling
+
+    _nestedModules: {
         'colorbar': 'Colorbar'
-    },
-    _composedModules: {  // composed module coupling
-        'histogram2d': 'Histogram',
-        'histogram2dcontour': 'Histogram'
     }
 };
 
-},{"../../components/colorscale/attributes":287,"../../lib/extend":316,"../scatter/attributes":403}],394:[function(require,module,exports){
+},{"../../components/colorscale/attributes":290,"../../lib/extend":328,"../scatter/attributes":455}],422:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -78816,198 +79351,23 @@ module.exports = {
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var d3 = require('d3');
-var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 
-var heatmap = module.exports = {};
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
 
-Plotly.Plots.register(heatmap, 'heatmap', ['cartesian', '2dMap'], {
-    description: [
-        'The data that describes the heatmap value-to-color mapping',
-        'is set in `z`.',
-        'Data in `z` can either be a {2D array} of values (ragged or not)',
-        'or a 1D array of values.',
+var histogram2dCalc = require('../histogram2d/calc');
+var colorscaleCalc = require('../../components/colorscale/calc');
+var hasColumns = require('./has_columns');
+var convertColumnXYZ = require('./convert_column_xyz');
+var maxRowLength = require('./max_row_length');
 
-        'In the case where `z` is a {2D array},',
-        'say that `z` has N rows and M columns.',
-        'Then, by default, the resulting heatmap will have N partitions along',
-        'the y axis and M partitions along the x axis.',
-        'In other words, the i-th row/ j-th column cell in `z`',
-        'is mapped to the i-th partition of the y axis',
-        '(starting from the bottom of the plot) and the j-th partition',
-        'of the x-axis (starting from the left of the plot).',
-        'This behavior can be flipped by using `transpose`.',
-        'Moreover, `x` (`y`) can be provided with M or M+1 (N or N+1) elements.',
-        'If M (N), then the coordinates correspond to the center of the',
-        'heatmap cells and the cells have equal width.',
-        'If M+1 (N+1), then the coordinates correspond to the edges of the',
-        'heatmap cells.',
 
-        'In the case where `z` is a 1D {array}, the x and y coordinates must be',
-        'provided in `x` and `y` respectively to form data triplets.'
-    ].join(' ')
-});
+module.exports = function calc(gd, trace) {
+    Lib.markTime('start convert x&y');
 
-heatmap.attributes = require('./attributes');
-
-heatmap.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
-    var isContour = Plotly.Plots.traceIs(traceOut, 'contour');
-
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, heatmap.attributes, attr, dflt);
-    }
-
-    if(!isContour) coerce('zsmooth');
-
-    if(Plotly.Plots.traceIs(traceOut, 'histogram')) {
-        // x, y, z, marker.color, and x0, dx, y0, dy are coerced
-        // in Histogram.supplyDefaults
-        // (along with histogram-specific attributes)
-        Plotly.Histogram.supplyDefaults(traceIn, traceOut);
-        if(traceOut.visible === false) return;
-    }
-    else {
-        var len = heatmap.handleXYZDefaults(traceIn, traceOut, coerce);
-        if(!len) {
-            traceOut.visible = false;
-            return;
-        }
-
-        coerce('text');
-
-        var hasColumns = heatmap.hasColumns(traceOut);
-
-        if(!hasColumns) coerce('transpose');
-        coerce('connectgaps', hasColumns &&
-            (isContour || traceOut.zsmooth !== false));
-    }
-
-    if(!isContour || (traceOut.contours || {}).coloring!=='none') {
-        Plotly.Colorscale.handleDefaults(
-            traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
-        );
-    }
-};
-
-heatmap.handleXYZDefaults = function(traceIn, traceOut, coerce) {
-    var z = coerce('z');
-    var x, y;
-
-    if(z===undefined || !z.length) return 0;
-
-    if(heatmap.hasColumns(traceIn)) {
-        x = coerce('x');
-        y = coerce('y');
-
-        // column z must be accompanied by 'x' and 'y' arrays
-        if(!x || !y) return 0;
-    }
-    else {
-        x = coordDefaults('x', coerce);
-        y = coordDefaults('y', coerce);
-
-        // TODO put z validation elsewhere
-        if(!isValidZ(z)) return 0;
-    }
-
-    return traceOut.z.length;
-};
-
-function coordDefaults(coordStr, coerce) {
-    var coord = coerce(coordStr),
-        coordType = coord ?
-            coerce(coordStr + 'type', 'array') :
-            'scaled';
-
-    if(coordType === 'scaled') {
-        coerce(coordStr + '0');
-        coerce('d' + coordStr);
-    }
-
-    return coord;
-}
-
-function isValidZ(z) {
-    var allRowsAreArrays = true,
-        oneRowIsFilled = false,
-        hasOneNumber = false,
-        zi;
-
-    // without this step:
-    // hasOneNumber = false breaks contour but not heatmap
-    // allRowsAreArrays = false breaks contour but not heatmap
-    // oneRowIsFilled = false breaks both
-
-    for(var i = 0; i < z.length; i++) {
-        zi = z[i];
-        if(!Array.isArray(zi)) {
-            allRowsAreArrays = false;
-            break;
-        }
-        if(zi.length > 0) oneRowIsFilled = true;
-        for(var j = 0; j < zi.length; j++) {
-            if(isNumeric(zi[j])) {
-                hasOneNumber = true;
-                break;
-            }
-        }
-    }
-
-    return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
-}
-
-heatmap.hasColumns = function(trace) {
-    return !Array.isArray(trace.z[0]);
-};
-
-heatmap.convertColumnXYZ = function(trace, xa, ya) {
-    var xCol = trace.x.slice(),
-        yCol = trace.y.slice(),
-        zCol = trace.z,
-        textCol = trace.text,
-        colLen = Math.min(xCol.length, yCol.length, zCol.length),
-        hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
-
-    var i;
-
-    if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
-    if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
-
-    for(i = 0; i < colLen; i++) {
-        xCol[i] = xa.d2c(xCol[i]);
-        yCol[i] = ya.d2c(yCol[i]);
-    }
-
-    var xColdv = Plotly.Lib.distinctVals(xCol),
-        x = xColdv.vals,
-        yColdv = Plotly.Lib.distinctVals(yCol),
-        y = yColdv.vals,
-        z = Plotly.Lib.init2dArray(y.length, x.length);
-
-    var ix, iy, text;
-
-    if(hasColumnText) text = Plotly.Lib.init2dArray(y.length, x.length);
-
-    for(i = 0; i < colLen; i++) {
-        ix = Plotly.Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
-        iy = Plotly.Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
-
-        z[iy][ix] = zCol[i];
-        if(hasColumnText) text[iy][ix] = textCol[i];
-    }
-
-    trace.x = x;
-    trace.y = y;
-    trace.z = z;
-    if(hasColumnText) trace.text = text;
-};
-
-heatmap.calc = function(gd, trace) {
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
-    Plotly.Lib.markTime('start convert x&y');
     var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
         ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
         isContour = Plotly.Plots.traceIs(trace, 'contour'),
@@ -79026,10 +79386,10 @@ heatmap.calc = function(gd, trace) {
     xa._minDtick = 0;
     ya._minDtick = 0;
 
-    Plotly.Lib.markTime('done convert x&y');
+    Lib.markTime('done convert x&y');
 
     if(isHist) {
-        var binned = Plotly.Histogram.calc2d(gd, trace);
+        var binned = histogram2dCalc(gd, trace);
         x = binned.x;
         x0 = binned.x0;
         dx = binned.dx;
@@ -79039,7 +79399,7 @@ heatmap.calc = function(gd, trace) {
         z = binned.z;
     }
     else {
-        if(heatmap.hasColumns(trace)) heatmap.convertColumnXYZ(trace, xa, ya);
+        if(hasColumns(trace)) convertColumnXYZ(trace, xa, ya);
 
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [];
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [];
@@ -79048,7 +79408,7 @@ heatmap.calc = function(gd, trace) {
         y0 = trace.y0 || 0;
         dy = trace.dy || 1;
 
-        z = heatmap.cleanZ(trace);
+        z = cleanZ(trace);
 
         if(isContour || trace.connectgaps) {
             trace._emptypoints = findEmpties(z);
@@ -79058,7 +79418,7 @@ heatmap.calc = function(gd, trace) {
 
     function noZsmooth(msg) {
         zsmooth = trace._input.zsmooth = trace.zsmooth = false;
-        Plotly.Lib.notifier('cannot fast-zsmooth: ' + msg);
+        Lib.notifier('cannot fast-zsmooth: ' + msg);
     }
 
     // check whether we really can smooth (ie all boxes are about the same size)
@@ -79091,7 +79451,7 @@ heatmap.calc = function(gd, trace) {
     }
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
-    var xlen = heatmap.maxRowLength(z),
+    var xlen = maxRowLength(z),
         xIn = trace.xtype==='scaled' ? '' : trace.x,
         xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa),
         yIn = trace.ytype==='scaled' ? '' : trace.y,
@@ -79103,7 +79463,7 @@ heatmap.calc = function(gd, trace) {
     var cd0 = {x: xArray, y: yArray, z: z};
 
     // auto-z and autocolorscale if applicable
-    Plotly.Colorscale.calc(trace, z, '', 'z');
+    colorscaleCalc(trace, z, '', 'z');
 
     if(isContour && trace.contours && trace.contours.coloring==='heatmap') {
         var hmType = trace.type === 'contour' ? 'heatmap' : 'histogram2d';
@@ -79114,15 +79474,16 @@ heatmap.calc = function(gd, trace) {
     return [cd0];
 };
 
-function cleanZvalue(v) {
-    if(!isNumeric(v)) return undefined;
-    return +v;
-}
 
-heatmap.cleanZ = function(trace) {
+function cleanZ(trace) {
     var zOld = trace.z;
 
     var rowlen, collen, getCollen, old2new, i, j;
+
+    function cleanZvalue(v) {
+        if(!isNumeric(v)) return undefined;
+        return +v;
+    }
 
     if(trace.transpose) {
         rowlen = 0;
@@ -79146,7 +79507,7 @@ heatmap.cleanZ = function(trace) {
     }
 
     return zNew;
-};
+}
 
 function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [],
@@ -79250,14 +79611,6 @@ function interp2d(z, emptyPoints, savedInterpZ) {
     return z;
 }
 
-heatmap.maxRowLength = function(z) {
-    var len = 0;
-    for(var i = 0; i < z.length; i++) {
-        len = Math.max(len, z[i].length);
-    }
-    return len;
-};
-
 function findEmpties(z) {
     // return a list of empty points in 2D array z
     // each empty point z[i][j] gives an array [i, j, neighborCount]
@@ -79271,7 +79624,7 @@ function findEmpties(z) {
         nextRow = z[0],
         row = [],
         blank = [0, 0, 0],
-        rowLength = heatmap.maxRowLength(z),
+        rowLength = maxRowLength(z),
         prevRow,
         i,
         j,
@@ -79421,13 +79774,383 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
+},{"../../components/colorscale/calc":291,"../../lib":332,"../../plotly":348,"../histogram2d/calc":442,"./convert_column_xyz":424,"./has_columns":426,"./max_row_length":429,"fast-isnumeric":58}],423:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+var getColorscale = require('../../components/colorscale/get_scale');
+var drawColorbar = require('../../components/colorbar/draw');
+
+
+module.exports = function colorbar(gd, cd) {
+    var trace = cd[0].trace,
+        cbId = 'cb' + trace.uid,
+        scl = getColorscale(trace.colorscale),
+        zmin = trace.zmin,
+        zmax = trace.zmax;
+
+    if(!isNumeric(zmin)) zmin = Lib.aggNums(Math.min, null, trace.z);
+    if(!isNumeric(zmax)) zmax = Lib.aggNums(Math.max, null, trace.z);
+
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+
+    if(!trace.showscale){
+        Plotly.Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+    cb.fillcolor(d3.scale.linear()
+            .domain(scl.map(function(v){ return zmin + v[0]*(zmax-zmin); }))
+            .range(scl.map(function(v){ return v[1]; })))
+        .filllevels({start: zmin, end: zmax, size: (zmax-zmin)/254})
+        .options(trace.colorbar)();
+
+    Lib.markTime('done colorbar');
+};
+
+},{"../../components/colorbar/draw":287,"../../components/colorscale/get_scale":295,"../../lib":332,"../../plotly":348,"d3":53,"fast-isnumeric":58}],424:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Lib = require('../../lib');
+
+
+module.exports = function convertColumnXYZ(trace, xa, ya) {
+    var xCol = trace.x.slice(),
+        yCol = trace.y.slice(),
+        zCol = trace.z,
+        textCol = trace.text,
+        colLen = Math.min(xCol.length, yCol.length, zCol.length),
+        hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
+
+    var i;
+
+    if(colLen < xCol.length) xCol = xCol.slice(0, colLen);
+    if(colLen < yCol.length) yCol = yCol.slice(0, colLen);
+
+    for(i = 0; i < colLen; i++) {
+        xCol[i] = xa.d2c(xCol[i]);
+        yCol[i] = ya.d2c(yCol[i]);
+    }
+
+    var xColdv = Lib.distinctVals(xCol),
+        x = xColdv.vals,
+        yColdv = Lib.distinctVals(yCol),
+        y = yColdv.vals,
+        z = Lib.init2dArray(y.length, x.length);
+
+    var ix, iy, text;
+
+    if(hasColumnText) text = Lib.init2dArray(y.length, x.length);
+
+    for(i = 0; i < colLen; i++) {
+        ix = Lib.findBin(xCol[i] + xColdv.minDiff / 2, x);
+        iy = Lib.findBin(yCol[i] + yColdv.minDiff / 2, y);
+
+        z[iy][ix] = zCol[i];
+        if(hasColumnText) text[iy][ix] = textCol[i];
+    }
+
+    trace.x = x;
+    trace.y = y;
+    trace.z = z;
+    if(hasColumnText) trace.text = text;
+};
+
+},{"../../lib":332}],425:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Lib = require('../../lib');
+
+var hasColumns = require('./has_columns');
+var handleXYZDefaults = require('./xyz_defaults');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
+var attributes = require('./attributes');
+
+
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    var len = handleXYZDefaults(traceIn, traceOut, coerce);
+    if(!len) {
+        traceOut.visible = false;
+        return;
+    }
+
+    coerce('text');
+    coerce('zsmooth');
+    coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
+
+    colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
+};
+
+},{"../../components/colorscale/defaults":293,"../../lib":332,"./attributes":421,"./has_columns":426,"./xyz_defaults":432}],426:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+module.exports = function(trace) {
+    return !Array.isArray(trace.z[0]);
+};
+
+},{}],427:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+
+
+module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour) {
+    // never let a heatmap override another type as closest point
+    if(pointData.distance < Plotly.Fx.MAXDIST) return;
+
+    var cd0 = pointData.cd[0],
+        trace = cd0.trace,
+        xa = pointData.xa,
+        ya = pointData.ya,
+        x = cd0.x,
+        y = cd0.y,
+        z = cd0.z,
+        zmask = cd0.zmask,
+        x2 = x,
+        y2 = y,
+        xl,
+        yl,
+        nx,
+        ny;
+    if(pointData.index!==false) {
+        try {
+            nx = Math.round(pointData.index[1]);
+            ny = Math.round(pointData.index[0]);
+        }
+        catch(e) {
+            console.log('Error hovering on heatmap, ' +
+                'pointNumber must be [row,col], found:', pointData.index);
+            return;
+        }
+        if(nx<0 || nx>=z[0].length || ny<0 || ny>z.length) {
+            return;
+        }
+    }
+    else if(Plotly.Fx.inbox(xval-x[0], xval-x[x.length-1])>Plotly.Fx.MAXDIST ||
+            Plotly.Fx.inbox(yval-y[0], yval-y[y.length-1])>Plotly.Fx.MAXDIST) {
+        return;
+    }
+    else {
+        if(contour) {
+            x2 = [2*x[0]-x[1]];
+            for(var i2=1; i2<x.length; i2++) {
+                x2.push((x[i2]+x[i2-1])/2);
+            }
+            x2.push([2*x[x.length-1]-x[x.length-2]]);
+
+            y2 = [2*y[0]-y[1]];
+            for(i2=1; i2<y.length; i2++) {
+                y2.push((y[i2]+y[i2-1])/2);
+            }
+            y2.push([2*y[y.length-1]-y[y.length-2]]);
+        }
+        nx = Math.max(0,Math.min(x2.length-2, Lib.findBin(xval,x2)));
+        ny = Math.max(0,Math.min(y2.length-2, Lib.findBin(yval,y2)));
+    }
+    var x0 = xa.c2p(x[nx]),
+        x1 = xa.c2p(x[nx+1]),
+        y0 = ya.c2p(y[ny]),
+        y1 = ya.c2p(y[ny+1]);
+    if(contour) {
+        x1=x0;
+        xl=x[nx];
+        y1=y0;
+        yl=y[ny];
+    }
+    else {
+        xl = (x[nx]+x[nx+1])/2;
+        yl = (y[ny]+y[ny+1])/2;
+        if(trace.zsmooth) {
+            x0=x1=(x0+x1)/2;
+            y0=y1=(y0+y1)/2;
+        }
+    }
+
+    var zVal = z[ny][nx];
+    if(zmask && !zmask[ny][nx]) zVal = undefined;
+
+    var text;
+    if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
+        text = trace.text[ny][nx];
+    }
+
+    return [Lib.extendFlat(pointData, {
+        index: [ny, nx],
+        // never let a 2D override 1D type as closest point
+        distance: Plotly.Fx.MAXDIST+10,
+        x0: x0,
+        x1: x1,
+        y0: y0,
+        y1: y1,
+        xLabelVal: xl,
+        yLabelVal: yl,
+        zLabelVal: zVal,
+        text: text
+    })];
+};
+
+},{"../../lib":332,"../../plotly":348}],428:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../../plotly');
+
+Plotly.Plots.register(exports, 'heatmap', ['cartesian', '2dMap'], {
+    description: [
+        'The data that describes the heatmap value-to-color mapping',
+        'is set in `z`.',
+        'Data in `z` can either be a {2D array} of values (ragged or not)',
+        'or a 1D array of values.',
+
+        'In the case where `z` is a {2D array},',
+        'say that `z` has N rows and M columns.',
+        'Then, by default, the resulting heatmap will have N partitions along',
+        'the y axis and M partitions along the x axis.',
+        'In other words, the i-th row/ j-th column cell in `z`',
+        'is mapped to the i-th partition of the y axis',
+        '(starting from the bottom of the plot) and the j-th partition',
+        'of the x-axis (starting from the left of the plot).',
+        'This behavior can be flipped by using `transpose`.',
+        'Moreover, `x` (`y`) can be provided with M or M+1 (N or N+1) elements.',
+        'If M (N), then the coordinates correspond to the center of the',
+        'heatmap cells and the cells have equal width.',
+        'If M+1 (N+1), then the coordinates correspond to the edges of the',
+        'heatmap cells.',
+
+        'In the case where `z` is a 1D {array}, the x and y coordinates must be',
+        'provided in `x` and `y` respectively to form data triplets.'
+    ].join(' ')
+});
+
+exports.attributes = require('./attributes');
+
+exports.supplyDefaults = require('./defaults');
+
+exports.calc = require('./calc');
+
+exports.plot = require('./plot');
+
+exports.colorbar = require('./colorbar');
+
+exports.style = require('./style');
+
+exports.hoverPoints = require('./hover');
+
+},{"../../plotly":348,"./attributes":421,"./calc":422,"./colorbar":423,"./defaults":425,"./hover":427,"./plot":430,"./style":431}],429:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+module.exports = function maxRowLength(z) {
+    var len = 0;
+
+    for(var i = 0; i < z.length; i++) {
+        len = Math.max(len, z[i].length);
+    }
+
+    return len;
+};
+
+},{}],430:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+var tinycolor = require('tinycolor2');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+var getColorscale = require('../../components/colorscale/get_scale');
+
+var maxRowLength = require('./max_row_length');
+
+
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
-heatmap.plot = function(gd, plotinfo, cdheatmaps) {
+module.exports = function(gd, plotinfo, cdheatmaps) {
     cdheatmaps.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
 };
 
 function plotOne(gd, plotinfo, cd) {
-    Plotly.Lib.markTime('in Heatmap.plot');
+    Lib.markTime('in Heatmap.plot');
+
     var trace = cd[0].trace,
         uid = trace.uid,
         xa = plotinfo.x(),
@@ -79447,7 +80170,7 @@ function plotOne(gd, plotinfo, cd) {
     var z = cd[0].z,
         min = trace.zmin,
         max = trace.zmax,
-        scl = Plotly.Colorscale.getScale(trace.colorscale),
+        scl = getColorscale(trace.colorscale),
         x = cd[0].x,
         y = cd[0].y,
         isContour = Plotly.Plots.traceIs(trace, 'contour'),
@@ -79455,7 +80178,7 @@ function plotOne(gd, plotinfo, cd) {
 
         // get z dims
         m = z.length,
-        n = heatmap.maxRowLength(z),
+        n = maxRowLength(z),
         xrev = false,
         left,
         right,
@@ -79572,18 +80295,18 @@ function plotOne(gd, plotinfo, cd) {
     if(zsmooth === 'fast') {
         xpx = xrev ?
             function(index) { return n - 1 - index; } :
-            Plotly.Lib.identity;
+            Lib.identity;
         ypx = yrev ?
             function(index) { return m - 1 - index; } :
-            Plotly.Lib.identity;
+            Lib.identity;
     }
     else {
         xpx = function(index){
-            return Plotly.Lib.constrain(Math.round(xa.c2p(x[index]) - left),
+            return Lib.constrain(Math.round(xa.c2p(x[index]) - left),
                 0, imageWidth);
         };
         ypx = function(index){
-            return Plotly.Lib.constrain(Math.round(ya.c2p(y[index]) - top),
+            return Lib.constrain(Math.round(ya.c2p(y[index]) - top),
                 0, imageHeight);
         };
     }
@@ -79591,10 +80314,10 @@ function plotOne(gd, plotinfo, cd) {
     // get interpolated bin value. Returns {bin0:closest bin, frac:fractional dist to next, bin1:next bin}
     function findInterp(pixel, pixArray) {
         var maxbin = pixArray.length - 2,
-            bin = Plotly.Lib.constrain(Plotly.Lib.findBin(pixel, pixArray), 0, maxbin),
+            bin = Lib.constrain(Lib.findBin(pixel, pixArray), 0, maxbin),
             pix0 = pixArray[bin],
             pix1 = pixArray[bin + 1],
-            interp = Plotly.Lib.constrain(bin + (pixel - pix0) / (pix1 - pix0) - 0.5, 0, maxbin),
+            interp = Lib.constrain(bin + (pixel - pix0) / (pix1 - pix0) - 0.5, 0, maxbin),
             bin0 = Math.round(interp),
             frac = Math.abs(interp - bin0);
 
@@ -79665,7 +80388,8 @@ function plotOne(gd, plotinfo, cd) {
         return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
     }
 
-    Plotly.Lib.markTime('done init png');
+    Lib.markTime('done init png');
+
     // build the pixel map brick-by-brick
     // cruise through z-matrix row-by-row
     // build a brick at each z-matrix value
@@ -79756,7 +80480,7 @@ function plotOne(gd, plotinfo, cd) {
         }
     }
 
-    Plotly.Lib.markTime('done filling png');
+    Lib.markTime('done filling png');
 
     rcount = Math.round(rcount / pixcount);
     gcount = Math.round(gcount/ pixcount);
@@ -79781,113 +80505,10 @@ function plotOne(gd, plotinfo, cd) {
             preserveAspectRatio: 'none'
         });
 
-    Plotly.Lib.markTime('done showing png');
+    Lib.markTime('done showing png');
 }
 
-heatmap.colorbar = Plotly.Colorbar.traceColorbar;
-
-heatmap.style = function(gd) {
-    d3.select(gd).selectAll('image').style('opacity',function(d){ return d.trace.opacity; });
-};
-
-heatmap.hoverPoints = function(pointData, xval, yval, hovermode, contour) {
-    // never let a heatmap override another type as closest point
-    if(pointData.distance<Plotly.Fx.MAXDIST) return;
-
-    var cd0 = pointData.cd[0],
-        trace = cd0.trace,
-        xa = pointData.xa,
-        ya = pointData.ya,
-        x = cd0.x,
-        y = cd0.y,
-        z = cd0.z,
-        zmask = cd0.zmask,
-        x2 = x,
-        y2 = y,
-        xl,
-        yl,
-        nx,
-        ny;
-    if(pointData.index!==false) {
-        try {
-            nx = Math.round(pointData.index[1]);
-            ny = Math.round(pointData.index[0]);
-        }
-        catch(e) {
-            console.log('Error hovering on heatmap, ' +
-                'pointNumber must be [row,col], found:', pointData.index);
-            return;
-        }
-        if(nx<0 || nx>=z[0].length || ny<0 || ny>z.length) {
-            return;
-        }
-    }
-    else if(Plotly.Fx.inbox(xval-x[0], xval-x[x.length-1])>Plotly.Fx.MAXDIST ||
-            Plotly.Fx.inbox(yval-y[0], yval-y[y.length-1])>Plotly.Fx.MAXDIST) {
-        return;
-    }
-    else {
-        if(contour) {
-            x2 = [2*x[0]-x[1]];
-            for(var i2=1; i2<x.length; i2++) {
-                x2.push((x[i2]+x[i2-1])/2);
-            }
-            x2.push([2*x[x.length-1]-x[x.length-2]]);
-
-            y2 = [2*y[0]-y[1]];
-            for(i2=1; i2<y.length; i2++) {
-                y2.push((y[i2]+y[i2-1])/2);
-            }
-            y2.push([2*y[y.length-1]-y[y.length-2]]);
-        }
-        nx = Math.max(0,Math.min(x2.length-2,
-            Plotly.Lib.findBin(xval,x2)));
-        ny = Math.max(0,Math.min(y2.length-2,
-            Plotly.Lib.findBin(yval,y2)));
-    }
-    var x0 = xa.c2p(x[nx]),
-        x1 = xa.c2p(x[nx+1]),
-        y0 = ya.c2p(y[ny]),
-        y1 = ya.c2p(y[ny+1]);
-    if(contour) {
-        x1=x0;
-        xl=x[nx];
-        y1=y0;
-        yl=y[ny];
-    }
-    else {
-        xl = (x[nx]+x[nx+1])/2;
-        yl = (y[ny]+y[ny+1])/2;
-        if(trace.zsmooth) {
-            x0=x1=(x0+x1)/2;
-            y0=y1=(y0+y1)/2;
-        }
-    }
-
-    var zVal = z[ny][nx];
-    if(zmask && !zmask[ny][nx]) zVal = undefined;
-
-    var text;
-    if(Array.isArray(trace.text) && Array.isArray(trace.text[ny])) {
-        text = trace.text[ny][nx];
-    }
-
-    return [Plotly.Lib.extendFlat(pointData, {
-        index: [ny, nx],
-        // never let a 2D override 1D type as closest point
-        distance: Plotly.Fx.MAXDIST+10,
-        x0: x0,
-        x1: x1,
-        y0: y0,
-        y1: y1,
-        xLabelVal: xl,
-        yLabelVal: yl,
-        zLabelVal: zVal,
-        text: text
-    })];
-};
-
-},{"../../plotly":336,"./attributes":393,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],395:[function(require,module,exports){
+},{"../../components/colorscale/get_scale":295,"../../lib":332,"../../plotly":348,"./max_row_length":429,"d3":53,"tinycolor2":213}],431:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79899,7 +80520,121 @@ heatmap.hoverPoints = function(pointData, xval, yval, hovermode, contour) {
 
 'use strict';
 
-var barAttrs = require('../bars/attributes');
+var d3 = require('d3');
+
+module.exports = function style(gd) {
+    d3.select(gd).selectAll('image')
+        .style('opacity', function(d) {
+            return d.trace.opacity;
+        });
+};
+
+},{"d3":53}],432:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var isNumeric = require('fast-isnumeric');
+
+var hasColumns = require('./has_columns');
+
+
+module.exports = function handleXYZDefaults(traceIn, traceOut, coerce) {
+    var z = coerce('z');
+    var x, y;
+
+    if(z===undefined || !z.length) return 0;
+
+    if(hasColumns(traceIn)) {
+        x = coerce('x');
+        y = coerce('y');
+
+        // column z must be accompanied by 'x' and 'y' arrays
+        if(!x || !y) return 0;
+    }
+    else {
+        x = coordDefaults('x', coerce);
+        y = coordDefaults('y', coerce);
+
+        // TODO put z validation elsewhere
+        if(!isValidZ(z)) return 0;
+
+        coerce('transpose');
+    }
+
+    return traceOut.z.length;
+};
+
+function coordDefaults(coordStr, coerce) {
+    var coord = coerce(coordStr),
+        coordType = coord ?
+            coerce(coordStr + 'type', 'array') :
+            'scaled';
+
+    if(coordType === 'scaled') {
+        coerce(coordStr + '0');
+        coerce('d' + coordStr);
+    }
+
+    return coord;
+}
+
+function isValidZ(z) {
+    var allRowsAreArrays = true,
+        oneRowIsFilled = false,
+        hasOneNumber = false,
+        zi;
+
+    /*
+     * Without this step:
+     *
+     * hasOneNumber = false breaks contour but not heatmap
+     * allRowsAreArrays = false breaks contour but not heatmap
+     * oneRowIsFilled = false breaks both
+     */
+
+    for(var i = 0; i < z.length; i++) {
+        zi = z[i];
+        if(!Array.isArray(zi)) {
+            allRowsAreArrays = false;
+            break;
+        }
+        if(zi.length > 0) oneRowIsFilled = true;
+        for(var j = 0; j < zi.length; j++) {
+            if(isNumeric(zi[j])) {
+                hasOneNumber = true;
+                break;
+            }
+        }
+    }
+
+    return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
+}
+
+},{"./has_columns":426,"fast-isnumeric":58}],433:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var barAttrs = require('../bar/attributes');
+var extendFlat = require('../../lib').extendFlat;
+
+var barMarkerAttrs = barAttrs.marker;
+var barMarkerLineAttrs = barMarkerAttrs.line;
 
 
 module.exports = {
@@ -79915,17 +80650,10 @@ module.exports = {
             'Sets the sample data to be binned on the y axis.'
         ].join(' ')
     },
-    z: {
-        valType: 'data_array',
-        description: 'Sets the aggregation data.'
-    },
-    marker: {
-        color: {  // FIXME this overrides 'bar'
-            valType: 'data_array',
-            arrayOk: undefined
-        }
-    },
+
+    text: barAttrs.text,
     orientation: barAttrs.orientation,
+
     histfunc: {
         valType: 'enumerated',
         values: ['count', 'sum', 'avg', 'min', 'max'],
@@ -79968,6 +80696,7 @@ module.exports = {
             '(here, the sum of all bin area equals 1).'
         ].join(' ')
     },
+
     autobinx: {
         valType: 'boolean',
         dflt: true,
@@ -79985,6 +80714,7 @@ module.exports = {
         description: 'Sets the number of x axis bins.'
     },
     xbins: makeBinsAttr('x'),
+
     autobiny: {
         valType: 'boolean',
         dflt: true,
@@ -80001,7 +80731,38 @@ module.exports = {
         role: 'style',
         description: 'Sets the number of y axis bins.'
     },
-    ybins: makeBinsAttr('y')
+    ybins: makeBinsAttr('y'),
+
+    marker: {
+        color: barMarkerAttrs.color,
+        colorscale: barMarkerAttrs.colorscale,
+        cauto: barMarkerAttrs.cauto,
+        cmax: barMarkerAttrs.cmax,
+        cmin: barMarkerAttrs.cmin,
+        autocolorscale: barMarkerAttrs.autocolorscale,
+        reversescale: barMarkerAttrs.reversescale,
+        showscale: barMarkerAttrs.showscale,
+        line: {
+            color: barMarkerLineAttrs.color,
+            colorscale: barMarkerLineAttrs.colorscale,
+            cauto: barMarkerLineAttrs.cauto,
+            cmax: barMarkerLineAttrs.cmax,
+            cmin: barMarkerLineAttrs.cmin,
+            autocolorscale: barMarkerLineAttrs.autocolorscale,
+            reversescale: barMarkerLineAttrs.reversescale,
+            width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})
+        }
+    },
+
+    _nestedModules: {
+        'error_y': 'ErrorBars',
+        'error_x': 'ErrorBars',
+        'marker.colorbar': 'Colorbar'
+    },
+
+    _deprecated: {
+        bardir: barAttrs._deprecated.bardir
+    }
 };
 
 function makeBinsAttr(axLetter) {
@@ -80036,7 +80797,7 @@ function makeBinsAttr(axLetter) {
     };
 }
 
-},{"../bars/attributes":381}],396:[function(require,module,exports){
+},{"../../lib":332,"../bar/attributes":394}],434:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80048,104 +80809,66 @@ function makeBinsAttr(axLetter) {
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var isNumeric = require('fast-isnumeric');
 
-/** 
- * Histogram has its own calc function,
- * but uses Bars.plot to display
- * and Bars.setPositions for stacking and grouping
- */
-var histogram = module.exports = {};
+module.exports = function doAvg(size, counts) {
+    var nMax = size.length,
+        total = 0;
+    for(var i=0; i<nMax; i++) {
+        if(counts[i]) {
+            size[i] /= counts[i];
+            total += size[i];
+        }
+        else size[i] = null;
+    }
+    return total;
+};
 
+},{}],435:[function(require,module,exports){
 /**
- * histogram errorBarsOK is debatable, but it's put in for backward compat.
- * there are use cases for it - sqrt for a simple histogram works right now,
- * constant and % work but they're not so meaningful. I guess it could be cool
- * to allow quadrature combination of errors in summed histograms...
- */
-Plotly.Plots.register(Plotly.Bars, 'histogram',
-    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'], {
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'for vertically spanning histograms and',
-        'in `y` for horizontally spanning histograms.',
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-        'Binning options are set `xbins` and `ybins` respectively',
-        'if no aggregation data is provided.'
-    ].join(' ')
-});
 
-Plotly.Plots.register(Plotly.Heatmap, 'histogram2d',
-    ['cartesian', '2dMap', 'histogram'], {
-    hrName: 'histogram_2d',
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'and `y` (where `x` and `y` represent marginal distributions,',
-        'binning is set in `xbins` and `ybins` in this case)',
-        'or `z` (where `z` represent the 2D distribution and binning set,',
-        'binning is set by `x` and `y` in this case).',
-        'The resulting distribution is visualized as a heatmap.'
-    ].join(' ')
-});
+'use strict';
 
-histogram.attributes = require('./attributes');
 
-histogram.supplyDefaults = function(traceIn, traceOut) {
-    function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, attr, dflt);
-    }
-
-    var binDirections = ['x'],
-        hasAggregationData,
-        x = coerce('x'),
-        y = coerce('y');
-
-    if(Plotly.Plots.traceIs(traceOut, '2dMap')) {
-        // we could try to accept x0 and dx, etc...
-        // but that's a pretty weird use case.
-        // for now require both x and y explicitly specified.
-        if(!(x && x.length && y && y.length)) {
-            traceOut.visible = false;
-            return;
-        }
-
-        // if marker.color is an array, we can use it in aggregation instead of z
-        hasAggregationData = coerce('z') || coerce('marker.color');
-
-        binDirections = ['x','y'];
-    } else {
-        var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
-            sample = traceOut[orientation==='v' ? 'x' : 'y'];
-
-        if(!(sample && sample.length)) {
-            traceOut.visible = false;
-            return;
-        }
-
-        if(orientation==='h') binDirections = ['y'];
-
-        hasAggregationData = traceOut[orientation==='h' ? 'x' : 'y'];
-    }
-
-    if(hasAggregationData) coerce('histfunc');
+module.exports = function handleBinDefaults(traceIn, traceOut, coerce, binDirections) {
     coerce('histnorm');
 
-    binDirections.forEach(function(binDirection){
+    binDirections.forEach(function(binDirection) {
         // data being binned - note that even though it's a little weird,
         // it's possible to have bins without data, if there's inferred data
-        var binstrt = Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, binDirection + 'bins.start'),
-            binend = Plotly.Lib.coerce(traceIn, traceOut, histogram.attributes, binDirection + 'bins.end'),
-            autobin = binstrt && binend ? 
-                coerce('autobin' + binDirection, false) : 
-                coerce('autobin' + binDirection);
+        var binstrt = coerce(binDirection + 'bins.start'),
+            binend = coerce(binDirection + 'bins.end'),
+            autobin = coerce('autobin' + binDirection, !(binstrt && binend));
 
         if(autobin) coerce('nbins' + binDirection);
         else coerce(binDirection + 'bins.size');
     });
+
+    return traceOut;
 };
 
-var binFunctions = {
+},{}],436:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var isNumeric = require('fast-isnumeric');
+
+
+module.exports = {
     count: function(n, i, size) {
         size[n]++;
         return 1;
@@ -80204,42 +80927,29 @@ var binFunctions = {
     }
 };
 
-function doAvg(size, counts) {
-    var nMax = size.length,
-        total = 0;
-    for(var i=0; i<nMax; i++) {
-        if(counts[i]) {
-            size[i] /= counts[i];
-            total += size[i];
-        }
-        else size[i] = null;
-    }
-    return total;
-}
+},{"fast-isnumeric":58}],437:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-var normFunctions = {
-    percent: function(size, total) {
-        var nMax = size.length,
-            norm = 100/total;
-        for(var n=0; n<nMax; n++) size[n] *= norm;
-    },
-    probability: function(size, total) {
-        var nMax = size.length;
-        for(var n=0; n<nMax; n++) size[n] /= total;
-    },
-    density: function(size, total, inc, yinc) {
-        var nMax = size.length;
-        yinc = yinc||1;
-        for(var n=0; n<nMax; n++) size[n] *= inc[n]*yinc;
-    },
-    'probability density': function(size, total, inc, yinc) {
-        var nMax = size.length;
-        if(yinc) total/=yinc;
-        for(var n=0; n<nMax; n++) size[n] *= inc[n]/total;
-    }
-};
 
-histogram.calc = function(gd, trace) {
+'use strict';
+
+var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+
+var binFunctions = require('./bin_functions');
+var normFunctions = require('./norm_functions');
+var doAvg = require('./average');
+
+
+module.exports = function calc(gd, trace) {
     // ignore as much processing as possible (and including in autorange) if bar is not visible
     if(trace.visible !== true) return;
 
@@ -80311,7 +81021,7 @@ histogram.calc = function(gd, trace) {
     var nMax = size.length;
     // bin the data
     for(i=0; i<pos0.length; i++) {
-        n = Plotly.Lib.findBin(pos0[i], bins);
+        n = Lib.findBin(pos0[i], bins);
         if(n>=0 && n<nMax) total += binfunc(n, i, size, rawCounterData, counts);
     }
 
@@ -80347,7 +81057,225 @@ histogram.calc = function(gd, trace) {
     return cd;
 };
 
-histogram.calc2d = function(gd, trace) {
+},{"../../lib":332,"../../plotly":348,"./average":434,"./bin_functions":436,"./norm_functions":440,"fast-isnumeric":58}],438:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Lib = require('../../lib');
+var Color = require('../../components/color');
+
+var handleBinDefaults = require('./bin_defaults');
+var handleStyleDefaults = require('../bar/style_defaults');
+var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
+var attributes = require('./attributes');
+
+
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    var x = coerce('x'),
+        y = coerce('y');
+
+    coerce('text');
+
+    var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
+        sample = traceOut[orientation==='v' ? 'x' : 'y'];
+
+    if(!(sample && sample.length)) {
+        traceOut.visible = false;
+        return;
+    }
+
+    var hasAggregationData = traceOut[orientation==='h' ? 'x' : 'y'];
+    if(hasAggregationData) coerce('histfunc');
+
+    var binDirections = (orientation==='h') ? ['y'] : ['x'];
+    handleBinDefaults(traceIn, traceOut, coerce, binDirections);
+
+    handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
+
+    // override defaultColor for error bars with defaultLine
+    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
+};
+
+},{"../../components/color":284,"../../components/errorbars/defaults":307,"../../lib":332,"../bar/style_defaults":404,"./attributes":433,"./bin_defaults":435}],439:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../../plotly');
+
+/** 
+ * Histogram has its own attribute, defaults and calc steps,
+ * but uses bar's plot to display
+ * and bar's setPositions for stacking and grouping
+ */
+
+/**
+ * histogram errorBarsOK is debatable, but it's put in for backward compat.
+ * there are use cases for it - sqrt for a simple histogram works right now,
+ * constant and % work but they're not so meaningful. I guess it could be cool
+ * to allow quadrature combination of errors in summed histograms...
+ */
+
+Plotly.Plots.register(exports, 'histogram',
+    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'], {
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'for vertically spanning histograms and',
+        'in `y` for horizontally spanning histograms.',
+
+        'Binning options are set `xbins` and `ybins` respectively',
+        'if no aggregation data is provided.'
+    ].join(' ')
+});
+
+exports.attributes = require('./attributes');
+
+exports.layoutAttributes = require('../bar/layout_attributes');
+
+exports.supplyDefaults = require('./defaults');
+
+exports.supplyLayoutDefaults = require('../bar/layout_defaults');
+
+exports.calc = require('./calc');
+
+exports.setPositions = require('../bar/set_positions');
+
+exports.plot = require('../bar/plot');
+
+exports.style = require('../bar/style');
+
+exports.colorbar = require('../scatter/colorbar');
+
+exports.hoverPoints = require('../bar/hover');
+
+},{"../../plotly":348,"../bar/hover":397,"../bar/layout_attributes":399,"../bar/layout_defaults":400,"../bar/plot":401,"../bar/set_positions":402,"../bar/style":403,"../scatter/colorbar":456,"./attributes":433,"./calc":437,"./defaults":438}],440:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+
+module.exports = {
+    percent: function(size, total) {
+        var nMax = size.length,
+            norm = 100/total;
+        for(var n=0; n<nMax; n++) size[n] *= norm;
+    },
+    probability: function(size, total) {
+        var nMax = size.length;
+        for(var n=0; n<nMax; n++) size[n] /= total;
+    },
+    density: function(size, total, inc, yinc) {
+        var nMax = size.length;
+        yinc = yinc||1;
+        for(var n=0; n<nMax; n++) size[n] *= inc[n]*yinc;
+    },
+    'probability density': function(size, total, inc, yinc) {
+        var nMax = size.length;
+        if(yinc) total/=yinc;
+        for(var n=0; n<nMax; n++) size[n] *= inc[n]/total;
+    }
+};
+
+},{}],441:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+var histogramAttrs = require('../histogram/attributes');
+var heatmapAttrs = require('../heatmap/attributes');
+
+module.exports = {
+    x: histogramAttrs.x,
+    y: histogramAttrs.y,
+
+    z: {
+        valType: 'data_array',
+        description: 'Sets the aggregation data.'
+    },
+    marker: {
+        color: {
+            valType: 'data_array',
+            description: 'Sets the aggregation data.'
+        }
+    },
+
+    histnorm: histogramAttrs.histnorm,
+    histfunc: histogramAttrs.histfunc,
+    autobinx:histogramAttrs.autobinx,
+    nbinsx: histogramAttrs.nbinsx,
+    xbins: histogramAttrs.xbins,
+    autobiny: histogramAttrs.autobiny,
+    nbinsy: histogramAttrs.nbinsy,
+    ybins: histogramAttrs.ybins,
+
+    zauto: heatmapAttrs.zauto,
+    zmin: heatmapAttrs.zmin,
+    zmax: heatmapAttrs.zmax,
+    colorscale: heatmapAttrs.colorscale,
+    autocolorscale: heatmapAttrs.autocolorscale,
+    reversescale: heatmapAttrs.reversescale,
+    showscale: heatmapAttrs.showscale,
+
+    zsmooth: heatmapAttrs.zsmooth,
+
+    _nestedModules: {
+        'colorbar': 'Colorbar'
+    }
+};
+
+},{"../heatmap/attributes":421,"../histogram/attributes":433}],442:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+
+var binFunctions = require('../histogram/bin_functions');
+var normFunctions = require('../histogram/norm_functions');
+var doAvg = require('../histogram/average');
+
+
+module.exports = function calc(gd, trace) {
     var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [],
         ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
@@ -80363,7 +81291,7 @@ histogram.calc2d = function(gd, trace) {
     if(x.length>serieslen) x.splice(serieslen, x.length-serieslen);
     if(y.length>serieslen) y.splice(serieslen, y.length-serieslen);
 
-    Plotly.Lib.markTime('done convert data');
+    Lib.markTime('done convert data');
 
     // calculate the bins
     if(trace.autobinx || !('xbins' in trace)) {
@@ -80384,7 +81312,7 @@ histogram.calc2d = function(gd, trace) {
         }
         trace._input.ybins = trace.ybins;
     }
-    Plotly.Lib.markTime('done autoBin');
+    Lib.markTime('done autoBin');
 
     // make the empty bin array & scale the map
     z = [];
@@ -80468,11 +81396,11 @@ histogram.calc2d = function(gd, trace) {
     }
 
 
-    Plotly.Lib.markTime('done making bins');
+    Lib.markTime('done making bins');
     // put data into bins
     for(i=0; i<serieslen; i++) {
-        n = Plotly.Lib.findBin(x[i],xbins);
-        m = Plotly.Lib.findBin(y[i],ybins);
+        n = Lib.findBin(x[i],xbins);
+        m = Lib.findBin(y[i],ybins);
         if(n>=0 && n<nx && m>=0 && m<ny) {
             total += binfunc(n, i, z[m], rawCounterData, counts[m]);
         }
@@ -80484,7 +81412,7 @@ histogram.calc2d = function(gd, trace) {
     if(normfunc) {
         for(m=0; m<ny; m++) normfunc(z[m], total, xinc, yinc[m]);
     }
-    Plotly.Lib.markTime('done binning');
+    Lib.markTime('done binning');
 
     return {
         x: x,
@@ -80497,7 +81425,239 @@ histogram.calc2d = function(gd, trace) {
     };
 };
 
-},{"../../plotly":336,"./attributes":395,"fast-isnumeric":58}],397:[function(require,module,exports){
+},{"../../lib":332,"../../plotly":348,"../histogram/average":434,"../histogram/bin_functions":436,"../histogram/norm_functions":440}],443:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Lib = require('../../lib');
+
+var handleSampleDefaults = require('./sample_defaults');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
+var attributes = require('./attributes');
+
+
+module.exports = function supplyDefaults(traceIn, traceOut, layout) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    handleSampleDefaults(traceIn, traceOut, coerce);
+
+    coerce('zsmooth');
+
+    colorscaleDefaults(
+        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+    );
+};
+
+},{"../../components/colorscale/defaults":293,"../../lib":332,"./attributes":441,"./sample_defaults":445}],444:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../../plotly');
+
+Plotly.Plots.register(exports, 'histogram2d',
+    ['cartesian', '2dMap', 'histogram'], {
+    hrName: 'histogram_2d',
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'and `y` (where `x` and `y` represent marginal distributions,',
+        'binning is set in `xbins` and `ybins` in this case)',
+        'or `z` (where `z` represent the 2D distribution and binning set,',
+        'binning is set by `x` and `y` in this case).',
+        'The resulting distribution is visualized as a heatmap.'
+    ].join(' ')
+});
+
+exports.attributes = require('./attributes');
+
+exports.supplyDefaults = require('./defaults');
+
+exports.calc = require('../heatmap/calc');
+
+exports.plot = require('../heatmap/plot');
+
+exports.colorbar = require('../heatmap/colorbar');
+
+exports.style = require('../heatmap/style');
+
+exports.hoverPoints = require('../heatmap/hover');
+
+},{"../../plotly":348,"../heatmap/calc":422,"../heatmap/colorbar":423,"../heatmap/hover":427,"../heatmap/plot":430,"../heatmap/style":431,"./attributes":441,"./defaults":443}],445:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var handleBinDefaults = require('../histogram/bin_defaults');
+
+
+module.exports = function handleSampleDefaults(traceIn, traceOut, coerce) {
+    var x = coerce('x'),
+        y = coerce('y');
+
+    // we could try to accept x0 and dx, etc...
+    // but that's a pretty weird use case.
+    // for now require both x and y explicitly specified.
+    if(!(x && x.length && y && y.length)) {
+        traceOut.visible = false;
+        return;
+    }
+
+    // if marker.color is an array, we can use it in aggregation instead of z
+    var hasAggregationData = coerce('z') || coerce('marker.color');
+
+    if(hasAggregationData) coerce('histfunc');
+
+    var binDirections = ['x', 'y'];
+    handleBinDefaults(traceIn, traceOut, coerce, binDirections);
+};
+
+},{"../histogram/bin_defaults":435}],446:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+var histogram2dAttrs = require('../histogram2d/attributes');
+var contourAttrs = require('../contour/attributes');
+
+module.exports = {
+    x: histogram2dAttrs.x,
+    y: histogram2dAttrs.y,
+    z: histogram2dAttrs.z,
+    marker: histogram2dAttrs.marker,
+
+    histnorm: histogram2dAttrs.histnorm,
+    histfunc: histogram2dAttrs.histfunc,
+    autobinx:histogram2dAttrs.autobinx,
+    nbinsx: histogram2dAttrs.nbinsx,
+    xbins: histogram2dAttrs.xbins,
+    autobiny: histogram2dAttrs.autobiny,
+    nbinsy: histogram2dAttrs.nbinsy,
+    ybins: histogram2dAttrs.ybins,
+
+    zauto: contourAttrs.zauto,
+    zmin: contourAttrs.zmin,
+    zmax: contourAttrs.zmax,
+    colorscale: contourAttrs.colorscale,
+    autocolorscale: contourAttrs.autocolorscale,
+    reversescale: contourAttrs.reversescale,
+    showscale: contourAttrs.showscale,
+
+    autocontour: contourAttrs.autocontour,
+    ncontours: contourAttrs.ncontours,
+    contours: contourAttrs.contours,
+    line: contourAttrs.line,
+
+    _nestedModules: {
+        'colorbar': 'Colorbar'
+    }
+};
+
+},{"../contour/attributes":412,"../histogram2d/attributes":441}],447:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Lib = require('../../lib');
+
+var handleSampleDefaults = require('../histogram2d/sample_defaults');
+var handleStyleDefaults = require('../contour/style_defaults');
+var attributes = require('./attributes');
+
+
+module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
+    function coerce(attr, dflt) {
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
+    }
+
+    handleSampleDefaults(traceIn, traceOut, coerce);
+
+    var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start'),
+        contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end'),
+        autocontour = coerce('autocontour', !(contourStart && contourEnd));
+
+    if(autocontour) coerce('ncontours');
+    else coerce('contours.size');
+
+    handleStyleDefaults(traceIn, traceOut, coerce, layout);
+};
+
+},{"../../lib":332,"../contour/style_defaults":420,"../histogram2d/sample_defaults":445,"./attributes":446}],448:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plotly = require('../../plotly');
+
+Plotly.Plots.register(exports, 'histogram2dcontour',
+    ['cartesian', '2dMap', 'contour', 'histogram'], {
+    hrName: 'histogram_2d_contour',
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'and `y` (where `x` and `y` represent marginal distributions,',
+        'binning is set in `xbins` and `ybins` in this case)',
+        'or `z` (where `z` represent the 2D distribution and binning set,',
+        'binning is set by `x` and `y` in this case).',
+        'The resulting distribution is visualized as a contour plot.'
+    ].join(' ')
+});
+
+exports.attributes = require('./attributes');
+
+exports.supplyDefaults = require('./defaults');
+
+exports.calc = require('../contour/calc');
+
+exports.plot = require('../contour/plot');
+
+exports.style = require('../contour/style');
+
+exports.colorbar = require('../contour/colorbar');
+
+exports.hoverPoints = require('../contour/hover');
+
+},{"../../plotly":348,"../contour/calc":413,"../contour/colorbar":414,"../contour/hover":416,"../contour/plot":418,"../contour/style":419,"./attributes":446,"./defaults":447}],449:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80508,129 +81668,129 @@ histogram.calc2d = function(gd, trace) {
 
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
+var surfaceAtts = require('../surface/attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
+
 
 module.exports = {
-    x: {valType: 'data_array'},
-    y: {valType: 'data_array'},
-    z: {valType: 'data_array'},
+    x: {
+        valType: 'data_array',
+        description: 'Sets the x coordinates of the vertices'
+    },
+    y: {
+        valType: 'data_array',
+        description: 'Sets the y coordinates of the vertices'
+    },
+    z: {
+        valType: 'data_array',
+        description: 'Sets the z coordinates of the vertices'
+    },
 
-    i: {valType: 'data_array'},
-    j: {valType: 'data_array'},
-    k: {valType: 'data_array'},
+    i: {
+        valType: 'data_array',
+        description: 'Sets the indices of x coordinates of the vertices'
+    },
+    j: {
+        valType: 'data_array',
+        description: 'Sets the indices of y coordinates of the vertices'
+    },
+    k: {
+        valType: 'data_array',
+        description: 'Sets the indices of z coordinates of the vertices'
+    },
 
     delaunayaxis: {
-      valType: 'enumerated',
-      role: 'info',
-      values: [ 'x', 'y', 'z' ],
-      dflt: 'z'
+        valType: 'enumerated',
+        role: 'info',
+        values: [ 'x', 'y', 'z' ],
+        dflt: 'z',
+        description: [
+            'Sets the Delaunay axis from which the triangulation of the mesh',
+            'takes place.',
+            'An alternative to setting the `i`, `j`, `k` indices triplets.'
+        ].join(' ')
     },
 
     alphahull: {
-      valType: 'number',
-      role: 'style',
-      dflt: -1
+        valType: 'number',
+        role: 'style',
+        dflt: -1,
+        description: [
+            'Sets the shape of the mesh',
+            'If *-1*, Delaunay triangulation is used',
+            'If *>0*, the alpha-shape algorithm is used',
+            'If *0*,  the convex-hull algorithm is used',
+            'An alternative to the `i`, `j`, `k` indices triplets.'
+        ].join(' ')
     },
 
-    intensity: {valType: 'data_array'},
+    intensity: {
+        valType: 'data_array',
+        description: [
+            'Sets the vertex intensity values,',
+            'used for plotting fields on meshes'
+        ].join(' ')
+    },
 
     //Color field
     color: {
         valType: 'color',
-        role: 'style'
+        role: 'style',
+        description: 'Sets the color of the whole mesh'
     },
     vertexcolor: {
         valType: 'data_array',  // FIXME: this should be a color array
-        role: 'style'
+        role: 'style',
+        description: [
+            'Sets the color of each vertex',
+            'Overrides *color*.'
+        ].join(' ')
     },
     facecolor: {
         valType: 'data_array',
-        role: 'style'
+        role: 'style',
+        description: [
+            'Sets the color of each face',
+            'Overrides *color* and *vertexcolor*.'
+        ].join(' ')
     },
 
     //Opacity
-    opacity: {
-        valType: 'number',
-        role: 'style',
-        min: 0,
-        max: 1,
-        dflt: 1
-    },
+    opacity: extendFlat({}, surfaceAtts.opacity),
 
     //Flat shaded mode
     flatshading: {
         valType: 'boolean',
         role: 'style',
-        dflt: false
+        dflt: false,
+        description: [
+            'Determines whether or not normal smoothing is applied to the meshes,',
+            'creating meshes with a low-poly look.'
+        ].join(' ')
     },
 
     contour: {
-        show: {
-            valType: 'boolean',
-            role: 'info',
-            dflt: false
-        },
-        color: {
-            valType: 'color',
-            role: 'style',
-            dflt: '#000'
-        },
-        width: {
-            valType: 'number',
-            role: 'style',
-            min: 1,
-            max: 16,
-            dflt: 2
-        }
+        show: extendFlat({}, surfaceAtts.contours.x.show, {
+            description: [
+                'Sets whether or not dynamic contours are shown on hover'
+            ].join(' ')
+        }),
+        color: extendFlat({}, surfaceAtts.contours.x.color),
+        width: extendFlat({}, surfaceAtts.contours.x.width)
     },
 
     colorscale: colorscaleAttrs.colorscale,
     reversescale: colorscaleAttrs.reversescale,
     showscale: colorscaleAttrs.showscale,
 
-    lighting: {
-        ambient: {
-            valType: 'number',
-            role: 'style',
-            min: 0.00,
-            max: 1.0,
-            dflt: 0.8
-        },
-        diffuse: {
-            valType: 'number',
-            role: 'style',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.8
-        },
-        specular: {
-            valType: 'number',
-            role: 'style',
-            min: 0.00,
-            max: 2.00,
-            dflt: 0.05
-        },
-        roughness: {
-            valType: 'number',
-            role: 'style',
-            min: 0.00,
-            max: 1.00,
-            dflt: 0.5
-        },
-        fresnel: {
-            valType: 'number',
-            role: 'style',
-            min: 0.00,
-            max: 5.00,
-            dflt: 0.2
-        }
-    },
+    lighting: extendFlat({}, surfaceAtts.lighting),
 
     _nestedModules: {  // nested module coupling
         'colorbar': 'Colorbar'
     }
 };
 
-},{"../../components/colorscale/attributes":287}],398:[function(require,module,exports){
+},{"../../components/colorscale/attributes":290,"../../lib/extend":328,"../surface/attributes":472}],450:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80709,15 +81869,15 @@ proto.update = function(data) {
     this.data = data;
 
     //Unpack position data
-    function toDataCoords(axis, coord, scale, offset) {
+    function toDataCoords(axis, coord, scale) {
       return coord.map(function(x) {
-        return axis.d2l(x) * scale - offset;
+        return axis.d2l(x) * scale;
       });
     }
     var positions = zip3(
-      toDataCoords(layout.xaxis, data.x, scene.dataScale[0], scene.dataCenter[0]),
-      toDataCoords(layout.yaxis, data.y, scene.dataScale[1], scene.dataCenter[1]),
-      toDataCoords(layout.zaxis, data.z, scene.dataScale[2], scene.dataCenter[2]));
+      toDataCoords(layout.xaxis, data.x, scene.dataScale[0]),
+      toDataCoords(layout.yaxis, data.y, scene.dataScale[1]),
+      toDataCoords(layout.zaxis, data.z, scene.dataScale[2]));
 
 
     var cells;
@@ -80786,7 +81946,7 @@ function createMesh3DTrace(scene, data) {
 
 module.exports = createMesh3DTrace;
 
-},{"../../lib/str2rgbarray":329,"alpha-shape":23,"convex-hull":42,"delaunay-triangulate":54,"gl-mesh3d":91,"tinycolor2":213}],399:[function(require,module,exports){
+},{"../../lib/str2rgbarray":341,"alpha-shape":23,"convex-hull":42,"delaunay-triangulate":54,"gl-mesh3d":91,"tinycolor2":213}],451:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80878,7 +82038,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../plotly":336,"./":400}],400:[function(require,module,exports){
+},{"../../plotly":348,"./":452}],452:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80896,7 +82056,12 @@ var Mesh3D = module.exports = {};
 
 Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
     description: [
-        ''
+        'Draws sets of triangles with coordinates given by',
+        'three 1-dimensional arrays in `x`, `y`, `z` and',
+        '(1) a sets of `i`, `j`, `k` indices',
+        '(2) Delaunay triangulation or',
+        '(3) the Alpha-shape algorithm or',
+        '(4) the Convex-hull algorithm'
     ].join(' ')
 });
 
@@ -80904,9 +82069,9 @@ Mesh3D.attributes = require('./attributes');
 
 Mesh3D.supplyDefaults = require('./defaults');
 
-Mesh3D.colorbar = Plotly.Colorbar.traceColorbar;
+Mesh3D.colorbar = require('../heatmap/colorbar');
 
-},{"../../plotly":336,"./attributes":397,"./defaults":399}],401:[function(require,module,exports){
+},{"../../plotly":348,"../heatmap/colorbar":423,"./attributes":449,"./defaults":451}],453:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -81170,7 +82335,7 @@ module.exports = {
 };
 
 
-},{"../../components/color/attributes":283,"../../lib/extend":316,"../../plots/attributes":337,"../../plots/font_attributes":342}],402:[function(require,module,exports){
+},{"../../components/color/attributes":283,"../../lib/extend":328,"../../plots/attributes":349,"../../plots/font_attributes":354}],454:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -81546,6 +82711,12 @@ pie.plot = function(gd, cdpie) {
                     }
                 }
 
+                function handleClick (evt) {
+                    gd._hoverdata = [pt];
+                    gd._hoverdata.trace = cd.trace;
+                    Plotly.Fx.click(gd, { target: true });
+                }
+
                 slicePath.enter().append('path')
                     .classed('surface', true)
                     .style({'pointer-events': 'all'});
@@ -81554,7 +82725,8 @@ pie.plot = function(gd, cdpie) {
 
                 sliceTop
                     .on('mouseover', handleMouseOver)
-                    .on('mouseout', handleMouseOut);
+                    .on('mouseout', handleMouseOut)
+                    .on('click', handleClick);
 
                 if(trace.pull) {
                     var pull = +(Array.isArray(trace.pull) ? trace.pull[pt.i] : trace.pull) || 0;
@@ -82116,7 +83288,7 @@ pie.styleOne = function(s, pt, trace) {
     .call(Plotly.Color.stroke, lineColor);
 };
 
-},{"../../plotly":336,"./attributes":401,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],403:[function(require,module,exports){
+},{"../../plotly":348,"./attributes":453,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],455:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -82552,7 +83724,62 @@ module.exports = {
     }
 };
 
-},{"../../plotly":336}],404:[function(require,module,exports){
+},{"../../plotly":348}],456:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+var getColorscale = require('../../components/colorscale/get_scale');
+var drawColorbar = require('../../components/colorbar/draw');
+
+
+module.exports = function colorbar(gd, cd) {
+    var trace = cd[0].trace,
+        marker = trace.marker,
+        cbId = 'cb' + trace.uid;
+
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+
+    // TODO unify Scatter.colorbar and Heatmap.colorbar
+    // TODO make Plotly[module].colorbar support multiple colorbar per trace
+
+    if(marker===undefined || !marker.showscale){
+        Plotly.Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var scl = getColorscale(marker.colorscale),
+        vals = marker.color,
+        cmin = marker.cmin,
+        cmax = marker.cmax;
+
+    if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
+    if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
+
+    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+
+    cb.fillcolor(d3.scale.linear()
+            .domain(scl.map(function(v){ return cmin + v[0] * (cmax - cmin); }))
+            .range(scl.map(function(v){ return v[1]; })))
+        .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
+        .options(marker.colorbar)();
+
+    Lib.markTime('done colorbar');
+};
+
+},{"../../components/colorbar/draw":287,"../../components/colorscale/get_scale":295,"../../lib":332,"../../plotly":348,"d3":53,"fast-isnumeric":58}],457:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -82587,44 +83814,14 @@ scatter.PTS_LINESONLY = 20;
 
 scatter.attributes = require('./attributes');
 
-scatter.handleXYDefaults = function(traceIn, traceOut, coerce) {
-    var len,
-        x = coerce('x'),
-        y = coerce('y');
-
-    if(x) {
-        if(y) {
-            len = Math.min(x.length, y.length);
-            // TODO: not sure we should do this here... but I think
-            // the way it works in calc is wrong, because it'll delete data
-            // which could be a problem eg in streaming / editing if x and y
-            // come in at different times
-            // so we need to revisit calc before taking this out
-            if(len<x.length) traceOut.x = x.slice(0, len);
-            if(len<y.length) traceOut.y = y.slice(0, len);
-        }
-        else {
-            len = x.length;
-            coerce('y0');
-            coerce('dy');
-        }
-    }
-    else {
-        if(!y) return 0;
-
-        len = traceOut.y.length;
-        coerce('x0');
-        coerce('dx');
-    }
-    return len;
-};
+var handleXYDefaults = require('./xy_defaults');
 
 scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
     }
 
-    var len = scatter.handleXYDefaults(traceIn, traceOut, coerce),
+    var len = handleXYDefaults(traceIn, traceOut, coerce),
         // TODO: default mode by orphan points...
         defaultMode = len < scatter.PTS_LINESONLY ? 'lines+markers' : 'lines';
     if(!len) {
@@ -82801,39 +83998,7 @@ scatter.isBubble = function(trace) {
                 Array.isArray(trace.marker.size));
 };
 
-scatter.colorbar = function(gd, cd) {
-    var trace = cd[0].trace,
-        marker = trace.marker,
-        cbId = 'cb' + trace.uid;
-
-    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
-
-    // TODO unify Scatter.colorbar and Heatmap.colorbar
-    // TODO make Plotly[module].colorbar support multiple colorbar per trace
-
-    if(marker===undefined || !marker.showscale){
-        Plotly.Plots.autoMargin(gd, cbId);
-        return;
-    }
-
-    var scl = Plotly.Colorscale.getScale(marker.colorscale),
-        vals = marker.color,
-        cmin = marker.cmin,
-        cmax = marker.cmax;
-
-    if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
-    if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
-
-    var cb = cd[0].t.cb = Plotly.Colorbar(gd, cbId);
-
-    cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v){ return cmin + v[0] * (cmax - cmin); }))
-            .range(scl.map(function(v){ return v[1]; })))
-        .filllevels({start: cmin, end: cmax, size: (cmax - cmin) / 254})
-        .options(marker.colorbar)();
-
-    Plotly.Lib.markTime('done colorbar');
-};
+scatter.colorbar = require('./colorbar');
 
 // used in the drawing step for 'scatter' and 'scattegeo' and
 // in the convert step for 'scatter3d'
@@ -83473,7 +84638,52 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
     return [pointData];
 };
 
-},{"../../plotly":336,"./attributes":403,"d3":53,"fast-isnumeric":58}],405:[function(require,module,exports){
+},{"../../plotly":348,"./attributes":455,"./colorbar":456,"./xy_defaults":458,"d3":53,"fast-isnumeric":58}],458:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+
+module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
+    var len,
+        x = coerce('x'),
+        y = coerce('y');
+
+    if(x) {
+        if(y) {
+            len = Math.min(x.length, y.length);
+            // TODO: not sure we should do this here... but I think
+            // the way it works in calc is wrong, because it'll delete data
+            // which could be a problem eg in streaming / editing if x and y
+            // come in at different times
+            // so we need to revisit calc before taking this out
+            if(len<x.length) traceOut.x = x.slice(0, len);
+            if(len<y.length) traceOut.y = y.slice(0, len);
+        }
+        else {
+            len = x.length;
+            coerce('y0');
+            coerce('dy');
+        }
+    }
+    else {
+        if(!y) return 0;
+
+        len = traceOut.y.length;
+        coerce('x0');
+        coerce('dx');
+    }
+    return len;
+};
+
+},{}],459:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -83590,7 +84800,17 @@ module.exports = {
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
-        opacity: scatterMarkerAttrs.opacity,
+        opacity: extendFlat({}, scatterMarkerAttrs.opacity, {
+            arrayOk: false,
+            description: [
+                'Sets the marker opacity.',
+                'Note that the marker opacity for scatter3d traces',
+                'must be a scalar value for performance reasons.',
+                'To set a blending opacity value',
+                '(i.e. which is not transparent), set *marker.color*',
+                'to an rgba color and use its alpha channel.'
+            ].join(' ')
+        }),
         colorscale: scatterMarkerAttrs.colorscale,
         cauto: scatterMarkerAttrs.cauto,
         cmax: scatterMarkerAttrs.cmax,
@@ -83619,7 +84839,7 @@ module.exports = {
     }
 };
 
-},{"../../constants/gl_markers.json":309,"../../lib/extend":316,"../scatter/attributes":403}],406:[function(require,module,exports){
+},{"../../constants/gl_markers.json":321,"../../lib/extend":328,"../scatter/attributes":455}],460:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -83690,7 +84910,7 @@ function calculateErrors(data, scaleFactor) {
 
 module.exports = calculateErrors;
 
-},{"../../components/errorbars/compute_error":294}],407:[function(require,module,exports){
+},{"../../components/errorbars/compute_error":306}],461:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -83862,7 +85082,6 @@ function convertPlotlyOptions(scene, data) {
         points = [],
         sceneLayout = scene.fullSceneLayout,
         scaleFactor = scene.dataScale,
-        offset = scene.dataCenter,
         xaxis = sceneLayout.xaxis,
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
@@ -83877,9 +85096,9 @@ function convertPlotlyOptions(scene, data) {
     //Convert points
     for (i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
-        xc = xaxis.d2l(x[i]) * scaleFactor[0] - offset[0];
-        yc = yaxis.d2l(y[i]) * scaleFactor[1] - offset[1];
-        zc = zaxis.d2l(z[i]) * scaleFactor[2] - offset[2];
+        xc = xaxis.d2l(x[i]) * scaleFactor[0];
+        yc = yaxis.d2l(y[i]) * scaleFactor[1];
+        zc = zaxis.d2l(z[i]) * scaleFactor[2];
 
         points[i] = [xc, yc, zc];
     }
@@ -84012,10 +85231,9 @@ proto.update = function(data) {
         this.linePlot = null;
     }
 
+    // N.B. marker.opacity must be a scalar for performance
     var scatterOpacity = data.opacity;
-    if(data.marker && typeof data.marker.opacity === 'number') {
-      scatterOpacity *= data.marker.opacity;
-    }
+    if(data.marker && data.marker.opacity) scatterOpacity *= data.marker.opacity;
 
     scatterOptions = {
         gl:           gl,
@@ -84147,7 +85365,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../constants/gl3d_dashes.json":308,"../../constants/gl_markers.json":309,"../../lib/gl_format_color":318,"../../lib/str2rgbarray":329,"../../plotly":336,"./calc_errors":406,"delaunay-triangulate":54,"gl-error3d":62,"gl-line3d":68,"gl-mesh3d":91,"gl-scatter3d":134}],408:[function(require,module,exports){
+},{"../../constants/gl3d_dashes.json":320,"../../constants/gl_markers.json":321,"../../lib/gl_format_color":330,"../../lib/str2rgbarray":341,"../../plotly":348,"./calc_errors":460,"delaunay-triangulate":54,"gl-error3d":62,"gl-line3d":68,"gl-mesh3d":91,"gl-scatter3d":134}],462:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84225,7 +85443,7 @@ function handleXYZDefaults(traceIn, traceOut, coerce) {
     return len;
 }
 
-},{"../../plotly":336,"./":409}],409:[function(require,module,exports){
+},{"../../plotly":348,"./":463}],463:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84274,7 +85492,7 @@ Scatter3D.calc = function(gd, trace) {
     return cd;
 };
 
-},{"../../constants/gl_markers.json":309,"../../plotly":336,"./attributes":405,"./defaults":408}],410:[function(require,module,exports){
+},{"../../constants/gl_markers.json":321,"../../plotly":348,"./attributes":459,"./defaults":462}],464:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84372,7 +85590,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":316,"../../plots/attributes":337,"../scatter/attributes":403}],411:[function(require,module,exports){
+},{"../../lib/extend":328,"../../plots/attributes":349,"../scatter/attributes":455}],465:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84441,7 +85659,7 @@ function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
     return len;
 }
 
-},{"../../plotly":336,"./":412}],412:[function(require,module,exports){
+},{"../../plotly":348,"./":466}],466:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84479,7 +85697,7 @@ ScatterGeo.calc = function(gd, trace) {
 
 };
 
-},{"../../plotly":336,"./attributes":410,"./defaults":411}],413:[function(require,module,exports){
+},{"../../plotly":348,"./attributes":464,"./defaults":465}],467:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84742,7 +85960,7 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     };
 }
 
-},{"../../lib/array_to_calc_item":312,"../../lib/geo_location_utils":317,"../../lib/topojson_utils":331,"../../plotly":336,"d3":53}],414:[function(require,module,exports){
+},{"../../lib/array_to_calc_item":324,"../../lib/geo_location_utils":329,"../../lib/topojson_utils":343,"../../plotly":348,"d3":53}],468:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84841,7 +86059,7 @@ module.exports = {
     }
 };
 
-},{"../../constants/gl2d_dashes.json":307,"../../constants/gl_markers.json":309,"../../lib/extend":316,"../scatter/attributes":403}],415:[function(require,module,exports){
+},{"../../constants/gl2d_dashes.json":319,"../../constants/gl_markers.json":321,"../../lib/extend":328,"../scatter/attributes":455}],469:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85402,7 +86620,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../constants/gl2d_dashes.json":307,"../../constants/gl_markers.json":309,"../../lib/gl_format_color":318,"../../lib/str2rgbarray":329,"../../plotly":336,"fast-isnumeric":58,"gl-error2d":60,"gl-line2d":66,"gl-scatter2d":131,"gl-scatter2d-fancy":126}],416:[function(require,module,exports){
+},{"../../constants/gl2d_dashes.json":319,"../../constants/gl_markers.json":321,"../../lib/gl_format_color":330,"../../lib/str2rgbarray":341,"../../plotly":348,"fast-isnumeric":58,"gl-error2d":60,"gl-line2d":66,"gl-scatter2d":131,"gl-scatter2d-fancy":126}],470:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85414,18 +86632,20 @@ module.exports = createLineWithMarkers;
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var ScatterGl = require('./');
+var Lib = require('../../lib');
+var Scatter = require('../scatter');
+
+var handleXYDefaults = require('../scatter/xy_defaults');
+var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
+var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    var Scatter = Plotly.Scatter;
-
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, ScatterGl.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = Scatter.handleXYDefaults(traceIn, traceOut, coerce);
+    var len = handleXYDefaults(traceIn, traceOut, coerce);
     if(!len) {
         traceOut.visible = false;
         return;
@@ -85447,11 +86667,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         Scatter.fillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../plotly":336,"./":417}],417:[function(require,module,exports){
+},{"../../components/errorbars/defaults":307,"../../lib":332,"../scatter":457,"../scatter/xy_defaults":458,"./attributes":468}],471:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85486,7 +86706,7 @@ ScatterGl.colorbar = Plotly.Scatter.colorbar;
 // reuse the Scatter3D 'dummy' calc step so that legends know what to do
 ScatterGl.calc = Plotly.Scatter3D.calc;
 
-},{"../../plotly":336,"./attributes":414,"./defaults":416}],418:[function(require,module,exports){
+},{"../../plotly":348,"./attributes":468,"./defaults":470}],472:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85653,7 +86873,27 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":287,"../../lib/extend":316}],419:[function(require,module,exports){
+},{"../../components/colorscale/attributes":290,"../../lib/extend":328}],473:[function(require,module,exports){
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var colorscaleCalc = require('../../components/colorscale/calc');
+
+
+// Compute auto-z and autocolorscale if applicable
+module.exports = function calc(gd, trace) {
+    colorscaleCalc(trace, trace.z, '', 'z');
+};
+
+},{"../../components/colorscale/calc":291}],474:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85708,9 +86948,9 @@ proto.handlePick = function(selection) {
 
     var sceneLayout = this.scene.fullSceneLayout;
     selection.dataCoordinate = [
-      sceneLayout.xaxis.d2l(traceCoordinate[0])*this.scene.dataScale[0] - this.scene.dataCenter[0],
-      sceneLayout.yaxis.d2l(traceCoordinate[1])*this.scene.dataScale[1] - this.scene.dataCenter[1],
-      sceneLayout.zaxis.d2l(traceCoordinate[2])*this.scene.dataScale[2] - this.scene.dataCenter[2]
+      sceneLayout.xaxis.d2l(traceCoordinate[0])*this.scene.dataScale[0],
+      sceneLayout.yaxis.d2l(traceCoordinate[1])*this.scene.dataScale[1],
+      sceneLayout.zaxis.d2l(traceCoordinate[2])*this.scene.dataScale[2]
     ];
 
     var text = this.data.text;
@@ -85821,7 +87061,6 @@ proto.update = function(data) {
         yaxis = sceneLayout.yaxis,
         zaxis = sceneLayout.zaxis,
         scaleFactor = scene.dataScale,
-        offset = scene.dataCenter,
         xlen = z[0].length,
         ylen = z.length,
         coords = [
@@ -85844,30 +87083,30 @@ proto.update = function(data) {
      * which is the transpose of 'gl-surface-plot'.
      */
     fill(coords[2], function(row, col) {
-        return zaxis.d2l(z[col][row]) * scaleFactor[2]  - offset[2];
+        return zaxis.d2l(z[col][row]) * scaleFactor[2];
     });
 
     // coords x
     if (Array.isArray(x[0])) {
         fill(xc, function(row, col) {
-            return xaxis.d2l(x[col][row]) * scaleFactor[0] - offset[0];
+            return xaxis.d2l(x[col][row]) * scaleFactor[0];
         });
     } else {
         // ticks x
         fill(xc, function(row) {
-            return xaxis.d2l(x[row]) * scaleFactor[0] - offset[0];
+            return xaxis.d2l(x[row]) * scaleFactor[0];
         });
     }
 
     // coords y
     if (Array.isArray(y[0])) {
         fill(yc, function(row, col) {
-            return yaxis.d2l(y[col][row]) * scaleFactor[1] - offset[1];
+            return yaxis.d2l(y[col][row]) * scaleFactor[1];
         });
     } else {
         // ticks y
         fill(yc, function(row, col) {
-            return yaxis.d2l(y[col]) * scaleFactor[1] - offset[1];
+            return yaxis.d2l(y[col]) * scaleFactor[1];
         });
     }
 
@@ -85978,7 +87217,7 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../lib/str2rgbarray":329,"gl-surface3d":161,"ndarray":189,"ndarray-fill":178,"ndarray-homography":183,"ndarray-ops":184,"tinycolor2":213}],420:[function(require,module,exports){
+},{"../../lib/str2rgbarray":341,"gl-surface3d":161,"ndarray":189,"ndarray-fill":178,"ndarray-homography":183,"ndarray-ops":184,"tinycolor2":213}],475:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85990,15 +87229,17 @@ module.exports = createSurfaceTrace;
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var Surface = require('./');
+var Lib = require('../../lib');
+
+var colorscaleDefaults = require('../../components/colorscale/defaults');
+var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     var i, j;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, Surface.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
     var z = coerce('z');
@@ -86064,12 +87305,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    Plotly.Colorscale.handleDefaults(
+    colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
 };
 
-},{"../../plotly":336,"./":421}],421:[function(require,module,exports){
+},{"../../components/colorscale/defaults":293,"../../lib":332,"./attributes":472}],476:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -86102,14 +87343,9 @@ Surface.attributes = require('./attributes');
 
 Surface.supplyDefaults = require('./defaults');
 
-Surface.colorbar = Plotly.Colorbar.traceColorbar;
+Surface.colorbar = require('../heatmap/colorbar');
 
-Surface.calc = function(gd, trace) {
+Surface.calc = require('./calc');
 
-    // auto-z and autocolorscale if applicable
-    Plotly.Colorscale.calc(trace, trace.z, '', 'z');
-
-};
-
-},{"../../plotly":336,"./attributes":418,"./defaults":420}]},{},[311])(311)
+},{"../../plotly":348,"../heatmap/colorbar":423,"./attributes":472,"./calc":473,"./defaults":475}]},{},[323])(323)
 });
