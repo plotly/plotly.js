@@ -955,6 +955,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
     }
     else if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
         if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
+            base = base === Math.E ? 'e' : base;
             var p = Math.round(x);
             if(p === 0) out.text = 1;
             else if(p === 1) out.text = base;
