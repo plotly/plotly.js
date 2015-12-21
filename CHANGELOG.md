@@ -9,6 +9,24 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.3.0] -- 2015-12-21
+
+### Added
+- Trigger click event on pie charts [#111]
+- Add attribute descriptions for mesh3d trace type [#115]
+
+### Changed
+- [Internal] Trace module have now a 1-to-1 correspondence with trace type [#124]
+- [Internal] Remove circularize import in colorbar and colorscale module [#136]
+
+### Fixed
+- Fixed zeroline behavior in gl3d plots [#112]
+- Axis `tickangle` consistently used degrees in both svg and gl plots [#131]
+- `Plotly.newPlot` destroy mode bar before plotting new one [#125]
+- `Plotly.newPlot` removes all event listeners from graph div [#117]
+- Fixed attribute description for scatter3d marker opacity [#114]
+
+
 ## [1.2.1] -- 2015-12-14
 
 ### Changed
