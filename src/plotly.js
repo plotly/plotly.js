@@ -57,10 +57,12 @@ exports.ModeBar = require('./components/modebar');
 
 // traces
 exports.Scatter = require('./traces/scatter');
-exports.Bars = require('./traces/bars');
-exports.Boxes = require('./traces/boxes');
+exports.Bar = require('./traces/bar');
+exports.Box = require('./traces/box');
 exports.Heatmap = require('./traces/heatmap');
 exports.Histogram = require('./traces/histogram');
+exports.Histogram2d = require('./traces/histogram2d');
+exports.Histogram2dContour = require('./traces/histogram2dcontour');
 exports.Pie = require('./traces/pie');
 exports.Contour = require('./traces/contour');
 exports.Scatter3D = require('./traces/scatter3d');

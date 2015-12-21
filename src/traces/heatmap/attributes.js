@@ -83,11 +83,8 @@ module.exports = {
             'in the `z` data are filled in.'
         ].join(' ')
     },
-    _nestedModules: {  // nested module coupling
+
+    _nestedModules: {
         'colorbar': 'Colorbar'
-    },
-    _composedModules: {  // composed module coupling
-        'histogram2d': 'Histogram',
-        'histogram2dcontour': 'Histogram'
     }
 };

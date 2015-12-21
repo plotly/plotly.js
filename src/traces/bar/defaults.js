@@ -10,9 +10,10 @@
 'use strict';
 
 var Lib = require('../../lib');
-var Scatter = require('../scatter');
+var Color = require('../../components/color');
 
 var handleXYDefaults = require('../scatter/xy_defaults');
+var handleStyleDefaults = require('../bar/style_defaults');
 var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 var attributes = require('./attributes');
 
@@ -28,22 +29,12 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
+    coerce('orientation', (traceOut.x && !traceOut.y) ? 'h' : 'v');
     coerce('text');
-    coerce('mode', len < Scatter.PTS_LINESONLY ? 'lines+markers' : 'lines');
 
-    if(Scatter.hasLines(traceOut)) {
-        Scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
-    }
+    handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);
 
-    if(Scatter.hasMarkers(traceOut)) {
-        Scatter.markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-    }
-
-    coerce('fill');
-    if(traceOut.fill !== 'none') {
-        Scatter.fillColorDefaults(traceIn, traceOut, defaultColor, coerce);
-    }
-
-    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
+    // override defaultColor for error bars with defaultLine
+    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'y'});
+    errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };

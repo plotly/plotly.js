@@ -28,4 +28,4 @@ Mesh3D.attributes = require('./attributes');
 
 Mesh3D.supplyDefaults = require('./defaults');
 
-Mesh3D.colorbar = Plotly.Colorbar.traceColorbar;
+Mesh3D.colorbar = require('../heatmap/colorbar');

@@ -259,12 +259,13 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 }
 
 function getSubplotRegistry(traceType) {
+    if(traceType === 'area') return {};  // FIXME
+
     var subplotsRegistry = Plotly.Plots.subplotsRegistry,
         subplotType = Object.keys(subplotsRegistry).filter(function(subplotType) {
             return Plotly.Plots.traceIs({type: traceType}, subplotType);
         })[0];
 
-    if(traceType === 'area') return {};  // FIXME
     if(subplotType === undefined) return {};
 
     return subplotsRegistry[subplotType];
