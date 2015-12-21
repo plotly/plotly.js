@@ -14,24 +14,28 @@ var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var getColorscale = require('../../components/colorscale/get_scale');
+var drawColorbar = require('../../components/colorbar/draw');
+
 
 module.exports = function colorbar(gd, cd) {
     var trace = cd[0].trace,
         cbId = 'cb' + trace.uid,
-        scl = Plotly.Colorscale.getScale(trace.colorscale),
+        scl = getColorscale(trace.colorscale),
         zmin = trace.zmin,
         zmax = trace.zmax;
 
-    if(!isNumeric(zmin)) zmin = Plotly.Lib.aggNums(Math.min, null, trace.z);
-    if(!isNumeric(zmax)) zmax = Plotly.Lib.aggNums(Math.max, null, trace.z);
+    if(!isNumeric(zmin)) zmin = Lib.aggNums(Math.min, null, trace.z);
+    if(!isNumeric(zmax)) zmax = Lib.aggNums(Math.max, null, trace.z);
 
-    gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+
     if(!trace.showscale){
         Plotly.Plots.autoMargin(gd, cbId);
         return;
     }
 
-    var cb = cd[0].t.cb = Plotly.Colorbar(gd, cbId);
+    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
     cb.fillcolor(d3.scale.linear()
             .domain(scl.map(function(v){ return zmin + v[0]*(zmax-zmin); }))
             .range(scl.map(function(v){ return v[1]; })))

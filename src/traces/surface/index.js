@@ -32,9 +32,4 @@ Surface.supplyDefaults = require('./defaults');
 
 Surface.colorbar = require('../heatmap/colorbar');
 
-Surface.calc = function(gd, trace) {
-
-    // auto-z and autocolorscale if applicable
-    Plotly.Colorscale.calc(trace, trace.z, '', 'z');
-
-};
+Surface.calc = require('./calc');

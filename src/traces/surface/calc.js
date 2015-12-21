@@ -9,11 +9,10 @@
 
 'use strict';
 
+var colorscaleCalc = require('../../components/colorscale/calc');
 
-exports.attributes = require('./attributes');
 
-exports.supplyDefaults = require('./defaults');
-
-exports.draw = require('./draw');
-
-exports.hasColorbar = require('./has_colorbar');
+// Compute auto-z and autocolorscale if applicable
+module.exports = function calc(gd, trace) {
+    colorscaleCalc(trace, trace.z, '', 'z');
+};

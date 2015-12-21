@@ -10,9 +10,9 @@
 'use strict';
 
 var Lib = require('../../lib');
-var Colorscale = require('../../components/colorscale');
 
 var handleSampleDefaults = require('./sample_defaults');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
 var attributes = require('./attributes');
 
 
@@ -25,7 +25,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, layout) {
 
     coerce('zsmooth');
 
-    Colorscale.handleDefaults(
+    colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
     );
 };

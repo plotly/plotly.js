@@ -14,6 +14,7 @@ var tinycolor = require('tinycolor2');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var getColorscale = require('../../components/colorscale/get_scale');
 
 var maxRowLength = require('./max_row_length');
 
@@ -45,7 +46,7 @@ function plotOne(gd, plotinfo, cd) {
     var z = cd[0].z,
         min = trace.zmin,
         max = trace.zmax,
-        scl = Plotly.Colorscale.getScale(trace.colorscale),
+        scl = getColorscale(trace.colorscale),
         x = cd[0].x,
         y = cd[0].y,
         isContour = Plotly.Plots.traceIs(trace, 'contour'),

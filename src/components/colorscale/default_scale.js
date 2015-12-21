@@ -6,14 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+var scales = require('./scales');
 
-'use strict';
 
-
-exports.attributes = require('./attributes');
-
-exports.supplyDefaults = require('./defaults');
-
-exports.draw = require('./draw');
-
-exports.hasColorbar = require('./has_colorbar');
+module.exports = scales.RdBu;

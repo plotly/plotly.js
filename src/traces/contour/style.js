@@ -12,6 +12,7 @@
 var d3 = require('d3');
 
 var Plotly = require('../../plotly');
+var getColorscale = require('../../components/colorscale/get_scale');
 var heatmapStyle = require('../heatmap/style');
 
 
@@ -26,7 +27,7 @@ module.exports = function style(gd) {
                 colorLines = contours.coloring==='lines',
                 cs = contours.size||1,
                 nc = Math.floor((contours.end + cs/10 - contours.start)/cs) + 1,
-                scl = Plotly.Colorscale.getScale(trace.colorscale),
+                scl = getColorscale(trace.colorscale),
                 extraLevel = colorLines ? 0 : 1,
                 colormap = d3.scale.linear()
                     .domain(scl.map(function(si){

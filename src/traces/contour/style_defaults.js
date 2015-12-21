@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Colorscale = require('../../components/colorscale');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
 
 
 module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout) {
@@ -27,7 +27,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout)
     coerce('line.smoothing');
 
     if((traceOut.contours || {}).coloring !== 'none') {
-        Colorscale.handleDefaults(
+        colorscaleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
         );
     }

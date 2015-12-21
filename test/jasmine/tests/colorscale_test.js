@@ -1,10 +1,11 @@
 var Plotly = require('@src/plotly');
+var Colorscale = require('@src/components/colorscale');
 
 describe('Test colorscale:', function () {
     'use strict';
 
     describe('isValidScale', function() {
-        var isValidScale = Plotly.Colorscale.isValidScale,
+        var isValidScale = Colorscale.isValidScale,
             scl;
 
         it('should accept colorscale strings', function() {
@@ -53,7 +54,7 @@ describe('Test colorscale:', function () {
     });
 
     describe('flipScale', function() {
-        var flipScale = Plotly.Colorscale.flipScale,
+        var flipScale = Colorscale.flipScale,
             scl;
 
         it('should flip a colorscale', function() {
@@ -66,7 +67,7 @@ describe('Test colorscale:', function () {
     });
 
     describe('hasColorscale', function() {
-        var hasColorscale = Plotly.Colorscale.hasColorscale,
+        var hasColorscale = Colorscale.hasColorscale,
             trace;
 
         it('should return false when marker is not defined', function() {
@@ -180,34 +181,8 @@ describe('Test colorscale:', function () {
         });
     });
 
-    describe('hasColorbar', function() {
-        var hasColorbar = Plotly.Colorscale.hasColorbar,
-            trace;
-
-        it('should return true when marker colorbar is defined', function() {
-            trace = {
-                marker: {
-                    colorbar: {},
-                    line: {
-                        colorbar: {}
-                    }
-                }
-            };
-            expect(hasColorbar(trace.marker)).toBe(true);
-            expect(hasColorbar(trace.marker.line)).toBe(true);
-
-            trace = {
-                marker: {
-                    line: {}
-                }
-            };
-            expect(hasColorbar(trace.marker)).toBe(false);
-            expect(hasColorbar(trace.marker.line)).toBe(false);
-        });
-    });
-
     describe('handleDefaults (heatmap-like version)', function() {
-        var handleDefaults = Plotly.Colorscale.handleDefaults,
+        var handleDefaults = Colorscale.handleDefaults,
             layout = {
                 font: Plotly.Plots.layoutAttributes.font
             },
@@ -277,7 +252,7 @@ describe('Test colorscale:', function () {
     });
 
     describe('handleDefaults (scatter-like version)', function() {
-        var handleDefaults = Plotly.Colorscale.handleDefaults,
+        var handleDefaults = Colorscale.handleDefaults,
             layout = {
                 font: Plotly.Plots.layoutAttributes.font
             },
@@ -328,7 +303,7 @@ describe('Test colorscale:', function () {
     });
 
     describe('calc', function() {
-        var calcColorscale = Plotly.Colorscale.calc;
+        var calcColorscale = Colorscale.calc;
         var trace, z;
 
         beforeEach(function() {

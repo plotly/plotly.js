@@ -12,28 +12,29 @@
 var d3 = require('d3');
 
 var Plotly = require('../../plotly');
+var getColorscale = require('../../components/colorscale/get_scale');
+var drawColorbar = require('../../components/colorbar/draw');
 
 
 module.exports = function colorbar(gd, cd) {
     var trace = cd[0].trace,
-        cbId = 'cb'+trace.uid;
+        cbId = 'cb' + trace.uid;
 
-    gd._fullLayout._infolayer.selectAll('.'+cbId).remove();
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
     if(trace.showscale===false){
         Plotly.Plots.autoMargin(gd, cbId);
         return;
     }
 
-    // instantiate the colorbar (will be drawn and styled in contour.style)
-    var cb = Plotly.Colorbar(gd, cbId);
+    var cb = drawColorbar(gd, cbId);
     cd[0].t.cb = cb;
 
     var contours = trace.contours,
         line = trace.line,
         cs = contours.size||1,
         nc = Math.floor((contours.end + cs/10 - contours.start)/cs)+1,
-        scl = Plotly.Colorscale.getScale(trace.colorscale),
+        scl = getColorscale(trace.colorscale),
         extraLevel = contours.coloring==='lines' ? 0 : 1,
         colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
         colorDomain = scl.map(function(si){

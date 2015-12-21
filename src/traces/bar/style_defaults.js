@@ -10,22 +10,23 @@
 'use strict';
 
 var Color = require('../../components/color');
-var Colorscale = require('../../components/colorscale');
+var hasColorscale = require('../../components/colorscale/has_colorscale');
+var colorscaleDefaults = require('../../components/colorscale/defaults');
 
 
 module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout) {
     coerce('marker.color', defaultColor);
 
-    if(Colorscale.hasColorscale(traceIn, 'marker')) {
-        Colorscale.handleDefaults(
+    if(hasColorscale(traceIn, 'marker')) {
+        colorscaleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
         );
     }
 
     coerce('marker.line.color', Color.defaultLine);
 
-    if(Colorscale.hasColorscale(traceIn, 'marker.line')) {
-        Colorscale.handleDefaults(
+    if(hasColorscale(traceIn, 'marker.line')) {
+        colorscaleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
         );
     }

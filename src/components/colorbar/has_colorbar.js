@@ -10,10 +10,9 @@
 'use strict';
 
 
-exports.attributes = require('./attributes');
-
-exports.supplyDefaults = require('./defaults');
-
-exports.draw = require('./draw');
-
-exports.hasColorbar = require('./has_colorbar');
+module.exports = function hasColorbar(container) {
+    return (
+        typeof container.colorbar === 'object' &&
+        container.colorbar !== null
+    );
+};
