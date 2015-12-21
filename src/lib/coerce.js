@@ -39,7 +39,7 @@ exports.valObjects = {
         requiredOpts: ['values'],
         otherOpts: ['dflt', 'coerceNumber', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(opts.coerceNumber) v = +v;
+            if(opts.coerceNumber && isNumeric(v)) v = +v;
             if(opts.values.indexOf(v)===-1) propOut.set(dflt);
             else propOut.set(v);
         }
