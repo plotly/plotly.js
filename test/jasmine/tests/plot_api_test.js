@@ -35,7 +35,7 @@ describe('Test graph_obj', function () {
             expect(gd.calcdata).toBeDefined();
         });
 
-        fit('calls Bar.arraysToCalcdata and Plots.style on bar styling', function() {
+        it('calls Bar.arraysToCalcdata and Plots.style on bar styling', function() {
             var gd = {
                 data: [{x: [1,2,3], y: [1,2,3], type: 'bar'}],
                 layout: {}

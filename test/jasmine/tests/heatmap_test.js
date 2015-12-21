@@ -21,7 +21,7 @@ describe('Test heatmap', function () {
             traceOut = {};
         });
 
-        fit('should set visible to false when z is empty', function() {
+        it('should set visible to false when z is empty', function() {
             traceIn = {
                 z: []
             };
