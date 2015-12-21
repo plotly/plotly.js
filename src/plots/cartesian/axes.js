@@ -962,8 +962,8 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
         if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
             base = base === Math.E ? 'e' : base;
             var p = Math.round(x);
-            if(p === 0) out.text = 1;
-            else if(p === 1) out.text = base;
+            if(p === 0) out.text = '1';
+            else if(p === 1) out.text = String(base);
             else if(p > 1) out.text = base + '<sup>' + p + '</sup>';
             else out.text = base + '<sup>\u2212' + -p + '</sup>';
 
