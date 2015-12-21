@@ -12,6 +12,8 @@ var pathToTopojsonSrc = path.join(
     path.dirname(require.resolve('sane-topojson')), 'dist/'
 );
 
+var year = (new Date()).getFullYear();
+
 module.exports = {
     pathToRoot: pathToRoot,
     pathToSrc: pathToSrc,
@@ -58,7 +60,7 @@ module.exports = {
     licenseDist: [
         '/**',
         '* plotly.js v' + pkg.version,
-        '* Copyright 2012-2015, Plotly, Inc.',
+        '* Copyright 2012-' + year + ', Plotly, Inc.',
         '* All rights reserved.',
         '* Licensed under the MIT license',
         '*/'
