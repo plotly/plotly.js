@@ -64,5 +64,15 @@ module.exports = {
         '* All rights reserved.',
         '* Licensed under the MIT license',
         '*/'
+    ].join('\n'),
+
+    licenseSrc: [
+        '/**',
+        '* Copyright 2012-' + year + ', Plotly, Inc.',
+        '* All rights reserved.',
+        '*',
+        '* This source code is licensed under the MIT license found in the',
+        '* LICENSE file in the root directory of this source tree.',
+        '*/'
     ].join('\n')
 };
