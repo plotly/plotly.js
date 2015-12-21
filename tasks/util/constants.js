@@ -61,7 +61,6 @@ module.exports = {
         '* Copyright 2012-2015, Plotly, Inc.',
         '* All rights reserved.',
         '* Licensed under the MIT license',
-        '*/',
-        ''
+        '*/'
     ].join('\n')
 };

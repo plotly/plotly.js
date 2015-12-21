@@ -13,7 +13,7 @@ var pathsDist = [
 ];
 
 function headerLicense(path) {
-    prependFile(path, constants.licenseDist, function(err) {
+    prependFile(path, constants.licenseDist + '\n', function(err) {
         if(err) throw err;
     });
 }
