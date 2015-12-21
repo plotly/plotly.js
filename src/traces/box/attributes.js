@@ -172,7 +172,7 @@ module.exports = {
         }
     },
     calcdataOverride: {
-    	valType: 'any',
+        valType: 'any',
     },
     fillcolor: scatterAttrs.fillcolor
 };

@@ -995,7 +995,7 @@ function doCalcdata(gd) {
         cd[0].trace = trace;
 
         if (trace.calcdataOverride) {
-        	cd[0] = _.defaults(trace.calcdataOverride, cd[0]);
+            cd[0] = _.defaults(trace.calcdataOverride, cd[0]);
         }
 
         Plotly.Lib.markTime('done with calcdata for '+i);
