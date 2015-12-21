@@ -951,33 +951,33 @@ function formatDate(ax, out, hover, extraPrecision) {
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
     var dtick = ax.dtick,
-        base = ax.exponentbase || 10,
+        exponentbase = ax.exponentbase || 10,
         x = out.x;
     if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0)!=='L')) dtick = 'L3';
 
     if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
-        out.text = numFormat(Math.pow(base, x), ax, hideexp, extraPrecision);
+        out.text = numFormat(Math.pow(exponentbase, x), ax, hideexp, extraPrecision);
     }
     else if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
         if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
-            base = base === Math.E ? 'e' : base;
+            exponentbase = exponentbase === Math.E ? 'e' : exponentbase;
             var p = Math.round(x);
             if(p === 0) out.text = '1';
-            else if(p === 1) out.text = String(base);
-            else if(p > 1) out.text = base + '<sup>' + p + '</sup>';
-            else out.text = base + '<sup>\u2212' + -p + '</sup>';
+            else if(p === 1) out.text = String(exponentbase);
+            else if(p > 1) out.text = exponentbase + '<sup>' + p + '</sup>';
+            else out.text = exponentbase + '<sup>\u2212' + -p + '</sup>';
 
             out.fontSize *= 1.25;
         }
         else {
-            out.text = numFormat(Math.pow(base,x), ax,'','fakehover');
+            out.text = numFormat(Math.pow(exponentbase, x), ax,'','fakehover');
             if(dtick==='D1' && ax._id.charAt(0)==='y') {
                 out.dy -= out.fontSize/6;
             }
         }
     }
     else if(dtick.charAt(0) === 'D') {
-        out.text = String(Math.round(Math.pow(base, mod(x, 1))));
+        out.text = String(Math.round(Math.pow(exponentbase, mod(x, 1))));
         out.fontSize *= 0.75;
     }
     else throw 'unrecognized dtick ' + String(dtick);
