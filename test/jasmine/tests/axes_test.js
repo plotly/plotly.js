@@ -3,7 +3,7 @@ var Plotly = require('@src/plotly');
 describe('Test axes', function () {
     'use strict';
 
-    describe('swap', function() {
+    fdescribe('swap', function() {
         it('should swap most attributes and fix placeholder titles', function() {
             var gd = {
                 data: [{x: [1,2,3], y: [1,2,3]}],
