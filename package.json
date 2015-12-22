@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.2.1",
+  "version": "1.3.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./src/index.js",
@@ -32,6 +32,7 @@
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
     "citest-jasmine": "karma start test/jasmine/karma.ciconf.js",
     "test-image": "./tasks/test_image.sh",
+    "test-syntax": "node test/syntax_test.js",
     "test": "npm run test-jasmine && npm test-image",
     "start-test_dashboard": "node devtools/test_dashboard/server.js",
     "start-image_viewer": "node devtools/image_viewer/server.js",

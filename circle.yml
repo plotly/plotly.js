@@ -21,3 +21,4 @@ test:
   override:
     - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' mytestbed)" -- bash -c "cd /var/www/streambed/image_server/plotly.js && node test/image/compare_pixels_test.js"
     - npm run citest-jasmine
+    - npm run test-syntax
