@@ -1427,6 +1427,7 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
     if (!Array.isArray(traces)) {
         traces = [traces];
     }
+    cleanData(traces, gd.data);
 
     // add the traces to gd.data (no redrawing yet!)
     for (i = 0; i < traces.length; i += 1) {
