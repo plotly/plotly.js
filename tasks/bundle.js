@@ -3,6 +3,7 @@ var fs = require('fs');
 var browserify = require('browserify');
 var UglifyJS = require('uglify-js');
 
+var removeHeaders = require('./util/remove_headers');
 var compressAttributes = require('./util/compress_attributes');
 var constants = require('./util/constants');
 
@@ -38,7 +39,7 @@ catch(e) {
 browserify(constants.pathToPlotlySrc, {
     debug: DEV,
     standalone: 'Plotly',
-    transform: [compressAttributes]
+    transform: [removeHeaders, compressAttributes]
 })
 .bundle(function(err, buf) {
     if(err) throw err;
@@ -56,18 +57,20 @@ browserify(constants.pathToPlotlySrc, {
 
 // Browserify the geo assets
 browserify(constants.pathToPlotlyGeoAssetsSrc, {
-    standalone: 'PlotlyGeoAssets'
+    standalone: 'PlotlyGeoAssets',
+    transform: [removeHeaders]
 })
 .bundle(function(err) {
     if(err) throw err;
 })
 .pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist));
 
-    
+
 // Browserify the plotly.js with meta
 browserify(constants.pathToPlotlySrc, {
     debug: DEV,
-    standalone: 'Plotly'
+    standalone: 'Plotly',
+    transform: [removeHeaders]
 })
 .bundle(function(err) {
     if(err) throw err;
