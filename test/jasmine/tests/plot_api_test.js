@@ -133,12 +133,7 @@ describe('Test graph_obj', function () {
         var gd;
 
         beforeEach(function () {
-            gd = {
-                data: [
-                    {'name': 'a'},
-                    {'name': 'b'}
-                ]
-            };
+            gd = { data: [{'name': 'a'}, {'name': 'b'}] };
             spyOn(Plotly, 'redraw');
             spyOn(Plotly, 'moveTraces');
         });
@@ -147,15 +142,15 @@ describe('Test graph_obj', function () {
             var expected = JSON.parse(JSON.stringify(gd));
             expect(function () {
                 Plotly.addTraces(gd, 1, 2);
-            }).toThrow(new Error('all values in traces array must be non-array objects'));
+            }).toThrowError(Error, 'all values in traces array must be non-array objects');
 
             expect(function () {
                 Plotly.addTraces(gd, [{}, 4], 2);
-            }).toThrow(new Error('all values in traces array must be non-array objects'));
+            }).toThrowError(Error, 'all values in traces array must be non-array objects');
 
             expect(function () {
                 Plotly.addTraces(gd, [{}, []], 2);
-            }).toThrow(new Error('all values in traces array must be non-array objects'));
+            }).toThrowError(Error, 'all values in traces array must be non-array objects');
 
             // make sure we didn't muck with gd.data if things failed!
             expect(gd).toEqual(expected);
@@ -166,7 +161,7 @@ describe('Test graph_obj', function () {
 
             expect(function () {
                 Plotly.addTraces(gd, [{}, {}], 2);
-            }).toThrow(new Error('if indices is specified, traces.length must equal indices.length'));
+            }).toThrowError(Error, 'if indices is specified, traces.length must equal indices.length');
 
         });
 
@@ -182,59 +177,41 @@ describe('Test graph_obj', function () {
         });
 
         it('should work when newIndices is undefined', function () {
-            var expectedData = [
-                {'name': 'a'},
-                {'name': 'b'},
-                {'name': 'c'},
-                {'name': 'd'}
-            ];
-
             Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}]);
-            expect(gd.data).toEqual(expectedData);
+            expect(gd.data[2].name).toBeDefined();
+            expect(gd.data[2].uid).toBeDefined();
+            expect(gd.data[3].name).toBeDefined();
+            expect(gd.data[3].uid).toBeDefined();
             expect(Plotly.redraw).toHaveBeenCalled();
             expect(Plotly.moveTraces).not.toHaveBeenCalled();
-
         });
 
         it('should work when newIndices is defined', function () {
-            var expectedData = [
-                {'name': 'a'},
-                {'name': 'b'},
-                {'name': 'c'},
-                {'name': 'd'}
-            ];
-
             Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}], [1, 3]);
-            expect(gd.data).toEqual(expectedData);
+            expect(gd.data[2].name).toBeDefined();
+            expect(gd.data[2].uid).toBeDefined();
+            expect(gd.data[3].name).toBeDefined();
+            expect(gd.data[3].uid).toBeDefined();
             expect(Plotly.redraw).not.toHaveBeenCalled();
             expect(Plotly.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [1, 3]);
 
         });
 
         it('should work when newIndices has negative indices', function () {
-            var expectedData = [
-                {'name': 'a'},
-                {'name': 'b'},
-                {'name': 'c'},
-                {'name': 'd'}
-            ];
-
             Plotly.addTraces(gd, [{'name': 'c'}, {'name': 'd'}], [-3, -1]);
-            expect(gd.data).toEqual(expectedData);
+            expect(gd.data[2].name).toBeDefined();
+            expect(gd.data[2].uid).toBeDefined();
+            expect(gd.data[3].name).toBeDefined();
+            expect(gd.data[3].uid).toBeDefined();
             expect(Plotly.redraw).not.toHaveBeenCalled();
             expect(Plotly.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [-3, -1]);
 
         });
 
         it('should work when newIndices is an integer', function () {
-            var expectedData = [
-                {'name': 'a'},
-                {'name': 'b'},
-                {'name': 'c'}
-            ];
-
             Plotly.addTraces(gd, {'name': 'c'}, 0);
-            expect(gd.data).toEqual(expectedData);
+            expect(gd.data[2].name).toBeDefined();
+            expect(gd.data[2].uid).toBeDefined();
             expect(Plotly.redraw).not.toHaveBeenCalled();
             expect(Plotly.moveTraces).toHaveBeenCalledWith(gd, [-1], [0]);
 
