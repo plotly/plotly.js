@@ -1,0 +1,24 @@
+{
+    "data": [{
+        "x": [
+            1,
+            2,
+            3,
+            4
+        ],
+        "y": [
+            1,
+            10,
+            100,
+            9999
+        ],
+        "name": "base 10"
+    }],
+    "layout": {
+        "yaxis": {
+            "exponentbase": "10",
+            "type": "log",
+            "exponentformat": "SI"
+        }
+    }
+}
