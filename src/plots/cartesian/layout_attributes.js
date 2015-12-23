@@ -290,8 +290,8 @@ module.exports = {
     },
     exponentbase: {
         valType: 'enumerated',
-        values: ['2', 'e', '8', '10', '16'],
-        dflt: '10',
+        values: [2, 'e', 8, 10, 16],
+        dflt: 10,
         coerceNumber: true,
         role: 'style',
         description: [
