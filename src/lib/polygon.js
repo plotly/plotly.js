@@ -1,0 +1,117 @@
+/**
+* Copyright 2012-2015, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+/**
+ * Turn an array of [x, y] pairs into a polygon object
+ * that can test if points are inside it
+ *
+ * @param pts Array of [x, y] pairs
+ *
+ * @returns polygon Object {xmin, xmax, ymin, ymax, pts, contains}
+ *      (x|y)(min|max) are the bounding rect of the polygon
+ *      pts is the original array, with the first pair repeated at the end
+ *      contains is a function: (pt, omitFirstEdge)
+ *          pt is the [x, y] pair to test
+ *          omitFirstEdge truthy means points exactly on the first edge don't
+ *              count. This is for use adding one polygon to another so we
+ *              don't double-count the edge where they meet.
+ *          returns boolean: is pt inside the polygon (including on its edges)
+ */
+module.exports = function polygon(ptsIn) {
+    var pts = ptsIn.slice(),
+        xmin = pts[0][0],
+        xmax = xmin,
+        ymin = pts[0][1],
+        ymax = ymin;
+
+    pts.push(pts[0]);
+    for(var i = 1; i < pts.length; i++) {
+        xmin = Math.min(xmin, pts[i][0]);
+        xmax = Math.max(xmax, pts[i][0]);
+        ymin = Math.min(ymin, pts[i][1]);
+        ymax = Math.max(ymax, pts[i][1]);
+    }
+
+    function contains(pt, omitFirstEdge) {
+        var x = pt[0],
+            y = pt[1];
+
+        if(x < xmin || x > xmax || y < ymin || y > ymax) {
+            // pt is outside the bounding box of polygon
+            return false;
+        }
+
+        var imax = pts.length,
+            x1 = pts[0][0],
+            y1 = pts[0][1],
+            crossings = 0,
+            i,
+            x0,
+            y0,
+            xmini,
+            ycross;
+
+        for(i = 1; i < imax; i++) {
+            // find all crossings of a vertical line upward from pt with
+            // polygon segments
+            // crossings exactly at xmax don't count, unless the point is
+            // exactly on the segment, then it counts as inside.
+            x0 = x1;
+            y0 = y1;
+            x1 = pts[i][0];
+            y1 = pts[i][1];
+            xmini = Math.min(x0, x1);
+
+            // outside the bounding box of this segment, it's only a crossing
+            // if it's below the box.
+            if(x < xmini || x > Math.max(x0, x1) || y > Math.max(y0, y1)) {
+                continue;
+            }
+            else if(y < Math.min(y0, y1)) {
+                // don't count the left-most point of the segment as a crossing
+                // because we don't want to double-count adjacent crossings
+                // UNLESS the polygon turns past vertical at exactly this x
+                // Note that this is repeated below, but we can't factor it out
+                // because
+                if(x !== xmini) crossings++;
+            }
+            // inside the bounding box, check the actual line intercept
+            else {
+                // vertical segment - we know already that the point is exactly
+                // on the segment, so mark the crossing as exactly at the point.
+                if(x1 === x0) ycross = y;
+                // any other angle
+                else ycross = y0 + (x - x0) * (y1 - y0) / (x1 - x0);
+
+                // exactly on the edge: counts as inside the polygon, unless it's the
+                // first edge and we're omitting it.
+                if(y === ycross) {
+                    if(i === 1 && omitFirstEdge) return false;
+                    return true;
+                }
+
+                if(y <= ycross && x !== xmini) crossings++;
+            }
+        }
+
+        // if we've gotten this far, odd crossings means inside, even is outside
+        return crossings % 2 === 1;
+    }
+
+    return {
+        xmin: xmin,
+        xmax: xmax,
+        ymin: ymin,
+        ymax: ymax,
+        pts: pts,
+        contains: contains
+    };
+};
