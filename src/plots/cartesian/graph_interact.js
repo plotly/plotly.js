@@ -14,6 +14,7 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 var Events = require('../../lib/events');
+var prepSelect = require('./select');
 
 var fx = module.exports = {};
 
@@ -21,7 +22,7 @@ fx.layoutAttributes = {
     dragmode: {
         valType: 'enumerated',
         role: 'info',
-        values: ['zoom', 'pan', 'orbit', 'turntable'],
+        values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable'],
         description: 'Determines the mode of drag interactions.'
     },
     hovermode: {
@@ -1370,15 +1371,38 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     var dragOptions = {
         element: dragger,
+        gd: gd,
+        plotinfo: plotinfo,
+        xaxes: xa,
+        yaxes: ya,
+        doubleclick: doubleClick,
         prepFn: function(e, startX, startY) {
-            if(ns+ew==='nsew' && ((fullLayout.dragmode==='zoom') ?
-                !e.shiftKey : e.shiftKey)) {
+            var dragModeNow = gd._fullLayout.dragmode;
+            if(ns + ew === 'nsew') {
+                // main dragger handles all drag modes, and changes
+                // to pan (or to zoom if it already is pan) on shift
+                if(e.shiftKey) {
+                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                    else dragModeNow = 'pan';
+                }
+            }
+            // all other draggers just pan
+            else dragModeNow = 'pan';
+
+            if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
+            else dragOptions.minDrag = undefined;
+
+            if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
                 dragOptions.doneFn = zoomDone;
                 zoomPrep(e, startX, startY);
-            } else {
+            }
+            else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragDone;
+            }
+            else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
+                prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         }
     };
@@ -2003,9 +2027,11 @@ fx.dragElement = function(options) {
 
     function onMove(e) {
         var dx = e.clientX - startX,
-            dy = e.clientY - startY;
-        if(Math.abs(dx)<fx.MINDRAG) dx = 0;
-        if(Math.abs(dy)<fx.MINDRAG) dy = 0;
+            dy = e.clientY - startY,
+            minDrag = options.minDrag || fx.MINDRAG;
+
+        if(Math.abs(dx) < minDrag) dx = 0;
+        if(Math.abs(dy) < minDrag) dy = 0;
         if(dx||dy) gd._dragged = true;
 
         if(options.moveFn) options.moveFn(dx, dy, gd._dragged);

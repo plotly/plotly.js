@@ -102,7 +102,7 @@ function getButtonGroups(fullLayout, buttonsToRemove, buttonsToAdd) {
         allAxesFixed = areAllAxesFixed(fullLayout);
 
     if((hasCartesian || hasGL2D) && !allAxesFixed) {
-        addGroup(['zoom2d', 'pan2d']);
+        addGroup(['zoom2d', 'pan2d', 'select2d', 'lasso2d']);
         addGroup(['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']);
     }
 
