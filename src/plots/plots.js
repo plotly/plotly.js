@@ -426,6 +426,15 @@ plots.supplyDefaults = function(gd) {
         trace  = newData[i];
 
         fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout);
+
+        // If autobinned before, autobin again. supplyDataDefaults sees
+        // the generated bin object and assumes it has been set manually
+        // so we need to override that behaviour.
+        if (oldFullData[i]){
+            fullTrace.autobinx = oldFullData[i].autobinx || fullTrace.autobinx;
+            fullTrace.autobiny = oldFullData[i].autobiny || fullTrace.autobiny;
+        }
+
         newFullData.push(fullTrace);
 
         // DETECT 3D, Cartesian, and Polar
