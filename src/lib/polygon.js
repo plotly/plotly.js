@@ -8,6 +8,7 @@
 
 
 'use strict';
+var dot = require('./matrix').dot;
 
 /**
  * Turn an array of [x, y] pairs into a polygon object
@@ -118,4 +119,80 @@ polygon.tester = function tester(ptsIn) {
     };
 };
 
+/**
+ * Test if a segment of a points array is bent or straight
+ *
+ * @param pts Array of [x, y] pairs
+ * @param start the index of the proposed start of the straight section
+ * @param end the index of the proposed end point
+ * @param tolerance the max distance off the line connecting start and end
+ *      before the line counts as bent
+ * @returns boolean: true means this segment is bent, false means straight
+ */
+var isBent = polygon.isSegmentBent = function isBent(pts, start, end, tolerance) {
+    var startPt = pts[start],
+        segment = [pts[end][0] - startPt[0], pts[end][1] - startPt[1]],
+        segmentSquared = dot(segment, segment),
+        segmentLen = Math.sqrt(segmentSquared),
+        unitPerp = [-segment[1] / segmentLen, segment[0] / segmentLen],
+        i,
+        part,
+        partParallel;
 
+    for(i = start + 1; i < end; i++) {
+        part = [pts[i][0] - startPt[0], pts[i][1] - startPt[1]];
+        partParallel = dot(part, segment);
+
+        if(partParallel < 0 || partParallel > segmentSquared ||
+            Math.abs(dot(part, unitPerp)) > tolerance) return true;
+    }
+    return false;
+};
+
+/**
+ * Make a filtering polygon, to minimize the number of segments
+ *
+ * @param pts Array of [x, y] pairs (must start with at least 1 pair)
+ * @param tolerance the maximum deviation from straight allowed for
+ *      removing points to simplify the polygon
+ *
+ * @returns Object {addPt, raw, filtered}
+ *      addPt is a function(pt: [x, y] pair) to add a raw point and
+ *          continue filtering
+ *      raw is all the input points
+ *      filtered is the resulting filtered Array of [x, y] pairs
+ */
+polygon.filter = function filter(pts, tolerance) {
+    var ptsFiltered = [pts[0]],
+        doneRawIndex = 0,
+        doneFilteredIndex = 0;
+
+    function addPt(pt) {
+        pts.push(pt);
+        var prevFilterLen = ptsFiltered.length,
+            iLast = doneRawIndex;
+        ptsFiltered.splice(doneFilteredIndex + 1);
+
+        for(var i = iLast + 1; i < pts.length; i++) {
+            if(i === pts.length - 1 || isBent(pts, iLast, i + 1, tolerance)) {
+                ptsFiltered.push(pts[i]);
+                if(ptsFiltered.length < prevFilterLen - 2) {
+                    doneRawIndex = i;
+                    doneFilteredIndex = ptsFiltered.length - 1;
+                }
+                iLast = i;
+            }
+        }
+    }
+
+    if(pts.length > 1) {
+        var lastPt = pts.pop();
+        addPt(lastPt);
+    }
+
+    return {
+        addPt: addPt,
+        raw: pts,
+        filtered: ptsFiltered
+    };
+};
