@@ -1647,11 +1647,11 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Plotly.Lib.isPlainObject(astr)) {
         aobj = astr;
-        if(traces === undefined) traces = val; // the 3-arg form
+        if(traces===undefined) traces = val; // the 3-arg form
     }
     else {
         console.log('restyle fail',astr,val,traces);
-        return Promise.reject();
+        return new Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
@@ -2173,7 +2173,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     gd = getGraphDiv(gd);
 
     if(gd.framework && gd.framework.isPolar) {
-        return Promise.resolve(gd);
+        return new Promise.resolve(gd);
     }
 
     var layout = gd.layout,
