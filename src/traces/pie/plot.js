@@ -82,7 +82,7 @@ module.exports = function plot(gd, cdpie) {
                     slicePath = sliceTop.selectAll('path.surface').data([pt]),
                     hasHoverData = false;
 
-                function handleMouseOver() {
+                function handleMouseOver(evt) {
                     // in case fullLayout or fullData has changed without a replot
                     var fullLayout2 = gd._fullLayout,
                         trace2 = gd._fullData[trace.index],
@@ -122,6 +122,8 @@ module.exports = function plot(gd, cdpie) {
                             outerContainer: fullLayout2._paper.node()
                         }
                     );
+
+                    Plotly.Fx.hover(gd, evt, 'pie');
 
                     hasHoverData = true;
                 }
