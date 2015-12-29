@@ -2022,6 +2022,8 @@ fx.dragElement = function(options) {
         dragCover.onmouseup = onDone;
         dragCover.onmouseout = onDone;
 
+        dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
+
         return Plotly.Lib.pauseEvent(e);
     }
 
