@@ -25,7 +25,9 @@
  *              don't double-count the edge where they meet.
  *          returns boolean: is pt inside the polygon (including on its edges)
  */
-module.exports = function polygon(ptsIn) {
+var polygon = module.exports = {};
+
+polygon.tester = function tester(ptsIn) {
     var pts = ptsIn.slice(),
         xmin = pts[0][0],
         xmax = xmin,
@@ -115,3 +117,5 @@ module.exports = function polygon(ptsIn) {
         contains: contains
     };
 };
+
+

@@ -1,6 +1,7 @@
-var polygon = require('@src/lib/polygon');
+var polygon = require('@src/lib/polygon'),
+    polygonTester = polygon.tester;
 
-describe('polygon', function() {
+describe('polygon.tester', function() {
     'use strict';
 
     var squareCW = [[0, 0], [0, 1], [1, 1], [1, 0]],
@@ -51,7 +52,7 @@ describe('polygon', function() {
         notInDonut = [[1.5, -0.5], [1.5, 1.5], [1.5, 3.5], [-0.5, 1.5], [3.5, 1.5]];
 
     it('should exclude points outside the bounding box', function() {
-        var poly = polygon([[1,2], [3,4]]);
+        var poly = polygonTester([[1,2], [3,4]]);
         var pts = [[0, 3], [4, 3], [2, 1], [2, 5]];
         pts.forEach(function(pt) {
             expect(poly.contains(pt)).toBe(false);
@@ -67,7 +68,7 @@ describe('polygon', function() {
         ];
 
         polyPts.forEach(function(polyPt) {
-            var poly = polygon(polyPt),
+            var poly = polygonTester(polyPt),
                 xArray = polyPt.map(function(pt) { return pt[0]; }),
                 yArray = polyPt.map(function(pt) { return pt[1]; });
 
@@ -89,7 +90,7 @@ describe('polygon', function() {
         var np = 6; // number of intermediate points on each edge to test
 
         polyPts.forEach(function(polyPt) {
-            var poly = polygon(polyPt);
+            var poly = polygonTester(polyPt);
             poly.pts.forEach(function(pt1, i) {
                 if(!i) return;
                 var pt0 = poly.pts[i - 1],
@@ -123,7 +124,7 @@ describe('polygon', function() {
     });
 
     it('should find only the right interior points', function() {
-        var zzpoly = polygon(zigzag);
+        var zzpoly = polygonTester(zigzag);
         inZigzag.forEach(function(pt) {
             expect(zzpoly.contains(pt)).toBe(true);
         });
@@ -131,8 +132,8 @@ describe('polygon', function() {
             expect(zzpoly.contains(pt)).toBe(false);
         });
 
-        var donutpoly = polygon(donut),
-            donut2poly = polygon(donut2);
+        var donutpoly = polygonTester(donut),
+            donut2poly = polygonTester(donut2);
         inDonut.forEach(function(pt) {
             expect(donutpoly.contains(pt)).toBe(true);
             expect(donut2poly.contains(pt)).toBe(true);
