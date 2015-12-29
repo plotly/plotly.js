@@ -99,10 +99,19 @@ function getButtonGroups(fullLayout, buttonsToRemove, buttonsToAdd) {
 
     var hasCartesian = fullLayout._hasCartesian,
         hasGL2D = fullLayout._hasGL2D,
-        allAxesFixed = areAllAxesFixed(fullLayout);
+        allAxesFixed = areAllAxesFixed(fullLayout),
+        dragModeGroup = [];
 
     if((hasCartesian || hasGL2D) && !allAxesFixed) {
-        addGroup(['zoom2d', 'pan2d', 'select2d', 'lasso2d']);
+        dragModeGroup = ['zoom2d', 'pan2d'];
+    }
+    if(hasCartesian) {
+        dragModeGroup.push('select2d');
+        dragModeGroup.push('lasso2d');
+    }
+    if(dragModeGroup.length) addGroup(dragModeGroup);
+
+    if((hasCartesian || hasGL2D) && !allAxesFixed) {
         addGroup(['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']);
     }
 
