@@ -1,5 +1,7 @@
 var polygon = require('@src/lib/polygon'),
-    polygonTester = polygon.tester;
+    polygonTester = polygon.tester,
+    isBent = polygon.isSegmentBent,
+    filter = polygon.filter;
 
 describe('polygon.tester', function() {
     'use strict';
@@ -143,4 +145,66 @@ describe('polygon.tester', function() {
             expect(donut2poly.contains(pt)).toBe(false);
         });
     });
+});
+
+describe('polygon.isSegmentBent', function() {
+    'use strict';
+
+    var pts = [[0, 0], [1, 1], [2, 0], [1, 0], [100, -37]];
+
+    it('should treat any two points as straight', function() {
+        for(var i = 0; i < pts.length - 1; i++) {
+            expect(isBent(pts, i, i + 1, 0)).toBe(false);
+        }
+    });
+
+    function rotatePt(theta) {
+        return function(pt) {
+            return [
+                pt[0] * Math.cos(theta) - pt[1] * Math.sin(theta),
+                pt[0] * Math.sin(theta) + pt[1] * Math.cos(theta)];
+        };
+    }
+
+    it('should find a bent line at the right tolerance', function() {
+        for(var theta = 0; theta < 6; theta += 0.3) {
+            var pts2 = pts.map(rotatePt(theta));
+            expect(isBent(pts2, 0, 2, 0.99)).toBe(true);
+            expect(isBent(pts2, 0, 2, 1.01)).toBe(false);
+        }
+    });
+
+    it('should treat any backward motion as bent', function() {
+        expect(isBent([[0, 0], [2, 0], [1, 0]], 0, 2, 10)).toBe(true);
+    });
+});
+
+describe('polygon.filter', function() {
+    'use strict';
+
+    var pts = [
+        [0, 0], [1, 0], [2, 0], [3, 0],
+        [3, 1], [3, 2], [3, 3],
+        [2, 3], [1, 3], [0, 3],
+        [0, 2], [0, 1], [0, 0]];
+
+    var ptsOut = [[0, 0], [3, 0], [3, 3], [0, 3], [0, 0]];
+
+    it('should give the right result if points are provided upfront', function() {
+        expect(filter(pts, 0.5).filtered).toEqual(ptsOut);
+    });
+
+    it('should give the right result if points are added one-by-one', function() {
+        var p = filter([pts[0]], 0.5),
+            i;
+
+        // intermediate result (the last point isn't in the final)
+        for(i = 1; i < 6; i++) p.addPt(pts[i]);
+        expect(p.filtered).toEqual([[0, 0], [3, 0], [3, 2]]);
+
+        // final result
+        for(i = 6; i < pts.length; i++) p.addPt(pts[i]);
+        expect(p.filtered).toEqual(ptsOut);
+    });
+
 });
