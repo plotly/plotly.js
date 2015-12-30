@@ -1594,7 +1594,7 @@ axes.tickText = function(ax, x, hover){
         var first_or_last;
 
         if (showAttr===undefined) return true;
-        if (hover) return showAttr==='none';
+        if (hover) return false;	// always show tick prefix/suffix on hover, *especially* if showAttr == 'none'
 
         first_or_last = {
             first: ax._tmin,

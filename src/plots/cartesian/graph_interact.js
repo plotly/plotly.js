@@ -629,6 +629,10 @@ function cleanPoint(d, hovermode) {
             else d.xLabel = '-' + xLabelObj.text;
         }
         else d.xLabel = xLabelObj.text;
+
+        if (d.trace.hoverinfo.indexOf("xtext") > -1 && d.text && d.text != "") {
+            d.xLabel += "<br />" + d.text
+        }
         d.xVal = d.xa.c2d(d.xLabelVal);
     }
 
