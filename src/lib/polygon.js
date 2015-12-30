@@ -14,7 +14,7 @@ var dot = require('./matrix').dot;
  * Turn an array of [x, y] pairs into a polygon object
  * that can test if points are inside it
  *
- * @param pts Array of [x, y] pairs
+ * @param ptsIn Array of [x, y] pairs
  *
  * @returns polygon Object {xmin, xmax, ymin, ymax, pts, contains}
  *      (x|y)(min|max) are the bounding rect of the polygon
@@ -41,6 +41,47 @@ polygon.tester = function tester(ptsIn) {
         xmax = Math.max(xmax, pts[i][0]);
         ymin = Math.min(ymin, pts[i][1]);
         ymax = Math.max(ymax, pts[i][1]);
+    }
+
+    // do we have a rectangle? Handle this here, so we can use the same
+    // tester for the rectangular case without sacrificing speed
+
+    var isRect = false,
+        rectFirstEdgeTest;
+
+    function onFirstVert(pt) { return pt[0] === pts[0][0]; }
+    function onFirstHorz(pt) { return pt[1] === pts[0][1]; }
+
+    if(pts.length === 5) {
+        if(pts[0][0] === pts[1][0]) { // vert, horz, vert, horz
+            if(pts[2][0] === pts[3][0] &&
+                    pts[0][1] === pts[3][1] &&
+                    pts[1][1] === pts[2][1]) {
+                isRect = true;
+                rectFirstEdgeTest = onFirstVert;
+            }
+        }
+        else if(pts[0][1] === pts[1][1]) { // horz, vert, horz, vert
+            if(pts[2][1] === pts[3][1] &&
+                    pts[0][0] === pts[3][0] &&
+                    pts[1][0] === pts[2][0]) {
+                isRect = true;
+                rectFirstEdgeTest = onFirstHorz;
+            }
+        }
+    }
+
+    function rectContains(pt, omitFirstEdge) {
+        var x = pt[0],
+            y = pt[1];
+
+        if(x < xmin || x > xmax || y < ymin || y > ymax) {
+            // pt is outside the bounding box of polygon
+            return false;
+        }
+        if(omitFirstEdge && rectFirstEdgeTest(pt)) return false;
+
+        return true;
     }
 
     function contains(pt, omitFirstEdge) {
@@ -115,7 +156,8 @@ polygon.tester = function tester(ptsIn) {
         ymin: ymin,
         ymax: ymax,
         pts: pts,
-        contains: contains
+        contains: isRect ? rectContains : contains,
+        isRect: isRect
     };
 };
 

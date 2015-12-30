@@ -64,10 +64,8 @@ describe('polygon.tester', function() {
     });
 
     it('should prepare a polygon object correctly', function() {
-        var polyPts = [
-            [[0, 0], [0, 1], [1, 1], [1, 0]],
-            [[-2.34, -0.67], [0.12345, 1.2345], [1.3456, 1.4567], [1.5678, 0.21345]]
-        ];
+        var polyPts = [squareCW, squareCCW, bowtie, squareish, equilateralTriangle,
+            zigzag, donut, donut2];
 
         polyPts.forEach(function(polyPt) {
             var poly = polygonTester(polyPt),
@@ -93,6 +91,12 @@ describe('polygon.tester', function() {
 
         polyPts.forEach(function(polyPt) {
             var poly = polygonTester(polyPt);
+
+            var isRect = polyPt === squareCW || polyPt === squareCCW;
+            expect(poly.isRect).toBe(isRect);
+            // to make sure we're only using the bounds and first pt, delete the rest
+            if(isRect) poly.pts.splice(1, poly.pts.length);
+
             poly.pts.forEach(function(pt1, i) {
                 if(!i) return;
                 var pt0 = poly.pts[i - 1],
