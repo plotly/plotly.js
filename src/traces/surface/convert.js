@@ -250,6 +250,7 @@ proto.update = function(data) {
         dynamicWidth: [1, 1, 1],
         dynamicTint: [1, 1, 1],
         opacity: 1,
+        colorBounds: [data.zmin * scaleFactor[2], data.zmax * scaleFactor[2]]
     };
 
 
