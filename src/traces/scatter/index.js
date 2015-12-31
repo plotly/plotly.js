@@ -458,6 +458,8 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
             line = trace.line;
         if(trace.visible !== true) return;
 
+        d[0].node = this; // store node for tweaking by selectPoints
+
         scatter.arraysToCalcdata(d);
 
         if(!scatter.hasLines(trace) && trace.fill==='none') return;
@@ -854,4 +856,54 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
     Plotly.ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
+};
+
+var DESELECTDIM = 0.2;
+
+scatter.selectPoints = function(searchInfo, polygon) {
+    var cd = searchInfo.cd,
+        xa = searchInfo.xaxis,
+        ya = searchInfo.yaxis,
+        selection = [],
+        curveNumber = cd[0].trace.index,
+        marker = cd[0].trace.marker,
+        i,
+        di,
+        x,
+        y;
+
+    if(!marker) return; // TODO: include text and/or lines?
+
+    var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
+
+    if(polygon === false) { // clear selection
+        for(i = 0; i < cd.length; i++) cd[i].dim = 0;
+    }
+    else {
+        for(i = 0; i < cd.length; i++) {
+            di = cd[i];
+            x = xa.c2p(di.x);
+            y = ya.c2p(di.y);
+            if(polygon.contains([x, y])) {
+                selection.push({
+                    curveNumber: curveNumber,
+                    pointNumber: i,
+                    x: di.x,
+                    y: di.y
+                });
+                di.dim = 0;
+            }
+            else di.dim = 1;
+        }
+    }
+
+    // do the dimming here, as well as returning the selection
+    // The logic here duplicates Drawing.pointStyle, but I don't want
+    // d.dim in pointStyle in case something goes wrong with selection.
+    d3.select(cd[0].node).selectAll('path.point')
+        .style('opacity', function(d) {
+            return ((d.mo+1 || opacity+1) - 1) * (d.dim ? DESELECTDIM : 1);
+        });
+
+    return selection;
 };
