@@ -1,10 +1,8334 @@
 /**
-* plotly.js v1.3.0
-* Copyright 2012-2015, Plotly, Inc.
+* plotly.js v1.3.1
+* Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
 */
 (function(f){if(typeof exports==="object"&&typeof module!=="undefined"){module.exports=f()}else if(typeof define==="function"&&define.amd){define([],f)}else{var g;if(typeof window!=="undefined"){g=window}else if(typeof global!=="undefined"){g=global}else if(typeof self!=="undefined"){g=self}else{g=this}g.Plotly = f()}})(function(){var define,module,exports;return (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+var createShader  = require('gl-shader')
+
+
+var vertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec4 uv;\nattribute vec2 f;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  worldCoordinate = vec3(uv.zw, f.x);\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  value = f.x;\n  kill = f.y;\n  planeCoordinate = uv.xy;\n  \n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}"
+var fragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat beckmannSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution_2_0(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\n\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = beckmannSpecular_1_1(L, V, N, roughness);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  float interpValue = (value - lowerBound.z) / (upperBound.z - lowerBound.z);\n  vec4 surfaceColor = texture2D(colormap, vec2(interpValue, interpValue));\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"
+var contourVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec4 uv;\n\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  vec4 worldPosition = model * vec4(dataCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z = clipPosition.z + zOffset;\n\n  gl_Position = clipPosition;\n  value = dataCoordinate.z;\n  kill = -1.0;\n  worldCoordinate = dataCoordinate;\n  planeCoordinate = uv.zw;\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"
+var pickSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if(kill > 0.0 || \n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}"
+
+exports.createShader = function(gl) {
+  var shader = createShader(gl, vertSrc, fragSrc, null, [
+    {name: 'uv', type: 'vec4'},
+    {name: 'f', type: 'vec2'},
+    {name: 'normal', type: 'vec3'}
+  ])
+  shader.attributes.uv.location = 0
+  shader.attributes.f.location = 1
+  shader.attributes.normal.location = 2
+  return shader
+}
+exports.createPickShader = function(gl) {
+  var shader = createShader(gl, vertSrc, pickSrc, null, [
+    {name: 'uv', type: 'vec4'},
+    {name: 'f', type: 'vec2'},
+    {name: 'normal', type: 'vec3'}
+  ])
+  shader.attributes.uv.location = 0
+  shader.attributes.f.location = 1
+  shader.attributes.normal.location = 2
+  return shader
+}
+exports.createContourShader = function(gl) {
+  var shader = createShader(gl, contourVertSrc, fragSrc, null, [
+    {name: 'uv', type: 'vec4'}
+  ])
+  shader.attributes.uv.location = 0
+  return shader
+}
+exports.createPickContourShader = function(gl) {
+  var shader = createShader(gl, contourVertSrc, pickSrc, null, [
+    {name: 'uv', type: 'vec4'}
+  ])
+  shader.attributes.uv.location = 0
+  return shader
+}
+
+},{"gl-shader":11}],2:[function(require,module,exports){
+"use strict"
+
+function compileSearch(funcName, predicate, reversed, extraArgs, useNdarray, earlyOut) {
+  var code = [
+    "function ", funcName, "(a,l,h,", extraArgs.join(","),  "){",
+earlyOut ? "" : "var i=", (reversed ? "l-1" : "h+1"),
+";while(l<=h){\
+var m=(l+h)>>>1,x=a", useNdarray ? ".get(m)" : "[m]"]
+  if(earlyOut) {
+    if(predicate.indexOf("c") < 0) {
+      code.push(";if(x===y){return m}else if(x<=y){")
+    } else {
+      code.push(";var p=c(x,y);if(p===0){return m}else if(p<=0){")
+    }
+  } else {
+    code.push(";if(", predicate, "){i=m;")
+  }
+  if(reversed) {
+    code.push("l=m+1}else{h=m-1}")
+  } else {
+    code.push("h=m-1}else{l=m+1}")
+  }
+  code.push("}")
+  if(earlyOut) {
+    code.push("return -1};")
+  } else {
+    code.push("return i};")
+  }
+  return code.join("")
+}
+
+function compileBoundsSearch(predicate, reversed, suffix, earlyOut) {
+  var result = new Function([
+  compileSearch("A", "x" + predicate + "y", reversed, ["y"], false, earlyOut),
+  compileSearch("B", "x" + predicate + "y", reversed, ["y"], true, earlyOut),
+  compileSearch("P", "c(x,y)" + predicate + "0", reversed, ["y", "c"], false, earlyOut),
+  compileSearch("Q", "c(x,y)" + predicate + "0", reversed, ["y", "c"], true, earlyOut),
+"function dispatchBsearch", suffix, "(a,y,c,l,h){\
+if(a.shape){\
+if(typeof(c)==='function'){\
+return Q(a,(l===undefined)?0:l|0,(h===undefined)?a.shape[0]-1:h|0,y,c)\
+}else{\
+return B(a,(c===undefined)?0:c|0,(l===undefined)?a.shape[0]-1:l|0,y)\
+}}else{\
+if(typeof(c)==='function'){\
+return P(a,(l===undefined)?0:l|0,(h===undefined)?a.length-1:h|0,y,c)\
+}else{\
+return A(a,(c===undefined)?0:c|0,(l===undefined)?a.length-1:l|0,y)\
+}}}\
+return dispatchBsearch", suffix].join(""))
+  return result()
+}
+
+module.exports = {
+  ge: compileBoundsSearch(">=", false, "GE"),
+  gt: compileBoundsSearch(">", false, "GT"),
+  lt: compileBoundsSearch("<", true, "LT"),
+  le: compileBoundsSearch("<=", true, "LE"),
+  eq: compileBoundsSearch("-", true, "EQ", true)
+}
+
+},{}],3:[function(require,module,exports){
+/**
+ * Bit twiddling hacks for JavaScript.
+ *
+ * Author: Mikola Lysenko
+ *
+ * Ported from Stanford bit twiddling hack library:
+ *    http://graphics.stanford.edu/~seander/bithacks.html
+ */
+
+"use strict"; "use restrict";
+
+//Number of bits in an integer
+var INT_BITS = 32;
+
+//Constants
+exports.INT_BITS  = INT_BITS;
+exports.INT_MAX   =  0x7fffffff;
+exports.INT_MIN   = -1<<(INT_BITS-1);
+
+//Returns -1, 0, +1 depending on sign of x
+exports.sign = function(v) {
+  return (v > 0) - (v < 0);
+}
+
+//Computes absolute value of integer
+exports.abs = function(v) {
+  var mask = v >> (INT_BITS-1);
+  return (v ^ mask) - mask;
+}
+
+//Computes minimum of integers x and y
+exports.min = function(x, y) {
+  return y ^ ((x ^ y) & -(x < y));
+}
+
+//Computes maximum of integers x and y
+exports.max = function(x, y) {
+  return x ^ ((x ^ y) & -(x < y));
+}
+
+//Checks if a number is a power of two
+exports.isPow2 = function(v) {
+  return !(v & (v-1)) && (!!v);
+}
+
+//Computes log base 2 of v
+exports.log2 = function(v) {
+  var r, shift;
+  r =     (v > 0xFFFF) << 4; v >>>= r;
+  shift = (v > 0xFF  ) << 3; v >>>= shift; r |= shift;
+  shift = (v > 0xF   ) << 2; v >>>= shift; r |= shift;
+  shift = (v > 0x3   ) << 1; v >>>= shift; r |= shift;
+  return r | (v >> 1);
+}
+
+//Computes log base 10 of v
+exports.log10 = function(v) {
+  return  (v >= 1000000000) ? 9 : (v >= 100000000) ? 8 : (v >= 10000000) ? 7 :
+          (v >= 1000000) ? 6 : (v >= 100000) ? 5 : (v >= 10000) ? 4 :
+          (v >= 1000) ? 3 : (v >= 100) ? 2 : (v >= 10) ? 1 : 0;
+}
+
+//Counts number of bits
+exports.popCount = function(v) {
+  v = v - ((v >>> 1) & 0x55555555);
+  v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
+  return ((v + (v >>> 4) & 0xF0F0F0F) * 0x1010101) >>> 24;
+}
+
+//Counts number of trailing zeros
+function countTrailingZeros(v) {
+  var c = 32;
+  v &= -v;
+  if (v) c--;
+  if (v & 0x0000FFFF) c -= 16;
+  if (v & 0x00FF00FF) c -= 8;
+  if (v & 0x0F0F0F0F) c -= 4;
+  if (v & 0x33333333) c -= 2;
+  if (v & 0x55555555) c -= 1;
+  return c;
+}
+exports.countTrailingZeros = countTrailingZeros;
+
+//Rounds to next power of 2
+exports.nextPow2 = function(v) {
+  v += v === 0;
+  --v;
+  v |= v >>> 1;
+  v |= v >>> 2;
+  v |= v >>> 4;
+  v |= v >>> 8;
+  v |= v >>> 16;
+  return v + 1;
+}
+
+//Rounds down to previous power of 2
+exports.prevPow2 = function(v) {
+  v |= v >>> 1;
+  v |= v >>> 2;
+  v |= v >>> 4;
+  v |= v >>> 8;
+  v |= v >>> 16;
+  return v - (v>>>1);
+}
+
+//Computes parity of word
+exports.parity = function(v) {
+  v ^= v >>> 16;
+  v ^= v >>> 8;
+  v ^= v >>> 4;
+  v &= 0xf;
+  return (0x6996 >>> v) & 1;
+}
+
+var REVERSE_TABLE = new Array(256);
+
+(function(tab) {
+  for(var i=0; i<256; ++i) {
+    var v = i, r = i, s = 7;
+    for (v >>>= 1; v; v >>>= 1) {
+      r <<= 1;
+      r |= v & 1;
+      --s;
+    }
+    tab[i] = (r << s) & 0xff;
+  }
+})(REVERSE_TABLE);
+
+//Reverse bits in a 32 bit word
+exports.reverse = function(v) {
+  return  (REVERSE_TABLE[ v         & 0xff] << 24) |
+          (REVERSE_TABLE[(v >>> 8)  & 0xff] << 16) |
+          (REVERSE_TABLE[(v >>> 16) & 0xff] << 8)  |
+           REVERSE_TABLE[(v >>> 24) & 0xff];
+}
+
+//Interleave bits of 2 coordinates with 16 bits.  Useful for fast quadtree codes
+exports.interleave2 = function(x, y) {
+  x &= 0xFFFF;
+  x = (x | (x << 8)) & 0x00FF00FF;
+  x = (x | (x << 4)) & 0x0F0F0F0F;
+  x = (x | (x << 2)) & 0x33333333;
+  x = (x | (x << 1)) & 0x55555555;
+
+  y &= 0xFFFF;
+  y = (y | (y << 8)) & 0x00FF00FF;
+  y = (y | (y << 4)) & 0x0F0F0F0F;
+  y = (y | (y << 2)) & 0x33333333;
+  y = (y | (y << 1)) & 0x55555555;
+
+  return x | (y << 1);
+}
+
+//Extracts the nth interleaved component
+exports.deinterleave2 = function(v, n) {
+  v = (v >>> n) & 0x55555555;
+  v = (v | (v >>> 1))  & 0x33333333;
+  v = (v | (v >>> 2))  & 0x0F0F0F0F;
+  v = (v | (v >>> 4))  & 0x00FF00FF;
+  v = (v | (v >>> 16)) & 0x000FFFF;
+  return (v << 16) >> 16;
+}
+
+
+//Interleave bits of 3 coordinates, each with 10 bits.  Useful for fast octree codes
+exports.interleave3 = function(x, y, z) {
+  x &= 0x3FF;
+  x  = (x | (x<<16)) & 4278190335;
+  x  = (x | (x<<8))  & 251719695;
+  x  = (x | (x<<4))  & 3272356035;
+  x  = (x | (x<<2))  & 1227133513;
+
+  y &= 0x3FF;
+  y  = (y | (y<<16)) & 4278190335;
+  y  = (y | (y<<8))  & 251719695;
+  y  = (y | (y<<4))  & 3272356035;
+  y  = (y | (y<<2))  & 1227133513;
+  x |= (y << 1);
+  
+  z &= 0x3FF;
+  z  = (z | (z<<16)) & 4278190335;
+  z  = (z | (z<<8))  & 251719695;
+  z  = (z | (z<<4))  & 3272356035;
+  z  = (z | (z<<2))  & 1227133513;
+  
+  return x | (z << 2);
+}
+
+//Extracts nth interleaved component of a 3-tuple
+exports.deinterleave3 = function(v, n) {
+  v = (v >>> n)       & 1227133513;
+  v = (v | (v>>>2))   & 3272356035;
+  v = (v | (v>>>4))   & 251719695;
+  v = (v | (v>>>8))   & 4278190335;
+  v = (v | (v>>>16))  & 0x3FF;
+  return (v<<22)>>22;
+}
+
+//Computes next combination in colexicographic order (this is mistakenly called nextPermutation on the bit twiddling hacks page)
+exports.nextCombination = function(v) {
+  var t = v | (v - 1);
+  return (t + 1) | (((~t & -~t) - 1) >>> (countTrailingZeros(v) + 1));
+}
+
+
+},{}],4:[function(require,module,exports){
+module.exports={"jet":[{"index":0,"rgb":[0,0,131]},{"index":0.125,"rgb":[0,60,170]},{"index":0.375,"rgb":[5,255,255]},{"index":0.625,"rgb":[255,255,0]},{"index":0.875,"rgb":[250,0,0]},{"index":1,"rgb":[128,0,0]}],"hsv":[{"index":0,"rgb":[255,0,0]},{"index":0.169,"rgb":[253,255,2]},{"index":0.173,"rgb":[247,255,2]},{"index":0.337,"rgb":[0,252,4]},{"index":0.341,"rgb":[0,252,10]},{"index":0.506,"rgb":[1,249,255]},{"index":0.671,"rgb":[2,0,253]},{"index":0.675,"rgb":[8,0,253]},{"index":0.839,"rgb":[255,0,251]},{"index":0.843,"rgb":[255,0,245]},{"index":1,"rgb":[255,0,6]}],"hot":[{"index":0,"rgb":[0,0,0]},{"index":0.3,"rgb":[230,0,0]},{"index":0.6,"rgb":[255,210,0]},{"index":1,"rgb":[255,255,255]}],"cool":[{"index":0,"rgb":[0,255,255]},{"index":1,"rgb":[255,0,255]}],"spring":[{"index":0,"rgb":[255,0,255]},{"index":1,"rgb":[255,255,0]}],"summer":[{"index":0,"rgb":[0,128,102]},{"index":1,"rgb":[255,255,102]}],"autumn":[{"index":0,"rgb":[255,0,0]},{"index":1,"rgb":[255,255,0]}],"winter":[{"index":0,"rgb":[0,0,255]},{"index":1,"rgb":[0,255,128]}],"bone":[{"index":0,"rgb":[0,0,0]},{"index":0.376,"rgb":[84,84,116]},{"index":0.753,"rgb":[169,200,200]},{"index":1,"rgb":[255,255,255]}],"copper":[{"index":0,"rgb":[0,0,0]},{"index":0.804,"rgb":[255,160,102]},{"index":1,"rgb":[255,199,127]}],"greys":[{"index":0,"rgb":[0,0,0]},{"index":1,"rgb":[255,255,255]}],"yignbu":[{"index":0,"rgb":[8,29,88]},{"index":0.125,"rgb":[37,52,148]},{"index":0.25,"rgb":[34,94,168]},{"index":0.375,"rgb":[29,145,192]},{"index":0.5,"rgb":[65,182,196]},{"index":0.625,"rgb":[127,205,187]},{"index":0.75,"rgb":[199,233,180]},{"index":0.875,"rgb":[237,248,217]},{"index":1,"rgb":[255,255,217]}],"greens":[{"index":0,"rgb":[0,68,27]},{"index":0.125,"rgb":[0,109,44]},{"index":0.25,"rgb":[35,139,69]},{"index":0.375,"rgb":[65,171,93]},{"index":0.5,"rgb":[116,196,118]},{"index":0.625,"rgb":[161,217,155]},{"index":0.75,"rgb":[199,233,192]},{"index":0.875,"rgb":[229,245,224]},{"index":1,"rgb":[247,252,245]}],"yiorrd":[{"index":0,"rgb":[128,0,38]},{"index":0.125,"rgb":[189,0,38]},{"index":0.25,"rgb":[227,26,28]},{"index":0.375,"rgb":[252,78,42]},{"index":0.5,"rgb":[253,141,60]},{"index":0.625,"rgb":[254,178,76]},{"index":0.75,"rgb":[254,217,118]},{"index":0.875,"rgb":[255,237,160]},{"index":1,"rgb":[255,255,204]}],"bluered":[{"index":0,"rgb":[0,0,255]},{"index":1,"rgb":[255,0,0]}],"rdbu":[{"index":0,"rgb":[5,10,172]},{"index":0.35,"rgb":[106,137,247]},{"index":0.5,"rgb":[190,190,190]},{"index":0.6,"rgb":[220,170,132]},{"index":0.7,"rgb":[230,145,90]},{"index":1,"rgb":[178,10,28]}],"picnic":[{"index":0,"rgb":[0,0,255]},{"index":0.1,"rgb":[51,153,255]},{"index":0.2,"rgb":[102,204,255]},{"index":0.3,"rgb":[153,204,255]},{"index":0.4,"rgb":[204,204,255]},{"index":0.5,"rgb":[255,255,255]},{"index":0.6,"rgb":[255,204,255]},{"index":0.7,"rgb":[255,153,255]},{"index":0.8,"rgb":[255,102,204]},{"index":0.9,"rgb":[255,102,102]},{"index":1,"rgb":[255,0,0]}],"rainbow":[{"index":0,"rgb":[150,0,90]},{"index":0.125,"rgb":[0,0,200]},{"index":0.25,"rgb":[0,25,255]},{"index":0.375,"rgb":[0,152,255]},{"index":0.5,"rgb":[44,255,150]},{"index":0.625,"rgb":[151,255,0]},{"index":0.75,"rgb":[255,234,0]},{"index":0.875,"rgb":[255,111,0]},{"index":1,"rgb":[255,0,0]}],"portland":[{"index":0,"rgb":[12,51,131]},{"index":0.25,"rgb":[10,136,186]},{"index":0.5,"rgb":[242,211,56]},{"index":0.75,"rgb":[242,143,56]},{"index":1,"rgb":[217,30,30]}],"blackbody":[{"index":0,"rgb":[0,0,0]},{"index":0.2,"rgb":[230,0,0]},{"index":0.4,"rgb":[230,210,0]},{"index":0.7,"rgb":[255,255,255]},{"index":1,"rgb":[160,200,255]}],"earth":[{"index":0,"rgb":[0,0,130]},{"index":0.1,"rgb":[0,180,180]},{"index":0.2,"rgb":[40,210,40]},{"index":0.4,"rgb":[230,230,50]},{"index":0.6,"rgb":[120,70,20]},{"index":1,"rgb":[255,255,255]}],"electric":[{"index":0,"rgb":[0,0,0]},{"index":0.15,"rgb":[30,0,100]},{"index":0.4,"rgb":[120,0,100]},{"index":0.6,"rgb":[160,90,0]},{"index":0.8,"rgb":[230,200,0]},{"index":1,"rgb":[255,250,220]}], "alpha": [{"index":0, "rgb": [255,255,255,0]},{"index":0, "rgb": [255,255,255,1]}]}
+
+},{}],5:[function(require,module,exports){
+/*
+ * Ben Postlethwaite
+ * January 2013
+ * License MIT
+ */
+'use strict';
+var at = require('arraytools');
+var colorScale = require('./colorScales.json');
+
+
+module.exports = function (spec) {
+
+  /*
+   * Default Options
+   */
+    var indicies, rgba, fromrgba, torgba,
+        nsteps, cmap, colormap, format,
+        nshades, colors, alpha, index, i,
+        r = [],
+        g = [],
+        b = [],
+        a = [];
+
+    if ( !at.isPlainObject(spec) ) spec = {};
+    if (!spec.colormap) colormap = 'jet';
+    if (!Array.isArray(spec.alpha)) {
+        if (typeof spec.alpha === 'number') spec.alpha = [spec.alpha, spec.alpha];
+        else spec.alpha = [1, 1];
+    } else if (spec.alpha.length !== 2) spec.alpha = [1, 1];
+    if (typeof spec.colormap === 'string') {
+        colormap = spec.colormap.toLowerCase();
+
+        if (!(colormap in colorScale)) {
+            throw Error(colormap + ' not a supported colorscale');
+        }
+        cmap = colorScale[colormap];
+
+    } else if (Array.isArray(spec.colormap)) {
+        cmap = spec.colormap;
+    }
+
+    nshades = spec.nshades || 72;
+    format = spec.format || 'hex';
+    alpha = spec.alpha;
+
+    if (cmap.length > nshades) {
+        throw new Error(colormap +
+                        ' map requires nshades to be at least size ' +
+                        cmap.length);
+    }
+
+    /*
+     * map index points from 0->1 to 0 -> n-1
+     */
+    indicies = cmap.map(function(c) {
+        return Math.round(c.index * nshades);
+    });
+
+    /*
+     * Add alpha channel to the map
+     */
+    if (alpha[0] < 0) alpha[0] = 0;
+    if (alpha[1] < 0) alpha[0] = 0;
+    if (alpha[0] > 1) alpha[0] = 1;
+    if (alpha[1] > 1) alpha[0] = 1;
+
+    for (i = 0; i < indicies.length; ++i) {
+        index = cmap[i].index;
+        rgba = cmap[i].rgb;
+        // if user supplies their own map use theirs
+        if (rgba.length === 4 && rgba[3] >= 0 && rgba[3] <= 1) continue;
+        rgba[3] = alpha[0] + (alpha[1] - alpha[0])*index;
+    }
+
+    /*
+     * map increasing linear values between indicies to
+     * linear steps in colorvalues
+     */
+    for (i = 0; i < indicies.length-1; ++i) {
+        nsteps = indicies[i+1] - indicies[i];
+        fromrgba = cmap[i].rgb;
+        torgba = cmap[i+1].rgb;
+        r = r.concat(at.linspace(fromrgba[0], torgba[0], nsteps ) );
+        g = g.concat(at.linspace(fromrgba[1], torgba[1], nsteps ) );
+        b = b.concat(at.linspace(fromrgba[2], torgba[2], nsteps ) );
+        a = a.concat(at.linspace(fromrgba[3], torgba[3], nsteps ) );
+    }
+
+    r = r.map( Math.round );
+    g = g.map( Math.round );
+    b = b.map( Math.round );
+
+    colors = at.zip(r, g, b, a);
+
+    if (format === 'hex') colors = colors.map( rgb2hex );
+    if (format === 'rgbaString') colors = colors.map( rgbaStr );
+
+    return colors;
+};
+
+
+function rgb2hex (rgba) {
+    var dig, hex = '#';
+    for (var i = 0; i < 3; ++i) {
+        dig = rgba[i];
+        dig = dig.toString(16);
+        hex += ('00' + dig).substr( dig.length );
+    }
+    return hex;
+}
+
+function rgbaStr (rgba) {
+    return 'rgba(' + rgba.join(',') + ')';
+}
+
+},{"./colorScales.json":4,"arraytools":6}],6:[function(require,module,exports){
+'use strict';
+
+var arraytools  = function () {
+
+  var that = {};
+
+  var RGB_REGEX =  /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(,.*)?\)$/;
+  var RGB_GROUP_REGEX = /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,?\s*(.*)?\)$/;
+
+  function isPlainObject (v) {
+    return !Array.isArray(v) && v !== null && typeof v === 'object';
+  }
+
+  function linspace (start, end, num) {
+    var inc = (end - start) / (num - 1);
+    var a = [];
+    for( var ii = 0; ii < num; ii++)
+      a.push(start + ii*inc);
+    return a;
+  }
+
+  function zip () {
+      var arrays = [].slice.call(arguments);
+      var lengths = arrays.map(function (a) {return a.length;});
+      var len = Math.min.apply(null, lengths);
+      var zipped = [];
+      for (var i = 0; i < len; i++) {
+          zipped[i] = [];
+          for (var j = 0; j < arrays.length; ++j) {
+              zipped[i][j] = arrays[j][i];
+          }
+      }
+      return zipped;
+  }
+
+  function zip3 (a, b, c) {
+      var len = Math.min.apply(null, [a.length, b.length, c.length]);
+      var result = [];
+      for (var n = 0; n < len; n++) {
+          result.push([a[n], b[n], c[n]]);
+      }
+      return result;
+  }
+
+  function sum (A) {
+    var acc = 0;
+    accumulate(A, acc);
+    function accumulate(x) {
+      for (var i = 0; i < x.length; i++) {
+        if (Array.isArray(x[i]))
+          accumulate(x[i], acc);
+        else
+          acc += x[i];
+      }
+    }
+    return acc;
+  }
+
+  function copy2D (arr) {
+    var carr = [];
+    for (var i = 0; i < arr.length; ++i) {
+      carr[i] = [];
+      for (var j = 0; j < arr[i].length; ++j) {
+        carr[i][j] = arr[i][j];
+      }
+    }
+
+    return carr;
+  }
+
+
+  function copy1D (arr) {
+    var carr = [];
+    for (var i = 0; i < arr.length; ++i) {
+      carr[i] = arr[i];
+    }
+
+    return carr;
+  }
+
+
+  function isEqual(arr1, arr2) {
+    if(arr1.length !== arr2.length)
+      return false;
+    for(var i = arr1.length; i--;) {
+      if(arr1[i] !== arr2[i])
+        return false;
+    }
+
+    return true;
+  }
+
+
+  function str2RgbArray(str, twoFiftySix) {
+    // convert hex or rbg strings to 0->1 or 0->255 rgb array
+    var rgb,
+        match;
+
+    if (typeof str !== 'string') return str;
+
+    rgb = [];
+    // hex notation
+    if (str[0] === '#') {
+      str = str.substr(1) // remove hash
+      if (str.length === 3) str += str // fff -> ffffff
+      match = parseInt(str, 16);
+      rgb[0] = ((match >> 16) & 255);
+      rgb[1] = ((match >> 8) & 255);
+      rgb[2] = (match & 255);
+    }
+
+    // rgb(34, 34, 127) or rgba(34, 34, 127, 0.1) notation
+    else if (RGB_REGEX.test(str)) {
+      match = str.match(RGB_GROUP_REGEX);
+      rgb[0] = parseInt(match[1]);
+      rgb[1] = parseInt(match[2]);
+      rgb[2] = parseInt(match[3]);
+    }
+
+    if (!twoFiftySix) {
+      for (var j=0; j<3; ++j) rgb[j] = rgb[j]/255
+    }
+
+
+    return rgb;
+  }
+
+
+  function str2RgbaArray(str, twoFiftySix) {
+    // convert hex or rbg strings to 0->1 or 0->255 rgb array
+    var rgb,
+        match;
+
+    if (typeof str !== 'string') return str;
+
+    rgb = [];
+    // hex notation
+    if (str[0] === '#') {
+      str = str.substr(1) // remove hash
+      if (str.length === 3) str += str // fff -> ffffff
+      match = parseInt(str, 16);
+      rgb[0] = ((match >> 16) & 255);
+      rgb[1] = ((match >> 8) & 255);
+      rgb[2] = (match & 255);
+    }
+
+    // rgb(34, 34, 127) or rgba(34, 34, 127, 0.1) notation
+    else if (RGB_REGEX.test(str)) {
+      match = str.match(RGB_GROUP_REGEX);
+      rgb[0] = parseInt(match[1]);
+      rgb[1] = parseInt(match[2]);
+      rgb[2] = parseInt(match[3]);
+      if (match[4]) rgb[3] = parseFloat(match[4]);
+      else rgb[3] = 1.0;
+    }
+
+
+
+    if (!twoFiftySix) {
+      for (var j=0; j<3; ++j) rgb[j] = rgb[j]/255
+    }
+
+
+    return rgb;
+  }
+
+
+
+
+
+  that.isPlainObject = isPlainObject;
+  that.linspace = linspace;
+  that.zip3 = zip3;
+  that.sum = sum;
+  that.zip = zip;
+  that.isEqual = isEqual;
+  that.copy2D = copy2D;
+  that.copy1D = copy1D;
+  that.str2RgbArray = str2RgbArray;
+  that.str2RgbaArray = str2RgbaArray;
+
+  return that
+
+}
+
+
+module.exports = arraytools();
+
+},{}],7:[function(require,module,exports){
+"use strict"
+
+function dupe_array(count, value, i) {
+  var c = count[i]|0
+  if(c <= 0) {
+    return []
+  }
+  var result = new Array(c), j
+  if(i === count.length-1) {
+    for(j=0; j<c; ++j) {
+      result[j] = value
+    }
+  } else {
+    for(j=0; j<c; ++j) {
+      result[j] = dupe_array(count, value, i+1)
+    }
+  }
+  return result
+}
+
+function dupe_number(count, value) {
+  var result, i
+  result = new Array(count)
+  for(i=0; i<count; ++i) {
+    result[i] = value
+  }
+  return result
+}
+
+function dupe(count, value) {
+  if(typeof value === "undefined") {
+    value = 0
+  }
+  switch(typeof count) {
+    case "number":
+      if(count > 0) {
+        return dupe_number(count|0, value)
+      }
+    break
+    case "object":
+      if(typeof (count.length) === "number") {
+        return dupe_array(count, value, 0)
+      }
+    break
+  }
+  return []
+}
+
+module.exports = dupe
+},{}],8:[function(require,module,exports){
+"use strict"
+
+var pool = require("typedarray-pool")
+var ops = require("ndarray-ops")
+var ndarray = require("ndarray")
+
+var SUPPORTED_TYPES = [
+  "uint8",
+  "uint8_clamped",
+  "uint16",
+  "uint32",
+  "int8",
+  "int16",
+  "int32",
+  "float32" ]
+
+function GLBuffer(gl, type, handle, length, usage) {
+  this.gl = gl
+  this.type = type
+  this.handle = handle
+  this.length = length
+  this.usage = usage
+}
+
+var proto = GLBuffer.prototype
+
+proto.bind = function() {
+  this.gl.bindBuffer(this.type, this.handle)
+}
+
+proto.unbind = function() {
+  this.gl.bindBuffer(this.type, null)
+}
+
+proto.dispose = function() {
+  this.gl.deleteBuffer(this.handle)
+}
+
+function updateTypeArray(gl, type, len, usage, data, offset) {
+  var dataLen = data.length * data.BYTES_PER_ELEMENT
+  if(offset < 0) {
+    gl.bufferData(type, data, usage)
+    return dataLen
+  }
+  if(dataLen + offset > len) {
+    throw new Error("gl-buffer: If resizing buffer, must not specify offset")
+  }
+  gl.bufferSubData(type, offset, data)
+  return len
+}
+
+function makeScratchTypeArray(array, dtype) {
+  var res = pool.malloc(array.length, dtype)
+  var n = array.length
+  for(var i=0; i<n; ++i) {
+    res[i] = array[i]
+  }
+  return res
+}
+
+function isPacked(shape, stride) {
+  var n = 1
+  for(var i=stride.length-1; i>=0; --i) {
+    if(stride[i] !== n) {
+      return false
+    }
+    n *= shape[i]
+  }
+  return true
+}
+
+proto.update = function(array, offset) {
+  if(typeof offset !== "number") {
+    offset = -1
+  }
+  this.bind()
+  if(typeof array === "object" && typeof array.shape !== "undefined") { //ndarray
+    var dtype = array.dtype
+    if(SUPPORTED_TYPES.indexOf(dtype) < 0) {
+      dtype = "float32"
+    }
+    if(this.type === this.gl.ELEMENT_ARRAY_BUFFER) {
+      var ext = gl.getExtension('OES_element_index_uint')
+      if(ext && dtype !== "uint16") {
+        dtype = "uint32"
+      } else {
+        dtype = "uint16"
+      }
+    }
+    if(dtype === array.dtype && isPacked(array.shape, array.stride)) {
+      if(array.offset === 0 && array.data.length === array.shape[0]) {
+        this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, array.data, offset)
+      } else {
+        this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, array.data.subarray(array.offset, array.shape[0]), offset)
+      }
+    } else {
+      var tmp = pool.malloc(array.size, dtype)
+      var ndt = ndarray(tmp, array.shape)
+      ops.assign(ndt, array)
+      if(offset < 0) {
+        this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, tmp, offset)
+      } else {
+        this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, tmp.subarray(0, array.size), offset)
+      }
+      pool.free(tmp)
+    }
+  } else if(Array.isArray(array)) { //Vanilla array
+    var t
+    if(this.type === this.gl.ELEMENT_ARRAY_BUFFER) {
+      t = makeScratchTypeArray(array, "uint16")
+    } else {
+      t = makeScratchTypeArray(array, "float32")
+    }
+    if(offset < 0) {
+      this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, t, offset)
+    } else {
+      this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, t.subarray(0, array.length), offset)
+    }
+    pool.free(t)
+  } else if(typeof array === "object" && typeof array.length === "number") { //Typed array
+    this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, array, offset)
+  } else if(typeof array === "number" || array === undefined) { //Number/default
+    if(offset >= 0) {
+      throw new Error("gl-buffer: Cannot specify offset when resizing buffer")
+    }
+    array = array | 0
+    if(array <= 0) {
+      array = 1
+    }
+    this.gl.bufferData(this.type, array|0, this.usage)
+    this.length = array
+  } else { //Error, case should not happen
+    throw new Error("gl-buffer: Invalid data type")
+  }
+}
+
+function createBuffer(gl, data, type, usage) {
+  type = type || gl.ARRAY_BUFFER
+  usage = usage || gl.DYNAMIC_DRAW
+  if(type !== gl.ARRAY_BUFFER && type !== gl.ELEMENT_ARRAY_BUFFER) {
+    throw new Error("gl-buffer: Invalid type for webgl buffer, must be either gl.ARRAY_BUFFER or gl.ELEMENT_ARRAY_BUFFER")
+  }
+  if(usage !== gl.DYNAMIC_DRAW && usage !== gl.STATIC_DRAW && usage !== gl.STREAM_DRAW) {
+    throw new Error("gl-buffer: Invalid usage for buffer, must be either gl.DYNAMIC_DRAW, gl.STATIC_DRAW or gl.STREAM_DRAW")
+  }
+  var handle = gl.createBuffer()
+  var result = new GLBuffer(gl, type, handle, 0, usage)
+  result.update(data)
+  return result
+}
+
+module.exports = createBuffer
+
+},{"ndarray":55,"ndarray-ops":44,"typedarray-pool":71}],9:[function(require,module,exports){
+module.exports = invert;
+
+/**
+ * Inverts a mat4
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the source matrix
+ * @returns {mat4} out
+ */
+function invert(out, a) {
+    var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
+        a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
+        a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
+        a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15],
+
+        b00 = a00 * a11 - a01 * a10,
+        b01 = a00 * a12 - a02 * a10,
+        b02 = a00 * a13 - a03 * a10,
+        b03 = a01 * a12 - a02 * a11,
+        b04 = a01 * a13 - a03 * a11,
+        b05 = a02 * a13 - a03 * a12,
+        b06 = a20 * a31 - a21 * a30,
+        b07 = a20 * a32 - a22 * a30,
+        b08 = a20 * a33 - a23 * a30,
+        b09 = a21 * a32 - a22 * a31,
+        b10 = a21 * a33 - a23 * a31,
+        b11 = a22 * a33 - a23 * a32,
+
+        // Calculate the determinant
+        det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
+
+    if (!det) { 
+        return null; 
+    }
+    det = 1.0 / det;
+
+    out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
+    out[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
+    out[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
+    out[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
+    out[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
+    out[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
+    out[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
+    out[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
+    out[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
+    out[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
+    out[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
+    out[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
+    out[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
+    out[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
+    out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
+    out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
+
+    return out;
+};
+},{}],10:[function(require,module,exports){
+module.exports = multiply;
+
+/**
+ * Multiplies two mat4's
+ *
+ * @param {mat4} out the receiving matrix
+ * @param {mat4} a the first operand
+ * @param {mat4} b the second operand
+ * @returns {mat4} out
+ */
+function multiply(out, a, b) {
+    var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
+        a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
+        a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
+        a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
+
+    // Cache only the current line of the second matrix
+    var b0  = b[0], b1 = b[1], b2 = b[2], b3 = b[3];  
+    out[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    out[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    out[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    out[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = b[4]; b1 = b[5]; b2 = b[6]; b3 = b[7];
+    out[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    out[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    out[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    out[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = b[8]; b1 = b[9]; b2 = b[10]; b3 = b[11];
+    out[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    out[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    out[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    out[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+
+    b0 = b[12]; b1 = b[13]; b2 = b[14]; b3 = b[15];
+    out[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
+    out[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
+    out[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
+    out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
+    return out;
+};
+},{}],11:[function(require,module,exports){
+'use strict'
+
+var createUniformWrapper   = require('./lib/create-uniforms')
+var createAttributeWrapper = require('./lib/create-attributes')
+var makeReflect            = require('./lib/reflect')
+var shaderCache            = require('./lib/shader-cache')
+var runtime                = require('./lib/runtime-reflect')
+
+//Shader object
+function Shader(gl) {
+  this.gl         = gl
+
+  //Default initialize these to null
+  this._vref      = 
+  this._fref      = 
+  this._relink    =
+  this.vertShader =
+  this.fragShader =
+  this.program    =
+  this.attributes =
+  this.uniforms   =
+  this.types      = null
+}
+
+var proto = Shader.prototype
+
+proto.bind = function() {
+  if(!this.program) {
+    this._relink()
+  }
+  this.gl.useProgram(this.program)
+}
+
+proto.dispose = function() {
+  if(this._fref) {
+    this._fref.dispose()
+  }
+  if(this._vref) {
+    this._vref.dispose()
+  }
+  this.attributes =
+  this.types      =
+  this.vertShader =
+  this.fragShader =
+  this.program    = 
+  this._relink    = 
+  this._fref      = 
+  this._vref      = null
+}
+
+function compareAttributes(a, b) {
+  if(a.name < b.name) {
+    return -1
+  }
+  return 1
+}
+
+//Update export hook for glslify-live
+proto.update = function(
+    vertSource
+  , fragSource
+  , uniforms
+  , attributes) {
+
+  //If only one object passed, assume glslify style output
+  if(!fragSource || arguments.length === 1) {
+    var obj = vertSource
+    vertSource = obj.vertex
+    fragSource = obj.fragment
+    uniforms   = obj.uniforms
+    attributes = obj.attributes
+  }
+
+  var wrapper = this
+  var gl      = wrapper.gl
+
+  //Compile vertex and fragment shaders
+  var pvref = wrapper._vref
+  wrapper._vref = shaderCache.shader(gl, gl.VERTEX_SHADER, vertSource)
+  if(pvref) {
+    pvref.dispose()
+  }
+  wrapper.vertShader = wrapper._vref.shader
+  var pfref = this._fref
+  wrapper._fref = shaderCache.shader(gl, gl.FRAGMENT_SHADER, fragSource)
+  if(pfref) {
+    pfref.dispose()
+  }
+  wrapper.fragShader = wrapper._fref.shader
+  
+  //If uniforms/attributes is not specified, use RT reflection
+  if(!uniforms || !attributes) {
+
+    //Create initial test program
+    var testProgram = gl.createProgram()
+    gl.attachShader(testProgram, wrapper.fragShader)
+    gl.attachShader(testProgram, wrapper.vertShader)
+    gl.linkProgram(testProgram)
+    if(!gl.getProgramParameter(testProgram, gl.LINK_STATUS)) {
+      var errLog = gl.getProgramInfoLog(testProgram)
+      console.error('gl-shader: Error linking program:', errLog)
+      throw new Error('gl-shader: Error linking program:' + errLog)
+    }
+    
+    //Load data from runtime
+    uniforms   = uniforms   || runtime.uniforms(gl, testProgram)
+    attributes = attributes || runtime.attributes(gl, testProgram)
+
+    //Release test program
+    gl.deleteProgram(testProgram)
+  }
+
+  //Sort attributes lexicographically
+  // overrides undefined WebGL behavior for attribute locations
+  attributes = attributes.slice()
+  attributes.sort(compareAttributes)
+
+  //Convert attribute types, read out locations
+  var attributeUnpacked  = []
+  var attributeNames     = []
+  var attributeLocations = []
+  for(var i=0; i<attributes.length; ++i) {
+    var attr = attributes[i]
+    if(attr.type.indexOf('mat') >= 0) {
+      var size = attr.type.charAt(attr.type.length-1)|0
+      var locVector = new Array(size)
+      for(var j=0; j<size; ++j) {
+        locVector[j] = attributeLocations.length
+        attributeNames.push(attr.name + '[' + j + ']')
+        if(typeof attr.location === 'number') {
+          attributeLocations.push(attr.location + j)
+        } else if(Array.isArray(attr.location) && 
+                  attr.location.length === size &&
+                  typeof attr.location[j] === 'number') {
+          attributeLocations.push(attr.location[j]|0)
+        } else {
+          attributeLocations.push(-1)
+        }
+      }
+      attributeUnpacked.push({
+        name: attr.name,
+        type: attr.type,
+        locations: locVector
+      })
+    } else {
+      attributeUnpacked.push({
+        name: attr.name,
+        type: attr.type,
+        locations: [ attributeLocations.length ]
+      })
+      attributeNames.push(attr.name)
+      if(typeof attr.location === 'number') {
+        attributeLocations.push(attr.location|0)
+      } else {
+        attributeLocations.push(-1)
+      }
+    }
+  }
+
+  //For all unspecified attributes, assign them lexicographically min attribute
+  var curLocation = 0
+  for(var i=0; i<attributeLocations.length; ++i) {
+    if(attributeLocations[i] < 0) {
+      while(attributeLocations.indexOf(curLocation) >= 0) {
+        curLocation += 1
+      }
+      attributeLocations[i] = curLocation
+    }
+  }
+
+  //Rebuild program and recompute all uniform locations
+  var uniformLocations = new Array(uniforms.length)
+  function relink() {
+    wrapper.program = shaderCache.program(
+        gl
+      , wrapper._vref
+      , wrapper._fref
+      , attributeNames
+      , attributeLocations)
+
+    for(var i=0; i<uniforms.length; ++i) {
+      uniformLocations[i] = gl.getUniformLocation(
+          wrapper.program
+        , uniforms[i].name)
+    }
+  }
+
+  //Perform initial linking, reuse program used for reflection
+  relink()
+
+  //Save relinking procedure, defer until runtime
+  wrapper._relink = relink
+
+  //Generate type info
+  wrapper.types = {
+    uniforms:   makeReflect(uniforms),
+    attributes: makeReflect(attributes)
+  }
+
+  //Generate attribute wrappers
+  wrapper.attributes = createAttributeWrapper(
+      gl
+    , wrapper
+    , attributeUnpacked
+    , attributeLocations)
+
+  //Generate uniform wrappers
+  Object.defineProperty(wrapper, 'uniforms', createUniformWrapper(
+      gl
+    , wrapper
+    , uniforms
+    , uniformLocations))
+}
+
+//Compiles and links a shader program with the given attribute and vertex list
+function createShader(
+    gl
+  , vertSource
+  , fragSource
+  , uniforms
+  , attributes) {
+
+  var shader = new Shader(gl)
+
+  shader.update(
+      vertSource
+    , fragSource
+    , uniforms
+    , attributes)
+
+  return shader
+}
+
+module.exports = createShader
+},{"./lib/create-attributes":12,"./lib/create-uniforms":13,"./lib/reflect":14,"./lib/runtime-reflect":15,"./lib/shader-cache":16}],12:[function(require,module,exports){
+'use strict'
+
+module.exports = createAttributeWrapper
+
+function ShaderAttribute(
+    gl
+  , wrapper
+  , index
+  , locations
+  , dimension
+  , constFunc) {
+  this._gl        = gl
+  this._wrapper   = wrapper
+  this._index     = index
+  this._locations = locations
+  this._dimension = dimension
+  this._constFunc = constFunc
+}
+
+var proto = ShaderAttribute.prototype
+
+proto.pointer = function setAttribPointer(
+    type
+  , normalized
+  , stride
+  , offset) {
+
+  var self      = this
+  var gl        = self._gl
+  var location  = self._locations[self._index]
+
+  gl.vertexAttribPointer(
+      location
+    , self._dimension
+    , type || gl.FLOAT
+    , !!normalized
+    , stride || 0
+    , offset || 0)
+  gl.enableVertexAttribArray(location)
+}
+
+proto.set = function(x0, x1, x2, x3) {
+  return this._constFunc(this._locations[this._index], x0, x1, x2, x3)
+}
+
+Object.defineProperty(proto, 'location', {
+  get: function() {
+    return this._locations[this._index]
+  }
+  , set: function(v) {
+    if(v !== this._locations[this._index]) {
+      this._locations[this._index] = v|0
+      this._wrapper.program = null
+    }
+    return v|0
+  }
+})
+
+//Adds a vector attribute to obj
+function addVectorAttribute(
+    gl
+  , wrapper
+  , index
+  , locations
+  , dimension
+  , obj
+  , name) {
+
+  //Construct constant function
+  var constFuncArgs = [ 'gl', 'v' ]
+  var varNames = []
+  for(var i=0; i<dimension; ++i) {
+    constFuncArgs.push('x'+i)
+    varNames.push('x'+i)
+  }
+  constFuncArgs.push(
+    'if(x0.length===void 0){return gl.vertexAttrib' +
+    dimension + 'f(v,' +
+    varNames.join() +
+    ')}else{return gl.vertexAttrib' +
+    dimension +
+    'fv(v,x0)}')
+  var constFunc = Function.apply(null, constFuncArgs)
+
+  //Create attribute wrapper
+  var attr = new ShaderAttribute(
+      gl
+    , wrapper
+    , index
+    , locations
+    , dimension
+    , constFunc)
+
+  //Create accessor
+  Object.defineProperty(obj, name, {
+    set: function(x) {
+      gl.disableVertexAttribArray(locations[index])
+      constFunc(gl, locations[index], x)
+      return x
+    }
+    , get: function() {
+      return attr
+    }
+    , enumerable: true
+  })
+}
+
+function addMatrixAttribute(
+    gl
+  , wrapper
+  , index
+  , locations
+  , dimension
+  , obj
+  , name) {
+
+  var parts = new Array(dimension)
+  var attrs = new Array(dimension)
+  for(var i=0; i<dimension; ++i) {
+    addVectorAttribute(
+        gl
+      , wrapper
+      , index[i]
+      , locations
+      , dimension
+      , parts
+      , i)
+    attrs[i] = parts[i]
+  }
+
+  Object.defineProperty(parts, 'location', {
+    set: function(v) {
+      if(Array.isArray(v)) {
+        for(var i=0; i<dimension; ++i) {
+          attrs[i].location = v[i]
+        }
+      } else {
+        for(var i=0; i<dimension; ++i) {
+          attrs[i].location = v + i
+        }
+      }
+      return v
+    }
+    , get: function() {
+      var result = new Array(dimension)
+      for(var i=0; i<dimension; ++i) {
+        result[i] = locations[index[i]]
+      }
+      return result
+    }
+    , enumerable: true
+  })
+
+  parts.pointer = function(type, normalized, stride, offset) {
+    type       = type || gl.FLOAT
+    normalized = !!normalized
+    stride     = stride || (dimension * dimension)
+    offset     = offset || 0
+    for(var i=0; i<dimension; ++i) {
+      var location = locations[index[i]]
+      gl.vertexAttribPointer(
+            location
+          , dimension
+          , type
+          , normalized
+          , stride
+          , offset + i * dimension)
+      gl.enableVertexAttribArray(location)
+    }
+  }
+
+  var scratch = new Array(dimension)
+  var vertexAttrib = gl['vertexAttrib' + dimension + 'fv']
+
+  Object.defineProperty(obj, name, {
+    set: function(x) {
+      for(var i=0; i<dimension; ++i) {
+        var loc = locations[index[i]]
+        gl.disableVertexAttribArray(loc)
+        if(Array.isArray(x[0])) {
+          vertexAttrib.call(gl, loc, x[i])
+        } else {
+          for(var j=0; j<dimension; ++j) {
+            scratch[j] = x[dimension*i + j]
+          }
+          vertexAttrib.call(gl, loc, scratch)
+        }
+      }
+      return x
+    }
+    , get: function() {
+      return parts
+    }
+    , enumerable: true
+  })
+}
+
+//Create shims for attributes
+function createAttributeWrapper(
+    gl
+  , wrapper
+  , attributes
+  , locations) {
+
+  var obj = {}
+  for(var i=0, n=attributes.length; i<n; ++i) {
+
+    var a = attributes[i]
+    var name = a.name
+    var type = a.type
+    var locs = a.locations
+
+    switch(type) {
+      case 'bool':
+      case 'int':
+      case 'float':
+        addVectorAttribute(
+            gl
+          , wrapper
+          , locs[0]
+          , locations
+          , 1
+          , obj
+          , name)
+      break
+
+      default:
+        if(type.indexOf('vec') >= 0) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new Error('gl-shader: Invalid data type for attribute ' + name + ': ' + type)
+          }
+          addVectorAttribute(
+              gl
+            , wrapper
+            , locs[0]
+            , locations
+            , d
+            , obj
+            , name)
+        } else if(type.indexOf('mat') >= 0) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new Error('gl-shader: Invalid data type for attribute ' + name + ': ' + type)
+          }
+          addMatrixAttribute(
+              gl
+            , wrapper
+            , locs
+            , locations
+            , d
+            , obj
+            , name)
+        } else {
+          throw new Error('gl-shader: Unknown data type for attribute ' + name + ': ' + type)
+        }
+      break
+    }
+  }
+  return obj
+}
+
+},{}],13:[function(require,module,exports){
+'use strict'
+
+var coallesceUniforms = require('./reflect')
+
+module.exports = createUniformWrapper
+
+//Binds a function and returns a value
+function identity(x) {
+  var c = new Function('y', 'return function(){return y}')
+  return c(x)
+}
+
+function makeVector(length, fill) {
+  var result = new Array(length)
+  for(var i=0; i<length; ++i) {
+    result[i] = fill
+  }
+  return result
+}
+
+//Create shims for uniforms
+function createUniformWrapper(gl, wrapper, uniforms, locations) {
+
+  function makeGetter(index) {
+    var proc = new Function(
+        'gl'
+      , 'wrapper'
+      , 'locations'
+      , 'return function(){return gl.getUniform(wrapper.program,locations[' + index + '])}') 
+    return proc(gl, wrapper, locations)
+  }
+
+  function makePropSetter(path, index, type) {
+    switch(type) {
+      case 'bool':
+      case 'int':
+      case 'sampler2D':
+      case 'samplerCube':
+        return 'gl.uniform1i(locations[' + index + '],obj' + path + ')'
+      case 'float':
+        return 'gl.uniform1f(locations[' + index + '],obj' + path + ')'
+      default:
+        var vidx = type.indexOf('vec')
+        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new Error('gl-shader: Invalid data type')
+          }
+          switch(type.charAt(0)) {
+            case 'b':
+            case 'i':
+              return 'gl.uniform' + d + 'iv(locations[' + index + '],obj' + path + ')'
+            case 'v':
+              return 'gl.uniform' + d + 'fv(locations[' + index + '],obj' + path + ')'
+            default:
+              throw new Error('gl-shader: Unrecognized data type for vector ' + name + ': ' + type)
+          }
+        } else if(type.indexOf('mat') === 0 && type.length === 4) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new Error('gl-shader: Invalid uniform dimension type for matrix ' + name + ': ' + type)
+          }
+          return 'gl.uniformMatrix' + d + 'fv(locations[' + index + '],false,obj' + path + ')'
+        } else {
+          throw new Error('gl-shader: Unknown uniform data type for ' + name + ': ' + type)
+        }
+      break
+    }
+  }
+
+  function enumerateIndices(prefix, type) {
+    if(typeof type !== 'object') {
+      return [ [prefix, type] ]
+    }
+    var indices = []
+    for(var id in type) {
+      var prop = type[id]
+      var tprefix = prefix
+      if(parseInt(id) + '' === id) {
+        tprefix += '[' + id + ']'
+      } else {
+        tprefix += '.' + id
+      }
+      if(typeof prop === 'object') {
+        indices.push.apply(indices, enumerateIndices(tprefix, prop))
+      } else {
+        indices.push([tprefix, prop])
+      }
+    }
+    return indices
+  }
+
+  function makeSetter(type) {
+    var code = [ 'return function updateProperty(obj){' ]
+    var indices = enumerateIndices('', type)
+    for(var i=0; i<indices.length; ++i) {
+      var item = indices[i]
+      var path = item[0]
+      var idx  = item[1]
+      if(locations[idx]) {
+        code.push(makePropSetter(path, idx, uniforms[idx].type))
+      }
+    }
+    code.push('return obj}')
+    var proc = new Function('gl', 'locations', code.join('\n'))
+    return proc(gl, locations)
+  }
+
+  function defaultValue(type) {
+    switch(type) {
+      case 'bool':
+        return false
+      case 'int':
+      case 'sampler2D':
+      case 'samplerCube':
+        return 0
+      case 'float':
+        return 0.0
+      default:
+        var vidx = type.indexOf('vec')
+        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new Error('gl-shader: Invalid data type')
+          }
+          if(type.charAt(0) === 'b') {
+            return makeVector(d, false)
+          }
+          return makeVector(d, 0)
+        } else if(type.indexOf('mat') === 0 && type.length === 4) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new Error('gl-shader: Invalid uniform dimension type for matrix ' + name + ': ' + type)
+          }
+          return makeVector(d*d, 0)
+        } else {
+          throw new Error('gl-shader: Unknown uniform data type for ' + name + ': ' + type)
+        }
+      break
+    }
+  }
+
+  function storeProperty(obj, prop, type) {
+    if(typeof type === 'object') {
+      var child = processObject(type)
+      Object.defineProperty(obj, prop, {
+        get: identity(child),
+        set: makeSetter(type),
+        enumerable: true,
+        configurable: false
+      })
+    } else {
+      if(locations[type]) {
+        Object.defineProperty(obj, prop, {
+          get: makeGetter(type),
+          set: makeSetter(type),
+          enumerable: true,
+          configurable: false
+        })
+      } else {
+        obj[prop] = defaultValue(uniforms[type].type)
+      }
+    }
+  }
+
+  function processObject(obj) {
+    var result
+    if(Array.isArray(obj)) {
+      result = new Array(obj.length)
+      for(var i=0; i<obj.length; ++i) {
+        storeProperty(result, i, obj[i])
+      }
+    } else {
+      result = {}
+      for(var id in obj) {
+        storeProperty(result, id, obj[id])
+      }
+    }
+    return result
+  }
+
+  //Return data
+  var coallesced = coallesceUniforms(uniforms, true)
+  return {
+    get: identity(processObject(coallesced)),
+    set: makeSetter(coallesced),
+    enumerable: true,
+    configurable: true
+  }
+}
+
+},{"./reflect":14}],14:[function(require,module,exports){
+'use strict'
+
+module.exports = makeReflectTypes
+
+//Construct type info for reflection.
+//
+// This iterates over the flattened list of uniform type values and smashes them into a JSON object.
+//
+// The leaves of the resulting object are either indices or type strings representing primitive glslify types
+function makeReflectTypes(uniforms, useIndex) {
+  var obj = {}
+  for(var i=0; i<uniforms.length; ++i) {
+    var n = uniforms[i].name
+    var parts = n.split(".")
+    var o = obj
+    for(var j=0; j<parts.length; ++j) {
+      var x = parts[j].split("[")
+      if(x.length > 1) {
+        if(!(x[0] in o)) {
+          o[x[0]] = []
+        }
+        o = o[x[0]]
+        for(var k=1; k<x.length; ++k) {
+          var y = parseInt(x[k])
+          if(k<x.length-1 || j<parts.length-1) {
+            if(!(y in o)) {
+              if(k < x.length-1) {
+                o[y] = []
+              } else {
+                o[y] = {}
+              }
+            }
+            o = o[y]
+          } else {
+            if(useIndex) {
+              o[y] = i
+            } else {
+              o[y] = uniforms[i].type
+            }
+          }
+        }
+      } else if(j < parts.length-1) {
+        if(!(x[0] in o)) {
+          o[x[0]] = {}
+        }
+        o = o[x[0]]
+      } else {
+        if(useIndex) {
+          o[x[0]] = i
+        } else {
+          o[x[0]] = uniforms[i].type
+        }
+      }
+    }
+  }
+  return obj
+}
+},{}],15:[function(require,module,exports){
+'use strict'
+
+exports.uniforms    = runtimeUniforms
+exports.attributes  = runtimeAttributes
+
+var GL_TO_GLSL_TYPES = {
+  'FLOAT':       'float',
+  'FLOAT_VEC2':  'vec2',
+  'FLOAT_VEC3':  'vec3',
+  'FLOAT_VEC4':  'vec4',
+  'INT':         'int',
+  'INT_VEC2':    'ivec2',
+  'INT_VEC3':    'ivec3',
+  'INT_VEC4':    'ivec4',
+  'BOOL':        'bool',
+  'BOOL_VEC2':   'bvec2',
+  'BOOL_VEC3':   'bvec3',
+  'BOOL_VEC4':   'bvec4',
+  'FLOAT_MAT2':  'mat2',
+  'FLOAT_MAT3':  'mat3',
+  'FLOAT_MAT4':  'mat4',
+  'SAMPLER_2D':  'sampler2D',
+  'SAMPLER_CUBE':'samplerCube'
+}
+
+var GL_TABLE = null
+
+function getType(gl, type) {
+  if(!GL_TABLE) {
+    var typeNames = Object.keys(GL_TO_GLSL_TYPES)
+    GL_TABLE = {}
+    for(var i=0; i<typeNames.length; ++i) {
+      var tn = typeNames[i]
+      GL_TABLE[gl[tn]] = GL_TO_GLSL_TYPES[tn]
+    }
+  }
+  return GL_TABLE[type]
+}
+
+function runtimeUniforms(gl, program) {
+  var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
+  var result = []
+  for(var i=0; i<numUniforms; ++i) {
+    var info = gl.getActiveUniform(program, i)
+    if(info) {
+      var type = getType(gl, info.type)
+      if(info.size > 1) {
+        for(var j=0; j<info.size; ++j) {
+          result.push({
+            name: info.name.replace('[0]', '[' + j + ']'),
+            type: type
+          })
+        }
+      } else {
+        result.push({
+          name: info.name,
+          type: type
+        })
+      }
+    }
+  }
+  return result
+}
+
+function runtimeAttributes(gl, program) {
+  var numAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES)
+  var result = []
+  for(var i=0; i<numAttributes; ++i) {
+    var info = gl.getActiveAttrib(program, i)
+    if(info) {
+      result.push({
+        name: info.name,
+        type: getType(gl, info.type)
+      })
+    }
+  }
+  return result
+}
+
+},{}],16:[function(require,module,exports){
+'use strict'
+
+exports.shader   = getShaderReference
+exports.program  = createProgram
+
+var formatCompilerError = require('gl-format-compiler-error');
+
+var weakMap = typeof WeakMap === 'undefined' ? require('weakmap-shim') : WeakMap
+var CACHE = new weakMap()
+
+var SHADER_COUNTER = 0
+
+function ShaderReference(id, src, type, shader, programs, count, cache) {
+  this.id       = id
+  this.src      = src
+  this.type     = type
+  this.shader   = shader
+  this.count    = count
+  this.programs = []
+  this.cache    = cache
+}
+
+ShaderReference.prototype.dispose = function() {
+  if(--this.count === 0) {
+    var cache    = this.cache
+    var gl       = cache.gl
+
+    //Remove program references
+    var programs = this.programs
+    for(var i=0, n=programs.length; i<n; ++i) {
+      var p = cache.programs[programs[i]]
+      if(p) {
+        delete cache.programs[i]
+        gl.deleteProgram(p)
+      }
+    }
+
+    //Remove shader reference
+    gl.deleteShader(this.shader)
+    delete cache.shaders[(this.type === gl.FRAGMENT_SHADER)|0][this.src]
+  }
+}
+
+function ContextCache(gl) {
+  this.gl       = gl
+  this.shaders  = [{}, {}]
+  this.programs = {}
+}
+
+var proto = ContextCache.prototype
+
+function compileShader(gl, type, src) {
+  var shader = gl.createShader(type)
+  gl.shaderSource(shader, src)
+  gl.compileShader(shader)
+  if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    var errLog = gl.getShaderInfoLog(shader)
+    try {
+        var fmt = formatCompilerError(errLog, src, type);
+    } catch (e){
+        console.warn('Failed to format compiler error: ' + e);
+        throw new Error('gl-shader: Error compiling shader:\n' + errLog)
+    }
+    console.warn('gl-shader: ' + fmt.long);
+    throw new Error('gl-shader: ' + fmt.short)
+  }
+  return shader
+}
+
+proto.getShaderReference = function(type, src) {
+  var gl      = this.gl
+  var shaders = this.shaders[(type === gl.FRAGMENT_SHADER)|0]
+  var shader  = shaders[src]
+  if(!shader || !gl.isShader(shader.shader)) {
+    var shaderObj = compileShader(gl, type, src)
+    shader = shaders[src] = new ShaderReference(
+      SHADER_COUNTER++,
+      src,
+      type,
+      shaderObj,
+      [],
+      1,
+      this)
+  } else {
+    shader.count += 1
+  }
+  return shader
+}
+
+function linkProgram(gl, vshader, fshader, attribs, locations) {
+  var program = gl.createProgram()
+  gl.attachShader(program, vshader)
+  gl.attachShader(program, fshader)
+  for(var i=0; i<attribs.length; ++i) {
+    gl.bindAttribLocation(program, locations[i], attribs[i])
+  }
+  gl.linkProgram(program)
+  if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    var errLog = gl.getProgramInfoLog(program)
+    console.error('gl-shader: Error linking program:', errLog)
+    throw new Error('gl-shader: Error linking program:' + errLog)
+  }
+  return program
+}
+
+proto.getProgram = function(vref, fref, attribs, locations) {
+  var token = [vref.id, fref.id, attribs.join(':'), locations.join(':')].join('@')
+  var prog  = this.programs[token]
+  if(!prog || !this.gl.isProgram(prog)) {
+    this.programs[token] = prog = linkProgram(
+      this.gl,
+      vref.shader,
+      fref.shader,
+      attribs,
+      locations)
+    vref.programs.push(token)
+    fref.programs.push(token)
+  }
+  return prog
+}
+
+function getCache(gl) {
+  var ctxCache = CACHE.get(gl)
+  if(!ctxCache) {
+    ctxCache = new ContextCache(gl)
+    CACHE.set(gl, ctxCache)
+  }
+  return ctxCache
+}
+
+function getShaderReference(gl, type, src) {
+  return getCache(gl).getShaderReference(type, src)
+}
+
+function createProgram(gl, vref, fref, attribs, locations) {
+  return getCache(gl).getProgram(vref, fref, attribs, locations)
+}
+
+},{"gl-format-compiler-error":17,"weakmap-shim":33}],17:[function(require,module,exports){
+
+var sprintf = require('sprintf-js').sprintf;
+var glConstants = require('gl-constants/lookup');
+var shaderName = require('glsl-shader-name');
+var addLineNumbers = require('add-line-numbers');
+
+module.exports = formatCompilerError;
+
+function formatCompilerError(errLog, src, type) {
+    "use strict";
+
+    var name = shaderName(src) || 'of unknown name (see npm glsl-shader-name)';
+
+    var typeName = 'unknown type';
+    if (type !== undefined) {
+        typeName = type === glConstants.FRAGMENT_SHADER ? 'fragment' : 'vertex'
+    }
+
+    var longForm = sprintf('Error compiling %s shader %s:\n', typeName, name);
+    var shortForm = sprintf("%s%s", longForm, errLog);
+
+    var errorStrings = errLog.split('\n');
+    var errors = {};
+
+    for (var i = 0; i < errorStrings.length; i++) {
+        var errorString = errorStrings[i];
+        if (errorString === '') continue;
+        var lineNo = parseInt(errorString.split(':')[2]);
+        if (isNaN(lineNo)) {
+            throw new Error(sprintf('Could not parse error: %s', errorString));
+        }
+        errors[lineNo] = errorString;
+    }
+
+    var lines = addLineNumbers(src).split('\n');
+
+    for (var i = 0; i < lines.length; i++) {
+        if (!errors[i+3] && !errors[i+2] && !errors[i+1]) continue;
+        var line = lines[i];
+        longForm += line + '\n';
+        if (errors[i+1]) {
+            var e = errors[i+1];
+            e = e.substr(e.split(':', 3).join(':').length + 1).trim();
+            longForm += sprintf('^^^ %s\n\n', e);
+        }
+    }
+
+    return {
+        long: longForm.trim(),
+        short: shortForm.trim()
+    };
+}
+
+
+},{"add-line-numbers":18,"gl-constants/lookup":22,"glsl-shader-name":23,"sprintf-js":30}],18:[function(require,module,exports){
+var padLeft = require('pad-left')
+
+module.exports = addLineNumbers
+function addLineNumbers (string, start, delim) {
+  start = typeof start === 'number' ? start : 1
+  delim = delim || ': '
+
+  var lines = string.split(/\r?\n/)
+  var totalDigits = String(lines.length + start - 1).length
+  return lines.map(function (line, i) {
+    var c = i + start
+    var digits = String(c).length
+    var prefix = padLeft(c, totalDigits - digits)
+    return prefix + delim + line
+  }).join('\n')
+}
+
+},{"pad-left":19}],19:[function(require,module,exports){
+/*!
+ * pad-left <https://github.com/jonschlinkert/pad-left>
+ *
+ * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Licensed under the MIT license.
+ */
+
+'use strict';
+
+var repeat = require('repeat-string');
+
+module.exports = function padLeft(str, num, ch) {
+  ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
+  return repeat(ch, num) + str;
+};
+},{"repeat-string":20}],20:[function(require,module,exports){
+/*!
+ * repeat-string <https://github.com/jonschlinkert/repeat-string>
+ *
+ * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Licensed under the MIT License.
+ */
+
+'use strict';
+
+/**
+ * Expose `repeat`
+ */
+
+module.exports = repeat;
+
+/**
+ * Repeat the given `string` the specified `number`
+ * of times.
+ *
+ * **Example:**
+ *
+ * ```js
+ * var repeat = require('repeat-string');
+ * repeat('A', 5);
+ * //=> AAAAA
+ * ```
+ *
+ * @param {String} `string` The string to repeat
+ * @param {Number} `number` The number of times to repeat the string
+ * @return {String} Repeated string
+ * @api public
+ */
+
+function repeat(str, num) {
+  if (typeof str !== 'string') {
+    throw new TypeError('repeat-string expects a string.');
+  }
+
+  if (num === 1) return str;
+  if (num === 2) return str + str;
+
+  var max = str.length * num;
+  if (cache !== str || typeof cache === 'undefined') {
+    cache = str;
+    res = '';
+  }
+
+  while (max > res.length && num > 0) {
+    if (num & 1) {
+      res += str;
+    }
+
+    num >>= 1;
+    if (!num) break;
+    str += str;
+  }
+
+  return res.substr(0, max);
+}
+
+/**
+ * Results cache
+ */
+
+var res = '';
+var cache;
+
+},{}],21:[function(require,module,exports){
+module.exports = {
+  0: 'NONE',
+  1: 'ONE',
+  2: 'LINE_LOOP',
+  3: 'LINE_STRIP',
+  4: 'TRIANGLES',
+  5: 'TRIANGLE_STRIP',
+  6: 'TRIANGLE_FAN',
+  256: 'DEPTH_BUFFER_BIT',
+  512: 'NEVER',
+  513: 'LESS',
+  514: 'EQUAL',
+  515: 'LEQUAL',
+  516: 'GREATER',
+  517: 'NOTEQUAL',
+  518: 'GEQUAL',
+  519: 'ALWAYS',
+  768: 'SRC_COLOR',
+  769: 'ONE_MINUS_SRC_COLOR',
+  770: 'SRC_ALPHA',
+  771: 'ONE_MINUS_SRC_ALPHA',
+  772: 'DST_ALPHA',
+  773: 'ONE_MINUS_DST_ALPHA',
+  774: 'DST_COLOR',
+  775: 'ONE_MINUS_DST_COLOR',
+  776: 'SRC_ALPHA_SATURATE',
+  1024: 'STENCIL_BUFFER_BIT',
+  1028: 'FRONT',
+  1029: 'BACK',
+  1032: 'FRONT_AND_BACK',
+  1280: 'INVALID_ENUM',
+  1281: 'INVALID_VALUE',
+  1282: 'INVALID_OPERATION',
+  1285: 'OUT_OF_MEMORY',
+  1286: 'INVALID_FRAMEBUFFER_OPERATION',
+  2304: 'CW',
+  2305: 'CCW',
+  2849: 'LINE_WIDTH',
+  2884: 'CULL_FACE',
+  2885: 'CULL_FACE_MODE',
+  2886: 'FRONT_FACE',
+  2928: 'DEPTH_RANGE',
+  2929: 'DEPTH_TEST',
+  2930: 'DEPTH_WRITEMASK',
+  2931: 'DEPTH_CLEAR_VALUE',
+  2932: 'DEPTH_FUNC',
+  2960: 'STENCIL_TEST',
+  2961: 'STENCIL_CLEAR_VALUE',
+  2962: 'STENCIL_FUNC',
+  2963: 'STENCIL_VALUE_MASK',
+  2964: 'STENCIL_FAIL',
+  2965: 'STENCIL_PASS_DEPTH_FAIL',
+  2966: 'STENCIL_PASS_DEPTH_PASS',
+  2967: 'STENCIL_REF',
+  2968: 'STENCIL_WRITEMASK',
+  2978: 'VIEWPORT',
+  3024: 'DITHER',
+  3042: 'BLEND',
+  3088: 'SCISSOR_BOX',
+  3089: 'SCISSOR_TEST',
+  3106: 'COLOR_CLEAR_VALUE',
+  3107: 'COLOR_WRITEMASK',
+  3317: 'UNPACK_ALIGNMENT',
+  3333: 'PACK_ALIGNMENT',
+  3379: 'MAX_TEXTURE_SIZE',
+  3386: 'MAX_VIEWPORT_DIMS',
+  3408: 'SUBPIXEL_BITS',
+  3410: 'RED_BITS',
+  3411: 'GREEN_BITS',
+  3412: 'BLUE_BITS',
+  3413: 'ALPHA_BITS',
+  3414: 'DEPTH_BITS',
+  3415: 'STENCIL_BITS',
+  3553: 'TEXTURE_2D',
+  4352: 'DONT_CARE',
+  4353: 'FASTEST',
+  4354: 'NICEST',
+  5120: 'BYTE',
+  5121: 'UNSIGNED_BYTE',
+  5122: 'SHORT',
+  5123: 'UNSIGNED_SHORT',
+  5124: 'INT',
+  5125: 'UNSIGNED_INT',
+  5126: 'FLOAT',
+  5386: 'INVERT',
+  5890: 'TEXTURE',
+  6401: 'STENCIL_INDEX',
+  6402: 'DEPTH_COMPONENT',
+  6406: 'ALPHA',
+  6407: 'RGB',
+  6408: 'RGBA',
+  6409: 'LUMINANCE',
+  6410: 'LUMINANCE_ALPHA',
+  7680: 'KEEP',
+  7681: 'REPLACE',
+  7682: 'INCR',
+  7683: 'DECR',
+  7936: 'VENDOR',
+  7937: 'RENDERER',
+  7938: 'VERSION',
+  9728: 'NEAREST',
+  9729: 'LINEAR',
+  9984: 'NEAREST_MIPMAP_NEAREST',
+  9985: 'LINEAR_MIPMAP_NEAREST',
+  9986: 'NEAREST_MIPMAP_LINEAR',
+  9987: 'LINEAR_MIPMAP_LINEAR',
+  10240: 'TEXTURE_MAG_FILTER',
+  10241: 'TEXTURE_MIN_FILTER',
+  10242: 'TEXTURE_WRAP_S',
+  10243: 'TEXTURE_WRAP_T',
+  10497: 'REPEAT',
+  10752: 'POLYGON_OFFSET_UNITS',
+  16384: 'COLOR_BUFFER_BIT',
+  32769: 'CONSTANT_COLOR',
+  32770: 'ONE_MINUS_CONSTANT_COLOR',
+  32771: 'CONSTANT_ALPHA',
+  32772: 'ONE_MINUS_CONSTANT_ALPHA',
+  32773: 'BLEND_COLOR',
+  32774: 'FUNC_ADD',
+  32777: 'BLEND_EQUATION_RGB',
+  32778: 'FUNC_SUBTRACT',
+  32779: 'FUNC_REVERSE_SUBTRACT',
+  32819: 'UNSIGNED_SHORT_4_4_4_4',
+  32820: 'UNSIGNED_SHORT_5_5_5_1',
+  32823: 'POLYGON_OFFSET_FILL',
+  32824: 'POLYGON_OFFSET_FACTOR',
+  32854: 'RGBA4',
+  32855: 'RGB5_A1',
+  32873: 'TEXTURE_BINDING_2D',
+  32926: 'SAMPLE_ALPHA_TO_COVERAGE',
+  32928: 'SAMPLE_COVERAGE',
+  32936: 'SAMPLE_BUFFERS',
+  32937: 'SAMPLES',
+  32938: 'SAMPLE_COVERAGE_VALUE',
+  32939: 'SAMPLE_COVERAGE_INVERT',
+  32968: 'BLEND_DST_RGB',
+  32969: 'BLEND_SRC_RGB',
+  32970: 'BLEND_DST_ALPHA',
+  32971: 'BLEND_SRC_ALPHA',
+  33071: 'CLAMP_TO_EDGE',
+  33170: 'GENERATE_MIPMAP_HINT',
+  33189: 'DEPTH_COMPONENT16',
+  33306: 'DEPTH_STENCIL_ATTACHMENT',
+  33635: 'UNSIGNED_SHORT_5_6_5',
+  33648: 'MIRRORED_REPEAT',
+  33901: 'ALIASED_POINT_SIZE_RANGE',
+  33902: 'ALIASED_LINE_WIDTH_RANGE',
+  33984: 'TEXTURE0',
+  33985: 'TEXTURE1',
+  33986: 'TEXTURE2',
+  33987: 'TEXTURE3',
+  33988: 'TEXTURE4',
+  33989: 'TEXTURE5',
+  33990: 'TEXTURE6',
+  33991: 'TEXTURE7',
+  33992: 'TEXTURE8',
+  33993: 'TEXTURE9',
+  33994: 'TEXTURE10',
+  33995: 'TEXTURE11',
+  33996: 'TEXTURE12',
+  33997: 'TEXTURE13',
+  33998: 'TEXTURE14',
+  33999: 'TEXTURE15',
+  34000: 'TEXTURE16',
+  34001: 'TEXTURE17',
+  34002: 'TEXTURE18',
+  34003: 'TEXTURE19',
+  34004: 'TEXTURE20',
+  34005: 'TEXTURE21',
+  34006: 'TEXTURE22',
+  34007: 'TEXTURE23',
+  34008: 'TEXTURE24',
+  34009: 'TEXTURE25',
+  34010: 'TEXTURE26',
+  34011: 'TEXTURE27',
+  34012: 'TEXTURE28',
+  34013: 'TEXTURE29',
+  34014: 'TEXTURE30',
+  34015: 'TEXTURE31',
+  34016: 'ACTIVE_TEXTURE',
+  34024: 'MAX_RENDERBUFFER_SIZE',
+  34041: 'DEPTH_STENCIL',
+  34055: 'INCR_WRAP',
+  34056: 'DECR_WRAP',
+  34067: 'TEXTURE_CUBE_MAP',
+  34068: 'TEXTURE_BINDING_CUBE_MAP',
+  34069: 'TEXTURE_CUBE_MAP_POSITIVE_X',
+  34070: 'TEXTURE_CUBE_MAP_NEGATIVE_X',
+  34071: 'TEXTURE_CUBE_MAP_POSITIVE_Y',
+  34072: 'TEXTURE_CUBE_MAP_NEGATIVE_Y',
+  34073: 'TEXTURE_CUBE_MAP_POSITIVE_Z',
+  34074: 'TEXTURE_CUBE_MAP_NEGATIVE_Z',
+  34076: 'MAX_CUBE_MAP_TEXTURE_SIZE',
+  34338: 'VERTEX_ATTRIB_ARRAY_ENABLED',
+  34339: 'VERTEX_ATTRIB_ARRAY_SIZE',
+  34340: 'VERTEX_ATTRIB_ARRAY_STRIDE',
+  34341: 'VERTEX_ATTRIB_ARRAY_TYPE',
+  34342: 'CURRENT_VERTEX_ATTRIB',
+  34373: 'VERTEX_ATTRIB_ARRAY_POINTER',
+  34466: 'NUM_COMPRESSED_TEXTURE_FORMATS',
+  34467: 'COMPRESSED_TEXTURE_FORMATS',
+  34660: 'BUFFER_SIZE',
+  34661: 'BUFFER_USAGE',
+  34816: 'STENCIL_BACK_FUNC',
+  34817: 'STENCIL_BACK_FAIL',
+  34818: 'STENCIL_BACK_PASS_DEPTH_FAIL',
+  34819: 'STENCIL_BACK_PASS_DEPTH_PASS',
+  34877: 'BLEND_EQUATION_ALPHA',
+  34921: 'MAX_VERTEX_ATTRIBS',
+  34922: 'VERTEX_ATTRIB_ARRAY_NORMALIZED',
+  34930: 'MAX_TEXTURE_IMAGE_UNITS',
+  34962: 'ARRAY_BUFFER',
+  34963: 'ELEMENT_ARRAY_BUFFER',
+  34964: 'ARRAY_BUFFER_BINDING',
+  34965: 'ELEMENT_ARRAY_BUFFER_BINDING',
+  34975: 'VERTEX_ATTRIB_ARRAY_BUFFER_BINDING',
+  35040: 'STREAM_DRAW',
+  35044: 'STATIC_DRAW',
+  35048: 'DYNAMIC_DRAW',
+  35632: 'FRAGMENT_SHADER',
+  35633: 'VERTEX_SHADER',
+  35660: 'MAX_VERTEX_TEXTURE_IMAGE_UNITS',
+  35661: 'MAX_COMBINED_TEXTURE_IMAGE_UNITS',
+  35663: 'SHADER_TYPE',
+  35664: 'FLOAT_VEC2',
+  35665: 'FLOAT_VEC3',
+  35666: 'FLOAT_VEC4',
+  35667: 'INT_VEC2',
+  35668: 'INT_VEC3',
+  35669: 'INT_VEC4',
+  35670: 'BOOL',
+  35671: 'BOOL_VEC2',
+  35672: 'BOOL_VEC3',
+  35673: 'BOOL_VEC4',
+  35674: 'FLOAT_MAT2',
+  35675: 'FLOAT_MAT3',
+  35676: 'FLOAT_MAT4',
+  35678: 'SAMPLER_2D',
+  35680: 'SAMPLER_CUBE',
+  35712: 'DELETE_STATUS',
+  35713: 'COMPILE_STATUS',
+  35714: 'LINK_STATUS',
+  35715: 'VALIDATE_STATUS',
+  35716: 'INFO_LOG_LENGTH',
+  35717: 'ATTACHED_SHADERS',
+  35718: 'ACTIVE_UNIFORMS',
+  35719: 'ACTIVE_UNIFORM_MAX_LENGTH',
+  35720: 'SHADER_SOURCE_LENGTH',
+  35721: 'ACTIVE_ATTRIBUTES',
+  35722: 'ACTIVE_ATTRIBUTE_MAX_LENGTH',
+  35724: 'SHADING_LANGUAGE_VERSION',
+  35725: 'CURRENT_PROGRAM',
+  36003: 'STENCIL_BACK_REF',
+  36004: 'STENCIL_BACK_VALUE_MASK',
+  36005: 'STENCIL_BACK_WRITEMASK',
+  36006: 'FRAMEBUFFER_BINDING',
+  36007: 'RENDERBUFFER_BINDING',
+  36048: 'FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE',
+  36049: 'FRAMEBUFFER_ATTACHMENT_OBJECT_NAME',
+  36050: 'FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL',
+  36051: 'FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE',
+  36053: 'FRAMEBUFFER_COMPLETE',
+  36054: 'FRAMEBUFFER_INCOMPLETE_ATTACHMENT',
+  36055: 'FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT',
+  36057: 'FRAMEBUFFER_INCOMPLETE_DIMENSIONS',
+  36061: 'FRAMEBUFFER_UNSUPPORTED',
+  36064: 'COLOR_ATTACHMENT0',
+  36096: 'DEPTH_ATTACHMENT',
+  36128: 'STENCIL_ATTACHMENT',
+  36160: 'FRAMEBUFFER',
+  36161: 'RENDERBUFFER',
+  36162: 'RENDERBUFFER_WIDTH',
+  36163: 'RENDERBUFFER_HEIGHT',
+  36164: 'RENDERBUFFER_INTERNAL_FORMAT',
+  36168: 'STENCIL_INDEX8',
+  36176: 'RENDERBUFFER_RED_SIZE',
+  36177: 'RENDERBUFFER_GREEN_SIZE',
+  36178: 'RENDERBUFFER_BLUE_SIZE',
+  36179: 'RENDERBUFFER_ALPHA_SIZE',
+  36180: 'RENDERBUFFER_DEPTH_SIZE',
+  36181: 'RENDERBUFFER_STENCIL_SIZE',
+  36194: 'RGB565',
+  36336: 'LOW_FLOAT',
+  36337: 'MEDIUM_FLOAT',
+  36338: 'HIGH_FLOAT',
+  36339: 'LOW_INT',
+  36340: 'MEDIUM_INT',
+  36341: 'HIGH_INT',
+  36346: 'SHADER_COMPILER',
+  36347: 'MAX_VERTEX_UNIFORM_VECTORS',
+  36348: 'MAX_VARYING_VECTORS',
+  36349: 'MAX_FRAGMENT_UNIFORM_VECTORS',
+  37440: 'UNPACK_FLIP_Y_WEBGL',
+  37441: 'UNPACK_PREMULTIPLY_ALPHA_WEBGL',
+  37442: 'CONTEXT_LOST_WEBGL',
+  37443: 'UNPACK_COLORSPACE_CONVERSION_WEBGL',
+  37444: 'BROWSER_DEFAULT_WEBGL'
+}
+
+},{}],22:[function(require,module,exports){
+var gl10 = require('./1.0/numbers')
+
+module.exports = function lookupConstant (number) {
+  return gl10[number]
+}
+
+},{"./1.0/numbers":21}],23:[function(require,module,exports){
+var tokenize = require('glsl-tokenizer')
+var atob     = require('atob-lite')
+
+module.exports = getName
+
+function getName(src) {
+  var tokens = Array.isArray(src)
+    ? src
+    : tokenize(src)
+
+  for (var i = 0; i < tokens.length; i++) {
+    var token = tokens[i]
+    if (token.type !== 'preprocessor') continue
+    var match = token.data.match(/\#define\s+SHADER_NAME(_B64)?\s+(.+)$/)
+    if (!match) continue
+    if (!match[2]) continue
+
+    var b64  = match[1]
+    var name = match[2]
+
+    return (b64 ? atob(name) : name).trim()
+  }
+}
+
+},{"atob-lite":24,"glsl-tokenizer":29}],24:[function(require,module,exports){
+module.exports = function _atob(str) {
+  return atob(str)
+}
+
+},{}],25:[function(require,module,exports){
+module.exports = tokenize
+
+var literals = require('./lib/literals')
+  , operators = require('./lib/operators')
+  , builtins = require('./lib/builtins')
+
+var NORMAL = 999          // <-- never emitted
+  , TOKEN = 9999          // <-- never emitted
+  , BLOCK_COMMENT = 0
+  , LINE_COMMENT = 1
+  , PREPROCESSOR = 2
+  , OPERATOR = 3
+  , INTEGER = 4
+  , FLOAT = 5
+  , IDENT = 6
+  , BUILTIN = 7
+  , KEYWORD = 8
+  , WHITESPACE = 9
+  , EOF = 10
+  , HEX = 11
+
+var map = [
+    'block-comment'
+  , 'line-comment'
+  , 'preprocessor'
+  , 'operator'
+  , 'integer'
+  , 'float'
+  , 'ident'
+  , 'builtin'
+  , 'keyword'
+  , 'whitespace'
+  , 'eof'
+  , 'integer'
+]
+
+function tokenize() {
+  var i = 0
+    , total = 0
+    , mode = NORMAL
+    , c
+    , last
+    , content = []
+    , tokens = []
+    , token_idx = 0
+    , token_offs = 0
+    , line = 1
+    , col = 0
+    , start = 0
+    , isnum = false
+    , isoperator = false
+    , input = ''
+    , len
+
+  return function(data) {
+    tokens = []
+    if (data !== null) return write(data)
+    return end()
+  }
+
+  function token(data) {
+    if (data.length) {
+      tokens.push({
+        type: map[mode]
+      , data: data
+      , position: start
+      , line: line
+      , column: col
+      })
+    }
+  }
+
+  function write(chunk) {
+    i = 0
+    input += chunk
+    len = input.length
+
+    var last
+
+    while(c = input[i], i < len) {
+      last = i
+
+      switch(mode) {
+        case BLOCK_COMMENT: i = block_comment(); break
+        case LINE_COMMENT: i = line_comment(); break
+        case PREPROCESSOR: i = preprocessor(); break
+        case OPERATOR: i = operator(); break
+        case INTEGER: i = integer(); break
+        case HEX: i = hex(); break
+        case FLOAT: i = decimal(); break
+        case TOKEN: i = readtoken(); break
+        case WHITESPACE: i = whitespace(); break
+        case NORMAL: i = normal(); break
+      }
+
+      if(last !== i) {
+        switch(input[last]) {
+          case '\n': col = 0; ++line; break
+          default: ++col; break
+        }
+      }
+    }
+
+    total += i
+    input = input.slice(i)
+    return tokens
+  }
+
+  function end(chunk) {
+    if(content.length) {
+      token(content.join(''))
+    }
+
+    mode = EOF
+    token('(eof)')
+    return tokens
+  }
+
+  function normal() {
+    content = content.length ? [] : content
+
+    if(last === '/' && c === '*') {
+      start = total + i - 1
+      mode = BLOCK_COMMENT
+      last = c
+      return i + 1
+    }
+
+    if(last === '/' && c === '/') {
+      start = total + i - 1
+      mode = LINE_COMMENT
+      last = c
+      return i + 1
+    }
+
+    if(c === '#') {
+      mode = PREPROCESSOR
+      start = total + i
+      return i
+    }
+
+    if(/\s/.test(c)) {
+      mode = WHITESPACE
+      start = total + i
+      return i
+    }
+
+    isnum = /\d/.test(c)
+    isoperator = /[^\w_]/.test(c)
+
+    start = total + i
+    mode = isnum ? INTEGER : isoperator ? OPERATOR : TOKEN
+    return i
+  }
+
+  function whitespace() {
+    if(/[^\s]/g.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function preprocessor() {
+    if(c === '\n' && last !== '\\') {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function line_comment() {
+    return preprocessor()
+  }
+
+  function block_comment() {
+    if(c === '/' && last === '*') {
+      content.push(c)
+      token(content.join(''))
+      mode = NORMAL
+      return i + 1
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function operator() {
+    if(last === '.' && /\d/.test(c)) {
+      mode = FLOAT
+      return i
+    }
+
+    if(last === '/' && c === '*') {
+      mode = BLOCK_COMMENT
+      return i
+    }
+
+    if(last === '/' && c === '/') {
+      mode = LINE_COMMENT
+      return i
+    }
+
+    if(c === '.' && content.length) {
+      while(determine_operator(content));
+
+      mode = FLOAT
+      return i
+    }
+
+    if(c === ';' || c === ')' || c === '(') {
+      if(content.length) while(determine_operator(content));
+      token(c)
+      mode = NORMAL
+      return i + 1
+    }
+
+    var is_composite_operator = content.length === 2 && c !== '='
+    if(/[\w_\d\s]/.test(c) || is_composite_operator) {
+      while(determine_operator(content));
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function determine_operator(buf) {
+    var j = 0
+      , idx
+      , res
+
+    do {
+      idx = operators.indexOf(buf.slice(0, buf.length + j).join(''))
+      res = operators[idx]
+
+      if(idx === -1) {
+        if(j-- + buf.length > 0) continue
+        res = buf.slice(0, 1).join('')
+      }
+
+      token(res)
+
+      start += res.length
+      content = content.slice(res.length)
+      return content.length
+    } while(1)
+  }
+
+  function hex() {
+    if(/[^a-fA-F0-9]/.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function integer() {
+    if(c === '.') {
+      content.push(c)
+      mode = FLOAT
+      last = c
+      return i + 1
+    }
+
+    if(/[eE]/.test(c)) {
+      content.push(c)
+      mode = FLOAT
+      last = c
+      return i + 1
+    }
+
+    if(c === 'x' && content.length === 1 && content[0] === '0') {
+      mode = HEX
+      content.push(c)
+      last = c
+      return i + 1
+    }
+
+    if(/[^\d]/.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function decimal() {
+    if(c === 'f') {
+      content.push(c)
+      last = c
+      i += 1
+    }
+
+    if(/[eE]/.test(c)) {
+      content.push(c)
+      last = c
+      return i + 1
+    }
+
+    if(/[^\d]/.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function readtoken() {
+    if(/[^\d\w_]/.test(c)) {
+      var contentstr = content.join('')
+      if(literals.indexOf(contentstr) > -1) {
+        mode = KEYWORD
+      } else if(builtins.indexOf(contentstr) > -1) {
+        mode = BUILTIN
+      } else {
+        mode = IDENT
+      }
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+}
+
+},{"./lib/builtins":26,"./lib/literals":27,"./lib/operators":28}],26:[function(require,module,exports){
+module.exports = [
+    'gl_Position'
+  , 'gl_PointSize'
+  , 'gl_ClipVertex'
+  , 'gl_FragCoord'
+  , 'gl_FrontFacing'
+  , 'gl_FragColor'
+  , 'gl_FragData'
+  , 'gl_FragDepth'
+  , 'gl_Color'
+  , 'gl_SecondaryColor'
+  , 'gl_Normal'
+  , 'gl_Vertex'
+  , 'gl_MultiTexCoord0'
+  , 'gl_MultiTexCoord1'
+  , 'gl_MultiTexCoord2'
+  , 'gl_MultiTexCoord3'
+  , 'gl_MultiTexCoord4'
+  , 'gl_MultiTexCoord5'
+  , 'gl_MultiTexCoord6'
+  , 'gl_MultiTexCoord7'
+  , 'gl_FogCoord'
+  , 'gl_MaxLights'
+  , 'gl_MaxClipPlanes'
+  , 'gl_MaxTextureUnits'
+  , 'gl_MaxTextureCoords'
+  , 'gl_MaxVertexAttribs'
+  , 'gl_MaxVertexUniformComponents'
+  , 'gl_MaxVaryingFloats'
+  , 'gl_MaxVertexTextureImageUnits'
+  , 'gl_MaxCombinedTextureImageUnits'
+  , 'gl_MaxTextureImageUnits'
+  , 'gl_MaxFragmentUniformComponents'
+  , 'gl_MaxDrawBuffers'
+  , 'gl_ModelViewMatrix'
+  , 'gl_ProjectionMatrix'
+  , 'gl_ModelViewProjectionMatrix'
+  , 'gl_TextureMatrix'
+  , 'gl_NormalMatrix'
+  , 'gl_ModelViewMatrixInverse'
+  , 'gl_ProjectionMatrixInverse'
+  , 'gl_ModelViewProjectionMatrixInverse'
+  , 'gl_TextureMatrixInverse'
+  , 'gl_ModelViewMatrixTranspose'
+  , 'gl_ProjectionMatrixTranspose'
+  , 'gl_ModelViewProjectionMatrixTranspose'
+  , 'gl_TextureMatrixTranspose'
+  , 'gl_ModelViewMatrixInverseTranspose'
+  , 'gl_ProjectionMatrixInverseTranspose'
+  , 'gl_ModelViewProjectionMatrixInverseTranspose'
+  , 'gl_TextureMatrixInverseTranspose'
+  , 'gl_NormalScale'
+  , 'gl_DepthRangeParameters'
+  , 'gl_DepthRange'
+  , 'gl_ClipPlane'
+  , 'gl_PointParameters'
+  , 'gl_Point'
+  , 'gl_MaterialParameters'
+  , 'gl_FrontMaterial'
+  , 'gl_BackMaterial'
+  , 'gl_LightSourceParameters'
+  , 'gl_LightSource'
+  , 'gl_LightModelParameters'
+  , 'gl_LightModel'
+  , 'gl_LightModelProducts'
+  , 'gl_FrontLightModelProduct'
+  , 'gl_BackLightModelProduct'
+  , 'gl_LightProducts'
+  , 'gl_FrontLightProduct'
+  , 'gl_BackLightProduct'
+  , 'gl_FogParameters'
+  , 'gl_Fog'
+  , 'gl_TextureEnvColor'
+  , 'gl_EyePlaneS'
+  , 'gl_EyePlaneT'
+  , 'gl_EyePlaneR'
+  , 'gl_EyePlaneQ'
+  , 'gl_ObjectPlaneS'
+  , 'gl_ObjectPlaneT'
+  , 'gl_ObjectPlaneR'
+  , 'gl_ObjectPlaneQ'
+  , 'gl_FrontColor'
+  , 'gl_BackColor'
+  , 'gl_FrontSecondaryColor'
+  , 'gl_BackSecondaryColor'
+  , 'gl_TexCoord'
+  , 'gl_FogFragCoord'
+  , 'gl_Color'
+  , 'gl_SecondaryColor'
+  , 'gl_TexCoord'
+  , 'gl_FogFragCoord'
+  , 'gl_PointCoord'
+  , 'radians'
+  , 'degrees'
+  , 'sin'
+  , 'cos'
+  , 'tan'
+  , 'asin'
+  , 'acos'
+  , 'atan'
+  , 'pow'
+  , 'exp'
+  , 'log'
+  , 'exp2'
+  , 'log2'
+  , 'sqrt'
+  , 'inversesqrt'
+  , 'abs'
+  , 'sign'
+  , 'floor'
+  , 'ceil'
+  , 'fract'
+  , 'mod'
+  , 'min'
+  , 'max'
+  , 'clamp'
+  , 'mix'
+  , 'step'
+  , 'smoothstep'
+  , 'length'
+  , 'distance'
+  , 'dot'
+  , 'cross'
+  , 'normalize'
+  , 'faceforward'
+  , 'reflect'
+  , 'refract'
+  , 'matrixCompMult'
+  , 'lessThan'
+  , 'lessThanEqual'
+  , 'greaterThan'
+  , 'greaterThanEqual'
+  , 'equal'
+  , 'notEqual'
+  , 'any'
+  , 'all'
+  , 'not'
+  , 'texture2D'
+  , 'texture2DProj'
+  , 'texture2DLod'
+  , 'texture2DProjLod'
+  , 'textureCube'
+  , 'textureCubeLod'
+  , 'dFdx'
+  , 'dFdy'
+]
+
+},{}],27:[function(require,module,exports){
+module.exports = [
+  // current
+    'precision'
+  , 'highp'
+  , 'mediump'
+  , 'lowp'
+  , 'attribute'
+  , 'const'
+  , 'uniform'
+  , 'varying'
+  , 'break'
+  , 'continue'
+  , 'do'
+  , 'for'
+  , 'while'
+  , 'if'
+  , 'else'
+  , 'in'
+  , 'out'
+  , 'inout'
+  , 'float'
+  , 'int'
+  , 'void'
+  , 'bool'
+  , 'true'
+  , 'false'
+  , 'discard'
+  , 'return'
+  , 'mat2'
+  , 'mat3'
+  , 'mat4'
+  , 'vec2'
+  , 'vec3'
+  , 'vec4'
+  , 'ivec2'
+  , 'ivec3'
+  , 'ivec4'
+  , 'bvec2'
+  , 'bvec3'
+  , 'bvec4'
+  , 'sampler1D'
+  , 'sampler2D'
+  , 'sampler3D'
+  , 'samplerCube'
+  , 'sampler1DShadow'
+  , 'sampler2DShadow'
+  , 'struct'
+
+  // future
+  , 'asm'
+  , 'class'
+  , 'union'
+  , 'enum'
+  , 'typedef'
+  , 'template'
+  , 'this'
+  , 'packed'
+  , 'goto'
+  , 'switch'
+  , 'default'
+  , 'inline'
+  , 'noinline'
+  , 'volatile'
+  , 'public'
+  , 'static'
+  , 'extern'
+  , 'external'
+  , 'interface'
+  , 'long'
+  , 'short'
+  , 'double'
+  , 'half'
+  , 'fixed'
+  , 'unsigned'
+  , 'input'
+  , 'output'
+  , 'hvec2'
+  , 'hvec3'
+  , 'hvec4'
+  , 'dvec2'
+  , 'dvec3'
+  , 'dvec4'
+  , 'fvec2'
+  , 'fvec3'
+  , 'fvec4'
+  , 'sampler2DRect'
+  , 'sampler3DRect'
+  , 'sampler2DRectShadow'
+  , 'sizeof'
+  , 'cast'
+  , 'namespace'
+  , 'using'
+]
+
+},{}],28:[function(require,module,exports){
+module.exports = [
+    '<<='
+  , '>>='
+  , '++'
+  , '--'
+  , '<<'
+  , '>>'
+  , '<='
+  , '>='
+  , '=='
+  , '!='
+  , '&&'
+  , '||'
+  , '+='
+  , '-='
+  , '*='
+  , '/='
+  , '%='
+  , '&='
+  , '^^'
+  , '^='
+  , '|='
+  , '('
+  , ')'
+  , '['
+  , ']'
+  , '.'
+  , '!'
+  , '~'
+  , '*'
+  , '/'
+  , '%'
+  , '+'
+  , '-'
+  , '<'
+  , '>'
+  , '&'
+  , '^'
+  , '|'
+  , '?'
+  , ':'
+  , '='
+  , ','
+  , ';'
+  , '{'
+  , '}'
+]
+
+},{}],29:[function(require,module,exports){
+var tokenize = require('./index')
+
+module.exports = tokenizeString
+
+function tokenizeString(str) {
+  var generator = tokenize()
+  var tokens = []
+
+  tokens = tokens.concat(generator(str))
+  tokens = tokens.concat(generator(null))
+
+  return tokens
+}
+
+},{"./index":25}],30:[function(require,module,exports){
+(function(window) {
+    var re = {
+        not_string: /[^s]/,
+        number: /[diefg]/,
+        json: /[j]/,
+        not_json: /[^j]/,
+        text: /^[^\x25]+/,
+        modulo: /^\x25{2}/,
+        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/,
+        key: /^([a-z_][a-z_\d]*)/i,
+        key_access: /^\.([a-z_][a-z_\d]*)/i,
+        index_access: /^\[(\d+)\]/,
+        sign: /^[\+\-]/
+    }
+
+    function sprintf() {
+        var key = arguments[0], cache = sprintf.cache
+        if (!(cache[key] && cache.hasOwnProperty(key))) {
+            cache[key] = sprintf.parse(key)
+        }
+        return sprintf.format.call(null, cache[key], arguments)
+    }
+
+    sprintf.format = function(parse_tree, argv) {
+        var cursor = 1, tree_length = parse_tree.length, node_type = "", arg, output = [], i, k, match, pad, pad_character, pad_length, is_positive = true, sign = ""
+        for (i = 0; i < tree_length; i++) {
+            node_type = get_type(parse_tree[i])
+            if (node_type === "string") {
+                output[output.length] = parse_tree[i]
+            }
+            else if (node_type === "array") {
+                match = parse_tree[i] // convenience purposes only
+                if (match[2]) { // keyword argument
+                    arg = argv[cursor]
+                    for (k = 0; k < match[2].length; k++) {
+                        if (!arg.hasOwnProperty(match[2][k])) {
+                            throw new Error(sprintf("[sprintf] property '%s' does not exist", match[2][k]))
+                        }
+                        arg = arg[match[2][k]]
+                    }
+                }
+                else if (match[1]) { // positional argument (explicit)
+                    arg = argv[match[1]]
+                }
+                else { // positional argument (implicit)
+                    arg = argv[cursor++]
+                }
+
+                if (get_type(arg) == "function") {
+                    arg = arg()
+                }
+
+                if (re.not_string.test(match[8]) && re.not_json.test(match[8]) && (get_type(arg) != "number" && isNaN(arg))) {
+                    throw new TypeError(sprintf("[sprintf] expecting number but found %s", get_type(arg)))
+                }
+
+                if (re.number.test(match[8])) {
+                    is_positive = arg >= 0
+                }
+
+                switch (match[8]) {
+                    case "b":
+                        arg = arg.toString(2)
+                    break
+                    case "c":
+                        arg = String.fromCharCode(arg)
+                    break
+                    case "d":
+                    case "i":
+                        arg = parseInt(arg, 10)
+                    break
+                    case "j":
+                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
+                    break
+                    case "e":
+                        arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential()
+                    break
+                    case "f":
+                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
+                    break
+                    case "g":
+                        arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg)
+                    break
+                    case "o":
+                        arg = arg.toString(8)
+                    break
+                    case "s":
+                        arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg)
+                    break
+                    case "u":
+                        arg = arg >>> 0
+                    break
+                    case "x":
+                        arg = arg.toString(16)
+                    break
+                    case "X":
+                        arg = arg.toString(16).toUpperCase()
+                    break
+                }
+                if (re.json.test(match[8])) {
+                    output[output.length] = arg
+                }
+                else {
+                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
+                        sign = is_positive ? "+" : "-"
+                        arg = arg.toString().replace(re.sign, "")
+                    }
+                    else {
+                        sign = ""
+                    }
+                    pad_character = match[4] ? match[4] === "0" ? "0" : match[4].charAt(1) : " "
+                    pad_length = match[6] - (sign + arg).length
+                    pad = match[6] ? (pad_length > 0 ? str_repeat(pad_character, pad_length) : "") : ""
+                    output[output.length] = match[5] ? sign + arg + pad : (pad_character === "0" ? sign + pad + arg : pad + sign + arg)
+                }
+            }
+        }
+        return output.join("")
+    }
+
+    sprintf.cache = {}
+
+    sprintf.parse = function(fmt) {
+        var _fmt = fmt, match = [], parse_tree = [], arg_names = 0
+        while (_fmt) {
+            if ((match = re.text.exec(_fmt)) !== null) {
+                parse_tree[parse_tree.length] = match[0]
+            }
+            else if ((match = re.modulo.exec(_fmt)) !== null) {
+                parse_tree[parse_tree.length] = "%"
+            }
+            else if ((match = re.placeholder.exec(_fmt)) !== null) {
+                if (match[2]) {
+                    arg_names |= 1
+                    var field_list = [], replacement_field = match[2], field_match = []
+                    if ((field_match = re.key.exec(replacement_field)) !== null) {
+                        field_list[field_list.length] = field_match[1]
+                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== "") {
+                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
+                                field_list[field_list.length] = field_match[1]
+                            }
+                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
+                                field_list[field_list.length] = field_match[1]
+                            }
+                            else {
+                                throw new SyntaxError("[sprintf] failed to parse named argument key")
+                            }
+                        }
+                    }
+                    else {
+                        throw new SyntaxError("[sprintf] failed to parse named argument key")
+                    }
+                    match[2] = field_list
+                }
+                else {
+                    arg_names |= 2
+                }
+                if (arg_names === 3) {
+                    throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported")
+                }
+                parse_tree[parse_tree.length] = match
+            }
+            else {
+                throw new SyntaxError("[sprintf] unexpected placeholder")
+            }
+            _fmt = _fmt.substring(match[0].length)
+        }
+        return parse_tree
+    }
+
+    var vsprintf = function(fmt, argv, _argv) {
+        _argv = (argv || []).slice(0)
+        _argv.splice(0, 0, fmt)
+        return sprintf.apply(null, _argv)
+    }
+
+    /**
+     * helpers
+     */
+    function get_type(variable) {
+        return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase()
+    }
+
+    function str_repeat(input, multiplier) {
+        return Array(multiplier + 1).join(input)
+    }
+
+    /**
+     * export to either browser or node.js
+     */
+    if (typeof exports !== "undefined") {
+        exports.sprintf = sprintf
+        exports.vsprintf = vsprintf
+    }
+    else {
+        window.sprintf = sprintf
+        window.vsprintf = vsprintf
+
+        if (typeof define === "function" && define.amd) {
+            define(function() {
+                return {
+                    sprintf: sprintf,
+                    vsprintf: vsprintf
+                }
+            })
+        }
+    }
+})(typeof window === "undefined" ? this : window);
+
+},{}],31:[function(require,module,exports){
+var hiddenStore = require('./hidden-store.js');
+
+module.exports = createStore;
+
+function createStore() {
+    var key = {};
+
+    return function (obj) {
+        if ((typeof obj !== 'object' || obj === null) &&
+            typeof obj !== 'function'
+        ) {
+            throw new Error('Weakmap-shim: Key must be object')
+        }
+
+        var store = obj.valueOf(key);
+        return store && store.identity === key ?
+            store : hiddenStore(obj, key);
+    };
+}
+
+},{"./hidden-store.js":32}],32:[function(require,module,exports){
+module.exports = hiddenStore;
+
+function hiddenStore(obj, key) {
+    var store = { identity: key };
+    var valueOf = obj.valueOf;
+
+    Object.defineProperty(obj, "valueOf", {
+        value: function (value) {
+            return value !== key ?
+                valueOf.apply(this, arguments) : store;
+        },
+        writable: true
+    });
+
+    return store;
+}
+
+},{}],33:[function(require,module,exports){
+// Original - @Gozola. 
+// https://gist.github.com/Gozala/1269991
+// This is a reimplemented version (with a few bug fixes).
+
+var createStore = require('./create-store.js');
+
+module.exports = weakMap;
+
+function weakMap() {
+    var privates = createStore();
+
+    return {
+        'get': function (key, fallback) {
+            var store = privates(key)
+            return store.hasOwnProperty('value') ?
+                store.value : fallback
+        },
+        'set': function (key, value) {
+            privates(key).value = value;
+        },
+        'has': function(key) {
+            return 'value' in privates(key);
+        },
+        'delete': function (key) {
+            return delete privates(key).value;
+        }
+    }
+}
+
+},{"./create-store.js":31}],34:[function(require,module,exports){
+'use strict'
+
+var ndarray = require('ndarray')
+var ops     = require('ndarray-ops')
+var pool    = require('typedarray-pool')
+
+module.exports = createTexture2D
+
+var linearTypes = null
+var filterTypes = null
+var wrapTypes   = null
+
+function lazyInitLinearTypes(gl) {
+  linearTypes = [
+    gl.LINEAR,
+    gl.NEAREST_MIPMAP_LINEAR,
+    gl.LINEAR_MIPMAP_NEAREST,
+    gl.LINEAR_MIPMAP_NEAREST
+  ]
+  filterTypes = [
+    gl.NEAREST,
+    gl.LINEAR,
+    gl.NEAREST_MIPMAP_NEAREST,
+    gl.NEAREST_MIPMAP_LINEAR,
+    gl.LINEAR_MIPMAP_NEAREST,
+    gl.LINEAR_MIPMAP_LINEAR
+  ]
+  wrapTypes = [
+    gl.REPEAT,
+    gl.CLAMP_TO_EDGE,
+    gl.MIRRORED_REPEAT
+  ]
+}
+
+var convertFloatToUint8 = function(out, inp) {
+  ops.muls(out, inp, 255.0)
+}
+
+function reshapeTexture(tex, w, h) {
+  var gl = tex.gl
+  var maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
+  if(w < 0 || w > maxSize || h < 0 || h > maxSize) {
+    throw new Error('gl-texture2d: Invalid texture size')
+  }
+  tex._shape = [w, h]
+  tex.bind()
+  gl.texImage2D(gl.TEXTURE_2D, 0, tex.format, w, h, 0, tex.format, tex.type, null)
+  tex._mipLevels = [0]
+  return tex
+}
+
+function Texture2D(gl, handle, width, height, format, type) {
+  this.gl = gl
+  this.handle = handle
+  this.format = format
+  this.type = type
+  this._shape = [width, height]
+  this._mipLevels = [0]
+  this._magFilter = gl.NEAREST
+  this._minFilter = gl.NEAREST
+  this._wrapS = gl.CLAMP_TO_EDGE
+  this._wrapT = gl.CLAMP_TO_EDGE
+  this._anisoSamples = 1
+
+  var parent = this
+  var wrapVector = [this._wrapS, this._wrapT]
+  Object.defineProperties(wrapVector, [
+    {
+      get: function() {
+        return parent._wrapS
+      },
+      set: function(v) {
+        return parent.wrapS = v
+      }
+    },
+    {
+      get: function() {
+        return parent._wrapT
+      },
+      set: function(v) {
+        return parent.wrapT = v
+      }
+    }
+  ])
+  this._wrapVector = wrapVector
+
+  var shapeVector = [this._shape[0], this._shape[1]]
+  Object.defineProperties(shapeVector, [
+    {
+      get: function() {
+        return parent._shape[0]
+      },
+      set: function(v) {
+        return parent.width = v
+      }
+    },
+    {
+      get: function() {
+        return parent._shape[1]
+      },
+      set: function(v) {
+        return parent.height = v
+      }
+    }
+  ])
+  this._shapeVector = shapeVector
+}
+
+var proto = Texture2D.prototype
+
+Object.defineProperties(proto, {
+  minFilter: {
+    get: function() {
+      return this._minFilter
+    },
+    set: function(v) {
+      this.bind()
+      var gl = this.gl
+      if(this.type === gl.FLOAT && linearTypes.indexOf(v) >= 0) {
+        if(!gl.getExtension('OES_texture_float_linear')) {
+          v = gl.NEAREST
+        }
+      }
+      if(filterTypes.indexOf(v) < 0) {
+        throw new Error('gl-texture2d: Unknown filter mode ' + v)
+      }
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, v)
+      return this._minFilter = v
+    }
+  },
+  magFilter: {
+    get: function() {
+      return this._magFilter
+    },
+    set: function(v) {
+      this.bind()
+      var gl = this.gl
+      if(this.type === gl.FLOAT && linearTypes.indexOf(v) >= 0) {
+        if(!gl.getExtension('OES_texture_float_linear')) {
+          v = gl.NEAREST
+        }
+      }
+      if(filterTypes.indexOf(v) < 0) {
+        throw new Error('gl-texture2d: Unknown filter mode ' + v)
+      }
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, v)
+      return this._magFilter = v
+    }
+  },
+  mipSamples: {
+    get: function() {
+      return this._anisoSamples
+    },
+    set: function(i) {
+      var psamples = this._anisoSamples
+      this._anisoSamples = Math.max(i, 1)|0
+      if(psamples !== this._anisoSamples) {
+        var ext = gl.getExtension('EXT_texture_filter_anisotropic')
+        if(ext) {
+          this.gl.texParameterf(this.gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, this._anisoSamples)
+        }
+      }
+      return this._anisoSamples
+    }
+  },
+  wrapS: {
+    get: function() {
+      return this._wrapS
+    },
+    set: function(v) {
+      this.bind()
+      if(wrapTypes.indexOf(v) < 0) {
+        throw new Error('gl-texture2d: Unknown wrap mode ' + v)
+      }
+      this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, v)
+      return this._wrapS = v
+    }
+  },
+  wrapT: {
+    get: function() {
+      return this._wrapT
+    },
+    set: function(v) {
+      this.bind()
+      if(wrapTypes.indexOf(v) < 0) {
+        throw new Error('gl-texture2d: Unknown wrap mode ' + v)
+      }
+      this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, v)
+      return this._wrapT = v
+    }
+  },
+  wrap: {
+    get: function() {
+      return this._wrapVector
+    },
+    set: function(v) {
+      if(!Array.isArray(v)) {
+        v = [v,v]
+      }
+      if(v.length !== 2) {
+        throw new Error('gl-texture2d: Must specify wrap mode for rows and columns')
+      }
+      for(var i=0; i<2; ++i) {
+        if(wrapTypes.indexOf(v[i]) < 0) {
+          throw new Error('gl-texture2d: Unknown wrap mode ' + v)
+        }
+      }
+      this._wrapS = v[0]
+      this._wrapT = v[1]
+
+      var gl = this.gl
+      this.bind()
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this._wrapS)
+      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this._wrapT)
+
+      return v
+    }
+  },
+  shape: {
+    get: function() {
+      return this._shapeVector
+    },
+    set: function(x) {
+      if(!Array.isArray(x)) {
+        x = [x|0,x|0]
+      } else {
+        if(x.length !== 2) {
+          throw new Error('gl-texture2d: Invalid texture shape')
+        }
+      }
+      reshapeTexture(this, x[0]|0, x[1]|0)
+      return [x[0]|0, x[1]|0]
+    }
+  },
+  width: {
+    get: function() {
+      return this._shape[0]
+    },
+    set: function(w) {
+      w = w|0
+      reshapeTexture(this, w, this._shape[1])
+      return w
+    }
+  },
+  height: {
+    get: function() {
+      return this._shape[1]
+    },
+    set: function(h) {
+      h = h|0
+      reshapeTexture(this, this._shape[0], h)
+      return h
+    }
+  }
+})
+
+proto.bind = function(unit) {
+  var gl = this.gl
+  if(unit !== undefined) {
+    gl.activeTexture(gl.TEXTURE0 + (unit|0))
+  }
+  gl.bindTexture(gl.TEXTURE_2D, this.handle)
+  if(unit !== undefined) {
+    return (unit|0)
+  }
+  return gl.getParameter(gl.ACTIVE_TEXTURE) - gl.TEXTURE0
+}
+
+proto.dispose = function() {
+  this.gl.deleteTexture(this.handle)
+}
+
+proto.generateMipmap = function() {
+  this.bind()
+  this.gl.generateMipmap(this.gl.TEXTURE_2D)
+
+  //Update mip levels
+  var l = Math.min(this._shape[0], this._shape[1])
+  for(var i=0; l>0; ++i, l>>>=1) {
+    if(this._mipLevels.indexOf(i) < 0) {
+      this._mipLevels.push(i)
+    }
+  }
+}
+
+proto.setPixels = function(data, x_off, y_off, mip_level) {
+  var gl = this.gl
+  this.bind()
+  if(Array.isArray(x_off)) {
+    mip_level = y_off
+    y_off = x_off[1]|0
+    x_off = x_off[0]|0
+  } else {
+    x_off = x_off || 0
+    y_off = y_off || 0
+  }
+  mip_level = mip_level || 0
+  if(data instanceof HTMLCanvasElement ||
+     data instanceof ImageData ||
+     data instanceof HTMLImageElement ||
+     data instanceof HTMLVideoElement) {
+    var needsMip = this._mipLevels.indexOf(mip_level) < 0
+    if(needsMip) {
+      gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, data)
+      this._mipLevels.push(mip_level)
+    } else {
+      gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, this.format, this.type, data)
+    }
+  } else if(data.shape && data.stride && data.data) {
+    if(data.shape.length < 2 ||
+       x_off + data.shape[1] > this._shape[1]>>>mip_level ||
+       y_off + data.shape[0] > this._shape[0]>>>mip_level ||
+       x_off < 0 ||
+       y_off < 0) {
+      throw new Error('gl-texture2d: Texture dimensions are out of bounds')
+    }
+    texSubImageArray(gl, x_off, y_off, mip_level, this.format, this.type, this._mipLevels, data)
+  } else {
+    throw new Error('gl-texture2d: Unsupported data type')
+  }
+}
+
+
+function isPacked(shape, stride) {
+  if(shape.length === 3) {
+    return  (stride[2] === 1) &&
+            (stride[1] === shape[0]*shape[2]) &&
+            (stride[0] === shape[2])
+  }
+  return  (stride[0] === 1) &&
+          (stride[1] === shape[0])
+}
+
+function texSubImageArray(gl, x_off, y_off, mip_level, cformat, ctype, mipLevels, array) {
+  var dtype = array.dtype
+  var shape = array.shape.slice()
+  if(shape.length < 2 || shape.length > 3) {
+    throw new Error('gl-texture2d: Invalid ndarray, must be 2d or 3d')
+  }
+  var type = 0, format = 0
+  var packed = isPacked(shape, array.stride.slice())
+  if(dtype === 'float32') {
+    type = gl.FLOAT
+  } else if(dtype === 'float64') {
+    type = gl.FLOAT
+    packed = false
+    dtype = 'float32'
+  } else if(dtype === 'uint8') {
+    type = gl.UNSIGNED_BYTE
+  } else {
+    type = gl.UNSIGNED_BYTE
+    packed = false
+    dtype = 'uint8'
+  }
+  var channels = 1
+  if(shape.length === 2) {
+    format = gl.LUMINANCE
+    shape = [shape[0], shape[1], 1]
+    array = ndarray(array.data, shape, [array.stride[0], array.stride[1], 1], array.offset)
+  } else if(shape.length === 3) {
+    if(shape[2] === 1) {
+      format = gl.ALPHA
+    } else if(shape[2] === 2) {
+      format = gl.LUMINANCE_ALPHA
+    } else if(shape[2] === 3) {
+      format = gl.RGB
+    } else if(shape[2] === 4) {
+      format = gl.RGBA
+    } else {
+      throw new Error('gl-texture2d: Invalid shape for pixel coords')
+    }
+    channels = shape[2]
+  } else {
+    throw new Error('gl-texture2d: Invalid shape for texture')
+  }
+  //For 1-channel textures allow conversion between formats
+  if((format  === gl.LUMINANCE || format  === gl.ALPHA) &&
+     (cformat === gl.LUMINANCE || cformat === gl.ALPHA)) {
+    format = cformat
+  }
+  if(format !== cformat) {
+    throw new Error('gl-texture2d: Incompatible texture format for setPixels')
+  }
+  var size = array.size
+  var needsMip = mipLevels.indexOf(mip_level) < 0
+  if(needsMip) {
+    mipLevels.push(mip_level)
+  }
+  if(type === ctype && packed) {
+    //Array data types are compatible, can directly copy into texture
+    if(array.offset === 0 && array.data.length === size) {
+      if(needsMip) {
+        gl.texImage2D(gl.TEXTURE_2D, mip_level, cformat, shape[0], shape[1], 0, cformat, ctype, array.data)
+      } else {
+        gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, shape[0], shape[1], cformat, ctype, array.data)
+      }
+    } else {
+      if(needsMip) {
+        gl.texImage2D(gl.TEXTURE_2D, mip_level, cformat, shape[0], shape[1], 0, cformat, ctype, array.data.subarray(array.offset, array.offset+size))
+      } else {
+        gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, shape[0], shape[1], cformat, ctype, array.data.subarray(array.offset, array.offset+size))
+      }
+    }
+  } else {
+    //Need to do type conversion to pack data into buffer
+    var pack_buffer
+    if(ctype === gl.FLOAT) {
+      pack_buffer = pool.mallocFloat32(size)
+    } else {
+      pack_buffer = pool.mallocUint8(size)
+    }
+    var pack_view = ndarray(pack_buffer, shape, [shape[2], shape[2]*shape[0], 1])
+    if(type === gl.FLOAT && ctype === gl.UNSIGNED_BYTE) {
+      convertFloatToUint8(pack_view, array)
+    } else {
+      ops.assign(pack_view, array)
+    }
+    if(needsMip) {
+      gl.texImage2D(gl.TEXTURE_2D, mip_level, cformat, shape[0], shape[1], 0, cformat, ctype, pack_buffer.subarray(0, size))
+    } else {
+      gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, shape[0], shape[1], cformat, ctype, pack_buffer.subarray(0, size))
+    }
+    if(ctype === gl.FLOAT) {
+      pool.freeFloat32(pack_buffer)
+    } else {
+      pool.freeUint8(pack_buffer)
+    }
+  }
+}
+
+function initTexture(gl) {
+  var tex = gl.createTexture()
+  gl.bindTexture(gl.TEXTURE_2D, tex)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
+  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
+  return tex
+}
+
+function createTextureShape(gl, width, height, format, type) {
+  var maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
+  if(width < 0 || width > maxTextureSize || height < 0 || height  > maxTextureSize) {
+    throw new Error('gl-texture2d: Invalid texture shape')
+  }
+  if(type === gl.FLOAT && !gl.getExtension('OES_texture_float')) {
+    throw new Error('gl-texture2d: Floating point textures not supported on this platform')
+  }
+  var tex = initTexture(gl)
+  gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, type, null)
+  return new Texture2D(gl, tex, width, height, format, type)
+}
+
+function createTextureDOM(gl, element, format, type) {
+  var tex = initTexture(gl)
+  gl.texImage2D(gl.TEXTURE_2D, 0, format, format, type, element)
+  return new Texture2D(gl, tex, element.width|0, element.height|0, format, type)
+}
+
+//Creates a texture from an ndarray
+function createTextureArray(gl, array) {
+  var dtype = array.dtype
+  var shape = array.shape.slice()
+  var maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
+  if(shape[0] < 0 || shape[0] > maxSize || shape[1] < 0 || shape[1] > maxSize) {
+    throw new Error('gl-texture2d: Invalid texture size')
+  }
+  var packed = isPacked(shape, array.stride.slice())
+  var type = 0
+  if(dtype === 'float32') {
+    type = gl.FLOAT
+  } else if(dtype === 'float64') {
+    type = gl.FLOAT
+    packed = false
+    dtype = 'float32'
+  } else if(dtype === 'uint8') {
+    type = gl.UNSIGNED_BYTE
+  } else {
+    type = gl.UNSIGNED_BYTE
+    packed = false
+    dtype = 'uint8'
+  }
+  var format = 0
+  if(shape.length === 2) {
+    format = gl.LUMINANCE
+    shape = [shape[0], shape[1], 1]
+    array = ndarray(array.data, shape, [array.stride[0], array.stride[1], 1], array.offset)
+  } else if(shape.length === 3) {
+    if(shape[2] === 1) {
+      format = gl.ALPHA
+    } else if(shape[2] === 2) {
+      format = gl.LUMINANCE_ALPHA
+    } else if(shape[2] === 3) {
+      format = gl.RGB
+    } else if(shape[2] === 4) {
+      format = gl.RGBA
+    } else {
+      throw new Error('gl-texture2d: Invalid shape for pixel coords')
+    }
+  } else {
+    throw new Error('gl-texture2d: Invalid shape for texture')
+  }
+  if(type === gl.FLOAT && !gl.getExtension('OES_texture_float')) {
+    type = gl.UNSIGNED_BYTE
+    packed = false
+  }
+  var buffer, buf_store
+  var size = array.size
+  if(!packed) {
+    var stride = [shape[2], shape[2]*shape[0], 1]
+    buf_store = pool.malloc(size, dtype)
+    var buf_array = ndarray(buf_store, shape, stride, 0)
+    if((dtype === 'float32' || dtype === 'float64') && type === gl.UNSIGNED_BYTE) {
+      convertFloatToUint8(buf_array, array)
+    } else {
+      ops.assign(buf_array, array)
+    }
+    buffer = buf_store.subarray(0, size)
+  } else if (array.offset === 0 && array.data.length === size) {
+    buffer = array.data
+  } else {
+    buffer = array.data.subarray(array.offset, array.offset + size)
+  }
+  var tex = initTexture(gl)
+  gl.texImage2D(gl.TEXTURE_2D, 0, format, shape[0], shape[1], 0, format, type, buffer)
+  if(!packed) {
+    pool.free(buf_store)
+  }
+  return new Texture2D(gl, tex, shape[0], shape[1], format, type)
+}
+
+function createTexture2D(gl) {
+  if(arguments.length <= 1) {
+    throw new Error('gl-texture2d: Missing arguments for texture2d constructor')
+  }
+  if(!linearTypes) {
+    lazyInitLinearTypes(gl)
+  }
+  if(typeof arguments[1] === 'number') {
+    return createTextureShape(gl, arguments[1], arguments[2], arguments[3]||gl.RGBA, arguments[4]||gl.UNSIGNED_BYTE)
+  }
+  if(Array.isArray(arguments[1])) {
+    return createTextureShape(gl, arguments[1][0]|0, arguments[1][1]|0, arguments[2]||gl.RGBA, arguments[3]||gl.UNSIGNED_BYTE)
+  }
+  if(typeof arguments[1] === 'object') {
+    var obj = arguments[1]
+    if(obj instanceof HTMLCanvasElement ||
+       obj instanceof HTMLImageElement ||
+       obj instanceof HTMLVideoElement ||
+       obj instanceof ImageData) {
+      return createTextureDOM(gl, obj, arguments[2]||gl.RGBA, arguments[3]||gl.UNSIGNED_BYTE)
+    } else if(obj.shape && obj.data && obj.stride) {
+      return createTextureArray(gl, obj)
+    }
+  }
+  throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
+}
+
+},{"ndarray":55,"ndarray-ops":44,"typedarray-pool":71}],35:[function(require,module,exports){
+"use strict"
+
+function doBind(gl, elements, attributes) {
+  if(elements) {
+    elements.bind()
+  } else {
+    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null)
+  }
+  var nattribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS)|0
+  if(attributes) {
+    if(attributes.length > nattribs) {
+      throw new Error("gl-vao: Too many vertex attributes")
+    }
+    for(var i=0; i<attributes.length; ++i) {
+      var attrib = attributes[i]
+      if(attrib.buffer) {
+        var buffer = attrib.buffer
+        var size = attrib.size || 4
+        var type = attrib.type || gl.FLOAT
+        var normalized = !!attrib.normalized
+        var stride = attrib.stride || 0
+        var offset = attrib.offset || 0
+        buffer.bind()
+        gl.enableVertexAttribArray(i)
+        gl.vertexAttribPointer(i, size, type, normalized, stride, offset)
+      } else {
+        if(typeof attrib === "number") {
+          gl.vertexAttrib1f(i, attrib)
+        } else if(attrib.length === 1) {
+          gl.vertexAttrib1f(i, attrib[0])
+        } else if(attrib.length === 2) {
+          gl.vertexAttrib2f(i, attrib[0], attrib[1])
+        } else if(attrib.length === 3) {
+          gl.vertexAttrib3f(i, attrib[0], attrib[1], attrib[2])
+        } else if(attrib.length === 4) {
+          gl.vertexAttrib4f(i, attrib[0], attrib[1], attrib[2], attrib[3])
+        } else {
+          throw new Error("gl-vao: Invalid vertex attribute")
+        }
+        gl.disableVertexAttribArray(i)
+      }
+    }
+    for(; i<nattribs; ++i) {
+      gl.disableVertexAttribArray(i)
+    }
+  } else {
+    gl.bindBuffer(gl.ARRAY_BUFFER, null)
+    for(var i=0; i<nattribs; ++i) {
+      gl.disableVertexAttribArray(i)
+    }
+  }
+}
+
+module.exports = doBind
+},{}],36:[function(require,module,exports){
+"use strict"
+
+var bindAttribs = require("./do-bind.js")
+
+function VAOEmulated(gl) {
+  this.gl = gl
+  this._elements = null
+  this._attributes = null
+  this._elementsType = gl.UNSIGNED_SHORT
+}
+
+VAOEmulated.prototype.bind = function() {
+  bindAttribs(this.gl, this._elements, this._attributes)
+}
+
+VAOEmulated.prototype.update = function(attributes, elements, elementsType) {
+  this._elements = elements
+  this._attributes = attributes
+  this._elementsType = elementsType || this.gl.UNSIGNED_SHORT
+}
+
+VAOEmulated.prototype.dispose = function() { }
+VAOEmulated.prototype.unbind = function() { }
+
+VAOEmulated.prototype.draw = function(mode, count, offset) {
+  offset = offset || 0
+  var gl = this.gl
+  if(this._elements) {
+    gl.drawElements(mode, count, this._elementsType, offset)
+  } else {
+    gl.drawArrays(mode, offset, count)
+  }
+}
+
+function createVAOEmulated(gl) {
+  return new VAOEmulated(gl)
+}
+
+module.exports = createVAOEmulated
+},{"./do-bind.js":35}],37:[function(require,module,exports){
+"use strict"
+
+var bindAttribs = require("./do-bind.js")
+
+function VertexAttribute(location, dimension, a, b, c, d) {
+  this.location = location
+  this.dimension = dimension
+  this.a = a
+  this.b = b
+  this.c = c
+  this.d = d
+}
+
+VertexAttribute.prototype.bind = function(gl) {
+  switch(this.dimension) {
+    case 1:
+      gl.vertexAttrib1f(this.location, this.a)
+    break
+    case 2:
+      gl.vertexAttrib2f(this.location, this.a, this.b)
+    break
+    case 3:
+      gl.vertexAttrib3f(this.location, this.a, this.b, this.c)
+    break
+    case 4:
+      gl.vertexAttrib4f(this.location, this.a, this.b, this.c, this.d)
+    break
+  }
+}
+
+function VAONative(gl, ext, handle) {
+  this.gl = gl
+  this._ext = ext
+  this.handle = handle
+  this._attribs = []
+  this._useElements = false
+  this._elementsType = gl.UNSIGNED_SHORT
+}
+
+VAONative.prototype.bind = function() {
+  this._ext.bindVertexArrayOES(this.handle)
+  for(var i=0; i<this._attribs.length; ++i) {
+    this._attribs[i].bind(this.gl)
+  }
+}
+
+VAONative.prototype.unbind = function() {
+  this._ext.bindVertexArrayOES(null)
+}
+
+VAONative.prototype.dispose = function() {
+  this._ext.deleteVertexArrayOES(this.handle)
+}
+
+VAONative.prototype.update = function(attributes, elements, elementsType) {
+  this.bind()
+  bindAttribs(this.gl, elements, attributes)
+  this.unbind()
+  this._attribs.length = 0
+  if(attributes)
+  for(var i=0; i<attributes.length; ++i) {
+    var a = attributes[i]
+    if(typeof a === "number") {
+      this._attribs.push(new VertexAttribute(i, 1, a))
+    } else if(Array.isArray(a)) {
+      this._attribs.push(new VertexAttribute(i, a.length, a[0], a[1], a[2], a[3]))
+    }
+  }
+  this._useElements = !!elements
+  this._elementsType = elementsType || this.gl.UNSIGNED_SHORT
+}
+
+VAONative.prototype.draw = function(mode, count, offset) {
+  offset = offset || 0
+  var gl = this.gl
+  if(this._useElements) {
+    gl.drawElements(mode, count, this._elementsType, offset)
+  } else {
+    gl.drawArrays(mode, offset, count)
+  }
+}
+
+function createVAONative(gl, ext) {
+  return new VAONative(gl, ext, ext.createVertexArrayOES())
+}
+
+module.exports = createVAONative
+},{"./do-bind.js":35}],38:[function(require,module,exports){
+"use strict"
+
+var createVAONative = require("./lib/vao-native.js")
+var createVAOEmulated = require("./lib/vao-emulated.js")
+
+function createVAO(gl, attributes, elements, elementsType) {
+  var ext = gl.getExtension('OES_vertex_array_object')
+  var vao
+  if(ext) {
+    vao = createVAONative(gl, ext)
+  } else {
+    vao = createVAOEmulated(gl)
+  }
+  vao.update(attributes, elements, elementsType)
+  return vao
+}
+
+module.exports = createVAO
+
+},{"./lib/vao-emulated.js":36,"./lib/vao-native.js":37}],39:[function(require,module,exports){
+'use strict'
+
+module.exports      = gradient
+
+var dup             = require('dup')
+var cwiseCompiler   = require('cwise-compiler')
+
+var TEMPLATE_CACHE  = {}
+var GRADIENT_CACHE  = {}
+
+var EmptyProc = {
+  body: "",
+  args: [],
+  thisVars: [],
+  localVars: []
+}
+
+var centralDiff = cwiseCompiler({
+  args: [ 'array', 'array', 'array' ],
+  pre: EmptyProc,
+  post: EmptyProc,
+  body: {
+    args: [ {
+      name: 'out', 
+      lvalue: true,
+      rvalue: false,
+      count: 1
+    }, {
+      name: 'left', 
+      lvalue: false,
+      rvalue: true,
+      count: 1
+    }, {
+      name: 'right', 
+      lvalue: false,
+      rvalue: true,
+      count: 1
+    }],
+    body: "out=0.5*(left-right)",
+    thisVars: [],
+    localVars: []
+  },
+  funcName: 'cdiff'
+})
+
+var zeroOut = cwiseCompiler({
+  args: [ 'array' ],
+  pre: EmptyProc,
+  post: EmptyProc,
+  body: {
+    args: [ {
+      name: 'out', 
+      lvalue: true,
+      rvalue: false,
+      count: 1
+    }],
+    body: "out=0",
+    thisVars: [],
+    localVars: []
+  },
+  funcName: 'zero'
+})
+
+function generateTemplate(d) {
+  if(d in TEMPLATE_CACHE) {
+    return TEMPLATE_CACHE[d]
+  }
+  var code = []
+  for(var i=0; i<d; ++i) {
+    code.push('out', i, 's=0.5*(inp', i, 'l-inp', i, 'r);')
+  }
+  var args = [ 'array' ]
+  var names = ['junk']
+  for(var i=0; i<d; ++i) {
+    args.push('array')
+    names.push('out' + i + 's')
+    var o = dup(d)
+    o[i] = -1
+    args.push({
+      array: 0,
+      offset: o.slice()
+    })
+    o[i] = 1
+    args.push({
+      array: 0,
+      offset: o.slice()
+    })
+    names.push('inp' + i + 'l', 'inp' + i + 'r')
+  }
+  return TEMPLATE_CACHE[d] = cwiseCompiler({
+    args: args,
+    pre:  EmptyProc,
+    post: EmptyProc,
+    body: {
+      body: code.join(''),
+      args: names.map(function(n) {
+        return {
+          name: n,
+          lvalue: n.indexOf('out') === 0,
+          rvalue: n.indexOf('inp') === 0,
+          count: (n!=='junk')|0
+        }
+      }),
+      thisVars: [],
+      localVars: []
+    },
+    funcName: 'fdTemplate' + d
+  })
+}
+
+function generateGradient(boundaryConditions) {
+  var token = boundaryConditions.join()
+  var proc = GRADIENT_CACHE[token]
+  if(proc) {
+    return proc
+  }
+
+  var d = boundaryConditions.length
+  var code = ['function gradient(dst,src){var s=src.shape.slice();' ]
+  
+  function handleBoundary(facet) {
+    var cod = d - facet.length
+
+    var loStr = []
+    var hiStr = []
+    var pickStr = []
+    for(var i=0; i<d; ++i) {
+      if(facet.indexOf(i+1) >= 0) {
+        pickStr.push('0')
+      } else if(facet.indexOf(-(i+1)) >= 0) {
+        pickStr.push('s['+i+']-1')
+      } else {
+        pickStr.push('-1')
+        loStr.push('1')
+        hiStr.push('s['+i+']-2')
+      }
+    }
+    var boundStr = '.lo(' + loStr.join() + ').hi(' + hiStr.join() + ')'
+    if(loStr.length === 0) {
+      boundStr = ''
+    }
+        
+    if(cod > 0) {
+      code.push('if(1') 
+      for(var i=0; i<d; ++i) {
+        if(facet.indexOf(i+1) >= 0 || facet.indexOf(-(i+1)) >= 0) {
+          continue
+        }
+        code.push('&&s[', i, ']>2')
+      }
+      code.push('){grad', cod, '(src.pick(', pickStr.join(), ')', boundStr)
+      for(var i=0; i<d; ++i) {
+        if(facet.indexOf(i+1) >= 0 || facet.indexOf(-(i+1)) >= 0) {
+          continue
+        }
+        code.push(',dst.pick(', pickStr.join(), ',', i, ')', boundStr)
+      }
+      code.push(');')
+    }
+
+    for(var i=0; i<facet.length; ++i) {
+      var bnd = Math.abs(facet[i])-1
+      var outStr = 'dst.pick(' + pickStr.join() + ',' + bnd + ')' + boundStr
+      switch(boundaryConditions[bnd]) {
+
+        case 'clamp':
+          var cPickStr = pickStr.slice()
+          var dPickStr = pickStr.slice()
+          if(facet[i] < 0) {
+            cPickStr[bnd] = 's[' + bnd + ']-2'
+          } else {
+            dPickStr[bnd] = '1'
+          }
+          if(cod === 0) {
+            code.push('if(s[', bnd, ']>1){dst.set(',
+              pickStr.join(), ',', bnd, ',0.5*(src.get(',
+                cPickStr.join(), ')-src.get(',
+                dPickStr.join(), ')))}else{dst.set(',
+              pickStr.join(), ',', bnd, ',0)};')
+          } else {
+            code.push('if(s[', bnd, ']>1){diff(', outStr, 
+                ',src.pick(', cPickStr.join(), ')', boundStr, 
+                ',src.pick(', dPickStr.join(), ')', boundStr, 
+                ');}else{zero(', outStr, ');};')
+          }
+        break
+
+        case 'mirror':
+          if(cod === 0) {
+            code.push('dst.set(', pickStr.join(), ',', bnd, ',0);')
+          } else {
+            code.push('zero(', outStr, ');')
+          }
+        break
+
+        case 'wrap':
+          var aPickStr = pickStr.slice()
+          var bPickStr = pickStr.slice()
+          if(facet[i] < 0) {
+            aPickStr[bnd] = 's[' + bnd + ']-2'
+            bPickStr[bnd] = '0'
+            
+          } else {
+            aPickStr[bnd] = 's[' + bnd + ']-1'
+            bPickStr[bnd] = '1'
+          }
+          if(cod === 0) {
+            code.push('if(s[', bnd, ']>2){dst.set(',
+              pickStr.join(), ',', bnd, ',0.5*(src.get(',
+                aPickStr.join(), ')-src.get(',
+                bPickStr.join(), ')))}else{dst.set(',
+              pickStr.join(), ',', bnd, ',0)};')
+          } else {
+            code.push('if(s[', bnd, ']>2){diff(', outStr, 
+                ',src.pick(', aPickStr.join(), ')', boundStr, 
+                ',src.pick(', bPickStr.join(), ')', boundStr, 
+                ');}else{zero(', outStr, ');};')
+          }
+        break
+
+        default:
+          throw new Error('ndarray-gradient: Invalid boundary condition')
+      }
+    }
+
+    if(cod > 0) {
+      code.push('};')
+    }
+  }
+
+  //Enumerate ridges, facets, etc. of hypercube
+  for(var i=0; i<(1<<d); ++i) {
+    var faces = []
+    for(var j=0; j<d; ++j) {
+      if(i & (1<<j)) {
+        faces.push(j+1)
+      }
+    }
+    for(var k=0; k<(1<<faces.length); ++k) {
+      var sfaces = faces.slice()
+      for(var j=0; j<faces.length; ++j) {
+        if(k & (1<<j)) {
+          sfaces[j] = -sfaces[j]
+        }
+      }
+      handleBoundary(sfaces)
+    }
+  }
+
+  code.push('return dst;};return gradient')
+
+  //Compile and link routine, save cached procedure
+  var linkNames = [ 'diff', 'zero' ]
+  var linkArgs  = [ centralDiff, zeroOut ]
+  for(var i=1; i<=d; ++i) {
+    linkNames.push('grad' + i)
+    linkArgs.push(generateTemplate(i))
+  }
+  linkNames.push(code.join(''))
+
+  var link = Function.apply(void 0, linkNames)
+  var proc = link.apply(void 0, linkArgs)
+  TEMPLATE_CACHE[token] = proc
+  return proc
+}
+
+function gradient(out, inp, bc) {
+  if(Array.isArray(bc)) {
+    if(bc.length !== inp.dimension) {
+      throw new Error('ndarray-gradient: invalid boundary conditions')
+    }
+  } else if(typeof bc === 'string') {
+    bc = dup(inp.dimension, bc)
+  } else {
+    bc = dup(inp.dimension, 'clamp')
+  }
+  if(out.dimension !== inp.dimension + 1) {
+    throw new Error('ndarray-gradient: output dimension must be +1 input dimension')
+  }
+  if(out.shape[inp.dimension] !== inp.dimension) {
+    throw new Error('ndarray-gradient: output shape must match input shape')
+  }
+  for(var i=0; i<inp.dimension; ++i) {
+    if(out.shape[i] !== inp.shape[i]) {
+      throw new Error('ndarray-gradient: shape mismatch')
+    }
+  }
+  if(inp.size === 0) {
+    return out
+  }
+  if(inp.dimension <= 0) {
+    out.set(0)
+    return out
+  }
+  var cached = generateGradient(bc)
+  return cached(out, inp)
+}
+},{"cwise-compiler":40,"dup":7}],40:[function(require,module,exports){
+"use strict"
+
+var createThunk = require("./lib/thunk.js")
+
+function Procedure() {
+  this.argTypes = []
+  this.shimArgs = []
+  this.arrayArgs = []
+  this.arrayBlockIndices = []
+  this.scalarArgs = []
+  this.offsetArgs = []
+  this.offsetArgIndex = []
+  this.indexArgs = []
+  this.shapeArgs = []
+  this.funcName = ""
+  this.pre = null
+  this.body = null
+  this.post = null
+  this.debug = false
+}
+
+function compileCwise(user_args) {
+  //Create procedure
+  var proc = new Procedure()
+  
+  //Parse blocks
+  proc.pre    = user_args.pre
+  proc.body   = user_args.body
+  proc.post   = user_args.post
+
+  //Parse arguments
+  var proc_args = user_args.args.slice(0)
+  proc.argTypes = proc_args
+  for(var i=0; i<proc_args.length; ++i) {
+    var arg_type = proc_args[i]
+    if(arg_type === "array" || (typeof arg_type === "object" && arg_type.blockIndices)) {
+      proc.argTypes[i] = "array"
+      proc.arrayArgs.push(i)
+      proc.arrayBlockIndices.push(arg_type.blockIndices ? arg_type.blockIndices : 0)
+      proc.shimArgs.push("array" + i)
+      if(i < proc.pre.args.length && proc.pre.args[i].count>0) {
+        throw new Error("cwise: pre() block may not reference array args")
+      }
+      if(i < proc.post.args.length && proc.post.args[i].count>0) {
+        throw new Error("cwise: post() block may not reference array args")
+      }
+    } else if(arg_type === "scalar") {
+      proc.scalarArgs.push(i)
+      proc.shimArgs.push("scalar" + i)
+    } else if(arg_type === "index") {
+      proc.indexArgs.push(i)
+      if(i < proc.pre.args.length && proc.pre.args[i].count > 0) {
+        throw new Error("cwise: pre() block may not reference array index")
+      }
+      if(i < proc.body.args.length && proc.body.args[i].lvalue) {
+        throw new Error("cwise: body() block may not write to array index")
+      }
+      if(i < proc.post.args.length && proc.post.args[i].count > 0) {
+        throw new Error("cwise: post() block may not reference array index")
+      }
+    } else if(arg_type === "shape") {
+      proc.shapeArgs.push(i)
+      if(i < proc.pre.args.length && proc.pre.args[i].lvalue) {
+        throw new Error("cwise: pre() block may not write to array shape")
+      }
+      if(i < proc.body.args.length && proc.body.args[i].lvalue) {
+        throw new Error("cwise: body() block may not write to array shape")
+      }
+      if(i < proc.post.args.length && proc.post.args[i].lvalue) {
+        throw new Error("cwise: post() block may not write to array shape")
+      }
+    } else if(typeof arg_type === "object" && arg_type.offset) {
+      proc.argTypes[i] = "offset"
+      proc.offsetArgs.push({ array: arg_type.array, offset:arg_type.offset })
+      proc.offsetArgIndex.push(i)
+    } else {
+      throw new Error("cwise: Unknown argument type " + proc_args[i])
+    }
+  }
+  
+  //Make sure at least one array argument was specified
+  if(proc.arrayArgs.length <= 0) {
+    throw new Error("cwise: No array arguments specified")
+  }
+  
+  //Make sure arguments are correct
+  if(proc.pre.args.length > proc_args.length) {
+    throw new Error("cwise: Too many arguments in pre() block")
+  }
+  if(proc.body.args.length > proc_args.length) {
+    throw new Error("cwise: Too many arguments in body() block")
+  }
+  if(proc.post.args.length > proc_args.length) {
+    throw new Error("cwise: Too many arguments in post() block")
+  }
+
+  //Check debug flag
+  proc.debug = !!user_args.printCode || !!user_args.debug
+  
+  //Retrieve name
+  proc.funcName = user_args.funcName || "cwise"
+  
+  //Read in block size
+  proc.blockSize = user_args.blockSize || 64
+
+  return createThunk(proc)
+}
+
+module.exports = compileCwise
+
+},{"./lib/thunk.js":42}],41:[function(require,module,exports){
+"use strict"
+
+var uniq = require("uniq")
+
+// This function generates very simple loops analogous to how you typically traverse arrays (the outermost loop corresponds to the slowest changing index, the innermost loop to the fastest changing index)
+// TODO: If two arrays have the same strides (and offsets) there is potential for decreasing the number of "pointers" and related variables. The drawback is that the type signature would become more specific and that there would thus be less potential for caching, but it might still be worth it, especially when dealing with large numbers of arguments.
+function innerFill(order, proc, body) {
+  var dimension = order.length
+    , nargs = proc.arrayArgs.length
+    , has_index = proc.indexArgs.length>0
+    , code = []
+    , vars = []
+    , idx=0, pidx=0, i, j
+  for(i=0; i<dimension; ++i) { // Iteration variables
+    vars.push(["i",i,"=0"].join(""))
+  }
+  //Compute scan deltas
+  for(j=0; j<nargs; ++j) {
+    for(i=0; i<dimension; ++i) {
+      pidx = idx
+      idx = order[i]
+      if(i === 0) { // The innermost/fastest dimension's delta is simply its stride
+        vars.push(["d",j,"s",i,"=t",j,"p",idx].join(""))
+      } else { // For other dimensions the delta is basically the stride minus something which essentially "rewinds" the previous (more inner) dimension
+        vars.push(["d",j,"s",i,"=(t",j,"p",idx,"-s",pidx,"*t",j,"p",pidx,")"].join(""))
+      }
+    }
+  }
+  code.push("var " + vars.join(","))
+  //Scan loop
+  for(i=dimension-1; i>=0; --i) { // Start at largest stride and work your way inwards
+    idx = order[i]
+    code.push(["for(i",i,"=0;i",i,"<s",idx,";++i",i,"){"].join(""))
+  }
+  //Push body of inner loop
+  code.push(body)
+  //Advance scan pointers
+  for(i=0; i<dimension; ++i) {
+    pidx = idx
+    idx = order[i]
+    for(j=0; j<nargs; ++j) {
+      code.push(["p",j,"+=d",j,"s",i].join(""))
+    }
+    if(has_index) {
+      if(i > 0) {
+        code.push(["index[",pidx,"]-=s",pidx].join(""))
+      }
+      code.push(["++index[",idx,"]"].join(""))
+    }
+    code.push("}")
+  }
+  return code.join("\n")
+}
+
+// Generate "outer" loops that loop over blocks of data, applying "inner" loops to the blocks by manipulating the local variables in such a way that the inner loop only "sees" the current block.
+// TODO: If this is used, then the previous declaration (done by generateCwiseOp) of s* is essentially unnecessary.
+//       I believe the s* are not used elsewhere (in particular, I don't think they're used in the pre/post parts and "shape" is defined independently), so it would be possible to make defining the s* dependent on what loop method is being used.
+function outerFill(matched, order, proc, body) {
+  var dimension = order.length
+    , nargs = proc.arrayArgs.length
+    , blockSize = proc.blockSize
+    , has_index = proc.indexArgs.length > 0
+    , code = []
+  for(var i=0; i<nargs; ++i) {
+    code.push(["var offset",i,"=p",i].join(""))
+  }
+  //Generate loops for unmatched dimensions
+  // The order in which these dimensions are traversed is fairly arbitrary (from small stride to large stride, for the first argument)
+  // TODO: It would be nice if the order in which these loops are placed would also be somehow "optimal" (at the very least we should check that it really doesn't hurt us if they're not).
+  for(var i=matched; i<dimension; ++i) {
+    code.push(["for(var j"+i+"=SS[", order[i], "]|0;j", i, ">0;){"].join("")) // Iterate back to front
+    code.push(["if(j",i,"<",blockSize,"){"].join("")) // Either decrease j by blockSize (s = blockSize), or set it to zero (after setting s = j).
+    code.push(["s",order[i],"=j",i].join(""))
+    code.push(["j",i,"=0"].join(""))
+    code.push(["}else{s",order[i],"=",blockSize].join(""))
+    code.push(["j",i,"-=",blockSize,"}"].join(""))
+    if(has_index) {
+      code.push(["index[",order[i],"]=j",i].join(""))
+    }
+  }
+  for(var i=0; i<nargs; ++i) {
+    var indexStr = ["offset"+i]
+    for(var j=matched; j<dimension; ++j) {
+      indexStr.push(["j",j,"*t",i,"p",order[j]].join(""))
+    }
+    code.push(["p",i,"=(",indexStr.join("+"),")"].join(""))
+  }
+  code.push(innerFill(order, proc, body))
+  for(var i=matched; i<dimension; ++i) {
+    code.push("}")
+  }
+  return code.join("\n")
+}
+
+//Count the number of compatible inner orders
+// This is the length of the longest common prefix of the arrays in orders.
+// Each array in orders lists the dimensions of the correspond ndarray in order of increasing stride.
+// This is thus the maximum number of dimensions that can be efficiently traversed by simple nested loops for all arrays.
+function countMatches(orders) {
+  var matched = 0, dimension = orders[0].length
+  while(matched < dimension) {
+    for(var j=1; j<orders.length; ++j) {
+      if(orders[j][matched] !== orders[0][matched]) {
+        return matched
+      }
+    }
+    ++matched
+  }
+  return matched
+}
+
+//Processes a block according to the given data types
+// Replaces variable names by different ones, either "local" ones (that are then ferried in and out of the given array) or ones matching the arguments that the function performing the ultimate loop will accept.
+function processBlock(block, proc, dtypes) {
+  var code = block.body
+  var pre = []
+  var post = []
+  for(var i=0; i<block.args.length; ++i) {
+    var carg = block.args[i]
+    if(carg.count <= 0) {
+      continue
+    }
+    var re = new RegExp(carg.name, "g")
+    var ptrStr = ""
+    var arrNum = proc.arrayArgs.indexOf(i)
+    switch(proc.argTypes[i]) {
+      case "offset":
+        var offArgIndex = proc.offsetArgIndex.indexOf(i)
+        var offArg = proc.offsetArgs[offArgIndex]
+        arrNum = offArg.array
+        ptrStr = "+q" + offArgIndex // Adds offset to the "pointer" in the array
+      case "array":
+        ptrStr = "p" + arrNum + ptrStr
+        var localStr = "l" + i
+        var arrStr = "a" + arrNum
+        if (proc.arrayBlockIndices[arrNum] === 0) { // Argument to body is just a single value from this array
+          if(carg.count === 1) { // Argument/array used only once(?)
+            if(dtypes[arrNum] === "generic") {
+              if(carg.lvalue) {
+                pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join("")) // Is this necessary if the argument is ONLY used as an lvalue? (keep in mind that we can have a += something, so we would actually need to check carg.rvalue)
+                code = code.replace(re, localStr)
+                post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
+              } else {
+                code = code.replace(re, [arrStr, ".get(", ptrStr, ")"].join(""))
+              }
+            } else {
+              code = code.replace(re, [arrStr, "[", ptrStr, "]"].join(""))
+            }
+          } else if(dtypes[arrNum] === "generic") {
+            pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join("")) // TODO: Could we optimize by checking for carg.rvalue?
+            code = code.replace(re, localStr)
+            if(carg.lvalue) {
+              post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
+            }
+          } else {
+            pre.push(["var ", localStr, "=", arrStr, "[", ptrStr, "]"].join("")) // TODO: Could we optimize by checking for carg.rvalue?
+            code = code.replace(re, localStr)
+            if(carg.lvalue) {
+              post.push([arrStr, "[", ptrStr, "]=", localStr].join(""))
+            }
+          }
+        } else { // Argument to body is a "block"
+          var reStrArr = [carg.name], ptrStrArr = [ptrStr]
+          for(var j=0; j<Math.abs(proc.arrayBlockIndices[arrNum]); j++) {
+            reStrArr.push("\\s*\\[([^\\]]+)\\]")
+            ptrStrArr.push("$" + (j+1) + "*t" + arrNum + "b" + j) // Matched index times stride
+          }
+          re = new RegExp(reStrArr.join(""), "g")
+          ptrStr = ptrStrArr.join("+")
+          if(dtypes[arrNum] === "generic") {
+            /*if(carg.lvalue) {
+              pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join("")) // Is this necessary if the argument is ONLY used as an lvalue? (keep in mind that we can have a += something, so we would actually need to check carg.rvalue)
+              code = code.replace(re, localStr)
+              post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
+            } else {
+              code = code.replace(re, [arrStr, ".get(", ptrStr, ")"].join(""))
+            }*/
+            throw new Error("cwise: Generic arrays not supported in combination with blocks!")
+          } else {
+            // This does not produce any local variables, even if variables are used multiple times. It would be possible to do so, but it would complicate things quite a bit.
+            code = code.replace(re, [arrStr, "[", ptrStr, "]"].join(""))
+          }
+        }
+      break
+      case "scalar":
+        code = code.replace(re, "Y" + proc.scalarArgs.indexOf(i))
+      break
+      case "index":
+        code = code.replace(re, "index")
+      break
+      case "shape":
+        code = code.replace(re, "shape")
+      break
+    }
+  }
+  return [pre.join("\n"), code, post.join("\n")].join("\n").trim()
+}
+
+function typeSummary(dtypes) {
+  var summary = new Array(dtypes.length)
+  var allEqual = true
+  for(var i=0; i<dtypes.length; ++i) {
+    var t = dtypes[i]
+    var digits = t.match(/\d+/)
+    if(!digits) {
+      digits = ""
+    } else {
+      digits = digits[0]
+    }
+    if(t.charAt(0) === 0) {
+      summary[i] = "u" + t.charAt(1) + digits
+    } else {
+      summary[i] = t.charAt(0) + digits
+    }
+    if(i > 0) {
+      allEqual = allEqual && summary[i] === summary[i-1]
+    }
+  }
+  if(allEqual) {
+    return summary[0]
+  }
+  return summary.join("")
+}
+
+//Generates a cwise operator
+function generateCWiseOp(proc, typesig) {
+
+  //Compute dimension
+  // Arrays get put first in typesig, and there are two entries per array (dtype and order), so this gets the number of dimensions in the first array arg.
+  var dimension = (typesig[1].length - Math.abs(proc.arrayBlockIndices[0]))|0
+  var orders = new Array(proc.arrayArgs.length)
+  var dtypes = new Array(proc.arrayArgs.length)
+  for(var i=0; i<proc.arrayArgs.length; ++i) {
+    dtypes[i] = typesig[2*i]
+    orders[i] = typesig[2*i+1]
+  }
+  
+  //Determine where block and loop indices start and end
+  var blockBegin = [], blockEnd = [] // These indices are exposed as blocks
+  var loopBegin = [], loopEnd = [] // These indices are iterated over
+  var loopOrders = [] // orders restricted to the loop indices
+  for(var i=0; i<proc.arrayArgs.length; ++i) {
+    if (proc.arrayBlockIndices[i]<0) {
+      loopBegin.push(0)
+      loopEnd.push(dimension)
+      blockBegin.push(dimension)
+      blockEnd.push(dimension+proc.arrayBlockIndices[i])
+    } else {
+      loopBegin.push(proc.arrayBlockIndices[i]) // Non-negative
+      loopEnd.push(proc.arrayBlockIndices[i]+dimension)
+      blockBegin.push(0)
+      blockEnd.push(proc.arrayBlockIndices[i])
+    }
+    var newOrder = []
+    for(var j=0; j<orders[i].length; j++) {
+      if (loopBegin[i]<=orders[i][j] && orders[i][j]<loopEnd[i]) {
+        newOrder.push(orders[i][j]-loopBegin[i]) // If this is a loop index, put it in newOrder, subtracting loopBegin, to make sure that all loopOrders are using a common set of indices.
+      }
+    }
+    loopOrders.push(newOrder)
+  }
+
+  //First create arguments for procedure
+  var arglist = ["SS"] // SS is the overall shape over which we iterate
+  var code = ["'use strict'"]
+  var vars = []
+  
+  for(var j=0; j<dimension; ++j) {
+    vars.push(["s", j, "=SS[", j, "]"].join("")) // The limits for each dimension.
+  }
+  for(var i=0; i<proc.arrayArgs.length; ++i) {
+    arglist.push("a"+i) // Actual data array
+    arglist.push("t"+i) // Strides
+    arglist.push("p"+i) // Offset in the array at which the data starts (also used for iterating over the data)
+    
+    for(var j=0; j<dimension; ++j) { // Unpack the strides into vars for looping
+      vars.push(["t",i,"p",j,"=t",i,"[",loopBegin[i]+j,"]"].join(""))
+    }
+    
+    for(var j=0; j<Math.abs(proc.arrayBlockIndices[i]); ++j) { // Unpack the strides into vars for block iteration
+      vars.push(["t",i,"b",j,"=t",i,"[",blockBegin[i]+j,"]"].join(""))
+    }
+  }
+  for(var i=0; i<proc.scalarArgs.length; ++i) {
+    arglist.push("Y" + i)
+  }
+  if(proc.shapeArgs.length > 0) {
+    vars.push("shape=SS.slice(0)") // Makes the shape over which we iterate available to the user defined functions (so you can use width/height for example)
+  }
+  if(proc.indexArgs.length > 0) {
+    // Prepare an array to keep track of the (logical) indices, initialized to dimension zeroes.
+    var zeros = new Array(dimension)
+    for(var i=0; i<dimension; ++i) {
+      zeros[i] = "0"
+    }
+    vars.push(["index=[", zeros.join(","), "]"].join(""))
+  }
+  for(var i=0; i<proc.offsetArgs.length; ++i) { // Offset arguments used for stencil operations
+    var off_arg = proc.offsetArgs[i]
+    var init_string = []
+    for(var j=0; j<off_arg.offset.length; ++j) {
+      if(off_arg.offset[j] === 0) {
+        continue
+      } else if(off_arg.offset[j] === 1) {
+        init_string.push(["t", off_arg.array, "p", j].join(""))      
+      } else {
+        init_string.push([off_arg.offset[j], "*t", off_arg.array, "p", j].join(""))
+      }
+    }
+    if(init_string.length === 0) {
+      vars.push("q" + i + "=0")
+    } else {
+      vars.push(["q", i, "=", init_string.join("+")].join(""))
+    }
+  }
+
+  //Prepare this variables
+  var thisVars = uniq([].concat(proc.pre.thisVars)
+                      .concat(proc.body.thisVars)
+                      .concat(proc.post.thisVars))
+  vars = vars.concat(thisVars)
+  code.push("var " + vars.join(","))
+  for(var i=0; i<proc.arrayArgs.length; ++i) {
+    code.push("p"+i+"|=0")
+  }
+  
+  //Inline prelude
+  if(proc.pre.body.length > 3) {
+    code.push(processBlock(proc.pre, proc, dtypes))
+  }
+
+  //Process body
+  var body = processBlock(proc.body, proc, dtypes)
+  var matched = countMatches(loopOrders)
+  if(matched < dimension) {
+    code.push(outerFill(matched, loopOrders[0], proc, body)) // TODO: Rather than passing loopOrders[0], it might be interesting to look at passing an order that represents the majority of the arguments for example.
+  } else {
+    code.push(innerFill(loopOrders[0], proc, body))
+  }
+
+  //Inline epilog
+  if(proc.post.body.length > 3) {
+    code.push(processBlock(proc.post, proc, dtypes))
+  }
+  
+  if(proc.debug) {
+    console.log("-----Generated cwise routine for ", typesig, ":\n" + code.join("\n") + "\n----------")
+  }
+  
+  var loopName = [(proc.funcName||"unnamed"), "_cwise_loop_", orders[0].join("s"),"m",matched,typeSummary(dtypes)].join("")
+  var f = new Function(["function ",loopName,"(", arglist.join(","),"){", code.join("\n"),"} return ", loopName].join(""))
+  return f()
+}
+module.exports = generateCWiseOp
+
+},{"uniq":43}],42:[function(require,module,exports){
+"use strict"
+
+// The function below is called when constructing a cwise function object, and does the following:
+// A function object is constructed which accepts as argument a compilation function and returns another function.
+// It is this other function that is eventually returned by createThunk, and this function is the one that actually
+// checks whether a certain pattern of arguments has already been used before and compiles new loops as needed.
+// The compilation passed to the first function object is used for compiling new functions.
+// Once this function object is created, it is called with compile as argument, where the first argument of compile
+// is bound to "proc" (essentially containing a preprocessed version of the user arguments to cwise).
+// So createThunk roughly works like this:
+// function createThunk(proc) {
+//   var thunk = function(compileBound) {
+//     var CACHED = {}
+//     return function(arrays and scalars) {
+//       if (dtype and order of arrays in CACHED) {
+//         var func = CACHED[dtype and order of arrays]
+//       } else {
+//         var func = CACHED[dtype and order of arrays] = compileBound(dtype and order of arrays)
+//       }
+//       return func(arrays and scalars)
+//     }
+//   }
+//   return thunk(compile.bind1(proc))
+// }
+
+var compile = require("./compile.js")
+
+function createThunk(proc) {
+  var code = ["'use strict'", "var CACHED={}"]
+  var vars = []
+  var thunkName = proc.funcName + "_cwise_thunk"
+  
+  //Build thunk
+  code.push(["return function ", thunkName, "(", proc.shimArgs.join(","), "){"].join(""))
+  var typesig = []
+  var string_typesig = []
+  var proc_args = [["array",proc.arrayArgs[0],".shape.slice(", // Slice shape so that we only retain the shape over which we iterate (which gets passed to the cwise operator as SS).
+                    Math.max(0,proc.arrayBlockIndices[0]),proc.arrayBlockIndices[0]<0?(","+proc.arrayBlockIndices[0]+")"):")"].join("")]
+  var shapeLengthConditions = [], shapeConditions = []
+  // Process array arguments
+  for(var i=0; i<proc.arrayArgs.length; ++i) {
+    var j = proc.arrayArgs[i]
+    vars.push(["t", j, "=array", j, ".dtype,",
+               "r", j, "=array", j, ".order"].join(""))
+    typesig.push("t" + j)
+    typesig.push("r" + j)
+    string_typesig.push("t"+j)
+    string_typesig.push("r"+j+".join()")
+    proc_args.push("array" + j + ".data")
+    proc_args.push("array" + j + ".stride")
+    proc_args.push("array" + j + ".offset|0")
+    if (i>0) { // Gather conditions to check for shape equality (ignoring block indices)
+      shapeLengthConditions.push("array" + proc.arrayArgs[0] + ".shape.length===array" + j + ".shape.length+" + (Math.abs(proc.arrayBlockIndices[0])-Math.abs(proc.arrayBlockIndices[i])))
+      shapeConditions.push("array" + proc.arrayArgs[0] + ".shape[shapeIndex+" + Math.max(0,proc.arrayBlockIndices[0]) + "]===array" + j + ".shape[shapeIndex+" + Math.max(0,proc.arrayBlockIndices[i]) + "]")
+    }
+  }
+  // Check for shape equality
+  if (proc.arrayArgs.length > 1) {
+    code.push("if (!(" + shapeLengthConditions.join(" && ") + ")) throw new Error('cwise: Arrays do not all have the same dimensionality!')")
+    code.push("for(var shapeIndex=array" + proc.arrayArgs[0] + ".shape.length-" + Math.abs(proc.arrayBlockIndices[0]) + "; shapeIndex-->0;) {")
+    code.push("if (!(" + shapeConditions.join(" && ") + ")) throw new Error('cwise: Arrays do not all have the same shape!')")
+    code.push("}")
+  }
+  // Process scalar arguments
+  for(var i=0; i<proc.scalarArgs.length; ++i) {
+    proc_args.push("scalar" + proc.scalarArgs[i])
+  }
+  // Check for cached function (and if not present, generate it)
+  vars.push(["type=[", string_typesig.join(","), "].join()"].join(""))
+  vars.push("proc=CACHED[type]")
+  code.push("var " + vars.join(","))
+  
+  code.push(["if(!proc){",
+             "CACHED[type]=proc=compile([", typesig.join(","), "])}",
+             "return proc(", proc_args.join(","), ")}"].join(""))
+
+  if(proc.debug) {
+    console.log("-----Generated thunk:\n" + code.join("\n") + "\n----------")
+  }
+  
+  //Compile thunk
+  var thunk = new Function("compile", code.join("\n"))
+  return thunk(compile.bind(undefined, proc))
+}
+
+module.exports = createThunk
+
+},{"./compile.js":41}],43:[function(require,module,exports){
+"use strict"
+
+function unique_pred(list, compare) {
+  var ptr = 1
+    , len = list.length
+    , a=list[0], b=list[0]
+  for(var i=1; i<len; ++i) {
+    b = a
+    a = list[i]
+    if(compare(a, b)) {
+      if(i === ptr) {
+        ptr++
+        continue
+      }
+      list[ptr++] = a
+    }
+  }
+  list.length = ptr
+  return list
+}
+
+function unique_eq(list) {
+  var ptr = 1
+    , len = list.length
+    , a=list[0], b = list[0]
+  for(var i=1; i<len; ++i, b=a) {
+    b = a
+    a = list[i]
+    if(a !== b) {
+      if(i === ptr) {
+        ptr++
+        continue
+      }
+      list[ptr++] = a
+    }
+  }
+  list.length = ptr
+  return list
+}
+
+function unique(list, compare, sorted) {
+  if(list.length === 0) {
+    return list
+  }
+  if(compare) {
+    if(!sorted) {
+      list.sort(compare)
+    }
+    return unique_pred(list, compare)
+  }
+  if(!sorted) {
+    list.sort()
+  }
+  return unique_eq(list)
+}
+
+module.exports = unique
+
+},{}],44:[function(require,module,exports){
+"use strict"
+
+var compile = require("cwise-compiler")
+
+var EmptyProc = {
+  body: "",
+  args: [],
+  thisVars: [],
+  localVars: []
+}
+
+function fixup(x) {
+  if(!x) {
+    return EmptyProc
+  }
+  for(var i=0; i<x.args.length; ++i) {
+    var a = x.args[i]
+    if(i === 0) {
+      x.args[i] = {name: a, lvalue:true, rvalue: !!x.rvalue, count:x.count||1 }
+    } else {
+      x.args[i] = {name: a, lvalue:false, rvalue:true, count: 1}
+    }
+  }
+  if(!x.thisVars) {
+    x.thisVars = []
+  }
+  if(!x.localVars) {
+    x.localVars = []
+  }
+  return x
+}
+
+function pcompile(user_args) {
+  return compile({
+    args:     user_args.args,
+    pre:      fixup(user_args.pre),
+    body:     fixup(user_args.body),
+    post:     fixup(user_args.proc),
+    funcName: user_args.funcName
+  })
+}
+
+function makeOp(user_args) {
+  var args = []
+  for(var i=0; i<user_args.args.length; ++i) {
+    args.push("a"+i)
+  }
+  var wrapper = new Function("P", [
+    "return function ", user_args.funcName, "_ndarrayops(", args.join(","), ") {P(", args.join(","), ");return a0}"
+  ].join(""))
+  return wrapper(pcompile(user_args))
+}
+
+var assign_ops = {
+  add:  "+",
+  sub:  "-",
+  mul:  "*",
+  div:  "/",
+  mod:  "%",
+  band: "&",
+  bor:  "|",
+  bxor: "^",
+  lshift: "<<",
+  rshift: ">>",
+  rrshift: ">>>"
+}
+;(function(){
+  for(var id in assign_ops) {
+    var op = assign_ops[id]
+    exports[id] = makeOp({
+      args: ["array","array","array"],
+      body: {args:["a","b","c"],
+             body: "a=b"+op+"c"},
+      funcName: id
+    })
+    exports[id+"eq"] = makeOp({
+      args: ["array","array"],
+      body: {args:["a","b"],
+             body:"a"+op+"=b"},
+      rvalue: true,
+      funcName: id+"eq"
+    })
+    exports[id+"s"] = makeOp({
+      args: ["array", "array", "scalar"],
+      body: {args:["a","b","s"],
+             body:"a=b"+op+"s"},
+      funcName: id+"s"
+    })
+    exports[id+"seq"] = makeOp({
+      args: ["array","scalar"],
+      body: {args:["a","s"],
+             body:"a"+op+"=s"},
+      rvalue: true,
+      funcName: id+"seq"
+    })
+  }
+})();
+
+var unary_ops = {
+  not: "!",
+  bnot: "~",
+  neg: "-",
+  recip: "1.0/"
+}
+;(function(){
+  for(var id in unary_ops) {
+    var op = unary_ops[id]
+    exports[id] = makeOp({
+      args: ["array", "array"],
+      body: {args:["a","b"],
+             body:"a="+op+"b"},
+      funcName: id
+    })
+    exports[id+"eq"] = makeOp({
+      args: ["array"],
+      body: {args:["a"],
+             body:"a="+op+"a"},
+      rvalue: true,
+      count: 2,
+      funcName: id+"eq"
+    })
+  }
+})();
+
+var binary_ops = {
+  and: "&&",
+  or: "||",
+  eq: "===",
+  neq: "!==",
+  lt: "<",
+  gt: ">",
+  leq: "<=",
+  geq: ">="
+}
+;(function() {
+  for(var id in binary_ops) {
+    var op = binary_ops[id]
+    exports[id] = makeOp({
+      args: ["array","array","array"],
+      body: {args:["a", "b", "c"],
+             body:"a=b"+op+"c"},
+      funcName: id
+    })
+    exports[id+"s"] = makeOp({
+      args: ["array","array","scalar"],
+      body: {args:["a", "b", "s"],
+             body:"a=b"+op+"s"},
+      funcName: id+"s"
+    })
+    exports[id+"eq"] = makeOp({
+      args: ["array", "array"],
+      body: {args:["a", "b"],
+             body:"a=a"+op+"b"},
+      rvalue:true,
+      count:2,
+      funcName: id+"eq"
+    })
+    exports[id+"seq"] = makeOp({
+      args: ["array", "scalar"],
+      body: {args:["a","s"],
+             body:"a=a"+op+"s"},
+      rvalue:true,
+      count:2,
+      funcName: id+"seq"
+    })
+  }
+})();
+
+var math_unary = [
+  "abs",
+  "acos",
+  "asin",
+  "atan",
+  "ceil",
+  "cos",
+  "exp",
+  "floor",
+  "log",
+  "round",
+  "sin",
+  "sqrt",
+  "tan"
+]
+;(function() {
+  for(var i=0; i<math_unary.length; ++i) {
+    var f = math_unary[i]
+    exports[f] = makeOp({
+                    args: ["array", "array"],
+                    pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                    body: {args:["a","b"], body:"a=this_f(b)", thisVars:["this_f"]},
+                    funcName: f
+                  })
+    exports[f+"eq"] = makeOp({
+                      args: ["array"],
+                      pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                      body: {args: ["a"], body:"a=this_f(a)", thisVars:["this_f"]},
+                      rvalue: true,
+                      count: 2,
+                      funcName: f+"eq"
+                    })
+  }
+})();
+
+var math_comm = [
+  "max",
+  "min",
+  "atan2",
+  "pow"
+]
+;(function(){
+  for(var i=0; i<math_comm.length; ++i) {
+    var f= math_comm[i]
+    exports[f] = makeOp({
+                  args:["array", "array", "array"],
+                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                  body: {args:["a","b","c"], body:"a=this_f(b,c)", thisVars:["this_f"]},
+                  funcName: f
+                })
+    exports[f+"s"] = makeOp({
+                  args:["array", "array", "scalar"],
+                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                  body: {args:["a","b","c"], body:"a=this_f(b,c)", thisVars:["this_f"]},
+                  funcName: f+"s"
+                  })
+    exports[f+"eq"] = makeOp({ args:["array", "array"],
+                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                  body: {args:["a","b"], body:"a=this_f(a,b)", thisVars:["this_f"]},
+                  rvalue: true,
+                  count: 2,
+                  funcName: f+"eq"
+                  })
+    exports[f+"seq"] = makeOp({ args:["array", "scalar"],
+                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                  body: {args:["a","b"], body:"a=this_f(a,b)", thisVars:["this_f"]},
+                  rvalue:true,
+                  count:2,
+                  funcName: f+"seq"
+                  })
+  }
+})();
+
+var math_noncomm = [
+  "atan2",
+  "pow"
+]
+;(function(){
+  for(var i=0; i<math_noncomm.length; ++i) {
+    var f= math_noncomm[i]
+    exports[f+"op"] = makeOp({
+                  args:["array", "array", "array"],
+                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                  body: {args:["a","b","c"], body:"a=this_f(c,b)", thisVars:["this_f"]},
+                  funcName: f+"op"
+                })
+    exports[f+"ops"] = makeOp({
+                  args:["array", "array", "scalar"],
+                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                  body: {args:["a","b","c"], body:"a=this_f(c,b)", thisVars:["this_f"]},
+                  funcName: f+"ops"
+                  })
+    exports[f+"opeq"] = makeOp({ args:["array", "array"],
+                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                  body: {args:["a","b"], body:"a=this_f(b,a)", thisVars:["this_f"]},
+                  rvalue: true,
+                  count: 2,
+                  funcName: f+"opeq"
+                  })
+    exports[f+"opseq"] = makeOp({ args:["array", "scalar"],
+                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
+                  body: {args:["a","b"], body:"a=this_f(b,a)", thisVars:["this_f"]},
+                  rvalue:true,
+                  count:2,
+                  funcName: f+"opseq"
+                  })
+  }
+})();
+
+exports.any = compile({
+  args:["array"],
+  pre: EmptyProc,
+  body: {args:[{name:"a", lvalue:false, rvalue:true, count:1}], body: "if(a){return true}", localVars: [], thisVars: []},
+  post: {args:[], localVars:[], thisVars:[], body:"return false"},
+  funcName: "any"
+})
+
+exports.all = compile({
+  args:["array"],
+  pre: EmptyProc,
+  body: {args:[{name:"x", lvalue:false, rvalue:true, count:1}], body: "if(!x){return false}", localVars: [], thisVars: []},
+  post: {args:[], localVars:[], thisVars:[], body:"return true"},
+  funcName: "all"
+})
+
+exports.sum = compile({
+  args:["array"],
+  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
+  body: {args:[{name:"a", lvalue:false, rvalue:true, count:1}], body: "this_s+=a", localVars: [], thisVars: ["this_s"]},
+  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
+  funcName: "sum"
+})
+
+exports.prod = compile({
+  args:["array"],
+  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=1"},
+  body: {args:[{name:"a", lvalue:false, rvalue:true, count:1}], body: "this_s*=a", localVars: [], thisVars: ["this_s"]},
+  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
+  funcName: "prod"
+})
+
+exports.norm2squared = compile({
+  args:["array"],
+  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
+  body: {args:[{name:"a", lvalue:false, rvalue:true, count:2}], body: "this_s+=a*a", localVars: [], thisVars: ["this_s"]},
+  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
+  funcName: "norm2squared"
+})
+  
+exports.norm2 = compile({
+  args:["array"],
+  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
+  body: {args:[{name:"a", lvalue:false, rvalue:true, count:2}], body: "this_s+=a*a", localVars: [], thisVars: ["this_s"]},
+  post: {args:[], localVars:[], thisVars:["this_s"], body:"return Math.sqrt(this_s)"},
+  funcName: "norm2"
+})
+  
+
+exports.norminf = compile({
+  args:["array"],
+  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
+  body: {args:[{name:"a", lvalue:false, rvalue:true, count:4}], body:"if(-a>this_s){this_s=-a}else if(a>this_s){this_s=a}", localVars: [], thisVars: ["this_s"]},
+  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
+  funcName: "norminf"
+})
+
+exports.norm1 = compile({
+  args:["array"],
+  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
+  body: {args:[{name:"a", lvalue:false, rvalue:true, count:3}], body: "this_s+=a<0?-a:a", localVars: [], thisVars: ["this_s"]},
+  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
+  funcName: "norm1"
+})
+
+exports.sup = compile({
+  args: [ "array" ],
+  pre:
+   { body: "this_h=-Infinity",
+     args: [],
+     thisVars: [ "this_h" ],
+     localVars: [] },
+  body:
+   { body: "if(_inline_1_arg0_>this_h)this_h=_inline_1_arg0_",
+     args: [{"name":"_inline_1_arg0_","lvalue":false,"rvalue":true,"count":2} ],
+     thisVars: [ "this_h" ],
+     localVars: [] },
+  post:
+   { body: "return this_h",
+     args: [],
+     thisVars: [ "this_h" ],
+     localVars: [] }
+ })
+
+exports.inf = compile({
+  args: [ "array" ],
+  pre:
+   { body: "this_h=Infinity",
+     args: [],
+     thisVars: [ "this_h" ],
+     localVars: [] },
+  body:
+   { body: "if(_inline_1_arg0_<this_h)this_h=_inline_1_arg0_",
+     args: [{"name":"_inline_1_arg0_","lvalue":false,"rvalue":true,"count":2} ],
+     thisVars: [ "this_h" ],
+     localVars: [] },
+  post:
+   { body: "return this_h",
+     args: [],
+     thisVars: [ "this_h" ],
+     localVars: [] }
+ })
+
+exports.argmin = compile({
+  args:["index","array","shape"],
+  pre:{
+    body:"{this_v=Infinity;this_i=_inline_0_arg2_.slice(0)}",
+    args:[
+      {name:"_inline_0_arg0_",lvalue:false,rvalue:false,count:0},
+      {name:"_inline_0_arg1_",lvalue:false,rvalue:false,count:0},
+      {name:"_inline_0_arg2_",lvalue:false,rvalue:true,count:1}
+      ],
+    thisVars:["this_i","this_v"],
+    localVars:[]},
+  body:{
+    body:"{if(_inline_1_arg1_<this_v){this_v=_inline_1_arg1_;for(var _inline_1_k=0;_inline_1_k<_inline_1_arg0_.length;++_inline_1_k){this_i[_inline_1_k]=_inline_1_arg0_[_inline_1_k]}}}",
+    args:[
+      {name:"_inline_1_arg0_",lvalue:false,rvalue:true,count:2},
+      {name:"_inline_1_arg1_",lvalue:false,rvalue:true,count:2}],
+    thisVars:["this_i","this_v"],
+    localVars:["_inline_1_k"]},
+  post:{
+    body:"{return this_i}",
+    args:[],
+    thisVars:["this_i"],
+    localVars:[]}
+})
+
+exports.argmax = compile({
+  args:["index","array","shape"],
+  pre:{
+    body:"{this_v=-Infinity;this_i=_inline_0_arg2_.slice(0)}",
+    args:[
+      {name:"_inline_0_arg0_",lvalue:false,rvalue:false,count:0},
+      {name:"_inline_0_arg1_",lvalue:false,rvalue:false,count:0},
+      {name:"_inline_0_arg2_",lvalue:false,rvalue:true,count:1}
+      ],
+    thisVars:["this_i","this_v"],
+    localVars:[]},
+  body:{
+    body:"{if(_inline_1_arg1_>this_v){this_v=_inline_1_arg1_;for(var _inline_1_k=0;_inline_1_k<_inline_1_arg0_.length;++_inline_1_k){this_i[_inline_1_k]=_inline_1_arg0_[_inline_1_k]}}}",
+    args:[
+      {name:"_inline_1_arg0_",lvalue:false,rvalue:true,count:2},
+      {name:"_inline_1_arg1_",lvalue:false,rvalue:true,count:2}],
+    thisVars:["this_i","this_v"],
+    localVars:["_inline_1_k"]},
+  post:{
+    body:"{return this_i}",
+    args:[],
+    thisVars:["this_i"],
+    localVars:[]}
+})  
+
+exports.random = makeOp({
+  args: ["array"],
+  pre: {args:[], body:"this_f=Math.random", thisVars:["this_f"]},
+  body: {args: ["a"], body:"a=this_f()", thisVars:["this_f"]},
+  funcName: "random"
+})
+
+exports.assign = makeOp({
+  args:["array", "array"],
+  body: {args:["a", "b"], body:"a=b"},
+  funcName: "assign" })
+
+exports.assigns = makeOp({
+  args:["array", "scalar"],
+  body: {args:["a", "b"], body:"a=b"},
+  funcName: "assigns" })
+
+
+exports.equals = compile({
+  args:["array", "array"],
+  pre: EmptyProc,
+  body: {args:[{name:"x", lvalue:false, rvalue:true, count:1},
+               {name:"y", lvalue:false, rvalue:true, count:1}], 
+        body: "if(x!==y){return false}", 
+        localVars: [], 
+        thisVars: []},
+  post: {args:[], localVars:[], thisVars:[], body:"return true"},
+  funcName: "equals"
+})
+
+
+
+},{"cwise-compiler":45}],45:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"./lib/thunk.js":47,"dup":40}],46:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"dup":41,"uniq":48}],47:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"./compile.js":46,"dup":42}],48:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"dup":43}],49:[function(require,module,exports){
+"use strict"
+
+var ndarray = require("ndarray")
+var do_convert = require("./doConvert.js")
+
+module.exports = function convert(arr, result) {
+  var shape = [], c = arr, sz = 1
+  while(c instanceof Array) {
+    shape.push(c.length)
+    sz *= c.length
+    c = c[0]
+  }
+  if(shape.length === 0) {
+    return ndarray()
+  }
+  if(!result) {
+    result = ndarray(new Float64Array(sz), shape)
+  }
+  do_convert(result, arr)
+  return result
+}
+
+},{"./doConvert.js":50,"ndarray":55}],50:[function(require,module,exports){
+module.exports=require('cwise-compiler')({"args":["array","scalar","index"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{\nvar _inline_1_v=_inline_1_arg1_,_inline_1_i\nfor(_inline_1_i=0;_inline_1_i<_inline_1_arg2_.length-1;++_inline_1_i) {\n_inline_1_v=_inline_1_v[_inline_1_arg2_[_inline_1_i]]\n}\n_inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]\n}","args":[{"name":"_inline_1_arg0_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":4}],"thisVars":[],"localVars":["_inline_1_i","_inline_1_v"]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"funcName":"convert","blockSize":64})
+
+},{"cwise-compiler":51}],51:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"./lib/thunk.js":53,"dup":40}],52:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"dup":41,"uniq":54}],53:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"./compile.js":52,"dup":42}],54:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"dup":43}],55:[function(require,module,exports){
+var iota = require("iota-array")
+var isBuffer = require("is-buffer")
+
+var hasTypedArrays  = ((typeof Float64Array) !== "undefined")
+
+function compare1st(a, b) {
+  return a[0] - b[0]
+}
+
+function order() {
+  var stride = this.stride
+  var terms = new Array(stride.length)
+  var i
+  for(i=0; i<terms.length; ++i) {
+    terms[i] = [Math.abs(stride[i]), i]
+  }
+  terms.sort(compare1st)
+  var result = new Array(terms.length)
+  for(i=0; i<result.length; ++i) {
+    result[i] = terms[i][1]
+  }
+  return result
+}
+
+function compileConstructor(dtype, dimension) {
+  var className = ["View", dimension, "d", dtype].join("")
+  if(dimension < 0) {
+    className = "View_Nil" + dtype
+  }
+  var useGetters = (dtype === "generic")
+
+  if(dimension === -1) {
+    //Special case for trivial arrays
+    var code =
+      "function "+className+"(a){this.data=a;};\
+var proto="+className+".prototype;\
+proto.dtype='"+dtype+"';\
+proto.index=function(){return -1};\
+proto.size=0;\
+proto.dimension=-1;\
+proto.shape=proto.stride=proto.order=[];\
+proto.lo=proto.hi=proto.transpose=proto.step=\
+function(){return new "+className+"(this.data);};\
+proto.get=proto.set=function(){};\
+proto.pick=function(){return null};\
+return function construct_"+className+"(a){return new "+className+"(a);}"
+    var procedure = new Function(code)
+    return procedure()
+  } else if(dimension === 0) {
+    //Special case for 0d arrays
+    var code =
+      "function "+className+"(a,d) {\
+this.data = a;\
+this.offset = d\
+};\
+var proto="+className+".prototype;\
+proto.dtype='"+dtype+"';\
+proto.index=function(){return this.offset};\
+proto.dimension=0;\
+proto.size=1;\
+proto.shape=\
+proto.stride=\
+proto.order=[];\
+proto.lo=\
+proto.hi=\
+proto.transpose=\
+proto.step=function "+className+"_copy() {\
+return new "+className+"(this.data,this.offset)\
+};\
+proto.pick=function "+className+"_pick(){\
+return TrivialArray(this.data);\
+};\
+proto.valueOf=proto.get=function "+className+"_get(){\
+return "+(useGetters ? "this.data.get(this.offset)" : "this.data[this.offset]")+
+"};\
+proto.set=function "+className+"_set(v){\
+return "+(useGetters ? "this.data.set(this.offset,v)" : "this.data[this.offset]=v")+"\
+};\
+return function construct_"+className+"(a,b,c,d){return new "+className+"(a,d)}"
+    var procedure = new Function("TrivialArray", code)
+    return procedure(CACHED_CONSTRUCTORS[dtype][0])
+  }
+
+  var code = ["'use strict'"]
+
+  //Create constructor for view
+  var indices = iota(dimension)
+  var args = indices.map(function(i) { return "i"+i })
+  var index_str = "this.offset+" + indices.map(function(i) {
+        return "this.stride[" + i + "]*i" + i
+      }).join("+")
+  var shapeArg = indices.map(function(i) {
+      return "b"+i
+    }).join(",")
+  var strideArg = indices.map(function(i) {
+      return "c"+i
+    }).join(",")
+  code.push(
+    "function "+className+"(a," + shapeArg + "," + strideArg + ",d){this.data=a",
+      "this.shape=[" + shapeArg + "]",
+      "this.stride=[" + strideArg + "]",
+      "this.offset=d|0}",
+    "var proto="+className+".prototype",
+    "proto.dtype='"+dtype+"'",
+    "proto.dimension="+dimension)
+
+  //view.size:
+  code.push("Object.defineProperty(proto,'size',{get:function "+className+"_size(){\
+return "+indices.map(function(i) { return "this.shape["+i+"]" }).join("*"),
+"}})")
+
+  //view.order:
+  if(dimension === 1) {
+    code.push("proto.order=[0]")
+  } else {
+    code.push("Object.defineProperty(proto,'order',{get:")
+    if(dimension < 4) {
+      code.push("function "+className+"_order(){")
+      if(dimension === 2) {
+        code.push("return (Math.abs(this.stride[0])>Math.abs(this.stride[1]))?[1,0]:[0,1]}})")
+      } else if(dimension === 3) {
+        code.push(
+"var s0=Math.abs(this.stride[0]),s1=Math.abs(this.stride[1]),s2=Math.abs(this.stride[2]);\
+if(s0>s1){\
+if(s1>s2){\
+return [2,1,0];\
+}else if(s0>s2){\
+return [1,2,0];\
+}else{\
+return [1,0,2];\
+}\
+}else if(s0>s2){\
+return [2,0,1];\
+}else if(s2>s1){\
+return [0,1,2];\
+}else{\
+return [0,2,1];\
+}}})")
+      }
+    } else {
+      code.push("ORDER})")
+    }
+  }
+
+  //view.set(i0, ..., v):
+  code.push(
+"proto.set=function "+className+"_set("+args.join(",")+",v){")
+  if(useGetters) {
+    code.push("return this.data.set("+index_str+",v)}")
+  } else {
+    code.push("return this.data["+index_str+"]=v}")
+  }
+
+  //view.get(i0, ...):
+  code.push("proto.get=function "+className+"_get("+args.join(",")+"){")
+  if(useGetters) {
+    code.push("return this.data.get("+index_str+")}")
+  } else {
+    code.push("return this.data["+index_str+"]}")
+  }
+
+  //view.index:
+  code.push(
+    "proto.index=function "+className+"_index(", args.join(), "){return "+index_str+"}")
+
+  //view.hi():
+  code.push("proto.hi=function "+className+"_hi("+args.join(",")+"){return new "+className+"(this.data,"+
+    indices.map(function(i) {
+      return ["(typeof i",i,"!=='number'||i",i,"<0)?this.shape[", i, "]:i", i,"|0"].join("")
+    }).join(",")+","+
+    indices.map(function(i) {
+      return "this.stride["+i + "]"
+    }).join(",")+",this.offset)}")
+
+  //view.lo():
+  var a_vars = indices.map(function(i) { return "a"+i+"=this.shape["+i+"]" })
+  var c_vars = indices.map(function(i) { return "c"+i+"=this.stride["+i+"]" })
+  code.push("proto.lo=function "+className+"_lo("+args.join(",")+"){var b=this.offset,d=0,"+a_vars.join(",")+","+c_vars.join(","))
+  for(var i=0; i<dimension; ++i) {
+    code.push(
+"if(typeof i"+i+"==='number'&&i"+i+">=0){\
+d=i"+i+"|0;\
+b+=c"+i+"*d;\
+a"+i+"-=d}")
+  }
+  code.push("return new "+className+"(this.data,"+
+    indices.map(function(i) {
+      return "a"+i
+    }).join(",")+","+
+    indices.map(function(i) {
+      return "c"+i
+    }).join(",")+",b)}")
+
+  //view.step():
+  code.push("proto.step=function "+className+"_step("+args.join(",")+"){var "+
+    indices.map(function(i) {
+      return "a"+i+"=this.shape["+i+"]"
+    }).join(",")+","+
+    indices.map(function(i) {
+      return "b"+i+"=this.stride["+i+"]"
+    }).join(",")+",c=this.offset,d=0,ceil=Math.ceil")
+  for(var i=0; i<dimension; ++i) {
+    code.push(
+"if(typeof i"+i+"==='number'){\
+d=i"+i+"|0;\
+if(d<0){\
+c+=b"+i+"*(a"+i+"-1);\
+a"+i+"=ceil(-a"+i+"/d)\
+}else{\
+a"+i+"=ceil(a"+i+"/d)\
+}\
+b"+i+"*=d\
+}")
+  }
+  code.push("return new "+className+"(this.data,"+
+    indices.map(function(i) {
+      return "a" + i
+    }).join(",")+","+
+    indices.map(function(i) {
+      return "b" + i
+    }).join(",")+",c)}")
+
+  //view.transpose():
+  var tShape = new Array(dimension)
+  var tStride = new Array(dimension)
+  for(var i=0; i<dimension; ++i) {
+    tShape[i] = "a[i"+i+"]"
+    tStride[i] = "b[i"+i+"]"
+  }
+  code.push("proto.transpose=function "+className+"_transpose("+args+"){"+
+    args.map(function(n,idx) { return n + "=(" + n + "===undefined?" + idx + ":" + n + "|0)"}).join(";"),
+    "var a=this.shape,b=this.stride;return new "+className+"(this.data,"+tShape.join(",")+","+tStride.join(",")+",this.offset)}")
+
+  //view.pick():
+  code.push("proto.pick=function "+className+"_pick("+args+"){var a=[],b=[],c=this.offset")
+  for(var i=0; i<dimension; ++i) {
+    code.push("if(typeof i"+i+"==='number'&&i"+i+">=0){c=(c+this.stride["+i+"]*i"+i+")|0}else{a.push(this.shape["+i+"]);b.push(this.stride["+i+"])}")
+  }
+  code.push("var ctor=CTOR_LIST[a.length+1];return ctor(this.data,a,b,c)}")
+
+  //Add return statement
+  code.push("return function construct_"+className+"(data,shape,stride,offset){return new "+className+"(data,"+
+    indices.map(function(i) {
+      return "shape["+i+"]"
+    }).join(",")+","+
+    indices.map(function(i) {
+      return "stride["+i+"]"
+    }).join(",")+",offset)}")
+
+  //Compile procedure
+  var procedure = new Function("CTOR_LIST", "ORDER", code.join("\n"))
+  return procedure(CACHED_CONSTRUCTORS[dtype], order)
+}
+
+function arrayDType(data) {
+  if(isBuffer(data)) {
+    return "buffer"
+  }
+  if(hasTypedArrays) {
+    switch(Object.prototype.toString.call(data)) {
+      case "[object Float64Array]":
+        return "float64"
+      case "[object Float32Array]":
+        return "float32"
+      case "[object Int8Array]":
+        return "int8"
+      case "[object Int16Array]":
+        return "int16"
+      case "[object Int32Array]":
+        return "int32"
+      case "[object Uint8Array]":
+        return "uint8"
+      case "[object Uint16Array]":
+        return "uint16"
+      case "[object Uint32Array]":
+        return "uint32"
+      case "[object Uint8ClampedArray]":
+        return "uint8_clamped"
+    }
+  }
+  if(Array.isArray(data)) {
+    return "array"
+  }
+  return "generic"
+}
+
+var CACHED_CONSTRUCTORS = {
+  "float32":[],
+  "float64":[],
+  "int8":[],
+  "int16":[],
+  "int32":[],
+  "uint8":[],
+  "uint16":[],
+  "uint32":[],
+  "array":[],
+  "uint8_clamped":[],
+  "buffer":[],
+  "generic":[]
+}
+
+;(function() {
+  for(var id in CACHED_CONSTRUCTORS) {
+    CACHED_CONSTRUCTORS[id].push(compileConstructor(id, -1))
+  }
+});
+
+function wrappedNDArrayCtor(data, shape, stride, offset) {
+  if(data === undefined) {
+    var ctor = CACHED_CONSTRUCTORS.array[0]
+    return ctor([])
+  } else if(typeof data === "number") {
+    data = [data]
+  }
+  if(shape === undefined) {
+    shape = [ data.length ]
+  }
+  var d = shape.length
+  if(stride === undefined) {
+    stride = new Array(d)
+    for(var i=d-1, sz=1; i>=0; --i) {
+      stride[i] = sz
+      sz *= shape[i]
+    }
+  }
+  if(offset === undefined) {
+    offset = 0
+    for(var i=0; i<d; ++i) {
+      if(stride[i] < 0) {
+        offset -= (shape[i]-1)*stride[i]
+      }
+    }
+  }
+  var dtype = arrayDType(data)
+  var ctor_list = CACHED_CONSTRUCTORS[dtype]
+  while(ctor_list.length <= d+1) {
+    ctor_list.push(compileConstructor(dtype, ctor_list.length-1))
+  }
+  var ctor = ctor_list[d+1]
+  return ctor(data, shape, stride, offset)
+}
+
+module.exports = wrappedNDArrayCtor
+
+},{"iota-array":56,"is-buffer":57}],56:[function(require,module,exports){
+"use strict"
+
+function iota(n) {
+  var result = new Array(n)
+  for(var i=0; i<n; ++i) {
+    result[i] = i
+  }
+  return result
+}
+
+module.exports = iota
+},{}],57:[function(require,module,exports){
+/**
+ * Determine if an object is Buffer
+ *
+ * Author:   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
+ * License:  MIT
+ *
+ * `npm install is-buffer`
+ */
+
+module.exports = function (obj) {
+  return !!(obj != null &&
+    (obj._isBuffer || // For Safari 5-7 (missing Object.prototype.constructor)
+      (obj.constructor &&
+      typeof obj.constructor.isBuffer === 'function' &&
+      obj.constructor.isBuffer(obj))
+    ))
+}
+
+},{}],58:[function(require,module,exports){
+"use strict"
+
+var pool = require("typedarray-pool")
+
+module.exports = createSurfaceExtractor
+
+//Helper macros
+function array(i) {
+  return "a" + i
+}
+function data(i) {
+  return "d" + i
+}
+function cube(i,bitmask) {
+  return "c" + i + "_" + bitmask
+}
+function shape(i) {
+  return "s" + i
+}
+function stride(i,j) {
+  return "t" + i + "_" + j
+}
+function offset(i) {
+  return "o" + i
+}
+function scalar(i) {
+  return "x" + i
+}
+function pointer(i) {
+  return "p" + i
+}
+function delta(i,bitmask) {
+  return "d" + i + "_" + bitmask
+}
+function index(i) {
+  return "i" + i
+}
+function step(i,j) {
+  return "u" + i + "_" + j
+}
+function pcube(bitmask) {
+  return "b" + bitmask
+}
+function qcube(bitmask) {
+  return "y" + bitmask
+}
+function pdelta(bitmask) {
+  return "e" + bitmask
+}
+function vert(i) {
+  return "v" + i
+}
+var VERTEX_IDS = "V"
+var PHASES = "P"
+var VERTEX_COUNT = "N"
+var POOL_SIZE = "Q"
+var POINTER = "X"
+var TEMPORARY = "T"
+
+function permBitmask(dimension, mask, order) {
+  var r = 0
+  for(var i=0; i<dimension; ++i) {
+    if(mask & (1<<i)) {
+      r |= (1<<order[i])
+    }
+  }
+  return r
+}
+
+//Generates the surface procedure
+function compileSurfaceProcedure(vertexFunc, faceFunc, phaseFunc, scalarArgs, order, typesig) {
+  var arrayArgs = typesig.length
+  var dimension = order.length
+
+  if(dimension < 2) {
+    throw new Error("ndarray-extract-contour: Dimension must be at least 2")
+  }
+
+  var funcName = "extractContour" + order.join("_")
+  var code = []
+  var vars = []
+  var args = []
+
+  //Assemble arguments
+  for(var i=0; i<arrayArgs; ++i) {
+    args.push(array(i))  
+  }
+  for(var i=0; i<scalarArgs; ++i) {
+    args.push(scalar(i))
+  }
+
+  //Shape
+  for(var i=0; i<dimension; ++i) {
+    vars.push(shape(i) + "=" + array(0) + ".shape[" + i + "]|0")
+  }
+  //Data, stride, offset pointers
+  for(var i=0; i<arrayArgs; ++i) {
+    vars.push(data(i) + "=" + array(i) + ".data",
+              offset(i) + "=" + array(i) + ".offset|0")
+    for(var j=0; j<dimension; ++j) {
+      vars.push(stride(i,j) + "=" + array(i) + ".stride[" + j + "]|0")
+    }
+  }
+  //Pointer, delta and cube variables
+  for(var i=0; i<arrayArgs; ++i) {
+    vars.push(pointer(i) + "=" + offset(i))
+    vars.push(cube(i,0))
+    for(var j=1; j<(1<<dimension); ++j) {
+      var ptrStr = []
+      for(var k=0; k<dimension; ++k) {
+        if(j & (1<<k)) {
+          ptrStr.push("-" + stride(i,k))
+        }
+      }
+      vars.push(delta(i,j) + "=(" + ptrStr.join("") + ")|0")
+      vars.push(cube(i,j) + "=0")
+    }
+  }
+  //Create step variables
+  for(var i=0; i<arrayArgs; ++i) {
+    for(var j=0; j<dimension; ++j) {
+      var stepVal = [ stride(i,order[j]) ]
+      if(j > 0) {
+        stepVal.push(stride(i, order[j-1]) + "*" + shape(order[j-1]) )
+      }
+      vars.push(step(i,order[j]) + "=(" + stepVal.join("-") + ")|0")
+    }
+  }
+  //Create index variables
+  for(var i=0; i<dimension; ++i) {
+    vars.push(index(i) + "=0")
+  }
+  //Vertex count
+  vars.push(VERTEX_COUNT + "=0")
+  //Compute pool size, initialize pool step
+  var sizeVariable = ["2"]
+  for(var i=dimension-2; i>=0; --i) {
+    sizeVariable.push(shape(order[i]))
+  }
+  //Previous phases and vertex_ids
+  vars.push(POOL_SIZE + "=(" + sizeVariable.join("*") + ")|0",
+            PHASES + "=mallocUint32(" + POOL_SIZE + ")",
+            VERTEX_IDS + "=mallocUint32(" + POOL_SIZE + ")",
+            POINTER + "=0")
+  //Create cube variables for phases
+  vars.push(pcube(0) + "=0")
+  for(var j=1; j<(1<<dimension); ++j) {
+    var cubeDelta = []
+    var cubeStep = [ ]
+    for(var k=0; k<dimension; ++k) {
+      if(j & (1<<k)) {
+        if(cubeStep.length === 0) {
+          cubeDelta.push("1")
+        } else {
+          cubeDelta.unshift(cubeStep.join("*"))
+        }
+      }
+      cubeStep.push(shape(order[k]))
+    }
+    var signFlag = ""
+    if(cubeDelta[0].indexOf(shape(order[dimension-2])) < 0) {
+      signFlag = "-"
+    }
+    var jperm = permBitmask(dimension, j, order)
+    vars.push(pdelta(jperm) + "=(-" + cubeDelta.join("-") + ")|0",
+              qcube(jperm) + "=(" + signFlag + cubeDelta.join("-") + ")|0",
+              pcube(jperm) + "=0")
+  }
+  vars.push(vert(0) + "=0", TEMPORARY + "=0")
+
+  function forLoopBegin(i, start) {
+    code.push("for(", index(order[i]), "=", start, ";",
+      index(order[i]), "<", shape(order[i]), ";",
+      "++", index(order[i]), "){")
+  }
+
+  function forLoopEnd(i) {
+    for(var j=0; j<arrayArgs; ++j) {
+      code.push(pointer(j), "+=", step(j,order[i]), ";")
+    }
+    code.push("}")
+  }
+
+  function fillEmptySlice(k) {
+    for(var i=k-1; i>=0; --i) {
+      forLoopBegin(i, 0) 
+    }
+    var phaseFuncArgs = []
+    for(var i=0; i<arrayArgs; ++i) {
+      if(typesig[i]) {
+        phaseFuncArgs.push(data(i) + ".get(" + pointer(i) + ")")
+      } else {
+        phaseFuncArgs.push(data(i) + "[" + pointer(i) + "]")
+      }
+    }
+    for(var i=0; i<scalarArgs; ++i) {
+      phaseFuncArgs.push(scalar(i))
+    }
+    code.push(PHASES, "[", POINTER, "++]=phase(", phaseFuncArgs.join(), ");")
+    for(var i=0; i<k; ++i) {
+      forLoopEnd(i)
+    }
+    for(var j=0; j<arrayArgs; ++j) {
+      code.push(pointer(j), "+=", step(j,order[k]), ";")
+    }
+  }
+
+  function processGridCell(mask) {
+    //Read in local data
+    for(var i=0; i<arrayArgs; ++i) {
+      if(typesig[i]) {
+        code.push(cube(i,0), "=", data(i), ".get(", pointer(i), ");")
+      } else {
+        code.push(cube(i,0), "=", data(i), "[", pointer(i), "];")
+      }
+    }
+
+    //Read in phase
+    var phaseFuncArgs = []
+    for(var i=0; i<arrayArgs; ++i) {
+      phaseFuncArgs.push(cube(i,0))
+    }
+    for(var i=0; i<scalarArgs; ++i) {
+      phaseFuncArgs.push(scalar(i))
+    }
+    
+    code.push(pcube(0), "=", PHASES, "[", POINTER, "]=phase(", phaseFuncArgs.join(), ");")
+    
+    //Read in other cube data
+    for(var j=1; j<(1<<dimension); ++j) {
+      code.push(pcube(j), "=", PHASES, "[", POINTER, "+", pdelta(j), "];")
+    }
+
+    //Check for boundary crossing
+    var vertexPredicate = []
+    for(var j=1; j<(1<<dimension); ++j) {
+      vertexPredicate.push("(" + pcube(0) + "!==" + pcube(j) + ")")
+    }
+    code.push("if(", vertexPredicate.join("||"), "){")
+
+    //Read in boundary data
+    var vertexArgs = []
+    for(var i=0; i<dimension; ++i) {
+      vertexArgs.push(index(i))
+    }
+    for(var i=0; i<arrayArgs; ++i) {
+      vertexArgs.push(cube(i,0))
+      for(var j=1; j<(1<<dimension); ++j) {
+        if(typesig[i]) {
+          code.push(cube(i,j), "=", data(i), ".get(", pointer(i), "+", delta(i,j), ");")
+        } else {
+          code.push(cube(i,j), "=", data(i), "[", pointer(i), "+", delta(i,j), "];")
+        }
+        vertexArgs.push(cube(i,j))
+      }
+    }
+    for(var i=0; i<(1<<dimension); ++i) {
+      vertexArgs.push(pcube(i))
+    }
+    for(var i=0; i<scalarArgs; ++i) {
+      vertexArgs.push(scalar(i))
+    }
+
+    //Generate vertex
+    code.push("vertex(", vertexArgs.join(), ");",
+      vert(0), "=", VERTEX_IDS, "[", POINTER, "]=", VERTEX_COUNT, "++;")
+
+    //Check for face crossings
+    var base = (1<<dimension)-1
+    var corner = pcube(base)
+    for(var j=0; j<dimension; ++j) {
+      if((mask & ~(1<<j))===0) {
+        //Check face
+        var subset = base^(1<<j)
+        var edge = pcube(subset)
+        var faceArgs = [ ]
+        for(var k=subset; k>0; k=(k-1)&subset) {
+          faceArgs.push(VERTEX_IDS + "[" + POINTER + "+" + pdelta(k) + "]")
+        }
+        faceArgs.push(vert(0))
+        for(var k=0; k<arrayArgs; ++k) {
+          if(j&1) {
+            faceArgs.push(cube(k,base), cube(k,subset))
+          } else {
+            faceArgs.push(cube(k,subset), cube(k,base))
+          }
+        }
+        if(j&1) {
+          faceArgs.push(corner, edge)
+        } else {
+          faceArgs.push(edge, corner)
+        }
+        for(var k=0; k<scalarArgs; ++k) {
+          faceArgs.push(scalar(k))
+        }
+        code.push("if(", corner, "!==", edge, "){",
+          "face(", faceArgs.join(), ")}")
+      }
+    }
+    
+    //Increment pointer, close off if statement
+    code.push("}",
+      POINTER, "+=1;")
+  }
+
+  function flip() {
+    for(var j=1; j<(1<<dimension); ++j) {
+      code.push(TEMPORARY, "=", pdelta(j), ";",
+                pdelta(j), "=", qcube(j), ";",
+                qcube(j), "=", TEMPORARY, ";")
+    }
+  }
+
+  function createLoop(i, mask) {
+    if(i < 0) {
+      processGridCell(mask)
+      return
+    }
+    fillEmptySlice(i)
+    code.push("if(", shape(order[i]), ">0){",
+      index(order[i]), "=1;")
+    createLoop(i-1, mask|(1<<order[i]))
+
+    for(var j=0; j<arrayArgs; ++j) {
+      code.push(pointer(j), "+=", step(j,order[i]), ";")
+    }
+    if(i === dimension-1) {
+      code.push(POINTER, "=0;")
+      flip()
+    }
+    forLoopBegin(i, 2)
+    createLoop(i-1, mask)
+    if(i === dimension-1) {
+      code.push("if(", index(order[dimension-1]), "&1){",
+        POINTER, "=0;}")
+      flip()
+    }
+    forLoopEnd(i)
+    code.push("}")
+  }
+
+  createLoop(dimension-1, 0)
+
+  //Release scratch memory
+  code.push("freeUint32(", VERTEX_IDS, ");freeUint32(", PHASES, ");")
+
+  //Compile and link procedure
+  var procedureCode = [
+    "'use strict';",
+    "function ", funcName, "(", args.join(), "){",
+      "var ", vars.join(), ";",
+      code.join(""),
+    "}",
+    "return ", funcName ].join("")
+
+  var proc = new Function(
+    "vertex", 
+    "face", 
+    "phase", 
+    "mallocUint32", 
+    "freeUint32",
+    procedureCode)
+  return proc(
+    vertexFunc, 
+    faceFunc, 
+    phaseFunc, 
+    pool.mallocUint32, 
+    pool.freeUint32)
+}
+
+function createSurfaceExtractor(args) {
+  function error(msg) {
+    throw new Error("ndarray-extract-contour: " + msg)
+  }
+  if(typeof args !== "object") {
+    error("Must specify arguments")
+  }
+  var order = args.order
+  if(!Array.isArray(order)) {
+    error("Must specify order")
+  }
+  var arrays = args.arrayArguments||1
+  if(arrays < 1) {
+    error("Must have at least one array argument")
+  }
+  var scalars = args.scalarArguments||0
+  if(scalars < 0) {
+    error("Scalar arg count must be > 0")
+  }
+  if(typeof args.vertex !== "function") {
+    error("Must specify vertex creation function")
+  }
+  if(typeof args.cell !== "function") {
+    error("Must specify cell creation function")
+  }
+  if(typeof args.phase !== "function") {
+    error("Must specify phase function")
+  }
+  var getters = args.getters || []
+  var typesig = new Array(arrays)
+  for(var i=0; i<arrays; ++i) {
+    if(getters.indexOf(i) >= 0) {
+      typesig[i] = true
+    } else {
+      typesig[i] = false
+    }
+  }
+  return compileSurfaceProcedure(
+    args.vertex,
+    args.cell,
+    args.phase,
+    scalars,
+    order,
+    typesig)
+}
+},{"typedarray-pool":71}],59:[function(require,module,exports){
+// transliterated from the python snippet here:
+// http://en.wikipedia.org/wiki/Lanczos_approximation
+
+var g = 7;
+var p = [
+    0.99999999999980993,
+    676.5203681218851,
+    -1259.1392167224028,
+    771.32342877765313,
+    -176.61502916214059,
+    12.507343278686905,
+    -0.13857109526572012,
+    9.9843695780195716e-6,
+    1.5056327351493116e-7
+];
+
+var g_ln = 607/128;
+var p_ln = [
+    0.99999999999999709182,
+    57.156235665862923517,
+    -59.597960355475491248,
+    14.136097974741747174,
+    -0.49191381609762019978,
+    0.33994649984811888699e-4,
+    0.46523628927048575665e-4,
+    -0.98374475304879564677e-4,
+    0.15808870322491248884e-3,
+    -0.21026444172410488319e-3,
+    0.21743961811521264320e-3,
+    -0.16431810653676389022e-3,
+    0.84418223983852743293e-4,
+    -0.26190838401581408670e-4,
+    0.36899182659531622704e-5
+];
+
+// Spouge approximation (suitable for large arguments)
+function lngamma(z) {
+
+    if(z < 0) return Number('0/0');
+    var x = p_ln[0];
+    for(var i = p_ln.length - 1; i > 0; --i) x += p_ln[i] / (z + i);
+    var t = z + g_ln + 0.5;
+    return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x)-Math.log(z);
+}
+
+module.exports = function gamma (z) {
+    if (z < 0.5) {
+        return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
+    }
+    else if(z > 100) return Math.exp(lngamma(z));
+    else {
+        z -= 1;
+        var x = p[0];
+        for (var i = 1; i < g + 2; i++) {
+            x += p[i] / (z + i);
+        }
+        var t = z + g + 0.5;
+
+        return Math.sqrt(2 * Math.PI)
+            * Math.pow(t, z + 0.5)
+            * Math.exp(-t)
+            * x
+        ;
+    }
+};
+
+module.exports.log = lngamma;
+
+},{}],60:[function(require,module,exports){
+"use strict"
+
+module.exports = permutationSign
+
+var BRUTE_FORCE_CUTOFF = 32
+
+var pool = require("typedarray-pool")
+
+function permutationSign(p) {
+  var n = p.length
+  if(n < BRUTE_FORCE_CUTOFF) {
+    //Use quadratic algorithm for small n
+    var sgn = 1
+    for(var i=0; i<n; ++i) {
+      for(var j=0; j<i; ++j) {
+        if(p[i] < p[j]) {
+          sgn = -sgn
+        } else if(p[i] === p[j]) {
+          return 0
+        }
+      }
+    }
+    return sgn
+  } else {
+    //Otherwise use linear time algorithm
+    var visited = pool.mallocUint8(n)
+    for(var i=0; i<n; ++i) {
+      visited[i] = 0
+    }
+    var sgn = 1
+    for(var i=0; i<n; ++i) {
+      if(!visited[i]) {
+        var count = 1
+        visited[i] = 1
+        for(var j=p[i]; j!==i; j=p[j]) {
+          if(visited[j]) {
+            pool.freeUint8(visited)
+            return 0
+          }
+          count += 1
+          visited[j] = 1
+        }
+        if(!(count & 1)) {
+          sgn = -sgn
+        }
+      }
+    }
+    pool.freeUint8(visited)
+    return sgn
+  }
+}
+},{"typedarray-pool":71}],61:[function(require,module,exports){
+"use strict"
+
+var pool = require("typedarray-pool")
+var inverse = require("invert-permutation")
+
+function rank(permutation) {
+  var n = permutation.length
+  switch(n) {
+    case 0:
+    case 1:
+      return 0
+    case 2:
+      return permutation[1]
+    default:
+      break
+  }
+  var p = pool.mallocUint32(n)
+  var pinv = pool.mallocUint32(n)
+  var r = 0, s, t, i
+  inverse(permutation, pinv)
+  for(i=0; i<n; ++i) {
+    p[i] = permutation[i]
+  }
+  for(i=n-1; i>0; --i) {
+    t = pinv[i]
+    s = p[i]
+    p[i] = p[t]
+    p[t] = s
+    pinv[i] = pinv[s]
+    pinv[s] = t
+    r = (r + s) * i
+  }
+  pool.freeUint32(pinv)
+  pool.freeUint32(p)
+  return r
+}
+
+function unrank(n, r, p) {
+  switch(n) {
+    case 0:
+      if(p) { return p }
+      return []
+    case 1:
+      if(p) {
+        p[0] = 0
+        return p
+      } else {
+        return [0]
+      }
+    case 2:
+      if(p) {
+        if(r) {
+          p[0] = 0
+          p[1] = 1
+        } else {
+          p[0] = 1
+          p[1] = 0
+        }
+        return p
+      } else {
+        return r ? [0,1] : [1,0]
+      }
+    default:
+      break
+  }
+  p = p || new Array(n)
+  var s, t, i, nf=1
+  p[0] = 0
+  for(i=1; i<n; ++i) {
+    p[i] = i
+    nf = (nf*i)|0
+  }
+  for(i=n-1; i>0; --i) {
+    s = (r / nf)|0
+    r = (r - s * nf)|0
+    nf = (nf / i)|0
+    t = p[i]|0
+    p[i] = p[s]|0
+    p[s] = t|0
+  }
+  return p
+}
+
+exports.rank = rank
+exports.unrank = unrank
+
+},{"invert-permutation":62,"typedarray-pool":71}],62:[function(require,module,exports){
+"use strict"
+
+function invertPermutation(pi, result) {
+  result = result || new Array(pi.length)
+  for(var i=0; i<pi.length; ++i) {
+    result[pi[i]] = i
+  }
+  return result
+}
+
+module.exports = invertPermutation
+},{}],63:[function(require,module,exports){
+"use strict"
+
+module.exports = triangulateCube
+
+var perm = require("permutation-rank")
+var sgn = require("permutation-parity")
+var gamma = require("gamma")
+
+function triangulateCube(dimension) {
+  if(dimension < 0) {
+    return [ ]
+  }
+  if(dimension === 0) {
+    return [ [0] ]
+  }
+  var dfactorial = Math.round(gamma(dimension+1))|0
+  var result = []
+  for(var i=0; i<dfactorial; ++i) {
+    var p = perm.unrank(dimension, i)
+    var cell = [ 0 ]
+    var v = 0
+    for(var j=0; j<p.length; ++j) {
+      v += (1<<p[j])
+      cell.push(v)
+    }
+    if(sgn(p) < 1) {
+      cell[0] = v
+      cell[dimension] = 0
+    }
+    result.push(cell)
+  }
+  return result
+}
+},{"gamma":59,"permutation-parity":60,"permutation-rank":61}],64:[function(require,module,exports){
+module.exports = require('cwise-compiler')({
+    args: ['array', {
+        offset: [1],
+        array: 0
+    }, 'scalar', 'scalar', 'index'],
+    pre: {
+        "body": "{}",
+        "args": [],
+        "thisVars": [],
+        "localVars": []
+    },
+    post: {
+        "body": "{}",
+        "args": [],
+        "thisVars": [],
+        "localVars": []
+    },
+    body: {
+        "body": "{\n        var _inline_1_da = _inline_1_arg0_ - _inline_1_arg3_\n        var _inline_1_db = _inline_1_arg1_ - _inline_1_arg3_\n        if((_inline_1_da >= 0) !== (_inline_1_db >= 0)) {\n          _inline_1_arg2_.push(_inline_1_arg4_[0] + 0.5 + 0.5 * (_inline_1_da + _inline_1_db) / (_inline_1_da - _inline_1_db))\n        }\n      }",
+        "args": [{
+            "name": "_inline_1_arg0_",
+            "lvalue": false,
+            "rvalue": true,
+            "count": 1
+        }, {
+            "name": "_inline_1_arg1_",
+            "lvalue": false,
+            "rvalue": true,
+            "count": 1
+        }, {
+            "name": "_inline_1_arg2_",
+            "lvalue": false,
+            "rvalue": true,
+            "count": 1
+        }, {
+            "name": "_inline_1_arg3_",
+            "lvalue": false,
+            "rvalue": true,
+            "count": 2
+        }, {
+            "name": "_inline_1_arg4_",
+            "lvalue": false,
+            "rvalue": true,
+            "count": 1
+        }],
+        "thisVars": [],
+        "localVars": ["_inline_1_da", "_inline_1_db"]
+    },
+    funcName: 'zeroCrossings'
+})
+
+},{"cwise-compiler":65}],65:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"./lib/thunk.js":67,"dup":40}],66:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"dup":41,"uniq":68}],67:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"./compile.js":66,"dup":42}],68:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"dup":43}],69:[function(require,module,exports){
+"use strict"
+
+module.exports = findZeroCrossings
+
+var core = require("./lib/zc-core")
+
+function findZeroCrossings(array, level) {
+  var cross = []
+  level = +level || 0.0
+  core(array.hi(array.shape[0]-1), cross, level)
+  return cross
+}
+},{"./lib/zc-core":64}],70:[function(require,module,exports){
+"use strict"
+
+module.exports = surfaceNets
+
+var generateContourExtractor = require("ndarray-extract-contour")
+var triangulateCube = require("triangulate-hypercube")
+var zeroCrossings = require("zero-crossings")
+
+function buildSurfaceNets(order, dtype) {
+  var dimension = order.length
+  var code = ["'use strict';"]
+  var funcName = "surfaceNets" + order.join("_") + "d" + dtype
+
+  //Contour extraction function
+  code.push(
+    "var contour=genContour({",
+      "order:[", order.join(), "],",
+      "scalarArguments: 3,",
+      "phase:function phaseFunc(p,a,b,c) { return (p > c)|0 },")
+  if(dtype === "generic") {
+    code.push("getters:[0],")
+  }
+
+  //Generate vertex function
+  var cubeArgs = []
+  var extraArgs = []
+  for(var i=0; i<dimension; ++i) {
+    cubeArgs.push("d" + i)
+    extraArgs.push("d" + i)
+  }
+  for(var i=0; i<(1<<dimension); ++i) {
+    cubeArgs.push("v" + i)
+    extraArgs.push("v" + i)
+  }
+  for(var i=0; i<(1<<dimension); ++i) {
+    cubeArgs.push("p" + i)
+    extraArgs.push("p" + i)
+  }
+  cubeArgs.push("a", "b", "c")
+  extraArgs.push("a", "c")
+  code.push("vertex:function vertexFunc(", cubeArgs.join(), "){")
+  //Mask args together
+  var maskStr = []
+  for(var i=0; i<(1<<dimension); ++i) {
+    maskStr.push("(p" + i + "<<" + i + ")")
+  }
+  //Generate variables and giganto switch statement
+  code.push("var m=(", maskStr.join("+"), ")|0;if(m===0||m===", (1<<(1<<dimension))-1, "){return}")
+  var extraFuncs = []
+  var currentFunc = []
+  if(1<<(1<<dimension) <= 128) {
+    code.push("switch(m){")
+    currentFunc = code
+  } else {
+    code.push("switch(m>>>7){")
+  }
+  for(var i=0; i<1<<(1<<dimension); ++i) {
+    if(1<<(1<<dimension) > 128) {
+      if((i%128)===0) {
+        if(extraFuncs.length > 0) {
+          currentFunc.push("}}")
+        }
+        var efName = "vExtra" + extraFuncs.length
+        code.push("case ", (i>>>7), ":", efName, "(m&0x7f,", extraArgs.join(), ");break;")
+        currentFunc = [
+          "function ", efName, "(m,", extraArgs.join(), "){switch(m){"
+        ]
+        extraFuncs.push(currentFunc)
+      }  
+    }
+    currentFunc.push("case ", (i&0x7f), ":")
+    var crossings = new Array(dimension)
+    var denoms = new Array(dimension)
+    var crossingCount = new Array(dimension)
+    var bias = new Array(dimension)
+    var totalCrossings = 0
+    for(var j=0; j<dimension; ++j) {
+      crossings[j] = []
+      denoms[j] = []
+      crossingCount[j] = 0
+      bias[j] = 0
+    }
+    for(var j=0; j<(1<<dimension); ++j) {
+      for(var k=0; k<dimension; ++k) {
+        var u = j ^ (1<<k)
+        if(u > j) {
+          continue
+        }
+        if(!(i&(1<<u)) !== !(i&(1<<j))) {
+          var sign = 1
+          if(i&(1<<u)) {
+            denoms[k].push("v" + u + "-v" + j)
+          } else {
+            denoms[k].push("v" + j + "-v" + u)
+            sign = -sign
+          }
+          if(sign < 0) {
+            crossings[k].push("-v" + j + "-v" + u)
+            crossingCount[k] += 2
+          } else {
+            crossings[k].push("v" + j + "+v" + u)
+            crossingCount[k] -= 2            
+          }
+          totalCrossings += 1
+          for(var l=0; l<dimension; ++l) {
+            if(l === k) {
+              continue
+            }
+            if(u&(1<<l)) {
+              bias[l] += 1
+            } else {
+              bias[l] -= 1
+            }
+          }
+        }
+      }
+    }
+    var vertexStr = []
+    for(var k=0; k<dimension; ++k) {
+      if(crossings[k].length === 0) {
+        vertexStr.push("d" + k + "-0.5")
+      } else {
+        var cStr = ""
+        if(crossingCount[k] < 0) {
+          cStr = crossingCount[k] + "*c"
+        } else if(crossingCount[k] > 0) {
+          cStr = "+" + crossingCount[k] + "*c"
+        }
+        var weight = 0.5 * (crossings[k].length / totalCrossings)
+        var shift = 0.5 + 0.5 * (bias[k] / totalCrossings)
+        vertexStr.push("d" + k + "-" + shift + "-" + weight + "*(" + crossings[k].join("+") + cStr + ")/(" + denoms[k].join("+") + ")")
+        
+      }
+    }
+    currentFunc.push("a.push([", vertexStr.join(), "]);",
+      "break;")
+  }
+  code.push("}},")
+  if(extraFuncs.length > 0) {
+    currentFunc.push("}}")
+  }
+
+  //Create face function
+  var faceArgs = []
+  for(var i=0; i<(1<<(dimension-1)); ++i) {
+    faceArgs.push("v" + i)
+  }
+  faceArgs.push("c0", "c1", "p0", "p1", "a", "b", "c")
+  code.push("cell:function cellFunc(", faceArgs.join(), "){")
+
+  var facets = triangulateCube(dimension-1)
+  code.push("if(p0){b.push(",
+    facets.map(function(f) {
+      return "[" + f.map(function(v) {
+        return "v" + v
+      }) + "]"
+    }).join(), ")}else{b.push(",
+    facets.map(function(f) {
+      var e = f.slice()
+      e.reverse()
+      return "[" + e.map(function(v) {
+        return "v" + v
+      }) + "]"
+    }).join(),
+    ")}}});function ", funcName, "(array,level){var verts=[],cells=[];contour(array,verts,cells,level);return {positions:verts,cells:cells};} return ", funcName, ";")
+
+  for(var i=0; i<extraFuncs.length; ++i) {
+    code.push(extraFuncs[i].join(""))
+  }
+
+  //Compile and link
+  var proc = new Function("genContour", code.join(""))
+  return proc(generateContourExtractor)
+}
+
+//1D case: Need to handle specially
+function mesh1D(array, level) {
+  var zc = zeroCrossings(array, level)
+  var n = zc.length
+  var npos = new Array(n)
+  var ncel = new Array(n)
+  for(var i=0; i<n; ++i) {
+    npos[i] = [ zc[i] ]
+    ncel[i] = [ i ]
+  }
+  return {
+    positions: npos,
+    cells: ncel
+  }
+}
+
+var CACHE = {}
+
+function surfaceNets(array,level) {
+  if(array.dimension <= 0) {
+    return { positions: [], cells: [] }
+  } else if(array.dimension === 1) {
+    return mesh1D(array, level)
+  }
+  var typesig = array.order.join() + "-" + array.dtype
+  var proc = CACHE[typesig]
+  var level = (+level) || 0.0
+  if(!proc) {
+    proc = CACHE[typesig] = buildSurfaceNets(array.order, array.dtype)
+  }
+  return proc(array,level)
+}
+},{"ndarray-extract-contour":58,"triangulate-hypercube":63,"zero-crossings":69}],71:[function(require,module,exports){
+(function (global,Buffer){
+'use strict'
+
+var bits = require('bit-twiddle')
+var dup = require('dup')
+
+//Legacy pool support
+if(!global.__TYPEDARRAY_POOL) {
+  global.__TYPEDARRAY_POOL = {
+      UINT8   : dup([32, 0])
+    , UINT16  : dup([32, 0])
+    , UINT32  : dup([32, 0])
+    , INT8    : dup([32, 0])
+    , INT16   : dup([32, 0])
+    , INT32   : dup([32, 0])
+    , FLOAT   : dup([32, 0])
+    , DOUBLE  : dup([32, 0])
+    , DATA    : dup([32, 0])
+    , UINT8C  : dup([32, 0])
+    , BUFFER  : dup([32, 0])
+  }
+}
+
+var hasUint8C = (typeof Uint8ClampedArray) !== 'undefined'
+var POOL = global.__TYPEDARRAY_POOL
+
+//Upgrade pool
+if(!POOL.UINT8C) {
+  POOL.UINT8C = dup([32, 0])
+}
+if(!POOL.BUFFER) {
+  POOL.BUFFER = dup([32, 0])
+}
+
+//New technique: Only allocate from ArrayBufferView and Buffer
+var DATA    = POOL.DATA
+  , BUFFER  = POOL.BUFFER
+
+exports.free = function free(array) {
+  if(Buffer.isBuffer(array)) {
+    BUFFER[bits.log2(array.length)].push(array)
+  } else {
+    if(Object.prototype.toString.call(array) !== '[object ArrayBuffer]') {
+      array = array.buffer
+    }
+    if(!array) {
+      return
+    }
+    var n = array.length || array.byteLength
+    var log_n = bits.log2(n)|0
+    DATA[log_n].push(array)
+  }
+}
+
+function freeArrayBuffer(buffer) {
+  if(!buffer) {
+    return
+  }
+  var n = buffer.length || buffer.byteLength
+  var log_n = bits.log2(n)
+  DATA[log_n].push(buffer)
+}
+
+function freeTypedArray(array) {
+  freeArrayBuffer(array.buffer)
+}
+
+exports.freeUint8 =
+exports.freeUint16 =
+exports.freeUint32 =
+exports.freeInt8 =
+exports.freeInt16 =
+exports.freeInt32 =
+exports.freeFloat32 = 
+exports.freeFloat =
+exports.freeFloat64 = 
+exports.freeDouble = 
+exports.freeUint8Clamped = 
+exports.freeDataView = freeTypedArray
+
+exports.freeArrayBuffer = freeArrayBuffer
+
+exports.freeBuffer = function freeBuffer(array) {
+  BUFFER[bits.log2(array.length)].push(array)
+}
+
+exports.malloc = function malloc(n, dtype) {
+  if(dtype === undefined || dtype === 'arraybuffer') {
+    return mallocArrayBuffer(n)
+  } else {
+    switch(dtype) {
+      case 'uint8':
+        return mallocUint8(n)
+      case 'uint16':
+        return mallocUint16(n)
+      case 'uint32':
+        return mallocUint32(n)
+      case 'int8':
+        return mallocInt8(n)
+      case 'int16':
+        return mallocInt16(n)
+      case 'int32':
+        return mallocInt32(n)
+      case 'float':
+      case 'float32':
+        return mallocFloat(n)
+      case 'double':
+      case 'float64':
+        return mallocDouble(n)
+      case 'uint8_clamped':
+        return mallocUint8Clamped(n)
+      case 'buffer':
+        return mallocBuffer(n)
+      case 'data':
+      case 'dataview':
+        return mallocDataView(n)
+
+      default:
+        return null
+    }
+  }
+  return null
+}
+
+function mallocArrayBuffer(n) {
+  var n = bits.nextPow2(n)
+  var log_n = bits.log2(n)
+  var d = DATA[log_n]
+  if(d.length > 0) {
+    return d.pop()
+  }
+  return new ArrayBuffer(n)
+}
+exports.mallocArrayBuffer = mallocArrayBuffer
+
+function mallocUint8(n) {
+  return new Uint8Array(mallocArrayBuffer(n), 0, n)
+}
+exports.mallocUint8 = mallocUint8
+
+function mallocUint16(n) {
+  return new Uint16Array(mallocArrayBuffer(2*n), 0, n)
+}
+exports.mallocUint16 = mallocUint16
+
+function mallocUint32(n) {
+  return new Uint32Array(mallocArrayBuffer(4*n), 0, n)
+}
+exports.mallocUint32 = mallocUint32
+
+function mallocInt8(n) {
+  return new Int8Array(mallocArrayBuffer(n), 0, n)
+}
+exports.mallocInt8 = mallocInt8
+
+function mallocInt16(n) {
+  return new Int16Array(mallocArrayBuffer(2*n), 0, n)
+}
+exports.mallocInt16 = mallocInt16
+
+function mallocInt32(n) {
+  return new Int32Array(mallocArrayBuffer(4*n), 0, n)
+}
+exports.mallocInt32 = mallocInt32
+
+function mallocFloat(n) {
+  return new Float32Array(mallocArrayBuffer(4*n), 0, n)
+}
+exports.mallocFloat32 = exports.mallocFloat = mallocFloat
+
+function mallocDouble(n) {
+  return new Float64Array(mallocArrayBuffer(8*n), 0, n)
+}
+exports.mallocFloat64 = exports.mallocDouble = mallocDouble
+
+function mallocUint8Clamped(n) {
+  if(hasUint8C) {
+    return new Uint8ClampedArray(mallocArrayBuffer(n), 0, n)
+  } else {
+    return mallocUint8(n)
+  }
+}
+exports.mallocUint8Clamped = mallocUint8Clamped
+
+function mallocDataView(n) {
+  return new DataView(mallocArrayBuffer(n), 0, n)
+}
+exports.mallocDataView = mallocDataView
+
+function mallocBuffer(n) {
+  n = bits.nextPow2(n)
+  var log_n = bits.log2(n)
+  var cache = BUFFER[log_n]
+  if(cache.length > 0) {
+    return cache.pop()
+  }
+  return new Buffer(n)
+}
+exports.mallocBuffer = mallocBuffer
+
+exports.clearCache = function clearCache() {
+  for(var i=0; i<32; ++i) {
+    POOL.UINT8[i].length = 0
+    POOL.UINT16[i].length = 0
+    POOL.UINT32[i].length = 0
+    POOL.INT8[i].length = 0
+    POOL.INT16[i].length = 0
+    POOL.INT32[i].length = 0
+    POOL.FLOAT[i].length = 0
+    POOL.DOUBLE[i].length = 0
+    POOL.UINT8C[i].length = 0
+    DATA[i].length = 0
+    BUFFER[i].length = 0
+  }
+}
+}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
+},{"bit-twiddle":3,"buffer":106,"dup":7}],72:[function(require,module,exports){
+'use strict'
+
+module.exports = createSurfacePlot
+
+var bits          = require('bit-twiddle')
+var createBuffer  = require('gl-buffer')
+var createVAO     = require('gl-vao')
+var createTexture = require('gl-texture2d')
+var pool          = require('typedarray-pool')
+var colormap      = require('colormap')
+var ops           = require('ndarray-ops')
+var pack          = require('ndarray-pack')
+var ndarray       = require('ndarray')
+var surfaceNets   = require('surface-nets')
+var multiply      = require('gl-mat4/multiply')
+var invert        = require('gl-mat4/invert')
+var bsearch       = require('binary-search-bounds')
+var gradient      = require('ndarray-gradient')
+var ndarray       = require('ndarray')
+var shaders       = require('./lib/shaders')
+
+var createShader            = shaders.createShader
+var createContourShader     = shaders.createContourShader
+var createPickShader        = shaders.createPickShader
+var createPickContourShader = shaders.createPickContourShader
+
+var SURFACE_VERTEX_SIZE = 4 * (4 + 2 + 3)
+
+var IDENTITY = [
+  1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 1, 0,
+  0, 0, 0, 1 ]
+
+var QUAD = [
+  [0, 0],
+  [0, 1],
+  [1, 0],
+  [1, 1],
+  [1, 0],
+  [0, 1]
+]
+
+var PERMUTATIONS = [
+  [0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0],
+  [0,0,0,0,0,0,0,0,0]
+]
+
+;(function() {
+  for(var i=0; i<3; ++i) {
+    var p = PERMUTATIONS[i]
+    var u = (i+1) % 3
+    var v = (i+2) % 3
+    p[u + 0] = 1
+    p[v + 3] = 1
+    p[i + 6] = 1
+  }
+})()
+
+function SurfacePickResult(position, index, uv, level, dataCoordinate) {
+  this.position     = position
+  this.index        = index
+  this.uv           = uv
+  this.level        = level
+  this.dataCoordinate = dataCoordinate
+}
+
+var N_COLORS = 265
+
+function genColormap(name) {
+  var x = pack([colormap({
+    colormap: name,
+    nshades: N_COLORS,
+    format: 'rgba'
+  }).map(function(c) {
+    return [c[0], c[1], c[2], 255*c[3]]
+  })])
+  ops.divseq(x, 255.0)
+  return x
+}
+
+function clampVec(v) {
+  var result = new Array(3)
+  for(var i=0; i<3; ++i) {
+    result[i] = Math.min(Math.max(v[i], -1e8), 1e8)
+  }
+  return result
+}
+
+function SurfacePlot(
+  gl,
+  shape,
+  bounds,
+  shader,
+  pickShader,
+  coordinates,
+  vao,
+  colorMap,
+  contourShader,
+  contourPickShader,
+  contourBuffer,
+  contourVAO,
+  dynamicBuffer,
+  dynamicVAO) {
+
+  this.gl                 = gl
+  this.shape              = shape
+  this.bounds             = bounds
+
+  this._shader            = shader
+  this._pickShader        = pickShader
+  this._coordinateBuffer  = coordinates
+  this._vao               = vao
+  this._colorMap          = colorMap
+
+  this._contourShader     = contourShader
+  this._contourPickShader = contourPickShader
+  this._contourBuffer     = contourBuffer
+  this._contourVAO        = contourVAO
+  this._contourOffsets    = [[], [], []]
+  this._contourCounts     = [[], [], []]
+  this._vertexCount       = 0
+
+  this._pickResult        = new SurfacePickResult([0,0,0], [0,0], [0,0], [0,0,0], [0,0,0])
+
+  this._dynamicBuffer     = dynamicBuffer
+  this._dynamicVAO        = dynamicVAO
+  this._dynamicOffsets    = [0,0,0]
+  this._dynamicCounts     = [0,0,0]
+
+  this.contourWidth       = [ 1, 1, 1 ]
+  this.contourLevels      = [[1], [1], [1]]
+  this.contourTint        = [0, 0, 0]
+  this.contourColor       = [[0.5,0.5,0.5,1], [0.5,0.5,0.5,1], [0.5,0.5,0.5,1]]
+
+  this.showContour        = true
+  this.showSurface        = true
+
+  this.enableHighlight    = [true, true, true]
+  this.highlightColor     = [[0,0,0,1], [0,0,0,1], [0,0,0,1]]
+  this.highlightTint      = [ 1, 1, 1 ]
+  this.highlightLevel     = [-1, -1, -1]
+
+  //Dynamic contour options
+  this.enableDynamic      = [ true, true, true ]
+  this.dynamicLevel       = [ NaN, NaN, NaN ]
+  this.dynamicColor       = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ]
+  this.dynamicTint        = [ 1, 1, 1 ]
+  this.dynamicWidth       = [ 1, 1, 1 ]
+
+  this.axesBounds         = [[Infinity,Infinity,Infinity],[-Infinity,-Infinity,-Infinity]]
+  this.surfaceProject     = [ false, false, false ]
+  this.contourProject     = [[ false, false, false ],
+                             [ false, false, false ],
+                             [ false, false, false ]]
+
+  this.colorBounds        = [ false, false ]
+
+  //Store xyz fields, need this for picking
+  this._field             = [
+      ndarray(pool.mallocFloat(1024), [0,0]),
+      ndarray(pool.mallocFloat(1024), [0,0]),
+      ndarray(pool.mallocFloat(1024), [0,0]) ]
+
+  this.pickId             = 1
+  this.clipBounds         = [[-Infinity,-Infinity,-Infinity],[Infinity,Infinity,Infinity]]
+
+  this.snapToData         = false
+
+  this.opacity            = 1.0
+
+  this.lightPosition      = [10, 10000, 0]
+  this.ambientLight       = 0.8
+  this.diffuseLight       = 0.8
+  this.specularLight      = 2.0
+  this.roughness          = 0.5
+  this.fresnel            = 1.5
+
+  this.dirty              = true
+}
+
+var proto = SurfacePlot.prototype
+
+proto.isTransparent = function() {
+  return this.opacity < 1
+}
+
+proto.isOpaque = function() {
+  if(this.opacity >= 1) {
+    return true
+  }
+  for(var i=0; i<3; ++i) {
+    if(this._contourCounts[i].length > 0 || this._dynamicCounts[i] > 0) {
+      return true
+    }
+  }
+  return false
+}
+
+proto.pickSlots = 1
+
+proto.setPickBase = function(id) {
+  this.pickId = id
+}
+
+var ZERO_VEC = [0,0,0]
+
+var PROJECT_DATA = {
+  showSurface: false,
+  showContour: false,
+  projections: [IDENTITY.slice(), IDENTITY.slice(), IDENTITY.slice()],
+  clipBounds:   [
+    [[0,0,0], [0,0,0]],
+    [[0,0,0], [0,0,0]],
+    [[0,0,0], [0,0,0]]]
+}
+
+function computeProjectionData(camera, obj) {
+  //Compute cube properties
+  var cubeAxis  = (obj.axes && obj.axes.lastCubeProps.axis) || ZERO_VEC
+
+  var showSurface = obj.showSurface
+  var showContour = obj.showContour
+
+  for(var i=0; i<3; ++i) {
+    showSurface = showSurface || obj.surfaceProject[i]
+    for(var j=0; j<3; ++j) {
+      showContour = showContour || obj.contourProject[i][j]
+    }
+  }
+
+  for(var i=0; i<3; ++i) {
+    //Construct projection onto axis
+    var axisSquish = PROJECT_DATA.projections[i]
+    for(var j=0; j<16; ++j) {
+      axisSquish[j] = 0
+    }
+    for(var j=0; j<4; ++j) {
+      axisSquish[5*j] = 1
+    }
+    axisSquish[5*i] = 0
+    axisSquish[12+i] = obj.axesBounds[+(cubeAxis[i]>0)][i]
+    multiply(axisSquish, camera.model, axisSquish)
+
+    var nclipBounds = PROJECT_DATA.clipBounds[i]
+    for(var k=0; k<2; ++k) {
+      for(var j=0; j<3; ++j) {
+        nclipBounds[k][j] = camera.clipBounds[k][j]
+      }
+    }
+    nclipBounds[0][i] = -1e8
+    nclipBounds[1][i] = 1e8
+  }
+
+  PROJECT_DATA.showSurface = showSurface
+  PROJECT_DATA.showContour = showContour
+
+  return PROJECT_DATA
+}
+
+var UNIFORMS = {
+  model:      IDENTITY,
+  view:       IDENTITY,
+  projection: IDENTITY,
+  inverseModel: IDENTITY.slice(),
+  lowerBound: [0,0,0],
+  upperBound: [0,0,0],
+  colorMap:   0,
+  clipBounds: [[0,0,0], [0,0,0]],
+  height:     0.0,
+  contourTint: 0,
+  contourColor: [0,0,0,1],
+  permutation: [1,0,0,0,1,0,0,0,1],
+  zOffset: -1e-4,
+  kambient: 1,
+  kdiffuse: 1,
+  kspecular: 1,
+  lightPosition: [1000,1000,1000],
+  eyePosition: [0,0,0],
+  roughness: 1,
+  fresnel: 1,
+  opacity: 1
+}
+
+var MATRIX_INVERSE = IDENTITY.slice()
+var DEFAULT_PERM = [1,0,0,0,1,0,0,0,1]
+
+function drawCore(params, transparent) {
+  params = params || {}
+  var gl = this.gl
+
+  gl.disable(gl.CULL_FACE)
+
+  this._colorMap.bind(0)
+
+  var uniforms = UNIFORMS
+  uniforms.model        = params.model || IDENTITY
+  uniforms.view         = params.view || IDENTITY
+  uniforms.projection   = params.projection || IDENTITY
+  uniforms.lowerBound   = [this.bounds[0][0], this.bounds[0][1], this.colorBounds[0] || this.bounds[0][2]]
+  uniforms.upperBound   = [this.bounds[1][0], this.bounds[1][1], this.colorBounds[1] || this.bounds[1][2]]
+  uniforms.contourColor = this.contourColor[0]
+
+  uniforms.inverseModel = invert(uniforms.inverseModel, uniforms.model)
+
+  for(var i=0; i<2; ++i) {
+    var clipClamped = uniforms.clipBounds[i]
+    for(var j=0; j<3; ++j) {
+      clipClamped[j] = Math.min(Math.max(this.clipBounds[i][j], -1e8), 1e8)
+    }
+  }
+
+  uniforms.kambient   = this.ambientLight
+  uniforms.kdiffuse   = this.diffuseLight
+  uniforms.kspecular  = this.specularLight
+
+  uniforms.shape =
+
+  uniforms.roughness  = this.roughness
+  uniforms.fresnel    = this.fresnel
+  uniforms.opacity    = this.opacity
+
+  uniforms.height = 0.0
+  uniforms.permutation = DEFAULT_PERM
+
+  //Compute camera matrix inverse
+  var invCameraMatrix = MATRIX_INVERSE
+  multiply(invCameraMatrix, uniforms.view, uniforms.model)
+  multiply(invCameraMatrix, uniforms.projection, invCameraMatrix)
+  invert(invCameraMatrix, invCameraMatrix)
+
+  for(var i=0; i<3; ++i) {
+    uniforms.eyePosition[i] = invCameraMatrix[12+i] / invCameraMatrix[15]
+  }
+
+  var w = invCameraMatrix[15]
+  for(var i=0; i<3; ++i) {
+    w += this.lightPosition[i] * invCameraMatrix[4*i+3]
+  }
+  for(var i=0; i<3; ++i) {
+    var s = invCameraMatrix[12+i]
+    for(var j=0; j<3; ++j) {
+      s += invCameraMatrix[4*j+i] * this.lightPosition[j]
+    }
+    uniforms.lightPosition[i] = s / w
+  }
+
+  var projectData = computeProjectionData(uniforms, this)
+
+  if(projectData.showSurface && (transparent === (this.opacity < 1))) {
+    //Set up uniforms
+    this._shader.bind()
+    this._shader.uniforms = uniforms
+
+    //Draw it
+    this._vao.bind()
+
+    if(this.showSurface) {
+      this._vao.draw(gl.TRIANGLES, this._vertexCount)
+    }
+
+    //Draw projections of surface
+    for(var i=0; i<3; ++i) {
+      if(!this.surfaceProject[i]) {
+        continue
+      }
+      this._shader.uniforms.model = projectData.projections[i]
+      this._shader.uniforms.clipBounds = projectData.clipBounds[i]
+      this._vao.draw(gl.TRIANGLES, this._vertexCount)
+    }
+
+    this._vao.unbind()
+  }
+
+  if(projectData.showContour && !transparent) {
+    var shader = this._contourShader
+
+    //Don't apply lighting to contours
+    uniforms.kambient = 1.0
+    uniforms.kdiffuse = 0.0
+    uniforms.kspecular = 0.0
+    uniforms.opacity = 1.0
+
+    shader.bind()
+    shader.uniforms = uniforms
+
+    //Draw contour lines
+    var vao = this._contourVAO
+    vao.bind()
+
+    //Draw contour levels
+    for(var i=0; i<3; ++i) {
+      shader.uniforms.permutation = PERMUTATIONS[i]
+      gl.lineWidth(this.contourWidth[i])
+
+      for(var j=0; j<this.contourLevels[i].length; ++j) {
+        if(j === this.highlightLevel[i]) {
+          shader.uniforms.contourColor = this.highlightColor[i]
+          shader.uniforms.contourTint  = this.highlightTint[i]
+
+        } else if(j === 0 || (j-1) === this.highlightLevel[i]) {
+          shader.uniforms.contourColor = this.contourColor[i]
+          shader.uniforms.contourTint  = this.contourTint[i]
+        }
+        shader.uniforms.height = this.contourLevels[i][j]
+        vao.draw(gl.LINES, this._contourCounts[i][j], this._contourOffsets[i][j])
+      }
+    }
+
+    //Draw projections of surface
+    for(var i=0; i<3; ++i) {
+      shader.uniforms.model      = projectData.projections[i]
+      shader.uniforms.clipBounds = projectData.clipBounds[i]
+      for(var j=0; j<3; ++j) {
+        if(!this.contourProject[i][j]) {
+          continue
+        }
+        shader.uniforms.permutation = PERMUTATIONS[j]
+        gl.lineWidth(this.contourWidth[j])
+        for(var k=0; k<this.contourLevels[j].length; ++k) {
+          if(k === this.highlightLevel[j]) {
+            shader.uniforms.contourColor  = this.highlightColor[j]
+            shader.uniforms.contourTint   = this.highlightTint[j]
+          } else if(k === 0 || (k-1) === this.highlightLevel[j]) {
+            shader.uniforms.contourColor  = this.contourColor[j]
+            shader.uniforms.contourTint   = this.contourTint[j]
+          }
+          shader.uniforms.height = this.contourLevels[j][k]
+          vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
+        }
+      }
+    }
+
+    //Draw dynamic contours
+    vao = this._dynamicVAO
+    vao.bind()
+
+    //Draw contour levels
+    for(var i=0; i<3; ++i) {
+      if(this._dynamicCounts[i] === 0) {
+        continue
+      }
+
+      shader.uniforms.model       = uniforms.model
+      shader.uniforms.clipBounds  = uniforms.clipBounds
+      shader.uniforms.permutation = PERMUTATIONS[i]
+      gl.lineWidth(this.dynamicWidth[i])
+
+      shader.uniforms.contourColor = this.dynamicColor[i]
+      shader.uniforms.contourTint  = this.dynamicTint[i]
+      shader.uniforms.height       = this.dynamicLevel[i]
+      vao.draw(gl.LINES, this._dynamicCounts[i], this._dynamicOffsets[i])
+
+      for(var j=0; j<3; ++j) {
+        if(!this.contourProject[j][i]) {
+          continue
+        }
+
+        shader.uniforms.model      = projectData.projections[j]
+        shader.uniforms.clipBounds = projectData.clipBounds[j]
+        vao.draw(gl.LINES, this._dynamicCounts[i], this._dynamicOffsets[i])
+      }
+    }
+
+    vao.unbind()
+  }
+}
+
+proto.draw = function(params) {
+  return drawCore.call(this, params, false)
+}
+
+proto.drawTransparent = function(params) {
+  return drawCore.call(this, params, true)
+}
+
+var PICK_UNIFORMS = {
+  model:          IDENTITY,
+  view:           IDENTITY,
+  projection:     IDENTITY,
+  inverseModel:   IDENTITY,
+  clipBounds:     [[0,0,0],[0,0,0]],
+  height:         0.0,
+  shape:          [0,0],
+  pickId:         0,
+  lowerBound:     [0,0,0],
+  upperBound:     [0,0,0],
+  zOffset:        0.0,
+  permutation:    [1,0,0,0,1,0,0,0,1],
+  lightPosition:  [0,0,0],
+  eyePosition:    [0,0,0]
+}
+
+proto.drawPick = function(params) {
+  params = params || {}
+  var gl = this.gl
+  gl.disable(gl.CULL_FACE)
+
+  var uniforms = PICK_UNIFORMS
+  uniforms.model = params.model || IDENTITY
+  uniforms.view = params.view || IDENTITY
+  uniforms.projection = params.projection || IDENTITY
+  uniforms.shape = this._field[2].shape
+  uniforms.pickId = this.pickId / 255.0
+  uniforms.lowerBound = this.bounds[0]
+  uniforms.upperBound = this.bounds[1]
+  uniforms.permutation = DEFAULT_PERM
+
+  for(var i=0; i<2; ++i) {
+    var clipClamped = uniforms.clipBounds[i]
+    for(var j=0; j<3; ++j) {
+      clipClamped[j] = Math.min(Math.max(this.clipBounds[i][j], -1e8), 1e8)
+    }
+  }
+
+  var projectData = computeProjectionData(uniforms, this)
+
+  if(projectData.showSurface) {
+    //Set up uniforms
+    this._pickShader.bind()
+    this._pickShader.uniforms = uniforms
+
+    //Draw it
+    this._vao.bind()
+    this._vao.draw(gl.TRIANGLES, this._vertexCount)
+
+    //Draw projections of surface
+    for(var i=0; i<3; ++i) {
+      if(!this.surfaceProject[i]) {
+        continue
+      }
+      this._pickShader.uniforms.model = projectData.projections[i]
+      this._pickShader.uniforms.clipBounds = projectData.clipBounds[i]
+      this._vao.draw(gl.TRIANGLES, this._vertexCount)
+    }
+
+    this._vao.unbind()
+  }
+
+  if(projectData.showContour) {
+    var shader = this._contourPickShader
+
+    shader.bind()
+    shader.uniforms = uniforms
+
+    var vao = this._contourVAO
+    vao.bind()
+
+    for(var j=0; j<3; ++j) {
+      gl.lineWidth(this.contourWidth[j])
+      shader.uniforms.permutation = PERMUTATIONS[j]
+      for(var i=0; i<this.contourLevels[j].length; ++i) {
+        shader.uniforms.height = this.contourLevels[j][i]
+        vao.draw(gl.LINES, this._contourCounts[j][i], this._contourOffsets[j][i])
+      }
+    }
+
+    //Draw projections of surface
+    for(var i=0; i<3; ++i) {
+      shader.uniforms.model      = projectData.projections[i]
+      shader.uniforms.clipBounds = projectData.clipBounds[i]
+
+      for(var j=0; j<3; ++j) {
+        if(!this.contourProject[i][j]) {
+          continue
+        }
+
+        shader.uniforms.permutation = PERMUTATIONS[j]
+        gl.lineWidth(this.contourWidth[j])
+        for(var k=0; k<this.contourLevels[j].length; ++k) {
+          shader.uniforms.height = this.contourLevels[j][k]
+          vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
+        }
+      }
+    }
+
+    vao.unbind()
+  }
+}
+
+
+proto.pick = function(selection) {
+  if(!selection) {
+    return null
+  }
+
+  if(selection.id !== this.pickId) {
+    return null
+  }
+
+  var shape = this._field[2].shape
+
+  var result = this._pickResult
+
+  //Compute uv coordinate
+  var x = shape[0] * (selection.value[0] + (selection.value[2]>>4)/16.0)/255.0
+  var ix = Math.floor(x)
+  var fx = x - ix
+
+  var y = shape[1] * (selection.value[1] + (selection.value[2]&15)/16.0)/255.0
+  var iy = Math.floor(y)
+  var fy = y - iy
+
+  ix += 1
+  iy += 1
+
+  //Compute xyz coordinate
+  var pos = result.position
+  pos[0] = pos[1] = pos[2] = 0
+  for(var dx=0; dx<2; ++dx) {
+    var s = dx ? fx : 1.0 - fx
+    for(var dy=0; dy<2; ++dy) {
+      var t = dy ? fy : 1.0 - fy
+
+      var r = ix + dx
+      var c = iy + dy
+      var w = s * t
+
+      for(var i=0; i<3; ++i) {
+        pos[i] += this._field[i].get(r,c) * w
+      }
+    }
+  }
+
+  //Find closest level
+  var levelIndex = this._pickResult.level
+  for(var j=0; j<3; ++j) {
+    levelIndex[j] = bsearch.le(this.contourLevels[j], pos[j])
+    if(levelIndex[j] < 0) {
+      if(this.contourLevels[j].length > 0) {
+        levelIndex[j] = 0
+      }
+    } else if(levelIndex[j] < this.contourLevels[j].length-1) {
+      var a = this.contourLevels[j][levelIndex[j]]
+      var b = this.contourLevels[j][levelIndex[j]+1]
+      if(Math.abs(a-pos[j]) > Math.abs(b-pos[j])) {
+        levelIndex[j] += 1
+      }
+    }
+  }
+
+  result.index[0] = fx<0.5 ? ix : (ix+1)
+  result.index[1] = fy<0.5 ? iy : (iy+1)
+
+  result.uv[0] = x/shape[0]
+  result.uv[1] = y/shape[1]
+
+  for(var i=0; i<3; ++i) {
+    result.dataCoordinate[i] = this._field[i].get(result.index[0], result.index[1])
+  }
+
+  return result
+}
+
+function padField(nfield, field) {
+
+  var shape = field.shape.slice()
+  var nshape = nfield.shape.slice()
+
+  //Center
+  ops.assign(nfield.lo(1,1).hi(shape[0], shape[1]), field)
+
+  //Edges
+  ops.assign(nfield.lo(1).hi(shape[0], 1),
+              field.hi(shape[0], 1))
+  ops.assign(nfield.lo(1,nshape[1]-1).hi(shape[0],1),
+              field.lo(0,shape[1]-1).hi(shape[0],1))
+  ops.assign(nfield.lo(0,1).hi(1,shape[1]),
+              field.hi(1))
+  ops.assign(nfield.lo(nshape[0]-1,1).hi(1,shape[1]),
+              field.lo(shape[0]-1))
+  //Corners
+  nfield.set(0,0, field.get(0,0))
+  nfield.set(0,nshape[1]-1, field.get(0,shape[1]-1))
+  nfield.set(nshape[0]-1,0, field.get(shape[0]-1,0))
+  nfield.set(nshape[0]-1,nshape[1]-1, field.get(shape[0]-1,shape[1]-1))
+}
+
+function handleArray(param, ctor) {
+  if(Array.isArray(param)) {
+    return [ ctor(param[0]), ctor(param[1]), ctor(param[2]) ]
+  }
+  return [ ctor(param), ctor(param), ctor(param) ]
+}
+
+function toColor(x) {
+  if(Array.isArray(x)) {
+    if(x.length === 3) {
+      return [x[0], x[1], x[2], 1]
+    }
+    return [x[0], x[1], x[2], x[3]]
+  }
+  return [0,0,0,1]
+}
+
+function handleColor(param) {
+  if(Array.isArray(param)) {
+    if(Array.isArray(param)) {
+      return [  toColor(param[0]),
+                toColor(param[1]),
+                toColor(param[2]) ]
+    } else {
+      var c = toColor(param)
+      return [
+        c.slice(),
+        c.slice(),
+        c.slice() ]
+    }
+  }
+}
+
+proto.update = function(params) {
+  params = params || {}
+
+  this.dirty = true
+
+  if('contourWidth' in params) {
+    this.contourWidth = handleArray(params.contourWidth, Number)
+  }
+  if('showContour' in params) {
+    this.showContour = handleArray(params.showContour, Boolean)
+  }
+  if('showSurface' in params) {
+    this.showSurface = !!params.showSurface
+  }
+  if('contourTint' in params) {
+    this.contourTint = handleArray(params.contourTint, Boolean)
+  }
+  if('contourColor' in params) {
+    this.contourColor = handleColor(params.contourColor)
+  }
+  if('contourProject' in params) {
+    this.contourProject = handleArray(params.contourProject, function(x) {
+      return handleArray(x, Boolean)
+    })
+  }
+  if('surfaceProject' in params) {
+    this.surfaceProject = params.surfaceProject
+  }
+  if('dynamicColor' in params) {
+    this.dynamicColor = handleColor(params.dynamicColor)
+  }
+  if('dynamicTint' in params) {
+    this.dynamicTint = handleArray(params.dynamicTint, Number)
+  }
+  if('dynamicWidth' in params) {
+    this.dynamicWidth = handleArray(params.dynamicWidth, Number)
+  }
+  if('opacity' in params) {
+    this.opacity = params.opacity
+  }
+  if('colorBounds' in params) {
+    this.colorBounds = params.colorBounds
+  }
+
+  var field = params.field || (params.coords && params.coords[2]) || null
+
+  if(!field) {
+    if(this._field[2].shape[0] || this._field[2].shape[2]) {
+      field = this._field[2].lo(1,1).hi(this._field[2].shape[0]-2, this._field[2].shape[1]-2)
+    } else {
+      field = this._field[2].hi(0,0)
+    }
+  }
+
+  //Update field
+  if('field' in params || 'coords' in params) {
+    var fsize = (field.shape[0]+2)*(field.shape[1]+2)
+
+    //Resize if necessary
+    if(fsize > this._field[2].data.length) {
+      pool.freeFloat(this._field[2].data)
+      this._field[2].data = pool.mallocFloat(bits.nextPow2(fsize))
+    }
+
+    //Pad field
+    this._field[2] = ndarray(this._field[2].data, [field.shape[0]+2, field.shape[1]+2])
+    padField(this._field[2], field)
+
+    //Save shape of field
+    this.shape = field.shape.slice()
+    var shape = this.shape
+
+    //Resize coordinate fields if necessary
+    for(var i=0; i<2; ++i) {
+      if(this._field[2].size > this._field[i].data.length) {
+        pool.freeFloat(this._field[i].data)
+        this._field[i].data = pool.mallocFloat(this._field[2].size)
+      }
+      this._field[i] = ndarray(this._field[i].data, [shape[0]+2, shape[1]+2])
+    }
+
+    //Generate x/y coordinates
+    if(params.coords) {
+      var coords = params.coords
+      if(!Array.isArray(coords) || coords.length !== 3) {
+        throw new Error('gl-surface: invalid coordinates for x/y')
+      }
+      for(var i=0; i<2; ++i) {
+        var coord = coords[i]
+        for(var j=0; j<2; ++j) {
+          if(coord.shape[j] !== shape[j]) {
+            throw new Error('gl-surface: coords have incorrect shape')
+          }
+        }
+        padField(this._field[i], coord)
+      }
+    } else if(params.ticks) {
+      var ticks = params.ticks
+      if(!Array.isArray(ticks) || ticks.length !== 2) {
+        throw new Error('gl-surface: invalid ticks')
+      }
+      for(var i=0; i<2; ++i) {
+        var tick = ticks[i]
+        if(Array.isArray(tick) || tick.length) {
+          tick = ndarray(tick)
+        }
+        if(tick.shape[0] !== shape[i]) {
+          throw new Error('gl-surface: invalid tick length')
+        }
+        //Make a copy view of the tick array
+        var tick2 = ndarray(tick.data, shape)
+        tick2.stride[i] = tick.stride[0]
+        tick2.stride[i^1] = 0
+
+        //Fill in field array
+        padField(this._field[i], tick2)
+      }
+    } else {
+      for(var i=0; i<2; ++i) {
+        var offset = [0,0]
+        offset[i] = 1
+        this._field[i] = ndarray(this._field[i].data, [shape[0]+2, shape[1]+2], offset, 0)
+      }
+      this._field[0].set(0,0,0)
+      for(var j=0; j<shape[0]; ++j) {
+        this._field[0].set(j+1,0,j)
+      }
+      this._field[0].set(shape[0]+1,0,shape[0]-1)
+      this._field[1].set(0,0,0)
+      for(var j=0; j<shape[1]; ++j) {
+        this._field[1].set(0,j+1,j)
+      }
+      this._field[1].set(0,shape[1]+1, shape[1]-1)
+    }
+
+    //Save shape
+    var fields = this._field
+
+    //Compute surface normals
+    var fieldSize = fields[2].size
+    var dfields = ndarray(pool.mallocFloat(fields[2].size*3*2), [3, shape[0]+2, shape[1]+2, 2])
+    for(var i=0; i<3; ++i) {
+      gradient(dfields.pick(i), fields[i], 'mirror')
+    }
+    var normals = ndarray(pool.mallocFloat(fields[2].size*3), [shape[0]+2, shape[1]+2, 3])
+    for(var i=0; i<shape[0]+2; ++i) {
+      for(var j=0; j<shape[1]+2; ++j) {
+        var dxdu = dfields.get(0, i, j, 0)
+        var dxdv = dfields.get(0, i, j, 1)
+        var dydu = dfields.get(1, i, j, 0)
+        var dydv = dfields.get(1, i, j, 1)
+        var dzdu = dfields.get(2, i, j, 0)
+        var dzdv = dfields.get(2, i, j, 1)
+
+        var nx = dydu * dzdv - dydv * dzdu
+        var ny = dzdu * dxdv - dzdv * dxdu
+        var nz = dxdu * dydv - dxdv * dydu
+
+        var nl = Math.sqrt(nx*nx + ny * ny + nz * nz)
+        if(nl < 1e-8) {
+          nl = Math.max(Math.abs(nx), Math.abs(ny), Math.abs(nz))
+          if(nl < 1e-8) {
+            nz = 1.0
+            ny = nx = 0.0
+            nl = 1.0
+          } else {
+            nl = 1.0/ nl
+          }
+        } else {
+          nl = 1.0 / Math.sqrt(nl)
+        }
+
+        normals.set(i,j,0, nx*nl)
+        normals.set(i,j,1, ny*nl)
+        normals.set(i,j,2, nz*nl)
+      }
+    }
+    pool.free(dfields.data)
+
+    //Initialize surface
+    var lo = [ Infinity, Infinity, Infinity]
+    var hi = [-Infinity,-Infinity,-Infinity]
+    var count   = (shape[0]-1) * (shape[1]-1) * 6
+    var tverts  = pool.mallocFloat(bits.nextPow2(9*count))
+    var tptr    = 0
+    var fptr    = 0
+    var vertexCount = 0
+    for(var i=0; i<shape[0]-1; ++i) {
+  j_loop:
+      for(var j=0; j<shape[1]-1; ++j) {
+
+        //Test for NaNs
+        for(var dx=0; dx<2; ++dx) {
+          for(var dy=0; dy<2; ++dy) {
+            for(var k=0; k<3; ++k) {
+              var f = this._field[k].get(1+i+dx, 1+j+dy)
+              if(isNaN(f) || !isFinite(f)) {
+                continue j_loop
+              }
+            }
+          }
+        }
+        for(var k=0; k<6; ++k) {
+          var r = i + QUAD[k][0]
+          var c = j + QUAD[k][1]
+
+          var tx = this._field[0].get(r+1, c+1)
+          var ty = this._field[1].get(r+1, c+1)
+          var f  = this._field[2].get(r+1, c+1)
+          var nx = normals.get(r+1, c+1, 0)
+          var ny = normals.get(r+1, c+1, 1)
+          var nz = normals.get(r+1, c+1, 2)
+
+          tverts[tptr++] = r
+          tverts[tptr++] = c
+          tverts[tptr++] = tx
+          tverts[tptr++] = ty
+          tverts[tptr++] = f
+          tverts[tptr++] = 0
+          tverts[tptr++] = nx
+          tverts[tptr++] = ny
+          tverts[tptr++] = nz
+
+          lo[0] = Math.min(lo[0], tx)
+          lo[1] = Math.min(lo[1], ty)
+          lo[2] = Math.min(lo[2], f)
+
+          hi[0] = Math.max(hi[0], tx)
+          hi[1] = Math.max(hi[1], ty)
+          hi[2] = Math.max(hi[2], f)
+
+          vertexCount += 1
+        }
+      }
+    }
+    this._vertexCount = vertexCount
+    this._coordinateBuffer.update(tverts.subarray(0,tptr))
+    pool.freeFloat(tverts)
+    pool.free(normals.data)
+
+    //Update bounds
+    this.bounds = [lo, hi]
+  }
+
+  //Update level crossings
+  var levelsChanged = false
+  if('levels' in params) {
+    var levels = params.levels
+    if(!Array.isArray(levels[0])) {
+      levels = [ [], [], levels ]
+    } else {
+      levels = levels.slice()
+    }
+    for(var i=0; i<3; ++i) {
+      levels[i] = levels[i].slice()
+      levels.sort(function(a,b) {
+        return a-b
+      })
+    }
+change_test:
+    for(var i=0; i<3; ++i) {
+      if(levels[i].length !== this.contourLevels[i].length) {
+        levelsChanged = true
+        break
+      }
+      for(var j=0; j<levels[i].length; ++j) {
+        if(levels[i][j] !== this.contourLevels[i][j]) {
+          levelsChanged = true
+          break change_test
+        }
+      }
+    }
+    this.contourLevels = levels
+  }
+
+  if(levelsChanged) {
+    var fields = this._field
+    var shape  = this.shape
+
+    //Update contour lines
+    var contourVerts = []
+
+    for(var dim=0; dim<3; ++dim) {
+      var levels = this.contourLevels[dim]
+      var levelOffsets = []
+      var levelCounts  = []
+
+      var parts = [0,0]
+      var graphParts = [0,0]
+
+      for(var i=0; i<levels.length; ++i) {
+        var graph = surfaceNets(this._field[dim], levels[i])
+        levelOffsets.push((contourVerts.length/4)|0)
+        var vertexCount = 0
+
+  edge_loop:
+        for(var j=0; j<graph.cells.length; ++j) {
+          var e = graph.cells[j]
+          for(var k=0; k<2; ++k) {
+            var p = graph.positions[e[k]]
+
+            var x = p[0]
+            var ix = Math.floor(x)|0
+            var fx = x - ix
+
+            var y = p[1]
+            var iy = Math.floor(y)|0
+            var fy = y - iy
+
+            var hole = false
+  dd_loop:
+            for(var dd=0; dd<2; ++dd) {
+              parts[dd] = 0.0
+              var iu = (dim + dd + 1) % 3
+              for(var dx=0; dx<2; ++dx) {
+                var s = dx ? fx : 1.0 - fx
+                var r = Math.min(Math.max(ix+dx, 0), shape[0])|0
+                for(var dy=0; dy<2; ++dy) {
+                  var t = dy ? fy : 1.0 - fy
+                  var c = Math.min(Math.max(iy+dy, 0), shape[1])|0
+
+                  var f = this._field[iu].get(r,c)
+                  if(!isFinite(f) || isNaN(f)) {
+                    hole = true
+                    break dd_loop
+                  }
+
+                  var w = s * t
+                  parts[dd] += w * f
+                }
+              }
+            }
+
+            if(!hole) {
+              contourVerts.push(parts[0], parts[1], p[0], p[1])
+              vertexCount += 1
+            } else {
+              if(k > 0) {
+                //If we already added first edge, pop off verts
+                for(var l=0; l<4; ++l) {
+                  contourVerts.pop()
+                }
+                vertexCount -= 1
+              }
+              continue edge_loop
+            }
+          }
+        }
+        levelCounts.push(vertexCount)
+      }
+
+      //Store results
+      this._contourOffsets[dim]  = levelOffsets
+      this._contourCounts[dim]   = levelCounts
+    }
+
+    var floatBuffer = pool.mallocFloat(contourVerts.length)
+    for(var i=0; i<contourVerts.length; ++i) {
+      floatBuffer[i] = contourVerts[i]
+    }
+    this._contourBuffer.update(floatBuffer)
+    pool.freeFloat(floatBuffer)
+  }
+
+  if(params.colormap) {
+    this._colorMap.setPixels(genColormap(params.colormap))
+  }
+}
+
+proto.dispose = function() {
+  this._shader.dispose()
+  this._vao.dispose()
+  this._coordinateBuffer.dispose()
+  this._colorMap.dispose()
+  this._contourBuffer.dispose()
+  this._contourVAO.dispose()
+  this._contourShader.dispose()
+  this._contourPickShader.dispose()
+  this._dynamicBuffer.dispose()
+  this._dynamicVAO.dispose()
+  for(var i=0; i<3; ++i) {
+    pool.freeFloat(this._field[i].data)
+  }
+}
+
+proto.highlight = function(selection) {
+  if(!selection) {
+    this._dynamicCounts = [0,0,0]
+    this.dyanamicLevel = [NaN, NaN, NaN]
+    this.highlightLevel = [-1,-1,-1]
+    return
+  }
+
+  for(var i=0; i<3; ++i) {
+    if(this.enableHighlight[i]) {
+      this.highlightLevel[i] = selection.level[i]
+    } else {
+      this.highlightLevel[i] = -1
+    }
+  }
+
+  var levels
+  if(this.snapToData) {
+    levels = selection.dataCoordinate
+  } else {
+    levels = selection.position
+  }
+  if( (!this.enableDynamic[0] || levels[0] === this.dynamicLevel[0]) &&
+      (!this.enableDynamic[1] || levels[1] === this.dynamicLevel[1]) &&
+      (!this.enableDynamic[2] || levels[2] === this.dynamicLevel[2]) ) {
+    return
+  }
+
+  var vertexCount = 0
+  var shape = this.shape
+  var scratchBuffer = pool.mallocFloat(12 * shape[0] * shape[1])
+
+  for(var d=0; d<3; ++d) {
+    if(!this.enableDynamic[d]) {
+      this.dynamicLevel[d] = NaN
+      this._dynamicCounts[d] = 0
+      continue
+    }
+
+    this.dynamicLevel[d] = levels[d]
+
+    var u = (d+1) % 3
+    var v = (d+2) % 3
+
+    var f = this._field[d]
+    var g = this._field[u]
+    var h = this._field[v]
+
+    var graph     = surfaceNets(f, levels[d])
+    var edges     = graph.cells
+    var positions = graph.positions
+
+    this._dynamicOffsets[d] = vertexCount
+
+    for(var i=0; i<edges.length; ++i) {
+      var e = edges[i]
+      for(var j=0; j<2; ++j) {
+        var p  = positions[e[j]]
+
+        var x  = +p[0]
+        var ix = x|0
+        var jx = Math.min(ix+1, shape[0])|0
+        var fx = x - ix
+        var hx = 1.0 - fx
+
+        var y  = +p[1]
+        var iy = y|0
+        var jy = Math.min(iy+1, shape[1])|0
+        var fy = y - iy
+        var hy = 1.0 - fy
+
+        var w00 = hx * hy
+        var w01 = hx * fy
+        var w10 = fx * hy
+        var w11 = fx * fy
+
+        var cu =  w00 * g.get(ix,iy) +
+                  w01 * g.get(ix,jy) +
+                  w10 * g.get(jx,iy) +
+                  w11 * g.get(jx,jy)
+
+        var cv =  w00 * h.get(ix,iy) +
+                  w01 * h.get(ix,jy) +
+                  w10 * h.get(jx,iy) +
+                  w11 * h.get(jx,jy)
+
+        if(isNaN(cu) || isNaN(cv)) {
+          if(j) {
+            vertexCount -= 1
+          }
+          break
+        }
+
+        scratchBuffer[2*vertexCount+0] = cu
+        scratchBuffer[2*vertexCount+1] = cv
+
+        vertexCount += 1
+      }
+    }
+
+    this._dynamicCounts[d] = vertexCount - this._dynamicOffsets[d]
+  }
+
+  this._dynamicBuffer.update(scratchBuffer.subarray(0, 2*vertexCount))
+  pool.freeFloat(scratchBuffer)
+}
+
+function createSurfacePlot(params) {
+  var gl = params.gl
+  var field = params.field || (params.coords && params.coords[2]) || ndarray([], [0,0])
+
+  var shader = createShader(gl)
+  var pickShader = createPickShader(gl)
+  var contourShader = createContourShader(gl)
+  var contourPickShader = createPickContourShader(gl)
+
+  var coordinateBuffer = createBuffer(gl)
+  var vao = createVAO(gl, [
+      { buffer: coordinateBuffer,
+        size: 4,
+        stride: SURFACE_VERTEX_SIZE,
+        offset: 0
+      },
+      { buffer: coordinateBuffer,
+        size: 2,
+        stride: SURFACE_VERTEX_SIZE,
+        offset: 16
+      },
+      {
+        buffer: coordinateBuffer,
+        size: 3,
+        stride: SURFACE_VERTEX_SIZE,
+        offset: 24
+      }
+    ])
+
+  var contourBuffer = createBuffer(gl)
+  var contourVAO = createVAO(gl, [
+    {
+      buffer: contourBuffer,
+      size: 4
+    }])
+
+  var dynamicBuffer = createBuffer(gl)
+  var dynamicVAO = createVAO(gl, [
+    {
+      buffer: dynamicBuffer,
+      size: 2,
+      type: gl.FLOAT
+    }])
+
+  var cmap = createTexture(gl, 1, N_COLORS, gl.RGBA, gl.UNSIGNED_BYTE)
+  cmap.minFilter = gl.LINEAR
+  cmap.magFilter = gl.LINEAR
+
+  var surface = new SurfacePlot(
+    gl,
+    [0,0],
+    [[0,0,0], [0,0,0]],
+    shader,
+    pickShader,
+    coordinateBuffer,
+    vao,
+    cmap,
+    contourShader,
+    contourPickShader,
+    contourBuffer,
+    contourVAO,
+    dynamicBuffer,
+    dynamicVAO)
+
+  var nparams = {
+    levels: [[], [], []]
+  }
+  for(var id in params) {
+    nparams[id] = params[id]
+  }
+  nparams.colormap = nparams.colormap || 'jet'
+
+  surface.update(nparams)
+
+  return surface
+}
+
+},{"./lib/shaders":1,"binary-search-bounds":2,"bit-twiddle":3,"colormap":5,"gl-buffer":8,"gl-mat4/invert":9,"gl-mat4/multiply":10,"gl-texture2d":34,"gl-vao":38,"ndarray":55,"ndarray-gradient":39,"ndarray-ops":44,"ndarray-pack":49,"surface-nets":70,"typedarray-pool":71}],73:[function(require,module,exports){
 'use strict';
 
 var Plotly = require('../src/plotly');
@@ -63,7 +8387,7 @@ for(var selector in rules) {
     Plotly.Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/plotly":348}],2:[function(require,module,exports){
+},{"../src/plotly":406}],74:[function(require,module,exports){
 /* jshint quotmark:true */
 
 'use strict';
@@ -172,7 +8496,7 @@ module.exports = {
         'descent': -150
     }
 };
-},{}],3:[function(require,module,exports){
+},{}],75:[function(require,module,exports){
 'use strict'
 
 module.exports = createFilteredVector
@@ -465,69 +8789,9 @@ function createFilteredVector(initState, initVelocity, initTime) {
   }
 }
 
-},{"binary-search-bounds":4,"cubic-hermite":5}],4:[function(require,module,exports){
-"use strict"
-
-function compileSearch(funcName, predicate, reversed, extraArgs, useNdarray, earlyOut) {
-  var code = [
-    "function ", funcName, "(a,l,h,", extraArgs.join(","),  "){",
-earlyOut ? "" : "var i=", (reversed ? "l-1" : "h+1"),
-";while(l<=h){\
-var m=(l+h)>>>1,x=a", useNdarray ? ".get(m)" : "[m]"]
-  if(earlyOut) {
-    if(predicate.indexOf("c") < 0) {
-      code.push(";if(x===y){return m}else if(x<=y){")
-    } else {
-      code.push(";var p=c(x,y);if(p===0){return m}else if(p<=0){")
-    }
-  } else {
-    code.push(";if(", predicate, "){i=m;")
-  }
-  if(reversed) {
-    code.push("l=m+1}else{h=m-1}")
-  } else {
-    code.push("h=m-1}else{l=m+1}")
-  }
-  code.push("}")
-  if(earlyOut) {
-    code.push("return -1};")
-  } else {
-    code.push("return i};")
-  }
-  return code.join("")
-}
-
-function compileBoundsSearch(predicate, reversed, suffix, earlyOut) {
-  var result = new Function([
-  compileSearch("A", "x" + predicate + "y", reversed, ["y"], false, earlyOut),
-  compileSearch("B", "x" + predicate + "y", reversed, ["y"], true, earlyOut),
-  compileSearch("P", "c(x,y)" + predicate + "0", reversed, ["y", "c"], false, earlyOut),
-  compileSearch("Q", "c(x,y)" + predicate + "0", reversed, ["y", "c"], true, earlyOut),
-"function dispatchBsearch", suffix, "(a,y,c,l,h){\
-if(a.shape){\
-if(typeof(c)==='function'){\
-return Q(a,(l===undefined)?0:l|0,(h===undefined)?a.shape[0]-1:h|0,y,c)\
-}else{\
-return B(a,(c===undefined)?0:c|0,(l===undefined)?a.shape[0]-1:l|0,y)\
-}}else{\
-if(typeof(c)==='function'){\
-return P(a,(l===undefined)?0:l|0,(h===undefined)?a.length-1:h|0,y,c)\
-}else{\
-return A(a,(c===undefined)?0:c|0,(l===undefined)?a.length-1:l|0,y)\
-}}}\
-return dispatchBsearch", suffix].join(""))
-  return result()
-}
-
-module.exports = {
-  ge: compileBoundsSearch(">=", false, "GE"),
-  gt: compileBoundsSearch(">", false, "GT"),
-  lt: compileBoundsSearch("<", true, "LT"),
-  le: compileBoundsSearch("<=", true, "LE"),
-  eq: compileBoundsSearch("-", true, "EQ", true)
-}
-
-},{}],5:[function(require,module,exports){
+},{"binary-search-bounds":76,"cubic-hermite":77}],76:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"dup":2}],77:[function(require,module,exports){
 "use strict"
 
 function dcubicHermite(p0, v0, p1, v1, t, f) {
@@ -567,7 +8831,7 @@ function cubicHermite(p0, v0, p1, v1, t, f) {
 
 module.exports = cubicHermite
 module.exports.derivative = dcubicHermite
-},{}],6:[function(require,module,exports){
+},{}],78:[function(require,module,exports){
 module.exports = cross;
 
 /**
@@ -587,7 +8851,7 @@ function cross(out, a, b) {
     out[2] = ax * by - ay * bx
     return out
 }
-},{}],7:[function(require,module,exports){
+},{}],79:[function(require,module,exports){
 module.exports = dot;
 
 /**
@@ -600,7 +8864,7 @@ module.exports = dot;
 function dot(a, b) {
     return a[0] * b[0] + a[1] * b[1] + a[2] * b[2]
 }
-},{}],8:[function(require,module,exports){
+},{}],80:[function(require,module,exports){
 module.exports = length;
 
 /**
@@ -615,7 +8879,7 @@ function length(a) {
         z = a[2]
     return Math.sqrt(x*x + y*y + z*z)
 }
-},{}],9:[function(require,module,exports){
+},{}],81:[function(require,module,exports){
 module.exports = lerp;
 
 /**
@@ -636,7 +8900,7 @@ function lerp(out, a, b, t) {
     out[2] = az + t * (b[2] - az)
     return out
 }
-},{}],10:[function(require,module,exports){
+},{}],82:[function(require,module,exports){
 module.exports = normalize;
 
 /**
@@ -660,7 +8924,7 @@ function normalize(out, a) {
     }
     return out
 }
-},{}],11:[function(require,module,exports){
+},{}],83:[function(require,module,exports){
 'use strict'
 
 var bsearch   = require('binary-search-bounds')
@@ -859,9 +9123,9 @@ function createMatrixCameraController(options) {
                0,0,0,1]
   return new MatrixCameraController(matrix)
 }
-},{"binary-search-bounds":12,"gl-mat4/invert":78,"gl-mat4/lookAt":79,"gl-mat4/rotateX":83,"gl-mat4/rotateY":84,"gl-mat4/rotateZ":85,"gl-mat4/scale":86,"gl-mat4/translate":87,"gl-vec3/normalize":10,"mat4-interpolate":13}],12:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],13:[function(require,module,exports){
+},{"binary-search-bounds":84,"gl-mat4/invert":150,"gl-mat4/lookAt":151,"gl-mat4/rotateX":155,"gl-mat4/rotateY":156,"gl-mat4/rotateZ":157,"gl-mat4/scale":158,"gl-mat4/translate":159,"gl-vec3/normalize":82,"mat4-interpolate":85}],84:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"dup":2}],85:[function(require,module,exports){
 var lerp = require('gl-vec3/lerp')
 
 var recompose = require('mat4-recompose')
@@ -914,7 +9178,7 @@ function vec3(n) {
 function vec4() {
     return [0,0,0,1]
 }
-},{"gl-mat4/determinant":74,"gl-vec3/lerp":9,"mat4-decompose":14,"mat4-recompose":16,"quat-slerp":17}],14:[function(require,module,exports){
+},{"gl-mat4/determinant":146,"gl-vec3/lerp":81,"mat4-decompose":86,"mat4-recompose":88,"quat-slerp":89}],86:[function(require,module,exports){
 /*jshint unused:true*/
 /*
 Input:  matrix      ; a 4x4 matrix
@@ -1094,7 +9358,7 @@ function combine(out, a, b, scale1, scale2) {
     out[1] = a[1] * scale1 + b[1] * scale2
     out[2] = a[2] * scale1 + b[2] * scale2
 }
-},{"./normalize":15,"gl-mat4/clone":72,"gl-mat4/create":73,"gl-mat4/determinant":74,"gl-mat4/invert":78,"gl-mat4/transpose":88,"gl-vec3/cross":6,"gl-vec3/dot":7,"gl-vec3/length":8,"gl-vec3/normalize":10}],15:[function(require,module,exports){
+},{"./normalize":87,"gl-mat4/clone":144,"gl-mat4/create":145,"gl-mat4/determinant":146,"gl-mat4/invert":150,"gl-mat4/transpose":160,"gl-vec3/cross":78,"gl-vec3/dot":79,"gl-vec3/length":80,"gl-vec3/normalize":82}],87:[function(require,module,exports){
 module.exports = function normalize(out, mat) {
     var m44 = mat[15]
     // Cannot normalize.
@@ -1105,7 +9369,7 @@ module.exports = function normalize(out, mat) {
         out[i] = mat[i] * scale
     return true
 }
-},{}],16:[function(require,module,exports){
+},{}],88:[function(require,module,exports){
 /*
 Input:  translation ; a 3 component vector
         scale       ; a 3 component vector
@@ -1166,9 +9430,9 @@ module.exports = function recomposeMat4(matrix, translation, scale, skew, perspe
     mat4.scale(matrix, matrix, scale)
     return matrix
 }
-},{"gl-mat4/create":73,"gl-mat4/fromRotationTranslation":76,"gl-mat4/identity":77,"gl-mat4/multiply":80,"gl-mat4/scale":86,"gl-mat4/translate":87}],17:[function(require,module,exports){
+},{"gl-mat4/create":145,"gl-mat4/fromRotationTranslation":148,"gl-mat4/identity":149,"gl-mat4/multiply":152,"gl-mat4/scale":158,"gl-mat4/translate":159}],89:[function(require,module,exports){
 module.exports = require('gl-quat/slerp')
-},{"gl-quat/slerp":18}],18:[function(require,module,exports){
+},{"gl-quat/slerp":90}],90:[function(require,module,exports){
 module.exports = slerp
 
 /**
@@ -1221,7 +9485,7 @@ function slerp (out, a, b, t) {
   return out
 }
 
-},{}],19:[function(require,module,exports){
+},{}],91:[function(require,module,exports){
 'use strict'
 
 module.exports = quatFromFrame
@@ -1263,7 +9527,7 @@ function quatFromFrame(
   }
   return out
 }
-},{}],20:[function(require,module,exports){
+},{}],92:[function(require,module,exports){
 'use strict'
 
 module.exports = createOrbitController
@@ -1657,7 +9921,7 @@ function createOrbitController(options) {
 
   return result
 }
-},{"./lib/quatFromFrame":19,"filtered-vector":3,"gl-mat4/fromQuat":75,"gl-mat4/invert":78,"gl-mat4/lookAt":79}],21:[function(require,module,exports){
+},{"./lib/quatFromFrame":91,"filtered-vector":75,"gl-mat4/fromQuat":147,"gl-mat4/invert":150,"gl-mat4/lookAt":151}],93:[function(require,module,exports){
 'use strict'
 
 module.exports = createTurntableController
@@ -2230,7 +10494,7 @@ function createTurntableController(options) {
     theta,
     phi)
 }
-},{"filtered-vector":3,"gl-mat4/invert":78,"gl-mat4/rotate":82,"gl-vec3/cross":6,"gl-vec3/dot":7,"gl-vec3/normalize":10}],22:[function(require,module,exports){
+},{"filtered-vector":75,"gl-mat4/invert":150,"gl-mat4/rotate":154,"gl-vec3/cross":78,"gl-vec3/dot":79,"gl-vec3/normalize":82}],94:[function(require,module,exports){
 'use strict'
 
 module.exports = createViewController
@@ -2353,7 +10617,7 @@ function createViewController(options) {
     matrix: matrix
   }, mode)
 }
-},{"matrix-camera-controller":11,"orbit-camera-controller":20,"turntable-camera-controller":21}],23:[function(require,module,exports){
+},{"matrix-camera-controller":83,"orbit-camera-controller":92,"turntable-camera-controller":93}],95:[function(require,module,exports){
 module.exports = alphaShape
 
 var ac = require('alpha-complex')
@@ -2362,7 +10626,7 @@ var bnd = require('simplicial-complex-boundary')
 function alphaShape(alpha, points) {
   return bnd(ac(alpha, points))
 }
-},{"alpha-complex":24,"simplicial-complex-boundary":27}],24:[function(require,module,exports){
+},{"alpha-complex":96,"simplicial-complex-boundary":99}],96:[function(require,module,exports){
 'use strict'
 
 module.exports = alphaComplex
@@ -2379,7 +10643,7 @@ function alphaComplex(alpha, points) {
     return circumradius(simplex) * alpha < 1
   })
 }
-},{"circumradius":25,"delaunay-triangulate":54}],25:[function(require,module,exports){
+},{"circumradius":97,"delaunay-triangulate":126}],97:[function(require,module,exports){
 module.exports = circumradius
 
 var circumcenter = require('circumcenter')
@@ -2395,7 +10659,7 @@ function circumradius(points) {
   }
   return Math.sqrt(avgDist / points.length)
 }
-},{"circumcenter":26}],26:[function(require,module,exports){
+},{"circumcenter":98}],98:[function(require,module,exports){
 "use strict"
 
 var dup = require("dup")
@@ -2464,7 +10728,7 @@ function circumcenter(points) {
 
 circumcenter.barycenetric = barycentricCircumcenter
 module.exports = circumcenter
-},{"dup":55,"robust-linear-solve":192}],27:[function(require,module,exports){
+},{"dup":127,"robust-linear-solve":250}],99:[function(require,module,exports){
 'use strict'
 
 module.exports = boundary
@@ -2476,7 +10740,7 @@ function boundary(cells) {
   return reduce(bnd(cells))
 }
 
-},{"boundary-cells":28,"reduce-simplicial-complex":31}],28:[function(require,module,exports){
+},{"boundary-cells":100,"reduce-simplicial-complex":103}],100:[function(require,module,exports){
 "use strict"
 
 module.exports = boundary
@@ -2502,7 +10766,7 @@ function boundary(cells) {
   return result
 }
 
-},{}],29:[function(require,module,exports){
+},{}],101:[function(require,module,exports){
 'use strict'
 
 module.exports = orientation
@@ -2521,7 +10785,7 @@ function orientation(s) {
   return p
 }
 
-},{}],30:[function(require,module,exports){
+},{}],102:[function(require,module,exports){
 'use strict'
 
 var compareCells = require('compare-cell')
@@ -2533,7 +10797,7 @@ function compareOrientedCells(a, b) {
   return compareCells(a, b) || parity(a) - parity(b)
 }
 
-},{"cell-orientation":29,"compare-cell":41}],31:[function(require,module,exports){
+},{"cell-orientation":101,"compare-cell":113}],103:[function(require,module,exports){
 'use strict'
 
 var compareCell = require('compare-cell')
@@ -2566,402 +10830,11 @@ function reduceCellComplex(cells) {
   return cells
 }
 
-},{"cell-orientation":29,"compare-cell":41,"compare-oriented-cell":30}],32:[function(require,module,exports){
-'use strict';
-
-var arraytools  = function () {
-
-  var that = {};
-
-  var RGB_REGEX =  /^rgba?\(\s*\d{1,3}\s*,\s*\d{1,3}\s*,\s*\d{1,3}\s*(,.*)?\)$/;
-  var RGB_GROUP_REGEX = /^rgba?\(\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,\s*(\d{1,3})\s*,?\s*(.*)?\)$/;
-
-  function isPlainObject (v) {
-    return !Array.isArray(v) && v !== null && typeof v === 'object';
-  }
-
-  function linspace (start, end, num) {
-    var inc = (end - start) / (num - 1);
-    var a = [];
-    for( var ii = 0; ii < num; ii++)
-      a.push(start + ii*inc);
-    return a;
-  }
-
-  function zip () {
-      var arrays = [].slice.call(arguments);
-      var lengths = arrays.map(function (a) {return a.length;});
-      var len = Math.min.apply(null, lengths);
-      var zipped = [];
-      for (var i = 0; i < len; i++) {
-          zipped[i] = [];
-          for (var j = 0; j < arrays.length; ++j) {
-              zipped[i][j] = arrays[j][i];
-          }
-      }
-      return zipped;
-  }
-
-  function zip3 (a, b, c) {
-      var len = Math.min.apply(null, [a.length, b.length, c.length]);
-      var result = [];
-      for (var n = 0; n < len; n++) {
-          result.push([a[n], b[n], c[n]]);
-      }
-      return result;
-  }
-
-  function sum (A) {
-    var acc = 0;
-    accumulate(A, acc);
-    function accumulate(x) {
-      for (var i = 0; i < x.length; i++) {
-        if (Array.isArray(x[i]))
-          accumulate(x[i], acc);
-        else
-          acc += x[i];
-      }
-    }
-    return acc;
-  }
-
-  function copy2D (arr) {
-    var carr = [];
-    for (var i = 0; i < arr.length; ++i) {
-      carr[i] = [];
-      for (var j = 0; j < arr[i].length; ++j) {
-        carr[i][j] = arr[i][j];
-      }
-    }
-
-    return carr;
-  }
-
-
-  function copy1D (arr) {
-    var carr = [];
-    for (var i = 0; i < arr.length; ++i) {
-      carr[i] = arr[i];
-    }
-
-    return carr;
-  }
-
-
-  function isEqual(arr1, arr2) {
-    if(arr1.length !== arr2.length)
-      return false;
-    for(var i = arr1.length; i--;) {
-      if(arr1[i] !== arr2[i])
-        return false;
-    }
-
-    return true;
-  }
-
-
-  function str2RgbArray(str, twoFiftySix) {
-    // convert hex or rbg strings to 0->1 or 0->255 rgb array
-    var rgb,
-        match;
-
-    if (typeof str !== 'string') return str;
-
-    rgb = [];
-    // hex notation
-    if (str[0] === '#') {
-      str = str.substr(1) // remove hash
-      if (str.length === 3) str += str // fff -> ffffff
-      match = parseInt(str, 16);
-      rgb[0] = ((match >> 16) & 255);
-      rgb[1] = ((match >> 8) & 255);
-      rgb[2] = (match & 255);
-    }
-
-    // rgb(34, 34, 127) or rgba(34, 34, 127, 0.1) notation
-    else if (RGB_REGEX.test(str)) {
-      match = str.match(RGB_GROUP_REGEX);
-      rgb[0] = parseInt(match[1]);
-      rgb[1] = parseInt(match[2]);
-      rgb[2] = parseInt(match[3]);
-    }
-
-    if (!twoFiftySix) {
-      for (var j=0; j<3; ++j) rgb[j] = rgb[j]/255
-    }
-
-
-    return rgb;
-  }
-
-
-  function str2RgbaArray(str, twoFiftySix) {
-    // convert hex or rbg strings to 0->1 or 0->255 rgb array
-    var rgb,
-        match;
-
-    if (typeof str !== 'string') return str;
-
-    rgb = [];
-    // hex notation
-    if (str[0] === '#') {
-      str = str.substr(1) // remove hash
-      if (str.length === 3) str += str // fff -> ffffff
-      match = parseInt(str, 16);
-      rgb[0] = ((match >> 16) & 255);
-      rgb[1] = ((match >> 8) & 255);
-      rgb[2] = (match & 255);
-    }
-
-    // rgb(34, 34, 127) or rgba(34, 34, 127, 0.1) notation
-    else if (RGB_REGEX.test(str)) {
-      match = str.match(RGB_GROUP_REGEX);
-      rgb[0] = parseInt(match[1]);
-      rgb[1] = parseInt(match[2]);
-      rgb[2] = parseInt(match[3]);
-      if (match[4]) rgb[3] = parseFloat(match[4]);
-      else rgb[3] = 1.0;
-    }
-
-
-
-    if (!twoFiftySix) {
-      for (var j=0; j<3; ++j) rgb[j] = rgb[j]/255
-    }
-
-
-    return rgb;
-  }
-
-
-
-
-
-  that.isPlainObject = isPlainObject;
-  that.linspace = linspace;
-  that.zip3 = zip3;
-  that.sum = sum;
-  that.zip = zip;
-  that.isEqual = isEqual;
-  that.copy2D = copy2D;
-  that.copy1D = copy1D;
-  that.str2RgbArray = str2RgbArray;
-  that.str2RgbaArray = str2RgbaArray;
-
-  return that
-
-}
-
-
-module.exports = arraytools();
-
-},{}],33:[function(require,module,exports){
-/**
- * Bit twiddling hacks for JavaScript.
- *
- * Author: Mikola Lysenko
- *
- * Ported from Stanford bit twiddling hack library:
- *    http://graphics.stanford.edu/~seander/bithacks.html
- */
-
-"use strict"; "use restrict";
-
-//Number of bits in an integer
-var INT_BITS = 32;
-
-//Constants
-exports.INT_BITS  = INT_BITS;
-exports.INT_MAX   =  0x7fffffff;
-exports.INT_MIN   = -1<<(INT_BITS-1);
-
-//Returns -1, 0, +1 depending on sign of x
-exports.sign = function(v) {
-  return (v > 0) - (v < 0);
-}
-
-//Computes absolute value of integer
-exports.abs = function(v) {
-  var mask = v >> (INT_BITS-1);
-  return (v ^ mask) - mask;
-}
-
-//Computes minimum of integers x and y
-exports.min = function(x, y) {
-  return y ^ ((x ^ y) & -(x < y));
-}
-
-//Computes maximum of integers x and y
-exports.max = function(x, y) {
-  return x ^ ((x ^ y) & -(x < y));
-}
-
-//Checks if a number is a power of two
-exports.isPow2 = function(v) {
-  return !(v & (v-1)) && (!!v);
-}
-
-//Computes log base 2 of v
-exports.log2 = function(v) {
-  var r, shift;
-  r =     (v > 0xFFFF) << 4; v >>>= r;
-  shift = (v > 0xFF  ) << 3; v >>>= shift; r |= shift;
-  shift = (v > 0xF   ) << 2; v >>>= shift; r |= shift;
-  shift = (v > 0x3   ) << 1; v >>>= shift; r |= shift;
-  return r | (v >> 1);
-}
-
-//Computes log base 10 of v
-exports.log10 = function(v) {
-  return  (v >= 1000000000) ? 9 : (v >= 100000000) ? 8 : (v >= 10000000) ? 7 :
-          (v >= 1000000) ? 6 : (v >= 100000) ? 5 : (v >= 10000) ? 4 :
-          (v >= 1000) ? 3 : (v >= 100) ? 2 : (v >= 10) ? 1 : 0;
-}
-
-//Counts number of bits
-exports.popCount = function(v) {
-  v = v - ((v >>> 1) & 0x55555555);
-  v = (v & 0x33333333) + ((v >>> 2) & 0x33333333);
-  return ((v + (v >>> 4) & 0xF0F0F0F) * 0x1010101) >>> 24;
-}
-
-//Counts number of trailing zeros
-function countTrailingZeros(v) {
-  var c = 32;
-  v &= -v;
-  if (v) c--;
-  if (v & 0x0000FFFF) c -= 16;
-  if (v & 0x00FF00FF) c -= 8;
-  if (v & 0x0F0F0F0F) c -= 4;
-  if (v & 0x33333333) c -= 2;
-  if (v & 0x55555555) c -= 1;
-  return c;
-}
-exports.countTrailingZeros = countTrailingZeros;
-
-//Rounds to next power of 2
-exports.nextPow2 = function(v) {
-  v += v === 0;
-  --v;
-  v |= v >>> 1;
-  v |= v >>> 2;
-  v |= v >>> 4;
-  v |= v >>> 8;
-  v |= v >>> 16;
-  return v + 1;
-}
-
-//Rounds down to previous power of 2
-exports.prevPow2 = function(v) {
-  v |= v >>> 1;
-  v |= v >>> 2;
-  v |= v >>> 4;
-  v |= v >>> 8;
-  v |= v >>> 16;
-  return v - (v>>>1);
-}
-
-//Computes parity of word
-exports.parity = function(v) {
-  v ^= v >>> 16;
-  v ^= v >>> 8;
-  v ^= v >>> 4;
-  v &= 0xf;
-  return (0x6996 >>> v) & 1;
-}
-
-var REVERSE_TABLE = new Array(256);
-
-(function(tab) {
-  for(var i=0; i<256; ++i) {
-    var v = i, r = i, s = 7;
-    for (v >>>= 1; v; v >>>= 1) {
-      r <<= 1;
-      r |= v & 1;
-      --s;
-    }
-    tab[i] = (r << s) & 0xff;
-  }
-})(REVERSE_TABLE);
-
-//Reverse bits in a 32 bit word
-exports.reverse = function(v) {
-  return  (REVERSE_TABLE[ v         & 0xff] << 24) |
-          (REVERSE_TABLE[(v >>> 8)  & 0xff] << 16) |
-          (REVERSE_TABLE[(v >>> 16) & 0xff] << 8)  |
-           REVERSE_TABLE[(v >>> 24) & 0xff];
-}
-
-//Interleave bits of 2 coordinates with 16 bits.  Useful for fast quadtree codes
-exports.interleave2 = function(x, y) {
-  x &= 0xFFFF;
-  x = (x | (x << 8)) & 0x00FF00FF;
-  x = (x | (x << 4)) & 0x0F0F0F0F;
-  x = (x | (x << 2)) & 0x33333333;
-  x = (x | (x << 1)) & 0x55555555;
-
-  y &= 0xFFFF;
-  y = (y | (y << 8)) & 0x00FF00FF;
-  y = (y | (y << 4)) & 0x0F0F0F0F;
-  y = (y | (y << 2)) & 0x33333333;
-  y = (y | (y << 1)) & 0x55555555;
-
-  return x | (y << 1);
-}
-
-//Extracts the nth interleaved component
-exports.deinterleave2 = function(v, n) {
-  v = (v >>> n) & 0x55555555;
-  v = (v | (v >>> 1))  & 0x33333333;
-  v = (v | (v >>> 2))  & 0x0F0F0F0F;
-  v = (v | (v >>> 4))  & 0x00FF00FF;
-  v = (v | (v >>> 16)) & 0x000FFFF;
-  return (v << 16) >> 16;
-}
-
-
-//Interleave bits of 3 coordinates, each with 10 bits.  Useful for fast octree codes
-exports.interleave3 = function(x, y, z) {
-  x &= 0x3FF;
-  x  = (x | (x<<16)) & 4278190335;
-  x  = (x | (x<<8))  & 251719695;
-  x  = (x | (x<<4))  & 3272356035;
-  x  = (x | (x<<2))  & 1227133513;
-
-  y &= 0x3FF;
-  y  = (y | (y<<16)) & 4278190335;
-  y  = (y | (y<<8))  & 251719695;
-  y  = (y | (y<<4))  & 3272356035;
-  y  = (y | (y<<2))  & 1227133513;
-  x |= (y << 1);
-  
-  z &= 0x3FF;
-  z  = (z | (z<<16)) & 4278190335;
-  z  = (z | (z<<8))  & 251719695;
-  z  = (z | (z<<4))  & 3272356035;
-  z  = (z | (z<<2))  & 1227133513;
-  
-  return x | (z << 2);
-}
-
-//Extracts nth interleaved component of a 3-tuple
-exports.deinterleave3 = function(v, n) {
-  v = (v >>> n)       & 1227133513;
-  v = (v | (v>>>2))   & 3272356035;
-  v = (v | (v>>>4))   & 251719695;
-  v = (v | (v>>>8))   & 4278190335;
-  v = (v | (v>>>16))  & 0x3FF;
-  return (v<<22)>>22;
-}
-
-//Computes next combination in colexicographic order (this is mistakenly called nextPermutation on the bit twiddling hacks page)
-exports.nextCombination = function(v) {
-  var t = v | (v - 1);
-  return (t + 1) | (((~t & -~t) - 1) >>> (countTrailingZeros(v) + 1));
-}
-
-
-},{}],34:[function(require,module,exports){
+},{"cell-orientation":101,"compare-cell":113,"compare-oriented-cell":102}],104:[function(require,module,exports){
+arguments[4][6][0].apply(exports,arguments)
+},{"dup":6}],105:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],106:[function(require,module,exports){
 (function (global){
 /*!
  * The buffer module from node.js, for the browser.
@@ -4509,7 +12382,7 @@ function blitBuffer (src, dst, offset, length) {
 }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"base64-js":35,"ieee754":36,"is-array":37}],35:[function(require,module,exports){
+},{"base64-js":107,"ieee754":108,"is-array":109}],107:[function(require,module,exports){
 var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 
 ;(function (exports) {
@@ -4635,7 +12508,7 @@ var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/';
 	exports.fromByteArray = uint8ToBase64
 }(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
 
-},{}],36:[function(require,module,exports){
+},{}],108:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
   var e, m
   var eLen = nBytes * 8 - mLen - 1
@@ -4721,7 +12594,7 @@ exports.write = function (buffer, value, offset, isLE, mLen, nBytes) {
   buffer[offset + i - d] |= s * 128
 }
 
-},{}],37:[function(require,module,exports){
+},{}],109:[function(require,module,exports){
 
 /**
  * isArray
@@ -4756,7 +12629,7 @@ module.exports = isArray || function (val) {
   return !! val && '[object Array]' == str.call(val);
 };
 
-},{}],38:[function(require,module,exports){
+},{}],110:[function(require,module,exports){
 // shim for using process in browser
 
 var process = module.exports = {};
@@ -4849,126 +12722,11 @@ process.chdir = function (dir) {
 };
 process.umask = function() { return 0; };
 
-},{}],39:[function(require,module,exports){
-module.exports={"jet":[{"index":0,"rgb":[0,0,131]},{"index":0.125,"rgb":[0,60,170]},{"index":0.375,"rgb":[5,255,255]},{"index":0.625,"rgb":[255,255,0]},{"index":0.875,"rgb":[250,0,0]},{"index":1,"rgb":[128,0,0]}],"hsv":[{"index":0,"rgb":[255,0,0]},{"index":0.169,"rgb":[253,255,2]},{"index":0.173,"rgb":[247,255,2]},{"index":0.337,"rgb":[0,252,4]},{"index":0.341,"rgb":[0,252,10]},{"index":0.506,"rgb":[1,249,255]},{"index":0.671,"rgb":[2,0,253]},{"index":0.675,"rgb":[8,0,253]},{"index":0.839,"rgb":[255,0,251]},{"index":0.843,"rgb":[255,0,245]},{"index":1,"rgb":[255,0,6]}],"hot":[{"index":0,"rgb":[0,0,0]},{"index":0.3,"rgb":[230,0,0]},{"index":0.6,"rgb":[255,210,0]},{"index":1,"rgb":[255,255,255]}],"cool":[{"index":0,"rgb":[0,255,255]},{"index":1,"rgb":[255,0,255]}],"spring":[{"index":0,"rgb":[255,0,255]},{"index":1,"rgb":[255,255,0]}],"summer":[{"index":0,"rgb":[0,128,102]},{"index":1,"rgb":[255,255,102]}],"autumn":[{"index":0,"rgb":[255,0,0]},{"index":1,"rgb":[255,255,0]}],"winter":[{"index":0,"rgb":[0,0,255]},{"index":1,"rgb":[0,255,128]}],"bone":[{"index":0,"rgb":[0,0,0]},{"index":0.376,"rgb":[84,84,116]},{"index":0.753,"rgb":[169,200,200]},{"index":1,"rgb":[255,255,255]}],"copper":[{"index":0,"rgb":[0,0,0]},{"index":0.804,"rgb":[255,160,102]},{"index":1,"rgb":[255,199,127]}],"greys":[{"index":0,"rgb":[0,0,0]},{"index":1,"rgb":[255,255,255]}],"yignbu":[{"index":0,"rgb":[8,29,88]},{"index":0.125,"rgb":[37,52,148]},{"index":0.25,"rgb":[34,94,168]},{"index":0.375,"rgb":[29,145,192]},{"index":0.5,"rgb":[65,182,196]},{"index":0.625,"rgb":[127,205,187]},{"index":0.75,"rgb":[199,233,180]},{"index":0.875,"rgb":[237,248,217]},{"index":1,"rgb":[255,255,217]}],"greens":[{"index":0,"rgb":[0,68,27]},{"index":0.125,"rgb":[0,109,44]},{"index":0.25,"rgb":[35,139,69]},{"index":0.375,"rgb":[65,171,93]},{"index":0.5,"rgb":[116,196,118]},{"index":0.625,"rgb":[161,217,155]},{"index":0.75,"rgb":[199,233,192]},{"index":0.875,"rgb":[229,245,224]},{"index":1,"rgb":[247,252,245]}],"yiorrd":[{"index":0,"rgb":[128,0,38]},{"index":0.125,"rgb":[189,0,38]},{"index":0.25,"rgb":[227,26,28]},{"index":0.375,"rgb":[252,78,42]},{"index":0.5,"rgb":[253,141,60]},{"index":0.625,"rgb":[254,178,76]},{"index":0.75,"rgb":[254,217,118]},{"index":0.875,"rgb":[255,237,160]},{"index":1,"rgb":[255,255,204]}],"bluered":[{"index":0,"rgb":[0,0,255]},{"index":1,"rgb":[255,0,0]}],"rdbu":[{"index":0,"rgb":[5,10,172]},{"index":0.35,"rgb":[106,137,247]},{"index":0.5,"rgb":[190,190,190]},{"index":0.6,"rgb":[220,170,132]},{"index":0.7,"rgb":[230,145,90]},{"index":1,"rgb":[178,10,28]}],"picnic":[{"index":0,"rgb":[0,0,255]},{"index":0.1,"rgb":[51,153,255]},{"index":0.2,"rgb":[102,204,255]},{"index":0.3,"rgb":[153,204,255]},{"index":0.4,"rgb":[204,204,255]},{"index":0.5,"rgb":[255,255,255]},{"index":0.6,"rgb":[255,204,255]},{"index":0.7,"rgb":[255,153,255]},{"index":0.8,"rgb":[255,102,204]},{"index":0.9,"rgb":[255,102,102]},{"index":1,"rgb":[255,0,0]}],"rainbow":[{"index":0,"rgb":[150,0,90]},{"index":0.125,"rgb":[0,0,200]},{"index":0.25,"rgb":[0,25,255]},{"index":0.375,"rgb":[0,152,255]},{"index":0.5,"rgb":[44,255,150]},{"index":0.625,"rgb":[151,255,0]},{"index":0.75,"rgb":[255,234,0]},{"index":0.875,"rgb":[255,111,0]},{"index":1,"rgb":[255,0,0]}],"portland":[{"index":0,"rgb":[12,51,131]},{"index":0.25,"rgb":[10,136,186]},{"index":0.5,"rgb":[242,211,56]},{"index":0.75,"rgb":[242,143,56]},{"index":1,"rgb":[217,30,30]}],"blackbody":[{"index":0,"rgb":[0,0,0]},{"index":0.2,"rgb":[230,0,0]},{"index":0.4,"rgb":[230,210,0]},{"index":0.7,"rgb":[255,255,255]},{"index":1,"rgb":[160,200,255]}],"earth":[{"index":0,"rgb":[0,0,130]},{"index":0.1,"rgb":[0,180,180]},{"index":0.2,"rgb":[40,210,40]},{"index":0.4,"rgb":[230,230,50]},{"index":0.6,"rgb":[120,70,20]},{"index":1,"rgb":[255,255,255]}],"electric":[{"index":0,"rgb":[0,0,0]},{"index":0.15,"rgb":[30,0,100]},{"index":0.4,"rgb":[120,0,100]},{"index":0.6,"rgb":[160,90,0]},{"index":0.8,"rgb":[230,200,0]},{"index":1,"rgb":[255,250,220]}], "alpha": [{"index":0, "rgb": [255,255,255,0]},{"index":0, "rgb": [255,255,255,1]}]}
-
-},{}],40:[function(require,module,exports){
-/*
- * Ben Postlethwaite
- * January 2013
- * License MIT
- */
-'use strict';
-var at = require('arraytools');
-var colorScale = require('./colorScales.json');
-
-
-module.exports = function (spec) {
-
-  /*
-   * Default Options
-   */
-    var indicies, rgba, fromrgba, torgba,
-        nsteps, cmap, colormap, format,
-        nshades, colors, alpha, index, i,
-        r = [],
-        g = [],
-        b = [],
-        a = [];
-
-    if ( !at.isPlainObject(spec) ) spec = {};
-    if (!spec.colormap) colormap = 'jet';
-    if (!Array.isArray(spec.alpha)) {
-        if (typeof spec.alpha === 'number') spec.alpha = [spec.alpha, spec.alpha];
-        else spec.alpha = [1, 1];
-    } else if (spec.alpha.length !== 2) spec.alpha = [1, 1];
-    if (typeof spec.colormap === 'string') {
-        colormap = spec.colormap.toLowerCase();
-
-        if (!(colormap in colorScale)) {
-            throw Error(colormap + ' not a supported colorscale');
-        }
-        cmap = colorScale[colormap];
-
-    } else if (Array.isArray(spec.colormap)) {
-        cmap = spec.colormap;
-    }
-
-    nshades = spec.nshades || 72;
-    format = spec.format || 'hex';
-    alpha = spec.alpha;
-
-    if (cmap.length > nshades) {
-        throw new Error(colormap +
-                        ' map requires nshades to be at least size ' +
-                        cmap.length);
-    }
-
-    /*
-     * map index points from 0->1 to 0 -> n-1
-     */
-    indicies = cmap.map(function(c) {
-        return Math.round(c.index * nshades);
-    });
-
-    /*
-     * Add alpha channel to the map
-     */
-    if (alpha[0] < 0) alpha[0] = 0;
-    if (alpha[1] < 0) alpha[0] = 0;
-    if (alpha[0] > 1) alpha[0] = 1;
-    if (alpha[1] > 1) alpha[0] = 1;
-
-    for (i = 0; i < indicies.length; ++i) {
-        index = cmap[i].index;
-        rgba = cmap[i].rgb;
-        // if user supplies their own map use theirs
-        if (rgba.length === 4 && rgba[3] >= 0 && rgba[3] <= 1) continue;
-        rgba[3] = alpha[0] + (alpha[1] - alpha[0])*index;
-    }
-
-    /*
-     * map increasing linear values between indicies to
-     * linear steps in colorvalues
-     */
-    for (i = 0; i < indicies.length-1; ++i) {
-        nsteps = indicies[i+1] - indicies[i];
-        fromrgba = cmap[i].rgb;
-        torgba = cmap[i+1].rgb;
-        r = r.concat(at.linspace(fromrgba[0], torgba[0], nsteps ) );
-        g = g.concat(at.linspace(fromrgba[1], torgba[1], nsteps ) );
-        b = b.concat(at.linspace(fromrgba[2], torgba[2], nsteps ) );
-        a = a.concat(at.linspace(fromrgba[3], torgba[3], nsteps ) );
-    }
-
-    r = r.map( Math.round );
-    g = g.map( Math.round );
-    b = b.map( Math.round );
-
-    colors = at.zip(r, g, b, a);
-
-    if (format === 'hex') colors = colors.map( rgb2hex );
-    if (format === 'rgbaString') colors = colors.map( rgbaStr );
-
-    return colors;
-};
-
-
-function rgb2hex (rgba) {
-    var dig, hex = '#';
-    for (var i = 0; i < 3; ++i) {
-        dig = rgba[i];
-        dig = dig.toString(16);
-        hex += ('00' + dig).substr( dig.length );
-    }
-    return hex;
-}
-
-function rgbaStr (rgba) {
-    return 'rgba(' + rgba.join(',') + ')';
-}
-
-},{"./colorScales.json":39,"arraytools":32}],41:[function(require,module,exports){
+},{}],111:[function(require,module,exports){
+arguments[4][4][0].apply(exports,arguments)
+},{"dup":4}],112:[function(require,module,exports){
+arguments[4][5][0].apply(exports,arguments)
+},{"./colorScales.json":111,"arraytools":104,"dup":5}],113:[function(require,module,exports){
 module.exports = compareCells
 
 var min = Math.min
@@ -5024,7 +12782,7 @@ function compareCells(a, b) {
   }
 }
 
-},{}],42:[function(require,module,exports){
+},{}],114:[function(require,module,exports){
 "use strict"
 
 var convexHull1d = require('./lib/ch1d')
@@ -5050,7 +12808,7 @@ function convexHull(points) {
   }
   return convexHullnd(points, d)
 }
-},{"./lib/ch1d":43,"./lib/ch2d":44,"./lib/chnd":45}],43:[function(require,module,exports){
+},{"./lib/ch1d":115,"./lib/ch2d":116,"./lib/chnd":117}],115:[function(require,module,exports){
 "use strict"
 
 module.exports = convexHull1d
@@ -5074,7 +12832,7 @@ function convexHull1d(points) {
     return [[lo]]
   }
 }
-},{}],44:[function(require,module,exports){
+},{}],116:[function(require,module,exports){
 'use strict'
 
 module.exports = convexHull2D
@@ -5097,7 +12855,7 @@ function convexHull2D(points) {
   return edges
 }
 
-},{"monotone-convex-hull-2d":47}],45:[function(require,module,exports){
+},{"monotone-convex-hull-2d":119}],117:[function(require,module,exports){
 'use strict'
 
 module.exports = convexHullnD
@@ -5158,7 +12916,7 @@ function convexHullnD(points, d) {
     return invPermute(nhull, ah)
   }
 }
-},{"affine-hull":46,"incremental-convex-hull":168}],46:[function(require,module,exports){
+},{"affine-hull":118,"incremental-convex-hull":226}],118:[function(require,module,exports){
 'use strict'
 
 module.exports = affineHull
@@ -5210,7 +12968,7 @@ function affineHull(points) {
   }
   return index
 }
-},{"robust-orientation":195}],47:[function(require,module,exports){
+},{"robust-orientation":253}],119:[function(require,module,exports){
 'use strict'
 
 module.exports = monotoneConvexHull2D
@@ -5292,623 +13050,17 @@ function monotoneConvexHull2D(points) {
   //Return result
   return result
 }
-},{"robust-orientation":195}],48:[function(require,module,exports){
+},{"robust-orientation":253}],120:[function(require,module,exports){
 module.exports = require("cwise-compiler")
-},{"cwise-compiler":49}],49:[function(require,module,exports){
-"use strict"
-
-var createThunk = require("./lib/thunk.js")
-
-function Procedure() {
-  this.argTypes = []
-  this.shimArgs = []
-  this.arrayArgs = []
-  this.arrayBlockIndices = []
-  this.scalarArgs = []
-  this.offsetArgs = []
-  this.offsetArgIndex = []
-  this.indexArgs = []
-  this.shapeArgs = []
-  this.funcName = ""
-  this.pre = null
-  this.body = null
-  this.post = null
-  this.debug = false
-}
-
-function compileCwise(user_args) {
-  //Create procedure
-  var proc = new Procedure()
-  
-  //Parse blocks
-  proc.pre    = user_args.pre
-  proc.body   = user_args.body
-  proc.post   = user_args.post
-
-  //Parse arguments
-  var proc_args = user_args.args.slice(0)
-  proc.argTypes = proc_args
-  for(var i=0; i<proc_args.length; ++i) {
-    var arg_type = proc_args[i]
-    if(arg_type === "array" || (typeof arg_type === "object" && arg_type.blockIndices)) {
-      proc.argTypes[i] = "array"
-      proc.arrayArgs.push(i)
-      proc.arrayBlockIndices.push(arg_type.blockIndices ? arg_type.blockIndices : 0)
-      proc.shimArgs.push("array" + i)
-      if(i < proc.pre.args.length && proc.pre.args[i].count>0) {
-        throw new Error("cwise: pre() block may not reference array args")
-      }
-      if(i < proc.post.args.length && proc.post.args[i].count>0) {
-        throw new Error("cwise: post() block may not reference array args")
-      }
-    } else if(arg_type === "scalar") {
-      proc.scalarArgs.push(i)
-      proc.shimArgs.push("scalar" + i)
-    } else if(arg_type === "index") {
-      proc.indexArgs.push(i)
-      if(i < proc.pre.args.length && proc.pre.args[i].count > 0) {
-        throw new Error("cwise: pre() block may not reference array index")
-      }
-      if(i < proc.body.args.length && proc.body.args[i].lvalue) {
-        throw new Error("cwise: body() block may not write to array index")
-      }
-      if(i < proc.post.args.length && proc.post.args[i].count > 0) {
-        throw new Error("cwise: post() block may not reference array index")
-      }
-    } else if(arg_type === "shape") {
-      proc.shapeArgs.push(i)
-      if(i < proc.pre.args.length && proc.pre.args[i].lvalue) {
-        throw new Error("cwise: pre() block may not write to array shape")
-      }
-      if(i < proc.body.args.length && proc.body.args[i].lvalue) {
-        throw new Error("cwise: body() block may not write to array shape")
-      }
-      if(i < proc.post.args.length && proc.post.args[i].lvalue) {
-        throw new Error("cwise: post() block may not write to array shape")
-      }
-    } else if(typeof arg_type === "object" && arg_type.offset) {
-      proc.argTypes[i] = "offset"
-      proc.offsetArgs.push({ array: arg_type.array, offset:arg_type.offset })
-      proc.offsetArgIndex.push(i)
-    } else {
-      throw new Error("cwise: Unknown argument type " + proc_args[i])
-    }
-  }
-  
-  //Make sure at least one array argument was specified
-  if(proc.arrayArgs.length <= 0) {
-    throw new Error("cwise: No array arguments specified")
-  }
-  
-  //Make sure arguments are correct
-  if(proc.pre.args.length > proc_args.length) {
-    throw new Error("cwise: Too many arguments in pre() block")
-  }
-  if(proc.body.args.length > proc_args.length) {
-    throw new Error("cwise: Too many arguments in body() block")
-  }
-  if(proc.post.args.length > proc_args.length) {
-    throw new Error("cwise: Too many arguments in post() block")
-  }
-
-  //Check debug flag
-  proc.debug = !!user_args.printCode || !!user_args.debug
-  
-  //Retrieve name
-  proc.funcName = user_args.funcName || "cwise"
-  
-  //Read in block size
-  proc.blockSize = user_args.blockSize || 64
-
-  return createThunk(proc)
-}
-
-module.exports = compileCwise
-
-},{"./lib/thunk.js":51}],50:[function(require,module,exports){
-"use strict"
-
-var uniq = require("uniq")
-
-// This function generates very simple loops analogous to how you typically traverse arrays (the outermost loop corresponds to the slowest changing index, the innermost loop to the fastest changing index)
-// TODO: If two arrays have the same strides (and offsets) there is potential for decreasing the number of "pointers" and related variables. The drawback is that the type signature would become more specific and that there would thus be less potential for caching, but it might still be worth it, especially when dealing with large numbers of arguments.
-function innerFill(order, proc, body) {
-  var dimension = order.length
-    , nargs = proc.arrayArgs.length
-    , has_index = proc.indexArgs.length>0
-    , code = []
-    , vars = []
-    , idx=0, pidx=0, i, j
-  for(i=0; i<dimension; ++i) { // Iteration variables
-    vars.push(["i",i,"=0"].join(""))
-  }
-  //Compute scan deltas
-  for(j=0; j<nargs; ++j) {
-    for(i=0; i<dimension; ++i) {
-      pidx = idx
-      idx = order[i]
-      if(i === 0) { // The innermost/fastest dimension's delta is simply its stride
-        vars.push(["d",j,"s",i,"=t",j,"p",idx].join(""))
-      } else { // For other dimensions the delta is basically the stride minus something which essentially "rewinds" the previous (more inner) dimension
-        vars.push(["d",j,"s",i,"=(t",j,"p",idx,"-s",pidx,"*t",j,"p",pidx,")"].join(""))
-      }
-    }
-  }
-  code.push("var " + vars.join(","))
-  //Scan loop
-  for(i=dimension-1; i>=0; --i) { // Start at largest stride and work your way inwards
-    idx = order[i]
-    code.push(["for(i",i,"=0;i",i,"<s",idx,";++i",i,"){"].join(""))
-  }
-  //Push body of inner loop
-  code.push(body)
-  //Advance scan pointers
-  for(i=0; i<dimension; ++i) {
-    pidx = idx
-    idx = order[i]
-    for(j=0; j<nargs; ++j) {
-      code.push(["p",j,"+=d",j,"s",i].join(""))
-    }
-    if(has_index) {
-      if(i > 0) {
-        code.push(["index[",pidx,"]-=s",pidx].join(""))
-      }
-      code.push(["++index[",idx,"]"].join(""))
-    }
-    code.push("}")
-  }
-  return code.join("\n")
-}
-
-// Generate "outer" loops that loop over blocks of data, applying "inner" loops to the blocks by manipulating the local variables in such a way that the inner loop only "sees" the current block.
-// TODO: If this is used, then the previous declaration (done by generateCwiseOp) of s* is essentially unnecessary.
-//       I believe the s* are not used elsewhere (in particular, I don't think they're used in the pre/post parts and "shape" is defined independently), so it would be possible to make defining the s* dependent on what loop method is being used.
-function outerFill(matched, order, proc, body) {
-  var dimension = order.length
-    , nargs = proc.arrayArgs.length
-    , blockSize = proc.blockSize
-    , has_index = proc.indexArgs.length > 0
-    , code = []
-  for(var i=0; i<nargs; ++i) {
-    code.push(["var offset",i,"=p",i].join(""))
-  }
-  //Generate loops for unmatched dimensions
-  // The order in which these dimensions are traversed is fairly arbitrary (from small stride to large stride, for the first argument)
-  // TODO: It would be nice if the order in which these loops are placed would also be somehow "optimal" (at the very least we should check that it really doesn't hurt us if they're not).
-  for(var i=matched; i<dimension; ++i) {
-    code.push(["for(var j"+i+"=SS[", order[i], "]|0;j", i, ">0;){"].join("")) // Iterate back to front
-    code.push(["if(j",i,"<",blockSize,"){"].join("")) // Either decrease j by blockSize (s = blockSize), or set it to zero (after setting s = j).
-    code.push(["s",order[i],"=j",i].join(""))
-    code.push(["j",i,"=0"].join(""))
-    code.push(["}else{s",order[i],"=",blockSize].join(""))
-    code.push(["j",i,"-=",blockSize,"}"].join(""))
-    if(has_index) {
-      code.push(["index[",order[i],"]=j",i].join(""))
-    }
-  }
-  for(var i=0; i<nargs; ++i) {
-    var indexStr = ["offset"+i]
-    for(var j=matched; j<dimension; ++j) {
-      indexStr.push(["j",j,"*t",i,"p",order[j]].join(""))
-    }
-    code.push(["p",i,"=(",indexStr.join("+"),")"].join(""))
-  }
-  code.push(innerFill(order, proc, body))
-  for(var i=matched; i<dimension; ++i) {
-    code.push("}")
-  }
-  return code.join("\n")
-}
-
-//Count the number of compatible inner orders
-// This is the length of the longest common prefix of the arrays in orders.
-// Each array in orders lists the dimensions of the correspond ndarray in order of increasing stride.
-// This is thus the maximum number of dimensions that can be efficiently traversed by simple nested loops for all arrays.
-function countMatches(orders) {
-  var matched = 0, dimension = orders[0].length
-  while(matched < dimension) {
-    for(var j=1; j<orders.length; ++j) {
-      if(orders[j][matched] !== orders[0][matched]) {
-        return matched
-      }
-    }
-    ++matched
-  }
-  return matched
-}
-
-//Processes a block according to the given data types
-// Replaces variable names by different ones, either "local" ones (that are then ferried in and out of the given array) or ones matching the arguments that the function performing the ultimate loop will accept.
-function processBlock(block, proc, dtypes) {
-  var code = block.body
-  var pre = []
-  var post = []
-  for(var i=0; i<block.args.length; ++i) {
-    var carg = block.args[i]
-    if(carg.count <= 0) {
-      continue
-    }
-    var re = new RegExp(carg.name, "g")
-    var ptrStr = ""
-    var arrNum = proc.arrayArgs.indexOf(i)
-    switch(proc.argTypes[i]) {
-      case "offset":
-        var offArgIndex = proc.offsetArgIndex.indexOf(i)
-        var offArg = proc.offsetArgs[offArgIndex]
-        arrNum = offArg.array
-        ptrStr = "+q" + offArgIndex // Adds offset to the "pointer" in the array
-      case "array":
-        ptrStr = "p" + arrNum + ptrStr
-        var localStr = "l" + i
-        var arrStr = "a" + arrNum
-        if (proc.arrayBlockIndices[arrNum] === 0) { // Argument to body is just a single value from this array
-          if(carg.count === 1) { // Argument/array used only once(?)
-            if(dtypes[arrNum] === "generic") {
-              if(carg.lvalue) {
-                pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join("")) // Is this necessary if the argument is ONLY used as an lvalue? (keep in mind that we can have a += something, so we would actually need to check carg.rvalue)
-                code = code.replace(re, localStr)
-                post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
-              } else {
-                code = code.replace(re, [arrStr, ".get(", ptrStr, ")"].join(""))
-              }
-            } else {
-              code = code.replace(re, [arrStr, "[", ptrStr, "]"].join(""))
-            }
-          } else if(dtypes[arrNum] === "generic") {
-            pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join("")) // TODO: Could we optimize by checking for carg.rvalue?
-            code = code.replace(re, localStr)
-            if(carg.lvalue) {
-              post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
-            }
-          } else {
-            pre.push(["var ", localStr, "=", arrStr, "[", ptrStr, "]"].join("")) // TODO: Could we optimize by checking for carg.rvalue?
-            code = code.replace(re, localStr)
-            if(carg.lvalue) {
-              post.push([arrStr, "[", ptrStr, "]=", localStr].join(""))
-            }
-          }
-        } else { // Argument to body is a "block"
-          var reStrArr = [carg.name], ptrStrArr = [ptrStr]
-          for(var j=0; j<Math.abs(proc.arrayBlockIndices[arrNum]); j++) {
-            reStrArr.push("\\s*\\[([^\\]]+)\\]")
-            ptrStrArr.push("$" + (j+1) + "*t" + arrNum + "b" + j) // Matched index times stride
-          }
-          re = new RegExp(reStrArr.join(""), "g")
-          ptrStr = ptrStrArr.join("+")
-          if(dtypes[arrNum] === "generic") {
-            /*if(carg.lvalue) {
-              pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join("")) // Is this necessary if the argument is ONLY used as an lvalue? (keep in mind that we can have a += something, so we would actually need to check carg.rvalue)
-              code = code.replace(re, localStr)
-              post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
-            } else {
-              code = code.replace(re, [arrStr, ".get(", ptrStr, ")"].join(""))
-            }*/
-            throw new Error("cwise: Generic arrays not supported in combination with blocks!")
-          } else {
-            // This does not produce any local variables, even if variables are used multiple times. It would be possible to do so, but it would complicate things quite a bit.
-            code = code.replace(re, [arrStr, "[", ptrStr, "]"].join(""))
-          }
-        }
-      break
-      case "scalar":
-        code = code.replace(re, "Y" + proc.scalarArgs.indexOf(i))
-      break
-      case "index":
-        code = code.replace(re, "index")
-      break
-      case "shape":
-        code = code.replace(re, "shape")
-      break
-    }
-  }
-  return [pre.join("\n"), code, post.join("\n")].join("\n").trim()
-}
-
-function typeSummary(dtypes) {
-  var summary = new Array(dtypes.length)
-  var allEqual = true
-  for(var i=0; i<dtypes.length; ++i) {
-    var t = dtypes[i]
-    var digits = t.match(/\d+/)
-    if(!digits) {
-      digits = ""
-    } else {
-      digits = digits[0]
-    }
-    if(t.charAt(0) === 0) {
-      summary[i] = "u" + t.charAt(1) + digits
-    } else {
-      summary[i] = t.charAt(0) + digits
-    }
-    if(i > 0) {
-      allEqual = allEqual && summary[i] === summary[i-1]
-    }
-  }
-  if(allEqual) {
-    return summary[0]
-  }
-  return summary.join("")
-}
-
-//Generates a cwise operator
-function generateCWiseOp(proc, typesig) {
-
-  //Compute dimension
-  // Arrays get put first in typesig, and there are two entries per array (dtype and order), so this gets the number of dimensions in the first array arg.
-  var dimension = (typesig[1].length - Math.abs(proc.arrayBlockIndices[0]))|0
-  var orders = new Array(proc.arrayArgs.length)
-  var dtypes = new Array(proc.arrayArgs.length)
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    dtypes[i] = typesig[2*i]
-    orders[i] = typesig[2*i+1]
-  }
-  
-  //Determine where block and loop indices start and end
-  var blockBegin = [], blockEnd = [] // These indices are exposed as blocks
-  var loopBegin = [], loopEnd = [] // These indices are iterated over
-  var loopOrders = [] // orders restricted to the loop indices
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    if (proc.arrayBlockIndices[i]<0) {
-      loopBegin.push(0)
-      loopEnd.push(dimension)
-      blockBegin.push(dimension)
-      blockEnd.push(dimension+proc.arrayBlockIndices[i])
-    } else {
-      loopBegin.push(proc.arrayBlockIndices[i]) // Non-negative
-      loopEnd.push(proc.arrayBlockIndices[i]+dimension)
-      blockBegin.push(0)
-      blockEnd.push(proc.arrayBlockIndices[i])
-    }
-    var newOrder = []
-    for(var j=0; j<orders[i].length; j++) {
-      if (loopBegin[i]<=orders[i][j] && orders[i][j]<loopEnd[i]) {
-        newOrder.push(orders[i][j]-loopBegin[i]) // If this is a loop index, put it in newOrder, subtracting loopBegin, to make sure that all loopOrders are using a common set of indices.
-      }
-    }
-    loopOrders.push(newOrder)
-  }
-
-  //First create arguments for procedure
-  var arglist = ["SS"] // SS is the overall shape over which we iterate
-  var code = ["'use strict'"]
-  var vars = []
-  
-  for(var j=0; j<dimension; ++j) {
-    vars.push(["s", j, "=SS[", j, "]"].join("")) // The limits for each dimension.
-  }
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    arglist.push("a"+i) // Actual data array
-    arglist.push("t"+i) // Strides
-    arglist.push("p"+i) // Offset in the array at which the data starts (also used for iterating over the data)
-    
-    for(var j=0; j<dimension; ++j) { // Unpack the strides into vars for looping
-      vars.push(["t",i,"p",j,"=t",i,"[",loopBegin[i]+j,"]"].join(""))
-    }
-    
-    for(var j=0; j<Math.abs(proc.arrayBlockIndices[i]); ++j) { // Unpack the strides into vars for block iteration
-      vars.push(["t",i,"b",j,"=t",i,"[",blockBegin[i]+j,"]"].join(""))
-    }
-  }
-  for(var i=0; i<proc.scalarArgs.length; ++i) {
-    arglist.push("Y" + i)
-  }
-  if(proc.shapeArgs.length > 0) {
-    vars.push("shape=SS.slice(0)") // Makes the shape over which we iterate available to the user defined functions (so you can use width/height for example)
-  }
-  if(proc.indexArgs.length > 0) {
-    // Prepare an array to keep track of the (logical) indices, initialized to dimension zeroes.
-    var zeros = new Array(dimension)
-    for(var i=0; i<dimension; ++i) {
-      zeros[i] = "0"
-    }
-    vars.push(["index=[", zeros.join(","), "]"].join(""))
-  }
-  for(var i=0; i<proc.offsetArgs.length; ++i) { // Offset arguments used for stencil operations
-    var off_arg = proc.offsetArgs[i]
-    var init_string = []
-    for(var j=0; j<off_arg.offset.length; ++j) {
-      if(off_arg.offset[j] === 0) {
-        continue
-      } else if(off_arg.offset[j] === 1) {
-        init_string.push(["t", off_arg.array, "p", j].join(""))      
-      } else {
-        init_string.push([off_arg.offset[j], "*t", off_arg.array, "p", j].join(""))
-      }
-    }
-    if(init_string.length === 0) {
-      vars.push("q" + i + "=0")
-    } else {
-      vars.push(["q", i, "=", init_string.join("+")].join(""))
-    }
-  }
-
-  //Prepare this variables
-  var thisVars = uniq([].concat(proc.pre.thisVars)
-                      .concat(proc.body.thisVars)
-                      .concat(proc.post.thisVars))
-  vars = vars.concat(thisVars)
-  code.push("var " + vars.join(","))
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    code.push("p"+i+"|=0")
-  }
-  
-  //Inline prelude
-  if(proc.pre.body.length > 3) {
-    code.push(processBlock(proc.pre, proc, dtypes))
-  }
-
-  //Process body
-  var body = processBlock(proc.body, proc, dtypes)
-  var matched = countMatches(loopOrders)
-  if(matched < dimension) {
-    code.push(outerFill(matched, loopOrders[0], proc, body)) // TODO: Rather than passing loopOrders[0], it might be interesting to look at passing an order that represents the majority of the arguments for example.
-  } else {
-    code.push(innerFill(loopOrders[0], proc, body))
-  }
-
-  //Inline epilog
-  if(proc.post.body.length > 3) {
-    code.push(processBlock(proc.post, proc, dtypes))
-  }
-  
-  if(proc.debug) {
-    console.log("-----Generated cwise routine for ", typesig, ":\n" + code.join("\n") + "\n----------")
-  }
-  
-  var loopName = [(proc.funcName||"unnamed"), "_cwise_loop_", orders[0].join("s"),"m",matched,typeSummary(dtypes)].join("")
-  var f = new Function(["function ",loopName,"(", arglist.join(","),"){", code.join("\n"),"} return ", loopName].join(""))
-  return f()
-}
-module.exports = generateCWiseOp
-
-},{"uniq":52}],51:[function(require,module,exports){
-"use strict"
-
-// The function below is called when constructing a cwise function object, and does the following:
-// A function object is constructed which accepts as argument a compilation function and returns another function.
-// It is this other function that is eventually returned by createThunk, and this function is the one that actually
-// checks whether a certain pattern of arguments has already been used before and compiles new loops as needed.
-// The compilation passed to the first function object is used for compiling new functions.
-// Once this function object is created, it is called with compile as argument, where the first argument of compile
-// is bound to "proc" (essentially containing a preprocessed version of the user arguments to cwise).
-// So createThunk roughly works like this:
-// function createThunk(proc) {
-//   var thunk = function(compileBound) {
-//     var CACHED = {}
-//     return function(arrays and scalars) {
-//       if (dtype and order of arrays in CACHED) {
-//         var func = CACHED[dtype and order of arrays]
-//       } else {
-//         var func = CACHED[dtype and order of arrays] = compileBound(dtype and order of arrays)
-//       }
-//       return func(arrays and scalars)
-//     }
-//   }
-//   return thunk(compile.bind1(proc))
-// }
-
-var compile = require("./compile.js")
-
-function createThunk(proc) {
-  var code = ["'use strict'", "var CACHED={}"]
-  var vars = []
-  var thunkName = proc.funcName + "_cwise_thunk"
-  
-  //Build thunk
-  code.push(["return function ", thunkName, "(", proc.shimArgs.join(","), "){"].join(""))
-  var typesig = []
-  var string_typesig = []
-  var proc_args = [["array",proc.arrayArgs[0],".shape.slice(", // Slice shape so that we only retain the shape over which we iterate (which gets passed to the cwise operator as SS).
-                    Math.max(0,proc.arrayBlockIndices[0]),proc.arrayBlockIndices[0]<0?(","+proc.arrayBlockIndices[0]+")"):")"].join("")]
-  var shapeLengthConditions = [], shapeConditions = []
-  // Process array arguments
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    var j = proc.arrayArgs[i]
-    vars.push(["t", j, "=array", j, ".dtype,",
-               "r", j, "=array", j, ".order"].join(""))
-    typesig.push("t" + j)
-    typesig.push("r" + j)
-    string_typesig.push("t"+j)
-    string_typesig.push("r"+j+".join()")
-    proc_args.push("array" + j + ".data")
-    proc_args.push("array" + j + ".stride")
-    proc_args.push("array" + j + ".offset|0")
-    if (i>0) { // Gather conditions to check for shape equality (ignoring block indices)
-      shapeLengthConditions.push("array" + proc.arrayArgs[0] + ".shape.length===array" + j + ".shape.length+" + (Math.abs(proc.arrayBlockIndices[0])-Math.abs(proc.arrayBlockIndices[i])))
-      shapeConditions.push("array" + proc.arrayArgs[0] + ".shape[shapeIndex+" + Math.max(0,proc.arrayBlockIndices[0]) + "]===array" + j + ".shape[shapeIndex+" + Math.max(0,proc.arrayBlockIndices[i]) + "]")
-    }
-  }
-  // Check for shape equality
-  if (proc.arrayArgs.length > 1) {
-    code.push("if (!(" + shapeLengthConditions.join(" && ") + ")) throw new Error('cwise: Arrays do not all have the same dimensionality!')")
-    code.push("for(var shapeIndex=array" + proc.arrayArgs[0] + ".shape.length-" + Math.abs(proc.arrayBlockIndices[0]) + "; shapeIndex-->0;) {")
-    code.push("if (!(" + shapeConditions.join(" && ") + ")) throw new Error('cwise: Arrays do not all have the same shape!')")
-    code.push("}")
-  }
-  // Process scalar arguments
-  for(var i=0; i<proc.scalarArgs.length; ++i) {
-    proc_args.push("scalar" + proc.scalarArgs[i])
-  }
-  // Check for cached function (and if not present, generate it)
-  vars.push(["type=[", string_typesig.join(","), "].join()"].join(""))
-  vars.push("proc=CACHED[type]")
-  code.push("var " + vars.join(","))
-  
-  code.push(["if(!proc){",
-             "CACHED[type]=proc=compile([", typesig.join(","), "])}",
-             "return proc(", proc_args.join(","), ")}"].join(""))
-
-  if(proc.debug) {
-    console.log("-----Generated thunk:\n" + code.join("\n") + "\n----------")
-  }
-  
-  //Compile thunk
-  var thunk = new Function("compile", code.join("\n"))
-  return thunk(compile.bind(undefined, proc))
-}
-
-module.exports = createThunk
-
-},{"./compile.js":50}],52:[function(require,module,exports){
-"use strict"
-
-function unique_pred(list, compare) {
-  var ptr = 1
-    , len = list.length
-    , a=list[0], b=list[0]
-  for(var i=1; i<len; ++i) {
-    b = a
-    a = list[i]
-    if(compare(a, b)) {
-      if(i === ptr) {
-        ptr++
-        continue
-      }
-      list[ptr++] = a
-    }
-  }
-  list.length = ptr
-  return list
-}
-
-function unique_eq(list) {
-  var ptr = 1
-    , len = list.length
-    , a=list[0], b = list[0]
-  for(var i=1; i<len; ++i, b=a) {
-    b = a
-    a = list[i]
-    if(a !== b) {
-      if(i === ptr) {
-        ptr++
-        continue
-      }
-      list[ptr++] = a
-    }
-  }
-  list.length = ptr
-  return list
-}
-
-function unique(list, compare, sorted) {
-  if(list.length === 0) {
-    return list
-  }
-  if(compare) {
-    if(!sorted) {
-      list.sort(compare)
-    }
-    return unique_pred(list, compare)
-  }
-  if(!sorted) {
-    list.sort()
-  }
-  return unique_eq(list)
-}
-
-module.exports = unique
-
-},{}],53:[function(require,module,exports){
+},{"cwise-compiler":121}],121:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"./lib/thunk.js":123,"dup":40}],122:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"dup":41,"uniq":124}],123:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"./compile.js":122,"dup":42}],124:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"dup":43}],125:[function(require,module,exports){
 !function() {
   var d3 = {
     version: "3.5.6"
@@ -15413,7 +22565,7 @@ module.exports = unique
   if (typeof define === "function" && define.amd) define(d3); else if (typeof module === "object" && module.exports) module.exports = d3;
   this.d3 = d3;
 }();
-},{}],54:[function(require,module,exports){
+},{}],126:[function(require,module,exports){
 "use strict"
 
 var ch = require("incremental-convex-hull")
@@ -15573,57 +22725,9 @@ function triangulate(points, includePointAtInfinity) {
 
   return hull
 }
-},{"incremental-convex-hull":168,"uniq":218}],55:[function(require,module,exports){
-"use strict"
-
-function dupe_array(count, value, i) {
-  var c = count[i]|0
-  if(c <= 0) {
-    return []
-  }
-  var result = new Array(c), j
-  if(i === count.length-1) {
-    for(j=0; j<c; ++j) {
-      result[j] = value
-    }
-  } else {
-    for(j=0; j<c; ++j) {
-      result[j] = dupe_array(count, value, i+1)
-    }
-  }
-  return result
-}
-
-function dupe_number(count, value) {
-  var result, i
-  result = new Array(count)
-  for(i=0; i<count; ++i) {
-    result[i] = value
-  }
-  return result
-}
-
-function dupe(count, value) {
-  if(typeof value === "undefined") {
-    value = 0
-  }
-  switch(typeof count) {
-    case "number":
-      if(count > 0) {
-        return dupe_number(count|0, value)
-      }
-    break
-    case "object":
-      if(typeof (count.length) === "number") {
-        return dupe_array(count, value, 0)
-      }
-    break
-  }
-  return []
-}
-
-module.exports = dupe
-},{}],56:[function(require,module,exports){
+},{"incremental-convex-hull":226,"uniq":276}],127:[function(require,module,exports){
+arguments[4][7][0].apply(exports,arguments)
+},{"dup":7}],128:[function(require,module,exports){
 (function (process,global){
 /*!
  * @overview es6-promise - a tiny implementation of Promises/A+.
@@ -16594,7 +23698,7 @@ module.exports = dupe
 
 
 }).call(this,require('_process'),typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"_process":38}],57:[function(require,module,exports){
+},{"_process":110}],129:[function(require,module,exports){
 // Copyright Joyent, Inc. and other Node contributors.
 //
 // Permission is hereby granted, free of charge, to any person obtaining a
@@ -16894,7 +23998,7 @@ function isUndefined(arg) {
   return arg === void 0;
 }
 
-},{}],58:[function(require,module,exports){
+},{}],130:[function(require,module,exports){
 /**
  * inspired by is-number <https://github.com/jonschlinkert/is-number>
  * but significantly simplified and sped up by ignoring number and string constructors
@@ -16951,161 +24055,9 @@ module.exports = function(n) {
     return n - n < 1;
 };
 
-},{}],59:[function(require,module,exports){
-"use strict"
-
-var pool = require("typedarray-pool")
-var ops = require("ndarray-ops")
-var ndarray = require("ndarray")
-
-var SUPPORTED_TYPES = [
-  "uint8",
-  "uint8_clamped",
-  "uint16",
-  "uint32",
-  "int8",
-  "int16",
-  "int32",
-  "float32" ]
-
-function GLBuffer(gl, type, handle, length, usage) {
-  this.gl = gl
-  this.type = type
-  this.handle = handle
-  this.length = length
-  this.usage = usage
-}
-
-var proto = GLBuffer.prototype
-
-proto.bind = function() {
-  this.gl.bindBuffer(this.type, this.handle)
-}
-
-proto.unbind = function() {
-  this.gl.bindBuffer(this.type, null)
-}
-
-proto.dispose = function() {
-  this.gl.deleteBuffer(this.handle)
-}
-
-function updateTypeArray(gl, type, len, usage, data, offset) {
-  var dataLen = data.length * data.BYTES_PER_ELEMENT
-  if(offset < 0) {
-    gl.bufferData(type, data, usage)
-    return dataLen
-  }
-  if(dataLen + offset > len) {
-    throw new Error("gl-buffer: If resizing buffer, must not specify offset")
-  }
-  gl.bufferSubData(type, offset, data)
-  return len
-}
-
-function makeScratchTypeArray(array, dtype) {
-  var res = pool.malloc(array.length, dtype)
-  var n = array.length
-  for(var i=0; i<n; ++i) {
-    res[i] = array[i]
-  }
-  return res
-}
-
-function isPacked(shape, stride) {
-  var n = 1
-  for(var i=stride.length-1; i>=0; --i) {
-    if(stride[i] !== n) {
-      return false
-    }
-    n *= shape[i]
-  }
-  return true
-}
-
-proto.update = function(array, offset) {
-  if(typeof offset !== "number") {
-    offset = -1
-  }
-  this.bind()
-  if(typeof array === "object" && typeof array.shape !== "undefined") { //ndarray
-    var dtype = array.dtype
-    if(SUPPORTED_TYPES.indexOf(dtype) < 0) {
-      dtype = "float32"
-    }
-    if(this.type === this.gl.ELEMENT_ARRAY_BUFFER) {
-      var ext = gl.getExtension('OES_element_index_uint')
-      if(ext && dtype !== "uint16") {
-        dtype = "uint32"
-      } else {
-        dtype = "uint16"
-      }
-    }
-    if(dtype === array.dtype && isPacked(array.shape, array.stride)) {
-      if(array.offset === 0 && array.data.length === array.shape[0]) {
-        this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, array.data, offset)
-      } else {
-        this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, array.data.subarray(array.offset, array.shape[0]), offset)
-      }
-    } else {
-      var tmp = pool.malloc(array.size, dtype)
-      var ndt = ndarray(tmp, array.shape)
-      ops.assign(ndt, array)
-      if(offset < 0) {
-        this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, tmp, offset)
-      } else {
-        this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, tmp.subarray(0, array.size), offset)
-      }
-      pool.free(tmp)
-    }
-  } else if(Array.isArray(array)) { //Vanilla array
-    var t
-    if(this.type === this.gl.ELEMENT_ARRAY_BUFFER) {
-      t = makeScratchTypeArray(array, "uint16")
-    } else {
-      t = makeScratchTypeArray(array, "float32")
-    }
-    if(offset < 0) {
-      this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, t, offset)
-    } else {
-      this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, t.subarray(0, array.length), offset)
-    }
-    pool.free(t)
-  } else if(typeof array === "object" && typeof array.length === "number") { //Typed array
-    this.length = updateTypeArray(this.gl, this.type, this.length, this.usage, array, offset)
-  } else if(typeof array === "number" || array === undefined) { //Number/default
-    if(offset >= 0) {
-      throw new Error("gl-buffer: Cannot specify offset when resizing buffer")
-    }
-    array = array | 0
-    if(array <= 0) {
-      array = 1
-    }
-    this.gl.bufferData(this.type, array|0, this.usage)
-    this.length = array
-  } else { //Error, case should not happen
-    throw new Error("gl-buffer: Invalid data type")
-  }
-}
-
-function createBuffer(gl, data, type, usage) {
-  type = type || gl.ARRAY_BUFFER
-  usage = usage || gl.DYNAMIC_DRAW
-  if(type !== gl.ARRAY_BUFFER && type !== gl.ELEMENT_ARRAY_BUFFER) {
-    throw new Error("gl-buffer: Invalid type for webgl buffer, must be either gl.ARRAY_BUFFER or gl.ELEMENT_ARRAY_BUFFER")
-  }
-  if(usage !== gl.DYNAMIC_DRAW && usage !== gl.STATIC_DRAW && usage !== gl.STREAM_DRAW) {
-    throw new Error("gl-buffer: Invalid usage for buffer, must be either gl.DYNAMIC_DRAW, gl.STATIC_DRAW or gl.STREAM_DRAW")
-  }
-  var handle = gl.createBuffer()
-  var result = new GLBuffer(gl, type, handle, 0, usage)
-  result.update(data)
-  return result
-}
-
-module.exports = createBuffer
-
-},{"ndarray":189,"ndarray-ops":184,"typedarray-pool":217}],60:[function(require,module,exports){
+},{}],131:[function(require,module,exports){
+arguments[4][8][0].apply(exports,arguments)
+},{"dup":8,"ndarray":247,"ndarray-ops":242,"typedarray-pool":275}],132:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -17351,7 +24303,7 @@ function createError2D(plot, options) {
   return errorbars
 }
 
-},{"./lib/shaders":61,"gl-buffer":59,"gl-shader":138,"typedarray-pool":217}],61:[function(require,module,exports){
+},{"./lib/shaders":133,"gl-buffer":131,"gl-shader":210,"typedarray-pool":275}],133:[function(require,module,exports){
 
 
 module.exports = {
@@ -17359,7 +24311,7 @@ module.exports = {
   fragment: "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}\n"
 }
 
-},{}],62:[function(require,module,exports){
+},{}],134:[function(require,module,exports){
 'use strict'
 
 module.exports = createErrorBars
@@ -17596,7 +24548,7 @@ function createErrorBars(options) {
   return result
 }
 
-},{"./shaders/index":63,"gl-buffer":59,"gl-vao":166}],63:[function(require,module,exports){
+},{"./shaders/index":135,"gl-buffer":131,"gl-vao":224}],135:[function(require,module,exports){
 'use strict'
 
 
@@ -17613,7 +24565,7 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":138}],64:[function(require,module,exports){
+},{"gl-shader":210}],136:[function(require,module,exports){
 'use strict'
 
 var createTexture = require('gl-texture2d')
@@ -18080,7 +25032,7 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":162}],65:[function(require,module,exports){
+},{"gl-texture2d":220}],137:[function(require,module,exports){
 
 
 exports.lineVertex    = "#define GLSLIFY 1\nprecision mediump float;\n\nfloat inverse_1_0(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse_1_0(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse_1_0(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse_1_0(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\n\n\nattribute vec2 a, d;\n\nuniform mat3 matrix;\nuniform vec2 screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\nvoid main() {\n  vec2 dir = (matrix * vec3(d, 0)).xy;\n  vec3 base = matrix * vec3(a, 1);\n  vec2 n = 0.5 * width *\n    normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(base.xy/base.z + n, 0, 1);\n}\n"
@@ -18092,7 +25044,7 @@ exports.pickFragment  = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform 
 exports.fillVertex    = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 a, d;\n\nuniform mat3 matrix;\nuniform vec2 projectAxis;\nuniform float projectValue;\nuniform float depth;\n\nvoid main() {\n  vec3 base = matrix * vec3(a, 1);\n  vec2 p = base.xy / base.z;\n  if(d.y < 0.0 || (d.y == 0.0 && d.x < 0.0)) {\n    if(dot(p, projectAxis) < projectValue) {\n      p = p * (1.0 - abs(projectAxis)) + projectAxis * projectValue;\n    }\n  }\n  gl_Position = vec4(p, depth, 1);\n}\n"
 exports.fillFragment  = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}\n"
 
-},{}],66:[function(require,module,exports){
+},{}],138:[function(require,module,exports){
 'use strict'
 
 module.exports = createLinePlot
@@ -18543,7 +25495,7 @@ function createLinePlot(plot, options) {
   return linePlot
 }
 
-},{"./lib/shaders":65,"gl-buffer":59,"gl-shader":138,"gl-texture2d":162,"ndarray":189,"typedarray-pool":217}],67:[function(require,module,exports){
+},{"./lib/shaders":137,"gl-buffer":131,"gl-shader":210,"gl-texture2d":220,"ndarray":247,"typedarray-pool":275}],139:[function(require,module,exports){
 
 var createShader  = require('gl-shader')
 
@@ -18567,7 +25519,7 @@ exports.createPickShader = function(gl) {
   return createShader(gl, vertSrc, pickFrag, null, ATTRIBUTES)
 }
 
-},{"gl-shader":138}],68:[function(require,module,exports){
+},{"gl-shader":210}],140:[function(require,module,exports){
 'use strict'
 
 module.exports = createLinePlot
@@ -18913,9 +25865,9 @@ function createLinePlot(options) {
   return linePlot
 }
 
-},{"./lib/shaders":67,"binary-search-bounds":69,"gl-buffer":59,"gl-texture2d":162,"gl-vao":166,"glsl-read-float":70,"ndarray":189}],69:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],70:[function(require,module,exports){
+},{"./lib/shaders":139,"binary-search-bounds":141,"gl-buffer":131,"gl-texture2d":220,"gl-vao":224,"glsl-read-float":142,"ndarray":247}],141:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"dup":2}],142:[function(require,module,exports){
 module.exports = decodeFloat
 
 var UINT8_VIEW = new Uint8Array(4)
@@ -18929,7 +25881,7 @@ function decodeFloat(x, y, z, w) {
   return FLOAT_VIEW[0]
 }
 
-},{}],71:[function(require,module,exports){
+},{}],143:[function(require,module,exports){
 module.exports = invert
 
 /**
@@ -18968,7 +25920,7 @@ function invert(out, a) {
   return out
 }
 
-},{}],72:[function(require,module,exports){
+},{}],144:[function(require,module,exports){
 module.exports = clone;
 
 /**
@@ -18997,7 +25949,7 @@ function clone(a) {
     out[15] = a[15];
     return out;
 };
-},{}],73:[function(require,module,exports){
+},{}],145:[function(require,module,exports){
 module.exports = create;
 
 /**
@@ -19025,7 +25977,7 @@ function create() {
     out[15] = 1;
     return out;
 };
-},{}],74:[function(require,module,exports){
+},{}],146:[function(require,module,exports){
 module.exports = determinant;
 
 /**
@@ -19056,7 +26008,7 @@ function determinant(a) {
     // Calculate the determinant
     return b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
 };
-},{}],75:[function(require,module,exports){
+},{}],147:[function(require,module,exports){
 module.exports = fromQuat;
 
 /**
@@ -19104,7 +26056,7 @@ function fromQuat(out, q) {
 
     return out;
 };
-},{}],76:[function(require,module,exports){
+},{}],148:[function(require,module,exports){
 module.exports = fromRotationTranslation;
 
 /**
@@ -19158,7 +26110,7 @@ function fromRotationTranslation(out, q, v) {
     
     return out;
 };
-},{}],77:[function(require,module,exports){
+},{}],149:[function(require,module,exports){
 module.exports = identity;
 
 /**
@@ -19186,63 +26138,9 @@ function identity(out) {
     out[15] = 1;
     return out;
 };
-},{}],78:[function(require,module,exports){
-module.exports = invert;
-
-/**
- * Inverts a mat4
- *
- * @param {mat4} out the receiving matrix
- * @param {mat4} a the source matrix
- * @returns {mat4} out
- */
-function invert(out, a) {
-    var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
-        a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
-        a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
-        a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15],
-
-        b00 = a00 * a11 - a01 * a10,
-        b01 = a00 * a12 - a02 * a10,
-        b02 = a00 * a13 - a03 * a10,
-        b03 = a01 * a12 - a02 * a11,
-        b04 = a01 * a13 - a03 * a11,
-        b05 = a02 * a13 - a03 * a12,
-        b06 = a20 * a31 - a21 * a30,
-        b07 = a20 * a32 - a22 * a30,
-        b08 = a20 * a33 - a23 * a30,
-        b09 = a21 * a32 - a22 * a31,
-        b10 = a21 * a33 - a23 * a31,
-        b11 = a22 * a33 - a23 * a32,
-
-        // Calculate the determinant
-        det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;
-
-    if (!det) { 
-        return null; 
-    }
-    det = 1.0 / det;
-
-    out[0] = (a11 * b11 - a12 * b10 + a13 * b09) * det;
-    out[1] = (a02 * b10 - a01 * b11 - a03 * b09) * det;
-    out[2] = (a31 * b05 - a32 * b04 + a33 * b03) * det;
-    out[3] = (a22 * b04 - a21 * b05 - a23 * b03) * det;
-    out[4] = (a12 * b08 - a10 * b11 - a13 * b07) * det;
-    out[5] = (a00 * b11 - a02 * b08 + a03 * b07) * det;
-    out[6] = (a32 * b02 - a30 * b05 - a33 * b01) * det;
-    out[7] = (a20 * b05 - a22 * b02 + a23 * b01) * det;
-    out[8] = (a10 * b10 - a11 * b08 + a13 * b06) * det;
-    out[9] = (a01 * b08 - a00 * b10 - a03 * b06) * det;
-    out[10] = (a30 * b04 - a31 * b02 + a33 * b00) * det;
-    out[11] = (a21 * b02 - a20 * b04 - a23 * b00) * det;
-    out[12] = (a11 * b07 - a10 * b09 - a12 * b06) * det;
-    out[13] = (a00 * b09 - a01 * b07 + a02 * b06) * det;
-    out[14] = (a31 * b01 - a30 * b03 - a32 * b00) * det;
-    out[15] = (a20 * b03 - a21 * b01 + a22 * b00) * det;
-
-    return out;
-};
-},{}],79:[function(require,module,exports){
+},{}],150:[function(require,module,exports){
+arguments[4][9][0].apply(exports,arguments)
+},{"dup":9}],151:[function(require,module,exports){
 var identity = require('./identity');
 
 module.exports = lookAt;
@@ -19333,50 +26231,9 @@ function lookAt(out, eye, center, up) {
 
     return out;
 };
-},{"./identity":77}],80:[function(require,module,exports){
-module.exports = multiply;
-
-/**
- * Multiplies two mat4's
- *
- * @param {mat4} out the receiving matrix
- * @param {mat4} a the first operand
- * @param {mat4} b the second operand
- * @returns {mat4} out
- */
-function multiply(out, a, b) {
-    var a00 = a[0], a01 = a[1], a02 = a[2], a03 = a[3],
-        a10 = a[4], a11 = a[5], a12 = a[6], a13 = a[7],
-        a20 = a[8], a21 = a[9], a22 = a[10], a23 = a[11],
-        a30 = a[12], a31 = a[13], a32 = a[14], a33 = a[15];
-
-    // Cache only the current line of the second matrix
-    var b0  = b[0], b1 = b[1], b2 = b[2], b3 = b[3];  
-    out[0] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    out[1] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    out[2] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    out[3] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    b0 = b[4]; b1 = b[5]; b2 = b[6]; b3 = b[7];
-    out[4] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    out[5] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    out[6] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    out[7] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    b0 = b[8]; b1 = b[9]; b2 = b[10]; b3 = b[11];
-    out[8] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    out[9] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    out[10] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    out[11] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-
-    b0 = b[12]; b1 = b[13]; b2 = b[14]; b3 = b[15];
-    out[12] = b0*a00 + b1*a10 + b2*a20 + b3*a30;
-    out[13] = b0*a01 + b1*a11 + b2*a21 + b3*a31;
-    out[14] = b0*a02 + b1*a12 + b2*a22 + b3*a32;
-    out[15] = b0*a03 + b1*a13 + b2*a23 + b3*a33;
-    return out;
-};
-},{}],81:[function(require,module,exports){
+},{"./identity":149}],152:[function(require,module,exports){
+arguments[4][10][0].apply(exports,arguments)
+},{"dup":10}],153:[function(require,module,exports){
 module.exports = perspective;
 
 /**
@@ -19410,7 +26267,7 @@ function perspective(out, fovy, aspect, near, far) {
     out[15] = 0;
     return out;
 };
-},{}],82:[function(require,module,exports){
+},{}],154:[function(require,module,exports){
 module.exports = rotate;
 
 /**
@@ -19475,7 +26332,7 @@ function rotate(out, a, rad, axis) {
     }
     return out;
 };
-},{}],83:[function(require,module,exports){
+},{}],155:[function(require,module,exports){
 module.exports = rotateX;
 
 /**
@@ -19520,7 +26377,7 @@ function rotateX(out, a, rad) {
     out[11] = a23 * c - a13 * s;
     return out;
 };
-},{}],84:[function(require,module,exports){
+},{}],156:[function(require,module,exports){
 module.exports = rotateY;
 
 /**
@@ -19565,7 +26422,7 @@ function rotateY(out, a, rad) {
     out[11] = a03 * s + a23 * c;
     return out;
 };
-},{}],85:[function(require,module,exports){
+},{}],157:[function(require,module,exports){
 module.exports = rotateZ;
 
 /**
@@ -19610,7 +26467,7 @@ function rotateZ(out, a, rad) {
     out[7] = a13 * c - a03 * s;
     return out;
 };
-},{}],86:[function(require,module,exports){
+},{}],158:[function(require,module,exports){
 module.exports = scale;
 
 /**
@@ -19642,7 +26499,7 @@ function scale(out, a, v) {
     out[15] = a[15];
     return out;
 };
-},{}],87:[function(require,module,exports){
+},{}],159:[function(require,module,exports){
 module.exports = translate;
 
 /**
@@ -19681,7 +26538,7 @@ function translate(out, a, v) {
 
     return out;
 };
-},{}],88:[function(require,module,exports){
+},{}],160:[function(require,module,exports){
 module.exports = transpose;
 
 /**
@@ -19731,7 +26588,7 @@ function transpose(out, a) {
     
     return out;
 };
-},{}],89:[function(require,module,exports){
+},{}],161:[function(require,module,exports){
 'use strict'
 
 var barycentric            = require('barycentric')
@@ -19829,7 +26686,7 @@ function closestPointToPickLocation(simplex, pixelCoord, model, view, projection
   }
   return [closestIndex, interpolate(simplex, weights), weights]
 }
-},{"barycentric":92,"polytope-closest-point/lib/closest_point_2d.js":94}],90:[function(require,module,exports){
+},{"barycentric":164,"polytope-closest-point/lib/closest_point_2d.js":166}],162:[function(require,module,exports){
 
 
 var triVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec4 m_position  = model * vec4(position, 1.0);\n  vec4 t_position  = view * m_position;\n  gl_Position      = projection * t_position;\n  f_color          = color;\n  f_normal         = normal;\n  f_data           = position;\n  f_eyeDirection   = eyePosition   - position;\n  f_lightDirection = lightPosition - position;\n  f_uv             = uv;\n}"
@@ -19898,7 +26755,7 @@ exports.contourShader = {
   ]
 }
 
-},{}],91:[function(require,module,exports){
+},{}],163:[function(require,module,exports){
 'use strict'
 
 var createShader  = require('gl-shader')
@@ -20890,7 +27747,7 @@ function createSimplicialMesh(params) {
 
 module.exports = createSimplicialMesh
 
-},{"./lib/closest-point":89,"./lib/shaders":90,"colormap":40,"gl-buffer":59,"gl-mat4/invert":78,"gl-mat4/multiply":80,"gl-shader":138,"gl-texture2d":162,"gl-vao":166,"ndarray":189,"normals":93,"simplicial-complex-contour":95,"typedarray-pool":217}],92:[function(require,module,exports){
+},{"./lib/closest-point":161,"./lib/shaders":162,"colormap":112,"gl-buffer":131,"gl-mat4/invert":150,"gl-mat4/multiply":152,"gl-shader":210,"gl-texture2d":220,"gl-vao":224,"ndarray":247,"normals":165,"simplicial-complex-contour":167,"typedarray-pool":275}],164:[function(require,module,exports){
 'use strict'
 
 module.exports = barycentric
@@ -20938,7 +27795,7 @@ function barycentric(simplex, point) {
   }
   return y
 }
-},{"robust-linear-solve":192}],93:[function(require,module,exports){
+},{"robust-linear-solve":250}],165:[function(require,module,exports){
 var EPSILON = 1e-6;
 
 //Estimate the vertex normals of a mesh
@@ -21059,7 +27916,7 @@ exports.faceNormals = function(faces, positions) {
 
 
 
-},{}],94:[function(require,module,exports){
+},{}],166:[function(require,module,exports){
 //Optimized version for triangle closest point
 // Based on Eberly's WildMagick codes
 // http://www.geometrictools.com/LibMathematics/Distance/Distance.html
@@ -21257,7 +28114,7 @@ function closestPoint2d(V0, V1, V2, point, result) {
 
 module.exports = closestPoint2d;
 
-},{}],95:[function(require,module,exports){
+},{}],167:[function(require,module,exports){
 'use strict'
 
 module.exports = extractContour
@@ -21420,7 +28277,7 @@ function extractContour(cells, values, level, d) {
     vertexWeights: uweights
   }
 }
-},{"./lib/codegen":96,"ndarray":189,"ndarray-sort":99,"typedarray-pool":217}],96:[function(require,module,exports){
+},{"./lib/codegen":168,"ndarray":247,"ndarray-sort":171,"typedarray-pool":275}],168:[function(require,module,exports){
 'use strict'
 
 module.exports = getPolygonizer
@@ -21517,7 +28374,7 @@ function getPolygonizer(d) {
   }
   return alg
 }
-},{"marching-simplex-table":97,"typedarray-pool":217}],97:[function(require,module,exports){
+},{"marching-simplex-table":169,"typedarray-pool":275}],169:[function(require,module,exports){
 'use strict'
 
 module.exports = createTable
@@ -21583,7 +28440,7 @@ function createTable(dimension) {
   }
   return result
 }
-},{"convex-hull":42}],98:[function(require,module,exports){
+},{"convex-hull":114}],170:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -22312,7 +29169,7 @@ function compileSort(order, dtype) {
 }
 
 module.exports = compileSort
-},{"typedarray-pool":217}],99:[function(require,module,exports){
+},{"typedarray-pool":275}],171:[function(require,module,exports){
 "use strict"
 
 var compile = require("./lib/compile_sort.js")
@@ -22332,7 +29189,7 @@ function sort(array) {
 }
 
 module.exports = sort
-},{"./lib/compile_sort.js":98}],100:[function(require,module,exports){
+},{"./lib/compile_sort.js":170}],172:[function(require,module,exports){
 'use strict'
 
 module.exports = createBoxes
@@ -22395,7 +29252,7 @@ function createBoxes(plot) {
   return new Boxes(plot, vbo, shader)
 }
 
-},{"./shaders":103,"gl-buffer":59,"gl-shader":138}],101:[function(require,module,exports){
+},{"./shaders":175,"gl-buffer":131,"gl-shader":210}],173:[function(require,module,exports){
 'use strict'
 
 module.exports = createGrid
@@ -22634,7 +29491,7 @@ function createGrid(plot) {
   return grid
 }
 
-},{"./shaders":103,"binary-search-bounds":105,"gl-buffer":59,"gl-shader":138}],102:[function(require,module,exports){
+},{"./shaders":175,"binary-search-bounds":177,"gl-buffer":131,"gl-shader":210}],174:[function(require,module,exports){
 'use strict'
 
 module.exports = createLines
@@ -22699,7 +29556,7 @@ function createLines(plot) {
   return lines
 }
 
-},{"./shaders":103,"gl-buffer":59,"gl-shader":138}],103:[function(require,module,exports){
+},{"./shaders":175,"gl-buffer":131,"gl-shader":210}],175:[function(require,module,exports){
 'use strict'
 
 
@@ -22717,7 +29574,7 @@ module.exports = {
   tickVert: "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale, screenOffset, tickScale;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  gl_Position = vec4(pos + tickScale*dataCoord.yz + screenOffset, 0, 1);\n}\n"
 }
 
-},{}],104:[function(require,module,exports){
+},{}],176:[function(require,module,exports){
 'use strict'
 
 module.exports = createTextElements
@@ -22988,7 +29845,7 @@ function createTextElements(plot) {
   return text
 }
 
-},{"./shaders":103,"binary-search-bounds":105,"gl-buffer":59,"gl-shader":138,"text-cache":212}],105:[function(require,module,exports){
+},{"./shaders":175,"binary-search-bounds":177,"gl-buffer":131,"gl-shader":210,"text-cache":270}],177:[function(require,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, earlyOut) {
@@ -23042,7 +29899,7 @@ module.exports = {
   eq: compileBoundsSearch("-", true, "EQ", true)
 }
 
-},{}],106:[function(require,module,exports){
+},{}],178:[function(require,module,exports){
 'use strict'
 
 module.exports = createGLPlot2D
@@ -23615,7 +30472,7 @@ function createGLPlot2D(options) {
   return plot
 }
 
-},{"./lib/box":100,"./lib/grid":101,"./lib/line":102,"./lib/text":104,"gl-select-static":137}],107:[function(require,module,exports){
+},{"./lib/box":172,"./lib/grid":173,"./lib/line":174,"./lib/text":176,"gl-select-static":209}],179:[function(require,module,exports){
 
 var createShader = require('gl-shader')
 
@@ -23626,7 +30483,7 @@ module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [ { name: 'position', type: 'vec2'}])
 }
 
-},{"gl-shader":138}],108:[function(require,module,exports){
+},{"gl-shader":210}],180:[function(require,module,exports){
 'use strict'
 
 module.exports = createCamera
@@ -23835,7 +30692,7 @@ function createCamera(element, options) {
 
   return camera
 }
-},{"3d-view":22,"mouse-change":173,"mouse-wheel":177,"right-now":191}],109:[function(require,module,exports){
+},{"3d-view":94,"mouse-change":231,"mouse-wheel":235,"right-now":249}],181:[function(require,module,exports){
 // Copyright (C) 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24522,7 +31379,7 @@ function createCamera(element, options) {
   }
 })();
 
-},{}],110:[function(require,module,exports){
+},{}],182:[function(require,module,exports){
 'use strict'
 
 var weakMap      = typeof WeakMap === 'undefined' ? require('weak-map') : WeakMap
@@ -24552,7 +31409,7 @@ function createABigTriangle(gl) {
 
 module.exports = createABigTriangle
 
-},{"gl-buffer":59,"gl-vao":166,"weak-map":109}],111:[function(require,module,exports){
+},{"gl-buffer":131,"gl-vao":224,"weak-map":181}],183:[function(require,module,exports){
 'use strict'
 
 module.exports = createAxes
@@ -25075,7 +31932,7 @@ function createAxes(gl, options) {
   return axes
 }
 
-},{"./lib/background.js":112,"./lib/cube.js":113,"./lib/lines.js":114,"./lib/text.js":116,"./lib/ticks.js":117}],112:[function(require,module,exports){
+},{"./lib/background.js":184,"./lib/cube.js":185,"./lib/lines.js":186,"./lib/text.js":188,"./lib/ticks.js":189}],184:[function(require,module,exports){
 'use strict'
 
 module.exports = createBackgroundCube
@@ -25187,7 +32044,7 @@ function createBackgroundCube(gl) {
   return new BackgroundCube(gl, buffer, vao, shader)
 }
 
-},{"./shaders":115,"gl-buffer":59,"gl-vao":166}],113:[function(require,module,exports){
+},{"./shaders":187,"gl-buffer":131,"gl-vao":224}],185:[function(require,module,exports){
 "use strict"
 
 module.exports = getCubeEdges
@@ -25428,7 +32285,7 @@ function getCubeEdges(model, view, projection, bounds) {
   //Return result
   return CUBE_RESULT
 }
-},{"bit-twiddle":33,"gl-mat4/invert":78,"gl-mat4/multiply":80,"robust-orientation":195,"split-polygon":119}],114:[function(require,module,exports){
+},{"bit-twiddle":105,"gl-mat4/invert":150,"gl-mat4/multiply":152,"robust-orientation":253,"split-polygon":191}],186:[function(require,module,exports){
 'use strict'
 
 module.exports    = createLines
@@ -25626,7 +32483,7 @@ function createLines(gl, bounds, ticks) {
   return new Lines(gl, vertBuf, vao, shader, tickCount, tickOffset, gridCount, gridOffset)
 }
 
-},{"./shaders":115,"gl-buffer":59,"gl-vao":166}],115:[function(require,module,exports){
+},{"./shaders":187,"gl-buffer":131,"gl-vao":224}],187:[function(require,module,exports){
 'use strict'
 
 
@@ -25657,7 +32514,7 @@ exports.bg = function(gl) {
   ])
 }
 
-},{"gl-shader":138}],116:[function(require,module,exports){
+},{"gl-shader":210}],188:[function(require,module,exports){
 (function (process){
 "use strict"
 
@@ -25852,7 +32709,7 @@ function createTextSprites(
 }
 
 }).call(this,require('_process'))
-},{"./shaders":115,"_process":38,"gl-buffer":59,"gl-vao":166,"vectorize-text":219}],117:[function(require,module,exports){
+},{"./shaders":187,"_process":110,"gl-buffer":131,"gl-vao":224,"vectorize-text":277}],189:[function(require,module,exports){
 'use strict'
 
 exports.create   = defaultTicks
@@ -25925,7 +32782,7 @@ function ticksEqual(ticksA, ticksB) {
   }
   return true
 }
-},{}],118:[function(require,module,exports){
+},{}],190:[function(require,module,exports){
 "use strict"
 
 module.exports = extractPlanes
@@ -25942,7 +32799,7 @@ function extractPlanes(M, zNear, zFar) {
     [ zf*M[12] - M[8], zf*M[13] - M[9], zf*M[14] - M[10], zf*M[15] - M[11] ]
   ]
 }
-},{}],119:[function(require,module,exports){
+},{}],191:[function(require,module,exports){
 "use strict"
 
 var robustDot = require("robust-dot-product")
@@ -26034,7 +32891,7 @@ function negative(points, plane) {
   }
   return neg
 }
-},{"robust-dot-product":120,"robust-sum":198}],120:[function(require,module,exports){
+},{"robust-dot-product":192,"robust-sum":256}],192:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -26049,7 +32906,7 @@ function robustDotProduct(a, b) {
   }
   return r
 }
-},{"robust-sum":198,"two-product":215}],121:[function(require,module,exports){
+},{"robust-sum":256,"two-product":273}],193:[function(require,module,exports){
 "use strict"
 
 module.exports = axesProperties
@@ -26191,7 +33048,7 @@ i_loop:
   return ranges
 }
 
-},{"./lib/cube.js":113,"extract-frustum-planes":118,"gl-mat4/multiply":80,"gl-mat4/transpose":88,"gl-vec4/transformMat4":167,"split-polygon":119}],122:[function(require,module,exports){
+},{"./lib/cube.js":185,"extract-frustum-planes":190,"gl-mat4/multiply":152,"gl-mat4/transpose":160,"gl-vec4/transformMat4":225,"split-polygon":191}],194:[function(require,module,exports){
 'use strict'
 
 
@@ -26208,7 +33065,7 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":138}],123:[function(require,module,exports){
+},{"gl-shader":210}],195:[function(require,module,exports){
 'use strict'
 
 var createBuffer = require('gl-buffer')
@@ -26404,7 +33261,7 @@ function createSpikes(gl, options) {
   return spikes
 }
 
-},{"./shaders/index":122,"gl-buffer":59,"gl-vao":166}],124:[function(require,module,exports){
+},{"./shaders/index":194,"gl-buffer":131,"gl-vao":224}],196:[function(require,module,exports){
 'use strict'
 
 module.exports = createScene
@@ -27166,7 +34023,7 @@ function createScene(options) {
   return scene
 }
 
-},{"./lib/shader":107,"3d-view-controls":108,"a-big-triangle":110,"gl-axes3d":111,"gl-axes3d/properties":121,"gl-fbo":64,"gl-mat4/perspective":81,"gl-select-static":137,"gl-spikes3d":123,"mouse-change":173}],125:[function(require,module,exports){
+},{"./lib/shader":179,"3d-view-controls":180,"a-big-triangle":182,"gl-axes3d":183,"gl-axes3d/properties":193,"gl-fbo":136,"gl-mat4/perspective":153,"gl-select-static":209,"gl-spikes3d":195,"mouse-change":231}],197:[function(require,module,exports){
 'use strict'
 
 
@@ -27178,7 +34035,7 @@ module.exports = {
   pickFragment: "#define GLSLIFY 1\nprecision lowp float;\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = fragColor;\n}\n"
 }
 
-},{}],126:[function(require,module,exports){
+},{}],198:[function(require,module,exports){
 'use strict'
 
 module.exports = createFancyScatter2D
@@ -27557,7 +34414,7 @@ function createFancyScatter2D(plot, options) {
   return scatter
 }
 
-},{"./lib/shaders":125,"gl-buffer":59,"gl-shader":138,"text-cache":212,"typedarray-pool":217,"vectorize-text":219}],127:[function(require,module,exports){
+},{"./lib/shaders":197,"gl-buffer":131,"gl-shader":210,"text-cache":270,"typedarray-pool":275,"vectorize-text":277}],199:[function(require,module,exports){
 
 
 exports.pointVertex       = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 position;\nattribute float weight;\n\nuniform mat3 matrix;\nuniform float pointSize, useWeight;\n\nvarying float fragWeight;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n  fragWeight = mix(1.0, weight, useWeight);\n}\n"
@@ -27565,9 +34422,9 @@ exports.pointFragment     = "#define GLSLIFY 1\nprecision mediump float;\n\nunif
 exports.pickVertex        = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"
 exports.pickFragment      = "#define GLSLIFY 1\nprecision mediump float;\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"
 
-},{}],128:[function(require,module,exports){
-arguments[4][105][0].apply(exports,arguments)
-},{"dup":105}],129:[function(require,module,exports){
+},{}],200:[function(require,module,exports){
+arguments[4][177][0].apply(exports,arguments)
+},{"dup":177}],201:[function(require,module,exports){
 'use strict'
 
 module.exports = sortLevels
@@ -27865,7 +34722,7 @@ function quickSort(left, right, data_levels, data_points, data_ids, data_weights
   }
 }
 
-},{}],130:[function(require,module,exports){
+},{}],202:[function(require,module,exports){
 'use strict'
 
 var pool = require('typedarray-pool')
@@ -28005,7 +34862,7 @@ function snapPoints(points, ids, weights, bounds) {
   return lod
 }
 
-},{"./lib/sort":129,"typedarray-pool":217}],131:[function(require,module,exports){
+},{"./lib/sort":201,"typedarray-pool":275}],203:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -28297,7 +35154,7 @@ function createScatter2D(plot, options) {
   return result
 }
 
-},{"./lib/shader":127,"binary-search-bounds":128,"gl-buffer":59,"gl-shader":138,"snap-points-2d":130,"typedarray-pool":217}],132:[function(require,module,exports){
+},{"./lib/shader":199,"binary-search-bounds":200,"gl-buffer":131,"gl-shader":210,"snap-points-2d":202,"typedarray-pool":275}],204:[function(require,module,exports){
 "use strict"
 
 var vectorizeText = require("vectorize-text")
@@ -28343,7 +35200,7 @@ function getGlyph(symbol, font) {
   //Save cached symbol
   return fontCache[symbol] = [triSymbol, lineSymbol, bounds]
 }
-},{"vectorize-text":219}],133:[function(require,module,exports){
+},{"vectorize-text":277}],205:[function(require,module,exports){
 var createShaderWrapper = require('gl-shader')
 
 
@@ -28420,7 +35277,7 @@ exports.createPickProject = function(gl) {
   return createShader(gl, pickProject)
 }
 
-},{"gl-shader":138}],134:[function(require,module,exports){
+},{"gl-shader":210}],206:[function(require,module,exports){
 'use strict'
 
 var createBuffer  = require('gl-buffer')
@@ -29180,7 +36037,7 @@ function createPointCloud(options) {
   return pointCloud
 }
 
-},{"./lib/glyphs":132,"./lib/shaders":133,"gl-buffer":59,"gl-mat4/multiply":80,"gl-vao":166,"typedarray-pool":217}],135:[function(require,module,exports){
+},{"./lib/glyphs":204,"./lib/shaders":205,"gl-buffer":131,"gl-mat4/multiply":152,"gl-vao":224,"typedarray-pool":275}],207:[function(require,module,exports){
 'use strict'
 
 
@@ -29188,7 +36045,7 @@ function createPointCloud(options) {
 exports.boxVertex = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"
 exports.boxFragment = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"
 
-},{}],136:[function(require,module,exports){
+},{}],208:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -29314,7 +36171,7 @@ function createSelectBox(plot, options) {
   return selectBox
 }
 
-},{"./lib/shaders":135,"gl-buffer":59,"gl-shader":138}],137:[function(require,module,exports){
+},{"./lib/shaders":207,"gl-buffer":131,"gl-shader":210}],209:[function(require,module,exports){
 'use strict'
 
 module.exports = createSelectBuffer
@@ -29469,242 +36326,9 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":33,"cwise/lib/wrapper":48,"gl-fbo":64,"ndarray":189,"typedarray-pool":217}],138:[function(require,module,exports){
-'use strict'
-
-var createUniformWrapper   = require('./lib/create-uniforms')
-var createAttributeWrapper = require('./lib/create-attributes')
-var makeReflect            = require('./lib/reflect')
-var shaderCache            = require('./lib/shader-cache')
-var runtime                = require('./lib/runtime-reflect')
-
-//Shader object
-function Shader(gl) {
-  this.gl         = gl
-
-  //Default initialize these to null
-  this._vref      = 
-  this._fref      = 
-  this._relink    =
-  this.vertShader =
-  this.fragShader =
-  this.program    =
-  this.attributes =
-  this.uniforms   =
-  this.types      = null
-}
-
-var proto = Shader.prototype
-
-proto.bind = function() {
-  if(!this.program) {
-    this._relink()
-  }
-  this.gl.useProgram(this.program)
-}
-
-proto.dispose = function() {
-  if(this._fref) {
-    this._fref.dispose()
-  }
-  if(this._vref) {
-    this._vref.dispose()
-  }
-  this.attributes =
-  this.types      =
-  this.vertShader =
-  this.fragShader =
-  this.program    = 
-  this._relink    = 
-  this._fref      = 
-  this._vref      = null
-}
-
-function compareAttributes(a, b) {
-  if(a.name < b.name) {
-    return -1
-  }
-  return 1
-}
-
-//Update export hook for glslify-live
-proto.update = function(
-    vertSource
-  , fragSource
-  , uniforms
-  , attributes) {
-
-  //If only one object passed, assume glslify style output
-  if(!fragSource || arguments.length === 1) {
-    var obj = vertSource
-    vertSource = obj.vertex
-    fragSource = obj.fragment
-    uniforms   = obj.uniforms
-    attributes = obj.attributes
-  }
-
-  var wrapper = this
-  var gl      = wrapper.gl
-
-  //Compile vertex and fragment shaders
-  var pvref = wrapper._vref
-  wrapper._vref = shaderCache.shader(gl, gl.VERTEX_SHADER, vertSource)
-  if(pvref) {
-    pvref.dispose()
-  }
-  wrapper.vertShader = wrapper._vref.shader
-  var pfref = this._fref
-  wrapper._fref = shaderCache.shader(gl, gl.FRAGMENT_SHADER, fragSource)
-  if(pfref) {
-    pfref.dispose()
-  }
-  wrapper.fragShader = wrapper._fref.shader
-  
-  //If uniforms/attributes is not specified, use RT reflection
-  if(!uniforms || !attributes) {
-
-    //Create initial test program
-    var testProgram = gl.createProgram()
-    gl.attachShader(testProgram, wrapper.fragShader)
-    gl.attachShader(testProgram, wrapper.vertShader)
-    gl.linkProgram(testProgram)
-    if(!gl.getProgramParameter(testProgram, gl.LINK_STATUS)) {
-      var errLog = gl.getProgramInfoLog(testProgram)
-      console.error('gl-shader: Error linking program:', errLog)
-      throw new Error('gl-shader: Error linking program:' + errLog)
-    }
-    
-    //Load data from runtime
-    uniforms   = uniforms   || runtime.uniforms(gl, testProgram)
-    attributes = attributes || runtime.attributes(gl, testProgram)
-
-    //Release test program
-    gl.deleteProgram(testProgram)
-  }
-
-  //Sort attributes lexicographically
-  // overrides undefined WebGL behavior for attribute locations
-  attributes = attributes.slice()
-  attributes.sort(compareAttributes)
-
-  //Convert attribute types, read out locations
-  var attributeUnpacked  = []
-  var attributeNames     = []
-  var attributeLocations = []
-  for(var i=0; i<attributes.length; ++i) {
-    var attr = attributes[i]
-    if(attr.type.indexOf('mat') >= 0) {
-      var size = attr.type.charAt(attr.type.length-1)|0
-      var locVector = new Array(size)
-      for(var j=0; j<size; ++j) {
-        locVector[j] = attributeLocations.length
-        attributeNames.push(attr.name + '[' + j + ']')
-        if(typeof attr.location === 'number') {
-          attributeLocations.push(attr.location + j)
-        } else if(Array.isArray(attr.location) && 
-                  attr.location.length === size &&
-                  typeof attr.location[j] === 'number') {
-          attributeLocations.push(attr.location[j]|0)
-        } else {
-          attributeLocations.push(-1)
-        }
-      }
-      attributeUnpacked.push({
-        name: attr.name,
-        type: attr.type,
-        locations: locVector
-      })
-    } else {
-      attributeUnpacked.push({
-        name: attr.name,
-        type: attr.type,
-        locations: [ attributeLocations.length ]
-      })
-      attributeNames.push(attr.name)
-      if(typeof attr.location === 'number') {
-        attributeLocations.push(attr.location|0)
-      } else {
-        attributeLocations.push(-1)
-      }
-    }
-  }
-
-  //For all unspecified attributes, assign them lexicographically min attribute
-  var curLocation = 0
-  for(var i=0; i<attributeLocations.length; ++i) {
-    if(attributeLocations[i] < 0) {
-      while(attributeLocations.indexOf(curLocation) >= 0) {
-        curLocation += 1
-      }
-      attributeLocations[i] = curLocation
-    }
-  }
-
-  //Rebuild program and recompute all uniform locations
-  var uniformLocations = new Array(uniforms.length)
-  function relink() {
-    wrapper.program = shaderCache.program(
-        gl
-      , wrapper._vref
-      , wrapper._fref
-      , attributeNames
-      , attributeLocations)
-
-    for(var i=0; i<uniforms.length; ++i) {
-      uniformLocations[i] = gl.getUniformLocation(
-          wrapper.program
-        , uniforms[i].name)
-    }
-  }
-
-  //Perform initial linking, reuse program used for reflection
-  relink()
-
-  //Save relinking procedure, defer until runtime
-  wrapper._relink = relink
-
-  //Generate type info
-  wrapper.types = {
-    uniforms:   makeReflect(uniforms),
-    attributes: makeReflect(attributes)
-  }
-
-  //Generate attribute wrappers
-  wrapper.attributes = createAttributeWrapper(
-      gl
-    , wrapper
-    , attributeUnpacked
-    , attributeLocations)
-
-  //Generate uniform wrappers
-  Object.defineProperty(wrapper, 'uniforms', createUniformWrapper(
-      gl
-    , wrapper
-    , uniforms
-    , uniformLocations))
-}
-
-//Compiles and links a shader program with the given attribute and vertex list
-function createShader(
-    gl
-  , vertSource
-  , fragSource
-  , uniforms
-  , attributes) {
-
-  var shader = new Shader(gl)
-
-  shader.update(
-      vertSource
-    , fragSource
-    , uniforms
-    , attributes)
-
-  return shader
-}
-
-module.exports = createShader
-},{"./lib/create-attributes":139,"./lib/create-uniforms":140,"./lib/reflect":141,"./lib/runtime-reflect":142,"./lib/shader-cache":143}],139:[function(require,module,exports){
+},{"bit-twiddle":105,"cwise/lib/wrapper":120,"gl-fbo":136,"ndarray":247,"typedarray-pool":275}],210:[function(require,module,exports){
+arguments[4][11][0].apply(exports,arguments)
+},{"./lib/create-attributes":211,"./lib/create-uniforms":212,"./lib/reflect":213,"./lib/runtime-reflect":214,"./lib/shader-cache":215,"dup":11}],211:[function(require,module,exports){
 'use strict'
 
 module.exports = createAttributeWrapper
@@ -29966,337 +36590,13 @@ function createAttributeWrapper(
   }
   return obj
 }
-},{}],140:[function(require,module,exports){
-'use strict'
-
-var coallesceUniforms = require('./reflect')
-
-module.exports = createUniformWrapper
-
-//Binds a function and returns a value
-function identity(x) {
-  var c = new Function('y', 'return function(){return y}')
-  return c(x)
-}
-
-function makeVector(length, fill) {
-  var result = new Array(length)
-  for(var i=0; i<length; ++i) {
-    result[i] = fill
-  }
-  return result
-}
-
-//Create shims for uniforms
-function createUniformWrapper(gl, wrapper, uniforms, locations) {
-
-  function makeGetter(index) {
-    var proc = new Function(
-        'gl'
-      , 'wrapper'
-      , 'locations'
-      , 'return function(){return gl.getUniform(wrapper.program,locations[' + index + '])}') 
-    return proc(gl, wrapper, locations)
-  }
-
-  function makePropSetter(path, index, type) {
-    switch(type) {
-      case 'bool':
-      case 'int':
-      case 'sampler2D':
-      case 'samplerCube':
-        return 'gl.uniform1i(locations[' + index + '],obj' + path + ')'
-      case 'float':
-        return 'gl.uniform1f(locations[' + index + '],obj' + path + ')'
-      default:
-        var vidx = type.indexOf('vec')
-        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new Error('gl-shader: Invalid data type')
-          }
-          switch(type.charAt(0)) {
-            case 'b':
-            case 'i':
-              return 'gl.uniform' + d + 'iv(locations[' + index + '],obj' + path + ')'
-            case 'v':
-              return 'gl.uniform' + d + 'fv(locations[' + index + '],obj' + path + ')'
-            default:
-              throw new Error('gl-shader: Unrecognized data type for vector ' + name + ': ' + type)
-          }
-        } else if(type.indexOf('mat') === 0 && type.length === 4) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new Error('gl-shader: Invalid uniform dimension type for matrix ' + name + ': ' + type)
-          }
-          return 'gl.uniformMatrix' + d + 'fv(locations[' + index + '],false,obj' + path + ')'
-        } else {
-          throw new Error('gl-shader: Unknown uniform data type for ' + name + ': ' + type)
-        }
-      break
-    }
-  }
-
-  function enumerateIndices(prefix, type) {
-    if(typeof type !== 'object') {
-      return [ [prefix, type] ]
-    }
-    var indices = []
-    for(var id in type) {
-      var prop = type[id]
-      var tprefix = prefix
-      if(parseInt(id) + '' === id) {
-        tprefix += '[' + id + ']'
-      } else {
-        tprefix += '.' + id
-      }
-      if(typeof prop === 'object') {
-        indices.push.apply(indices, enumerateIndices(tprefix, prop))
-      } else {
-        indices.push([tprefix, prop])
-      }
-    }
-    return indices
-  }
-
-  function makeSetter(type) {
-    var code = [ 'return function updateProperty(obj){' ]
-    var indices = enumerateIndices('', type)
-    for(var i=0; i<indices.length; ++i) {
-      var item = indices[i]
-      var path = item[0]
-      var idx  = item[1]
-      if(locations[idx]) {
-        code.push(makePropSetter(path, idx, uniforms[idx].type))
-      }
-    }
-    code.push('return obj}')
-    var proc = new Function('gl', 'locations', code.join('\n'))
-    return proc(gl, locations)
-  }
-
-  function defaultValue(type) {
-    switch(type) {
-      case 'bool':
-        return false
-      case 'int':
-      case 'sampler2D':
-      case 'samplerCube':
-        return 0
-      case 'float':
-        return 0.0
-      default:
-        var vidx = type.indexOf('vec')
-        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new Error('gl-shader: Invalid data type')
-          }
-          if(type.charAt(0) === 'b') {
-            return makeVector(d, false)
-          }
-          return makeVector(d, 0)
-        } else if(type.indexOf('mat') === 0 && type.length === 4) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new Error('gl-shader: Invalid uniform dimension type for matrix ' + name + ': ' + type)
-          }
-          return makeVector(d*d, 0)
-        } else {
-          throw new Error('gl-shader: Unknown uniform data type for ' + name + ': ' + type)
-        }
-      break
-    }
-  }
-
-  function storeProperty(obj, prop, type) {
-    if(typeof type === 'object') {
-      var child = processObject(type)
-      Object.defineProperty(obj, prop, {
-        get: identity(child),
-        set: makeSetter(type),
-        enumerable: true,
-        configurable: false
-      })
-    } else {
-      if(locations[type]) {
-        Object.defineProperty(obj, prop, {
-          get: makeGetter(type),
-          set: makeSetter(type),
-          enumerable: true,
-          configurable: false
-        })
-      } else {
-        obj[prop] = defaultValue(uniforms[type].type)
-      }
-    }
-  }
-
-  function processObject(obj) {
-    var result
-    if(Array.isArray(obj)) {
-      result = new Array(obj.length)
-      for(var i=0; i<obj.length; ++i) {
-        storeProperty(result, i, obj[i])
-      }
-    } else {
-      result = {}
-      for(var id in obj) {
-        storeProperty(result, id, obj[id])
-      }
-    }
-    return result
-  }
-
-  //Return data
-  var coallesced = coallesceUniforms(uniforms, true)
-  return {
-    get: identity(processObject(coallesced)),
-    set: makeSetter(coallesced),
-    enumerable: true,
-    configurable: true
-  }
-}
-
-},{"./reflect":141}],141:[function(require,module,exports){
-'use strict'
-
-module.exports = makeReflectTypes
-
-//Construct type info for reflection.
-//
-// This iterates over the flattened list of uniform type values and smashes them into a JSON object.
-//
-// The leaves of the resulting object are either indices or type strings representing primitive glslify types
-function makeReflectTypes(uniforms, useIndex) {
-  var obj = {}
-  for(var i=0; i<uniforms.length; ++i) {
-    var n = uniforms[i].name
-    var parts = n.split(".")
-    var o = obj
-    for(var j=0; j<parts.length; ++j) {
-      var x = parts[j].split("[")
-      if(x.length > 1) {
-        if(!(x[0] in o)) {
-          o[x[0]] = []
-        }
-        o = o[x[0]]
-        for(var k=1; k<x.length; ++k) {
-          var y = parseInt(x[k])
-          if(k<x.length-1 || j<parts.length-1) {
-            if(!(y in o)) {
-              if(k < x.length-1) {
-                o[y] = []
-              } else {
-                o[y] = {}
-              }
-            }
-            o = o[y]
-          } else {
-            if(useIndex) {
-              o[y] = i
-            } else {
-              o[y] = uniforms[i].type
-            }
-          }
-        }
-      } else if(j < parts.length-1) {
-        if(!(x[0] in o)) {
-          o[x[0]] = {}
-        }
-        o = o[x[0]]
-      } else {
-        if(useIndex) {
-          o[x[0]] = i
-        } else {
-          o[x[0]] = uniforms[i].type
-        }
-      }
-    }
-  }
-  return obj
-}
-},{}],142:[function(require,module,exports){
-'use strict'
-
-exports.uniforms    = runtimeUniforms
-exports.attributes  = runtimeAttributes
-
-var GL_TO_GLSL_TYPES = {
-  'FLOAT':       'float',
-  'FLOAT_VEC2':  'vec2',
-  'FLOAT_VEC3':  'vec3',
-  'FLOAT_VEC4':  'vec4',
-  'INT':         'int',
-  'INT_VEC2':    'ivec2',
-  'INT_VEC3':    'ivec3',
-  'INT_VEC4':    'ivec4',
-  'BOOL':        'bool',
-  'BOOL_VEC2':   'bvec2',
-  'BOOL_VEC3':   'bvec3',
-  'BOOL_VEC4':   'bvec4',
-  'FLOAT_MAT2':  'mat2',
-  'FLOAT_MAT3':  'mat3',
-  'FLOAT_MAT4':  'mat4',
-  'SAMPLER_2D':  'sampler2D',
-  'SAMPLER_CUBE':'samplerCube'
-}
-
-var GL_TABLE = null
-
-function getType(gl, type) {
-  if(!GL_TABLE) {
-    var typeNames = Object.keys(GL_TO_GLSL_TYPES)
-    GL_TABLE = {}
-    for(var i=0; i<typeNames.length; ++i) {
-      var tn = typeNames[i]
-      GL_TABLE[gl[tn]] = GL_TO_GLSL_TYPES[tn]
-    }
-  }
-  return GL_TABLE[type]
-}
-
-function runtimeUniforms(gl, program) {
-  var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
-  var result = []
-  for(var i=0; i<numUniforms; ++i) {
-    var info = gl.getActiveUniform(program, i)
-    if(info) {
-      var type = getType(gl, info.type)
-      if(info.size > 1) {
-        for(var j=0; j<info.size; ++j) {
-          result.push({
-            name: info.name.replace('[0]', '[' + j + ']'),
-            type: type
-          })
-        }
-      } else {
-        result.push({
-          name: info.name,
-          type: type
-        })
-      }
-    }
-  }
-  return result
-}
-
-function runtimeAttributes(gl, program) {
-  var numAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES)
-  var result = []
-  for(var i=0; i<numAttributes; ++i) {
-    var info = gl.getActiveAttrib(program, i)
-    if(info) {
-      result.push({
-        name: info.name,
-        type: getType(gl, info.type)
-      })
-    }
-  }
-  return result
-}
-
-},{}],143:[function(require,module,exports){
+},{}],212:[function(require,module,exports){
+arguments[4][13][0].apply(exports,arguments)
+},{"./reflect":213,"dup":13}],213:[function(require,module,exports){
+arguments[4][14][0].apply(exports,arguments)
+},{"dup":14}],214:[function(require,module,exports){
+arguments[4][15][0].apply(exports,arguments)
+},{"dup":15}],215:[function(require,module,exports){
 'use strict'
 
 exports.shader   = getShaderReference
@@ -30427,76 +36727,13 @@ function createProgram(gl, vref, fref, attribs, locations) {
   return getCache(gl).getProgram(vref, fref, attribs, locations)
 }
 
-},{"weakmap-shim":146}],144:[function(require,module,exports){
-var hiddenStore = require('./hidden-store.js');
-
-module.exports = createStore;
-
-function createStore() {
-    var key = {};
-
-    return function (obj) {
-        if ((typeof obj !== 'object' || obj === null) &&
-            typeof obj !== 'function'
-        ) {
-            throw new Error('Weakmap-shim: Key must be object')
-        }
-
-        var store = obj.valueOf(key);
-        return store && store.identity === key ?
-            store : hiddenStore(obj, key);
-    };
-}
-
-},{"./hidden-store.js":145}],145:[function(require,module,exports){
-module.exports = hiddenStore;
-
-function hiddenStore(obj, key) {
-    var store = { identity: key };
-    var valueOf = obj.valueOf;
-
-    Object.defineProperty(obj, "valueOf", {
-        value: function (value) {
-            return value !== key ?
-                valueOf.apply(this, arguments) : store;
-        },
-        writable: true
-    });
-
-    return store;
-}
-
-},{}],146:[function(require,module,exports){
-// Original - @Gozola. 
-// https://gist.github.com/Gozala/1269991
-// This is a reimplemented version (with a few bug fixes).
-
-var createStore = require('./create-store.js');
-
-module.exports = weakMap;
-
-function weakMap() {
-    var privates = createStore();
-
-    return {
-        'get': function (key, fallback) {
-            var store = privates(key)
-            return store.hasOwnProperty('value') ?
-                store.value : fallback
-        },
-        'set': function (key, value) {
-            privates(key).value = value;
-        },
-        'has': function(key) {
-            return 'value' in privates(key);
-        },
-        'delete': function (key) {
-            return delete privates(key).value;
-        }
-    }
-}
-
-},{"./create-store.js":144}],147:[function(require,module,exports){
+},{"weakmap-shim":218}],216:[function(require,module,exports){
+arguments[4][31][0].apply(exports,arguments)
+},{"./hidden-store.js":217,"dup":31}],217:[function(require,module,exports){
+arguments[4][32][0].apply(exports,arguments)
+},{"dup":32}],218:[function(require,module,exports){
+arguments[4][33][0].apply(exports,arguments)
+},{"./create-store.js":216,"dup":33}],219:[function(require,module,exports){
 'use strict'
 
 module.exports = createSpikes2D
@@ -30584,2923 +36821,17 @@ function createSpikes2D(plot, options) {
   return spikes
 }
 
-},{}],148:[function(require,module,exports){
-var createShader  = require('gl-shader')
-
-
-var vertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec4 uv;\nattribute vec2 f;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  worldCoordinate = vec3(uv.zw, f.x);\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  value = f.x;\n  kill = f.y;\n  planeCoordinate = uv.xy;\n  \n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}"
-var fragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat beckmannSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution_2_0(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\n\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = beckmannSpecular_1_1(L, V, N, roughness);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  float interpValue = (value - lowerBound.z) / (upperBound.z - lowerBound.z);\n  vec4 surfaceColor = texture2D(colormap, vec2(interpValue, interpValue));\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"
-var contourVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec4 uv;\n\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  vec4 worldPosition = model * vec4(dataCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z = clipPosition.z + zOffset;\n\n  gl_Position = clipPosition;\n  value = dataCoordinate.z;\n  kill = -1.0;\n  worldCoordinate = dataCoordinate;\n  planeCoordinate = uv.zw;\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"
-var pickSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if(kill > 0.0 || \n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}"
-
-exports.createShader = function(gl) {
-  var shader = createShader(gl, vertSrc, fragSrc, null, [
-    {name: 'uv', type: 'vec4'},
-    {name: 'f', type: 'vec2'},
-    {name: 'normal', type: 'vec3'}
-  ])
-  shader.attributes.uv.location = 0
-  shader.attributes.f.location = 1
-  shader.attributes.normal.location = 2
-  return shader
-}
-exports.createPickShader = function(gl) {
-  var shader = createShader(gl, vertSrc, pickSrc, null, [
-    {name: 'uv', type: 'vec4'},
-    {name: 'f', type: 'vec2'},
-    {name: 'normal', type: 'vec3'}
-  ])
-  shader.attributes.uv.location = 0
-  shader.attributes.f.location = 1
-  shader.attributes.normal.location = 2
-  return shader
-}
-exports.createContourShader = function(gl) {
-  var shader = createShader(gl, contourVertSrc, fragSrc, null, [
-    {name: 'uv', type: 'vec4'}
-  ])
-  shader.attributes.uv.location = 0
-  return shader
-}
-exports.createPickContourShader = function(gl) {
-  var shader = createShader(gl, contourVertSrc, pickSrc, null, [
-    {name: 'uv', type: 'vec4'}
-  ])
-  shader.attributes.uv.location = 0
-  return shader
-}
-
-},{"gl-shader":138}],149:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],150:[function(require,module,exports){
-'use strict'
-
-module.exports      = gradient
-
-var dup             = require('dup')
-var cwiseCompiler   = require('cwise-compiler')
-
-var TEMPLATE_CACHE  = {}
-var GRADIENT_CACHE  = {}
-
-var EmptyProc = {
-  body: "",
-  args: [],
-  thisVars: [],
-  localVars: []
-}
-
-var centralDiff = cwiseCompiler({
-  args: [ 'array', 'array', 'array' ],
-  pre: EmptyProc,
-  post: EmptyProc,
-  body: {
-    args: [ {
-      name: 'out', 
-      lvalue: true,
-      rvalue: false,
-      count: 1
-    }, {
-      name: 'left', 
-      lvalue: false,
-      rvalue: true,
-      count: 1
-    }, {
-      name: 'right', 
-      lvalue: false,
-      rvalue: true,
-      count: 1
-    }],
-    body: "out=0.5*(left-right)",
-    thisVars: [],
-    localVars: []
-  },
-  funcName: 'cdiff'
-})
-
-var zeroOut = cwiseCompiler({
-  args: [ 'array' ],
-  pre: EmptyProc,
-  post: EmptyProc,
-  body: {
-    args: [ {
-      name: 'out', 
-      lvalue: true,
-      rvalue: false,
-      count: 1
-    }],
-    body: "out=0",
-    thisVars: [],
-    localVars: []
-  },
-  funcName: 'zero'
-})
-
-function generateTemplate(d) {
-  if(d in TEMPLATE_CACHE) {
-    return TEMPLATE_CACHE[d]
-  }
-  var code = []
-  for(var i=0; i<d; ++i) {
-    code.push('out', i, 's=0.5*(inp', i, 'l-inp', i, 'r);')
-  }
-  var args = [ 'array' ]
-  var names = ['junk']
-  for(var i=0; i<d; ++i) {
-    args.push('array')
-    names.push('out' + i + 's')
-    var o = dup(d)
-    o[i] = -1
-    args.push({
-      array: 0,
-      offset: o.slice()
-    })
-    o[i] = 1
-    args.push({
-      array: 0,
-      offset: o.slice()
-    })
-    names.push('inp' + i + 'l', 'inp' + i + 'r')
-  }
-  return TEMPLATE_CACHE[d] = cwiseCompiler({
-    args: args,
-    pre:  EmptyProc,
-    post: EmptyProc,
-    body: {
-      body: code.join(''),
-      args: names.map(function(n) {
-        return {
-          name: n,
-          lvalue: n.indexOf('out') === 0,
-          rvalue: n.indexOf('inp') === 0,
-          count: (n!=='junk')|0
-        }
-      }),
-      thisVars: [],
-      localVars: []
-    },
-    funcName: 'fdTemplate' + d
-  })
-}
-
-function generateGradient(boundaryConditions) {
-  var token = boundaryConditions.join()
-  var proc = GRADIENT_CACHE[token]
-  if(proc) {
-    return proc
-  }
-
-  var d = boundaryConditions.length
-  var code = ['function gradient(dst,src){var s=src.shape.slice();' ]
-  
-  function handleBoundary(facet) {
-    var cod = d - facet.length
-
-    var loStr = []
-    var hiStr = []
-    var pickStr = []
-    for(var i=0; i<d; ++i) {
-      if(facet.indexOf(i+1) >= 0) {
-        pickStr.push('0')
-      } else if(facet.indexOf(-(i+1)) >= 0) {
-        pickStr.push('s['+i+']-1')
-      } else {
-        pickStr.push('-1')
-        loStr.push('1')
-        hiStr.push('s['+i+']-2')
-      }
-    }
-    var boundStr = '.lo(' + loStr.join() + ').hi(' + hiStr.join() + ')'
-    if(loStr.length === 0) {
-      boundStr = ''
-    }
-        
-    if(cod > 0) {
-      code.push('if(1') 
-      for(var i=0; i<d; ++i) {
-        if(facet.indexOf(i+1) >= 0 || facet.indexOf(-(i+1)) >= 0) {
-          continue
-        }
-        code.push('&&s[', i, ']>2')
-      }
-      code.push('){grad', cod, '(src.pick(', pickStr.join(), ')', boundStr)
-      for(var i=0; i<d; ++i) {
-        if(facet.indexOf(i+1) >= 0 || facet.indexOf(-(i+1)) >= 0) {
-          continue
-        }
-        code.push(',dst.pick(', pickStr.join(), ',', i, ')', boundStr)
-      }
-      code.push(');')
-    }
-
-    for(var i=0; i<facet.length; ++i) {
-      var bnd = Math.abs(facet[i])-1
-      var outStr = 'dst.pick(' + pickStr.join() + ',' + bnd + ')' + boundStr
-      switch(boundaryConditions[bnd]) {
-
-        case 'clamp':
-          var cPickStr = pickStr.slice()
-          var dPickStr = pickStr.slice()
-          if(facet[i] < 0) {
-            cPickStr[bnd] = 's[' + bnd + ']-2'
-          } else {
-            dPickStr[bnd] = '1'
-          }
-          if(cod === 0) {
-            code.push('if(s[', bnd, ']>1){dst.set(',
-              pickStr.join(), ',', bnd, ',0.5*(src.get(',
-                cPickStr.join(), ')-src.get(',
-                dPickStr.join(), ')))}else{dst.set(',
-              pickStr.join(), ',', bnd, ',0)};')
-          } else {
-            code.push('if(s[', bnd, ']>1){diff(', outStr, 
-                ',src.pick(', cPickStr.join(), ')', boundStr, 
-                ',src.pick(', dPickStr.join(), ')', boundStr, 
-                ');}else{zero(', outStr, ');};')
-          }
-        break
-
-        case 'mirror':
-          if(cod === 0) {
-            code.push('dst.set(', pickStr.join(), ',', bnd, ',0);')
-          } else {
-            code.push('zero(', outStr, ');')
-          }
-        break
-
-        case 'wrap':
-          var aPickStr = pickStr.slice()
-          var bPickStr = pickStr.slice()
-          if(facet[i] < 0) {
-            aPickStr[bnd] = 's[' + bnd + ']-2'
-            bPickStr[bnd] = '0'
-            
-          } else {
-            aPickStr[bnd] = 's[' + bnd + ']-1'
-            bPickStr[bnd] = '1'
-          }
-          if(cod === 0) {
-            code.push('if(s[', bnd, ']>2){dst.set(',
-              pickStr.join(), ',', bnd, ',0.5*(src.get(',
-                aPickStr.join(), ')-src.get(',
-                bPickStr.join(), ')))}else{dst.set(',
-              pickStr.join(), ',', bnd, ',0)};')
-          } else {
-            code.push('if(s[', bnd, ']>2){diff(', outStr, 
-                ',src.pick(', aPickStr.join(), ')', boundStr, 
-                ',src.pick(', bPickStr.join(), ')', boundStr, 
-                ');}else{zero(', outStr, ');};')
-          }
-        break
-
-        default:
-          throw new Error('ndarray-gradient: Invalid boundary condition')
-      }
-    }
-
-    if(cod > 0) {
-      code.push('};')
-    }
-  }
-
-  //Enumerate ridges, facets, etc. of hypercube
-  for(var i=0; i<(1<<d); ++i) {
-    var faces = []
-    for(var j=0; j<d; ++j) {
-      if(i & (1<<j)) {
-        faces.push(j+1)
-      }
-    }
-    for(var k=0; k<(1<<faces.length); ++k) {
-      var sfaces = faces.slice()
-      for(var j=0; j<faces.length; ++j) {
-        if(k & (1<<j)) {
-          sfaces[j] = -sfaces[j]
-        }
-      }
-      handleBoundary(sfaces)
-    }
-  }
-
-  code.push('return dst;};return gradient')
-
-  //Compile and link routine, save cached procedure
-  var linkNames = [ 'diff', 'zero' ]
-  var linkArgs  = [ centralDiff, zeroOut ]
-  for(var i=1; i<=d; ++i) {
-    linkNames.push('grad' + i)
-    linkArgs.push(generateTemplate(i))
-  }
-  linkNames.push(code.join(''))
-
-  var link = Function.apply(void 0, linkNames)
-  var proc = link.apply(void 0, linkArgs)
-  TEMPLATE_CACHE[token] = proc
-  return proc
-}
-
-function gradient(out, inp, bc) {
-  if(Array.isArray(bc)) {
-    if(bc.length !== inp.dimension) {
-      throw new Error('ndarray-gradient: invalid boundary conditions')
-    }
-  } else if(typeof bc === 'string') {
-    bc = dup(inp.dimension, bc)
-  } else {
-    bc = dup(inp.dimension, 'clamp')
-  }
-  if(out.dimension !== inp.dimension + 1) {
-    throw new Error('ndarray-gradient: output dimension must be +1 input dimension')
-  }
-  if(out.shape[inp.dimension] !== inp.dimension) {
-    throw new Error('ndarray-gradient: output shape must match input shape')
-  }
-  for(var i=0; i<inp.dimension; ++i) {
-    if(out.shape[i] !== inp.shape[i]) {
-      throw new Error('ndarray-gradient: shape mismatch')
-    }
-  }
-  if(inp.size === 0) {
-    return out
-  }
-  if(inp.dimension <= 0) {
-    out.set(0)
-    return out
-  }
-  var cached = generateGradient(bc)
-  return cached(out, inp)
-}
-},{"cwise-compiler":151,"dup":55}],151:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"./lib/thunk.js":153,"dup":49}],152:[function(require,module,exports){
-arguments[4][50][0].apply(exports,arguments)
-},{"dup":50,"uniq":154}],153:[function(require,module,exports){
-arguments[4][51][0].apply(exports,arguments)
-},{"./compile.js":152,"dup":51}],154:[function(require,module,exports){
-arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],155:[function(require,module,exports){
-"use strict"
-
-var ndarray = require("ndarray")
-var do_convert = require("./doConvert.js")
-
-module.exports = function convert(arr, result) {
-  var shape = [], c = arr, sz = 1
-  while(c instanceof Array) {
-    shape.push(c.length)
-    sz *= c.length
-    c = c[0]
-  }
-  if(shape.length === 0) {
-    return ndarray()
-  }
-  if(!result) {
-    result = ndarray(new Float64Array(sz), shape)
-  }
-  do_convert(result, arr)
-  return result
-}
-
-},{"./doConvert.js":156,"ndarray":189}],156:[function(require,module,exports){
-module.exports=require('cwise-compiler')({"args":["array","scalar","index"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{\nvar _inline_1_v=_inline_1_arg1_,_inline_1_i\nfor(_inline_1_i=0;_inline_1_i<_inline_1_arg2_.length-1;++_inline_1_i) {\n_inline_1_v=_inline_1_v[_inline_1_arg2_[_inline_1_i]]\n}\n_inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]\n}","args":[{"name":"_inline_1_arg0_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":4}],"thisVars":[],"localVars":["_inline_1_i","_inline_1_v"]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"funcName":"convert","blockSize":64})
-
-},{"cwise-compiler":157}],157:[function(require,module,exports){
-"use strict"
-
-var createThunk = require("./lib/thunk.js")
-
-function Procedure() {
-  this.argTypes = []
-  this.shimArgs = []
-  this.arrayArgs = []
-  this.scalarArgs = []
-  this.offsetArgs = []
-  this.offsetArgIndex = []
-  this.indexArgs = []
-  this.shapeArgs = []
-  this.funcName = ""
-  this.pre = null
-  this.body = null
-  this.post = null
-  this.debug = false
-}
-
-function compileCwise(user_args) {
-  //Create procedure
-  var proc = new Procedure()
-  
-  //Parse blocks
-  proc.pre    = user_args.pre
-  proc.body   = user_args.body
-  proc.post   = user_args.post
-
-  //Parse arguments
-  var proc_args = user_args.args.slice(0)
-  proc.argTypes = proc_args.slice(0)
-  for(var i=0; i<proc_args.length; ++i) {
-    var arg_type = proc_args[i]
-    if(arg_type === "array") {
-      proc.arrayArgs.push(i)
-      proc.shimArgs.push("array" + i)
-      if(i < proc.pre.args.length && proc.pre.args[i].count>0) {
-        throw new Error("cwise: pre() block may not reference array args")
-      }
-      if(i < proc.post.args.length && proc.post.args[i].count>0) {
-        throw new Error("cwise: post() block may not reference array args")
-      }
-    } else if(arg_type === "scalar") {
-      proc.scalarArgs.push(i)
-      proc.shimArgs.push("scalar" + i)
-    } else if(arg_type === "index") {
-      proc.indexArgs.push(i)
-      if(i < proc.pre.args.length && proc.pre.args[i].count > 0) {
-        throw new Error("cwise: pre() block may not reference array index")
-      }
-      if(i < proc.body.args.length && proc.body.args[i].lvalue) {
-        throw new Error("cwise: body() block may not write to array index")
-      }
-      if(i < proc.post.args.length && proc.post.args[i].count > 0) {
-        throw new Error("cwise: post() block may not reference array index")
-      }
-    } else if(arg_type === "shape") {
-      proc.shapeArgs.push(i)
-      if(i < proc.pre.args.length && proc.pre.args[i].lvalue) {
-        throw new Error("cwise: pre() block may not write to array shape")
-      }
-      if(i < proc.body.args.length && proc.body.args[i].lvalue) {
-        throw new Error("cwise: body() block may not write to array shape")
-      }
-      if(i < proc.post.args.length && proc.post.args[i].lvalue) {
-        throw new Error("cwise: post() block may not write to array shape")
-      }
-    } else if(typeof arg_type === "object" && arg_type.offset) {
-      proc.argTypes[i] = "offset"
-      proc.offsetArgs.push({ array: arg_type.array, offset:arg_type.offset })
-      proc.offsetArgIndex.push(i)
-    } else {
-      throw new Error("cwise: Unknown argument type " + proc_args[i])
-    }
-  }
-  
-  //Make sure at least one array argument was specified
-  if(proc.arrayArgs.length <= 0) {
-    throw new Error("cwise: No array arguments specified")
-  }
-  
-  //Make sure arguments are correct
-  if(proc.pre.args.length > proc_args.length) {
-    throw new Error("cwise: Too many arguments in pre() block")
-  }
-  if(proc.body.args.length > proc_args.length) {
-    throw new Error("cwise: Too many arguments in body() block")
-  }
-  if(proc.post.args.length > proc_args.length) {
-    throw new Error("cwise: Too many arguments in post() block")
-  }
-
-  //Check debug flag
-  proc.debug = !!user_args.printCode || !!user_args.debug
-  
-  //Retrieve name
-  proc.funcName = user_args.funcName || "cwise"
-  
-  //Read in block size
-  proc.blockSize = user_args.blockSize || 64
-
-  return createThunk(proc)
-}
-
-module.exports = compileCwise
-
-},{"./lib/thunk.js":159}],158:[function(require,module,exports){
-"use strict"
-
-var uniq = require("uniq")
-
-function innerFill(order, proc, body) {
-  var dimension = order.length
-    , nargs = proc.arrayArgs.length
-    , has_index = proc.indexArgs.length>0
-    , code = []
-    , vars = []
-    , idx=0, pidx=0, i, j
-  for(i=0; i<dimension; ++i) {
-    vars.push(["i",i,"=0"].join(""))
-  }
-  //Compute scan deltas
-  for(j=0; j<nargs; ++j) {
-    for(i=0; i<dimension; ++i) {
-      pidx = idx
-      idx = order[i]
-      if(i === 0) {
-        vars.push(["d",j,"s",i,"=t",j,"[",idx,"]"].join(""))
-      } else {
-        vars.push(["d",j,"s",i,"=(t",j,"[",idx,"]-s",pidx,"*t",j,"[",pidx,"])"].join(""))
-      }
-    }
-  }
-  code.push("var " + vars.join(","))
-  //Scan loop
-  for(i=dimension-1; i>=0; --i) {
-    idx = order[i]
-    code.push(["for(i",i,"=0;i",i,"<s",idx,";++i",i,"){"].join(""))
-  }
-  //Push body of inner loop
-  code.push(body)
-  //Advance scan pointers
-  for(i=0; i<dimension; ++i) {
-    pidx = idx
-    idx = order[i]
-    for(j=0; j<nargs; ++j) {
-      code.push(["p",j,"+=d",j,"s",i].join(""))
-    }
-    if(has_index) {
-      if(i > 0) {
-        code.push(["index[",pidx,"]-=s",pidx].join(""))
-      }
-      code.push(["++index[",idx,"]"].join(""))
-    }
-    code.push("}")
-  }
-  return code.join("\n")
-}
-
-function outerFill(matched, order, proc, body) {
-  var dimension = order.length
-    , nargs = proc.arrayArgs.length
-    , blockSize = proc.blockSize
-    , has_index = proc.indexArgs.length > 0
-    , code = []
-  for(var i=0; i<nargs; ++i) {
-    code.push(["var offset",i,"=p",i].join(""))
-  }
-  //Generate matched loops
-  for(var i=matched; i<dimension; ++i) {
-    code.push(["for(var j"+i+"=SS[", order[i], "]|0;j", i, ">0;){"].join(""))
-    code.push(["if(j",i,"<",blockSize,"){"].join(""))
-    code.push(["s",order[i],"=j",i].join(""))
-    code.push(["j",i,"=0"].join(""))
-    code.push(["}else{s",order[i],"=",blockSize].join(""))
-    code.push(["j",i,"-=",blockSize,"}"].join(""))
-    if(has_index) {
-      code.push(["index[",order[i],"]=j",i].join(""))
-    }
-  }
-  for(var i=0; i<nargs; ++i) {
-    var indexStr = ["offset"+i]
-    for(var j=matched; j<dimension; ++j) {
-      indexStr.push(["j",j,"*t",i,"[",order[j],"]"].join(""))
-    }
-    code.push(["p",i,"=(",indexStr.join("+"),")"].join(""))
-  }
-  code.push(innerFill(order, proc, body))
-  for(var i=matched; i<dimension; ++i) {
-    code.push("}")
-  }
-  return code.join("\n")
-}
-
-//Count the number of compatible inner orders
-function countMatches(orders) {
-  var matched = 0, dimension = orders[0].length
-  while(matched < dimension) {
-    for(var j=1; j<orders.length; ++j) {
-      if(orders[j][matched] !== orders[0][matched]) {
-        return matched
-      }
-    }
-    ++matched
-  }
-  return matched
-}
-
-//Processes a block according to the given data types
-function processBlock(block, proc, dtypes) {
-  var code = block.body
-  var pre = []
-  var post = []
-  for(var i=0; i<block.args.length; ++i) {
-    var carg = block.args[i]
-    if(carg.count <= 0) {
-      continue
-    }
-    var re = new RegExp(carg.name, "g")
-    var ptrStr = ""
-    var arrNum = proc.arrayArgs.indexOf(i)
-    switch(proc.argTypes[i]) {
-      case "offset":
-        var offArgIndex = proc.offsetArgIndex.indexOf(i)
-        var offArg = proc.offsetArgs[offArgIndex]
-        arrNum = offArg.array
-        ptrStr = "+q" + offArgIndex
-      case "array":
-        ptrStr = "p" + arrNum + ptrStr
-        var localStr = "l" + i
-        var arrStr = "a" + arrNum
-        if(carg.count === 1) {
-          if(dtypes[arrNum] === "generic") {
-            if(carg.lvalue) {
-              pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join(""))
-              code = code.replace(re, localStr)
-              post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
-            } else {
-              code = code.replace(re, [arrStr, ".get(", ptrStr, ")"].join(""))
-            }
-          } else {
-            code = code.replace(re, [arrStr, "[", ptrStr, "]"].join(""))
-          }
-        } else if(dtypes[arrNum] === "generic") {
-          pre.push(["var ", localStr, "=", arrStr, ".get(", ptrStr, ")"].join(""))
-          code = code.replace(re, localStr)
-          if(carg.lvalue) {
-            post.push([arrStr, ".set(", ptrStr, ",", localStr,")"].join(""))
-          }
-        } else {
-          pre.push(["var ", localStr, "=", arrStr, "[", ptrStr, "]"].join(""))
-          code = code.replace(re, localStr)
-          if(carg.lvalue) {
-            post.push([arrStr, "[", ptrStr, "]=", localStr].join(""))
-          }
-        }
-      break
-      case "scalar":
-        code = code.replace(re, "Y" + proc.scalarArgs.indexOf(i))
-      break
-      case "index":
-        code = code.replace(re, "index")
-      break
-      case "shape":
-        code = code.replace(re, "shape")
-      break
-    }
-  }
-  return [pre.join("\n"), code, post.join("\n")].join("\n").trim()
-}
-
-function typeSummary(dtypes) {
-  var summary = new Array(dtypes.length)
-  var allEqual = true
-  for(var i=0; i<dtypes.length; ++i) {
-    var t = dtypes[i]
-    var digits = t.match(/\d+/)
-    if(!digits) {
-      digits = ""
-    } else {
-      digits = digits[0]
-    }
-    if(t.charAt(0) === 0) {
-      summary[i] = "u" + t.charAt(1) + digits
-    } else {
-      summary[i] = t.charAt(0) + digits
-    }
-    if(i > 0) {
-      allEqual = allEqual && summary[i] === summary[i-1]
-    }
-  }
-  if(allEqual) {
-    return summary[0]
-  }
-  return summary.join("")
-}
-
-//Generates a cwise operator
-function generateCWiseOp(proc, typesig) {
-
-  //Compute dimension
-  var dimension = typesig[1].length|0
-  var orders = new Array(proc.arrayArgs.length)
-  var dtypes = new Array(proc.arrayArgs.length)
-
-  //First create arguments for procedure
-  var arglist = ["SS"]
-  var code = ["'use strict'"]
-  var vars = []
-  
-  for(var j=0; j<dimension; ++j) {
-    vars.push(["s", j, "=SS[", j, "]"].join(""))
-  }
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    arglist.push("a"+i)
-    arglist.push("t"+i)
-    arglist.push("p"+i)
-    dtypes[i] = typesig[2*i]
-    orders[i] = typesig[2*i+1]
-  }
-  for(var i=0; i<proc.scalarArgs.length; ++i) {
-    arglist.push("Y" + i)
-  }
-  if(proc.shapeArgs.length > 0) {
-    vars.push("shape=SS.slice(0)")
-  }
-  if(proc.indexArgs.length > 0) {
-    var zeros = new Array(dimension)
-    for(var i=0; i<dimension; ++i) {
-      zeros[i] = "0"
-    }
-    vars.push(["index=[", zeros.join(","), "]"].join(""))
-  }
-  for(var i=0; i<proc.offsetArgs.length; ++i) {
-    var off_arg = proc.offsetArgs[i]
-    var init_string = []
-    for(var j=0; j<off_arg.offset.length; ++j) {
-      if(off_arg.offset[j] === 0) {
-        continue
-      } else if(off_arg.offset[j] === 1) {
-        init_string.push(["t", off_arg.array, "[", j, "]"].join(""))      
-      } else {
-        init_string.push([off_arg.offset[j], "*t", off_arg.array, "[", j, "]"].join(""))
-      }
-    }
-    if(init_string.length === 0) {
-      vars.push("q" + i + "=0")
-    } else {
-      vars.push(["q", i, "=(", init_string.join("+"),")|0"].join(""))
-    }
-  }
-
-  //Prepare this variables
-  var thisVars = uniq([].concat(proc.pre.thisVars)
-                      .concat(proc.body.thisVars)
-                      .concat(proc.post.thisVars))
-  vars = vars.concat(thisVars)
-  code.push("var " + vars.join(","))
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    code.push("p"+i+"|=0")
-  }
-  
-  //Inline prelude
-  if(proc.pre.body.length > 3) {
-    code.push(processBlock(proc.pre, proc, dtypes))
-  }
-
-  //Process body
-  var body = processBlock(proc.body, proc, dtypes)
-  var matched = countMatches(orders)
-  if(matched < dimension) {
-    code.push(outerFill(matched, orders[0], proc, body))
-  } else {
-    code.push(innerFill(orders[0], proc, body))
-  }
-
-  //Inline epilog
-  if(proc.post.body.length > 3) {
-    code.push(processBlock(proc.post, proc, dtypes))
-  }
-  
-  if(proc.debug) {
-    console.log("Generated cwise routine for ", typesig, ":\n\n", code.join("\n"))
-  }
-  
-  var loopName = [(proc.funcName||"unnamed"), "_cwise_loop_", orders[0].join("s"),"m",matched,typeSummary(dtypes)].join("")
-  var f = new Function(["function ",loopName,"(", arglist.join(","),"){", code.join("\n"),"} return ", loopName].join(""))
-  return f()
-}
-module.exports = generateCWiseOp
-},{"uniq":160}],159:[function(require,module,exports){
-"use strict"
-
-var compile = require("./compile.js")
-
-function createThunk(proc) {
-  var code = ["'use strict'", "var CACHED={}"]
-  var vars = []
-  var thunkName = proc.funcName + "_cwise_thunk"
-  
-  //Build thunk
-  code.push(["return function ", thunkName, "(", proc.shimArgs.join(","), "){"].join(""))
-  var typesig = []
-  var string_typesig = []
-  var proc_args = [["array",proc.arrayArgs[0],".shape"].join("")]
-  for(var i=0; i<proc.arrayArgs.length; ++i) {
-    var j = proc.arrayArgs[i]
-    vars.push(["t", j, "=array", j, ".dtype,",
-               "r", j, "=array", j, ".order"].join(""))
-    typesig.push("t" + j)
-    typesig.push("r" + j)
-    string_typesig.push("t"+j)
-    string_typesig.push("r"+j+".join()")
-    proc_args.push("array" + j + ".data")
-    proc_args.push("array" + j + ".stride")
-    proc_args.push("array" + j + ".offset|0")
-  }
-  for(var i=0; i<proc.scalarArgs.length; ++i) {
-    proc_args.push("scalar" + proc.scalarArgs[i])
-  }
-  vars.push(["type=[", string_typesig.join(","), "].join()"].join(""))
-  vars.push("proc=CACHED[type]")
-  code.push("var " + vars.join(","))
-  
-  code.push(["if(!proc){",
-             "CACHED[type]=proc=compile([", typesig.join(","), "])}",
-             "return proc(", proc_args.join(","), ")}"].join(""))
-
-  if(proc.debug) {
-    console.log("Generated thunk:", code.join("\n"))
-  }
-  
-  //Compile thunk
-  var thunk = new Function("compile", code.join("\n"))
-  return thunk(compile.bind(undefined, proc))
-}
-
-module.exports = createThunk
-
-},{"./compile.js":158}],160:[function(require,module,exports){
-"use strict"
-
-function unique_pred(list, compare) {
-  var ptr = 1
-    , len = list.length
-    , a=list[0], b=list[0]
-  for(var i=1; i<len; ++i) {
-    b = a
-    a = list[i]
-    if(compare(a, b)) {
-      if(i === ptr) {
-        ptr++
-        continue
-      }
-      list[ptr++] = a
-    }
-  }
-  list.length = ptr
-  return list
-}
-
-function unique_eq(list) {
-  var ptr = 1
-    , len = list.length
-    , a=list[0], b = list[0]
-  for(var i=1; i<len; ++i, b=a) {
-    b = a
-    a = list[i]
-    if(a !== b) {
-      if(i === ptr) {
-        ptr++
-        continue
-      }
-      list[ptr++] = a
-    }
-  }
-  list.length = ptr
-  return list
-}
-
-function unique(list, compare, sorted) {
-  if(list.length === 0) {
-    return []
-  }
-  if(compare) {
-    if(!sorted) {
-      list.sort(compare)
-    }
-    return unique_pred(list, compare)
-  }
-  if(!sorted) {
-    list.sort()
-  }
-  return unique_eq(list)
-}
-
-module.exports = unique
-},{}],161:[function(require,module,exports){
-'use strict'
-
-module.exports = createSurfacePlot
-
-var bits          = require('bit-twiddle')
-var createBuffer  = require('gl-buffer')
-var createVAO     = require('gl-vao')
-var createTexture = require('gl-texture2d')
-var pool          = require('typedarray-pool')
-var colormap      = require('colormap')
-var ops           = require('ndarray-ops')
-var pack          = require('ndarray-pack')
-var ndarray       = require('ndarray')
-var surfaceNets   = require('surface-nets')
-var multiply      = require('gl-mat4/multiply')
-var invert        = require('gl-mat4/invert')
-var bsearch       = require('binary-search-bounds')
-var gradient      = require('ndarray-gradient')
-var ndarray       = require('ndarray')
-var shaders       = require('./lib/shaders')
-
-var createShader            = shaders.createShader
-var createContourShader     = shaders.createContourShader
-var createPickShader        = shaders.createPickShader
-var createPickContourShader = shaders.createPickContourShader
-
-var SURFACE_VERTEX_SIZE = 4 * (4 + 2 + 3)
-
-var IDENTITY = [
-  1, 0, 0, 0,
-  0, 1, 0, 0,
-  0, 0, 1, 0,
-  0, 0, 0, 1 ]
-
-var QUAD = [
-  [0, 0],
-  [0, 1],
-  [1, 0],
-  [1, 1],
-  [1, 0],
-  [0, 1]
-]
-
-var PERMUTATIONS = [
-  [0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0]
-]
-
-;(function() {
-  for(var i=0; i<3; ++i) {
-    var p = PERMUTATIONS[i]
-    var u = (i+1) % 3
-    var v = (i+2) % 3
-    p[u + 0] = 1
-    p[v + 3] = 1
-    p[i + 6] = 1
-  }
-})()
-
-function SurfacePickResult(position, index, uv, level, dataCoordinate) {
-  this.position     = position
-  this.index        = index
-  this.uv           = uv
-  this.level        = level
-  this.dataCoordinate = dataCoordinate
-}
-
-function genColormap(name) {
-  var x = pack([colormap({
-    colormap: name,
-    nshades: 256,
-    format: 'rgba'
-  }).map(function(c) {
-    return [c[0], c[1], c[2], 255*c[3]]
-  })])
-  ops.divseq(x, 255.0)
-  return x
-}
-
-function clampVec(v) {
-  var result = new Array(3)
-  for(var i=0; i<3; ++i) {
-    result[i] = Math.min(Math.max(v[i], -1e8), 1e8)
-  }
-  return result
-}
-
-function SurfacePlot(
-  gl,
-  shape,
-  bounds,
-  shader,
-  pickShader,
-  coordinates,
-  vao,
-  colorMap,
-  contourShader,
-  contourPickShader,
-  contourBuffer,
-  contourVAO,
-  dynamicBuffer,
-  dynamicVAO) {
-
-  this.gl                 = gl
-  this.shape              = shape
-  this.bounds             = bounds
-
-  this._shader            = shader
-  this._pickShader        = pickShader
-  this._coordinateBuffer  = coordinates
-  this._vao               = vao
-  this._colorMap          = colorMap
-
-  this._contourShader     = contourShader
-  this._contourPickShader = contourPickShader
-  this._contourBuffer     = contourBuffer
-  this._contourVAO        = contourVAO
-  this._contourOffsets    = [[], [], []]
-  this._contourCounts     = [[], [], []]
-  this._vertexCount       = 0
-
-  this._pickResult        = new SurfacePickResult([0,0,0], [0,0], [0,0], [0,0,0], [0,0,0])
-
-  this._dynamicBuffer     = dynamicBuffer
-  this._dynamicVAO        = dynamicVAO
-  this._dynamicOffsets    = [0,0,0]
-  this._dynamicCounts     = [0,0,0]
-
-  this.contourWidth       = [ 1, 1, 1 ]
-  this.contourLevels      = [[1], [1], [1]]
-  this.contourTint        = [0, 0, 0]
-  this.contourColor       = [[0.5,0.5,0.5,1], [0.5,0.5,0.5,1], [0.5,0.5,0.5,1]]
-
-  this.showContour        = true
-  this.showSurface        = true
-
-  this.enableHighlight    = [true, true, true]
-  this.highlightColor     = [[0,0,0,1], [0,0,0,1], [0,0,0,1]]
-  this.highlightTint      = [ 1, 1, 1 ]
-  this.highlightLevel     = [-1, -1, -1]
-
-  //Dynamic contour options
-  this.enableDynamic      = [ true, true, true ]
-  this.dynamicLevel       = [ NaN, NaN, NaN ]
-  this.dynamicColor       = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ]
-  this.dynamicTint        = [ 1, 1, 1 ]
-  this.dynamicWidth       = [ 1, 1, 1 ]
-
-  this.axesBounds         = [[Infinity,Infinity,Infinity],[-Infinity,-Infinity,-Infinity]]
-  this.surfaceProject     = [ false, false, false ]
-  this.contourProject     = [[ false, false, false ],
-                             [ false, false, false ],
-                             [ false, false, false ]]
-
-  //Store xyz fields, need this for picking
-  this._field             = [
-      ndarray(pool.mallocFloat(1024), [0,0]),
-      ndarray(pool.mallocFloat(1024), [0,0]),
-      ndarray(pool.mallocFloat(1024), [0,0]) ]
-
-  this.pickId             = 1
-  this.clipBounds         = [[-Infinity,-Infinity,-Infinity],[Infinity,Infinity,Infinity]]
-
-  this.snapToData         = false
-
-  this.opacity            = 1.0
-
-  this.lightPosition      = [10, 10000, 0]
-  this.ambientLight       = 0.8
-  this.diffuseLight       = 0.8
-  this.specularLight      = 2.0
-  this.roughness          = 0.5
-  this.fresnel            = 1.5
-
-  this.dirty              = true
-}
-
-var proto = SurfacePlot.prototype
-
-proto.isTransparent = function() {
-  return this.opacity < 1
-}
-
-proto.isOpaque = function() {
-  if(this.opacity >= 1) {
-    return true
-  }
-  for(var i=0; i<3; ++i) {
-    if(this._contourCounts[i].length > 0 || this._dynamicCounts[i] > 0) {
-      return true
-    }
-  }
-  return false
-}
-
-proto.pickSlots = 1
-
-proto.setPickBase = function(id) {
-  this.pickId = id
-}
-
-var ZERO_VEC = [0,0,0]
-
-var PROJECT_DATA = {
-  showSurface: false,
-  showContour: false,
-  projections: [IDENTITY.slice(), IDENTITY.slice(), IDENTITY.slice()],
-  clipBounds:   [
-    [[0,0,0], [0,0,0]],
-    [[0,0,0], [0,0,0]],
-    [[0,0,0], [0,0,0]]]
-}
-
-function computeProjectionData(camera, obj) {
-  //Compute cube properties
-  var cubeAxis  = (obj.axes && obj.axes.lastCubeProps.axis) || ZERO_VEC
-
-  var showSurface = obj.showSurface
-  var showContour = obj.showContour
-
-  for(var i=0; i<3; ++i) {
-    showSurface = showSurface || obj.surfaceProject[i]
-    for(var j=0; j<3; ++j) {
-      showContour = showContour || obj.contourProject[i][j]
-    }
-  }
-
-  for(var i=0; i<3; ++i) {
-    //Construct projection onto axis
-    var axisSquish = PROJECT_DATA.projections[i]
-    for(var j=0; j<16; ++j) {
-      axisSquish[j] = 0
-    }
-    for(var j=0; j<4; ++j) {
-      axisSquish[5*j] = 1
-    }
-    axisSquish[5*i] = 0
-    axisSquish[12+i] = obj.axesBounds[+(cubeAxis[i]>0)][i]
-    multiply(axisSquish, camera.model, axisSquish)
-
-    var nclipBounds = PROJECT_DATA.clipBounds[i]
-    for(var k=0; k<2; ++k) {
-      for(var j=0; j<3; ++j) {
-        nclipBounds[k][j] = camera.clipBounds[k][j]
-      }
-    }
-    nclipBounds[0][i] = -1e8
-    nclipBounds[1][i] = 1e8
-  }
-
-  PROJECT_DATA.showSurface = showSurface
-  PROJECT_DATA.showContour = showContour
-
-  return PROJECT_DATA
-}
-
-var UNIFORMS = {
-  model:      IDENTITY,
-  view:       IDENTITY,
-  projection: IDENTITY,
-  inverseModel: IDENTITY.slice(),
-  lowerBound: [0,0,0],
-  upperBound: [0,0,0],
-  colorMap:   0,
-  clipBounds: [[0,0,0], [0,0,0]],
-  height:     0.0,
-  contourTint: 0,
-  contourColor: [0,0,0,1],
-  permutation: [1,0,0,0,1,0,0,0,1],
-  zOffset: -1e-4,
-  kambient: 1,
-  kdiffuse: 1,
-  kspecular: 1,
-  lightPosition: [1000,1000,1000],
-  eyePosition: [0,0,0],
-  roughness: 1,
-  fresnel: 1,
-  opacity: 1
-}
-
-var MATRIX_INVERSE = IDENTITY.slice()
-var DEFAULT_PERM = [1,0,0,0,1,0,0,0,1]
-
-function drawCore(params, transparent) {
-  params = params || {}
-  var gl = this.gl
-
-  gl.disable(gl.CULL_FACE)
-
-  this._colorMap.bind(0)
-
-  var uniforms = UNIFORMS
-  uniforms.model        = params.model || IDENTITY
-  uniforms.view         = params.view || IDENTITY
-  uniforms.projection   = params.projection || IDENTITY
-  uniforms.lowerBound   = this.bounds[0]
-  uniforms.upperBound   = this.bounds[1]
-  uniforms.contourColor = this.contourColor[0]
-
-  uniforms.inverseModel = invert(uniforms.inverseModel, uniforms.model)
-
-  for(var i=0; i<2; ++i) {
-    var clipClamped = uniforms.clipBounds[i]
-    for(var j=0; j<3; ++j) {
-      clipClamped[j] = Math.min(Math.max(this.clipBounds[i][j], -1e8), 1e8)
-    }
-  }
-
-  uniforms.kambient   = this.ambientLight
-  uniforms.kdiffuse   = this.diffuseLight
-  uniforms.kspecular  = this.specularLight
-
-  uniforms.shape =
-
-  uniforms.roughness  = this.roughness
-  uniforms.fresnel    = this.fresnel
-  uniforms.opacity    = this.opacity
-
-  uniforms.height = 0.0
-  uniforms.permutation = DEFAULT_PERM
-
-  //Compute camera matrix inverse
-  var invCameraMatrix = MATRIX_INVERSE
-  multiply(invCameraMatrix, uniforms.view, uniforms.model)
-  multiply(invCameraMatrix, uniforms.projection, invCameraMatrix)
-  invert(invCameraMatrix, invCameraMatrix)
-
-  for(var i=0; i<3; ++i) {
-    uniforms.eyePosition[i] = invCameraMatrix[12+i] / invCameraMatrix[15]
-  }
-
-  var w = invCameraMatrix[15]
-  for(var i=0; i<3; ++i) {
-    w += this.lightPosition[i] * invCameraMatrix[4*i+3]
-  }
-  for(var i=0; i<3; ++i) {
-    var s = invCameraMatrix[12+i]
-    for(var j=0; j<3; ++j) {
-      s += invCameraMatrix[4*j+i] * this.lightPosition[j]
-    }
-    uniforms.lightPosition[i] = s / w
-  }
-
-  var projectData = computeProjectionData(uniforms, this)
-
-  if(projectData.showSurface && (transparent === (this.opacity < 1))) {
-    //Set up uniforms
-    this._shader.bind()
-    this._shader.uniforms = uniforms
-
-    //Draw it
-    this._vao.bind()
-
-    if(this.showSurface) {
-      this._vao.draw(gl.TRIANGLES, this._vertexCount)
-    }
-
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      if(!this.surfaceProject[i]) {
-        continue
-      }
-      this._shader.uniforms.model = projectData.projections[i]
-      this._shader.uniforms.clipBounds = projectData.clipBounds[i]
-      this._vao.draw(gl.TRIANGLES, this._vertexCount)
-    }
-
-    this._vao.unbind()
-  }
-
-  if(projectData.showContour && !transparent) {
-    var shader = this._contourShader
-
-    //Don't apply lighting to contours
-    uniforms.kambient = 1.0
-    uniforms.kdiffuse = 0.0
-    uniforms.kspecular = 0.0
-    uniforms.opacity = 1.0
-
-    shader.bind()
-    shader.uniforms = uniforms
-
-    //Draw contour lines
-    var vao = this._contourVAO
-    vao.bind()
-
-    //Draw contour levels
-    for(var i=0; i<3; ++i) {
-      shader.uniforms.permutation = PERMUTATIONS[i]
-      gl.lineWidth(this.contourWidth[i])
-
-      for(var j=0; j<this.contourLevels[i].length; ++j) {
-        if(j === this.highlightLevel[i]) {
-          shader.uniforms.contourColor = this.highlightColor[i]
-          shader.uniforms.contourTint  = this.highlightTint[i]
-
-        } else if(j === 0 || (j-1) === this.highlightLevel[i]) {
-          shader.uniforms.contourColor = this.contourColor[i]
-          shader.uniforms.contourTint  = this.contourTint[i]
-        }
-        shader.uniforms.height = this.contourLevels[i][j]
-        vao.draw(gl.LINES, this._contourCounts[i][j], this._contourOffsets[i][j])
-      }
-    }
-
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      shader.uniforms.model      = projectData.projections[i]
-      shader.uniforms.clipBounds = projectData.clipBounds[i]
-      for(var j=0; j<3; ++j) {
-        if(!this.contourProject[i][j]) {
-          continue
-        }
-        shader.uniforms.permutation = PERMUTATIONS[j]
-        gl.lineWidth(this.contourWidth[j])
-        for(var k=0; k<this.contourLevels[j].length; ++k) {
-          if(k === this.highlightLevel[j]) {
-            shader.uniforms.contourColor  = this.highlightColor[j]
-            shader.uniforms.contourTint   = this.highlightTint[j]
-          } else if(k === 0 || (k-1) === this.highlightLevel[j]) {
-            shader.uniforms.contourColor  = this.contourColor[j]
-            shader.uniforms.contourTint   = this.contourTint[j]
-          }
-          shader.uniforms.height = this.contourLevels[j][k]
-          vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
-        }
-      }
-    }
-
-    //Draw dynamic contours
-    vao = this._dynamicVAO
-    vao.bind()
-
-    //Draw contour levels
-    for(var i=0; i<3; ++i) {
-      if(this._dynamicCounts[i] === 0) {
-        continue
-      }
-
-      shader.uniforms.model       = uniforms.model
-      shader.uniforms.clipBounds  = uniforms.clipBounds
-      shader.uniforms.permutation = PERMUTATIONS[i]
-      gl.lineWidth(this.dynamicWidth[i])
-
-      shader.uniforms.contourColor = this.dynamicColor[i]
-      shader.uniforms.contourTint  = this.dynamicTint[i]
-      shader.uniforms.height       = this.dynamicLevel[i]
-      vao.draw(gl.LINES, this._dynamicCounts[i], this._dynamicOffsets[i])
-
-      for(var j=0; j<3; ++j) {
-        if(!this.contourProject[j][i]) {
-          continue
-        }
-
-        shader.uniforms.model      = projectData.projections[j]
-        shader.uniforms.clipBounds = projectData.clipBounds[j]
-        vao.draw(gl.LINES, this._dynamicCounts[i], this._dynamicOffsets[i])
-      }
-    }
-
-    vao.unbind()
-  }
-}
-
-proto.draw = function(params) {
-  return drawCore.call(this, params, false)
-}
-
-proto.drawTransparent = function(params) {
-  return drawCore.call(this, params, true)
-}
-
-var PICK_UNIFORMS = {
-  model:          IDENTITY,
-  view:           IDENTITY,
-  projection:     IDENTITY,
-  inverseModel:   IDENTITY,
-  clipBounds:     [[0,0,0],[0,0,0]],
-  height:         0.0,
-  shape:          [0,0],
-  pickId:         0,
-  lowerBound:     [0,0,0],
-  upperBound:     [0,0,0],
-  zOffset:        0.0,
-  permutation:    [1,0,0,0,1,0,0,0,1],
-  lightPosition:  [0,0,0],
-  eyePosition:    [0,0,0]
-}
-
-proto.drawPick = function(params) {
-  params = params || {}
-  var gl = this.gl
-  gl.disable(gl.CULL_FACE)
-
-  var uniforms = PICK_UNIFORMS
-  uniforms.model = params.model || IDENTITY
-  uniforms.view = params.view || IDENTITY
-  uniforms.projection = params.projection || IDENTITY
-  uniforms.shape = this._field[2].shape
-  uniforms.pickId = this.pickId / 255.0
-  uniforms.lowerBound = this.bounds[0]
-  uniforms.upperBound = this.bounds[1]
-  uniforms.permutation = DEFAULT_PERM
-
-  for(var i=0; i<2; ++i) {
-    var clipClamped = uniforms.clipBounds[i]
-    for(var j=0; j<3; ++j) {
-      clipClamped[j] = Math.min(Math.max(this.clipBounds[i][j], -1e8), 1e8)
-    }
-  }
-
-  var projectData = computeProjectionData(uniforms, this)
-
-  if(projectData.showSurface) {
-    //Set up uniforms
-    this._pickShader.bind()
-    this._pickShader.uniforms = uniforms
-
-    //Draw it
-    this._vao.bind()
-    this._vao.draw(gl.TRIANGLES, this._vertexCount)
-
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      if(!this.surfaceProject[i]) {
-        continue
-      }
-      this._pickShader.uniforms.model = projectData.projections[i]
-      this._pickShader.uniforms.clipBounds = projectData.clipBounds[i]
-      this._vao.draw(gl.TRIANGLES, this._vertexCount)
-    }
-
-    this._vao.unbind()
-  }
-
-  if(projectData.showContour) {
-    var shader = this._contourPickShader
-
-    shader.bind()
-    shader.uniforms = uniforms
-
-    var vao = this._contourVAO
-    vao.bind()
-
-    for(var j=0; j<3; ++j) {
-      gl.lineWidth(this.contourWidth[j])
-      shader.uniforms.permutation = PERMUTATIONS[j]
-      for(var i=0; i<this.contourLevels[j].length; ++i) {
-        shader.uniforms.height = this.contourLevels[j][i]
-        vao.draw(gl.LINES, this._contourCounts[j][i], this._contourOffsets[j][i])
-      }
-    }
-
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      shader.uniforms.model      = projectData.projections[i]
-      shader.uniforms.clipBounds = projectData.clipBounds[i]
-
-      for(var j=0; j<3; ++j) {
-        if(!this.contourProject[i][j]) {
-          continue
-        }
-
-        shader.uniforms.permutation = PERMUTATIONS[j]
-        gl.lineWidth(this.contourWidth[j])
-        for(var k=0; k<this.contourLevels[j].length; ++k) {
-          shader.uniforms.height = this.contourLevels[j][k]
-          vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
-        }
-      }
-    }
-
-    vao.unbind()
-  }
-}
-
-
-proto.pick = function(selection) {
-  if(!selection) {
-    return null
-  }
-
-  if(selection.id !== this.pickId) {
-    return null
-  }
-
-  var shape = this._field[2].shape
-
-  var result = this._pickResult
-
-  //Compute uv coordinate
-  var x = shape[0] * (selection.value[0] + (selection.value[2]>>4)/16.0)/255.0
-  var ix = Math.floor(x)
-  var fx = x - ix
-
-  var y = shape[1] * (selection.value[1] + (selection.value[2]&15)/16.0)/255.0
-  var iy = Math.floor(y)
-  var fy = y - iy
-
-  ix += 1
-  iy += 1
-
-  //Compute xyz coordinate
-  var pos = result.position
-  pos[0] = pos[1] = pos[2] = 0
-  for(var dx=0; dx<2; ++dx) {
-    var s = dx ? fx : 1.0 - fx
-    for(var dy=0; dy<2; ++dy) {
-      var t = dy ? fy : 1.0 - fy
-
-      var r = ix + dx
-      var c = iy + dy
-      var w = s * t
-
-      for(var i=0; i<3; ++i) {
-        pos[i] += this._field[i].get(r,c) * w
-      }
-    }
-  }
-
-  //Find closest level
-  var levelIndex = this._pickResult.level
-  for(var j=0; j<3; ++j) {
-    levelIndex[j] = bsearch.le(this.contourLevels[j], pos[j])
-    if(levelIndex[j] < 0) {
-      if(this.contourLevels[j].length > 0) {
-        levelIndex[j] = 0
-      }
-    } else if(levelIndex[j] < this.contourLevels[j].length-1) {
-      var a = this.contourLevels[j][levelIndex[j]]
-      var b = this.contourLevels[j][levelIndex[j]+1]
-      if(Math.abs(a-pos[j]) > Math.abs(b-pos[j])) {
-        levelIndex[j] += 1
-      }
-    }
-  }
-
-  result.index[0] = fx<0.5 ? ix : (ix+1)
-  result.index[1] = fy<0.5 ? iy : (iy+1)
-
-  result.uv[0] = x/shape[0]
-  result.uv[1] = y/shape[1]
-
-  for(var i=0; i<3; ++i) {
-    result.dataCoordinate[i] = this._field[i].get(result.index[0], result.index[1])
-  }
-
-  return result
-}
-
-function padField(nfield, field) {
-
-  var shape = field.shape.slice()
-  var nshape = nfield.shape.slice()
-
-  //Center
-  ops.assign(nfield.lo(1,1).hi(shape[0], shape[1]), field)
-
-  //Edges
-  ops.assign(nfield.lo(1).hi(shape[0], 1),
-              field.hi(shape[0], 1))
-  ops.assign(nfield.lo(1,nshape[1]-1).hi(shape[0],1),
-              field.lo(0,shape[1]-1).hi(shape[0],1))
-  ops.assign(nfield.lo(0,1).hi(1,shape[1]),
-              field.hi(1))
-  ops.assign(nfield.lo(nshape[0]-1,1).hi(1,shape[1]),
-              field.lo(shape[0]-1))
-  //Corners
-  nfield.set(0,0, field.get(0,0))
-  nfield.set(0,nshape[1]-1, field.get(0,shape[1]-1))
-  nfield.set(nshape[0]-1,0, field.get(shape[0]-1,0))
-  nfield.set(nshape[0]-1,nshape[1]-1, field.get(shape[0]-1,shape[1]-1))
-}
-
-function handleArray(param, ctor) {
-  if(Array.isArray(param)) {
-    return [ ctor(param[0]), ctor(param[1]), ctor(param[2]) ]
-  }
-  return [ ctor(param), ctor(param), ctor(param) ]
-}
-
-function toColor(x) {
-  if(Array.isArray(x)) {
-    if(x.length === 3) {
-      return [x[0], x[1], x[2], 1]
-    }
-    return [x[0], x[1], x[2], x[3]]
-  }
-  return [0,0,0,1]
-}
-
-function handleColor(param) {
-  if(Array.isArray(param)) {
-    if(Array.isArray(param)) {
-      return [  toColor(param[0]),
-                toColor(param[1]),
-                toColor(param[2]) ]
-    } else {
-      var c = toColor(param)
-      return [
-        c.slice(),
-        c.slice(),
-        c.slice() ]
-    }
-  }
-}
-
-proto.update = function(params) {
-  params = params || {}
-
-  this.dirty = true
-
-  if('contourWidth' in params) {
-    this.contourWidth = handleArray(params.contourWidth, Number)
-  }
-  if('showContour' in params) {
-    this.showContour = handleArray(params.showContour, Boolean)
-  }
-  if('showSurface' in params) {
-    this.showSurface = !!params.showSurface
-  }
-  if('contourTint' in params) {
-    this.contourTint = handleArray(params.contourTint, Boolean)
-  }
-  if('contourColor' in params) {
-    this.contourColor = handleColor(params.contourColor)
-  }
-  if('contourProject' in params) {
-    this.contourProject = handleArray(params.contourProject, function(x) {
-      return handleArray(x, Boolean)
-    })
-  }
-  if('surfaceProject' in params) {
-    this.surfaceProject = params.surfaceProject
-  }
-  if('dynamicColor' in params) {
-    this.dynamicColor = handleColor(params.dynamicColor)
-  }
-  if('dynamicTint' in params) {
-    this.dynamicTint = handleArray(params.dynamicTint, Number)
-  }
-  if('dynamicWidth' in params) {
-    this.dynamicWidth = handleArray(params.dynamicWidth, Number)
-  }
-  if('opacity' in params) {
-    this.opacity = params.opacity
-  }
-
-  var field = params.field || (params.coords && params.coords[2]) || null
-
-  if(!field) {
-    if(this._field[2].shape[0] || this._field[2].shape[2]) {
-      field = this._field[2].lo(1,1).hi(this._field[2].shape[0]-2, this._field[2].shape[1]-2)
-    } else {
-      field = this._field[2].hi(0,0)
-    }
-  }
-
-  //Update field
-  if('field' in params || 'coords' in params) {
-    var fsize = (field.shape[0]+2)*(field.shape[1]+2)
-
-    //Resize if necessary
-    if(fsize > this._field[2].data.length) {
-      pool.freeFloat(this._field[2].data)
-      this._field[2].data = pool.mallocFloat(bits.nextPow2(fsize))
-    }
-
-    //Pad field
-    this._field[2] = ndarray(this._field[2].data, [field.shape[0]+2, field.shape[1]+2])
-    padField(this._field[2], field)
-
-    //Save shape of field
-    this.shape = field.shape.slice()
-    var shape = this.shape
-
-    //Resize coordinate fields if necessary
-    for(var i=0; i<2; ++i) {
-      if(this._field[2].size > this._field[i].data.length) {
-        pool.freeFloat(this._field[i].data)
-        this._field[i].data = pool.mallocFloat(this._field[2].size)
-      }
-      this._field[i] = ndarray(this._field[i].data, [shape[0]+2, shape[1]+2])
-    }
-
-    //Generate x/y coordinates
-    if(params.coords) {
-      var coords = params.coords
-      if(!Array.isArray(coords) || coords.length !== 3) {
-        throw new Error('gl-surface: invalid coordinates for x/y')
-      }
-      for(var i=0; i<2; ++i) {
-        var coord = coords[i]
-        for(var j=0; j<2; ++j) {
-          if(coord.shape[j] !== shape[j]) {
-            throw new Error('gl-surface: coords have incorrect shape')
-          }
-        }
-        padField(this._field[i], coord)
-      }
-    } else if(params.ticks) {
-      var ticks = params.ticks
-      if(!Array.isArray(ticks) || ticks.length !== 2) {
-        throw new Error('gl-surface: invalid ticks')
-      }
-      for(var i=0; i<2; ++i) {
-        var tick = ticks[i]
-        if(Array.isArray(tick) || tick.length) {
-          tick = ndarray(tick)
-        }
-        if(tick.shape[0] !== shape[i]) {
-          throw new Error('gl-surface: invalid tick length')
-        }
-        //Make a copy view of the tick array
-        var tick2 = ndarray(tick.data, shape)
-        tick2.stride[i] = tick.stride[0]
-        tick2.stride[i^1] = 0
-
-        //Fill in field array
-        padField(this._field[i], tick2)
-      }
-    } else {
-      for(var i=0; i<2; ++i) {
-        var offset = [0,0]
-        offset[i] = 1
-        this._field[i] = ndarray(this._field[i].data, [shape[0]+2, shape[1]+2], offset, 0)
-      }
-      this._field[0].set(0,0,0)
-      for(var j=0; j<shape[0]; ++j) {
-        this._field[0].set(j+1,0,j)
-      }
-      this._field[0].set(shape[0]+1,0,shape[0]-1)
-      this._field[1].set(0,0,0)
-      for(var j=0; j<shape[1]; ++j) {
-        this._field[1].set(0,j+1,j)
-      }
-      this._field[1].set(0,shape[1]+1, shape[1]-1)
-    }
-
-    //Save shape
-    var fields = this._field
-
-    //Compute surface normals
-    var fieldSize = fields[2].size
-    var dfields = ndarray(pool.mallocFloat(fields[2].size*3*2), [3, shape[0]+2, shape[1]+2, 2])
-    for(var i=0; i<3; ++i) {
-      gradient(dfields.pick(i), fields[i], 'mirror')
-    }
-    var normals = ndarray(pool.mallocFloat(fields[2].size*3), [shape[0]+2, shape[1]+2, 3])
-    for(var i=0; i<shape[0]+2; ++i) {
-      for(var j=0; j<shape[1]+2; ++j) {
-        var dxdu = dfields.get(0, i, j, 0)
-        var dxdv = dfields.get(0, i, j, 1)
-        var dydu = dfields.get(1, i, j, 0)
-        var dydv = dfields.get(1, i, j, 1)
-        var dzdu = dfields.get(2, i, j, 0)
-        var dzdv = dfields.get(2, i, j, 1)
-
-        var nx = dydu * dzdv - dydv * dzdu
-        var ny = dzdu * dxdv - dzdv * dxdu
-        var nz = dxdu * dydv - dxdv * dydu
-
-        var nl = Math.sqrt(nx*nx + ny * ny + nz * nz)
-        if(nl < 1e-8) {
-          nl = Math.max(Math.abs(nx), Math.abs(ny), Math.abs(nz))
-          if(nl < 1e-8) {
-            nz = 1.0
-            ny = nx = 0.0
-            nl = 1.0
-          } else {
-            nl = 1.0/ nl
-          }
-        } else {
-          nl = 1.0 / Math.sqrt(nl)
-        }
-
-        normals.set(i,j,0, nx*nl)
-        normals.set(i,j,1, ny*nl)
-        normals.set(i,j,2, nz*nl)
-      }
-    }
-    pool.free(dfields.data)
-
-    //Initialize surface
-    var lo = [ Infinity, Infinity, Infinity]
-    var hi = [-Infinity,-Infinity,-Infinity]
-    var count   = (shape[0]-1) * (shape[1]-1) * 6
-    var tverts  = pool.mallocFloat(bits.nextPow2(9*count))
-    var tptr    = 0
-    var fptr    = 0
-    var vertexCount = 0
-    for(var i=0; i<shape[0]-1; ++i) {
-  j_loop:
-      for(var j=0; j<shape[1]-1; ++j) {
-
-        //Test for NaNs
-        for(var dx=0; dx<2; ++dx) {
-          for(var dy=0; dy<2; ++dy) {
-            for(var k=0; k<3; ++k) {
-              var f = this._field[k].get(1+i+dx, 1+j+dy)
-              if(isNaN(f) || !isFinite(f)) {
-                continue j_loop
-              }
-            }
-          }
-        }
-        for(var k=0; k<6; ++k) {
-          var r = i + QUAD[k][0]
-          var c = j + QUAD[k][1]
-
-          var tx = this._field[0].get(r+1, c+1)
-          var ty = this._field[1].get(r+1, c+1)
-          var f  = this._field[2].get(r+1, c+1)
-          var nx = normals.get(r+1, c+1, 0)
-          var ny = normals.get(r+1, c+1, 1)
-          var nz = normals.get(r+1, c+1, 2)
-
-          tverts[tptr++] = r
-          tverts[tptr++] = c
-          tverts[tptr++] = tx
-          tverts[tptr++] = ty
-          tverts[tptr++] = f
-          tverts[tptr++] = 0
-          tverts[tptr++] = nx
-          tverts[tptr++] = ny
-          tverts[tptr++] = nz
-
-          lo[0] = Math.min(lo[0], tx)
-          lo[1] = Math.min(lo[1], ty)
-          lo[2] = Math.min(lo[2], f)
-
-          hi[0] = Math.max(hi[0], tx)
-          hi[1] = Math.max(hi[1], ty)
-          hi[2] = Math.max(hi[2], f)
-
-          vertexCount += 1
-        }
-      }
-    }
-    this._vertexCount = vertexCount
-    this._coordinateBuffer.update(tverts.subarray(0,tptr))
-    pool.freeFloat(tverts)
-    pool.free(normals.data)
-
-    //Update bounds
-    this.bounds = [lo, hi]
-  }
-
-  //Update level crossings
-  var levelsChanged = false
-  if('levels' in params) {
-    var levels = params.levels
-    if(!Array.isArray(levels[0])) {
-      levels = [ [], [], levels ]
-    } else {
-      levels = levels.slice()
-    }
-    for(var i=0; i<3; ++i) {
-      levels[i] = levels[i].slice()
-      levels.sort(function(a,b) {
-        return a-b
-      })
-    }
-change_test:
-    for(var i=0; i<3; ++i) {
-      if(levels[i].length !== this.contourLevels[i].length) {
-        levelsChanged = true
-        break
-      }
-      for(var j=0; j<levels[i].length; ++j) {
-        if(levels[i][j] !== this.contourLevels[i][j]) {
-          levelsChanged = true
-          break change_test
-        }
-      }
-    }
-    this.contourLevels = levels
-  }
-
-  if(levelsChanged) {
-    var fields = this._field
-    var shape  = this.shape
-
-    //Update contour lines
-    var contourVerts = []
-
-    for(var dim=0; dim<3; ++dim) {
-      var levels = this.contourLevels[dim]
-      var levelOffsets = []
-      var levelCounts  = []
-
-      var parts = [0,0]
-      var graphParts = [0,0]
-
-      for(var i=0; i<levels.length; ++i) {
-        var graph = surfaceNets(this._field[dim], levels[i])
-        levelOffsets.push((contourVerts.length/4)|0)
-        var vertexCount = 0
-
-  edge_loop:
-        for(var j=0; j<graph.cells.length; ++j) {
-          var e = graph.cells[j]
-          for(var k=0; k<2; ++k) {
-            var p = graph.positions[e[k]]
-
-            var x = p[0]
-            var ix = Math.floor(x)|0
-            var fx = x - ix
-
-            var y = p[1]
-            var iy = Math.floor(y)|0
-            var fy = y - iy
-
-            var hole = false
-  dd_loop:
-            for(var dd=0; dd<2; ++dd) {
-              parts[dd] = 0.0
-              var iu = (dim + dd + 1) % 3
-              for(var dx=0; dx<2; ++dx) {
-                var s = dx ? fx : 1.0 - fx
-                var r = Math.min(Math.max(ix+dx, 0), shape[0])|0
-                for(var dy=0; dy<2; ++dy) {
-                  var t = dy ? fy : 1.0 - fy
-                  var c = Math.min(Math.max(iy+dy, 0), shape[1])|0
-
-                  var f = this._field[iu].get(r,c)
-                  if(!isFinite(f) || isNaN(f)) {
-                    hole = true
-                    break dd_loop
-                  }
-
-                  var w = s * t
-                  parts[dd] += w * f
-                }
-              }
-            }
-
-            if(!hole) {
-              contourVerts.push(parts[0], parts[1], p[0], p[1])
-              vertexCount += 1
-            } else {
-              if(k > 0) {
-                //If we already added first edge, pop off verts
-                for(var l=0; l<4; ++l) {
-                  contourVerts.pop()
-                }
-                vertexCount -= 1
-              }
-              continue edge_loop
-            }
-          }
-        }
-        levelCounts.push(vertexCount)
-      }
-
-      //Store results
-      this._contourOffsets[dim]  = levelOffsets
-      this._contourCounts[dim]   = levelCounts
-    }
-
-    var floatBuffer = pool.mallocFloat(contourVerts.length)
-    for(var i=0; i<contourVerts.length; ++i) {
-      floatBuffer[i] = contourVerts[i]
-    }
-    this._contourBuffer.update(floatBuffer)
-    pool.freeFloat(floatBuffer)
-  }
-
-  if(params.colormap) {
-    this._colorMap.setPixels(genColormap(params.colormap))
-  }
-}
-
-proto.dispose = function() {
-  this._shader.dispose()
-  this._vao.dispose()
-  this._coordinateBuffer.dispose()
-  this._colorMap.dispose()
-  this._contourBuffer.dispose()
-  this._contourVAO.dispose()
-  this._contourShader.dispose()
-  this._contourPickShader.dispose()
-  this._dynamicBuffer.dispose()
-  this._dynamicVAO.dispose()
-  for(var i=0; i<3; ++i) {
-    pool.freeFloat(this._field[i].data)
-  }
-}
-
-proto.highlight = function(selection) {
-  if(!selection) {
-    this._dynamicCounts = [0,0,0]
-    this.dyanamicLevel = [NaN, NaN, NaN]
-    this.highlightLevel = [-1,-1,-1]
-    return
-  }
-
-  for(var i=0; i<3; ++i) {
-    if(this.enableHighlight[i]) {
-      this.highlightLevel[i] = selection.level[i]
-    } else {
-      this.highlightLevel[i] = -1
-    }
-  }
-
-  var levels
-  if(this.snapToData) {
-    levels = selection.dataCoordinate
-  } else {
-    levels = selection.position
-  }
-  if( (!this.enableDynamic[0] || levels[0] === this.dynamicLevel[0]) &&
-      (!this.enableDynamic[1] || levels[1] === this.dynamicLevel[1]) &&
-      (!this.enableDynamic[2] || levels[2] === this.dynamicLevel[2]) ) {
-    return
-  }
-
-  var vertexCount = 0
-  var shape = this.shape
-  var scratchBuffer = pool.mallocFloat(12 * shape[0] * shape[1])
-
-  for(var d=0; d<3; ++d) {
-    if(!this.enableDynamic[d]) {
-      this.dynamicLevel[d] = NaN
-      this._dynamicCounts[d] = 0
-      continue
-    }
-
-    this.dynamicLevel[d] = levels[d]
-
-    var u = (d+1) % 3
-    var v = (d+2) % 3
-
-    var f = this._field[d]
-    var g = this._field[u]
-    var h = this._field[v]
-
-    var graph     = surfaceNets(f, levels[d])
-    var edges     = graph.cells
-    var positions = graph.positions
-
-    this._dynamicOffsets[d] = vertexCount
-
-    for(var i=0; i<edges.length; ++i) {
-      var e = edges[i]
-      for(var j=0; j<2; ++j) {
-        var p  = positions[e[j]]
-
-        var x  = +p[0]
-        var ix = x|0
-        var jx = Math.min(ix+1, shape[0])|0
-        var fx = x - ix
-        var hx = 1.0 - fx
-
-        var y  = +p[1]
-        var iy = y|0
-        var jy = Math.min(iy+1, shape[1])|0
-        var fy = y - iy
-        var hy = 1.0 - fy
-
-        var w00 = hx * hy
-        var w01 = hx * fy
-        var w10 = fx * hy
-        var w11 = fx * fy
-
-        var cu =  w00 * g.get(ix,iy) +
-                  w01 * g.get(ix,jy) +
-                  w10 * g.get(jx,iy) +
-                  w11 * g.get(jx,jy)
-
-        var cv =  w00 * h.get(ix,iy) +
-                  w01 * h.get(ix,jy) +
-                  w10 * h.get(jx,iy) +
-                  w11 * h.get(jx,jy)
-
-        if(isNaN(cu) || isNaN(cv)) {
-          if(j) {
-            vertexCount -= 1
-          }
-          break
-        }
-
-        scratchBuffer[2*vertexCount+0] = cu
-        scratchBuffer[2*vertexCount+1] = cv
-
-        vertexCount += 1
-      }
-    }
-
-    this._dynamicCounts[d] = vertexCount - this._dynamicOffsets[d]
-  }
-
-  this._dynamicBuffer.update(scratchBuffer.subarray(0, 2*vertexCount))
-  pool.freeFloat(scratchBuffer)
-}
-
-function createSurfacePlot(params) {
-  var gl = params.gl
-  var field = params.field || (params.coords && params.coords[2]) || ndarray([], [0,0])
-
-  var shader = createShader(gl)
-  var pickShader = createPickShader(gl)
-  var contourShader = createContourShader(gl)
-  var contourPickShader = createPickContourShader(gl)
-
-  var coordinateBuffer = createBuffer(gl)
-  var vao = createVAO(gl, [
-      { buffer: coordinateBuffer,
-        size: 4,
-        stride: SURFACE_VERTEX_SIZE,
-        offset: 0
-      },
-      { buffer: coordinateBuffer,
-        size: 2,
-        stride: SURFACE_VERTEX_SIZE,
-        offset: 16
-      },
-      {
-        buffer: coordinateBuffer,
-        size: 3,
-        stride: SURFACE_VERTEX_SIZE,
-        offset: 24
-      }
-    ])
-
-  var contourBuffer = createBuffer(gl)
-  var contourVAO = createVAO(gl, [
-    {
-      buffer: contourBuffer,
-      size: 4
-    }])
-
-  var dynamicBuffer = createBuffer(gl)
-  var dynamicVAO = createVAO(gl, [
-    {
-      buffer: dynamicBuffer,
-      size: 2,
-      type: gl.FLOAT
-    }])
-
-  var cmap = createTexture(gl, 1, 256, gl.RGBA, gl.UNSIGNED_BYTE)
-  cmap.minFilter = gl.LINEAR
-  cmap.magFilter = gl.LINEAR
-
-  var surface = new SurfacePlot(
-    gl,
-    [0,0],
-    [[0,0,0], [0,0,0]],
-    shader,
-    pickShader,
-    coordinateBuffer,
-    vao,
-    cmap,
-    contourShader,
-    contourPickShader,
-    contourBuffer,
-    contourVAO,
-    dynamicBuffer,
-    dynamicVAO)
-
-  var nparams = {
-    levels: [[], [], []]
-  }
-  for(var id in params) {
-    nparams[id] = params[id]
-  }
-  nparams.colormap = nparams.colormap || 'jet'
-
-  surface.update(nparams)
-
-  return surface
-}
-
-},{"./lib/shaders":148,"binary-search-bounds":149,"bit-twiddle":33,"colormap":40,"gl-buffer":59,"gl-mat4/invert":78,"gl-mat4/multiply":80,"gl-texture2d":162,"gl-vao":166,"ndarray":189,"ndarray-gradient":150,"ndarray-ops":184,"ndarray-pack":155,"surface-nets":211,"typedarray-pool":217}],162:[function(require,module,exports){
-'use strict'
-
-var ndarray = require('ndarray')
-var ops     = require('ndarray-ops')
-var pool    = require('typedarray-pool')
-
-module.exports = createTexture2D
-
-var linearTypes = null
-var filterTypes = null
-var wrapTypes   = null
-
-function lazyInitLinearTypes(gl) {
-  linearTypes = [
-    gl.LINEAR,
-    gl.NEAREST_MIPMAP_LINEAR,
-    gl.LINEAR_MIPMAP_NEAREST,
-    gl.LINEAR_MIPMAP_NEAREST
-  ]
-  filterTypes = [
-    gl.NEAREST,
-    gl.LINEAR,
-    gl.NEAREST_MIPMAP_NEAREST,
-    gl.NEAREST_MIPMAP_LINEAR,
-    gl.LINEAR_MIPMAP_NEAREST,
-    gl.LINEAR_MIPMAP_LINEAR
-  ]
-  wrapTypes = [
-    gl.REPEAT,
-    gl.CLAMP_TO_EDGE,
-    gl.MIRRORED_REPEAT
-  ]
-}
-
-var convertFloatToUint8 = function(out, inp) {
-  ops.muls(out, inp, 255.0)
-}
-
-function reshapeTexture(tex, w, h) {
-  var gl = tex.gl
-  var maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
-  if(w < 0 || w > maxSize || h < 0 || h > maxSize) {
-    throw new Error('gl-texture2d: Invalid texture size')
-  }
-  tex._shape = [w, h]
-  tex.bind()
-  gl.texImage2D(gl.TEXTURE_2D, 0, tex.format, w, h, 0, tex.format, tex.type, null)
-  tex._mipLevels = [0]
-  return tex
-}
-
-function Texture2D(gl, handle, width, height, format, type) {
-  this.gl = gl
-  this.handle = handle
-  this.format = format
-  this.type = type
-  this._shape = [width, height]
-  this._mipLevels = [0]
-  this._magFilter = gl.NEAREST
-  this._minFilter = gl.NEAREST
-  this._wrapS = gl.CLAMP_TO_EDGE
-  this._wrapT = gl.CLAMP_TO_EDGE
-  this._anisoSamples = 1
-
-  var parent = this
-  var wrapVector = [this._wrapS, this._wrapT]
-  Object.defineProperties(wrapVector, [
-    {
-      get: function() {
-        return parent._wrapS
-      },
-      set: function(v) {
-        return parent.wrapS = v
-      }
-    },
-    {
-      get: function() {
-        return parent._wrapT
-      },
-      set: function(v) {
-        return parent.wrapT = v
-      }
-    }
-  ])
-  this._wrapVector = wrapVector
-
-  var shapeVector = [this._shape[0], this._shape[1]]
-  Object.defineProperties(shapeVector, [
-    {
-      get: function() {
-        return parent._shape[0]
-      },
-      set: function(v) {
-        return parent.width = v
-      }
-    },
-    {
-      get: function() {
-        return parent._shape[1]
-      },
-      set: function(v) {
-        return parent.height = v
-      }
-    }
-  ])
-  this._shapeVector = shapeVector
-}
-
-var proto = Texture2D.prototype
-
-Object.defineProperties(proto, {
-  minFilter: {
-    get: function() {
-      return this._minFilter
-    },
-    set: function(v) {
-      this.bind()
-      var gl = this.gl
-      if(this.type === gl.FLOAT && linearTypes.indexOf(v) >= 0) {
-        if(!gl.getExtension('OES_texture_float_linear')) {
-          v = gl.NEAREST
-        }
-      }
-      if(filterTypes.indexOf(v) < 0) {
-        throw new Error('gl-texture2d: Unknown filter mode ' + v)
-      }
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, v)
-      return this._minFilter = v
-    }
-  },
-  magFilter: {
-    get: function() {
-      return this._magFilter
-    },
-    set: function(v) {
-      this.bind()
-      var gl = this.gl
-      if(this.type === gl.FLOAT && linearTypes.indexOf(v) >= 0) {
-        if(!gl.getExtension('OES_texture_float_linear')) {
-          v = gl.NEAREST
-        }
-      }
-      if(filterTypes.indexOf(v) < 0) {
-        throw new Error('gl-texture2d: Unknown filter mode ' + v)
-      }
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, v)
-      return this._magFilter = v
-    }
-  },
-  mipSamples: {
-    get: function() {
-      return this._anisoSamples
-    },
-    set: function(i) {
-      var psamples = this._anisoSamples
-      this._anisoSamples = Math.max(i, 1)|0
-      if(psamples !== this._anisoSamples) {
-        var ext = gl.getExtension('EXT_texture_filter_anisotropic')
-        if(ext) {
-          this.gl.texParameterf(this.gl.TEXTURE_2D, ext.TEXTURE_MAX_ANISOTROPY_EXT, this._anisoSamples)
-        }
-      }
-      return this._anisoSamples
-    }
-  },
-  wrapS: {
-    get: function() {
-      return this._wrapS
-    },
-    set: function(v) {
-      this.bind()
-      if(wrapTypes.indexOf(v) < 0) {
-        throw new Error('gl-texture2d: Unknown wrap mode ' + v)
-      }
-      this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_S, v)
-      return this._wrapS = v
-    }
-  },
-  wrapT: {
-    get: function() {
-      return this._wrapT
-    },
-    set: function(v) {
-      this.bind()
-      if(wrapTypes.indexOf(v) < 0) {
-        throw new Error('gl-texture2d: Unknown wrap mode ' + v)
-      }
-      this.gl.texParameteri(this.gl.TEXTURE_2D, this.gl.TEXTURE_WRAP_T, v)
-      return this._wrapT = v
-    }
-  },
-  wrap: {
-    get: function() {
-      return this._wrapVector
-    },
-    set: function(v) {
-      if(!Array.isArray(v)) {
-        v = [v,v]
-      }
-      if(v.length !== 2) {
-        throw new Error('gl-texture2d: Must specify wrap mode for rows and columns')
-      }
-      for(var i=0; i<2; ++i) {
-        if(wrapTypes.indexOf(v[i]) < 0) {
-          throw new Error('gl-texture2d: Unknown wrap mode ' + v)
-        }
-      }
-      this._wrapS = v[0]
-      this._wrapT = v[1]
-
-      var gl = this.gl
-      this.bind()
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, this._wrapS)
-      gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, this._wrapT)
-
-      return v
-    }
-  },
-  shape: {
-    get: function() {
-      return this._shapeVector
-    },
-    set: function(x) {
-      if(!Array.isArray(x)) {
-        x = [x|0,x|0]
-      } else {
-        if(x.length !== 2) {
-          throw new Error('gl-texture2d: Invalid texture shape')
-        }
-      }
-      reshapeTexture(this, x[0]|0, x[1]|0)
-      return [x[0]|0, x[1]|0]
-    }
-  },
-  width: {
-    get: function() {
-      return this._shape[0]
-    },
-    set: function(w) {
-      w = w|0
-      reshapeTexture(this, w, this._shape[1])
-      return w
-    }
-  },
-  height: {
-    get: function() {
-      return this._shape[1]
-    },
-    set: function(h) {
-      h = h|0
-      reshapeTexture(this, this._shape[0], h)
-      return h
-    }
-  }
-})
-
-proto.bind = function(unit) {
-  var gl = this.gl
-  if(unit !== undefined) {
-    gl.activeTexture(gl.TEXTURE0 + (unit|0))
-  }
-  gl.bindTexture(gl.TEXTURE_2D, this.handle)
-  if(unit !== undefined) {
-    return (unit|0)
-  }
-  return gl.getParameter(gl.ACTIVE_TEXTURE) - gl.TEXTURE0
-}
-
-proto.dispose = function() {
-  this.gl.deleteTexture(this.handle)
-}
-
-proto.generateMipmap = function() {
-  this.bind()
-  this.gl.generateMipmap(this.gl.TEXTURE_2D)
-
-  //Update mip levels
-  var l = Math.min(this._shape[0], this._shape[1])
-  for(var i=0; l>0; ++i, l>>>=1) {
-    if(this._mipLevels.indexOf(i) < 0) {
-      this._mipLevels.push(i)
-    }
-  }
-}
-
-proto.setPixels = function(data, x_off, y_off, mip_level) {
-  var gl = this.gl
-  this.bind()
-  if(Array.isArray(x_off)) {
-    mip_level = y_off
-    y_off = x_off[1]|0
-    x_off = x_off[0]|0
-  } else {
-    x_off = x_off || 0
-    y_off = y_off || 0
-  }
-  mip_level = mip_level || 0
-  if(data instanceof HTMLCanvasElement ||
-     data instanceof ImageData ||
-     data instanceof HTMLImageElement ||
-     data instanceof HTMLVideoElement) {
-    var needsMip = this._mipLevels.indexOf(mip_level) < 0
-    if(needsMip) {
-      gl.texImage2D(gl.TEXTURE_2D, 0, this.format, this.format, this.type, data)
-      this._mipLevels.push(mip_level)
-    } else {
-      gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, this.format, this.type, data)
-    }
-  } else if(data.shape && data.stride && data.data) {
-    if(data.shape.length < 2 ||
-       x_off + data.shape[1] > this._shape[1]>>>mip_level ||
-       y_off + data.shape[0] > this._shape[0]>>>mip_level ||
-       x_off < 0 ||
-       y_off < 0) {
-      throw new Error('gl-texture2d: Texture dimensions are out of bounds')
-    }
-    texSubImageArray(gl, x_off, y_off, mip_level, this.format, this.type, this._mipLevels, data)
-  } else {
-    throw new Error('gl-texture2d: Unsupported data type')
-  }
-}
-
-
-function isPacked(shape, stride) {
-  if(shape.length === 3) {
-    return  (stride[2] === 1) &&
-            (stride[1] === shape[0]*shape[2]) &&
-            (stride[0] === shape[2])
-  }
-  return  (stride[0] === 1) &&
-          (stride[1] === shape[0])
-}
-
-function texSubImageArray(gl, x_off, y_off, mip_level, cformat, ctype, mipLevels, array) {
-  var dtype = array.dtype
-  var shape = array.shape.slice()
-  if(shape.length < 2 || shape.length > 3) {
-    throw new Error('gl-texture2d: Invalid ndarray, must be 2d or 3d')
-  }
-  var type = 0, format = 0
-  var packed = isPacked(shape, array.stride.slice())
-  if(dtype === 'float32') {
-    type = gl.FLOAT
-  } else if(dtype === 'float64') {
-    type = gl.FLOAT
-    packed = false
-    dtype = 'float32'
-  } else if(dtype === 'uint8') {
-    type = gl.UNSIGNED_BYTE
-  } else {
-    type = gl.UNSIGNED_BYTE
-    packed = false
-    dtype = 'uint8'
-  }
-  var channels = 1
-  if(shape.length === 2) {
-    format = gl.LUMINANCE
-    shape = [shape[0], shape[1], 1]
-    array = ndarray(array.data, shape, [array.stride[0], array.stride[1], 1], array.offset)
-  } else if(shape.length === 3) {
-    if(shape[2] === 1) {
-      format = gl.ALPHA
-    } else if(shape[2] === 2) {
-      format = gl.LUMINANCE_ALPHA
-    } else if(shape[2] === 3) {
-      format = gl.RGB
-    } else if(shape[2] === 4) {
-      format = gl.RGBA
-    } else {
-      throw new Error('gl-texture2d: Invalid shape for pixel coords')
-    }
-    channels = shape[2]
-  } else {
-    throw new Error('gl-texture2d: Invalid shape for texture')
-  }
-  //For 1-channel textures allow conversion between formats
-  if((format  === gl.LUMINANCE || format  === gl.ALPHA) &&
-     (cformat === gl.LUMINANCE || cformat === gl.ALPHA)) {
-    format = cformat
-  }
-  if(format !== cformat) {
-    throw new Error('gl-texture2d: Incompatible texture format for setPixels')
-  }
-  var size = array.size
-  var needsMip = mipLevels.indexOf(mip_level) < 0
-  if(needsMip) {
-    mipLevels.push(mip_level)
-  }
-  if(type === ctype && packed) {
-    //Array data types are compatible, can directly copy into texture
-    if(array.offset === 0 && array.data.length === size) {
-      if(needsMip) {
-        gl.texImage2D(gl.TEXTURE_2D, mip_level, cformat, shape[0], shape[1], 0, cformat, ctype, array.data)
-      } else {
-        gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, shape[0], shape[1], cformat, ctype, array.data)
-      }
-    } else {
-      if(needsMip) {
-        gl.texImage2D(gl.TEXTURE_2D, mip_level, cformat, shape[0], shape[1], 0, cformat, ctype, array.data.subarray(array.offset, array.offset+size))
-      } else {
-        gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, shape[0], shape[1], cformat, ctype, array.data.subarray(array.offset, array.offset+size))
-      }
-    }
-  } else {
-    //Need to do type conversion to pack data into buffer
-    var pack_buffer
-    if(ctype === gl.FLOAT) {
-      pack_buffer = pool.mallocFloat32(size)
-    } else {
-      pack_buffer = pool.mallocUint8(size)
-    }
-    var pack_view = ndarray(pack_buffer, shape, [shape[2], shape[2]*shape[0], 1])
-    if(type === gl.FLOAT && ctype === gl.UNSIGNED_BYTE) {
-      convertFloatToUint8(pack_view, array)
-    } else {
-      ops.assign(pack_view, array)
-    }
-    if(needsMip) {
-      gl.texImage2D(gl.TEXTURE_2D, mip_level, cformat, shape[0], shape[1], 0, cformat, ctype, pack_buffer.subarray(0, size))
-    } else {
-      gl.texSubImage2D(gl.TEXTURE_2D, mip_level, x_off, y_off, shape[0], shape[1], cformat, ctype, pack_buffer.subarray(0, size))
-    }
-    if(ctype === gl.FLOAT) {
-      pool.freeFloat32(pack_buffer)
-    } else {
-      pool.freeUint8(pack_buffer)
-    }
-  }
-}
-
-function initTexture(gl) {
-  var tex = gl.createTexture()
-  gl.bindTexture(gl.TEXTURE_2D, tex)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE)
-  gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE)
-  return tex
-}
-
-function createTextureShape(gl, width, height, format, type) {
-  var maxTextureSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
-  if(width < 0 || width > maxTextureSize || height < 0 || height  > maxTextureSize) {
-    throw new Error('gl-texture2d: Invalid texture shape')
-  }
-  if(type === gl.FLOAT && !gl.getExtension('OES_texture_float')) {
-    throw new Error('gl-texture2d: Floating point textures not supported on this platform')
-  }
-  var tex = initTexture(gl)
-  gl.texImage2D(gl.TEXTURE_2D, 0, format, width, height, 0, format, type, null)
-  return new Texture2D(gl, tex, width, height, format, type)
-}
-
-function createTextureDOM(gl, element, format, type) {
-  var tex = initTexture(gl)
-  gl.texImage2D(gl.TEXTURE_2D, 0, format, format, type, element)
-  return new Texture2D(gl, tex, element.width|0, element.height|0, format, type)
-}
-
-//Creates a texture from an ndarray
-function createTextureArray(gl, array) {
-  var dtype = array.dtype
-  var shape = array.shape.slice()
-  var maxSize = gl.getParameter(gl.MAX_TEXTURE_SIZE)
-  if(shape[0] < 0 || shape[0] > maxSize || shape[1] < 0 || shape[1] > maxSize) {
-    throw new Error('gl-texture2d: Invalid texture size')
-  }
-  var packed = isPacked(shape, array.stride.slice())
-  var type = 0
-  if(dtype === 'float32') {
-    type = gl.FLOAT
-  } else if(dtype === 'float64') {
-    type = gl.FLOAT
-    packed = false
-    dtype = 'float32'
-  } else if(dtype === 'uint8') {
-    type = gl.UNSIGNED_BYTE
-  } else {
-    type = gl.UNSIGNED_BYTE
-    packed = false
-    dtype = 'uint8'
-  }
-  var format = 0
-  if(shape.length === 2) {
-    format = gl.LUMINANCE
-    shape = [shape[0], shape[1], 1]
-    array = ndarray(array.data, shape, [array.stride[0], array.stride[1], 1], array.offset)
-  } else if(shape.length === 3) {
-    if(shape[2] === 1) {
-      format = gl.ALPHA
-    } else if(shape[2] === 2) {
-      format = gl.LUMINANCE_ALPHA
-    } else if(shape[2] === 3) {
-      format = gl.RGB
-    } else if(shape[2] === 4) {
-      format = gl.RGBA
-    } else {
-      throw new Error('gl-texture2d: Invalid shape for pixel coords')
-    }
-  } else {
-    throw new Error('gl-texture2d: Invalid shape for texture')
-  }
-  if(type === gl.FLOAT && !gl.getExtension('OES_texture_float')) {
-    type = gl.UNSIGNED_BYTE
-    packed = false
-  }
-  var buffer, buf_store
-  var size = array.size
-  if(!packed) {
-    var stride = [shape[2], shape[2]*shape[0], 1]
-    buf_store = pool.malloc(size, dtype)
-    var buf_array = ndarray(buf_store, shape, stride, 0)
-    if((dtype === 'float32' || dtype === 'float64') && type === gl.UNSIGNED_BYTE) {
-      convertFloatToUint8(buf_array, array)
-    } else {
-      ops.assign(buf_array, array)
-    }
-    buffer = buf_store.subarray(0, size)
-  } else if (array.offset === 0 && array.data.length === size) {
-    buffer = array.data
-  } else {
-    buffer = array.data.subarray(array.offset, array.offset + size)
-  }
-  var tex = initTexture(gl)
-  gl.texImage2D(gl.TEXTURE_2D, 0, format, shape[0], shape[1], 0, format, type, buffer)
-  if(!packed) {
-    pool.free(buf_store)
-  }
-  return new Texture2D(gl, tex, shape[0], shape[1], format, type)
-}
-
-function createTexture2D(gl) {
-  if(arguments.length <= 1) {
-    throw new Error('gl-texture2d: Missing arguments for texture2d constructor')
-  }
-  if(!linearTypes) {
-    lazyInitLinearTypes(gl)
-  }
-  if(typeof arguments[1] === 'number') {
-    return createTextureShape(gl, arguments[1], arguments[2], arguments[3]||gl.RGBA, arguments[4]||gl.UNSIGNED_BYTE)
-  }
-  if(Array.isArray(arguments[1])) {
-    return createTextureShape(gl, arguments[1][0]|0, arguments[1][1]|0, arguments[2]||gl.RGBA, arguments[3]||gl.UNSIGNED_BYTE)
-  }
-  if(typeof arguments[1] === 'object') {
-    var obj = arguments[1]
-    if(obj instanceof HTMLCanvasElement ||
-       obj instanceof HTMLImageElement ||
-       obj instanceof HTMLVideoElement ||
-       obj instanceof ImageData) {
-      return createTextureDOM(gl, obj, arguments[2]||gl.RGBA, arguments[3]||gl.UNSIGNED_BYTE)
-    } else if(obj.shape && obj.data && obj.stride) {
-      return createTextureArray(gl, obj)
-    }
-  }
-  throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
-}
-
-},{"ndarray":189,"ndarray-ops":184,"typedarray-pool":217}],163:[function(require,module,exports){
-"use strict"
-
-function doBind(gl, elements, attributes) {
-  if(elements) {
-    elements.bind()
-  } else {
-    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, null)
-  }
-  var nattribs = gl.getParameter(gl.MAX_VERTEX_ATTRIBS)|0
-  if(attributes) {
-    if(attributes.length > nattribs) {
-      throw new Error("gl-vao: Too many vertex attributes")
-    }
-    for(var i=0; i<attributes.length; ++i) {
-      var attrib = attributes[i]
-      if(attrib.buffer) {
-        var buffer = attrib.buffer
-        var size = attrib.size || 4
-        var type = attrib.type || gl.FLOAT
-        var normalized = !!attrib.normalized
-        var stride = attrib.stride || 0
-        var offset = attrib.offset || 0
-        buffer.bind()
-        gl.enableVertexAttribArray(i)
-        gl.vertexAttribPointer(i, size, type, normalized, stride, offset)
-      } else {
-        if(typeof attrib === "number") {
-          gl.vertexAttrib1f(i, attrib)
-        } else if(attrib.length === 1) {
-          gl.vertexAttrib1f(i, attrib[0])
-        } else if(attrib.length === 2) {
-          gl.vertexAttrib2f(i, attrib[0], attrib[1])
-        } else if(attrib.length === 3) {
-          gl.vertexAttrib3f(i, attrib[0], attrib[1], attrib[2])
-        } else if(attrib.length === 4) {
-          gl.vertexAttrib4f(i, attrib[0], attrib[1], attrib[2], attrib[3])
-        } else {
-          throw new Error("gl-vao: Invalid vertex attribute")
-        }
-        gl.disableVertexAttribArray(i)
-      }
-    }
-    for(; i<nattribs; ++i) {
-      gl.disableVertexAttribArray(i)
-    }
-  } else {
-    gl.bindBuffer(gl.ARRAY_BUFFER, null)
-    for(var i=0; i<nattribs; ++i) {
-      gl.disableVertexAttribArray(i)
-    }
-  }
-}
-
-module.exports = doBind
-},{}],164:[function(require,module,exports){
-"use strict"
-
-var bindAttribs = require("./do-bind.js")
-
-function VAOEmulated(gl) {
-  this.gl = gl
-  this._elements = null
-  this._attributes = null
-  this._elementsType = gl.UNSIGNED_SHORT
-}
-
-VAOEmulated.prototype.bind = function() {
-  bindAttribs(this.gl, this._elements, this._attributes)
-}
-
-VAOEmulated.prototype.update = function(attributes, elements, elementsType) {
-  this._elements = elements
-  this._attributes = attributes
-  this._elementsType = elementsType || this.gl.UNSIGNED_SHORT
-}
-
-VAOEmulated.prototype.dispose = function() { }
-VAOEmulated.prototype.unbind = function() { }
-
-VAOEmulated.prototype.draw = function(mode, count, offset) {
-  offset = offset || 0
-  var gl = this.gl
-  if(this._elements) {
-    gl.drawElements(mode, count, this._elementsType, offset)
-  } else {
-    gl.drawArrays(mode, offset, count)
-  }
-}
-
-function createVAOEmulated(gl) {
-  return new VAOEmulated(gl)
-}
-
-module.exports = createVAOEmulated
-},{"./do-bind.js":163}],165:[function(require,module,exports){
-"use strict"
-
-var bindAttribs = require("./do-bind.js")
-
-function VertexAttribute(location, dimension, a, b, c, d) {
-  this.location = location
-  this.dimension = dimension
-  this.a = a
-  this.b = b
-  this.c = c
-  this.d = d
-}
-
-VertexAttribute.prototype.bind = function(gl) {
-  switch(this.dimension) {
-    case 1:
-      gl.vertexAttrib1f(this.location, this.a)
-    break
-    case 2:
-      gl.vertexAttrib2f(this.location, this.a, this.b)
-    break
-    case 3:
-      gl.vertexAttrib3f(this.location, this.a, this.b, this.c)
-    break
-    case 4:
-      gl.vertexAttrib4f(this.location, this.a, this.b, this.c, this.d)
-    break
-  }
-}
-
-function VAONative(gl, ext, handle) {
-  this.gl = gl
-  this._ext = ext
-  this.handle = handle
-  this._attribs = []
-  this._useElements = false
-  this._elementsType = gl.UNSIGNED_SHORT
-}
-
-VAONative.prototype.bind = function() {
-  this._ext.bindVertexArrayOES(this.handle)
-  for(var i=0; i<this._attribs.length; ++i) {
-    this._attribs[i].bind(this.gl)
-  }
-}
-
-VAONative.prototype.unbind = function() {
-  this._ext.bindVertexArrayOES(null)
-}
-
-VAONative.prototype.dispose = function() {
-  this._ext.deleteVertexArrayOES(this.handle)
-}
-
-VAONative.prototype.update = function(attributes, elements, elementsType) {
-  this.bind()
-  bindAttribs(this.gl, elements, attributes)
-  this.unbind()
-  this._attribs.length = 0
-  if(attributes)
-  for(var i=0; i<attributes.length; ++i) {
-    var a = attributes[i]
-    if(typeof a === "number") {
-      this._attribs.push(new VertexAttribute(i, 1, a))
-    } else if(Array.isArray(a)) {
-      this._attribs.push(new VertexAttribute(i, a.length, a[0], a[1], a[2], a[3]))
-    }
-  }
-  this._useElements = !!elements
-  this._elementsType = elementsType || this.gl.UNSIGNED_SHORT
-}
-
-VAONative.prototype.draw = function(mode, count, offset) {
-  offset = offset || 0
-  var gl = this.gl
-  if(this._useElements) {
-    gl.drawElements(mode, count, this._elementsType, offset)
-  } else {
-    gl.drawArrays(mode, offset, count)
-  }
-}
-
-function createVAONative(gl, ext) {
-  return new VAONative(gl, ext, ext.createVertexArrayOES())
-}
-
-module.exports = createVAONative
-},{"./do-bind.js":163}],166:[function(require,module,exports){
-"use strict"
-
-var createVAONative = require("./lib/vao-native.js")
-var createVAOEmulated = require("./lib/vao-emulated.js")
-
-function createVAO(gl, attributes, elements, elementsType) {
-  var ext = gl.getExtension('OES_vertex_array_object')
-  var vao
-  if(ext) {
-    vao = createVAONative(gl, ext)
-  } else {
-    vao = createVAOEmulated(gl)
-  }
-  vao.update(attributes, elements, elementsType)
-  return vao
-}
-
-module.exports = createVAO
-
-},{"./lib/vao-emulated.js":164,"./lib/vao-native.js":165}],167:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
+arguments[4][34][0].apply(exports,arguments)
+},{"dup":34,"ndarray":247,"ndarray-ops":242,"typedarray-pool":275}],221:[function(require,module,exports){
+arguments[4][35][0].apply(exports,arguments)
+},{"dup":35}],222:[function(require,module,exports){
+arguments[4][36][0].apply(exports,arguments)
+},{"./do-bind.js":221,"dup":36}],223:[function(require,module,exports){
+arguments[4][37][0].apply(exports,arguments)
+},{"./do-bind.js":221,"dup":37}],224:[function(require,module,exports){
+arguments[4][38][0].apply(exports,arguments)
+},{"./lib/vao-emulated.js":222,"./lib/vao-native.js":223,"dup":38}],225:[function(require,module,exports){
 module.exports = transformMat4
 
 /**
@@ -33520,7 +36851,7 @@ function transformMat4 (out, a, m) {
   return out
 }
 
-},{}],168:[function(require,module,exports){
+},{}],226:[function(require,module,exports){
 "use strict"
 
 //High level idea:
@@ -33967,9 +37298,9 @@ function incrementalConvexHull(points, randomSearch) {
   //Extract boundary cells
   return triangles.boundary()
 }
-},{"robust-orientation":195,"simplicial-complex":171}],169:[function(require,module,exports){
-arguments[4][33][0].apply(exports,arguments)
-},{"dup":33}],170:[function(require,module,exports){
+},{"robust-orientation":253,"simplicial-complex":229}],227:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],228:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -34032,7 +37363,7 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],171:[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 "use strict"; "use restrict";
 
 var bits      = require("bit-twiddle")
@@ -34376,26 +37707,9 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":169,"union-find":170}],172:[function(require,module,exports){
-/**
- * Determine if an object is Buffer
- *
- * Author:   Feross Aboukhadijeh <feross@feross.org> <http://feross.org>
- * License:  MIT
- *
- * `npm install is-buffer`
- */
-
-module.exports = function (obj) {
-  return !!(obj != null &&
-    (obj._isBuffer || // For Safari 5-7 (missing Object.prototype.constructor)
-      (obj.constructor &&
-      typeof obj.constructor.isBuffer === 'function' &&
-      obj.constructor.isBuffer(obj))
-    ))
-}
-
-},{}],173:[function(require,module,exports){
+},{"bit-twiddle":227,"union-find":228}],230:[function(require,module,exports){
+arguments[4][57][0].apply(exports,arguments)
+},{"dup":57}],231:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -34604,7 +37918,7 @@ function mouseListen(element, callback) {
   return result
 }
 
-},{"mouse-event":174}],174:[function(require,module,exports){
+},{"mouse-event":232}],232:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -34666,7 +37980,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],175:[function(require,module,exports){
+},{}],233:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -34677,7 +37991,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],176:[function(require,module,exports){
+},{}],234:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -34738,7 +38052,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":175}],177:[function(require,module,exports){
+},{"parse-unit":233}],235:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -34777,7 +38091,7 @@ function mouseWheelListen(element, callback, noScroll) {
     }
   })
 }
-},{"to-px":176}],178:[function(require,module,exports){
+},{"to-px":234}],236:[function(require,module,exports){
 "use strict"
 
 
@@ -34789,7 +38103,7 @@ module.exports = function(array, f) {
   return array
 }
 
-},{"cwise/lib/wrapper":48}],179:[function(require,module,exports){
+},{"cwise/lib/wrapper":120}],237:[function(require,module,exports){
 'use strict'
 
 module.exports = invert
@@ -34820,7 +38134,7 @@ function invert(out, M) {
   }
   return out
 }
-},{"gl-mat2/invert":180,"gl-mat3/invert":71,"gl-mat4/invert":78}],180:[function(require,module,exports){
+},{"gl-mat2/invert":238,"gl-mat3/invert":143,"gl-mat4/invert":150}],238:[function(require,module,exports){
 module.exports = invert
 
 /**
@@ -34849,7 +38163,7 @@ function invert(out, a) {
   return out
 }
 
-},{}],181:[function(require,module,exports){
+},{}],239:[function(require,module,exports){
 "use strict"
 
 function interp1d(arr, x) {
@@ -34960,7 +38274,7 @@ module.exports.d1 = interp1d
 module.exports.d2 = interp2d
 module.exports.d3 = interp3d
 
-},{}],182:[function(require,module,exports){
+},{}],240:[function(require,module,exports){
 'use strict'
 
 var interp  = require('ndarray-linear-interpolate')
@@ -34992,7 +38306,7 @@ module.exports = function warp(dest, src, func) {
   return dest
 }
 
-},{"cwise/lib/wrapper":48,"ndarray-linear-interpolate":181}],183:[function(require,module,exports){
+},{"cwise/lib/wrapper":120,"ndarray-linear-interpolate":239}],241:[function(require,module,exports){
 'use strict'
 
 var warp = require('ndarray-warp')
@@ -35022,835 +38336,21 @@ function applyHomography(dest, src, Xi) {
   })
   return dest
 }
-},{"gl-matrix-invert":179,"ndarray-warp":182}],184:[function(require,module,exports){
-"use strict"
-
-var compile = require("cwise-compiler")
-
-var EmptyProc = {
-  body: "",
-  args: [],
-  thisVars: [],
-  localVars: []
-}
-
-function fixup(x) {
-  if(!x) {
-    return EmptyProc
-  }
-  for(var i=0; i<x.args.length; ++i) {
-    var a = x.args[i]
-    if(i === 0) {
-      x.args[i] = {name: a, lvalue:true, rvalue: !!x.rvalue, count:x.count||1 }
-    } else {
-      x.args[i] = {name: a, lvalue:false, rvalue:true, count: 1}
-    }
-  }
-  if(!x.thisVars) {
-    x.thisVars = []
-  }
-  if(!x.localVars) {
-    x.localVars = []
-  }
-  return x
-}
-
-function pcompile(user_args) {
-  return compile({
-    args:     user_args.args,
-    pre:      fixup(user_args.pre),
-    body:     fixup(user_args.body),
-    post:     fixup(user_args.proc),
-    funcName: user_args.funcName
-  })
-}
-
-function makeOp(user_args) {
-  var args = []
-  for(var i=0; i<user_args.args.length; ++i) {
-    args.push("a"+i)
-  }
-  var wrapper = new Function("P", [
-    "return function ", user_args.funcName, "_ndarrayops(", args.join(","), ") {P(", args.join(","), ");return a0}"
-  ].join(""))
-  return wrapper(pcompile(user_args))
-}
-
-var assign_ops = {
-  add:  "+",
-  sub:  "-",
-  mul:  "*",
-  div:  "/",
-  mod:  "%",
-  band: "&",
-  bor:  "|",
-  bxor: "^",
-  lshift: "<<",
-  rshift: ">>",
-  rrshift: ">>>"
-}
-;(function(){
-  for(var id in assign_ops) {
-    var op = assign_ops[id]
-    exports[id] = makeOp({
-      args: ["array","array","array"],
-      body: {args:["a","b","c"],
-             body: "a=b"+op+"c"},
-      funcName: id
-    })
-    exports[id+"eq"] = makeOp({
-      args: ["array","array"],
-      body: {args:["a","b"],
-             body:"a"+op+"=b"},
-      rvalue: true,
-      funcName: id+"eq"
-    })
-    exports[id+"s"] = makeOp({
-      args: ["array", "array", "scalar"],
-      body: {args:["a","b","s"],
-             body:"a=b"+op+"s"},
-      funcName: id+"s"
-    })
-    exports[id+"seq"] = makeOp({
-      args: ["array","scalar"],
-      body: {args:["a","s"],
-             body:"a"+op+"=s"},
-      rvalue: true,
-      funcName: id+"seq"
-    })
-  }
-})();
-
-var unary_ops = {
-  not: "!",
-  bnot: "~",
-  neg: "-",
-  recip: "1.0/"
-}
-;(function(){
-  for(var id in unary_ops) {
-    var op = unary_ops[id]
-    exports[id] = makeOp({
-      args: ["array", "array"],
-      body: {args:["a","b"],
-             body:"a="+op+"b"},
-      funcName: id
-    })
-    exports[id+"eq"] = makeOp({
-      args: ["array"],
-      body: {args:["a"],
-             body:"a="+op+"a"},
-      rvalue: true,
-      count: 2,
-      funcName: id+"eq"
-    })
-  }
-})();
-
-var binary_ops = {
-  and: "&&",
-  or: "||",
-  eq: "===",
-  neq: "!==",
-  lt: "<",
-  gt: ">",
-  leq: "<=",
-  geq: ">="
-}
-;(function() {
-  for(var id in binary_ops) {
-    var op = binary_ops[id]
-    exports[id] = makeOp({
-      args: ["array","array","array"],
-      body: {args:["a", "b", "c"],
-             body:"a=b"+op+"c"},
-      funcName: id
-    })
-    exports[id+"s"] = makeOp({
-      args: ["array","array","scalar"],
-      body: {args:["a", "b", "s"],
-             body:"a=b"+op+"s"},
-      funcName: id+"s"
-    })
-    exports[id+"eq"] = makeOp({
-      args: ["array", "array"],
-      body: {args:["a", "b"],
-             body:"a=a"+op+"b"},
-      rvalue:true,
-      count:2,
-      funcName: id+"eq"
-    })
-    exports[id+"seq"] = makeOp({
-      args: ["array", "scalar"],
-      body: {args:["a","s"],
-             body:"a=a"+op+"s"},
-      rvalue:true,
-      count:2,
-      funcName: id+"seq"
-    })
-  }
-})();
-
-var math_unary = [
-  "abs",
-  "acos",
-  "asin",
-  "atan",
-  "ceil",
-  "cos",
-  "exp",
-  "floor",
-  "log",
-  "round",
-  "sin",
-  "sqrt",
-  "tan"
-]
-;(function() {
-  for(var i=0; i<math_unary.length; ++i) {
-    var f = math_unary[i]
-    exports[f] = makeOp({
-                    args: ["array", "array"],
-                    pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                    body: {args:["a","b"], body:"a=this_f(b)", thisVars:["this_f"]},
-                    funcName: f
-                  })
-    exports[f+"eq"] = makeOp({
-                      args: ["array"],
-                      pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                      body: {args: ["a"], body:"a=this_f(a)", thisVars:["this_f"]},
-                      rvalue: true,
-                      count: 2,
-                      funcName: f+"eq"
-                    })
-  }
-})();
-
-var math_comm = [
-  "max",
-  "min",
-  "atan2",
-  "pow"
-]
-;(function(){
-  for(var i=0; i<math_comm.length; ++i) {
-    var f= math_comm[i]
-    exports[f] = makeOp({
-                  args:["array", "array", "array"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b","c"], body:"a=this_f(b,c)", thisVars:["this_f"]},
-                  funcName: f
-                })
-    exports[f+"s"] = makeOp({
-                  args:["array", "array", "scalar"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b","c"], body:"a=this_f(b,c)", thisVars:["this_f"]},
-                  funcName: f+"s"
-                  })
-    exports[f+"eq"] = makeOp({ args:["array", "array"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b"], body:"a=this_f(a,b)", thisVars:["this_f"]},
-                  rvalue: true,
-                  count: 2,
-                  funcName: f+"eq"
-                  })
-    exports[f+"seq"] = makeOp({ args:["array", "scalar"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b"], body:"a=this_f(a,b)", thisVars:["this_f"]},
-                  rvalue:true,
-                  count:2,
-                  funcName: f+"seq"
-                  })
-  }
-})();
-
-var math_noncomm = [
-  "atan2",
-  "pow"
-]
-;(function(){
-  for(var i=0; i<math_noncomm.length; ++i) {
-    var f= math_noncomm[i]
-    exports[f+"op"] = makeOp({
-                  args:["array", "array", "array"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b","c"], body:"a=this_f(c,b)", thisVars:["this_f"]},
-                  funcName: f+"op"
-                })
-    exports[f+"ops"] = makeOp({
-                  args:["array", "array", "scalar"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b","c"], body:"a=this_f(c,b)", thisVars:["this_f"]},
-                  funcName: f+"ops"
-                  })
-    exports[f+"opeq"] = makeOp({ args:["array", "array"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b"], body:"a=this_f(b,a)", thisVars:["this_f"]},
-                  rvalue: true,
-                  count: 2,
-                  funcName: f+"opeq"
-                  })
-    exports[f+"opseq"] = makeOp({ args:["array", "scalar"],
-                  pre: {args:[], body:"this_f=Math."+f, thisVars:["this_f"]},
-                  body: {args:["a","b"], body:"a=this_f(b,a)", thisVars:["this_f"]},
-                  rvalue:true,
-                  count:2,
-                  funcName: f+"opseq"
-                  })
-  }
-})();
-
-exports.any = compile({
-  args:["array"],
-  pre: EmptyProc,
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:1}], body: "if(a){return true}", localVars: [], thisVars: []},
-  post: {args:[], localVars:[], thisVars:[], body:"return false"},
-  funcName: "any"
-})
-
-exports.all = compile({
-  args:["array"],
-  pre: EmptyProc,
-  body: {args:[{name:"x", lvalue:false, rvalue:true, count:1}], body: "if(!x){return false}", localVars: [], thisVars: []},
-  post: {args:[], localVars:[], thisVars:[], body:"return true"},
-  funcName: "all"
-})
-
-exports.sum = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:1}], body: "this_s+=a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "sum"
-})
-
-exports.prod = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=1"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:1}], body: "this_s*=a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "prod"
-})
-
-exports.norm2squared = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:2}], body: "this_s+=a*a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "norm2squared"
-})
-  
-exports.norm2 = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:2}], body: "this_s+=a*a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return Math.sqrt(this_s)"},
-  funcName: "norm2"
-})
-  
-
-exports.norminf = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:4}], body:"if(-a>this_s){this_s=-a}else if(a>this_s){this_s=a}", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "norminf"
-})
-
-exports.norm1 = compile({
-  args:["array"],
-  pre: {args:[], localVars:[], thisVars:["this_s"], body:"this_s=0"},
-  body: {args:[{name:"a", lvalue:false, rvalue:true, count:3}], body: "this_s+=a<0?-a:a", localVars: [], thisVars: ["this_s"]},
-  post: {args:[], localVars:[], thisVars:["this_s"], body:"return this_s"},
-  funcName: "norm1"
-})
-
-exports.sup = compile({
-  args: [ "array" ],
-  pre:
-   { body: "this_h=-Infinity",
-     args: [],
-     thisVars: [ "this_h" ],
-     localVars: [] },
-  body:
-   { body: "if(_inline_1_arg0_>this_h)this_h=_inline_1_arg0_",
-     args: [{"name":"_inline_1_arg0_","lvalue":false,"rvalue":true,"count":2} ],
-     thisVars: [ "this_h" ],
-     localVars: [] },
-  post:
-   { body: "return this_h",
-     args: [],
-     thisVars: [ "this_h" ],
-     localVars: [] }
- })
-
-exports.inf = compile({
-  args: [ "array" ],
-  pre:
-   { body: "this_h=Infinity",
-     args: [],
-     thisVars: [ "this_h" ],
-     localVars: [] },
-  body:
-   { body: "if(_inline_1_arg0_<this_h)this_h=_inline_1_arg0_",
-     args: [{"name":"_inline_1_arg0_","lvalue":false,"rvalue":true,"count":2} ],
-     thisVars: [ "this_h" ],
-     localVars: [] },
-  post:
-   { body: "return this_h",
-     args: [],
-     thisVars: [ "this_h" ],
-     localVars: [] }
- })
-
-exports.argmin = compile({
-  args:["index","array","shape"],
-  pre:{
-    body:"{this_v=Infinity;this_i=_inline_0_arg2_.slice(0)}",
-    args:[
-      {name:"_inline_0_arg0_",lvalue:false,rvalue:false,count:0},
-      {name:"_inline_0_arg1_",lvalue:false,rvalue:false,count:0},
-      {name:"_inline_0_arg2_",lvalue:false,rvalue:true,count:1}
-      ],
-    thisVars:["this_i","this_v"],
-    localVars:[]},
-  body:{
-    body:"{if(_inline_1_arg1_<this_v){this_v=_inline_1_arg1_;for(var _inline_1_k=0;_inline_1_k<_inline_1_arg0_.length;++_inline_1_k){this_i[_inline_1_k]=_inline_1_arg0_[_inline_1_k]}}}",
-    args:[
-      {name:"_inline_1_arg0_",lvalue:false,rvalue:true,count:2},
-      {name:"_inline_1_arg1_",lvalue:false,rvalue:true,count:2}],
-    thisVars:["this_i","this_v"],
-    localVars:["_inline_1_k"]},
-  post:{
-    body:"{return this_i}",
-    args:[],
-    thisVars:["this_i"],
-    localVars:[]}
-})
-
-exports.argmax = compile({
-  args:["index","array","shape"],
-  pre:{
-    body:"{this_v=-Infinity;this_i=_inline_0_arg2_.slice(0)}",
-    args:[
-      {name:"_inline_0_arg0_",lvalue:false,rvalue:false,count:0},
-      {name:"_inline_0_arg1_",lvalue:false,rvalue:false,count:0},
-      {name:"_inline_0_arg2_",lvalue:false,rvalue:true,count:1}
-      ],
-    thisVars:["this_i","this_v"],
-    localVars:[]},
-  body:{
-    body:"{if(_inline_1_arg1_>this_v){this_v=_inline_1_arg1_;for(var _inline_1_k=0;_inline_1_k<_inline_1_arg0_.length;++_inline_1_k){this_i[_inline_1_k]=_inline_1_arg0_[_inline_1_k]}}}",
-    args:[
-      {name:"_inline_1_arg0_",lvalue:false,rvalue:true,count:2},
-      {name:"_inline_1_arg1_",lvalue:false,rvalue:true,count:2}],
-    thisVars:["this_i","this_v"],
-    localVars:["_inline_1_k"]},
-  post:{
-    body:"{return this_i}",
-    args:[],
-    thisVars:["this_i"],
-    localVars:[]}
-})  
-
-exports.random = makeOp({
-  args: ["array"],
-  pre: {args:[], body:"this_f=Math.random", thisVars:["this_f"]},
-  body: {args: ["a"], body:"a=this_f()", thisVars:["this_f"]},
-  funcName: "random"
-})
-
-exports.assign = makeOp({
-  args:["array", "array"],
-  body: {args:["a", "b"], body:"a=b"},
-  funcName: "assign" })
-
-exports.assigns = makeOp({
-  args:["array", "scalar"],
-  body: {args:["a", "b"], body:"a=b"},
-  funcName: "assigns" })
-
-
-exports.equals = compile({
-  args:["array", "array"],
-  pre: EmptyProc,
-  body: {args:[{name:"x", lvalue:false, rvalue:true, count:1},
-               {name:"y", lvalue:false, rvalue:true, count:1}], 
-        body: "if(x!==y){return false}", 
-        localVars: [], 
-        thisVars: []},
-  post: {args:[], localVars:[], thisVars:[], body:"return true"},
-  funcName: "equals"
-})
-
-
-
-},{"cwise-compiler":185}],185:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"./lib/thunk.js":187,"dup":49}],186:[function(require,module,exports){
-arguments[4][50][0].apply(exports,arguments)
-},{"dup":50,"uniq":188}],187:[function(require,module,exports){
-arguments[4][51][0].apply(exports,arguments)
-},{"./compile.js":186,"dup":51}],188:[function(require,module,exports){
-arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],189:[function(require,module,exports){
-var iota = require("iota-array")
-var isBuffer = require("is-buffer")
-
-var hasTypedArrays  = ((typeof Float64Array) !== "undefined")
-
-function compare1st(a, b) {
-  return a[0] - b[0]
-}
-
-function order() {
-  var stride = this.stride
-  var terms = new Array(stride.length)
-  var i
-  for(i=0; i<terms.length; ++i) {
-    terms[i] = [Math.abs(stride[i]), i]
-  }
-  terms.sort(compare1st)
-  var result = new Array(terms.length)
-  for(i=0; i<result.length; ++i) {
-    result[i] = terms[i][1]
-  }
-  return result
-}
-
-function compileConstructor(dtype, dimension) {
-  var className = ["View", dimension, "d", dtype].join("")
-  if(dimension < 0) {
-    className = "View_Nil" + dtype
-  }
-  var useGetters = (dtype === "generic")
-
-  if(dimension === -1) {
-    //Special case for trivial arrays
-    var code =
-      "function "+className+"(a){this.data=a;};\
-var proto="+className+".prototype;\
-proto.dtype='"+dtype+"';\
-proto.index=function(){return -1};\
-proto.size=0;\
-proto.dimension=-1;\
-proto.shape=proto.stride=proto.order=[];\
-proto.lo=proto.hi=proto.transpose=proto.step=\
-function(){return new "+className+"(this.data);};\
-proto.get=proto.set=function(){};\
-proto.pick=function(){return null};\
-return function construct_"+className+"(a){return new "+className+"(a);}"
-    var procedure = new Function(code)
-    return procedure()
-  } else if(dimension === 0) {
-    //Special case for 0d arrays
-    var code =
-      "function "+className+"(a,d) {\
-this.data = a;\
-this.offset = d\
-};\
-var proto="+className+".prototype;\
-proto.dtype='"+dtype+"';\
-proto.index=function(){return this.offset};\
-proto.dimension=0;\
-proto.size=1;\
-proto.shape=\
-proto.stride=\
-proto.order=[];\
-proto.lo=\
-proto.hi=\
-proto.transpose=\
-proto.step=function "+className+"_copy() {\
-return new "+className+"(this.data,this.offset)\
-};\
-proto.pick=function "+className+"_pick(){\
-return TrivialArray(this.data);\
-};\
-proto.valueOf=proto.get=function "+className+"_get(){\
-return "+(useGetters ? "this.data.get(this.offset)" : "this.data[this.offset]")+
-"};\
-proto.set=function "+className+"_set(v){\
-return "+(useGetters ? "this.data.set(this.offset,v)" : "this.data[this.offset]=v")+"\
-};\
-return function construct_"+className+"(a,b,c,d){return new "+className+"(a,d)}"
-    var procedure = new Function("TrivialArray", code)
-    return procedure(CACHED_CONSTRUCTORS[dtype][0])
-  }
-
-  var code = ["'use strict'"]
-
-  //Create constructor for view
-  var indices = iota(dimension)
-  var args = indices.map(function(i) { return "i"+i })
-  var index_str = "this.offset+" + indices.map(function(i) {
-        return "this.stride[" + i + "]*i" + i
-      }).join("+")
-  var shapeArg = indices.map(function(i) {
-      return "b"+i
-    }).join(",")
-  var strideArg = indices.map(function(i) {
-      return "c"+i
-    }).join(",")
-  code.push(
-    "function "+className+"(a," + shapeArg + "," + strideArg + ",d){this.data=a",
-      "this.shape=[" + shapeArg + "]",
-      "this.stride=[" + strideArg + "]",
-      "this.offset=d|0}",
-    "var proto="+className+".prototype",
-    "proto.dtype='"+dtype+"'",
-    "proto.dimension="+dimension)
-
-  //view.size:
-  code.push("Object.defineProperty(proto,'size',{get:function "+className+"_size(){\
-return "+indices.map(function(i) { return "this.shape["+i+"]" }).join("*"),
-"}})")
-
-  //view.order:
-  if(dimension === 1) {
-    code.push("proto.order=[0]")
-  } else {
-    code.push("Object.defineProperty(proto,'order',{get:")
-    if(dimension < 4) {
-      code.push("function "+className+"_order(){")
-      if(dimension === 2) {
-        code.push("return (Math.abs(this.stride[0])>Math.abs(this.stride[1]))?[1,0]:[0,1]}})")
-      } else if(dimension === 3) {
-        code.push(
-"var s0=Math.abs(this.stride[0]),s1=Math.abs(this.stride[1]),s2=Math.abs(this.stride[2]);\
-if(s0>s1){\
-if(s1>s2){\
-return [2,1,0];\
-}else if(s0>s2){\
-return [1,2,0];\
-}else{\
-return [1,0,2];\
-}\
-}else if(s0>s2){\
-return [2,0,1];\
-}else if(s2>s1){\
-return [0,1,2];\
-}else{\
-return [0,2,1];\
-}}})")
-      }
-    } else {
-      code.push("ORDER})")
-    }
-  }
-
-  //view.set(i0, ..., v):
-  code.push(
-"proto.set=function "+className+"_set("+args.join(",")+",v){")
-  if(useGetters) {
-    code.push("return this.data.set("+index_str+",v)}")
-  } else {
-    code.push("return this.data["+index_str+"]=v}")
-  }
-
-  //view.get(i0, ...):
-  code.push("proto.get=function "+className+"_get("+args.join(",")+"){")
-  if(useGetters) {
-    code.push("return this.data.get("+index_str+")}")
-  } else {
-    code.push("return this.data["+index_str+"]}")
-  }
-
-  //view.index:
-  code.push(
-    "proto.index=function "+className+"_index(", args.join(), "){return "+index_str+"}")
-
-  //view.hi():
-  code.push("proto.hi=function "+className+"_hi("+args.join(",")+"){return new "+className+"(this.data,"+
-    indices.map(function(i) {
-      return ["(typeof i",i,"!=='number'||i",i,"<0)?this.shape[", i, "]:i", i,"|0"].join("")
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "this.stride["+i + "]"
-    }).join(",")+",this.offset)}")
-
-  //view.lo():
-  var a_vars = indices.map(function(i) { return "a"+i+"=this.shape["+i+"]" })
-  var c_vars = indices.map(function(i) { return "c"+i+"=this.stride["+i+"]" })
-  code.push("proto.lo=function "+className+"_lo("+args.join(",")+"){var b=this.offset,d=0,"+a_vars.join(",")+","+c_vars.join(","))
-  for(var i=0; i<dimension; ++i) {
-    code.push(
-"if(typeof i"+i+"==='number'&&i"+i+">=0){\
-d=i"+i+"|0;\
-b+=c"+i+"*d;\
-a"+i+"-=d}")
-  }
-  code.push("return new "+className+"(this.data,"+
-    indices.map(function(i) {
-      return "a"+i
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "c"+i
-    }).join(",")+",b)}")
-
-  //view.step():
-  code.push("proto.step=function "+className+"_step("+args.join(",")+"){var "+
-    indices.map(function(i) {
-      return "a"+i+"=this.shape["+i+"]"
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "b"+i+"=this.stride["+i+"]"
-    }).join(",")+",c=this.offset,d=0,ceil=Math.ceil")
-  for(var i=0; i<dimension; ++i) {
-    code.push(
-"if(typeof i"+i+"==='number'){\
-d=i"+i+"|0;\
-if(d<0){\
-c+=b"+i+"*(a"+i+"-1);\
-a"+i+"=ceil(-a"+i+"/d)\
-}else{\
-a"+i+"=ceil(a"+i+"/d)\
-}\
-b"+i+"*=d\
-}")
-  }
-  code.push("return new "+className+"(this.data,"+
-    indices.map(function(i) {
-      return "a" + i
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "b" + i
-    }).join(",")+",c)}")
-
-  //view.transpose():
-  var tShape = new Array(dimension)
-  var tStride = new Array(dimension)
-  for(var i=0; i<dimension; ++i) {
-    tShape[i] = "a[i"+i+"]"
-    tStride[i] = "b[i"+i+"]"
-  }
-  code.push("proto.transpose=function "+className+"_transpose("+args+"){"+
-    args.map(function(n,idx) { return n + "=(" + n + "===undefined?" + idx + ":" + n + "|0)"}).join(";"),
-    "var a=this.shape,b=this.stride;return new "+className+"(this.data,"+tShape.join(",")+","+tStride.join(",")+",this.offset)}")
-
-  //view.pick():
-  code.push("proto.pick=function "+className+"_pick("+args+"){var a=[],b=[],c=this.offset")
-  for(var i=0; i<dimension; ++i) {
-    code.push("if(typeof i"+i+"==='number'&&i"+i+">=0){c=(c+this.stride["+i+"]*i"+i+")|0}else{a.push(this.shape["+i+"]);b.push(this.stride["+i+"])}")
-  }
-  code.push("var ctor=CTOR_LIST[a.length+1];return ctor(this.data,a,b,c)}")
-
-  //Add return statement
-  code.push("return function construct_"+className+"(data,shape,stride,offset){return new "+className+"(data,"+
-    indices.map(function(i) {
-      return "shape["+i+"]"
-    }).join(",")+","+
-    indices.map(function(i) {
-      return "stride["+i+"]"
-    }).join(",")+",offset)}")
-
-  //Compile procedure
-  var procedure = new Function("CTOR_LIST", "ORDER", code.join("\n"))
-  return procedure(CACHED_CONSTRUCTORS[dtype], order)
-}
-
-function arrayDType(data) {
-  if(isBuffer(data)) {
-    return "buffer"
-  }
-  if(hasTypedArrays) {
-    switch(Object.prototype.toString.call(data)) {
-      case "[object Float64Array]":
-        return "float64"
-      case "[object Float32Array]":
-        return "float32"
-      case "[object Int8Array]":
-        return "int8"
-      case "[object Int16Array]":
-        return "int16"
-      case "[object Int32Array]":
-        return "int32"
-      case "[object Uint8Array]":
-        return "uint8"
-      case "[object Uint16Array]":
-        return "uint16"
-      case "[object Uint32Array]":
-        return "uint32"
-      case "[object Uint8ClampedArray]":
-        return "uint8_clamped"
-    }
-  }
-  if(Array.isArray(data)) {
-    return "array"
-  }
-  return "generic"
-}
-
-var CACHED_CONSTRUCTORS = {
-  "float32":[],
-  "float64":[],
-  "int8":[],
-  "int16":[],
-  "int32":[],
-  "uint8":[],
-  "uint16":[],
-  "uint32":[],
-  "array":[],
-  "uint8_clamped":[],
-  "buffer":[],
-  "generic":[]
-}
-
-;(function() {
-  for(var id in CACHED_CONSTRUCTORS) {
-    CACHED_CONSTRUCTORS[id].push(compileConstructor(id, -1))
-  }
-});
-
-function wrappedNDArrayCtor(data, shape, stride, offset) {
-  if(data === undefined) {
-    var ctor = CACHED_CONSTRUCTORS.array[0]
-    return ctor([])
-  } else if(typeof data === "number") {
-    data = [data]
-  }
-  if(shape === undefined) {
-    shape = [ data.length ]
-  }
-  var d = shape.length
-  if(stride === undefined) {
-    stride = new Array(d)
-    for(var i=d-1, sz=1; i>=0; --i) {
-      stride[i] = sz
-      sz *= shape[i]
-    }
-  }
-  if(offset === undefined) {
-    offset = 0
-    for(var i=0; i<d; ++i) {
-      if(stride[i] < 0) {
-        offset -= (shape[i]-1)*stride[i]
-      }
-    }
-  }
-  var dtype = arrayDType(data)
-  var ctor_list = CACHED_CONSTRUCTORS[dtype]
-  while(ctor_list.length <= d+1) {
-    ctor_list.push(compileConstructor(dtype, ctor_list.length-1))
-  }
-  var ctor = ctor_list[d+1]
-  return ctor(data, shape, stride, offset)
-}
-
-module.exports = wrappedNDArrayCtor
-
-},{"iota-array":190,"is-buffer":172}],190:[function(require,module,exports){
-"use strict"
-
-function iota(n) {
-  var result = new Array(n)
-  for(var i=0; i<n; ++i) {
-    result[i] = i
-  }
-  return result
-}
-
-module.exports = iota
-},{}],191:[function(require,module,exports){
+},{"gl-matrix-invert":237,"ndarray-warp":240}],242:[function(require,module,exports){
+arguments[4][44][0].apply(exports,arguments)
+},{"cwise-compiler":243,"dup":44}],243:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"./lib/thunk.js":245,"dup":40}],244:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"dup":41,"uniq":246}],245:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"./compile.js":244,"dup":42}],246:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"dup":43}],247:[function(require,module,exports){
+arguments[4][55][0].apply(exports,arguments)
+},{"dup":55,"iota-array":248,"is-buffer":230}],248:[function(require,module,exports){
+arguments[4][56][0].apply(exports,arguments)
+},{"dup":56}],249:[function(require,module,exports){
 (function (global){
 module.exports =
   global.performance &&
@@ -35861,7 +38361,7 @@ module.exports =
   }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],192:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 "use strict"
 
 var determinant = require("robust-determinant")
@@ -35933,7 +38433,7 @@ function generateDispatch() {
 }
 
 generateDispatch()
-},{"robust-determinant":194}],193:[function(require,module,exports){
+},{"robust-determinant":252}],251:[function(require,module,exports){
 "use strict"
 
 module.exports = compressExpansion
@@ -35968,7 +38468,7 @@ function compressExpansion(e) {
   e.length = top
   return e
 }
-},{}],194:[function(require,module,exports){
+},{}],252:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -36072,7 +38572,7 @@ return robustDeterminant")
 }
 
 generateDispatch()
-},{"robust-compress":193,"robust-scale":196,"robust-sum":198,"two-product":215}],195:[function(require,module,exports){
+},{"robust-compress":251,"robust-scale":254,"robust-sum":256,"two-product":273}],253:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -36263,7 +38763,7 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":196,"robust-subtract":197,"robust-sum":198,"two-product":215}],196:[function(require,module,exports){
+},{"robust-scale":254,"robust-subtract":255,"robust-sum":256,"two-product":273}],254:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -36314,7 +38814,7 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":215,"two-sum":216}],197:[function(require,module,exports){
+},{"two-product":273,"two-sum":274}],255:[function(require,module,exports){
 "use strict"
 
 module.exports = robustSubtract
@@ -36471,7 +38971,7 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],198:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 "use strict"
 
 module.exports = linearExpansionSum
@@ -36628,7 +39128,7 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],199:[function(require,module,exports){
+},{}],257:[function(require,module,exports){
 'use strict'
 
 module.exports = toSuperScript
@@ -36683,956 +39183,31 @@ function toSuperScript(x) {
   }).join('')
 }
 
-},{}],200:[function(require,module,exports){
-"use strict"
-
-var pool = require("typedarray-pool")
-
-module.exports = createSurfaceExtractor
-
-//Helper macros
-function array(i) {
-  return "a" + i
-}
-function data(i) {
-  return "d" + i
-}
-function cube(i,bitmask) {
-  return "c" + i + "_" + bitmask
-}
-function shape(i) {
-  return "s" + i
-}
-function stride(i,j) {
-  return "t" + i + "_" + j
-}
-function offset(i) {
-  return "o" + i
-}
-function scalar(i) {
-  return "x" + i
-}
-function pointer(i) {
-  return "p" + i
-}
-function delta(i,bitmask) {
-  return "d" + i + "_" + bitmask
-}
-function index(i) {
-  return "i" + i
-}
-function step(i,j) {
-  return "u" + i + "_" + j
-}
-function pcube(bitmask) {
-  return "b" + bitmask
-}
-function qcube(bitmask) {
-  return "y" + bitmask
-}
-function pdelta(bitmask) {
-  return "e" + bitmask
-}
-function vert(i) {
-  return "v" + i
-}
-var VERTEX_IDS = "V"
-var PHASES = "P"
-var VERTEX_COUNT = "N"
-var POOL_SIZE = "Q"
-var POINTER = "X"
-var TEMPORARY = "T"
-
-function permBitmask(dimension, mask, order) {
-  var r = 0
-  for(var i=0; i<dimension; ++i) {
-    if(mask & (1<<i)) {
-      r |= (1<<order[i])
-    }
-  }
-  return r
-}
-
-//Generates the surface procedure
-function compileSurfaceProcedure(vertexFunc, faceFunc, phaseFunc, scalarArgs, order, typesig) {
-  var arrayArgs = typesig.length
-  var dimension = order.length
-
-  if(dimension < 2) {
-    throw new Error("ndarray-extract-contour: Dimension must be at least 2")
-  }
-
-  var funcName = "extractContour" + order.join("_")
-  var code = []
-  var vars = []
-  var args = []
-
-  //Assemble arguments
-  for(var i=0; i<arrayArgs; ++i) {
-    args.push(array(i))  
-  }
-  for(var i=0; i<scalarArgs; ++i) {
-    args.push(scalar(i))
-  }
-
-  //Shape
-  for(var i=0; i<dimension; ++i) {
-    vars.push(shape(i) + "=" + array(0) + ".shape[" + i + "]|0")
-  }
-  //Data, stride, offset pointers
-  for(var i=0; i<arrayArgs; ++i) {
-    vars.push(data(i) + "=" + array(i) + ".data",
-              offset(i) + "=" + array(i) + ".offset|0")
-    for(var j=0; j<dimension; ++j) {
-      vars.push(stride(i,j) + "=" + array(i) + ".stride[" + j + "]|0")
-    }
-  }
-  //Pointer, delta and cube variables
-  for(var i=0; i<arrayArgs; ++i) {
-    vars.push(pointer(i) + "=" + offset(i))
-    vars.push(cube(i,0))
-    for(var j=1; j<(1<<dimension); ++j) {
-      var ptrStr = []
-      for(var k=0; k<dimension; ++k) {
-        if(j & (1<<k)) {
-          ptrStr.push("-" + stride(i,k))
-        }
-      }
-      vars.push(delta(i,j) + "=(" + ptrStr.join("") + ")|0")
-      vars.push(cube(i,j) + "=0")
-    }
-  }
-  //Create step variables
-  for(var i=0; i<arrayArgs; ++i) {
-    for(var j=0; j<dimension; ++j) {
-      var stepVal = [ stride(i,order[j]) ]
-      if(j > 0) {
-        stepVal.push(stride(i, order[j-1]) + "*" + shape(order[j-1]) )
-      }
-      vars.push(step(i,order[j]) + "=(" + stepVal.join("-") + ")|0")
-    }
-  }
-  //Create index variables
-  for(var i=0; i<dimension; ++i) {
-    vars.push(index(i) + "=0")
-  }
-  //Vertex count
-  vars.push(VERTEX_COUNT + "=0")
-  //Compute pool size, initialize pool step
-  var sizeVariable = ["2"]
-  for(var i=dimension-2; i>=0; --i) {
-    sizeVariable.push(shape(order[i]))
-  }
-  //Previous phases and vertex_ids
-  vars.push(POOL_SIZE + "=(" + sizeVariable.join("*") + ")|0",
-            PHASES + "=mallocUint32(" + POOL_SIZE + ")",
-            VERTEX_IDS + "=mallocUint32(" + POOL_SIZE + ")",
-            POINTER + "=0")
-  //Create cube variables for phases
-  vars.push(pcube(0) + "=0")
-  for(var j=1; j<(1<<dimension); ++j) {
-    var cubeDelta = []
-    var cubeStep = [ ]
-    for(var k=0; k<dimension; ++k) {
-      if(j & (1<<k)) {
-        if(cubeStep.length === 0) {
-          cubeDelta.push("1")
-        } else {
-          cubeDelta.unshift(cubeStep.join("*"))
-        }
-      }
-      cubeStep.push(shape(order[k]))
-    }
-    var signFlag = ""
-    if(cubeDelta[0].indexOf(shape(order[dimension-2])) < 0) {
-      signFlag = "-"
-    }
-    var jperm = permBitmask(dimension, j, order)
-    vars.push(pdelta(jperm) + "=(-" + cubeDelta.join("-") + ")|0",
-              qcube(jperm) + "=(" + signFlag + cubeDelta.join("-") + ")|0",
-              pcube(jperm) + "=0")
-  }
-  vars.push(vert(0) + "=0", TEMPORARY + "=0")
-
-  function forLoopBegin(i, start) {
-    code.push("for(", index(order[i]), "=", start, ";",
-      index(order[i]), "<", shape(order[i]), ";",
-      "++", index(order[i]), "){")
-  }
-
-  function forLoopEnd(i) {
-    for(var j=0; j<arrayArgs; ++j) {
-      code.push(pointer(j), "+=", step(j,order[i]), ";")
-    }
-    code.push("}")
-  }
-
-  function fillEmptySlice(k) {
-    for(var i=k-1; i>=0; --i) {
-      forLoopBegin(i, 0) 
-    }
-    var phaseFuncArgs = []
-    for(var i=0; i<arrayArgs; ++i) {
-      if(typesig[i]) {
-        phaseFuncArgs.push(data(i) + ".get(" + pointer(i) + ")")
-      } else {
-        phaseFuncArgs.push(data(i) + "[" + pointer(i) + "]")
-      }
-    }
-    for(var i=0; i<scalarArgs; ++i) {
-      phaseFuncArgs.push(scalar(i))
-    }
-    code.push(PHASES, "[", POINTER, "++]=phase(", phaseFuncArgs.join(), ");")
-    for(var i=0; i<k; ++i) {
-      forLoopEnd(i)
-    }
-    for(var j=0; j<arrayArgs; ++j) {
-      code.push(pointer(j), "+=", step(j,order[k]), ";")
-    }
-  }
-
-  function processGridCell(mask) {
-    //Read in local data
-    for(var i=0; i<arrayArgs; ++i) {
-      if(typesig[i]) {
-        code.push(cube(i,0), "=", data(i), ".get(", pointer(i), ");")
-      } else {
-        code.push(cube(i,0), "=", data(i), "[", pointer(i), "];")
-      }
-    }
-
-    //Read in phase
-    var phaseFuncArgs = []
-    for(var i=0; i<arrayArgs; ++i) {
-      phaseFuncArgs.push(cube(i,0))
-    }
-    for(var i=0; i<scalarArgs; ++i) {
-      phaseFuncArgs.push(scalar(i))
-    }
-    
-    code.push(pcube(0), "=", PHASES, "[", POINTER, "]=phase(", phaseFuncArgs.join(), ");")
-    
-    //Read in other cube data
-    for(var j=1; j<(1<<dimension); ++j) {
-      code.push(pcube(j), "=", PHASES, "[", POINTER, "+", pdelta(j), "];")
-    }
-
-    //Check for boundary crossing
-    var vertexPredicate = []
-    for(var j=1; j<(1<<dimension); ++j) {
-      vertexPredicate.push("(" + pcube(0) + "!==" + pcube(j) + ")")
-    }
-    code.push("if(", vertexPredicate.join("||"), "){")
-
-    //Read in boundary data
-    var vertexArgs = []
-    for(var i=0; i<dimension; ++i) {
-      vertexArgs.push(index(i))
-    }
-    for(var i=0; i<arrayArgs; ++i) {
-      vertexArgs.push(cube(i,0))
-      for(var j=1; j<(1<<dimension); ++j) {
-        if(typesig[i]) {
-          code.push(cube(i,j), "=", data(i), ".get(", pointer(i), "+", delta(i,j), ");")
-        } else {
-          code.push(cube(i,j), "=", data(i), "[", pointer(i), "+", delta(i,j), "];")
-        }
-        vertexArgs.push(cube(i,j))
-      }
-    }
-    for(var i=0; i<(1<<dimension); ++i) {
-      vertexArgs.push(pcube(i))
-    }
-    for(var i=0; i<scalarArgs; ++i) {
-      vertexArgs.push(scalar(i))
-    }
-
-    //Generate vertex
-    code.push("vertex(", vertexArgs.join(), ");",
-      vert(0), "=", VERTEX_IDS, "[", POINTER, "]=", VERTEX_COUNT, "++;")
-
-    //Check for face crossings
-    var base = (1<<dimension)-1
-    var corner = pcube(base)
-    for(var j=0; j<dimension; ++j) {
-      if((mask & ~(1<<j))===0) {
-        //Check face
-        var subset = base^(1<<j)
-        var edge = pcube(subset)
-        var faceArgs = [ ]
-        for(var k=subset; k>0; k=(k-1)&subset) {
-          faceArgs.push(VERTEX_IDS + "[" + POINTER + "+" + pdelta(k) + "]")
-        }
-        faceArgs.push(vert(0))
-        for(var k=0; k<arrayArgs; ++k) {
-          if(j&1) {
-            faceArgs.push(cube(k,base), cube(k,subset))
-          } else {
-            faceArgs.push(cube(k,subset), cube(k,base))
-          }
-        }
-        if(j&1) {
-          faceArgs.push(corner, edge)
-        } else {
-          faceArgs.push(edge, corner)
-        }
-        for(var k=0; k<scalarArgs; ++k) {
-          faceArgs.push(scalar(k))
-        }
-        code.push("if(", corner, "!==", edge, "){",
-          "face(", faceArgs.join(), ")}")
-      }
-    }
-    
-    //Increment pointer, close off if statement
-    code.push("}",
-      POINTER, "+=1;")
-  }
-
-  function flip() {
-    for(var j=1; j<(1<<dimension); ++j) {
-      code.push(TEMPORARY, "=", pdelta(j), ";",
-                pdelta(j), "=", qcube(j), ";",
-                qcube(j), "=", TEMPORARY, ";")
-    }
-  }
-
-  function createLoop(i, mask) {
-    if(i < 0) {
-      processGridCell(mask)
-      return
-    }
-    fillEmptySlice(i)
-    code.push("if(", shape(order[i]), ">0){",
-      index(order[i]), "=1;")
-    createLoop(i-1, mask|(1<<order[i]))
-
-    for(var j=0; j<arrayArgs; ++j) {
-      code.push(pointer(j), "+=", step(j,order[i]), ";")
-    }
-    if(i === dimension-1) {
-      code.push(POINTER, "=0;")
-      flip()
-    }
-    forLoopBegin(i, 2)
-    createLoop(i-1, mask)
-    if(i === dimension-1) {
-      code.push("if(", index(order[dimension-1]), "&1){",
-        POINTER, "=0;}")
-      flip()
-    }
-    forLoopEnd(i)
-    code.push("}")
-  }
-
-  createLoop(dimension-1, 0)
-
-  //Release scratch memory
-  code.push("freeUint32(", VERTEX_IDS, ");freeUint32(", PHASES, ");")
-
-  //Compile and link procedure
-  var procedureCode = [
-    "'use strict';",
-    "function ", funcName, "(", args.join(), "){",
-      "var ", vars.join(), ";",
-      code.join(""),
-    "}",
-    "return ", funcName ].join("")
-
-  var proc = new Function(
-    "vertex", 
-    "face", 
-    "phase", 
-    "mallocUint32", 
-    "freeUint32",
-    procedureCode)
-  return proc(
-    vertexFunc, 
-    faceFunc, 
-    phaseFunc, 
-    pool.mallocUint32, 
-    pool.freeUint32)
-}
-
-function createSurfaceExtractor(args) {
-  function error(msg) {
-    throw new Error("ndarray-extract-contour: " + msg)
-  }
-  if(typeof args !== "object") {
-    error("Must specify arguments")
-  }
-  var order = args.order
-  if(!Array.isArray(order)) {
-    error("Must specify order")
-  }
-  var arrays = args.arrayArguments||1
-  if(arrays < 1) {
-    error("Must have at least one array argument")
-  }
-  var scalars = args.scalarArguments||0
-  if(scalars < 0) {
-    error("Scalar arg count must be > 0")
-  }
-  if(typeof args.vertex !== "function") {
-    error("Must specify vertex creation function")
-  }
-  if(typeof args.cell !== "function") {
-    error("Must specify cell creation function")
-  }
-  if(typeof args.phase !== "function") {
-    error("Must specify phase function")
-  }
-  var getters = args.getters || []
-  var typesig = new Array(arrays)
-  for(var i=0; i<arrays; ++i) {
-    if(getters.indexOf(i) >= 0) {
-      typesig[i] = true
-    } else {
-      typesig[i] = false
-    }
-  }
-  return compileSurfaceProcedure(
-    args.vertex,
-    args.cell,
-    args.phase,
-    scalars,
-    order,
-    typesig)
-}
-},{"typedarray-pool":217}],201:[function(require,module,exports){
-// transliterated from the python snippet here:
-// http://en.wikipedia.org/wiki/Lanczos_approximation
-
-var g = 7;
-var p = [
-    0.99999999999980993,
-    676.5203681218851,
-    -1259.1392167224028,
-    771.32342877765313,
-    -176.61502916214059,
-    12.507343278686905,
-    -0.13857109526572012,
-    9.9843695780195716e-6,
-    1.5056327351493116e-7
-];
-
-var g_ln = 607/128;
-var p_ln = [
-    0.99999999999999709182,
-    57.156235665862923517,
-    -59.597960355475491248,
-    14.136097974741747174,
-    -0.49191381609762019978,
-    0.33994649984811888699e-4,
-    0.46523628927048575665e-4,
-    -0.98374475304879564677e-4,
-    0.15808870322491248884e-3,
-    -0.21026444172410488319e-3,
-    0.21743961811521264320e-3,
-    -0.16431810653676389022e-3,
-    0.84418223983852743293e-4,
-    -0.26190838401581408670e-4,
-    0.36899182659531622704e-5
-];
-
-// Spouge approximation (suitable for large arguments)
-function lngamma(z) {
-
-    if(z < 0) return Number('0/0');
-    var x = p_ln[0];
-    for(var i = p_ln.length - 1; i > 0; --i) x += p_ln[i] / (z + i);
-    var t = z + g_ln + 0.5;
-    return .5*Math.log(2*Math.PI)+(z+.5)*Math.log(t)-t+Math.log(x)-Math.log(z);
-}
-
-module.exports = function gamma (z) {
-    if (z < 0.5) {
-        return Math.PI / (Math.sin(Math.PI * z) * gamma(1 - z));
-    }
-    else if(z > 100) return Math.exp(lngamma(z));
-    else {
-        z -= 1;
-        var x = p[0];
-        for (var i = 1; i < g + 2; i++) {
-            x += p[i] / (z + i);
-        }
-        var t = z + g + 0.5;
-
-        return Math.sqrt(2 * Math.PI)
-            * Math.pow(t, z + 0.5)
-            * Math.exp(-t)
-            * x
-        ;
-    }
-};
-
-module.exports.log = lngamma;
-
-},{}],202:[function(require,module,exports){
-"use strict"
-
-module.exports = permutationSign
-
-var BRUTE_FORCE_CUTOFF = 32
-
-var pool = require("typedarray-pool")
-
-function permutationSign(p) {
-  var n = p.length
-  if(n < BRUTE_FORCE_CUTOFF) {
-    //Use quadratic algorithm for small n
-    var sgn = 1
-    for(var i=0; i<n; ++i) {
-      for(var j=0; j<i; ++j) {
-        if(p[i] < p[j]) {
-          sgn = -sgn
-        } else if(p[i] === p[j]) {
-          return 0
-        }
-      }
-    }
-    return sgn
-  } else {
-    //Otherwise use linear time algorithm
-    var visited = pool.mallocUint8(n)
-    for(var i=0; i<n; ++i) {
-      visited[i] = 0
-    }
-    var sgn = 1
-    for(var i=0; i<n; ++i) {
-      if(!visited[i]) {
-        var count = 1
-        visited[i] = 1
-        for(var j=p[i]; j!==i; j=p[j]) {
-          if(visited[j]) {
-            pool.freeUint8(visited)
-            return 0
-          }
-          count += 1
-          visited[j] = 1
-        }
-        if(!(count & 1)) {
-          sgn = -sgn
-        }
-      }
-    }
-    pool.freeUint8(visited)
-    return sgn
-  }
-}
-},{"typedarray-pool":217}],203:[function(require,module,exports){
-"use strict"
-
-var pool = require("typedarray-pool")
-var inverse = require("invert-permutation")
-
-function rank(permutation) {
-  var n = permutation.length
-  switch(n) {
-    case 0:
-    case 1:
-      return 0
-    case 2:
-      return permutation[1]
-    default:
-      break
-  }
-  var p = pool.mallocUint32(n)
-  var pinv = pool.mallocUint32(n)
-  var r = 0, s, t, i
-  inverse(permutation, pinv)
-  for(i=0; i<n; ++i) {
-    p[i] = permutation[i]
-  }
-  for(i=n-1; i>0; --i) {
-    t = pinv[i]
-    s = p[i]
-    p[i] = p[t]
-    p[t] = s
-    pinv[i] = pinv[s]
-    pinv[s] = t
-    r = (r + s) * i
-  }
-  pool.freeUint32(pinv)
-  pool.freeUint32(p)
-  return r
-}
-
-function unrank(n, r, p) {
-  switch(n) {
-    case 0:
-      if(p) { return p }
-      return []
-    case 1:
-      if(p) {
-        p[0] = 0
-        return p
-      } else {
-        return [0]
-      }
-    case 2:
-      if(p) {
-        if(r) {
-          p[0] = 0
-          p[1] = 1
-        } else {
-          p[0] = 1
-          p[1] = 0
-        }
-        return p
-      } else {
-        return r ? [0,1] : [1,0]
-      }
-    default:
-      break
-  }
-  p = p || new Array(n)
-  var s, t, i, nf=1
-  p[0] = 0
-  for(i=1; i<n; ++i) {
-    p[i] = i
-    nf = (nf*i)|0
-  }
-  for(i=n-1; i>0; --i) {
-    s = (r / nf)|0
-    r = (r - s * nf)|0
-    nf = (nf / i)|0
-    t = p[i]|0
-    p[i] = p[s]|0
-    p[s] = t|0
-  }
-  return p
-}
-
-exports.rank = rank
-exports.unrank = unrank
-
-},{"invert-permutation":204,"typedarray-pool":217}],204:[function(require,module,exports){
-"use strict"
-
-function invertPermutation(pi, result) {
-  result = result || new Array(pi.length)
-  for(var i=0; i<pi.length; ++i) {
-    result[pi[i]] = i
-  }
-  return result
-}
-
-module.exports = invertPermutation
-},{}],205:[function(require,module,exports){
-"use strict"
-
-module.exports = triangulateCube
-
-var perm = require("permutation-rank")
-var sgn = require("permutation-parity")
-var gamma = require("gamma")
-
-function triangulateCube(dimension) {
-  if(dimension < 0) {
-    return [ ]
-  }
-  if(dimension === 0) {
-    return [ [0] ]
-  }
-  var dfactorial = Math.round(gamma(dimension+1))|0
-  var result = []
-  for(var i=0; i<dfactorial; ++i) {
-    var p = perm.unrank(dimension, i)
-    var cell = [ 0 ]
-    var v = 0
-    for(var j=0; j<p.length; ++j) {
-      v += (1<<p[j])
-      cell.push(v)
-    }
-    if(sgn(p) < 1) {
-      cell[0] = v
-      cell[dimension] = 0
-    }
-    result.push(cell)
-  }
-  return result
-}
-},{"gamma":201,"permutation-parity":202,"permutation-rank":203}],206:[function(require,module,exports){
-module.exports = require('cwise-compiler')({
-    args: ['array', {
-        offset: [1],
-        array: 0
-    }, 'scalar', 'scalar', 'index'],
-    pre: {
-        "body": "{}",
-        "args": [],
-        "thisVars": [],
-        "localVars": []
-    },
-    post: {
-        "body": "{}",
-        "args": [],
-        "thisVars": [],
-        "localVars": []
-    },
-    body: {
-        "body": "{\n        var _inline_1_da = _inline_1_arg0_ - _inline_1_arg3_\n        var _inline_1_db = _inline_1_arg1_ - _inline_1_arg3_\n        if((_inline_1_da >= 0) !== (_inline_1_db >= 0)) {\n          _inline_1_arg2_.push(_inline_1_arg4_[0] + 0.5 + 0.5 * (_inline_1_da + _inline_1_db) / (_inline_1_da - _inline_1_db))\n        }\n      }",
-        "args": [{
-            "name": "_inline_1_arg0_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 1
-        }, {
-            "name": "_inline_1_arg1_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 1
-        }, {
-            "name": "_inline_1_arg2_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 1
-        }, {
-            "name": "_inline_1_arg3_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 2
-        }, {
-            "name": "_inline_1_arg4_",
-            "lvalue": false,
-            "rvalue": true,
-            "count": 1
-        }],
-        "thisVars": [],
-        "localVars": ["_inline_1_da", "_inline_1_db"]
-    },
-    funcName: 'zeroCrossings'
-})
-
-},{"cwise-compiler":207}],207:[function(require,module,exports){
-arguments[4][49][0].apply(exports,arguments)
-},{"./lib/thunk.js":209,"dup":49}],208:[function(require,module,exports){
-arguments[4][50][0].apply(exports,arguments)
-},{"dup":50,"uniq":218}],209:[function(require,module,exports){
-arguments[4][51][0].apply(exports,arguments)
-},{"./compile.js":208,"dup":51}],210:[function(require,module,exports){
-"use strict"
-
-module.exports = findZeroCrossings
-
-var core = require("./lib/zc-core")
-
-function findZeroCrossings(array, level) {
-  var cross = []
-  level = +level || 0.0
-  core(array.hi(array.shape[0]-1), cross, level)
-  return cross
-}
-},{"./lib/zc-core":206}],211:[function(require,module,exports){
-"use strict"
-
-module.exports = surfaceNets
-
-var generateContourExtractor = require("ndarray-extract-contour")
-var triangulateCube = require("triangulate-hypercube")
-var zeroCrossings = require("zero-crossings")
-
-function buildSurfaceNets(order, dtype) {
-  var dimension = order.length
-  var code = ["'use strict';"]
-  var funcName = "surfaceNets" + order.join("_") + "d" + dtype
-
-  //Contour extraction function
-  code.push(
-    "var contour=genContour({",
-      "order:[", order.join(), "],",
-      "scalarArguments: 3,",
-      "phase:function phaseFunc(p,a,b,c) { return (p > c)|0 },")
-  if(dtype === "generic") {
-    code.push("getters:[0],")
-  }
-
-  //Generate vertex function
-  var cubeArgs = []
-  var extraArgs = []
-  for(var i=0; i<dimension; ++i) {
-    cubeArgs.push("d" + i)
-    extraArgs.push("d" + i)
-  }
-  for(var i=0; i<(1<<dimension); ++i) {
-    cubeArgs.push("v" + i)
-    extraArgs.push("v" + i)
-  }
-  for(var i=0; i<(1<<dimension); ++i) {
-    cubeArgs.push("p" + i)
-    extraArgs.push("p" + i)
-  }
-  cubeArgs.push("a", "b", "c")
-  extraArgs.push("a", "c")
-  code.push("vertex:function vertexFunc(", cubeArgs.join(), "){")
-  //Mask args together
-  var maskStr = []
-  for(var i=0; i<(1<<dimension); ++i) {
-    maskStr.push("(p" + i + "<<" + i + ")")
-  }
-  //Generate variables and giganto switch statement
-  code.push("var m=(", maskStr.join("+"), ")|0;if(m===0||m===", (1<<(1<<dimension))-1, "){return}")
-  var extraFuncs = []
-  var currentFunc = []
-  if(1<<(1<<dimension) <= 128) {
-    code.push("switch(m){")
-    currentFunc = code
-  } else {
-    code.push("switch(m>>>7){")
-  }
-  for(var i=0; i<1<<(1<<dimension); ++i) {
-    if(1<<(1<<dimension) > 128) {
-      if((i%128)===0) {
-        if(extraFuncs.length > 0) {
-          currentFunc.push("}}")
-        }
-        var efName = "vExtra" + extraFuncs.length
-        code.push("case ", (i>>>7), ":", efName, "(m&0x7f,", extraArgs.join(), ");break;")
-        currentFunc = [
-          "function ", efName, "(m,", extraArgs.join(), "){switch(m){"
-        ]
-        extraFuncs.push(currentFunc)
-      }  
-    }
-    currentFunc.push("case ", (i&0x7f), ":")
-    var crossings = new Array(dimension)
-    var denoms = new Array(dimension)
-    var crossingCount = new Array(dimension)
-    var bias = new Array(dimension)
-    var totalCrossings = 0
-    for(var j=0; j<dimension; ++j) {
-      crossings[j] = []
-      denoms[j] = []
-      crossingCount[j] = 0
-      bias[j] = 0
-    }
-    for(var j=0; j<(1<<dimension); ++j) {
-      for(var k=0; k<dimension; ++k) {
-        var u = j ^ (1<<k)
-        if(u > j) {
-          continue
-        }
-        if(!(i&(1<<u)) !== !(i&(1<<j))) {
-          var sign = 1
-          if(i&(1<<u)) {
-            denoms[k].push("v" + u + "-v" + j)
-          } else {
-            denoms[k].push("v" + j + "-v" + u)
-            sign = -sign
-          }
-          if(sign < 0) {
-            crossings[k].push("-v" + j + "-v" + u)
-            crossingCount[k] += 2
-          } else {
-            crossings[k].push("v" + j + "+v" + u)
-            crossingCount[k] -= 2            
-          }
-          totalCrossings += 1
-          for(var l=0; l<dimension; ++l) {
-            if(l === k) {
-              continue
-            }
-            if(u&(1<<l)) {
-              bias[l] += 1
-            } else {
-              bias[l] -= 1
-            }
-          }
-        }
-      }
-    }
-    var vertexStr = []
-    for(var k=0; k<dimension; ++k) {
-      if(crossings[k].length === 0) {
-        vertexStr.push("d" + k + "-0.5")
-      } else {
-        var cStr = ""
-        if(crossingCount[k] < 0) {
-          cStr = crossingCount[k] + "*c"
-        } else if(crossingCount[k] > 0) {
-          cStr = "+" + crossingCount[k] + "*c"
-        }
-        var weight = 0.5 * (crossings[k].length / totalCrossings)
-        var shift = 0.5 + 0.5 * (bias[k] / totalCrossings)
-        vertexStr.push("d" + k + "-" + shift + "-" + weight + "*(" + crossings[k].join("+") + cStr + ")/(" + denoms[k].join("+") + ")")
-        
-      }
-    }
-    currentFunc.push("a.push([", vertexStr.join(), "]);",
-      "break;")
-  }
-  code.push("}},")
-  if(extraFuncs.length > 0) {
-    currentFunc.push("}}")
-  }
-
-  //Create face function
-  var faceArgs = []
-  for(var i=0; i<(1<<(dimension-1)); ++i) {
-    faceArgs.push("v" + i)
-  }
-  faceArgs.push("c0", "c1", "p0", "p1", "a", "b", "c")
-  code.push("cell:function cellFunc(", faceArgs.join(), "){")
-
-  var facets = triangulateCube(dimension-1)
-  code.push("if(p0){b.push(",
-    facets.map(function(f) {
-      return "[" + f.map(function(v) {
-        return "v" + v
-      }) + "]"
-    }).join(), ")}else{b.push(",
-    facets.map(function(f) {
-      var e = f.slice()
-      e.reverse()
-      return "[" + e.map(function(v) {
-        return "v" + v
-      }) + "]"
-    }).join(),
-    ")}}});function ", funcName, "(array,level){var verts=[],cells=[];contour(array,verts,cells,level);return {positions:verts,cells:cells};} return ", funcName, ";")
-
-  for(var i=0; i<extraFuncs.length; ++i) {
-    code.push(extraFuncs[i].join(""))
-  }
-
-  //Compile and link
-  var proc = new Function("genContour", code.join(""))
-  return proc(generateContourExtractor)
-}
-
-//1D case: Need to handle specially
-function mesh1D(array, level) {
-  var zc = zeroCrossings(array, level)
-  var n = zc.length
-  var npos = new Array(n)
-  var ncel = new Array(n)
-  for(var i=0; i<n; ++i) {
-    npos[i] = [ zc[i] ]
-    ncel[i] = [ i ]
-  }
-  return {
-    positions: npos,
-    cells: ncel
-  }
-}
-
-var CACHE = {}
-
-function surfaceNets(array,level) {
-  if(array.dimension <= 0) {
-    return { positions: [], cells: [] }
-  } else if(array.dimension === 1) {
-    return mesh1D(array, level)
-  }
-  var typesig = array.order.join() + "-" + array.dtype
-  var proc = CACHE[typesig]
-  var level = (+level) || 0.0
-  if(!proc) {
-    proc = CACHE[typesig] = buildSurfaceNets(array.order, array.dtype)
-  }
-  return proc(array,level)
-}
-},{"ndarray-extract-contour":200,"triangulate-hypercube":205,"zero-crossings":210}],212:[function(require,module,exports){
+},{}],258:[function(require,module,exports){
+arguments[4][58][0].apply(exports,arguments)
+},{"dup":58,"typedarray-pool":275}],259:[function(require,module,exports){
+arguments[4][59][0].apply(exports,arguments)
+},{"dup":59}],260:[function(require,module,exports){
+arguments[4][60][0].apply(exports,arguments)
+},{"dup":60,"typedarray-pool":275}],261:[function(require,module,exports){
+arguments[4][61][0].apply(exports,arguments)
+},{"dup":61,"invert-permutation":262,"typedarray-pool":275}],262:[function(require,module,exports){
+arguments[4][62][0].apply(exports,arguments)
+},{"dup":62}],263:[function(require,module,exports){
+arguments[4][63][0].apply(exports,arguments)
+},{"dup":63,"gamma":259,"permutation-parity":260,"permutation-rank":261}],264:[function(require,module,exports){
+arguments[4][64][0].apply(exports,arguments)
+},{"cwise-compiler":265,"dup":64}],265:[function(require,module,exports){
+arguments[4][40][0].apply(exports,arguments)
+},{"./lib/thunk.js":267,"dup":40}],266:[function(require,module,exports){
+arguments[4][41][0].apply(exports,arguments)
+},{"dup":41,"uniq":276}],267:[function(require,module,exports){
+arguments[4][42][0].apply(exports,arguments)
+},{"./compile.js":266,"dup":42}],268:[function(require,module,exports){
+arguments[4][69][0].apply(exports,arguments)
+},{"./lib/zc-core":264,"dup":69}],269:[function(require,module,exports){
+arguments[4][70][0].apply(exports,arguments)
+},{"dup":70,"ndarray-extract-contour":258,"triangulate-hypercube":263,"zero-crossings":268}],270:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -37721,7 +39296,7 @@ function textGet(font, text) {
 }
 
 }).call(this,require('_process'))
-},{"_process":38,"vectorize-text":219}],213:[function(require,module,exports){
+},{"_process":110,"vectorize-text":277}],271:[function(require,module,exports){
 // TinyColor v1.1.2
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -38886,7 +40461,7 @@ else {
 
 })();
 
-},{}],214:[function(require,module,exports){
+},{}],272:[function(require,module,exports){
 !function() {
   var topojson = {
     version: "1.6.19",
@@ -39422,7 +40997,7 @@ else {
   else this.topojson = topojson;
 }();
 
-},{}],215:[function(require,module,exports){
+},{}],273:[function(require,module,exports){
 "use strict"
 
 module.exports = twoProduct
@@ -39456,7 +41031,7 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],216:[function(require,module,exports){
+},{}],274:[function(require,module,exports){
 "use strict"
 
 module.exports = fastTwoSum
@@ -39474,226 +41049,11 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],217:[function(require,module,exports){
-(function (global,Buffer){
-'use strict'
-
-var bits = require('bit-twiddle')
-var dup = require('dup')
-
-//Legacy pool support
-if(!global.__TYPEDARRAY_POOL) {
-  global.__TYPEDARRAY_POOL = {
-      UINT8   : dup([32, 0])
-    , UINT16  : dup([32, 0])
-    , UINT32  : dup([32, 0])
-    , INT8    : dup([32, 0])
-    , INT16   : dup([32, 0])
-    , INT32   : dup([32, 0])
-    , FLOAT   : dup([32, 0])
-    , DOUBLE  : dup([32, 0])
-    , DATA    : dup([32, 0])
-    , UINT8C  : dup([32, 0])
-    , BUFFER  : dup([32, 0])
-  }
-}
-
-var hasUint8C = (typeof Uint8ClampedArray) !== 'undefined'
-var POOL = global.__TYPEDARRAY_POOL
-
-//Upgrade pool
-if(!POOL.UINT8C) {
-  POOL.UINT8C = dup([32, 0])
-}
-if(!POOL.BUFFER) {
-  POOL.BUFFER = dup([32, 0])
-}
-
-//New technique: Only allocate from ArrayBufferView and Buffer
-var DATA    = POOL.DATA
-  , BUFFER  = POOL.BUFFER
-
-exports.free = function free(array) {
-  if(Buffer.isBuffer(array)) {
-    BUFFER[bits.log2(array.length)].push(array)
-  } else {
-    if(Object.prototype.toString.call(array) !== '[object ArrayBuffer]') {
-      array = array.buffer
-    }
-    if(!array) {
-      return
-    }
-    var n = array.length || array.byteLength
-    var log_n = bits.log2(n)|0
-    DATA[log_n].push(array)
-  }
-}
-
-function freeArrayBuffer(buffer) {
-  if(!buffer) {
-    return
-  }
-  var n = buffer.length || buffer.byteLength
-  var log_n = bits.log2(n)
-  DATA[log_n].push(buffer)
-}
-
-function freeTypedArray(array) {
-  freeArrayBuffer(array.buffer)
-}
-
-exports.freeUint8 =
-exports.freeUint16 =
-exports.freeUint32 =
-exports.freeInt8 =
-exports.freeInt16 =
-exports.freeInt32 =
-exports.freeFloat32 = 
-exports.freeFloat =
-exports.freeFloat64 = 
-exports.freeDouble = 
-exports.freeUint8Clamped = 
-exports.freeDataView = freeTypedArray
-
-exports.freeArrayBuffer = freeArrayBuffer
-
-exports.freeBuffer = function freeBuffer(array) {
-  BUFFER[bits.log2(array.length)].push(array)
-}
-
-exports.malloc = function malloc(n, dtype) {
-  if(dtype === undefined || dtype === 'arraybuffer') {
-    return mallocArrayBuffer(n)
-  } else {
-    switch(dtype) {
-      case 'uint8':
-        return mallocUint8(n)
-      case 'uint16':
-        return mallocUint16(n)
-      case 'uint32':
-        return mallocUint32(n)
-      case 'int8':
-        return mallocInt8(n)
-      case 'int16':
-        return mallocInt16(n)
-      case 'int32':
-        return mallocInt32(n)
-      case 'float':
-      case 'float32':
-        return mallocFloat(n)
-      case 'double':
-      case 'float64':
-        return mallocDouble(n)
-      case 'uint8_clamped':
-        return mallocUint8Clamped(n)
-      case 'buffer':
-        return mallocBuffer(n)
-      case 'data':
-      case 'dataview':
-        return mallocDataView(n)
-
-      default:
-        return null
-    }
-  }
-  return null
-}
-
-function mallocArrayBuffer(n) {
-  var n = bits.nextPow2(n)
-  var log_n = bits.log2(n)
-  var d = DATA[log_n]
-  if(d.length > 0) {
-    return d.pop()
-  }
-  return new ArrayBuffer(n)
-}
-exports.mallocArrayBuffer = mallocArrayBuffer
-
-function mallocUint8(n) {
-  return new Uint8Array(mallocArrayBuffer(n), 0, n)
-}
-exports.mallocUint8 = mallocUint8
-
-function mallocUint16(n) {
-  return new Uint16Array(mallocArrayBuffer(2*n), 0, n)
-}
-exports.mallocUint16 = mallocUint16
-
-function mallocUint32(n) {
-  return new Uint32Array(mallocArrayBuffer(4*n), 0, n)
-}
-exports.mallocUint32 = mallocUint32
-
-function mallocInt8(n) {
-  return new Int8Array(mallocArrayBuffer(n), 0, n)
-}
-exports.mallocInt8 = mallocInt8
-
-function mallocInt16(n) {
-  return new Int16Array(mallocArrayBuffer(2*n), 0, n)
-}
-exports.mallocInt16 = mallocInt16
-
-function mallocInt32(n) {
-  return new Int32Array(mallocArrayBuffer(4*n), 0, n)
-}
-exports.mallocInt32 = mallocInt32
-
-function mallocFloat(n) {
-  return new Float32Array(mallocArrayBuffer(4*n), 0, n)
-}
-exports.mallocFloat32 = exports.mallocFloat = mallocFloat
-
-function mallocDouble(n) {
-  return new Float64Array(mallocArrayBuffer(8*n), 0, n)
-}
-exports.mallocFloat64 = exports.mallocDouble = mallocDouble
-
-function mallocUint8Clamped(n) {
-  if(hasUint8C) {
-    return new Uint8ClampedArray(mallocArrayBuffer(n), 0, n)
-  } else {
-    return mallocUint8(n)
-  }
-}
-exports.mallocUint8Clamped = mallocUint8Clamped
-
-function mallocDataView(n) {
-  return new DataView(mallocArrayBuffer(n), 0, n)
-}
-exports.mallocDataView = mallocDataView
-
-function mallocBuffer(n) {
-  n = bits.nextPow2(n)
-  var log_n = bits.log2(n)
-  var cache = BUFFER[log_n]
-  if(cache.length > 0) {
-    return cache.pop()
-  }
-  return new Buffer(n)
-}
-exports.mallocBuffer = mallocBuffer
-
-exports.clearCache = function clearCache() {
-  for(var i=0; i<32; ++i) {
-    POOL.UINT8[i].length = 0
-    POOL.UINT16[i].length = 0
-    POOL.UINT32[i].length = 0
-    POOL.INT8[i].length = 0
-    POOL.INT16[i].length = 0
-    POOL.INT32[i].length = 0
-    POOL.FLOAT[i].length = 0
-    POOL.DOUBLE[i].length = 0
-    POOL.UINT8C[i].length = 0
-    DATA[i].length = 0
-    BUFFER[i].length = 0
-  }
-}
-}).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bit-twiddle":33,"buffer":34,"dup":55}],218:[function(require,module,exports){
-arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],219:[function(require,module,exports){
+},{}],275:[function(require,module,exports){
+arguments[4][71][0].apply(exports,arguments)
+},{"bit-twiddle":105,"buffer":106,"dup":71}],276:[function(require,module,exports){
+arguments[4][43][0].apply(exports,arguments)
+},{"dup":43}],277:[function(require,module,exports){
 "use strict"
 
 module.exports = createText
@@ -39720,7 +41080,7 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":220}],220:[function(require,module,exports){
+},{"./lib/vtext":278}],278:[function(require,module,exports){
 "use strict"
 
 module.exports = vectorizeText
@@ -39926,7 +41286,7 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":221,"clean-pslg":228,"ndarray":189,"planar-graph-to-polyline":274,"simplify-planar-graph":278,"surface-nets":211}],221:[function(require,module,exports){
+},{"cdt2d":279,"clean-pslg":286,"ndarray":247,"planar-graph-to-polyline":332,"simplify-planar-graph":336,"surface-nets":269}],279:[function(require,module,exports){
 'use strict'
 
 var monotoneTriangulate = require('./lib/monotone')
@@ -40010,7 +41370,7 @@ function cdt2d(points, edges, options) {
   }
 }
 
-},{"./lib/delaunay":222,"./lib/filter":223,"./lib/monotone":224,"./lib/triangulation":225}],222:[function(require,module,exports){
+},{"./lib/delaunay":280,"./lib/filter":281,"./lib/monotone":282,"./lib/triangulation":283}],280:[function(require,module,exports){
 'use strict'
 
 var inCircle = require('robust-in-sphere')[4]
@@ -40127,7 +41487,7 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":226,"robust-in-sphere":227}],223:[function(require,module,exports){
+},{"binary-search-bounds":284,"robust-in-sphere":285}],281:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -40309,7 +41669,7 @@ function classifyFaces(triangulation, target, infinity) {
   return result
 }
 
-},{"binary-search-bounds":226}],224:[function(require,module,exports){
+},{"binary-search-bounds":284}],282:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -40498,7 +41858,7 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":226,"robust-orientation":195}],225:[function(require,module,exports){
+},{"binary-search-bounds":284,"robust-orientation":253}],283:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -40604,9 +41964,9 @@ function createTriangulation(numVerts, edges) {
   return new Triangulation(stars, edges)
 }
 
-},{"binary-search-bounds":226}],226:[function(require,module,exports){
-arguments[4][105][0].apply(exports,arguments)
-},{"dup":105}],227:[function(require,module,exports){
+},{"binary-search-bounds":284}],284:[function(require,module,exports){
+arguments[4][177][0].apply(exports,arguments)
+},{"dup":177}],285:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -40774,7 +42134,7 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":196,"robust-subtract":197,"robust-sum":198,"two-product":215}],228:[function(require,module,exports){
+},{"robust-scale":254,"robust-subtract":255,"robust-sum":256,"two-product":273}],286:[function(require,module,exports){
 'use strict'
 
 module.exports = cleanPSLG
@@ -41136,7 +42496,7 @@ function cleanPSLG(points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":229,"big-rat":233,"big-rat/cmp":231,"big-rat/to-float":246,"box-intersect":247,"compare-cell":41,"nextafter":255,"rat-vec":257,"robust-segment-intersect":260,"union-find":261}],229:[function(require,module,exports){
+},{"./lib/rat-seg-intersect":287,"big-rat":291,"big-rat/cmp":289,"big-rat/to-float":304,"box-intersect":305,"compare-cell":113,"nextafter":313,"rat-vec":315,"robust-segment-intersect":318,"union-find":319}],287:[function(require,module,exports){
 'use strict'
 
 //TODO: Move this to a separate module
@@ -41182,7 +42542,7 @@ function solveIntersection(a, b, c, d) {
   return rvAdd(a, rvMuls(ba, t))
 }
 
-},{"big-rat/div":232,"big-rat/mul":242,"big-rat/sign":244,"big-rat/sub":245,"big-rat/to-float":246,"rat-vec/add":256,"rat-vec/muls":258,"rat-vec/sub":259}],230:[function(require,module,exports){
+},{"big-rat/div":290,"big-rat/mul":300,"big-rat/sign":302,"big-rat/sub":303,"big-rat/to-float":304,"rat-vec/add":314,"rat-vec/muls":316,"rat-vec/sub":317}],288:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -41195,7 +42555,7 @@ function add(a, b) {
     a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":240}],231:[function(require,module,exports){
+},{"./lib/rationalize":298}],289:[function(require,module,exports){
 'use strict'
 
 module.exports = cmp
@@ -41204,7 +42564,7 @@ function cmp(a, b) {
     return a[0].mul(b[1]).cmp(b[0].mul(a[1]))
 }
 
-},{}],232:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -41215,7 +42575,7 @@ function div(a, b) {
   return rationalize(a[0].mul(b[1]), a[1].mul(b[0]))
 }
 
-},{"./lib/rationalize":240}],233:[function(require,module,exports){
+},{"./lib/rationalize":298}],291:[function(require,module,exports){
 'use strict'
 
 var isRat = require('./is-rat')
@@ -41277,7 +42637,7 @@ function makeRational(numer, denom) {
   return rationalize(a, b)
 }
 
-},{"./div":232,"./is-rat":234,"./lib/is-bn":238,"./lib/num-to-bn":239,"./lib/rationalize":240,"./lib/str-to-bn":241}],234:[function(require,module,exports){
+},{"./div":290,"./is-rat":292,"./lib/is-bn":296,"./lib/num-to-bn":297,"./lib/rationalize":298,"./lib/str-to-bn":299}],292:[function(require,module,exports){
 'use strict'
 
 var isBN = require('./lib/is-bn')
@@ -41288,7 +42648,7 @@ function isRat(x) {
   return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1])
 }
 
-},{"./lib/is-bn":238}],235:[function(require,module,exports){
+},{"./lib/is-bn":296}],293:[function(require,module,exports){
 'use strict'
 
 var bn = require('bn.js')
@@ -41299,7 +42659,7 @@ function sign(x) {
   return x.cmp(new bn(0))
 }
 
-},{"bn.js":243}],236:[function(require,module,exports){
+},{"bn.js":301}],294:[function(require,module,exports){
 'use strict'
 
 module.exports = bn2num
@@ -41323,7 +42683,7 @@ function bn2num(b) {
   return b.sign ? -out : out
 }
 
-},{}],237:[function(require,module,exports){
+},{}],295:[function(require,module,exports){
 'use strict'
 
 var db = require('double-bits')
@@ -41344,7 +42704,7 @@ function ctzNumber(x) {
   return h + 32
 }
 
-},{"bit-twiddle":33,"double-bits":254}],238:[function(require,module,exports){
+},{"bit-twiddle":105,"double-bits":312}],296:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -41357,7 +42717,7 @@ function isBN(x) {
   return x && typeof x === 'object' && Boolean(x.words)
 }
 
-},{"bn.js":243}],239:[function(require,module,exports){
+},{"bn.js":301}],297:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -41374,7 +42734,7 @@ function num2bn(x) {
   }
 }
 
-},{"bn.js":243,"double-bits":254}],240:[function(require,module,exports){
+},{"bn.js":301,"double-bits":312}],298:[function(require,module,exports){
 'use strict'
 
 var num2bn = require('./num-to-bn')
@@ -41402,7 +42762,7 @@ function rationalize(numer, denom) {
   return [ numer, denom ]
 }
 
-},{"./bn-sign":235,"./num-to-bn":239}],241:[function(require,module,exports){
+},{"./bn-sign":293,"./num-to-bn":297}],299:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -41413,7 +42773,7 @@ function str2BN(x) {
   return new BN(x)
 }
 
-},{"bn.js":243}],242:[function(require,module,exports){
+},{"bn.js":301}],300:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -41424,7 +42784,7 @@ function mul(a, b) {
   return rationalize(a[0].mul(b[0]), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":240}],243:[function(require,module,exports){
+},{"./lib/rationalize":298}],301:[function(require,module,exports){
 (function (module, exports) {
 
 'use strict';
@@ -43744,7 +45104,7 @@ Mont.prototype.invm = function invm(a) {
 
 })(typeof module === 'undefined' || module, this);
 
-},{}],244:[function(require,module,exports){
+},{}],302:[function(require,module,exports){
 'use strict'
 
 var bnsign = require('./lib/bn-sign')
@@ -43755,7 +45115,7 @@ function sign(x) {
   return bnsign(x[0]) * bnsign(x[1])
 }
 
-},{"./lib/bn-sign":235}],245:[function(require,module,exports){
+},{"./lib/bn-sign":293}],303:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -43766,7 +45126,7 @@ function sub(a, b) {
   return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":240}],246:[function(require,module,exports){
+},{"./lib/rationalize":298}],304:[function(require,module,exports){
 'use strict'
 
 var bn2num = require('./lib/bn-to-num')
@@ -43809,7 +45169,7 @@ function roundRat(f) {
   }
 }
 
-},{"./lib/bn-to-num":236,"./lib/ctz":237}],247:[function(require,module,exports){
+},{"./lib/bn-to-num":294,"./lib/ctz":295}],305:[function(require,module,exports){
 'use strict'
 
 module.exports = boxIntersectWrapper
@@ -43948,7 +45308,7 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":249,"./lib/sweep":253,"typedarray-pool":217}],248:[function(require,module,exports){
+},{"./lib/intersect":307,"./lib/sweep":311,"typedarray-pool":275}],306:[function(require,module,exports){
 'use strict'
 
 var DIMENSION   = 'd'
@@ -44093,7 +45453,7 @@ function bruteForcePlanner(full) {
 
 exports.partial = bruteForcePlanner(false)
 exports.full    = bruteForcePlanner(true)
-},{}],249:[function(require,module,exports){
+},{}],307:[function(require,module,exports){
 'use strict'
 
 module.exports = boxIntersectIter
@@ -44588,7 +45948,7 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":248,"./median":250,"./partition":251,"./sweep":253,"bit-twiddle":33,"typedarray-pool":217}],250:[function(require,module,exports){
+},{"./brute":306,"./median":308,"./partition":309,"./sweep":311,"bit-twiddle":105,"typedarray-pool":275}],308:[function(require,module,exports){
 'use strict'
 
 module.exports = findMedian
@@ -44731,7 +46091,7 @@ function findMedian(d, axis, start, end, boxes, ids) {
     start, mid, boxes, ids,
     boxes[elemSize*mid+axis])
 }
-},{"./partition":251}],251:[function(require,module,exports){
+},{"./partition":309}],309:[function(require,module,exports){
 'use strict'
 
 module.exports = genPartition
@@ -44752,7 +46112,7 @@ function genPartition(predicate, args) {
         .replace('$', predicate))
   return Function.apply(void 0, fargs)
 }
-},{}],252:[function(require,module,exports){
+},{}],310:[function(require,module,exports){
 'use strict';
 
 //This code is extracted from ndarray-sort
@@ -44989,7 +46349,7 @@ function quickSort(left, right, data) {
     quickSort(less, great, data);
   }
 }
-},{}],253:[function(require,module,exports){
+},{}],311:[function(require,module,exports){
 'use strict'
 
 module.exports = {
@@ -45424,7 +46784,7 @@ red_loop:
     }
   }
 }
-},{"./sort":252,"bit-twiddle":33,"typedarray-pool":217}],254:[function(require,module,exports){
+},{"./sort":310,"bit-twiddle":105,"typedarray-pool":275}],312:[function(require,module,exports){
 (function (Buffer){
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
@@ -45528,7 +46888,7 @@ module.exports.denormalized = function(n) {
   return !(hi & 0x7ff00000)
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":34}],255:[function(require,module,exports){
+},{"buffer":106}],313:[function(require,module,exports){
 "use strict"
 
 var doubleBits = require("double-bits")
@@ -45571,7 +46931,7 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":254}],256:[function(require,module,exports){
+},{"double-bits":312}],314:[function(require,module,exports){
 'use strict'
 
 var bnadd = require('big-rat/add')
@@ -45587,7 +46947,7 @@ function add(a, b) {
   return r
 }
 
-},{"big-rat/add":230}],257:[function(require,module,exports){
+},{"big-rat/add":288}],315:[function(require,module,exports){
 'use strict'
 
 module.exports = float2rat
@@ -45602,7 +46962,7 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":233}],258:[function(require,module,exports){
+},{"big-rat":291}],316:[function(require,module,exports){
 'use strict'
 
 var rat = require('big-rat')
@@ -45620,7 +46980,7 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":233,"big-rat/mul":242}],259:[function(require,module,exports){
+},{"big-rat":291,"big-rat/mul":300}],317:[function(require,module,exports){
 'use strict'
 
 var bnsub = require('big-rat/sub')
@@ -45636,7 +46996,7 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":245}],260:[function(require,module,exports){
+},{"big-rat/sub":303}],318:[function(require,module,exports){
 "use strict"
 
 module.exports = segmentsIntersect
@@ -45684,9 +47044,9 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":195}],261:[function(require,module,exports){
-arguments[4][170][0].apply(exports,arguments)
-},{"dup":170}],262:[function(require,module,exports){
+},{"robust-orientation":253}],319:[function(require,module,exports){
+arguments[4][228][0].apply(exports,arguments)
+},{"dup":228}],320:[function(require,module,exports){
 'use strict'
 
 module.exports = trimLeaves
@@ -45742,7 +47102,7 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":263}],263:[function(require,module,exports){
+},{"edges-to-adjacency-list":321}],321:[function(require,module,exports){
 "use strict"
 
 module.exports = edgeToAdjacency
@@ -45776,7 +47136,7 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":218}],264:[function(require,module,exports){
+},{"uniq":276}],322:[function(require,module,exports){
 "use strict"
 
 module.exports = planarDual
@@ -45907,7 +47267,7 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":265}],265:[function(require,module,exports){
+},{"compare-angle":323}],323:[function(require,module,exports){
 "use strict"
 
 module.exports = compareAngle
@@ -45993,7 +47353,7 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":195,"robust-product":266,"robust-sum":198,"signum":267,"two-sum":216}],266:[function(require,module,exports){
+},{"robust-orientation":253,"robust-product":324,"robust-sum":256,"signum":325,"two-sum":274}],324:[function(require,module,exports){
 "use strict"
 
 var robustSum = require("robust-sum")
@@ -46023,7 +47383,7 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":196,"robust-sum":198}],267:[function(require,module,exports){
+},{"robust-scale":254,"robust-sum":256}],325:[function(require,module,exports){
 "use strict"
 
 module.exports = function signum(x) {
@@ -46031,9 +47391,9 @@ module.exports = function signum(x) {
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],268:[function(require,module,exports){
-arguments[4][4][0].apply(exports,arguments)
-},{"dup":4}],269:[function(require,module,exports){
+},{}],326:[function(require,module,exports){
+arguments[4][2][0].apply(exports,arguments)
+},{"dup":2}],327:[function(require,module,exports){
 "use strict"
 
 var bounds = require("binary-search-bounds")
@@ -46400,7 +47760,7 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":268}],270:[function(require,module,exports){
+},{"binary-search-bounds":326}],328:[function(require,module,exports){
 "use strict"
 
 module.exports = orderSegments
@@ -46496,7 +47856,7 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":195}],271:[function(require,module,exports){
+},{"robust-orientation":253}],329:[function(require,module,exports){
 "use strict"
 
 module.exports = createRBTree
@@ -47493,7 +48853,7 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],272:[function(require,module,exports){
+},{}],330:[function(require,module,exports){
 "use strict"
 
 module.exports = createSlabDecomposition
@@ -47724,7 +49084,7 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":270,"binary-search-bounds":268,"functional-red-black-tree":271,"robust-orientation":195}],273:[function(require,module,exports){
+},{"./lib/order-segments":328,"binary-search-bounds":326,"functional-red-black-tree":329,"robust-orientation":253}],331:[function(require,module,exports){
 module.exports = preprocessPolygon
 
 var orient = require('robust-orientation')[3]
@@ -47876,7 +49236,7 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":268,"interval-tree-1d":269,"robust-orientation":195,"slab-decomposition":272}],274:[function(require,module,exports){
+},{"binary-search-bounds":326,"interval-tree-1d":327,"robust-orientation":253,"slab-decomposition":330}],332:[function(require,module,exports){
 'use strict'
 
 module.exports = planarGraphToPolyline
@@ -48081,9 +49441,9 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":262,"edges-to-adjacency-list":263,"planar-dual":264,"point-in-big-polygon":273,"robust-sum":198,"two-product":215,"uniq":218}],275:[function(require,module,exports){
-arguments[4][33][0].apply(exports,arguments)
-},{"dup":33}],276:[function(require,module,exports){
+},{"./lib/trim-leaves":320,"edges-to-adjacency-list":321,"planar-dual":322,"point-in-big-polygon":331,"robust-sum":256,"two-product":273,"uniq":276}],333:[function(require,module,exports){
+arguments[4][3][0].apply(exports,arguments)
+},{"dup":3}],334:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -48140,9 +49500,9 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],277:[function(require,module,exports){
-arguments[4][171][0].apply(exports,arguments)
-},{"bit-twiddle":275,"dup":171,"union-find":276}],278:[function(require,module,exports){
+},{}],335:[function(require,module,exports){
+arguments[4][229][0].apply(exports,arguments)
+},{"bit-twiddle":333,"dup":229,"union-find":334}],336:[function(require,module,exports){
 "use strict"
 
 module.exports = simplifyPolygon
@@ -48414,10 +49774,10 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":195,"simplicial-complex":277}],279:[function(require,module,exports){
+},{"robust-orientation":253,"simplicial-complex":335}],337:[function(require,module,exports){
 module.exports={
   "name": "plotly.js",
-  "version": "1.3.0",
+  "version": "1.3.1",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./src/index.js",
@@ -48449,6 +49809,7 @@ module.exports={
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
     "citest-jasmine": "karma start test/jasmine/karma.ciconf.js",
     "test-image": "./tasks/test_image.sh",
+    "test-syntax": "node test/syntax_test.js",
     "test": "npm run test-jasmine && npm test-image",
     "start-test_dashboard": "node devtools/test_dashboard/server.js",
     "start-image_viewer": "node devtools/image_viewer/server.js",
@@ -48500,6 +49861,8 @@ module.exports={
     "browserify": "^12.0.1",
     "browserify-transform-tools": "^1.5.0",
     "ecstatic": "^1.2.0",
+    "falafel": "^1.2.0",
+    "glob": "^6.0.1",
     "jasmine-core": "^2.3.4",
     "jshint": "^2.8.0",
     "karma": "^0.13.15",
@@ -48517,7 +49880,7 @@ module.exports={
   }
 }
 
-},{}],280:[function(require,module,exports){
+},{}],338:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -48577,7 +49940,7 @@ module.exports = [
     }
 ];
 
-},{}],281:[function(require,module,exports){
+},{}],339:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -48748,7 +50111,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":328,"../../plotly":348,"../../plots/font_attributes":354,"./arrow_paths":280}],282:[function(require,module,exports){
+},{"../../lib/extend":386,"../../plotly":406,"../../plots/font_attributes":412,"./arrow_paths":338}],340:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -49670,7 +51033,7 @@ function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     return {x: x1 + a * t, y: y1 + d * t};
 }
 
-},{"../../plotly":348,"./arrow_paths":280,"./attributes":281,"d3":53,"fast-isnumeric":58}],283:[function(require,module,exports){
+},{"../../plotly":406,"./arrow_paths":338,"./attributes":339,"d3":125,"fast-isnumeric":130}],341:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -49700,7 +51063,7 @@ exports.lightLine = '#eee';
 
 exports.background = '#fff';
 
-},{}],284:[function(require,module,exports){
+},{}],342:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -49844,7 +51207,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"./attributes":283,"fast-isnumeric":58,"tinycolor2":213}],285:[function(require,module,exports){
+},{"./attributes":341,"fast-isnumeric":130,"tinycolor2":271}],343:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -49997,7 +51360,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":328,"../../plots/cartesian/layout_attributes":353,"../../plots/font_attributes":354}],286:[function(require,module,exports){
+},{"../../lib/extend":386,"../../plots/cartesian/layout_attributes":411,"../../plots/font_attributes":412}],344:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50059,7 +51422,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('titleside');
 };
 
-},{"../../lib":332,"../../plots/cartesian/axes":351,"./attributes":285}],287:[function(require,module,exports){
+},{"../../lib":390,"../../plots/cartesian/axes":409,"./attributes":343}],345:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50594,7 +51957,7 @@ module.exports = function draw(gd, id) {
     return component;
 };
 
-},{"../../plotly":348,"./attributes":285,"d3":53}],288:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":343,"d3":125}],346:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50614,7 +51977,7 @@ module.exports = function hasColorbar(container) {
     );
 };
 
-},{}],289:[function(require,module,exports){
+},{}],347:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50635,7 +51998,7 @@ exports.draw = require('./draw');
 
 exports.hasColorbar = require('./has_colorbar');
 
-},{"./attributes":285,"./defaults":286,"./draw":287,"./has_colorbar":288}],290:[function(require,module,exports){
+},{"./attributes":343,"./defaults":344,"./draw":345,"./has_colorbar":346}],348:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50702,7 +52065,7 @@ module.exports = {
     }
 };
 
-},{}],291:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50767,7 +52130,7 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     }
 };
 
-},{"../../lib":332,"./flip_scale":294,"./scales":301}],292:[function(require,module,exports){
+},{"../../lib":390,"./flip_scale":352,"./scales":359}],350:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50781,7 +52144,7 @@ var scales = require('./scales');
 
 module.exports = scales.RdBu;
 
-},{"./scales":301}],293:[function(require,module,exports){
+},{"./scales":359}],351:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50845,7 +52208,7 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     if(showScale) colorbarDefaults(containerIn, containerOut, layout);
 };
 
-},{"../../lib":332,"../colorbar/defaults":286,"../colorbar/has_colorbar":288,"./flip_scale":294,"./is_valid_scale":298,"fast-isnumeric":58}],294:[function(require,module,exports){
+},{"../../lib":390,"../colorbar/defaults":344,"../colorbar/has_colorbar":346,"./flip_scale":352,"./is_valid_scale":356,"fast-isnumeric":130}],352:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50870,7 +52233,7 @@ module.exports = function flipScale(scl) {
     return sclNew;
 };
 
-},{}],295:[function(require,module,exports){
+},{}],353:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50910,7 +52273,7 @@ module.exports = function getScale(scl, dflt) {
     return scl;
 };
 
-},{"./default_scale":292,"./is_valid_scale_array":299,"./scales":301}],296:[function(require,module,exports){
+},{"./default_scale":350,"./is_valid_scale_array":357,"./scales":359}],354:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50956,7 +52319,7 @@ module.exports = function hasColorscale(trace, containerStr) {
     );
 };
 
-},{"../../lib":332,"./is_valid_scale":298,"fast-isnumeric":58}],297:[function(require,module,exports){
+},{"../../lib":390,"./is_valid_scale":356,"fast-isnumeric":130}],355:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -50988,7 +52351,7 @@ exports.flipScale = require('./flip_scale');
 
 exports.makeScaleFunction = require('./make_scale_function');
 
-},{"./attributes":290,"./calc":291,"./default_scale":292,"./defaults":293,"./flip_scale":294,"./get_scale":295,"./has_colorscale":296,"./is_valid_scale":298,"./make_scale_function":300,"./scales":301}],298:[function(require,module,exports){
+},{"./attributes":348,"./calc":349,"./default_scale":350,"./defaults":351,"./flip_scale":352,"./get_scale":353,"./has_colorscale":354,"./is_valid_scale":356,"./make_scale_function":358,"./scales":359}],356:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -51009,7 +52372,7 @@ module.exports = function isValidScale(scl) {
     else return isValidScaleArray(scl);
 };
 
-},{"./is_valid_scale_array":299,"./scales":301}],299:[function(require,module,exports){
+},{"./is_valid_scale_array":357,"./scales":359}],357:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -51044,7 +52407,7 @@ module.exports = function isValidScaleArray(scl) {
     }
 };
 
-},{"tinycolor2":213}],300:[function(require,module,exports){
+},{"tinycolor2":271}],358:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -51087,7 +52450,7 @@ module.exports = function makeScaleFunction(scl, cmin, cmax) {
     };
 };
 
-},{"../color":284,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],301:[function(require,module,exports){
+},{"../color":342,"d3":125,"fast-isnumeric":130,"tinycolor2":271}],359:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -51180,7 +52543,7 @@ module.exports = {
         [1,'#fde725']]
 };
 
-},{}],302:[function(require,module,exports){
+},{}],360:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -51731,7 +53094,7 @@ drawing.setClipUrl = function(s, localId) {
     s.attr('clip-path', 'url(' + url + ')');
 };
 
-},{"../../plotly":348,"./symbol_defs":303,"d3":53,"fast-isnumeric":58}],303:[function(require,module,exports){
+},{"../../plotly":406,"./symbol_defs":361,"d3":125,"fast-isnumeric":130}],361:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52207,7 +53570,7 @@ module.exports = {
     }
 };
 
-},{"d3":53}],304:[function(require,module,exports){
+},{"d3":125}],362:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52304,7 +53667,7 @@ module.exports = {
     }
 };
 
-},{}],305:[function(require,module,exports){
+},{}],363:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52367,7 +53730,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     Axes.expand(axis, vals, {padded: true});
 }
 
-},{"../../plots/cartesian/axes":351,"../../plots/plots":382,"./compute_error":306,"fast-isnumeric":58}],306:[function(require,module,exports){
+},{"../../plots/cartesian/axes":409,"../../plots/plots":440,"./compute_error":364,"fast-isnumeric":130}],364:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52463,7 +53826,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],307:[function(require,module,exports){
+},{}],365:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52540,7 +53903,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":332,"../../plots/plots":382,"./attributes":304,"fast-isnumeric":58}],308:[function(require,module,exports){
+},{"../../lib":390,"../../plots/plots":440,"./attributes":362,"fast-isnumeric":130}],366:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52717,7 +54080,7 @@ errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
     }
 };
 
-},{"../../plotly":348,"./attributes":304,"./calc":305,"./defaults":307,"d3":53,"fast-isnumeric":58}],309:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":362,"./calc":363,"./defaults":365,"d3":125,"fast-isnumeric":130}],367:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -52800,7 +54163,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":328,"../../plots/font_attributes":354,"../color/attributes":283}],310:[function(require,module,exports){
+},{"../../lib/extend":386,"../../plots/font_attributes":412,"../color/attributes":341}],368:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -53480,7 +54843,7 @@ legend.repositionLegend = function(td, traces){
     });
 };
 
-},{"../../plotly":348,"./attributes":309,"d3":53}],311:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":367,"d3":125}],369:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -53956,7 +55319,7 @@ function toggleHover(gd) {
     Plotly.relayout(gd, 'hovermode', newHover);
 }
 
-},{"../../../build/ploticon":2,"../../lib":332,"../../plotly":348,"../../snapshot":389}],312:[function(require,module,exports){
+},{"../../../build/ploticon":74,"../../lib":390,"../../plotly":406,"../../snapshot":447}],370:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -54242,7 +55605,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../../build/ploticon":2,"../../plotly":348,"d3":53}],313:[function(require,module,exports){
+},{"../../../build/ploticon":74,"../../plotly":406,"d3":125}],371:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -54412,7 +55775,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plotly":348,"./":312,"./buttons":311}],314:[function(require,module,exports){
+},{"../../plotly":406,"./":370,"./buttons":369}],372:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -54494,7 +55857,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":328,"../../traces/scatter/attributes":455,"../annotations/attributes":281}],315:[function(require,module,exports){
+},{"../../lib/extend":386,"../../traces/scatter/attributes":513,"../annotations/attributes":339}],373:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -54969,7 +56332,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../plotly":348,"./attributes":314,"fast-isnumeric":58}],316:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":372,"fast-isnumeric":130}],374:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55284,9 +56647,9 @@ Titles.draw = function(gd, title) {
     el.classed('js-placeholder',isplaceholder);
 };
 
-},{"../../plotly":348,"d3":53,"fast-isnumeric":58}],317:[function(require,module,exports){
+},{"../../plotly":406,"d3":125,"fast-isnumeric":130}],375:[function(require,module,exports){
 module.exports={"DZA":"algeria","AGO":"angola","EGY":"egypt","BGD":"bangladesh|^(?=.*east).*paki?stan","NER":"\\bniger(?!ia)","LIE":"liechtenstein","NAM":"namibia","BGR":"bulgaria","BOL":"bolivia","GHA":"ghana|gold.?coast","CCK":"\\bcocos|keeling","PAK":"^(?!.*east).*paki?stan","CPV":"verde","JOR":"jordan","LBR":"liberia","LBY":"libya","MYS":"malaysia","IOT":"british.?indian.?ocean","PRI":"puerto.?rico","MYT":"mayotte","PRK":"^(?=.*democrat).*\\bkorea|^(?=.*people).*\\bkorea|^(?=.*north).*\\bkorea|\\bd\\.?p\\.?r\\.?k","PSE":"palestin|\\bgaza|west.?bank","TZA":"tanzania","BWA":"botswana|bechuana","KHM":"cambodia|kampuchea|khmer|^p\\.?r\\.?k\\.?$","UMI":"minor.?outlying.?is","TTO":"trinidad|tobago","PRY":"paraguay","HKG":"hong.?kong","SAU":"\\bsa\\w*.?arabia","LBN":"lebanon","SVN":"slovenia","BFA":"burkina|\\bfaso|upper.?volta","SVK":"^(?!.*cze).*slovak","MRT":"mauritania","HRV":"croatia","CHL":"\\bchile","CHN":"^(?!.*\\bmac)(?!.*\\bhong)(?!.*\\btai).*china|^p\\.?r\\.?c\\.?$","KNA":"kitts|\\bnevis","JAM":"jamaica","SMR":"san.?marino","GIB":"gibraltar","DJI":"djibouti","GIN":"^(?!.*eq)(?!.*span)(?!.*bissau)(?!.*portu)(?!.*new).*guinea","FIN":"finland","URY":"uruguay","VAT":"holy.?see|vatican|papal.?st","STP":"\\bs(a|\u00e3)o.?tom(e|\u00e9)","SYC":"seychell","NPL":"nepal","CXR":"christmas","LAO":"\\blaos?\\b","YEM":"^(?!.*arab)(?!.*north)(?!.*sana)(?!.*peo)(?!.*dem)(?!.*south)(?!.*aden)(?!.*\\bp\\.?d\\.?r).*yemen","BVT":"bouvet","ZAF":"\\bs\\w*.?africa","KIR":"kiribati","PHL":"philippines","SXM":"^(?!.*martin)(?!.*saba).*maarten","ROU":"r(o|u|ou)mania","VIR":"^(?=.*\\bu\\.?\\s?s).*virgin|^(?=.*states).*virgin","SYR":"syria","MAC":"maca(o|u)","NFK":"norfolk","NIC":"nicaragua","MLT":"\\bmalta","KAZ":"kazak","TCA":"turks","PYF":"french.?polynesia|tahiti","NIU":"niue","DMA":"dominica(?!n)","GBR":"united.?kingdom|britain|^u\\.?k\\.?$","BEN":"benin|dahome","GUF":"^(?=.*french).*guiana","BEL":"^(?!.*luxem).*belgium","MSR":"montserrat","TGO":"togo","DEU":"^(?!.*east).*germany|^(?=.*\\bfed.*\\brep).*german","GUM":"\\bguam","LKA":"sri.?lanka|ceylon","SSD":"\\bs\\w*.?sudan","FLK":"falkland|malvinas","PCN":"pitcairn","BES":"^(?=.*bonaire).*eustatius|^(?=.*carib).*netherlands|\\bbes.?islands","GUY":"guyana|british.?guiana","CRI":"costa.?rica","COK":"\\bcook","MAR":"morocco|\\bmaroc","MNP":"mariana","LSO":"lesotho|basuto","HUN":"^(?!.*austr).*hungary","TKM":"turkmen","SUR":"surinam|dutch.?guiana","NLD":"^(?!.*\\bant)(?!.*\\bcarib).*netherlands","BMU":"bermuda","HMD":"heard.*mcdonald","TCD":"\\bchad","GEO":"^(?!.*south).*georgia","MNE":"^(?!.*serbia).*montenegro","MNG":"mongolia","MHL":"marshall","MTQ":"martinique","CSK":"czechoslovakia","BLZ":"belize|^(?=.*british).*honduras","DDR":"german.?democratic.?republic|^(d|g)\\.?d\\.?r\\.?$|^(?=.*east).*germany","MMR":"myanmar|burma","AFG":"afghan","BDI":"burundi","VGB":"^(?=.*\\bu\\.?\\s?k).*virgin|^(?=.*brit).*virgin|^(?=.*kingdom).*virgin","BLR":"belarus|byelo","BLM":"barth(e|\u00e9)lemy","GRD":"grenada","TKL":"tokelau","GRC":"greece|hellenic|hellas","GRL":"greenland","SHN":"helena","AND":"andorra","MOZ":"mozambique","TJK":"tajik","THA":"thailand|\\bsiam","HTI":"haiti","MEX":"\\bmexic","ANT":"^(?=.*\\bant).*(nether|dutch)","ZWE":"zimbabwe|^(?!.*northern).*rhodesia","LCA":"\\blucia","IND":"india(?!.*ocea)","LVA":"latvia","BTN":"bhutan","VCT":"vincent","VNM":"^(?!.*republic).*viet.?nam|^(?=.*socialist).*viet.?nam","NOR":"norway","CZE":"^(?=.*rep).*czech|czechia|bohemia","ATF":"french.?southern|\\bfr.*\\bso.*\\ban.*\\b\\bt","ATG":"antigua","FJI":"fiji","HND":"^(?!.*brit).*honduras","MUS":"mauritius","DOM":"dominican","LUX":"^(?!.*belg).*luxem","ISR":"israel","YUG":"yugoslavia","FSM":"micronesia","PER":"peru","REU":"r(e|\u00e9)union","IDN":"indonesia","VUT":"vanuatu|new.?hebrides","MKD":"macedonia|^f\\.?y\\.?r\\.?o\\.?m\\.?$","COD":"\\bdem.*congo|congo.*\\bdem|congo.*\\bdr|\\bdr.*congo|\\bd\\.?r\\.?c|\\bd\\.?r\\.?o\\.?c|\\br\\.?d\\.?c|belgian.?congo|congo.?free.?state|kinshasa|zaire|l\\w{1,2}opoldville","COG":"^(?!.*\\bdem)(?!.*\\bdr)(?!.*kinshasa)(?!.*zaire)(?!.*belg)(?!.*l\\w{1,2}opoldville)(?!.*free).*\\bcongo","ISL":"iceland","GLP":"guadeloupe","ETH":"ethiopia|abyssinia","COM":"comoro","COL":"colombia","NGA":"nigeria","TLS":"^(?=.*leste).*timor|^(?=.*east).*timor","TWN":"taiwan|taipei|formosa","PRT":"portugal","MDA":"moldov|b(a|e)ssarabia","GGY":"guernsey","MDG":"madagascar|malagasy","ATA":"antarctica","ECU":"ecuador","SEN":"senegal","ESH":"sahara","MDV":"maldive","ASM":"^(?=.*americ).*samoa","SPM":"miquelon","CUW":"^(?!.*bonaire).*\\bcura(c|\u00e7)ao","FRA":"^(?!.*\\bdep)(?!.*martinique).*france|french.?republic|\\bgaul","LTU":"lithuania","RWA":"rwanda","ZMB":"zambia|northern.?rhodesia","GMB":"gambia","WLF":"futuna|wallis","JEY":"jersey","FRO":"faroe|faeroe","GTM":"guatemala","DNK":"denmark","IMN":"^(?=.*isle).*\\bman","MAF":"^(?=.*collectivity).*martin|^(?=.*france).*martin(?!ique)|^(?=.*french).*martin(?!ique)","AUS":"australia","AUT":"^(?!.*hungary).*austria|\\baust.*\\bemp","SJM":"svalbard","VEN":"venezuela","PLW":"palau","KEN":"kenya|british.?east.?africa|east.?africa.?prot","TUR":"turkey","ALB":"albania","OMN":"\\boman|trucial","TUV":"tuvalu","ALA":"\\b(a|\u00e5)land","BRN":"brunei","TUN":"tunisia","RUS":"\\brussia|soviet.?union|u\\.?s\\.?s\\.?r|socialist.?republics","BRB":"barbados","BRA":"brazil","CIV":"ivoire|ivory","SRB":"^(?!.*monte).*serbia","GNQ":"guine.*eq|eq.*guine|^(?=.*span).*guinea","USA":"^(?!.*islands).*united.?states|^u\\.?s\\.?a\\.?$|^u\\.?s\\.?$","QAT":"qatar","WSM":"^(?!.*amer).*samoa","AZE":"azerbaijan","GNB":"bissau|^(?=.*portu).*guinea","SWZ":"swaziland","TON":"tonga","CAN":"canada","UKR":"ukrain","KOR":"^(?!.*democrat)(?!.*people)(?!.*north).*\\bkorea|\\br\\.?o\\.?k\\b","AIA":"anguill?a","CAF":"\\bcen.*\\baf|^c\\.?a\\.?r\\.?$","CHE":"switz|swiss","CYP":"cyprus","BIH":"herzegovina|bosnia","SGP":"singapore","SGS":"south.?georgia|sandwich","SOM":"somali","UZB":"uzbek","CMR":"cameroon","POL":"poland","EAZ":"zanz","KWT":"kuwait","ERI":"eritrea","GAB":"gabon","CYM":"cayman","ARE":"emirates|^u\\.?a\\.?e\\.?$|united.?arab.?em","EST":"estonia","MWI":"malawi|nyasa","ESP":"spain","IRQ":"\\biraq|mesopotamia","SLV":"el.?salvador","MLI":"\\bmali\\b","YMD":"^(?=.*peo).*yemen|^(?!.*rep)(?=.*dem).*yemen|^(?=.*south).*yemen|^(?=.*aden).*yemen|^(?=.*\\bp\\.?d\\.?r).*yemen","IRL":"ireland","IRN":"\\biran|persia","ABW":"^(?!.*bonaire).*\\baruba","SLE":"sierra","PAN":"panama","SDN":"^(?!.*\\bs(?!u)).*sudan","SLB":"solomon","NZL":"new.?zealand","MCO":"monaco","ITA":"italy","JPN":"japan","KGZ":"kyrgyz|kirghiz","UGA":"uganda","NCL":"new.?caledonia","PNG":"papua|\\bp.*\\bn.*\\bguin.*|^p\\.?n\\.?g\\.?$|new.?guinea","ARG":"argentin","SWE":"sweden","BHS":"bahamas","BHR":"bahrain","ARM":"armenia","NRU":"nauru","CUB":"\\bcuba"}
-},{}],318:[function(require,module,exports){
+},{}],376:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55443,7 +56806,7 @@ params.layerNameToAdjective = {
 // base layers drawn over choropleth
 params.baseLayersOverChoropleth = ['rivers', 'lakes'];
 
-},{}],319:[function(require,module,exports){
+},{}],377:[function(require,module,exports){
 module.exports={
     "solid": [1],
     "dot": [1,1],
@@ -55453,7 +56816,7 @@ module.exports={
     "longdashdot": [8,1,1,1]
 }
 
-},{}],320:[function(require,module,exports){
+},{}],378:[function(require,module,exports){
 module.exports={
   "solid":        [[], 0],
   "dot":          [[0.5,1], 200],
@@ -55462,7 +56825,7 @@ module.exports={
   "dashdot":      [[0.5,0.625,0.875,1], 50],
   "longdashdot":  [[0.5,0.7,0.8,1], 10]
 }
-},{}],321:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 module.exports={
     "circle": "●",
     "circle-open": "○",
@@ -55474,7 +56837,7 @@ module.exports={
     "x": "❌"
 }
 
-},{}],322:[function(require,module,exports){
+},{}],380:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55506,7 +56869,7 @@ if (typeof MathJax !== 'undefined'){
     exports.MathJax = false;
 }
 
-},{}],323:[function(require,module,exports){
+},{}],381:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55554,7 +56917,7 @@ exports.Queue = Plotly.Queue;
 // export d3 used in the bundle
 exports.d3 = require('d3');
 
-},{"../build/ploticon":2,"../package.json":279,"./plot_api/set_plot_config":347,"./plotly":348,"d3":53}],324:[function(require,module,exports){
+},{"../build/ploticon":74,"../package.json":337,"./plot_api/set_plot_config":405,"./plotly":406,"d3":125}],382:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55571,7 +56934,7 @@ module.exports = function arrayToCalcItem(traceAttr, calcItem, calcAttr, i) {
     if(Array.isArray(traceAttr)) calcItem[calcAttr] = traceAttr[i];
 };
 
-},{}],325:[function(require,module,exports){
+},{}],383:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -55865,7 +57228,7 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     return out;
 };
 
-},{"../components/colorscale/get_scale":295,"../components/colorscale/scales":301,"./nested_property":335,"fast-isnumeric":58,"tinycolor2":213}],326:[function(require,module,exports){
+},{"../components/colorscale/get_scale":353,"../components/colorscale/scales":359,"./nested_property":393,"fast-isnumeric":130,"tinycolor2":271}],384:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56201,7 +57564,7 @@ exports.parseDate = function(v) {
     return out;
 };
 
-},{"d3":53,"fast-isnumeric":58}],327:[function(require,module,exports){
+},{"d3":125,"fast-isnumeric":130}],385:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56323,7 +57686,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":57}],328:[function(require,module,exports){
+},{"events":129}],386:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56403,7 +57766,7 @@ function _extend(inputs, isDeep, keepAllKeys) {
     return target;
 }
 
-},{"./is_plain_object.js":333}],329:[function(require,module,exports){
+},{"./is_plain_object.js":391}],387:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56465,7 +57828,7 @@ function countryNameToISO3(countryName) {
     console.warn('unrecognized country name: ' + countryName + '.');
 }
 
-},{"../constants/country-name_to_iso3.json":317,"../plotly":348}],330:[function(require,module,exports){
+},{"../constants/country-name_to_iso3.json":375,"../plotly":406}],388:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56542,7 +57905,7 @@ function formatColor(containerIn, opacityIn, len) {
 
 module.exports = formatColor;
 
-},{"../components/color/attributes":283,"../plotly":348,"./str2rgbarray":341,"fast-isnumeric":58,"tinycolor2":213}],331:[function(require,module,exports){
+},{"../components/color/attributes":341,"../plotly":406,"./str2rgbarray":399,"fast-isnumeric":130,"tinycolor2":271}],389:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -56612,7 +57975,7 @@ function convertHTMLToUnicode(html) {
 
 module.exports = convertHTMLToUnicode;
 
-},{"superscript-text":199}],332:[function(require,module,exports){
+},{"superscript-text":257}],390:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57048,7 +58411,7 @@ lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
-},{"./coerce":325,"./dates":326,"./extend":328,"./is_plain_object":333,"./matrix":334,"./nested_property":335,"./notifier":336,"./search":338,"./stats":340,"d3":53}],333:[function(require,module,exports){
+},{"./coerce":383,"./dates":384,"./extend":386,"./is_plain_object":391,"./matrix":392,"./nested_property":393,"./notifier":394,"./search":396,"./stats":398,"d3":125}],391:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57068,7 +58431,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],334:[function(require,module,exports){
+},{}],392:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57178,7 +58541,7 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-},{}],335:[function(require,module,exports){
+},{}],393:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57434,7 +58797,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"fast-isnumeric":58}],336:[function(require,module,exports){
+},{"fast-isnumeric":130}],394:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57511,7 +58874,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"d3":53,"fast-isnumeric":58}],337:[function(require,module,exports){
+},{"d3":125,"fast-isnumeric":130}],395:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57714,7 +59077,7 @@ queue.plotDo = function (gd, func, args) {
 
 module.exports = queue;
 
-},{"../plotly":348}],338:[function(require,module,exports){
+},{"../plotly":406}],396:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57823,7 +59186,7 @@ exports.roundUp = function(val, arrayIn, reverse){
     return arrayIn[low];
 };
 
-},{"fast-isnumeric":58}],339:[function(require,module,exports){
+},{"fast-isnumeric":130}],397:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57871,7 +59234,7 @@ module.exports = function showWebGlMsg(scene) {
     return false;
 };
 
-},{"../plotly":348}],340:[function(require,module,exports){
+},{"../plotly":406}],398:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57967,7 +59330,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"fast-isnumeric":58}],341:[function(require,module,exports){
+},{"fast-isnumeric":130}],399:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -57989,7 +59352,7 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"arraytools":32,"tinycolor2":213}],342:[function(require,module,exports){
+},{"arraytools":104,"tinycolor2":271}],400:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -58465,7 +59828,7 @@ util.makeEditable = function(context, _delegate, options){
     return d3.rebind(this, dispatch, 'on');
 };
 
-},{"../plotly":348,"d3":53}],343:[function(require,module,exports){
+},{"../plotly":406,"d3":125}],401:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -58501,7 +59864,7 @@ topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
     return topojsonFeature(topojson, obj).features;
 };
 
-},{"../constants/geo_constants":318,"topojson":214}],344:[function(require,module,exports){
+},{"../constants/geo_constants":376,"topojson":272}],402:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -59931,6 +61294,7 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
     if (!Array.isArray(traces)) {
         traces = [traces];
     }
+    cleanData(traces, gd.data);
 
     // add the traces to gd.data (no redrawing yet!)
     for (i = 0; i < traces.length; i += 1) {
@@ -61525,7 +62889,7 @@ function lsInner(gd) {
     return gd._promises.length && Promise.all(gd._promises);
 }
 
-},{"../components/modebar/manage":313,"../lib/events":327,"../plotly":348,"d3":53,"fast-isnumeric":58,"gl-mat4/fromQuat":75}],345:[function(require,module,exports){
+},{"../components/modebar/manage":371,"../lib/events":385,"../plotly":406,"d3":125,"fast-isnumeric":130,"gl-mat4/fromQuat":147}],403:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -61624,7 +62988,7 @@ function defaultSetBackground(gd, bgColor) {
     catch(e) { console.log(e); }
 }
 
-},{}],346:[function(require,module,exports){
+},{}],404:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -61938,7 +63302,7 @@ function handleLinkedToArray(layoutAttributes) {
     return layoutAttributes;
 }
 
-},{"../plotly":348,"../plots/polar/area_attributes":383,"../plots/polar/axis_attributes":384}],347:[function(require,module,exports){
+},{"../plotly":406,"../plots/polar/area_attributes":441,"../plots/polar/axis_attributes":442}],405:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -61963,7 +63327,7 @@ module.exports = function setPlotConfig(configObj) {
     return Plotly.Lib.extendFlat(Plotly.defaultConfig, configObj);
 };
 
-},{"../plotly":348}],348:[function(require,module,exports){
+},{"../plotly":406}],406:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -62045,7 +63409,7 @@ exports.PlotSchema = require('./plot_api/plot_schema');
 // imaging routines
 exports.Snapshot = require('./snapshot');
 
-},{"../build/plotcss":1,"./components/annotations":282,"./components/color":284,"./components/colorbar":289,"./components/colorscale":297,"./components/drawing":302,"./components/errorbars":308,"./components/legend":310,"./components/modebar":312,"./components/shapes":315,"./components/titles":316,"./fonts/mathjax_config":322,"./lib":332,"./lib/queue":337,"./lib/svg_text_utils":342,"./plot_api/plot_api":344,"./plot_api/plot_config":345,"./plot_api/plot_schema":346,"./plots/cartesian/axes":351,"./plots/cartesian/graph_interact":352,"./plots/geo/geo":355,"./plots/geo/layout":360,"./plots/gl2d/scene2d":368,"./plots/gl3d/layout":375,"./plots/gl3d/scene":380,"./plots/plots":382,"./plots/polar/micropolar":385,"./snapshot":389,"./traces/bar":398,"./traces/box":406,"./traces/choropleth":410,"./traces/contour":417,"./traces/heatmap":428,"./traces/histogram":439,"./traces/histogram2d":444,"./traces/histogram2dcontour":448,"./traces/mesh3d":452,"./traces/pie":454,"./traces/scatter":457,"./traces/scatter3d":463,"./traces/scattergeo":466,"./traces/scattergl":471,"./traces/surface":476,"es6-promise":56}],349:[function(require,module,exports){
+},{"../build/plotcss":73,"./components/annotations":340,"./components/color":342,"./components/colorbar":347,"./components/colorscale":355,"./components/drawing":360,"./components/errorbars":366,"./components/legend":368,"./components/modebar":370,"./components/shapes":373,"./components/titles":374,"./fonts/mathjax_config":380,"./lib":390,"./lib/queue":395,"./lib/svg_text_utils":400,"./plot_api/plot_api":402,"./plot_api/plot_config":403,"./plot_api/plot_schema":404,"./plots/cartesian/axes":409,"./plots/cartesian/graph_interact":410,"./plots/geo/geo":413,"./plots/geo/layout":418,"./plots/gl2d/scene2d":426,"./plots/gl3d/layout":433,"./plots/gl3d/scene":438,"./plots/plots":440,"./plots/polar/micropolar":443,"./snapshot":447,"./traces/bar":456,"./traces/box":464,"./traces/choropleth":468,"./traces/contour":475,"./traces/heatmap":486,"./traces/histogram":497,"./traces/histogram2d":502,"./traces/histogram2dcontour":506,"./traces/mesh3d":510,"./traces/pie":512,"./traces/scatter":515,"./traces/scatter3d":521,"./traces/scattergeo":524,"./traces/scattergl":529,"./traces/surface":534,"es6-promise":128}],407:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -62124,7 +63488,7 @@ module.exports = {
     }
 };
 
-},{}],350:[function(require,module,exports){
+},{}],408:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -62149,7 +63513,7 @@ module.exports = {
    }
 };
 
-},{}],351:[function(require,module,exports){
+},{}],409:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -64840,7 +66204,7 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
 // rather than built-in % which gives a negative value for negative v
 function mod(v,d){ return ((v%d) + d) % d; }
 
-},{"../../plotly":348,"./attributes":350,"./layout_attributes":353,"d3":53,"fast-isnumeric":58}],352:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":408,"./layout_attributes":411,"d3":125,"fast-isnumeric":130}],410:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -66933,7 +68297,7 @@ fx.inbox = function(v0,v1){
     return Infinity;
 };
 
-},{"../../lib/events":327,"../../plotly":348,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],353:[function(require,module,exports){
+},{"../../lib/events":385,"../../plotly":406,"d3":125,"fast-isnumeric":130,"tinycolor2":271}],411:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -67248,7 +68612,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":283,"../../lib/extend":328,"../../plotly":348,"../font_attributes":354}],354:[function(require,module,exports){
+},{"../../components/color/attributes":341,"../../lib/extend":386,"../../plotly":406,"../font_attributes":412}],412:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -67277,7 +68641,7 @@ module.exports = {
     }
 };
 
-},{}],355:[function(require,module,exports){
+},{}],413:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -67741,7 +69105,7 @@ function createMockAxis(fullLayout) {
     return mockAxis;
 }
 
-},{"../../constants/geo_constants":318,"../../lib/topojson_utils":343,"../../plotly":348,"../../traces/choropleth/plot":411,"../../traces/scattergeo/plot":467,"./projections":362,"./set_scale":363,"./zoom":364,"./zoom_reset":365,"d3":53,"topojson":214}],356:[function(require,module,exports){
+},{"../../constants/geo_constants":376,"../../lib/topojson_utils":401,"../../plotly":406,"../../traces/choropleth/plot":469,"../../traces/scattergeo/plot":525,"./projections":420,"./set_scale":421,"./zoom":422,"./zoom_reset":423,"d3":125,"topojson":272}],414:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -67760,7 +69124,7 @@ module.exports = {
     }
 };
 
-},{}],357:[function(require,module,exports){
+},{}],415:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -67813,7 +69177,7 @@ module.exports = {
     }
 };
 
-},{"../../../components/color/attributes":283}],358:[function(require,module,exports){
+},{"../../../components/color/attributes":341}],416:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -67885,7 +69249,7 @@ module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut)
     }
 };
 
-},{"../../../constants/geo_constants":318,"../../../plotly":348,"./axis_attributes":357}],359:[function(require,module,exports){
+},{"../../../constants/geo_constants":376,"../../../plotly":406,"./axis_attributes":415}],417:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68016,7 +69380,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     ];
 }
 
-},{"../../../constants/geo_constants":318,"../../../plotly":348,"./axis_defaults":358,"./layout_attributes":361}],360:[function(require,module,exports){
+},{"../../../constants/geo_constants":376,"../../../plotly":406,"./axis_defaults":416,"./layout_attributes":419}],418:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68036,7 +69400,7 @@ Plotly.Plots.registerSubplot('geo', 'geo', 'geo', attributes);
 exports.layoutAttributes = require('./layout_attributes');
 exports.supplyLayoutDefaults = require('./defaults');
 
-},{"../../../plotly":348,"./attributes":356,"./defaults":359,"./layout_attributes":361}],361:[function(require,module,exports){
+},{"../../../plotly":406,"./attributes":414,"./defaults":417,"./layout_attributes":419}],419:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68268,7 +69632,7 @@ module.exports = {
     lataxis: geoAxesAttrs
 };
 
-},{"../../../components/color/attributes":283,"../../../constants/geo_constants":318,"./axis_attributes":357}],362:[function(require,module,exports){
+},{"../../../components/color/attributes":341,"../../../constants/geo_constants":376,"./axis_attributes":415}],420:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68683,7 +70047,7 @@ function addProjectionToD3() {
 
 module.exports = addProjectionToD3;
 
-},{"d3":53}],363:[function(require,module,exports){
+},{"d3":125}],421:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -68834,7 +70198,7 @@ function getBounds(projection, rangeBox) {
     return d3.geo.path().projection(projection).bounds(rangeBox);
 }
 
-},{"../../constants/geo_constants":318,"d3":53}],364:[function(require,module,exports){
+},{"../../constants/geo_constants":376,"d3":125}],422:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69260,7 +70624,7 @@ function d3_eventDispatch(target) {
     return dispatch;
 }
 
-},{"d3":53}],365:[function(require,module,exports){
+},{"d3":125}],423:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69296,7 +70660,7 @@ function createGeoZoomReset(geo, geoLayout) {
 
 module.exports = createGeoZoomReset;
 
-},{"../../plotly":348}],366:[function(require,module,exports){
+},{"../../plotly":406}],424:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69451,7 +70815,7 @@ function createCamera(scene) {
     return result;
 }
 
-},{"mouse-change":173,"mouse-wheel":177}],367:[function(require,module,exports){
+},{"mouse-change":231,"mouse-wheel":235}],425:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -69694,7 +71058,7 @@ function createAxes2D(scene) {
 
 module.exports = createAxes2D;
 
-},{"../../lib/html2unicode":331,"../../lib/str2rgbarray":341,"../../plotly":348}],368:[function(require,module,exports){
+},{"../../lib/html2unicode":389,"../../lib/str2rgbarray":399,"../../plotly":406}],426:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70201,7 +71565,7 @@ proto.hoverFormatter = function(axisName, val) {
     return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };
 
-},{"../../lib/html2unicode":331,"../../lib/show_no_webgl_msg":339,"../../plotly":348,"../../traces/scattergl/convert":469,"./camera":366,"./convert":367,"gl-plot2d":106,"gl-select-box":136,"gl-spikes2d":147}],369:[function(require,module,exports){
+},{"../../lib/html2unicode":389,"../../lib/show_no_webgl_msg":397,"../../plotly":406,"../../traces/scattergl/convert":527,"./camera":424,"./convert":425,"gl-plot2d":178,"gl-select-box":208,"gl-spikes2d":219}],427:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70449,7 +71813,7 @@ function createCamera(element, options) {
   return camera;
 }
 
-},{"3d-view":22,"mouse-change":173,"mouse-wheel":177,"right-now":191}],370:[function(require,module,exports){
+},{"3d-view":94,"mouse-change":231,"mouse-wheel":235,"right-now":249}],428:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70468,7 +71832,7 @@ module.exports = {
     }
 };
 
-},{}],371:[function(require,module,exports){
+},{}],429:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70569,7 +71933,7 @@ module.exports = {
     zerolinewidth: axesAttrs.zerolinewidth
 };
 
-},{"../../../lib/extend":328,"../../cartesian/layout_attributes":353}],372:[function(require,module,exports){
+},{"../../../lib/extend":386,"../../cartesian/layout_attributes":411}],430:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70632,7 +71996,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     }
 };
 
-},{"../../../plotly":348,"./axis_attributes":371}],373:[function(require,module,exports){
+},{"../../../plotly":406,"./axis_attributes":429}],431:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70786,7 +72150,7 @@ function createAxesOptions(plotlyOptions) {
 
 module.exports = createAxesOptions;
 
-},{"../../../lib/html2unicode":331,"../../../lib/str2rgbarray":341,"arraytools":32}],374:[function(require,module,exports){
+},{"../../../lib/html2unicode":389,"../../../lib/str2rgbarray":399,"arraytools":104}],432:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70892,7 +72256,7 @@ module.exports = function supplyLayoutDefaults (layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../../plotly":348,"./axis_defaults":372,"./layout_attributes":376}],375:[function(require,module,exports){
+},{"../../../plotly":406,"./axis_defaults":430,"./layout_attributes":434}],433:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -70951,7 +72315,7 @@ exports.initAxes = function (td) {
     }
 };
 
-},{"../../../plotly":348,"./attributes":370,"./defaults":374,"./layout_attributes":376}],376:[function(require,module,exports){
+},{"../../../plotly":406,"./attributes":428,"./defaults":432,"./layout_attributes":434}],434:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71064,7 +72428,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":328,"./axis_attributes":371}],377:[function(require,module,exports){
+},{"../../../lib/extend":386,"./axis_attributes":429}],435:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71110,7 +72474,7 @@ function createSpikeOptions(layout) {
 
 module.exports = createSpikeOptions;
 
-},{"../../../lib/str2rgbarray":341}],378:[function(require,module,exports){
+},{"../../../lib/str2rgbarray":399}],436:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71205,7 +72569,7 @@ function computeTickMarks(scene) {
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
 
-},{"../../../lib/html2unicode":331,"../../../plotly":348}],379:[function(require,module,exports){
+},{"../../../lib/html2unicode":389,"../../../plotly":406}],437:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71236,7 +72600,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],380:[function(require,module,exports){
+},{}],438:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -71923,7 +73287,7 @@ proto.toImage = function (format) {
 
 module.exports = Scene;
 
-},{"../../lib/show_no_webgl_msg":339,"../../lib/str2rgbarray":341,"../../plotly":348,"../../traces/mesh3d/convert":450,"../../traces/scatter3d/convert":461,"../../traces/surface/convert":474,"./camera":369,"./layout/convert":373,"./layout/spikes":377,"./layout/tick_marks":378,"./project":379,"gl-plot3d":124}],381:[function(require,module,exports){
+},{"../../lib/show_no_webgl_msg":397,"../../lib/str2rgbarray":399,"../../plotly":406,"../../traces/mesh3d/convert":508,"../../traces/scatter3d/convert":519,"../../traces/surface/convert":532,"./camera":427,"./layout/convert":431,"./layout/spikes":435,"./layout/tick_marks":436,"./project":437,"gl-plot3d":196}],439:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -72102,7 +73466,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":283,"../plotly":348,"./font_attributes":354}],382:[function(require,module,exports){
+},{"../components/color/attributes":341,"../plotly":406,"./font_attributes":412}],440:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -73079,7 +74443,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
     return (output==='object') ? obj : JSON.stringify(obj);
 };
 
-},{"../plotly":348,"./attributes":349,"./font_attributes":354,"./layout_attributes":381,"d3":53,"fast-isnumeric":58}],383:[function(require,module,exports){
+},{"../plotly":406,"./attributes":407,"./font_attributes":412,"./layout_attributes":439,"d3":125,"fast-isnumeric":130}],441:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -73103,7 +74467,7 @@ module.exports = {
     }
 };
 
-},{"../../traces/scatter/attributes":455}],384:[function(require,module,exports){
+},{"../../traces/scatter/attributes":513}],442:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -73218,7 +74582,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":328,"../cartesian/layout_attributes":353}],385:[function(require,module,exports){
+},{"../../lib/extend":386,"../cartesian/layout_attributes":411}],443:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -74644,7 +76008,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
     return exports;
 };
 
-},{"../../plotly":348,"./micropolar_manager":386,"d3":53}],386:[function(require,module,exports){
+},{"../../plotly":406,"./micropolar_manager":444,"d3":125}],444:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -74729,7 +76093,7 @@ manager.fillLayout = function(_gd) {
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };
 
-},{"../../plotly":348,"./undo_manager":387,"d3":53}],387:[function(require,module,exports){
+},{"../../plotly":406,"./undo_manager":445,"d3":125}],445:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -74798,7 +76162,7 @@ module.exports = function UndoManager() {
     };
 };
 
-},{}],388:[function(require,module,exports){
+},{}],446:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -74954,7 +76318,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../plotly":348}],389:[function(require,module,exports){
+},{"../plotly":406}],447:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75000,7 +76364,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"../plotly":348,"./cloneplot":388,"./svgtoimg":390,"./toimage":391,"./tosvg":392}],390:[function(require,module,exports){
+},{"../plotly":406,"./cloneplot":446,"./svgtoimg":448,"./toimage":449,"./tosvg":450}],448:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75072,7 +76436,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"events":57}],391:[function(require,module,exports){
+},{"events":129}],449:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75154,7 +76518,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../plotly":348,"events":57}],392:[function(require,module,exports){
+},{"../plotly":406,"events":129}],450:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75323,7 +76687,7 @@ function insertGlImage(fullLayout, scene, opts) {
    scene.destroy();
 }
 
-},{"../plotly":348,"d3":53}],393:[function(require,module,exports){
+},{"../plotly":406,"d3":125}],451:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75351,7 +76715,7 @@ module.exports = function arraysToCalcdata(cd) {
     mergeArray(markerLine.width, cd, 'mlw');
 };
 
-},{"../../lib":332}],394:[function(require,module,exports){
+},{"../../lib":390}],452:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75420,7 +76784,7 @@ module.exports = {
     }
 };
 
-},{"../scatter/attributes":455}],395:[function(require,module,exports){
+},{"../scatter/attributes":513}],453:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75479,7 +76843,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../components/colorscale/calc":291,"../../components/colorscale/has_colorscale":296,"../../plotly":348,"fast-isnumeric":58}],396:[function(require,module,exports){
+},{"../../components/colorscale/calc":349,"../../components/colorscale/has_colorscale":354,"../../plotly":406,"fast-isnumeric":130}],454:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75521,7 +76885,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":284,"../../components/errorbars/defaults":307,"../../lib":332,"../bar/style_defaults":404,"../scatter/xy_defaults":458,"./attributes":394}],397:[function(require,module,exports){
+},{"../../components/color":342,"../../components/errorbars/defaults":365,"../../lib":390,"../bar/style_defaults":462,"../scatter/xy_defaults":516,"./attributes":452}],455:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75611,7 +76975,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return [pointData];
 };
 
-},{"../../components/color":284,"../../plotly":348}],398:[function(require,module,exports){
+},{"../../components/color":342,"../../plotly":406}],456:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75652,7 +77016,7 @@ exports.style = require('./style');
 
 exports.hoverPoints = require('./hover');
 
-},{"../../plotly":348,"../scatter/colorbar":456,"./arrays_to_calcdata":393,"./attributes":394,"./calc":395,"./defaults":396,"./hover":397,"./layout_attributes":399,"./layout_defaults":400,"./plot":401,"./set_positions":402,"./style":403}],399:[function(require,module,exports){
+},{"../../plotly":406,"../scatter/colorbar":514,"./arrays_to_calcdata":451,"./attributes":452,"./calc":453,"./defaults":454,"./hover":455,"./layout_attributes":457,"./layout_defaults":458,"./plot":459,"./set_positions":460,"./style":461}],457:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75694,7 +77058,7 @@ module.exports = {
     }
 };
 
-},{}],400:[function(require,module,exports){
+},{}],458:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75754,7 +77118,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
     coerce('bargroupgap');
 };
 
-},{"../../lib":332,"../../plotly":348,"./layout_attributes":399}],401:[function(require,module,exports){
+},{"../../lib":390,"../../plotly":406,"./layout_attributes":457}],459:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -75861,7 +77225,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
         });
 };
 
-},{"../../components/color":284,"../../lib":332,"./arrays_to_calcdata":393,"d3":53,"fast-isnumeric":58}],402:[function(require,module,exports){
+},{"../../components/color":342,"../../lib":390,"./arrays_to_calcdata":451,"d3":125,"fast-isnumeric":130}],460:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -76063,7 +77427,7 @@ module.exports = function setPositions(gd, plotinfo) {
     });
 };
 
-},{"../../lib":332,"../../plotly":348,"fast-isnumeric":58}],403:[function(require,module,exports){
+},{"../../lib":390,"../../plotly":406,"fast-isnumeric":130}],461:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -76139,7 +77503,7 @@ module.exports = function style(gd) {
     });
 };
 
-},{"../../components/color":284,"../../plotly":348,"d3":53}],404:[function(require,module,exports){
+},{"../../components/color":342,"../../plotly":406,"d3":125}],462:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -76176,7 +77540,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
     coerce('marker.line.width');
 };
 
-},{"../../components/color":284,"../../components/colorscale/defaults":293,"../../components/colorscale/has_colorscale":296}],405:[function(require,module,exports){
+},{"../../components/color":342,"../../components/colorscale/defaults":351,"../../components/colorscale/has_colorscale":354}],463:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -76306,7 +77670,7 @@ module.exports = {
     fillcolor: scatterAttrs.fillcolor
 };
 
-},{"../../components/color/attributes":283,"../../lib/extend":328,"../scatter/attributes":455}],406:[function(require,module,exports){
+},{"../../components/color/attributes":341,"../../lib/extend":386,"../scatter/attributes":513}],464:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -76937,7 +78301,7 @@ boxes.hoverPoints = function(pointData, xval, yval, hovermode) {
     return closeData;
 };
 
-},{"../../plotly":348,"./attributes":405,"./layout_attributes":407,"d3":53,"fast-isnumeric":58}],407:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":463,"./layout_attributes":465,"d3":125,"fast-isnumeric":130}],465:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -76973,7 +78337,7 @@ module.exports = {
     }
 };
 
-},{}],408:[function(require,module,exports){
+},{}],466:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77025,7 +78389,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":290,"../../lib/extend":328,"../../plots/attributes":349,"../scattergeo/attributes":464}],409:[function(require,module,exports){
+},{"../../components/colorscale/attributes":348,"../../lib/extend":386,"../../plots/attributes":407,"../scattergeo/attributes":522}],467:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77080,7 +78444,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined);
 };
 
-},{"../../components/colorscale/defaults":293,"../../lib":332,"./attributes":408}],410:[function(require,module,exports){
+},{"../../components/colorscale/defaults":351,"../../lib":390,"./attributes":466}],468:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77106,7 +78470,7 @@ exports.colorbar = require('../heatmap/colorbar');
 
 exports.calc = require('../surface/calc');
 
-},{"../../plotly":348,"../heatmap/colorbar":423,"../surface/calc":473,"./attributes":408,"./defaults":409}],411:[function(require,module,exports){
+},{"../../plotly":406,"../heatmap/colorbar":481,"../surface/calc":531,"./attributes":466,"./defaults":467}],469:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77298,7 +78662,7 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     };
 }
 
-},{"../../components/color":284,"../../components/colorscale/get_scale":295,"../../components/colorscale/make_scale_function":300,"../../constants/geo_constants":318,"../../lib/array_to_calc_item":324,"../../lib/geo_location_utils":329,"../../lib/topojson_utils":343,"../../plotly":348,"d3":53}],412:[function(require,module,exports){
+},{"../../components/color":342,"../../components/colorscale/get_scale":353,"../../components/colorscale/make_scale_function":358,"../../constants/geo_constants":376,"../../lib/array_to_calc_item":382,"../../lib/geo_location_utils":387,"../../lib/topojson_utils":401,"../../plotly":406,"d3":125}],470:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77400,7 +78764,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":328,"../heatmap/attributes":421,"../scatter/attributes":455}],413:[function(require,module,exports){
+},{"../../lib/extend":386,"../heatmap/attributes":479,"../scatter/attributes":513}],471:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77449,7 +78813,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../plotly":348,"../heatmap/calc":422}],414:[function(require,module,exports){
+},{"../../plotly":406,"../heatmap/calc":480}],472:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77543,7 +78907,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":287,"../../components/colorscale/get_scale":295,"../../plotly":348,"d3":53}],415:[function(require,module,exports){
+},{"../../components/colorbar/draw":345,"../../components/colorscale/get_scale":353,"../../plotly":406,"d3":125}],473:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77587,7 +78951,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":332,"../contour/style_defaults":420,"../heatmap/has_columns":426,"../heatmap/xyz_defaults":432,"./attributes":412}],416:[function(require,module,exports){
+},{"../../lib":390,"../contour/style_defaults":478,"../heatmap/has_columns":484,"../heatmap/xyz_defaults":490,"./attributes":470}],474:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77606,7 +78970,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return heatmapHoverPoints(pointData, xval, yval, hovermode, true);
 };
 
-},{"../heatmap/hover":427}],417:[function(require,module,exports){
+},{"../heatmap/hover":485}],475:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -77639,7 +79003,7 @@ exports.colorbar = require('./colorbar');
 
 exports.hoverPoints = require('./hover');
 
-},{"../../plotly":348,"./attributes":412,"./calc":413,"./colorbar":414,"./defaults":415,"./hover":416,"./plot":418,"./style":419}],418:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":470,"./calc":471,"./colorbar":472,"./defaults":473,"./hover":474,"./plot":476,"./style":477}],476:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -78347,7 +79711,7 @@ function makeClipMask(cd0) {
     return z;
 }
 
-},{"../../lib":332,"../../plotly":348,"../heatmap/plot":430,"d3":53}],419:[function(require,module,exports){
+},{"../../lib":390,"../../plotly":406,"../heatmap/plot":488,"d3":125}],477:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -78405,7 +79769,7 @@ module.exports = function style(gd) {
     heatmapStyle(gd);
 };
 
-},{"../../components/colorscale/get_scale":295,"../../plotly":348,"../heatmap/style":431,"d3":53}],420:[function(require,module,exports){
+},{"../../components/colorscale/get_scale":353,"../../plotly":406,"../heatmap/style":489,"d3":125}],478:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -78441,7 +79805,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout)
     }
 };
 
-},{"../../components/colorscale/defaults":293}],421:[function(require,module,exports){
+},{"../../components/colorscale/defaults":351}],479:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -78517,7 +79881,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":290,"../../lib/extend":328,"../scatter/attributes":455}],422:[function(require,module,exports){
+},{"../../components/colorscale/attributes":348,"../../lib/extend":386,"../scatter/attributes":513}],480:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -78952,7 +80316,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../components/colorscale/calc":291,"../../lib":332,"../../plotly":348,"../histogram2d/calc":442,"./convert_column_xyz":424,"./has_columns":426,"./max_row_length":429,"fast-isnumeric":58}],423:[function(require,module,exports){
+},{"../../components/colorscale/calc":349,"../../lib":390,"../../plotly":406,"../histogram2d/calc":500,"./convert_column_xyz":482,"./has_columns":484,"./max_row_length":487,"fast-isnumeric":130}],481:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79000,7 +80364,7 @@ module.exports = function colorbar(gd, cd) {
     Lib.markTime('done colorbar');
 };
 
-},{"../../components/colorbar/draw":287,"../../components/colorscale/get_scale":295,"../../lib":332,"../../plotly":348,"d3":53,"fast-isnumeric":58}],424:[function(require,module,exports){
+},{"../../components/colorbar/draw":345,"../../components/colorscale/get_scale":353,"../../lib":390,"../../plotly":406,"d3":125,"fast-isnumeric":130}],482:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79057,7 +80421,7 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
     if(hasColumnText) trace.text = text;
 };
 
-},{"../../lib":332}],425:[function(require,module,exports){
+},{"../../lib":390}],483:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79095,7 +80459,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };
 
-},{"../../components/colorscale/defaults":293,"../../lib":332,"./attributes":421,"./has_columns":426,"./xyz_defaults":432}],426:[function(require,module,exports){
+},{"../../components/colorscale/defaults":351,"../../lib":390,"./attributes":479,"./has_columns":484,"./xyz_defaults":490}],484:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79111,7 +80475,7 @@ module.exports = function(trace) {
     return !Array.isArray(trace.z[0]);
 };
 
-},{}],427:[function(require,module,exports){
+},{}],485:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79222,7 +80586,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     })];
 };
 
-},{"../../lib":332,"../../plotly":348}],428:[function(require,module,exports){
+},{"../../lib":390,"../../plotly":406}],486:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79254,7 +80618,7 @@ exports.style = require('./style');
 
 exports.hoverPoints = require('./hover');
 
-},{"../../plotly":348,"./attributes":421,"./calc":422,"./colorbar":423,"./defaults":425,"./hover":427,"./plot":430,"./style":431}],429:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":479,"./calc":480,"./colorbar":481,"./defaults":483,"./hover":485,"./plot":488,"./style":489}],487:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79276,7 +80640,7 @@ module.exports = function maxRowLength(z) {
     return len;
 };
 
-},{}],430:[function(require,module,exports){
+},{}],488:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79663,7 +81027,7 @@ function plotOne(gd, plotinfo, cd) {
     Lib.markTime('done showing png');
 }
 
-},{"../../components/colorscale/get_scale":295,"../../lib":332,"../../plotly":348,"./max_row_length":429,"d3":53,"tinycolor2":213}],431:[function(require,module,exports){
+},{"../../components/colorscale/get_scale":353,"../../lib":390,"../../plotly":406,"./max_row_length":487,"d3":125,"tinycolor2":271}],489:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79684,7 +81048,7 @@ module.exports = function style(gd) {
         });
 };
 
-},{"d3":53}],432:[function(require,module,exports){
+},{"d3":125}],490:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79773,7 +81137,7 @@ function isValidZ(z) {
     return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
 }
 
-},{"./has_columns":426,"fast-isnumeric":58}],433:[function(require,module,exports){
+},{"./has_columns":484,"fast-isnumeric":130}],491:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79905,7 +81269,7 @@ function makeBinsAttr(axLetter) {
     };
 }
 
-},{"../../lib":332,"../bar/attributes":394}],434:[function(require,module,exports){
+},{"../../lib":390,"../bar/attributes":452}],492:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79931,7 +81295,7 @@ module.exports = function doAvg(size, counts) {
     return total;
 };
 
-},{}],435:[function(require,module,exports){
+},{}],493:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -79961,7 +81325,7 @@ module.exports = function handleBinDefaults(traceIn, traceOut, coerce, binDirect
     return traceOut;
 };
 
-},{}],436:[function(require,module,exports){
+},{}],494:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80035,7 +81399,7 @@ module.exports = {
     }
 };
 
-},{"fast-isnumeric":58}],437:[function(require,module,exports){
+},{"fast-isnumeric":130}],495:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80165,7 +81529,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":332,"../../plotly":348,"./average":434,"./bin_functions":436,"./norm_functions":440,"fast-isnumeric":58}],438:[function(require,module,exports){
+},{"../../lib":390,"../../plotly":406,"./average":492,"./bin_functions":494,"./norm_functions":498,"fast-isnumeric":130}],496:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80217,7 +81581,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":284,"../../components/errorbars/defaults":307,"../../lib":332,"../bar/style_defaults":404,"./attributes":433,"./bin_defaults":435}],439:[function(require,module,exports){
+},{"../../components/color":342,"../../components/errorbars/defaults":365,"../../lib":390,"../bar/style_defaults":462,"./attributes":491,"./bin_defaults":493}],497:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80269,7 +81633,7 @@ exports.colorbar = require('../scatter/colorbar');
 
 exports.hoverPoints = require('../bar/hover');
 
-},{"../../plotly":348,"../bar/hover":397,"../bar/layout_attributes":399,"../bar/layout_defaults":400,"../bar/plot":401,"../bar/set_positions":402,"../bar/style":403,"../scatter/colorbar":456,"./attributes":433,"./calc":437,"./defaults":438}],440:[function(require,module,exports){
+},{"../../plotly":406,"../bar/hover":455,"../bar/layout_attributes":457,"../bar/layout_defaults":458,"../bar/plot":459,"../bar/set_positions":460,"../bar/style":461,"../scatter/colorbar":514,"./attributes":491,"./calc":495,"./defaults":496}],498:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80304,7 +81668,7 @@ module.exports = {
     }
 };
 
-},{}],441:[function(require,module,exports){
+},{}],499:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80356,7 +81720,7 @@ module.exports = {
     }
 };
 
-},{"../heatmap/attributes":421,"../histogram/attributes":433}],442:[function(require,module,exports){
+},{"../heatmap/attributes":479,"../histogram/attributes":491}],500:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80526,7 +81890,7 @@ module.exports = function calc(gd, trace) {
     };
 };
 
-},{"../../lib":332,"../../plotly":348,"../histogram/average":434,"../histogram/bin_functions":436,"../histogram/norm_functions":440}],443:[function(require,module,exports){
+},{"../../lib":390,"../../plotly":406,"../histogram/average":492,"../histogram/bin_functions":494,"../histogram/norm_functions":498}],501:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80559,7 +81923,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, layout) {
     );
 };
 
-},{"../../components/colorscale/defaults":293,"../../lib":332,"./attributes":441,"./sample_defaults":445}],444:[function(require,module,exports){
+},{"../../components/colorscale/defaults":351,"../../lib":390,"./attributes":499,"./sample_defaults":503}],502:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80593,7 +81957,7 @@ exports.style = require('../heatmap/style');
 
 exports.hoverPoints = require('../heatmap/hover');
 
-},{"../../plotly":348,"../heatmap/calc":422,"../heatmap/colorbar":423,"../heatmap/hover":427,"../heatmap/plot":430,"../heatmap/style":431,"./attributes":441,"./defaults":443}],445:[function(require,module,exports){
+},{"../../plotly":406,"../heatmap/calc":480,"../heatmap/colorbar":481,"../heatmap/hover":485,"../heatmap/plot":488,"../heatmap/style":489,"./attributes":499,"./defaults":501}],503:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80629,7 +81993,7 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce) {
     handleBinDefaults(traceIn, traceOut, coerce, binDirections);
 };
 
-},{"../histogram/bin_defaults":435}],446:[function(require,module,exports){
+},{"../histogram/bin_defaults":493}],504:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80674,7 +82038,7 @@ module.exports = {
     }
 };
 
-},{"../contour/attributes":412,"../histogram2d/attributes":441}],447:[function(require,module,exports){
+},{"../contour/attributes":470,"../histogram2d/attributes":499}],505:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80710,7 +82074,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":332,"../contour/style_defaults":420,"../histogram2d/sample_defaults":445,"./attributes":446}],448:[function(require,module,exports){
+},{"../../lib":390,"../contour/style_defaults":478,"../histogram2d/sample_defaults":503,"./attributes":504}],506:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80744,7 +82108,7 @@ exports.colorbar = require('../contour/colorbar');
 
 exports.hoverPoints = require('../contour/hover');
 
-},{"../../plotly":348,"../contour/calc":413,"../contour/colorbar":414,"../contour/hover":416,"../contour/plot":418,"../contour/style":419,"./attributes":446,"./defaults":447}],449:[function(require,module,exports){
+},{"../../plotly":406,"../contour/calc":471,"../contour/colorbar":472,"../contour/hover":474,"../contour/plot":476,"../contour/style":477,"./attributes":504,"./defaults":505}],507:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -80853,7 +82217,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":290,"../../lib/extend":328,"../surface/attributes":472}],450:[function(require,module,exports){
+},{"../../components/colorscale/attributes":348,"../../lib/extend":386,"../surface/attributes":530}],508:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -81009,7 +82373,7 @@ function createMesh3DTrace(scene, data) {
 
 module.exports = createMesh3DTrace;
 
-},{"../../lib/str2rgbarray":341,"alpha-shape":23,"convex-hull":42,"delaunay-triangulate":54,"gl-mesh3d":91,"tinycolor2":213}],451:[function(require,module,exports){
+},{"../../lib/str2rgbarray":399,"alpha-shape":95,"convex-hull":114,"delaunay-triangulate":126,"gl-mesh3d":163,"tinycolor2":271}],509:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -81101,7 +82465,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../plotly":348,"./":452}],452:[function(require,module,exports){
+},{"../../plotly":406,"./":510}],510:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -81127,7 +82491,7 @@ Mesh3D.supplyDefaults = require('./defaults');
 
 Mesh3D.colorbar = require('../heatmap/colorbar');
 
-},{"../../plotly":348,"../heatmap/colorbar":423,"./attributes":449,"./defaults":451}],453:[function(require,module,exports){
+},{"../../plotly":406,"../heatmap/colorbar":481,"./attributes":507,"./defaults":509}],511:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -81347,7 +82711,7 @@ module.exports = {
 };
 
 
-},{"../../components/color/attributes":283,"../../lib/extend":328,"../../plots/attributes":349,"../../plots/font_attributes":354}],454:[function(require,module,exports){
+},{"../../components/color/attributes":341,"../../lib/extend":386,"../../plots/attributes":407,"../../plots/font_attributes":412}],512:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -82296,7 +83660,7 @@ pie.styleOne = function(s, pt, trace) {
     .call(Plotly.Color.stroke, lineColor);
 };
 
-},{"../../plotly":348,"./attributes":453,"d3":53,"fast-isnumeric":58,"tinycolor2":213}],455:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":511,"d3":125,"fast-isnumeric":130,"tinycolor2":271}],513:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -82613,7 +83977,7 @@ module.exports = {
     }
 };
 
-},{"../../plotly":348}],456:[function(require,module,exports){
+},{"../../plotly":406}],514:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -82668,7 +84032,7 @@ module.exports = function colorbar(gd, cd) {
     Lib.markTime('done colorbar');
 };
 
-},{"../../components/colorbar/draw":287,"../../components/colorscale/get_scale":295,"../../lib":332,"../../plotly":348,"d3":53,"fast-isnumeric":58}],457:[function(require,module,exports){
+},{"../../components/colorbar/draw":345,"../../components/colorscale/get_scale":353,"../../lib":390,"../../plotly":406,"d3":125,"fast-isnumeric":130}],515:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -83521,7 +84885,7 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
     return [pointData];
 };
 
-},{"../../plotly":348,"./attributes":455,"./colorbar":456,"./xy_defaults":458,"d3":53,"fast-isnumeric":58}],458:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":513,"./colorbar":514,"./xy_defaults":516,"d3":125,"fast-isnumeric":130}],516:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -83566,7 +84930,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     return len;
 };
 
-},{}],459:[function(require,module,exports){
+},{}],517:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -83699,7 +85063,7 @@ module.exports = {
     }
 };
 
-},{"../../constants/gl_markers.json":321,"../../lib/extend":328,"../scatter/attributes":455}],460:[function(require,module,exports){
+},{"../../constants/gl_markers.json":379,"../../lib/extend":386,"../scatter/attributes":513}],518:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -83770,7 +85134,7 @@ function calculateErrors(data, scaleFactor) {
 
 module.exports = calculateErrors;
 
-},{"../../components/errorbars/compute_error":306}],461:[function(require,module,exports){
+},{"../../components/errorbars/compute_error":364}],519:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84225,7 +85589,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../constants/gl3d_dashes.json":320,"../../constants/gl_markers.json":321,"../../lib/gl_format_color":330,"../../lib/str2rgbarray":341,"../../plotly":348,"./calc_errors":460,"delaunay-triangulate":54,"gl-error3d":62,"gl-line3d":68,"gl-mesh3d":91,"gl-scatter3d":134}],462:[function(require,module,exports){
+},{"../../constants/gl3d_dashes.json":378,"../../constants/gl_markers.json":379,"../../lib/gl_format_color":388,"../../lib/str2rgbarray":399,"../../plotly":406,"./calc_errors":518,"delaunay-triangulate":126,"gl-error3d":134,"gl-line3d":140,"gl-mesh3d":163,"gl-scatter3d":206}],520:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84303,7 +85667,7 @@ function handleXYZDefaults(traceIn, traceOut, coerce) {
     return len;
 }
 
-},{"../../plotly":348,"./":463}],463:[function(require,module,exports){
+},{"../../plotly":406,"./":521}],521:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84345,7 +85709,7 @@ Scatter3D.calc = function(gd, trace) {
     return cd;
 };
 
-},{"../../constants/gl_markers.json":321,"../../plotly":348,"./attributes":459,"./defaults":462}],464:[function(require,module,exports){
+},{"../../constants/gl_markers.json":379,"../../plotly":406,"./attributes":517,"./defaults":520}],522:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84429,7 +85793,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":328,"../../plots/attributes":349,"../scatter/attributes":455}],465:[function(require,module,exports){
+},{"../../lib/extend":386,"../../plots/attributes":407,"../scatter/attributes":513}],523:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84498,7 +85862,7 @@ function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
     return len;
 }
 
-},{"../../plotly":348,"./":466}],466:[function(require,module,exports){
+},{"../../plotly":406,"./":524}],524:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84532,7 +85896,7 @@ ScatterGeo.calc = function(gd, trace) {
 
 };
 
-},{"../../plotly":348,"./attributes":464,"./defaults":465}],467:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":522,"./defaults":523}],525:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84795,7 +86159,7 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     };
 }
 
-},{"../../lib/array_to_calc_item":324,"../../lib/geo_location_utils":329,"../../lib/topojson_utils":343,"../../plotly":348,"d3":53}],468:[function(require,module,exports){
+},{"../../lib/array_to_calc_item":382,"../../lib/geo_location_utils":387,"../../lib/topojson_utils":401,"../../plotly":406,"d3":125}],526:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -84886,7 +86250,7 @@ module.exports = {
     }
 };
 
-},{"../../constants/gl2d_dashes.json":319,"../../constants/gl_markers.json":321,"../../lib/extend":328,"../scatter/attributes":455}],469:[function(require,module,exports){
+},{"../../constants/gl2d_dashes.json":377,"../../constants/gl_markers.json":379,"../../lib/extend":386,"../scatter/attributes":513}],527:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85447,7 +86811,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../constants/gl2d_dashes.json":319,"../../constants/gl_markers.json":321,"../../lib/gl_format_color":330,"../../lib/str2rgbarray":341,"../../plotly":348,"fast-isnumeric":58,"gl-error2d":60,"gl-line2d":66,"gl-scatter2d":131,"gl-scatter2d-fancy":126}],470:[function(require,module,exports){
+},{"../../constants/gl2d_dashes.json":377,"../../constants/gl_markers.json":379,"../../lib/gl_format_color":388,"../../lib/str2rgbarray":399,"../../plotly":406,"fast-isnumeric":130,"gl-error2d":132,"gl-line2d":138,"gl-scatter2d":203,"gl-scatter2d-fancy":198}],528:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85498,7 +86862,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/errorbars/defaults":307,"../../lib":332,"../scatter":457,"../scatter/xy_defaults":458,"./attributes":468}],471:[function(require,module,exports){
+},{"../../components/errorbars/defaults":365,"../../lib":390,"../scatter":515,"../scatter/xy_defaults":516,"./attributes":526}],529:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85528,7 +86892,7 @@ ScatterGl.colorbar = Plotly.Scatter.colorbar;
 // reuse the Scatter3D 'dummy' calc step so that legends know what to do
 ScatterGl.calc = Plotly.Scatter3D.calc;
 
-},{"../../plotly":348,"./attributes":468,"./defaults":470}],472:[function(require,module,exports){
+},{"../../plotly":406,"./attributes":526,"./defaults":528}],530:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85689,7 +87053,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":290,"../../lib/extend":328}],473:[function(require,module,exports){
+},{"../../components/colorscale/attributes":348,"../../lib/extend":386}],531:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -85709,7 +87073,7 @@ module.exports = function calc(gd, trace) {
     colorscaleCalc(trace, trace.z, '', 'z');
 };
 
-},{"../../components/colorscale/calc":291}],474:[function(require,module,exports){
+},{"../../components/colorscale/calc":349}],532:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -86033,7 +87397,7 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../lib/str2rgbarray":341,"gl-surface3d":161,"ndarray":189,"ndarray-fill":178,"ndarray-homography":183,"ndarray-ops":184,"tinycolor2":213}],475:[function(require,module,exports){
+},{"../../lib/str2rgbarray":399,"gl-surface3d":72,"ndarray":247,"ndarray-fill":236,"ndarray-homography":241,"ndarray-ops":242,"tinycolor2":271}],533:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -86126,7 +87490,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     );
 };
 
-},{"../../components/colorscale/defaults":293,"../../lib":332,"./attributes":472}],476:[function(require,module,exports){
+},{"../../components/colorscale/defaults":351,"../../lib":390,"./attributes":530}],534:[function(require,module,exports){
 /**
 * Copyright 2012-2015, Plotly, Inc.
 * All rights reserved.
@@ -86154,5 +87518,5 @@ Surface.colorbar = require('../heatmap/colorbar');
 
 Surface.calc = require('./calc');
 
-},{"../../plotly":348,"../heatmap/colorbar":423,"./attributes":472,"./calc":473,"./defaults":475}]},{},[323])(323)
+},{"../../plotly":406,"../heatmap/colorbar":481,"./attributes":530,"./calc":531,"./defaults":533}]},{},[381])(381)
 });
