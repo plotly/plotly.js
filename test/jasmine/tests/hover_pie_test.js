@@ -58,7 +58,6 @@ describe('pie hovering', function () {
             gd.on('plotly_hover', function (data) {
                 count++;
                 futureData.push(data);
-                console.log(data);
             });
 
             mouseEvent('mouseover', 180, 140);
