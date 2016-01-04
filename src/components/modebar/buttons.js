@@ -201,7 +201,7 @@ var DRAGCURSORS = {
     pan: 'move',
     zoom: 'crosshair',
     select: 'crosshair',
-    lasso: 'crosshair' // TODO: better cursors for select and lasso?
+    lasso: 'crosshair'
 };
 
 function handleCartesian(gd, ev) {
