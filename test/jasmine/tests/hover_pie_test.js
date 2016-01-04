@@ -5,7 +5,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 
-fdescribe('pie hovering', function () {
+describe('pie hovering', function () {
     var mock = require('@mocks/pie_simple.json');
 
     describe('event data', function () {
