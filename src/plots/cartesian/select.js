@@ -8,8 +8,11 @@
 
 
 'use strict';
+
 var polygon = require('../../lib/polygon');
+
 var axes = require('./axes');
+
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
 var BENDPX = 1.5; // max pixels off straight before a line counts as bent

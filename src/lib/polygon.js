@@ -8,7 +8,10 @@
 
 
 'use strict';
+
 var dot = require('./matrix').dot;
+
+var polygon = module.exports = {};
 
 /**
  * Turn an array of [x, y] pairs into a polygon object
@@ -26,8 +29,6 @@ var dot = require('./matrix').dot;
  *              don't double-count the edge where they meet.
  *          returns boolean: is pt inside the polygon (including on its edges)
  */
-var polygon = module.exports = {};
-
 polygon.tester = function tester(ptsIn) {
     var pts = ptsIn.slice(),
         xmin = pts[0][0],
