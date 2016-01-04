@@ -49,16 +49,13 @@ polygon.tester = function tester(ptsIn) {
     var isRect = false,
         rectFirstEdgeTest;
 
-    function onFirstVert(pt) { return pt[0] === pts[0][0]; }
-    function onFirstHorz(pt) { return pt[1] === pts[0][1]; }
-
     if(pts.length === 5) {
         if(pts[0][0] === pts[1][0]) { // vert, horz, vert, horz
             if(pts[2][0] === pts[3][0] &&
                     pts[0][1] === pts[3][1] &&
                     pts[1][1] === pts[2][1]) {
                 isRect = true;
-                rectFirstEdgeTest = onFirstVert;
+                rectFirstEdgeTest = function(pt) { return pt[0] === pts[0][0]; };
             }
         }
         else if(pts[0][1] === pts[1][1]) { // horz, vert, horz, vert
@@ -66,7 +63,7 @@ polygon.tester = function tester(ptsIn) {
                     pts[0][0] === pts[3][0] &&
                     pts[1][0] === pts[2][0]) {
                 isRect = true;
-                rectFirstEdgeTest = onFirstHorz;
+                rectFirstEdgeTest = function(pt) { return pt[1] === pts[0][1]; };
             }
         }
     }
