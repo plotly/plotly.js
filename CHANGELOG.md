@@ -9,6 +9,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.3.1] -- 2016-01-04
+
+### Fixed
+
+- Fix `Plotly.addTraces` for gl3d and gl2d trace types [#140]
+
+
 ## [1.3.0] -- 2015-12-21
 
 ### Added
