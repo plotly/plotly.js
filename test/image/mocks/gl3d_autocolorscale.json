@@ -24,7 +24,9 @@
                 ["zero two", "one one", "two one"],
                 ["zero two", "one two", "two two"]
             ],
-            "autocolorscale": true
+            "autocolorscale": true,
+            "zmin": 0,
+            "zmax": "50"
         }
     ],
     "layout": {
