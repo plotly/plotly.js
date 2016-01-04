@@ -865,14 +865,15 @@ scatter.selectPoints = function(searchInfo, polygon) {
         xa = searchInfo.xaxis,
         ya = searchInfo.yaxis,
         selection = [],
-        curveNumber = cd[0].trace.index,
-        marker = cd[0].trace.marker,
+        trace = cd[0].trace,
+        curveNumber = trace.index,
+        marker = trace.marker,
         i,
         di,
         x,
         y;
 
-    if(!marker) return; // TODO: include text and/or lines?
+    if(!scatter.hasMarkers(trace)) return; // TODO: include text and/or lines?
 
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 
