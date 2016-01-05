@@ -50,7 +50,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         cd,
         trace,
         searchInfo,
-        selection = [];
+        selection = [],
+        eventData;
     for(i = 0; i < gd.calcdata.length; i++) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
@@ -87,13 +88,15 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             searchInfo = searchTraces[i];
             [].push.apply(selection, searchInfo.selectPoints(searchInfo, poly));
         }
-        dragOptions.gd.emit('plotly_selecting', {points: selection});
+
+        eventData = {points: selection};
+        dragOptions.gd.emit('plotly_selecting', eventData);
     };
 
     dragOptions.doneFn = function(dragged, numclicks) {
         if(!dragged && numclicks === 2) dragOptions.doubleclick();
         else {
-            dragOptions.gd.emit('plotly_selected', {points: selection});
+            dragOptions.gd.emit('plotly_selected', eventData);
         }
         outlines.remove();
         for(i = 0; i < searchTraces.length; i++) {
