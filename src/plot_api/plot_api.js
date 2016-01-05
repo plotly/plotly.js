@@ -418,41 +418,6 @@ function setPlotContext(gd, config) {
     }
 }
 
-function plotGeo(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        geoIds = plots.getSubplotIds(fullLayout, 'geo');
-
-    var i, geoId, fullGeoData, geo;
-
-    // if 'plotly-geo-assets.js' is not included,
-    // initialize object to keep reference to every loaded topojson
-    if(window.PlotlyGeoAssets === undefined) {
-        window.PlotlyGeoAssets = { topojson : {} };
-    }
-
-    for (i = 0; i < geoIds.length; i++) {
-        geoId = geoIds[i];
-        fullGeoData = plots.getSubplotData(fullData, 'geo', geoId);
-        geo = fullLayout[geoId]._geo;
-
-        // If geo is not instantiated, create one!
-        if(geo === undefined) {
-            geo = new Plotly.Geo(
-                {
-                    id: geoId,
-                    container: fullLayout._geocontainer.node(),
-                    topojsonURL: gd._context.topojsonURL
-                },
-                fullLayout
-            );
-            fullLayout[geoId]._geo = geo;
-        }
-
-        geo.plot(fullGeoData, fullLayout, gd._promises);
-    }
-}
-
 function plotGl2d(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
