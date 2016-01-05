@@ -418,39 +418,6 @@ function setPlotContext(gd, config) {
     }
 }
 
-function plotGl2d(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
-
-    for(var i = 0; i < subplotIds.length; i++) {
-        var subplotId = subplotIds[i],
-            subplotObj = fullLayout._plots[subplotId],
-            fullSubplotData = plots.getSubplotData(fullData, 'gl2d', subplotId);
-        var scene;
-
-        // ref. to corresp. Scene instance
-        scene = subplotObj._scene2d;
-
-        // If Scene is not instantiated, create one!
-        if(scene === undefined) {
-            scene = new Plotly.Scene2D({
-                    container: gd.querySelector('.gl-container'),
-                    id: subplotId,
-                    staticPlot: gd._context.staticPlot,
-                    plotGlPixelRatio: gd._context.plotGlPixelRatio
-                },
-                fullLayout
-            );
-
-            // set ref to Scene instance
-            subplotObj._scene2d = scene;
-        }
-
-        scene.plot(fullSubplotData, fullLayout, gd.layout);
-    }
-}
-
 function plotPolar(gd, data, layout) {
     // build or reuse the container skeleton
     var plotContainer = d3.select(gd).selectAll('.plot-container')

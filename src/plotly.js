@@ -44,7 +44,10 @@ var Geo = require('./plots/geo');
 Plots.registerSubplot(Geo);
 exports.Scene = require('./plots/gl3d/scene');
 exports.Gl3dLayout = require('./plots/gl3d/layout');
-exports.Scene2D = require('./plots/gl2d/scene2d');
+
+var Gl2d = require('./plots/gl2d');
+Plots.registerSubplot(Gl2d);
+
 exports.micropolar = require('./plots/polar/micropolar');
 
 // components
