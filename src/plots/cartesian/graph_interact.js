@@ -9,12 +9,15 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
 var Events = require('../../lib/events');
+
 var prepSelect = require('./select');
+var constants = require('./constants');
 
 var fx = module.exports = {};
 
@@ -68,19 +71,6 @@ fx.isHoriz = function(fullData) {
     return isHoriz;
 };
 
-// ms between first mousedown and 2nd mouseup to constitute dblclick...
-// we don't seem to have access to the system setting
-fx.DBLCLICKDELAY = 600;
-
-// pixels to move mouse before you stop clamping to starting point
-fx.MINDRAG = 8;
-
-// smallest dimension allowed for a zoombox
-fx.MINZOOM = 20;
-
-// width of axis drag regions
-var DRAGGERSIZE = 20;
-
 fx.init = function(gd) {
     var fullLayout = gd._fullLayout;
 
@@ -113,6 +103,7 @@ fx.init = function(gd) {
             // the x position of the main y axis line
             x0 = (ya._linepositions[subplot]||[])[3];
 
+        var DRAGGERSIZE = constants.DRAGGERSIZE;
         if(isNumeric(y0) && xa.side==='top') y0 -= DRAGGERSIZE;
         if(isNumeric(x0) && ya.side!=='right') x0 -= DRAGGERSIZE;
 
@@ -1458,7 +1449,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             y1 = Math.max(0, Math.min(ph, dy0 + y0)),
             dx = Math.abs(x1 - x0),
             dy = Math.abs(y1 - y0),
-            clen = Math.floor(Math.min(dy, dx, fx.MINZOOM) / 2);
+            clen = Math.floor(Math.min(dy, dx, constants.MINZOOM) / 2);
 
         box.l = Math.min(x0, x1);
         box.r = Math.max(x0, x1);
@@ -1467,8 +1458,8 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // look for small drags in one direction or the other,
         // and only drag the other axis
-        if(!yActive || dy < Math.min(Math.max(dx * 0.6, fx.MINDRAG), fx.MINZOOM)) {
-            if(dx < fx.MINDRAG) {
+        if(!yActive || dy < Math.min(Math.max(dx * 0.6, constants.MINDRAG), constants.MINZOOM)) {
+            if(dx < constants.MINDRAG) {
                 zoomMode = '';
                 box.r = box.l;
                 box.t = box.b;
@@ -1479,21 +1470,21 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 box.b = ph;
                 zoomMode = 'x';
                 corners.attr('d',
-                    'M'+(box.l-0.5)+','+(y0-fx.MINZOOM-0.5)+
-                    'h-3v'+(2*fx.MINZOOM+1)+'h3ZM'+
-                    (box.r+0.5)+','+(y0-fx.MINZOOM-0.5)+
-                    'h3v'+(2*fx.MINZOOM+1)+'h-3Z');
+                    'M' + (box.l - 0.5) + ',' + (y0 - constants.MINZOOM - 0.5) +
+                    'h-3v' + (2 * constants.MINZOOM + 1) + 'h3ZM' +
+                    (box.r + 0.5) + ',' + (y0 - constants.MINZOOM - 0.5) +
+                    'h3v' + (2 * constants.MINZOOM + 1) + 'h-3Z');
             }
         }
-        else if(!xActive || dx < Math.min(dy * 0.6, fx.MINZOOM)) {
+        else if(!xActive || dx < Math.min(dy * 0.6, constants.MINZOOM)) {
             box.l = 0;
             box.r = pw;
             zoomMode = 'y';
             corners.attr('d',
-                'M'+(x0-fx.MINZOOM-0.5)+','+(box.t-0.5)+
-                'v-3h'+(2*fx.MINZOOM+1)+'v3ZM'+
-                (x0-fx.MINZOOM-0.5)+','+(box.b+0.5)+
-                'v3h'+(2*fx.MINZOOM+1)+'v-3Z');
+                'M' + (x0 - constants.MINZOOM - 0.5) + ',' + (box.t - 0.5) +
+                'v-3h' + (2 * constants.MINZOOM + 1) + 'v3ZM' +
+                (x0 - constants.MINZOOM - 0.5) + ',' + (box.b + 0.5) +
+                'v3h' + (2 * constants.MINZOOM + 1) + 'v-3Z');
         }
         else {
             zoomMode = 'xy';
@@ -1545,7 +1536,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function zoomDone(dragged, numClicks) {
-        if(Math.min(box.h, box.w) < fx.MINDRAG * 2) {
+        if(Math.min(box.h, box.w) < constants.MINDRAG * 2) {
             if(numClicks === 2) doubleClick();
             else pauseForDrag(gd);
 
@@ -1904,7 +1895,7 @@ function pauseForDrag(gd) {
             gd._replotPending = deferredReplot;
             finishDrag(gd);
         },
-        fx.DBLCLICKDELAY);
+        constants.DBLCLICKDELAY);
 }
 
 function finishDrag(gd) {
@@ -2005,7 +1996,7 @@ fx.dragElement = function(options) {
         initialTarget = e.target;
 
         newMouseDownTime = (new Date()).getTime();
-        if(newMouseDownTime - gd._mouseDownTime < fx.DBLCLICKDELAY) {
+        if(newMouseDownTime - gd._mouseDownTime < constants.DBLCLICKDELAY) {
             // in a click train
             numClicks += 1;
         }
@@ -2031,7 +2022,7 @@ fx.dragElement = function(options) {
     function onMove(e) {
         var dx = e.clientX - startX,
             dy = e.clientY - startY,
-            minDrag = options.minDrag || fx.MINDRAG;
+            minDrag = options.minDrag || constants.MINDRAG;
 
         if(Math.abs(dx) < minDrag) dx = 0;
         if(Math.abs(dy) < minDrag) dy = 0;
@@ -2056,7 +2047,7 @@ fx.dragElement = function(options) {
 
         // don't count as a dblClick unless the mouseUp is also within
         // the dblclick delay
-        if((new Date()).getTime() - gd._mouseDownTime > fx.DBLCLICKDELAY) {
+        if((new Date()).getTime() - gd._mouseDownTime > constants.DBLCLICKDELAY) {
             numClicks = Math.max(numClicks - 1, 1);
         }
 
