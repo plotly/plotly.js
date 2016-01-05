@@ -6,24 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Plotly = require('../../plotly');
 
-var boxes = {
-    attributes: require('./attributes'),
-    layoutAttributes: require('./layout_attributes'),
-    supplyDefaults: require('./defaults'),
-    supplyLayoutDefaults: require('./layout_defaults'),
-    calc: require('./calc'),
-    setPositions: require('./set_positions'),
-    plot: require('./plot'),
-    style: require('./style'),
-    hoverPoints: require('./hover')
-};
-
-Plotly.Plots.register(boxes, 'box',
+Plotly.Plots.register(exports, 'box',
     ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'], {
     description: [
         'In vertical (horizontal) box plots,',
@@ -41,4 +28,12 @@ Plotly.Plots.register(boxes, 'box',
     ].join(' ')
 });
 
-module.exports = boxes;
+exports.attributes = require('./attributes');
+exports.layoutAttributes = require('./layout_attributes');
+exports.supplyDefaults = require('./defaults');
+exports.supplyLayoutDefaults = require('./layout_defaults');
+exports.calc = require('./calc');
+exports.setPositions = require('./set_positions');
+exports.plot = require('./plot');
+exports.style = require('./style');
+exports.hoverPoints = require('./hover');
