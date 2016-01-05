@@ -20,7 +20,7 @@ Plotly.Plots.register(exports, 'pie', ['pie', 'showLegend'], {
 
 exports.attributes = require('./attributes');
 exports.supplyDefaults = require('./defaults');
-exports.layoutDefaults = require('./layout_defaults');
+exports.supplyLayoutDefaults = require('./layout_defaults');
 exports.layoutAttributes = require('./layout_attributes');
 exports.calc = require('./calc');
 exports.plot = require('./plot');
