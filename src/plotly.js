@@ -39,10 +39,11 @@ var Cartesian = require('./plots/cartesian');
 Plots.registerSubplot(Cartesian);
 exports.Axes = require('./plots/cartesian/axes');
 exports.Fx = require('./plots/cartesian/graph_interact');
+
+var Geo = require('./plots/geo');
+Plots.registerSubplot(Geo);
 exports.Scene = require('./plots/gl3d/scene');
 exports.Gl3dLayout = require('./plots/gl3d/layout');
-exports.Geo = require('./plots/geo/geo');
-exports.GeoLayout = require('./plots/geo/layout');
 exports.Scene2D = require('./plots/gl2d/scene2d');
 exports.micropolar = require('./plots/polar/micropolar');
 

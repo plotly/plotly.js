@@ -196,7 +196,7 @@ module.exports = {
         'xaxis': 'Axes',
         'yaxis': 'Axes',
         'scene': 'Gl3dLayout',
-        'geo': 'GeoLayout',
+        'geo': 'geo',
         'legend': 'Legend',
         'annotations': 'Annotations',
         'shapes': 'Shapes'

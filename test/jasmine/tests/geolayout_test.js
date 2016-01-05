@@ -1,9 +1,10 @@
-var Plotly = require('@src/plotly');
+var Geo = require('@src/plots/geo');
 
-describe('Test geolayout', function () {
+describe('Test Geo layout defaults', function () {
     'use strict';
 
-    var GeoLayout = Plotly.GeoLayout;
+    var layoutAttributes = Geo.layoutAttributes;
+    var supplyLayoutDefaults = Geo.supplyLayoutDefaults;
 
     describe('supplyLayoutDefaults', function() {
         var layoutIn, layoutOut;
@@ -30,12 +31,12 @@ describe('Test geolayout', function () {
                 }
             };
 
-            GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.geo.projection.rotation).toBeUndefined();
 
             delete layoutIn.geo.projection.type;
             layoutOut = {};
-            GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.geo.projection.rotation).toBeDefined();
         });
 
@@ -55,21 +56,21 @@ describe('Test geolayout', function () {
                 }
             };
 
-            GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             fields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeUndefined();
             });
 
             delete layoutIn.geo.projection.type;
             layoutOut = {};
-            GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             fields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeDefined();
             });
         });
 
         it('should not coerce projection.parallels if type is conic', function() {
-            var projTypes = GeoLayout.layoutAttributes.projection.type.values;
+            var projTypes = layoutAttributes.projection.type.values;
 
             function testOne(projType) {
                 layoutIn = {
@@ -81,7 +82,7 @@ describe('Test geolayout', function () {
                     }
                 };
                 layoutOut = {};
-                GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             }
 
             projTypes.forEach(function(projType) {
@@ -103,14 +104,14 @@ describe('Test geolayout', function () {
                 geo: { scope: 'usa' }
             };
             layoutOut = {};
-            GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             fields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeDefined();
             });
 
             delete layoutIn.geo.scope;
             layoutOut = {};
-            GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             fields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeUndefined();
             });
@@ -122,7 +123,7 @@ describe('Test geolayout', function () {
                 }
             };
             layoutOut = {};
-            GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             fields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeDefined();
             });
@@ -134,14 +135,14 @@ describe('Test geolayout', function () {
                 }
             };
             layoutOut = {};
-            GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             fields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeDefined();
             });
 
             delete layoutIn.geo.resolution;
             layoutOut = {};
-            GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             fields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeUndefined();
             });
@@ -151,14 +152,14 @@ describe('Test geolayout', function () {
             var fields = [
                 'showframe', 'framecolor', 'framewidth'
             ],
-            scopes = GeoLayout.layoutAttributes.scope.values;
+            scopes = layoutAttributes.scope.values;
 
             function testOne(scope) {
                 layoutIn = {
                     geo: { scope: scope }
                 };
                 layoutOut = {};
-                GeoLayout.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+                supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             }
 
             scopes.forEach(function(scope) {
