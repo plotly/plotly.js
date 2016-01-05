@@ -31,7 +31,7 @@ plots.fontWeight = 'normal';
 /**
  * plots.register: register a module as the handler for a trace type
  *
- * @param {object} module the module that will handle plotting this trace type
+ * @param {object} _module the module that will handle plotting this trace type
  * @param {string} thisType
  * @param {array of strings} categoriesIn all the categories this type is in,
  *     tested by calls: Plotly.Plots.traceIs(trace, oneCategory)
@@ -357,7 +357,7 @@ function positionPlayWithData(gd, container){
 
     if(gd._context.sendData) {
         link.on('click', function() {
-            plots.sendDataToCloud(gd)
+            plots.sendDataToCloud(gd);
         });
     }
     else {
@@ -400,7 +400,7 @@ plots.sendDataToCloud = function(gd) {
 
         gd.emit('plotly_afterexport');
         return false;
-}
+};
 
 plots.supplyDefaults = function(gd) {
     // fill in default values:
