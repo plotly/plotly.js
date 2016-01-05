@@ -37,13 +37,15 @@ var Plots = exports.Plots = require('./plots/plots');
 
 var Cartesian = require('./plots/cartesian');
 Plots.registerSubplot(Cartesian);
+
 exports.Axes = require('./plots/cartesian/axes');
 exports.Fx = require('./plots/cartesian/graph_interact');
 
 var Geo = require('./plots/geo');
 Plots.registerSubplot(Geo);
-exports.Scene = require('./plots/gl3d/scene');
-exports.Gl3dLayout = require('./plots/gl3d/layout');
+
+var Gl3d = require('./plots/gl3d');
+Plots.registerSubplot(Gl3d);
 
 var Gl2d = require('./plots/gl2d');
 Plots.registerSubplot(Gl2d);
