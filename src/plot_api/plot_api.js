@@ -266,10 +266,12 @@ Plotly.plot = function(gd, data, layout, config) {
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
 
-        // ... until subplot of different type play better together
-        if(gd._fullLayout._hasGL3D) plotGl3d(gd);
-        if(gd._fullLayout._hasGeo) plotGeo(gd);
-        if(gd._fullLayout._hasGL2D) plotGl2d(gd);
+        var registry = plots.subplotsRegistry;
+
+        // TODO incorporate cartesian and polar plots into this paradigm
+        if(fullLayout._hasGL3D && registry.gl3d) registry.gl3d.plot(gd);
+        if(fullLayout._hasGeo && registry.geo) registry.geo.plot(gd);
+        if(fullLayout._hasGL2D && registry.gl2d) registry.gl2d.plot(gd);
 
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
