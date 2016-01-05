@@ -658,17 +658,29 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var moduleLayoutDefaults = [
         'Axes', 'Annotations', 'Shapes', 'Fx',
-        'Bar', 'Box', 'Gl3dLayout', 'GeoLayout', 'Pie', 'Legend'
+        'Bar', 'Box', 'Pie', 'Legend'
     ];
 
-    var i, module;
+    var i, _module;
 
     // don't add a check for 'function in module' as it is better to error out and
     // secure the module API then not apply the default function.
     for(i = 0; i < moduleLayoutDefaults.length; i++) {
-        module = moduleLayoutDefaults[i];
-        if(Plotly[module]) {
-            Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        _module = moduleLayoutDefaults[i];
+
+        if(Plotly[_module]) {
+            Plotly[_module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+    }
+
+    var plotTypes = Object.keys(subplotsRegistry);
+
+    for(i = 0; i < plotTypes.length; i++) {
+        _module = subplotsRegistry[plotTypes[i]];
+
+        // e.g. gl2d does not have a layout-defaults step
+        if(_module.supplyLayoutDefaults) {
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         }
     }
 };
