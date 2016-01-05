@@ -20,58 +20,68 @@ var str2RgbaArray = require('../../lib/str2rgbarray');
 
 var MIN_RESOLUTION = 128;
 
+
 function SurfaceTrace(scene, surface, uid) {
-  this.scene    = scene;
-  this.uid      = uid;
-  this.surface  = surface;
-  this.data     = null;
-  this.showContour = [false,false,false];
-  this.dataScale = 1.0;
+    this.scene = scene;
+    this.uid = uid;
+    this.surface = surface;
+    this.data = null;
+    this.showContour = [false, false, false];
+    this.dataScale = 1.0;
 }
 
 var proto = SurfaceTrace.prototype;
 
 proto.handlePick = function(selection) {
-  if(selection.object === this.surface) {
-    var selectIndex = [
-      Math.min(Math.round(selection.data.index[0]/this.dataScale-1)|0, this.data.z[0].length-1),
-      Math.min(Math.round(selection.data.index[1]/this.dataScale-1)|0, this.data.z.length-1) ];
-    var traceCoordinate = [0,0,0];
-    if(Array.isArray(this.data.x[0])) {
-      traceCoordinate[0] = this.data.x[selectIndex[1]][selectIndex[0]];
-    } else {
-      traceCoordinate[0] = this.data.x[selectIndex[0]];
+    if(selection.object === this.surface) {
+        var selectIndex = [
+            Math.min(
+                Math.round(selection.data.index[0]/this.dataScale-1)|0,
+                this.data.z[0].length-1
+            ),
+            Math.min(
+                Math.round(selection.data.index[1]/this.dataScale-1)|0,
+                this.data.z.length-1
+            )
+        ];
+        var traceCoordinate = [0,0,0];
+
+        if(Array.isArray(this.data.x[0])) {
+            traceCoordinate[0] = this.data.x[selectIndex[1]][selectIndex[0]];
+        } else {
+            traceCoordinate[0] = this.data.x[selectIndex[0]];
+        }
+        if(Array.isArray(this.data.y[0])) {
+            traceCoordinate[1] = this.data.y[selectIndex[1]][selectIndex[0]];
+        } else {
+            traceCoordinate[1] = this.data.y[selectIndex[1]];
+        }
+
+        traceCoordinate[2] = this.data.z[selectIndex[1]][selectIndex[0]];
+        selection.traceCoordinate = traceCoordinate;
+
+        var sceneLayout = this.scene.fullSceneLayout;
+        selection.dataCoordinate = [
+            sceneLayout.xaxis.d2l(traceCoordinate[0]) * this.scene.dataScale[0],
+            sceneLayout.yaxis.d2l(traceCoordinate[1]) * this.scene.dataScale[1],
+            sceneLayout.zaxis.d2l(traceCoordinate[2]) * this.scene.dataScale[2]
+        ];
+
+        var text = this.data.text;
+        if(text && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]]!==undefined) {
+            selection.textLabel = text[selectIndex[1]][selectIndex[0]];
+        }
+        else selection.textLabel = '';
+
+        selection.data.dataCoordinate = selection.dataCoordinate.slice();
+
+        this.surface.highlight(selection.data);
+
+        // Snap spikes to data coordinate
+        this.scene.glplot.spikes.position = selection.dataCoordinate;
+
+        return true;
     }
-    if(Array.isArray(this.data.y[0])) {
-      traceCoordinate[1] = this.data.y[selectIndex[1]][selectIndex[0]];
-    } else {
-      traceCoordinate[1] = this.data.y[selectIndex[1]];
-    }
-    traceCoordinate[2] = this.data.z[selectIndex[1]][selectIndex[0]];
-    selection.traceCoordinate = traceCoordinate;
-
-    var sceneLayout = this.scene.fullSceneLayout;
-    selection.dataCoordinate = [
-      sceneLayout.xaxis.d2l(traceCoordinate[0])*this.scene.dataScale[0],
-      sceneLayout.yaxis.d2l(traceCoordinate[1])*this.scene.dataScale[1],
-      sceneLayout.zaxis.d2l(traceCoordinate[2])*this.scene.dataScale[2]
-    ];
-
-    var text = this.data.text;
-    if(text && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]]!==undefined) {
-        selection.textLabel = text[selectIndex[1]][selectIndex[0]];
-    }
-    else selection.textLabel = '';
-
-    selection.data.dataCoordinate = selection.dataCoordinate.slice();
-
-    this.surface.highlight(selection.data);
-
-    //Snap spikes to data coordinate
-    this.scene.glplot.spikes.position = selection.dataCoordinate;
-
-    return true;
-  }
 };
 
 function parseColorScale (colorscale, alpha) {
@@ -88,42 +98,44 @@ function parseColorScale (colorscale, alpha) {
     });
 }
 
-//Pad coords by +1
+// Pad coords by +1
 function padField(field) {
-  var shape = field.shape;
-  var nshape = [shape[0]+2, shape[1]+2];
-  var nfield = ndarray(new Float32Array(nshape[0] * nshape[1]), nshape);
+    var shape = field.shape;
+    var nshape = [shape[0]+2, shape[1]+2];
+    var nfield = ndarray(new Float32Array(nshape[0] * nshape[1]), nshape);
 
-  //Center
-  ops.assign(nfield.lo(1, 1).hi(shape[0], shape[1]), field);
+    // Center
+    ops.assign(nfield.lo(1, 1).hi(shape[0], shape[1]), field);
 
-  //Edges
-  ops.assign(nfield.lo(1).hi(shape[0], 1),
-              field.hi(shape[0], 1));
-  ops.assign(nfield.lo(1, nshape[1]-1).hi(shape[0], 1),
-              field.lo(0, shape[1]-1).hi(shape[0], 1));
-  ops.assign(nfield.lo(0, 1).hi(1, shape[1]),
-              field.hi(1));
-  ops.assign(nfield.lo(nshape[0]-1, 1).hi(1, shape[1]),
-              field.lo(shape[0]-1));
+    // Edges
+    ops.assign(nfield.lo(1).hi(shape[0], 1),
+                field.hi(shape[0], 1));
+    ops.assign(nfield.lo(1, nshape[1]-1).hi(shape[0], 1),
+                field.lo(0, shape[1]-1).hi(shape[0], 1));
+    ops.assign(nfield.lo(0, 1).hi(1, shape[1]),
+                field.hi(1));
+    ops.assign(nfield.lo(nshape[0]-1, 1).hi(1, shape[1]),
+                field.lo(shape[0]-1));
 
-  //Corners
-  nfield.set(0, 0, field.get(0, 0));
-  nfield.set(0, nshape[1]-1, field.get(0, shape[1]-1));
-  nfield.set(nshape[0]-1, 0, field.get(shape[0]-1, 0));
-  nfield.set(nshape[0]-1, nshape[1]-1, field.get(shape[0]-1, shape[1]-1));
+    // Corners
+    nfield.set(0, 0, field.get(0, 0));
+    nfield.set(0, nshape[1]-1, field.get(0, shape[1]-1));
+    nfield.set(nshape[0]-1, 0, field.get(shape[0]-1, 0));
+    nfield.set(nshape[0]-1, nshape[1]-1, field.get(shape[0]-1, shape[1]-1));
 
-  return nfield;
+    return nfield;
 }
 
 function refine(coords) {
     var minScale = Math.max(coords[0].shape[0], coords[0].shape[1]);
+
     if(minScale < MIN_RESOLUTION) {
         var scaleF = MIN_RESOLUTION / minScale;
         var nshape = [
             Math.floor((coords[0].shape[0]) * scaleF+1)|0,
             Math.floor((coords[0].shape[1]) * scaleF+1)|0 ];
         var nsize = nshape[0] * nshape[1];
+
         for(var i = 0; i < 3; ++i) {
             var padImg = padField(coords[i]);
             var scaledImg = ndarray(new Float32Array(nsize), nshape);
@@ -132,20 +144,24 @@ function refine(coords) {
                                               0, 0, 1]);
             coords[i] = scaledImg;
         }
+
         return scaleF;
     }
+
     return 1.0;
 }
 
 proto.setContourLevels = function() {
     var nlevels = [[], [], []];
     var needsUpdate = false;
-    for(var i=0; i<3; ++i) {
+
+    for(var i = 0; i < 3; ++i) {
         if(this.showContour[i]) {
             needsUpdate = true;
             nlevels[i] = this.scene.contourLevels[i];
         }
     }
+
     if(needsUpdate) {
         this.surface.update({ levels: nlevels });
     }
@@ -218,20 +234,23 @@ proto.update = function(data) {
     this.dataScale = refine(coords);
 
     var params = {
-        colormap:       colormap,
-        levels:         [[], [], []],
-        showContour:    [ true, true, true ],
-        showSurface:    !data.hidesurface,
-        contourProject: [ [ false, false, false ],
-                          [ false, false, false ],
-                          [ false, false, false ] ],
-        contourWidth:   [ 1, 1, 1 ],
-        contourColor:   [ [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1] ],
-        contourTint:    [ 1, 1, 1 ],
-        dynamicColor:   [ [1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1] ],
-        dynamicWidth:   [ 1, 1, 1 ],
-        dynamicTint:    [ 1, 1, 1 ],
-        opacity:        1
+        colormap: colormap,
+        levels: [[], [], []],
+        showContour: [true, true, true],
+        showSurface: !data.hidesurface,
+        contourProject: [
+            [false, false, false],
+            [false, false, false],
+            [false, false, false]
+        ],
+        contourWidth: [1, 1, 1],
+        contourColor: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
+        contourTint: [1, 1, 1],
+        dynamicColor: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
+        dynamicWidth: [1, 1, 1],
+        dynamicTint: [1, 1, 1],
+        opacity: 1,
+        colorBounds: [data.zmin * scaleFactor[2], data.zmax * scaleFactor[2]]
     };
 
 
@@ -241,24 +260,23 @@ proto.update = function(data) {
         }
     }
 
-    var highlightEnable            = [ true, true, true ];
-    var contourEnable              = [ true, true, true ];
-    var axis                       = [ 'x', 'y', 'z' ];
+    var highlightEnable = [true, true, true];
+    var contourEnable = [true, true, true];
+    var axis = ['x', 'y', 'z'];
 
     for(i = 0; i < 3; ++i) {
-        var contourParams          = data.contours[axis[i]];
-        highlightEnable[i]         = contourParams.highlight;
-        contourEnable[i]           = contourParams.show;
+        var contourParams = data.contours[axis[i]];
+        highlightEnable[i] = contourParams.highlight;
+        contourEnable[i] = contourParams.show;
 
-        params.showContour[i]      = contourParams.show || contourParams.highlight;
-        if (!params.showContour[i]) {
-            continue;
-        }
+        params.showContour[i] = contourParams.show || contourParams.highlight;
+        if(!params.showContour[i]) continue;
 
-        params.contourProject[i]   = [
+        params.contourProject[i] = [
             contourParams.project.x,
             contourParams.project.y,
-            contourParams.project.z ];
+            contourParams.project.z
+        ];
 
         if (contourParams.show) {
             this.showContour[i] = true;
@@ -283,18 +301,18 @@ proto.update = function(data) {
     params.coords = coords;
     surface.update(params);
 
-    surface.highlightEnable  = highlightEnable;
-    surface.contourEnable    = contourEnable;
-    surface.visible          = data.visible;
+    surface.highlightEnable = highlightEnable;
+    surface.contourEnable = contourEnable;
+    surface.visible = data.visible;
 
     surface.snapToData = true;
 
     if ('lighting' in data) {
-        surface.ambientLight   = data.lighting.ambient;
-        surface.diffuseLight   = data.lighting.diffuse;
-        surface.specularLight  = data.lighting.specular;
-        surface.roughness      = data.lighting.roughness;
-        surface.fresnel        = data.lighting.fresnel;
+        surface.ambientLight = data.lighting.ambient;
+        surface.diffuseLight = data.lighting.diffuse;
+        surface.specularLight = data.lighting.specular;
+        surface.roughness = data.lighting.roughness;
+        surface.fresnel = data.lighting.fresnel;
     }
 
     if (alpha && alpha < 1) {
@@ -304,19 +322,17 @@ proto.update = function(data) {
 
 
 proto.dispose = function() {
-  this.glplot.remove(this.surface);
-  this.surface.dispose();
+    this.glplot.remove(this.surface);
+    this.surface.dispose();
 };
 
 function createSurfaceTrace(scene, data) {
-  var gl = scene.glplot.gl;
-  var surface = createSurface({
-    gl: gl
-  });
-  var result = new SurfaceTrace(scene, surface, data.uid);
-  result.update(data);
-  scene.glplot.add(surface);
-  return result;
+    var gl = scene.glplot.gl;
+    var surface = createSurface({ gl: gl });
+    var result = new SurfaceTrace(scene, surface, data.uid);
+    result.update(data);
+    scene.glplot.add(surface);
+    return result;
 }
 
 module.exports = createSurfaceTrace;
