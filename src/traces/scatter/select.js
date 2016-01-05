@@ -9,7 +9,7 @@
 
 'use strict';
 
-var hasMarkers = require('./subtypes').hasMarkers;
+var subtypes = require('./subtypes');
 
 var DESELECTDIM = 0.2;
 
@@ -26,7 +26,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
         x,
         y;
 
-    if(!hasMarkers(trace)) return; // TODO: include text and/or lines?
+    // TODO: include lines? that would require per-segment line properties
+    if(!subtypes.hasMarkers(trace) && ! subtypes.hasText(trace)) return;
 
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 
@@ -57,6 +58,10 @@ module.exports = function selectPoints(searchInfo, polygon) {
     cd[0].node3.selectAll('path.point')
         .style('opacity', function(d) {
             return ((d.mo+1 || opacity+1) - 1) * (d.dim ? DESELECTDIM : 1);
+        });
+    cd[0].node3.selectAll('text')
+        .style('opacity', function(d) {
+            return d.dim ? DESELECTDIM : 1;
         });
 
     return selection;
