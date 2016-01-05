@@ -9,11 +9,21 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Plotly = require('../../plotly');
+
+var subtypes = require('./subtypes');
+
 var scatter = module.exports = {};
+
+scatter.hasLines = subtypes.hasLines;
+scatter.hasMarkers = subtypes.hasMarkers;
+scatter.hasText = subtypes.hasText;
+scatter.isBubble = subtypes.isBubble;
+
+scatter.selectPoints = require('./select');
 
 Plotly.Plots.register(scatter, 'scatter',
     ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
@@ -194,26 +204,6 @@ scatter.cleanData = function(fullData) {
             }
         }
     }
-};
-
-scatter.hasLines = function(trace) {
-    return trace.visible && trace.mode &&
-        trace.mode.indexOf('lines') !== -1;
-};
-
-scatter.hasMarkers = function(trace) {
-    return trace.visible && trace.mode &&
-        trace.mode.indexOf('markers') !== -1;
-};
-
-scatter.hasText = function(trace) {
-    return trace.visible && trace.mode &&
-        trace.mode.indexOf('text') !== -1;
-};
-
-scatter.isBubble = function(trace) {
-    return (typeof trace.marker === 'object' &&
-                Array.isArray(trace.marker.size));
 };
 
 scatter.colorbar = require('./colorbar');
@@ -455,17 +445,17 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
         tozero,tonext,nexttonext;
     scattertraces.each(function(d){
         var trace = d[0].trace,
-            line = trace.line;
+            line = trace.line,
+            tr = d3.select(this);
         if(trace.visible !== true) return;
 
-        d[0].node = this; // store node for tweaking by selectPoints
+        d[0].node3 = tr; // store node for tweaking by selectPoints
 
         scatter.arraysToCalcdata(d);
 
         if(!scatter.hasLines(trace) && trace.fill==='none') return;
 
-        var tr = d3.select(this),
-            thispath,
+        var thispath,
             // fullpath is all paths for this curve, joined together straight
             // across gaps, for filling
             fullpath = '',
@@ -856,55 +846,4 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
     Plotly.ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
-};
-
-var DESELECTDIM = 0.2;
-
-scatter.selectPoints = function(searchInfo, polygon) {
-    var cd = searchInfo.cd,
-        xa = searchInfo.xaxis,
-        ya = searchInfo.yaxis,
-        selection = [],
-        trace = cd[0].trace,
-        curveNumber = trace.index,
-        marker = trace.marker,
-        i,
-        di,
-        x,
-        y;
-
-    if(!scatter.hasMarkers(trace)) return; // TODO: include text and/or lines?
-
-    var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
-
-    if(polygon === false) { // clear selection
-        for(i = 0; i < cd.length; i++) cd[i].dim = 0;
-    }
-    else {
-        for(i = 0; i < cd.length; i++) {
-            di = cd[i];
-            x = xa.c2p(di.x);
-            y = ya.c2p(di.y);
-            if(polygon.contains([x, y])) {
-                selection.push({
-                    curveNumber: curveNumber,
-                    pointNumber: i,
-                    x: di.x,
-                    y: di.y
-                });
-                di.dim = 0;
-            }
-            else di.dim = 1;
-        }
-    }
-
-    // do the dimming here, as well as returning the selection
-    // The logic here duplicates Drawing.pointStyle, but I don't want
-    // d.dim in pointStyle in case something goes wrong with selection.
-    d3.select(cd[0].node).selectAll('path.point')
-        .style('opacity', function(d) {
-            return ((d.mo+1 || opacity+1) - 1) * (d.dim ? DESELECTDIM : 1);
-        });
-
-    return selection;
 };
