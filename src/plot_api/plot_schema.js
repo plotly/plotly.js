@@ -231,7 +231,12 @@ function getModule(arg) {
             { attributes: polarAreaAttrs } :
             Plotly.Plots.getModule({type: arg.type});
     }
-    else if('module' in arg) return Plotly[arg.module];
+
+    var subplotsRegistry = Plotly.Plots.subplotsRegistry,
+        _module = arg.module;
+
+    if(subplotsRegistry[_module]) return subplotsRegistry[_module];
+    else if('module' in arg) return Plotly[_module];
 }
 
 function removeUnderscoreAttrs(attributes) {
