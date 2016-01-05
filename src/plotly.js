@@ -33,7 +33,10 @@ exports.MathJaxConfig = require('./fonts/mathjax_config');
 exports.defaultConfig = require('./plot_api/plot_config');
 
 // plots
-exports.Plots = require('./plots/plots');
+var Plots = exports.Plots = require('./plots/plots');
+
+var Cartesian = require('./plots/cartesian');
+Plots.registerSubplot(Cartesian);
 exports.Axes = require('./plots/cartesian/axes');
 exports.Fx = require('./plots/cartesian/graph_interact');
 exports.Scene = require('./plots/gl3d/scene');
