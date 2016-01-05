@@ -309,7 +309,7 @@ fx.unhover = function (gd, evt, subplot) {
 // The actual implementation is here:
 
 function hover(gd, evt, subplot){
-    if(gd._fullLayout._hasPie){
+    if(subplot === 'pie'){
         gd.emit('plotly_hover', {
             points: [evt]
         });
