@@ -3,9 +3,11 @@
 var Plots = require('../../plots/plots');
 var Lib = require('../../lib');
 
+var layoutAttributes = require('./layout_attributes');
+
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     function coerce(attr, dflt) {
-        return Lib.coerce(layoutIn, layoutOut, boxes.layoutAttributes, attr, dflt);
+        return Lib.coerce(layoutIn, layoutOut, layoutAttributes, attr, dflt);
     }
 
     var hasBoxes;
