@@ -6,6 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 var colorAttrs = require('../../components/color/attributes');
 var fontAttrs = require('../../plots/font_attributes');
