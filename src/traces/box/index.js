@@ -65,6 +65,7 @@ boxes.supplyDefaults = function(traceIn, traceOut, defaultColor) {
 
     coerce('whiskerwidth');
     coerce('boxmean');
+    coerce('calcdataOverride');
 
     var outlierColorDflt = Plotly.Lib.coerce2(traceIn, traceOut, boxes.attributes, 'marker.outliercolor'),
         lineoutliercolor = coerce('marker.line.outliercolor'),
