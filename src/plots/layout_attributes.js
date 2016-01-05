@@ -195,7 +195,7 @@ module.exports = {
     _nestedModules: {
         'xaxis': 'Axes',
         'yaxis': 'Axes',
-        'scene': 'Gl3dLayout',
+        'scene': 'gl3d',
         'geo': 'geo',
         'legend': 'Legend',
         'annotations': 'Annotations',

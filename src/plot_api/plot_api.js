@@ -418,41 +418,6 @@ function setPlotContext(gd, config) {
     }
 }
 
-function plotGl3d(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
-
-    var i, sceneId, fullSceneData, scene, sceneOptions;
-
-    fullLayout._paperdiv.style({
-        width: fullLayout.width + 'px',
-        height: fullLayout.height + 'px'
-    });
-
-    gd._context.setBackground(gd, fullLayout.paper_bgcolor);
-
-    for (i = 0; i < sceneIds.length; i++) {
-        sceneId = sceneIds[i];
-        fullSceneData = plots.getSubplotData(fullData, 'gl3d', sceneId);
-        scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
-
-        // If Scene is not instantiated, create one!
-        if(scene === undefined) {
-            sceneOptions = {
-                container: gd.querySelector('.gl-container'),
-                id: sceneId,
-                staticPlot: gd._context.staticPlot,
-                plotGlPixelRatio: gd._context.plotGlPixelRatio
-            };
-            scene = new Plotly.Scene(sceneOptions, fullLayout);
-            fullLayout[sceneId]._scene = scene;  // set ref to Scene instance
-        }
-
-        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
-    }
-}
-
 function plotGeo(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
@@ -866,8 +831,9 @@ function cleanData(data, existingData) {
         if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if (trace.scene) {
-            trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
+        var plotRegistry = plots.subplotsRegistry;
+        if(trace.scene && plotRegistry.gl3d) {
+            trace.scene = plotRegistry.gl3d.cleanId(trace.scene);
         }
 
         if(!plots.traceIs(trace, 'pie')) {
@@ -2593,10 +2559,11 @@ function makePlotFramework(gd) {
     var gd3 = d3.select(gd),
         fullLayout = gd._fullLayout;
 
-    /*
-     * TODO - find a better place for 3D to initialize axes
-     */
-    if(fullLayout._hasGL3D) Plotly.Gl3dLayout.initAxes(gd);
+    // TODO - find a better place for 3D to initialize axes
+    var plotRegistry = plots.subplotsRegistry;
+    if(fullLayout._hasGL3D && plotRegistry.gl3d) {
+        plotRegistry.gl3d.initAxes(gd);
+    }
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);

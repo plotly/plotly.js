@@ -1,13 +1,14 @@
-var Plotly = require('@src/plotly');
+var Gl3d = require('@src/plots/gl3d');
 
-describe('Test Gl3dLayout', function () {
+
+describe('Test Gl3d layout defaults', function () {
     'use strict';
 
     describe('supplyLayoutDefaults', function() {
         var layoutIn,
             layoutOut;
 
-        var supplyLayoutDefaults = Plotly.Gl3dLayout.supplyLayoutDefaults;
+        var supplyLayoutDefaults = Gl3d.supplyLayoutDefaults;
 
         beforeEach(function() {
             layoutOut = {
