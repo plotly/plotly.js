@@ -107,12 +107,14 @@ plots.traceIs = function traceIs(traceType, category) {
 /**
  * plots.registerSubplot: register a subplot type
  *
- * @param {string} subplotType subplot type
- *   (these must also be categories defined with plots.register)
- * @param {string or array of strings} attr attribute name in traces and layout
- * @param {string or array of strings} idRoot root of id
- *   (setting the possible value for attrName)
- * @param {object} attributes attribute(s) for traces of this subplot type
+ * @param {object} _module subplot module:
+ *
+ *      @param {string or array of strings} attr
+ *          attribute name in traces and layout
+ *      @param {string or array of strings} idRoot
+ *          root of id (setting the possible value for attrName)
+ *      @param {object} attributes
+ *          attribute(s) for traces of this subplot type
  *
  * In trace objects `attr` is the object key taking a valid `id` as value
  * (the set of all valid ids is generated below and stored in idRegex).
@@ -123,33 +125,36 @@ plots.traceIs = function traceIs(traceType, category) {
  *
  * TODO use these in Lib.coerce
  */
-plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
-    if(subplotsRegistry[subplotType]) {
-        throw new Error('subplot ' + subplotType + ' already registered');
+plots.registerSubplot = function(_module) {
+    var plotType = _module.type;
+
+    if(subplotsRegistry[plotType]) {
+        throw new Error('plot type' + plotType + ' already registered');
     }
+
+    var attr = _module.attr,
+        idRoot = _module.idRoot;
 
     var regexStart = '^',
         regexEnd = '([2-9]|[1-9][0-9]+)?$',
-        hasXY = (subplotType === 'cartesian' || subplotsRegistry === 'gl2d');
+        hasXY = (plotType === 'cartesian' || subplotsRegistry === 'gl2d');
 
     function makeRegex(mid) {
         return new RegExp(regexStart + mid + regexEnd);
     }
 
     // not sure what's best for the 'cartesian' type at this point
-    subplotsRegistry[subplotType] = {
-        attr: attr,
-        idRoot: idRoot,
-        attributes: attributes,
-        // register the regex representing the set of all valid attribute names
-        attrRegex: hasXY ?
-            { x: makeRegex(attr[0]), y: makeRegex(attr[1]) } :
-            makeRegex(attr),
-        // register the regex representing the set of all valid attribute ids
-        idRegex: hasXY ?
-            { x: makeRegex(idRoot[0]), y: makeRegex(idRoot[1]) } :
-            makeRegex(idRoot)
-    };
+    subplotsRegistry[plotType] = _module;
+
+    // register the regex representing the set of all valid attribute names
+    subplotsRegistry[plotType].attrRegex = hasXY ?
+        { x: makeRegex(attr[0]), y: makeRegex(attr[1]) } :
+        makeRegex(attr);
+
+    // register the regex representing the set of all valid attribute ids
+    subplotsRegistry[plotType].idRegex = hasXY ?
+        { x: makeRegex(idRoot[0]), y: makeRegex(idRoot[1]) } :
+        makeRegex(idRoot);
 };
 
 // TODO separate the 'find subplot' step (which looks in layout)
