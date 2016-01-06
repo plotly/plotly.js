@@ -235,7 +235,7 @@ describe('Test Plotly.Plots', function () {
 
     describe('Plotly.Plots.registerSubplot', function() {
         var fake = {
-            type: 'fake',
+            name: 'fake',
             attr: 'abc',
             idRoot: 'cba',
             attributes: { stuff: { 'more stuff': 102102 } }

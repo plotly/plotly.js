@@ -12,7 +12,7 @@
 var Plotly = require('../../plotly');
 
 
-exports.type = 'cartesian';
+exports.name = 'cartesian';
 
 exports.attr = ['xaxis', 'yaxis'];
 

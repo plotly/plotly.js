@@ -16,7 +16,7 @@ var Geo = require('./geo');
 var Plots = Plotly.Plots;
 
 
-exports.type = 'geo';
+exports.name = 'geo';
 
 exports.attr = 'geo';
 

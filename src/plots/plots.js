@@ -126,7 +126,7 @@ plots.traceIs = function traceIs(traceType, category) {
  * TODO use these in Lib.coerce
  */
 plots.registerSubplot = function(_module) {
-    var plotType = _module.type;
+    var plotType = _module.name;
 
     if(subplotsRegistry[plotType]) {
         throw new Error('plot type' + plotType + ' already registered');

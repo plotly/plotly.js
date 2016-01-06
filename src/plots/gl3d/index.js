@@ -17,7 +17,7 @@ var plots = Plotly.Plots;
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
 
 
-exports.type = 'gl3d';
+exports.name = 'gl3d';
 
 exports.attr = 'scene';
 

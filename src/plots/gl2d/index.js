@@ -16,7 +16,7 @@ var Scene2D = require('./scene2d');
 var Plots = Plotly.Plots;
 
 
-exports.type = 'gl2d';
+exports.name = 'gl2d';
 
 exports.attr = ['xaxis', 'yaxis'];
 
