@@ -31,7 +31,8 @@ module.exports = function pullFontSVG(data, pathOut) {
             '',
             '\'use strict\';',
             '',
-            'module.exports = ' + charStr + ';'
+            'module.exports = ' + charStr + ';',
+            ''
         ].join('\n');
 
         fs.writeFile(pathOut, outStr, function(err) {
@@ -39,4 +40,3 @@ module.exports = function pullFontSVG(data, pathOut) {
         });
     });
 };
-
