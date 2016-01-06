@@ -195,7 +195,7 @@ fx.init = function(gd) {
 
 // hover labels for multiple horizontal bars get tilted by some angle,
 // then need to be offset differently if they overlap
-var YANGLE = 60,
+var YANGLE = constants.YANGLE,
     YA_RADIANS = Math.PI*YANGLE/180,
 
     // expansion of projected height
@@ -228,13 +228,10 @@ function quadrature(dx, dy) {
 }
 
 // size and display constants for hover text
-var HOVERARROWSIZE = 6, // pixel size of hover arrows
-    HOVERTEXTPAD = 3, // pixels padding around text
-    HOVERFONTSIZE = 13,
-    HOVERFONT = 'Arial, sans-serif';
-
-// max pixels away from mouse to allow a point to highlight
-fx.MAXDIST = 20;
+var HOVERARROWSIZE = constants.HOVERARROWSIZE,
+    HOVERTEXTPAD = constants.HOVERTEXTPAD,
+    HOVERFONTSIZE = constants.HOVERFONTSIZE,
+    HOVERFONT = constants.HOVERFONT;
 
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
@@ -262,8 +259,6 @@ fx.MAXDIST = 20;
 // The actual rendering is done by private functions
 // hover() and unhover().
 
-var HOVERMINTIME = 100; // minimum time between hover calls
-
 fx.hover = function (gd, evt, subplot) {
     if(typeof gd === 'string') gd = document.getElementById(gd);
     if(gd._lastHoverTime === undefined) gd._lastHoverTime = 0;
@@ -275,7 +270,7 @@ fx.hover = function (gd, evt, subplot) {
     }
     // Is it more than 100ms since the last update?  If so, force
     // an update now (synchronously) and exit
-    if (Date.now() > gd._lastHoverTime + HOVERMINTIME) {
+    if (Date.now() > gd._lastHoverTime + constants.HOVERMINTIME) {
         hover(gd,evt,subplot);
         gd._lastHoverTime = Date.now();
         return;
@@ -285,7 +280,7 @@ fx.hover = function (gd, evt, subplot) {
         hover(gd,evt,subplot);
         gd._lastHoverTime = Date.now();
         gd._hoverTimer = undefined;
-    }, HOVERMINTIME);
+    }, constants.HOVERMINTIME);
 };
 
 fx.unhover = function (gd, evt, subplot) {
@@ -442,7 +437,7 @@ function hover(gd, evt, subplot){
             name: (gd.data.length>1 || trace.hoverinfo.indexOf('name')!==-1) ? trace.name : undefined,
             // point properties - override all of these
             index: false, // point index in trace - only used by plotly.js hoverdata consumers
-            distance: Math.min(distance, fx.MAXDIST), // pixel distance or pseudo-distance
+            distance: Math.min(distance, constants.MAXDIST), // pixel distance or pseudo-distance
             color: Plotly.Color.defaultLine, // trace color
             x0: undefined,
             x1: undefined,
@@ -762,7 +757,7 @@ function createHoverText(hoverData, opts) {
     // show the common label, if any, on the axis
     // never show a common label in array mode,
     // even if sometimes there could be one
-    var showCommonLabel = c0.distance<=fx.MAXDIST &&
+    var showCommonLabel = c0.distance<=constants.MAXDIST &&
                           (hovermode==='x' || hovermode==='y');
 
     // all hover traces hoverinfo must contain the hovermode
@@ -1312,6 +1307,8 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         ya = [plotinfo.y()],
         pw = xa[0]._length,
         ph = ya[0]._length,
+        MINDRAG = constants.MINDRAG,
+        MINZOOM = constants.MINZOOM,
         i,
         subplotXa,
         subplotYa;
@@ -1449,7 +1446,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             y1 = Math.max(0, Math.min(ph, dy0 + y0)),
             dx = Math.abs(x1 - x0),
             dy = Math.abs(y1 - y0),
-            clen = Math.floor(Math.min(dy, dx, constants.MINZOOM) / 2);
+            clen = Math.floor(Math.min(dy, dx, MINZOOM) / 2);
 
         box.l = Math.min(x0, x1);
         box.r = Math.max(x0, x1);
@@ -1458,8 +1455,8 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // look for small drags in one direction or the other,
         // and only drag the other axis
-        if(!yActive || dy < Math.min(Math.max(dx * 0.6, constants.MINDRAG), constants.MINZOOM)) {
-            if(dx < constants.MINDRAG) {
+        if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
+            if(dx < MINDRAG) {
                 zoomMode = '';
                 box.r = box.l;
                 box.t = box.b;
@@ -1470,21 +1467,21 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 box.b = ph;
                 zoomMode = 'x';
                 corners.attr('d',
-                    'M' + (box.l - 0.5) + ',' + (y0 - constants.MINZOOM - 0.5) +
-                    'h-3v' + (2 * constants.MINZOOM + 1) + 'h3ZM' +
-                    (box.r + 0.5) + ',' + (y0 - constants.MINZOOM - 0.5) +
-                    'h3v' + (2 * constants.MINZOOM + 1) + 'h-3Z');
+                    'M' + (box.l - 0.5) + ',' + (y0 - MINZOOM - 0.5) +
+                    'h-3v' + (2 * MINZOOM + 1) + 'h3ZM' +
+                    (box.r + 0.5) + ',' + (y0 - MINZOOM - 0.5) +
+                    'h3v' + (2 * MINZOOM + 1) + 'h-3Z');
             }
         }
-        else if(!xActive || dx < Math.min(dy * 0.6, constants.MINZOOM)) {
+        else if(!xActive || dx < Math.min(dy * 0.6, MINZOOM)) {
             box.l = 0;
             box.r = pw;
             zoomMode = 'y';
             corners.attr('d',
-                'M' + (x0 - constants.MINZOOM - 0.5) + ',' + (box.t - 0.5) +
-                'v-3h' + (2 * constants.MINZOOM + 1) + 'v3ZM' +
-                (x0 - constants.MINZOOM - 0.5) + ',' + (box.b + 0.5) +
-                'v3h' + (2 * constants.MINZOOM + 1) + 'v-3Z');
+                'M' + (x0 - MINZOOM - 0.5) + ',' + (box.t - 0.5) +
+                'v-3h' + (2 * MINZOOM + 1) + 'v3ZM' +
+                (x0 - MINZOOM - 0.5) + ',' + (box.b + 0.5) +
+                'v3h' + (2 * MINZOOM + 1) + 'v-3Z');
         }
         else {
             zoomMode = 'xy';
@@ -1536,7 +1533,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function zoomDone(dragged, numClicks) {
-        if(Math.min(box.h, box.w) < constants.MINDRAG * 2) {
+        if(Math.min(box.h, box.w) < MINDRAG * 2) {
             if(numClicks === 2) doubleClick();
             else pauseForDrag(gd);
 
@@ -1973,6 +1970,7 @@ fx.dragCursors = function(x,y,xanchor,yanchor){
 fx.dragElement = function(options) {
     var gd = Plotly.Lib.getPlotDiv(options.element) || {},
         numClicks = 1,
+        DBLCLICKDELAY = constants.DBLCLICKDELAY,
         startX,
         startY,
         newMouseDownTime,
@@ -1996,7 +1994,7 @@ fx.dragElement = function(options) {
         initialTarget = e.target;
 
         newMouseDownTime = (new Date()).getTime();
-        if(newMouseDownTime - gd._mouseDownTime < constants.DBLCLICKDELAY) {
+        if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
             // in a click train
             numClicks += 1;
         }
@@ -2047,7 +2045,7 @@ fx.dragElement = function(options) {
 
         // don't count as a dblClick unless the mouseUp is also within
         // the dblclick delay
-        if((new Date()).getTime() - gd._mouseDownTime > constants.DBLCLICKDELAY) {
+        if((new Date()).getTime() - gd._mouseDownTime > DBLCLICKDELAY) {
             numClicks = Math.max(numClicks - 1, 1);
         }
 
@@ -2105,7 +2103,7 @@ fx.setCursor = function(el3,csr) {
 // count one edge as in, so that over continuous ranges you never get a gap
 fx.inbox = function(v0,v1){
     if(v0*v1<0 || v0===0) {
-        return fx.MAXDIST*(0.6-0.3/Math.max(3,Math.abs(v0-v1)));
+        return constants.MAXDIST*(0.6-0.3/Math.max(3,Math.abs(v0-v1)));
     }
     return Infinity;
 };
