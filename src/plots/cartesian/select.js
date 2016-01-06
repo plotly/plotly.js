@@ -86,6 +86,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         return function(v) { return ax.p2d(v[index]); };
     }
 
+    function ascending(a, b){ return a - b; }
+
     dragOptions.moveFn = function(dx0, dy0) {
         var poly,
             ax;
@@ -146,7 +148,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 axLetter = ax._id.charAt(0);
                 ranges[ax._id] = [
                     ax.p2d(poly[axLetter + 'min']),
-                    ax.p2d(poly[axLetter + 'max'])].sort();
+                    ax.p2d(poly[axLetter + 'max'])].sort(ascending);
             }
         }
         else {
