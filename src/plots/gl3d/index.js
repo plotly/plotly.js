@@ -53,7 +53,8 @@ exports.plot = function plotGl3d(gd) {
                     id: sceneId,
                     staticPlot: gd._context.staticPlot,
                     plotGlPixelRatio: gd._context.plotGlPixelRatio
-                }, fullLayout
+                },
+                fullLayout
             );
 
             fullLayout[sceneId]._scene = scene;  // set ref to Scene instance

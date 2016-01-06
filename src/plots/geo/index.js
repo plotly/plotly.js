@@ -49,10 +49,12 @@ exports.plot = function plotGeo(gd) {
         // If geo is not instantiated, create one!
         if(geo === undefined) {
             geo = new Geo({
-                id: geoId,
-                container: fullLayout._geocontainer.node(),
-                topojsonURL: gd._context.topojsonURL
-            }, fullLayout);
+                    id: geoId,
+                    container: fullLayout._geocontainer.node(),
+                    topojsonURL: gd._context.topojsonURL
+                },
+                fullLayout
+            );
 
             fullLayout[geoId]._geo = geo;
         }

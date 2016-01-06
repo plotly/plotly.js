@@ -22,7 +22,7 @@ var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 var createCamera = require('./camera');
 var project = require('./project');
 var setConvert = require('./set_convert');
-var createAxesOptions  = require('./layout/convert');
+var createAxesOptions = require('./layout/convert');
 var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
