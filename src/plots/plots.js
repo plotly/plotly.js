@@ -656,31 +656,40 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
-    var moduleLayoutDefaults = [
-        'Axes', 'Annotations', 'Shapes', 'Fx',
-        'Bar', 'Box', 'Pie', 'Legend'
-    ];
-
     var i, _module;
 
-    // don't add a check for 'function in module' as it is better to error out and
-    // secure the module API then not apply the default function.
-    for(i = 0; i < moduleLayoutDefaults.length; i++) {
-        _module = moduleLayoutDefaults[i];
+    // TODO incorporate into subplotRegistry
+    Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-        if(Plotly[_module]) {
-            Plotly[_module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-        }
-    }
-
+    // plot module layout defaults
     var plotTypes = Object.keys(subplotsRegistry);
-
     for(i = 0; i < plotTypes.length; i++) {
         _module = subplotsRegistry[plotTypes[i]];
 
         // e.g. gl2d does not have a layout-defaults step
         if(_module.supplyLayoutDefaults) {
             _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+    }
+
+    // trace module layout defaults
+    var traceTypes = Object.keys(modules);
+    for(i = 0; i < traceTypes.length; i++) {
+        _module = modules[allTypes[i]].module;
+
+        if(_module.supplyLayoutDefaults) {
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+    }
+
+    // TODO register these
+    // Legend must come after traces (e.g. it depends on 'barmode')
+    var moduleLayoutDefaults = ['Fx', 'Annotations', 'Shapes', 'Legend'];
+    for(i = 0; i < moduleLayoutDefaults.length; i++) {
+        _module = moduleLayoutDefaults[i];
+
+        if(Plotly[_module]) {
+            Plotly[_module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         }
     }
 };
