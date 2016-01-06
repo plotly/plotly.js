@@ -6,8 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-var Plotly = require('../../plotly');
+var Drawing = require('../../components/drawing');
 
 var PTS_LINESONLY = 20;  // TODO put in constants/
 
@@ -166,7 +165,7 @@ module.exports = {
     marker: {
         symbol: {
             valType: 'enumerated',
-            values: Plotly.Drawing.symbolList,
+            values: Drawing.symbolList,
             dflt: 'circle',
             arrayOk: true,
             role: 'style',

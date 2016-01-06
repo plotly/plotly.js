@@ -9,9 +9,9 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
 
-Plotly.Plots.register(exports, 'choropleth', ['geo', 'noOpacity'], {
+Plots.register(exports, 'choropleth', ['geo', 'noOpacity'], {
     description: [
         'The data that describes the choropleth value-to-color mapping',
         'is set in `z`.',

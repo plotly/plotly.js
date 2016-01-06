@@ -13,13 +13,16 @@ var Plotly = require('../../plotly');
 var d3 = require('d3');
 
 var Color = require('../../components/color');
+var Drawing = require('../../components/drawing');
+
+var getColorscale = require('../../components/colorscale/get_scale');
+var makeScaleFunction = require('../../components/colorscale/make_scale_function');
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var arrayToCalcItem = require('../../lib/array_to_calc_item');
-var getColorscale = require('../../components/colorscale/get_scale');
-var makeScaleFunction = require('../../components/colorscale/make_scale_function');
 
 var constants = require('../../constants/geo_constants');
+var attributes = require('./attributes');
 
 var plotChoropleth = module.exports = {};
 
@@ -141,7 +144,7 @@ plotChoropleth.style = function(geo) {
                     d3.select(this)
                         .attr('fill', function(d) { return sclFunc(d.z); })
                         .call(Color.stroke, d.mlc || markerLine.color)
-                        .call(Plotly.Drawing.dashLine, '', d.mlw || markerLine.width);
+                        .call(Drawing.dashLine, '', d.mlw || markerLine.width);
                 });
         });
 };
@@ -157,7 +160,7 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     }
 
     var hoverinfoParts = (hoverinfo === 'all') ?
-            Plotly.Choropleth.attributes.hoverinfo.flags :
+            attributes.hoverinfo.flags :
             hoverinfo.split('+');
 
     var hasName = (hoverinfoParts.indexOf('name') !== -1),
