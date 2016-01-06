@@ -9,11 +9,21 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Plotly = require('../../plotly');
+
+var subtypes = require('./subtypes');
+
 var scatter = module.exports = {};
+
+scatter.hasLines = subtypes.hasLines;
+scatter.hasMarkers = subtypes.hasMarkers;
+scatter.hasText = subtypes.hasText;
+scatter.isBubble = subtypes.isBubble;
+
+scatter.selectPoints = require('./select');
 
 Plotly.Plots.register(scatter, 'scatter',
     ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
@@ -194,26 +204,6 @@ scatter.cleanData = function(fullData) {
             }
         }
     }
-};
-
-scatter.hasLines = function(trace) {
-    return trace.visible && trace.mode &&
-        trace.mode.indexOf('lines') !== -1;
-};
-
-scatter.hasMarkers = function(trace) {
-    return trace.visible && trace.mode &&
-        trace.mode.indexOf('markers') !== -1;
-};
-
-scatter.hasText = function(trace) {
-    return trace.visible && trace.mode &&
-        trace.mode.indexOf('text') !== -1;
-};
-
-scatter.isBubble = function(trace) {
-    return (typeof trace.marker === 'object' &&
-                Array.isArray(trace.marker.size));
 };
 
 scatter.colorbar = require('./colorbar');
@@ -455,15 +445,17 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
         tozero,tonext,nexttonext;
     scattertraces.each(function(d){
         var trace = d[0].trace,
-            line = trace.line;
+            line = trace.line,
+            tr = d3.select(this);
         if(trace.visible !== true) return;
+
+        d[0].node3 = tr; // store node for tweaking by selectPoints
 
         scatter.arraysToCalcdata(d);
 
         if(!scatter.hasLines(trace) && trace.fill==='none') return;
 
-        var tr = d3.select(this),
-            thispath,
+        var thispath,
             // fullpath is all paths for this curve, joined together straight
             // across gaps, for filling
             fullpath = '',

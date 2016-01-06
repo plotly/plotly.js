@@ -9,11 +9,15 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
 var Events = require('../../lib/events');
+
+var prepSelect = require('./select');
+var constants = require('./constants');
 
 var fx = module.exports = {};
 
@@ -21,8 +25,13 @@ fx.layoutAttributes = {
     dragmode: {
         valType: 'enumerated',
         role: 'info',
-        values: ['zoom', 'pan', 'orbit', 'turntable'],
-        description: 'Determines the mode of drag interactions.'
+        values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable'],
+        description: [
+            'Determines the mode of drag interactions.',
+            '*select* and *lasso* apply only to scatter traces with',
+            'markers or text. *orbit* and *turntable* apply only to',
+            '3D scenes.'
+        ].join(' ')
     },
     hovermode: {
         valType: 'enumerated',
@@ -67,19 +76,6 @@ fx.isHoriz = function(fullData) {
     return isHoriz;
 };
 
-// ms between first mousedown and 2nd mouseup to constitute dblclick...
-// we don't seem to have access to the system setting
-fx.DBLCLICKDELAY = 600;
-
-// pixels to move mouse before you stop clamping to starting point
-fx.MINDRAG = 8;
-
-// smallest dimension allowed for a zoombox
-fx.MINZOOM = 20;
-
-// width of axis drag regions
-var DRAGGERSIZE = 20;
-
 fx.init = function(gd) {
     var fullLayout = gd._fullLayout;
 
@@ -112,6 +108,7 @@ fx.init = function(gd) {
             // the x position of the main y axis line
             x0 = (ya._linepositions[subplot]||[])[3];
 
+        var DRAGGERSIZE = constants.DRAGGERSIZE;
         if(isNumeric(y0) && xa.side==='top') y0 -= DRAGGERSIZE;
         if(isNumeric(x0) && ya.side!=='right') x0 -= DRAGGERSIZE;
 
@@ -203,7 +200,7 @@ fx.init = function(gd) {
 
 // hover labels for multiple horizontal bars get tilted by some angle,
 // then need to be offset differently if they overlap
-var YANGLE = 60,
+var YANGLE = constants.YANGLE,
     YA_RADIANS = Math.PI*YANGLE/180,
 
     // expansion of projected height
@@ -236,13 +233,10 @@ function quadrature(dx, dy) {
 }
 
 // size and display constants for hover text
-var HOVERARROWSIZE = 6, // pixel size of hover arrows
-    HOVERTEXTPAD = 3, // pixels padding around text
-    HOVERFONTSIZE = 13,
-    HOVERFONT = 'Arial, sans-serif';
-
-// max pixels away from mouse to allow a point to highlight
-fx.MAXDIST = 20;
+var HOVERARROWSIZE = constants.HOVERARROWSIZE,
+    HOVERTEXTPAD = constants.HOVERTEXTPAD,
+    HOVERFONTSIZE = constants.HOVERFONTSIZE,
+    HOVERFONT = constants.HOVERFONT;
 
 // fx.hover: highlight data on hover
 // evt can be a mousemove event, or an object with data about what points
@@ -270,8 +264,6 @@ fx.MAXDIST = 20;
 // The actual rendering is done by private functions
 // hover() and unhover().
 
-var HOVERMINTIME = 100; // minimum time between hover calls
-
 fx.hover = function (gd, evt, subplot) {
     if(typeof gd === 'string') gd = document.getElementById(gd);
     if(gd._lastHoverTime === undefined) gd._lastHoverTime = 0;
@@ -283,7 +275,7 @@ fx.hover = function (gd, evt, subplot) {
     }
     // Is it more than 100ms since the last update?  If so, force
     // an update now (synchronously) and exit
-    if (Date.now() > gd._lastHoverTime + HOVERMINTIME) {
+    if (Date.now() > gd._lastHoverTime + constants.HOVERMINTIME) {
         hover(gd,evt,subplot);
         gd._lastHoverTime = Date.now();
         return;
@@ -293,7 +285,7 @@ fx.hover = function (gd, evt, subplot) {
         hover(gd,evt,subplot);
         gd._lastHoverTime = Date.now();
         gd._hoverTimer = undefined;
-    }, HOVERMINTIME);
+    }, constants.HOVERMINTIME);
 };
 
 fx.unhover = function (gd, evt, subplot) {
@@ -457,7 +449,7 @@ function hover(gd, evt, subplot){
             name: (gd.data.length>1 || trace.hoverinfo.indexOf('name')!==-1) ? trace.name : undefined,
             // point properties - override all of these
             index: false, // point index in trace - only used by plotly.js hoverdata consumers
-            distance: Math.min(distance, fx.MAXDIST), // pixel distance or pseudo-distance
+            distance: Math.min(distance, constants.MAXDIST), // pixel distance or pseudo-distance
             color: Plotly.Color.defaultLine, // trace color
             x0: undefined,
             x1: undefined,
@@ -777,7 +769,7 @@ function createHoverText(hoverData, opts) {
     // show the common label, if any, on the axis
     // never show a common label in array mode,
     // even if sometimes there could be one
-    var showCommonLabel = c0.distance<=fx.MAXDIST &&
+    var showCommonLabel = c0.distance<=constants.MAXDIST &&
                           (hovermode==='x' || hovermode==='y');
 
     // all hover traces hoverinfo must contain the hovermode
@@ -1327,6 +1319,8 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         ya = [plotinfo.y()],
         pw = xa[0]._length,
         ph = ya[0]._length,
+        MINDRAG = constants.MINDRAG,
+        MINZOOM = constants.MINZOOM,
         i,
         subplotXa,
         subplotYa;
@@ -1377,15 +1371,40 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     var dragOptions = {
         element: dragger,
+        gd: gd,
+        plotinfo: plotinfo,
+        xaxes: xa,
+        yaxes: ya,
+        doubleclick: doubleClick,
         prepFn: function(e, startX, startY) {
-            if(ns+ew==='nsew' && ((fullLayout.dragmode==='zoom') ?
-                !e.shiftKey : e.shiftKey)) {
+            fx.unhover(gd); // we want a clear plot for dragging
+            var dragModeNow = gd._fullLayout.dragmode;
+            if(ns + ew === 'nsew') {
+                // main dragger handles all drag modes, and changes
+                // to pan (or to zoom if it already is pan) on shift
+                if(e.shiftKey) {
+                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                    else dragModeNow = 'pan';
+                }
+            }
+            // all other draggers just pan
+            else dragModeNow = 'pan';
+
+            if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
+            else dragOptions.minDrag = undefined;
+
+            if(dragModeNow === 'zoom') {
                 dragOptions.moveFn = zoomMove;
                 dragOptions.doneFn = zoomDone;
                 zoomPrep(e, startX, startY);
-            } else {
+            }
+            else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragDone;
+                clearSelect();
+            }
+            else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
+                prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         }
     };
@@ -1432,7 +1451,15 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             })
             .attr('d','M0,0Z');
 
+        clearSelect();
         for(i = 0; i < allaxes.length; i++) forceNumbers(allaxes[i].range);
+    }
+
+    function clearSelect() {
+        // until we get around to persistent selections, remove the outline
+        // here. The selection itself will be removed when the plot redraws
+        // at the end.
+        plotinfo.plot.selectAll('.select-outline').remove();
     }
 
     function zoomMove(dx0, dy0) {
@@ -1440,7 +1467,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             y1 = Math.max(0, Math.min(ph, dy0 + y0)),
             dx = Math.abs(x1 - x0),
             dy = Math.abs(y1 - y0),
-            clen = Math.floor(Math.min(dy, dx, fx.MINZOOM) / 2);
+            clen = Math.floor(Math.min(dy, dx, MINZOOM) / 2);
 
         box.l = Math.min(x0, x1);
         box.r = Math.max(x0, x1);
@@ -1449,8 +1476,8 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // look for small drags in one direction or the other,
         // and only drag the other axis
-        if(!yActive || dy < Math.min(Math.max(dx * 0.6, fx.MINDRAG), fx.MINZOOM)) {
-            if(dx < fx.MINDRAG) {
+        if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
+            if(dx < MINDRAG) {
                 zoomMode = '';
                 box.r = box.l;
                 box.t = box.b;
@@ -1461,21 +1488,21 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 box.b = ph;
                 zoomMode = 'x';
                 corners.attr('d',
-                    'M'+(box.l-0.5)+','+(y0-fx.MINZOOM-0.5)+
-                    'h-3v'+(2*fx.MINZOOM+1)+'h3ZM'+
-                    (box.r+0.5)+','+(y0-fx.MINZOOM-0.5)+
-                    'h3v'+(2*fx.MINZOOM+1)+'h-3Z');
+                    'M' + (box.l - 0.5) + ',' + (y0 - MINZOOM - 0.5) +
+                    'h-3v' + (2 * MINZOOM + 1) + 'h3ZM' +
+                    (box.r + 0.5) + ',' + (y0 - MINZOOM - 0.5) +
+                    'h3v' + (2 * MINZOOM + 1) + 'h-3Z');
             }
         }
-        else if(!xActive || dx < Math.min(dy * 0.6, fx.MINZOOM)) {
+        else if(!xActive || dx < Math.min(dy * 0.6, MINZOOM)) {
             box.l = 0;
             box.r = pw;
             zoomMode = 'y';
             corners.attr('d',
-                'M'+(x0-fx.MINZOOM-0.5)+','+(box.t-0.5)+
-                'v-3h'+(2*fx.MINZOOM+1)+'v3ZM'+
-                (x0-fx.MINZOOM-0.5)+','+(box.b+0.5)+
-                'v3h'+(2*fx.MINZOOM+1)+'v-3Z');
+                'M' + (x0 - MINZOOM - 0.5) + ',' + (box.t - 0.5) +
+                'v-3h' + (2 * MINZOOM + 1) + 'v3ZM' +
+                (x0 - MINZOOM - 0.5) + ',' + (box.b + 0.5) +
+                'v3h' + (2 * MINZOOM + 1) + 'v-3Z');
         }
         else {
             zoomMode = 'xy';
@@ -1527,7 +1554,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function zoomDone(dragged, numClicks) {
-        if(Math.min(box.h, box.w) < fx.MINDRAG * 2) {
+        if(Math.min(box.h, box.w) < MINDRAG * 2) {
             if(numClicks === 2) doubleClick();
             else pauseForDrag(gd);
 
@@ -1886,7 +1913,7 @@ function pauseForDrag(gd) {
             gd._replotPending = deferredReplot;
             finishDrag(gd);
         },
-        fx.DBLCLICKDELAY);
+        constants.DBLCLICKDELAY);
 }
 
 function finishDrag(gd) {
@@ -1964,6 +1991,7 @@ fx.dragCursors = function(x,y,xanchor,yanchor){
 fx.dragElement = function(options) {
     var gd = Plotly.Lib.getPlotDiv(options.element) || {},
         numClicks = 1,
+        DBLCLICKDELAY = constants.DBLCLICKDELAY,
         startX,
         startY,
         newMouseDownTime,
@@ -1987,7 +2015,7 @@ fx.dragElement = function(options) {
         initialTarget = e.target;
 
         newMouseDownTime = (new Date()).getTime();
-        if(newMouseDownTime - gd._mouseDownTime < fx.DBLCLICKDELAY) {
+        if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
             // in a click train
             numClicks += 1;
         }
@@ -2005,14 +2033,18 @@ fx.dragElement = function(options) {
         dragCover.onmouseup = onDone;
         dragCover.onmouseout = onDone;
 
+        dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
+
         return Plotly.Lib.pauseEvent(e);
     }
 
     function onMove(e) {
         var dx = e.clientX - startX,
-            dy = e.clientY - startY;
-        if(Math.abs(dx)<fx.MINDRAG) dx = 0;
-        if(Math.abs(dy)<fx.MINDRAG) dy = 0;
+            dy = e.clientY - startY,
+            minDrag = options.minDrag || constants.MINDRAG;
+
+        if(Math.abs(dx) < minDrag) dx = 0;
+        if(Math.abs(dy) < minDrag) dy = 0;
         if(dx||dy) gd._dragged = true;
 
         if(options.moveFn) options.moveFn(dx, dy, gd._dragged);
@@ -2034,7 +2066,7 @@ fx.dragElement = function(options) {
 
         // don't count as a dblClick unless the mouseUp is also within
         // the dblclick delay
-        if((new Date()).getTime() - gd._mouseDownTime > fx.DBLCLICKDELAY) {
+        if((new Date()).getTime() - gd._mouseDownTime > DBLCLICKDELAY) {
             numClicks = Math.max(numClicks - 1, 1);
         }
 
@@ -2092,7 +2124,7 @@ fx.setCursor = function(el3,csr) {
 // count one edge as in, so that over continuous ranges you never get a gap
 fx.inbox = function(v0,v1){
     if(v0*v1<0 || v0===0) {
-        return fx.MAXDIST*(0.6-0.3/Math.max(3,Math.abs(v0-v1)));
+        return constants.MAXDIST*(0.6-0.3/Math.max(3,Math.abs(v0-v1)));
     }
     return Infinity;
 };
