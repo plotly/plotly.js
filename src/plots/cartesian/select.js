@@ -12,10 +12,10 @@
 var polygon = require('../../lib/polygon');
 
 var axes = require('./axes');
+var constants = require('./constants');
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
-var BENDPX = 1.5; // max pixels off straight before a line counts as bent
 
 function getAxId(ax) { return ax._id; }
 
@@ -33,7 +33,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         yAxisIds = dragOptions.yaxes.map(getAxId);
 
     if(mode === 'lasso') {
-        var pts = filteredPolygon([[x0, y0]], BENDPX);
+        var pts = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
 
     var outlines = plot.selectAll('path.select-outline').data([1,2]);
