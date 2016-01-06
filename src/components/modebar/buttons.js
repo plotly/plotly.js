@@ -126,7 +126,7 @@ modeBarButtons.select2d = {
     title: 'Box Select',
     attr: 'dragmode',
     val: 'select',
-    icon: Icons.question, // TODO
+    icon: Icons.selectbox,
     click: handleCartesian
 };
 
@@ -135,7 +135,7 @@ modeBarButtons.lasso2d = {
     title: 'Lasso Select',
     attr: 'dragmode',
     val: 'lasso',
-    icon: Icons.question, // TODO
+    icon: Icons.lasso,
     click: handleCartesian
 };
 
