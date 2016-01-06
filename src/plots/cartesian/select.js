@@ -95,7 +95,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 // extras to guide users in keeping a straight selection
                 corners.attr('d', 'M' + poly.xmin + ',' + (y0 - MINDRAG) +
                     'h-4v' + (2 * MINDRAG) + 'h4Z' +
-                    'M' + poly.xmax + ',' + (y0 - MINDRAG) +
+                    'M' + (poly.xmax - 1) + ',' + (y0 - MINDRAG) +
                     'h4v' + (2 * MINDRAG) + 'h-4Z');
 
             }
@@ -104,7 +104,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 poly = polygonTester([[0, y0], [0, y1], [pw, y1], [pw, y0]]);
                 corners.attr('d', 'M' + (x0 - MINDRAG) + ',' + poly.ymin +
                     'v-4h' + (2 * MINDRAG) + 'v4Z' +
-                    'M' + (x0 - MINDRAG) + ',' + poly.ymax +
+                    'M' + (x0 - MINDRAG) + ',' + (poly.ymax - 1) +
                     'v4h' + (2 * MINDRAG) + 'v-4Z');
             }
             else {
@@ -113,7 +113,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 corners.attr('d','M0,0Z');
             }
             outlines.attr('d', 'M' + poly.xmin + ',' + poly.ymin +
-                'H' + poly.xmax + 'V' + poly.ymax + 'H' + poly.xmin + 'Z');
+                'H' + (poly.xmax - 1) + 'V' + (poly.ymax - 1) +
+                'H' + poly.xmin + 'Z');
         }
         else if(mode === 'lasso') {
             pts.addPt([x1, y1]);
