@@ -15,6 +15,9 @@ module.exports = {
     // pixels to move mouse before you stop clamping to starting point
     MINDRAG: 8,
 
+    // smallest dimension allowed for a select box
+    MINSELECT: 12,
+
     // smallest dimension allowed for a zoombox
     MINZOOM: 20,
 

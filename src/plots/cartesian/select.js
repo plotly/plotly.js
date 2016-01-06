@@ -17,7 +17,7 @@ var constants = require('./constants');
 
 var filteredPolygon = polygon.filter;
 var polygonTester = polygon.tester;
-var MINDRAG = constants.MINDRAG;
+var MINSELECT = constants.MINSELECT;
 
 function getAxId(ax) { return ax._id; }
 
@@ -98,23 +98,23 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             dy = Math.abs(y1 - y0);
 
         if(mode === 'select') {
-            if(dy < Math.min(dx * 0.6, MINDRAG)) {
+            if(dy < Math.min(dx * 0.6, MINSELECT)) {
                 // horizontal motion: make a vertical box
                 poly = polygonTester([[x0, 0], [x0, ph], [x1, ph], [x1, 0]]);
                 // extras to guide users in keeping a straight selection
-                corners.attr('d', 'M' + poly.xmin + ',' + (y0 - MINDRAG) +
-                    'h-4v' + (2 * MINDRAG) + 'h4Z' +
-                    'M' + (poly.xmax - 1) + ',' + (y0 - MINDRAG) +
-                    'h4v' + (2 * MINDRAG) + 'h-4Z');
+                corners.attr('d', 'M' + poly.xmin + ',' + (y0 - MINSELECT) +
+                    'h-4v' + (2 * MINSELECT) + 'h4Z' +
+                    'M' + (poly.xmax - 1) + ',' + (y0 - MINSELECT) +
+                    'h4v' + (2 * MINSELECT) + 'h-4Z');
 
             }
-            else if(dx < Math.min(dy * 0.6, MINDRAG)) {
+            else if(dx < Math.min(dy * 0.6, MINSELECT)) {
                 // vertical motion: make a horizontal box
                 poly = polygonTester([[0, y0], [0, y1], [pw, y1], [pw, y0]]);
-                corners.attr('d', 'M' + (x0 - MINDRAG) + ',' + poly.ymin +
-                    'v-4h' + (2 * MINDRAG) + 'v4Z' +
-                    'M' + (x0 - MINDRAG) + ',' + (poly.ymax - 1) +
-                    'v4h' + (2 * MINDRAG) + 'v-4Z');
+                corners.attr('d', 'M' + (x0 - MINSELECT) + ',' + poly.ymin +
+                    'v-4h' + (2 * MINSELECT) + 'v4Z' +
+                    'M' + (x0 - MINSELECT) + ',' + (poly.ymax - 1) +
+                    'v4h' + (2 * MINSELECT) + 'v-4Z');
             }
             else {
                 // diagonal motion
