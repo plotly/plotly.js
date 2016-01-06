@@ -25,6 +25,7 @@ describe('ModeBar', function() {
                 dragmode: 'zoom',
                 _paperdiv: d3.select(getMockContainerTree())
             },
+            _fullData: [],
             _context: {
                 displaylogo: true,
                 displayModeBar: true,
@@ -158,10 +159,23 @@ describe('ModeBar', function() {
             return list;
         }
 
-        it('creates mode bar (cartesian version)', function() {
+        function checkButtons(modeBar, buttons, logos) {
+            var expectedGroupCount = buttons.length + logos;
+            var expectedButtonCount = logos;
+            buttons.forEach(function(group) {
+                expectedButtonCount += group.length;
+            });
+
+            expect(modeBar.hasButtons(buttons)).toBe(true);
+            expect(countGroups(modeBar)).toEqual(expectedGroupCount);
+            expect(countButtons(modeBar)).toEqual(expectedButtonCount);
+            expect(countLogo(modeBar)).toEqual(1);
+        }
+
+        it('creates mode bar (unselectable cartesian version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
+                ['zoom2d', 'pan2d'],
                 ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
                 ['hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
@@ -173,16 +187,36 @@ describe('ModeBar', function() {
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
 
-            expect(modeBar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modeBar)).toEqual(5);
-            expect(countButtons(modeBar)).toEqual(13);
-            expect(countLogo(modeBar)).toEqual(1);
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (selectable cartesian version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
+                ['hoverClosestCartesian', 'hoverCompareCartesian']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullData = [{
+                type:'scatter',
+                visible: true,
+                mode:'markers',
+                _module: {selectPoints: true}
+            }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
         });
 
         it('creates mode bar (cartesian fixed-axes version)', function() {
             var buttons = getButtons([
                 ['toImage', 'sendDataToCloud'],
-                ['select2d', 'lasso2d'],
                 ['hoverClosestCartesian', 'hoverCompareCartesian']
             ]);
 
@@ -192,10 +226,7 @@ describe('ModeBar', function() {
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
 
-            expect(modeBar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modeBar)).toEqual(4);
-            expect(countButtons(modeBar)).toEqual(7);
-            expect(countLogo(modeBar)).toEqual(1);
+            checkButtons(modeBar, buttons, 1);
         });
 
         it('creates mode bar (gl3d version)', function() {
@@ -212,10 +243,7 @@ describe('ModeBar', function() {
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
 
-            expect(modeBar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modeBar)).toEqual(5);
-            expect(countButtons(modeBar)).toEqual(10);
-            expect(countLogo(modeBar)).toEqual(1);
+            checkButtons(modeBar, buttons, 1);
         });
 
         it('creates mode bar (geo version)', function() {
@@ -231,10 +259,7 @@ describe('ModeBar', function() {
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
 
-            expect(modeBar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modeBar)).toEqual(4);
-            expect(countButtons(modeBar)).toEqual(7);
-            expect(countLogo(modeBar)).toEqual(1);
+            checkButtons(modeBar, buttons, 1);
         });
 
         it('creates mode bar (gl2d version)', function() {
@@ -252,10 +277,7 @@ describe('ModeBar', function() {
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
 
-            expect(modeBar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modeBar)).toEqual(5);
-            expect(countButtons(modeBar)).toEqual(10);
-            expect(countLogo(modeBar)).toEqual(1);
+            checkButtons(modeBar, buttons, 1);
         });
 
         it('creates mode bar (pie version)', function() {
@@ -270,10 +292,7 @@ describe('ModeBar', function() {
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
 
-            expect(modeBar.hasButtons(buttons)).toBe(true);
-            expect(countGroups(modeBar)).toEqual(3);
-            expect(countButtons(modeBar)).toEqual(4);
-            expect(countLogo(modeBar)).toEqual(1);
+            checkButtons(modeBar, buttons, 1);
         });
 
         it('throws an error if modeBarButtonsToRemove isn\'t an array', function() {
@@ -382,7 +401,7 @@ describe('ModeBar', function() {
 
             var modeBar = gd._fullLayout._modeBar;
             expect(countGroups(modeBar)).toEqual(6);
-            expect(countButtons(modeBar)).toEqual(12);
+            expect(countButtons(modeBar)).toEqual(10);
         });
 
         it('sets up buttons with modeBarButtonsToAdd and modeBarButtonToRemove (2)', function() {
@@ -402,7 +421,7 @@ describe('ModeBar', function() {
 
             var modeBar = gd._fullLayout._modeBar;
             expect(countGroups(modeBar)).toEqual(7);
-            expect(countButtons(modeBar)).toEqual(14);
+            expect(countButtons(modeBar)).toEqual(12);
         });
 
         it('sets up buttons with fully custom modeBarButtons', function() {
