@@ -74,8 +74,7 @@
     "sane-topojson": "^1.2.0",
     "superscript-text": "^1.0.0",
     "tinycolor2": "1.1.2",
-    "topojson": "^1.6.19",
-    "xml2js": "^0.4.15"
+    "topojson": "^1.6.19"
   },
   "devDependencies": {
     "brfs": "^1.4.1",
@@ -98,6 +97,7 @@
     "prettysize": "0.0.3",
     "through2": "^2.0.0",
     "uglify-js": "^2.5.0",
-    "watchify": "^3.6.0"
+    "watchify": "^3.6.0",
+    "xml2js": "^0.4.15"
   }
 }
