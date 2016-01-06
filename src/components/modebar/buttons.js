@@ -121,6 +121,24 @@ modeBarButtons.pan2d = {
     click: handleCartesian
 };
 
+modeBarButtons.select2d = {
+    name: 'select2d',
+    title: 'Box Select',
+    attr: 'dragmode',
+    val: 'select',
+    icon: Icons.selectbox,
+    click: handleCartesian
+};
+
+modeBarButtons.lasso2d = {
+    name: 'lasso2d',
+    title: 'Lasso Select',
+    attr: 'dragmode',
+    val: 'lasso',
+    icon: Icons.lasso,
+    click: handleCartesian
+};
+
 modeBarButtons.zoomIn2d = {
     name: 'zoomIn2d',
     title: 'Zoom in',
@@ -179,6 +197,13 @@ modeBarButtons.hoverCompareCartesian = {
     click: handleCartesian
 };
 
+var DRAGCURSORS = {
+    pan: 'move',
+    zoom: 'crosshair',
+    select: 'crosshair',
+    lasso: 'crosshair'
+};
+
 function handleCartesian(gd, ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
@@ -230,7 +255,7 @@ function handleCartesian(gd, ev) {
             if(fullLayout._hasCartesian) {
                 Plotly.Fx.setCursor(
                     fullLayout._paper.select('.nsewdrag'),
-                    {pan:'move', zoom:'crosshair'}[val]
+                    DRAGCURSORS[val]
                 );
             }
             Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);

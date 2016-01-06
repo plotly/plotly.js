@@ -630,6 +630,7 @@ axes.setConvert = function(ax) {
     ax.c2l = (ax.type==='log') ? toLog : num;
     ax.l2c = (ax.type==='log') ? fromLog : num;
     ax.l2d = function(v) { return ax.c2d(ax.l2c(v)); };
+    ax.p2d = function(v) { return ax.l2d(ax.p2l(v)); };
 
     // set scaling to pixels
     ax.setScale = function(){
