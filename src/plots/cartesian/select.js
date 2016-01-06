@@ -133,16 +133,18 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 
     dragOptions.doneFn = function(dragged, numclicks) {
-        if(!dragged && numclicks === 2) dragOptions.doubleclick();
+        if(!dragged && numclicks === 2) {
+            // clear selection on doubleclick
+            outlines.remove();
+            for(i = 0; i < searchTraces.length; i++) {
+                searchInfo = searchTraces[i];
+                searchInfo.selectPoints(searchInfo, false);
+            }
+        }
         else {
             dragOptions.gd.emit('plotly_selected', eventData);
         }
-        outlines.remove();
         corners.remove();
-        for(i = 0; i < searchTraces.length; i++) {
-            searchInfo = searchTraces[i];
-            searchInfo.selectPoints(searchInfo, false);
-        }
     };
 };
 

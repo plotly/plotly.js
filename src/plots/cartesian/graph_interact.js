@@ -1389,6 +1389,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragDone;
+                clearSelect();
             }
             else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
@@ -1438,7 +1439,15 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             })
             .attr('d','M0,0Z');
 
+        clearSelect();
         for(i = 0; i < allaxes.length; i++) forceNumbers(allaxes[i].range);
+    }
+
+    function clearSelect() {
+        // until we get around to persistent selections, remove the outline
+        // here. The selection itself will be removed when the plot redraws
+        // at the end.
+        plotinfo.plot.selectAll('.select-outline').remove();
     }
 
     function zoomMove(dx0, dy0) {
