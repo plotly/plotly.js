@@ -266,12 +266,12 @@ Plotly.plot = function(gd, data, layout, config) {
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
 
-        var registry = plots.subplotsRegistry;
+        var plotRegistry = plots.subplotsRegistry;
 
         // TODO incorporate cartesian and polar plots into this paradigm
-        if(fullLayout._hasGL3D && registry.gl3d) registry.gl3d.plot(gd);
-        if(fullLayout._hasGeo && registry.geo) registry.geo.plot(gd);
-        if(fullLayout._hasGL2D && registry.gl2d) registry.gl2d.plot(gd);
+        if(fullLayout._hasGL3D) plotRegistry.gl3d.plot(gd);
+        if(fullLayout._hasGeo) plotRegistry.geo.plot(gd);
+        if(fullLayout._hasGL2D) plotRegistry.gl2d.plot(gd);
 
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
@@ -765,9 +765,8 @@ function cleanData(data, existingData) {
         if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        var plotRegistry = plots.subplotsRegistry;
-        if(trace.scene && plotRegistry.gl3d) {
-            trace.scene = plotRegistry.gl3d.cleanId(trace.scene);
+        if(plots.traceIs(trace, 'gl3d') && trace.scene) {
+            trace.scene = plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
         if(!plots.traceIs(trace, 'pie')) {
@@ -2494,10 +2493,7 @@ function makePlotFramework(gd) {
         fullLayout = gd._fullLayout;
 
     // TODO - find a better place for 3D to initialize axes
-    var plotRegistry = plots.subplotsRegistry;
-    if(fullLayout._hasGL3D && plotRegistry.gl3d) {
-        plotRegistry.gl3d.initAxes(gd);
-    }
+    if(fullLayout._hasGL3D) plots.subplotsRegistry.gl3d.initAxes(gd);
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);

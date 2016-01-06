@@ -433,7 +433,7 @@ plots.supplyDefaults = function(gd) {
         fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout);
         newFullData.push(fullTrace);
 
-        // DETECT 3D, Cartesian, and Polar
+        // detect plot type
         if(plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
         else if(plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
         else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
