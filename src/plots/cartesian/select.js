@@ -32,7 +32,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         pw = dragOptions.xaxes[0]._length,
         ph = dragOptions.yaxes[0]._length,
         xAxisIds = dragOptions.xaxes.map(getAxId),
-        yAxisIds = dragOptions.yaxes.map(getAxId);
+        yAxisIds = dragOptions.yaxes.map(getAxId),
+        allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
 
     if(mode === 'lasso') {
         var pts = filteredPolygon([[x0, y0]], constants.BENDPX);
@@ -80,8 +81,14 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         });
     }
 
+    function axValue(ax) {
+        var index = (ax._id.charAt(0) === 'y') ? 1 : 0;
+        return function(v) { return ax.p2d(v[index]); };
+    }
+
     dragOptions.moveFn = function(dx0, dy0) {
-        var poly;
+        var poly,
+            ax;
         x1 = Math.max(0, Math.min(pw, dx0 + x0));
         y1 = Math.max(0, Math.min(ph, dy0 + y0));
 
@@ -129,6 +136,27 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         }
 
         eventData = {points: selection};
+
+        if(mode === 'select') {
+            var ranges = eventData.range = {},
+                axLetter;
+
+            for(i = 0; i < allAxes.length; i++) {
+                ax = allAxes[i];
+                axLetter = ax._id.charAt(0);
+                ranges[ax._id] = [
+                    ax.p2d(poly[axLetter + 'min']),
+                    ax.p2d(poly[axLetter + 'max'])].sort();
+            }
+        }
+        else {
+            var dataPts = eventData.lassoPoints = {};
+
+            for(i = 0; i < allAxes.length; i++) {
+                ax = allAxes[i];
+                dataPts[ax._id] = pts.filtered.map(axValue(ax));
+            }
+        }
         dragOptions.gd.emit('plotly_selecting', eventData);
     };
 
