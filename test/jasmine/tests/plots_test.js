@@ -234,9 +234,14 @@ describe('Test Plotly.Plots', function () {
     });
 
     describe('Plotly.Plots.registerSubplot', function() {
-        Plotly.Plots.registerSubplot('fake', 'abc', 'cba', {
-            stuff: { 'more stuff': 102102 }
-        });
+        var fake = {
+            name: 'fake',
+            attr: 'abc',
+            idRoot: 'cba',
+            attributes: { stuff: { 'more stuff': 102102 } }
+        }
+
+        Plotly.Plots.registerSubplot(fake);
 
         var subplotsRegistry = Plotly.Plots.subplotsRegistry;
 

@@ -13,19 +13,18 @@
 var Plotly = require('../../plotly');
 var createPlot = require('gl-plot3d');
 
-var createAxesOptions  = require('./layout/convert');
-var createSpikeOptions = require('./layout/spikes');
-var computeTickMarks = require('./layout/tick_marks');
-
 var createScatterTrace = require('../../traces/scatter3d/convert');
 var createSurfaceTrace = require('../../traces/surface/convert');
 var createMeshTrace = require('../../traces/mesh3d/convert');
+var str2RGBAarray = require('../../lib/str2rgbarray');
+var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
 var createCamera = require('./camera');
 var project = require('./project');
-
-var str2RGBAarray = require('../../lib/str2rgbarray');
-var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
+var setConvert = require('./set_convert');
+var createAxesOptions = require('./layout/convert');
+var createSpikeOptions = require('./layout/spikes');
+var computeTickMarks = require('./layout/tick_marks');
 
 var STATIC_CANVAS, STATIC_CONTEXT;
 
@@ -310,7 +309,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Update axes functions BEFORE updating traces
     for (i = 0; i < 3; ++i) {
         var axis = fullSceneLayout[axisProperties[i]];
-        Plotly.Gl3dLayout.setConvert(axis);
+        setConvert(axis);
     }
 
     //Convert scene data
@@ -536,7 +535,7 @@ proto.destroy = function() {
 
 // for reset camera button in mode bar
 proto.setCameraToDefault = function setCameraToDefault () {
-    // as in Gl3dLayout.layoutAttributes
+    // as in Gl3d.layoutAttributes
     this.glplot.camera.lookAt(
         [1.25, 1.25, 1.25],
         [0   , 0   , 0   ],

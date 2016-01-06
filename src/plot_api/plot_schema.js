@@ -10,10 +10,12 @@
 'use strict';
 
 var Plotly = require('../plotly');
+var Plots = require('../plots/plots');
+var Lib = require('../lib');
 
-var extendFlat = Plotly.Lib.extendFlat;
-var extendDeep = Plotly.Lib.extendDeep;
-var extendDeepAll = Plotly.Lib.extendDeepAll;
+var extendFlat = Lib.extendFlat;
+var extendDeep = Lib.extendDeep;
+var extendDeepAll = Lib.extendDeepAll;
 
 var NESTED_MODULE = '_nestedModules',
     COMPOSED_MODULE = '_composedModules',
@@ -38,7 +40,7 @@ var PlotSchema = module.exports = {};
 
 
 PlotSchema.get =  function() {
-    Plotly.Plots.allTypes
+    Plots.allTypes
         .concat('area')  // FIXME polar 'area' attributes
         .forEach(getTraceAttributes);
 
@@ -56,7 +58,7 @@ PlotSchema.crawl = function(attrs, callback) {
         callback(attr, attrName, attrs);
 
         if(PlotSchema.isValObject(attr)) return;
-        if(Plotly.Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback);
+        if(Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback);
     });
 };
 
@@ -65,7 +67,7 @@ PlotSchema.isValObject = function(obj) {
 };
 
 function getTraceAttributes(type) {
-    var globalAttributes = Plotly.Plots.attributes,
+    var globalAttributes = Plots.attributes,
         _module = getModule({type: type}),
         meta = getMeta(type),
         subplotRegistry = getSubplotRegistry(type);
@@ -111,7 +113,7 @@ function getTraceAttributes(type) {
 }
 
 function getLayoutAttributes() {
-    var globalLayoutAttributes = Plotly.Plots.layoutAttributes,
+    var globalLayoutAttributes = Plots.layoutAttributes,
         layoutAttributes = {};
 
     // layout module attributes (+ nested + composed)
@@ -136,7 +138,7 @@ function getLayoutAttributes() {
 
 function getDefs() {
     plotSchema.defs = {
-        valObjects: Plotly.Lib.valObjects,
+        valObjects: Lib.valObjects,
         metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
     };
 }
@@ -157,7 +159,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
                     nestedAttrs, {}, whichAttrs, type
                 );
 
-                Plotly.Lib.nestedProperty(attrsOut, kk)
+                Lib.nestedProperty(attrsOut, kk)
                     .set(extendDeep({}, nestedReference));
             });
             return;
@@ -180,7 +182,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             return;
         }
 
-        attrsOut[k] = Plotly.Lib.isPlainObject(attrsIn[k]) ?
+        attrsOut[k] = Lib.isPlainObject(attrsIn[k]) ?
             extendDeepAll({}, attrsIn[k]) :
             attrsIn[k];
     });
@@ -214,7 +216,7 @@ function mergeValTypeAndRole(attrs) {
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
            }
         }
-        else if(Plotly.Lib.isPlainObject(attr)) {
+        else if(Lib.isPlainObject(attr)) {
             // all attrs container objects get role 'object'
             attr.role = 'object';
         }
@@ -229,9 +231,14 @@ function getModule(arg) {
     if('type' in arg) {
         return (arg.type === 'area') ?  // FIXME
             { attributes: polarAreaAttrs } :
-            Plotly.Plots.getModule({type: arg.type});
+            Plots.getModule({type: arg.type});
     }
-    else if('module' in arg) return Plotly[arg.module];
+
+    var subplotsRegistry = Plots.subplotsRegistry,
+        _module = arg.module;
+
+    if(subplotsRegistry[_module]) return subplotsRegistry[_module];
+    else if('module' in arg) return Plotly[_module];
 }
 
 function removeUnderscoreAttrs(attributes) {
@@ -244,7 +251,7 @@ function removeUnderscoreAttrs(attributes) {
 
 function getMeta(type) {
     if(type === 'area') return {};  // FIXME
-    return Plotly.Plots.modules[type].meta || {};
+    return Plots.modules[type].meta || {};
 }
 
 function assignPolarLayoutAttrs(layoutAttributes) {
@@ -261,9 +268,9 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 function getSubplotRegistry(traceType) {
     if(traceType === 'area') return {};  // FIXME
 
-    var subplotsRegistry = Plotly.Plots.subplotsRegistry,
+    var subplotsRegistry = Plots.subplotsRegistry,
         subplotType = Object.keys(subplotsRegistry).filter(function(subplotType) {
-            return Plotly.Plots.traceIs({type: traceType}, subplotType);
+            return Plots.traceIs({type: traceType}, subplotType);
         })[0];
 
     if(subplotType === undefined) return {};
@@ -272,7 +279,7 @@ function getSubplotRegistry(traceType) {
 }
 
 function handleSubplotObjs(layoutAttributes) {
-    var subplotsRegistry = Plotly.Plots.subplotsRegistry;
+    var subplotsRegistry = Plots.subplotsRegistry;
 
     Object.keys(layoutAttributes).forEach(function(k) {
         Object.keys(subplotsRegistry).forEach(function(subplotType) {

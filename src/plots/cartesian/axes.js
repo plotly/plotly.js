@@ -15,10 +15,6 @@ var isNumeric = require('fast-isnumeric');
 
 var axes = module.exports = {};
 
-axes.attributes = require('./attributes');
-
-Plotly.Plots.registerSubplot('cartesian', ['xaxis', 'yaxis'], ['x', 'y'], axes.attributes);
-
 axes.layoutAttributes = require('./layout_attributes');
 
 var xAxisMatch = /^xaxis[0-9]*$/,

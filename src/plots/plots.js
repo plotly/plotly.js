@@ -31,7 +31,7 @@ plots.fontWeight = 'normal';
 /**
  * plots.register: register a module as the handler for a trace type
  *
- * @param {object} module the module that will handle plotting this trace type
+ * @param {object} _module the module that will handle plotting this trace type
  * @param {string} thisType
  * @param {array of strings} categoriesIn all the categories this type is in,
  *     tested by calls: Plotly.Plots.traceIs(trace, oneCategory)
@@ -107,12 +107,14 @@ plots.traceIs = function traceIs(traceType, category) {
 /**
  * plots.registerSubplot: register a subplot type
  *
- * @param {string} subplotType subplot type
- *   (these must also be categories defined with plots.register)
- * @param {string or array of strings} attr attribute name in traces and layout
- * @param {string or array of strings} idRoot root of id
- *   (setting the possible value for attrName)
- * @param {object} attributes attribute(s) for traces of this subplot type
+ * @param {object} _module subplot module:
+ *
+ *      @param {string or array of strings} attr
+ *          attribute name in traces and layout
+ *      @param {string or array of strings} idRoot
+ *          root of id (setting the possible value for attrName)
+ *      @param {object} attributes
+ *          attribute(s) for traces of this subplot type
  *
  * In trace objects `attr` is the object key taking a valid `id` as value
  * (the set of all valid ids is generated below and stored in idRegex).
@@ -123,33 +125,36 @@ plots.traceIs = function traceIs(traceType, category) {
  *
  * TODO use these in Lib.coerce
  */
-plots.registerSubplot = function(subplotType, attr, idRoot, attributes) {
-    if(subplotsRegistry[subplotType]) {
-        throw new Error('subplot ' + subplotType + ' already registered');
+plots.registerSubplot = function(_module) {
+    var plotType = _module.name;
+
+    if(subplotsRegistry[plotType]) {
+        throw new Error('plot type' + plotType + ' already registered');
     }
+
+    var attr = _module.attr,
+        idRoot = _module.idRoot;
 
     var regexStart = '^',
         regexEnd = '([2-9]|[1-9][0-9]+)?$',
-        hasXY = (subplotType === 'cartesian' || subplotsRegistry === 'gl2d');
+        hasXY = (plotType === 'cartesian' || subplotsRegistry === 'gl2d');
 
     function makeRegex(mid) {
         return new RegExp(regexStart + mid + regexEnd);
     }
 
     // not sure what's best for the 'cartesian' type at this point
-    subplotsRegistry[subplotType] = {
-        attr: attr,
-        idRoot: idRoot,
-        attributes: attributes,
-        // register the regex representing the set of all valid attribute names
-        attrRegex: hasXY ?
-            { x: makeRegex(attr[0]), y: makeRegex(attr[1]) } :
-            makeRegex(attr),
-        // register the regex representing the set of all valid attribute ids
-        idRegex: hasXY ?
-            { x: makeRegex(idRoot[0]), y: makeRegex(idRoot[1]) } :
-            makeRegex(idRoot)
-    };
+    subplotsRegistry[plotType] = _module;
+
+    // register the regex representing the set of all valid attribute names
+    subplotsRegistry[plotType].attrRegex = hasXY ?
+        { x: makeRegex(attr[0]), y: makeRegex(attr[1]) } :
+        makeRegex(attr);
+
+    // register the regex representing the set of all valid attribute ids
+    subplotsRegistry[plotType].idRegex = hasXY ?
+        { x: makeRegex(idRoot[0]), y: makeRegex(idRoot[1]) } :
+        makeRegex(idRoot);
 };
 
 // TODO separate the 'find subplot' step (which looks in layout)
@@ -352,7 +357,7 @@ function positionPlayWithData(gd, container){
 
     if(gd._context.sendData) {
         link.on('click', function() {
-            plots.sendDataToCloud(gd)
+            plots.sendDataToCloud(gd);
         });
     }
     else {
@@ -395,7 +400,7 @@ plots.sendDataToCloud = function(gd) {
 
         gd.emit('plotly_afterexport');
         return false;
-}
+};
 
 plots.supplyDefaults = function(gd) {
     // fill in default values:
@@ -428,7 +433,7 @@ plots.supplyDefaults = function(gd) {
         fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout);
         newFullData.push(fullTrace);
 
-        // DETECT 3D, Cartesian, and Polar
+        // detect plot type
         if(plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
         else if(plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
         else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
@@ -651,19 +656,40 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
-    var moduleLayoutDefaults = [
-        'Axes', 'Annotations', 'Shapes', 'Fx',
-        'Bar', 'Box', 'Gl3dLayout', 'GeoLayout', 'Pie', 'Legend'
-    ];
+    var i, _module;
 
-    var i, module;
+    // TODO incorporate into subplotRegistry
+    Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-    // don't add a check for 'function in module' as it is better to error out and
-    // secure the module API then not apply the default function.
+    // plot module layout defaults
+    var plotTypes = Object.keys(subplotsRegistry);
+    for(i = 0; i < plotTypes.length; i++) {
+        _module = subplotsRegistry[plotTypes[i]];
+
+        // e.g. gl2d does not have a layout-defaults step
+        if(_module.supplyLayoutDefaults) {
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+    }
+
+    // trace module layout defaults
+    var traceTypes = Object.keys(modules);
+    for(i = 0; i < traceTypes.length; i++) {
+        _module = modules[allTypes[i]].module;
+
+        if(_module.supplyLayoutDefaults) {
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        }
+    }
+
+    // TODO register these
+    // Legend must come after traces (e.g. it depends on 'barmode')
+    var moduleLayoutDefaults = ['Fx', 'Annotations', 'Shapes', 'Legend'];
     for(i = 0; i < moduleLayoutDefaults.length; i++) {
-        module = moduleLayoutDefaults[i];
-        if(Plotly[module]) {
-            Plotly[module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        _module = moduleLayoutDefaults[i];
+
+        if(Plotly[_module]) {
+            Plotly[_module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         }
     }
 };

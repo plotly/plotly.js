@@ -266,10 +266,12 @@ Plotly.plot = function(gd, data, layout, config) {
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
 
-        // ... until subplot of different type play better together
-        if(gd._fullLayout._hasGL3D) plotGl3d(gd);
-        if(gd._fullLayout._hasGeo) plotGeo(gd);
-        if(gd._fullLayout._hasGL2D) plotGl2d(gd);
+        var plotRegistry = plots.subplotsRegistry;
+
+        // TODO incorporate cartesian and polar plots into this paradigm
+        if(fullLayout._hasGL3D) plotRegistry.gl3d.plot(gd);
+        if(fullLayout._hasGeo) plotRegistry.geo.plot(gd);
+        if(fullLayout._hasGL2D) plotRegistry.gl2d.plot(gd);
 
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
@@ -415,109 +417,6 @@ function setPlotContext(gd, config) {
         context.showTips = false;
         context.showLink = false;
         context.displayModeBar = false;
-    }
-}
-
-function plotGl3d(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
-
-    var i, sceneId, fullSceneData, scene, sceneOptions;
-
-    fullLayout._paperdiv.style({
-        width: fullLayout.width + 'px',
-        height: fullLayout.height + 'px'
-    });
-
-    gd._context.setBackground(gd, fullLayout.paper_bgcolor);
-
-    for (i = 0; i < sceneIds.length; i++) {
-        sceneId = sceneIds[i];
-        fullSceneData = plots.getSubplotData(fullData, 'gl3d', sceneId);
-        scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
-
-        // If Scene is not instantiated, create one!
-        if(scene === undefined) {
-            sceneOptions = {
-                container: gd.querySelector('.gl-container'),
-                id: sceneId,
-                staticPlot: gd._context.staticPlot,
-                plotGlPixelRatio: gd._context.plotGlPixelRatio
-            };
-            scene = new Plotly.Scene(sceneOptions, fullLayout);
-            fullLayout[sceneId]._scene = scene;  // set ref to Scene instance
-        }
-
-        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
-    }
-}
-
-function plotGeo(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        geoIds = plots.getSubplotIds(fullLayout, 'geo');
-
-    var i, geoId, fullGeoData, geo;
-
-    // if 'plotly-geo-assets.js' is not included,
-    // initialize object to keep reference to every loaded topojson
-    if(window.PlotlyGeoAssets === undefined) {
-        window.PlotlyGeoAssets = { topojson : {} };
-    }
-
-    for (i = 0; i < geoIds.length; i++) {
-        geoId = geoIds[i];
-        fullGeoData = plots.getSubplotData(fullData, 'geo', geoId);
-        geo = fullLayout[geoId]._geo;
-
-        // If geo is not instantiated, create one!
-        if(geo === undefined) {
-            geo = new Plotly.Geo(
-                {
-                    id: geoId,
-                    container: fullLayout._geocontainer.node(),
-                    topojsonURL: gd._context.topojsonURL
-                },
-                fullLayout
-            );
-            fullLayout[geoId]._geo = geo;
-        }
-
-        geo.plot(fullGeoData, fullLayout, gd._promises);
-    }
-}
-
-function plotGl2d(gd) {
-    var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
-
-    for(var i = 0; i < subplotIds.length; i++) {
-        var subplotId = subplotIds[i],
-            subplotObj = fullLayout._plots[subplotId],
-            fullSubplotData = plots.getSubplotData(fullData, 'gl2d', subplotId);
-        var scene;
-
-        // ref. to corresp. Scene instance
-        scene = subplotObj._scene2d;
-
-        // If Scene is not instantiated, create one!
-        if(scene === undefined) {
-            scene = new Plotly.Scene2D({
-                    container: gd.querySelector('.gl-container'),
-                    id: subplotId,
-                    staticPlot: gd._context.staticPlot,
-                    plotGlPixelRatio: gd._context.plotGlPixelRatio
-                },
-                fullLayout
-            );
-
-            // set ref to Scene instance
-            subplotObj._scene2d = scene;
-        }
-
-        scene.plot(fullSubplotData, fullLayout, gd.layout);
     }
 }
 
@@ -866,8 +765,8 @@ function cleanData(data, existingData) {
         if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if (trace.scene) {
-            trace.scene = Plotly.Gl3dLayout.cleanId(trace.scene);
+        if(plots.traceIs(trace, 'gl3d') && trace.scene) {
+            trace.scene = plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
         if(!plots.traceIs(trace, 'pie')) {
@@ -2593,10 +2492,8 @@ function makePlotFramework(gd) {
     var gd3 = d3.select(gd),
         fullLayout = gd._fullLayout;
 
-    /*
-     * TODO - find a better place for 3D to initialize axes
-     */
-    if(fullLayout._hasGL3D) Plotly.Gl3dLayout.initAxes(gd);
+    // TODO - find a better place for 3D to initialize axes
+    if(fullLayout._hasGL3D) plots.subplotsRegistry.gl3d.initAxes(gd);
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);
