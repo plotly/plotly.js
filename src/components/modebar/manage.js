@@ -10,6 +10,7 @@
 'use strict';
 
 var Plotly = require('../../plotly');
+var scatterSubTypes = require('../../traces/scatter/subtypes');
 
 var createModeBar = require('./');
 var modeBarButtons = require('./buttons');
@@ -57,7 +58,7 @@ module.exports = function manageModeBar(gd) {
     }
     else {
         buttonGroups = getButtonGroups(
-            fullLayout,
+            gd,
             context.modeBarButtonsToRemove,
             context.modeBarButtonsToAdd
         );
@@ -68,8 +69,12 @@ module.exports = function manageModeBar(gd) {
 };
 
 // logic behind which buttons are displayed by default
-function getButtonGroups(fullLayout, buttonsToRemove, buttonsToAdd) {
-    var groups = [];
+function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
+    var fullLayout = gd._fullLayout,
+        fullData = gd._fullData,
+        groups = [],
+        i,
+        trace;
 
     function addGroup(newGroup) {
         var out = [];
@@ -106,8 +111,29 @@ function getButtonGroups(fullLayout, buttonsToRemove, buttonsToAdd) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     }
     if(hasCartesian) {
-        dragModeGroup.push('select2d');
-        dragModeGroup.push('lasso2d');
+        // look for traces that support selection
+        // to be updated as we add more selectPoints handlers
+        var selectable = false;
+        for(i = 0; i < fullData.length; i++) {
+            if(selectable) break;
+            trace = fullData[i];
+            if(!trace._module || !trace._module.selectPoints) continue;
+
+            if(trace.type === 'scatter') {
+                if(scatterSubTypes.hasMarkers(trace) || scatterSubTypes.hasText(trace)) {
+                    selectable = true;
+                }
+            }
+            // assume that in general if the trace module has selectPoints,
+            // then it's selectable. Scatter is an exception to this because it must
+            // have markers or text, not just be a scatter type.
+            else selectable = true;
+        }
+
+        if(selectable) {
+            dragModeGroup.push('select2d');
+            dragModeGroup.push('lasso2d');
+        }
     }
     if(dragModeGroup.length) addGroup(dragModeGroup);
 
@@ -128,7 +154,7 @@ function getButtonGroups(fullLayout, buttonsToRemove, buttonsToAdd) {
     // append buttonsToAdd to the groups
     if(buttonsToAdd.length) {
         if(Array.isArray(buttonsToAdd[0])) {
-            for(var i = 0; i < buttonsToAdd.length; i++) {
+            for(i = 0; i < buttonsToAdd.length; i++) {
                 groups.push(buttonsToAdd[i]);
             }
         }
