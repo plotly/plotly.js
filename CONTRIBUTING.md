@@ -70,7 +70,7 @@ Plotly.plot(Tabs.fresh(), [{x:[1,2,3], y:[2,1,2]}]);
 **Other npm scripts**:
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
-  script is run automatically on `npm install`.
+  script must be run manually when updating the css and svg source files.
 - `npm run watch`: starts a watchify file watcher just like the test dashboard but
   without booting up a server.
 
@@ -111,7 +111,7 @@ To view the results of a run on CircleCI, download the `build/test_images/` and 
 - All tasks can be run using [`npm run-srcript`](https://docs.npmjs.com/cli/run-script)
 - Tests are `test/`, they are partitioned into `image` and `jasmine` tests
 - Test dashboard and image viewer code is in `devtools/`
-- Non-distributed, git-ignored built files are in `build/`
+- Non-distributed, built files are in `build/` (most files in here are git-ignored, the css and font built files are exceptions)
 
 
 ### Coding style
