@@ -27,7 +27,7 @@
     "build": "npm run preprocess && npm run bundle && npm run header",
     "cibuild": "node tasks/cibundle.js",
     "watch": "node tasks/watch_plotly.js",
-    "lint": "cd src && jshint . || true",
+    "lint": "eslint . || true",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
     "citest-jasmine": "karma start test/jasmine/karma.ciconf.js",
     "test-image": "./tasks/test_image.sh",
