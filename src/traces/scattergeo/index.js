@@ -9,11 +9,12 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
+var Scatter = require('../scatter');
 
 var ScatterGeo = module.exports = {};
 
-Plotly.Plots.register(ScatterGeo, 'scattergeo',
+Plots.register(ScatterGeo, 'scattergeo',
     ['geo', 'symbols', 'markerColorscale', 'showLegend'], {
         hrName: 'scatter_geo',
         description: [
@@ -28,10 +29,10 @@ ScatterGeo.attributes = require('./attributes');
 
 ScatterGeo.supplyDefaults = require('./defaults');
 
-ScatterGeo.colorbar = Plotly.Scatter.colorbar;
+ScatterGeo.colorbar = Scatter.colorbar;
 
 ScatterGeo.calc = function(gd, trace) {
 
-    Plotly.Scatter.calcMarkerColorscales(trace);
+    Scatter.calcMarkerColorscales(trace);
 
 };
