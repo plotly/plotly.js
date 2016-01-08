@@ -1,0 +1,7 @@
+{
+  "extends": "../../.eslintrc",
+  "env": {
+    "browser": true,
+    "jasmine": true
+  }
+}

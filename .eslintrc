@@ -1,0 +1,40 @@
+{
+  "root": true,
+  "extends": [
+    "eslint:recommended",
+  ],
+  "env": {
+    "commonjs": true
+  },
+  "rules": {
+    "no-trailing-spaces": [0],
+    "no-multiple-empty-lines": [2, {"max": 3, "maxEOF": 1}],
+    "linebreak-style": [2, "unix"],
+    "indent": [0, 4],
+    "max-len": [0, 80],
+    "brace-style": [0, "stroustrup", { "allowSingleLine": true }],
+    "curly": [0, "multi"],
+    "camelcase": [0, {"properties": "never"}],
+    "comma-spacing": [0, {"before": false, "after": true}],
+    "comma-style": [0, "last"],
+    "semi": [2],
+    "semi-spacing": [2, {"before": false, "after": true}],
+    "key-spacing": [0, {"beforeColon": false, "afterColon": true}],
+    "no-spaced-func": [2],
+    "space-in-parens": [2, "never"],
+    "space-before-function-paren": [0, "never"],
+    "no-multi-spaces": [0],
+    "space-infix-ops": [0, {"int32Hint": false}],
+    "quotes": [2, "single"],
+    "dot-notation": [2, {"allowKeywords": false}],
+    "eqeqeq": [2],
+    "new-cap": [2],
+    "no-redeclare": [2, {"builtinGlobals": true}],
+    "no-shadow": [0, {"builtinGlobals": true}],
+    "block-scoped-var": [2],
+    "no-unused-vars": [2],
+    "no-use-before-define": [2, "nofunc"],
+    "no-loop-func": [2],
+    "no-console": [0]
+  },
+}
