@@ -416,7 +416,7 @@ plots.supplyDefaults = function(gd) {
         newData = gd.data || [],
         modules = gd._modules = [];
 
-    var i, trace, fullTrace, module, axList, ax;
+    var i, trace, fullTrace, _module, axList, ax;
 
 
     // first fill in what we can of layout without looking at data
@@ -441,14 +441,14 @@ plots.supplyDefaults = function(gd) {
         else if(plots.traceIs(fullTrace, 'gl2d')) newFullLayout._hasGL2D = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
-        module = fullTrace._module;
-        if (module && modules.indexOf(module)===-1) modules.push(module);
+        _module = fullTrace._module;
+        if (_module && modules.indexOf(_module)===-1) modules.push(_module);
     }
 
     // special cases that introduce interactions between traces
     for (i = 0; i < modules.length; i++) {
-        module = modules[i];
-        if (module.cleanData) module.cleanData(newFullData);
+        _module = modules[i];
+        if (_module.cleanData) _module.cleanData(newFullData);
     }
 
     if (oldFullData.length === newData.length) {
@@ -563,7 +563,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     traceOut.index = i;
     var visible = coerce('visible'),
         scene,
-        module;
+        _module;
 
     coerce('type');
     coerce('uid');
@@ -577,14 +577,14 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
     if(visible || scene) {
-        module = plots.getModule(traceOut);
-        traceOut._module = module;
+        _module = plots.getModule(traceOut);
+        traceOut._module = _module;
     }
 
     // gets overwritten in pie and geo
     if(visible) coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
 
-    if(module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+    if(_module && visible) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
     if(visible) {
         coerce('name', 'trace ' + i);
