@@ -9,15 +9,28 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
-var Events = require('../lib/events');
-var manageModeBar = require('../components/modebar/manage');
-
 var d3 = require('d3');
 var m4FromQuat = require('gl-mat4/fromQuat');
 var isNumeric = require('fast-isnumeric');
 
-var plots = Plotly.Plots;
+var Plotly = require('../plotly');
+var Lib = require('../lib');
+var Events = require('../lib/events');
+var Queue = require('../lib/queue');
+
+var Plots = require('../plots/plots');
+var Fx = require('../plots/cartesian/graph_interact');
+
+var Pie = require('../traces/pie');
+
+var Color = require('../components/color');
+var Drawing = require('../components/drawing');
+var ErrorBars = require('../components/errorbars');
+var Legend = require('../components/legend');
+var Shapes = require('../components/shapes');
+var Titles = require('../components/titles');
+var manageModeBar = require('../components/modebar/manage');
+
 
 /**
  * Main plot-creation function
@@ -36,7 +49,7 @@ var plots = Plotly.Plots;
  *
  */
 Plotly.plot = function(gd, data, layout, config) {
-    Plotly.Lib.markTime('in plot');
+    Lib.markTime('in plot');
 
 
     gd = getGraphDiv(gd);
@@ -51,7 +64,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
-    if(!data && !layout && !Plotly.Lib.isPlotDiv(gd)) {
+    if(!data && !layout && !Lib.isPlotDiv(gd)) {
         console.log('Warning: calling Plotly.plot as if redrawing ' +
             'but this container doesn\'t yet have a plot.', gd);
     }
@@ -69,7 +82,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // off-screen getBoundingClientRect testing space,
     // in #js-plotly-tester (and stored as gd._tester)
     // so we can share cached text across tabs
-    Plotly.Drawing.makeTester(gd);
+    Drawing.makeTester(gd);
 
     // collect promises for any async actions during plotting
     // any part of the plotting code can push to gd._promises, then
@@ -106,7 +119,7 @@ Plotly.plot = function(gd, data, layout, config) {
         gd._replotPending = false;
     }
 
-    plots.supplyDefaults(gd);
+    Plots.supplyDefaults(gd);
 
     // Polar plots
     if(data && data[0] && data[0].r) return plotPolar(gd, data, layout);
@@ -164,32 +177,32 @@ Plotly.plot = function(gd, data, layout, config) {
         var calcdata = gd.calcdata;
         var i, cd, trace;
 
-        Plotly.Legend.draw(gd);
+        Legend.draw(gd);
 
         for (i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
             trace = cd[0].trace;
             if (trace.visible !== true || !trace._module.colorbar) {
-                plots.autoMargin(gd, 'cb'+trace.uid);
+                Plots.autoMargin(gd, 'cb'+trace.uid);
             }
             else trace._module.colorbar(gd, cd);
         }
 
-        plots.doAutoMargin(gd);
-        return plots.previousPromises(gd);
+        Plots.doAutoMargin(gd);
+        return Plots.previousPromises(gd);
     }
 
     function marginPushersAgain() {
         // in case the margins changed, draw margin pushers again
         var seq = JSON.stringify(fullLayout._size)===oldmargins ?
             [] : [marginPushers, layoutStyles];
-        return Plotly.Lib.syncOrAsync(seq.concat(Plotly.Fx.init),gd);
+        return Lib.syncOrAsync(seq.concat(Fx.init),gd);
     }
 
     function positionAndAutorange() {
         if(!recalc) return;
 
-        var subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
+        var subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
             modules = gd._modules;
 
         // position and range calculations for traces that
@@ -207,15 +220,15 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        Plotly.Lib.markTime('done with bar/box adjustments');
+        Lib.markTime('done with bar/box adjustments');
 
         // calc and autorange for errorbars
-        Plotly.ErrorBars.calc(gd);
-        Plotly.Lib.markTime('done Plotly.ErrorBars.calc');
+        ErrorBars.calc(gd);
+        Lib.markTime('done ErrorBars.calc');
 
         // TODO: autosize extra for text markers
-        return Plotly.Lib.syncOrAsync([
-            Plotly.Shapes.calcAutorange,
+        return Lib.syncOrAsync([
+            Shapes.calcAutorange,
             Plotly.Annotations.calcAutorange,
             doAutoRange
         ], gd);
@@ -236,7 +249,7 @@ Plotly.plot = function(gd, data, layout, config) {
     function drawData() {
         // Now plot the data
         var calcdata = gd.calcdata,
-            subplots = plots.getSubplotIds(fullLayout, 'cartesian'),
+            subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
             modules = gd._modules;
 
         var i, j, cd, trace, uid, subplot, subplotInfo,
@@ -267,7 +280,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
 
-        var plotRegistry = plots.subplotsRegistry;
+        var plotRegistry = Plots.subplotsRegistry;
 
         // TODO incorporate cartesian and polar plots into this paradigm
         if(fullLayout._hasGL3D) plotRegistry.gl3d.plot(gd);
@@ -304,50 +317,50 @@ Plotly.plot = function(gd, data, layout, config) {
                 // plot all traces of this type on this subplot at once
                 cdModule = getCdModule(cdSubplot, module);
                 module.plot(gd, subplotInfo, cdModule);
-                Plotly.Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
+                Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
 
                 // collect the traces that may have error bars
-                if(cdModule[0] && cdModule[0][0].trace && plots.traceIs(cdModule[0][0].trace, 'errorBarsOK')) {
+                if(cdModule[0] && cdModule[0][0].trace && Plots.traceIs(cdModule[0][0].trace, 'errorBarsOK')) {
                     cdError = cdError.concat(cdModule);
                 }
             }
 
             // finally do all error bars at once
             if(gd._fullLayout._hasCartesian) {
-                Plotly.ErrorBars.plot(gd, subplotInfo, cdError);
-                Plotly.Lib.markTime('done ErrorBars');
+                ErrorBars.plot(gd, subplotInfo, cdError);
+                Lib.markTime('done ErrorBars');
             }
         }
 
         // now draw stuff not on subplots (ie, pies)
         // TODO: gotta be a better way to handle this
-        var cdPie = getCdModule(calcdata, Plotly.Pie);
-        if(cdPie.length) Plotly.Pie.plot(gd, cdPie);
+        var cdPie = getCdModule(calcdata, Pie);
+        if(cdPie.length) Pie.plot(gd, cdPie);
 
         // styling separate from drawing
-        plots.style(gd);
-        Plotly.Lib.markTime('done plots.style');
+        Plots.style(gd);
+        Lib.markTime('done Plots.style');
 
         // show annotations and shapes
-        Plotly.Shapes.drawAll(gd);
+        Shapes.drawAll(gd);
         Plotly.Annotations.drawAll(gd);
 
         // source links
-        plots.addLinks(gd);
+        Plots.addLinks(gd);
 
-        return plots.previousPromises(gd);
+        return Plots.previousPromises(gd);
     }
 
     function cleanUp() {
         // now we're REALLY TRULY done plotting...
         // so mark it as done and let other procedures call a replot
         gd._replotting = false;
-        Plotly.Lib.markTime('done plot');
+        Lib.markTime('done plot');
         gd.emit('plotly_afterplot');
     }
 
-    var donePlotting = Plotly.Lib.syncOrAsync([
-        plots.previousPromises,
+    var donePlotting = Lib.syncOrAsync([
+        Plots.previousPromises,
         marginPushers,
         layoutStyles,
         marginPushersAgain,
@@ -390,7 +403,7 @@ function opaqueSetBackground(gd, bgColor) {
 }
 
 function setPlotContext(gd, config) {
-    if(!gd._context) gd._context = Plotly.Lib.extendFlat({}, Plotly.defaultConfig);
+    if(!gd._context) gd._context = Lib.extendFlat({}, Plotly.defaultConfig);
     var context = gd._context;
 
     if(config) {
@@ -514,7 +527,7 @@ function plotPolar(gd, data, layout) {
     }
 
     gd._context.setBackground(gd, gd._fullLayout.paper_bgcolor);
-    plots.addLinks(gd);
+    Plots.addLinks(gd);
 
     return Promise.resolve();
 }
@@ -640,7 +653,7 @@ function cleanLayout(layout) {
     /*
      * Clean up Scene layouts
      */
-    var sceneIds = plots.getSubplotIds(layout, 'gl3d');
+    var sceneIds = Plots.getSubplotIds(layout, 'gl3d');
     var scene, cameraposition, rotation,
         radius, center, mat, eye;
     for (i = 0; i < sceneIds.length; i++) {
@@ -670,9 +683,9 @@ function cleanLayout(layout) {
 
     // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
     // supported, but new tinycolor does not because they're not valid css
-    Plotly.Lib.markTime('finished rest of cleanLayout, starting color');
-    Plotly.Color.clean(layout);
-    Plotly.Lib.markTime('finished cleanLayout color.clean');
+    Lib.markTime('finished rest of cleanLayout, starting color');
+    Color.clean(layout);
+    Lib.markTime('finished cleanLayout color.clean');
 
     return layout;
 }
@@ -703,10 +716,10 @@ function cleanData(data, existingData) {
         if (!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
             var newUid, i;
             for(i=0; i<100; i++) {
-                newUid = Plotly.Lib.randstr(uids);
+                newUid = Lib.randstr(uids);
                 if(suids.indexOf(newUid)===-1) break;
             }
-            trace.uid = Plotly.Lib.randstr(uids);
+            trace.uid = Lib.randstr(uids);
             uids.push(trace.uid);
         }
         // keep track of already seen uids, so that if there are
@@ -724,19 +737,19 @@ function cleanData(data, existingData) {
 
         // error_y.opacity is obsolete - merge into color
         if(trace.error_y && 'opacity' in trace.error_y) {
-            var dc = Plotly.Color.defaults,
+            var dc = Color.defaults,
                 yeColor = trace.error_y.color ||
-                (plots.traceIs(trace, 'bar') ? Plotly.Color.defaultLine : dc[tracei % dc.length]);
-            trace.error_y.color = Plotly.Color.addOpacity(
-                Plotly.Color.rgb(yeColor),
-                Plotly.Color.opacity(yeColor) * trace.error_y.opacity);
+                (Plots.traceIs(trace, 'bar') ? Color.defaultLine : dc[tracei % dc.length]);
+            trace.error_y.color = Color.addOpacity(
+                Color.rgb(yeColor),
+                Color.opacity(yeColor) * trace.error_y.opacity);
             delete trace.error_y.opacity;
         }
 
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir==='h' && (plots.traceIs(trace, 'bar') ||
+            if(trace.bardir==='h' && (Plots.traceIs(trace, 'bar') ||
                      trace.type.substr(0,9)==='histogram')) {
                 trace.orientation = 'h';
                 swapXYData(trace);
@@ -766,11 +779,11 @@ function cleanData(data, existingData) {
         if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if(plots.traceIs(trace, 'gl3d') && trace.scene) {
-            trace.scene = plots.subplotsRegistry.gl3d.cleanId(trace.scene);
+        if(Plots.traceIs(trace, 'gl3d') && trace.scene) {
+            trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!plots.traceIs(trace, 'pie')) {
+        if(!Plots.traceIs(trace, 'pie')) {
             if(Array.isArray(trace.textposition)) {
                 trace.textposition = trace.textposition.map(cleanTextPosition);
             }
@@ -788,9 +801,9 @@ function cleanData(data, existingData) {
 
         // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
         // supported, but new tinycolor does not because they're not valid css
-        Plotly.Lib.markTime('finished rest of cleanData, starting color');
-        Plotly.Color.clean(trace);
-        Plotly.Lib.markTime('finished cleanData color.clean');
+        Lib.markTime('finished rest of cleanData, starting color');
+        Color.clean(trace);
+        Lib.markTime('finished cleanData color.clean');
     }
 }
 
@@ -818,7 +831,7 @@ function emptyContainer(outer, innerStr) {
 Plotly.redraw = function(gd) {
     gd = getGraphDiv(gd);
 
-    if(!Plotly.Lib.isPlotDiv(gd)) {
+    if(!Lib.isPlotDiv(gd)) {
         console.log('This element is not a Plotly Plot', gd);
         return;
     }
@@ -840,7 +853,7 @@ Plotly.redraw = function(gd) {
  */
 Plotly.newPlot = function(gd, data, layout, config) {
     gd = getGraphDiv(gd);
-    plots.purge(gd);
+    Plots.purge(gd);
     return Plotly.plot(gd, data, layout, config);
 };
 
@@ -894,7 +907,7 @@ function doCalcdata(gd) {
         if (!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
-        Plotly.Lib.markTime('done with calcdata for '+i);
+        Lib.markTime('done with calcdata for '+i);
         calcdata[i] = cd;
     }
 }
@@ -1050,12 +1063,12 @@ function checkAddTracesArgs(gd, traces, newIndices) {
  */
 function assertExtendTracesArgs(gd, update, indices, maxPoints) {
 
-    var maxPointsIsObject = Plotly.Lib.isPlainObject(maxPoints);
+    var maxPointsIsObject = Lib.isPlainObject(maxPoints);
 
     if (!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array');
     }
-    if (!Plotly.Lib.isPlainObject(update)) {
+    if (!Lib.isPlainObject(update)) {
         throw new Error('update must be a key:value object');
     }
 
@@ -1098,7 +1111,7 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  */
 function getExtendProperties(gd, update, indices, maxPoints) {
 
-    var maxPointsIsObject = Plotly.Lib.isPlainObject(maxPoints),
+    var maxPointsIsObject = Lib.isPlainObject(maxPoints),
         updateProps = [];
     var trace, target, prop, insert, maxp;
 
@@ -1118,7 +1131,7 @@ function getExtendProperties(gd, update, indices, maxPoints) {
              * instance that references the key and value for this particular trace.
              */
             trace = gd.data[indices[j]];
-            prop = Plotly.Lib.nestedProperty(trace, key);
+            prop = Lib.nestedProperty(trace, key);
 
             /*
              * Target is the existing gd.data.trace.dataArray value like "x" or "marker.size"
@@ -1265,8 +1278,8 @@ Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if (Plotly.Queue) {
-        Plotly.Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
+    if (Queue) {
+        Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
     }
 
     return promise;
@@ -1294,8 +1307,8 @@ Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if (Plotly.Queue) {
-        Plotly.Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
+    if (Queue) {
+        Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
     }
 
     return promise;
@@ -1343,8 +1356,8 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     // if the user didn't define newIndices, they just want the traces appended
     // i.e., we can simply redraw and be done
     if (typeof newIndices === 'undefined') {
-        promise = Plotly.redraw(gd);
-        if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        var promise = Plotly.redraw(gd);
+        if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return promise;
     }
 
@@ -1367,11 +1380,10 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
 
     // if we're here, the user has defined specific places to place the new traces
     // this requires some extra work that moveTraces will do
-    if (Plotly.Queue) Plotly.Queue.startSequence(gd);
-    if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
-
-    promise = Plotly.moveTraces(gd, currentIndices, newIndices);
-    if (Plotly.Queue) Plotly.Queue.stopSequence(gd);
+    if (Queue) Queue.startSequence(gd);
+    if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    var promise = Plotly.moveTraces(gd, currentIndices, newIndices);
+    if (Queue) Queue.stopSequence(gd);
     return promise;
 };
 
@@ -1413,7 +1425,7 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
 
     var promise = Plotly.redraw(gd);
 
-    if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
 };
@@ -1512,7 +1524,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 
     var promise = Plotly.redraw(gd);
 
-    if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
 };
@@ -1547,7 +1559,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         aobj = {};
 
     if(typeof astr === 'string') aobj[astr] = val;
-    else if(Plotly.Lib.isPlainObject(astr)) {
+    else if(Lib.isPlainObject(astr)) {
         aobj = astr;
         if(traces===undefined) traces = val; // the 3-arg form
     }
@@ -1599,7 +1611,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'tilt', 'tiltaxis', 'depth', 'direction', 'rotation', 'pull'
     ];
     for(i = 0; i < traces.length; i++) {
-        if(plots.traceIs(gd._fullData[traces[i]], 'box')) {
+        if(Plots.traceIs(gd._fullData[traces[i]], 'box')) {
             recalcAttrs.push('name');
             break;
         }
@@ -1685,9 +1697,9 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
         var extraparam;
         if(attr.substr(0, 6) === 'LAYOUT') {
-            extraparam = Plotly.Lib.nestedProperty(gd.layout, attr.replace('LAYOUT', ''));
+            extraparam = Lib.nestedProperty(gd.layout, attr.replace('LAYOUT', ''));
         } else {
-            extraparam = Plotly.Lib.nestedProperty(gd.data[traces[i]], attr);
+            extraparam = Lib.nestedProperty(gd.data[traces[i]], attr);
         }
 
         if(!(attr in undoit)) {
@@ -1717,7 +1729,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         redoit[ai] = vi;
 
         if(ai.substr(0,6)==='LAYOUT'){
-            param = Plotly.Lib.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
+            param = Lib.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [param.get()];
             // since we're allowing val to be an array, allow it here too,
             // even though that's meaningless
@@ -1733,7 +1745,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         for(i=0; i<traces.length; i++) {
             cont = gd.data[traces[i]];
             contFull = gd._fullData[traces[i]];
-            param = Plotly.Lib.nestedProperty(cont,ai);
+            param = Lib.nestedProperty(cont,ai);
             oldVal = param.get();
             newVal = Array.isArray(vi) ? vi[i%vi.length] : vi;
 
@@ -1825,19 +1837,19 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                     labelsTo = 'y';
                     valuesTo = 'x';
                 }
-                Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'labels', labelsTo);
-                Plotly.Lib.swapAttrs(cont, ['d?', '?0'], 'label', labelsTo);
-                Plotly.Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
+                Lib.swapAttrs(cont, ['?', '?src'], 'labels', labelsTo);
+                Lib.swapAttrs(cont, ['d?', '?0'], 'label', labelsTo);
+                Lib.swapAttrs(cont, ['?', '?src'], 'values', valuesTo);
 
                 if(oldVal === 'pie') {
-                    Plotly.Lib.nestedProperty(cont, 'marker.color')
-                        .set(Plotly.Lib.nestedProperty(cont, 'marker.colors').get());
+                    Lib.nestedProperty(cont, 'marker.color')
+                        .set(Lib.nestedProperty(cont, 'marker.colors').get());
 
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
-                } else if(plots.traceIs(cont, 'cartesian')) {
-                    Plotly.Lib.nestedProperty(cont, 'marker.colors')
-                        .set(Plotly.Lib.nestedProperty(cont, 'marker.color').get());
+                } else if(Plots.traceIs(cont, 'cartesian')) {
+                    Lib.nestedProperty(cont, 'marker.colors')
+                        .set(Lib.nestedProperty(cont, 'marker.color').get());
                     //look for axes that are no longer in use and delete them
                     flagAxForDelete[cont.xaxis || 'x'] = true;
                     flagAxForDelete[cont.yaxis || 'y'] = true;
@@ -1877,7 +1889,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
         // swap hovermode if set to "compare x/y data"
         if (ai === 'orientationaxes') {
-            var hovermode = Plotly.Lib.nestedProperty(gd.layout, 'hovermode');
+            var hovermode = Lib.nestedProperty(gd.layout, 'hovermode');
             if (hovermode.get() === 'x') {
                 hovermode.set('y');
             } else if (hovermode.get() === 'y') {
@@ -1911,7 +1923,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 for(i=0; i<traces.length; i++) {
                     var trace = gd.data[traces[i]];
 
-                    if(plots.traceIs(trace, 'cartesian')) {
+                    if(Plots.traceIs(trace, 'cartesian')) {
                         addToAxlist(trace.xaxis||'x');
                         addToAxlist(trace.yaxis||'y');
 
@@ -1939,7 +1951,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             axLetter = axId.charAt(0),
             axAttr = axLetter + 'axis';
         for(var j = 0; j < gd.data.length; j++) {
-            if(plots.traceIs(gd.data[j], 'cartesian') &&
+            if(Plots.traceIs(gd.data[j], 'cartesian') &&
                     (gd.data[j][axAttr] || axLetter) === axId) {
                 continue axisLoop;
             }
@@ -1951,8 +1963,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     // now all attribute mods are done, as are redo and undo
     // so we can save them
-    if(Plotly.Queue) {
-        Plotly.Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
+    if(Queue) {
+        Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
     }
 
     // do we need to force a recalc?
@@ -1978,8 +1990,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         seq = [Plotly.plot];
     }
     else {
-        plots.supplyDefaults(gd);
-        seq = [plots.previousPromises];
+        Plots.supplyDefaults(gd);
+        seq = [Plots.previousPromises];
         if(dostyle) {
             seq.push(function doStyle() {
                 // first see if we need to do arraysToCalcdata
@@ -1992,9 +2004,9 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                     arraysToCalcdata = (((cdi[0]||{}).trace||{})._module||{}).arraysToCalcdata;
                     if(arraysToCalcdata) arraysToCalcdata(cdi);
                 }
-                plots.style(gd);
-                Plotly.Legend.draw(gd);
-                return plots.previousPromises(gd);
+                Plots.style(gd);
+                Legend.draw(gd);
+                return Plots.previousPromises(gd);
             });
         }
         if(docolorbars) {
@@ -2003,7 +2015,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                     if((cd[0].t || {}).cb) {
                         var trace = cd[0].trace,
                             cb = cd[0].t.cb;
-                        if(plots.traceIs(trace, 'contour')) {
+
+                        if(Plots.traceIs(trace, 'contour')) {
                             cb.line({
                                 width: trace.contours.showlines!==false ?
                                     trace.line.width : 0,
@@ -2012,23 +2025,23 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                                     cb._opts.line.color : trace.line.color
                             });
                         }
-                        if(plots.traceIs(trace, 'markerColorscale')) {
+                        if(Plots.traceIs(trace, 'markerColorscale')) {
                             cb.options(trace.marker.colorbar)();
                         }
                         else cb.options(trace.colorbar)();
                     }
                 });
-                return plots.previousPromises(gd);
+                return Plots.previousPromises(gd);
             });
         }
     }
 
-    var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
+    var plotDone = Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function() {
-        gd.emit('plotly_restyle', Plotly.Lib.extendDeep([], [redoit, traces]));
+        gd.emit('plotly_restyle', Lib.extendDeep([], [redoit, traces]));
         return gd;
     });
 };
@@ -2036,7 +2049,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 // swap all the data and data attributes associated with x and y
 function swapXYData(trace) {
     var i;
-    Plotly.Lib.swapAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
+    Lib.swapAttrs(trace, ['?', '?0', 'd?', '?bins', 'nbins?', 'autobin?', '?src', 'error_?']);
     if(Array.isArray(trace.z) && Array.isArray(trace.z[0])) {
         if(trace.transpose) delete trace.transpose;
         else trace.transpose = true;
@@ -2045,9 +2058,9 @@ function swapXYData(trace) {
         var errorY = trace.error_y,
             copyYstyle = ('copy_ystyle' in errorY) ? errorY.copy_ystyle :
                 !(errorY.color || errorY.thickness || errorY.width);
-        Plotly.Lib.swapAttrs(trace, ['error_?.copy_ystyle']);
+        Lib.swapAttrs(trace, ['error_?.copy_ystyle']);
         if(copyYstyle) {
-            Plotly.Lib.swapAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
+            Lib.swapAttrs(trace, ['error_?.color', 'error_?.thickness', 'error_?.width']);
         }
     }
     if(trace.hoverinfo) {
@@ -2090,7 +2103,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         newkey, axes, keys, xyref, scene, axisAttr, i;
 
     if(typeof astr === 'string') aobj[astr] = val;
-    else if(Plotly.Lib.isPlainObject(astr)) aobj = astr;
+    else if(Lib.isPlainObject(astr)) aobj = astr;
     else {
         console.log('relayout fail',astr,val);
         return new Promise.reject();
@@ -2140,7 +2153,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         // quit if explicitly setting this elsewhere
         if(attr in aobj) return;
 
-        var p = Plotly.Lib.nestedProperty(layout,attr);
+        var p = Lib.nestedProperty(layout,attr);
         if(!(attr in undoit)) undoit[attr] = p.get();
         if(val!==undefined) p.set(val);
     }
@@ -2155,7 +2168,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
     // alter gd.layout
     for(var ai in aobj) {
-        var p = Plotly.Lib.nestedProperty(layout,ai),
+        var p = Lib.nestedProperty(layout,ai),
             vi = aobj[ai],
             plen = p.parts.length,
             // p.parts may end with an index integer if the property is an array
@@ -2166,8 +2179,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
             pleafPlus = p.parts[pend - 1] + '.' + pleaf,
             // trunk nodes (everything except the leaf)
             ptrunk = p.parts.slice(0, pend).join('.'),
-            parentIn = Plotly.Lib.nestedProperty(gd.layout, ptrunk).get(),
-            parentFull = Plotly.Lib.nestedProperty(fullLayout, ptrunk).get();
+            parentIn = Lib.nestedProperty(gd.layout, ptrunk).get(),
+            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get();
 
         redoit[ai] = vi;
 
@@ -2249,13 +2262,13 @@ Plotly.relayout = function relayout(gd, astr, val) {
             var objNum = p.parts[1],
                 objType = p.parts[0],
                 objList = layout[objType] || [],
-                objModule = Plotly[Plotly.Lib.titleCase(objType)],
+                objModule = Plotly[Lib.titleCase(objType)],
                 obji = objList[objNum] || {};
             // if p.parts is just an annotation number, and val is either
             // 'add' or an entire annotation to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
             if(p.parts.length === 2) {
-                if(aobj[ai] === 'add' || Plotly.Lib.isPlainObject(aobj[ai])) {
+                if(aobj[ai] === 'add' || Lib.isPlainObject(aobj[ai])) {
                     undoit[ai] = 'remove';
                 }
                 else if(aobj[ai] === 'remove') {
@@ -2268,7 +2281,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
                 else console.log('???', aobj);
             }
             if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
-                    !Plotly.Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {
+                    !Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {
                 docalc = true;
             }
             // TODO: combine all edits to a given annotation / shape into one call
@@ -2290,7 +2303,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             else if(ai.indexOf('title')!==-1) doticks = true;
             else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;
             else if(p.parts.length>1 &&
-                    Plotly.Lib.containsAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
+                    Lib.containsAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
                 doticks = true;
             }
             else if(ai.indexOf('.linewidth')!==-1 &&
@@ -2331,8 +2344,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
     }
     // now all attribute mods are done, as are
     // redo and undo so we can save them
-    if(Plotly.Queue) {
-        Plotly.Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
+    if(Queue) {
+        Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
     }
 
     // calculate autosizing - if size hasn't changed,
@@ -2344,7 +2357,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     // redraw
     // first check if there's still anything to do
     var ak = Object.keys(aobj),
-        seq = [plots.previousPromises];
+        seq = [Plots.previousPromises];
 
     if(doplot || docalc) {
         seq.push(function layoutReplot() {
@@ -2358,13 +2371,13 @@ Plotly.relayout = function relayout(gd, astr, val) {
     }
     else if(ak.length) {
         // if we didn't need to redraw entirely, just do the needed parts
-        plots.supplyDefaults(gd);
+        Plots.supplyDefaults(gd);
         fullLayout = gd._fullLayout;
 
         if(dolegend) {
             seq.push(function doLegend() {
-                Plotly.Legend.draw(gd);
-                return plots.previousPromises(gd);
+                Legend.draw(gd);
+                return Plots.previousPromises(gd);
             });
         }
 
@@ -2373,8 +2386,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(doticks) {
             seq.push(function() {
                 Plotly.Axes.doTicks(gd,'redraw');
-                Plotly.Titles.draw(gd, 'gtitle');
-                return plots.previousPromises(gd);
+                Titles.draw(gd, 'gtitle');
+                return Plots.previousPromises(gd);
             });
         }
 
@@ -2383,13 +2396,13 @@ Plotly.relayout = function relayout(gd, astr, val) {
             manageModeBar(gd);
 
             var subplotIds;
-            subplotIds = plots.getSubplotIds(fullLayout, 'gl3d');
+            subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout[subplotIds[i]]._scene;
                 scene.handleDragmode(fullLayout.dragmode);
             }
 
-            subplotIds = plots.getSubplotIds(fullLayout, 'gl2d');
+            subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout._plots[subplotIds[i]]._scene2d;
                 scene.updateFx(fullLayout);
@@ -2397,12 +2410,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
         }
     }
 
-    var plotDone = Plotly.Lib.syncOrAsync(seq, gd);
+    var plotDone = Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
-        gd.emit('plotly_relayout', Plotly.Lib.extendDeep({}, redoit));
+        gd.emit('plotly_relayout', Lib.extendDeep({}, redoit));
         return gd;
     });
 };
@@ -2482,7 +2495,7 @@ function plotAutoSize(gd, aobj) {
         fullLayout.autosize = gd.layout.autosize = true;
     }
 
-    plots.sanitizeMargins(fullLayout);
+    Plots.sanitizeMargins(fullLayout);
 
     return aobj;
 }
@@ -2495,7 +2508,7 @@ function makePlotFramework(gd) {
         fullLayout = gd._fullLayout;
 
     // TODO - find a better place for 3D to initialize axes
-    if(fullLayout._hasGL3D) plots.subplotsRegistry.gl3d.initAxes(gd);
+    if(fullLayout._hasGL3D) Plots.subplotsRegistry.gl3d.initAxes(gd);
 
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);
@@ -2544,7 +2557,7 @@ function makePlotFramework(gd) {
         d3.selectAll('defs').each(function() {
             if(this.id) otherUids.push(this.id.split('-')[1]);
         });
-        fullLayout._uid = Plotly.Lib.randstr(otherUids);
+        fullLayout._uid = Lib.randstr(otherUids);
     }
 
     fullLayout._paperdiv.selectAll('.main-svg')
@@ -2584,10 +2597,10 @@ function makePlotFramework(gd) {
     gd.emit('plotly_framework');
 
     // position and style the containers, make main title
-    var frameWorkDone = Plotly.Lib.syncOrAsync([
+    var frameWorkDone = Lib.syncOrAsync([
         layoutStyles,
         function goAxes() { return Plotly.Axes.doTicks(gd,'redraw'); },
-        Plotly.Fx.init
+        Fx.init
     ], gd);
 
     if(frameWorkDone && frameWorkDone.then) {
@@ -2719,7 +2732,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
     // now make the components of overlaid subplots
     // overlays don't have backgrounds, and append all
     // their other components to the corresponding
-    // extra groups of their main plots.
+    // extra groups of their main Plots.
     overlays.forEach(function(plotinfo) {
         var mainplot = fullLayout._plots[plotinfo.mainplot];
         mainplot.overlays.push(plotinfo);
@@ -2751,7 +2764,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
 
 // layoutStyles: styling for plot layout elements
 function layoutStyles(gd) {
-    return Plotly.Lib.syncOrAsync([plots.doAutoMargin, lsInner], gd);
+    return Lib.syncOrAsync([Plots.doAutoMargin, lsInner], gd);
 }
 
 function lsInner(gd) {
@@ -2769,7 +2782,7 @@ function lsInner(gd) {
             height: fullLayout.height + 'px'
         })
         .selectAll('.main-svg')
-            .call(Plotly.Drawing.setSize, fullLayout.width, fullLayout.height);
+            .call(Drawing.setSize, fullLayout.width, fullLayout.height);
 
     gd._context.setBackground(gd, fullLayout.paper_bgcolor);
 
@@ -2783,17 +2796,17 @@ function lsInner(gd) {
 
         if(plotinfo.bg) {
             plotinfo.bg
-                .call(Plotly.Drawing.setRect,
+                .call(Drawing.setRect,
                     xa._offset-gs.p, ya._offset-gs.p,
                     xa._length+2*gs.p, ya._length+2*gs.p)
-                .call(Plotly.Color.fill, fullLayout.plot_bgcolor);
+                .call(Color.fill, fullLayout.plot_bgcolor);
         }
         plotinfo.plot
-            .call(Plotly.Drawing.setRect,
+            .call(Drawing.setRect,
                 xa._offset, ya._offset, xa._length, ya._length);
 
-        var xlw = Plotly.Drawing.crispRound(gd, xa.linewidth, 1),
-            ylw = Plotly.Drawing.crispRound(gd, ya.linewidth, 1),
+        var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
+            ylw = Drawing.crispRound(gd, ya.linewidth, 1),
             xp = gs.p+ylw,
             xpathPrefix = 'M'+(-xp)+',',
             xpathSuffix = 'h'+(xa._length+2*xp),
@@ -2888,7 +2901,7 @@ function lsInner(gd) {
                 // so it doesn't barf with no lines shown
                 'M0,0')
             .style('stroke-width',xlw+'px')
-            .call(Plotly.Color.stroke, xa.showline ?
+            .call(Color.stroke, xa.showline ?
                 xa.linecolor : 'rgba(0,0,0,0)');
         plotinfo.ylines
             .attr('transform', originy)
@@ -2898,7 +2911,7 @@ function lsInner(gd) {
                 (showfreey ? ('M'+freeposy+ypathSuffix) : '')) ||
                 'M0,0')
             .attr('stroke-width',ylw+'px')
-            .call(Plotly.Color.stroke,ya.showline ?
+            .call(Color.stroke,ya.showline ?
                 ya.linecolor : 'rgba(0,0,0,0)');
 
         plotinfo.xaxislayer.attr('transform',originx);
@@ -2914,7 +2927,7 @@ function lsInner(gd) {
 
     Plotly.Axes.makeClipPaths(gd);
 
-    Plotly.Titles.draw(gd, 'gtitle');
+    Titles.draw(gd, 'gtitle');
 
     manageModeBar(gd);
 
