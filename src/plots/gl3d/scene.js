@@ -530,7 +530,7 @@ proto.destroy = function() {
 
 
 // for reset camera button in mode bar
-proto.setCameraToDefault = function setCameraToDefault () {
+proto.setCameraToDefault = function setCameraToDefault() {
     // as in Gl3d.layoutAttributes
     this.glplot.camera.lookAt(
         [1.25, 1.25, 1.25],
@@ -540,7 +540,7 @@ proto.setCameraToDefault = function setCameraToDefault () {
 };
 
 // get camera position in plotly coords from 'orbit-camera' coords
-proto.getCamera = function getCamera () {
+proto.getCamera = function getCamera() {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
 
     var up = this.glplot.camera.up;
@@ -555,7 +555,7 @@ proto.getCamera = function getCamera () {
 };
 
 // set camera position with a set of plotly coords
-proto.setCamera = function setCamera (cameraData) {
+proto.setCamera = function setCamera(cameraData) {
     var up = cameraData.up;
     var center = cameraData.center;
     var eye = cameraData.eye;
@@ -596,7 +596,7 @@ proto.saveCamera = function saveCamera(layout) {
     return hasChanged;
 };
 
-proto.handleDragmode = function (dragmode) {
+proto.handleDragmode = function(dragmode) {
 
     var camera = this.camera;
     if (camera) {
@@ -618,7 +618,7 @@ proto.handleDragmode = function (dragmode) {
     }
 };
 
-proto.toImage = function (format) {
+proto.toImage = function(format) {
     if (!format) format = 'png';
 
     if(this.staticMode) this.container.appendChild(STATIC_CANVAS);

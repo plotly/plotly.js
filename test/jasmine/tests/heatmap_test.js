@@ -3,7 +3,7 @@ var Heatmap = require('@src/traces/heatmap');
 var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
 
 
-describe('Test heatmap', function () {
+describe('Test heatmap', function() {
     'use strict';
 
     describe('supplyDefaults', function() {

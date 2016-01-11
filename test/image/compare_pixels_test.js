@@ -28,8 +28,8 @@ var userFileName = process.argv[2];
 if(!userFileName) runAll();
 else runSingle(userFileName);
 
-function runAll () {
-    test('testing mocks', function (t) {
+function runAll() {
+    test('testing mocks', function(t) {
 
         var allMocks = fs.readdirSync(constants.pathToTestImageMocks);
 
@@ -73,14 +73,14 @@ function runAll () {
     });
 }
 
-function runSingle (userFileName) {
-    test('testing single mock: ' + userFileName, function (t) {
+function runSingle(userFileName) {
+    test('testing single mock: ' + userFileName, function(t) {
         t.plan(1);
         testMock(userFileName, t);
     });
 }
 
-function testMock (fileName, t) {
+function testMock(fileName, t) {
     var figure = require(path.join(constants.pathToTestImageMocks, fileName));
     var bodyMock = {
         figure: figure,
@@ -94,7 +94,7 @@ function testMock (fileName, t) {
     var savedImageStream = fs.createWriteStream(savedImagePath);
     var options = getOptions(bodyMock, 'http://localhost:9010/');
 
-    function checkImage () {
+    function checkImage() {
         var options = {
             file: diffPath,
             highlightColor: 'purple',
@@ -109,7 +109,7 @@ function testMock (fileName, t) {
         );
     }
 
-    function onEqualityCheck (err, isEqual) {
+    function onEqualityCheck(err, isEqual) {
         if (err) {
             touch(diffPath);
             return console.error(err, imageFileName);

@@ -46,7 +46,7 @@ module.exports = function calc(gd, trace) {
     // so if you want one box
     // per trace, set x0 (y0) to the x (y) value or category for this trace
     // (or set x (y) to a constant array matching y (x))
-    function getPos (gd, trace, posLetter, posAxis, val) {
+    function getPos(gd, trace, posLetter, posAxis, val) {
         var pos0;
         if (posLetter in trace) pos = posAxis.makeCalcdata(trace, posLetter);
         else {
@@ -62,7 +62,7 @@ module.exports = function calc(gd, trace) {
             }
             else pos0 = gd.numboxes;
             pos0 = posAxis.d2c(pos0);
-            pos = val.map(function(){ return pos0; });
+            pos = val.map(function() { return pos0; });
         }
         return pos;
     }
@@ -74,7 +74,7 @@ module.exports = function calc(gd, trace) {
     posDistinct = dv.vals;
     dPos = dv.minDiff/2;
 
-    function binVal (cd, val, pos, posDistinct, dPos) {
+    function binVal(cd, val, pos, posDistinct, dPos) {
         var posDistinctLength = posDistinct.length,
             valLength = val.length,
             valBinned = [],
@@ -104,7 +104,7 @@ module.exports = function calc(gd, trace) {
     valBinned = binVal(cd, val, pos, posDistinct, dPos);
 
     // sort the bins and calculate the stats
-    function calculateStats (cd, valBinned) {
+    function calculateStats(cd, valBinned) {
         var v, l, cdi, i;
 
         for (i = 0; i < valBinned.length; ++i) {
@@ -136,7 +136,7 @@ module.exports = function calc(gd, trace) {
     calculateStats(cd, valBinned);
 
     // remove empty bins
-    cd = cd.filter(function(cdi){ return cdi.val && cdi.val.length; });
+    cd = cd.filter(function(cdi) { return cdi.val && cdi.val.length; });
     if(!cd.length) return [{t: {emptybox: true}}];
 
     // add numboxes and dPos to cd

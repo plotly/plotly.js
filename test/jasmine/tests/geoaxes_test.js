@@ -1,7 +1,8 @@
 var params = require('@src/constants/geo_constants');
 var supplyLayoutDefaults = require('@src/plots/geo/layout/axis_defaults');
 
-describe('Test geoaxes', function () {
+
+describe('Test geoaxes', function() {
     'use strict';
 
     describe('supplyLayoutDefaults', function() {

@@ -84,10 +84,10 @@ proto.handlePick = function(selection) {
     }
 };
 
-function parseColorScale (colorscale, alpha) {
+function parseColorScale(colorscale, alpha) {
     if (alpha === undefined) alpha = 1;
 
-    return colorscale.map(function (elem) {
+    return colorscale.map(function(elem) {
         var index = elem[0];
         var color = tinycolor(elem[1]);
         var rgb = color.toRgb();

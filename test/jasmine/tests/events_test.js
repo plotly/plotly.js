@@ -9,7 +9,7 @@
 
 var Events = require('@src/lib/events');
 
-describe('Events', function () {
+describe('Events', function() {
     'use strict';
 
     var plotObj;
@@ -38,7 +38,7 @@ describe('Events', function () {
 
         it('is idempotent', function() {
             Events.init(plotObj);
-            plotObj.emit = function () {
+            plotObj.emit = function() {
                 return 'initial';
             };
 

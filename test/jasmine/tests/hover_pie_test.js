@@ -5,16 +5,16 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 
-describe('pie hovering', function () {
+describe('pie hovering', function() {
     var mock = require('@mocks/pie_simple.json');
 
-    describe('event data', function () {
+    describe('event data', function() {
         var mockCopy = Lib.extendDeep({}, mock),
             width = mockCopy.layout.width,
             height = mockCopy.layout.height,
             gd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             gd = createGraphDiv();
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout)
@@ -23,7 +23,7 @@ describe('pie hovering', function () {
 
         afterEach(destroyGraphDiv);
 
-        it('should contain the correct fields', function () {
+        it('should contain the correct fields', function() {
 
             /*
              * expected = [{
@@ -45,7 +45,7 @@ describe('pie hovering', function () {
             var futureData;
 
 
-            gd.on('plotly_hover', function (data) {
+            gd.on('plotly_hover', function(data) {
                 futureData = data;
             });
 
@@ -59,17 +59,17 @@ describe('pie hovering', function () {
             expect(futureData.points[0].i).toEqual(3);
         });
 
-        it('should fire when moving from one slice to another', function (done) {
+        it('should fire when moving from one slice to another', function(done) {
             var count = 0,
                 futureData = [];
 
-            gd.on('plotly_hover', function (data) {
+            gd.on('plotly_hover', function(data) {
                 count++;
                 futureData.push(data);
             });
 
             mouseEvent('mouseover', 180, 140);
-            setTimeout(function () {
+            setTimeout(function() {
                 mouseEvent('mouseover', 240, 200);
                 expect(count).toEqual(2);
                 expect(futureData[0]).not.toEqual(futureData[1]);

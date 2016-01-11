@@ -14,7 +14,7 @@ var layoutAttributes = require('./layout_attributes');
 var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
 
-module.exports = function supplyLayoutDefaults (layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     if (!layoutOut._hasGL3D) return;
 
     var scenes = Plotly.Plots.getSubplotIdsInData(fullData, 'gl3d');

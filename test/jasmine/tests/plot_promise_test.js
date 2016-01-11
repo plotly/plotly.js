@@ -2,14 +2,14 @@ var Plotly = require('@src/plotly');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-describe('Plotly.___ methods', function () {
+describe('Plotly.___ methods', function() {
     'use strict';
 
-    describe('Plotly.plot promise', function () {
+    describe('Plotly.plot promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }];
 
             promise = Plotly.plot(createGraphDiv(), data, {});
@@ -21,7 +21,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -29,11 +29,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.redraw promise', function () {
+    describe('Plotly.redraw promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
                 initialDiv = createGraphDiv();
 
@@ -48,7 +48,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -56,11 +56,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.newPlot promise', function () {
+    describe('Plotly.newPlot promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }];
 
             promise = Plotly.newPlot(createGraphDiv(), data, {});
@@ -72,7 +72,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -80,11 +80,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.extendTraces promise', function () {
+    describe('Plotly.extendTraces promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
                 initialDiv = createGraphDiv();
 
@@ -99,7 +99,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -107,11 +107,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.prependTraces promise', function () {
+    describe('Plotly.prependTraces promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
                 initialDiv = createGraphDiv();
 
@@ -126,7 +126,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -134,11 +134,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.addTraces promise', function () {
+    describe('Plotly.addTraces promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
                 initialDiv = createGraphDiv();
 
@@ -153,7 +153,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -161,11 +161,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.deleteTraces promise', function () {
+    describe('Plotly.deleteTraces promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
                 initialDiv = createGraphDiv();
 
@@ -180,7 +180,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -188,11 +188,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.deleteTraces promise', function () {
+    describe('Plotly.deleteTraces promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
                 initialDiv = createGraphDiv();
 
@@ -207,7 +207,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -215,11 +215,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.moveTraces promise', function () {
+    describe('Plotly.moveTraces promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [
                     { x: [1,2,3], y: [4,5,6] },
                     { x: [1,2,3], y: [6,5,4] }
@@ -237,7 +237,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -245,11 +245,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.restyle promise', function () {
+    describe('Plotly.restyle promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
                 initialDiv = createGraphDiv();
 
@@ -264,7 +264,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
@@ -272,11 +272,11 @@ describe('Plotly.___ methods', function () {
         });
     });
 
-    describe('Plotly.relayout promise', function () {
+    describe('Plotly.relayout promise', function() {
         var promise,
             promiseGd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
                 initialDiv = createGraphDiv();
 
@@ -291,7 +291,7 @@ describe('Plotly.___ methods', function () {
         });
         afterEach(destroyGraphDiv);
 
-        it('should be returned with the graph div as an argument', function () {
+        it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();

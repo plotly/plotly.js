@@ -1,6 +1,7 @@
 var Plotly = require('@src/plotly');
 
-describe('Test axes', function () {
+
+describe('Test axes', function() {
     'use strict';
 
     describe('swap', function() {

@@ -13,7 +13,7 @@ var bar;
 
 
 if (!userFileName) {
-    fs.readdir(constants.pathToTestImageMocks, function (err, files) {
+    fs.readdir(constants.pathToTestImageMocks, function(err, files) {
         console.log('#######  ' + files.length + ' total baseline images to build  #######');
         bar = new ProgressBar('processing [:bar] [:current / :total]', { total: files.length, width: 30 });
         if (err) return console.log(err);
@@ -25,7 +25,7 @@ else {
 }
 
 
-function createBaselineImage (fileName) {
+function createBaselineImage(fileName) {
     if (path.extname(fileName) !== '.json') return;
 
     var figure = require(path.join(constants.pathToTestImageMocks, fileName));
@@ -40,12 +40,12 @@ function createBaselineImage (fileName) {
     var savedImageStream = fs.createWriteStream(savedImagePath);
     var options = getOptions(bodyMock, 'http://localhost:9010/');
 
-    function checkFormat (err, res) {
+    function checkFormat(err, res) {
         if (err) console.log(err);
         if (res.headers['content-type'] !== 'image/png') console.log(res.statusCode);
     }
 
-    function onClose () {
+    function onClose() {
         if (bar) bar.tick();
         if (userFileName) console.log('generated : ' + imageFileName + ' successfully');
     }

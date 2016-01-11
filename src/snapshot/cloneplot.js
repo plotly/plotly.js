@@ -15,7 +15,7 @@ var extendFlat = Plotly.Lib.extendFlat;
 var extendDeep = Plotly.Lib.extendDeep;
 
 // Put default plotTile layouts here
-function cloneLayoutOverride (tileClass) {
+function cloneLayoutOverride(tileClass) {
     var override;
 
     switch (tileClass) {

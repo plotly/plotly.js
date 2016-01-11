@@ -1,6 +1,7 @@
 var Colorbar = require('@src/components/colorbar');
 
-describe('Test colorbar:', function () {
+
+describe('Test colorbar:', function() {
     'use strict';
 
     describe('hasColorbar', function() {

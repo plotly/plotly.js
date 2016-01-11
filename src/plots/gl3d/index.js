@@ -76,7 +76,7 @@ exports.cleanId = function cleanId(id) {
 
 exports.setConvert = require('./set_convert');
 
-exports.initAxes = function (gd) {
+exports.initAxes = function(gd) {
     var fullLayout = gd._fullLayout;
 
     // until they play better together

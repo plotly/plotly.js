@@ -8,7 +8,7 @@ var str = 'me a test',
     arr = [1, 'what', new Date(81, 8, 4)],
     date = new Date(81, 4, 13);
 
-var Foo = function () {};
+var Foo = function() {};
 
 var obj = {
     str: str,

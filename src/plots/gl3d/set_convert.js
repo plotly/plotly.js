@@ -11,7 +11,7 @@
 
 var Plotly = require('../../plotly');
 
-var noop = function () {};
+var noop = function() {};
 
 
 module.exports = function setConvert(containerOut) {

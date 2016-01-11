@@ -1,6 +1,6 @@
 var Plotly = require('@src/plotly');
 
-describe('Test scattergeo', function () {
+describe('Test scattergeo', function() {
     'use strict';
 
     var ScatterGeo = Plotly.ScatterGeo;

@@ -500,7 +500,7 @@ module.exports = function draw(gd, id) {
     }
 
     // setter/getters for every item defined in opts
-    Object.keys(opts).forEach(function (name) {
+    Object.keys(opts).forEach(function(name) {
         component[name] = function(v) {
             // getter
             if(!arguments.length) return opts[name];

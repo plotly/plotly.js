@@ -1,6 +1,7 @@
 var Box = require('@src/traces/box');
 
-describe('Test boxes', function () {
+
+describe('Test boxes', function() {
     'use strict';
 
     describe('supplyDefaults', function() {

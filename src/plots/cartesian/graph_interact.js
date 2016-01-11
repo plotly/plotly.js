@@ -264,7 +264,7 @@ var HOVERARROWSIZE = constants.HOVERARROWSIZE,
 // The actual rendering is done by private functions
 // hover() and unhover().
 
-fx.hover = function (gd, evt, subplot) {
+fx.hover = function(gd, evt, subplot) {
     if(typeof gd === 'string') gd = document.getElementById(gd);
     if(gd._lastHoverTime === undefined) gd._lastHoverTime = 0;
 
@@ -281,14 +281,14 @@ fx.hover = function (gd, evt, subplot) {
         return;
     }
     // Queue up the next hover for 100ms from now (if no further events)
-    gd._hoverTimer = setTimeout(function () {
+    gd._hoverTimer = setTimeout(function() {
         hover(gd,evt,subplot);
         gd._lastHoverTime = Date.now();
         gd._hoverTimer = undefined;
     }, constants.HOVERMINTIME);
 };
 
-fx.unhover = function (gd, evt, subplot) {
+fx.unhover = function(gd, evt, subplot) {
     if(typeof gd === 'string') gd = document.getElementById(gd);
     // Important, clear any queued hovers
     if (gd._hoverTimer) {

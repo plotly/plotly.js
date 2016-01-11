@@ -83,7 +83,7 @@ modeBarButtons.toImage = {
             ev.clean();
         });
 
-        ev.once('error', function (err) {
+        ev.once('error', function(err) {
             gd._snapshotInProgress = false;
 
             Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');

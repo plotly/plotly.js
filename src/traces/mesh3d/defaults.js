@@ -77,7 +77,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(traceOut.reversescale) {
-        traceOut.colorscale = traceOut.colorscale.map(function (si) {
+        traceOut.colorscale = traceOut.colorscale.map(function(si) {
             return [1 - si[0], si[1]];
         }).reverse();
     }

@@ -2,7 +2,8 @@ var Plotly = require('@src/plotly');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-describe('Test Plotly.Plots', function () {
+
+describe('Test Plotly.Plots', function() {
     'use strict';
 
     describe('Plotly.Plots.supplyLayoutGlobalDefaults should', function() {
@@ -266,13 +267,13 @@ describe('Test Plotly.Plots', function () {
             ];
 
             shouldPass.forEach(function(s) {
-                it('considers ' + JSON.stringify(s) + 'as a correct attribute name', function () {
+                it('considers ' + JSON.stringify(s) + 'as a correct attribute name', function() {
                     expect(subplotsRegistry.fake.attrRegex.test(s)).toBe(true);
                 });
             });
 
             shouldFail.forEach(function(s) {
-                it('considers ' + JSON.stringify(s) + 'as an incorrect attribute name', function () {
+                it('considers ' + JSON.stringify(s) + 'as an incorrect attribute name', function() {
                     expect(subplotsRegistry.fake.attrRegex.test(s)).toBe(false);
                 });
             });
@@ -292,13 +293,13 @@ describe('Test Plotly.Plots', function () {
             ];
 
             shouldPass.forEach(function(s) {
-                it('considers ' + JSON.stringify(s) + 'as a correct attribute name', function () {
+                it('considers ' + JSON.stringify(s) + 'as a correct attribute name', function() {
                     expect(subplotsRegistry.fake.idRegex.test(s)).toBe(true);
                 });
             });
 
             shouldFail.forEach(function(s) {
-                it('considers ' + JSON.stringify(s) + 'as an incorrect attribute name', function () {
+                it('considers ' + JSON.stringify(s) + 'as an incorrect attribute name', function() {
                     expect(subplotsRegistry.fake.idRegex.test(s)).toBe(false);
                 });
             });
@@ -306,17 +307,17 @@ describe('Test Plotly.Plots', function () {
 
     });
 
-    describe('Plotly.Plots.purge', function () {
+    describe('Plotly.Plots.purge', function() {
         var gd;
 
-        beforeEach(function (done) {
+        beforeEach(function(done) {
             gd = createGraphDiv();
             Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {}).then(done);
         });
 
         afterEach(destroyGraphDiv);
 
-        it('should unset everything in the gd except _context', function () {
+        it('should unset everything in the gd except _context', function() {
             var expectedKeys = [
                 '_ev', 'on', 'once', 'removeListener', 'removeAllListeners',
                 'emit', '_context', '_replotPending', '_mouseDownTime',

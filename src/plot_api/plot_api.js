@@ -824,7 +824,7 @@ Plotly.redraw = function(gd) {
     }
 
     gd.calcdata = undefined;
-    return Plotly.plot(gd).then(function () {
+    return Plotly.plot(gd).then(function() {
         gd.emit('plotly_redraw');
         return gd;
     });
@@ -838,7 +838,7 @@ Plotly.redraw = function(gd) {
  * @param {Object} layout
  * @param {Object} config
  */
-Plotly.newPlot = function (gd, data, layout, config) {
+Plotly.newPlot = function(gd, data, layout, config) {
     gd = getGraphDiv(gd);
     plots.purge(gd);
     return Plotly.plot(gd, data, layout, config);
@@ -1096,7 +1096,7 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
  * @param {Number||Object} maxPoints
  * @return {Object[]}
  */
-function getExtendProperties (gd, update, indices, maxPoints) {
+function getExtendProperties(gd, update, indices, maxPoints) {
 
     var maxPointsIsObject = Plotly.Lib.isPlainObject(maxPoints),
         updateProps = [];
@@ -1172,7 +1172,7 @@ function getExtendProperties (gd, update, indices, maxPoints) {
  * @param {Function} spliceArray
  * @return {Object}
  */
-function spliceTraces (gd, update, indices, maxPoints, lengthenArray, spliceArray) {
+function spliceTraces(gd, update, indices, maxPoints, lengthenArray, spliceArray) {
 
     assertExtendTracesArgs(gd, update, indices, maxPoints);
 
@@ -1243,7 +1243,7 @@ function spliceTraces (gd, update, indices, maxPoints, lengthenArray, spliceArra
  * @param {Number|Object} [maxPoints] Number of points for trace window after lengthening.
  *
  */
-Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
+Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     gd = getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
@@ -1272,7 +1272,7 @@ Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
     return promise;
 };
 
-Plotly.prependTraces = function prependTraces (gd, update, indices, maxPoints) {
+Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     gd = getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
@@ -1310,7 +1310,7 @@ Plotly.prependTraces = function prependTraces (gd, update, indices, maxPoints) {
  * @param {Number[]|Number} [newIndices=[gd.data.length]] Locations to add traces
  *
  */
-Plotly.addTraces = function addTraces (gd, traces, newIndices) {
+Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     gd = getGraphDiv(gd);
 
     var currentIndices = [],
@@ -1382,7 +1382,7 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
  * @param {Object[]} gd.data The array of traces we're removing from
  * @param {Number|Number[]} indices The indices
  */
-Plotly.deleteTraces = function deleteTraces (gd, indices) {
+Plotly.deleteTraces = function deleteTraces(gd, indices) {
     gd = getGraphDiv(gd);
 
     var traces = [],
@@ -1449,7 +1449,7 @@ Plotly.deleteTraces = function deleteTraces (gd, indices) {
  *      // reorder all traces (assume there are 5--a, b, c, d, e)
  *      Plotly.moveTraces(gd, [b, d, e, a, c])  // same as 'move to end'
  */
-Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
+Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     gd = getGraphDiv(gd);
 
     var newData = [],
@@ -1499,7 +1499,7 @@ Plotly.moveTraces = function moveTraces (gd, currentIndices, newIndices) {
     }
 
     // reorder this mapping by newIndex, ascending
-    movingTraceMap.sort(function (a, b) {
+    movingTraceMap.sort(function(a, b) {
         return a.newIndex - b.newIndex;
     });
 

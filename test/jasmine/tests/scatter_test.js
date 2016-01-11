@@ -1,6 +1,6 @@
 var Plotly = require('@src/plotly');
 
-describe('Test scatter', function () {
+describe('Test scatter', function() {
     'use strict';
 
     describe('supplyDefaults', function() {

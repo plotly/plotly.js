@@ -18,7 +18,7 @@ var Plotly = require('../plotly');
  * @param args
  * @returns {Array}
  */
-function copyArgArray (gd, args) {
+function copyArgArray(gd, args) {
     var copy = [];
     var arg;
 
@@ -188,7 +188,7 @@ queue.redo = function redo(gd) {
  * @param func
  * @param args
  */
-queue.plotDo = function (gd, func, args) {
+queue.plotDo = function(gd, func, args) {
     gd.autoplay = true;
 
     // this *won't* copy gd and it preserves `undefined` properties!

@@ -13,7 +13,7 @@ anchor.style.width = '1000px';
 
 function plotButtons(plots, figDir) {
 
-    Object.keys(plots).forEach(function (plotname) {
+    Object.keys(plots).forEach(function(plotname) {
 
         var button = document.createElement('button');
 
@@ -25,7 +25,7 @@ function plotButtons(plots, figDir) {
 
         plotlist.appendChild(button);
 
-        button.addEventListener('click', function () {
+        button.addEventListener('click', function() {
 
             var myImage = new Image();
             myImage.src = figDir + plotname + '.png';
@@ -90,7 +90,7 @@ function plotButtons(plots, figDir) {
                 var myImage = new Image();
                 myImage.src = dataURL;
 
-                myImage.onload = function () {
+                myImage.onload = function() {
                     myImage.height = scene.container.clientHeight;
                     myImage.width = scene.container.clientWidth;
                 };
@@ -114,17 +114,17 @@ function plotButtons(plots, figDir) {
     var mock = require('@mocks/gl3d_marker-color.json');
     var statusDiv = document.getElementById('status-info');
 
-    pummelButton.addEventListener('click', function () {
-        setInterval(function () {
+    pummelButton.addEventListener('click', function() {
+        setInterval(function() {
             var plotDiv = document.createElement('div');
             window.plotDiv = plotDiv;
 
             plotDiv.id = 'div' + i;
             document.body.appendChild(plotDiv);
 
-            Plotly.plot(plotDiv, mock.data, mock.layout, {staticPlot: true}).then(function () {
+            Plotly.plot(plotDiv, mock.data, mock.layout, {staticPlot: true}).then(function() {
 
-                Plotly.Plots.getSubplotIds(plotDiv._fullLayout, 'gl3d').forEach(function (key) {
+                Plotly.Plots.getSubplotIds(plotDiv._fullLayout, 'gl3d').forEach(function(key) {
                     var scene = plotDiv._fullLayout[key]._scene;
                     scene.destroy();
                     i ++;
@@ -146,7 +146,7 @@ function plotButtons(plots, figDir) {
     scrapeButton.style.background = 'blue';
     plotlist.appendChild(scrapeButton);
 
-    scrapeButton.addEventListener('click', function () {
+    scrapeButton.addEventListener('click', function() {
         Plotly.Snapshot.toSVG(Tabs.get());
         return;
     });

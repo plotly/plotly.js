@@ -1,6 +1,7 @@
 var Geo = require('@src/plots/geo');
 
-describe('Test Geo layout defaults', function () {
+
+describe('Test Geo layout defaults', function() {
     'use strict';
 
     var layoutAttributes = Geo.layoutAttributes;

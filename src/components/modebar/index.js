@@ -102,7 +102,7 @@ proto.updateButtons = function(buttons) {
  * Empty div for containing a group of buttons
  * @Return {HTMLelement}
  */
-proto.createGroup = function () {
+proto.createGroup = function() {
     var group = document.createElement('div');
     group.className = 'modebar-group';
 
@@ -114,7 +114,7 @@ proto.createGroup = function () {
  * @Param {object} config (see ./buttons.js for more info)
  * @Return {HTMLelement}
  */
-proto.createButton = function (config) {
+proto.createButton = function(config) {
     var _this = this,
         button = document.createElement('a');
 
@@ -162,7 +162,7 @@ proto.createButton = function (config) {
  * @Param {string} thisIcon.path
  * @Return {HTMLelement}
  */
-proto.createIcon = function (thisIcon) {
+proto.createIcon = function(thisIcon) {
     var iconHeight = thisIcon.ascent - thisIcon.descent,
         svgNS = 'http://www.w3.org/2000/svg',
         icon = document.createElementNS(svgNS, 'svg'),
@@ -216,7 +216,7 @@ proto.updateActiveButton = function(buttonClicked) {
  * @Param {object} buttons 2d array of grouped button config objects
  * @Return {boolean}
  */
-proto.hasButtons = function (buttons) {
+proto.hasButtons = function(buttons) {
     var currentButtons = this.buttons;
 
     if(!currentButtons) return false;

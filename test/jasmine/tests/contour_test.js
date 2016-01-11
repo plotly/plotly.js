@@ -1,6 +1,7 @@
 var Plotly = require('@src/plotly');
 
-describe('Test contour', function () {
+
+describe('Test contour', function() {
     'use strict';
 
     describe('supplyDefaults', function() {

@@ -32,10 +32,10 @@ function toImage(gd, opts) {
     clonedGd.style.left = '-5000px';
     document.body.appendChild(clonedGd);
 
-    function wait () {
+    function wait() {
         var delay = Snapshot.getDelay(clonedGd._fullLayout);
 
-        setTimeout(function () {
+        setTimeout(function() {
             var svg = Plotly.Snapshot.toSVG(clonedGd);
 
             var canvasContainer = window.document.createElement('div');

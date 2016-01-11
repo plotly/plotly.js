@@ -1,6 +1,7 @@
 var supplyDefaults = require('@src/traces/histogram/defaults');
 
-describe('Test histogram', function () {
+
+describe('Test histogram', function() {
     'use strict';
 
     describe('supplyDefaults', function() {

@@ -133,7 +133,7 @@ module.exports = function plot(gd, cdpie) {
                     }
                 }
 
-                function handleClick () {
+                function handleClick() {
                     gd._hoverdata = [pt];
                     gd._hoverdata.trace = cd.trace;
                     Plotly.Fx.click(gd, { target: true });
@@ -438,8 +438,8 @@ function scootLabels(quadrants, trace) {
         thisQuadOutside,
         firstOppositeOutsidePt;
 
-    function topFirst (a, b) { return a.pxmid[1] - b.pxmid[1]; }
-    function bottomFirst (a, b) { return b.pxmid[1] - a.pxmid[1]; }
+    function topFirst(a, b) { return a.pxmid[1] - b.pxmid[1]; }
+    function bottomFirst(a, b) { return b.pxmid[1] - a.pxmid[1]; }
 
     function scootOneLabel(thisPt, prevPt) {
         if(!prevPt) prevPt = {};

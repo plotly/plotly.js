@@ -1,7 +1,7 @@
 var supplyLayoutDefaults = require('@src/plots/gl3d/layout/axis_defaults');
 
 
-describe('Test Gl3dAxes', function () {
+describe('Test Gl3dAxes', function() {
     'use strict';
 
     describe('supplyLayoutDefaults supplies defaults', function() {

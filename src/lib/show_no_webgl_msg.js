@@ -11,6 +11,9 @@
 
 var Plotly = require('../plotly');
 
+var noop = function() {};
+
+
 /**
  * Prints a no webgl error message into the scene container
  * @param {scene instance} scene
@@ -19,13 +22,11 @@ var Plotly = require('../plotly');
  *
  */
 module.exports = function showWebGlMsg(scene) {
-    var noop = function () {};
-
     for(var prop in scene) {
         if (typeof scene[prop] === 'function') scene[prop] = noop;
     }
 
-    scene.destroy = function () {
+    scene.destroy = function() {
         scene.container.parentNode.removeChild(scene.container);
     };
 
@@ -37,7 +38,7 @@ module.exports = function showWebGlMsg(scene) {
 
     scene.container.appendChild(div);
     scene.container.style.background = '#FFFFFF';
-    scene.container.onclick = function () {
+    scene.container.onclick = function() {
         window.open('http://get.webgl.org');
     };
 

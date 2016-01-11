@@ -1,6 +1,7 @@
 var Plotly = require('@src/plotly');
 
-describe('Test choropleth', function () {
+
+describe('Test choropleth', function() {
     'use strict';
 
     var Choropleth = Plotly.Choropleth;
