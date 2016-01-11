@@ -1377,7 +1377,6 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         yaxes: ya,
         doubleclick: doubleClick,
         prepFn: function(e, startX, startY) {
-            fx.unhover(gd); // we want a clear plot for dragging
             var dragModeNow = gd._fullLayout.dragmode;
             if(ns + ew === 'nsew') {
                 // main dragger handles all drag modes, and changes
@@ -2046,7 +2045,10 @@ fx.dragElement = function(options) {
 
         if(Math.abs(dx) < minDrag) dx = 0;
         if(Math.abs(dy) < minDrag) dy = 0;
-        if(dx||dy) gd._dragged = true;
+        if(dx||dy) {
+            gd._dragged = true;
+            fx.unhover(gd);
+        }
 
         if(options.moveFn) options.moveFn(dx, dy, gd._dragged);
 
