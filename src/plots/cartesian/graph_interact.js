@@ -2044,7 +2044,10 @@ fx.dragElement = function(options) {
 
         if(Math.abs(dx) < minDrag) dx = 0;
         if(Math.abs(dy) < minDrag) dy = 0;
-        if(dx||dy) gd._dragged = true;
+        if(dx||dy) {
+            gd._dragged = true;
+            fx.unhover(gd);
+        }
 
         if(options.moveFn) options.moveFn(dx, dy, gd._dragged);
 
@@ -2059,7 +2062,6 @@ fx.dragElement = function(options) {
 
         if(!gd._dragging) {
             gd._dragged = false;
-            fx.unhover(gd);
             return;
         }
         gd._dragging = false;
