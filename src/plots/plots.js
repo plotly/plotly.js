@@ -13,6 +13,8 @@ var Plotly = require('../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../lib');
+
 var plots = module.exports = {};
 
 var modules = plots.modules = {},
@@ -269,7 +271,7 @@ plots.resize = function(gd) {
 };
 
 
-// for use in Plotly.Lib.syncOrAsync, check if there are any
+// for use in Lib.syncOrAsync, check if there are any
 // pending promises in this plot and wait for them
 plots.previousPromises = function(gd) {
     if((gd._promises || []).length) {
@@ -524,7 +526,7 @@ function relinkPrivateKeys(toLayout, fromLayout) {
         else if (Array.isArray(fromLayout[k]) &&
                  Array.isArray(toLayout[k]) &&
                  fromLayout[k].length &&
-                 Plotly.Lib.isPlainObject(fromLayout[k][0])) {
+                 Lib.isPlainObject(fromLayout[k][0])) {
             if(fromLayout[k].length !== toLayout[k].length) {
                 // this should be handled elsewhere, it causes
                 // ambiguity if we try to deal with it here.
@@ -536,8 +538,8 @@ function relinkPrivateKeys(toLayout, fromLayout) {
                 relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
             }
         }
-        else if (Plotly.Lib.isPlainObject(fromLayout[k]) &&
-                 Plotly.Lib.isPlainObject(toLayout[k])) {
+        else if (Lib.isPlainObject(fromLayout[k]) &&
+                 Lib.isPlainObject(toLayout[k])) {
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toLayout[k], fromLayout[k]);
             if (!Object.keys(toLayout[k]).length) delete toLayout[k];
@@ -550,12 +552,12 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
         defaultColor = Plotly.Color.defaults[i % Plotly.Color.defaults.length];
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
     }
 
     function coerceSubplotAttr(subplotType, subplotAttr) {
         if(!plots.traceIs(traceOut, subplotType)) return;
-        return Plotly.Lib.coerce(traceIn, traceOut,
+        return Lib.coerce(traceIn, traceOut,
             plots.subplotsRegistry[subplotType].attributes, subplotAttr);
     }
 
@@ -615,14 +617,14 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
+        return Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
     }
 
-    var globalFont = Plotly.Lib.coerceFont(coerce, 'font');
+    var globalFont = Lib.coerceFont(coerce, 'font');
 
     coerce('title');
 
-    Plotly.Lib.coerceFont(coerce, 'titlefont', {
+    Lib.coerceFont(coerce, 'titlefont', {
         family: globalFont.family,
         size: Math.round(globalFont.size * 1.4),
         color: globalFont.color
@@ -928,7 +930,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
         if(typeof d === 'function') {
             return null;
         }
-        if(Plotly.Lib.isPlainObject(d)) {
+        if(Lib.isPlainObject(d)) {
             var o={}, v, src;
             for(v in d) {
                 // remove private elements and functions
@@ -951,7 +953,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
                     // in a trace, we will keep the data array.
                     src = d[v+'src'];
                     if(typeof src==='string' && src.indexOf(':')>0) {
-                        if(!Plotly.Lib.isPlainObject(d.stream)) {
+                        if(!Lib.isPlainObject(d.stream)) {
                             continue;
                         }
                     }
@@ -978,7 +980,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
         // convert native dates to date strings...
         // mostly for external users exporting to plotly
         if(d && d.getTime) {
-            return Plotly.Lib.ms2DateTime(d);
+            return Lib.ms2DateTime(d);
         }
 
         return d;
