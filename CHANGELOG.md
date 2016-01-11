@@ -9,10 +9,25 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+
+## [1.4.0] -- 2016-01-11
+
+### Added
+- Lasso and rectangular selection interactions for scatter-marker and scatter-text traces [#154, #169]
+- Un-gitignore css and svg font built files, removing post-install step and
+  dependency on node-sass [#164]
+
+### Changed
+- Clean up Pie, Box and Choropleth trace module [#158, #159, #165]
+
+### Fixed
+- Surface traces correctly handle `zmin` and `zmax` attributes [#153]
+- Pie trace correctly trigger hover events [#150]
+
+
 ## [1.3.1] -- 2016-01-04
 
 ### Fixed
-
 - Fix `Plotly.addTraces` for gl3d and gl2d trace types [#140]
 
 
