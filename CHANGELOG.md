@@ -12,6 +12,12 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 ## [1.4.0] -- 2016-01-11
 
+### Fixed
+- Click events work properly after being broken in 1.4.0 [#174]
+
+
+## [1.4.0] -- 2016-01-11
+
 ### Added
 - Lasso and rectangular selection interactions for scatter-marker and scatter-text traces [#154, #169]
 - Un-gitignore css and svg font built files, removing post-install step and
