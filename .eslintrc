@@ -22,7 +22,7 @@
     "key-spacing": [0, {"beforeColon": false, "afterColon": true}],
     "no-spaced-func": [2],
     "space-in-parens": [2, "never"],
-    "space-before-function-paren": [0, "never"],
+    "space-before-function-paren": [2, "never"],
     "no-multi-spaces": [2],
     "space-infix-ops": [0, {"int32Hint": false}],
     "quotes": [2, "single"],
