@@ -39,7 +39,7 @@ var polarAreaAttrs = require('../plots/polar/area_attributes'),
 var PlotSchema = module.exports = {};
 
 
-PlotSchema.get =  function() {
+PlotSchema.get = function() {
     Plots.allTypes
         .concat('area')  // FIXME polar 'area' attributes
         .forEach(getTraceAttributes);
@@ -210,11 +210,11 @@ function mergeValTypeAndRole(attrs) {
                 attr.role = 'data';
                 // all 'data_array' attrs have a corresponding 'src' attr
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
-           }
-           else if(attr.arrayOk === true) {
+            }
+            else if(attr.arrayOk === true) {
                 // all 'arrayOk' attrs have a corresponding 'src' attr
                 attrs[attrName + 'src'] = makeSrcAttr(attrName);
-           }
+            }
         }
         else if(Lib.isPlainObject(attr)) {
             // all attrs container objects get role 'object'

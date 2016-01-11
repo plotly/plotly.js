@@ -13,7 +13,7 @@
 
 module.exports = computeTickMarks;
 
-var Plotly  = require('../../../plotly');
+var Plotly = require('../../../plotly');
 var convertHTML = require('../../../lib/html2unicode');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
@@ -35,7 +35,7 @@ function contourLevelsFromTicks(ticks) {
 
 function computeTickMarks(scene) {
     var axesOptions = scene.axesOptions;
-    var glRange     = scene.glplot.axesPixels;
+    var glRange = scene.glplot.axesPixels;
     var sceneLayout = scene.fullSceneLayout;
 
     var ticks = [[],[],[]];
@@ -51,7 +51,7 @@ function computeTickMarks(scene) {
         } else {
             axes.range[0] = (glRange[i].lo) / scene.dataScale[i];
             axes.range[1] = (glRange[i].hi) / scene.dataScale[i];
-            axes._m       = 1.0 / (scene.dataScale[i] * glRange[i].pixelsPerDataUnit);
+            axes._m = 1.0 / (scene.dataScale[i] * glRange[i].pixelsPerDataUnit);
 
             if(axes.range[0] === axes.range[1]) {
                 axes.range[0] -= 1;
@@ -69,8 +69,8 @@ function computeTickMarks(scene) {
             }
             var dataTicks = Plotly.Axes.calcTicks(axes);
             for(var j=0; j<dataTicks.length; ++j) {
-              dataTicks[j].x = dataTicks[j].x * scene.dataScale[i];
-              dataTicks[j].text = convertHTML(dataTicks[j].text);
+                dataTicks[j].x = dataTicks[j].x * scene.dataScale[i];
+                dataTicks[j].text = convertHTML(dataTicks[j].text);
             }
             ticks[i] = dataTicks;
 

@@ -33,10 +33,11 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         ph = dragOptions.yaxes[0]._length,
         xAxisIds = dragOptions.xaxes.map(getAxId),
         yAxisIds = dragOptions.yaxes.map(getAxId),
-        allAxes = dragOptions.xaxes.concat(dragOptions.yaxes);
+        allAxes = dragOptions.xaxes.concat(dragOptions.yaxes),
+        pts;
 
     if(mode === 'lasso') {
-        var pts = filteredPolygon([[x0, y0]], constants.BENDPX);
+        pts = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
 
     var outlines = plot.selectAll('path.select-outline').data([1,2]);
@@ -177,4 +178,3 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         corners.remove();
     };
 };
-

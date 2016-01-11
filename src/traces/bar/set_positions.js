@@ -97,7 +97,7 @@ module.exports = function setPositions(gd, plotinfo) {
             for(var i=0; i<bl1.length; i++){
                 var t = gd.calcdata[bl1[i]][0].t;
                 t.barwidth = barDiff*(1-fullLayout.bargroupgap);
-                t.poffset = ((overlap ? (2*i+1-bl1.length)*barDiff : 0 ) -
+                t.poffset = ((overlap ? (2*i+1-bl1.length)*barDiff : 0) -
                     t.barwidth)/2;
                 t.dbar = dv.minDiff;
 

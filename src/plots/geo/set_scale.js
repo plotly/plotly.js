@@ -33,7 +33,7 @@ function createGeoScale(geoLayout, graphSize) {
         lonfull1 = lonaxisLayout._fullRange[1] - clipPad,
         latfull0 = lataxisLayout._fullRange[0] + clipPad,
         latfull1 = lataxisLayout._fullRange[1] - clipPad;
-    
+
     // initial translation (makes the math easier)
     projLayout._translate0 = [
         graphSize.l + geoWidth / 2, graphSize.t + geoHeight / 2
@@ -48,7 +48,7 @@ function createGeoScale(geoLayout, graphSize) {
         r = projLayout._rotate;
 
     projLayout._center = [c0[0] + r[0], c0[1] + r[1]];
-    
+
     // needs a initial projection; it is called from makeProjection
     var setScale = function(projection) {
         var scale0 = projection.scale(),
@@ -56,7 +56,7 @@ function createGeoScale(geoLayout, graphSize) {
             rangeBox = makeRangeBox(lon0, lat0, lon1, lat1),
             fullRangeBox = makeRangeBox(lonfull0, latfull0, lonfull1, latfull1);
 
-       var scale, translate, bounds, fullBounds;
+        var scale, translate, bounds, fullBounds;
 
         // Inspired by: http://stackoverflow.com/a/14654988/4068492
         // using the path determine the bounds of the current map and use
@@ -109,7 +109,7 @@ function createGeoScale(geoLayout, graphSize) {
         geoLayout._marginX = (geoWidth - Math.round(bounds[1][0])) / 2;
         geoLayout._marginY = (geoHeight - Math.round(bounds[1][1])) / 2;
     };
-    
+
     return setScale;
 }
 

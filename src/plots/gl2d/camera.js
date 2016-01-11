@@ -87,7 +87,7 @@ function createCamera(scene) {
 
                     result.boxEnabled = false;
                 }
-            break;
+                break;
 
             case 'pan':
                 result.boxEnabled = false;
@@ -107,7 +107,7 @@ function createCamera(scene) {
 
                     scene.cameraChanged();
                 }
-            break;
+                break;
         }
 
         result.lastPos[0] = x;
@@ -124,7 +124,7 @@ function createCamera(scene) {
 
         switch(scene.fullLayout.dragmode) {
             case 'zoom':
-              break;
+                break;
 
             case 'pan':
                 var scale = Math.exp(0.1 * dy / (viewBox[3] - viewBox[1]));
@@ -143,7 +143,7 @@ function createCamera(scene) {
 
                 result.lastInputTime = Date.now();
                 scene.cameraChanged();
-            break;
+                break;
         }
 
         return true;

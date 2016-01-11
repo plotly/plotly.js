@@ -250,7 +250,7 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    Plotly.relayout(gd, aobj).then( function() {
+    Plotly.relayout(gd, aobj).then(function() {
         if(astr === 'dragmode') {
             if(fullLayout._hasCartesian) {
                 Plotly.Fx.setCursor(
@@ -337,7 +337,7 @@ function handleCamera3d(gd, ev) {
         fullLayout = gd._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
-    for(var i = 0;  i < sceneIds.length; i++) {
+    for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
             sceneLayout = layout[sceneId],
             fullSceneLayout = fullLayout[sceneId],
@@ -387,7 +387,7 @@ modeBarButtons.hoverClosest3d = {
         else {
             layoutUpdate = {'allaxes.showspikes': false};
 
-            for(var i = 0;  i < sceneIds.length; i++) {
+            for(var i = 0; i < sceneIds.length; i++) {
                 var sceneId = sceneIds[i],
                     sceneLayout = fullLayout[sceneId],
                     sceneSpikes = currentSpikes[sceneId] = {};
@@ -456,7 +456,7 @@ function handleGeo(gd, ev) {
         fullLayout = gd._fullLayout,
         geoIds = Plotly.Plots.getSubplotIds(fullLayout, 'geo');
 
-    for(var i = 0;  i < geoIds.length; i++) {
+    for(var i = 0; i < geoIds.length; i++) {
         var geo = fullLayout[geoIds[i]]._geo;
 
         if(attr === 'zoom') {
@@ -493,7 +493,7 @@ modeBarButtons.hoverClosestPie = {
 };
 
 function toggleHover(gd) {
-    var newHover = gd._fullLayout.hovermode ?  false : 'closest';
+    var newHover = gd._fullLayout.hovermode ? false : 'closest';
 
     Plotly.relayout(gd, 'hovermode', newHover);
 }

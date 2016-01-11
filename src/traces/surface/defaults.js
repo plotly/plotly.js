@@ -67,7 +67,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         var show = coerce(contourDim + '.show');
         var highlight = coerce(contourDim + '.highlight');
 
-        if (show || highlight ) {
+        if (show || highlight) {
             for (j = 0; j < 3; ++j) {
                 coerce(contourDim + '.project.' + dims[j]);
             }

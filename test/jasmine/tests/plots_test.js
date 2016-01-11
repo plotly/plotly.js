@@ -239,7 +239,7 @@ describe('Test Plotly.Plots', function () {
             attr: 'abc',
             idRoot: 'cba',
             attributes: { stuff: { 'more stuff': 102102 } }
-        }
+        };
 
         Plotly.Plots.registerSubplot(fake);
 

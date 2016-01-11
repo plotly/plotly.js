@@ -41,16 +41,16 @@ function LineWithMarkers(scene, uid) {
 
     this.hasLines = false;
     this.lineOptions = {
-      positions: new Float32Array(),
-      color: [0, 0, 0, 1],
-      width: 1,
-      fill: [false, false, false, false],
-      fillColor:  [
-          [0, 0, 0, 1],
-          [0, 0, 0, 1],
-          [0, 0, 0, 1],
-          [0, 0, 0, 1]],
-      dashes: [1]
+        positions: new Float32Array(),
+        color: [0, 0, 0, 1],
+        width: 1,
+        fill: [false, false, false, false],
+        fillColor:  [
+            [0, 0, 0, 1],
+            [0, 0, 0, 1],
+            [0, 0, 0, 1],
+            [0, 0, 0, 1]],
+        dashes: [1]
     };
     this.line = createLine(scene.glplot, this.lineOptions);
     this.line._trace = this;
@@ -199,7 +199,8 @@ function _convertColor(colors, opacities, count) {
 
     for(var i = 0; i < count; ++i) {
         for(var j = 0; j < 3; ++j) result[4*i+j] = colors[i][j];
-        result[4*i+3] = colors[i][j] * opacities[i];
+
+        result[4*i+3] = colors[i][3] * opacities[i];
     }
 
     return result;
@@ -211,7 +212,7 @@ function _convertColor(colors, opacities, count) {
  */
 function truncate(float32ArrayIn, len) {
     if(Float32Array.slice === undefined) {
-        var float32ArrayOut  = new Float32Array(len);
+        var float32ArrayOut = new Float32Array(len);
         for(var i = 0; i < len; i++) float32ArrayOut[i] = float32ArrayIn[i];
         return float32ArrayOut;
     }
@@ -467,15 +468,15 @@ proto.updateLines = function(options, positions) {
         for(var i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
 
         switch(options.fill) {
-          case 'tozeroy':
-              this.lineOptions.fill = [false, true, false, false];
-          break;
-          case 'tozerox':
-              this.lineOptions.fill = [true, false, false, false];
-          break;
-          default:
-              this.lineOptions.fill = [false, false, false, false];
-          break;
+            case 'tozeroy':
+                this.lineOptions.fill = [false, true, false, false];
+                break;
+            case 'tozerox':
+                this.lineOptions.fill = [true, false, false, false];
+                break;
+            default:
+                this.lineOptions.fill = [false, false, false, false];
+                break;
         }
 
         var fillColor = str2RGBArray(options.fillcolor);

@@ -222,10 +222,11 @@ function makePath(pi, loc, edgeflag) {
         pts = [getInterpPx(pi, loc, [-marchStep[0], -marchStep[1]])],
         startStepStr = marchStep.join(','),
         m = pi.z.length,
-        n = pi.z[0].length;
+        n = pi.z[0].length,
+        cnt;
 
     // now follow the path
-    for(var cnt=0; cnt<10000; cnt++) { // just to avoid infinite loops
+    for(cnt=0; cnt<10000; cnt++) { // just to avoid infinite loops
         if(mi>20) {
             mi = CHOOSESADDLE[mi][(marchStep[0]||marchStep[1])<0 ? 0 : 1];
             pi.crossings[locStr] = SADDLEREMAINDER[mi];
@@ -250,7 +251,7 @@ function makePath(pi, loc, edgeflag) {
         locStr = loc.join(',');
 
         // have we completed a loop, or reached an edge?
-        if( (locStr===startLocStr && marchStep.join(',')===startStepStr) ||
+        if((locStr===startLocStr && marchStep.join(',')===startStepStr) ||
             (edgeflag && (
                 (marchStep[0] && (loc[0]<0 || loc[0]>n-2)) ||
                 (marchStep[1] && (loc[1]<0 || loc[1]>m-2))))) {
@@ -319,7 +320,7 @@ function makePath(pi, loc, edgeflag) {
             else if(ptcnt%2) newpt = getpt(ptavg);
 
             // even # of pts - average central two
-            else  {
+            else {
                 newpt = [(getpt(ptavg)[0] + getpt(ptavg+1)[0]) / 2,
                          (getpt(ptavg)[1] + getpt(ptavg+1)[1]) / 2];
             }

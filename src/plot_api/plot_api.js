@@ -38,6 +38,7 @@ var plots = Plotly.Plots;
 Plotly.plot = function(gd, data, layout, config) {
     Plotly.Lib.markTime('in plot');
 
+
     gd = getGraphDiv(gd);
 
     /*
@@ -651,8 +652,8 @@ function cleanLayout(layout) {
         cameraposition = scene.cameraposition;
         if (Array.isArray(cameraposition) && cameraposition[0].length === 4) {
             rotation = cameraposition[0];
-            center   = cameraposition[1];
-            radius   = cameraposition[2];
+            center = cameraposition[1];
+            radius = cameraposition[2];
             mat = m4FromQuat([], rotation);
             eye = [];
             for (j = 0; j < 3; ++j) {
@@ -693,8 +694,8 @@ function cleanData(data, existingData) {
      */
     var suids = [], // seen uids --- so we can weed out incoming repeats
         uids = data.concat(Array.isArray(existingData) ? existingData : [])
-               .filter( function(trace) { return 'uid' in trace; } )
-               .map( function(trace) { return trace.uid; });
+               .filter(function(trace) { return 'uid' in trace; })
+               .map(function(trace) { return trace.uid; });
 
     for(var tracei = 0; tracei < data.length; tracei++) {
         var trace = data[tracei];
@@ -1079,10 +1080,10 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
          */
         if (maxPointsIsObject &&
             (!(key in maxPoints) || !Array.isArray(maxPoints[key]) ||
-             maxPoints[key].length !== update[key].length )) {
-                 throw new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
-                                'corrispondence with the keys and number of traces in the update object');
-             }
+            maxPoints[key].length !== update[key].length)) {
+            throw new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
+                            'corrispondence with the keys and number of traces in the update object');
+        }
     }
 }
 
@@ -1271,7 +1272,7 @@ Plotly.extendTraces = function extendTraces (gd, update, indices, maxPoints) {
     return promise;
 };
 
-Plotly.prependTraces  = function prependTraces (gd, update, indices, maxPoints) {
+Plotly.prependTraces = function prependTraces (gd, update, indices, maxPoints) {
     gd = getGraphDiv(gd);
 
     var undo = spliceTraces(gd, update, indices, maxPoints,
@@ -1317,7 +1318,8 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
         redoFunc = addTraces,
         undoArgs = [gd, currentIndices],
         redoArgs = [gd, traces],  // no newIndices here
-        i;
+        i,
+        promise;
 
     // all validation is done elsewhere to remove clutter here
     checkAddTracesArgs(gd, traces, newIndices);
@@ -1341,7 +1343,7 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
     // if the user didn't define newIndices, they just want the traces appended
     // i.e., we can simply redraw and be done
     if (typeof newIndices === 'undefined') {
-        var promise = Plotly.redraw(gd);
+        promise = Plotly.redraw(gd);
         if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return promise;
     }
@@ -1367,7 +1369,8 @@ Plotly.addTraces = function addTraces (gd, traces, newIndices) {
     // this requires some extra work that moveTraces will do
     if (Plotly.Queue) Plotly.Queue.startSequence(gd);
     if (Plotly.Queue) Plotly.Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
-    var promise = Plotly.moveTraces(gd, currentIndices, newIndices);
+
+    promise = Plotly.moveTraces(gd, currentIndices, newIndices);
     if (Plotly.Queue) Plotly.Queue.stopSequence(gd);
     return promise;
 };
@@ -2001,7 +2004,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                         var trace = cd[0].trace,
                             cb = cd[0].t.cb;
                         if(plots.traceIs(trace, 'contour')) {
-                              cb.line({
+                            cb.line({
                                 width: trace.contours.showlines!==false ?
                                     trace.line.width : 0,
                                 dash: trace.line.dash,
@@ -2084,7 +2087,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         doplot = false,
         docalc = false,
         domodebar = false,
-        newkey, axes, keys, xyref, scene, axisAttr;
+        newkey, axes, keys, xyref, scene, axisAttr, i;
 
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Plotly.Lib.isPlainObject(astr)) aobj = astr;
@@ -2098,7 +2101,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     keys = Object.keys(aobj);
     axes = Plotly.Axes.list(gd);
 
-    for(var i=0; i<keys.length; i++) {
+    for(i = 0; i < keys.length; i++) {
         // look for 'allaxes', split out into all axes
         if(keys[i].indexOf('allaxes')===0) {
             for(var j=0; j<axes.length; j++) {
@@ -2399,9 +2402,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
-        gd.emit('plotly_relayout',
-            Plotly.Lib.extendDeep({}, redoit));
-            return gd;
+        gd.emit('plotly_relayout', Plotly.Lib.extendDeep({}, redoit));
+        return gd;
     });
 };
 

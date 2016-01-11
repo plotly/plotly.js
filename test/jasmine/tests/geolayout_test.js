@@ -150,9 +150,9 @@ describe('Test Geo layout defaults', function () {
 
         it('should not coerce frame unless for world scope', function() {
             var fields = [
-                'showframe', 'framecolor', 'framewidth'
-            ],
-            scopes = layoutAttributes.scope.values;
+                    'showframe', 'framecolor', 'framewidth'
+                ],
+                scopes = layoutAttributes.scope.values;
 
             function testOne(scope) {
                 layoutIn = {

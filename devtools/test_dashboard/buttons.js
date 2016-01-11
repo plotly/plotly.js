@@ -1,3 +1,5 @@
+/* global Plotly:false Tabs:false */
+
 var plotlist = document.getElementById('plot-list');
 var anchor = document.getElementById('embedded-graph');
 var image = document.getElementById('embedded-image');
@@ -11,7 +13,7 @@ anchor.style.width = '1000px';
 
 function plotButtons(plots, figDir) {
 
-    Object.keys(plots).forEach( function (plotname) {
+    Object.keys(plots).forEach(function (plotname) {
 
         var button = document.createElement('button');
 
@@ -55,7 +57,7 @@ function plotButtons(plots, figDir) {
 
     plotlist.appendChild(snapshot);
 
-    snapshot.addEventListener('click', function () {
+    snapshot.addEventListener('click', function() {
 
         /*
          * Grab the currently loaded plot and make an image - replacing the plot.
@@ -67,7 +69,7 @@ function plotButtons(plots, figDir) {
 
         if (!layout || !data) return;
 
-        Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
+        Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach(function(key) {
             var scene = gd._fullLayout[key]._scene;
             scene.destroy();
         });
@@ -80,23 +82,23 @@ function plotButtons(plots, figDir) {
         /*
          * Replot with staticPlot
          */
-        Plotly.plot(gd, data, layout, {staticPlot: true, plotGlPixelRatio: 2}).then( function () {
-            Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach( function (key) {
-                  var scene = gd._fullLayout[key]._scene;
-                  var dataURL = scene.toImage();
+        Plotly.plot(gd, data, layout, {staticPlot: true, plotGlPixelRatio: 2}).then(function() {
+            Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach(function(key) {
+                var scene = gd._fullLayout[key]._scene;
+                var dataURL = scene.toImage();
 
-                  var myImage = new Image();
-                  myImage.src = dataURL;
+                var myImage = new Image();
+                myImage.src = dataURL;
 
-                  myImage.onload = function () {
-                      myImage.height = scene.container.clientHeight;
-                      myImage.width = scene.container.clientWidth;
-                  };
+                myImage.onload = function () {
+                    myImage.height = scene.container.clientHeight;
+                    myImage.width = scene.container.clientWidth;
+                };
 
-                  image.innerHTML = '';
-                  image.appendChild(myImage);
-              });
-        })
+                image.innerHTML = '';
+                image.appendChild(myImage);
+            });
+        });
     });
 
     var pummelButton = document.createElement('button');
@@ -122,7 +124,7 @@ function plotButtons(plots, figDir) {
 
             Plotly.plot(plotDiv, mock.data, mock.layout, {staticPlot: true}).then(function () {
 
-                Plotly.Plots.getSubplotIds(plotDiv._fullLayout, 'gl3d').forEach( function (key) {
+                Plotly.Plots.getSubplotIds(plotDiv._fullLayout, 'gl3d').forEach(function (key) {
                     var scene = plotDiv._fullLayout[key]._scene;
                     scene.destroy();
                     i ++;

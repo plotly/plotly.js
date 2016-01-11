@@ -39,11 +39,10 @@ describe('Test contour', function () {
                 z: [[10, 10.625, 12.5, 15.625],
                     [5.625, 6.25, 8.125, 11.25],
                     [2.5, 3.125, 5., 8.125],
-                    [0.625, 1.25, 3.125, 6.25]],
+                    [0.625, 1.25, 3.125, 6.25]]
             };
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
             expect(traceOut.autocontour).toBe(true);
         });
     });
 });
-

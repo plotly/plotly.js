@@ -176,8 +176,8 @@ lib.randstr = function randstr(existing, bits, base) {
     }
 
     var parsed = parseInt(res, base);
-    if ( (existing && (existing.indexOf(res) > -1)) ||
-         (parsed !== Infinity && parsed >= Math.pow(2, bits)) ) {
+    if ((existing && (existing.indexOf(res) > -1)) ||
+         (parsed !== Infinity && parsed >= Math.pow(2, bits))) {
         return randstr(existing, bits, base);
     }
     else return res;

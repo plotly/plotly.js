@@ -211,6 +211,25 @@ function plotOne(gd, plotinfo, cd) {
         };
     }
 
+    // build the pixel map brick-by-brick
+    // cruise through z-matrix row-by-row
+    // build a brick at each z-matrix value
+    var yi = ypx(0),
+        yb = [yi, yi],
+        xbi = xrev ? 0 : 1,
+        ybi = yrev ? 0 : 1,
+        // for collecting an average luminosity of the heatmap
+        pixcount = 0,
+        rcount = 0,
+        gcount = 0,
+        bcount = 0,
+        xb,
+        j,
+        xi,
+        v,
+        row,
+        c;
+
     function setColor(v, pixsize) {
         if(v !== undefined) {
             var c = s((v - min) / (max - min));
@@ -265,25 +284,6 @@ function plotOne(gd, plotinfo, cd) {
     }
 
     Lib.markTime('done init png');
-
-    // build the pixel map brick-by-brick
-    // cruise through z-matrix row-by-row
-    // build a brick at each z-matrix value
-    var yi = ypx(0),
-        yb = [yi, yi],
-        xbi = xrev ? 0 : 1,
-        ybi = yrev ? 0 : 1,
-        // for collecting an average luminosity of the heatmap
-        pixcount = 0,
-        rcount = 0,
-        gcount = 0,
-        bcount = 0,
-        xb,
-        j,
-        xi,
-        v,
-        row,
-        c;
 
     if(zsmooth) { // best or fast, works fastest with imageData
         var pxIndex = 0,

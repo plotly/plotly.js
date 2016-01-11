@@ -21,7 +21,7 @@ var Events = {
          * If we have already instantiated an emitter for this plot
          * return early.
          */
-        if (plotObj._ev instanceof  EventEmitter) return plotObj;
+        if (plotObj._ev instanceof EventEmitter) return plotObj;
 
         var ev = new EventEmitter();
 

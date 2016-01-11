@@ -12,57 +12,61 @@
 var toSuperScript = require('superscript-text');
 
 var ENTITIES = {
-  'mu': 'μ',
-  'amp': '&',
-  'lt': '<',
-  'gt': '>'
+    'mu': 'μ',
+    'amp': '&',
+    'lt': '<',
+    'gt': '>'
 };
 
 function fixSuperScript(x) {
-  var idx = 0;
-  while((idx = x.indexOf('<sup>', idx)) >= 0) {
-    var nidx = x.indexOf('</sup>', idx);
-    if(nidx < idx) {
-      break;
+    var idx = 0;
+
+    while((idx = x.indexOf('<sup>', idx)) >= 0) {
+        var nidx = x.indexOf('</sup>', idx);
+        if(nidx < idx) break;
+
+        x = x.slice(0, idx) + toSuperScript(x.slice(idx+5, nidx)) + x.slice(nidx+6);
     }
-    x = x.slice(0, idx) + toSuperScript(x.slice(idx+5, nidx)) + x.slice(nidx+6);
-  }
-  return x;
+
+    return x;
 }
 
 function fixBR(x) {
-  return x.replace(/\<br\>/g, '\n');
+    return x.replace(/\<br\>/g, '\n');
 }
 
 function stripTags(x) {
-  return x.replace(/\<.*\>/g, '');
+    return x.replace(/\<.*\>/g, '');
 }
 
 function fixEntities(x) {
-  var idx = 0;
-  while((idx = x.indexOf('&', idx)) >= 0) {
-    var nidx = x.indexOf(';', idx);
-    if(nidx < idx) {
-      idx += 1;
-      continue;
+    var idx = 0;
+
+    while((idx = x.indexOf('&', idx)) >= 0) {
+        var nidx = x.indexOf(';', idx);
+        if(nidx < idx) {
+            idx += 1;
+            continue;
+        }
+
+        var entity = ENTITIES[x.slice(idx+1, nidx)];
+        if(entity) {
+            x = x.slice(0, idx) + entity + x.slice(nidx+1);
+        } else {
+            x = x.slice(0, idx) + x.slice(nidx+1);
+        }
     }
-    var entity = ENTITIES[x.slice(idx+1, nidx)];
-    if(entity) {
-      x = x.slice(0, idx) + entity + x.slice(nidx+1);
-    } else {
-      x = x.slice(0, idx) + x.slice(nidx+1);
-    }
-  }
-  return x;
+
+    return x;
 }
 
 function convertHTMLToUnicode(html) {
-  return '' +
-    fixEntities(
-    stripTags(
-    fixSuperScript(
-    fixBR(
-      html))));
+    return '' +
+        fixEntities(
+        stripTags(
+        fixSuperScript(
+        fixBR(
+          html))));
 }
 
 module.exports = convertHTMLToUnicode;

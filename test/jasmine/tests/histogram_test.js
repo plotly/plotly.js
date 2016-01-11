@@ -96,7 +96,7 @@ describe('Test histogram', function () {
             expect(traceOut.autobinx).toBe(false);
 
             traceIn = {
-                x: [1, 2, 2],
+                x: [1, 2, 2]
             };
             supplyDefaults(traceIn, traceOut);
             expect(traceOut.autobinx).toBe(true);
@@ -115,7 +115,7 @@ describe('Test histogram', function () {
             expect(traceOut.autobiny).toBe(false);
 
             traceIn = {
-                y: [1, 2, 2],
+                y: [1, 2, 2]
             };
             supplyDefaults(traceIn, traceOut);
             expect(traceOut.autobiny).toBe(true);

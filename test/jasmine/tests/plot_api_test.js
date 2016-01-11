@@ -347,7 +347,7 @@ describe('Test graph_obj', function () {
 
     describe('Plotly.ExtendTraces', function() {
         var gd;
-        beforeEach(function () {
+        beforeEach(function() {
             gd = {
                 data: [
                     {x: [0,1,2], marker: {size: [3,2,1]}},
@@ -369,11 +369,11 @@ describe('Test graph_obj', function () {
 
         it('should throw an error when gd.data isn\'t an array.', function () {
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces({}, {x: [[1]]}, [0]);
             }).toThrow(new Error('gd.data must be an array'));
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces({data: 'meow'}, {x: [[1]]}, [0]);
             }).toThrow(new Error('gd.data must be an array'));
 
@@ -381,11 +381,11 @@ describe('Test graph_obj', function () {
 
         it('should throw an error when update is not an object', function () {
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, undefined, [0], 8);
             }).toThrow(new Error('update must be a key:value object'));
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, null, [0]);
             }).toThrow(new Error('update must be a key:value object'));
 
@@ -394,48 +394,48 @@ describe('Test graph_obj', function () {
 
         it('should throw an error when indices are omitted', function () {
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]});
             }).toThrow(new Error('indices must be an integer or array of integers'));
 
         });
 
-        it('should thow an error when a current index is out of bounds', function () {
+        it('should throw an error when a current index is out of bounds', function () {
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [-gd.data.length - 1]);
             }).toThrow(new Error('indices must be valid indices for gd.data.'));
 
         });
 
-        it('should not thow an error when negative index wraps to positive', function () {
+        it('should not throw an error when negative index wraps to positive', function () {
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [-1]);
             }).not.toThrow();
 
         });
 
-       it('should thow an error when number of Indices does not match Update arrays', function () {
+        it('should throw an error when number of Indices does not match Update arrays', function () {
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, {x: [[1, 2], [2, 3]] }, [0]);
             }).toThrow(new Error('attribute x must be an array of length equal to indices array length'));
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0, 1]);
             }).toThrow(new Error('attribute x must be an array of length equal to indices array length'));
 
         });
 
-        it('should thow an error when maxPoints is an Object but does not match Update', function () {
+        it('should throw an error when maxPoints is an Object but does not match Update', function () {
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {y: [1]});
             }).toThrow(new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
                                  'corrispondence with the keys and number of traces in the update object'));
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, {x: [[1]]}, [0], {x: [1, 2]});
             }).toThrow(new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
                                  'corrispondence with the keys and number of traces in the update object'));
@@ -447,7 +447,7 @@ describe('Test graph_obj', function () {
             // lets update y on both traces, but only 1 trace has "y"
             gd.data[1].y = [1,2,3];
 
-            expect(function () {
+            expect(function() {
                 Plotly.extendTraces(gd, {
                     y: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
                 }, [0, 1]);

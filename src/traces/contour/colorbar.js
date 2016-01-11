@@ -38,9 +38,9 @@ module.exports = function colorbar(gd, cd) {
         extraLevel = contours.coloring==='lines' ? 0 : 1,
         colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
         colorDomain = scl.map(function(si){
-                return (si[0]*(nc+extraLevel-1)-(extraLevel/2)) * cs +
-                    contours.start;
-            }),
+            return (si[0]*(nc+extraLevel-1)-(extraLevel/2)) * cs +
+                contours.start;
+        }),
         colorRange = scl.map(function(si){ return si[1]; });
 
     // colorbar fill and lines

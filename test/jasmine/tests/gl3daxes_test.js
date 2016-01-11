@@ -70,7 +70,7 @@ describe('Test Gl3dAxes', function () {
             }
 
             supplyLayoutDefaults(layoutIn, layoutOut, options);
-            ['xaxis', 'yaxis', 'zaxis'].forEach( function (axis) {
+            ['xaxis', 'yaxis', 'zaxis'].forEach(function(axis) {
                 expect(checkKeys(expected[axis], layoutOut[axis])).toBe(true);
             });
         });

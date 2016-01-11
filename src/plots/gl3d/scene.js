@@ -35,9 +35,9 @@ function render(scene) {
     var svgContainer = scene.svgContainer;
     var clientRect = scene.container.getBoundingClientRect();
     var width = clientRect.width, height = clientRect.height;
-    svgContainer.setAttributeNS (null, 'viewBox', '0 0 ' + width + ' ' + height);
-    svgContainer.setAttributeNS (null, 'width', width);
-    svgContainer.setAttributeNS (null, 'height', height);
+    svgContainer.setAttributeNS(null, 'viewBox', '0 0 ' + width + ' ' + height);
+    svgContainer.setAttributeNS(null, 'width', width);
+    svgContainer.setAttributeNS(null, 'height', height);
 
     computeTickMarks(scene);
     scene.glplot.axes.update(scene.axesOptions);
@@ -45,13 +45,11 @@ function render(scene) {
     //Check if pick has changed
     var keys = Object.keys(scene.traces);
     var lastPicked = null;
-    var lastIndex = null;
     var selection = scene.glplot.selection;
     for (var i = 0; i < keys.length; ++i) {
         var trace = scene.traces[keys[i]];
         if(trace.handlePick(selection)) {
             lastPicked = trace;
-            lastIndex = scene.glplot.selection.index;
         }
 
         if (trace.setContourLevels) trace.setContourLevels();
@@ -95,40 +93,40 @@ function render(scene) {
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
-      var glplotOptions = {
-              canvas:     canvas,
-              gl:         gl,
-              container:  scene.container,
-              axes:       scene.axesOptions,
-              spikes:     scene.spikeOptions,
-              pickRadius: 10,
-              snapToData: true,
-              autoScale:  true,
-              autoBounds: false
-      };
+    var glplotOptions = {
+        canvas: canvas,
+        gl: gl,
+        container: scene.container,
+        axes: scene.axesOptions,
+        spikes: scene.spikeOptions,
+        pickRadius: 10,
+        snapToData: true,
+        autoScale: true,
+        autoBounds: false
+    };
 
       //For static plots, we reuse the WebGL context as WebKit doesn't collect them
       //reliably
-      if (scene.staticMode) {
-          if(!STATIC_CONTEXT) {
-              STATIC_CANVAS = document.createElement('canvas');
-              try {
-                  STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
-                      preserveDrawingBuffer: true,
-                      premultipliedAlpha: true
-                  });
-              } catch(e) {
-                  throw new Error('error creating static canvas/context for image server');
-              }
-          }
-          glplotOptions.pixelRatio = scene.pixelRatio;
-          glplotOptions.gl = STATIC_CONTEXT;
-          glplotOptions.canvas = STATIC_CANVAS;
-      }
+    if (scene.staticMode) {
+        if(!STATIC_CONTEXT) {
+            STATIC_CANVAS = document.createElement('canvas');
+            try {
+                STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
+                    preserveDrawingBuffer: true,
+                    premultipliedAlpha: true
+                });
+            } catch(e) {
+                throw new Error('error creating static canvas/context for image server');
+            }
+        }
+        glplotOptions.pixelRatio = scene.pixelRatio;
+        glplotOptions.gl = STATIC_CONTEXT;
+        glplotOptions.canvas = STATIC_CANVAS;
+    }
 
-      try {
-          scene.glplot = createPlot(glplotOptions);
-      } catch (e) {
+    try {
+        scene.glplot = createPlot(glplotOptions);
+    } catch (e) {
         /*
         * createPlot will throw when webgl is not enabled in the client.
         * Lets return an instance of the module with all functions noop'd.
@@ -136,41 +134,41 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         * is overridden with a function that removes the container only.
         */
         showNoWebGlMsg(scene);
-      }
+    }
 
-      if(!scene.staticMode) {
+    if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
-          console.log('lost context');
-          ev.preventDefault();
+            console.log('lost context');
+            ev.preventDefault();
         });
-      }
+    }
 
-      if(!scene.camera) {
+    if(!scene.camera) {
         var cameraData = fullLayout.scene.camera;
         scene.camera = createCamera(scene.container, {
             center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
-            eye:    [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
-            up:     [cameraData.up.x, cameraData.up.y, cameraData.up.z],
+            eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
+            up: [cameraData.up.x, cameraData.up.y, cameraData.up.z],
             zoomMin: 0.1,
             zoomMax: 100,
-            mode:   'orbit'
+            mode: 'orbit'
         });
-      }
+    }
 
-      scene.glplot.mouseListener.enabled = false;
-      scene.glplot.camera = scene.camera;
+    scene.glplot.mouseListener.enabled = false;
+    scene.glplot.camera = scene.camera;
 
-      scene.glplot.oncontextloss = function() {
+    scene.glplot.oncontextloss = function() {
         scene.recoverContext();
-      };
+    };
 
 
-      scene.glplot.onrender = render.bind(null, scene);
+    scene.glplot.onrender = render.bind(null, scene);
 
-      //List of scene objects
-      scene.traces = {};
+    //List of scene objects
+    scene.traces = {};
 
-      return true;
+    return true;
 }
 
 function Scene(options, fullLayout) {
@@ -184,24 +182,22 @@ function Scene(options, fullLayout) {
         'http://www.w3.org/2000/svg',
         'svg');
     svgContainer.style.position = 'absolute';
-    svgContainer.style.top   = svgContainer.style.left   = '0px';
+    svgContainer.style.top = svgContainer.style.left = '0px';
     svgContainer.style.width = svgContainer.style.height = '100%';
     svgContainer.style['z-index'] = 20;
     svgContainer.style['pointer-events'] = 'none';
     sceneContainer.appendChild(svgContainer);
     this.svgContainer = svgContainer;
 
-    /*
-     * Tag the container with the sceneID
-     */
-    sceneContainer.id             = options.id;
+    // Tag the container with the sceneID
+    sceneContainer.id = options.id;
     sceneContainer.style.position = 'absolute';
-    sceneContainer.style.top      = sceneContainer.style.left = '0px';
-    sceneContainer.style.width    = sceneContainer.style.height = '100%';
+    sceneContainer.style.top = sceneContainer.style.left = '0px';
+    sceneContainer.style.width = sceneContainer.style.height = '100%';
     plotContainer.appendChild(sceneContainer);
 
-    this.fullLayout               = fullLayout;
-    this.id                       = options.id || 'scene';
+    this.fullLayout = fullLayout;
+    this.id = options.id || 'scene';
 
     //Saved from last call to plot()
     this.plotArgs = [ [], {}, {} ];
@@ -209,79 +205,77 @@ function Scene(options, fullLayout) {
     /*
      * Move this to calc step? Why does it work here?
      */
-    this.axesOptions      = createAxesOptions(fullLayout[this.id]);
-    this.spikeOptions     = createSpikeOptions(fullLayout[this.id]);
-    this.container        = sceneContainer;
-    this.staticMode       = !!options.staticPlot;
-    this.pixelRatio       = options.plotGlPixelRatio || 2;
+    this.axesOptions = createAxesOptions(fullLayout[this.id]);
+    this.spikeOptions = createSpikeOptions(fullLayout[this.id]);
+    this.container = sceneContainer;
+    this.staticMode = !!options.staticPlot;
+    this.pixelRatio = options.plotGlPixelRatio || 2;
 
     //Coordinate rescaling
-    this.dataScale    = [1,1,1];
+    this.dataScale = [1,1,1];
 
     this.contourLevels = [ [], [], [] ];
 
-    if(!initializeGLPlot(this, fullLayout)) {
-      return;
-    }
+    if(!initializeGLPlot(this, fullLayout)) return;
 }
 
 var proto = Scene.prototype;
 
 proto.recoverContext = function() {
-  var scene = this;
-  var gl = this.glplot.gl;
-  var canvas = this.glplot.canvas;
-  this.glplot.dispose();
-  function tryRecover() {
-    if(gl.isContextLost()) {
-      requestAnimationFrame(tryRecover);
-      return;
+    var scene = this;
+    var gl = this.glplot.gl;
+    var canvas = this.glplot.canvas;
+    this.glplot.dispose();
+
+    function tryRecover() {
+        if(gl.isContextLost()) {
+            requestAnimationFrame(tryRecover);
+            return;
+        }
+        if(!initializeGLPlot(scene, scene.fullLayout, canvas, gl)) {
+            console.error('catastrophic/unrecoverable webgl error.  context lost.');
+            return;
+        }
+        scene.plot.apply(scene, scene.plotArgs);
     }
-    if(!initializeGLPlot(scene, scene.fullLayout, canvas, gl)) {
-      console.error('catastrophic/unrecoverable webgl error.  context lost.');
-      return;
-    }
-    scene.plot.apply(scene, scene.plotArgs);
-  }
-  requestAnimationFrame(tryRecover);
+    requestAnimationFrame(tryRecover);
 };
 
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
 function coordinateBound(axis, coord, d, bounds) {
-  for(var i=0; i<coord.length; ++i) {
-    if(Array.isArray(coord[i])) {
-      for(var j=0; j<coord[i].length; ++j) {
-        var x = axis.d2l(coord[i][j]);
-        if(!isNaN(x) && isFinite(x)) {
-          bounds[0][d] = Math.min(bounds[0][d], x);
-          bounds[1][d] = Math.max(bounds[1][d], x);
+    for(var i=0; i<coord.length; ++i) {
+        if(Array.isArray(coord[i])) {
+            for(var j=0; j<coord[i].length; ++j) {
+                var x = axis.d2l(coord[i][j]);
+                if(!isNaN(x) && isFinite(x)) {
+                    bounds[0][d] = Math.min(bounds[0][d], x);
+                    bounds[1][d] = Math.max(bounds[1][d], x);
+                }
+            }
         }
-      }
-    } else {
-      var x = axis.d2l(coord[i]);
-      if(!isNaN(x) && isFinite(x)) {
-        bounds[0][d] = Math.min(bounds[0][d], x);
-        bounds[1][d] = Math.max(bounds[1][d], x);
-      }
+        else {
+            var x = axis.d2l(coord[i]);
+            if(!isNaN(x) && isFinite(x)) {
+                bounds[0][d] = Math.min(bounds[0][d], x);
+                bounds[1][d] = Math.max(bounds[1][d], x);
+            }
+        }
     }
-  }
 }
 
 function computeTraceBounds(scene, trace, bounds) {
-  var sceneLayout = scene.fullSceneLayout;
-  coordinateBound(sceneLayout.xaxis, trace.x, 0, bounds);
-  coordinateBound(sceneLayout.yaxis, trace.y, 1, bounds);
-  coordinateBound(sceneLayout.zaxis, trace.z, 2, bounds);
+    var sceneLayout = scene.fullSceneLayout;
+    coordinateBound(sceneLayout.xaxis, trace.x, 0, bounds);
+    coordinateBound(sceneLayout.yaxis, trace.y, 1, bounds);
+    coordinateBound(sceneLayout.zaxis, trace.z, 2, bounds);
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
     //Save parameters
-    this.plotArgs = [ sceneData, fullLayout, layout ];
+    this.plotArgs = [sceneData, fullLayout, layout];
 
-    if(this.glplot.contextLost) {
-      return;
-    }
+    if(this.glplot.contextLost) return;
 
     var data, trace;
     var i, j;
@@ -313,35 +307,33 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
 
     //Convert scene data
-    if(!sceneData) {
-      sceneData = [];
-    } else if(!Array.isArray(sceneData)) {
-      sceneData = [sceneData];
-    }
+    if(!sceneData) sceneData = [];
+    else if(!Array.isArray(sceneData)) sceneData = [sceneData];
 
     //Compute trace bounding box
     var dataBounds = [
-      [ Infinity,  Infinity,  Infinity],
-      [-Infinity, -Infinity, -Infinity]
+        [Infinity, Infinity, Infinity],
+        [-Infinity, -Infinity, -Infinity]
     ];
     for(var i=0; i<sceneData.length; ++i) {
-      var data = sceneData[i];
-      if(data.visible !== true) {
-        continue;
-      }
-      computeTraceBounds(this, data, dataBounds);
+        var data = sceneData[i];
+        if(data.visible !== true) continue;
+
+        computeTraceBounds(this, data, dataBounds);
     }
     var dataScale = [1,1,1];
     for(var j=0; j<3; ++j) {
-      if(dataBounds[0][j] > dataBounds[1][j]) {
-        dataScale[j] = 1.0;
-      } else {
-        if(dataBounds[1][j] === dataBounds[0][j]) {
-          dataScale[j] = 1.0;
-        } else {
-          dataScale[j] = 1.0/(dataBounds[1][j] - dataBounds[0][j]);
+        if(dataBounds[0][j] > dataBounds[1][j]) {
+            dataScale[j] = 1.0;
         }
-      }
+        else {
+            if(dataBounds[1][j] === dataBounds[0][j]) {
+                dataScale[j] = 1.0;
+            }
+            else {
+                dataScale[j] = 1.0/(dataBounds[1][j] - dataBounds[0][j]);
+            }
+        }
     }
 
     //Save scale
@@ -360,15 +352,15 @@ proto.plot = function(sceneData, fullLayout, layout) {
             switch(data.type) {
                 case 'scatter3d':
                     trace = createScatterTrace(this, data);
-                break;
+                    break;
 
                 case 'surface':
                     trace = createSurfaceTrace(this, data);
-                break;
+                    break;
 
                 case 'mesh3d':
                     trace = createMeshTrace(this, data);
-                break;
+                    break;
 
                 default:
             }
@@ -379,7 +371,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
     //Remove empty traces
     var traceIds = Object.keys(this.traces);
-trace_id_loop:
+
+    trace_id_loop:
     for(i = 0; i<traceIds.length; ++i) {
         for(j = 0; j<sceneData.length; ++j) {
             if(sceneData[j].uid === traceIds[i] && sceneData[j].visible===true) {
@@ -401,13 +394,14 @@ trace_id_loop:
         var axisType = axis.type;
 
         if(axisType in axisTypeRatios) {
-          axisTypeRatios[axisType].acc *= dataScale[i];
-          axisTypeRatios[axisType].count += 1;
-        } else {
-          axisTypeRatios[axisType] = {
-            acc: dataScale[i],
-            count: 1
-          };
+            axisTypeRatios[axisType].acc *= dataScale[i];
+            axisTypeRatios[axisType].count += 1;
+        }
+        else {
+            axisTypeRatios[axisType] = {
+                acc: dataScale[i],
+                count: 1
+            };
         }
 
         if(axis.autorange) {
@@ -426,7 +420,7 @@ trace_id_loop:
             }
             if(sceneBounds[0][i] > sceneBounds[1][i]) {
                 sceneBounds[0][i] = -1;
-                sceneBounds[1][i] =  1;
+                sceneBounds[1][i] = 1;
             } else {
                 var d = sceneBounds[1][i] - sceneBounds[0][i];
                 sceneBounds[0][i] -= d/32.0;
@@ -452,10 +446,10 @@ trace_id_loop:
 
     //Compute axis scale per category
     for(var i=0; i<3; ++i) {
-      var axis = fullSceneLayout[axisProperties[i]];
-      var axisType = axis.type;
-      var axisRatio = axisTypeRatios[axisType];
-      axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0/axisRatio.count) / dataScale[i];
+        var axis = fullSceneLayout[axisProperties[i]];
+        var axisType = axis.type;
+        var axisRatio = axisTypeRatios[axisType];
+        axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0/axisRatio.count) / dataScale[i];
     }
 
     /*
@@ -517,10 +511,10 @@ trace_id_loop:
     if (domain && size) {
         var containerStyle = this.container.style;
         containerStyle.position = 'absolute';
-        containerStyle.left     = (size.l + domain.x[0] * size.w) + 'px';
-        containerStyle.top      = (size.t + (1 - domain.y[1]) * size.h) + 'px';
-        containerStyle.width    = (size.w * (domain.x[1] - domain.x[0])) + 'px';
-        containerStyle.height   = (size.h * (domain.y[1] - domain.y[0])) + 'px';
+        containerStyle.left = (size.l + domain.x[0] * size.w) + 'px';
+        containerStyle.top = (size.t + (1 - domain.y[1]) * size.h) + 'px';
+        containerStyle.width = (size.w * (domain.x[1] - domain.x[0])) + 'px';
+        containerStyle.height = (size.h * (domain.y[1] - domain.y[0])) + 'px';
     }
 };
 
@@ -538,8 +532,8 @@ proto.setCameraToDefault = function setCameraToDefault () {
     // as in Gl3d.layoutAttributes
     this.glplot.camera.lookAt(
         [1.25, 1.25, 1.25],
-        [0   , 0   , 0   ],
-        [0   , 0   , 1   ]
+        [0, 0, 0],
+        [0, 0, 1]
     );
 };
 
@@ -547,22 +541,22 @@ proto.setCameraToDefault = function setCameraToDefault () {
 proto.getCamera = function getCamera () {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
 
-    var up     = this.glplot.camera.up;
+    var up = this.glplot.camera.up;
     var center = this.glplot.camera.center;
-    var eye    = this.glplot.camera.eye;
+    var eye = this.glplot.camera.eye;
 
     return {
-        up:     {x:up[0], y:up[1], z:up[2]},
+        up: {x:up[0], y:up[1], z:up[2]},
         center: {x:center[0], y:center[1], z:center[2]},
-        eye:    {x:eye[0], y:eye[1], z:eye[2]}
+        eye: {x:eye[0], y:eye[1], z:eye[2]}
     };
 };
 
 // set camera position with a set of plotly coords
 proto.setCamera = function setCamera (cameraData) {
-    var up      = cameraData.up;
-    var center  = cameraData.center;
-    var eye     = cameraData.eye;
+    var up = cameraData.up;
+    var center = cameraData.center;
+    var eye = cameraData.eye;
     this.glplot.camera.lookAt(
         [eye.x, eye.y, eye.z],
         [center.x, center.y, center.z],
@@ -625,9 +619,7 @@ proto.handleDragmode = function (dragmode) {
 proto.toImage = function (format) {
     if (!format) format = 'png';
 
-    if(this.staticMode) {
-      this.container.appendChild(STATIC_CANVAS);
-    }
+    if(this.staticMode) this.container.appendChild(STATIC_CANVAS);
 
     //Force redraw
     this.glplot.redraw();
@@ -663,7 +655,7 @@ proto.toImage = function (format) {
 
     var dataURL;
 
-    switch (format) {
+    switch(format) {
         case 'jpeg':
             dataURL = canvas.toDataURL('image/jpeg');
             break;
@@ -671,12 +663,10 @@ proto.toImage = function (format) {
             dataURL = canvas.toDataURL('image/webp');
             break;
         default:
-        dataURL = canvas.toDataURL('image/png');
+            dataURL = canvas.toDataURL('image/png');
     }
 
-    if(this.staticMode) {
-      this.container.removeChild(STATIC_CANVAS);
-    }
+    if(this.staticMode) this.container.removeChild(STATIC_CANVAS);
 
     return dataURL;
 };

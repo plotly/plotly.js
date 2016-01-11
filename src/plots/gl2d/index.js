@@ -20,7 +20,7 @@ exports.name = 'gl2d';
 
 exports.attr = ['xaxis', 'yaxis'];
 
-exports.idRoot =  ['x', 'y'];
+exports.idRoot = ['x', 'y'];
 
 exports.attributes = require('../cartesian/attributes');
 
@@ -40,11 +40,11 @@ exports.plot = function plotGl2d(gd) {
         // If Scene is not instantiated, create one!
         if(scene === undefined) {
             scene = new Scene2D({
-                    container: gd.querySelector('.gl-container'),
-                    id: subplotId,
-                    staticPlot: gd._context.staticPlot,
-                    plotGlPixelRatio: gd._context.plotGlPixelRatio
-                },
+                container: gd.querySelector('.gl-container'),
+                id: subplotId,
+                staticPlot: gd._context.staticPlot,
+                plotGlPixelRatio: gd._context.plotGlPixelRatio
+            },
                 fullLayout
             );
 

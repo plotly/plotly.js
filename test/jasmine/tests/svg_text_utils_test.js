@@ -24,7 +24,7 @@ describe('svg+text utils', function() {
         it('checks for XSS attack in href', function() {
             var node = mockTextSVGElement(
                 '<a href="javascript:alert(\'attack\')">XSS</a>'
-            )
+            );
 
             expect(node.text()).toEqual('XSS');
             expect(node.select('a').attr('xlink:href')).toBe(null);
@@ -33,7 +33,7 @@ describe('svg+text utils', function() {
         it('checks for XSS attack in href (with plenty of white spaces)', function() {
             var node = mockTextSVGElement(
                 '<a href =    "     javascript:alert(\'attack\')">XSS</a>'
-            )
+            );
 
             expect(node.text()).toEqual('XSS');
             expect(node.select('a').attr('xlink:href')).toBe(null);
@@ -42,7 +42,7 @@ describe('svg+text utils', function() {
         it('whitelists http hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="http://bl.ocks.org/">bl.ocks.org</a>'
-            )
+            );
 
             expect(node.text()).toEqual('bl.ocks.org');
             expect(node.select('a').attr('xlink:href')).toEqual('http://bl.ocks.org/');
@@ -51,7 +51,7 @@ describe('svg+text utils', function() {
         it('whitelists https hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="https://plot.ly">plot.ly</a>'
-            )
+            );
 
             expect(node.text()).toEqual('plot.ly');
             expect(node.select('a').attr('xlink:href')).toEqual('https://plot.ly');
@@ -60,7 +60,7 @@ describe('svg+text utils', function() {
         it('whitelists mailto hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="mailto:support@plot.ly">support</a>'
-            )
+            );
 
             expect(node.text()).toEqual('support');
             expect(node.select('a').attr('xlink:href')).toEqual('mailto:support@plot.ly');

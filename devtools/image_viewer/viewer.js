@@ -50,7 +50,7 @@ function createButton(imageName) {
 
             $mock.innerHTML = '';
             $mock.appendChild(createJSONview(mock));
-       });
+        });
     });
 
     return button;

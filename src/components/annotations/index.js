@@ -533,10 +533,10 @@ annotations.draw = function(gd, index, opt, value) {
             // line from the arrowhead to far away and reduce with xor
             // to get the parity of the number of intersections.
             if(edges.reduce(function(a, x) {
-                        return a ^
-                            !!lineIntersect(arrowX, arrowY, arrowX + 1e6, arrowY + 1e6,
-                                x[0], x[1], x[2], x[3]);
-                    },false)) {
+                return a ^
+                    !!lineIntersect(arrowX, arrowY, arrowX + 1e6, arrowY + 1e6,
+                            x[0], x[1], x[2], x[3]);
+            }, false)) {
                 // no line or arrow - so quit drawArrow now
                 return;
             }

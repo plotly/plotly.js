@@ -17,6 +17,8 @@ var axisAttributes = require('./axis_attributes');
 module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut) {
     var axesNames = constants.axesNames;
 
+    var axisIn, axisOut;
+
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(axisIn, axisOut, axisAttributes, attr, dflt);
     }
@@ -46,8 +48,8 @@ module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut)
 
     for(var i = 0; i < axesNames.length; i++) {
         var axisName = axesNames[i];
-        var axisIn = geoLayoutIn[axisName] || {};
-        var axisOut = {};
+        axisIn = geoLayoutIn[axisName] || {};
+        axisOut = {};
 
         var rangeDflt = getRangeDflt(axisName);
 

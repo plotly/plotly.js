@@ -83,8 +83,8 @@ fx.init = function(gd) {
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number
-        if( (fullLayout._plots[a].mainplot && true) ===
-                (fullLayout._plots[b].mainplot && true) ) {
+        if((fullLayout._plots[a].mainplot && true) ===
+            (fullLayout._plots[b].mainplot && true)) {
             var aParts = a.split('y'),
                 bParts = b.split('y');
             return (aParts[0]===bParts[0]) ?
@@ -146,11 +146,11 @@ fx.init = function(gd) {
             // corner draggers
             dragBox(gd, plotinfo, -DRAGGERSIZE, -DRAGGERSIZE,
                 DRAGGERSIZE, DRAGGERSIZE, 'n', 'w');
-            dragBox(gd, plotinfo, xa._length,   -DRAGGERSIZE,
+            dragBox(gd, plotinfo, xa._length, -DRAGGERSIZE,
                 DRAGGERSIZE, DRAGGERSIZE, 'n', 'e');
             dragBox(gd, plotinfo, -DRAGGERSIZE, ya._length,
                 DRAGGERSIZE, DRAGGERSIZE, 's', 'w');
-            dragBox(gd, plotinfo, xa._length,   ya._length,
+            dragBox(gd, plotinfo, xa._length, ya._length,
                 DRAGGERSIZE, DRAGGERSIZE, 's', 'e');
         }
 
@@ -714,8 +714,8 @@ fx.loneHover = function(hoverItem, opts) {
 
         // filler to make createHoverText happy
         trace: {
-          index: 0,
-          hoverinfo: ''
+            index: 0,
+            hoverinfo: ''
         },
         xa: {_offset:0},
         ya: {_offset:0},
@@ -1780,8 +1780,8 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var obji;
             for(i = 0; i < objArray.length; i++) {
                 obji = objArray[i];
-                if( (ew && activeAxIds.indexOf(obji.xref) !== -1) ||
-                        (ns && activeAxIds.indexOf(obji.yref) !== -1) ) {
+                if((ew && activeAxIds.indexOf(obji.xref) !== -1) ||
+                    (ns && activeAxIds.indexOf(obji.yref) !== -1)) {
                     module.draw(gd, i);
                 }
             }
@@ -1910,10 +1910,11 @@ function pauseForDrag(gd) {
     gd._replotPending = false;
 
     setTimeout(function() {
-            gd._replotPending = deferredReplot;
-            finishDrag(gd);
-        },
-        constants.DBLCLICKDELAY);
+        gd._replotPending = deferredReplot;
+        finishDrag(gd);
+    },
+        constants.DBLCLICKDELAY
+    );
 }
 
 function finishDrag(gd) {

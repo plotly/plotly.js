@@ -131,11 +131,12 @@ util.convertToTspans = function(_context, _callback){
                 }
 
                 newSvg.attr({
-                        'class': svgClass,
-                        height: _svgBBox.height,
-                        preserveAspectRatio: 'xMinYMin meet'
-                    })
-                    .style({overflow: 'visible', 'pointer-events': 'none'});
+                    'class': svgClass,
+                    height: _svgBBox.height,
+                    preserveAspectRatio: 'xMinYMin meet'
+                })
+                .style({overflow: 'visible', 'pointer-events': 'none'});
+
                 var fill = that.style('fill') || 'black';
                 newSvg.select('g').attr({fill: fill, stroke: fill});
 

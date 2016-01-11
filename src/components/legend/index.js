@@ -282,13 +282,13 @@ legend.texts = function(context, td, d, i, traces){
         .data([0]);
     text.enter().append('text').classed('legendtext', true);
     text.attr({
-            x: 40,
-            y: 0
-        })
-        .style('text-anchor', 'start')
-        .call(Plotly.Drawing.font, fullLayout.legend.font)
-        .text(name)
-        .attr({'data-unformatted': name});
+        x: 40,
+        y: 0
+    })
+    .style('text-anchor', 'start')
+    .call(Plotly.Drawing.font, fullLayout.legend.font)
+    .text(name)
+    .attr({'data-unformatted': name});
 
     function textLayout(s){
         Plotly.util.convertToTspans(s, function(){
@@ -512,7 +512,7 @@ legend.draw = function(td) {
                         }
                     }
 
-                    newVisible = trace.visible === true ?  'legendonly' : true;
+                    newVisible = trace.visible === true ? 'legendonly' : true;
                     Plotly.restyle(td, 'visible', newVisible, traceIndicesInGroup);
                 }
             });

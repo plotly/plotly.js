@@ -39,7 +39,7 @@ var deep = {
 var undef = {
     str: undefined,
     layer: {
-       date: undefined
+        date: undefined
     },
     arr: [1, 2, undefined]
 };
@@ -193,7 +193,7 @@ describe('extendFlat', function() {
         expect(undef).toEqual({
             str: undefined,
             layer: {
-               date: undefined
+                date: undefined
             },
             arr: [1, 2, undefined]
         });
@@ -382,7 +382,7 @@ describe('extendDeep', function() {
         expect(undef).toEqual({
             str: undefined,
             layer: {
-               date: undefined
+                date: undefined
             },
             arr: [1, 2, undefined]
         });
@@ -408,11 +408,11 @@ describe('extendDeep', function() {
 describe('extendDeepAll', function() {
     'use strict';
 
-    var ori, target;
+    var ori;
 
     it('extends object with another other containing keys undefined values', function() {
         ori = {};
-        target = extendDeepAll(ori, deep, undef);
+        extendDeepAll(ori, deep, undef);
 
         expect(ori.str).toBe(undefined);
         expect(ori.layer.date).toBe(undefined);

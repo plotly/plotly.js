@@ -26,6 +26,5 @@ fs.readFile(constants.pathToFontSVG, function(err, data) {
 // copy topojson files from sane-topojson to dist/
 fs.copy(constants.pathToTopojsonSrc, constants.pathToTopojsonDist,
     { clobber: true },
-    function(err) {
-        if(err) throw err;
-});
+    function(err) { if(err) throw err; }
+);

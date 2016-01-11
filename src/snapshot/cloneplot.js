@@ -19,32 +19,32 @@ function cloneLayoutOverride (tileClass) {
     var override;
 
     switch (tileClass) {
-    case 'themes__thumb':
-        override = {
-            autosize: true,
-            width: 150,
-            height: 150,
-            title: '',
-            showlegend: false,
-            margin: {l: 5, r: 5, t: 5, b: 5, pad: 0},
-            annotations: []
-        };
-        break;
+        case 'themes__thumb':
+            override = {
+                autosize: true,
+                width: 150,
+                height: 150,
+                title: '',
+                showlegend: false,
+                margin: {l: 5, r: 5, t: 5, b: 5, pad: 0},
+                annotations: []
+            };
+            break;
 
-    case 'thumbnail':
-        override = {
-            title: '',
-            hidesources: true,
-            showlegend: false,
-            borderwidth: 0,
-            bordercolor: '',
-            margin: {l: 1, r: 1, t: 1, b: 1, pad: 0},
-            annotations: []
-        };
-        break;
+        case 'thumbnail':
+            override = {
+                title: '',
+                hidesources: true,
+                showlegend: false,
+                borderwidth: 0,
+                bordercolor: '',
+                margin: {l: 1, r: 1, t: 1, b: 1, pad: 0},
+                annotations: []
+            };
+            break;
 
-    default:
-        override = {};
+        default:
+            override = {};
     }
 
 

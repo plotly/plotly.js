@@ -313,8 +313,7 @@ axes.handleAxisPositioningDefaults = function(containerIn, containerOut, coerce,
 
     var overlaying = false;
     if(overlayableAxes.length) {
-        overlaying = Plotly.Lib.coerce(containerIn, containerOut,
-        {
+        overlaying = Plotly.Lib.coerce(containerIn, containerOut, {
             overlaying: {
                 valType: 'enumerated',
                 values: [false].concat(overlayableAxes),
@@ -1574,11 +1573,12 @@ axes.tickText = function(ax, x, hover){
     var out = tickTextObj(ax, x),
         hideexp,
         arrayMode = ax.tickmode === 'array',
-        extraPrecision = hover || arrayMode;
+        extraPrecision = hover || arrayMode,
+        i;
 
     if(arrayMode && Array.isArray(ax.ticktext)) {
         var minDiff = Math.abs(ax.range[1] - ax.range[0]) / 10000;
-        for(var i = 0; i < ax.ticktext.length; i++) {
+        for(i = 0; i < ax.ticktext.length; i++) {
             if(Math.abs(x - ax.d2l(ax.tickvals[i])) < minDiff) break;
         }
         if(i < ax.ticktext.length) {
@@ -1998,10 +1998,10 @@ axes.getSubplots = function(gd, ax) {
         // if a free axis is already represented in the data, ignore it
         var foundAx2 = false;
         for(j = 0; j < subplots.length; j++) {
-             if(hasAx2(subplots[j], ax2)) {
-                 foundAx2 = true;
-                 break;
-             }
+            if(hasAx2(subplots[j], ax2)) {
+                foundAx2 = true;
+                break;
+            }
         }
         if(ax2.anchor === 'free' && foundAx2) continue;
 
@@ -2048,7 +2048,7 @@ axes.getSubplots = function(gd, ax) {
 // find all subplots with axis 'ax'
 axes.findSubplotsWithAxis = function(subplots, ax) {
     var axMatch = new RegExp(
-        (ax._id.charAt(0) === 'x') ?  ('^' + ax._id + 'y') : (ax._id + '$')
+        (ax._id.charAt(0) === 'x') ? ('^' + ax._id + 'y') : (ax._id + '$')
     );
     var subplotsWithAxis = [];
 
@@ -2092,7 +2092,7 @@ axes.makeClipPaths = function(td) {
         .data(clipList, function(d) { return d.x._id + d.y._id; });
     axClips.enter().append('clipPath')
         .classed('axesclip', true)
-        .attr('id', function(d) { return 'clip' + layout._uid + d.x._id + d.y._id; } )
+        .attr('id', function(d) { return 'clip' + layout._uid + d.x._id + d.y._id; })
       .append('rect');
     axClips.exit().remove();
     axClips.each(function(d) {

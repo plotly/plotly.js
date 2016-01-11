@@ -28,7 +28,7 @@ var STATIC_CANVAS, STATIC_CONTEXT;
 
 function Scene2D(options, fullLayout) {
     this.container = options.container;
-    this.pixelRatio = options.plotGlPixelRatio ||  window.devicePixelRatio;
+    this.pixelRatio = options.plotGlPixelRatio || window.devicePixelRatio;
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
 
@@ -89,9 +89,9 @@ proto.makeFramework = function() {
                     antialias: true
                 });
             } catch(e) {
-              throw new Error([
-                  'Error creating static canvas/context for image server'
-              ].join(' '));
+                throw new Error([
+                    'Error creating static canvas/context for image server'
+                ].join(' '));
             }
         }
 
@@ -105,12 +105,16 @@ proto.makeFramework = function() {
 
         try {
             gl = liveCanvas.getContext('webgl', glOpts);
-        } catch(e) {}
+        } catch(e) {
+            //
+        }
 
         if(!gl) {
             try {
                 gl = liveCanvas.getContext('experimental-webgl', glOpts);
-            } catch(e) {}
+            } catch(e) {
+                //
+            }
         }
 
         if(!gl) showNoWebGlMsg(this);
@@ -204,7 +208,7 @@ proto.toImage = function(format) {
             dataURL = canvas.toDataURL('image/webp');
             break;
         default:
-        dataURL = canvas.toDataURL('image/png');
+            dataURL = canvas.toDataURL('image/png');
     }
 
     if(this.staticPlot) this.container.removeChild(STATIC_CANVAS);
@@ -324,7 +328,7 @@ proto.plot = function(fullData, fullLayout) {
             switch(traceData.type) {
                 case 'scattergl':
                     trace = createLineWithMarkers(this, traceData);
-                break;
+                    break;
             }
         }
         this.traces[traceData.uid] = trace;
@@ -332,7 +336,8 @@ proto.plot = function(fullData, fullLayout) {
 
     // remove empty traces
     var traceIds = Object.keys(this.traces);
-trace_id_loop:
+
+    trace_id_loop:
     for(i = 0; i < traceIds.length; ++i) {
         for(j = 0; j < fullData.length; ++j) {
             if(fullData[j].uid === traceIds[i]) continue trace_id_loop;
@@ -482,7 +487,7 @@ proto.draw = function() {
                     container: this.svgContainer
                 });
 
-                 this.lastPickResult = { dataCoord: result.dataCoord };
+                this.lastPickResult = { dataCoord: result.dataCoord };
             }
         }
         else if(!result && this.lastPickResult) {
