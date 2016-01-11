@@ -84,7 +84,6 @@
     "falafel": "^1.2.0",
     "glob": "^6.0.1",
     "jasmine-core": "^2.3.4",
-    "jshint": "^2.8.0",
     "karma": "^0.13.15",
     "karma-browserify": "^4.4.1",
     "karma-chrome-launcher": "^0.2.1",
