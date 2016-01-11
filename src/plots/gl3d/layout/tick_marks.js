@@ -6,8 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-/* jshint shadow: true */
+/*eslint block-scoped-var: 0*/
+/*eslint no-redeclare: 0*/
 
 'use strict';
 

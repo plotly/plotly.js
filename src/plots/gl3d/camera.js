@@ -6,9 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-/* jshint shadow: true */
-
 'use strict';
 
 module.exports = createCamera;

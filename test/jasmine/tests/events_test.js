@@ -1,3 +1,5 @@
+/* global $:false */
+
 /*
  * Note this test requires JQuery in the global scope.
  * we should keep it that way to keep testing our backward

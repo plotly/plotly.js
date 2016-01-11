@@ -1,3 +1,5 @@
+/*eslint dot-notation: 0*/
+
 var plotButtons = require('./buttons');
 
 var figDir = '../../test/image/baselines/gl3d_';

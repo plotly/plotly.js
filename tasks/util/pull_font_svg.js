@@ -27,8 +27,6 @@ module.exports = function pullFontSVG(data, pathOut) {
         var charStr = JSON.stringify(chars, null, 4).replace(/\"/g, '\'');
 
         var outStr = [
-            '/* jshint quotmark:true */',
-            '',
             '\'use strict\';',
             '',
             'module.exports = ' + charStr + ';',
