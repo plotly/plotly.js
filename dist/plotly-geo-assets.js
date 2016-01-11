@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.3.1
+* plotly.js v1.4.0
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -57,7 +57,7 @@ exports['usa_50m'] = require('./dist/usa_50m.json');
 },{"./dist/africa_110m.json":1,"./dist/africa_50m.json":2,"./dist/asia_110m.json":3,"./dist/asia_50m.json":4,"./dist/europe_110m.json":5,"./dist/europe_50m.json":6,"./dist/north-america_110m.json":7,"./dist/north-america_50m.json":8,"./dist/south-america_110m.json":9,"./dist/south-america_50m.json":10,"./dist/usa_110m.json":11,"./dist/usa_50m.json":12,"./dist/world_110m.json":13,"./dist/world_50m.json":14}],16:[function(require,module,exports){
 module.exports={
   "name": "plotly.js",
-  "version": "1.3.1",
+  "version": "1.4.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./src/index.js",
@@ -79,7 +79,6 @@ module.exports={
   ],
   "scripts": {
     "preprocess": "node tasks/preprocess.js",
-    "postinstall": "npm run preprocess",
     "bundle": "node tasks/bundle.js",
     "header": "node tasks/header.js",
     "build": "npm run preprocess && npm run bundle && npm run header",
@@ -120,21 +119,19 @@ module.exports={
     "gl-scatter3d": "^1.0.4",
     "gl-select-box": "^1.0.1",
     "gl-spikes2d": "^1.0.1",
-    "gl-surface3d": "^1.0.6",
+    "gl-surface3d": "^1.1.0",
     "mouse-change": "^1.1.1",
     "mouse-wheel": "^1.0.2",
     "ndarray": "^1.0.16",
     "ndarray-fill": "^1.0.1",
     "ndarray-homography": "^1.0.0",
     "ndarray-ops": "^1.2.2",
-    "node-sass": "^3.4.1",
     "right-now": "^1.0.0",
     "robust-orientation": "^1.1.3",
     "sane-topojson": "^1.2.0",
     "superscript-text": "^1.0.0",
     "tinycolor2": "1.1.2",
-    "topojson": "^1.6.19",
-    "xml2js": "^0.4.15"
+    "topojson": "^1.6.19"
   },
   "devDependencies": {
     "brfs": "^1.4.1",
@@ -151,18 +148,20 @@ module.exports={
     "karma-coverage": "^0.5.3",
     "karma-firefox-launcher": "^0.1.6",
     "karma-jasmine": "^0.3.6",
+    "node-sass": "^3.4.1",
     "open": "0.0.5",
     "prepend-file": "^1.3.0",
     "prettysize": "0.0.3",
     "through2": "^2.0.0",
     "uglify-js": "^2.5.0",
-    "watchify": "^3.6.0"
+    "watchify": "^3.6.0",
+    "xml2js": "^0.4.15"
   }
 }
 
 },{}],17:[function(require,module,exports){
 /**
-* Copyright 2012-2015, Plotly, Inc.
+* Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
