@@ -13,7 +13,7 @@ var createSurface = require('gl-surface3d');
 var ndarray = require('ndarray');
 var homography = require('ndarray-homography');
 var fill = require('ndarray-fill');
-var ops  = require('ndarray-ops');
+var ops = require('ndarray-ops');
 var tinycolor = require('tinycolor2');
 
 var str2RgbaArray = require('../../lib/str2rgbarray');
@@ -84,10 +84,10 @@ proto.handlePick = function(selection) {
     }
 };
 
-function parseColorScale (colorscale, alpha) {
+function parseColorScale(colorscale, alpha) {
     if (alpha === undefined) alpha = 1;
 
-    return colorscale.map( function (elem) {
+    return colorscale.map(function(elem) {
         var index = elem[0];
         var color = tinycolor(elem[1]);
         var rgb = color.toRgb();
@@ -283,9 +283,10 @@ proto.update = function(data) {
             params.levels[i] = contourLevels[i];
             surface.highlightColor[i] = params.contourColor[i] = str2RgbaArray(contourParams.color);
             if(contourParams.usecolormap) {
-              surface.highlightTint[i] = params.contourTint[i] = 0;
-            } else {
-              surface.highlightTint[i] = params.contourTint[i] = 1;
+                surface.highlightTint[i] = params.contourTint[i] = 0;
+            }
+            else {
+                surface.highlightTint[i] = params.contourTint[i] = 1;
             }
             params.contourWidth[i] = contourParams.width;
         } else {

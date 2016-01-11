@@ -1,0 +1,7 @@
+node_modules
+dist
+build
+
+test/jasmine/assets/jquery-1.8.3.min.js
+src/plots/polar/micropolar.js
+src/plots/geo/projections.js

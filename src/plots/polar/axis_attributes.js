@@ -99,7 +99,7 @@ module.exports = {
                 'Defines the start and end point of this radial axis.'
             ].join(' ')
         },
-        domain: domainAttr, 
+        domain: domainAttr,
         orientation: {
             valType: 'number',
             role: 'style',

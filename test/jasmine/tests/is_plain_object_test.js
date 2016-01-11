@@ -34,13 +34,13 @@ describe('isPlainObject', function() {
     ];
 
     shouldPass.forEach(function(obj) {
-        it('treats ' + JSON.stringify(obj) + ' as a plain object', function () {
+        it('treats ' + JSON.stringify(obj) + ' as a plain object', function() {
             expect(isPlainObject(obj)).toBe(true);
         });
     });
 
     shouldFail.forEach(function(obj) {
-        it('treats ' + JSON.stringify(obj!==window ? obj: 'window') + ' as NOT a plain object', function () {
+        it('treats ' + JSON.stringify(obj!==window ? obj: 'window') + ' as NOT a plain object', function() {
             expect(isPlainObject(obj)).toBe(false);
         });
     });

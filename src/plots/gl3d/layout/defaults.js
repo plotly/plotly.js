@@ -14,7 +14,7 @@ var layoutAttributes = require('./layout_attributes');
 var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
 
-module.exports = function supplyLayoutDefaults (layoutIn, layoutOut, fullData) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     if (!layoutOut._hasGL3D) return;
 
     var scenes = Plotly.Plots.getSubplotIdsInData(fullData, 'gl3d');
@@ -26,6 +26,7 @@ module.exports = function supplyLayoutDefaults (layoutIn, layoutOut, fullData) {
 
     // Get number of scenes to compute default scene domain
     var scenesLength = scenes.length;
+    var sceneLayoutIn, sceneLayoutOut;
 
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(sceneLayoutIn, sceneLayoutOut, layoutAttributes, attr, dflt);
@@ -44,11 +45,11 @@ module.exports = function supplyLayoutDefaults (layoutIn, layoutOut, fullData) {
          * Also write back a blank scene object to user layout so that some
          * attributes like aspectratio can be written back dynamically.
          */
-        var sceneLayoutIn;
+        sceneLayoutIn;
         if(layoutIn[scene] !== undefined) sceneLayoutIn = layoutIn[scene];
         else layoutIn[scene] = sceneLayoutIn = {};
 
-        var sceneLayoutOut = layoutOut[scene] || {};
+        sceneLayoutOut = layoutOut[scene] || {};
 
         coerce('bgcolor');
 

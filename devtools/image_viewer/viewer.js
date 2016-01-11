@@ -37,7 +37,7 @@ function createButton(imageName) {
     button.style.height = '40px';
     button.innerHTML = imageName;
 
-    button.addEventListener('click', function () {
+    button.addEventListener('click', function() {
         var imgBaseline = createImg(dirBaseline, imageName),
             imgTest = createImg(dirTest, imageName),
             imgDiff = createImg(dirDiff, 'diff-' + imageName);
@@ -50,7 +50,7 @@ function createButton(imageName) {
 
             $mock.innerHTML = '';
             $mock.appendChild(createJSONview(mock));
-       });
+        });
     });
 
     return button;

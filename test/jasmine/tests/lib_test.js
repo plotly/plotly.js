@@ -353,12 +353,12 @@ describe('Test lib.js:', function() {
 
         it('should remove containers but not data arrays', function() {
             var obj = {
-                annotations: [{a: [1,2,3]}],
-                c: [1,2,3],
-                domain: [1,2],
-                range: [2,3],
-                shapes: ['elephant']
-            },
+                    annotations: [{a: [1,2,3]}],
+                    c: [1,2,3],
+                    domain: [1,2],
+                    range: [2,3],
+                    shapes: ['elephant']
+                },
                 propA = np(obj, 'annotations[-1].a'),
                 propC = np(obj, 'c'),
                 propD0 = np(obj, 'domain[0]'),
@@ -494,75 +494,74 @@ describe('Test lib.js:', function() {
             });
         });
 
-    describe('coerce2', function() {
-        var coerce2 = Plotly.Lib.coerce2,
-            out;
+        describe('coerce2', function() {
+            var coerce2 = Plotly.Lib.coerce2;
 
-        it('should set a value and return the value it sets when user input is valid', function() {
-            var colVal = 'red',
-                sizeVal = 14,
-                attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                                      testSize: {valType: 'number', dflt: 20}}},
-                obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
-                outObj = {},
-                colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
-                sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');               
+            it('should set a value and return the value it sets when user input is valid', function() {
+                var colVal = 'red',
+                    sizeVal = 14,
+                    attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                                          testSize: {valType: 'number', dflt: 20}}},
+                    obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
+                    outObj = {},
+                    colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
+                    sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
 
-            expect(colOut).toBe(colVal);
-            expect(colOut).toBe(outObj.testMarker.testColor);
-            expect(sizeOut).toBe(sizeVal);
-            expect(sizeOut).toBe(outObj.testMarker.testSize);
+                expect(colOut).toBe(colVal);
+                expect(colOut).toBe(outObj.testMarker.testColor);
+                expect(sizeOut).toBe(sizeVal);
+                expect(sizeOut).toBe(outObj.testMarker.testSize);
+            });
+
+            it('should set and return the default if the user input is not valid', function() {
+                var colVal = 'r',
+                    sizeVal = 'aaaaah!',
+                    attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                                          testSize: {valType: 'number', dflt: 20}}},
+                    obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
+                    outObj = {},
+                    colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
+                    sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+
+                expect(colOut).toBe('rgba(0, 0, 0, 0)');
+                expect(sizeOut).toBe(outObj.testMarker.testSize);
+                expect(sizeOut).toBe(20);
+                expect(sizeOut).toBe(outObj.testMarker.testSize);
+            });
+
+            it('should return false if there is no user input', function() {
+                var colVal = null,
+                    sizeVal = null,
+                    attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
+                                          testSize: {valType: 'number', dflt: 20}}},
+                    obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
+                    outObj = {},
+                    colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
+                    sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');
+
+                expect(colOut).toBe(false);
+                expect(sizeOut).toBe(false);
+            });
         });
-
-        it('should set and return the default if the user input is not valid', function() {
-            var colVal = 'r',
-                sizeVal = 'aaaaah!',
-                attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                                      testSize: {valType: 'number', dflt: 20}}},
-                obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
-                outObj = {},
-                colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
-                sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');                
-
-            expect(colOut).toBe('rgba(0, 0, 0, 0)');
-            expect(sizeOut).toBe(outObj.testMarker.testSize);
-            expect(sizeOut).toBe(20);
-            expect(sizeOut).toBe(outObj.testMarker.testSize);
-        });
-
-        it('should return false if there is no user input', function() {
-            var colVal = null,
-                sizeVal = null, 
-                attrs = {testMarker: {testColor: {valType: 'color', dflt: 'rgba(0, 0, 0, 0)'},
-                                      testSize: {valType: 'number', dflt: 20}}},
-                obj = {testMarker: {testColor: colVal, testSize: sizeVal}},
-                outObj = {},
-                colOut = coerce2(obj, outObj, attrs, 'testMarker.testColor'),
-                sizeOut = coerce2(obj, outObj, attrs, 'testMarker.testSize');                 
-
-            expect(colOut).toBe(false);
-            expect(sizeOut).toBe(false);
-        });
-    });
 
         describe('info_array valType', function() {
             var infoArrayAttrs = {
-                    range: {
-                        valType: 'info_array',
-                        items: [
-                            { valType: 'number' },
-                            { valType: 'number' }
-                        ]
-                    },
-                    domain: {
-                        valType: 'info_array',
-                        items: [
-                            { valType: 'number', min: 0, max: 1 },
-                            { valType: 'number', min: 0, max: 1 }
-                        ],
-                        dflt: [0, 1]
-                    }
-                };
+                range: {
+                    valType: 'info_array',
+                    items: [
+                        { valType: 'number' },
+                        { valType: 'number' }
+                    ]
+                },
+                domain: {
+                    valType: 'info_array',
+                    items: [
+                        { valType: 'number', min: 0, max: 1 },
+                        { valType: 'number', min: 0, max: 1 }
+                    ],
+                    dflt: [0, 1]
+                }
+            };
 
             it('should insert the default if input is missing', function() {
                 expect(coerce(undefined, {}, infoArrayAttrs, 'domain'))
@@ -599,6 +598,7 @@ describe('Test lib.js:', function() {
             size: 314159,
             color: 'neon pink with sparkles'
         };
+
         var attributes = {
             fontWithDefault: {
                 family: extendFlat({}, fontAttrs.family, {dflt: defaultFont.family}),
@@ -607,12 +607,12 @@ describe('Test lib.js:', function() {
             },
             fontNoDefault: fontAttrs
         };
-            
+
+        var containerIn;
+
         function coerce(attr, dflt) {
             return Plotly.Lib.coerce(containerIn, {}, attributes, attr, dflt);
         }
-
-        var containerIn;
 
         it('should insert the full default if no or empty input', function() {
             containerIn = undefined;

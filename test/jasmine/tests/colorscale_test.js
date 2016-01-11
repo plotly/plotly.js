@@ -1,7 +1,8 @@
 var Plotly = require('@src/plotly');
 var Colorscale = require('@src/components/colorscale');
 
-describe('Test colorscale:', function () {
+
+describe('Test colorscale:', function() {
     'use strict';
 
     describe('isValidScale', function() {

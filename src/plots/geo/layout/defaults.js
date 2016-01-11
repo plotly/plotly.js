@@ -18,15 +18,17 @@ var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var geos = Plotly.Plots.getSubplotIdsInData(fullData, 'geo'),
         geosLength = geos.length;
-    
+
+    var geoLayoutIn, geoLayoutOut;
+
     function coerce(attr, dflt) {
         return Plotly.Lib.coerce(geoLayoutIn, geoLayoutOut, layoutAttributes, attr, dflt);
     }
 
     for(var i = 0; i < geosLength; i++) {
         var geo = geos[i];
-        var geoLayoutIn = layoutIn[geo] || {};
-        var geoLayoutOut = {};
+        geoLayoutIn = layoutIn[geo] || {};
+        geoLayoutOut = {};
 
         coerce('domain.x');
         coerce('domain.y', [i / geosLength, (i + 1) / geosLength]);

@@ -15,16 +15,17 @@ var Scatter3D = module.exports = {};
 
 Plotly.Plots.register(Scatter3D,
     'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend'], {
-    hrName: 'scatter_3d',
-    description: [
-        'The data visualized as scatter point or lines in 3D dimension', 
-        'is set in `x`, `y`, `z`.',
-        'Text (appearing either on the chart or on hover only) is via `text`.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'Projections are achieved via `projection`.',
-        'Surface fills are achieved via `surfaceaxis`.'
-    ].join(' ')
-});
+        hrName: 'scatter_3d',
+        description: [
+            'The data visualized as scatter point or lines in 3D dimension',
+            'is set in `x`, `y`, `z`.',
+            'Text (appearing either on the chart or on hover only) is via `text`.',
+            'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+            'Projections are achieved via `projection`.',
+            'Surface fills are achieved via `surfaceaxis`.'
+        ].join(' ')
+    }
+);
 
 Scatter3D.attributes = require('./attributes');
 

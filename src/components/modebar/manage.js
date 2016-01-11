@@ -186,7 +186,7 @@ function fillCustomButton(customButtons) {
         for(var j = 0; j < buttonGroup.length; j++) {
             var button = buttonGroup[j];
 
-            if(typeof button === 'string')
+            if(typeof button === 'string') {
                 if(modeBarButtons[button] !== undefined) {
                     customButtons[i][j] = modeBarButtons[button];
                 }
@@ -198,6 +198,7 @@ function fillCustomButton(customButtons) {
                 }
             }
         }
+    }
 
     return customButtons;
 }

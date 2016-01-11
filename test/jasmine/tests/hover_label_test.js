@@ -12,8 +12,8 @@ describe('hover info', function() {
 
     var mock = require('@mocks/14.json'),
         evt = {
-                clientX: mock.layout.width/ 2,
-                clientY: mock.layout.height / 2
+            clientX: mock.layout.width / 2,
+            clientY: mock.layout.height / 2
         };
 
     afterEach(destroyGraphDiv);
@@ -98,8 +98,8 @@ describe('hover info', function() {
     describe('hover info text', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
-        mockCopy.data[0].text = []
-        mockCopy.data[0].text[17] = 'hover text'
+        mockCopy.data[0].text = [];
+        mockCopy.data[0].text[17] = 'hover text';
         mockCopy.data[0].hoverinfo = 'text';
 
         beforeEach(function(done) {
@@ -126,8 +126,8 @@ describe('hover info', function() {
     describe('hover info all', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
-        mockCopy.data[0].text = []
-        mockCopy.data[0].text[17] = 'hover text'
+        mockCopy.data[0].text = [];
+        mockCopy.data[0].text[17] = 'hover text';
         mockCopy.data[0].hoverinfo = 'all';
 
         beforeEach(function(done) {
@@ -149,16 +149,16 @@ describe('hover info', function() {
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
             expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
             expect(d3.selectAll('g.hovertext').select('text').selectAll('tspan').size()).toEqual(2);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1')
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text')
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
         });
     });
 
     describe('hover info y+text', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
-        mockCopy.data[0].text = []
-        mockCopy.data[0].text[17] = 'hover text'
+        mockCopy.data[0].text = [];
+        mockCopy.data[0].text[17] = 'hover text';
         mockCopy.data[0].hoverinfo = 'y+text';
 
         beforeEach(function(done) {
@@ -179,16 +179,16 @@ describe('hover info', function() {
             expect(d3.selectAll('g.axistext').size()).toEqual(0);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
             expect(d3.selectAll('g.hovertext').selectAll('tspan').size()).toEqual(2);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1')
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text')
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('1');
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('hover text');
         });
     });
 
     describe('hover info x+text', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
-        mockCopy.data[0].text = []
-        mockCopy.data[0].text[17] = 'hover text'
+        mockCopy.data[0].text = [];
+        mockCopy.data[0].text[17] = 'hover text';
         mockCopy.data[0].hoverinfo = 'x+text';
 
         beforeEach(function(done) {
@@ -216,8 +216,8 @@ describe('hover info', function() {
     describe('hover info text with html', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
-        mockCopy.data[0].text = []
-        mockCopy.data[0].text[17] = 'hover<br>text'
+        mockCopy.data[0].text = [];
+        mockCopy.data[0].text[17] = 'hover<br>text';
         mockCopy.data[0].hoverinfo = 'text';
 
         beforeEach(function(done) {
@@ -237,8 +237,8 @@ describe('hover info', function() {
 
             expect(d3.selectAll('g.axistext').size()).toEqual(0);
             expect(d3.selectAll('g.hovertext').size()).toEqual(1);
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('hover')
-            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('text')
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('hover');
+            expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('text');
             expect(d3.selectAll('g.hovertext').select('text').selectAll('tspan').size()).toEqual(2);
         });
     });

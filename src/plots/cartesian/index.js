@@ -9,8 +9,6 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 
 exports.name = 'cartesian';
 

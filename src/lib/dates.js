@@ -229,8 +229,9 @@ var dateTimeFormats = {
         dateTimeFormats[dateType].D.push(formatter(dateFormat));
         ['H', 'I', 'D'].forEach(function(timeType) {
             timeFormats[timeType].forEach(function(timeFormat) {
-            var a = dateTimeFormats[dateType][timeType];
-            // 'date time', then 'time date'
+                var a = dateTimeFormats[dateType][timeType];
+
+                // 'date time', then 'time date'
                 a.push(formatter(dateFormat+'~'+timeFormat));
                 a.push(formatter(timeFormat+'~'+dateFormat));
             });

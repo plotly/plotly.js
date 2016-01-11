@@ -21,7 +21,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
         containerOut = traceOut[objName] = {},
         containerIn = traceIn[objName] || {};
 
-    function coerce (attr, dflt) {
+    function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 

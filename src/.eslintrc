@@ -1,0 +1,9 @@
+{
+  "extends": "../.eslintrc",
+  "env": {
+    "browser": true
+  },
+  "rules": {
+    "strict": [2, "global"]
+  }
+}

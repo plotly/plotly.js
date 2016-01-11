@@ -6,10 +6,12 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 var axesAttrs = require('../../plots/cartesian/layout_attributes');
 var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+
 
 module.exports = {
 // TODO: only right is supported currently

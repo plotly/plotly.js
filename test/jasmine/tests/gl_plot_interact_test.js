@@ -12,7 +12,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
  */
 
 
-describe('Test plot structure', function () {
+describe('Test plot structure', function() {
     'use strict';
 
     afterEach(destroyGraphDiv);

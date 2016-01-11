@@ -129,7 +129,7 @@ function npSet(cont, parts) {
     return function(val) {
         var curCont = cont,
             containerLevels = [cont],
-            toDelete = emptyObj(val)  && !isDataArray(val, parts[parts.length-1]),
+            toDelete = emptyObj(val) && !isDataArray(val, parts[parts.length-1]),
             curPart,
             i;
 
@@ -224,7 +224,7 @@ function pruneContainers(containerLevels) {
                 else remainingKeys = true;
             }
         }
-        else if(typeof curCont === 'object' && curCont !== null)  {
+        else if(typeof curCont === 'object' && curCont !== null) {
             keys = Object.keys(curCont);
             remainingKeys = false;
             for(j = keys.length - 1; j >= 0; j--) {

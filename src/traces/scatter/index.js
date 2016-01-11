@@ -27,14 +27,15 @@ scatter.selectPoints = require('./select');
 
 Plotly.Plots.register(scatter, 'scatter',
     ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
-    description: [
-        'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
-        'The data visualized as scatter point or lines is set in `x` and `y`.',
-        'Text (appearing either on the chart or on hover only) is via `text`.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'to a numerical arrays.'
-    ].join(' ')
-});
+        description: [
+            'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
+            'The data visualized as scatter point or lines is set in `x` and `y`.',
+            'Text (appearing either on the chart or on hover only) is via `text`.',
+            'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+            'to a numerical arrays.'
+        ].join(' ')
+    }
+);
 
 // traces with < this many points are by default shown
 // with points and lines, > just get lines
@@ -506,12 +507,13 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
         };
 
         var segments = scatter.linePoints(d, {
-                xaxis: xa,
-                yaxis: ya,
-                connectGaps: trace.connectgaps,
-                baseTolerance: Math.max(line.width || 1, 3) / 4,
-                linear: line.shape === 'linear'
-            });
+            xaxis: xa,
+            yaxis: ya,
+            connectGaps: trace.connectgaps,
+            baseTolerance: Math.max(line.width || 1, 3) / 4,
+            linear: line.shape === 'linear'
+        });
+
         if(segments.length) {
             var pt0 = segments[0][0],
                 lastSegment = segments[segments.length - 1],

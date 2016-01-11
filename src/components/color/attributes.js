@@ -6,6 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
 
 // IMPORTANT - default colors should be in hex for compatibility
 exports.defaults = [

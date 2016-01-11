@@ -176,8 +176,8 @@ lib.randstr = function randstr(existing, bits, base) {
     }
 
     var parsed = parseInt(res, base);
-    if ( (existing && (existing.indexOf(res) > -1)) ||
-         (parsed !== Infinity && parsed >= Math.pow(2, bits)) ) {
+    if ((existing && (existing.indexOf(res) > -1)) ||
+         (parsed !== Infinity && parsed >= Math.pow(2, bits))) {
         return randstr(existing, bits, base);
     }
     else return res;
@@ -303,7 +303,7 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
  * Helper to strip trailing slash, from
  * http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
  */
-lib.stripTrailingSlash = function (str) {
+lib.stripTrailingSlash = function(str) {
     if (str.substr(-1) === '/') return str.substr(0, str.length - 1);
     return str;
 };

@@ -260,4 +260,3 @@ module.exports = {
         ].join(' ')
     }
 };
-

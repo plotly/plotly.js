@@ -6,6 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
 
 module.exports = {
     'Greys':[[0,'rgb(0,0,0)'],[1,'rgb(255,255,255)']],

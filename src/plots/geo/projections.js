@@ -6,9 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-// jshint ignore: start
-
 /**
  * Forked from https://github.com/d3/d3-geo-projection
  * Pasted from https://github.com/etpinard/d3-geo-projection

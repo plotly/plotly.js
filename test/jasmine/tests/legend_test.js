@@ -1,6 +1,6 @@
 var Plotly = require('@src/plotly');
 
-describe('Test legend:', function () {
+describe('Test legend:', function() {
     'use strict';
 
     describe('supplyLayoutDefaults', function() {

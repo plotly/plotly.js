@@ -370,36 +370,36 @@ function positionPlayWithData(gd, container){
     }
 }
 plots.sendDataToCloud = function(gd) {
-        gd.emit('plotly_beforeexport');
+    gd.emit('plotly_beforeexport');
 
-        var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
+    var baseUrl = (window.PLOTLYENV && window.PLOTLYENV.BASE_URL) || 'https://plot.ly';
 
-        var hiddenformDiv = d3.select(gd)
-            .append('div')
-            .attr('id', 'hiddenform')
-            .style('display', 'none');
+    var hiddenformDiv = d3.select(gd)
+        .append('div')
+        .attr('id', 'hiddenform')
+        .style('display', 'none');
 
-        var hiddenform = hiddenformDiv
-            .append('form')
-            .attr({
-                action: baseUrl + '/external',
-                method: 'post',
-                target: '_blank'
-            });
+    var hiddenform = hiddenformDiv
+        .append('form')
+        .attr({
+            action: baseUrl + '/external',
+            method: 'post',
+            target: '_blank'
+        });
 
-        var hiddenformInput = hiddenform
-            .append('input')
-            .attr({
-                type: 'text',
-                name: 'data'
-            });
+    var hiddenformInput = hiddenform
+        .append('input')
+        .attr({
+            type: 'text',
+            name: 'data'
+        });
 
-        hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
-        hiddenform.node().submit();
-        hiddenformDiv.remove();
+    hiddenformInput.node().value = plots.graphJson(gd, false, 'keepdata');
+    hiddenform.node().submit();
+    hiddenformDiv.remove();
 
-        gd.emit('plotly_afterexport');
-        return false;
+    gd.emit('plotly_afterexport');
+    return false;
 };
 
 plots.supplyDefaults = function(gd) {
@@ -428,7 +428,7 @@ plots.supplyDefaults = function(gd) {
 
     // then do the data
     for (i = 0; i < newData.length; i++) {
-        trace  = newData[i];
+        trace = newData[i];
 
         fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout);
         newFullData.push(fullTrace);

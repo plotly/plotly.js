@@ -67,12 +67,12 @@ exports.dot = function(x, y) {
 };
 
 // translate by (x,y)
-exports.translationMatrix = function (x, y) {
+exports.translationMatrix = function(x, y) {
     return [[1, 0, x], [0, 1, y], [0, 0, 1]];
 };
 
 // rotate by alpha around (0,0)
-exports.rotationMatrix = function (alpha) {
+exports.rotationMatrix = function(alpha) {
     var a = alpha*Math.PI/180;
     return [[Math.cos(a), -Math.sin(a), 0],
             [Math.sin(a), Math.cos(a), 0],

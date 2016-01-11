@@ -11,7 +11,7 @@
 
 var Plotly = require('../../plotly');
 
-/** 
+/**
  * Histogram has its own attribute, defaults and calc steps,
  * but uses bar's plot to display
  * and bar's setPositions for stacking and grouping
@@ -26,15 +26,16 @@ var Plotly = require('../../plotly');
 
 Plotly.Plots.register(exports, 'histogram',
     ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'], {
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'for vertically spanning histograms and',
-        'in `y` for horizontally spanning histograms.',
+        description: [
+            'The sample data from which statistics are computed is set in `x`',
+            'for vertically spanning histograms and',
+            'in `y` for horizontally spanning histograms.',
 
-        'Binning options are set `xbins` and `ybins` respectively',
-        'if no aggregation data is provided.'
-    ].join(' ')
-});
+            'Binning options are set `xbins` and `ybins` respectively',
+            'if no aggregation data is provided.'
+        ].join(' ')
+    }
+);
 
 exports.attributes = require('./attributes');
 

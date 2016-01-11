@@ -139,16 +139,14 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
     var scattergeoData = [],
         choroplethData = [];
 
-    var trace, traceType;
-
     this.drawLayout(geoLayout);
 
     for(var i = 0; i < geoData.length; i++) {
-        trace = geoData[i];
-        traceType = trace.type;
+        var trace = geoData[i];
+        var traceType = trace.type;
 
-        if(trace.type === 'scattergeo') scattergeoData.push(trace);
-        else if(trace.type === 'choropleth') choroplethData.push(trace);
+        if(traceType === 'scattergeo') scattergeoData.push(trace);
+        else if(traceType === 'choropleth') choroplethData.push(trace);
     }
 
     if(scattergeoData.length>0) plotScatterGeo.plot(this, scattergeoData);
@@ -334,7 +332,7 @@ proto.drawLayout = function(geoLayout) {
     // N.B. html('') does not work in IE11
     gBaseLayer.selectAll('*').remove();
 
-    for(var i = 0;  i < baseLayers.length; i++) {
+    for(var i = 0; i < baseLayers.length; i++) {
         layerName = baseLayers[i];
 
         if(axesNames.indexOf(layerName)!==-1) {

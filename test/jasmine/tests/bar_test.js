@@ -1,6 +1,7 @@
 var Bar = require('@src/traces/bar');
 
-describe('Test bar', function () {
+
+describe('Test bar', function() {
     'use strict';
 
     describe('supplyDefaults', function() {

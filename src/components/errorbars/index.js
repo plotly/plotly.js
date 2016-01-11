@@ -134,9 +134,9 @@ errorBars.style = function(gd){
 function errorcoords(d, xa, ya) {
     // compute the coordinates of the error-bar objects
     var out = {
-            x: xa.c2p(d.x),
-            y: ya.c2p(d.y)
-        };
+        x: xa.c2p(d.x),
+        y: ya.c2p(d.y)
+    };
 
     // calculate the error bar size and hat and shoe locations
     if(d.yh!==undefined) {

@@ -32,7 +32,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }) && ret;
     }
 
-    var coords  = readComponents(['x', 'y', 'z']);
+    var coords = readComponents(['x', 'y', 'z']);
     var indices = readComponents(['i', 'j', 'k']);
 
     if(!coords) {
@@ -43,9 +43,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(indices) {
         // otherwise, convert all face indices to ints
         indices.forEach(function(index) {
-            for(var i=0; i<index.length; ++i) {
-                index[i] |= 0;
-              }
+            for(var i = 0; i < index.length; ++i) index[i] |= 0;
         });
     }
 
@@ -69,7 +67,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if('intensity' in traceIn) {
         coerce('intensity');
         coerce('showscale', true);
-    } 
+    }
     else {
         traceOut.showscale = false;
 
@@ -79,7 +77,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(traceOut.reversescale) {
-        traceOut.colorscale = traceOut.colorscale.map(function (si) {
+        traceOut.colorscale = traceOut.colorscale.map(function(si) {
             return [1 - si[0], si[1]];
         }).reverse();
     }

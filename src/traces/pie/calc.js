@@ -133,9 +133,13 @@ function nextDefaultColor(index) {
         // generate this default set on demand (but then it gets saved in the module)
         var mainDefaults = Color.defaults;
         pieDefaultColors = mainDefaults.slice();
-        for(var i = 0; i < mainDefaults.length; i++) {
+
+        var i;
+
+        for(i = 0; i < mainDefaults.length; i++) {
             pieDefaultColors.push(tinycolor(mainDefaults[i]).lighten(20).toHexString());
         }
+
         for(i = 0; i < Color.defaults.length; i++) {
             pieDefaultColors.push(tinycolor(mainDefaults[i]).darken(20).toHexString());
         }

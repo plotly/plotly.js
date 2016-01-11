@@ -6,9 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-// jshint ignore: start
-
 var Plotly = require('../../plotly');
 var d3 = require('d3');
 

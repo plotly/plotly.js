@@ -1,6 +1,7 @@
 var Plotly = require('@src/plotly');
 
-describe('Test color:', function () {
+
+describe('Test color:', function() {
     'use strict';
 
     describe('clean', function() {

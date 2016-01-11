@@ -26,26 +26,26 @@ var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
 var calculateError = require('./calc_errors');
 
 function LineWithMarkers(scene, uid) {
-    this.scene              = scene;
-    this.uid                = uid;
-    this.linePlot           = null;
-    this.scatterPlot        = null;
-    this.errorBars          = null;
-    this.textMarkers        = null;
-    this.delaunayMesh       = null;
-    this.color              = null;
-    this.mode               = '';
-    this.dataPoints         = [];
-    this.axesBounds         = [[-Infinity,-Infinity,-Infinity],
-                               [Infinity,Infinity,Infinity]];
-    this.textLabels         = null;
-    this.data               = null;
+    this.scene = scene;
+    this.uid = uid;
+    this.linePlot = null;
+    this.scatterPlot = null;
+    this.errorBars = null;
+    this.textMarkers = null;
+    this.delaunayMesh = null;
+    this.color = null;
+    this.mode = '';
+    this.dataPoints = [];
+    this.axesBounds = [[-Infinity,-Infinity,-Infinity],
+                       [Infinity,Infinity,Infinity]];
+    this.textLabels = null;
+    this.data = null;
 }
 
 var proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(selection) {
-    if( selection.object &&
+    if(selection.object &&
         (selection.object === this.linePlot ||
          selection.object === this.delaunayMesh ||
          selection.object === this.textMarkers ||
@@ -64,9 +64,9 @@ proto.handlePick = function(selection) {
 
         var selectIndex = selection.data.index;
         selection.traceCoordinate = [
-          this.data.x[selectIndex],
-          this.data.y[selectIndex],
-          this.data.z[selectIndex]
+            this.data.x[selectIndex],
+            this.data.y[selectIndex],
+            this.data.z[selectIndex]
         ];
 
         return true;
@@ -77,7 +77,7 @@ function constructDelaunay(points, color, axis) {
     var u = (axis+1)%3;
     var v = (axis+2)%3;
     var filteredPoints = [];
-    var filteredIds    = [];
+    var filteredIds = [];
     var i;
 
     for(i=0; i<points.length; ++i) {
@@ -104,8 +104,6 @@ function constructDelaunay(points, color, axis) {
 }
 
 function calculateErrorParams(errors) {
-    /*jshint camelcase: false */
-
     var capSize = [0.0, 0.0, 0.0],
         color = [[0,0,0], [0,0,0], [0,0,0]],
         lineWidth = [0.0, 0.0, 0.0];
@@ -205,28 +203,28 @@ function convertPlotlyOptions(scene, data) {
     };
 
     if ('line' in data) {
-        params.lineColor     = str2RgbaArray(line.color);
-        params.lineWidth     = line.width;
-        params.lineDashes    = line.dash;
+        params.lineColor = str2RgbaArray(line.color);
+        params.lineWidth = line.width;
+        params.lineDashes = line.dash;
     }
 
     if ('marker' in data) {
         var sizeFn = Plotly.Scatter.getBubbleSizeFn(data);
 
-        params.scatterColor         = formatColor(marker, 1, len);
-        params.scatterSize          = formatParam(marker.size, len, calculateSize, 20, sizeFn);
-        params.scatterMarker        = formatParam(marker.symbol, len, calculateSymbol, '●');
-        params.scatterLineWidth     = marker.line.width;  // arrayOk === false
-        params.scatterLineColor     = formatColor(marker.line, 1, len);
-        params.scatterAngle         = 0;
+        params.scatterColor = formatColor(marker, 1, len);
+        params.scatterSize = formatParam(marker.size, len, calculateSize, 20, sizeFn);
+        params.scatterMarker = formatParam(marker.symbol, len, calculateSymbol, '●');
+        params.scatterLineWidth = marker.line.width;  // arrayOk === false
+        params.scatterLineColor = formatColor(marker.line, 1, len);
+        params.scatterAngle = 0;
     }
 
     if ('textposition' in data) {
-        params.textOffset     = calculateTextOffset(data.textposition);  // arrayOk === false
-        params.textColor      = formatColor(data.textfont, 1, len);
-        params.textSize       = formatParam(data.textfont.size, len, Plotly.Lib.identity, 12);
-        params.textFont       = data.textfont.family;  // arrayOk === false
-        params.textAngle      = 0;
+        params.textOffset = calculateTextOffset(data.textposition);  // arrayOk === false
+        params.textColor = formatColor(data.textfont, 1, len);
+        params.textSize = formatParam(data.textfont.size, len, Plotly.Lib.identity, 12);
+        params.textFont = data.textfont.family;  // arrayOk === false
+        params.textAngle = 0;
     }
 
     var dims = ['x', 'y', 'z'];
@@ -255,16 +253,17 @@ function convertPlotlyOptions(scene, data) {
 }
 
 function arrayToColor(color) {
-  if(Array.isArray(color)) {
-    var c = color[0];
-    if(Array.isArray(c)) {
-      color = c;
+    if(Array.isArray(color)) {
+        var c = color[0];
+
+        if(Array.isArray(c)) color = c;
+
+        return 'rgb(' + color.slice(0,3).map(function(x) {
+            return Math.round(x*255);
+        }) + ')';
     }
-    return 'rgb(' + color.slice(0,3).map(function(x) {
-      return Math.round(x*255);
-    }) + ')';
-  }
-  return null;
+
+    return null;
 }
 
 proto.update = function(data) {

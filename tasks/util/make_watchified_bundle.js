@@ -51,7 +51,7 @@ module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
         })
         .pipe(
             fs.createWriteStream(constants.pathToPlotlyBuild)
-        )
+        );
     }
 
     return bundle;

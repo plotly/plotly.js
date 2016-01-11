@@ -13,14 +13,15 @@ var Plotly = require('../../plotly');
 
 Plotly.Plots.register(exports, 'bar',
     ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
-    description: [
-        'The data visualized by the span of the bars is set in `y`',
-        'if `orientation` is set th *v* (the default)',
-        'and the labels are set in `x`.',
+        description: [
+            'The data visualized by the span of the bars is set in `y`',
+            'if `orientation` is set th *v* (the default)',
+            'and the labels are set in `x`.',
 
-        'By setting `orientation` to *h*, the roles are interchanged.'
-    ].join(' ')
-});
+            'By setting `orientation` to *h*, the roles are interchanged.'
+        ].join(' ')
+    }
+);
 
 exports.attributes = require('./attributes');
 

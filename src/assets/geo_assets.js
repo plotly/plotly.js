@@ -6,8 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 var saneTopojson = require('sane-topojson');
+
 
 // export the version found in the package.json
 exports.version = require('../../package.json').version;

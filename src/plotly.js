@@ -6,6 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 /*
  * Pack internal modules unto an object.

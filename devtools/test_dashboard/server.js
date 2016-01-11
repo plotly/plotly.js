@@ -18,13 +18,13 @@ var testFile;
 switch(process.argv[2]) {
     case 'cartesian':
         testFile = 'test_cartesian';
-    break;
+        break;
     case 'geo':
         testFile = 'test_geo';
-    break;
+        break;
     case 'gl3d':
         testFile = 'test_gl3d';
-    break;
+        break;
     default:
         testFile = 'test_gl2d';
 }

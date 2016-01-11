@@ -163,5 +163,5 @@ function insertGlImage(fullLayout, scene, opts) {
             preserveAspectRatio: 'none'
         });
 
-   scene.destroy();
+    scene.destroy();
 }

@@ -1,7 +1,7 @@
 var Gl3d = require('@src/plots/gl3d');
 
 
-describe('Test Gl3d layout defaults', function () {
+describe('Test Gl3d layout defaults', function() {
     'use strict';
 
     describe('supplyLayoutDefaults', function() {

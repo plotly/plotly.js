@@ -31,6 +31,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
         yl,
         nx,
         ny;
+
     if(pointData.index!==false) {
         try {
             nx = Math.round(pointData.index[1]);
@@ -51,8 +52,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     }
     else {
         if(contour) {
+            var i2;
             x2 = [2*x[0]-x[1]];
-            for(var i2=1; i2<x.length; i2++) {
+
+            for(i2=1; i2<x.length; i2++) {
                 x2.push((x[i2]+x[i2-1])/2);
             }
             x2.push([2*x[x.length-1]-x[x.length-2]]);

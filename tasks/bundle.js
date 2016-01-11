@@ -63,7 +63,7 @@ browserify(constants.pathToPlotlyGeoAssetsSrc, {
 })
 .pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist));
 
-    
+
 // Browserify the plotly.js with meta
 browserify(constants.pathToPlotlySrc, {
     debug: DEV,

@@ -56,8 +56,7 @@ Titles.draw = function(gd, title) {
         fontColor = cont.titlefont.color,
         x,
         y,
-        transform='',
-        attr = {},
+        transform = '',
         xa,
         ya,
         avoid = {
@@ -120,7 +119,6 @@ Titles.draw = function(gd, title) {
             xa._length + 10 +
                 fontSize*(offsetBase + (ya.showticklabels ? 1 : 0.5)) :
             -10 - fontSize*(offsetBase + (ya.showticklabels ? 0.5 : 0)));
-        attr = {center: 0};
         options = {x: x, y: y, 'text-anchor': 'middle'};
         transform = {rotate: '-90', offset: 0};
         if(!avoid.side) { avoid.side = 'left'; }
@@ -183,16 +181,18 @@ Titles.draw = function(gd, title) {
             'rotate(' + [transform.rotate, options.x, options.y] +
                 ') translate(0, '+transform.offset+')' :
             null);
+
         titleEl.style({
-                'font-family': font,
-                'font-size': d3.round(fontSize,2)+'px',
-                fill: Plotly.Color.rgb(fontColor),
-                opacity: opacity*Plotly.Color.opacity(fontColor),
-                'font-weight': plots.fontWeight
-            })
-            .attr(options)
-            .call(Plotly.util.convertToTspans)
-            .attr(options);
+            'font-family': font,
+            'font-size': d3.round(fontSize,2)+'px',
+            fill: Plotly.Color.rgb(fontColor),
+            opacity: opacity*Plotly.Color.opacity(fontColor),
+            'font-weight': plots.fontWeight
+        })
+        .attr(options)
+        .call(Plotly.util.convertToTspans)
+        .attr(options);
+
         titleEl.selectAll('tspan.line')
             .attr(options);
         return plots.previousPromises(gd);

@@ -20,7 +20,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         ya = pointData.ya,
         closeData = [],
         dx, dy, distfn, boxDelta,
-        posLetter, posAxis, posText,
+        posLetter, posAxis,
         val, valLetter, valAxis;
 
     // adjust inbox w.r.t. to calculate box size
@@ -71,7 +71,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     pointData[posLetter+'0'] = posAxis.c2p(di.pos + t.bPos - t.bdPos, true);
     pointData[posLetter+'1'] = posAxis.c2p(di.pos + t.bPos + t.bdPos, true);
 
-    posText = Plotly.Axes.tickText(posAxis, posAxis.c2l(di.pos), 'hover').text;
+    Plotly.Axes.tickText(posAxis, posAxis.c2l(di.pos), 'hover').text;
     pointData[posLetter+'LabelVal'] = di.pos;
 
     // box plots: each "point" gets many labels

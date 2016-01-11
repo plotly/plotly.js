@@ -97,7 +97,7 @@ module.exports = function calc(gd, trace) {
             }
             if(y.length && zsmooth === 'fast') {
                 var avgdy = (y[y.length-1]-y[0])/(y.length-1),
-                maxErrY = Math.abs(avgdy/100);
+                    maxErrY = Math.abs(avgdy/100);
                 for(i=0; i<y.length-1; i++) {
                     if(Math.abs(y[i+1]-y[i]-avgdy)>maxErrY) {
                         noZsmooth('y scale is not linear');
@@ -208,7 +208,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
             return isContour ?
                 arrayIn.slice(0, numbricks) :  // we must be strict for contours
                 arrayIn.slice(0, numbricks + 1);
-       }
+        }
     }
     else {
         dv = dvIn || 1;

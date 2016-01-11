@@ -109,19 +109,17 @@ module.exports = function plot(gd, cdpie) {
                     if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal));
 
                     Plotly.Fx.loneHover({
-                            x0: hoverCenterX - rInscribed * cd0.r,
-                            x1: hoverCenterX + rInscribed * cd0.r,
-                            y: hoverCenterY,
-                            text: thisText.join('<br>'),
-                            name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
-                            color: pt.color,
-                            idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right'
-                        },
-                        {
-                            container: fullLayout2._hoverlayer.node(),
-                            outerContainer: fullLayout2._paper.node()
-                        }
-                    );
+                        x0: hoverCenterX - rInscribed * cd0.r,
+                        x1: hoverCenterX + rInscribed * cd0.r,
+                        y: hoverCenterY,
+                        text: thisText.join('<br>'),
+                        name: hoverinfo.indexOf('name') !== -1 ? trace2.name : undefined,
+                        color: pt.color,
+                        idealAlign: pt.pxmid[0] < 0 ? 'left' : 'right'
+                    }, {
+                        container: fullLayout2._hoverlayer.node(),
+                        outerContainer: fullLayout2._paper.node()
+                    });
 
                     Plotly.Fx.hover(gd, evt, 'pie');
 
@@ -135,7 +133,7 @@ module.exports = function plot(gd, cdpie) {
                     }
                 }
 
-                function handleClick () {
+                function handleClick() {
                     gd._hoverdata = [pt];
                     gd._hoverdata.trace = cd.trace;
                     Plotly.Fx.click(gd, { target: true });
@@ -440,8 +438,8 @@ function scootLabels(quadrants, trace) {
         thisQuadOutside,
         firstOppositeOutsidePt;
 
-    function topFirst (a, b) { return a.pxmid[1] - b.pxmid[1]; }
-    function bottomFirst (a, b) { return b.pxmid[1] - a.pxmid[1]; }
+    function topFirst(a, b) { return a.pxmid[1] - b.pxmid[1]; }
+    function bottomFirst(a, b) { return b.pxmid[1] - a.pxmid[1]; }
 
     function scootOneLabel(thisPt, prevPt) {
         if(!prevPt) prevPt = {};

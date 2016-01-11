@@ -1,7 +1,7 @@
 var prettySize = require('prettysize');
 
 
-/** 
+/**
  *  Format the on-bundle output message
  *
  * @param {browserify instance} b
@@ -14,15 +14,15 @@ module.exports = function formatBundleMsg(b, bundleName) {
         '[', '', '', '', ']'
     ];
 
-    b.on('bytes', function(bytes) { 
-        msgParts[2] = prettySize(bytes, true); 
+    b.on('bytes', function(bytes) {
+        msgParts[2] = prettySize(bytes, true);
     });
 
     b.on('time', function(time) {
         msgParts[5] = (time / 1000).toFixed(2);
     });
 
-    b.on('log', function() { 
+    b.on('log', function() {
         var date = new Date();
 
         // get locale date

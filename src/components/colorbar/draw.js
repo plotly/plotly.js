@@ -317,13 +317,13 @@ module.exports = function draw(gd, id) {
             fills.exit().remove();
             fills.each(function(d,i) {
                 var z = [
-                        (i===0) ? zrange[0] :
-                            (filllevels[i]+filllevels[i-1])/2,
-                        (i===filllevels.length-1) ? zrange[1] :
-                            (filllevels[i]+filllevels[i+1])/2
-                    ]
-                    .map(cbAxisOut.c2p)
-                    .map(Math.round);
+                    (i===0) ? zrange[0] :
+                        (filllevels[i]+filllevels[i-1])/2,
+                    (i===filllevels.length-1) ? zrange[1] :
+                        (filllevels[i]+filllevels[i+1])/2
+                ]
+                .map(cbAxisOut.c2p)
+                .map(Math.round);
 
                 // offset the side adjoining the next rectangle so they
                 // overlap, to prevent antialiasing gaps
@@ -500,7 +500,7 @@ module.exports = function draw(gd, id) {
     }
 
     // setter/getters for every item defined in opts
-    Object.keys(opts).forEach(function (name) {
+    Object.keys(opts).forEach(function(name) {
         component[name] = function(v) {
             // getter
             if(!arguments.length) return opts[name];

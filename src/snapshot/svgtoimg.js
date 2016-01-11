@@ -38,20 +38,20 @@ function svgToImg(opts) {
         ctx.drawImage(img, 0, 0);
 
         switch (format) {
-        case 'jpeg':
-            imgData = canvas.toDataURL('image/jpeg');
-            break;
-        case 'png':
-            imgData = canvas.toDataURL('image/png');
-            break;
-        case 'webp':
-            imgData = canvas.toDataURL('image/webp');
-            break;
-        case 'svg':
-            imgData = svg;
-            break;
-        default:
-            return ev.emit('error', 'Image format is not jpeg, png or svg');
+            case 'jpeg':
+                imgData = canvas.toDataURL('image/jpeg');
+                break;
+            case 'png':
+                imgData = canvas.toDataURL('image/png');
+                break;
+            case 'webp':
+                imgData = canvas.toDataURL('image/webp');
+                break;
+            case 'svg':
+                imgData = svg;
+                break;
+            default:
+                return ev.emit('error', 'Image format is not jpeg, png or svg');
         }
 
         ev.emit('success', imgData);

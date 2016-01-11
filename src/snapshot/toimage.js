@@ -6,8 +6,10 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+/*eslint dot-notation: [2, {"allowPattern": "^catch$"}]*/
 
 'use strict';
+
 var EventEmitter = require('events').EventEmitter;
 var Plotly = require('../plotly');
 
@@ -30,10 +32,10 @@ function toImage(gd, opts) {
     clonedGd.style.left = '-5000px';
     document.body.appendChild(clonedGd);
 
-    function wait () {
+    function wait() {
         var delay = Snapshot.getDelay(clonedGd._fullLayout);
 
-        setTimeout(function () {
+        setTimeout(function() {
             var svg = Plotly.Snapshot.toSVG(clonedGd);
 
             var canvasContainer = window.document.createElement('div');
@@ -69,7 +71,7 @@ function toImage(gd, opts) {
         // out why and take it out.
         .then(redrawFunc)
         .then(wait)
-        .catch( function (err) {
+        .catch(function(err) {
             ev.emit('error', err);
         });
 

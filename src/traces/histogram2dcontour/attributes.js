@@ -6,6 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
 var histogram2dAttrs = require('../histogram2d/attributes');
 var contourAttrs = require('../contour/attributes');
 

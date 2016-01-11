@@ -6,6 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var surfaceAtts = require('../surface/attributes');

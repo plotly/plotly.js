@@ -6,6 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
 
 module.exports = {
     // ms between first mousedown and 2nd mouseup to constitute dblclick...

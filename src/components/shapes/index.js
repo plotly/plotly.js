@@ -406,7 +406,7 @@ shapes.convertPath = function(pathIn, x2p, y2p) {
 
         if(paramNumber > nParams) {
             paramString = paramString.replace(/[\s,]*X.*/, '');
-                console.log('ignoring extra params in segment ' + segment);
+            console.log('ignoring extra params in segment ' + segment);
         }
 
         return segmentType + paramString;

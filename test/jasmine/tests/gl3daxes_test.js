@@ -1,7 +1,7 @@
 var supplyLayoutDefaults = require('@src/plots/gl3d/layout/axis_defaults');
 
 
-describe('Test Gl3dAxes', function () {
+describe('Test Gl3dAxes', function() {
     'use strict';
 
     describe('supplyLayoutDefaults supplies defaults', function() {
@@ -70,7 +70,7 @@ describe('Test Gl3dAxes', function () {
             }
 
             supplyLayoutDefaults(layoutIn, layoutOut, options);
-            ['xaxis', 'yaxis', 'zaxis'].forEach( function (axis) {
+            ['xaxis', 'yaxis', 'zaxis'].forEach(function(axis) {
                 expect(checkKeys(expected[axis], layoutOut[axis])).toBe(true);
             });
         });

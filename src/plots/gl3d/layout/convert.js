@@ -18,8 +18,10 @@ var arrayCopy1D = arrtools.copy1D;
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
 function AxesOptions() {
-    this.bounds = [ [-10, -10, -10],
-                    [ 10,  10,  10] ];
+    this.bounds = [
+        [-10, -10, -10],
+        [10, 10, 10]
+    ];
 
     this.ticks = [ [], [], [] ];
     this.tickEnable = [ true, true, true ];
@@ -57,7 +59,7 @@ function AxesOptions() {
     this.zeroLineWidth = [ 2, 2, 2 ];
 
     this.backgroundEnable = [ true, true, true ];
-    this.backgroundColor  = [ [0.8, 0.8, 0.8, 0.5],
+    this.backgroundColor = [ [0.8, 0.8, 0.8, 0.5],
                               [0.8, 0.8, 0.8, 0.5],
                               [0.8, 0.8, 0.8, 0.5] ];
 
@@ -77,17 +79,17 @@ proto.merge = function(sceneLayout) {
         /////// Axes labels //
         opts.labels[i] = convertHTML(axes.title);
         if ('titlefont' in axes) {
-            if (axes.titlefont.color)  opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
+            if (axes.titlefont.color) opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
             if (axes.titlefont.family) opts.labelFont[i] = axes.titlefont.family;
-            if (axes.titlefont.size)   opts.labelSize[i] = axes.titlefont.size;
+            if (axes.titlefont.size) opts.labelSize[i] = axes.titlefont.size;
         }
 
         /////// LINES ////////
-        if ('showline' in axes)  opts.lineEnable[i] = axes.showline;
+        if ('showline' in axes) opts.lineEnable[i] = axes.showline;
         if ('linecolor' in axes) opts.lineColor[i] = str2RgbaArray(axes.linecolor);
         if ('linewidth' in axes) opts.lineWidth[i] = axes.linewidth;
 
-        if ('showgrid' in axes)  opts.gridEnable[i] = axes.showgrid;
+        if ('showgrid' in axes) opts.gridEnable[i] = axes.showgrid;
         if ('gridcolor' in axes) opts.gridColor[i] = str2RgbaArray(axes.gridcolor);
         if ('gridwidth' in axes) opts.gridWidth[i] = axes.gridwidth;
 
