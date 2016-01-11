@@ -253,7 +253,7 @@ Plotly.plot = function(gd, data, layout, config) {
             modules = gd._modules;
 
         var i, j, cd, trace, uid, subplot, subplotInfo,
-            cdSubplot, cdError, cdModule, module;
+            cdSubplot, cdError, cdModule, _module;
 
         function getCdSubplot(calcdata, subplot) {
             var cdSubplot = [];
@@ -266,13 +266,13 @@ Plotly.plot = function(gd, data, layout, config) {
             return cdSubplot;
         }
 
-        function getCdModule(cdSubplot, module) {
+        function getCdModule(cdSubplot, _module) {
             var cdModule = [];
             var i, cd, trace;
             for (i = 0; i < cdSubplot.length; i++) {
                 cd = cdSubplot[i];
                 trace = cd[0].trace;
-                if (trace._module===module && trace.visible===true) cdModule.push(cd);
+                if (trace._module === _module && trace.visible === true) cdModule.push(cd);
             }
             return cdModule;
         }
@@ -311,12 +311,12 @@ Plotly.plot = function(gd, data, layout, config) {
             if(subplotInfo.plot) subplotInfo.plot.selectAll('g.trace').remove();
 
             for(j = 0; j < modules.length; j++) {
-                module = modules[j];
-                if(!module.plot) continue;
+                _module = modules[j];
+                if(!_module.plot) continue;
 
                 // plot all traces of this type on this subplot at once
-                cdModule = getCdModule(cdSubplot, module);
-                module.plot(gd, subplotInfo, cdModule);
+                cdModule = getCdModule(cdSubplot, _module);
+                _module.plot(gd, subplotInfo, cdModule);
                 Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
 
                 // collect the traces that may have error bars
