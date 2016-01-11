@@ -6,6 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 /**
  * centerx is a center of scaling tuned for maximum scalability of
@@ -17,6 +18,7 @@
  * TODO: option to have the pointed-to  point a little in front of the
  * end of the line, as people tend to want a bit of a gap there...
  */
+
 module.exports = [
     // no arrow
     '',

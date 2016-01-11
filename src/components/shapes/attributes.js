@@ -6,6 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 var annAttrs = require('../annotations/attributes');
 var scatterAttrs = require('../../traces/scatter/attributes');

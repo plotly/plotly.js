@@ -6,11 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 var Plotly = require('../../plotly');
 var ARROWPATHS = require('./arrow_paths');
 var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+
 
 module.exports = {
     _isLinkedToArray: true,

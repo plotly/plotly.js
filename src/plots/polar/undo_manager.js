@@ -6,9 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
-// jshint ignore: start
-
 'use strict';
 
 //Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager

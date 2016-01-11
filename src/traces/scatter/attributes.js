@@ -6,6 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
 var Drawing = require('../../components/drawing');
 
 var PTS_LINESONLY = 20;  // TODO put in constants/

@@ -6,6 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
 var DASHES = require('../../constants/gl2d_dashes.json');

@@ -6,6 +6,7 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
 
 var Plotly = require('../../plotly');
 var fontAttrs = require('../font_attributes');
@@ -129,7 +130,7 @@ module.exports = {
             '(the number of milliseconds since January 1st, 1970).',
             'For example, to set the starting tick to',
             'November 4th, 2013, set the range to 1380844800000.0.'
-       ].join(' ')
+        ].join(' ')
     },
     dtick: {
         valType: 'any',
