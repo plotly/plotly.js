@@ -1403,7 +1403,6 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 clearSelect();
             }
             else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
-                fx.unhover(gd); // we want a clear plot for dragging
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         }
@@ -2060,6 +2059,7 @@ fx.dragElement = function(options) {
 
         if(!gd._dragging) {
             gd._dragged = false;
+            fx.unhover(gd);
             return;
         }
         gd._dragging = false;
