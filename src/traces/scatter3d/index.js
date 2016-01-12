@@ -6,14 +6,14 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Plotly = require('../../plotly');
+var Scatter = require('../scatter');
+var Plots = require('../../plots/plots');
 
-var Scatter3D = module.exports = {};
+var Scatter3D = {};
 
-Plotly.Plots.register(Scatter3D,
+Plots.register(Scatter3D,
     'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend'], {
         hrName: 'scatter_3d',
         description: [
@@ -24,25 +24,24 @@ Plotly.Plots.register(Scatter3D,
             'Projections are achieved via `projection`.',
             'Surface fills are achieved via `surfaceaxis`.'
         ].join(' ')
-    }
-);
+    });
 
+Scatter3D.plot = require('./convert');
 Scatter3D.attributes = require('./attributes');
-
 Scatter3D.markerSymbols = require('../../constants/gl_markers.json');
-
 Scatter3D.supplyDefaults = require('./defaults');
-
-Scatter3D.colorbar = Plotly.Scatter.colorbar;
+Scatter3D.colorbar = require('../scatter/colorbar');
 
 Scatter3D.calc = function(gd, trace) {
     // this is a kludge to put the array attributes into
     // calcdata the way Scatter.plot does, so that legends and
     // popovers know what to do with them.
     var cd = [{x: false, y: false, trace: trace, t: {}}];
-    Plotly.Scatter.arraysToCalcdata(cd);
+    Scatter.arraysToCalcdata(cd);
 
-    Plotly.Scatter.calcMarkerColorscales(trace);
+    Scatter.calcMarkerColorscales(trace);
 
     return cd;
 };
+
+module.exports = Scatter3D;

@@ -9,11 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
 
-var Mesh3D = module.exports = {};
+var Mesh3D = {};
 
-Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
+Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
     description: [
         'Draws sets of triangles with coordinates given by',
         'three 1-dimensional arrays in `x`, `y`, `z` and',
@@ -25,7 +25,8 @@ Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
 });
 
 Mesh3D.attributes = require('./attributes');
-
 Mesh3D.supplyDefaults = require('./defaults');
-
 Mesh3D.colorbar = require('../heatmap/colorbar');
+Mesh3D.plot = require('./convert');
+
+module.exports = Mesh3D;

@@ -12,7 +12,16 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+
+var Plots = require('../../plots/plots');
+var Fx = require('../../plots/cartesian/graph_interact');
+var Axes = require('../../plots/cartesian/axes');
+
+var Color = require('../../components/color');
+var Colorscale = require('../../components/colorscale');
+var Drawing = require('../../components/drawing');
+var ErrorBars = require('../../components/errorbars');
 
 var subtypes = require('./subtypes');
 
@@ -25,7 +34,7 @@ scatter.isBubble = subtypes.isBubble;
 
 scatter.selectPoints = require('./select');
 
-Plotly.Plots.register(scatter, 'scatter',
+Plots.register(scatter, 'scatter',
     ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
         description: [
             'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
@@ -47,7 +56,7 @@ var handleXYDefaults = require('./xy_defaults');
 
 scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, scatter.attributes, attr, dflt);
     }
 
     var len = handleXYDefaults(traceIn, traceOut, coerce),
@@ -85,8 +94,8 @@ scatter.supplyDefaults = function(traceIn, traceOut, defaultColor, layout) {
         if(!scatter.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut, coerce);
     }
 
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
+    ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
+    ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
 // common to 'scatter', 'scatter3d', 'scattergeo' and 'scattergl'
@@ -118,8 +127,8 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
     coerce('marker.size');
 
     coerce('marker.color', defaultColor);
-    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker')) {
-        Plotly.Colorscale.handleDefaults(
+    if(Colorscale.hasColorscale(traceIn, 'marker')) {
+        Colorscale.handleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
         );
     }
@@ -130,12 +139,12 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
     if(lineColor && traceOut.marker.color!==lineColor) {
         defaultMLC = lineColor;
     }
-    else if(isBubble) defaultMLC = Plotly.Color.background;
-    else defaultMLC = Plotly.Color.defaultLine;
+    else if(isBubble) defaultMLC = Color.background;
+    else defaultMLC = Color.defaultLine;
 
     coerce('marker.line.color', defaultMLC);
-    if(Plotly.Colorscale.hasColorscale(traceIn, 'marker.line')) {
-        Plotly.Colorscale.handleDefaults(
+    if(Colorscale.hasColorscale(traceIn, 'marker.line')) {
+        Colorscale.handleDefaults(
             traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
         );
     }
@@ -152,7 +161,7 @@ scatter.markerDefaults = function(traceIn, traceOut, defaultColor, layout, coerc
 // common to 'scatter', 'scatter3d' and 'scattergeo'
 scatter.textDefaults = function(traceIn, traceOut, layout, coerce) {
     coerce('textposition');
-    Plotly.Lib.coerceFont(coerce, 'textfont', layout.font);
+    Lib.coerceFont(coerce, 'textfont', layout.font);
 };
 
 // common to 'scatter' and 'scattergl'
@@ -172,7 +181,7 @@ scatter.fillColorDefaults = function(traceIn, traceOut, defaultColor, coerce) {
         }
     }
 
-    coerce('fillcolor', Plotly.Color.addOpacity(
+    coerce('fillcolor', Color.addOpacity(
         (traceOut.line || {}).color ||
         inheritColorFromMarker ||
         defaultColor, 0.5
@@ -236,13 +245,13 @@ scatter.getBubbleSizeFn = function(trace) {
 };
 
 scatter.calc = function(gd, trace) {
-    var xa = Plotly.Axes.getFromId(gd,trace.xaxis||'x'),
-        ya = Plotly.Axes.getFromId(gd,trace.yaxis||'y');
-    Plotly.Lib.markTime('in Scatter.calc');
+    var xa = Axes.getFromId(gd,trace.xaxis||'x'),
+        ya = Axes.getFromId(gd,trace.yaxis||'y');
+    Lib.markTime('in Scatter.calc');
     var x = xa.makeCalcdata(trace,'x');
-    Plotly.Lib.markTime('finished convert x');
+    Lib.markTime('finished convert x');
     var y = ya.makeCalcdata(trace,'y');
-    Plotly.Lib.markTime('finished convert y');
+    Lib.markTime('finished convert y');
     var serieslen = Math.min(x.length,y.length),
         marker,
         s,
@@ -270,7 +279,7 @@ scatter.calc = function(gd, trace) {
         if (Array.isArray(s)) {
             // I tried auto-type but category and dates dont make much sense.
             var ax = {type: 'linear'};
-            Plotly.Axes.setConvert(ax);
+            Axes.setConvert(ax);
             s = ax.makeCalcdata(trace.marker, 'size');
             if(s.length>serieslen) s.splice(serieslen, s.length-serieslen);
         }
@@ -324,11 +333,11 @@ scatter.calc = function(gd, trace) {
         yOptions.padded = false;
     }
 
-    Plotly.Lib.markTime('ready for Axes.expand');
-    Plotly.Axes.expand(xa, x, xOptions);
-    Plotly.Lib.markTime('done expand x');
-    Plotly.Axes.expand(ya, y, yOptions);
-    Plotly.Lib.markTime('done expand y');
+    Lib.markTime('ready for Axes.expand');
+    Axes.expand(xa, x, xOptions);
+    Lib.markTime('done expand x');
+    Axes.expand(ya, y, yOptions);
+    Lib.markTime('done expand y');
 
     // create the "calculated data" to plot
     var cd = new Array(serieslen);
@@ -338,7 +347,7 @@ scatter.calc = function(gd, trace) {
     }
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if (typeof s !== undefined) Plotly.Lib.mergeArray(s, cd, 'ms');
+    if (typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
 
     gd.firstscatter = false;
     return cd;
@@ -351,11 +360,11 @@ scatter.calcMarkerColorscales = function(trace) {
     var marker = trace.marker;
 
     // auto-z and autocolorscale if applicable
-    if(Plotly.Colorscale.hasColorscale(trace, 'marker')) {
-        Plotly.Colorscale.calc(trace, marker.color, 'marker', 'c');
+    if(Colorscale.hasColorscale(trace, 'marker')) {
+        Colorscale.calc(trace, marker.color, 'marker', 'c');
     }
-    if(Plotly.Colorscale.hasColorscale(trace, 'marker.line')) {
-        Plotly.Colorscale.calc(trace, marker.line.color, 'marker.line', 'c');
+    if(Colorscale.hasColorscale(trace, 'marker.line')) {
+        Colorscale.calc(trace, marker.line.color, 'marker.line', 'c');
     }
 };
 
@@ -408,21 +417,21 @@ scatter.arraysToCalcdata = function(cd) {
     var trace = cd[0].trace,
         marker = trace.marker;
 
-    Plotly.Lib.mergeArray(trace.text, cd, 'tx');
-    Plotly.Lib.mergeArray(trace.textposition, cd, 'tp');
+    Lib.mergeArray(trace.text, cd, 'tx');
+    Lib.mergeArray(trace.textposition, cd, 'tp');
     if(trace.textfont) {
-        Plotly.Lib.mergeArray(trace.textfont.size, cd, 'ts');
-        Plotly.Lib.mergeArray(trace.textfont.color, cd, 'tc');
-        Plotly.Lib.mergeArray(trace.textfont.family, cd, 'tf');
+        Lib.mergeArray(trace.textfont.size, cd, 'ts');
+        Lib.mergeArray(trace.textfont.color, cd, 'tc');
+        Lib.mergeArray(trace.textfont.family, cd, 'tf');
     }
 
     if(marker && marker.line) {
         var markerLine = marker.line;
-        Plotly.Lib.mergeArray(marker.opacity, cd, 'mo');
-        Plotly.Lib.mergeArray(marker.symbol, cd, 'mx');
-        Plotly.Lib.mergeArray(marker.color, cd, 'mc');
-        Plotly.Lib.mergeArray(markerLine.color, cd, 'mlc');
-        Plotly.Lib.mergeArray(markerLine.width, cd, 'mlw');
+        Lib.mergeArray(marker.opacity, cd, 'mo');
+        Lib.mergeArray(marker.symbol, cd, 'mx');
+        Lib.mergeArray(marker.color, cd, 'mc');
+        Lib.mergeArray(markerLine.color, cd, 'mlc');
+        Lib.mergeArray(markerLine.width, cd, 'mlw');
     }
 };
 
@@ -485,14 +494,14 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
         nexttonext = tr.append('path').classed('js-fill',true);
 
         if(['hv','vh','hvh','vhv'].indexOf(line.shape)!==-1) {
-            pathfn = Plotly.Drawing.steps(line.shape);
-            revpathbase = Plotly.Drawing.steps(
+            pathfn = Drawing.steps(line.shape);
+            revpathbase = Drawing.steps(
                 line.shape.split('').reverse().join('')
             );
         }
         else if(line.shape==='spline') {
             pathfn = revpathbase = function(pts) {
-                return Plotly.Drawing.smoothopen(pts, line.smoothing);
+                return Drawing.smoothopen(pts, line.smoothing);
             };
         }
         else {
@@ -567,19 +576,19 @@ scatter.plot = function(gd, plotinfo, cdscatter) {
             else {
                 if(showMarkers) {
                     s.selectAll('path.point')
-                        .data(trace.marker.maxdisplayed ? visFilter : Plotly.Lib.identity)
+                        .data(trace.marker.maxdisplayed ? visFilter : Lib.identity)
                         .enter().append('path')
                             .classed('point', true)
-                            .call(Plotly.Drawing.translatePoints, xa, ya);
+                            .call(Drawing.translatePoints, xa, ya);
                 }
                 if(showText) {
                     s.selectAll('g')
-                        .data(trace.marker.maxdisplayed ? visFilter : Plotly.Lib.identity)
+                        .data(trace.marker.maxdisplayed ? visFilter : Lib.identity)
                         // each text needs to go in its own 'g' in case
                         // it gets converted to mathjax
                         .enter().append('g')
                             .append('text')
-                            .call(Plotly.Drawing.translatePoints, xa, ya);
+                            .call(Drawing.translatePoints, xa, ya);
                 }
             }
         });
@@ -592,7 +601,7 @@ scatter.linePoints = function(d, opts) {
         baseTolerance = opts.baseTolerance,
         linear = opts.linear,
         segments = [],
-        badnum = Plotly.Axes.BADNUM,
+        badnum = Axes.BADNUM,
         minTolerance = 0.2, // fraction of tolerance "so close we don't even consider it a new point"
         pts = new Array(d.length),
         pti = 0,
@@ -747,16 +756,16 @@ scatter.style = function(gd) {
     s.selectAll('g.points')
         .each(function(d){
             d3.select(this).selectAll('path.point')
-                .call(Plotly.Drawing.pointStyle,d.trace||d[0].trace);
+                .call(Drawing.pointStyle,d.trace||d[0].trace);
             d3.select(this).selectAll('text')
-                .call(Plotly.Drawing.textPointStyle,d.trace||d[0].trace);
+                .call(Drawing.textPointStyle,d.trace||d[0].trace);
         });
 
     s.selectAll('g.trace path.js-line')
-        .call(Plotly.Drawing.lineGroupStyle);
+        .call(Drawing.lineGroupStyle);
 
     s.selectAll('g.trace path.js-fill')
-        .call(Plotly.Drawing.fillGroupStyle);
+        .call(Drawing.fillGroupStyle);
 };
 
 scatter.getTraceColor = function(trace, di) {
@@ -766,7 +775,7 @@ scatter.getTraceColor = function(trace, di) {
 
     if(trace.mode === 'lines') {
         lc = trace.line.color;
-        return (lc && Plotly.Color.opacity(lc)) ?
+        return (lc && Color.opacity(lc)) ?
             lc : trace.fillcolor;
     }
     else if(trace.mode === 'none') {
@@ -776,20 +785,20 @@ scatter.getTraceColor = function(trace, di) {
         var mc = di.mcc || (trace.marker || {}).color,
             mlc = di.mlcc || ((trace.marker || {}).line || {}).color;
 
-        tc = (mc && Plotly.Color.opacity(mc)) ? mc :
-            (mlc && Plotly.Color.opacity(mlc) &&
+        tc = (mc && Color.opacity(mc)) ? mc :
+            (mlc && Color.opacity(mlc) &&
                 (di.mlw || ((trace.marker || {}).line || {}).width)) ? mlc : '';
 
         if(tc) {
             // make sure the points aren't TOO transparent
-            if(Plotly.Color.opacity(tc) < 0.3) {
-                return Plotly.Color.addOpacity(tc, 0.3);
+            if(Color.opacity(tc) < 0.3) {
+                return Color.addOpacity(tc, 0.3);
             }
             else return tc;
         }
         else {
             lc = (trace.line || {}).color;
-            return (lc && Plotly.Color.opacity(lc) &&
+            return (lc && Color.opacity(lc) &&
                 scatter.hasLines(trace) && trace.line.width) ?
                     lc : trace.fillcolor;
         }
@@ -819,9 +828,9 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
                 dy = Math.abs(ya.c2p(di.y)-ya.c2p(yval));
             return Math.max(Math.sqrt(dx*dx + dy*dy)-rad, 1-3/rad);
         },
-        distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy, dxy);
+        distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
 
-    Plotly.Fx.getClosest(cd, distfn, pointData);
+    Fx.getClosest(cd, distfn, pointData);
 
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index===false) return;
@@ -845,7 +854,7 @@ scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
     if(di.tx) pointData.text = di.tx;
     else if(trace.text) pointData.text = trace.text;
 
-    Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+    ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
 };

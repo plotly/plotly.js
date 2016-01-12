@@ -9,11 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
 
-var Surface = module.exports = {};
+var Surface = {};
 
-Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity'], {
+Plots.register(Surface, 'surface', ['gl3d', 'noOpacity'], {
     description: [
         'The data the describes the coordinates of the surface is set in `z`.',
         'Data in `z` should be a {2D array}.',
@@ -27,9 +27,9 @@ Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity'], {
 });
 
 Surface.attributes = require('./attributes');
-
 Surface.supplyDefaults = require('./defaults');
-
 Surface.colorbar = require('../heatmap/colorbar');
-
 Surface.calc = require('./calc');
+Surface.plot = require('./convert');
+
+module.exports = Surface;

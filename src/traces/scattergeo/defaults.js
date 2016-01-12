@@ -9,15 +9,15 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var ScatterGeo = require('./');
+var Lib = require('../../lib');
+var Scatter = require('../scatter');
+var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    var Scatter = Plotly.Scatter;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, ScatterGeo.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
     var len = handleLonLatLocDefaults(traceIn, traceOut, coerce);

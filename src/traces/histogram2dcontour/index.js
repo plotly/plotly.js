@@ -9,9 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
 
-Plotly.Plots.register(exports, 'histogram2dcontour',
+var Histogram2dContour = {};
+
+Plots.register(Histogram2dContour, 'histogram2dcontour',
     ['cartesian', '2dMap', 'contour', 'histogram'], {
         hrName: 'histogram_2d_contour',
         description: [
@@ -25,16 +27,12 @@ Plotly.Plots.register(exports, 'histogram2dcontour',
     }
 );
 
-exports.attributes = require('./attributes');
+Histogram2dContour.attributes = require('./attributes');
+Histogram2dContour.supplyDefaults = require('./defaults');
+Histogram2dContour.calc = require('../contour/calc');
+Histogram2dContour.plot = require('../contour/plot');
+Histogram2dContour.style = require('../contour/style');
+Histogram2dContour.colorbar = require('../contour/colorbar');
+Histogram2dContour.hoverPoints = require('../contour/hover');
 
-exports.supplyDefaults = require('./defaults');
-
-exports.calc = require('../contour/calc');
-
-exports.plot = require('../contour/plot');
-
-exports.style = require('../contour/style');
-
-exports.colorbar = require('../contour/colorbar');
-
-exports.hoverPoints = require('../contour/hover');
+module.exports = Histogram2dContour;
