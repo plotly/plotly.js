@@ -8,9 +8,11 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
 
-Plotly.Plots.register(exports, 'box',
+var Box = {};
+
+Plots.register(Box, 'box',
     ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'], {
         description: [
             'In vertical (horizontal) box plots,',
@@ -29,12 +31,14 @@ Plotly.Plots.register(exports, 'box',
     }
 );
 
-exports.attributes = require('./attributes');
-exports.layoutAttributes = require('./layout_attributes');
-exports.supplyDefaults = require('./defaults');
-exports.supplyLayoutDefaults = require('./layout_defaults');
-exports.calc = require('./calc');
-exports.setPositions = require('./set_positions');
-exports.plot = require('./plot');
-exports.style = require('./style');
-exports.hoverPoints = require('./hover');
+Box.attributes = require('./attributes');
+Box.layoutAttributes = require('./layout_attributes');
+Box.supplyDefaults = require('./defaults');
+Box.supplyLayoutDefaults = require('./layout_defaults');
+Box.calc = require('./calc');
+Box.setPositions = require('./set_positions');
+Box.plot = require('./plot');
+Box.style = require('./style');
+Box.hoverPoints = require('./hover');
+
+module.exports = Box;

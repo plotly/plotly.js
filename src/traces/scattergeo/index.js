@@ -12,7 +12,8 @@
 var Plots = require('../../plots/plots');
 var Scatter = require('../scatter');
 
-var ScatterGeo = module.exports = {};
+
+var ScatterGeo = {};
 
 Plots.register(ScatterGeo, 'scattergeo',
     ['geo', 'symbols', 'markerColorscale', 'showLegend'], {
@@ -22,17 +23,17 @@ Plots.register(ScatterGeo, 'scattergeo',
             'is provided either by longitude/latitude pairs in `lon` and `lat`',
             'respectively or by geographic location IDs or names in `locations`.'
         ].join(' ')
-    }
-);
+    });
 
 ScatterGeo.attributes = require('./attributes');
-
 ScatterGeo.supplyDefaults = require('./defaults');
-
 ScatterGeo.colorbar = Scatter.colorbar;
+ScatterGeo.plot = require('./plot');
 
 ScatterGeo.calc = function(gd, trace) {
 
     Scatter.calcMarkerColorscales(trace);
 
 };
+
+module.exports = ScatterGeo;

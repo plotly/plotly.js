@@ -9,9 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
 
-Plotly.Plots.register(exports, 'contour',
+var Contour = {};
+
+Plots.register(Contour, 'contour',
     ['cartesian', '2dMap', 'contour'], {
         description: [
             'The data from which contour lines are computed is set in `z`.',
@@ -21,22 +23,22 @@ Plotly.Plots.register(exports, 'contour',
             'these N rows correspond to N y coordinates',
             '(set in `y` or auto-generated) and the M columns',
             'correspond to M x coordinates (set in `x` or auto-generated).',
-
             'By setting `transpose` to *true*, the above behavior is flipped.'
         ].join(' ')
-    }
-);
+    });
 
-exports.attributes = require('./attributes');
+Contour.attributes = require('./attributes');
 
-exports.supplyDefaults = require('./defaults');
+Contour.supplyDefaults = require('./defaults');
 
-exports.calc = require('./calc');
+Contour.calc = require('./calc');
 
-exports.plot = require('./plot');
+Contour.plot = require('./plot');
 
-exports.style = require('./style');
+Contour.style = require('./style');
 
-exports.colorbar = require('./colorbar');
+Contour.colorbar = require('./colorbar');
 
-exports.hoverPoints = require('./hover');
+Contour.hoverPoints = require('./hover');
+
+module.exports = Contour;

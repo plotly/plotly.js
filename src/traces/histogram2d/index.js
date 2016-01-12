@@ -9,9 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
 
-Plotly.Plots.register(exports, 'histogram2d',
+var Histogram2D = {};
+
+Plots.register(Histogram2D, 'histogram2d',
     ['cartesian', '2dMap', 'histogram'], {
         hrName: 'histogram_2d',
         description: [
@@ -25,16 +27,12 @@ Plotly.Plots.register(exports, 'histogram2d',
     }
 );
 
-exports.attributes = require('./attributes');
+Histogram2D.attributes = require('./attributes');
+Histogram2D.supplyDefaults = require('./defaults');
+Histogram2D.calc = require('../heatmap/calc');
+Histogram2D.plot = require('../heatmap/plot');
+Histogram2D.colorbar = require('../heatmap/colorbar');
+Histogram2D.style = require('../heatmap/style');
+Histogram2D.hoverPoints = require('../heatmap/hover');
 
-exports.supplyDefaults = require('./defaults');
-
-exports.calc = require('../heatmap/calc');
-
-exports.plot = require('../heatmap/plot');
-
-exports.colorbar = require('../heatmap/colorbar');
-
-exports.style = require('../heatmap/style');
-
-exports.hoverPoints = require('../heatmap/hover');
+module.exports = Histogram2D;
