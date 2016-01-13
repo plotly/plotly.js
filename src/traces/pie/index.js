@@ -8,18 +8,7 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
-
-
 var Pie = {};
-
-Plots.register(Pie, 'pie', ['pie', 'showLegend'], {
-    description: [
-        'A data visualized by the sectors of the pie is set in `values`.',
-        'The sector labels are set in `labels`.',
-        'The sector colors are set in `marker.colors`'
-    ].join(' ')
-});
 
 Pie.attributes = require('./attributes');
 Pie.supplyDefaults = require('./defaults');
@@ -29,5 +18,15 @@ Pie.calc = require('./calc');
 Pie.plot = require('./plot');
 Pie.style = require('./style');
 Pie.styleOne = require('./style_one');
+
+Pie._type = 'pie';
+Pie._categories = ['pie', 'showLegend'];
+Pie._meta = {
+    description: [
+        'A data visualized by the sectors of the pie is set in `values`.',
+        'The sector labels are set in `labels`.',
+        'The sector colors are set in `marker.colors`'
+    ].join(' ')
+};
 
 module.exports = Pie;

@@ -9,21 +9,7 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
-
 var Bar = {};
-
-Plots.register(Bar, 'bar',
-    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
-        description: [
-            'The data visualized by the span of the bars is set in `y`',
-            'if `orientation` is set th *v* (the default)',
-            'and the labels are set in `x`.',
-
-            'By setting `orientation` to *h*, the roles are interchanged.'
-        ].join(' ')
-    }
-);
 
 Bar.attributes = require('./attributes');
 Bar.layoutAttributes = require('./layout_attributes');
@@ -36,5 +22,16 @@ Bar.arraysToCalcdata = require('./arrays_to_calcdata');
 Bar.plot = require('./plot');
 Bar.style = require('./style');
 Bar.hoverPoints = require('./hover');
+
+Bar._categories = ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'];
+Bar._type = 'bar';
+Bar._meta = {
+    description: [
+        'The data visualized by the span of the bars is set in `y`',
+        'if `orientation` is set th *v* (the default)',
+        'and the labels are set in `x`.',
+        'By setting `orientation` to *h*, the roles are interchanged.'
+    ].join(' ')
+};
 
 module.exports = Bar;

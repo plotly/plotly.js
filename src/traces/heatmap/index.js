@@ -9,11 +9,19 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
-
 var Heatmap = {};
 
-Plots.register(Heatmap, 'heatmap', ['cartesian', '2dMap'], {
+Heatmap.attributes = require('./attributes');
+Heatmap.supplyDefaults = require('./defaults');
+Heatmap.calc = require('./calc');
+Heatmap.plot = require('./plot');
+Heatmap.colorbar = require('./colorbar');
+Heatmap.style = require('./style');
+Heatmap.hoverPoints = require('./hover');
+
+Heatmap._type = 'heatmap';
+Heatmap._categories = ['cartesian', '2dMap'];
+Heatmap._meta = {
     description: [
         'The data that describes the heatmap value-to-color mapping',
         'is set in `z`.',
@@ -38,14 +46,6 @@ Plots.register(Heatmap, 'heatmap', ['cartesian', '2dMap'], {
         'In the case where `z` is a 1D {array}, the x and y coordinates must be',
         'provided in `x` and `y` respectively to form data triplets.'
     ].join(' ')
-});
-
-Heatmap.attributes = require('./attributes');
-Heatmap.supplyDefaults = require('./defaults');
-Heatmap.calc = require('./calc');
-Heatmap.plot = require('./plot');
-Heatmap.colorbar = require('./colorbar');
-Heatmap.style = require('./style');
-Heatmap.hoverPoints = require('./hover');
+};
 
 module.exports = Heatmap;
