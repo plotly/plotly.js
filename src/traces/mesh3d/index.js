@@ -9,11 +9,16 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
-
 var Mesh3D = {};
 
-Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
+Mesh3D.attributes = require('./attributes');
+Mesh3D.supplyDefaults = require('./defaults');
+Mesh3D.colorbar = require('../heatmap/colorbar');
+Mesh3D.plot = require('./convert');
+
+Mesh3D._type = 'mesh3d',
+Mesh3D._categories = ['gl3d'];
+Mesh3D._meta = {
     description: [
         'Draws sets of triangles with coordinates given by',
         'three 1-dimensional arrays in `x`, `y`, `z` and',
@@ -22,11 +27,6 @@ Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
         '(3) the Alpha-shape algorithm or',
         '(4) the Convex-hull algorithm'
     ].join(' ')
-});
-
-Mesh3D.attributes = require('./attributes');
-Mesh3D.supplyDefaults = require('./defaults');
-Mesh3D.colorbar = require('../heatmap/colorbar');
-Mesh3D.plot = require('./convert');
+};
 
 module.exports = Mesh3D;

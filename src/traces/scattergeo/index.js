@@ -9,31 +9,30 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
 var Scatter = require('../scatter');
 
-
 var ScatterGeo = {};
-
-Plots.register(ScatterGeo, 'scattergeo',
-    ['geo', 'symbols', 'markerColorscale', 'showLegend'], {
-        hrName: 'scatter_geo',
-        description: [
-            'The data visualized as scatter point or lines on a geographic map',
-            'is provided either by longitude/latitude pairs in `lon` and `lat`',
-            'respectively or by geographic location IDs or names in `locations`.'
-        ].join(' ')
-    });
 
 ScatterGeo.attributes = require('./attributes');
 ScatterGeo.supplyDefaults = require('./defaults');
 ScatterGeo.colorbar = Scatter.colorbar;
-ScatterGeo.plot = require('./plot');
+ScatterGeo.plot = require('./plot').plot;
 
 ScatterGeo.calc = function(gd, trace) {
 
     Scatter.calcMarkerColorscales(trace);
 
+};
+
+ScatterGeo._type = 'scattergeo';
+ScatterGeo._categories = ['geo', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterGeo._meta = {
+    hrName: 'scatter_geo',
+    description: [
+        'The data visualized as scatter point or lines on a geographic map',
+        'is provided either by longitude/latitude pairs in `lon` and `lat`',
+        'respectively or by geographic location IDs or names in `locations`.'
+    ].join(' ')
 };
 
 module.exports = ScatterGeo;

@@ -9,22 +9,8 @@
 'use strict';
 
 var Scatter = require('../scatter');
-var Plots = require('../../plots/plots');
 
 var Scatter3D = {};
-
-Plots.register(Scatter3D,
-    'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend'], {
-        hrName: 'scatter_3d',
-        description: [
-            'The data visualized as scatter point or lines in 3D dimension',
-            'is set in `x`, `y`, `z`.',
-            'Text (appearing either on the chart or on hover only) is via `text`.',
-            'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-            'Projections are achieved via `projection`.',
-            'Surface fills are achieved via `surfaceaxis`.'
-        ].join(' ')
-    });
 
 Scatter3D.plot = require('./convert');
 Scatter3D.attributes = require('./attributes');
@@ -42,6 +28,20 @@ Scatter3D.calc = function(gd, trace) {
     Scatter.calcMarkerColorscales(trace);
 
     return cd;
+};
+
+Scatter3D._type = 'scatter3d';
+Scatter3D._categories = ['gl3d', 'symbols', 'markerColorscale', 'showLegend'];
+Scatter3D._meta = {
+    hrName: 'scatter_3d',
+    description: [
+        'The data visualized as scatter point or lines in 3D dimension',
+        'is set in `x`, `y`, `z`.',
+        'Text (appearing either on the chart or on hover only) is via `text`.',
+        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+        'Projections are achieved via `projection`.',
+        'Surface fills are achieved via `surfaceaxis`.'
+    ].join(' ')
 };
 
 module.exports = Scatter3D;

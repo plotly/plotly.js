@@ -14,7 +14,6 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 
-var Plots = require('../../plots/plots');
 var Fx = require('../../plots/cartesian/graph_interact');
 var Axes = require('../../plots/cartesian/axes');
 
@@ -34,17 +33,17 @@ scatter.isBubble = subtypes.isBubble;
 
 scatter.selectPoints = require('./select');
 
-Plots.register(scatter, 'scatter',
-    ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
-        description: [
-            'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
-            'The data visualized as scatter point or lines is set in `x` and `y`.',
-            'Text (appearing either on the chart or on hover only) is via `text`.',
-            'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-            'to a numerical arrays.'
-        ].join(' ')
-    }
-);
+scatter._type = 'scatter';
+scatter._categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
+scatter._meta = {
+    description: [
+        'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
+        'The data visualized as scatter point or lines is set in `x` and `y`.',
+        'Text (appearing either on the chart or on hover only) is via `text`.',
+        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+        'to a numerical arrays.'
+    ].join(' ')
+};
 
 // traces with < this many points are by default shown
 // with points and lines, > just get lines

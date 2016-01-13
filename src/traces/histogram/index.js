@@ -9,8 +9,6 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
-
 /**
  * Histogram has its own attribute, defaults and calc steps,
  * but uses bar's plot to display
@@ -27,18 +25,6 @@ var Plots = require('../../plots/plots');
 
 var Histogram = {};
 
-Plots.register(Histogram, 'histogram',
-    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'], {
-        description: [
-            'The sample data from which statistics are computed is set in `x`',
-            'for vertically spanning histograms and',
-            'in `y` for horizontally spanning histograms.',
-            'Binning options are set `xbins` and `ybins` respectively',
-            'if no aggregation data is provided.'
-        ].join(' ')
-    }
-);
-
 Histogram.attributes = require('./attributes');
 Histogram.layoutAttributes = require('../bar/layout_attributes');
 Histogram.supplyDefaults = require('./defaults');
@@ -49,5 +35,17 @@ Histogram.plot = require('../bar/plot');
 Histogram.style = require('../bar/style');
 Histogram.colorbar = require('../scatter/colorbar');
 Histogram.hoverPoints = require('../bar/hover');
+
+Histogram._type = 'histogram';
+Histogram._categories = ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
+Histogram._meta = {
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'for vertically spanning histograms and',
+        'in `y` for horizontally spanning histograms.',
+        'Binning options are set `xbins` and `ybins` respectively',
+        'if no aggregation data is provided.'
+    ].join(' ')
+};
 
 module.exports = Histogram;
