@@ -41,7 +41,8 @@ plots.fontWeight = 'normal';
  */
 plots.register = function(_module, thisType, categoriesIn, meta) {
     if(modules[thisType]) {
-        throw new Error('type ' + thisType + ' already registered');
+        console.warn('type ' + thisType + ' already registered');
+        return;
     }
 
     var categoryObj = {};
