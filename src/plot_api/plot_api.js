@@ -1356,7 +1356,7 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     // if the user didn't define newIndices, they just want the traces appended
     // i.e., we can simply redraw and be done
     if (typeof newIndices === 'undefined') {
-        var promise = Plotly.redraw(gd);
+        promise = Plotly.redraw(gd);
         if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return promise;
     }
@@ -1382,7 +1382,7 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     // this requires some extra work that moveTraces will do
     if (Queue) Queue.startSequence(gd);
     if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
-    var promise = Plotly.moveTraces(gd, currentIndices, newIndices);
+    promise = Plotly.moveTraces(gd, currentIndices, newIndices);
     if (Queue) Queue.stopSequence(gd);
     return promise;
 };
