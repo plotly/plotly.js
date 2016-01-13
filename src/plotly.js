@@ -39,9 +39,6 @@ var Plots = exports.Plots = require('./plots/plots');
 var Cartesian = require('./plots/cartesian');
 Plots.registerSubplot(Cartesian);
 
-exports.Axes = require('./plots/cartesian/axes');
-exports.Fx = require('./plots/cartesian/graph_interact');
-
 var Geo = require('./plots/geo');
 Plots.registerSubplot(Geo);
 
@@ -49,9 +46,12 @@ var Gl3d = require('./plots/gl3d');
 Plots.registerSubplot(Gl3d);
 
 var Gl2d = require('./plots/gl2d');
-Plots.registerSubplot(Gl2d);
 
+Plots.registerSubplot(Gl2d);
+exports.Axes = require('./plots/cartesian/axes');
+exports.Fx = require('./plots/cartesian/graph_interact');
 exports.micropolar = require('./plots/polar/micropolar');
+
 
 // components
 exports.Color = require('./components/color');
@@ -65,22 +65,24 @@ exports.Titles = require('./components/titles');
 exports.Legend = require('./components/legend');
 exports.ModeBar = require('./components/modebar');
 
-// traces
-exports.Scatter = require('./traces/scatter');
-exports.Bar = require('./traces/bar');
-exports.Box = require('./traces/box');
-exports.Heatmap = require('./traces/heatmap');
-exports.Histogram = require('./traces/histogram');
-exports.Histogram2d = require('./traces/histogram2d');
-exports.Histogram2dContour = require('./traces/histogram2dcontour');
-exports.Pie = require('./traces/pie');
-exports.Contour = require('./traces/contour');
-exports.Scatter3D = require('./traces/scatter3d');
-exports.Surface = require('./traces/surface');
-exports.Mesh3D = require('./traces/mesh3d');
-exports.ScatterGeo = require('./traces/scattergeo');
-exports.Choropleth = require('./traces/choropleth');
-exports.ScatterGl = require('./traces/scattergl');
+// Traces are registered in index.js
+exports.register = function register(options) {
+    if(!options || options === {}){
+        throw new Error('You must pass a config object to Plotly.register.');
+    }
+
+    for(var trace in options.traces){
+        var newTrace = options.traces[trace];
+        Plots.register(newTrace, newTrace._type, newTrace._categories, newTrace._meta);
+    }
+};
+
+exports.register({
+    traces: [require('./traces/scatter')]
+});
+
+// Scatter is the only trace included by default
+exports.Scatter = Plots.getModule('scatter');
 
 // plot api
 require('./plot_api/plot_api');
