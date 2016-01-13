@@ -9,8 +9,7 @@
 
 'use strict';
 
-var loneUnhover = require('../../plotly').Fx.loneUnhover;
-
+var Fx = require('../cartesian/graph_interact');
 
 function createGeoZoomReset(geo, geoLayout) {
     var projection = geo.projection,
@@ -23,7 +22,7 @@ function createGeoZoomReset(geo, geoLayout) {
         zoom.scale(projection.scale());
         zoom.translate(projection.translate());
 
-        loneUnhover(geo.hoverContainer);
+        Fx.loneUnhover(geo.hoverContainer);
 
         geo.render();
     };

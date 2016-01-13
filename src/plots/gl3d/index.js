@@ -9,11 +9,9 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 var Scene = require('./scene');
+var Plots = require('../plots');
 
-var plots = Plotly.Plots;
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
 
 
@@ -32,7 +30,7 @@ exports.supplyLayoutDefaults = require('./layout/defaults');
 exports.plot = function plotGl3d(gd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
-        sceneIds = plots.getSubplotIds(fullLayout, 'gl3d');
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
 
     fullLayout._paperdiv.style({
         width: fullLayout.width + 'px',
@@ -43,7 +41,7 @@ exports.plot = function plotGl3d(gd) {
 
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
-            fullSceneData = plots.getSubplotData(fullData, 'gl3d', sceneId),
+            fullSceneData = Plots.getSubplotData(fullData, 'gl3d', sceneId),
             scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
 
         // If Scene is not instantiated, create one!
@@ -83,7 +81,7 @@ exports.initAxes = function(gd) {
     delete fullLayout.xaxis;
     delete fullLayout.yaxis;
 
-    var sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
+    var sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
 
     for(var i = 0; i < sceneIds.length; ++i) {
         var sceneId = sceneIds[i];
