@@ -1,9 +1,7 @@
-var Plotly = require('@src/plotly');
+var ScatterGeo = require('@src/traces/scattergeo');
 
 describe('Test scattergeo', function() {
     'use strict';
-
-    var ScatterGeo = Plotly.ScatterGeo;
 
     describe('supplyDefaults', function() {
         var traceIn,

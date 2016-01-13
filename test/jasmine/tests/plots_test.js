@@ -1,17 +1,19 @@
 var Plotly = require('@src/plotly');
+var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
-describe('Test Plotly.Plots', function() {
+
+describe('Test Plots', function() {
     'use strict';
 
-    describe('Plotly.Plots.supplyLayoutGlobalDefaults should', function() {
+    describe('Plots.supplyLayoutGlobalDefaults should', function() {
         var layoutIn,
             layoutOut,
             expected;
 
-        var supplyLayoutDefaults = Plotly.Plots.supplyLayoutGlobalDefaults;
+        var supplyLayoutDefaults = Plots.supplyLayoutGlobalDefaults;
 
         beforeEach(function() {
             layoutOut = {};
@@ -65,8 +67,8 @@ describe('Test Plotly.Plots', function() {
 
     });
 
-    describe('Plotly.Plots.supplyDataDefaults', function() {
-        var supplyDataDefaults = Plotly.Plots.supplyDataDefaults,
+    describe('Plots.supplyDataDefaults', function() {
+        var supplyDataDefaults = Plots.supplyDataDefaults,
             layout = {};
 
         var traceIn, traceOut;
@@ -98,8 +100,8 @@ describe('Test Plotly.Plots', function() {
         });
     });
 
-    describe('Plotly.Plots.getSubplotIds', function() {
-        var getSubplotIds = Plotly.Plots.getSubplotIds;
+    describe('Plots.getSubplotIds', function() {
+        var getSubplotIds = Plots.getSubplotIds;
         var layout;
 
         it('returns scene ids', function() {
@@ -143,8 +145,8 @@ describe('Test Plotly.Plots', function() {
         });
     });
 
-    describe('Plotly.Plots.getSubplotIdsInData', function() {
-        var getSubplotIdsInData = Plotly.Plots.getSubplotIdsInData;
+    describe('Plots.getSubplotIdsInData', function() {
+        var getSubplotIdsInData = Plots.getSubplotIdsInData;
 
         var ids, data;
 
@@ -173,11 +175,11 @@ describe('Test Plotly.Plots', function() {
 
     });
 
-    describe('Plotly.Plots.register, getModule, and traceIs', function() {
+    describe('Plots.register, getModule, and traceIs', function() {
         beforeEach(function() {
-            this.modulesKeys = Object.keys(Plotly.Plots.modules);
-            this.allTypesKeys = Object.keys(Plotly.Plots.allTypes);
-            this.allCategoriesKeys = Object.keys(Plotly.Plots.allCategories);
+            this.modulesKeys = Object.keys(Plots.modules);
+            this.allTypesKeys = Object.keys(Plots.allTypes);
+            this.allCategoriesKeys = Object.keys(Plots.allCategories);
 
             this.fakeModule = {
                 calc: function() { return 42; },
@@ -187,7 +189,7 @@ describe('Test Plotly.Plots', function() {
                 plot: function() { throw new Error('nope!'); }
             };
 
-            Plotly.Plots.register(this.fakeModule, 'newtype', ['red', 'green']);
+            Plots.register(this.fakeModule, 'newtype', ['red', 'green']);
 
             spyOn(console, 'warn');
         });
@@ -199,42 +201,40 @@ describe('Test Plotly.Plots', function() {
                 });
             }
 
-            revertObj(Plotly.Plots.modules, this.modulesKeys);
-            revertObj(Plotly.Plots.allTypes, this.allTypesKeys);
-            revertObj(Plotly.Plots.allCategories, this.allCategoriesKeys);
+            revertObj(Plots.modules, this.modulesKeys);
+            revertObj(Plots.allTypes, this.allTypesKeys);
+            revertObj(Plots.allCategories, this.allCategoriesKeys);
         });
 
-        it('should error on attempts to reregister a type', function() {
-            var fm2 = this.fakeModule2;
-            expect(function() { Plotly.Plots.register(fm2, 'newtype', ['yellow', 'blue']); })
-                .toThrow(new Error('type newtype already registered'));
-            expect(Plotly.Plots.allCategories.yellow).toBeUndefined();
+        it('should warn on attempts to reregister a type', function() {
+            Plots.register(this.fakeModule2, 'newtype', ['yellow', 'blue']);
+            expect(Plots.allCategories.yellow).toBeUndefined();
         });
 
         it('should find the module for a type', function() {
-            expect(Plotly.Plots.getModule('newtype')).toBe(this.fakeModule);
-            expect(Plotly.Plots.getModule({type: 'newtype'})).toBe(this.fakeModule);
+            expect(Plots.getModule('newtype')).toBe(this.fakeModule);
+            expect(Plots.getModule({type: 'newtype'})).toBe(this.fakeModule);
         });
 
         it('should return false for types it doesn\'t know', function() {
-            expect(Plotly.Plots.getModule('notatype')).toBe(false);
-            expect(Plotly.Plots.getModule({type: 'notatype'})).toBe(false);
-            expect(Plotly.Plots.getModule({type: 'newtype', r: 'this is polar'})).toBe(false);
+            expect(Plots.getModule('notatype')).toBe(false);
+            expect(Plots.getModule({type: 'notatype'})).toBe(false);
+            expect(Plots.getModule({type: 'newtype', r: 'this is polar'})).toBe(false);
         });
 
         it('should find the categories for this type', function() {
-            expect(Plotly.Plots.traceIs('newtype', 'red')).toBe(true);
-            expect(Plotly.Plots.traceIs({type: 'newtype'}, 'red')).toBe(true);
+            expect(Plots.traceIs('newtype', 'red')).toBe(true);
+            expect(Plots.traceIs({type: 'newtype'}, 'red')).toBe(true);
         });
 
         it('should not find other real categories', function() {
-            expect(Plotly.Plots.traceIs('newtype', 'cartesian')).toBe(false);
-            expect(Plotly.Plots.traceIs({type: 'newtype'}, 'cartesian')).toBe(false);
+            expect(Plots.traceIs('newtype', 'cartesian')).toBe(false);
+            expect(Plots.traceIs({type: 'newtype'}, 'cartesian')).toBe(false);
             expect(console.warn).not.toHaveBeenCalled();
         });
     });
 
-    describe('Plotly.Plots.registerSubplot', function() {
+    describe('Plots.registerSubplot', function() {
         var fake = {
             name: 'fake',
             attr: 'abc',
@@ -242,9 +242,9 @@ describe('Test Plotly.Plots', function() {
             attributes: { stuff: { 'more stuff': 102102 } }
         };
 
-        Plotly.Plots.registerSubplot(fake);
+        Plots.registerSubplot(fake);
 
-        var subplotsRegistry = Plotly.Plots.subplotsRegistry;
+        var subplotsRegistry = Plots.subplotsRegistry;
 
         it('should register attr, idRoot and attributes', function() {
             expect(subplotsRegistry.fake.attr).toEqual('abc');
@@ -307,7 +307,7 @@ describe('Test Plotly.Plots', function() {
 
     });
 
-    describe('Plotly.Plots.purge', function() {
+    describe('Plots.purge', function() {
         var gd;
 
         beforeEach(function(done) {
@@ -324,7 +324,7 @@ describe('Test Plotly.Plots', function() {
                 '_hmpixcount', '_hmlumcount'
             ];
 
-            Plotly.Plots.purge(gd);
+            Plots.purge(gd);
             expect(Object.keys(gd)).toEqual(expectedKeys);
             expect(gd.data).toBeUndefined();
             expect(gd.layout).toBeUndefined();
