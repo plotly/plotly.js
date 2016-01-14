@@ -8,21 +8,26 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Pie = {};
 
-Plotly.Plots.register(exports, 'pie', ['pie', 'showLegend'], {
+Pie.attributes = require('./attributes');
+Pie.supplyDefaults = require('./defaults');
+Pie.supplyLayoutDefaults = require('./layout_defaults');
+Pie.layoutAttributes = require('./layout_attributes');
+Pie.calc = require('./calc');
+Pie.plot = require('./plot');
+Pie.style = require('./style');
+Pie.styleOne = require('./style_one');
+
+Pie.moduleType = 'trace';
+Pie.name = 'pie';
+Pie.categories = ['pie', 'showLegend'];
+Pie.meta = {
     description: [
         'A data visualized by the sectors of the pie is set in `values`.',
         'The sector labels are set in `labels`.',
         'The sector colors are set in `marker.colors`'
     ].join(' ')
-});
+};
 
-exports.attributes = require('./attributes');
-exports.supplyDefaults = require('./defaults');
-exports.supplyLayoutDefaults = require('./layout_defaults');
-exports.layoutAttributes = require('./layout_attributes');
-exports.calc = require('./calc');
-exports.plot = require('./plot');
-exports.style = require('./style');
-exports.styleOne = require('./style_one');
+module.exports = Pie;

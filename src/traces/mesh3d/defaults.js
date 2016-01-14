@@ -10,12 +10,13 @@
 'use strict';
 
 var Plotly = require('../../plotly');
-var Mesh3D = require('./');
+var Lib = require('../../lib');
+var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, Mesh3D.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
     // read in face/vertex properties

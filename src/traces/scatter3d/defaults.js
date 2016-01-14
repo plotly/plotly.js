@@ -9,15 +9,17 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var Scatter3D = require('./');
+var Scatter = require('../../traces/scatter');
+var Lib = require('../../lib');
+var ErrorBars = require('../../components/errorbars');
+
+var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-    var Scatter = Plotly.Scatter;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, Scatter3D.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
     var len = handleXYZDefaults(traceIn, traceOut, coerce);
@@ -54,9 +56,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
-    Plotly.ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
+    ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
+    ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
+    ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
 };
 
 function handleXYZDefaults(traceIn, traceOut, coerce) {

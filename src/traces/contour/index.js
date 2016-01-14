@@ -9,34 +9,30 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Contour = {};
 
-Plotly.Plots.register(exports, 'contour',
-    ['cartesian', '2dMap', 'contour'], {
-        description: [
-            'The data from which contour lines are computed is set in `z`.',
-            'Data in `z` must be a {2D array} of numbers.',
+Contour.attributes = require('./attributes');
+Contour.supplyDefaults = require('./defaults');
+Contour.calc = require('./calc');
+Contour.plot = require('./plot');
+Contour.style = require('./style');
+Contour.colorbar = require('./colorbar');
+Contour.hoverPoints = require('./hover');
 
-            'Say that `z` has N rows and M columns, then by default,',
-            'these N rows correspond to N y coordinates',
-            '(set in `y` or auto-generated) and the M columns',
-            'correspond to M x coordinates (set in `x` or auto-generated).',
+Contour.moduleType = 'trace';
+Contour.name = 'contour';
+Contour.categories = ['cartesian', '2dMap', 'contour'];
+Contour.meta = {
+    description: [
+        'The data from which contour lines are computed is set in `z`.',
+        'Data in `z` must be a {2D array} of numbers.',
 
-            'By setting `transpose` to *true*, the above behavior is flipped.'
-        ].join(' ')
-    }
-);
+        'Say that `z` has N rows and M columns, then by default,',
+        'these N rows correspond to N y coordinates',
+        '(set in `y` or auto-generated) and the M columns',
+        'correspond to M x coordinates (set in `x` or auto-generated).',
+        'By setting `transpose` to *true*, the above behavior is flipped.'
+    ].join(' ')
+};
 
-exports.attributes = require('./attributes');
-
-exports.supplyDefaults = require('./defaults');
-
-exports.calc = require('./calc');
-
-exports.plot = require('./plot');
-
-exports.style = require('./style');
-
-exports.colorbar = require('./colorbar');
-
-exports.hoverPoints = require('./hover');
+module.exports = Contour;

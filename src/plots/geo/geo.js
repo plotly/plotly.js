@@ -14,13 +14,12 @@
 var Plotly = require('../../plotly');
 var d3 = require('d3');
 
+var Plots = require('../../plots/plots');
+
 var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');
 var createGeoZoom = require('./zoom');
 var createGeoZoomReset = require('./zoom_reset');
-
-var plotScatterGeo = require('../../traces/scattergeo/plot');
-var plotChoropleth = require('../../traces/choropleth/plot');
 
 var constants = require('../../constants/geo_constants');
 var topojsonUtils = require('../../lib/topojson_utils');
@@ -136,21 +135,22 @@ proto.plot = function(geoData, fullLayout, promises) {
 };
 
 proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
-    var scattergeoData = [],
-        choroplethData = [];
+    var traceData = {};
 
     this.drawLayout(geoLayout);
 
     for(var i = 0; i < geoData.length; i++) {
         var trace = geoData[i];
-        var traceType = trace.type;
 
-        if(traceType === 'scattergeo') scattergeoData.push(trace);
-        else if(traceType === 'choropleth') choroplethData.push(trace);
+        traceData[trace.type] = traceData[trace.type] || [];
+        traceData[trace.type].push(trace);
     }
 
-    if(scattergeoData.length>0) plotScatterGeo.plot(this, scattergeoData);
-    if(choroplethData.length>0) plotChoropleth.plot(this, choroplethData, geoLayout);
+    var traceKeys = Object.keys(traceData);
+    for(var j = 0; j < traceKeys.length; j++){
+        var traceKey = traceKeys[j];
+        Plots.getModule(traceKey).plot(this, traceData[traceKey], geoLayout);
+    }
 
     this.render();
 };

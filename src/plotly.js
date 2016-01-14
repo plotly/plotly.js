@@ -39,9 +39,6 @@ var Plots = exports.Plots = require('./plots/plots');
 var Cartesian = require('./plots/cartesian');
 Plots.registerSubplot(Cartesian);
 
-exports.Axes = require('./plots/cartesian/axes');
-exports.Fx = require('./plots/cartesian/graph_interact');
-
 var Geo = require('./plots/geo');
 Plots.registerSubplot(Geo);
 
@@ -51,7 +48,10 @@ Plots.registerSubplot(Gl3d);
 var Gl2d = require('./plots/gl2d');
 Plots.registerSubplot(Gl2d);
 
+exports.Axes = require('./plots/cartesian/axes');
+exports.Fx = require('./plots/cartesian/graph_interact');
 exports.micropolar = require('./plots/polar/micropolar');
+
 
 // components
 exports.Color = require('./components/color');
@@ -65,22 +65,30 @@ exports.Titles = require('./components/titles');
 exports.Legend = require('./components/legend');
 exports.ModeBar = require('./components/modebar');
 
-// traces
-exports.Scatter = require('./traces/scatter');
-exports.Bar = require('./traces/bar');
-exports.Box = require('./traces/box');
-exports.Heatmap = require('./traces/heatmap');
-exports.Histogram = require('./traces/histogram');
-exports.Histogram2d = require('./traces/histogram2d');
-exports.Histogram2dContour = require('./traces/histogram2dcontour');
-exports.Pie = require('./traces/pie');
-exports.Contour = require('./traces/contour');
-exports.Scatter3D = require('./traces/scatter3d');
-exports.Surface = require('./traces/surface');
-exports.Mesh3D = require('./traces/mesh3d');
-exports.ScatterGeo = require('./traces/scattergeo');
-exports.Choropleth = require('./traces/choropleth');
-exports.ScatterGl = require('./traces/scattergl');
+exports.register = function register(_modules) {
+    if(!_modules){
+        throw new Error('No argument passed to Plotly.register.');
+    } else if(_modules && !Array.isArray(_modules)){
+        _modules = [_modules];
+    }
+
+
+    for(var i = 0; i < _modules.length; i++){
+        var newModule = _modules[i];
+
+        if(newModule && newModule.moduleType !== 'trace'){
+            throw new Error('Invalid module was attempted to be registered!');
+        } else {
+            Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
+        }
+    }
+};
+
+
+exports.register(require('./traces/scatter'));
+
+// Scatter is the only trace included by default
+exports.Scatter = Plots.getModule('scatter');
 
 // plot api
 require('./plot_api/plot_api');

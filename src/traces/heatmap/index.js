@@ -9,9 +9,20 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Heatmap = {};
 
-Plotly.Plots.register(exports, 'heatmap', ['cartesian', '2dMap'], {
+Heatmap.attributes = require('./attributes');
+Heatmap.supplyDefaults = require('./defaults');
+Heatmap.calc = require('./calc');
+Heatmap.plot = require('./plot');
+Heatmap.colorbar = require('./colorbar');
+Heatmap.style = require('./style');
+Heatmap.hoverPoints = require('./hover');
+
+Heatmap.moduleType = 'trace';
+Heatmap.name = 'heatmap';
+Heatmap.categories = ['cartesian', '2dMap'];
+Heatmap.meta = {
     description: [
         'The data that describes the heatmap value-to-color mapping',
         'is set in `z`.',
@@ -36,18 +47,6 @@ Plotly.Plots.register(exports, 'heatmap', ['cartesian', '2dMap'], {
         'In the case where `z` is a 1D {array}, the x and y coordinates must be',
         'provided in `x` and `y` respectively to form data triplets.'
     ].join(' ')
-});
+};
 
-exports.attributes = require('./attributes');
-
-exports.supplyDefaults = require('./defaults');
-
-exports.calc = require('./calc');
-
-exports.plot = require('./plot');
-
-exports.colorbar = require('./colorbar');
-
-exports.style = require('./style');
-
-exports.hoverPoints = require('./hover');
+module.exports = Heatmap;

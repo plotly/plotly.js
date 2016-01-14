@@ -9,29 +9,31 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Scatter = require('../scatter');
 
-var ScatterGeo = module.exports = {};
-
-Plotly.Plots.register(ScatterGeo, 'scattergeo',
-    ['geo', 'symbols', 'markerColorscale', 'showLegend'], {
-        hrName: 'scatter_geo',
-        description: [
-            'The data visualized as scatter point or lines on a geographic map',
-            'is provided either by longitude/latitude pairs in `lon` and `lat`',
-            'respectively or by geographic location IDs or names in `locations`.'
-        ].join(' ')
-    }
-);
+var ScatterGeo = {};
 
 ScatterGeo.attributes = require('./attributes');
-
 ScatterGeo.supplyDefaults = require('./defaults');
-
-ScatterGeo.colorbar = Plotly.Scatter.colorbar;
+ScatterGeo.colorbar = Scatter.colorbar;
+ScatterGeo.plot = require('./plot').plot;
 
 ScatterGeo.calc = function(gd, trace) {
 
-    Plotly.Scatter.calcMarkerColorscales(trace);
+    Scatter.calcMarkerColorscales(trace);
 
 };
+
+ScatterGeo.moduleType = 'trace';
+ScatterGeo.name = 'scattergeo';
+ScatterGeo.categories = ['geo', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterGeo.meta = {
+    hrName: 'scatter_geo',
+    description: [
+        'The data visualized as scatter point or lines on a geographic map',
+        'is provided either by longitude/latitude pairs in `lon` and `lat`',
+        'respectively or by geographic location IDs or names in `locations`.'
+    ].join(' ')
+};
+
+module.exports = ScatterGeo;

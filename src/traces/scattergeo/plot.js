@@ -16,6 +16,13 @@ var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeature
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var arrayToCalcItem = require('../../lib/array_to_calc_item');
 
+var Color = require('../../components/color');
+var Drawing = require('../../components/drawing');
+
+var Scatter = require('../scatter');
+
+var attributes = require('./attributes');
+
 var plotScatterGeo = module.exports = {};
 
 
@@ -109,7 +116,6 @@ function makeLineGeoJSON(trace) {
 
 plotScatterGeo.plot = function(geo, scattergeoData) {
     var gScatterGeo = geo.framework.select('g.scattergeolayer'),
-        Scatter = Plotly.Scatter,
         topojson = geo.topojson;
 
     // TODO move to more d3-idiomatic pattern (that's work on replot)
@@ -204,12 +210,12 @@ plotScatterGeo.style = function(geo) {
     selection.selectAll('g.points')
         .each(function(trace){
             d3.select(this).selectAll('path.point')
-                .call(Plotly.Drawing.pointStyle, trace);
+                .call(Drawing.pointStyle, trace);
             d3.select(this).selectAll('text')
-                .call(Plotly.Drawing.textPointStyle, trace);
+                .call(Drawing.textPointStyle, trace);
         });
 
-    // GeoJSON calc data is incompatible with Plotly.Drawing.lineGroupStyle
+    // GeoJSON calc data is incompatible with Drawing.lineGroupStyle
     selection.selectAll('path.js-line')
         .style('fill', 'none')
         .each(function(d) {
@@ -217,8 +223,8 @@ plotScatterGeo.style = function(geo) {
                 line = trace.line || {};
 
             d3.select(this)
-                .call(Plotly.Color.stroke, line.color)
-                .call(Plotly.Drawing.dashLine, line.dash || '', line.width || 0);
+                .call(Color.stroke, line.color)
+                .call(Drawing.dashLine, line.dash || '', line.width || 0);
         });
 };
 
@@ -230,7 +236,7 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     }
 
     var hoverinfoParts = (hoverinfo === 'all') ?
-        Plotly.ScatterGeo.attributes.hoverinfo.flags :
+        attributes.hoverinfo.flags :
         hoverinfo.split('+');
 
     var hasLocation = (hoverinfoParts.indexOf('location') !== -1 &&

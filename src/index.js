@@ -45,3 +45,20 @@ exports.Queue = Plotly.Queue;
 
 // export d3 used in the bundle
 exports.d3 = require('d3');
+
+Plotly.register([
+    require('./traces/bar'),
+    require('./traces/box'),
+    require('./traces/heatmap'),
+    require('./traces/histogram'),
+    require('./traces/histogram2d'),
+    require('./traces/histogram2dcontour'),
+    require('./traces/pie'),
+    require('./traces/contour'),
+    require('./traces/scatter3d'),
+    require('./traces/surface'),
+    require('./traces/mesh3d'),
+    require('./traces/scattergeo'),
+    require('./traces/choropleth'),
+    require('./traces/scattergl')
+]);

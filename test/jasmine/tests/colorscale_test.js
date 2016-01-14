@@ -1,5 +1,7 @@
 var Plotly = require('@src/plotly');
 var Colorscale = require('@src/components/colorscale');
+var Heatmap = require('@src/traces/heatmap');
+var Scatter = require('@src/traces/scatter');
 
 
 describe('Test colorscale:', function() {
@@ -191,7 +193,7 @@ describe('Test colorscale:', function() {
         var traceIn, traceOut;
 
         function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Heatmap.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, Heatmap.attributes, attr, dflt);
         }
 
         beforeEach(function() {
@@ -261,7 +263,7 @@ describe('Test colorscale:', function() {
         var traceIn, traceOut;
 
         function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Plotly.Scatter.attributes, attr, dflt);
+            return Plotly.Lib.coerce(traceIn, traceOut, Scatter.attributes, attr, dflt);
         }
 
         beforeEach(function() {

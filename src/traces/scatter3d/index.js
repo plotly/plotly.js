@@ -6,43 +6,43 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Plotly = require('../../plotly');
+var Scatter = require('../scatter');
 
-var Scatter3D = module.exports = {};
+var Scatter3D = {};
 
-Plotly.Plots.register(Scatter3D,
-    'scatter3d', ['gl3d', 'symbols', 'markerColorscale', 'showLegend'], {
-        hrName: 'scatter_3d',
-        description: [
-            'The data visualized as scatter point or lines in 3D dimension',
-            'is set in `x`, `y`, `z`.',
-            'Text (appearing either on the chart or on hover only) is via `text`.',
-            'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-            'Projections are achieved via `projection`.',
-            'Surface fills are achieved via `surfaceaxis`.'
-        ].join(' ')
-    }
-);
-
+Scatter3D.plot = require('./convert');
 Scatter3D.attributes = require('./attributes');
-
 Scatter3D.markerSymbols = require('../../constants/gl_markers.json');
-
 Scatter3D.supplyDefaults = require('./defaults');
-
-Scatter3D.colorbar = Plotly.Scatter.colorbar;
+Scatter3D.colorbar = require('../scatter/colorbar');
 
 Scatter3D.calc = function(gd, trace) {
     // this is a kludge to put the array attributes into
     // calcdata the way Scatter.plot does, so that legends and
     // popovers know what to do with them.
     var cd = [{x: false, y: false, trace: trace, t: {}}];
-    Plotly.Scatter.arraysToCalcdata(cd);
+    Scatter.arraysToCalcdata(cd);
 
-    Plotly.Scatter.calcMarkerColorscales(trace);
+    Scatter.calcMarkerColorscales(trace);
 
     return cd;
 };
+
+Scatter3D.moduleType = 'trace';
+Scatter3D.name = 'scatter3d';
+Scatter3D.categories = ['gl3d', 'symbols', 'markerColorscale', 'showLegend'];
+Scatter3D.meta = {
+    hrName: 'scatter_3d',
+    description: [
+        'The data visualized as scatter point or lines in 3D dimension',
+        'is set in `x`, `y`, `z`.',
+        'Text (appearing either on the chart or on hover only) is via `text`.',
+        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+        'Projections are achieved via `projection`.',
+        'Surface fills are achieved via `surfaceaxis`.'
+    ].join(' ')
+};
+
+module.exports = Scatter3D;

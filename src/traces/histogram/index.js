@@ -9,8 +9,6 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 /**
  * Histogram has its own attribute, defaults and calc steps,
  * but uses bar's plot to display
@@ -24,35 +22,31 @@ var Plotly = require('../../plotly');
  * to allow quadrature combination of errors in summed histograms...
  */
 
-Plotly.Plots.register(exports, 'histogram',
-    ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'], {
-        description: [
-            'The sample data from which statistics are computed is set in `x`',
-            'for vertically spanning histograms and',
-            'in `y` for horizontally spanning histograms.',
 
-            'Binning options are set `xbins` and `ybins` respectively',
-            'if no aggregation data is provided.'
-        ].join(' ')
-    }
-);
+var Histogram = {};
 
-exports.attributes = require('./attributes');
+Histogram.attributes = require('./attributes');
+Histogram.layoutAttributes = require('../bar/layout_attributes');
+Histogram.supplyDefaults = require('./defaults');
+Histogram.supplyLayoutDefaults = require('../bar/layout_defaults');
+Histogram.calc = require('./calc');
+Histogram.setPositions = require('../bar/set_positions');
+Histogram.plot = require('../bar/plot');
+Histogram.style = require('../bar/style');
+Histogram.colorbar = require('../scatter/colorbar');
+Histogram.hoverPoints = require('../bar/hover');
 
-exports.layoutAttributes = require('../bar/layout_attributes');
+Histogram.moduleType = 'trace';
+Histogram.name = 'histogram';
+Histogram.categories = ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
+Histogram.meta = {
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'for vertically spanning histograms and',
+        'in `y` for horizontally spanning histograms.',
+        'Binning options are set `xbins` and `ybins` respectively',
+        'if no aggregation data is provided.'
+    ].join(' ')
+};
 
-exports.supplyDefaults = require('./defaults');
-
-exports.supplyLayoutDefaults = require('../bar/layout_defaults');
-
-exports.calc = require('./calc');
-
-exports.setPositions = require('../bar/set_positions');
-
-exports.plot = require('../bar/plot');
-
-exports.style = require('../bar/style');
-
-exports.colorbar = require('../scatter/colorbar');
-
-exports.hoverPoints = require('../bar/hover');
+module.exports = Histogram;

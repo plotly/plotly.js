@@ -1,10 +1,9 @@
 var Plotly = require('@src/plotly');
+var Choropleth = require('@src/traces/choropleth');
 
 
 describe('Test choropleth', function() {
     'use strict';
-
-    var Choropleth = Plotly.Choropleth;
 
     describe('supplyDefaults', function() {
         var traceIn,

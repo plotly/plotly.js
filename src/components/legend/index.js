@@ -12,6 +12,8 @@
 var Plotly = require('../../plotly');
 var d3 = require('d3');
 
+var styleOne = require('../../traces/pie/style_one');
+
 var legend = module.exports = {};
 
 legend.layoutAttributes = require('./attributes');
@@ -233,7 +235,7 @@ legend.pie = function(d) {
         .attr('transform', 'translate(20,0)');
     pts.exit().remove();
 
-    if(pts.size()) pts.call(Plotly.Pie.styleOne, d[0], trace);
+    if(pts.size()) pts.call(styleOne, d[0], trace);
 };
 
 legend.style = function(s) {

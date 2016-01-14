@@ -12,12 +12,14 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var createPlot = require('gl-plot3d');
 
-var createScatterTrace = require('../../traces/scatter3d/convert');
-var createSurfaceTrace = require('../../traces/surface/convert');
-var createMeshTrace = require('../../traces/mesh3d/convert');
+var Lib = require('../../lib');
+
+var Plots = require('../../plots/plots');
+var Axes = require('../../plots/cartesian/axes');
+var Fx = require('../../plots/cartesian/graph_interact');
+
 var str2RGBAarray = require('../../lib/str2rgbarray');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
@@ -29,7 +31,6 @@ var createSpikeOptions = require('./layout/spikes');
 var computeTickMarks = require('./layout/tick_marks');
 
 var STATIC_CANVAS, STATIC_CONTEXT;
-
 
 function render(scene) {
 
@@ -62,7 +63,7 @@ function render(scene) {
         if(typeof val === 'string') return val;
 
         var axis = scene.fullSceneLayout[axisName];
-        return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
+        return Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
     if(lastPicked !== null) {
@@ -78,7 +79,7 @@ function render(scene) {
             if(hoverinfoParts.indexOf('name') === -1) lastPicked.name = undefined;
         }
 
-        Plotly.Fx.loneHover({
+        Fx.loneHover({
             x: (0.5 + 0.5 * pdata[0]/pdata[3]) * width,
             y: (0.5 - 0.5 * pdata[1]/pdata[3]) * height,
             xLabel: formatter('xaxis', selection.traceCoordinate[0]),
@@ -91,7 +92,7 @@ function render(scene) {
             container: svgContainer
         });
     }
-    else Plotly.Fx.loneUnhover(svgContainer);
+    else Fx.loneUnhover(svgContainer);
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
@@ -351,21 +352,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
         if(trace) {
             trace.update(data);
         } else {
-            switch(data.type) {
-                case 'scatter3d':
-                    trace = createScatterTrace(this, data);
-                    break;
-
-                case 'surface':
-                    trace = createSurfaceTrace(this, data);
-                    break;
-
-                case 'mesh3d':
-                    trace = createMeshTrace(this, data);
-                    break;
-
-                default:
-            }
+            var traceModule = Plots.getModule(data.type);
+            trace = traceModule.plot(this, data);
             this.traces[data.uid] = trace;
         }
         trace.name = data.name;
@@ -569,7 +557,7 @@ proto.setCamera = function setCamera(cameraData) {
 // save camera to user layout (i.e. gd.layout)
 proto.saveCamera = function saveCamera(layout) {
     var cameraData = this.getCamera(),
-        cameraNestedProp = Plotly.Lib.nestedProperty(layout, this.id + '.camera'),
+        cameraNestedProp = Lib.nestedProperty(layout, this.id + '.camera'),
         cameraDataLastSave = cameraNestedProp.get(),
         hasChanged = false;
 

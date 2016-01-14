@@ -1,20 +1,24 @@
 var Plotly = require('@src/plotly');
+var Plots = require('@src/plots/plots');
+var Scatter = require('@src/traces/scatter');
+var Bar = require('@src/traces/bar');
+var Legend = require('@src/components/legend');
 
 describe('Test graph_obj', function() {
     'use strict';
 
     describe('Plotly.restyle', function() {
         beforeEach(function() {
-            spyOn(Plotly.Plots, 'previousPromises');
             spyOn(Plotly, 'plot');
-            spyOn(Plotly.Scatter, 'arraysToCalcdata');
-            spyOn(Plotly.Bar, 'arraysToCalcdata');
-            spyOn(Plotly.Plots, 'style');
-            spyOn(Plotly.Legend, 'draw');
+            spyOn(Plots, 'previousPromises');
+            spyOn(Scatter, 'arraysToCalcdata');
+            spyOn(Bar, 'arraysToCalcdata');
+            spyOn(Plots, 'style');
+            spyOn(Legend, 'draw');
         });
 
         function mockDefaultsAndCalc(gd) {
-            Plotly.Plots.supplyDefaults(gd);
+            Plots.supplyDefaults(gd);
             gd.calcdata = gd._fullData.map(function(trace) {
                 return [{x: 1, y: 1, trace: trace}];
             });
@@ -27,9 +31,9 @@ describe('Test graph_obj', function() {
             };
             mockDefaultsAndCalc(gd);
             Plotly.restyle(gd, {'marker.color': 'red'});
-            expect(Plotly.Scatter.arraysToCalcdata).toHaveBeenCalled();
-            expect(Plotly.Bar.arraysToCalcdata).not.toHaveBeenCalled();
-            expect(Plotly.Plots.style).toHaveBeenCalled();
+            expect(Scatter.arraysToCalcdata).toHaveBeenCalled();
+            expect(Bar.arraysToCalcdata).not.toHaveBeenCalled();
+            expect(Plots.style).toHaveBeenCalled();
             expect(Plotly.plot).not.toHaveBeenCalled();
             // "docalc" deletes gd.calcdata - make sure this didn't happen
             expect(gd.calcdata).toBeDefined();
@@ -42,9 +46,9 @@ describe('Test graph_obj', function() {
             };
             mockDefaultsAndCalc(gd);
             Plotly.restyle(gd, {'marker.color': 'red'});
-            expect(Plotly.Scatter.arraysToCalcdata).not.toHaveBeenCalled();
-            expect(Plotly.Bar.arraysToCalcdata).toHaveBeenCalled();
-            expect(Plotly.Plots.style).toHaveBeenCalled();
+            expect(Scatter.arraysToCalcdata).not.toHaveBeenCalled();
+            expect(Bar.arraysToCalcdata).toHaveBeenCalled();
+            expect(Plots.style).toHaveBeenCalled();
             expect(Plotly.plot).not.toHaveBeenCalled();
             expect(gd.calcdata).toBeDefined();
         });
