@@ -146,8 +146,10 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
         traceData[trace.type].push(trace);
     }
 
-    for(var traceType in traceData){
-        Plots.getModule(traceType).plot(this, traceData[traceType], geoLayout);
+    var traceKeys = Object.keys(traceData);
+    for(var j = 0; j < traceKeys.length; j++){
+        var traceKey = traceKeys[j];
+        Plots.getModule(traceKey).plot(this, traceData[traceKey], geoLayout);
     }
 
     this.render();
