@@ -46,8 +46,8 @@ var Gl3d = require('./plots/gl3d');
 Plots.registerSubplot(Gl3d);
 
 var Gl2d = require('./plots/gl2d');
-
 Plots.registerSubplot(Gl2d);
+
 exports.Axes = require('./plots/cartesian/axes');
 exports.Fx = require('./plots/cartesian/graph_interact');
 exports.micropolar = require('./plots/polar/micropolar');
@@ -65,21 +65,27 @@ exports.Titles = require('./components/titles');
 exports.Legend = require('./components/legend');
 exports.ModeBar = require('./components/modebar');
 
-// Traces are registered in index.js
-exports.register = function register(options) {
-    if(!options || options === {}){
-        throw new Error('You must pass a config object to Plotly.register.');
+exports.register = function register(_modules) {
+    if(!_modules){
+        throw new Error('No argument passed to Plotly.register.');
+    } else if(_modules && !Array.isArray(_modules)){
+        _modules = [_modules];
     }
 
-    for(var trace in options.traces){
-        var newTrace = options.traces[trace];
-        Plots.register(newTrace, newTrace._type, newTrace._categories, newTrace._meta);
+
+    for(var i = 0; i < _modules.length; i++){
+        var newModule = _modules[i];
+
+        if(newModule && newModule.moduleType !== 'trace'){
+            throw new Error('Invalid module was attempted to be registered!');
+        } else {
+            Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
+        }
     }
 };
 
-exports.register({
-    traces: [require('./traces/scatter')]
-});
+
+exports.register(require('./traces/scatter'));
 
 // Scatter is the only trace included by default
 exports.Scatter = Plots.getModule('scatter');
