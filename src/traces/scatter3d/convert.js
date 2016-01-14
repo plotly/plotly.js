@@ -9,19 +9,19 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 var createLinePlot = require('gl-line3d');
 var createScatterPlot = require('gl-scatter3d');
 var createErrorBars = require('gl-error3d');
 var createMesh = require('gl-mesh3d');
 var triangulate = require('delaunay-triangulate');
 
+var Lib = require('../../lib');
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
 
 var DASH_PATTERNS = require('../../constants/gl3d_dashes');
 var MARKER_SYMBOLS = require('../../constants/gl_markers');
+var Scatter = require('../scatter');
 
 var calculateError = require('./calc_errors');
 
@@ -156,7 +156,7 @@ function formatParam(paramIn, len, calculate, dflt, extraFn) {
         }
 
     }
-    else paramOut = calculate(paramIn, Plotly.Lib.identity);
+    else paramOut = calculate(paramIn, Lib.identity);
 
     return paramOut;
 }
@@ -209,7 +209,7 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if ('marker' in data) {
-        var sizeFn = Plotly.Scatter.getBubbleSizeFn(data);
+        var sizeFn = Scatter.getBubbleSizeFn(data);
 
         params.scatterColor = formatColor(marker, 1, len);
         params.scatterSize = formatParam(marker.size, len, calculateSize, 20, sizeFn);
@@ -222,7 +222,7 @@ function convertPlotlyOptions(scene, data) {
     if ('textposition' in data) {
         params.textOffset = calculateTextOffset(data.textposition);  // arrayOk === false
         params.textColor = formatColor(data.textfont, 1, len);
-        params.textSize = formatParam(data.textfont.size, len, Plotly.Lib.identity, 12);
+        params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
         params.textFont = data.textfont.family;  // arrayOk === false
         params.textAngle = 0;
     }

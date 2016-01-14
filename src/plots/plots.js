@@ -13,6 +13,8 @@ var Plotly = require('../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../lib');
+
 var plots = module.exports = {};
 
 var modules = plots.modules = {},
@@ -39,7 +41,8 @@ plots.fontWeight = 'normal';
  */
 plots.register = function(_module, thisType, categoriesIn, meta) {
     if(modules[thisType]) {
-        throw new Error('type ' + thisType + ' already registered');
+        console.warn('type ' + thisType + ' already registered');
+        return;
     }
 
     var categoryObj = {};
@@ -269,7 +272,7 @@ plots.resize = function(gd) {
 };
 
 
-// for use in Plotly.Lib.syncOrAsync, check if there are any
+// for use in Lib.syncOrAsync, check if there are any
 // pending promises in this plot and wait for them
 plots.previousPromises = function(gd) {
     if((gd._promises || []).length) {
@@ -416,7 +419,7 @@ plots.supplyDefaults = function(gd) {
         newData = gd.data || [],
         modules = gd._modules = [];
 
-    var i, trace, fullTrace, module, axList, ax;
+    var i, trace, fullTrace, _module, axList, ax;
 
 
     // first fill in what we can of layout without looking at data
@@ -441,14 +444,14 @@ plots.supplyDefaults = function(gd) {
         else if(plots.traceIs(fullTrace, 'gl2d')) newFullLayout._hasGL2D = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
-        module = fullTrace._module;
-        if (module && modules.indexOf(module)===-1) modules.push(module);
+        _module = fullTrace._module;
+        if (_module && modules.indexOf(_module)===-1) modules.push(_module);
     }
 
     // special cases that introduce interactions between traces
     for (i = 0; i < modules.length; i++) {
-        module = modules[i];
-        if (module.cleanData) module.cleanData(newFullData);
+        _module = modules[i];
+        if (_module.cleanData) _module.cleanData(newFullData);
     }
 
     if (oldFullData.length === newData.length) {
@@ -524,7 +527,7 @@ function relinkPrivateKeys(toLayout, fromLayout) {
         else if (Array.isArray(fromLayout[k]) &&
                  Array.isArray(toLayout[k]) &&
                  fromLayout[k].length &&
-                 Plotly.Lib.isPlainObject(fromLayout[k][0])) {
+                 Lib.isPlainObject(fromLayout[k][0])) {
             if(fromLayout[k].length !== toLayout[k].length) {
                 // this should be handled elsewhere, it causes
                 // ambiguity if we try to deal with it here.
@@ -536,8 +539,8 @@ function relinkPrivateKeys(toLayout, fromLayout) {
                 relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
             }
         }
-        else if (Plotly.Lib.isPlainObject(fromLayout[k]) &&
-                 Plotly.Lib.isPlainObject(toLayout[k])) {
+        else if (Lib.isPlainObject(fromLayout[k]) &&
+                 Lib.isPlainObject(toLayout[k])) {
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toLayout[k], fromLayout[k]);
             if (!Object.keys(toLayout[k]).length) delete toLayout[k];
@@ -550,12 +553,12 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
         defaultColor = Plotly.Color.defaults[i % Plotly.Color.defaults.length];
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
+        return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
     }
 
     function coerceSubplotAttr(subplotType, subplotAttr) {
         if(!plots.traceIs(traceOut, subplotType)) return;
-        return Plotly.Lib.coerce(traceIn, traceOut,
+        return Lib.coerce(traceIn, traceOut,
             plots.subplotsRegistry[subplotType].attributes, subplotAttr);
     }
 
@@ -563,7 +566,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     traceOut.index = i;
     var visible = coerce('visible'),
         scene,
-        module;
+        _module;
 
     coerce('type');
     coerce('uid');
@@ -577,14 +580,14 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
     if(visible || scene) {
-        module = plots.getModule(traceOut);
-        traceOut._module = module;
+        _module = plots.getModule(traceOut);
+        traceOut._module = _module;
     }
 
     // gets overwritten in pie and geo
     if(visible) coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
 
-    if(module && visible) module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+    if(_module && visible) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
     if(visible) {
         coerce('name', 'trace ' + i);
@@ -615,14 +618,14 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
+        return Lib.coerce(layoutIn, layoutOut, plots.layoutAttributes, attr, dflt);
     }
 
-    var globalFont = Plotly.Lib.coerceFont(coerce, 'font');
+    var globalFont = Lib.coerceFont(coerce, 'font');
 
     coerce('title');
 
-    Plotly.Lib.coerceFont(coerce, 'titlefont', {
+    Lib.coerceFont(coerce, 'titlefont', {
         family: globalFont.family,
         size: Math.round(globalFont.size * 1.4),
         color: globalFont.color
@@ -928,7 +931,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
         if(typeof d === 'function') {
             return null;
         }
-        if(Plotly.Lib.isPlainObject(d)) {
+        if(Lib.isPlainObject(d)) {
             var o={}, v, src;
             for(v in d) {
                 // remove private elements and functions
@@ -951,7 +954,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
                     // in a trace, we will keep the data array.
                     src = d[v+'src'];
                     if(typeof src==='string' && src.indexOf(':')>0) {
-                        if(!Plotly.Lib.isPlainObject(d.stream)) {
+                        if(!Lib.isPlainObject(d.stream)) {
                             continue;
                         }
                     }
@@ -978,7 +981,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
         // convert native dates to date strings...
         // mostly for external users exporting to plotly
         if(d && d.getTime) {
-            return Plotly.Lib.ms2DateTime(d);
+            return Lib.ms2DateTime(d);
         }
 
         return d;

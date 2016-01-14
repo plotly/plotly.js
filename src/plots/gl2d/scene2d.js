@@ -9,15 +9,16 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
+var Axes = require('../../plots/cartesian/axes');
+var Fx = require('../../plots/cartesian/graph_interact');
+
 var createPlot2D = require('gl-plot2d');
 var createSpikes = require('gl-spikes2d');
 var createSelectBox = require('gl-select-box');
 
 var createOptions = require('./convert');
 var createCamera = require('./camera');
-
-var createLineWithMarkers = require('../../traces/scattergl/convert');
 
 var htmlToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
@@ -223,8 +224,8 @@ proto.computeTickMarks = function() {
         this.glplot.viewBox[3] - this.glplot.viewBox[1];
 
     var nextTicks = [
-        Plotly.Axes.calcTicks(this.xaxis),
-        Plotly.Axes.calcTicks(this.yaxis)
+        Axes.calcTicks(this.xaxis),
+        Axes.calcTicks(this.yaxis)
     ];
 
     for(var j = 0; j < 2; ++j) {
@@ -254,7 +255,7 @@ function compareTicks(a, b) {
 }
 
 proto.updateAxes = function(options) {
-    var spmatch = Plotly.Axes.subplotMatch,
+    var spmatch = Axes.subplotMatch,
         xaxisName = 'xaxis' + this.id.match(spmatch)[1],
         yaxisName = 'yaxis' + this.id.match(spmatch)[2];
 
@@ -325,11 +326,8 @@ proto.plot = function(fullData, fullLayout) {
 
         if(trace) trace.update(traceData);
         else {
-            switch(traceData.type) {
-                case 'scattergl':
-                    trace = createLineWithMarkers(this, traceData);
-                    break;
-            }
+            var traceModule = Plots.getModule(traceData.type);
+            trace = traceModule.plot(this, traceData);
         }
         this.traces[traceData.uid] = trace;
     }
@@ -392,7 +390,7 @@ proto.plot = function(fullData, fullLayout) {
         ax = this[AXES[i]];
         ax._length = options.viewBox[i+2] - options.viewBox[i];
 
-        Plotly.Axes.doAutoRange(ax);
+        Axes.doAutoRange(ax);
     }
 
     options.ticks = this.computeTickMarks();
@@ -475,7 +473,7 @@ proto.draw = function() {
                     if(parts.indexOf('name') === -1) selection.name = undefined;
                 }
 
-                Plotly.Fx.loneHover({
+                Fx.loneHover({
                     x: selection.screenCoord[0],
                     y: selection.screenCoord[1],
                     xLabel: this.hoverFormatter('xaxis', selection.traceCoord[0]),
@@ -493,7 +491,7 @@ proto.draw = function() {
         else if(!result && this.lastPickResult) {
             this.spikes.update({});
             this.lastPickResult = null;
-            Plotly.Fx.loneUnhover(this.svgContainer);
+            Fx.loneUnhover(this.svgContainer);
         }
     }
 
@@ -504,5 +502,5 @@ proto.hoverFormatter = function(axisName, val) {
     if(val === undefined) return undefined;
 
     var axis = this[axisName];
-    return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
+    return Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };

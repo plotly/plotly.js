@@ -17,11 +17,15 @@ var createLine = require('gl-line2d');
 var createError = require('gl-error2d');
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../../lib');
 var str2RGBArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
 
 var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var DASHES = require('../../constants/gl2d_dashes');
+var Scatter = require('../scatter');
+var ErrorBars = require('../../components/errorbars');
+
 var AXES = ['xaxis', 'yaxis'];
 
 
@@ -185,7 +189,7 @@ function convertColorScale(containerIn, markerOpacity, traceOpacity, count) {
 
     colors = Array.isArray(colors[0]) ?
         colors :
-        _convertArray(Plotly.Lib.identity, [colors], count);
+        _convertArray(Lib.identity, [colors], count);
 
     return _convertColor(
         colors,
@@ -234,10 +238,10 @@ proto.update = function(options) {
         this.hasMarkers = false;
     }
     else {
-        this.hasLines = Plotly.Scatter.hasLines(options);
+        this.hasLines = Scatter.hasLines(options);
         this.hasErrorX = options.error_x.visible === true;
         this.hasErrorY = options.error_y.visible === true;
-        this.hasMarkers = Plotly.Scatter.hasMarkers(options);
+        this.hasMarkers = Scatter.hasMarkers(options);
     }
 
     this.textLabels = options.text;
@@ -254,7 +258,7 @@ proto.update = function(options) {
 
     // not quite on-par with 'scatter', but close enough for now
     // does not handle the colorscale case
-    this.color = Plotly.Scatter.getTraceColor(options, {});
+    this.color = Scatter.getTraceColor(options, {});
 };
 
 proto.updateFast = function(options) {
@@ -344,7 +348,7 @@ proto.updateFancy = function(options) {
     var y = this.yData = yaxis.makeCalcdata(options, 'y');
 
     // get error values
-    var errorVals = Plotly.ErrorBars.calcFromTrace(options, scene.fullLayout);
+    var errorVals = ErrorBars.calcFromTrace(options, scene.fullLayout);
 
     var len = x.length,
         idToIndex = new Array(len),
@@ -413,7 +417,7 @@ proto.updateFancy = function(options) {
         this.scatterOptions.colors = new Array(pId * 4);
         this.scatterOptions.borderColors = new Array(pId * 4);
 
-        var markerSizeFunc = Plotly.Scatter.getBubbleSizeFn(options),
+        var markerSizeFunc = Scatter.getBubbleSizeFn(options),
             markerOpts = options.marker,
             markerOpacity = markerOpts.opacity,
             traceOpacity = options.opacity,

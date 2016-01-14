@@ -1,6 +1,6 @@
-var Plotly = require('@src/plotly');
-var Heatmap = require('@src/traces/heatmap');
 var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
+var Heatmap = require('@src/traces/heatmap');
+var Plots = require('@src/plots/plots');
 
 
 describe('Test heatmap', function() {
@@ -12,7 +12,7 @@ describe('Test heatmap', function() {
 
         var defaultColor = '#444',
             layout = {
-                font: Plotly.Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font
             };
 
         var supplyDefaults = Heatmap.supplyDefaults;
@@ -44,13 +44,13 @@ describe('Test heatmap', function() {
                 type: 'heatmap',
                 z: [[1, 2], []]
             };
-            traceOut = Plotly.Plots.supplyDataDefaults(traceIn, 0, layout);
+            traceOut = Plots.supplyDataDefaults(traceIn, 0, layout);
 
             traceIn = {
                 type: 'heatmap',
                 z: [[], [1, 2], [1, 2, 3]]
             };
-            traceOut = Plotly.Plots.supplyDataDefaults(traceIn, 0, layout);
+            traceOut = Plots.supplyDataDefaults(traceIn, 0, layout);
             expect(traceOut.visible).toBe(true);
             expect(traceOut.visible).toBe(true);
         });

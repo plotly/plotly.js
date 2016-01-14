@@ -9,38 +9,30 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Bar = {};
 
-Plotly.Plots.register(exports, 'bar',
-    ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'], {
-        description: [
-            'The data visualized by the span of the bars is set in `y`',
-            'if `orientation` is set th *v* (the default)',
-            'and the labels are set in `x`.',
+Bar.attributes = require('./attributes');
+Bar.layoutAttributes = require('./layout_attributes');
+Bar.supplyDefaults = require('./defaults');
+Bar.supplyLayoutDefaults = require('./layout_defaults');
+Bar.calc = require('./calc');
+Bar.setPositions = require('./set_positions');
+Bar.colorbar = require('../scatter/colorbar');
+Bar.arraysToCalcdata = require('./arrays_to_calcdata');
+Bar.plot = require('./plot');
+Bar.style = require('./style');
+Bar.hoverPoints = require('./hover');
 
-            'By setting `orientation` to *h*, the roles are interchanged.'
-        ].join(' ')
-    }
-);
+Bar.moduleType = 'trace';
+Bar.name = 'bar';
+Bar.categories = ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'];
+Bar.meta = {
+    description: [
+        'The data visualized by the span of the bars is set in `y`',
+        'if `orientation` is set th *v* (the default)',
+        'and the labels are set in `x`.',
+        'By setting `orientation` to *h*, the roles are interchanged.'
+    ].join(' ')
+};
 
-exports.attributes = require('./attributes');
-
-exports.layoutAttributes = require('./layout_attributes');
-
-exports.supplyDefaults = require('./defaults');
-
-exports.supplyLayoutDefaults = require('./layout_defaults');
-
-exports.calc = require('./calc');
-
-exports.setPositions = require('./set_positions');
-
-exports.colorbar = require('../scatter/colorbar');
-
-exports.arraysToCalcdata = require('./arrays_to_calcdata');
-
-exports.plot = require('./plot');
-
-exports.style = require('./style');
-
-exports.hoverPoints = require('./hover');
+module.exports = Bar;

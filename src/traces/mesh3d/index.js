@@ -9,11 +9,17 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Mesh3D = {};
 
-var Mesh3D = module.exports = {};
+Mesh3D.attributes = require('./attributes');
+Mesh3D.supplyDefaults = require('./defaults');
+Mesh3D.colorbar = require('../heatmap/colorbar');
+Mesh3D.plot = require('./convert');
 
-Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
+Mesh3D.moduleType = 'trace';
+Mesh3D.name = 'mesh3d',
+Mesh3D.categories = ['gl3d'];
+Mesh3D.meta = {
     description: [
         'Draws sets of triangles with coordinates given by',
         'three 1-dimensional arrays in `x`, `y`, `z` and',
@@ -22,10 +28,6 @@ Plotly.Plots.register(Mesh3D, 'mesh3d', ['gl3d'], {
         '(3) the Alpha-shape algorithm or',
         '(4) the Convex-hull algorithm'
     ].join(' ')
-});
+};
 
-Mesh3D.attributes = require('./attributes');
-
-Mesh3D.supplyDefaults = require('./defaults');
-
-Mesh3D.colorbar = require('../heatmap/colorbar');
+module.exports = Mesh3D;

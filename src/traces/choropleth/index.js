@@ -9,21 +9,24 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
+var Choropleth = {};
 
-Plots.register(exports, 'choropleth', ['geo', 'noOpacity'], {
+Choropleth.attributes = require('./attributes');
+Choropleth.supplyDefaults = require('./defaults');
+Choropleth.colorbar = require('../heatmap/colorbar');
+Choropleth.calc = require('../surface/calc');
+Choropleth.plot = require('./plot').plot;
+
+Choropleth.moduleType = 'trace';
+Choropleth.name = 'choropleth';
+Choropleth.categories = ['geo', 'noOpacity'];
+Choropleth.meta = {
     description: [
         'The data that describes the choropleth value-to-color mapping',
         'is set in `z`.',
         'The geographic locations corresponding to each value in `z`',
         'are set in `locations`.'
     ].join(' ')
-});
+};
 
-exports.attributes = require('./attributes');
-
-exports.supplyDefaults = require('./defaults');
-
-exports.colorbar = require('../heatmap/colorbar');
-
-exports.calc = require('../surface/calc');
+module.exports = Choropleth;

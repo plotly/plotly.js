@@ -1,4 +1,5 @@
-var Plotly = require('@src/plotly');
+var Plots = require('@src/plots/plots');
+var Contour = require('@src/traces/contour');
 
 
 describe('Test contour', function() {
@@ -10,10 +11,10 @@ describe('Test contour', function() {
 
         var defaultColor = '#444',
             layout = {
-                font: Plotly.Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font
             };
 
-        var supplyDefaults = Plotly.Contour.supplyDefaults;
+        var supplyDefaults = Contour.supplyDefaults;
 
         beforeEach(function() {
             traceOut = {};

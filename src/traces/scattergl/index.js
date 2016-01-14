@@ -6,29 +6,31 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-var Plotly = require('../../plotly');
+var Scatter = require('../scatter');
+var Scatter3D = require('../scatter3d');
 
-var ScatterGl = module.exports = {};
-
-Plotly.Plots.register(ScatterGl, 'scattergl',
-    ['gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend'], {
-        description: [
-            'The data visualized as scatter point or lines is set in `x` and `y`',
-            'using the WebGl plotting engine.',
-            'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-            'to a numerical arrays.'
-        ].join(' ')
-    }
-);
+var ScatterGl = {};
 
 ScatterGl.attributes = require('./attributes');
-
 ScatterGl.supplyDefaults = require('./defaults');
-
-ScatterGl.colorbar = Plotly.Scatter.colorbar;
+ScatterGl.colorbar = Scatter.colorbar;
 
 // reuse the Scatter3D 'dummy' calc step so that legends know what to do
-ScatterGl.calc = Plotly.Scatter3D.calc;
+ScatterGl.calc = Scatter3D.calc;
+ScatterGl.plot = require('./convert');
+
+ScatterGl.moduleType = 'trace';
+ScatterGl.name = 'scattergl';
+ScatterGl.categories = ['gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend'];
+ScatterGl.meta = {
+    description: [
+        'The data visualized as scatter point or lines is set in `x` and `y`',
+        'using the WebGl plotting engine.',
+        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
+        'to a numerical arrays.'
+    ].join(' ')
+};
+
+module.exports = ScatterGl;

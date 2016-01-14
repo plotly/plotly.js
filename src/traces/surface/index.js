@@ -9,11 +9,18 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Surface = {};
 
-var Surface = module.exports = {};
+Surface.attributes = require('./attributes');
+Surface.supplyDefaults = require('./defaults');
+Surface.colorbar = require('../heatmap/colorbar');
+Surface.calc = require('./calc');
+Surface.plot = require('./convert');
 
-Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity'], {
+Surface.moduleType = 'trace';
+Surface.name = 'surface';
+Surface.categories = ['gl3d', 'noOpacity'];
+Surface.meta = {
     description: [
         'The data the describes the coordinates of the surface is set in `z`.',
         'Data in `z` should be a {2D array}.',
@@ -24,12 +31,6 @@ Plotly.Plots.register(Surface, 'surface', ['gl3d', 'noOpacity'], {
         'If not provided in `x` and `y`, the x and y coordinates are assumed',
         'to be linear starting at 0 with a unit step.'
     ].join(' ')
-});
+};
 
-Surface.attributes = require('./attributes');
-
-Surface.supplyDefaults = require('./defaults');
-
-Surface.colorbar = require('../heatmap/colorbar');
-
-Surface.calc = require('./calc');
+module.exports = Surface;

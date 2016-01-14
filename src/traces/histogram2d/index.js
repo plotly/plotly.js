@@ -9,32 +9,29 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Histogram2D = {};
 
-Plotly.Plots.register(exports, 'histogram2d',
-    ['cartesian', '2dMap', 'histogram'], {
-        hrName: 'histogram_2d',
-        description: [
-            'The sample data from which statistics are computed is set in `x`',
-            'and `y` (where `x` and `y` represent marginal distributions,',
-            'binning is set in `xbins` and `ybins` in this case)',
-            'or `z` (where `z` represent the 2D distribution and binning set,',
-            'binning is set by `x` and `y` in this case).',
-            'The resulting distribution is visualized as a heatmap.'
-        ].join(' ')
-    }
-);
+Histogram2D.attributes = require('./attributes');
+Histogram2D.supplyDefaults = require('./defaults');
+Histogram2D.calc = require('../heatmap/calc');
+Histogram2D.plot = require('../heatmap/plot');
+Histogram2D.colorbar = require('../heatmap/colorbar');
+Histogram2D.style = require('../heatmap/style');
+Histogram2D.hoverPoints = require('../heatmap/hover');
 
-exports.attributes = require('./attributes');
+Histogram2D.moduleType = 'trace';
+Histogram2D.name = 'histogram2d';
+Histogram2D.categories = ['cartesian', '2dMap', 'histogram'];
+Histogram2D.meta = {
+    hrName: 'histogram_2d',
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'and `y` (where `x` and `y` represent marginal distributions,',
+        'binning is set in `xbins` and `ybins` in this case)',
+        'or `z` (where `z` represent the 2D distribution and binning set,',
+        'binning is set by `x` and `y` in this case).',
+        'The resulting distribution is visualized as a heatmap.'
+    ].join(' ')
+};
 
-exports.supplyDefaults = require('./defaults');
-
-exports.calc = require('../heatmap/calc');
-
-exports.plot = require('../heatmap/plot');
-
-exports.colorbar = require('../heatmap/colorbar');
-
-exports.style = require('../heatmap/style');
-
-exports.hoverPoints = require('../heatmap/hover');
+module.exports = Histogram2D;

@@ -9,32 +9,29 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Histogram2dContour = {};
 
-Plotly.Plots.register(exports, 'histogram2dcontour',
-    ['cartesian', '2dMap', 'contour', 'histogram'], {
-        hrName: 'histogram_2d_contour',
-        description: [
-            'The sample data from which statistics are computed is set in `x`',
-            'and `y` (where `x` and `y` represent marginal distributions,',
-            'binning is set in `xbins` and `ybins` in this case)',
-            'or `z` (where `z` represent the 2D distribution and binning set,',
-            'binning is set by `x` and `y` in this case).',
-            'The resulting distribution is visualized as a contour plot.'
-        ].join(' ')
-    }
-);
+Histogram2dContour.attributes = require('./attributes');
+Histogram2dContour.supplyDefaults = require('./defaults');
+Histogram2dContour.calc = require('../contour/calc');
+Histogram2dContour.plot = require('../contour/plot');
+Histogram2dContour.style = require('../contour/style');
+Histogram2dContour.colorbar = require('../contour/colorbar');
+Histogram2dContour.hoverPoints = require('../contour/hover');
 
-exports.attributes = require('./attributes');
+Histogram2dContour.moduleType = 'trace';
+Histogram2dContour.name = 'histogram2dcontour';
+Histogram2dContour.categories = ['cartesian', '2dMap', 'contour', 'histogram'];
+Histogram2dContour.meta = {
+    hrName: 'histogram_2d_contour',
+    description: [
+        'The sample data from which statistics are computed is set in `x`',
+        'and `y` (where `x` and `y` represent marginal distributions,',
+        'binning is set in `xbins` and `ybins` in this case)',
+        'or `z` (where `z` represent the 2D distribution and binning set,',
+        'binning is set by `x` and `y` in this case).',
+        'The resulting distribution is visualized as a contour plot.'
+    ].join(' ')
+};
 
-exports.supplyDefaults = require('./defaults');
-
-exports.calc = require('../contour/calc');
-
-exports.plot = require('../contour/plot');
-
-exports.style = require('../contour/style');
-
-exports.colorbar = require('../contour/colorbar');
-
-exports.hoverPoints = require('../contour/hover');
+module.exports = Histogram2dContour;
