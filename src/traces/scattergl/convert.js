@@ -20,8 +20,8 @@ var isNumeric = require('fast-isnumeric');
 var str2RGBArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
 
-var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
-var DASHES = require('../../constants/gl2d_dashes.json');
+var MARKER_SYMBOLS = require('../../constants/gl_markers');
+var DASHES = require('../../constants/gl2d_dashes');
 var AXES = ['xaxis', 'yaxis'];
 
 

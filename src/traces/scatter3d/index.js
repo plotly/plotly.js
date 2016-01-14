@@ -29,7 +29,7 @@ Plotly.Plots.register(Scatter3D,
 
 Scatter3D.attributes = require('./attributes');
 
-Scatter3D.markerSymbols = require('../../constants/gl_markers.json');
+Scatter3D.markerSymbols = require('../../constants/gl_markers');
 
 Scatter3D.supplyDefaults = require('./defaults');
 

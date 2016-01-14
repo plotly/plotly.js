@@ -20,8 +20,8 @@ var triangulate = require('delaunay-triangulate');
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
 
-var DASH_PATTERNS = require('../../constants/gl3d_dashes.json');
-var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
+var DASH_PATTERNS = require('../../constants/gl3d_dashes');
+var MARKER_SYMBOLS = require('../../constants/gl_markers');
 
 var calculateError = require('./calc_errors');
 
