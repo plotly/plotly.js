@@ -30,9 +30,10 @@ Scatter3D.calc = function(gd, trace) {
     return cd;
 };
 
-Scatter3D._type = 'scatter3d';
-Scatter3D._categories = ['gl3d', 'symbols', 'markerColorscale', 'showLegend'];
-Scatter3D._meta = {
+Scatter3D.moduleType = 'trace';
+Scatter3D.name = 'scatter3d';
+Scatter3D.categories = ['gl3d', 'symbols', 'markerColorscale', 'showLegend'];
+Scatter3D.meta = {
     hrName: 'scatter_3d',
     description: [
         'The data visualized as scatter point or lines in 3D dimension',

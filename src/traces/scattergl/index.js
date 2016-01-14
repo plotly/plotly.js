@@ -21,9 +21,10 @@ ScatterGl.colorbar = Scatter.colorbar;
 ScatterGl.calc = Scatter3D.calc;
 ScatterGl.plot = require('./convert');
 
-ScatterGl._type = 'scattergl';
-ScatterGl._categories = ['gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend'];
-ScatterGl._meta = {
+ScatterGl.moduleType = 'trace';
+ScatterGl.name = 'scattergl';
+ScatterGl.categories = ['gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend'];
+ScatterGl.meta = {
     description: [
         'The data visualized as scatter point or lines is set in `x` and `y`',
         'using the WebGl plotting engine.',

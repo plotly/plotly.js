@@ -17,9 +17,10 @@ Surface.colorbar = require('../heatmap/colorbar');
 Surface.calc = require('./calc');
 Surface.plot = require('./convert');
 
-Surface._type = 'surface';
-Surface._categories = ['gl3d', 'noOpacity'];
-Surface._meta = {
+Surface.moduleType = 'trace';
+Surface.name = 'surface';
+Surface.categories = ['gl3d', 'noOpacity'];
+Surface.meta = {
     description: [
         'The data the describes the coordinates of the surface is set in `z`.',
         'Data in `z` should be a {2D array}.',

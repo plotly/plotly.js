@@ -23,9 +23,10 @@ Bar.plot = require('./plot');
 Bar.style = require('./style');
 Bar.hoverPoints = require('./hover');
 
-Bar._categories = ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'];
-Bar._type = 'bar';
-Bar._meta = {
+Bar.moduleType = 'trace';
+Bar.name = 'bar';
+Bar.categories = ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'];
+Bar.meta = {
     description: [
         'The data visualized by the span of the bars is set in `y`',
         'if `orientation` is set th *v* (the default)',

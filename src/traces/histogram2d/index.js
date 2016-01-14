@@ -19,9 +19,10 @@ Histogram2D.colorbar = require('../heatmap/colorbar');
 Histogram2D.style = require('../heatmap/style');
 Histogram2D.hoverPoints = require('../heatmap/hover');
 
-Histogram2D._type = 'histogram2d';
-Histogram2D._categories = ['cartesian', '2dMap', 'histogram'];
-Histogram2D._meta = {
+Histogram2D.moduleType = 'trace';
+Histogram2D.name = 'histogram2d';
+Histogram2D.categories = ['cartesian', '2dMap', 'histogram'];
+Histogram2D.meta = {
     hrName: 'histogram_2d',
     description: [
         'The sample data from which statistics are computed is set in `x`',

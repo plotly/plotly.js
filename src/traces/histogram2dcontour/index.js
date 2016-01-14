@@ -19,9 +19,10 @@ Histogram2dContour.style = require('../contour/style');
 Histogram2dContour.colorbar = require('../contour/colorbar');
 Histogram2dContour.hoverPoints = require('../contour/hover');
 
-Histogram2dContour._type = 'histogram2dcontour';
-Histogram2dContour._categories = ['cartesian', '2dMap', 'contour', 'histogram'];
-Histogram2dContour._meta = {
+Histogram2dContour.moduleType = 'trace';
+Histogram2dContour.name = 'histogram2dcontour';
+Histogram2dContour.categories = ['cartesian', '2dMap', 'contour', 'histogram'];
+Histogram2dContour.meta = {
     hrName: 'histogram_2d_contour',
     description: [
         'The sample data from which statistics are computed is set in `x`',

@@ -19,9 +19,10 @@ Heatmap.colorbar = require('./colorbar');
 Heatmap.style = require('./style');
 Heatmap.hoverPoints = require('./hover');
 
-Heatmap._type = 'heatmap';
-Heatmap._categories = ['cartesian', '2dMap'];
-Heatmap._meta = {
+Heatmap.moduleType = 'trace';
+Heatmap.name = 'heatmap';
+Heatmap.categories = ['cartesian', '2dMap'];
+Heatmap.meta = {
     description: [
         'The data that describes the heatmap value-to-color mapping',
         'is set in `z`.',

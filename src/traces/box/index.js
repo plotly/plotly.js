@@ -20,9 +20,10 @@ Box.plot = require('./plot');
 Box.style = require('./style');
 Box.hoverPoints = require('./hover');
 
-Box._type = 'box';
-Box._categories = ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'];
-Box._meta = {
+Box.moduleType = 'trace';
+Box.name = 'box';
+Box.categories = ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'];
+Box.meta = {
     description: [
         'In vertical (horizontal) box plots,',
         'statistics are computed using `y` (`x`) values.',

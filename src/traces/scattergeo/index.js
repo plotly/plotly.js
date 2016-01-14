@@ -24,9 +24,10 @@ ScatterGeo.calc = function(gd, trace) {
 
 };
 
-ScatterGeo._type = 'scattergeo';
-ScatterGeo._categories = ['geo', 'symbols', 'markerColorscale', 'showLegend'];
-ScatterGeo._meta = {
+ScatterGeo.moduleType = 'trace';
+ScatterGeo.name = 'scattergeo';
+ScatterGeo.categories = ['geo', 'symbols', 'markerColorscale', 'showLegend'];
+ScatterGeo.meta = {
     hrName: 'scatter_geo',
     description: [
         'The data visualized as scatter point or lines on a geographic map',

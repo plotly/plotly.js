@@ -16,9 +16,10 @@ Mesh3D.supplyDefaults = require('./defaults');
 Mesh3D.colorbar = require('../heatmap/colorbar');
 Mesh3D.plot = require('./convert');
 
-Mesh3D._type = 'mesh3d',
-Mesh3D._categories = ['gl3d'];
-Mesh3D._meta = {
+Mesh3D.moduleType = 'trace';
+Mesh3D.name = 'mesh3d',
+Mesh3D.categories = ['gl3d'];
+Mesh3D.meta = {
     description: [
         'Draws sets of triangles with coordinates given by',
         'three 1-dimensional arrays in `x`, `y`, `z` and',

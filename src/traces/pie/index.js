@@ -19,9 +19,10 @@ Pie.plot = require('./plot');
 Pie.style = require('./style');
 Pie.styleOne = require('./style_one');
 
-Pie._type = 'pie';
-Pie._categories = ['pie', 'showLegend'];
-Pie._meta = {
+Pie.moduleType = 'trace';
+Pie.name = 'pie';
+Pie.categories = ['pie', 'showLegend'];
+Pie.meta = {
     description: [
         'A data visualized by the sectors of the pie is set in `values`.',
         'The sector labels are set in `labels`.',

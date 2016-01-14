@@ -19,9 +19,10 @@ Contour.style = require('./style');
 Contour.colorbar = require('./colorbar');
 Contour.hoverPoints = require('./hover');
 
-Contour._type = 'contour';
-Contour._categories = ['cartesian', '2dMap', 'contour'];
-Contour._meta = {
+Contour.moduleType = 'trace';
+Contour.name = 'contour';
+Contour.categories = ['cartesian', '2dMap', 'contour'];
+Contour.meta = {
     description: [
         'The data from which contour lines are computed is set in `z`.',
         'Data in `z` must be a {2D array} of numbers.',

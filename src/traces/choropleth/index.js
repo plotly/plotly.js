@@ -17,9 +17,10 @@ Choropleth.colorbar = require('../heatmap/colorbar');
 Choropleth.calc = require('../surface/calc');
 Choropleth.plot = require('./plot').plot;
 
-Choropleth._type = 'choropleth';
-Choropleth._categories = ['geo', 'noOpacity'];
-Choropleth._meta = {
+Choropleth.moduleType = 'trace';
+Choropleth.name = 'choropleth';
+Choropleth.categories = ['geo', 'noOpacity'];
+Choropleth.meta = {
     description: [
         'The data that describes the choropleth value-to-color mapping',
         'is set in `z`.',

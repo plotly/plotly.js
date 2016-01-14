@@ -36,9 +36,10 @@ Histogram.style = require('../bar/style');
 Histogram.colorbar = require('../scatter/colorbar');
 Histogram.hoverPoints = require('../bar/hover');
 
-Histogram._type = 'histogram';
-Histogram._categories = ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
-Histogram._meta = {
+Histogram.moduleType = 'trace';
+Histogram.name = 'histogram';
+Histogram.categories = ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
+Histogram.meta = {
     description: [
         'The sample data from which statistics are computed is set in `x`',
         'for vertically spanning histograms and',

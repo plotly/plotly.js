@@ -33,9 +33,10 @@ scatter.isBubble = subtypes.isBubble;
 
 scatter.selectPoints = require('./select');
 
-scatter._type = 'scatter';
-scatter._categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
-scatter._meta = {
+scatter.moduleType = 'trace';
+scatter.name = 'scatter';
+scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
+scatter.meta = {
     description: [
         'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
         'The data visualized as scatter point or lines is set in `x` and `y`.',
