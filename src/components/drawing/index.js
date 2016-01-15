@@ -13,6 +13,8 @@ var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
+
 var drawing = module.exports = {};
 
 // -----------------------------------------------------
@@ -175,7 +177,7 @@ drawing.pointStyle = function(s, trace) {
     // only scatter & box plots get marker path and opacity
     // bars, histograms don't
     if(Plotly.Plots.traceIs(trace, 'symbols')) {
-        var sizeFn = Plotly.Scatter.getBubbleSizeFn(trace);
+        var sizeFn = makeBubbleSizeFn(trace);
 
         s.attr('d', function(d) {
             var r;

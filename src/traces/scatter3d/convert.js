@@ -18,8 +18,7 @@ var triangulate = require('delaunay-triangulate');
 var Lib = require('../../lib');
 var str2RgbaArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
-
-var Scatter = require('../scatter');
+var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 
 var DASH_PATTERNS = require('../../constants/gl3d_dashes.json');
 var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
@@ -210,7 +209,7 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if ('marker' in data) {
-        var sizeFn = Scatter.getBubbleSizeFn(data);
+        var sizeFn = makeBubbleSizeFn(data);
 
         params.scatterColor = formatColor(marker, 1, len);
         params.scatterSize = formatParam(marker.size, len, calculateSize, 20, sizeFn);

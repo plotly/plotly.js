@@ -79,32 +79,6 @@ scatter.cleanData = function(fullData) {
 
 scatter.colorbar = require('./colorbar');
 
-// used in the drawing step for 'scatter' and 'scattegeo' and
-// in the convert step for 'scatter3d'
-scatter.getBubbleSizeFn = function(trace) {
-    var marker = trace.marker,
-        sizeRef = marker.sizeref || 1,
-        sizeMin = marker.sizemin || 0;
-
-    // for bubble charts, allow scaling the provided value linearly
-    // and by area or diameter.
-    // Note this only applies to the array-value sizes
-
-    var baseFn = marker.sizemode==='area' ?
-            function(v) { return Math.sqrt(v / sizeRef); } :
-            function(v) { return v / sizeRef; };
-
-    // TODO add support for position/negative bubbles?
-    // TODO add 'sizeoffset' attribute?
-    return function(v) {
-        var baseSize = baseFn(v / 2);
-
-        // don't show non-numeric and negative sizes
-        return (isNumeric(baseSize) && baseSize>0) ?
-            Math.max(baseSize, sizeMin) : 0;
-    };
-};
-
 scatter.calc = function(gd, trace) {
     var xa = Axes.getFromId(gd,trace.xaxis||'x'),
         ya = Axes.getFromId(gd,trace.yaxis||'y');

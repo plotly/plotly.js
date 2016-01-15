@@ -24,6 +24,7 @@ var formatColor = require('../../lib/gl_format_color');
 var Scatter = require('../scatter');
 
 var ErrorBars = require('../../components/errorbars');
+var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 
 var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
 var DASHES = require('../../constants/gl2d_dashes.json');
@@ -418,7 +419,7 @@ proto.updateFancy = function(options) {
         this.scatterOptions.colors = new Array(pId * 4);
         this.scatterOptions.borderColors = new Array(pId * 4);
 
-        var markerSizeFunc = Scatter.getBubbleSizeFn(options),
+        var markerSizeFunc = makeBubbleSizeFn(options),
             markerOpts = options.marker,
             markerOpacity = markerOpts.opacity,
             traceOpacity = options.opacity,
