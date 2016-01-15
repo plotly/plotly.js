@@ -1,3 +1,4 @@
+
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -12,6 +13,7 @@
 var Plotly = require('../../plotly');
 var d3 = require('d3');
 
+var subTypes = require('../../traces/scatter/subtypes');
 var styleOne = require('../../traces/pie/style_one');
 
 var legend = module.exports = {};
@@ -80,7 +82,7 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 legend.lines = function(d){
     var trace = d[0].trace,
         showFill = trace.visible && trace.fill && trace.fill!=='none',
-        showLine = Plotly.Scatter.hasLines(trace);
+        showLine = subTypes.hasLines(trace);
 
     var fill = d3.select(this).select('.legendfill').selectAll('path')
         .data(showFill ? [d] : []);
@@ -100,9 +102,9 @@ legend.lines = function(d){
 legend.points = function(d){
     var d0 = d[0],
         trace = d0.trace,
-        showMarkers = Plotly.Scatter.hasMarkers(trace),
-        showText = Plotly.Scatter.hasText(trace),
-        showLines = Plotly.Scatter.hasLines(trace);
+        showMarkers = subTypes.hasMarkers(trace),
+        showText = subTypes.hasText(trace),
+        showLines = subTypes.hasLines(trace);
 
     var dMod, tMod;
 

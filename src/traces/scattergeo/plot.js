@@ -18,8 +18,7 @@ var arrayToCalcItem = require('../../lib/array_to_calc_item');
 
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-
-var Scatter = require('../scatter');
+var subTypes = require('../scatter/subtypes');
 
 var attributes = require('./attributes');
 
@@ -132,7 +131,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
     // TODO add hover - how?
     gScatterGeoTraces
         .each(function(trace) {
-            if(!Scatter.hasLines(trace) || trace.visible !== true) return;
+            if(!subTypes.hasLines(trace) || trace.visible !== true) return;
             d3.select(this)
                 .append('path')
                 .datum(makeLineGeoJSON(trace))
@@ -143,8 +142,8 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
         .attr('class', 'points')
         .each(function(trace) {
             var s = d3.select(this),
-                showMarkers = Scatter.hasMarkers(trace),
-                showText = Scatter.hasText(trace);
+                showMarkers = subTypes.hasMarkers(trace),
+                showText = subTypes.hasText(trace);
 
             if((!showMarkers && !showText) || trace.visible !== true) {
                 s.remove();

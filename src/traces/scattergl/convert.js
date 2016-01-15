@@ -18,12 +18,10 @@ var createError = require('gl-error2d');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var ErrorBars = require('../../components/errorbars');
 var str2RGBArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
-
-var Scatter = require('../scatter');
-
-var ErrorBars = require('../../components/errorbars');
+var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
 
@@ -241,10 +239,10 @@ proto.update = function(options) {
         this.hasMarkers = false;
     }
     else {
-        this.hasLines = Scatter.hasLines(options);
+        this.hasLines = subTypes.hasLines(options);
         this.hasErrorX = options.error_x.visible === true;
         this.hasErrorY = options.error_y.visible === true;
-        this.hasMarkers = Scatter.hasMarkers(options);
+        this.hasMarkers = subTypes.hasMarkers(options);
     }
 
     this.textLabels = options.text;

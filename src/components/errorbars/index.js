@@ -9,9 +9,13 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+
+var Lib = require('../../lib');
+var Color = require('../color');
+var subTypes = require('../../traces/scatter/subtypes');
+
 
 var errorBars = module.exports = {};
 
@@ -70,13 +74,13 @@ errorBars.plot = function(gd, plotinfo, cd) {
             var trace = d[0].trace,
                 xObj = trace.error_x,
                 yObj = trace.error_y,
-                sparse = Plotly.Scatter.hasMarkers(trace) &&
+                sparse = subTypes.hasMarkers(trace) &&
                     trace.marker.maxdisplayed>0;
 
             if(!yObj.visible && !xObj.visible) return;
 
             d3.select(this).selectAll('g')
-                .data(Plotly.Lib.identity)
+                .data(Lib.identity)
               .enter().append('g')
                 .each(function(d){
                     coords = errorcoords(d, xa, ya);
@@ -121,13 +125,13 @@ errorBars.style = function(gd){
 
         eb.selectAll('g path.yerror')
             .style('stroke-width', yObj.thickness+'px')
-            .call(Plotly.Color.stroke, yObj.color);
+            .call(Color.stroke, yObj.color);
 
         if(xObj.copy_ystyle) xObj = yObj;
 
         eb.selectAll('g path.xerror')
             .style('stroke-width', xObj.thickness+'px')
-            .call(Plotly.Color.stroke, xObj.color);
+            .call(Color.stroke, xObj.color);
     });
 };
 

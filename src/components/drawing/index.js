@@ -13,6 +13,7 @@ var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
 var drawing = module.exports = {};
@@ -184,7 +185,7 @@ drawing.pointStyle = function(s, trace) {
 
             // handle multi-trace graph edit case
             if(d.ms==='various' || marker.size==='various') r = 3;
-            else r = Plotly.Scatter.isBubble(trace) ?
+            else r = subTypes.isBubble(trace) ?
                         sizeFn(d.ms) : (marker.size || 6) / 2;
 
             // store the calculated size so hover can use it
