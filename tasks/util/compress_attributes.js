@@ -15,7 +15,9 @@ attributeNamesToRemove.forEach(function(attr, i) {
     // one line string with or without trailing comma
     regexStr += attr + ': \'.*\'' + ',?' + '|';
     // array of strings with or without trailing comma
-    regexStr += attr + ': \\[[\\s\\S]*?\\].*' + ',?';
+    regexStr += attr + ':.*\\n*.*\\.join\\(\\\'\\s\\\'\\)';
+
+    // attr:.*\n.*\.join\(\'\s\'\)
 
     if(i !== attributeNamesToRemove.length-1) regexStr += '|';
 });
