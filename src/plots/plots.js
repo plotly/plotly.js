@@ -52,7 +52,7 @@ plots.register = function(_module, thisType, categoriesIn, meta) {
     }
 
     modules[thisType] = {
-        module: _module,
+        _module: _module,
         categories: categoryObj
     };
 
@@ -79,7 +79,7 @@ plots.getModule = function(trace) {
 
     var _module = modules[getTraceType(trace)];
     if(!_module) return false;
-    return _module.module;
+    return _module._module;
 };
 
 
@@ -678,7 +678,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     // trace module layout defaults
     var traceTypes = Object.keys(modules);
     for(i = 0; i < traceTypes.length; i++) {
-        _module = modules[allTypes[i]].module;
+        _module = modules[allTypes[i]]._module;
 
         if(_module.supplyLayoutDefaults) {
             _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
