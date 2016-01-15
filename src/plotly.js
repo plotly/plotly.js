@@ -84,11 +84,8 @@ exports.register = function register(_modules) {
     }
 };
 
-
-exports.register(require('./traces/scatter'));
-
 // Scatter is the only trace included by default
-exports.Scatter = Plots.getModule('scatter');
+exports.register(require('./traces/scatter'));
 
 // plot api
 require('./plot_api/plot_api');
