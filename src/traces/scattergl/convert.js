@@ -25,6 +25,7 @@ var Scatter = require('../scatter');
 
 var ErrorBars = require('../../components/errorbars');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
+var getTraceColor = require('../scatter/get_trace_color');
 
 var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
 var DASHES = require('../../constants/gl2d_dashes.json');
@@ -260,7 +261,7 @@ proto.update = function(options) {
 
     // not quite on-par with 'scatter', but close enough for now
     // does not handle the colorscale case
-    this.color = Scatter.getTraceColor(options, {});
+    this.color = getTraceColor(options, {});
 };
 
 proto.updateFast = function(options) {

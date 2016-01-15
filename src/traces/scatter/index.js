@@ -38,6 +38,7 @@ scatter.name = 'scatter';
 scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
 scatter.meta = {
 Scatter.supplyDefaults = require('./defaults');
+Scatter.hoverPoints = require('./hover');
     description: [
         'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
         'The data visualized as scatter point or lines is set in `x` and `y`.',
@@ -601,95 +602,4 @@ scatter.style = function(gd) {
 
     s.selectAll('g.trace path.js-fill')
         .call(Drawing.fillGroupStyle);
-};
-
-scatter.getTraceColor = function(trace, di) {
-    var lc, tc;
-
-    // TODO: text modes
-
-    if(trace.mode === 'lines') {
-        lc = trace.line.color;
-        return (lc && Color.opacity(lc)) ?
-            lc : trace.fillcolor;
-    }
-    else if(trace.mode === 'none') {
-        return trace.fill ? trace.fillcolor : '';
-    }
-    else {
-        var mc = di.mcc || (trace.marker || {}).color,
-            mlc = di.mlcc || ((trace.marker || {}).line || {}).color;
-
-        tc = (mc && Color.opacity(mc)) ? mc :
-            (mlc && Color.opacity(mlc) &&
-                (di.mlw || ((trace.marker || {}).line || {}).width)) ? mlc : '';
-
-        if(tc) {
-            // make sure the points aren't TOO transparent
-            if(Color.opacity(tc) < 0.3) {
-                return Color.addOpacity(tc, 0.3);
-            }
-            else return tc;
-        }
-        else {
-            lc = (trace.line || {}).color;
-            return (lc && Color.opacity(lc) &&
-                scatter.hasLines(trace) && trace.line.width) ?
-                    lc : trace.fillcolor;
-        }
-    }
-};
-
-scatter.hoverPoints = function(pointData, xval, yval, hovermode) {
-    var cd = pointData.cd,
-        trace = cd[0].trace,
-        xa = pointData.xa,
-        ya = pointData.ya,
-        dx = function(di){
-            // scatter points: d.mrc is the calculated marker radius
-            // adjust the distance so if you're inside the marker it
-            // always will show up regardless of point size, but
-            // prioritize smaller points
-            var rad = Math.max(3, di.mrc||0);
-            return Math.max(Math.abs(xa.c2p(di.x)-xa.c2p(xval))-rad, 1-3/rad);
-        },
-        dy = function(di){
-            var rad = Math.max(3, di.mrc||0);
-            return Math.max(Math.abs(ya.c2p(di.y)-ya.c2p(yval))-rad, 1-3/rad);
-        },
-        dxy = function(di) {
-            var rad = Math.max(3, di.mrc||0),
-                dx = Math.abs(xa.c2p(di.x)-xa.c2p(xval)),
-                dy = Math.abs(ya.c2p(di.y)-ya.c2p(yval));
-            return Math.max(Math.sqrt(dx*dx + dy*dy)-rad, 1-3/rad);
-        },
-        distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
-
-    Fx.getClosest(cd, distfn, pointData);
-
-    // skip the rest (for this trace) if we didn't find a close point
-    if(pointData.index===false) return;
-
-    // the closest data point
-    var di = cd[pointData.index],
-        xc = xa.c2p(di.x, true),
-        yc = ya.c2p(di.y, true),
-        rad = di.mrc||1;
-
-    pointData.color = scatter.getTraceColor(trace, di);
-
-    pointData.x0 = xc - rad;
-    pointData.x1 = xc + rad;
-    pointData.xLabelVal = di.x;
-
-    pointData.y0 = yc - rad;
-    pointData.y1 = yc + rad;
-    pointData.yLabelVal = di.y;
-
-    if(di.tx) pointData.text = di.tx;
-    else if(trace.text) pointData.text = trace.text;
-
-    ErrorBars.hoverInfo(di, trace, pointData);
-
-    return [pointData];
 };
