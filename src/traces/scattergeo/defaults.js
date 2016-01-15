@@ -10,12 +10,16 @@
 'use strict';
 
 var Lib = require('../../lib');
-var Scatter = require('../scatter');
+
+var subTypes = require('../scatter/subtypes');
+var handleMarkerDefaults = require('../scatter/marker_defaults');
+var handleLineDefaults = require('../scatter/line_defaults');
+var handleTextDefaults = require('../scatter/text_defaults');
+
 var attributes = require('./attributes');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
-
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
@@ -29,16 +33,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('mode');
 
-    if(Scatter.hasLines(traceOut)) {
-        Scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
+    if(subTypes.hasLines(traceOut)) {
+        handleLineDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
-    if(Scatter.hasMarkers(traceOut)) {
-        Scatter.markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    if(subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
-    if(Scatter.hasText(traceOut)) {
-        Scatter.textDefaults(traceIn, traceOut, layout, coerce);
+    if(subTypes.hasText(traceOut)) {
+        handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
     coerce('hoverinfo', (layout._dataLength === 1) ? 'lon+lat+location+text' : undefined);

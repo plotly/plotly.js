@@ -10,10 +10,15 @@
 'use strict';
 
 var Lib = require('../../lib');
-var Scatter = require('../scatter');
 
+var constants = require('../scatter/constants');
+var subTypes = require('../scatter/subtypes');
 var handleXYDefaults = require('../scatter/xy_defaults');
+var handleMarkerDefaults = require('../scatter/marker_defaults');
+var handleLineDefaults = require('../scatter/line_defaults');
+var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
+
 var attributes = require('./attributes');
 
 
@@ -29,19 +34,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
-    coerce('mode', len < Scatter.PTS_LINESONLY ? 'lines+markers' : 'lines');
+    coerce('mode', len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines');
 
-    if(Scatter.hasLines(traceOut)) {
-        Scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
+    if(subTypes.hasLines(traceOut)) {
+        handleLineDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
-    if(Scatter.hasMarkers(traceOut)) {
-        Scatter.markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    if(subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
     coerce('fill');
     if(traceOut.fill !== 'none') {
-        Scatter.fillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
