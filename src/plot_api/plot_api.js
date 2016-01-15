@@ -21,8 +21,6 @@ var Queue = require('../lib/queue');
 var Plots = require('../plots/plots');
 var Fx = require('../plots/cartesian/graph_interact');
 
-var Pie = require('../traces/pie');
-
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
@@ -333,10 +331,13 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        // now draw stuff not on subplots (ie, pies)
-        // TODO: gotta be a better way to handle this
-        var cdPie = getCdModule(calcdata, Pie);
-        if(cdPie.length) Pie.plot(gd, cdPie);
+        // now draw stuff not on subplots (ie, only pies at the moment)
+        if(fullLayout._hasPie) {
+            var Pie = Plots.modules.pie._module;
+            var cdPie = getCdModule(calcdata, Pie);
+
+            if(cdPie.length) Pie.plot(gd, cdPie);
+        }
 
         // styling separate from drawing
         Plots.style(gd);
