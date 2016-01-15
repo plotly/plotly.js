@@ -77,7 +77,7 @@ module.exports = {
     },
     mode: {
         valType: 'flaglist',
-        flags: ['lines','markers','text'],
+        flags: ['lines', 'markers', 'text'],
         extras: ['none'],
         role: 'info',
         description: [

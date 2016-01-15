@@ -23,7 +23,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     // and by area or diameter.
     // Note this only applies to the array-value sizes
 
-    var baseFn = marker.sizemode==='area' ?
+    var baseFn = (marker.sizemode === 'area') ?
             function(v) { return Math.sqrt(v / sizeRef); } :
             function(v) { return v / sizeRef; };
 
@@ -33,7 +33,8 @@ module.exports = function makeBubbleSizeFn(trace) {
         var baseSize = baseFn(v / 2);
 
         // don't show non-numeric and negative sizes
-        return (isNumeric(baseSize) && baseSize>0) ?
-            Math.max(baseSize, sizeMin) : 0;
+        return (isNumeric(baseSize) && (baseSize > 0)) ?
+            Math.max(baseSize, sizeMin) :
+            0;
     };
 };

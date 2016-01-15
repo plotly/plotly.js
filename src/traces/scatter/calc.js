@@ -19,14 +19,17 @@ var calcMarkerColorscale = require('./marker_colorscale_calc');
 
 
 module.exports = function calc(gd, trace) {
-    var xa = Axes.getFromId(gd,trace.xaxis||'x'),
-        ya = Axes.getFromId(gd,trace.yaxis||'y');
+    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
+        ya = Axes.getFromId(gd, trace.yaxis || 'y');
     Lib.markTime('in Scatter.calc');
-    var x = xa.makeCalcdata(trace,'x');
+
+    var x = xa.makeCalcdata(trace, 'x');
     Lib.markTime('finished convert x');
-    var y = ya.makeCalcdata(trace,'y');
+
+    var y = ya.makeCalcdata(trace, 'y');
     Lib.markTime('finished convert y');
-    var serieslen = Math.min(x.length,y.length),
+
+    var serieslen = Math.min(x.length, y.length),
         marker,
         s,
         i;
@@ -35,13 +38,13 @@ module.exports = function calc(gd, trace) {
     xa._minDtick = 0;
     ya._minDtick = 0;
 
-    if(x.length>serieslen) x.splice(serieslen, x.length-serieslen);
-    if(y.length>serieslen) y.splice(serieslen, y.length-serieslen);
+    if(x.length > serieslen) x.splice(serieslen, x.length - serieslen);
+    if(y.length > serieslen) y.splice(serieslen, y.length - serieslen);
 
     // check whether bounds should be tight, padded, extended to zero...
     // most cases both should be padded on both ends, so start with that.
-    var xOptions = {padded:true},
-        yOptions = {padded:true};
+    var xOptions = {padded: true},
+        yOptions = {padded: true};
 
     if(subTypes.hasMarkers(trace)) {
 
@@ -55,19 +58,19 @@ module.exports = function calc(gd, trace) {
             var ax = {type: 'linear'};
             Axes.setConvert(ax);
             s = ax.makeCalcdata(trace.marker, 'size');
-            if(s.length>serieslen) s.splice(serieslen, s.length-serieslen);
+            if(s.length > serieslen) s.splice(serieslen, s.length - serieslen);
         }
 
-        var sizeref = 1.6*(trace.marker.sizeref||1),
+        var sizeref = 1.6 * (trace.marker.sizeref || 1),
             markerTrans;
-        if(trace.marker.sizemode==='area') {
+        if(trace.marker.sizemode === 'area') {
             markerTrans = function(v) {
-                return Math.max(Math.sqrt((v||0)/sizeref),3);
+                return Math.max(Math.sqrt((v || 0) / sizeref), 3);
             };
         }
         else {
             markerTrans = function(v) {
-                return Math.max((v||0)/sizeref,3);
+                return Math.max((v || 0) / sizeref, 3);
             };
         }
         xOptions.ppad = yOptions.ppad = Array.isArray(s) ?
@@ -80,14 +83,15 @@ module.exports = function calc(gd, trace) {
 
     // include zero (tight) and extremes (padded) if fill to zero
     // (unless the shape is closed, then it's just filling the shape regardless)
-    if((trace.fill==='tozerox' || (trace.fill==='tonextx' && gd.firstscatter)) &&
-            (x[0]!==x[serieslen-1] || y[0]!==y[serieslen-1])) {
+    if(((trace.fill === 'tozerox') ||
+            ((trace.fill === 'tonextx') && gd.firstscatter)) &&
+            ((x[0] !== x[serieslen - 1]) || (y[0] !== y[serieslen - 1]))) {
         xOptions.tozero = true;
     }
 
     // if no error bars, markers or text, or fill to y=0 remove x padding
     else if(!trace.error_y.visible && (
-            ['tonexty', 'tozeroy'].indexOf(trace.fill)!==-1 ||
+            ['tonexty', 'tozeroy'].indexOf(trace.fill) !== -1 ||
             (!subTypes.hasMarkers(trace) && !subTypes.hasText(trace))
         )) {
         xOptions.padded = false;
@@ -97,13 +101,13 @@ module.exports = function calc(gd, trace) {
     // now check for y - rather different logic, though still mostly padded both ends
     // include zero (tight) and extremes (padded) if fill to zero
     // (unless the shape is closed, then it's just filling the shape regardless)
-    if((trace.fill==='tozeroy' || (trace.fill==='tonexty' && gd.firstscatter)) &&
-            (x[0]!==x[serieslen-1] || y[0]!==y[serieslen-1])) {
+    if(((trace.fill === 'tozeroy') || ((trace.fill === 'tonexty') && gd.firstscatter)) &&
+            ((x[0] !== x[serieslen - 1]) || (y[0] !== y[serieslen - 1]))) {
         yOptions.tozero = true;
     }
 
     // tight y: any x fill
-    else if(['tonextx', 'tozerox'].indexOf(trace.fill)!==-1) {
+    else if(['tonextx', 'tozerox'].indexOf(trace.fill) !== -1) {
         yOptions.padded = false;
     }
 

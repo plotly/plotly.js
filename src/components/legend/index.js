@@ -1,4 +1,3 @@
-
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.

@@ -28,7 +28,7 @@ module.exports = function colorbar(gd, cd) {
     // TODO unify Scatter.colorbar and Heatmap.colorbar
     // TODO make Plotly[module].colorbar support multiple colorbar per trace
 
-    if(marker===undefined || !marker.showscale){
+    if((marker === undefined) || !marker.showscale){
         Plotly.Plots.autoMargin(gd, cbId);
         return;
     }

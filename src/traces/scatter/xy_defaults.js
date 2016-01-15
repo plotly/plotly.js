@@ -23,8 +23,8 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
             // which could be a problem eg in streaming / editing if x and y
             // come in at different times
             // so we need to revisit calc before taking this out
-            if(len<x.length) traceOut.x = x.slice(0, len);
-            if(len<y.length) traceOut.y = y.slice(0, len);
+            if(len < x.length) traceOut.x = x.slice(0, len);
+            if(len < y.length) traceOut.y = y.slice(0, len);
         }
         else {
             len = x.length;

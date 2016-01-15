@@ -68,5 +68,5 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
 function lineShapeDefaults(traceIn, traceOut, coerce) {
     var shape = coerce('line.shape');
-    if(shape==='spline') coerce('line.smoothing');
+    if(shape === 'spline') coerce('line.smoothing');
 }

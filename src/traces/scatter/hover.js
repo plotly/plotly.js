@@ -19,20 +19,20 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         trace = cd[0].trace,
         xa = pointData.xa,
         ya = pointData.ya,
-        dx = function(di){
+        dx = function(di) {
             // scatter points: d.mrc is the calculated marker radius
             // adjust the distance so if you're inside the marker it
             // always will show up regardless of point size, but
             // prioritize smaller points
-            var rad = Math.max(3, di.mrc||0);
+            var rad = Math.max(3, di.mrc || 0);
             return Math.max(Math.abs(xa.c2p(di.x)-xa.c2p(xval))-rad, 1-3/rad);
         },
-        dy = function(di){
-            var rad = Math.max(3, di.mrc||0);
+        dy = function(di) {
+            var rad = Math.max(3, di.mrc || 0);
             return Math.max(Math.abs(ya.c2p(di.y)-ya.c2p(yval))-rad, 1-3/rad);
         },
         dxy = function(di) {
-            var rad = Math.max(3, di.mrc||0),
+            var rad = Math.max(3, di.mrc || 0),
                 dx = Math.abs(xa.c2p(di.x)-xa.c2p(xval)),
                 dy = Math.abs(ya.c2p(di.y)-ya.c2p(yval));
             return Math.max(Math.sqrt(dx*dx + dy*dy)-rad, 1-3/rad);
@@ -42,13 +42,13 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     Fx.getClosest(cd, distfn, pointData);
 
     // skip the rest (for this trace) if we didn't find a close point
-    if(pointData.index===false) return;
+    if(pointData.index === false) return;
 
     // the closest data point
     var di = cd[pointData.index],
         xc = xa.c2p(di.x, true),
         yc = ya.c2p(di.y, true),
-        rad = di.mrc||1;
+        rad = di.mrc || 1;
 
     pointData.color = getTraceColor(trace, di);
 

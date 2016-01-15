@@ -31,12 +31,13 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         .selectAll('g.trace.scatter')
         .data(cdscatter);
     scattertraces.enter().append('g')
-        .attr('class','trace scatter')
-        .style('stroke-miterlimit',2);
+        .attr('class', 'trace scatter')
+        .style('stroke-miterlimit', 2);
 
     // BUILD LINES AND FILLS
-    var prevpath='',
-        tozero,tonext,nexttonext;
+    var prevpath = '',
+        tozero, tonext, nexttonext;
+
     scattertraces.each(function(d){
         var trace = d[0].trace,
             line = trace.line,
@@ -47,7 +48,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
 
         arraysToCalcdata(d);
 
-        if(!subTypes.hasLines(trace) && trace.fill==='none') return;
+        if(!subTypes.hasLines(trace) && trace.fill === 'none') return;
 
         var thispath,
             // fullpath is all paths for this curve, joined together straight
@@ -61,10 +62,10 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         // make the fill-to-zero path now, so it shows behind the line
         // fill to next puts the fill associated with one trace
         // grouped with the previous
-        if(trace.fill.substr(0,6)==='tozero' ||
-                (trace.fill.substr(0,2)==='to' && !prevpath)) {
+        if(trace.fill.substr(0, 6) === 'tozero' ||
+                (trace.fill.substr(0, 2) === 'to' && !prevpath)) {
             tozero = tr.append('path')
-                .classed('js-fill',true);
+                .classed('js-fill', true);
         }
         else tozero = null;
 
@@ -75,15 +76,15 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         if(nexttonext) tonext = nexttonext.datum(d);
 
         // now make a new nexttonext for next time
-        nexttonext = tr.append('path').classed('js-fill',true);
+        nexttonext = tr.append('path').classed('js-fill', true);
 
-        if(['hv','vh','hvh','vhv'].indexOf(line.shape)!==-1) {
+        if(['hv', 'vh', 'hvh', 'vhv'].indexOf(line.shape) !== -1) {
             pathfn = Drawing.steps(line.shape);
             revpathbase = Drawing.steps(
                 line.shape.split('').reverse().join('')
             );
         }
-        else if(line.shape==='spline') {
+        else if(line.shape === 'spline') {
             pathfn = revpathbase = function(pts) {
                 return Drawing.smoothopen(pts, line.smoothing);
             };
@@ -96,7 +97,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
 
         revpathfn = function(pts) {
             // note: this is destructive (reverses pts in place) so can't use pts after this
-            return 'L'+revpathbase(pts.reverse()).substr(1);
+            return 'L' + revpathbase(pts.reverse()).substr(1);
         };
 
         var segments = linePoints(d, {
@@ -115,27 +116,27 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
             for(var i = 0; i < segments.length; i++) {
                 var pts = segments[i];
                 thispath = pathfn(pts);
-                fullpath += fullpath ? ('L'+thispath.substr(1)) : thispath;
+                fullpath += fullpath ? ('L' + thispath.substr(1)) : thispath;
                 revpath = revpathfn(pts) + revpath;
                 if(subTypes.hasLines(trace) && pts.length > 1) {
-                    tr.append('path').classed('js-line',true).attr('d', thispath);
+                    tr.append('path').classed('js-line', true).attr('d', thispath);
                 }
             }
             if(tozero) {
                 if(pt0 && pt1) {
-                    if(trace.fill.charAt(trace.fill.length-1)==='y') {
-                        pt0[1]=pt1[1]=ya.c2p(0,true);
+                    if(trace.fill.charAt(trace.fill.length - 1) === 'y') {
+                        pt0[1] = pt1[1] = ya.c2p(0, true);
                     }
-                    else pt0[0]=pt1[0]=xa.c2p(0,true);
+                    else pt0[0] = pt1[0] = xa.c2p(0, true);
 
                     // fill to zero: full trace path, plus extension of
                     // the endpoints to the appropriate axis
-                    tozero.attr('d',fullpath+'L'+pt1+'L'+pt0+'Z');
+                    tozero.attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
                 }
             }
-            else if(trace.fill.substr(0,6)==='tonext' && fullpath && prevpath) {
+            else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevpath) {
                 // fill to next: full trace path, plus the previous path reversed
-                tonext.attr('d',fullpath+prevpath+'Z');
+                tonext.attr('d', fullpath + prevpath + 'Z');
             }
             prevpath = revpath;
         }
@@ -145,12 +146,12 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
     scattertraces.selectAll('path:not([d])').remove();
 
     function visFilter(d){
-        return d.filter(function(v){ return v.vis; });
+        return d.filter(function(v) { return v.vis; });
     }
 
     scattertraces.append('g')
-        .attr('class','points')
-        .each(function(d){
+        .attr('class', 'points')
+        .each(function(d) {
             var trace = d[0].trace,
                 s = d3.select(this),
                 showMarkers = subTypes.hasMarkers(trace),
@@ -184,7 +185,7 @@ function selectMarkers(gd, plotinfo, cdscatter) {
         xr = d3.extent(xa.range.map(xa.l2c)),
         yr = d3.extent(ya.range.map(ya.l2c));
 
-    cdscatter.forEach(function(d,i) {
+    cdscatter.forEach(function(d, i) {
         var trace = d[0].trace;
         if(!subTypes.hasMarkers(trace)) return;
         // if marker.maxdisplayed is used, select a maximum of
@@ -192,12 +193,12 @@ function selectMarkers(gd, plotinfo, cdscatter) {
         var mnum = trace.marker.maxdisplayed;
 
         // TODO: remove some as we get away from the viewport?
-        if(mnum===0) return;
+        if(mnum === 0) return;
 
         var cd = d.filter(function(v) {
                 return v.x>=xr[0] && v.x<=xr[1] && v.y>=yr[0] && v.y<=yr[1];
             }),
-            inc = Math.ceil(cd.length/mnum),
+            inc = Math.ceil(cd.length / mnum),
             tnum = 0;
         cdscatter.forEach(function(cdj, j) {
             var tracei = cdj[0].trace;
@@ -211,13 +212,13 @@ function selectMarkers(gd, plotinfo, cdscatter) {
         // display this formula offsets successive traces by 1/3 of the
         // increment, adding an extra small amount after each triplet so
         // it's not quite periodic
-        var i0 = Math.round(tnum*inc/3 + Math.floor(tnum/3)*inc/7.1);
+        var i0 = Math.round(tnum*inc/3 + Math.floor(tnum/3) * inc/7.1);
 
         // for error bars: save in cd which markers to show
         // so we don't have to repeat this
-        d.forEach(function(v){ delete v.vis; });
-        cd.forEach(function(v,i) {
-            if(Math.round((i+i0)%inc)===0) v.vis = true;
+        d.forEach(function(v) { delete v.vis; });
+        cd.forEach(function(v, i) {
+            if(Math.round((i + i0) % inc) === 0) v.vis = true;
         });
     });
 }

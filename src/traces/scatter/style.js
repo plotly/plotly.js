@@ -24,9 +24,9 @@ module.exports = function style(gd) {
     s.selectAll('g.points')
         .each(function(d){
             d3.select(this).selectAll('path.point')
-                .call(Drawing.pointStyle,d.trace||d[0].trace);
+                .call(Drawing.pointStyle, d.trace || d[0].trace);
             d3.select(this).selectAll('text')
-                .call(Drawing.textPointStyle,d.trace||d[0].trace);
+                .call(Drawing.textPointStyle, d.trace || d[0].trace);
         });
 
     s.selectAll('g.trace path.js-line')
