@@ -47,10 +47,6 @@ Scatter.supplyDefaults = require('./defaults');
     ].join(' ')
 };
 
-// traces with < this many points are by default shown
-// with points and lines, > just get lines
-scatter.PTS_LINESONLY = 20;
-
 scatter.attributes = require('./attributes');
 
 scatter.cleanData = function(fullData) {

@@ -10,7 +10,8 @@
 
 var Drawing = require('../../components/drawing');
 
-var PTS_LINESONLY = 20;  // TODO put in constants/
+var constants = require('./constants');
+
 
 module.exports = {
     x: {
@@ -84,7 +85,7 @@ module.exports = {
             'If the provided `mode` includes *text* then the `text` elements',
             'appear at the coordinates. Otherwise, the `text` elements',
             'appear on hover.',
-            'If there are less than ' + PTS_LINESONLY + ' points,',
+            'If there are less than ' + constants.PTS_LINESONLY + ' points,',
             'then the default is *lines+markers*. Otherwise, *lines*.'
         ].join(' ')
     },
