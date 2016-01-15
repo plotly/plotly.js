@@ -8,8 +8,6 @@
 
 'use strict';
 
-var Scatter3D = require('../scatter3d');
-
 var ScatterGl = {};
 
 ScatterGl.attributes = require('./attributes');
@@ -17,7 +15,7 @@ ScatterGl.supplyDefaults = require('./defaults');
 ScatterGl.colorbar = require('../scatter/colorbar');
 
 // reuse the Scatter3D 'dummy' calc step so that legends know what to do
-ScatterGl.calc = Scatter3D.calc;
+ScatterGl.calc = require('../scatter3d/calc');
 ScatterGl.plot = require('./convert');
 
 ScatterGl.moduleType = 'trace';
