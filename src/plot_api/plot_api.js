@@ -266,12 +266,16 @@ Plotly.plot = function(gd, data, layout, config) {
 
         function getCdModule(cdSubplot, _module) {
             var cdModule = [];
-            var i, cd, trace;
-            for (i = 0; i < cdSubplot.length; i++) {
-                cd = cdSubplot[i];
-                trace = cd[0].trace;
-                if (trace._module === _module && trace.visible === true) cdModule.push(cd);
+
+            for(var i = 0; i < cdSubplot.length; i++) {
+                var cd = cdSubplot[i];
+                var trace = cd[0].trace;
+
+                if((trace._module === _module) && (trace.visible === true)) {
+                    cdModule.push(cd);
+                }
             }
+
             return cdModule;
         }
 
@@ -299,7 +303,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
         for (i = 0; i < subplots.length; i++) {
             subplot = subplots[i];
-            subplotInfo = gd._fullLayout._plots[subplot];
+            subplotInfo = fullLayout._plots[subplot];
             cdSubplot = getCdSubplot(calcdata, subplot);
             cdError = [];
 
@@ -325,7 +329,7 @@ Plotly.plot = function(gd, data, layout, config) {
             }
 
             // finally do all error bars at once
-            if(gd._fullLayout._hasCartesian) {
+            if(fullLayout._hasCartesian) {
                 ErrorBars.plot(gd, subplotInfo, cdError);
                 Lib.markTime('done ErrorBars');
             }
