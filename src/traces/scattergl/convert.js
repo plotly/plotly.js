@@ -18,12 +18,12 @@ var createError = require('gl-error2d');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var ErrorBars = require('../../components/errorbars');
 var str2RGBArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
-
-var Scatter = require('../scatter');
-
-var ErrorBars = require('../../components/errorbars');
+var subTypes = require('../scatter/subtypes');
+var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
+var getTraceColor = require('../scatter/get_trace_color');
 
 var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
 var DASHES = require('../../constants/gl2d_dashes.json');
@@ -239,10 +239,10 @@ proto.update = function(options) {
         this.hasMarkers = false;
     }
     else {
-        this.hasLines = Scatter.hasLines(options);
+        this.hasLines = subTypes.hasLines(options);
         this.hasErrorX = options.error_x.visible === true;
         this.hasErrorY = options.error_y.visible === true;
-        this.hasMarkers = Scatter.hasMarkers(options);
+        this.hasMarkers = subTypes.hasMarkers(options);
     }
 
     this.textLabels = options.text;
@@ -259,7 +259,7 @@ proto.update = function(options) {
 
     // not quite on-par with 'scatter', but close enough for now
     // does not handle the colorscale case
-    this.color = Scatter.getTraceColor(options, {});
+    this.color = getTraceColor(options, {});
 };
 
 proto.updateFast = function(options) {
@@ -418,7 +418,7 @@ proto.updateFancy = function(options) {
         this.scatterOptions.colors = new Array(pId * 4);
         this.scatterOptions.borderColors = new Array(pId * 4);
 
-        var markerSizeFunc = Scatter.getBubbleSizeFn(options),
+        var markerSizeFunc = makeBubbleSizeFn(options),
             markerOpts = options.marker,
             markerOpacity = markerOpts.opacity,
             traceOpacity = options.opacity,

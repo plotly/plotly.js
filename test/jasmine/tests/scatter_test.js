@@ -1,4 +1,7 @@
-var Plotly = require('@src/plotly');
+var Scatter = require('@src/traces/scatter');
+var makeBubbleSizeFn = require('@src/traces/scatter/make_bubble_size_func');
+var linePoints = require('@src/traces/scatter/line_points');
+var Lib = require('@src/lib');
 
 describe('Test scatter', function() {
     'use strict';
@@ -10,7 +13,7 @@ describe('Test scatter', function() {
         var defaultColor = '#444',
             layout = {};
 
-        var supplyDefaults = Plotly.Scatter.supplyDefaults;
+        var supplyDefaults = Scatter.supplyDefaults;
 
         beforeEach(function() {
             traceOut = {};
@@ -66,7 +69,7 @@ describe('Test scatter', function() {
                         size: [1, 4, 2, 10]
                     }
                 },
-                isBubble = Plotly.Scatter.isBubble(trace);
+                isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(true);
         });
@@ -77,7 +80,7 @@ describe('Test scatter', function() {
                         size: 10
                     }
                 },
-                isBubble = Plotly.Scatter.isBubble(trace);
+                isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
@@ -88,7 +91,7 @@ describe('Test scatter', function() {
                         color: 'red'
                     }
                 },
-                isBubble = Plotly.Scatter.isBubble(trace);
+                isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
@@ -99,16 +102,15 @@ describe('Test scatter', function() {
                         color: 'red'
                     }
                 },
-                isBubble = Plotly.Scatter.isBubble(trace);
+                isBubble = Scatter.isBubble(trace);
 
             expect(isBubble).toBe(false);
         });
 
     });
 
-    describe('getBubbleSizeFn', function() {
-        var getBubbleSizeFn = Plotly.Scatter.getBubbleSizeFn,
-            markerSizes = [
+    describe('makeBubbleSizeFn', function() {
+        var markerSizes = [
                 0, '1', 2.21321321, 'not-a-number',
                 100, 1000.213213, 1e7, undefined, null, -100
             ],
@@ -118,7 +120,7 @@ describe('Test scatter', function() {
 
         it('should scale w.r.t. bubble diameter when sizemode=diameter', function() {
             trace.marker.sizemode = 'diameter';
-            sizeFn = getBubbleSizeFn(trace);
+            sizeFn = makeBubbleSizeFn(trace);
 
             expected = [
                 0, 0.5, 1.106606605, 0, 50, 500.1066065, 5000000, 0, 0, 0
@@ -128,7 +130,7 @@ describe('Test scatter', function() {
 
         it('should scale w.r.t. bubble area when sizemode=area', function() {
             trace.marker.sizemode = 'area';
-            sizeFn = getBubbleSizeFn(trace);
+            sizeFn = makeBubbleSizeFn(trace);
 
             expected = [
                 0, 0.7071067811865476, 1.051953708582274, 0, 7.0710678118654755,
@@ -140,7 +142,7 @@ describe('Test scatter', function() {
         it('should adjust scaling according to sizeref', function() {
             trace.marker.sizemode = 'diameter';
             trace.marker.sizeref = 0.1;
-            sizeFn = getBubbleSizeFn(trace);
+            sizeFn = makeBubbleSizeFn(trace);
 
             expected = [
                 0, 5, 11.06606605, 0, 500, 5001.066065, 50000000, 0, 0, 0
@@ -152,7 +154,7 @@ describe('Test scatter', function() {
             trace.marker.sizemode = 'diameter';
             trace.marker.sizeref = 10;
             trace.marker.sizemin = 5;
-            sizeFn = getBubbleSizeFn(trace);
+            sizeFn = makeBubbleSizeFn(trace);
 
             expected = [
                 0, 5, 5, 0, 5, 50.01066065, 500000, 0, 0, 0
@@ -163,8 +165,7 @@ describe('Test scatter', function() {
 
     describe('linePoints', function() {
         // test axes are unit-scaled and 100 units long
-        var ax = {_length: 100, c2p: Plotly.Lib.identity},
-            linePoints = Plotly.Scatter.linePoints,
+        var ax = {_length: 100, c2p: Lib.identity},
             baseOpts = {
                 xaxis: ax,
                 yaxis: ax,

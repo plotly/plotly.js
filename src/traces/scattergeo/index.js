@@ -9,20 +9,13 @@
 
 'use strict';
 
-var Scatter = require('../scatter');
-
 var ScatterGeo = {};
 
 ScatterGeo.attributes = require('./attributes');
 ScatterGeo.supplyDefaults = require('./defaults');
-ScatterGeo.colorbar = Scatter.colorbar;
+ScatterGeo.colorbar = require('../scatter/colorbar');
+ScatterGeo.calc = require('./calc');
 ScatterGeo.plot = require('./plot').plot;
-
-ScatterGeo.calc = function(gd, trace) {
-
-    Scatter.calcMarkerColorscales(trace);
-
-};
 
 ScatterGeo.moduleType = 'trace';
 ScatterGeo.name = 'scattergeo';
