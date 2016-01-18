@@ -286,7 +286,7 @@ function handleSubplotObjs(layoutAttributes) {
             var subplotRegistry = subplotsRegistry[subplotType],
                 isSubplotObj;
 
-            if(subplotType === 'cartesian') {
+            if(subplotType === 'cartesian' || subplotType === 'gl2d') {
                 isSubplotObj = (
                     subplotRegistry.attrRegex.x.test(k) ||
                     subplotRegistry.attrRegex.y.test(k)

@@ -140,7 +140,7 @@ plots.registerSubplot = function(_module) {
 
     var regexStart = '^',
         regexEnd = '([2-9]|[1-9][0-9]+)?$',
-        hasXY = (plotType === 'cartesian' || subplotsRegistry === 'gl2d');
+        hasXY = (plotType === 'cartesian' || plotType === 'gl2d');
 
     function makeRegex(mid) {
         return new RegExp(regexStart + mid + regexEnd);
