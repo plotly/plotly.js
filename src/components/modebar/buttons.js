@@ -259,6 +259,7 @@ function handleCartesian(gd, ev) {
                 );
             }
             Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
+            Plotly.Fx.init(gd);
         }
     });
 }
