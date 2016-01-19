@@ -5,10 +5,17 @@ var Lib = require('@src/lib');
 var Scatter = require('@src/traces/scatter');
 var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
+var pkg = require('../../../package.json');
 
 
 describe('Test plot api', function() {
     'use strict';
+
+    describe('Plotly.version', function() {
+        it('should be the same as in the package.json', function() {
+            expect(Plotly.version).toEqual(pkg.version);
+        });
+    });
 
     describe('Plotly.restyle', function() {
         beforeEach(function() {
