@@ -28,6 +28,7 @@ var Legend = require('../components/legend');
 var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
 var manageModeBar = require('../components/modebar/manage');
+var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 
 
 /**
@@ -2567,11 +2568,7 @@ function makePlotFramework(gd) {
     }
 
     fullLayout._paperdiv.selectAll('.main-svg')
-        .attr({
-            xmlns: 'http://www.w3.org/2000/svg',
-            // odd d3 quirk - need namespace twice??
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
-        });
+        .attr(xmlnsNamespaces.svgAttrs);
 
     fullLayout._defs = fullLayout._paper.append('defs')
         .attr('id', 'defs-' + fullLayout._uid);

@@ -13,6 +13,7 @@ var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var subTypes = require('../../traces/scatter/subtypes');
 var makeBubbleSizeFn = require('../../traces/scatter/make_bubble_size_func');
 
@@ -449,12 +450,8 @@ drawing.makeTester = function(gd) {
         .data([0]);
 
     tester.enter().append('svg')
-        .attr({
-            id: 'js-plotly-tester',
-            xmlns: 'http://www.w3.org/2000/svg',
-            // odd d3 quirk - need namespace twice??
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
-        })
+        .attr('id', 'js-plotly-tester')
+        .attr(xmlnsNamespaces.svgAttrs)
         .style({
             position: 'absolute',
             left: '-10000px',
