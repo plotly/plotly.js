@@ -21,6 +21,10 @@ exports.attr = 'scene';
 
 exports.idRoot = 'scene';
 
+exports.idRegex = /^scene([2-9]|[1-9][0-9]+)?$/;
+
+exports.attrRegex = /^scene([2-9]|[1-9][0-9]+)?$/;
+
 exports.attributes = require('./layout/attributes');
 
 exports.layoutAttributes = require('./layout/layout_attributes');

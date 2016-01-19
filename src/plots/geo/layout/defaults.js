@@ -9,20 +9,21 @@
 
 'use strict';
 
-var Plotly = require('../../../plotly');
+var Lib = require('../../../lib');
+var Plots = require('../../plots');
 var constants = require('../../../constants/geo_constants');
 var layoutAttributes = require('./layout_attributes');
 var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    var geos = Plotly.Plots.getSubplotIdsInData(fullData, 'geo'),
+    var geos = Plots.getSubplotIdsInData(fullData, 'geo'),
         geosLength = geos.length;
 
     var geoLayoutIn, geoLayoutOut;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(geoLayoutIn, geoLayoutOut, layoutAttributes, attr, dflt);
+        return Lib.coerce(geoLayoutIn, geoLayoutOut, layoutAttributes, attr, dflt);
     }
 
     for(var i = 0; i < geosLength; i++) {

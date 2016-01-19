@@ -41,7 +41,7 @@ plots.fontWeight = 'normal';
  */
 plots.register = function(_module, thisType, categoriesIn, meta) {
     if(modules[thisType]) {
-        console.warn('type ' + thisType + ' already registered');
+        console.log('type ' + thisType + ' already registered');
         return;
     }
 
@@ -132,32 +132,12 @@ plots.registerSubplot = function(_module) {
     var plotType = _module.name;
 
     if(subplotsRegistry[plotType]) {
-        throw new Error('plot type' + plotType + ' already registered');
-    }
-
-    var attr = _module.attr,
-        idRoot = _module.idRoot;
-
-    var regexStart = '^',
-        regexEnd = '([2-9]|[1-9][0-9]+)?$',
-        hasXY = (plotType === 'cartesian' || plotType === 'gl2d');
-
-    function makeRegex(mid) {
-        return new RegExp(regexStart + mid + regexEnd);
+        console.log('plot type ' + plotType + ' already registered');
+        return;
     }
 
     // not sure what's best for the 'cartesian' type at this point
     subplotsRegistry[plotType] = _module;
-
-    // register the regex representing the set of all valid attribute names
-    subplotsRegistry[plotType].attrRegex = hasXY ?
-        { x: makeRegex(attr[0]), y: makeRegex(attr[1]) } :
-        makeRegex(attr);
-
-    // register the regex representing the set of all valid attribute ids
-    subplotsRegistry[plotType].idRegex = hasXY ?
-        { x: makeRegex(idRoot[0]), y: makeRegex(idRoot[1]) } :
-        makeRegex(idRoot);
 };
 
 // TODO separate the 'find subplot' step (which looks in layout)

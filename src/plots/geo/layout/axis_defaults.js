@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Plotly = require('../../../plotly');
+var Lib = require('../../../lib');
 var constants = require('../../../constants/geo_constants');
 var axisAttributes = require('./axis_attributes');
 
@@ -20,7 +20,7 @@ module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut)
     var axisIn, axisOut;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(axisIn, axisOut, axisAttributes, attr, dflt);
+        return Lib.coerce(axisIn, axisOut, axisAttributes, attr, dflt);
     }
 
     function getRangeDflt(axisName) {
@@ -55,7 +55,7 @@ module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut)
 
         var range = coerce('range', rangeDflt);
 
-        Plotly.Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
+        Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
 
         coerce('tick0', range[0]);
         coerce('dtick', axisName==='lonaxis' ? 30 : 10);
