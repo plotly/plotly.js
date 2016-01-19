@@ -368,7 +368,7 @@ function plotOne(gd, plotinfo, cd) {
 
     // put this right before making the new image, to minimize flicker
     fullLayout._paper.selectAll('.'+id).remove();
-    plotinfo.plot.select('.maplayer').append('svg:image')
+    plotinfo.plot.select('.imagelayer').append('svg:image')
         .classed(id, true)
         .datum(cd[0])
         .attr({

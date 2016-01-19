@@ -2657,6 +2657,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
     // 4. scatter
     // 5. box plots
     function plotLayers(svg) {
+        svg.append('g').classed('imagelayer', true);
         svg.append('g').classed('maplayer', true);
         svg.append('g').classed('barlayer', true);
         svg.append('g').classed('errorlayer', true);
