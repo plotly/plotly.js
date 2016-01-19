@@ -21,8 +21,6 @@ var Queue = require('../lib/queue');
 var Plots = require('../plots/plots');
 var Fx = require('../plots/cartesian/graph_interact');
 
-var Pie = require('../traces/pie');
-
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
@@ -268,12 +266,16 @@ Plotly.plot = function(gd, data, layout, config) {
 
         function getCdModule(cdSubplot, _module) {
             var cdModule = [];
-            var i, cd, trace;
-            for (i = 0; i < cdSubplot.length; i++) {
-                cd = cdSubplot[i];
-                trace = cd[0].trace;
-                if (trace._module === _module && trace.visible === true) cdModule.push(cd);
+
+            for(var i = 0; i < cdSubplot.length; i++) {
+                var cd = cdSubplot[i];
+                var trace = cd[0].trace;
+
+                if((trace._module === _module) && (trace.visible === true)) {
+                    cdModule.push(cd);
+                }
             }
+
             return cdModule;
         }
 
@@ -301,7 +303,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
         for (i = 0; i < subplots.length; i++) {
             subplot = subplots[i];
-            subplotInfo = gd._fullLayout._plots[subplot];
+            subplotInfo = fullLayout._plots[subplot];
             cdSubplot = getCdSubplot(calcdata, subplot);
             cdError = [];
 
@@ -312,7 +314,8 @@ Plotly.plot = function(gd, data, layout, config) {
 
             for(j = 0; j < modules.length; j++) {
                 _module = modules[j];
-                if(!_module.plot) continue;
+
+                if(!_module.plot && (_module.name === 'pie')) continue;
 
                 // plot all traces of this type on this subplot at once
                 cdModule = getCdModule(cdSubplot, _module);
@@ -326,16 +329,19 @@ Plotly.plot = function(gd, data, layout, config) {
             }
 
             // finally do all error bars at once
-            if(gd._fullLayout._hasCartesian) {
+            if(fullLayout._hasCartesian) {
                 ErrorBars.plot(gd, subplotInfo, cdError);
                 Lib.markTime('done ErrorBars');
             }
         }
 
-        // now draw stuff not on subplots (ie, pies)
-        // TODO: gotta be a better way to handle this
-        var cdPie = getCdModule(calcdata, Pie);
-        if(cdPie.length) Pie.plot(gd, cdPie);
+        // now draw stuff not on subplots (ie, only pies at the moment)
+        if(fullLayout._hasPie) {
+            var Pie = Plots.getModule('pie');
+            var cdPie = getCdModule(calcdata, Pie);
+
+            if(cdPie.length) Pie.plot(gd, cdPie);
+        }
 
         // styling separate from drawing
         Plots.style(gd);
