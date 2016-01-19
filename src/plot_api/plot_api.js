@@ -337,7 +337,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // now draw stuff not on subplots (ie, only pies at the moment)
         if(fullLayout._hasPie) {
-            var Pie = Plots.modules.pie._module;
+            var Pie = Plots.getModule('pie');
             var cdPie = getCdModule(calcdata, Pie);
 
             if(cdPie.length) Pie.plot(gd, cdPie);
