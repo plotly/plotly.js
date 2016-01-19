@@ -8,8 +8,8 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var ARROWPATHS = require('./arrow_paths');
+var Cartesian = require('../../plots/cartesian');
 var fontAttrs = require('../../plots/font_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -156,7 +156,7 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'paper',
-            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString()
+            Cartesian.idRegex.x.toString()
         ],
         role: 'info',
         description: [
@@ -199,7 +199,7 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'paper',
-            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+            Cartesian.idRegex.y.toString()
         ],
         role: 'info',
         description: [
