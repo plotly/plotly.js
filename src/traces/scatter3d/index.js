@@ -8,8 +8,6 @@
 
 'use strict';
 
-var Scatter = require('../scatter');
-
 var Scatter3D = {};
 
 Scatter3D.plot = require('./convert');
@@ -17,18 +15,7 @@ Scatter3D.attributes = require('./attributes');
 Scatter3D.markerSymbols = require('../../constants/gl_markers');
 Scatter3D.supplyDefaults = require('./defaults');
 Scatter3D.colorbar = require('../scatter/colorbar');
-
-Scatter3D.calc = function(gd, trace) {
-    // this is a kludge to put the array attributes into
-    // calcdata the way Scatter.plot does, so that legends and
-    // popovers know what to do with them.
-    var cd = [{x: false, y: false, trace: trace, t: {}}];
-    Scatter.arraysToCalcdata(cd);
-
-    Scatter.calcMarkerColorscales(trace);
-
-    return cd;
-};
+Scatter3D.calc = require('./calc');
 
 Scatter3D.moduleType = 'trace';
 Scatter3D.name = 'scatter3d';

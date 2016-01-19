@@ -9,9 +9,13 @@
 
 'use strict';
 
-var Scatter = require('../../traces/scatter');
 var Lib = require('../../lib');
-var ErrorBars = require('../../components/errorbars');
+
+var subTypes = require('../scatter/subtypes');
+var handleMarkerDefaults = require('../scatter/marker_defaults');
+var handleLineDefaults = require('../scatter/line_defaults');
+var handleTextDefaults = require('../scatter/text_defaults');
+var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 
 var attributes = require('./attributes');
 
@@ -31,16 +35,16 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
     coerce('mode');
 
-    if(Scatter.hasLines(traceOut)) {
-        Scatter.lineDefaults(traceIn, traceOut, defaultColor, coerce);
+    if(subTypes.hasLines(traceOut)) {
+        handleLineDefaults(traceIn, traceOut, defaultColor, coerce);
     }
 
-    if(Scatter.hasMarkers(traceOut)) {
-        Scatter.markerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
+    if(subTypes.hasMarkers(traceOut)) {
+        handleMarkerDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
-    if(Scatter.hasText(traceOut)) {
-        Scatter.textDefaults(traceIn, traceOut, layout, coerce);
+    if(subTypes.hasText(traceOut)) {
+        handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
     var lineColor = (traceOut.line || {}).color ,
@@ -56,9 +60,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
-    ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
-    ErrorBars.supplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
+    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'z'});
+    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y', inherit: 'z'});
+    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'z'});
 };
 
 function handleXYZDefaults(traceIn, traceOut, coerce) {

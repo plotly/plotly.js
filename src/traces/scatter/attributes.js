@@ -10,7 +10,8 @@
 
 var Drawing = require('../../components/drawing');
 
-var PTS_LINESONLY = 20;  // TODO put in constants/
+var constants = require('./constants');
+
 
 module.exports = {
     x: {
@@ -76,7 +77,7 @@ module.exports = {
     },
     mode: {
         valType: 'flaglist',
-        flags: ['lines','markers','text'],
+        flags: ['lines', 'markers', 'text'],
         extras: ['none'],
         role: 'info',
         description: [
@@ -84,7 +85,7 @@ module.exports = {
             'If the provided `mode` includes *text* then the `text` elements',
             'appear at the coordinates. Otherwise, the `text` elements',
             'appear on hover.',
-            'If there are less than ' + PTS_LINESONLY + ' points,',
+            'If there are less than ' + constants.PTS_LINESONLY + ' points,',
             'then the default is *lines+markers*. Otherwise, *lines*.'
         ].join(' ')
     },
@@ -246,8 +247,15 @@ module.exports = {
             valType: 'colorscale',
             role: 'style',
             description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Sets the colorscale.'
+                'Sets the colorscale.',
+                'The colorscale must be an array containing',
+                'arrays mapping a normalized value to an',
+                'rgb, rgba, hex, hsl, hsv, or named color string.',
+                'At minimum, a mapping for the lowest (0) and highest (1)',
+                'values are required. For example,',
+                '`[[0, \'rgb(0,0,255)\', [1, \'rgb(255,0,0)\']]`.',
+                'To control the bounds of the colorscale in color space,',
+                'use cmin and cmax'
             ].join(' ')
         },
         cauto: {
