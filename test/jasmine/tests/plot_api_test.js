@@ -1,10 +1,13 @@
-var Plotly = require('@src/plotly');
+var Plotly = require('@src');
+var PlotlyInternal = require('@src/plotly');
 var Plots = require('@src/plots/plots');
+var Lib = require('@src/lib');
 var Scatter = require('@src/traces/scatter');
 var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
 
-describe('Test graph_obj', function() {
+
+describe('Test plot api', function() {
     'use strict';
 
     describe('Plotly.restyle', function() {
@@ -67,7 +70,7 @@ describe('Test graph_obj', function() {
                     {'name': 'd'}
                 ]
             };
-            spyOn(Plotly, 'redraw');
+            spyOn(PlotlyInternal, 'redraw');
         });
 
         it('should throw an error when indices are omitted', function() {
@@ -103,7 +106,7 @@ describe('Test graph_obj', function() {
 
             Plotly.deleteTraces(gd, -1);
             expect(gd.data).toEqual(expectedData);
-            expect(Plotly.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
 
         });
 
@@ -115,7 +118,7 @@ describe('Test graph_obj', function() {
 
             Plotly.deleteTraces(gd, [0, 3]);
             expect(gd.data).toEqual(expectedData);
-            expect(Plotly.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
 
         });
 
@@ -127,7 +130,7 @@ describe('Test graph_obj', function() {
 
             Plotly.deleteTraces(gd, [3, 0]);
             expect(gd.data).toEqual(expectedData);
-            expect(Plotly.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
 
         });
 
@@ -138,8 +141,8 @@ describe('Test graph_obj', function() {
 
         beforeEach(function() {
             gd = { data: [{'name': 'a'}, {'name': 'b'}] };
-            spyOn(Plotly, 'redraw');
-            spyOn(Plotly, 'moveTraces');
+            spyOn(PlotlyInternal, 'redraw');
+            spyOn(PlotlyInternal, 'moveTraces');
         });
 
         it('should throw an error when traces is not an object or an array of objects', function() {
@@ -186,8 +189,8 @@ describe('Test graph_obj', function() {
             expect(gd.data[2].uid).toBeDefined();
             expect(gd.data[3].name).toBeDefined();
             expect(gd.data[3].uid).toBeDefined();
-            expect(Plotly.redraw).toHaveBeenCalled();
-            expect(Plotly.moveTraces).not.toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.moveTraces).not.toHaveBeenCalled();
         });
 
         it('should work when newIndices is defined', function() {
@@ -196,8 +199,8 @@ describe('Test graph_obj', function() {
             expect(gd.data[2].uid).toBeDefined();
             expect(gd.data[3].name).toBeDefined();
             expect(gd.data[3].uid).toBeDefined();
-            expect(Plotly.redraw).not.toHaveBeenCalled();
-            expect(Plotly.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [1, 3]);
+            expect(PlotlyInternal.redraw).not.toHaveBeenCalled();
+            expect(PlotlyInternal.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [1, 3]);
 
         });
 
@@ -207,8 +210,8 @@ describe('Test graph_obj', function() {
             expect(gd.data[2].uid).toBeDefined();
             expect(gd.data[3].name).toBeDefined();
             expect(gd.data[3].uid).toBeDefined();
-            expect(Plotly.redraw).not.toHaveBeenCalled();
-            expect(Plotly.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [-3, -1]);
+            expect(PlotlyInternal.redraw).not.toHaveBeenCalled();
+            expect(PlotlyInternal.moveTraces).toHaveBeenCalledWith(gd, [-2, -1], [-3, -1]);
 
         });
 
@@ -216,8 +219,8 @@ describe('Test graph_obj', function() {
             Plotly.addTraces(gd, {'name': 'c'}, 0);
             expect(gd.data[2].name).toBeDefined();
             expect(gd.data[2].uid).toBeDefined();
-            expect(Plotly.redraw).not.toHaveBeenCalled();
-            expect(Plotly.moveTraces).toHaveBeenCalledWith(gd, [-1], [0]);
+            expect(PlotlyInternal.redraw).not.toHaveBeenCalled();
+            expect(PlotlyInternal.moveTraces).toHaveBeenCalledWith(gd, [-1], [0]);
 
         });
     });
@@ -233,7 +236,7 @@ describe('Test graph_obj', function() {
                     {'name': 'd'}
                 ]
             };
-            spyOn(Plotly, 'redraw');
+            spyOn(PlotlyInternal, 'redraw');
         });
 
         it('throw an error when index arrays are unequal', function() {
@@ -301,7 +304,7 @@ describe('Test graph_obj', function() {
 
             Plotly.moveTraces(gd, 0, 1);
             expect(gd.data).toEqual(expectedData);
-            expect(Plotly.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
 
         });
 
@@ -315,7 +318,7 @@ describe('Test graph_obj', function() {
 
             Plotly.moveTraces(gd, [3, 1], [0, 3]);
             expect(gd.data).toEqual(expectedData);
-            expect(Plotly.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
 
         });
 
@@ -329,7 +332,7 @@ describe('Test graph_obj', function() {
 
             Plotly.moveTraces(gd, [3, 0]);
             expect(gd.data).toEqual(expectedData);
-            expect(Plotly.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
 
         });
 
@@ -343,7 +346,7 @@ describe('Test graph_obj', function() {
 
             Plotly.moveTraces(gd, 1, -2);
             expect(gd.data).toEqual(expectedData);
-            expect(Plotly.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
 
         });
     });
@@ -367,7 +370,7 @@ describe('Test graph_obj', function() {
                 };
             }
 
-            spyOn(Plotly, 'redraw');
+            spyOn(PlotlyInternal, 'redraw');
             spyOn(Plotly.Queue, 'add');
         });
 
@@ -470,7 +473,7 @@ describe('Test graph_obj', function() {
                 {x: [1,2,3,4,5], marker: {size: [2,3,4,5,6]}}
             ]);
 
-            expect(Plotly.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
         });
 
         it('should extend and window traces with update keys', function() {
@@ -523,11 +526,11 @@ describe('Test graph_obj', function() {
                 {x: [], marker: {size: []}}
             ]);
 
-            expect(Plotly.redraw).toHaveBeenCalled();
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
         });
 
         it('prepend is the inverse of extend - no maxPoints', function() {
-            var cachedData = Plotly.Lib.extendDeep([], gd.data);
+            var cachedData = Lib.extendDeep([], gd.data);
 
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
@@ -545,7 +548,7 @@ describe('Test graph_obj', function() {
 
 
         it('extend is the inverse of prepend - no maxPoints', function() {
-            var cachedData = Plotly.Lib.extendDeep([], gd.data);
+            var cachedData = Lib.extendDeep([], gd.data);
 
             Plotly.prependTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
@@ -564,7 +567,7 @@ describe('Test graph_obj', function() {
 
         it('prepend is the inverse of extend - with maxPoints', function() {
             var maxPoints = 3;
-            var cachedData = Plotly.Lib.extendDeep([], gd.data);
+            var cachedData = Lib.extendDeep([], gd.data);
 
             Plotly.extendTraces(gd, {
                 x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
