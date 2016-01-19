@@ -19,6 +19,7 @@ Surface.plot = require('./convert');
 
 Surface.moduleType = 'trace';
 Surface.name = 'surface';
+Surface.basePlotModule = require('../../plots/gl3d');
 Surface.categories = ['gl3d', 'noOpacity'];
 Surface.meta = {
     description: [

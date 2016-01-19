@@ -19,6 +19,7 @@ Choropleth.plot = require('./plot').plot;
 
 Choropleth.moduleType = 'trace';
 Choropleth.name = 'choropleth';
+Choropleth.basePlotModule = require('../../plots/geo');
 Choropleth.categories = ['geo', 'noOpacity'];
 Choropleth.meta = {
     description: [
