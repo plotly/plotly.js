@@ -77,13 +77,13 @@
     "topojson": "^1.6.19"
   },
   "devDependencies": {
-    "brfs": "^1.4.1",
-    "browserify": "^12.0.1",
-    "browserify-transform-tools": "^1.5.0",
+    "brfs": "^1.4.3",
+    "browserify": "^13.0.0",
+    "browserify-transform-tools": "^1.5.1",
     "ecstatic": "^1.2.0",
     "eslint": "^1.10.3",
     "falafel": "^1.2.0",
-    "glob": "^6.0.1",
+    "glob": "^6.0.4",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.15",
     "karma-browserify": "^4.4.1",
@@ -97,7 +97,7 @@
     "prettysize": "0.0.3",
     "through2": "^2.0.0",
     "uglify-js": "^2.5.0",
-    "watchify": "^3.6.0",
-    "xml2js": "^0.4.15"
+    "watchify": "^3.7.0",
+    "xml2js": "^0.4.16"
   }
 }
