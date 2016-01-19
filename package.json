@@ -44,7 +44,7 @@
     "alpha-shape": "^1.0.0",
     "arraytools": "^1.0.0",
     "convex-hull": "^1.0.3",
-    "d3": "3.5.6",
+    "d3": "^3.5.12",
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.1",
