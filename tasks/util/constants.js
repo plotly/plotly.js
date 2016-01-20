@@ -4,6 +4,7 @@ var pkg = require('../../package.json');
 
 var pathToRoot = path.join(__dirname, '../../');
 var pathToSrc = path.join(pathToRoot, 'src/');
+var pathToLib = path.join(pathToRoot, 'lib/');
 var pathToImageTest = path.join(pathToRoot, 'test/image');
 var pathToDist = path.join(pathToRoot, 'dist/');
 var pathToBuild = path.join(pathToRoot, 'build/');
@@ -17,8 +18,9 @@ var year = (new Date()).getFullYear();
 module.exports = {
     pathToRoot: pathToRoot,
     pathToSrc: pathToSrc,
+    pathToLib: pathToLib,
 
-    pathToPlotlySrc: path.join(pathToSrc, 'index.js'),
+    pathToPlotlySrc: path.join(pathToLib, 'index.js'),
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
