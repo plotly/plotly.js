@@ -9,6 +9,13 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Test plot structure', function() {
     'use strict';
 
+    function assertNamespaces(node) {
+        expect(node.getAttribute('xmlns'))
+            .toEqual('http://www.w3.org/2000/svg');
+        expect(node.getAttribute('xmlns:xlink'))
+            .toEqual('http://www.w3.org/1999/xlink');
+    }
+
     afterEach(destroyGraphDiv);
 
     describe('cartesian plots', function() {
@@ -44,6 +51,15 @@ describe('Test plot structure', function() {
 
                 expect(nodes.size()).toEqual(Npts);
             });
+
+            it('has the correct name spaces', function() {
+                var mainSVGs = d3.selectAll('.main-svg');
+
+                mainSVGs.each(function() {
+                    var node = this;
+                    assertNamespaces(node);
+                });
+            });
         });
 
         describe('pie traces', function() {
@@ -62,6 +78,18 @@ describe('Test plot structure', function() {
                 });
 
                 expect(nodes.size()).toEqual(Npts);
+            });
+
+            it('has the correct name spaces', function() {
+                var mainSVGs = d3.selectAll('.main-svg');
+
+                mainSVGs.each(function() {
+                    var node = this;
+                    assertNamespaces(node);
+                });
+
+                var testerSVG = d3.selectAll('#js-plotly-tester');
+                assertNamespaces(testerSVG.node());
             });
         });
     });
@@ -95,6 +123,22 @@ describe('Test plot structure', function() {
             });
 
             expect(nodes.size()).toEqual(Npts);
+        });
+
+        it('has the correct name spaces', function() {
+            var mainSVGs = d3.selectAll('.main-svg');
+
+            mainSVGs.each(function() {
+                var node = this;
+                assertNamespaces(node);
+            });
+
+            var geoSVGs = d3.select('#geo').selectAll('svg');
+
+            geoSVGs.each(function() {
+                var node = this;
+                assertNamespaces(node);
+            });
         });
     });
 
