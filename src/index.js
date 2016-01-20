@@ -14,9 +14,6 @@
 
 var Core = require('./core');
 
-// package version injected by `npm run preprocess`
-exports.version = '1.4.1';
-
 // Load all trace modules
 Core.register([
     require('./traces/bar'),

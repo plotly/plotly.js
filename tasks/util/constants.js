@@ -19,6 +19,7 @@ module.exports = {
     pathToSrc: pathToSrc,
 
     pathToPlotlySrc: path.join(pathToSrc, 'index.js'),
+    pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
     pathToPlotlyBuild: path.join(pathToBuild, 'plotly.js'),
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
