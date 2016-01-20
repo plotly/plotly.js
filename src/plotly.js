@@ -36,22 +36,9 @@ exports.defaultConfig = require('./plot_api/plot_config');
 // plots
 var Plots = exports.Plots = require('./plots/plots');
 
-var Cartesian = require('./plots/cartesian');
-Plots.registerSubplot(Cartesian);
-
-var Geo = require('./plots/geo');
-Plots.registerSubplot(Geo);
-
-var Gl3d = require('./plots/gl3d');
-Plots.registerSubplot(Gl3d);
-
-var Gl2d = require('./plots/gl2d');
-Plots.registerSubplot(Gl2d);
-
 exports.Axes = require('./plots/cartesian/axes');
 exports.Fx = require('./plots/cartesian/graph_interact');
 exports.micropolar = require('./plots/polar/micropolar');
-
 
 // components
 exports.Color = require('./components/color');
@@ -80,6 +67,10 @@ exports.register = function register(_modules) {
             throw new Error('Invalid module was attempted to be registered!');
         } else {
             Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
+
+            if(!Plots.subplotsRegistry[newModule.basePlotModule.name]){
+                Plots.registerSubplot(newModule.basePlotModule);
+            }
         }
     }
 };

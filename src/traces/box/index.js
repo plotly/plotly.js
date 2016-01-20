@@ -22,6 +22,7 @@ Box.hoverPoints = require('./hover');
 
 Box.moduleType = 'trace';
 Box.name = 'box';
+Box.basePlotModule = require('../../plots/cartesian');
 Box.categories = ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'];
 Box.meta = {
     description: [

@@ -43,6 +43,11 @@ glob(path.join(constants.pathToSrc, '**/*.js'), function(err, files) {
 
             var header = comments[0];
 
+            // error out if no header is found
+            if(!header || header.loc.start.line > 1) {
+                throw new Error(file + ' : has no header information.');
+            }
+
             // if header and license are the same, do nothing
             if(isCorrect(header)) return;
 

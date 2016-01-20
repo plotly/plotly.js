@@ -6,12 +6,14 @@
 * LICENSE file in the root directory of this source tree.
 */
 
+
 'use strict';
 
-var saneTopojson = require('sane-topojson');
-
-
-// package version injected by `npm run preprocess`
-exports.version = '1.4.1';
-
-exports.topojson = saneTopojson;
+module.exports = {
+    solid: [1],
+    dot: [1, 1],
+    dash: [4, 1],
+    longdash: [8, 1],
+    dashdot: [4, 1, 1, 1],
+    longdashdot: [8, 1, 1, 1]
+};

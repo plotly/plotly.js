@@ -38,6 +38,7 @@ Histogram.hoverPoints = require('../bar/hover');
 
 Histogram.moduleType = 'trace';
 Histogram.name = 'histogram';
+Histogram.basePlotModule = require('../../plots/cartesian');
 Histogram.categories = ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
 Histogram.meta = {
     description: [

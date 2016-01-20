@@ -13,6 +13,7 @@ describe('the register function', function() {
             moduleType: 'trace',
             name: 'mockTrace1',
             meta: 'Meta string',
+            basePlotModule: { name: 'plotModule' },
             categories: ['categories', 'array']
         };
 
@@ -28,6 +29,7 @@ describe('the register function', function() {
             moduleType: 'trace',
             name: 'mockTrace2',
             meta: 'Meta string',
+            basePlotModule: { name: 'plotModule' },
             categories: ['categories', 'array']
         };
 

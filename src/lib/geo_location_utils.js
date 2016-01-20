@@ -14,7 +14,7 @@ var locationUtils = module.exports = {};
 var Plotly = require('../plotly');
 
 // an hash object iso3 to regex string
-var countryNameData = require('../constants/country-name_to_iso3.json');
+var countryNameData = require('../constants/country-name_to_iso3');
 
 // make list of all country iso3 ids from at runtime
 var countryIds = Object.keys(countryNameData);
