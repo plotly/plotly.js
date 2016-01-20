@@ -9,3 +9,12 @@ test
 dist/extras/mathjax
 
 circle.yml
+docker-compose.yml
+bower.json
+
+.ackrc
+.agignore
+.eslintignore
+.eslintrc
+
+npm-debug.log
