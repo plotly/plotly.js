@@ -20,6 +20,7 @@ ScatterGl.plot = require('./convert');
 
 ScatterGl.moduleType = 'trace';
 ScatterGl.name = 'scattergl';
+ScatterGl.basePlotModule = require('../../plots/gl2d');
 ScatterGl.categories = ['gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend'];
 ScatterGl.meta = {
     description: [

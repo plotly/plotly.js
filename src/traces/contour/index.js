@@ -21,6 +21,7 @@ Contour.hoverPoints = require('./hover');
 
 Contour.moduleType = 'trace';
 Contour.name = 'contour';
+Contour.basePlotModule = require('../../plots/cartesian');
 Contour.categories = ['cartesian', '2dMap', 'contour'];
 Contour.meta = {
     description: [

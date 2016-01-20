@@ -32,6 +32,7 @@ Scatter.selectPoints = require('./select');
 
 Scatter.moduleType = 'trace';
 Scatter.name = 'scatter';
+Scatter.basePlotModule = require('../../plots/cartesian');
 Scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
 Scatter.meta = {
     description: [

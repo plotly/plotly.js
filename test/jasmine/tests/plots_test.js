@@ -206,7 +206,7 @@ describe('Test Plots', function() {
             revertObj(Plots.allCategories, this.allCategoriesKeys);
         });
 
-        it('should warn on attempts to reregister a type', function() {
+        it('should not reregister a type', function() {
             Plots.register(this.fakeModule2, 'newtype', ['yellow', 'blue']);
             expect(Plots.allCategories.yellow).toBeUndefined();
         });
@@ -239,6 +239,8 @@ describe('Test Plots', function() {
             name: 'fake',
             attr: 'abc',
             idRoot: 'cba',
+            attrRegex: /^abc([2-9]|[1-9][0-9]+)?$/,
+            idRegex: /^cba([2-9]|[1-9][0-9]+)?$/,
             attributes: { stuff: { 'more stuff': 102102 } }
         };
 

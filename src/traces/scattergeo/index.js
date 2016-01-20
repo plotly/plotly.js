@@ -19,6 +19,7 @@ ScatterGeo.plot = require('./plot').plot;
 
 ScatterGeo.moduleType = 'trace';
 ScatterGeo.name = 'scattergeo';
+ScatterGeo.basePlotModule = require('../../plots/geo');
 ScatterGeo.categories = ['geo', 'symbols', 'markerColorscale', 'showLegend'];
 ScatterGeo.meta = {
     hrName: 'scatter_geo',

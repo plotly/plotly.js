@@ -7,12 +7,10 @@
 */
 
 'use strict';
-
-var Plotly = require('../../plotly');
+var Cartesian = require('./index');
 var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
-
 
 module.exports = {
     title: {
@@ -385,8 +383,8 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'free',
-            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
-            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+            Cartesian.idRegex.x.toString(),
+            Cartesian.idRegex.y.toString()
         ],
         role: 'info',
         description: [
@@ -414,8 +412,8 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'free',
-            Plotly.Plots.subplotsRegistry.cartesian.idRegex.x.toString(),
-            Plotly.Plots.subplotsRegistry.cartesian.idRegex.y.toString()
+            Cartesian.idRegex.x.toString(),
+            Cartesian.idRegex.y.toString()
         ],
         role: 'info',
         description: [
