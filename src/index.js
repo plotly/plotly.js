@@ -9,44 +9,15 @@
 'use strict';
 
 /*
- * Export the plotly.js API methods.
- *
  * This file is browserify'ed into a standalone 'Plotly' object.
- *
  */
 
-var Plotly = require('./plotly');
+var Core = require('./core');
 
-// export the version found in the package.json
-exports.version = require('../package.json').version;
+console.log(Object.keys(Core));
 
-// plot api
-exports.plot = Plotly.plot;
-exports.newPlot = Plotly.newPlot;
-exports.restyle = Plotly.restyle;
-exports.relayout = Plotly.relayout;
-exports.redraw = Plotly.redraw;
-exports.extendTraces = Plotly.extendTraces;
-exports.prependTraces = Plotly.prependTraces;
-exports.addTraces = Plotly.addTraces;
-exports.deleteTraces = Plotly.deleteTraces;
-exports.moveTraces = Plotly.moveTraces;
-exports.setPlotConfig = require('./plot_api/set_plot_config');
-
-// plot icons
-exports.Icons = require('../build/ploticon');
-
-// unofficial 'beta' plot methods, use at your own risk
-exports.Plots = Plotly.Plots;
-exports.Fx = Plotly.Fx;
-exports.Snapshot = Plotly.Snapshot;
-exports.PlotSchema = Plotly.PlotSchema;
-exports.Queue = Plotly.Queue;
-
-// export d3 used in the bundle
-exports.d3 = require('d3');
-
-Plotly.register([
+// Load all trace modules
+Core.register([
     require('./traces/bar'),
     require('./traces/box'),
     require('./traces/heatmap'),
@@ -62,3 +33,5 @@ Plotly.register([
     require('./traces/choropleth'),
     require('./traces/scattergl')
 ]);
+
+module.exports = Core;
