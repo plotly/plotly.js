@@ -56,6 +56,7 @@ function greaterThan(a, b) { return a > b; }
 function greaterOrEqual(a, b) { return a >= b; }
 
 exports.sorterAsc = function(a, b) { return a - b; };
+exports.sorterDes = function(a, b) { return b - a; };
 
 /**
  * find distinct values in an array, lumping together ones that appear to

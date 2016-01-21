@@ -141,6 +141,32 @@ describe('Test plot api', function() {
 
         });
 
+        it('should work with more than 10 indices', function() {
+            gd.data = [];
+
+            for(var i = 0; i < 20; i++) {
+                gd.data.push({
+                    name: 'trace #' + i
+                });
+            }
+
+            var expectedData = [
+                {name: 'trace #12'},
+                {name: 'trace #13'},
+                {name: 'trace #14'},
+                {name: 'trace #15'},
+                {name: 'trace #16'},
+                {name: 'trace #17'},
+                {name: 'trace #18'},
+                {name: 'trace #19'}
+            ];
+
+            Plotly.deleteTraces(gd, [0,1,2,3,4,5,6,7,8,9,10,11]);
+            expect(gd.data).toEqual(expectedData);
+            expect(PlotlyInternal.redraw).toHaveBeenCalled();
+
+        });
+
     });
 
     describe('Plotly.addTraces', function() {
