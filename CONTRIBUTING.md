@@ -106,6 +106,7 @@ To view the results of a run on CircleCI, download the `build/test_images/` and 
 ### Repo organization
 
 - Distributed files are in `dist/`
+- CommonJS require-able modules are in `lib/`
 - Sources files are in `src/`, including the index
 - Build and repo management scripts are in `tasks/`
 - All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
