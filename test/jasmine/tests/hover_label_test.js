@@ -1,6 +1,6 @@
 var d3 = require('d3');
 
-var Plotly = require('@src/index');
+var Plotly = require('@lib/index');
 var Fx = require('@src/plots/cartesian/graph_interact');
 var Lib = require('@src/lib');
 

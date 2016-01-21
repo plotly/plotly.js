@@ -31,5 +31,5 @@ fs.copy(constants.pathToTopojsonSrc, constants.pathToTopojsonDist,
 );
 
 // inject package version into source index files
-updateVersion(constants.pathToPlotlySrc);
+updateVersion(constants.pathToPlotlyCore);
 updateVersion(constants.pathToPlotlyGeoAssetsSrc);

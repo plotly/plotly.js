@@ -18,7 +18,7 @@ var constants = require('./constants');
  *
  */
 module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
-    var b = browserify(constants.pathToPlotlySrc, {
+    var b = browserify(constants.pathToPlotlyIndex, {
         debug: true,
         standalone: 'Plotly',
         transform: [compressAttributes],

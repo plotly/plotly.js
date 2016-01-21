@@ -1,6 +1,6 @@
 <a href="https://plot.ly/javascript/"><img src="http://images.plot.ly/logo/plotlyjs-logo@2x.png" height="70"></a>
 
-[![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js) 
+[![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
@@ -10,6 +10,7 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 ## Table of contents
 
 * [Quick start options](#quick-start-options)
+* [Modules](#modules)
 * [Bugs and feature requests](#bugs-and-feature-requests)
 * [Documentation](#documentation)
 * [Contributing](#contributing)
@@ -38,9 +39,46 @@ npm install plotly.js
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- OR use a specific plotly.js release (e.g. version 1.5.0)-->
+<script type="text/javascript" src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
 ```
 
-Read the [Getting started page](https://plot.ly/javascript/getting-started/) for examples.
+Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
+
+## Modules
+
+If you would like to reduce the bundle size of plotly.js, you can create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*: 
+
+```javascript
+// in custom-plotly.js
+var plotlyCore = require('plotly.js/lib/core');
+
+// Load in the trace types for pie, and choropleth
+plotlyCore.register([
+    require('plotly.js/lib/pie'),
+    require('plotly.js/lib/choropleth');
+]);
+
+module.exports = customPlotly;
+```
+
+Then elsewhere in your code:
+
+```javascript
+var Plotly = require('./path/to/custom-plotly');
+```
+
+**IMPORTANT**: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `chartset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
+
+```html
+<script type="text/javascript" src="my-plotly-bundle.js" charset="utf-8"></script>
+```
+
+
+#### Webpack Usage with Modules
+
+Browserify [transforms](https://github.com/substack/browserify-handbook#transforms) are required to build plotly.js, namely, [glslify](https://github.com/stackgl/glslify) to transform WebGL shaders and [cwise](https://github.com/scijs/cwise) to compile component-wise array operations. To make the trace module system work with Webpack, you will need to install [ify-loader](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json` for your build to correctly bundle plotly.js files.
 
 ## Bugs and feature requests
 

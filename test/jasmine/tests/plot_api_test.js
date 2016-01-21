@@ -1,4 +1,4 @@
-var Plotly = require('@src');
+var Plotly = require('@lib/index');
 var PlotlyInternal = require('@src/plotly');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');

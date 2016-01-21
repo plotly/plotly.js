@@ -10,9 +10,6 @@
 
 /*
  * Export the plotly.js API methods.
- *
- * This file is browserify'ed into a standalone 'Plotly' object.
- *
  */
 
 var Plotly = require('./plotly');
@@ -32,6 +29,7 @@ exports.addTraces = Plotly.addTraces;
 exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
 exports.setPlotConfig = require('./plot_api/set_plot_config');
+exports.register = Plotly.register;
 
 // plot icons
 exports.Icons = require('../build/ploticon');
@@ -45,20 +43,3 @@ exports.Queue = Plotly.Queue;
 
 // export d3 used in the bundle
 exports.d3 = require('d3');
-
-Plotly.register([
-    require('./traces/bar'),
-    require('./traces/box'),
-    require('./traces/heatmap'),
-    require('./traces/histogram'),
-    require('./traces/histogram2d'),
-    require('./traces/histogram2dcontour'),
-    require('./traces/pie'),
-    require('./traces/contour'),
-    require('./traces/scatter3d'),
-    require('./traces/surface'),
-    require('./traces/mesh3d'),
-    require('./traces/scattergeo'),
-    require('./traces/choropleth'),
-    require('./traces/scattergl')
-]);
