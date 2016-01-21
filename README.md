@@ -69,6 +69,13 @@ Then elsewhere in your code:
 var Plotly = require('./path/to/custom-plotly');
 ```
 
+**IMPORTANT**: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `chartset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
+
+```html
+<script type="text/javascript" src="my-plotly-bundle.js" charset="utf-8"></script>
+```
+
+
 #### Webpack Usage with Modules
 
 Browserify [transforms](https://github.com/substack/browserify-handbook#transforms) are required to build plotly.js, namely, [glslify](https://github.com/stackgl/glslify) to transform WebGL shaders and [cwise](https://github.com/scijs/cwise) to compile component-wise array operations. To make the trace module system work with Webpack, you will need to install [ify-loader](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json` for your build to correctly bundle plotly.js files.
