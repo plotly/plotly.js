@@ -48,6 +48,7 @@ module.exports = {
     pathToTestImagesDiffList: path.join(pathToBuild, 'list_of_incorrect_images.txt'),
 
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
+    pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
 
     uglifyOptions: {
         fromString: true,
