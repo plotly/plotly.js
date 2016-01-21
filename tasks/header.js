@@ -32,8 +32,9 @@ pathsDist.forEach(headerLicense);
 var licenseSrc = constants.licenseSrc;
 var licenseStr = licenseSrc.substring(2, licenseSrc.length - 2);
 
-
-glob(path.join(constants.pathToSrc, '**/*.js'), function(err, files) {
+var srcGlob = path.join(constants.pathToSrc, '**/*.js');
+var libGlob = path.join(constants.pathToLib, '**/*.js');
+glob('{' + srcGlob + ',' + libGlob + '}', function(err, files){
     files.forEach(function(file) {
         fs.readFile(file, 'utf-8', function(err, code) {
 
