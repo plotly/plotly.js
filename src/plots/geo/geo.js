@@ -24,6 +24,7 @@ var createGeoScale = require('./set_scale');
 var createGeoZoom = require('./zoom');
 var createGeoZoomReset = require('./zoom_reset');
 
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('../../constants/geo_constants');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson').feature;
@@ -217,10 +218,7 @@ proto.makeFramework = function() {
 
     var hoverContainer = this.hoverContainer = geoDiv.append('svg');
     hoverContainer
-        .attr({
-            xmlns:'http://www.w3.org/2000/svg',
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
-        })
+        .attr(xmlnsNamespaces.svgAttrs)
         .style({
             'position': 'absolute',
             'z-index': 20,
@@ -229,9 +227,8 @@ proto.makeFramework = function() {
 
     var framework = this.framework = geoDiv.append('svg');
     framework
+        .attr(xmlnsNamespaces.svgAttrs)
         .attr({
-            'xmlns':'http://www.w3.org/2000/svg',
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
             'position': 'absolute',
             'preserveAspectRatio': 'none'
         });

@@ -6,7 +6,7 @@ var glob = require('glob');
 
 var constants = require('../tasks/util/constants');
 
-var focusGlobals = ['fdescribe', 'fit'];
+var focusGlobals = ['fdescribe', 'fit', 'xdescribe', 'xit'];
 var logs = [];
 
 
@@ -19,12 +19,13 @@ glob(path.join(constants.pathToJasmineTests, '**/*.js'), function(err, files) {
                 logs.push([
                     path.basename(file),
                     '[line ' + node.loc.start.line + '] :',
-                    'contains either a *fdescribe* or a *fit* block.'
+                    'contains either a *fdescribe*, *fit*,',
+                    '*xdescribe* or *xit* block.'
                 ].join(' '));
             }
         });
 
     });
 
-    if(logs.length) throw new Error(logs.join('\n'));
+    if(logs.length) throw new Error('\n' + logs.join('\n') + '\n');
 });
