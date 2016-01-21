@@ -6,4 +6,4 @@ build/*
 !build/ploticon.js
 !build/README.md
 
-npm-debug.log
+npm-debug.log*
