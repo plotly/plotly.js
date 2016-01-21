@@ -16,7 +16,7 @@ var constants = require('./util/constants');
 
 
 // Browserify plotly.js
-browserify(constants.pathToPlotlySrc, {
+browserify(constants.pathToPlotlyIndex, {
     standalone: 'Plotly',
     transform: [compressAttributes]
 })

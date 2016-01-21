@@ -35,7 +35,7 @@ catch(e) {
 
 
 // Browserify plotly.js
-browserify(constants.pathToPlotlySrc, {
+browserify(constants.pathToPlotlyIndex, {
     debug: DEV,
     standalone: 'Plotly',
     transform: [compressAttributes]
@@ -65,7 +65,7 @@ browserify(constants.pathToPlotlyGeoAssetsSrc, {
 
 
 // Browserify the plotly.js with meta
-browserify(constants.pathToPlotlySrc, {
+browserify(constants.pathToPlotlyIndex, {
     debug: DEV,
     standalone: 'Plotly'
 })
