@@ -40,10 +40,6 @@ npm install plotly.js
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 ```
 
-#### Webpack Usage
-
-Plotly.js uses a browserify transform (glslify) to transform shaders. To make this work with Webpack, you will need to install [ify-loader]() and add it to your `webpack.config.json`.
-
 Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
 
 ## Modules
@@ -67,6 +63,10 @@ Then elsewhere in your code:
 ```javascript
 var Plotly = require('./custom-plotly');
 ```
+
+#### Webpack Usage with Modules
+
+Plotly.js uses a browserify transform (glslify) to transform shaders. To make the trace module system work with Webpack, you will need to install [ify-loader]() and add it to your `webpack.config.json` for your build to correctly bundle and parse `.glsl` files.
 
 ## Bugs and feature requests
 
