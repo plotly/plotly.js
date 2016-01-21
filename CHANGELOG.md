@@ -10,7 +10,23 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
-## [1.4.0] -- 2016-01-11
+## [1.5.0] -- 2016-01-22
+
+### Added
+- Modularize the library (first iteration). Trace types can be required in
+  one-by-one to make custom plotly.js bundles of lesser size. [#180, #187, #193, #202]
+
+### Changed
+- Remove json assets from the js source files (to better support Webpack bundling) [#183]
+- Update d3, tinycolor2, topojson dependencies [#195]
+- Improve `'colorscale'` attribute description [#186]
+
+### Fixed
+- Fix pan mode drag delay [#188]
+- Make `Plotly.deleteTrace` handle big-indices-array properly [#203]
+
+
+## [1.4.1] -- 2016-01-11
 
 ### Fixed
 - Click events work properly after being broken in 1.4.0 [#174]
