@@ -24,7 +24,7 @@
     "preprocess": "node tasks/preprocess.js",
     "bundle": "node tasks/bundle.js",
     "header": "node tasks/header.js",
-    "build": "npm run preprocess && npm run bundle && npm run header",
+    "build": "npm dedupe && npm run preprocess && npm run bundle && npm run header",
     "cibuild": "node tasks/cibundle.js",
     "watch": "node tasks/watch_plotly.js",
     "lint": "eslint . || true",
