@@ -1,4 +1,19 @@
+/*eslint-env node*/
+
 // Karma configuration
+
+/*
+ * Test file globs can be passed with an argument.
+ *
+ * Example:
+ *
+ *  $ npm run test-jasmine -- tests/axes_test.js
+ *
+ * will only run the tests in axes_test.js
+ *
+ */
+var testFileGlob = process.argv[4] ? process.argv[4] : 'tests/*_test.js';
+
 
 function func(config) {
 
@@ -21,7 +36,7 @@ func.defaultConfig = {
     // list of files / patterns to load in the browser
     files: [
         'assets/jquery-1.8.3.min.js',
-        'tests/*_test.js'
+        testFileGlob
     ],
 
     // list of files to exclude
@@ -30,9 +45,9 @@ func.defaultConfig = {
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
-    preprocessors: {
-        'tests/*_test.js': ['browserify']
-    },
+    //
+    // N.B. this field is filled below
+    preprocessors: {},
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
@@ -64,5 +79,7 @@ func.defaultConfig = {
     }
 };
 
+// browserify the test files
+func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
 
 module.exports = func;
