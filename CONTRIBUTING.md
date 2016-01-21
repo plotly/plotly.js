@@ -108,7 +108,7 @@ To view the results of a run on CircleCI, download the `build/test_images/` and 
 - Distributed files are in `dist/`
 - Sources files are in `src/`, including the index
 - Build and repo management scripts are in `tasks/`
-- All tasks can be run using [`npm run-srcript`](https://docs.npmjs.com/cli/run-script)
+- All tasks can be run using [`npm run-script`](https://docs.npmjs.com/cli/run-script)
 - Tests are `test/`, they are partitioned into `image` and `jasmine` tests
 - Test dashboard and image viewer code is in `devtools/`
 - Non-distributed, built files are in `build/` (most files in here are git-ignored, the css and font built files are exceptions)
