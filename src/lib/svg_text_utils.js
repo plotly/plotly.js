@@ -14,16 +14,23 @@
 var Plotly = require('../plotly');
 var d3 = require('d3');
 
+var xmlnsNamespaces = require('../constants/xmlns_namespaces');
+
 var util = module.exports = {};
 
 // Append SVG
 
 d3.selection.prototype.appendSVG = function(_svgString) {
-    var skeleton = '<svg xmlns="http://www.w3.org/2000/svg" ' +
-            'xmlns:xlink="http://www.w3.org/1999/xlink">' +
-            _svgString + '</svg>',
-        dom = new DOMParser().parseFromString(skeleton, 'application/xml'),
+    var skeleton = [
+        '<svg xmlns="', xmlnsNamespaces.svg, '" ',
+        'xmlns:xlink="', xmlnsNamespaces.xlink, '">',
+        _svgString,
+        '</svg>'
+    ].join('');
+
+    var dom = new DOMParser().parseFromString(skeleton, 'application/xml'),
         childNode = dom.documentElement.firstChild;
+
     while(childNode) {
         this.node().appendChild(this.node().ownerDocument.importNode(childNode, true));
         childNode = childNode.nextSibling;

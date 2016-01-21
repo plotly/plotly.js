@@ -9,8 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../plotly'),
-    d3 = require('d3');
+var Plotly = require('../plotly');
+var d3 = require('d3');
+
+var xmlnsNamespaces = require('../constants/xmlns_namespaces');
+
 
 module.exports = function toSVG(gd, format) {
 
@@ -139,8 +142,8 @@ module.exports = function toSVG(gd, format) {
 
     // fix for IE namespacing quirk?
     // http://stackoverflow.com/questions/19610089/unwanted-namespaces-on-svg-markup-when-using-xmlserializer-in-javascript-with-ie
-    svg.node().setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns', 'http://www.w3.org/2000/svg');
-    svg.node().setAttributeNS('http://www.w3.org/2000/xmlns/', 'xmlns:xlink', 'http://www.w3.org/1999/xlink');
+    svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns', xmlnsNamespaces.svg);
+    svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns:xlink', xmlnsNamespaces.xlink);
 
     var s = new window.XMLSerializer().serializeToString(svg.node());
     s = Plotly.util.html_entity_decode(s);
@@ -154,8 +157,8 @@ function insertGlImage(fullLayout, scene, opts) {
 
     fullLayout._glimages.append('svg:image')
         .attr({
-            xmlns:'http://www.w3.org/2000/svg',
-            'xlink:xlink:href': imageData, // odd d3 quirk, need namespace twice
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
             x: opts.x,
             y: opts.y,
             width: opts.width,
