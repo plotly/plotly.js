@@ -1821,6 +1821,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
 
+        gd.emit('plotly_doubleclick', {});
         Plotly.relayout(gd, attrs);
     }
 

@@ -171,6 +171,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
                 searchInfo = searchTraces[i];
                 searchInfo.selectPoints(searchInfo, false);
             }
+
+            gd.emit('plotly_doubleclick', {});
         }
         else {
             dragOptions.gd.emit('plotly_selected', eventData);
