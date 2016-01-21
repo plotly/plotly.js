@@ -10,6 +10,7 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 ## Table of contents
 
 * [Quick start options](#quick-start-options)
+* [Modules](#modules)
 * [Bugs and feature requests](#bugs-and-feature-requests)
 * [Documentation](#documentation)
 * [Contributing](#contributing)
@@ -38,16 +39,19 @@ npm install plotly.js
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+<!-- OR use a specific plotly.js release (e.g. version 1.5.0)-->
+<script type="text/javascript" src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
 ```
 
 Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
 
 ## Modules
 
-If you would like to reduce the bundle size of plotly.js, you can create a "custom" bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a "bundling file":
+If you would like to reduce the bundle size of plotly.js, you can create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*: 
 
 ```javascript
-// custom-plotly.js
+// in custom-plotly.js
 var plotlyCore = require('plotly.js/lib/core');
 
 // Load in the trace types for pie, and choropleth
@@ -58,15 +62,16 @@ plotlyCore.register([
 
 module.exports = customPlotly;
 ```
+
 Then elsewhere in your code:
 
 ```javascript
-var Plotly = require('./custom-plotly');
+var Plotly = require('./path/to/custom-plotly');
 ```
 
 #### Webpack Usage with Modules
 
-Plotly.js uses a browserify transform (glslify) to transform shaders. To make the trace module system work with Webpack, you will need to install [ify-loader]() and add it to your `webpack.config.json` for your build to correctly bundle and parse `.glsl` files.
+Browserify [transforms](https://github.com/substack/browserify-handbook#transforms) are required to build plotly.js, namely, [glslify](https://github.com/stackgl/glslify) to transform WebGL shaders and [cwise](https://github.com/scijs/cwise) to compile component-wise array operations. To make the trace module system work with Webpack, you will need to install [ify-loader](https://github.com/hughsk/ify-loader) and add it to your `webpack.config.json` for your build to correctly bundle plotly.js files.
 
 ## Bugs and feature requests
 
