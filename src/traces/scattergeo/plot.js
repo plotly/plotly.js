@@ -11,7 +11,7 @@
 
 var d3 = require('d3');
 
-var Fx = require('../../plots/plots');
+var Fx = require('../../plots/cartesian/graph_interact');
 var Axes = require('../../plots/cartesian/axes');
 
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
