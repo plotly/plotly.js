@@ -33,7 +33,7 @@
     "test-image": "./tasks/test_image.sh",
     "test-syntax": "node test/syntax_test.js",
     "test-bundle": "node tasks/test_bundle.js",
-    "test": "npm run test-jasmine && npm test-image && npm test-syntax && npm test-bundle",
+    "test": "npm run citest-jasmine && npm run test-image && npm run test-syntax && npm run test-bundle",
     "start-test_dashboard": "node devtools/test_dashboard/server.js",
     "start-image_viewer": "node devtools/image_viewer/server.js",
     "baseline": "./tasks/baseline.sh",
