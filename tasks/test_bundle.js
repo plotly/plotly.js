@@ -4,7 +4,7 @@ var exec = require('child_process').exec;
 var glob = require('glob');
 
 var constants = require('./util/constants');
-var pathToJasmineBundleTests= path.join(constants.pathToJasmineBundleTests);
+var pathToJasmineBundleTests = path.join(constants.pathToJasmineBundleTests);
 
 
 glob(pathToJasmineBundleTests + '/*.js', function(err, files) {
