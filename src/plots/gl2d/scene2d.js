@@ -447,11 +447,8 @@ proto.draw = function() {
             (y / glplot.pixelRatio) - (size.t + (1-domainY[1]) * size.h)
         );
 
-
         if(result && fullLayout.hovermode) {
             var nextSelection = result.object._trace.handlePick(result);
-
-            console.log(result.dataCoord, result.pointId)
 
             if(nextSelection && (
                 !this.lastPickResult ||
@@ -478,6 +475,7 @@ proto.draw = function() {
                     var parts = hoverinfo.split('+');
                     if(parts.indexOf('x') === -1) selection.traceCoord[0] = undefined;
                     if(parts.indexOf('y') === -1) selection.traceCoord[1] = undefined;
+                    if(parts.indexOf('z') === -1) selection.traceCoord[2] = undefined;
                     if(parts.indexOf('text') === -1) selection.textLabel = undefined;
                     if(parts.indexOf('name') === -1) selection.name = undefined;
                 }
@@ -487,6 +485,7 @@ proto.draw = function() {
                     y: selection.screenCoord[1],
                     xLabel: this.hoverFormatter('xaxis', selection.traceCoord[0]),
                     yLabel: this.hoverFormatter('yaxis', selection.traceCoord[1]),
+                    zLabel: selection.traceCoord[2],
                     text: selection.textLabel,
                     name: selection.name,
                     color: selection.color

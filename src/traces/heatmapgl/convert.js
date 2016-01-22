@@ -11,10 +11,7 @@
 
 var createHeatmap2D = require('gl-heatmap2d');
 
-var maxRowLength = require('../heatmap/max_row_length');
 var str2RGBArray = require('../../lib/str2rgbarray');
-
-var AXES = ['xaxis', 'yaxis'];
 
 
 function Heatmap(scene, uid) {
@@ -48,23 +45,18 @@ function Heatmap(scene, uid) {
 var proto = Heatmap.prototype;
 
 proto.handlePick = function(pickResult) {
-    var index = this.idToIndex[pickResult.pointId];
-
-//     console.log(pickResult.pointId)
+    var index = pickResult.pointId,
+        shape = this.options.shape;
 
     return {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            this.xData[index],
-            this.yData[index]
+            this.options.x[index % shape[0]],
+            this.options.y[Math.floor(index / shape[0])],
+            this.options.z[index]
         ],
-        textLabel: Array.isArray(this.textLabels) ?
-            this.textLabels[index] :
-            this.textLabels,
-        color: Array.isArray(this.color) ?
-            this.color[index] :
-            this.color,
+        textLabel: this.textLabels[index],
         name: this.name,
         hoverinfo: this.hoverinfo
     };
@@ -73,7 +65,6 @@ proto.handlePick = function(pickResult) {
 proto.update = function(fullTrace, calcTrace) {
     var calcPt = calcTrace[0];
 
-    this.textLabels = fullTrace.text;
     this.name = fullTrace.name;
     this.hoverinfo = fullTrace.hoverinfo;
 
@@ -85,35 +76,15 @@ proto.update = function(fullTrace, calcTrace) {
         colLen = z.length;
     this.options.shape = [rowLen, colLen];
 
-    // don't use calc'ed bricks
-    // maybe use xa.makeCalcdata() ???
-    var x = fullTrace.x;
-    if(x) {
-        this.options.x = x;
-        this.bounds[0] = x[0];
-        this.bounds[2] = x[rowLen - 1];
-    }
-    else {
-        this.options.x = null;
-        this.bounds[0] = 0;
-        this.bounds[2] = rowLen
-    }
-
-    var y = fullTrace.y;
-    if(y) {
-        this.options.y = y;
-        this.bounds[1] = y[0];
-        this.bounds[3] = y[colLen - 1];
-    }
-    else {
-        this.options.y = null;
-        this.bounds[1] = 0;
-        this.bounds[3] = colLen
-    }
+    this.options.x = calcPt.x;
+    this.options.y = calcPt.y;
 
     var colorOptions = convertColorscale(fullTrace);
     this.options.colorLevels = colorOptions.colorLevels;
     this.options.colorValues = colorOptions.colorValues;
+
+    // convert text from 2D -> 1D
+    this.textLabels = [].concat.apply([], fullTrace.text);
 
     this.heatmap.update(this.options);
 };
