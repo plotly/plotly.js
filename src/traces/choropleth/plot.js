@@ -59,7 +59,6 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
 
 plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
     var framework = geo.framework,
-        topojson = geo.topojson,
         gChoropleth = framework.select('g.choroplethlayer'),
         gBaseLayer = framework.select('g.baselayer'),
         gBaseLayerOverChoropleth = framework.select('g.baselayeroverchoropleth'),
@@ -82,20 +81,20 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         .each(function(trace) {
             if(trace.visible !== true) return;
 
-            var cdi = plotChoropleth.calcGeoJSON(trace, topojson),
+            var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
                 cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
 
-            function handleMouseOver(d) {
+            function handleMouseOver(pt, ptIndex) {
                 if(!geo.showHover) return;
 
-                var xy = geo.projection(d.properties.ct);
-                cleanHoverLabelsFunc(d);
+                var xy = geo.projection(pt.properties.ct);
+                cleanHoverLabelsFunc(pt);
 
                 Plotly.Fx.loneHover({
                     x: xy[0],
                     y: xy[1],
-                    name: d.nameLabel,
-                    text: d.textLabel
+                    name: pt.nameLabel,
+                    text: pt.textLabel
                 }, {
                     container: geo.hoverContainer.node()
                 });
@@ -140,11 +139,11 @@ plotChoropleth.style = function(geo) {
                 sclFunc = makeScaleFunction(scl, zmin, zmax);
 
             s.selectAll('path.choroplethlocation')
-                .each(function(d) {
+                .each(function(pt) {
                     d3.select(this)
-                        .attr('fill', function(d) { return sclFunc(d.z); })
-                        .call(Color.stroke, d.mlc || markerLine.color)
-                        .call(Drawing.dashLine, '', d.mlw || markerLine.width);
+                        .attr('fill', function(pt) { return sclFunc(pt.z); })
+                        .call(Color.stroke, pt.mlc || markerLine.color)
+                        .call(Drawing.dashLine, '', pt.mlw || markerLine.width);
                 });
         });
 };
@@ -153,9 +152,9 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     var hoverinfo = trace.hoverinfo;
 
     if(hoverinfo === 'none') {
-        return function cleanHoverLabelsFunc(d) {
-            delete d.nameLabel;
-            delete d.textLabel;
+        return function cleanHoverLabelsFunc(pt) {
+            delete pt.nameLabel;
+            delete pt.textLabel;
         };
     }
 
@@ -174,20 +173,21 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
-    return function cleanHoverLabelsFunc(d) {
+    return function cleanHoverLabelsFunc(pt) {
         // put location id in name label container
         // if name isn't part of hoverinfo
         var thisText = [];
 
-        if(hasIdAsNameLabel) d.nameLabel = d.id;
+        if(hasIdAsNameLabel) pt.nameLabel = pt.id;
         else {
-            if(hasName) d.nameLabel = trace.name;
-            if(hasLocation) thisText.push(d.id);
+            if(hasName) pt.nameLabel = trace.name;
+            if(hasLocation) thisText.push(pt.id);
         }
 
-        if(hasZ) thisText.push(formatter(d.z));
-        if(hasText) thisText.push(d.tx);
+        if(hasZ) thisText.push(formatter(pt.z));
+        if(hasText) thisText.push(pt.tx);
 
-        d.textLabel = thisText.join('<br>');
+        pt.textLabel = thisText.join('<br>');
+
     };
 }
