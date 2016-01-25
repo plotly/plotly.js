@@ -116,18 +116,14 @@ function makeLineGeoJSON(trace) {
 }
 
 plotScatterGeo.plot = function(geo, scattergeoData) {
-    var gScatterGeo = geo.framework.select('g.scattergeolayer'),
-
-    // TODO move to more d3-idiomatic pattern (that's work on replot)
-    // N.B. html('') does not work in IE11
-    gScatterGeo.selectAll('*').remove();
-
-    var gScatterGeoTraces = gScatterGeo
-        .selectAll('g.trace.scatter')
+    var gScatterGeoTraces = geo.framework.select('.scattergeolayer')
+        .selectAll('g.trace.scattergeo')
         .data(scattergeoData);
 
     gScatterGeoTraces.enter().append('g')
-            .attr('class', 'trace scattergeo');
+        .attr('class', 'trace scattergeo');
+
+    gScatterGeoTraces.exit().remove();
 
     // TODO add hover - how?
     gScatterGeoTraces

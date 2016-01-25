@@ -65,17 +65,14 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         baseLayersOverChoropleth = constants.baseLayersOverChoropleth,
         layerName;
 
-    // TODO move to more d3-idiomatic pattern (that's work on replot)
-    // N.B. html('') does not work in IE11
-    gChoropleth.selectAll('*').remove();
-    gBaseLayerOverChoropleth.selectAll('*').remove();
-
     var gChoroplethTraces = gChoropleth
-        .selectAll('g.trace.scatter')
+        .selectAll('g.trace.choropleth')
         .data(choroplethData);
 
     gChoroplethTraces.enter().append('g')
-            .attr('class', 'trace choropleth');
+        .attr('class', 'trace choropleth');
+
+    gChoroplethTraces.exit().remove();
 
     gChoroplethTraces
         .each(function(trace) {
@@ -117,6 +114,8 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         });
 
     // some baselayers are drawn over choropleth
+    gBaseLayerOverChoropleth.selectAll('*').remove();
+
     for(var i = 0; i < baseLayersOverChoropleth.length; i++) {
         layerName = baseLayersOverChoropleth[i];
         gBaseLayer.select('g.' + layerName).remove();
