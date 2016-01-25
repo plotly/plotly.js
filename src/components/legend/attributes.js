@@ -14,6 +14,13 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 
 module.exports = {
+    type: {
+        valType: 'enumerated',
+        values: ['vertical', 'dropdown'],
+        dflt: 'vertical',
+        role: 'style',
+        description: 'Sets the type of legend to be drawn.'
+    },
     bgcolor: {
         valType: 'color',
         role: 'style',
