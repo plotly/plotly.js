@@ -33,6 +33,7 @@ var topojsonFeature = require('topojson').feature;
 function Geo(options, fullLayout) {
 
     this.id = options.id;
+    this.graphDiv = options.graphDiv;
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
 

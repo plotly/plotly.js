@@ -148,7 +148,8 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
             }
 
             var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+                eventDataFunc = makeEventDataFunc(trace);
 
             var hoverinfo = trace.hoverinfo,
                 hasNameLabel = (
@@ -171,6 +172,12 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 }, {
                     container: geo.hoverContainer.node()
                 });
+
+                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+            }
+
+            function handleClick(pt, ptIndex) {
+                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
             }
 
             if(showMarkers) {
@@ -179,6 +186,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                     .enter().append('path')
                         .attr('class', 'point')
                         .on('mouseover', handleMouseOver)
+                        .on('click', handleClick)
                         .on('mouseout', function() {
                             Fx.loneUnhover(geo.hoverContainer);
                         })
@@ -263,6 +271,21 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         if(hasText) thisText.push(pt.tx || trace.text);
 
         pt.textLabel = thisText.join('<br>');
+    };
+}
 
+function makeEventDataFunc(trace) {
+    var hasLocation = Array.isArray(trace.locations);
+
+    return function(pt, ptIndex) {
+        return {points: [{
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: ptIndex,
+            lon: pt.lon,
+            lat: pt.lat,
+            location: hasLocation ? pt.location : null
+        }]};
     };
 }

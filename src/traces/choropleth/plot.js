@@ -79,7 +79,8 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
             if(trace.visible !== true) return;
 
             var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+                eventDataFunc = makeEventDataFunc(trace);
 
             function handleMouseOver(pt, ptIndex) {
                 if(!geo.showHover) return;
@@ -95,6 +96,12 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 }, {
                     container: geo.hoverContainer.node()
                 });
+
+                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+            }
+
+            function handleClick(pt, ptIndex) {
+                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
             }
 
             d3.select(this)
@@ -103,6 +110,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 .enter().append('path')
                     .attr('class', 'choroplethlocation')
                     .on('mouseover', handleMouseOver)
+                    .on('click', handleClick)
                     .on('mouseout', function() {
                         Plotly.Fx.loneUnhover(geo.hoverContainer);
                     })
@@ -187,6 +195,18 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         if(hasText) thisText.push(pt.tx);
 
         pt.textLabel = thisText.join('<br>');
+    };
+}
 
+function makeEventDataFunc(trace) {
+    return function(pt, ptIndex) {
+        return {points: [{
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: ptIndex,
+            location: pt.id,
+            z: pt.z
+        }]};
     };
 }
