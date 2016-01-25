@@ -13,6 +13,8 @@
         }
     ],
     "layout": {
-        "showframe": true
+        "showframe": true,
+        "width": 600,
+        "height": 440
     }
 }
