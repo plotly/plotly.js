@@ -12,7 +12,7 @@ describe('Test geo interactions', function() {
 
     afterEach(destroyGraphDiv);
 
-    fdescribe('mock geo_first.json', function() {
+    describe('mock geo_first.json', function() {
         var mock = require('@mocks/geo_first.json');
 
         beforeEach(function(done) {
