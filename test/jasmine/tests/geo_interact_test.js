@@ -21,7 +21,7 @@ describe('Test geo interactions', function() {
 
         describe('scattegeo hover labels', function() {
             beforeEach(function() {
-                mouseEvent('mouseover', 459, 246);
+                mouseEvent('mouseover', 300, 235);
             });
 
             it('should show one hover text group', function() {
@@ -43,7 +43,7 @@ describe('Test geo interactions', function() {
 
         describe('choropleth hover labels', function() {
             beforeEach(function() {
-                mouseEvent('mouseover', 628, 162);
+                mouseEvent('mouseover', 400, 160);
             });
 
             it('should show one hover text group', function() {
