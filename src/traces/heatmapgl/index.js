@@ -1,5 +1,5 @@
 /**
-* Copyright 2012-2015, Plotly, Inc.
+* Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 *
 * This source code is licensed under the MIT license found in the
@@ -24,7 +24,7 @@ HeatmapGl.basePlotModule = require('../../plots/gl2d');
 HeatmapGl.categories = ['gl2d', '2dMap'];
 HeatmapGl.meta = {
     description: [
-        'HIGH PERFORMANCE HEATMAPS BABY !!!'
+        'WebGL heatmap (beta)'
     ].join(' ')
 };
 
