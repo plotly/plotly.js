@@ -423,7 +423,7 @@ modeBarButtons.zoomInGeo = {
 
 modeBarButtons.zoomOutGeo = {
     name: 'zoomOutGeo',
-    title: 'Zoom in',
+    title: 'Zoom out',
     attr: 'zoom',
     val: 'out',
     icon: Icons.zoom_minus,
