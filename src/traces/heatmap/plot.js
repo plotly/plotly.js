@@ -369,20 +369,28 @@ function plotOne(gd, plotinfo, cd) {
     gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
     gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-    // put this right before making the new image, to minimize flicker
-    fullLayout._paper.selectAll('.'+id).remove();
-    plotinfo.plot.select('.imagelayer').append('svg:image')
-        .classed(id, true)
-        .datum(cd[0])
-        .attr({
-            xmlns: xmlnsNamespaces.svg,
-            'xlink:href': canvas.toDataURL('image/png'),
-            height: imageHeight,
-            width: imageWidth,
-            x: left,
-            y: top,
-            preserveAspectRatio: 'none'
-        });
+    var plotgroup = plotinfo.plot.select('.imagelayer')
+        .selectAll('g.hm.' + id)
+        .data([0]);
+    plotgroup.enter().append('g')
+        .classed('hm', true)
+        .classed(id, true);
+    plotgroup.exit().remove();
+
+    var image3 = plotgroup.selectAll('image')
+        .data(cd);
+    image3.enter().append('svg:image');
+    image3.exit().remove();
+
+    image3.attr({
+        xmlns: xmlnsNamespaces.svg,
+        'xlink:href': canvas.toDataURL('image/png'),
+        height: imageHeight,
+        width: imageWidth,
+        x: left,
+        y: top,
+        preserveAspectRatio: 'none'
+    });
 
     Lib.markTime('done showing png');
 }
