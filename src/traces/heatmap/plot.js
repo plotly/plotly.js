@@ -33,14 +33,14 @@ function plotOne(gd, plotinfo, cd) {
         xa = plotinfo.x(),
         ya = plotinfo.y(),
         fullLayout = gd._fullLayout,
-        id = 'hm' + uid,
-        cbId = 'cb' + uid;
+        id = 'hm' + uid;
 
-    fullLayout._paper.selectAll('.contour' + uid).remove(); // in case this used to be a contour map
+    // in case this used to be a contour map
+    fullLayout._paper.selectAll('.contour' + uid).remove();
 
     if(trace.visible !== true) {
         fullLayout._paper.selectAll('.' + id).remove();
-        fullLayout._paper.selectAll('.' + cbId).remove();
+        fullLayout._infolayer.selectAll('.cb' + uid).remove();
         return;
     }
 

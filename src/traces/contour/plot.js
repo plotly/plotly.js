@@ -64,7 +64,8 @@ function plotOne(gd, plotinfo, cd) {
         pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
 
     if(trace.visible !== true) {
-        fullLayout._paper.selectAll('.'+id+',.cb'+uid+',.hm'+uid).remove();
+        fullLayout._paper.selectAll('.' + id + ',.hm' + id).remove();
+        fullLayout._infolayer.selectAll('.cb' + uid).remove();
         return;
     }
 
