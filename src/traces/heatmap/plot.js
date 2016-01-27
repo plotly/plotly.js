@@ -15,6 +15,7 @@ var tinycolor = require('tinycolor2');
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var getColorscale = require('../../components/colorscale/get_scale');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var maxRowLength = require('./max_row_length');
 
@@ -372,8 +373,8 @@ function plotOne(gd, plotinfo, cd) {
         .classed(id, true)
         .datum(cd[0])
         .attr({
-            xmlns: 'http://www.w3.org/2000/svg',
-            'xlink:xlink:href': canvas.toDataURL('image/png'), // odd d3 quirk, need namespace twice
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': canvas.toDataURL('image/png'),
             height: imageHeight,
             width: imageWidth,
             x: left,

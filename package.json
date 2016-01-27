@@ -1,10 +1,10 @@
 {
   "name": "plotly.js",
-  "version": "1.4.1",
+  "version": "1.5.0",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
-  "main": "./src/index.js",
-  "webpack": "./dist/plotly.min.js",
+  "main": "./lib/index.js",
+  "webpack": "./dist/plotly.js",
   "repository": {
     "type": "git",
     "url": "https://github.com/plotly/plotly.js.git"
@@ -24,7 +24,7 @@
     "preprocess": "node tasks/preprocess.js",
     "bundle": "node tasks/bundle.js",
     "header": "node tasks/header.js",
-    "build": "npm run preprocess && npm run bundle && npm run header",
+    "build": "npm dedupe && npm run preprocess && npm run bundle && npm run header",
     "cibuild": "node tasks/cibundle.js",
     "watch": "node tasks/watch_plotly.js",
     "lint": "eslint . || true",
@@ -32,11 +32,12 @@
     "citest-jasmine": "karma start test/jasmine/karma.ciconf.js",
     "test-image": "./tasks/test_image.sh",
     "test-syntax": "node test/syntax_test.js",
-    "test": "npm run test-jasmine && npm test-image",
+    "test-bundle": "node tasks/test_bundle.js",
+    "test": "npm run citest-jasmine && npm run test-image && npm run test-syntax && npm run test-bundle",
     "start-test_dashboard": "node devtools/test_dashboard/server.js",
     "start-image_viewer": "node devtools/image_viewer/server.js",
     "baseline": "./tasks/baseline.sh",
-    "version": "npm run build && git add -A dist",
+    "version": "npm run build && git add -A dist src",
     "postversion": "git push && git push --tags"
   },
   "dependencies": {
@@ -44,7 +45,7 @@
     "alpha-shape": "^1.0.0",
     "arraytools": "^1.0.0",
     "convex-hull": "^1.0.3",
-    "d3": "3.5.6",
+    "d3": "^3.5.12",
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.1",
@@ -54,7 +55,7 @@
     "gl-line2d": "^1.2.1",
     "gl-line3d": "^1.0.1",
     "gl-mat4": "^1.1.2",
-    "gl-mesh3d": "^1.0.4",
+    "gl-mesh3d": "^1.0.7",
     "gl-plot2d": "^1.1.6",
     "gl-plot3d": "^1.3.0",
     "gl-scatter2d": "^1.0.5",
@@ -62,7 +63,7 @@
     "gl-scatter3d": "^1.0.4",
     "gl-select-box": "^1.0.1",
     "gl-spikes2d": "^1.0.1",
-    "gl-surface3d": "^1.1.0",
+    "gl-surface3d": "^1.1.1",
     "mouse-change": "^1.1.1",
     "mouse-wheel": "^1.0.2",
     "ndarray": "^1.0.16",
@@ -73,17 +74,17 @@
     "robust-orientation": "^1.1.3",
     "sane-topojson": "^1.2.0",
     "superscript-text": "^1.0.0",
-    "tinycolor2": "1.1.2",
-    "topojson": "^1.6.19"
+    "tinycolor2": "^1.3.0",
+    "topojson": "^1.6.20"
   },
   "devDependencies": {
-    "brfs": "^1.4.1",
-    "browserify": "^12.0.1",
-    "browserify-transform-tools": "^1.5.0",
+    "brfs": "^1.4.3",
+    "browserify": "^13.0.0",
+    "browserify-transform-tools": "^1.5.1",
     "ecstatic": "^1.2.0",
     "eslint": "^1.10.3",
     "falafel": "^1.2.0",
-    "glob": "^6.0.1",
+    "glob": "^6.0.4",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.15",
     "karma-browserify": "^4.4.1",
@@ -97,7 +98,7 @@
     "prettysize": "0.0.3",
     "through2": "^2.0.0",
     "uglify-js": "^2.5.0",
-    "watchify": "^3.6.0",
-    "xml2js": "^0.4.15"
+    "watchify": "^3.7.0",
+    "xml2js": "^0.4.16"
   }
 }

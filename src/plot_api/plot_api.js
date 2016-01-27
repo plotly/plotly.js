@@ -28,6 +28,7 @@ var Legend = require('../components/legend');
 var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
 var manageModeBar = require('../components/modebar/manage');
+var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 
 
 /**
@@ -1423,7 +1424,7 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
     indices = positivifyIndices(indices, gd.data.length - 1);
 
     // we want descending here so that splicing later doesn't affect indexing
-    indices.sort().reverse();
+    indices.sort(Lib.sorterDes);
     for (i = 0; i < indices.length; i += 1) {
         deletedTrace = gd.data.splice(indices[i], 1)[0];
         traces.push(deletedTrace);
@@ -2567,11 +2568,7 @@ function makePlotFramework(gd) {
     }
 
     fullLayout._paperdiv.selectAll('.main-svg')
-        .attr({
-            xmlns: 'http://www.w3.org/2000/svg',
-            // odd d3 quirk - need namespace twice??
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
-        });
+        .attr(xmlnsNamespaces.svgAttrs);
 
     fullLayout._defs = fullLayout._paper.append('defs')
         .attr('id', 'defs-' + fullLayout._uid);

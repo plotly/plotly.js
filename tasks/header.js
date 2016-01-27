@@ -32,8 +32,9 @@ pathsDist.forEach(headerLicense);
 var licenseSrc = constants.licenseSrc;
 var licenseStr = licenseSrc.substring(2, licenseSrc.length - 2);
 
-
-glob(path.join(constants.pathToSrc, '**/*.js'), function(err, files) {
+var srcGlob = path.join(constants.pathToSrc, '**/*.js');
+var libGlob = path.join(constants.pathToLib, '**/*.js');
+glob('{' + srcGlob + ',' + libGlob + '}', function(err, files){
     files.forEach(function(file) {
         fs.readFile(file, 'utf-8', function(err, code) {
 
@@ -42,6 +43,11 @@ glob(path.join(constants.pathToSrc, '**/*.js'), function(err, files) {
             falafel(code, {onComment: comments, locations: true}, function() {});
 
             var header = comments[0];
+
+            // error out if no header is found
+            if(!header || header.loc.start.line > 1) {
+                throw new Error(file + ' : has no header information.');
+            }
 
             // if header and license are the same, do nothing
             if(isCorrect(header)) return;

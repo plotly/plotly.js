@@ -1,6 +1,6 @@
 var d3 = require('d3');
 
-var Plotly = require('@src/index');
+var Plotly = require('@lib/index');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -8,6 +8,13 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 describe('Test plot structure', function() {
     'use strict';
+
+    function assertNamespaces(node) {
+        expect(node.getAttribute('xmlns'))
+            .toEqual('http://www.w3.org/2000/svg');
+        expect(node.getAttribute('xmlns:xlink'))
+            .toEqual('http://www.w3.org/1999/xlink');
+    }
 
     afterEach(destroyGraphDiv);
 
@@ -21,17 +28,17 @@ describe('Test plot structure', function() {
 
             it('has one *subplot xy* node', function() {
                 var nodes = d3.selectAll('g.subplot.xy');
-                expect(nodes[0].length).toEqual(1);
+                expect(nodes.size()).toEqual(1);
             });
 
             it('has one *scatterlayer* node', function() {
                 var nodes = d3.selectAll('g.scatterlayer');
-                expect(nodes[0].length).toEqual(1);
+                expect(nodes.size()).toEqual(1);
             });
 
             it('has as many *trace scatter* nodes as there are traces', function() {
                 var nodes = d3.selectAll('g.trace.scatter');
-                expect(nodes[0].length).toEqual(mock.data.length);
+                expect(nodes.size()).toEqual(mock.data.length);
             });
 
             it('has as many *point* nodes as there are traces', function() {
@@ -42,7 +49,16 @@ describe('Test plot structure', function() {
                     Npts += trace.x.length;
                 });
 
-                expect(nodes[0].length).toEqual(Npts);
+                expect(nodes.size()).toEqual(Npts);
+            });
+
+            it('has the correct name spaces', function() {
+                var mainSVGs = d3.selectAll('.main-svg');
+
+                mainSVGs.each(function() {
+                    var node = this;
+                    assertNamespaces(node);
+                });
             });
         });
 
@@ -61,7 +77,19 @@ describe('Test plot structure', function() {
                     Npts += trace.values.length;
                 });
 
-                expect(nodes[0].length).toEqual(Npts);
+                expect(nodes.size()).toEqual(Npts);
+            });
+
+            it('has the correct name spaces', function() {
+                var mainSVGs = d3.selectAll('.main-svg');
+
+                mainSVGs.each(function() {
+                    var node = this;
+                    assertNamespaces(node);
+                });
+
+                var testerSVG = d3.selectAll('#js-plotly-tester');
+                assertNamespaces(testerSVG.node());
             });
         });
     });
@@ -82,7 +110,7 @@ describe('Test plot structure', function() {
                 if(items) Npts += items.length;
             });
 
-            expect(nodes[0].length).toEqual(Npts);
+            expect(nodes.size()).toEqual(Npts);
         });
 
         it('has as many *point* nodes as there are marker points', function() {
@@ -94,7 +122,23 @@ describe('Test plot structure', function() {
                 if(items) Npts += items.length;
             });
 
-            expect(nodes[0].length).toEqual(Npts);
+            expect(nodes.size()).toEqual(Npts);
+        });
+
+        it('has the correct name spaces', function() {
+            var mainSVGs = d3.selectAll('.main-svg');
+
+            mainSVGs.each(function() {
+                var node = this;
+                assertNamespaces(node);
+            });
+
+            var geoSVGs = d3.select('#geo').selectAll('svg');
+
+            geoSVGs.each(function() {
+                var node = this;
+                assertNamespaces(node);
+            });
         });
     });
 
@@ -113,7 +157,7 @@ describe('Test plot structure', function() {
                 Npts += trace.r.length;
             });
 
-            expect(nodes[0].length).toEqual(Npts);
+            expect(nodes.size()).toEqual(Npts);
         });
     });
 });

@@ -21,6 +21,7 @@ Pie.styleOne = require('./style_one');
 
 Pie.moduleType = 'trace';
 Pie.name = 'pie';
+Pie.basePlotModule = require('../../plots/cartesian');
 Pie.categories = ['pie', 'showLegend'];
 Pie.meta = {
     description: [

@@ -24,9 +24,9 @@ var formatColor = require('../../lib/gl_format_color');
 var subTypes = require('../scatter/subtypes');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 var getTraceColor = require('../scatter/get_trace_color');
+var MARKER_SYMBOLS = require('../../constants/gl_markers');
+var DASHES = require('../../constants/gl2d_dashes');
 
-var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
-var DASHES = require('../../constants/gl2d_dashes.json');
 var AXES = ['xaxis', 'yaxis'];
 
 

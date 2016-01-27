@@ -10,7 +10,7 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
-var MARKER_SYMBOLS = require('../../constants/gl_markers.json');
+var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line,

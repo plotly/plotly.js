@@ -21,6 +21,7 @@ Histogram2D.hoverPoints = require('../heatmap/hover');
 
 Histogram2D.moduleType = 'trace';
 Histogram2D.name = 'histogram2d';
+Histogram2D.basePlotModule = require('../../plots/cartesian');
 Histogram2D.categories = ['cartesian', '2dMap', 'histogram'];
 Histogram2D.meta = {
     hrName: 'histogram_2d',

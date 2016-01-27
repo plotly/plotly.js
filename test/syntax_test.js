@@ -6,25 +6,29 @@ var glob = require('glob');
 
 var constants = require('../tasks/util/constants');
 
-var focusGlobals = ['fdescribe', 'fit'];
+var BLACK_LIST = ['fdescribe', 'fit', 'xdescribe', 'xit'];
 var logs = [];
 
+var testGlob = path.join(constants.pathToJasmineTests, '**/*.js');
+var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
 
-glob(path.join(constants.pathToJasmineTests, '**/*.js'), function(err, files) {
+
+glob('{' + testGlob + ',' + bundleTestGlob + '}', function(err, files) {
     files.forEach(function(file) {
         var code = fs.readFileSync(file, 'utf-8');
 
         falafel(code, {locations: true}, function(node) {
-            if(node.type === 'Identifier' && focusGlobals.indexOf(node.name) !== -1) {
+            if(node.type === 'Identifier' && BLACK_LIST.indexOf(node.name) !== -1) {
                 logs.push([
                     path.basename(file),
                     '[line ' + node.loc.start.line + '] :',
-                    'contains either a *fdescribe* or a *fit* block.'
+                    'contains either a *fdescribe*, *fit*,',
+                    '*xdescribe* or *xit* block.'
                 ].join(' '));
             }
         });
 
     });
 
-    if(logs.length) throw new Error(logs.join('\n'));
+    if(logs.length) throw new Error('\n' + logs.join('\n') + '\n');
 });

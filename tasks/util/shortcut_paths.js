@@ -10,6 +10,7 @@ var constants = require('./constants');
 
 var shortcutsConfig = {
     '@src': constants.pathToSrc,
+    '@lib': constants.pathToLib,
     '@mocks': constants.pathToTestImageMocks
 };
 

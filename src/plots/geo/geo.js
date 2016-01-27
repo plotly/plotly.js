@@ -11,16 +11,20 @@
 
 /* global PlotlyGeoAssets:false */
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 
+var Color = require('../../components/color');
+var Drawing = require('../../components/drawing');
+
 var Plots = require('../../plots/plots');
+var Axes = require('../../plots/cartesian/axes');
 
 var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');
 var createGeoZoom = require('./zoom');
 var createGeoZoomReset = require('./zoom_reset');
 
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var constants = require('../../constants/geo_constants');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson').feature;
@@ -214,10 +218,7 @@ proto.makeFramework = function() {
 
     var hoverContainer = this.hoverContainer = geoDiv.append('svg');
     hoverContainer
-        .attr({
-            xmlns:'http://www.w3.org/2000/svg',
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink'
-        })
+        .attr(xmlnsNamespaces.svgAttrs)
         .style({
             'position': 'absolute',
             'z-index': 20,
@@ -226,9 +227,8 @@ proto.makeFramework = function() {
 
     var framework = this.framework = geoDiv.append('svg');
     framework
+        .attr(xmlnsNamespaces.svgAttrs)
         .attr({
-            'xmlns':'http://www.w3.org/2000/svg',
-            'xmlns:xmlns:xlink': 'http://www.w3.org/1999/xlink',
             'position': 'absolute',
             'preserveAspectRatio': 'none'
         });
@@ -350,7 +350,7 @@ function styleFillLayer(selection, layerName, geoLayout) {
     selection.select('.' + layerName)
         .selectAll('path')
             .attr('stroke', 'none')
-            .call(Plotly.Color.fill, geoLayout[layerAdj + 'color']);
+            .call(Color.fill, geoLayout[layerAdj + 'color']);
 }
 
 function styleLineLayer(selection, layerName, geoLayout) {
@@ -359,16 +359,16 @@ function styleLineLayer(selection, layerName, geoLayout) {
     selection.select('.' + layerName)
         .selectAll('path')
             .attr('fill', 'none')
-            .call(Plotly.Color.stroke, geoLayout[layerAdj + 'color'])
-            .call(Plotly.Drawing.dashLine, '', geoLayout[layerAdj + 'width']);
+            .call(Color.stroke, geoLayout[layerAdj + 'color'])
+            .call(Drawing.dashLine, '', geoLayout[layerAdj + 'width']);
 }
 
 function styleGraticule(selection, axisName, geoLayout) {
     selection.select('.' + axisName + 'graticule')
         .selectAll('path')
             .attr('fill', 'none')
-            .call(Plotly.Color.stroke, geoLayout[axisName].gridcolor)
-            .call(Plotly.Drawing.dashLine, '', geoLayout[axisName].gridwidth);
+            .call(Color.stroke, geoLayout[axisName].gridcolor)
+            .call(Drawing.dashLine, '', geoLayout[axisName].gridwidth);
 }
 
 proto.styleLayer = function(selection, layerName, geoLayout) {
@@ -451,10 +451,10 @@ function createMockAxis(fullLayout) {
     var mockAxis = {
         type: 'linear',
         showexponent: 'all',
-        exponentformat: Plotly.Axes.layoutAttributes.exponentformat.dflt,
+        exponentformat: Axes.layoutAttributes.exponentformat.dflt,
         _td: { _fullLayout: fullLayout }
     };
 
-    Plotly.Axes.setConvert(mockAxis);
+    Axes.setConvert(mockAxis);
     return mockAxis;
 }

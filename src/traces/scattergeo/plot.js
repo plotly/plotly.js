@@ -9,8 +9,10 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
+
+var Fx = require('../../plots/cartesian/graph_interact');
+var Axes = require('../../plots/cartesian/axes');
 
 var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeatures;
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
@@ -163,7 +165,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 var xy = geo.projection([d.lon, d.lat]);
                 cleanHoverLabelsFunc(d);
 
-                Plotly.Fx.loneHover({
+                Fx.loneHover({
                     x: xy[0],
                     y: xy[1],
                     name: hasNameLabel ? trace.name : undefined,
@@ -181,11 +183,11 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                         .attr('class', 'point')
                         .on('mouseover', handleMouseOver)
                         .on('mouseout', function() {
-                            Plotly.Fx.loneUnhover(geo.hoverContainer);
+                            Fx.loneUnhover(geo.hoverContainer);
                         })
                         .on('mousedown', function() {
                             // to simulate the 'zoomon' event
-                            Plotly.Fx.loneUnhover(geo.hoverContainer);
+                            Fx.loneUnhover(geo.hoverContainer);
                         })
                         .on('mouseup', handleMouseOver);  // ~ 'zoomend'
             }
@@ -246,7 +248,7 @@ function makeCleanHoverLabelsFunc(geo, trace) {
 
     function formatter(val) {
         var axis = geo.mockAxis;
-        return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
+        return Axes.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
     }
 
     return function cleanHoverLabelsFunc(d) {

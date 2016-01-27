@@ -9,11 +9,9 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 var Geo = require('./geo');
 
-var Plots = Plotly.Plots;
+var Plots = require('../../plots/plots');
 
 
 exports.name = 'geo';
@@ -21,6 +19,10 @@ exports.name = 'geo';
 exports.attr = 'geo';
 
 exports.idRoot = 'geo';
+
+exports.idRegex = /^geo([2-9]|[1-9][0-9]+)?$/;
+
+exports.attrRegex = /^geo([2-9]|[1-9][0-9]+)?$/;
 
 exports.attributes = require('./layout/attributes');
 

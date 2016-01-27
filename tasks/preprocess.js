@@ -4,6 +4,7 @@ var sass = require('node-sass');
 
 var pullCSS = require('./util/pull_css');
 var pullFontSVG = require('./util/pull_font_svg');
+var updateVersion = require('./util/update_version');
 var constants = require('./util/constants');
 
 
@@ -28,3 +29,7 @@ fs.copy(constants.pathToTopojsonSrc, constants.pathToTopojsonDist,
     { clobber: true },
     function(err) { if(err) throw err; }
 );
+
+// inject package version into source index files
+updateVersion(constants.pathToPlotlyCore);
+updateVersion(constants.pathToPlotlyGeoAssetsSrc);

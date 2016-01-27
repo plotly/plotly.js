@@ -1,4 +1,4 @@
-var Plotly = require('@src/index');
+var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
