@@ -64,7 +64,7 @@ function plotOne(gd, plotinfo, cd) {
         pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
 
     if(trace.visible !== true) {
-        fullLayout._paper.selectAll('.' + id + ',.hm' + id).remove();
+        fullLayout._paper.selectAll('.' + id + ',.hm' + uid).remove();
         fullLayout._infolayer.selectAll('.cb' + uid).remove();
         return;
     }
@@ -81,7 +81,7 @@ function plotOne(gd, plotinfo, cd) {
         heatmapPlot(gd, plotinfo, [cd]);
     }
     // in case this used to be a heatmap (or have heatmap fill)
-    else fullLayout._paper.selectAll('.hm '+ uid).remove();
+    else fullLayout._paper.selectAll('.hm' + uid).remove();
 
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
