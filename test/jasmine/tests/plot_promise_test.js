@@ -282,7 +282,7 @@ describe('Plotly.___ methods', function() {
 
             Plotly.plot(initialDiv, data, {});
 
-            promise = Plotly.restyle(initialDiv, 'title', 'Promise test!');
+            promise = Plotly.relayout(initialDiv, 'title', 'Promise test!');
 
             promise.then(function(gd){
                 promiseGd = gd;
