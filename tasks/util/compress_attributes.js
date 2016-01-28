@@ -5,21 +5,31 @@ var through = require('through2');
  * of the plotly.js bundles
  */
 
-var attributeNamesToRemove = [
-    'description', 'requiredOpts', 'otherOpts', 'hrName', 'role'
-];
+
+// one line string with or without trailing comma
+function makeStringRegex(attr) {
+    return attr + ': \'.*\'' + ',?';
+}
+
+// joined array of strings with or without trailing comma
+function makeJoinedArrayRegex(attr) {
+    return attr + ': \\[[\\s\\S]*?\\]' + '\\.join\\(.*' + ',?';
+}
+
+// array with or without trailing comma
+function makeArrayRegex(attr) {
+    return attr + ': \\[[\\s\\S]*?\\]' + ',?';
+}
 
 // ref: http://www.regexr.com/3cmac
-var regexStr = '';
-attributeNamesToRemove.forEach(function(attr, i) {
-    // one line string with or without trailing comma
-    regexStr += attr + ': \'.*\'' + ',?' + '|';
-
-    // joined array of strings with or without trailing comma
-    regexStr += attr + ': \\[[\\s\\S]*?\\]\\.join\\(.*' + ',?';
-
-    if(i !== attributeNamesToRemove.length-1) regexStr += '|';
-});
+var regexStr = [
+    makeStringRegex('description'),
+    makeJoinedArrayRegex('description'),
+    makeArrayRegex('requiredOpts'),
+    makeArrayRegex('otherOpts'),
+    makeStringRegex('hrName'),
+    makeStringRegex('role')
+].join('|');
 
 var regex = new RegExp(regexStr, 'g');
 
