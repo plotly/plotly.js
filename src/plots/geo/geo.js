@@ -33,6 +33,7 @@ var topojsonFeature = require('topojson').feature;
 function Geo(options, fullLayout) {
 
     this.id = options.id;
+    this.graphDiv = options.graphDiv;
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
 
@@ -40,7 +41,7 @@ function Geo(options, fullLayout) {
     // a subset of https://github.com/d3/d3-geo-projection
     addProjectionsToD3();
 
-    this.showHover = fullLayout.hovermode==='closest';
+    this.showHover = (fullLayout.hovermode === 'closest');
     this.hoverContainer = null;
 
     this.topojsonName = null;

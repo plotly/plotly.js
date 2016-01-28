@@ -52,6 +52,7 @@ exports.plot = function plotGeo(gd) {
         if(geo === undefined) {
             geo = new Geo({
                 id: geoId,
+                graphDiv: gd,
                 container: fullLayout._geocontainer.node(),
                 topojsonURL: gd._context.topojsonURL
             },

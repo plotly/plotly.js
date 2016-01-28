@@ -116,19 +116,14 @@ function makeLineGeoJSON(trace) {
 }
 
 plotScatterGeo.plot = function(geo, scattergeoData) {
-    var gScatterGeo = geo.framework.select('g.scattergeolayer'),
-        topojson = geo.topojson;
-
-    // TODO move to more d3-idiomatic pattern (that's work on replot)
-    // N.B. html('') does not work in IE11
-    gScatterGeo.selectAll('*').remove();
-
-    var gScatterGeoTraces = gScatterGeo
-        .selectAll('g.trace.scatter')
+    var gScatterGeoTraces = geo.framework.select('.scattergeolayer')
+        .selectAll('g.trace.scattergeo')
         .data(scattergeoData);
 
     gScatterGeoTraces.enter().append('g')
-            .attr('class', 'trace scattergeo');
+        .attr('class', 'trace scattergeo');
+
+    gScatterGeoTraces.exit().remove();
 
     // TODO add hover - how?
     gScatterGeoTraces
@@ -152,28 +147,37 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 return;
             }
 
-            var cdi = plotScatterGeo.calcGeoJSON(trace, topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+            var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+                eventDataFunc = makeEventDataFunc(trace);
 
             var hoverinfo = trace.hoverinfo,
-                hasNameLabel = (hoverinfo === 'all' ||
-                    hoverinfo.indexOf('name') !== -1);
+                hasNameLabel = (
+                    hoverinfo === 'all' ||
+                    hoverinfo.indexOf('name') !== -1
+                );
 
-            function handleMouseOver(d) {
+            function handleMouseOver(pt, ptIndex) {
                 if(!geo.showHover) return;
 
-                var xy = geo.projection([d.lon, d.lat]);
-                cleanHoverLabelsFunc(d);
+                var xy = geo.projection([pt.lon, pt.lat]);
+                cleanHoverLabelsFunc(pt);
 
                 Fx.loneHover({
                     x: xy[0],
                     y: xy[1],
                     name: hasNameLabel ? trace.name : undefined,
-                    text: d.textLabel,
-                    color: d.mc || (trace.marker || {}).color
+                    text: pt.textLabel,
+                    color: pt.mc || (trace.marker || {}).color
                 }, {
                     container: geo.hoverContainer.node()
                 });
+
+                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+            }
+
+            function handleClick(pt, ptIndex) {
+                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
             }
 
             if(showMarkers) {
@@ -182,6 +186,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                     .enter().append('path')
                         .attr('class', 'point')
                         .on('mouseover', handleMouseOver)
+                        .on('click', handleClick)
                         .on('mouseout', function() {
                             Fx.loneUnhover(geo.hoverContainer);
                         })
@@ -237,11 +242,13 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     }
 
     var hoverinfoParts = (hoverinfo === 'all') ?
-        attributes.hoverinfo.flags :
-        hoverinfo.split('+');
+            attributes.hoverinfo.flags :
+            hoverinfo.split('+');
 
-    var hasLocation = (hoverinfoParts.indexOf('location') !== -1 &&
-           Array.isArray(trace.locations)),
+    var hasLocation = (
+            hoverinfoParts.indexOf('location') !== -1 &&
+            Array.isArray(trace.locations)
+        ),
         hasLon = (hoverinfoParts.indexOf('lon') !== -1),
         hasLat = (hoverinfoParts.indexOf('lat') !== -1),
         hasText = (hoverinfoParts.indexOf('text') !== -1);
@@ -251,18 +258,34 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         return Axes.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
     }
 
-    return function cleanHoverLabelsFunc(d) {
+    return function cleanHoverLabelsFunc(pt) {
         var thisText = [];
 
-        if(hasLocation) thisText.push(d.location);
+        if(hasLocation) thisText.push(pt.location);
         else if(hasLon && hasLat) {
-            thisText.push('(' + formatter(d.lon) + ', ' + formatter(d.lat) + ')');
+            thisText.push('(' + formatter(pt.lon) + ', ' + formatter(pt.lat) + ')');
         }
-        else if(hasLon) thisText.push('lon: ' + formatter(d.lon));
-        else if(hasLat) thisText.push('lat: ' + formatter(d.lat));
+        else if(hasLon) thisText.push('lon: ' + formatter(pt.lon));
+        else if(hasLat) thisText.push('lat: ' + formatter(pt.lat));
 
-        if(hasText) thisText.push(d.tx || trace.text);
+        if(hasText) thisText.push(pt.tx || trace.text);
 
-        d.textLabel = thisText.join('<br>');
+        pt.textLabel = thisText.join('<br>');
+    };
+}
+
+function makeEventDataFunc(trace) {
+    var hasLocation = Array.isArray(trace.locations);
+
+    return function(pt, ptIndex) {
+        return {points: [{
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: ptIndex,
+            lon: pt.lon,
+            lat: pt.lat,
+            location: hasLocation ? pt.location : null
+        }]};
     };
 }
