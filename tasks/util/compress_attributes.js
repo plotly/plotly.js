@@ -9,15 +9,14 @@ var attributeNamesToRemove = [
     'description', 'requiredOpts', 'otherOpts', 'hrName', 'role'
 ];
 
-// ref: http://www.regexr.com/3bj6p
+// ref: http://www.regexr.com/3cmac
 var regexStr = '';
 attributeNamesToRemove.forEach(function(attr, i) {
     // one line string with or without trailing comma
     regexStr += attr + ': \'.*\'' + ',?' + '|';
-    // array of strings with or without trailing comma
-    regexStr += attr + ':.*\\n*.*\\.join\\(\\\'\\s\\\'\\)';
 
-    // attr:.*\n.*\.join\(\'\s\'\)
+    // joined array of strings with or without trailing comma
+    regexStr += attr + ': \\[[\\s\\S]*?\\]\\.join\\(.*' + ',?';
 
     if(i !== attributeNamesToRemove.length-1) regexStr += '|';
 });
