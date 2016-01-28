@@ -2,7 +2,7 @@ var Plotly = require('@src/plotly');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-fdescribe('config argument', function() {
+describe('config argument', function() {
 
     var gd;
 
