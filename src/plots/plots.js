@@ -298,9 +298,7 @@ plots.addLinks = function(gd) {
     // IE doesn't like getComputedTextLength if an element
     // isn't visible, which it (sometimes?) isn't
     // apparently offsetParent is null for invisibles.
-    // http://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
-    if (text && text.offsetParent &&
-            text.getComputedTextLength() >= (fullLayout.width - 20)) {
+    if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
         // Align the text at the left
         attrs['text-anchor'] = 'start';
         attrs.x = 5;
