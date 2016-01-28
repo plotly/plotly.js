@@ -1,5 +1,3 @@
-/* jshint quotmark:true */
-
 'use strict';
 
 module.exports = {
