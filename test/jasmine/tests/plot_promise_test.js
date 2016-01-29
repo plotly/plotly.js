@@ -361,11 +361,12 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
+                layout = {hovermode:'closest'},
                 initialDiv = createGraphDiv();
 
-            Plotly.plot(initialDiv, data, {});
+            Plotly.plot(initialDiv, data, layout);
 
-            promise = Plotly.restyle(initialDiv, 'title', 'Promise test!');
+            promise = Plotly.relayout(initialDiv, 'hovermode', false);
 
             promise.then(function(gd){
                 promiseGd = gd;
@@ -379,6 +380,87 @@ describe('Plotly.___ methods', function() {
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
             expect(promiseGd.layout).toBeDefined();
+        });
+    });
+
+    describe('Plotly.relayout promise', function() {
+        var promise,
+            promiseGd;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }],
+                layout = {hovermode:'closest'},
+                initialDiv = createGraphDiv();
+
+            Plotly.plot(initialDiv, data, layout);
+
+            promise = Plotly.relayout(initialDiv, 'hovermode', false);
+
+            promise.then(function(gd){
+                promiseGd = gd;
+                done();
+            });
+        });
+        afterEach(destroyGraphDiv);
+
+        it('should be returned with the graph div as an argument', function() {
+            expect(promiseGd).toBeDefined();
+            expect(typeof promiseGd).toBe('object');
+            expect(promiseGd.data).toBeDefined();
+            expect(promiseGd.layout).toBeDefined();
+        });
+    });
+
+    describe('Plotly.relayout promise', function() {
+        var promise,
+            promiseGd;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }],
+                layout = {hovermode:'closest'},
+                initialDiv = createGraphDiv();
+
+            Plotly.plot(initialDiv, data, layout);
+
+            initialDiv.framework = { isPolar: true };
+            promise = Plotly.relayout(initialDiv, 'hovermode', false);
+
+            promise.then(function(gd){
+                promiseGd = gd;
+                done();
+            });
+        });
+        afterEach(destroyGraphDiv);
+
+        it('should be returned with the graph div unchanged when the framework is polar', function() {
+            expect(promiseGd).toBeDefined();
+            expect(typeof promiseGd).toBe('object');
+            expect(promiseGd.changed).toBeFalsy();
+        });
+    });
+
+    describe('Plotly.relayout promise', function() {
+        var promise,
+            promiseRejected = false;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }],
+                layout = {hovermode:'closest'},
+                initialDiv = createGraphDiv();
+
+            Plotly.plot(initialDiv, data, layout);
+
+            promise = Plotly.relayout(initialDiv, undefined, false);
+
+            promise.then(null, function(){
+                promiseRejected = true;
+                done();
+            });
+        });
+        afterEach(destroyGraphDiv);
+
+        it('should be rejected when the attribute is missing', function() {
+            expect(promiseRejected).toBe(true);
         });
     });
 

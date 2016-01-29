@@ -2095,7 +2095,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     gd = getGraphDiv(gd);
 
     if(gd.framework && gd.framework.isPolar) {
-        return new Promise.resolve(gd);
+        return Promise.resolve(gd);
     }
 
     var layout = gd.layout,
@@ -2113,7 +2113,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     else if(Lib.isPlainObject(astr)) aobj = astr;
     else {
         console.log('relayout fail',astr,val);
-        return new Promise.reject();
+        return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
