@@ -1,7 +1,11 @@
 <a href="https://plot.ly/javascript/"><img src="http://images.plot.ly/logo/plotlyjs-logo@2x.png" height="70"></a>
 
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
+[![npm downloads](https://img.shields.io/npm/dm/plotly.js.svg?style=flat-square)](https://www.npmjs.com/package/plotly.js)
+
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
+[![Dependency Status](https://img.shields.io/david/plotly/plotly.js.svg?style=flat-square)](https://david-dm.org/plotly/plotly.js)
+[![devDependency Status](https://img.shields.io/david/dev/plotly/plotly.js.svg?style=flat-square)](https://david-dm.org/plotly/plotly.js#info=devDependencies)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
 plotly.js is a high-level, declarative charting library. plotly.js ships with 20
@@ -69,7 +73,11 @@ Then elsewhere in your code:
 var Plotly = require('./path/to/custom-plotly');
 ```
 
-**IMPORTANT**: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `chartset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
+To learn more about the plotly.js module architecture, refer to our [modularizing monolithic JS projects](https://plot.ly/javascript/modularizing-monolithic-javascript-projects/) post.
+
+#### Non-ascii characters
+
+Important: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `chartset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
 
 ```html
 <script type="text/javascript" src="my-plotly-bundle.js" charset="utf-8"></script>
