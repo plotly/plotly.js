@@ -20,11 +20,13 @@ var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var maxRowLength = require('./max_row_length');
 
 
-// From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 module.exports = function(gd, plotinfo, cdheatmaps) {
-    cdheatmaps.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
+    for(var i = 0; i < cdheatmaps.length; i++) {
+        plotOne(gd, plotinfo, cdheatmaps[i]);
+    }
 };
 
+// From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function plotOne(gd, plotinfo, cd) {
     Lib.markTime('in Heatmap.plot');
 
@@ -33,14 +35,14 @@ function plotOne(gd, plotinfo, cd) {
         xa = plotinfo.x(),
         ya = plotinfo.y(),
         fullLayout = gd._fullLayout,
-        id = 'hm' + uid,
-        cbId = 'cb' + uid;
+        id = 'hm' + uid;
 
-    fullLayout._paper.selectAll('.contour' + uid).remove(); // in case this used to be a contour map
+    // in case this used to be a contour map
+    fullLayout._paper.selectAll('.contour' + uid).remove();
 
     if(trace.visible !== true) {
         fullLayout._paper.selectAll('.' + id).remove();
-        fullLayout._paper.selectAll('.' + cbId).remove();
+        fullLayout._infolayer.selectAll('.cb' + uid).remove();
         return;
     }
 
@@ -367,20 +369,28 @@ function plotOne(gd, plotinfo, cd) {
     gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
     gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-    // put this right before making the new image, to minimize flicker
-    fullLayout._paper.selectAll('.'+id).remove();
-    plotinfo.plot.select('.maplayer').append('svg:image')
-        .classed(id, true)
-        .datum(cd[0])
-        .attr({
-            xmlns: xmlnsNamespaces.svg,
-            'xlink:href': canvas.toDataURL('image/png'),
-            height: imageHeight,
-            width: imageWidth,
-            x: left,
-            y: top,
-            preserveAspectRatio: 'none'
-        });
+    var plotgroup = plotinfo.plot.select('.imagelayer')
+        .selectAll('g.hm.' + id)
+        .data([0]);
+    plotgroup.enter().append('g')
+        .classed('hm', true)
+        .classed(id, true);
+    plotgroup.exit().remove();
+
+    var image3 = plotgroup.selectAll('image')
+        .data(cd);
+    image3.enter().append('svg:image');
+    image3.exit().remove();
+
+    image3.attr({
+        xmlns: xmlnsNamespaces.svg,
+        'xlink:href': canvas.toDataURL('image/png'),
+        height: imageHeight,
+        width: imageWidth,
+        x: left,
+        y: top,
+        preserveAspectRatio: 'none'
+    });
 
     Lib.markTime('done showing png');
 }
