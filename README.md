@@ -70,7 +70,10 @@ var Plotly = require('./path/to/custom-plotly');
 ```
 
 To learn more about the plotly.js module architecture, refer to our [modularing monolithic JS projects](https://plot.ly/javascript/modularizing-monolithic-javascript-projects/) post.
-**IMPORTANT**: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `chartset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
+
+#### Non-ascii characters
+
+Important: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `chartset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
 
 ```html
 <script type="text/javascript" src="my-plotly-bundle.js" charset="utf-8"></script>
