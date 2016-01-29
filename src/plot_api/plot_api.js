@@ -1572,7 +1572,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     }
     else {
         console.log('restyle fail',astr,val,traces);
-        return new Promise.reject();
+        return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;

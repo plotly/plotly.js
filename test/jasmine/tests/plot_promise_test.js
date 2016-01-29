@@ -331,6 +331,30 @@ describe('Plotly.___ methods', function() {
         });
     });
 
+    describe('Plotly.restyle promise', function() {
+        var promise,
+            promiseRejected = false;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }],
+                initialDiv = createGraphDiv();
+
+            Plotly.plot(initialDiv, data, {});
+
+            promise = Plotly.restyle(initialDiv, undefined, '');
+
+            promise.then(null, function(){
+                promiseRejected = true;
+                done();
+            });
+        });
+        afterEach(destroyGraphDiv);
+
+        it('should be rejected when the attribute is missing', function() {
+            expect(promiseRejected).toBe(true);
+        });
+    });
+
     describe('Plotly.relayout promise', function() {
         var promise,
             promiseGd;
