@@ -1,6 +1,7 @@
 var d3 = require('d3');
 
 var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -58,6 +59,101 @@ describe('Test plot structure', function() {
                 mainSVGs.each(function() {
                     var node = this;
                     assertNamespaces(node);
+                });
+            });
+        });
+
+        describe('contour/heatmap traces', function() {
+            var mock = require('@mocks/connectgaps_2d.json');
+
+            function extendMock() {
+                var mockCopy = Lib.extendDeep(mock);
+
+                // add a colorbar for testing
+                mockCopy.data[0].showscale = true;
+
+                return mockCopy;
+            }
+
+            describe('initial structure', function() {
+                beforeEach(function(done) {
+                    var mockCopy = extendMock();
+
+                    Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout)
+                        .then(done);
+                });
+
+                it('has four *subplot* nodes', function() {
+                    var nodes = d3.selectAll('g.subplot');
+                    expect(nodes.size()).toEqual(4);
+                });
+
+                // N.B. the contour traces both have a heatmap fill
+                it('has four heatmap image nodes', function() {
+                    var hmNodes = d3.selectAll('g.hm');
+                    expect(hmNodes.size()).toEqual(4);
+
+                    var imageNodes = d3.selectAll('image');
+                    expect(imageNodes.size()).toEqual(4);
+                });
+
+                it('has two contour nodes', function() {
+                    var nodes = d3.selectAll('g.contour');
+                    expect(nodes.size()).toEqual(2);
+                });
+
+                it('has one colorbar nodes', function() {
+                    var nodes = d3.selectAll('rect.cbbg');
+                    expect(nodes.size()).toEqual(1);
+                });
+            });
+
+            describe('structure after restyle', function() {
+                beforeEach(function(done) {
+                    var mockCopy = extendMock();
+                    var gd = createGraphDiv();
+
+                    Plotly.plot(gd, mockCopy.data, mockCopy.layout);
+
+                    Plotly.restyle(gd, {
+                        type: 'scatter',
+                        x: [[1, 2, 3]],
+                        y: [[2, 1, 2]],
+                        z: null
+                    }, 0);
+
+                    Plotly.restyle(gd, 'type', 'contour', 1);
+
+                    Plotly.restyle(gd, 'type', 'heatmap', 2)
+                        .then(done);
+                });
+
+                it('has four *subplot* nodes', function() {
+                    var nodes = d3.selectAll('g.subplot');
+                    expect(nodes.size()).toEqual(4);
+                });
+
+                it('has two heatmap image nodes', function() {
+                    var hmNodes = d3.selectAll('g.hm');
+                    expect(hmNodes.size()).toEqual(2);
+
+                    var imageNodes = d3.selectAll('image');
+                    expect(imageNodes.size()).toEqual(2);
+                });
+
+                it('has two contour nodes', function() {
+                    var nodes = d3.selectAll('g.contour');
+                    expect(nodes.size()).toEqual(2);
+                });
+
+                it('has one scatter node', function() {
+                    var nodes = d3.selectAll('g.trace.scatter');
+                    expect(nodes.size()).toEqual(1);
+                });
+
+                it('has no colorbar node', function() {
+                    var nodes = d3.selectAll('rect.cbbg');
+                    expect(nodes.size()).toEqual(0);
                 });
             });
         });

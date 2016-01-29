@@ -251,7 +251,7 @@ Plotly.plot = function(gd, data, layout, config) {
             subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
             modules = gd._modules;
 
-        var i, j, cd, trace, uid, subplot, subplotInfo,
+        var i, j, trace, subplot, subplotInfo,
             cdSubplot, cdError, cdModule, _module;
 
         function getCdSubplot(calcdata, subplot) {
@@ -293,12 +293,21 @@ Plotly.plot = function(gd, data, layout, config) {
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
         for (i = 0; i < calcdata.length; i++) {
-            cd = calcdata[i];
-            trace = cd[0].trace;
-            if (trace.visible !== true || !trace._module.colorbar) {
+            trace = calcdata[i][0].trace;
+
+            var isVisible = (trace.visible === true),
                 uid = trace.uid;
-                fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid+',#clip'+uid)
-                    .remove();
+
+            if(!isVisible || !Plots.traceIs(trace, '2dMap')) {
+                fullLayout._paper.selectAll(
+                    '.hm' + uid +
+                    ',.contour' + uid +
+                    ',#clip' + uid
+                ).remove();
+            }
+
+            if(!isVisible || !trace._module.colorbar) {
+                fullLayout._infolayer.selectAll('.cb' + uid).remove();
             }
         }
 
@@ -2654,6 +2663,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
     // 4. scatter
     // 5. box plots
     function plotLayers(svg) {
+        svg.append('g').classed('imagelayer', true);
         svg.append('g').classed('maplayer', true);
         svg.append('g').classed('barlayer', true);
         svg.append('g').classed('errorlayer', true);

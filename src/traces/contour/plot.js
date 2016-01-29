@@ -64,15 +64,16 @@ function plotOne(gd, plotinfo, cd) {
         pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
 
     if(trace.visible !== true) {
-        fullLayout._paper.selectAll('.'+id+',.cb'+uid+',.hm'+uid).remove();
+        fullLayout._paper.selectAll('.' + id + ',.hm' + uid).remove();
+        fullLayout._infolayer.selectAll('.cb' + uid).remove();
         return;
     }
 
     // use a heatmap to fill - draw it behind the lines
-    if(contours.coloring==='heatmap') {
-        if(trace.zauto && trace.autocontour===false) {
+    if(contours.coloring === 'heatmap') {
+        if(trace.zauto && (trace.autocontour === false)) {
             trace._input.zmin = trace.zmin =
-                contours.start - contours.size/2;
+                contours.start - contours.size / 2;
             trace._input.zmax = trace.zmax =
                 trace.zmin + pathinfo.length * contours.size;
         }
@@ -80,7 +81,7 @@ function plotOne(gd, plotinfo, cd) {
         heatmapPlot(gd, plotinfo, [cd]);
     }
     // in case this used to be a heatmap (or have heatmap fill)
-    else fullLayout._paper.selectAll('.hm'+uid).remove();
+    else fullLayout._paper.selectAll('.hm' + uid).remove();
 
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
@@ -471,12 +472,15 @@ function getInterpPx(pi, loc, step) {
 
 function makeContourGroup(plotinfo, cd, id) {
     var plotgroup = plotinfo.plot.select('.maplayer')
-        .selectAll('g.contour.'+id)
+        .selectAll('g.contour.' + id)
         .data(cd);
+
     plotgroup.enter().append('g')
-        .classed('contour',true)
-        .classed(id,true);
+        .classed('contour', true)
+        .classed(id, true);
+
     plotgroup.exit().remove();
+
     return plotgroup;
 }
 
