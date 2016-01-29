@@ -73,7 +73,7 @@ Then elsewhere in your code:
 var Plotly = require('./path/to/custom-plotly');
 ```
 
-To learn more about the plotly.js module architecture, refer to our [modularing monolithic JS projects](https://plot.ly/javascript/modularizing-monolithic-javascript-projects/) post.
+To learn more about the plotly.js module architecture, refer to our [modularizing monolithic JS projects](https://plot.ly/javascript/modularizing-monolithic-javascript-projects/) post.
 
 #### Non-ascii characters
 
