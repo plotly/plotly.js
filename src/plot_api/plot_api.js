@@ -59,7 +59,7 @@ Plotly.plot = function(gd, data, layout, config) {
     Events.init(gd);
 
     var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
-    if(okToPlot===false) return new Promise.reject();
+    if(okToPlot===false) return Promise.reject();
 
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
@@ -112,7 +112,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // signal to drag handler that after everything else is done
         // we need to replot, because something has changed
         gd._replotPending = true;
-        return new Promise.reject();
+        return Promise.reject();
     } else {
         // we're going ahead with a replot now
         gd._replotPending = false;

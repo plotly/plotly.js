@@ -1,4 +1,5 @@
 var Plotly = require('@src/plotly');
+var Events = require('@src/lib/events');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -26,6 +27,64 @@ describe('Plotly.___ methods', function() {
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
             expect(promiseGd.layout).toBeDefined();
+        });
+    });
+
+    describe('Plotly.plot promise', function() {
+        var gd,
+            promise,
+            promiseRejected = false;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }];
+
+            gd = createGraphDiv();
+
+            Events.init(gd);
+
+            gd.on('plotly_beforeplot', function() {
+                return false;
+            });
+
+            promise = Plotly.plot(gd, data, {});
+
+            promise.then(null, function(){
+                promiseRejected = true;
+                done();
+            });
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should be rejected when plotly_beforeplot event handlers return false', function() {
+            expect(promiseRejected).toBe(true);
+        });
+    });
+
+    describe('Plotly.plot promise', function() {
+        var gd,
+            promise,
+            promiseRejected = false;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }];
+
+            gd = createGraphDiv();
+
+            gd._dragging = true;
+
+            promise = Plotly.plot(gd, data, {});
+
+            promise.then(null, function(){
+                promiseRejected = true;
+                done();
+            });
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should reject the promise when graph is being dragged', function() {
+            expect(promiseRejected).toBe(true);
         });
     });
 
