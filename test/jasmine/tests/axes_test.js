@@ -1,4 +1,11 @@
-var Plotly = require('@src/plotly');
+var PlotlyInternal = require('@src/plotly');
+
+var Plots = require('@src/plots/plots');
+var Lib = require('@src/lib');
+var Color = require('@src/components/color');
+
+var handleTickValueDefaults = require('@src/plots/cartesian/tick_value_defaults');
+var Axes = PlotlyInternal.Axes;
 
 
 describe('Test axes', function() {
@@ -28,15 +35,15 @@ describe('Test axes', function() {
                     }
                 }
             };
-            var expectedYaxis = Plotly.Lib.extendDeep({}, gd.layout.xaxis),
+            var expectedYaxis = Lib.extendDeep({}, gd.layout.xaxis),
                 expectedXaxis = {
                     title: 'Click to enter X axis title',
                     type: 'date'
                 };
 
-            Plotly.Plots.supplyDefaults(gd);
+            Plots.supplyDefaults(gd);
 
-            Plotly.Axes.swap(gd, [0]);
+            Axes.swap(gd, [0]);
 
             expect(gd.layout.xaxis).toEqual(expectedXaxis);
             expect(gd.layout.yaxis).toEqual(expectedYaxis);
@@ -61,13 +68,13 @@ describe('Test axes', function() {
                     }
                 }
             };
-            var expectedLayoutAfter = Plotly.Lib.extendDeep({}, gd.layout);
+            var expectedLayoutAfter = Lib.extendDeep({}, gd.layout);
             expectedLayoutAfter.xaxis.type = 'linear';
             expectedLayoutAfter.yaxis.type = 'linear';
 
-            Plotly.Plots.supplyDefaults(gd);
+            Plots.supplyDefaults(gd);
 
-            Plotly.Axes.swap(gd, [0]);
+            Axes.swap(gd, [0]);
 
             expect(gd.layout.xaxis).toEqual(expectedLayoutAfter.xaxis);
             expect(gd.layout.yaxis).toEqual(expectedLayoutAfter.yaxis);
@@ -145,9 +152,9 @@ describe('Test axes', function() {
                     {x: 5, y: 0.5, xref: 'x', yref: 'paper'}
                 ];
 
-            Plotly.Plots.supplyDefaults(gd);
+            Plots.supplyDefaults(gd);
 
-            Plotly.Axes.swap(gd, [0, 1]);
+            Axes.swap(gd, [0, 1]);
 
             expect(gd.layout.xaxis).toEqual(expectedXaxis);
             expect(gd.layout.xaxis2).toEqual(expectedXaxis2);
@@ -161,7 +168,7 @@ describe('Test axes', function() {
             layoutOut = {},
             fullData = [];
 
-        var supplyLayoutDefaults = Plotly.Axes.supplyLayoutDefaults;
+        var supplyLayoutDefaults = Axes.supplyLayoutDefaults;
 
         it('should set undefined linewidth/linecolor if linewidth, linecolor or showline is not supplied', function() {
             layoutIn = {
@@ -181,7 +188,7 @@ describe('Test axes', function() {
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.linewidth).toBe(1);
-            expect(layoutOut.xaxis.linecolor).toBe(Plotly.Color.defaultLine);
+            expect(layoutOut.xaxis.linecolor).toBe(Color.defaultLine);
         });
 
         it('should set linewidth to default if linecolor is supplied and valid', function() {
@@ -199,7 +206,7 @@ describe('Test axes', function() {
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis.linewidth).toBe(2);
-            expect(layoutOut.yaxis.linecolor).toBe(Plotly.Color.defaultLine);
+            expect(layoutOut.yaxis.linecolor).toBe(Color.defaultLine);
         });
 
         it('should set default gridwidth and gridcolor', function() {
@@ -209,9 +216,9 @@ describe('Test axes', function() {
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.gridwidth).toBe(1);
-            expect(layoutOut.xaxis.gridcolor).toBe(Plotly.Color.lightLine);
+            expect(layoutOut.xaxis.gridcolor).toBe(Color.lightLine);
             expect(layoutOut.yaxis.gridwidth).toBe(1);
-            expect(layoutOut.yaxis.gridcolor).toBe(Plotly.Color.lightLine);
+            expect(layoutOut.yaxis.gridcolor).toBe(Color.lightLine);
         });
 
         it('should set gridcolor/gridwidth to undefined if showgrid is false', function() {
@@ -230,9 +237,9 @@ describe('Test axes', function() {
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.zerolinewidth).toBe(1);
-            expect(layoutOut.xaxis.zerolinecolor).toBe(Plotly.Color.defaultLine);
+            expect(layoutOut.xaxis.zerolinecolor).toBe(Color.defaultLine);
             expect(layoutOut.yaxis.zerolinewidth).toBe(1);
-            expect(layoutOut.yaxis.zerolinecolor).toBe(Plotly.Color.defaultLine);
+            expect(layoutOut.yaxis.zerolinecolor).toBe(Color.defaultLine);
         });
 
         it('should set zerolinecolor/zerolinewidth to undefined if zeroline is false', function() {
@@ -246,82 +253,80 @@ describe('Test axes', function() {
     });
 
     describe('handleTickValueDefaults', function() {
-        function handleTickValueDefaults(axIn, axOut, axType) {
+        function mockSupplyDefaults(axIn, axOut, axType) {
             function coerce(attr, dflt) {
-                return Plotly.Lib.coerce(axIn, axOut,
-                                         Plotly.Axes.layoutAttributes,
-                                         attr, dflt);
+                return Lib.coerce(axIn, axOut, Axes.layoutAttributes, attr, dflt);
             }
 
-            Plotly.Axes.handleTickValueDefaults(axIn, axOut, coerce, axType);
+            handleTickValueDefaults(axIn, axOut, coerce, axType);
         }
 
         it('should set default tickmode correctly', function() {
             var axIn = {},
                 axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
 
             axIn = {tickmode: 'array', tickvals: 'stuff'};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('auto');
 
             axIn = {tickmode: 'array', tickvals: [1, 2, 3]};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'date');
+            mockSupplyDefaults(axIn, axOut, 'date');
             expect(axOut.tickmode).toBe('auto');
 
             axIn = {tickvals: [1, 2, 3]};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('array');
 
             axIn = {dtick: 1};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickmode).toBe('linear');
         });
 
         it('should set nticks iff tickmode=auto', function() {
             var axIn = {},
                 axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.nticks).toBe(0);
 
             axIn = {tickmode: 'auto', nticks: 5};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.nticks).toBe(5);
 
             axIn = {tickmode: 'linear', nticks: 15};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.nticks).toBe(undefined);
         });
 
         it('should set tick0 and dtick iff tickmode=linear', function() {
             var axIn = {tickmode: 'auto', tick0: 1, dtick: 1},
                 axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tick0).toBe(undefined);
             expect(axOut.dtick).toBe(undefined);
 
             axIn = {tickvals: [1,2,3], tick0: 1, dtick: 1};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tick0).toBe(undefined);
             expect(axOut.dtick).toBe(undefined);
 
             axIn = {tick0: 2.71, dtick: 0.00828};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tick0).toBe(2.71);
             expect(axOut.dtick).toBe(0.00828);
 
             axIn = {tickmode: 'linear', tick0: 3.14, dtick: 0.00159};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tick0).toBe(3.14);
             expect(axOut.dtick).toBe(0.00159);
         });
@@ -329,20 +334,20 @@ describe('Test axes', function() {
         it('should set tickvals and ticktext iff tickmode=array', function() {
             var axIn = {tickmode: 'auto', tickvals: [1,2,3], ticktext: ['4','5','6']},
                 axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickvals).toBe(undefined);
             expect(axOut.ticktext).toBe(undefined);
 
             axIn = {tickvals: [2,4,6,8], ticktext: ['who','do','we','appreciate']};
             axOut = {};
-            handleTickValueDefaults(axIn, axOut, 'linear');
+            mockSupplyDefaults(axIn, axOut, 'linear');
             expect(axOut.tickvals).toEqual([2,4,6,8]);
             expect(axOut.ticktext).toEqual(['who','do','we','appreciate']);
         });
     });
 
     describe('saveRangeInitial', function() {
-        var saveRangeInitial = Plotly.Axes.saveRangeInitial;
+        var saveRangeInitial = Axes.saveRangeInitial;
         var gd, hasOneAxisChanged;
 
         beforeEach(function() {
@@ -401,7 +406,7 @@ describe('Test axes', function() {
     });
 
     describe('list', function() {
-        var listFunc = Plotly.Axes.list;
+        var listFunc = Axes.list;
         var gd;
 
         it('returns empty array when no fullLayout is present', function() {
@@ -484,7 +489,7 @@ describe('Test axes', function() {
     });
 
     describe('getSubplots', function() {
-        var getSubplots = Plotly.Axes.getSubplots;
+        var getSubplots = Axes.getSubplots;
         var gd;
 
         it('returns list of subplots ids (from data only)', function() {
