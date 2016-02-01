@@ -1,7 +1,6 @@
 <a href="https://plot.ly/javascript/"><img src="http://images.plot.ly/logo/plotlyjs-logo@2x.png" height="70"></a>
 
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
-[![npm downloads](https://img.shields.io/npm//plotly.js.svg?style=flat-square)](https://www.npmjs.com/package/plotly.js)
 
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
 [![Dependency Status](https://david-dm.org/plotly/plotly.js.svg?style=flat-square)](https://david-dm.org/plotly/plotly.js)
