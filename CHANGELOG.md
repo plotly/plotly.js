@@ -9,6 +9,19 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.5.1] -- 2016-02-01
+
+### Fixed
+- Scattergeo and choropleth now correctly fire hover and click events [#215]
+- Heatmap and contour traces are redrawn in the correct order [#194]
+- Early returns in `Plotly.plot` now correctly return Promise rejections [#226]
+- Soon to be deprecated `SVGElement.offsetParent` calls are removed [#222]
+- Geo zoom in button is now correctly titled `Zoom in` [#219]
+- All attribute description are correctly stripped from the dist files (bug
+  introduce in 1.5.0) [#223]
+- Insecure dev dependencies `ecstatic` and `uglify-js` are bumped [#225]
+- Outdated karma-browserify dev dependency is bumped [#229]
+
 
 ## [1.5.0] -- 2016-01-22
 
@@ -78,7 +91,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 ### Fixed
 - Fix Fifefox 42 to-image failures [#104]
-- Fix error bar with type 'sqrt' logic making them visible without 
+- Fix error bar with type 'sqrt' logic making them visible without
   specifying the 'value' field [#91]
 - Fix cartesian zoom/drag cover attributes for Firefox 31 [#92]
 
@@ -111,7 +124,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 
 ## [1.1.0] -- 2015-11-25
 
-### Added 
+### Added
 - Add three plot config options: `modeBarButtonsToRemove`,
   `modeBarButtonsToAdd` and `modeBarButtons` which combine
   to add the ability to remove specific mode bar buttons add
@@ -131,7 +144,7 @@ First fully open source release.
 
 ### Changed
 - Save to cloud is now done via a modebar button by default,
-  the `'Edit chart'` link is still available through the 
+  the `'Edit chart'` link is still available through the
   `'showLink'` plot config.
 - Better double-click notifier CSS
 
