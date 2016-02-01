@@ -10,6 +10,22 @@
 
 
 module.exports = {
+    /**
+     * standardize all missing data in calcdata to use undefined
+     * never null or NaN.
+     * that way we can use !==undefined, or !== BADNUM,
+     * to test for real data
+     */
+    BADNUM: undefined,
+
+    // axis match regular expression
+    xAxisMatch: /^xaxis[0-9]*$/,
+    yAxisMatch: /^yaxis[0-9]*$/,
+
+    // pattern matching axis ids and names
+    AX_ID_PATTERN: /^[xyz][0-9]*$/,
+    AX_NAME_PATTERN: /^[xyz]axis[0-9]*$/,
+
     // ms between first mousedown and 2nd mouseup to constitute dblclick...
     // we don't seem to have access to the system setting
     DBLCLICKDELAY: 600,

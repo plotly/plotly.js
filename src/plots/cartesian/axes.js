@@ -17,8 +17,6 @@ var axes = module.exports = {};
 
 axes.layoutAttributes = require('./layout_attributes');
 
-var xAxisMatch = /^xaxis[0-9]*$/,
-    yAxisMatch = /^yaxis[0-9]*$/;
 
 axes.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     // get the full list of axes already defined
@@ -371,8 +369,6 @@ axes.clearTypes = function(gd, traces) {
 // convert between axis names (xaxis, xaxis2, etc, elements of td.layout)
 // and axis id's (x, x2, etc). Would probably have ditched 'xaxis'
 // completely in favor of just 'x' if it weren't ingrained in the API etc.
-var AX_ID_PATTERN = /^[xyz][0-9]*$/,
-    AX_NAME_PATTERN = /^[xyz]axis[0-9]*$/;
 axes.id2name = function(id) {
     if(typeof id !== 'string' || !id.match(AX_ID_PATTERN)) return;
     var axNum = id.substr(1);
@@ -582,14 +578,6 @@ axes.cleanDatum = function(c){
     }
     return c;
 };
-
-/**
- * standardize all missing data in calcdata to use undefined
- * never null or NaN.
- * that way we can use !==undefined, or !==axes.BADNUM,
- * to test for real data
- */
-axes.BADNUM = undefined;
 
 // setConvert: define the conversion functions for an axis
 // data is used in 4 ways:
