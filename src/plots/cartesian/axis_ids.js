@@ -40,15 +40,6 @@ exports.cleanId = function cleanId(id, axLetter) {
     return id.charAt(0) + axNum;
 };
 
-exports.cleanName = function cleanName(name, axLetter) {
-    if(!name.match(constants.AX_ID_PATTERN)) return;
-    if(axLetter && name.charAt(0) !== axLetter) return;
-
-    var axNum = name.substr(5).replace(/^0+/,'');
-    if(axNum === '1') axNum = '';
-    return name.charAt(0) + 'axis' + axNum;
-};
-
 // get all axis object names
 // optionally restricted to only x or y or z by string axLetter
 // and optionally 2D axes only, not those inside 3D scenes
