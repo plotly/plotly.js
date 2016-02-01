@@ -52,19 +52,21 @@ axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
 // so we auto-set them again
 axes.clearTypes = function(gd, traces) {
     if(!Array.isArray(traces) || !traces.length) {
-        traces = (gd._fullData).map(function(d,i) { return i; });
+        traces = (gd._fullData).map(function(d, i) { return i; });
     }
     traces.forEach(function(tracenum) {
         var trace = gd.data[tracenum];
-        delete (axes.getFromId(gd, trace.xaxis)||{}).type;
-        delete (axes.getFromId(gd, trace.yaxis)||{}).type;
+        delete (axes.getFromId(gd, trace.xaxis) || {}).type;
+        delete (axes.getFromId(gd, trace.yaxis) || {}).type;
     });
 };
 
 // get counteraxis letter for this axis (name or id)
 // this can also be used as the id for default counter axis
 axes.counterLetter = function(id) {
-    return {x:'y',y:'x'}[id.charAt(0)];
+    var axLetter = id.charAt(0);
+    if(axLetter === 'x') return 'y';
+    if(axLetter === 'y') return 'x';
 };
 
 // incorporate a new minimum difference and first tick into
@@ -343,8 +345,8 @@ axes.autoBin = function(data,ax,nbins,is2d) {
         datamax = Plotly.Lib.aggNums(Math.max, null, data);
     if(ax.type==='category') {
         return {
-            start: datamin-0.5,
-            end: datamax+0.5,
+            start: datamin - 0.5,
+            end: datamax + 0.5,
             size: 1
         };
     }
@@ -457,12 +459,12 @@ axes.calcTicks = function calcTicks(ax) {
         var nt = ax.nticks,
             minPx;
         if(!nt) {
-            if(ax.type==='category') {
+            if(ax.type === 'category') {
                 minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
                 nt = ax._length / minPx;
             }
             else {
-                minPx = ax._id.charAt(0)==='y' ? 40 : 80;
+                minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
                 nt = Plotly.Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
         }
@@ -1417,7 +1419,7 @@ axes.doTicks = function(td, axid, skipTitle) {
     var valsClipped = vals.filter(clipEnds);
 
     function drawTicks(container,tickpath) {
-        var ticks=container.selectAll('path.'+tcls)
+        var ticks = container.selectAll('path.'+tcls)
             .data(ax.ticks==='inside' ? valsClipped : vals, datafn);
         if(tickpath && ax.ticks) {
             ticks.enter().append('path').classed(tcls, 1).classed('ticks', 1)
@@ -1431,7 +1433,7 @@ axes.doTicks = function(td, axid, skipTitle) {
         else ticks.remove();
     }
 
-    function drawLabels(container,position) {
+    function drawLabels(container, position) {
         // tick labels - for now just the main labels.
         // TODO: mirror labels, esp for subplots
         var tickLabels=container.selectAll('g.'+tcls).data(vals, datafn);
