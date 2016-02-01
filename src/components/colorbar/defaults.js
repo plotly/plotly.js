@@ -9,8 +9,9 @@
 
 'use strict';
 
-var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
+var handleTickDefaults = require('../../plots/cartesian/tick_defaults');
 
 var attributes = require('./attributes');
 
@@ -49,9 +50,9 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('borderwidth');
     coerce('bgcolor');
 
-    Axes.handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
+    handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
-    Axes.handleTickDefaults(colorbarIn, colorbarOut, coerce, 'linear',
+    handleTickDefaults(colorbarIn, colorbarOut, coerce, 'linear',
         {outerTicks: false, font: layout.font, noHover: true});
 
     coerce('title');

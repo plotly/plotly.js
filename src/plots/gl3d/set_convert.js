@@ -9,12 +9,12 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Axes = require('../cartesian/axes');
 
 var noop = function() {};
 
 
 module.exports = function setConvert(containerOut) {
-    Plotly.Axes.setConvert(containerOut);
+    Axes.setConvert(containerOut);
     containerOut.setScale = noop;
 };

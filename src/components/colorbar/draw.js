@@ -12,6 +12,16 @@
 var d3 = require('d3');
 
 var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
+var Axes = require('../../plots/cartesian/axes');
+var Fx = require('../../plots/cartesian/graph_interact');
+var Lib = require('../../lib');
+var Drawing = require('../drawing');
+var Color = require('../color');
+
+var handleAxisDefaults = require('../../plots/cartesian/axis_defaults');
+var handleAxisPositionDefaults = require('../../plots/cartesian/position_defaults');
+var axisLayoutAttrs = require('../../plots/cartesian/layout_attributes');
 
 var attributes = require('./attributes');
 
@@ -163,23 +173,19 @@ module.exports = function draw(gd, id) {
         // Coerce w.r.t. Axes layoutAttributes:
         // re-use axes.js logic without updating _fullData
         function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(cbAxisIn, cbAxisOut,
-                                     Plotly.Axes.layoutAttributes,
-                                     attr, dflt);
+            return Lib.coerce(cbAxisIn, cbAxisOut, axisLayoutAttrs, attr, dflt);
         }
 
         // Prepare the Plotly axis object
-        Plotly.Axes.handleAxisDefaults(cbAxisIn, cbAxisOut,
-                                       coerce, axisOptions);
-        Plotly.Axes.handleAxisPositioningDefaults(cbAxisIn, cbAxisOut,
-                                                  coerce, axisOptions);
+        handleAxisDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions);
+        handleAxisPositionDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions);
 
         cbAxisOut._id = 'y' + id;
         cbAxisOut._td = gd;
 
         // position can't go in through supplyDefaults
         // because that restricts it to [0,1]
-        cbAxisOut.position = opts.x+xpadFrac+thickFrac;
+        cbAxisOut.position = opts.x + xpadFrac + thickFrac;
 
         // save for other callers to access this axis
         component.axis = cbAxisOut;
@@ -196,14 +202,14 @@ module.exports = function draw(gd, id) {
             cbAxisOut.tick0 = opts.levels.start;
             var dtick = opts.levels.size;
             // expand if too many contours, so we don't get too many ticks
-            var autoNtick = Plotly.Lib.constrain(
+            var autoNtick = Lib.constrain(
                     (yBottomPx-yTopPx)/50, 4, 15) + 1,
                 dtFactor = (zrange[1]-zrange[0]) /
                     ((opts.nticks||autoNtick)*dtick);
             if(dtFactor>1) {
                 var dtexp = Math.pow(10,Math.floor(
                     Math.log(dtFactor)/Math.LN10));
-                dtick *= dtexp*Plotly.Lib.roundUp(dtFactor/dtexp,[2,5,10]);
+                dtick *= dtexp * Lib.roundUp(dtFactor/dtexp,[2,5,10]);
                 // if the contours are at round multiples, reset tick0
                 // so they're still at round multiples. Otherwise,
                 // keep the first label on the first contour level
@@ -269,7 +275,7 @@ module.exports = function draw(gd, id) {
                         parseInt(titleText.style('font-size'), 10) * 1.3;
                 }
                 if(mathJaxNode) {
-                    titleHeight = Plotly.Drawing.bBox(mathJaxNode).height;
+                    titleHeight = Drawing.bBox(mathJaxNode).height;
                     if(titleHeight>lineSize) {
                         // not entirely sure how mathjax is doing
                         // vertical alignment, but this seems to work.
@@ -278,7 +284,7 @@ module.exports = function draw(gd, id) {
                 }
                 else if(titleText.node() &&
                         !titleText.classed('js-placeholder')) {
-                    titleHeight = Plotly.Drawing.bBox(
+                    titleHeight = Drawing.bBox(
                         titleGroup.node()).height;
                 }
                 if(titleHeight) {
@@ -351,7 +357,7 @@ module.exports = function draw(gd, id) {
                     .attr('d','M'+xLeft+',' +
                         (Math.round(cbAxisOut.c2p(d))+(opts.line.width/2)%1) +
                         'h'+thickPx)
-                    .call(Plotly.Drawing.lineGroupStyle,
+                    .call(Drawing.lineGroupStyle,
                         opts.line.width, linecolormap(d), opts.line.dash);
             });
 
@@ -363,7 +369,7 @@ module.exports = function draw(gd, id) {
                 (opts.outlinewidth||0)/2 - (opts.ticks==='outside' ? 1 : 0);
             cbAxisOut.side = 'right';
 
-            return Plotly.Axes.doTicks(gd, cbAxisOut);
+            return Axes.doTicks(gd, cbAxisOut);
         }
 
         function positionCB(){
@@ -372,7 +378,7 @@ module.exports = function draw(gd, id) {
             // TODO: why are we redrawing multiple times now with this?
             // I guess autoMargin doesn't like being post-promise?
             var innerWidth = thickPx + opts.outlinewidth/2 +
-                    Plotly.Drawing.bBox(cbAxisOut._axislayer.node()).width;
+                    Drawing.bBox(cbAxisOut._axislayer.node()).width;
             titleEl = titleCont.select('text');
             if(titleEl.node() && !titleEl.classed('js-placeholder')) {
                 var mathJaxNode = titleCont
@@ -381,7 +387,7 @@ module.exports = function draw(gd, id) {
                     titleWidth;
                 if(mathJaxNode &&
                         ['top','bottom'].indexOf(opts.titleside)!==-1) {
-                    titleWidth = Plotly.Drawing.bBox(mathJaxNode).width;
+                    titleWidth = Drawing.bBox(mathJaxNode).width;
                 }
                 else {
                     // note: the formula below works for all titlesides,
@@ -389,7 +395,7 @@ module.exports = function draw(gd, id) {
                     // but the weird fullLayout._size.l is because the titleunshift
                     // transform gets removed by Drawing.bBox
                     titleWidth =
-                        Plotly.Drawing.bBox(titleCont.node()).right -
+                        Drawing.bBox(titleCont.node()).right -
                         xLeft - fullLayout._size.l;
                 }
                 innerWidth = Math.max(innerWidth,titleWidth);
@@ -406,8 +412,8 @@ module.exports = function draw(gd, id) {
                 width: Math.max(outerwidth,2),
                 height: Math.max(outerheight + 2*yExtraPx,2)
             })
-            .call(Plotly.Color.fill, opts.bgcolor)
-            .call(Plotly.Color.stroke, opts.bordercolor)
+            .call(Color.fill, opts.bgcolor)
+            .call(Color.stroke, opts.bordercolor)
             .style({'stroke-width': opts.borderwidth});
 
             container.selectAll('.cboutline').attr({
@@ -417,7 +423,7 @@ module.exports = function draw(gd, id) {
                 width: Math.max(thickPx,2),
                 height: Math.max(outerheight - 2*opts.ypad - titleHeight, 2)
             })
-            .call(Plotly.Color.stroke, opts.outlinecolor)
+            .call(Color.stroke, opts.outlinecolor)
             .style({
                 fill: 'None',
                 'stroke-width': opts.outlinewidth
@@ -430,7 +436,7 @@ module.exports = function draw(gd, id) {
                 'translate('+(fullLayout._size.l-xoffset)+','+fullLayout._size.t+')');
 
             //auto margin adjustment
-            Plotly.Plots.autoMargin(gd, id,{
+            Plots.autoMargin(gd, id,{
                 x: opts.x,
                 y: opts.y,
                 l: outerwidth*({right:1, center:0.5}[opts.xanchor]||0),
@@ -440,10 +446,10 @@ module.exports = function draw(gd, id) {
             });
         }
 
-        var cbDone = Plotly.Lib.syncOrAsync([
-            Plotly.Plots.previousPromises,
+        var cbDone = Lib.syncOrAsync([
+            Plots.previousPromises,
             drawAxis,
-            Plotly.Plots.previousPromises,
+            Plots.previousPromises,
             positionCB
         ], gd);
 
@@ -455,11 +461,11 @@ module.exports = function draw(gd, id) {
                 xf,
                 yf;
 
-            Plotly.Fx.dragElement({
+            Fx.dragElement({
                 element: container.node(),
                 prepFn: function() {
                     t0 = container.attr('transform');
-                    Plotly.Fx.setCursor(container);
+                    Fx.setCursor(container);
                 },
                 moveFn: function(dx, dy) {
                     var gs = gd._fullLayout._size;
@@ -467,17 +473,17 @@ module.exports = function draw(gd, id) {
                     container.attr('transform',
                         t0+' ' + 'translate('+dx+','+dy+')');
 
-                    xf = Plotly.Fx.dragAlign(xLeftFrac + (dx/gs.w), thickFrac,
+                    xf = Fx.dragAlign(xLeftFrac + (dx/gs.w), thickFrac,
                         0, 1, opts.xanchor);
-                    yf = Plotly.Fx.dragAlign(yBottomFrac - (dy/gs.h), lenFrac,
+                    yf = Fx.dragAlign(yBottomFrac - (dy/gs.h), lenFrac,
                         0, 1, opts.yanchor);
 
-                    var csr = Plotly.Fx.dragCursors(xf, yf,
+                    var csr = Fx.dragCursors(xf, yf,
                         opts.xanchor, opts.yanchor);
-                    Plotly.Fx.setCursor(container, csr);
+                    Fx.setCursor(container, csr);
                 },
                 doneFn: function(dragged) {
-                    Plotly.Fx.setCursor(container);
+                    Fx.setCursor(container);
 
                     if(dragged && xf!==undefined && yf!==undefined) {
                         var idNum = id.substr(2),
@@ -507,8 +513,8 @@ module.exports = function draw(gd, id) {
 
             // setter - for multi-part properties,
             // set only the parts that are provided
-            opts[name] = Plotly.Lib.isPlainObject(opts[name]) ?
-                 Plotly.Lib.extendFlat(opts[name], v) :
+            opts[name] = Lib.isPlainObject(opts[name]) ?
+                 Lib.extendFlat(opts[name], v) :
                  v;
 
             return component;

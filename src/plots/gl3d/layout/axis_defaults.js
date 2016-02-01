@@ -9,19 +9,19 @@
 
 'use strict';
 
-var Plotly = require('../../../plotly');
+var Lib = require('../../../lib');
 var layoutAttributes = require('./axis_attributes');
+var handleAxisDefaults = require('../../cartesian/axis_defaults');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
 var noop = function() {};
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
-    var Axes = Plotly.Axes;
     var containerIn, containerOut;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(containerIn, containerOut, layoutAttributes, attr, dflt);
+        return Lib.coerce(containerIn, containerOut, layoutAttributes, attr, dflt);
     }
 
     for (var j = 0; j < axesNames.length; j++) {
@@ -33,11 +33,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
             _name: axName
         };
 
-        layoutOut[axName] = containerOut = Axes.handleAxisDefaults(
+        layoutOut[axName] = containerOut = handleAxisDefaults(
             containerIn,
             containerOut,
-            coerce,
-            {
+            coerce, {
                 font: options.font,
                 letter: axName[0],
                 data: options.data,
