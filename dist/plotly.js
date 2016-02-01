@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.5.0
+* plotly.js v1.5.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -49694,22 +49694,13 @@ module.exports = {
     text: {
         valType: 'string',
         
-        description: [
-            'Sets the text associated with this annotation.',
-            'Plotly uses a subset of HTML tags to do things like',
-            'newline (<br>), bold (<b></b>), italics (<i></i>),',
-            'hyperlinks (<a href=\'...\'></a>). Tags <em>, <sup>, <sub>',
-            '<span> are also supported.'
-        ].join(' ')
+        
     },
     textangle: {
         valType: 'angle',
         dflt: 0,
         
-        description: [
-            'Sets the angle at which the `text` is drawn',
-            'with respect to the horizontal.'
-        ].join(' ')
+        
     },
     font: extendFlat({}, fontAttrs, {
         
@@ -49727,12 +49718,7 @@ module.exports = {
         values: ['left', 'center', 'right'],
         dflt: 'center',
         
-        description: [
-            'Sets the vertical alignment of the `text` with',
-            'respect to the set `x` and `y` position.',
-            'Has only an effect if `text` spans more two or more lines',
-            '(i.e. `text` contains one or more <br> HTML tags).'
-        ].join(' ')
+        
     },
     bgcolor: {
         valType: 'color',
@@ -49744,40 +49730,28 @@ module.exports = {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
         
-        description: [
-            'Sets the color of the border enclosing the annotation `text`.'
-        ].join(' ')
+        
     },
     borderpad: {
         valType: 'number',
         min: 0,
         dflt: 1,
         
-        description: [
-            'Sets the padding (in px) between the `text`',
-            'and the enclosing border.'
-        ].join(' ')
+        
     },
     borderwidth: {
         valType: 'number',
         min: 0,
         dflt: 1,
         
-        description: [
-            'Sets the width (in px) of the border enclosing',
-            'the annotation `text`.'
-        ].join(' ')
+        
     },
     // arrow
     showarrow: {
         valType: 'boolean',
         dflt: true,
         
-        description: [
-            'Determines whether or not the annotation is drawn with an arrow.',
-            'If *true*, `text` is placed near the arrow\'s tail.',
-            'If *false*, `text` lines up with the `x` and `y` provided.'
-        ].join(' ')
+        
     },
     arrowcolor: {
         valType: 'color',
@@ -49809,21 +49783,13 @@ module.exports = {
         valType: 'number',
         dflt: -10,
         
-        description: [
-            'Sets the x component of the arrow tail about the arrow head.',
-            'A positive (negative) component corresponds to an arrow pointing',
-            'from right to left (left to right)'
-        ].join(' ')
+        
     },
     ay: {
         valType: 'number',
         dflt: -30,
         
-        description: [
-            'Sets the y component of the arrow tail about the arrow head.',
-            'A positive (negative) component corresponds to an arrow pointing',
-            'from bottom to top (top to bottom)'
-        ].join(' ')
+        
     },
     // positioning
     xref: {
@@ -49833,41 +49799,19 @@ module.exports = {
             Cartesian.idRegex.x.toString()
         ],
         
-        description: [
-            'Sets the annotation\'s x coordinate axis.',
-            'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
-            'refers to an x coordinate',
-            'If set to *paper*, the `x` position refers to the distance from',
-            'the left side of the plotting area in normalized coordinates',
-            'where 0 (1) corresponds to the left (right) side.'
-        ].join(' ')
+        
     },
     x: {
         valType: 'number',
         
-        description: [
-            'Sets the annotation\'s x position.',
-            'Note that dates and categories are converted to numbers.'
-        ].join(' ')
+        
     },
     xanchor: {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'auto',
         
-        description: [
-            'Sets the annotation\'s horizontal position anchor',
-            'This anchor binds the `x` position to the *left*, *center*',
-            'or *right* of the annotation.',
-            'For example, if `x` is set to 1, `xref` to *paper* and',
-            '`xanchor` to *right* then the right-most portion of the',
-            'annotation lines up with the right-most edge of the',
-            'plotting area.',
-            'If *auto*, the anchor is equivalent to *center* for',
-            'data-referenced annotations',
-            'whereas for paper-referenced, the anchor picked corresponds',
-            'to the closest side.'
-        ].join(' ')
+        
     },
     yref: {
         valType: 'enumerated',
@@ -49876,50 +49820,26 @@ module.exports = {
             Cartesian.idRegex.y.toString()
         ],
         
-        description: [
-            'Sets the annotation\'s y coordinate axis.',
-            'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
-            'refers to an y coordinate',
-            'If set to *paper*, the `y` position refers to the distance from',
-            'the bottom of the plotting area in normalized coordinates',
-            'where 0 (1) corresponds to the bottom (top).'
-        ].join(' ')
+        
     },
     y: {
         valType: 'number',
         
-        description: [
-            'Sets the annotation\'s y position.',
-            'Note that dates and categories are converted to numbers.'
-        ].join(' ')
+        
     },
     yanchor: {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto',
         
-        description: [
-            'Sets the annotation\'s vertical position anchor',
-            'This anchor binds the `y` position to the *top*, *middle*',
-            'or *bottom* of the annotation.',
-            'For example, if `y` is set to 1, `yref` to *paper* and',
-            '`yanchor` to *top* then the top-most portion of the',
-            'annotation lines up with the top-most edge of the',
-            'plotting area.',
-            'If *auto*, the anchor is equivalent to *middle* for',
-            'data-referenced annotations',
-            'whereas for paper-referenced, the anchor picked corresponds',
-            'to the closest side.'
-        ].join(' ')
+        
     },
 
     _deprecated: {
         ref: {
             valType: 'string',
             
-            description: [
-                'Obsolete. Set `xref` and `yref` separately instead.'
-            ].join(' ')
+            
         }
     }
 };
@@ -51045,56 +50965,35 @@ module.exports = {
 //         
 //         values: ['left', 'right', 'top', 'bottom'],
 //         dflt: 'right',
-//         description: [
-//             'Determines which side are the labels on',
-//             '(so left and right make vertical bars, etc.)'
-//         ].join(' ')
+//         
 //     },
     thicknessmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
         
         dflt: 'pixels',
-        description: [
-            'Determines whether this color bar\'s thickness',
-            '(i.e. the measure in the constant color direction)',
-            'is set in units of plot *fraction* or in *pixels*.',
-            'Use `thickness` to set the value.'
-        ].join(' ')
+        
     },
     thickness: {
         valType: 'number',
         
         min: 0,
         dflt: 30,
-        description: [
-            'Sets the thickness of the color bar',
-            'This measure excludes the size of the padding, ticks and labels.'
-        ].join(' ')
+        
     },
     lenmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],
         
         dflt: 'fraction',
-        description: [
-            'Determines whether this color bar\'s length',
-            '(i.e. the measure in the color variation direction)',
-            'is set in units of plot *fraction* or in *pixels.',
-            'Use `len` to set the value.'
-        ].join(' ')
+        
     },
     len: {
         valType: 'number',
         min: 0,
         dflt: 1,
         
-        description: [
-            'Sets the length of the color bar',
-            'This measure excludes the padding of both ends.',
-            'That is, the color bar length is this length minus the',
-            'padding on both ends.'
-        ].join(' ')
+        
     },
     x: {
         valType: 'number',
@@ -51102,20 +51001,14 @@ module.exports = {
         min: -2,
         max: 3,
         
-        description: [
-            'Sets the x position of the color bar (in plot fraction).'
-        ].join(' ')
+        
     },
     xanchor: {
         valType: 'enumerated',
         values: ['left', 'center', 'right'],
         dflt: 'left',
         
-        description: [
-            'Sets this color bar\'s horizontal position anchor.',
-            'This anchor binds the `x` position to the *left*, *center*',
-            'or *right* of the color bar.'
-        ].join(' ')
+        
     },
     xpad: {
         valType: 'number',
@@ -51130,20 +51023,14 @@ module.exports = {
         dflt: 0.5,
         min: -2,
         max: 3,
-        description: [
-            'Sets the y position of the color bar (in plot fraction).'
-        ].join(' ')
+        
     },
     yanchor: {
         valType: 'enumerated',
         values: ['top', 'middle', 'bottom'],
         
         dflt: 'middle',
-        description: [
-            'Sets this color bar\'s vertical position anchor',
-            'This anchor binds the `y` position to the *top*, *middle*',
-            'or *bottom* of the color bar.'
-        ].join(' ')
+        
     },
     ypad: {
         valType: 'number',
@@ -51163,9 +51050,7 @@ module.exports = {
         
         min: 0,
         dflt: 0,
-        description: [
-            'Sets the width (in px) or the border enclosing this color bar.'
-        ].join(' ')
+        
     },
     bgcolor: {
         valType: 'color',
@@ -51201,19 +51086,14 @@ module.exports = {
         
     },
     titlefont: extendFlat({}, fontAttrs, {
-        description: [
-            'Sets this color bar\'s title font.'
-        ].join(' ')
+        
     }),
     titleside: {
         valType: 'enumerated',
         values: ['right', 'top', 'bottom'],
         
         dflt: 'top',
-        description: [
-            'Determines the location of the colorbar title',
-            'with respect to the color bar.'
-        ].join(' ')
+        
     }
 };
 
@@ -51872,10 +51752,7 @@ module.exports = {
         valType: 'boolean',
         
         dflt: true,
-        description: [
-            'Determines the whether or not the color domain is computed',
-            'with respect to the input data.'
-        ].join(' ')
+        
     },
     zmin: {
         valType: 'number',
@@ -51892,26 +51769,13 @@ module.exports = {
     colorscale: {
         valType: 'colorscale',
         
-        description: [
-            'Sets the colorscale.',
-            'The colorscale must be an array containing',
-            'arrays mapping a normalized value to an',
-            'rgb, rgba, hex, hsl, hsv, or named color string.',
-            'At minimum, a mapping for the lowest (0) and highest (1)',
-            'values are required. For example,',
-            '`[[0, \'rgb(0,0,255)\', [1, \'rgb(255,0,0)\']]`.',
-            'To control the bounds of the colorscale in z space,',
-            'use zmin and zmax'
-        ].join(' ')
+        
     },
     autocolorscale: {
         valType: 'boolean',
         
         dflt: true,  // gets overrode in 'heatmap' & 'surface' for backwards comp.
-        description: [
-            'Determines whether or not the colorscale is picked using the sign of',
-            'the input z values.'
-        ].join(' ')
+        
     },
     reversescale: {
         valType: 'boolean',
@@ -51923,9 +51787,7 @@ module.exports = {
         valType: 'boolean',
         
         dflt: true,
-        description: [
-            'Determines whether or not a colorbar is displayed for this trace.'
-        ].join(' ')
+        
     },
 
     _deprecated: {
@@ -53467,77 +53329,40 @@ module.exports = {
     visible: {
         valType: 'boolean',
         
-        description: [
-            'Determines whether or not this set of error bars is visible.'
-        ].join(' ')
+        
     },
     type: {
         valType: 'enumerated',
         values: ['percent', 'constant', 'sqrt', 'data'],
         
-        description: [
-            'Determines the rule used to generate the error bars.',
-
-            'If *constant`, the bar lengths are of a constant value.',
-            'Set this constant in `value`.',
-
-            'If *percent*, the bar lengths correspond to a percentage of',
-            'underlying data. Set this percentage in `value`.',
-
-            'If *sqrt*, the bar lengths correspond to the sqaure of the',
-            'underlying data.',
-
-            'If *array*, the bar lengths are set with data set `array`.'
-        ].join(' ')
+        
     },
     symmetric: {
         valType: 'boolean',
         
-        description: [
-            'Determines whether or not the error bars have the same length',
-            'in both direction',
-            '(top/bottom for vertical bars, left/right for horizontal bars.'
-        ].join(' ')
+        
     },
     array: {
         valType: 'data_array',
-        description: [
-            'Sets the data corresponding the length of each error bar.',
-            'Values are plotted relative to the underlying data.'
-        ].join(' ')
+        
     },
     arrayminus: {
         valType: 'data_array',
-        description: [
-            'Sets the data corresponding the length of each error bar in the',
-            'bottom (left) direction for vertical (horizontal) bars',
-            'Values are plotted relative to the underlying data.'
-        ].join(' ')
+        
     },
     value: {
         valType: 'number',
         min: 0,
         dflt: 10,
         
-        description: [
-            'Sets the value of either the percentage',
-            '(if `type` is set to *percent*) or the constant',
-            '(if `type` is set to *constant*) corresponding to the lengths of',
-            'the error bars.'
-        ].join(' ')
+        
     },
     valueminus: {
         valType: 'number',
         min: 0,
         dflt: 10,
         
-        description: [
-            'Sets the value of either the percentage',
-            '(if `type` is set to *percent*) or the constant',
-            '(if `type` is set to *constant*) corresponding to the lengths of',
-            'the error bars in the',
-            'bottom (left) direction for vertical (horizontal) bars'
-        ].join(' ')
+        
     },
     traceref: {
         valType: 'integer',
@@ -53575,20 +53400,14 @@ module.exports = {
         valType: 'number',
         min: 0,
         
-        description: [
-            'Sets the width (in px) of the cross-bar at both ends',
-            'of the error bars.'
-        ].join(' ')
+        
     },
 
     _deprecated: {
         opacity: {
             valType: 'number',
             
-            description: [
-                'Obsolete.',
-                'Use the alpha channel in error bar `color` to set the opacity.'
-            ].join(' ')
+            
         }
     }
 };
@@ -54053,30 +53872,14 @@ module.exports = {
         flags: ['reversed', 'grouped'],
         extras: ['normal'],
         
-        description: [
-            'Determines the order at which the legend items are displayed.',
-
-            'If *normal*, the items are displayed top-to-bottom in the same',
-            'order as the input data.',
-
-            'If *reversed*, the items are displayed in the opposite order',
-            'as *normal*.',
-
-            'If *grouped*, the items are displayed in groups',
-            '(when a trace `legendgroup` is provided).',
-
-            'if *grouped+reversed*, the items are displayed in the opposite order',
-            'as *grouped*.'
-        ].join(' ')
+        
     },
     tracegroupgap: {
         valType: 'number',
         min: 0,
         dflt: 10,
         
-        description: [
-            'Sets the amount of vertical space (in px) between legend groups.'
-        ].join(' ')
+        
     },
     x: {
         valType: 'number',
@@ -54091,11 +53894,7 @@ module.exports = {
         values: ['auto', 'left', 'center', 'right'],
         dflt: 'left',
         
-        description: [
-            'Sets the legend\'s horizontal position anchor.',
-            'This anchor binds the `x` position to the *left*, *center*',
-            'or *right* of the legend.'
-        ].join(' ')
+        
     },
     y: {
         valType: 'number',
@@ -54110,11 +53909,7 @@ module.exports = {
         values: ['auto', 'top', 'middle', 'bottom'],
         dflt: 'auto',
         
-        description: [
-            'Sets the legend\'s vertical position anchor',
-            'This anchor binds the `y` position to the *top*, *middle*',
-            'or *bottom* of the legend.'
-        ].join(' ')
+        
     }
 };
 
@@ -55227,7 +55022,7 @@ modeBarButtons.zoomInGeo = {
 
 modeBarButtons.zoomOutGeo = {
     name: 'zoomOutGeo',
-    title: 'Zoom in',
+    title: 'Zoom out',
     attr: 'zoom',
     val: 'out',
     icon: Icons.zoom_minus,
@@ -55819,102 +55614,41 @@ module.exports = {
         valType: 'enumerated',
         values: ['circle', 'rect', 'path', 'line'],
         
-        description: [
-            'Specifies the shape type to be drawn.',
-
-            'If *line*, a line is drawn from (`x0`,`y0`) to (`x1`,`y1`)',
-
-            'If *circle*, a circle is drawn from',
-            '((`x0`+`x1`)/2, (`y0`+`y1`)/2))',
-            'with radius',
-            '(|(`x0`+`x1`)/2 - `x0`|, |(`y0`+`y1`)/2 -`y0`)|)',
-
-            'If *rect*, a rectangle is drawn linking',
-            '(`x0`,`y0`), (`x1`,`y0`), (`x1`,`y1`), (`x0`,`y1`), (`x0`,`y0`)',
-
-            'If *path*, draw a custom SVG path using `path`.'
-        ].join(' ')
+        
     },
 
     xref: extendFlat({}, annAttrs.xref, {
-        description: [
-            'Sets the shape\'s x coordinate axis.',
-            'If set to an x axis id (e.g. *x* or *x2*), the `x` position',
-            'refers to an x coordinate',
-            'If set to *paper*, the `x` position refers to the distance from',
-            'the left side of the plotting area in normalized coordinates',
-            'where *0* (*1*) corresponds to the left (right) side.'
-        ].join(' ')
+        
     }),
     x0: {
         valType: 'any',
         
-        description: [
-            'Sets the shape\'s starting x position.',
-            'See `type` for more info.'
-        ].join(' ')
+        
     },
     x1: {
         valType: 'any',
         
-        description: [
-            'Sets the shape\'s end x position.',
-            'See `type` for more info.'
-        ].join(' ')
+        
     },
 
     yref: extendFlat({}, annAttrs.yref, {
-        description: [
-            'Sets the annotation\'s y coordinate axis.',
-            'If set to an y axis id (e.g. *y* or *y2*), the `y` position',
-            'refers to an y coordinate',
-            'If set to *paper*, the `y` position refers to the distance from',
-            'the bottom of the plotting area in normalized coordinates',
-            'where *0* (*1*) corresponds to the bottom (top).'
-        ].join(' ')
+        
     }),
     y0: {
         valType: 'any',
         
-        description: [
-            'Sets the shape\'s starting y position.',
-            'See `type` for more info.'
-        ].join(' ')
+        
     },
     y1: {
         valType: 'any',
         
-        description: [
-            'Sets the shape\'s end y position.',
-            'See `type` for more info.'
-        ].join(' ')
+        
     },
 
     path: {
         valType: 'string',
         
-        description: [
-            'For `type` *path* - a valid SVG path but with the pixel values',
-            'replaced by data values. There are a few restrictions / quirks',
-            'only absolute instructions, not relative. So the allowed segments',
-            'are: M, L, H, V, Q, C, T, S, and Z',
-            'arcs (A) are not allowed because radius rx and ry are relative.',
-
-            'In the future we could consider supporting relative commands,',
-            'but we would have to decide on how to handle date and log axes.',
-            'Note that even as is, Q and C Bezier paths that are smooth on',
-            'linear axes may not be smooth on log, and vice versa.',
-            'no chained "polybezier" commands - specify the segment type for',
-            'each one.',
-
-            'On category axes, values are numbers scaled to the serial numbers',
-            'of categories because using the categories themselves there would',
-            'be no way to describe fractional positions',
-            'On data axes: because space and T are both normal components of path',
-            'strings, we can\'t use either to separate date from time parts.',
-            'Therefore we\'ll use underscore for this purpose:',
-            '2015-02-21_13:45:56.789'
-        ].join(' ')
+        
     },
 
     opacity: {
@@ -55935,9 +55669,7 @@ module.exports = {
         valType: 'color',
         dflt: 'rgba(0,0,0,0)',
         
-        description: [
-            'Sets the color filling the shape\'s interior.'
-        ].join(' ')
+        
     }
 };
 
@@ -57265,7 +56997,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.5.0';
+exports.version = '1.5.1';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -57367,24 +57099,18 @@ var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 exports.valObjects = {
     data_array: {
         // You can use *dflt=[] to force said array to exist though.
-        description: [
-            'An {array} of data.',
-            'The value MUST be an {array}, or we ignore it.'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt) {
             if(Array.isArray(v)) propOut.set(v);
             else if(dflt!==undefined) propOut.set(dflt);
         }
     },
     enumerated: {
-        description: [
-            'Enumerated value type. The available values are listed',
-            'in `values`.'
-        ].join(' '),
-        requiredOpts: ['values'],
-        otherOpts: ['dflt', 'coerceNumber', 'arrayOk'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt, opts) {
             if(opts.coerceNumber) v = +v;
             if(opts.values.indexOf(v)===-1) propOut.set(dflt);
@@ -57393,22 +57119,17 @@ exports.valObjects = {
     },
     'boolean': {
         
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        
+        
         coerceFunction: function(v, propOut, dflt) {
             if(v===true || v===false) propOut.set(v);
             else propOut.set(dflt);
         }
     },
     number: {
-        description: [
-            'A number or a numeric value',
-            '(e.g. a number inside a string).',
-            'When applicable, values greater (less) than `max` (`min`)',
-            'are coerced to the `dflt`.'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt', 'min', 'max', 'arrayOk'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt, opts) {
             if(!isNumeric(v) ||
                     (opts.min!==undefined && v<opts.min) ||
@@ -57419,13 +57140,9 @@ exports.valObjects = {
         }
     },
     integer: {
-        description: [
-            'An integer or an integer inside a string.',
-            'When applicable, values greater (less) than `max` (`min`)',
-            'are coerced to the `dflt`.'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt', 'min', 'max'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt, opts) {
             if(v%1 || !isNumeric(v) ||
                     (opts.min!==undefined && v<opts.min) ||
@@ -57436,14 +57153,10 @@ exports.valObjects = {
         }
     },
     string: {
-        description: [
-            'A string value.',
-            'Numbers are converted to strings except for attributes with',
-            '`strict` set to true.'
-        ].join(' '),
-        requiredOpts: [],
+        
+        
         // TODO 'values shouldn't be in there (edge case: 'dash' in Scatter)
-        otherOpts: ['dflt', 'noBlank', 'strict', 'arrayOk', 'values'],
+        
         coerceFunction: function(v, propOut, dflt, opts) {
             if(opts.strict===true && typeof v !== 'string') {
                 propOut.set(dflt);
@@ -57458,44 +57171,26 @@ exports.valObjects = {
         }
     },
     color: {
-        description: [
-            'A string describing color.',
-            'Supported formats:',
-            '- hex (e.g. \'#d3d3d3\')',
-            '- rgb (e.g. \'rgb(255, 0, 0)\')',
-            '- rgba (e.g. \'rgb(255, 0, 0, 0.5)\')',
-            '- hsl (e.g. \'hsl(0, 100%, 50%)\')',
-            '- hsv (e.g. \'hsv(0, 100%, 100%)\')',
-            '- named colors (full list: http://www.w3.org/TR/css3-color/#svg-color)'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt', 'arrayOk'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt) {
             if(tinycolor(v).isValid()) propOut.set(v);
             else propOut.set(dflt);
         }
     },
     colorscale: {
-        description: [
-            'A Plotly colorscale either picked by a name:',
-            '(any of', colorscaleNames.join(', '), ')',
-            'customized as an {array} of 2-element {arrays} where',
-            'the first element is the normalized color level value',
-            '(starting at *0* and ending at *1*),',
-            'and the second item is a valid color string.'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt) {
             propOut.set(getColorscale(v, dflt));
         }
     },
     angle: {
-        description: [
-            'A number (in degree) between -180 and 180.'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt) {
             if(v==='auto') propOut.set('auto');
             else if(!isNumeric(v)) propOut.set(dflt);
@@ -57506,11 +57201,9 @@ exports.valObjects = {
         }
     },
     axisid: {
-        description: [
-            'An axis id string (e.g. \'x\', \'x2\', \'x3\', ...).'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt) {
             if(typeof v === 'string' && v.charAt(0)===dflt) {
                 var axnum = Number(v.substr(1));
@@ -57523,11 +57216,9 @@ exports.valObjects = {
         }
     },
     sceneid: {
-        description: [
-            'A scene id string (e.g. \'scene\', \'scene2\', \'scene3\', ...).'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt) {
             if(typeof v === 'string' && v.substr(0,5)===dflt) {
                 var scenenum = Number(v.substr(5));
@@ -57540,11 +57231,9 @@ exports.valObjects = {
         }
     },
     geoid: {
-        description: [
-            'A geo id string (e.g. \'geo\', \'geo2\', \'geo3\', ...).'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt) {
             if(typeof v === 'string' && v.substr(0,3)===dflt) {
                 var geonum = Number(v.substr(3));
@@ -57557,15 +57246,9 @@ exports.valObjects = {
         }
     },
     flaglist: {
-        description: [
-            'A string representing a combination of flags',
-            '(order does not matter here).',
-            'Combine any of the available `flags` with *+*.',
-            '(e.g. (\'lines+markers\')).',
-            'Values in `extras` cannot be combined.'
-        ].join(' '),
-        requiredOpts: ['flags'],
-        otherOpts: ['dflt', 'extras'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt, opts) {
             if(typeof v !== 'string') {
                 propOut.set(dflt);
@@ -57590,19 +57273,17 @@ exports.valObjects = {
     },
     any: {
         
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        
+        
         coerceFunction: function(v, propOut, dflt) {
             if(v===undefined) propOut.set(dflt);
             else propOut.set(v);
         }
     },
     info_array: {
-        description: [
-            'An {array} of plot information.'
-        ].join(' '),
-        requiredOpts: ['items'],
-        otherOpts: ['dflt'],
+        
+        
+        
         coerceFunction: function(v, propOut, dflt, opts) {
             if(!Array.isArray(v)) {
                 propOut.set(dflt);
@@ -60643,7 +60324,7 @@ Plotly.plot = function(gd, data, layout, config) {
     Events.init(gd);
 
     var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
-    if(okToPlot===false) return;
+    if(okToPlot===false) return Promise.reject();
 
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
@@ -60696,7 +60377,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // signal to drag handler that after everything else is done
         // we need to replot, because something has changed
         gd._replotPending = true;
-        return;
+        return Promise.reject();
     } else {
         // we're going ahead with a replot now
         gd._replotPending = false;
@@ -60835,7 +60516,7 @@ Plotly.plot = function(gd, data, layout, config) {
             subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
             modules = gd._modules;
 
-        var i, j, cd, trace, uid, subplot, subplotInfo,
+        var i, j, trace, subplot, subplotInfo,
             cdSubplot, cdError, cdModule, _module;
 
         function getCdSubplot(calcdata, subplot) {
@@ -60877,12 +60558,21 @@ Plotly.plot = function(gd, data, layout, config) {
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
         for (i = 0; i < calcdata.length; i++) {
-            cd = calcdata[i];
-            trace = cd[0].trace;
-            if (trace.visible !== true || !trace._module.colorbar) {
+            trace = calcdata[i][0].trace;
+
+            var isVisible = (trace.visible === true),
                 uid = trace.uid;
-                fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid+',#clip'+uid)
-                    .remove();
+
+            if(!isVisible || !Plots.traceIs(trace, '2dMap')) {
+                fullLayout._paper.selectAll(
+                    '.hm' + uid +
+                    ',.contour' + uid +
+                    ',#clip' + uid
+                ).remove();
+            }
+
+            if(!isVisible || !trace._module.colorbar) {
+                fullLayout._infolayer.selectAll('.cb' + uid).remove();
             }
         }
 
@@ -62156,7 +61846,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     }
     else {
         console.log('restyle fail',astr,val,traces);
-        return new Promise.reject();
+        return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
@@ -62679,7 +62369,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     gd = getGraphDiv(gd);
 
     if(gd.framework && gd.framework.isPolar) {
-        return new Promise.resolve(gd);
+        return Promise.resolve(gd);
     }
 
     var layout = gd.layout,
@@ -62697,7 +62387,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     else if(Lib.isPlainObject(astr)) aobj = astr;
     else {
         console.log('relayout fail',astr,val);
-        return new Promise.reject();
+        return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
@@ -63238,6 +62928,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
     // 4. scatter
     // 5. box plots
     function plotLayers(svg) {
+        svg.append('g').classed('imagelayer', true);
         svg.append('g').classed('maplayer', true);
         svg.append('g').classed('barlayer', true);
         svg.append('g').classed('errorlayer', true);
@@ -63819,10 +63510,7 @@ function mergeValTypeAndRole(attrs) {
         return {
             valType: 'string',
             
-            description: [
-                'Sets the source reference on plot.ly for ',
-                attrName, '.'
-            ].join(' ')
+            
         };
     }
 
@@ -64081,31 +63769,19 @@ module.exports = {
         values: [true, false, 'legendonly'],
         
         dflt: true,
-        description: [
-            'Determines whether or not this trace is visible.',
-            'If *legendonly*, the trace is not drawn,',
-            'but can appear as a legend item',
-            '(provided that the legend itself is visible).'
-        ].join(' ')
+        
     },
     showlegend: {
         valType: 'boolean',
         
         dflt: true,
-        description: [
-            'Determines whether or not an item corresponding to this',
-            'trace is shown in the legend.'
-        ].join(' ')
+        
     },
     legendgroup: {
         valType: 'string',
         
         dflt: '',
-        description: [
-            'Sets the legend group for this trace.',
-            'Traces part of the same legend group hide/show at the same time',
-            'when toggling legend items.'
-        ].join(' ')
+        
     },
     opacity: {
         valType: 'number',
@@ -64118,10 +63794,7 @@ module.exports = {
     name: {
         valType: 'string',
         
-        description: [
-            'Sets the trace name.',
-            'The trace name appear as the legend item and on hover.'
-        ].join(' ')
+        
     },
     uid: {
         valType: 'string',
@@ -64142,21 +63815,13 @@ module.exports = {
             noBlank: true,
             strict: true,
             
-            description: [
-                'The stream id number links a data trace on a plot with a stream.',
-                'See https://plot.ly/settings for more details.'
-            ].join(' ')
+            
         },
         maxpoints: {
             valType: 'number',
             min: 0,
             
-            description: [
-                'Sets the maximum number of points to keep on the plots from an',
-                'incoming stream.',
-                'If `maxpoints` is set to *50*, only the newest 50 points will',
-                'be displayed on the plot.'
-            ].join(' ')
+            
         }
     }
 };
@@ -64178,25 +63843,13 @@ module.exports = {
         valType: 'axisid',
         
         dflt: 'x',
-        description: [
-            'Sets a reference between this trace\'s x coordinates and',
-            'a 2D cartesian x axis.',
-            'If *x* (the default value), the x coordinates refer to',
-            '`layout.xaxis`.',
-            'If *x2*, the x coordinates refer to `layout.xaxis2`, and so on.'
-        ].join(' ')
+        
     },
     yaxis: {
         valType: 'axisid',
         
         dflt: 'y',
-        description: [
-            'Sets a reference between this trace\'s y coordinates and',
-            'a 2D cartesian y axis.',
-            'If *y* (the default value), the y coordinates refer to',
-            '`layout.yaxis`.',
-            'If *y2*, the y coordinates refer to `layout.xaxis2`, and so on.'
-        ].join(' ')
+        
     }
 };
 
@@ -66965,12 +66618,7 @@ fx.layoutAttributes = {
         valType: 'enumerated',
         
         values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable'],
-        description: [
-            'Determines the mode of drag interactions.',
-            '*select* and *lasso* apply only to scatter traces with',
-            'markers or text. *orbit* and *turntable* apply only to',
-            '3D scenes.'
-        ].join(' ')
+        
     },
     hovermode: {
         valType: 'enumerated',
@@ -69124,9 +68772,7 @@ module.exports = {
         
     },
     titlefont: extendFlat({}, fontAttrs, {
-        description: [
-            'Sets this axis\' title font.'
-        ].join(' ')
+        
     }),
     type: {
         valType: 'enumerated',
@@ -69136,38 +68782,21 @@ module.exports = {
         values: ['-', 'linear', 'log', 'date', 'category'],
         dflt: '-',
         
-        description: [
-            'Sets the axis type.',
-            'By default, plotly attempts to determined the axis type',
-            'by looking into the data of the traces that referenced',
-            'the axis in question.'
-        ].join(' ')
+        
     },
     autorange: {
         valType: 'enumerated',
         values: [true, false, 'reversed'],
         dflt: true,
         
-        description: [
-            'Determines whether or not the range of this axis is',
-            'computed in relation to the input data.',
-            'See `rangemode` for more info.',
-            'If `range` is provided, then `autorange` is set to *false*.'
-        ].join(' ')
+        
     },
     rangemode: {
         valType: 'enumerated',
         values: ['normal', 'tozero', 'nonnegative'],
         dflt: 'normal',
         
-        description: [
-            'If *normal*, the range is computed in relation to the extrema',
-            'of the input data.',
-            'If *tozero*`, the range extends to 0,',
-            'regardless of the input data',
-            'If *nonnegative*, the range is non-negative,',
-            'regardless of the input data.'
-        ].join(' ')
+        
     },
     range: {
         valType: 'info_array',
@@ -69176,124 +68805,60 @@ module.exports = {
             {valType: 'number'},
             {valType: 'number'}
         ],
-        description: [
-            'Sets the range of this axis.',
-            'If the axis `type` is *log*, then you must take the log of your desired range',
-            '(e.g. to set the range from 1 to 100, set the range from 0 to 2).',
-            'If the axis `type` is *date*, then you must convert the date to unix time in milliseconds',
-            '(the number of milliseconds since January 1st, 1970). For example, to set the date range from',
-            'January 1st 1970 to November 4th, 2013, set the range from 0 to 1380844800000.0'
-        ].join(' ')
+        
     },
     fixedrange: {
         valType: 'boolean',
         dflt: false,
         
-        description: [
-            'Determines whether or not this axis is zoom-able.',
-            'If true, then zoom is disabled.'
-        ].join(' ')
+        
     },
     // ticks
     tickmode: {
         valType: 'enumerated',
         values: ['auto', 'linear', 'array'],
         
-        description: [
-            'Sets the tick mode for this axis.',
-            'If *auto*, the number of ticks is set via `nticks`.',
-            'If *linear*, the placement of the ticks is determined by',
-            'a starting position `tick0` and a tick step `dtick`',
-            '(*linear* is the default value if `tick0` and `dtick` are provided).',
-            'If *array*, the placement of the ticks is set via `tickvals`',
-            'and the tick text is `ticktext`.',
-            '(*array* is the default value if `tickvals` is provided).'
-        ].join(' ')
+        
     },
     nticks: {
         valType: 'integer',
         min: 0,
         dflt: 0,
         
-        description: [
-            'Sets the number of ticks.',
-            'Has an effect only if `tickmode` is set to *auto*.'
-        ].join(' ')
+        
     },
     tick0: {
         valType: 'number',
         dflt: 0,
         
-        description: [
-            'Sets the placement of the first tick on this axis.',
-            'Use with `dtick`.',
-            'If the axis `type` is *log*, then you must take the log of your starting tick',
-            '(e.g. to set the starting tick to 100, set the `tick0` to 2).',
-            'If the axis `type` is *date*, then you must convert the date to unix time in milliseconds',
-            '(the number of milliseconds since January 1st, 1970).',
-            'For example, to set the starting tick to',
-            'November 4th, 2013, set the range to 1380844800000.0.'
-        ].join(' ')
+        
     },
     dtick: {
         valType: 'any',
         dflt: 1,
         
-        description: [
-            'Sets the step in-between ticks on this axis',
-            'Use with `tick0`.',
-            'If the axis `type` is *log*, then ticks are set every 10^(n*dtick) where n',
-            'is the tick number. For example,',
-            'to set a tick mark at 1, 10, 100, 1000, ... set dtick to 1.',
-            'To set tick marks at 1, 100, 10000, ... set dtick to 2.',
-            'To set tick marks at 1, 5, 25, 125, 625, 3125, ... set dtick to log_10(5), or 0.69897000433.',
-            'If the axis `type` is *date*, then you must convert the time to milliseconds.',
-            'For example, to set the interval between ticks to one day,',
-            'set `dtick` to 86400000.0.'
-        ].join(' ')
+        
     },
     tickvals: {
         valType: 'data_array',
-        description: [
-            'Sets the values at which ticks on this axis appear.',
-            'Only has an effect if `tickmode` is set to *array*.',
-            'Used with `ticktext`.'
-        ].join(' ')
+        
     },
     ticktext: {
         valType: 'data_array',
-        description: [
-            'Sets the text displayed at the ticks position via `tickvals`.',
-            'Only has an effect if `tickmode` is set to *array*.',
-            'Used with `ticktext`.'
-        ].join(' ')
+        
     },
     ticks: {
         valType: 'enumerated',
         values: ['outside', 'inside', ''],
         
-        description: [
-            'Determines whether ticks are drawn or not.',
-            'If **, this axis\' ticks are not drawn.',
-            'If *outside* (*inside*), this axis\' are drawn outside (inside)',
-            'the axis lines.'
-        ].join(' ')
+        
     },
     mirror: {
         valType: 'enumerated',
         values: [true, 'ticks', false, 'all', 'allticks'],
         dflt: false,
         
-        description: [
-            'Determines if the axis lines or/and ticks are mirrored to',
-            'the opposite side of the plotting area.',
-            'If *true*, the axis lines are mirrored.',
-            'If *ticks*, the axis lines and ticks are mirrored.',
-            'If *false*, mirroring is disable.',
-            'If *all*, axis lines are mirrored on all shared-axes subplots.',
-            'If *allticks*, axis lines and ticks are mirrored',
-            'on all shared-axes subplots.'
-        ].join(' ')
+        
     },
     ticklen: {
         valType: 'number',
@@ -69328,11 +68893,7 @@ module.exports = {
         valType: 'angle',
         dflt: 'auto',
         
-        description: [
-            'Sets the angle of the tick labels with respect to the horizontal.',
-            'For example, a `tickangle` of -90 draws the tick labels',
-            'vertically.'
-        ].join(' ')
+        
     },
     tickprefix: {
         valType: 'string',
@@ -69345,12 +68906,7 @@ module.exports = {
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
         
-        description: [
-            'If *all*, all tick labels are displayed with a prefix.',
-            'If *first*, only the first tick is displayed with a prefix.',
-            'If *last*, only the last tick is displayed with a suffix.',
-            'If *none*, tick prefixes are hidden.'
-        ].join(' ')
+        
     },
     ticksuffix: {
         valType: 'string',
@@ -69370,61 +68926,33 @@ module.exports = {
         values: ['all', 'first', 'last', 'none'],
         dflt: 'all',
         
-        description: [
-            'If *all*, all exponents are shown besides their significands.',
-            'If *first*, only the exponent of the first tick is shown.',
-            'If *last*, only the exponent of the last tick is shown.',
-            'If *none*, no exponents appear.'
-        ].join(' ')
+        
     },
     exponentformat: {
         valType: 'enumerated',
         values: ['none', 'e', 'E', 'power', 'SI', 'B'],
         dflt: 'B',
         
-        description: [
-            'Determines a formatting rule for the tick exponents.',
-            'For example, consider the number 1,000,000,000.',
-            'If *none*, it appears as 1,000,000,000.',
-            'If *e*, 1e+9.',
-            'If *E*, 1E+9.',
-            'If *power*, 1x10^9 (with 9 in a super script).',
-            'If *SI*, 1G.',
-            'If *B*, 1B.'
-        ].join(' ')
+        
     },
     tickformat: {
         valType: 'string',
         dflt: '',
         
-        description: [
-            'Sets the tick label formatting rule using the',
-            'python/d3 number formatting language.',
-            'See https://github.com/mbostock/d3/wiki/Formatting#numbers',
-            'or https://docs.python.org/release/3.1.3/library/string.html#formatspec',
-            'for more info.'
-        ].join(' ')
+        
     },
     hoverformat: {
         valType: 'string',
         dflt: '',
         
-        description: [
-            'Sets the hover text formatting rule for data values on this axis,',
-            'using the python/d3 number formatting language.',
-            'See https://github.com/mbostock/d3/wiki/Formatting#numbers',
-            'or https://docs.python.org/release/3.1.3/library/string.html#formatspec',
-            'for more info.'
-        ].join(' ')
+        
     },
     // lines and grids
     showline: {
         valType: 'boolean',
         dflt: false,
         
-        description: [
-            'Determines whether or not a line bounding this axis is drawn.'
-        ].join(' ')
+        
     },
     linecolor: {
         valType: 'color',
@@ -69442,10 +68970,7 @@ module.exports = {
     showgrid: {
         valType: 'boolean',
         
-        description: [
-            'Determines whether or not grid lines are drawn.',
-            'If *true*, the grid lines are drawn at every tick mark.'
-        ].join(' ')
+        
     },
     gridcolor: {
         valType: 'color',
@@ -69463,11 +68988,7 @@ module.exports = {
     zeroline: {
         valType: 'boolean',
         
-        description: [
-            'Determines whether or not a line is drawn at along the 0 value',
-            'of this axis.',
-            'If *true*, the zero line is drawn on top of the grid lines.'
-        ].join(' ')
+        
     },
     zerolinecolor: {
         valType: 'color',
@@ -69492,11 +69013,7 @@ module.exports = {
             Cartesian.idRegex.y.toString()
         ],
         
-        description: [
-            'If set to an opposite-letter axis id (e.g. `xaxis2`, `yaxis`), this axis is bound to',
-            'the corresponding opposite-letter axis.',
-            'If set to *free*, this axis\' position is determined by `position`.'
-        ].join(' ')
+        
     },
     // side: not used directly, as values depend on direction
     // values are top, bottom for x axes, and left, right for y
@@ -69504,11 +69021,7 @@ module.exports = {
         valType: 'enumerated',
         values: ['top', 'bottom', 'left', 'right'],
         
-        description: [
-            'Determines whether a x (y) axis is positioned',
-            'at the *bottom* (*left*) or *top* (*right*)',
-            'of the plotting area.'
-        ].join(' ')
+        
     },
     // overlaying: not used directly, just put here for reference
     // values are false and any other same-letter axis id that's not
@@ -69521,11 +69034,7 @@ module.exports = {
             Cartesian.idRegex.y.toString()
         ],
         
-        description: [
-            'If set a same-letter axis id, this axis is overlaid on top of',
-            'the corresponding same-letter axis.',
-            'If *false*, this axis does not overlay any same-letter axes.'
-        ].join(' ')
+        
     },
     domain: {
         valType: 'info_array',
@@ -69535,9 +69044,7 @@ module.exports = {
             {valType: 'number', min: 0, max: 1}
         ],
         dflt: [0, 1],
-        description: [
-            'Sets the domain of this axis (in plot fraction).'
-        ].join(' ')
+        
     },
     position: {
         valType: 'number',
@@ -69545,22 +69052,14 @@ module.exports = {
         max: 1,
         dflt: 0,
         
-        description: [
-            'Sets the position of this axis in the plotting space',
-            '(in normalized coordinates).',
-            'Only has an effect if `anchor` is set to *free*.'
-        ].join(' ')
+        
     },
 
     _deprecated: {
         autotick: {
             valType: 'boolean',
             
-            description: [
-                'Obsolete.',
-                'Set `tickmode` to *auto* for old `autotick` *true* behavior.',
-                'Set `tickmode` to *linear* for `autotick` *false*.'
-            ].join(' ')
+            
         }
     }
 };
@@ -69765,18 +69264,7 @@ module.exports = {
         
         noBlank: true,
         strict: true,
-        description: [
-            'HTML font family - the typeface that will be applied by the web browser.',
-            'The web browser will only be able to apply a font if it is available on the system',
-            'which it operates. Provide multiple font families, separated by commas, to indicate',
-            'the preference in which to apply fonts if they aren\'t available on the system.',
-            'The plotly service (at https://plot.ly or on-premise) generates images on a server,',
-            'where only a select number of',
-            'fonts are installed and supported.',
-            'These include *Arial*, *Balto*, *Courier New*, *Droid Sans*,, *Droid Serif*,',
-            '*Droid Sans Mono*, *Gravitas One*, *Old Standard TT*, *Open Sans*, *Overpass*,',
-            '*PT Sans Narrow*, *Raleway*, *Times New Roman*.'
-        ].join(' ')
+        
     },
     size: {
         valType: 'number',
@@ -69825,6 +69313,7 @@ var topojsonFeature = require('topojson').feature;
 function Geo(options, fullLayout) {
 
     this.id = options.id;
+    this.graphDiv = options.graphDiv;
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
 
@@ -69832,7 +69321,7 @@ function Geo(options, fullLayout) {
     // a subset of https://github.com/d3/d3-geo-projection
     addProjectionsToD3();
 
-    this.showHover = fullLayout.hovermode==='closest';
+    this.showHover = (fullLayout.hovermode === 'closest');
     this.hoverContainer = null;
 
     this.topojsonName = null;
@@ -70306,6 +69795,7 @@ exports.plot = function plotGeo(gd) {
         if(geo === undefined) {
             geo = new Geo({
                 id: geoId,
+                graphDiv: gd,
                 container: fullLayout._geocontainer.node(),
                 topojsonURL: gd._context.topojsonURL
             },
@@ -70336,14 +69826,7 @@ module.exports = {
         valType: 'geoid',
         
         dflt: 'geo',
-        description: [
-            'Sets a reference between this trace\'s geospatial coordinates and',
-            'a geographic map.',
-            'If *geo* (the default value), the geospatial coordinates refer to',
-            '`layout.geo`.',
-            'If *geo2*, the geospatial coordinates refer to `layout.geo2`,',
-            'and so on.'
-        ].join(' ')
+        
     }
 };
 
@@ -70380,33 +69863,25 @@ module.exports = {
     tick0: {
         valType: 'number',
         
-        description: [
-            'Sets the graticule\'s starting tick longitude/latitude.'
-        ].join(' ')
+        
     },
     dtick: {
         valType: 'number',
         
-        description: [
-            'Sets the graticule\'s longitude/latitude tick step.'
-        ].join(' ')
+        
     },
     gridcolor: {
         valType: 'color',
         
         dflt: colorAttrs.lightLine,
-        description: [
-            'Sets the graticule\'s stroke color.'
-        ].join(' ')
+        
     },
     gridwidth: {
         valType: 'number',
         
         min: 0,
         dflt: 1,
-        description: [
-            'Sets the graticule\'s stroke width (in px).'
-        ].join(' ')
+        
     }
 };
 
@@ -70644,10 +70119,7 @@ module.exports = {
                 {valType: 'number', min: 0, max: 1}
             ],
             dflt: [0, 1],
-            description: [
-                'Sets the horizontal domain of this map',
-                '(in plot fraction).'
-            ].join(' ')
+            
         },
         y: {
             valType: 'info_array',
@@ -70657,10 +70129,7 @@ module.exports = {
                 {valType: 'number', min: 0, max: 1}
             ],
             dflt: [0, 1],
-            description: [
-                'Sets the vertical domain of this map',
-                '(in plot fraction).'
-            ].join(' ')
+            
         }
     },
     resolution: {
@@ -70669,11 +70138,7 @@ module.exports = {
         
         dflt: 110,
         coerceNumber: true,
-        description: [
-            'Sets the resolution of the base layers.',
-            'The values have units of km/mm',
-            'e.g. 110 corresponds to a scale ratio of 1:110,000,000.'
-        ].join(' ')
+        
     },
     scope: {
         valType: 'enumerated',
@@ -70693,26 +70158,17 @@ module.exports = {
             lon: {
                 valType: 'number',
                 
-                description: [
-                    'Rotates the map along parallels',
-                    '(in degrees East).'
-                ].join(' ')
+                
             },
             lat: {
                 valType: 'number',
                 
-                description: [
-                    'Rotates the map along meridians',
-                    '(in degrees North).'
-                ].join(' ')
+                
             },
             roll: {
                 valType: 'number',
                 
-                description: [
-                    'Roll the map (in degrees)',
-                    'For example, a roll of *180* makes the map appear upside down.'
-                ].join(' ')
+                
             }
         },
         parallels: {
@@ -70722,11 +70178,7 @@ module.exports = {
                 {valType: 'number'},
                 {valType: 'number'}
             ],
-            description: [
-                'For conic projection types only.',
-                'Sets the parallels (tangent, secant)',
-                'where the cone intersects the sphere.'
-            ].join(' ')
+            
         },
         scale: {
             valType: 'number',
@@ -70831,10 +70283,7 @@ module.exports = {
     showsubunits: {
         valType: 'boolean',
         
-        description: [
-            'Sets whether or not boundaries of subunits within countries',
-            '(e.g. states, provinces) are drawn.'
-        ].join(' ')
+        
     },
     subunitcolor: {
         valType: 'color',
@@ -73239,14 +72688,7 @@ module.exports = {
         valType: 'sceneid',
         
         dflt: 'scene',
-        description: [
-            'Sets a reference between this trace\'s 3D coordinate system and',
-            'a 3D scene.',
-            'If *scene* (the default value), the (x,y,z) coordinates refer to',
-            '`layout.scene`.',
-            'If *scene2*, the (x,y,z) coordinates refer to `layout.scene2`,',
-            'and so on.'
-        ].join(' ')
+        
     }
 };
 
@@ -73271,20 +72713,13 @@ module.exports = {
         valType: 'boolean',
         
         dflt: true,
-        description: [
-            'Sets whether or not spikes starting from',
-            'data points to this axis\' wall are shown on hover.'
-        ].join(' ')
+        
     },
     spikesides: {
         valType: 'boolean',
         
         dflt: true,
-        description: [
-            'Sets whether or not spikes extending from the',
-            'projection data points to this axis\' wall boundaries',
-            'are shown on hover.'
-        ].join(' ')
+        
     },
     spikethickness: {
         valType: 'number',
@@ -73303,10 +72738,7 @@ module.exports = {
         valType: 'boolean',
         
         dflt: false,
-        description: [
-            'Sets whether or not this axis\' wall',
-            'has a background color.'
-        ].join(' ')
+        
     },
     backgroundcolor: {
         valType: 'color',
@@ -73732,28 +73164,13 @@ module.exports = {
     },
     camera: {
         up: extendFlat(makeVector(0, 0, 1), {
-            description: [
-                'Sets the (x,y,z) components of the \'up\' camera vector.',
-                'This vector determines the up direction of this scene',
-                'with respect to the page.',
-                'The default is *{x: 0, y: 0, z: 1}* which means that',
-                'the z axis points up.'
-            ].join(' ')
+            
         }),
         center: extendFlat(makeVector(0, 0, 0), {
-            description: [
-                'Sets the (x,y,z) components of the \'center\' camera vector',
-                'This vector determines the translation (x,y,z) space',
-                'about the center of this scene.',
-                'By default, there is no such translation.'
-            ].join(' ')
+            
         }),
         eye: extendFlat(makeVector(1.25, 1.25, 1.25), {
-            description: [
-                'Sets the (x,y,z) components of the \'eye\' camera vector.',
-                'This vector determines the view point about the origin',
-                'of this scene.'
-            ].join(' ')
+            
         })
     },
     domain: {
@@ -73765,10 +73182,7 @@ module.exports = {
                 {valType: 'number', min: 0, max: 1}
             ],
             dflt: [0, 1],
-            description: [
-                'Sets the horizontal domain of this scene',
-                '(in plot fraction).'
-            ].join(' ')
+            
         },
         y: {
             valType: 'info_array',
@@ -73778,10 +73192,7 @@ module.exports = {
                 {valType: 'number', min: 0, max: 1}
             ],
             dflt: [0, 1],
-            description: [
-                'Sets the vertical domain of this scene',
-                '(in plot fraction).'
-            ].join(' ')
+            
         }
     },
     aspectmode: {
@@ -73789,22 +73200,7 @@ module.exports = {
         
         values: ['auto', 'cube', 'data', 'manual'],
         dflt: 'auto',
-        description: [
-            'If *cube*, this scene\'s axes are drawn as a cube,',
-            'regardless of the axes\' ranges.',
-
-            'If *data*, this scene\'s axes are drawn',
-            'in proportion with the axes\' ranges.',
-
-            'If *manual*, this scene\'s axes are drawn',
-            'in proportion with the input of *aspectratio*',
-            '(the default behavior if *aspectratio* is provided).',
-
-            'If *auto*, this scene\'s axes are drawn',
-            'using the results of *data* except when one axis',
-            'is more than four times the size of the two others,',
-            'where in that case the results of *cube* are used.'
-        ].join(' ')
+        
     },
     aspectratio: { // must be positive (0's are coerced to 1)
         x: {
@@ -73822,9 +73218,7 @@ module.exports = {
             
             min: 0
         },
-        description: [
-            'Sets this scene\'s axis aspectratio.'
-        ].join(' ')
+        
     },
 
     xaxis: gl3dAxisAttrs,
@@ -74733,19 +74127,13 @@ module.exports = {
         color: extendFlat({}, fontAttrs.color, {
             dflt: colorAttrs.defaultLine
         }),
-        description: [
-            'Sets the global font.',
-            'Note that fonts used in traces and other',
-            'layout components inherit from the global font.'
-        ].join(' ')
+        
     },
     title: {
         valType: 'string',
         
         dflt: 'Click to enter Plot title',
-        description: [
-            'Sets the plot\'s title.'
-        ].join(' ')
+        
     },
     titlefont: extendFlat({}, fontAttrs, {
         
@@ -74755,28 +74143,21 @@ module.exports = {
         
         // TODO: better handling of 'initial'
         values: [true, false, 'initial'],
-        description: [
-            'Determines whether or not the dimensions of the figure are',
-            'computed as a function of the display size.'
-        ].join(' ')
+        
     },
     width: {
         valType: 'number',
         
         min: 10,
         dflt: 700,
-        description: [
-            'Sets the plot\'s width (in px).'
-        ].join(' ')
+        
     },
     height: {
         valType: 'number',
         
         min: 10,
         dflt: 450,
-        description: [
-            'Sets the plot\'s height (in px).'
-        ].join(' ')
+        
     },
     margin: {
         l: {
@@ -74812,10 +74193,7 @@ module.exports = {
             
             min: 0,
             dflt: 0,
-            description: [
-                'Sets the amount of padding (in px)',
-                'between the plotting area and the axis lines'
-            ].join(' ')
+            
         },
         autoexpand: {
             valType: 'boolean',
@@ -74835,30 +74213,19 @@ module.exports = {
         valType: 'color',
         
         dflt: colorAttrs.background,
-        description: [
-            'Sets the color of plotting area in-between x and y axes.'
-        ].join(' ')
+        
     },
     separators: {
         valType: 'string',
         
         dflt: '.,',
-        description: [
-            'Sets the decimal and thousand separators.',
-            'For example, *. * puts a \'.\' before decimals and',
-            'a space between thousands.'
-        ].join(' ')
+        
     },
     hidesources: {
         valType: 'boolean',
         
         dflt: false,
-        description: [
-            'Determines whether or not a text link citing the data source is',
-            'placed at the bottom-right cored of the figure.',
-            'Has only an effect only on graphs that have been generated via',
-            'forked graphs from the plotly service (at https://plot.ly or on-premise).'
-        ].join(' ')
+        
     },
     smith: {
         // will become a boolean if/when we implement this
@@ -75211,9 +74578,7 @@ plots.addLinks = function(gd) {
     // IE doesn't like getComputedTextLength if an element
     // isn't visible, which it (sometimes?) isn't
     // apparently offsetParent is null for invisibles.
-    // http://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
-    if (text && text.offsetParent &&
-            text.getComputedTextLength() >= (fullLayout.width - 20)) {
+    if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
         // Align the text at the left
         attrs['text-anchor'] = 'start';
         attrs.x = 5;
@@ -75937,10 +75302,7 @@ var axesAttrs = require('../cartesian/layout_attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var domainAttr = extendFlat({}, axesAttrs.domain, {
-    description: [
-        'Polar chart subplots are not supported yet.',
-        'This key has currently no effect.'
-    ].join(' ')
+    
 });
 
 function mergeAttrs(axisName, nonCommonAttrs) {
@@ -75948,51 +75310,34 @@ function mergeAttrs(axisName, nonCommonAttrs) {
         showline: {
             valType: 'boolean',
             
-            description: [
-                'Determines whether or not the line bounding this',
-                axisName, 'axis',
-                'will be shown on the figure.'
-            ].join(' ')
+            
         },
         showticklabels: {
             valType: 'boolean',
             
-            description: [
-                'Determines whether or not the',
-                axisName, 'axis ticks',
-                'will feature tick labels.'
-            ].join(' ')
+            
         },
         tickorientation: {
             valType: 'enumerated',
             values: ['horizontal', 'vertical'],
             
-            description: [
-                'Sets the orientation (from the paper perspective)',
-                'of the', axisName, 'axis tick labels.'
-            ].join(' ')
+            
         },
         ticklen: {
             valType: 'number',
             min: 0,
             
-            description: [
-                'Sets the length of the tick lines on this', axisName, 'axis.'
-            ].join(' ')
+            
         },
         tickcolor: {
             valType: 'color',
             
-            description: [
-                'Sets the color of the tick lines on this', axisName, 'axis.'
-            ].join(' ')
+            
         },
         ticksuffix: {
             valType: 'string',
             
-            description: [
-                'Sets the length of the tick lines on this', axisName, 'axis.'
-            ].join(' ')
+            
         },
         endpadding: {
             valType: 'number',
@@ -76001,9 +75346,7 @@ function mergeAttrs(axisName, nonCommonAttrs) {
         visible: {
             valType: 'boolean',
             
-            description: [
-                'Determines whether or not this axis will be visible.'
-            ].join(' ')
+            
         }
     };
 
@@ -76019,18 +75362,13 @@ module.exports = {
                 { valType: 'number' },
                 { valType: 'number' }
             ],
-            description: [
-                'Defines the start and end point of this radial axis.'
-            ].join(' ')
+            
         },
         domain: domainAttr,
         orientation: {
             valType: 'number',
             
-            description: [
-                'Sets the orientation (an angle with respect to the origin)',
-                'of the radial axis.'
-            ].join(' ')
+            
         }
     }),
 
@@ -76042,9 +75380,7 @@ module.exports = {
                 { valType: 'number', dflt: 0 },
                 { valType: 'number', dflt: 360 }
             ],
-            description: [
-                'Defines the start and end point of this angular axis.'
-            ].join(' ')
+            
         },
         domain: domainAttr
     }),
@@ -76055,18 +75391,12 @@ module.exports = {
             valType: 'enumerated',
             values: ['clockwise', 'counterclockwise'],
             
-            description: [
-                'For polar plots only.',
-                'Sets the direction corresponding to positive angles.'
-            ].join(' ')
+            
         },
         orientation: {
             valType: 'angle',
             
-            description: [
-                'For polar plots only.',
-                'Rotates the entire polar by the given angle.'
-            ].join(' ')
+            
         }
     }
 };
@@ -78231,11 +77561,7 @@ module.exports = {
         valType: 'enumerated',
         
         values: ['v', 'h'],
-        description: [
-            'Sets the orientation of the bars.',
-            'With *v* (*h*), the value of the each bar spans',
-            'along the vertical (horizontal).'
-        ].join(' ')
+        
     },
     marker: {
         color: scatterMarkerAttrs.color,
@@ -78499,12 +77825,7 @@ Bar.name = 'bar';
 Bar.basePlotModule = require('../../plots/cartesian');
 Bar.categories = ['cartesian', 'bar', 'oriented', 'markerColorscale', 'errorBarsOK', 'showLegend'];
 Bar.meta = {
-    description: [
-        'The data visualized by the span of the bars is set in `y`',
-        'if `orientation` is set th *v* (the default)',
-        'and the labels are set in `x`.',
-        'By setting `orientation` to *h*, the roles are interchanged.'
-    ].join(' ')
+    
 };
 
 module.exports = Bar;
@@ -78527,37 +77848,21 @@ module.exports = {
         values: ['stack', 'group', 'overlay'],
         dflt: 'group',
         
-        description: [
-            'Determines how bars at the same location coordinate',
-            'are displayed on the graph.',
-            'With *stack*, the bars are stacked on top of one another',
-            'With *group*, the bars are plotted next to one another',
-            'centered around the shared location.',
-            'With *overlay*, the bars are plotted over one another,',
-            'you might need to an *opacity* to see multiple bars.'
-        ].join(' ')
+        
     },
     barnorm: {
         valType: 'enumerated',
         values: ['', 'fraction', 'percent'],
         dflt: '',
         
-        description: [
-            'Sets the normalization for bar traces on the graph.',
-            'With *fraction*, the value of each bar is divide by the sum of the',
-            'values at the location coordinate.',
-            'With *percent*, the results form *fraction* are presented in percents.'
-        ].join(' ')
+        
     },
     bargap: {
         valType: 'number',
         min: 0,
         max: 1,
         
-        description: [
-            'Sets the gap (in plot fraction) between bars of',
-            'adjacent location coordinates.'
-        ].join(' ')
+        
     },
     bargroupgap: {
         valType: 'number',
@@ -78565,10 +77870,7 @@ module.exports = {
         max: 1,
         dflt: 0,
         
-        description: [
-            'Sets the gap (in plot fraction) between bars of',
-            'the same location coordinate.'
-        ].join(' ')
+        
     }
 };
 
@@ -79076,33 +78378,21 @@ var scatterMarkerAttrs = scatterAttrs.marker,
 module.exports = {
     y: {
         valType: 'data_array',
-        description: [
-            'Sets the y sample data or coordinates.',
-            'See overview for more info.'
-        ].join(' ')
+        
     },
     x: {
         valType: 'data_array',
-        description: [
-            'Sets the x sample data or coordinates.',
-            'See overview for more info.'
-        ].join(' ')
+        
     },
     x0: {
         valType: 'any',
         
-        description: [
-            'Sets the x coordinate of the box.',
-            'See overview for more info.'
-        ].join(' ')
+        
     },
     y0: {
         valType: 'any',
         
-        description: [
-            'Sets the y coordinate of the box.',
-            'See overview for more info.'
-        ].join(' ')
+        
     },
     whiskerwidth: {
         valType: 'number',
@@ -79110,71 +78400,41 @@ module.exports = {
         max: 1,
         dflt: 0.5,
         
-        description: [
-            'Sets the width of the whiskers relative to',
-            'the box\' width.',
-            'For example, with 1, the whiskers are as wide as the box(es).'
-        ].join(' ')
+        
     },
     boxpoints: {
         valType: 'enumerated',
         values: ['all', 'outliers', 'suspectedoutliers', false],
         dflt: 'outliers',
         
-        description: [
-            'If *outliers*, only the sample points lying outside the whiskers',
-            'are shown',
-            'If *suspectedoutliers*, the outlier points are shown and',
-            'points either less than 4*Q1-3*Q3 or greater than 4*Q3-3*Q1',
-            'are highlighted (see `outliercolor`)',
-            'If *all*, all sample points are shown',
-            'If *false*, only the box(es) are shown with no sample points'
-        ].join(' ')
+        
     },
     boxmean: {
         valType: 'enumerated',
         values: [true, 'sd', false],
         dflt: false,
         
-        description: [
-            'If *true*, the mean of the box(es)\' underlying distribution is',
-            'drawn as a dashed line inside the box(es).',
-            'If *sd* the standard deviation is also drawn.'
-        ].join(' ')
+        
     },
     jitter: {
         valType: 'number',
         min: 0,
         max: 1,
         
-        description: [
-            'Sets the amount of jitter in the sample points drawn.',
-            'If *0*, the sample points align along the distribution axis.',
-            'If *1*, the sample points are drawn in a random jitter of width',
-            'equal to the width of the box(es).'
-        ].join(' ')
+        
     },
     pointpos: {
         valType: 'number',
         min: -2,
         max: 2,
         
-        description: [
-            'Sets the position of the sample points in relation to the box(es).',
-            'If *0*, the sample points are places over the center of the box(es).',
-            'Positive (negative) values correspond to positions to the',
-            'right (left) for vertical boxes and above (below) for horizontal boxes'
-        ].join(' ')
+        
     },
     orientation: {
         valType: 'enumerated',
         values: ['v', 'h'],
         
-        description: [
-            'Sets the orientation of the box(es).',
-            'If *v* (*h*), the distribution is visualized along',
-            'the vertical (horizontal).'
-        ].join(' ')
+        
     },
     marker: {
         outliercolor: {
@@ -79199,19 +78459,14 @@ module.exports = {
             outliercolor: {
                 valType: 'color',
                 
-                description: [
-                    'Sets the border line color of the outlier sample points.',
-                    'Defaults to marker.color'
-                ].join(' ')
+                
             },
             outlierwidth: {
                 valType: 'number',
                 min: 0,
                 dflt: 1,
                 
-                description: [
-                    'Sets the border line width (in px) of the outlier sample points.'
-                ].join(' ')
+                
             }
         }
     },
@@ -79584,20 +78839,7 @@ Box.name = 'box';
 Box.basePlotModule = require('../../plots/cartesian');
 Box.categories = ['cartesian', 'symbols', 'oriented', 'box', 'showLegend'];
 Box.meta = {
-    description: [
-        'In vertical (horizontal) box plots,',
-        'statistics are computed using `y` (`x`) values.',
-        'By supplying an `x` (`y`) array, one box per distinct x (y) value',
-        'is drawn',
-        'If no `x` (`y`) {array} is provided, a single box is drawn.',
-        'That box position is then positioned with',
-        'with `name` or with `x0` (`y0`) if provided.',
-        'Each box spans from quartile 1 (Q1) to quartile 3 (Q3).',
-        'The second quartile (Q2) is marked by a line inside the box.',
-        'By default, the whiskers correspond to the box\' edges',
-        '+/- 1.5 times the interquartile range (IQR = Q3-Q1),',
-        'see *boxpoints* for other options.'
-    ].join(' ')
+    
 };
 
 module.exports = Box;
@@ -79620,14 +78862,7 @@ module.exports = {
         values: ['group', 'overlay'],
         dflt: 'overlay',
         
-        description: [
-            'Determines how boxes at the same location coordinate',
-            'are displayed on the graph.',
-            'If *group*, the boxes are plotted next to one another',
-            'centered around the shared location.',
-            'If *overlay*, the boxes are plotted over one another,',
-            'you might need to set *opacity* to see them multiple boxes.'
-        ].join(' ')
+        
     },
     boxgap: {
         valType: 'number',
@@ -79635,10 +78870,7 @@ module.exports = {
         max: 1,
         dflt: 0.3,
         
-        description: [
-            'Sets the gap (in plot fraction) between boxes of',
-            'adjacent location coordinates.'
-        ].join(' ')
+        
     },
     boxgroupgap: {
         valType: 'number',
@@ -79646,10 +78878,7 @@ module.exports = {
         max: 1,
         dflt: 0.3,
         
-        description: [
-            'Sets the gap (in plot fraction) between boxes of',
-            'the same location coordinate.'
-        ].join(' ')
+        
     }
 };
 
@@ -80065,10 +79294,7 @@ var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 module.exports = {
     locations: {
         valType: 'data_array',
-        description: [
-            'Sets the coordinates via location IDs or names.',
-            'See `locationmode` for more info.'
-        ].join(' ')
+        
     },
     locationmode: ScatterGeoAttrs.locationmode,
     z: {
@@ -80180,12 +79406,7 @@ Choropleth.name = 'choropleth';
 Choropleth.basePlotModule = require('../../plots/geo');
 Choropleth.categories = ['geo', 'noOpacity'];
 Choropleth.meta = {
-    description: [
-        'The data that describes the choropleth value-to-color mapping',
-        'is set in `z`.',
-        'The geographic locations corresponding to each value in `z`',
-        'are set in `locations`.'
-    ].join(' ')
+    
 };
 
 module.exports = Choropleth;
@@ -80252,46 +79473,49 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
 
 plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
     var framework = geo.framework,
-        topojson = geo.topojson,
         gChoropleth = framework.select('g.choroplethlayer'),
         gBaseLayer = framework.select('g.baselayer'),
         gBaseLayerOverChoropleth = framework.select('g.baselayeroverchoropleth'),
         baseLayersOverChoropleth = constants.baseLayersOverChoropleth,
         layerName;
 
-    // TODO move to more d3-idiomatic pattern (that's work on replot)
-    // N.B. html('') does not work in IE11
-    gChoropleth.selectAll('*').remove();
-    gBaseLayerOverChoropleth.selectAll('*').remove();
-
     var gChoroplethTraces = gChoropleth
-        .selectAll('g.trace.scatter')
+        .selectAll('g.trace.choropleth')
         .data(choroplethData);
 
     gChoroplethTraces.enter().append('g')
-            .attr('class', 'trace choropleth');
+        .attr('class', 'trace choropleth');
+
+    gChoroplethTraces.exit().remove();
 
     gChoroplethTraces
         .each(function(trace) {
             if(trace.visible !== true) return;
 
-            var cdi = plotChoropleth.calcGeoJSON(trace, topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+            var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+                eventDataFunc = makeEventDataFunc(trace);
 
-            function handleMouseOver(d) {
+            function handleMouseOver(pt, ptIndex) {
                 if(!geo.showHover) return;
 
-                var xy = geo.projection(d.properties.ct);
-                cleanHoverLabelsFunc(d);
+                var xy = geo.projection(pt.properties.ct);
+                cleanHoverLabelsFunc(pt);
 
                 Plotly.Fx.loneHover({
                     x: xy[0],
                     y: xy[1],
-                    name: d.nameLabel,
-                    text: d.textLabel
+                    name: pt.nameLabel,
+                    text: pt.textLabel
                 }, {
                     container: geo.hoverContainer.node()
                 });
+
+                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+            }
+
+            function handleClick(pt, ptIndex) {
+                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
             }
 
             d3.select(this)
@@ -80300,6 +79524,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 .enter().append('path')
                     .attr('class', 'choroplethlocation')
                     .on('mouseover', handleMouseOver)
+                    .on('click', handleClick)
                     .on('mouseout', function() {
                         Plotly.Fx.loneUnhover(geo.hoverContainer);
                     })
@@ -80311,6 +79536,8 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         });
 
     // some baselayers are drawn over choropleth
+    gBaseLayerOverChoropleth.selectAll('*').remove();
+
     for(var i = 0; i < baseLayersOverChoropleth.length; i++) {
         layerName = baseLayersOverChoropleth[i];
         gBaseLayer.select('g.' + layerName).remove();
@@ -80333,11 +79560,11 @@ plotChoropleth.style = function(geo) {
                 sclFunc = makeScaleFunction(scl, zmin, zmax);
 
             s.selectAll('path.choroplethlocation')
-                .each(function(d) {
+                .each(function(pt) {
                     d3.select(this)
-                        .attr('fill', function(d) { return sclFunc(d.z); })
-                        .call(Color.stroke, d.mlc || markerLine.color)
-                        .call(Drawing.dashLine, '', d.mlw || markerLine.width);
+                        .attr('fill', function(pt) { return sclFunc(pt.z); })
+                        .call(Color.stroke, pt.mlc || markerLine.color)
+                        .call(Drawing.dashLine, '', pt.mlw || markerLine.width);
                 });
         });
 };
@@ -80346,9 +79573,9 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     var hoverinfo = trace.hoverinfo;
 
     if(hoverinfo === 'none') {
-        return function cleanHoverLabelsFunc(d) {
-            delete d.nameLabel;
-            delete d.textLabel;
+        return function cleanHoverLabelsFunc(pt) {
+            delete pt.nameLabel;
+            delete pt.textLabel;
         };
     }
 
@@ -80367,21 +79594,34 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
-    return function cleanHoverLabelsFunc(d) {
+    return function cleanHoverLabelsFunc(pt) {
         // put location id in name label container
         // if name isn't part of hoverinfo
         var thisText = [];
 
-        if(hasIdAsNameLabel) d.nameLabel = d.id;
+        if(hasIdAsNameLabel) pt.nameLabel = pt.id;
         else {
-            if(hasName) d.nameLabel = trace.name;
-            if(hasLocation) thisText.push(d.id);
+            if(hasName) pt.nameLabel = trace.name;
+            if(hasLocation) thisText.push(pt.id);
         }
 
-        if(hasZ) thisText.push(formatter(d.z));
-        if(hasText) thisText.push(d.tx);
+        if(hasZ) thisText.push(formatter(pt.z));
+        if(hasText) thisText.push(pt.tx);
 
-        d.textLabel = thisText.join('<br>');
+        pt.textLabel = thisText.join('<br>');
+    };
+}
+
+function makeEventDataFunc(trace) {
+    return function(pt, ptIndex) {
+        return {points: [{
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: ptIndex,
+            location: pt.id,
+            z: pt.z
+        }]};
     };
 }
 
@@ -80429,12 +79669,7 @@ module.exports = {
         valType: 'boolean',
         dflt: true,
         
-        description: [
-            'Determines whether of not the contour level attributes at',
-            'picked by an algorithm.',
-            'If *true*, the number of contour levels can be set in `ncontours`.',
-            'If *false*, set the contour level attributes in `contours`.'
-        ].join(' ')
+        
     },
     ncontours: {
         valType: 'integer',
@@ -80467,40 +79702,24 @@ module.exports = {
             values: ['fill', 'heatmap', 'lines', 'none'],
             dflt: 'fill',
             
-            description: [
-                'Determines the coloring method showing the contour values.',
-                'If *fill*, coloring is done evenly between each contour level',
-                'If *heatmap*, a heatmap gradient is coloring is applied',
-                'between each contour level.',
-                'If *lines*, coloring is done on the contour lines.',
-                'If *none*, no coloring is applied on this trace.'
-            ].join(' ')
+            
         },
         showlines: {
             valType: 'boolean',
             dflt: true,
             
-            description: [
-                'Determines whether or not the contour lines are drawn.',
-                'Has only an effect if `contours.coloring` is set to *fill*.'
-            ].join(' ')
+            
         }
     },
 
     line: {
         color: extendFlat({}, scatterLineAttrs.color, {
-            description: [
-                'Sets the color of the contour level.',
-                'Has no if `contours.coloring` is set to *lines*.'
-            ].join(' ')
+            
         }),
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash,
         smoothing: extendFlat({}, scatterLineAttrs.smoothing, {
-            description: [
-                'Sets the amount of smoothing for the contour lines,',
-                'where *0* corresponds to no smoothing.'
-            ].join(' ')
+            
         })
     },
 
@@ -80742,16 +79961,7 @@ Contour.name = 'contour';
 Contour.basePlotModule = require('../../plots/cartesian');
 Contour.categories = ['cartesian', '2dMap', 'contour'];
 Contour.meta = {
-    description: [
-        'The data from which contour lines are computed is set in `z`.',
-        'Data in `z` must be a {2D array} of numbers.',
-
-        'Say that `z` has N rows and M columns, then by default,',
-        'these N rows correspond to N y coordinates',
-        '(set in `y` or auto-generated) and the M columns',
-        'correspond to M x coordinates (set in `x` or auto-generated).',
-        'By setting `transpose` to *true*, the above behavior is flipped.'
-    ].join(' ')
+    
 };
 
 module.exports = Contour;
@@ -80823,15 +80033,16 @@ function plotOne(gd, plotinfo, cd) {
         pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
 
     if(trace.visible !== true) {
-        fullLayout._paper.selectAll('.'+id+',.cb'+uid+',.hm'+uid).remove();
+        fullLayout._paper.selectAll('.' + id + ',.hm' + uid).remove();
+        fullLayout._infolayer.selectAll('.cb' + uid).remove();
         return;
     }
 
     // use a heatmap to fill - draw it behind the lines
-    if(contours.coloring==='heatmap') {
-        if(trace.zauto && trace.autocontour===false) {
+    if(contours.coloring === 'heatmap') {
+        if(trace.zauto && (trace.autocontour === false)) {
             trace._input.zmin = trace.zmin =
-                contours.start - contours.size/2;
+                contours.start - contours.size / 2;
             trace._input.zmax = trace.zmax =
                 trace.zmin + pathinfo.length * contours.size;
         }
@@ -80839,7 +80050,7 @@ function plotOne(gd, plotinfo, cd) {
         heatmapPlot(gd, plotinfo, [cd]);
     }
     // in case this used to be a heatmap (or have heatmap fill)
-    else fullLayout._paper.selectAll('.hm'+uid).remove();
+    else fullLayout._paper.selectAll('.hm' + uid).remove();
 
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
@@ -81230,12 +80441,15 @@ function getInterpPx(pi, loc, step) {
 
 function makeContourGroup(plotinfo, cd, id) {
     var plotgroup = plotinfo.plot.select('.maplayer')
-        .selectAll('g.contour.'+id)
+        .selectAll('g.contour.' + id)
         .data(cd);
+
     plotgroup.enter().append('g')
-        .classed('contour',true)
-        .classed(id,true);
+        .classed('contour', true)
+        .classed(id, true);
+
     plotgroup.exit().remove();
+
     return plotgroup;
 }
 
@@ -81601,23 +80815,13 @@ module.exports = {
         valType: 'enumerated',
         values: ['array', 'scaled'],
         
-        description: [
-            'If *array*, the heatmap\'s x coordinates are given by *x*',
-            '(the default behavior when `x` is provided).',
-            'If *scaled*, the heatmap\'s x coordinates are given by *x0* and *dx*',
-            '(the default behavior when `x` is not provided).'
-        ].join(' ')
+        
     },
     ytype: {
         valType: 'enumerated',
         values: ['array', 'scaled'],
         
-        description: [
-            'If *array*, the heatmap\'s y coordinates are given by *y*',
-            '(the default behavior when `y` is provided)',
-            'If *scaled*, the heatmap\'s y coordinates are given by *y0* and *dy*',
-            '(the default behavior when `y` is not provided)'
-        ].join(' ')
+        
     },
     zauto: colorscaleAttrs.zauto,
     zmin: colorscaleAttrs.zmin,
@@ -81632,19 +80836,13 @@ module.exports = {
         values: ['fast', 'best', false],
         dflt: false,
         
-        description: [
-            'Picks a smoothing algorithm use to smooth `z` data.'
-        ].join(' ')
+        
     },
     connectgaps: {
         valType: 'boolean',
         dflt: false,
         
-        description: [
-            'Determines whether or not gaps',
-            '(i.e. {nan} or missing values)',
-            'in the `z` data are filled in.'
-        ].join(' ')
+        
     },
 
     _nestedModules: {
@@ -82387,30 +81585,7 @@ Heatmap.name = 'heatmap';
 Heatmap.basePlotModule = require('../../plots/cartesian');
 Heatmap.categories = ['cartesian', '2dMap'];
 Heatmap.meta = {
-    description: [
-        'The data that describes the heatmap value-to-color mapping',
-        'is set in `z`.',
-        'Data in `z` can either be a {2D array} of values (ragged or not)',
-        'or a 1D array of values.',
-
-        'In the case where `z` is a {2D array},',
-        'say that `z` has N rows and M columns.',
-        'Then, by default, the resulting heatmap will have N partitions along',
-        'the y axis and M partitions along the x axis.',
-        'In other words, the i-th row/ j-th column cell in `z`',
-        'is mapped to the i-th partition of the y axis',
-        '(starting from the bottom of the plot) and the j-th partition',
-        'of the x-axis (starting from the left of the plot).',
-        'This behavior can be flipped by using `transpose`.',
-        'Moreover, `x` (`y`) can be provided with M or M+1 (N or N+1) elements.',
-        'If M (N), then the coordinates correspond to the center of the',
-        'heatmap cells and the cells have equal width.',
-        'If M+1 (N+1), then the coordinates correspond to the edges of the',
-        'heatmap cells.',
-
-        'In the case where `z` is a 1D {array}, the x and y coordinates must be',
-        'provided in `x` and `y` respectively to form data triplets.'
-    ].join(' ')
+    
 };
 
 module.exports = Heatmap;
@@ -82460,11 +81635,13 @@ var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var maxRowLength = require('./max_row_length');
 
 
-// From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 module.exports = function(gd, plotinfo, cdheatmaps) {
-    cdheatmaps.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
+    for(var i = 0; i < cdheatmaps.length; i++) {
+        plotOne(gd, plotinfo, cdheatmaps[i]);
+    }
 };
 
+// From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function plotOne(gd, plotinfo, cd) {
     Lib.markTime('in Heatmap.plot');
 
@@ -82473,14 +81650,14 @@ function plotOne(gd, plotinfo, cd) {
         xa = plotinfo.x(),
         ya = plotinfo.y(),
         fullLayout = gd._fullLayout,
-        id = 'hm' + uid,
-        cbId = 'cb' + uid;
+        id = 'hm' + uid;
 
-    fullLayout._paper.selectAll('.contour' + uid).remove(); // in case this used to be a contour map
+    // in case this used to be a contour map
+    fullLayout._paper.selectAll('.contour' + uid).remove();
 
     if(trace.visible !== true) {
         fullLayout._paper.selectAll('.' + id).remove();
-        fullLayout._paper.selectAll('.' + cbId).remove();
+        fullLayout._infolayer.selectAll('.cb' + uid).remove();
         return;
     }
 
@@ -82807,20 +81984,28 @@ function plotOne(gd, plotinfo, cd) {
     gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
     gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-    // put this right before making the new image, to minimize flicker
-    fullLayout._paper.selectAll('.'+id).remove();
-    plotinfo.plot.select('.maplayer').append('svg:image')
-        .classed(id, true)
-        .datum(cd[0])
-        .attr({
-            xmlns: xmlnsNamespaces.svg,
-            'xlink:href': canvas.toDataURL('image/png'),
-            height: imageHeight,
-            width: imageWidth,
-            x: left,
-            y: top,
-            preserveAspectRatio: 'none'
-        });
+    var plotgroup = plotinfo.plot.select('.imagelayer')
+        .selectAll('g.hm.' + id)
+        .data([0]);
+    plotgroup.enter().append('g')
+        .classed('hm', true)
+        .classed(id, true);
+    plotgroup.exit().remove();
+
+    var image3 = plotgroup.selectAll('image')
+        .data(cd);
+    image3.enter().append('svg:image');
+    image3.exit().remove();
+
+    image3.attr({
+        xmlns: xmlnsNamespaces.svg,
+        'xlink:href': canvas.toDataURL('image/png'),
+        height: imageHeight,
+        width: imageWidth,
+        x: left,
+        y: top,
+        preserveAspectRatio: 'none'
+    });
 
     Lib.markTime('done showing png');
 }
@@ -82957,15 +82142,11 @@ var barMarkerLineAttrs = barMarkerAttrs.line;
 module.exports = {
     x: {
         valType: 'data_array',
-        description: [
-            'Sets the sample data to be binned on the x axis.'
-        ].join(' ')
+        
     },
     y: {
         valType: 'data_array',
-        description: [
-            'Sets the sample data to be binned on the y axis.'
-        ].join(' ')
+        
     },
 
     text: barAttrs.text,
@@ -82976,52 +82157,21 @@ module.exports = {
         values: ['count', 'sum', 'avg', 'min', 'max'],
         
         dflt: 'count',
-        description: [
-            'Specifies the binning function used for this histogram trace.',
-
-            'If *count*, the histogram values are computed by counting the',
-            'number of values lying inside each bin.',
-
-            'If *sum*, *avg*, *min*, *max*,',
-            'the histogram values are computed using',
-            'the sum, the average, the minimum or the maximum',
-            'of the values lying inside each bin respectively.'
-        ].join(' ')
+        
     },
     histnorm: {
         valType: 'enumerated',
         values: ['', 'percent', 'probability', 'density', 'probability density'],
         dflt: '',
         
-        description: [
-            'Specifies the type of normalization used for this histogram trace.',
-
-            'If **, the span of each bar corresponds to the number of',
-            'occurrences (i.e. the number of data points lying inside the bins).',
-
-            'If *percent*, the span of each bar corresponds to the percentage',
-            'of occurrences with respect to the total number of sample points',
-            '(here, the sum of all bin area equals 100%).',
-
-            'If *density*, the span of each bar corresponds to the number of',
-            'occurrences in a bin divided by the size of the bin interval',
-            '(here, the sum of all bin area equals the',
-            'total number of sample points).',
-
-            'If *probability density*, the span of each bar corresponds to the',
-            'probability that an event will fall into the corresponding bin',
-            '(here, the sum of all bin area equals 1).'
-        ].join(' ')
+        
     },
 
     autobinx: {
         valType: 'boolean',
         dflt: true,
         
-        description: [
-            'Determines whether or not the x axis bin attributes are picked',
-            'by an algorithm.'
-        ].join(' ')
+        
     },
     nbinsx: {
         valType: 'integer',
@@ -83036,10 +82186,7 @@ module.exports = {
         valType: 'boolean',
         dflt: true,
         
-        description: [
-            'Determines whether or not the y axis bin attributes are picked',
-            'by an algorithm.'
-        ].join(' ')
+        
     },
     nbinsy: {
         valType: 'integer',
@@ -83088,28 +82235,19 @@ function makeBinsAttr(axLetter) {
             valType: 'number',
             dflt: null,
             
-            description: [
-                'Sets the starting value for the', axLetter,
-                'axis bins.'
-            ].join(' ')
+            
         },
         end: {
             valType: 'number',
             dflt: null,
             
-            description: [
-                'Sets the end value for the', axLetter,
-                'axis bins.'
-            ].join(' ')
+            
         },
         size: {
             valType: 'any', // for date axes
             dflt: 1,
             
-            description: [
-                'Sets the step in-between value each', axLetter,
-                'axis bin.'
-            ].join(' ')
+            
         }
     };
 }
@@ -83470,13 +82608,7 @@ Histogram.name = 'histogram';
 Histogram.basePlotModule = require('../../plots/cartesian');
 Histogram.categories = ['cartesian', 'bar', 'histogram', 'oriented', 'errorBarsOK', 'showLegend'];
 Histogram.meta = {
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'for vertically spanning histograms and',
-        'in `y` for horizontally spanning histograms.',
-        'Binning options are set `xbins` and `ybins` respectively',
-        'if no aggregation data is provided.'
-    ].join(' ')
+    
 };
 
 module.exports = Histogram;
@@ -83800,14 +82932,7 @@ Histogram2D.basePlotModule = require('../../plots/cartesian');
 Histogram2D.categories = ['cartesian', '2dMap', 'histogram'];
 Histogram2D.meta = {
     
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'and `y` (where `x` and `y` represent marginal distributions,',
-        'binning is set in `xbins` and `ybins` in this case)',
-        'or `z` (where `z` represent the 2D distribution and binning set,',
-        'binning is set by `x` and `y` in this case).',
-        'The resulting distribution is visualized as a heatmap.'
-    ].join(' ')
+    
 };
 
 module.exports = Histogram2D;
@@ -83959,14 +83084,7 @@ Histogram2dContour.basePlotModule = require('../../plots/cartesian');
 Histogram2dContour.categories = ['cartesian', '2dMap', 'contour', 'histogram'];
 Histogram2dContour.meta = {
     
-    description: [
-        'The sample data from which statistics are computed is set in `x`',
-        'and `y` (where `x` and `y` represent marginal distributions,',
-        'binning is set in `xbins` and `ybins` in this case)',
-        'or `z` (where `z` represent the 2D distribution and binning set,',
-        'binning is set by `x` and `y` in this case).',
-        'The resulting distribution is visualized as a contour plot.'
-    ].join(' ')
+    
 };
 
 module.exports = Histogram2dContour;
@@ -84019,32 +83137,19 @@ module.exports = {
         
         values: [ 'x', 'y', 'z' ],
         dflt: 'z',
-        description: [
-            'Sets the Delaunay axis from which the triangulation of the mesh',
-            'takes place.',
-            'An alternative to setting the `i`, `j`, `k` indices triplets.'
-        ].join(' ')
+        
     },
 
     alphahull: {
         valType: 'number',
         
         dflt: -1,
-        description: [
-            'Sets the shape of the mesh',
-            'If *-1*, Delaunay triangulation is used',
-            'If *>0*, the alpha-shape algorithm is used',
-            'If *0*,  the convex-hull algorithm is used',
-            'An alternative to the `i`, `j`, `k` indices triplets.'
-        ].join(' ')
+        
     },
 
     intensity: {
         valType: 'data_array',
-        description: [
-            'Sets the vertex intensity values,',
-            'used for plotting fields on meshes'
-        ].join(' ')
+        
     },
 
     //Color field
@@ -84056,18 +83161,12 @@ module.exports = {
     vertexcolor: {
         valType: 'data_array',  // FIXME: this should be a color array
         
-        description: [
-            'Sets the color of each vertex',
-            'Overrides *color*.'
-        ].join(' ')
+        
     },
     facecolor: {
         valType: 'data_array',
         
-        description: [
-            'Sets the color of each face',
-            'Overrides *color* and *vertexcolor*.'
-        ].join(' ')
+        
     },
 
     //Opacity
@@ -84078,17 +83177,12 @@ module.exports = {
         valType: 'boolean',
         
         dflt: false,
-        description: [
-            'Determines whether or not normal smoothing is applied to the meshes,',
-            'creating meshes with a low-poly look.'
-        ].join(' ')
+        
     },
 
     contour: {
         show: extendFlat({}, surfaceAtts.contours.x.show, {
-            description: [
-                'Sets whether or not dynamic contours are shown on hover'
-            ].join(' ')
+            
         }),
         color: extendFlat({}, surfaceAtts.contours.x.color),
         width: extendFlat({}, surfaceAtts.contours.x.width)
@@ -84379,14 +83473,7 @@ Mesh3D.name = 'mesh3d',
 Mesh3D.basePlotModule = require('../../plots/gl3d');
 Mesh3D.categories = ['gl3d'];
 Mesh3D.meta = {
-    description: [
-        'Draws sets of triangles with coordinates given by',
-        'three 1-dimensional arrays in `x`, `y`, `z` and',
-        '(1) a sets of `i`, `j`, `k` indices',
-        '(2) Delaunay triangulation or',
-        '(3) the Alpha-shape algorithm or',
-        '(4) the Convex-hull algorithm'
-    ].join(' ')
+    
 };
 
 module.exports = Mesh3D;
@@ -84419,12 +83506,7 @@ module.exports = {
         valType: 'number',
         
         dflt: 0,
-        description: [
-            'Alternate to `labels`.',
-            'Builds a numeric set of labels.',
-            'Use with `dlabel`',
-            'where `label0` is the starting label and `dlabel` the step.'
-        ].join(' ')
+        
     },
     dlabel: {
         valType: 'number',
@@ -84441,11 +83523,7 @@ module.exports = {
     marker: {
         colors: {
             valType: 'data_array',  // TODO 'color_array' ?
-            description: [
-                'Sets the color of each sector of this pie chart.',
-                'If not specified, the default trace color set is used',
-                'to pick the sector colors.'
-            ].join(' ')
+            
         },
 
         line: {
@@ -84454,9 +83532,7 @@ module.exports = {
                 
                 dflt: colorAttrs.defaultLine,
                 arrayOk: true,
-                description: [
-                    'Sets the color of the line enclosing each sector.'
-                ].join(' ')
+                
             },
             width: {
                 valType: 'number',
@@ -84464,9 +83540,7 @@ module.exports = {
                 min: 0,
                 dflt: 0,
                 arrayOk: true,
-                description: [
-                    'Sets the width (in px) of the line enclosing each sector.'
-                ].join(' ')
+                
             }
         }
     },
@@ -84484,11 +83558,7 @@ module.exports = {
         valType: 'string',
         
         dflt: '',
-        description: [
-            'If there are multiple pies that should be sized according to',
-            'their totals, link them by providing a non-empty group id here',
-            'shared by every trace in the same group.'
-        ].join(' ')
+        
     },
 
     // labels (legend is handled by plots.attributes.showlegend and layout.hiddenlabels)
@@ -84497,9 +83567,7 @@ module.exports = {
         
         flags: ['label', 'text', 'value', 'percent'],
         extras: ['none'],
-        description: [
-            'Determines which trace information appear on the graph.'
-        ].join(' ')
+        
     },
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['label', 'text', 'value', 'percent', 'name']
@@ -84510,9 +83578,7 @@ module.exports = {
         values: ['inside', 'outside', 'auto', 'none'],
         dflt: 'auto',
         arrayOk: true,
-        description: [
-            'Specifies the location of the `textinfo`.'
-        ].join(' ')
+        
     },
     // TODO make those arrayOk?
     textfont: extendFlat({}, fontAttrs, {
@@ -84535,10 +83601,7 @@ module.exports = {
                 {valType: 'number', min: 0, max: 1}
             ],
             dflt: [0, 1],
-            description: [
-                'Sets the horizontal domain of this pie trace',
-                '(in plot fraction).'
-            ].join(' ')
+            
         },
         y: {
             valType: 'info_array',
@@ -84548,10 +83611,7 @@ module.exports = {
                 {valType: 'number', min: 0, max: 1}
             ],
             dflt: [0, 1],
-            description: [
-                'Sets the vertical domain of this pie trace',
-                '(in plot fraction).'
-            ].join(' ')
+            
         }
     },
     // 3D attributes commented out until I finish them in a later PR
@@ -84594,10 +83654,7 @@ module.exports = {
         min: 0,
         max: 1,
         dflt: 0,
-        description: [
-            'Sets the fraction of the radius to cut out of the pie.',
-            'Use this to make a donut chart.'
-        ].join(' ')
+        
     },
 
     // ordering and direction
@@ -84605,10 +83662,7 @@ module.exports = {
         valType: 'boolean',
         
         dflt: true,
-        description: [
-            'Determines whether or not the sectors of reordered',
-            'from largest to smallest.'
-        ].join(' ')
+        
     },
     direction: {
         /**
@@ -84622,10 +83676,7 @@ module.exports = {
         values: ['clockwise', 'counterclockwise'],
         
         dflt: 'counterclockwise',
-        description: [
-            'Specifies the direction at which succeeding sectors follow',
-            'one another.'
-        ].join(' ')
+        
     },
     rotation: {
         valType: 'number',
@@ -84633,10 +83684,7 @@ module.exports = {
         min: -360,
         max: 360,
         dflt: 0,
-        description: [
-            'Instead of the first slice starting at 12 o\'clock,',
-            'rotate to some other angle.'
-        ].join(' ')
+        
     },
 
     pull: {
@@ -84646,12 +83694,7 @@ module.exports = {
         max: 1,
         dflt: 0,
         arrayOk: true,
-        description: [
-            'Sets the fraction of larger radius to pull the sectors',
-            'out from the center. This can be a constant',
-            'to pull all slices apart from each other equally',
-            'or an array to highlight one or more slices.'
-        ].join(' ')
+        
     }
 };
 
@@ -84940,11 +83983,7 @@ Pie.name = 'pie';
 Pie.basePlotModule = require('../../plots/cartesian');
 Pie.categories = ['pie', 'showLegend'];
 Pie.meta = {
-    description: [
-        'A data visualized by the sectors of the pie is set in `values`.',
-        'The sector labels are set in `labels`.',
-        'The sector colors are set in `marker.colors`'
-    ].join(' ')
+    
 };
 
 module.exports = Pie;
@@ -85796,21 +84835,13 @@ module.exports = {
         valType: 'any',
         dflt: 0,
         
-        description: [
-            'Alternate to `x`.',
-            'Builds a linear space of x coordinates.',
-            'Use with `dx`',
-            'where `x0` is the starting coordinate and `dx` the step.'
-        ].join(' ')
+        
     },
     dx: {
         valType: 'number',
         dflt: 1,
         
-        description: [
-            'Sets the x coordinate step.',
-            'See `x0` for more info.'
-        ].join(' ')
+        
     },
     y: {
         valType: 'data_array',
@@ -85820,48 +84851,27 @@ module.exports = {
         valType: 'any',
         dflt: 0,
         
-        description: [
-            'Alternate to `y`.',
-            'Builds a linear space of y coordinates.',
-            'Use with `dy`',
-            'where `y0` is the starting coordinate and `dy` the step.'
-        ].join(' ')
+        
     },
     dy: {
         valType: 'number',
         dflt: 1,
         
-        description: [
-            'Sets the y coordinate step.',
-            'See `y0` for more info.'
-        ].join(' ')
+        
     },
     text: {
         valType: 'string',
         
         dflt: '',
         arrayOk: true,
-        description: [
-            'Sets text elements associated with each (x,y) pair.',
-            'If a single string, the same string appears over',
-            'all the data points.',
-            'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.'
-        ].join(' ')
+        
     },
     mode: {
         valType: 'flaglist',
         flags: ['lines', 'markers', 'text'],
         extras: ['none'],
         
-        description: [
-            'Determines the drawing mode for this scatter trace.',
-            'If the provided `mode` includes *text* then the `text` elements',
-            'appear at the coordinates. Otherwise, the `text` elements',
-            'appear on hover.',
-            'If there are less than ' + constants.PTS_LINESONLY + ' points,',
-            'then the default is *lines+markers*. Otherwise, *lines*.'
-        ].join(' ')
+        
     },
     line: {
         color: {
@@ -85881,11 +84891,7 @@ module.exports = {
             values: ['linear', 'spline', 'hv', 'vh', 'hvh', 'vhv'],
             dflt: 'linear',
             
-            description: [
-                'Determines the line shape.',
-                'With *spline* the lines are drawn using spline interpolation.',
-                'The other available values correspond to step-wise line shapes.'
-            ].join(' ')
+            
         },
         smoothing: {
             valType: 'number',
@@ -85893,11 +84899,7 @@ module.exports = {
             max: 1.3,
             dflt: 1,
             
-            description: [
-                'Has only an effect if `shape` is set to *spline*',
-                'Sets the amount of smoothing.',
-                '*0* corresponds to no smoothing (equivalent to a *linear* shape).'
-            ].join(' ')
+            
         },
         dash: {
             valType: 'string',
@@ -85908,31 +84910,21 @@ module.exports = {
             values: ['solid', 'dot', 'dash', 'longdash', 'dashdot', 'longdashdot'],
             dflt: 'solid',
             
-            description: [
-                'Sets the style of the lines. Set to a dash string type',
-                'or a dash length in px.'
-            ].join(' ')
+            
         }
     },
     connectgaps: {
         valType: 'boolean',
         dflt: false,
         
-        description: [
-            'Determines whether or not gaps',
-            '(i.e. {nan} or missing values)',
-            'in the provided data arrays are connected.'
-        ].join(' ')
+        
     },
     fill: {
         valType: 'enumerated',
         values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx'],
         dflt: 'none',
         
-        description: [
-            'Sets the area to fill with a solid color.',
-            'Use with `fillcolor`.'
-        ].join(' ')
+        
     },
     fillcolor: {
         valType: 'color',
@@ -85946,13 +84938,7 @@ module.exports = {
             dflt: 'circle',
             arrayOk: true,
             
-            description: [
-                'Sets the marker symbol type.',
-                'Adding 100 is equivalent to appending *-open* to a symbol name.',
-                'Adding 200 is equivalent to appending *-dot* to a symbol name.',
-                'Adding 300 is equivalent to appending *-open-dot*',
-                'or *dot-open* to a symbol name.'
-            ].join(' ')
+            
         },
         opacity: {
             valType: 'number',
@@ -85981,112 +84967,68 @@ module.exports = {
             min: 0,
             dflt: 0,
             
-            description: [
-                'Sets a maximum number of points to be drawn on the graph.',
-                '*0* corresponds to no limit.'
-            ].join(' ')
+            
         },
         sizeref: {
             valType: 'number',
             dflt: 1,
             
-            description: [
-                'Has only an effect if `marker.size` is set to a numerical array.',
-                'Sets the scale factor used to determine the rendered size of',
-                'marker points. Use with `sizemin` and `sizemode`.'
-            ].join(' ')
+            
         },
         sizemin: {
             valType: 'number',
             min: 0,
             dflt: 0,
             
-            description: [
-                'Has only an effect if `marker.size` is set to a numerical array.',
-                'Sets the minimum size (in px) of the rendered marker points.'
-            ].join(' ')
+            
         },
         sizemode: {
             valType: 'enumerated',
             values: ['diameter', 'area'],
             dflt: 'diameter',
             
-            description: [
-                'Has only an effect if `marker.size` is set to a numerical array.',
-                'Sets the rule for which the data in `size` is converted',
-                'to pixels.'
-            ].join(' ')
+            
         },
         colorscale: {
             valType: 'colorscale',
             
-            description: [
-                'Sets the colorscale.',
-                'The colorscale must be an array containing',
-                'arrays mapping a normalized value to an',
-                'rgb, rgba, hex, hsl, hsv, or named color string.',
-                'At minimum, a mapping for the lowest (0) and highest (1)',
-                'values are required. For example,',
-                '`[[0, \'rgb(0,0,255)\', [1, \'rgb(255,0,0)\']]`.',
-                'To control the bounds of the colorscale in color space,',
-                'use cmin and cmax'
-            ].join(' ')
+            
         },
         cauto: {
             valType: 'boolean',
             dflt: true,
             
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Determines the whether or not the color domain is computed',
-                'automatically.'
-            ].join(' ')
+            
         },
         cmax: {
             valType: 'number',
             dflt: null,
             
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Sets the upper bound of the color domain.'
-            ].join(' ')
+            
         },
         cmin: {
             valType: 'number',
             dflt: null,
             
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Sets the lower bound of the color domain.'
-            ].join(' ')
+            
         },
         autocolorscale: {
             valType: 'boolean',
             dflt: true,
             
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Determines whether or not the colorscale is picked using',
-                'values inside `marker.color`.'
-            ].join(' ')
+            
         },
         reversescale: {
             valType: 'boolean',
             
             dflt: false,
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Reverses the colorscale.'
-            ].join(' ')
+            
         },
         showscale: {
             valType: 'boolean',
             
             dflt: false,
-            description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
-                'Determines whether or not a colorbar is displayed.'
-            ].join(' ')
+            
         },
         line: {
             color: {
@@ -86105,57 +85047,37 @@ module.exports = {
             colorscale: {
                 valType: 'colorscale',
                 
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Sets the colorscale.'
-                ].join(' ')
+                
             },
             cauto: {
                 valType: 'boolean',
                 dflt: true,
                 
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Determines the whether or not the color domain is computed',
-                    'with respect to the input data.'
-                ].join(' ')
+                
             },
             cmax: {
                 valType: 'number',
                 dflt: null,
                 
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Sets the upper bound of the color domain.'
-                ].join(' ')
+                
             },
             cmin: {
                 valType: 'number',
                 dflt: null,
                 
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Sets the lower bound of the color domain.'
-                ].join(' ')
+                
             },
             autocolorscale: {
                 valType: 'boolean',
                 dflt: true,
                 
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Determines whether or not the colorscale is picked using',
-                    'the sign of values inside `marker.line.color`.'
-                ].join(' ')
+                
             },
             reversescale: {
                 valType: 'boolean',
                 dflt: false,
                 
-                description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Reverses the colorscale.'
-                ].join(' ')
+                
             }
         }
     },
@@ -86169,10 +85091,7 @@ module.exports = {
         dflt: 'middle center',
         arrayOk: true,
         
-        description: [
-            'Sets the positions of the `text` elements',
-            'with respects to the (x,y) coordinates.'
-        ].join(' ')
+        
     },
     textfont: {
         family: {
@@ -86197,17 +85116,11 @@ module.exports = {
     },
     r: {
         valType: 'data_array',
-        description: [
-            'For polar chart only.',
-            'Sets the radial coordinates.'
-        ].join('')
+        
     },
     t: {
         valType: 'data_array',
-        description: [
-            'For polar chart only.',
-            'Sets the angular coordinates.'
-        ].join('')
+        
     },
     _nestedModules: {  // nested module coupling
         'error_y': 'ErrorBars',
@@ -86737,13 +85650,7 @@ Scatter.name = 'scatter';
 Scatter.basePlotModule = require('../../plots/cartesian');
 Scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
 Scatter.meta = {
-    description: [
-        'The scatter trace type encompasses line charts, scatter charts, text charts, and bubble charts.',
-        'The data visualized as scatter point or lines is set in `x` and `y`.',
-        'Text (appearing either on the chart or on hover only) is via `text`.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'to a numerical arrays.'
-    ].join(' ')
+    
 };
 
 module.exports = Scatter;
@@ -87541,10 +86448,7 @@ function makeProjectionAttr(axLetter) {
             valType: 'boolean',
             
             dflt: false,
-            description: [
-                'Sets whether or not projections are shown along the',
-                axLetter, 'axis.'
-            ].join(' ')
+            
         },
         opacity: {
             valType: 'number',
@@ -87560,10 +86464,7 @@ function makeProjectionAttr(axLetter) {
             min: 0,
             max: 10,
             dflt: 2/3,
-            description: [
-                'Sets the scale factor determining the size of the',
-                'projection marker points.'
-            ].join(' ')
+            
         }
     };
 }
@@ -87582,13 +86483,7 @@ module.exports = {
         
     },
     text: extendFlat({}, scatterAttrs.text, {
-        description: [
-            'Sets text elements associated with each (x,y,z) triplet.',
-            'If a single string, the same string appears over',
-            'all the data points.',
-            'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y,z) coordinates.'
-        ].join(' ')
+        
     }),
     mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),
@@ -87597,11 +86492,7 @@ module.exports = {
         
         values: [-1, 0, 1, 2],
         dflt: -1,
-        description: [
-            'If *-1*, the scatter points are not fill with a surface',
-            'If *0*, *1*, *2*, the scatter points are filled with',
-            'a Delaunay surface about the x, y, z respectively.'
-        ].join(' ')
+        
     },
     surfacecolor: {
         valType: 'color',
@@ -87634,14 +86525,7 @@ module.exports = {
         sizemode: scatterMarkerAttrs.sizemode,
         opacity: extendFlat({}, scatterMarkerAttrs.opacity, {
             arrayOk: false,
-            description: [
-                'Sets the marker opacity.',
-                'Note that the marker opacity for scatter3d traces',
-                'must be a scalar value for performance reasons.',
-                'To set a blending opacity value',
-                '(i.e. which is not transparent), set *marker.color*',
-                'to an rgba color and use its alpha channel.'
-            ].join(' ')
+            
         }),
         colorscale: scatterMarkerAttrs.colorscale,
         cauto: scatterMarkerAttrs.cauto,
@@ -88334,14 +87218,7 @@ Scatter3D.basePlotModule = require('../../plots/gl3d');
 Scatter3D.categories = ['gl3d', 'symbols', 'markerColorscale', 'showLegend'];
 Scatter3D.meta = {
     
-    description: [
-        'The data visualized as scatter point or lines in 3D dimension',
-        'is set in `x`, `y`, `z`.',
-        'Text (appearing either on the chart or on hover only) is via `text`.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'Projections are achieved via `projection`.',
-        'Surface fills are achieved via `surfaceaxis`.'
-    ].join(' ')
+    
 };
 
 module.exports = Scatter3D;
@@ -88377,32 +87254,18 @@ module.exports = {
     },
     locations: {
         valType: 'data_array',
-        description: [
-            'Sets the coordinates via location IDs or names.',
-            'Coordinates correspond to the centroid of each location given.',
-            'See `locationmode` for more info.'
-        ].join(' ')
+        
     },
     locationmode: {
         valType: 'enumerated',
         values: ['ISO-3', 'USA-states', 'country names'],
         
         dflt: 'ISO-3',
-        description: [
-            'Determines the set of locations used to match entries in `locations`',
-            'to regions on the map.'
-        ].join(' ')
+        
     },
     mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
     text: extendFlat({}, scatterAttrs.text, {
-        description: [
-            'Sets text elements associated with each (lon,lat) pair.',
-            'or item in `locations`.',
-            'If a single string, the same string appears over',
-            'all the data points.',
-            'If an array of string, the items are mapped in order to the',
-            'this trace\'s (lon,lat) or `locations` coordinates.'
-        ].join(' ')
+        
     }),
     line: {
         color: scatterLineAttrs.color,
@@ -88567,11 +87430,7 @@ ScatterGeo.basePlotModule = require('../../plots/geo');
 ScatterGeo.categories = ['geo', 'symbols', 'markerColorscale', 'showLegend'];
 ScatterGeo.meta = {
     
-    description: [
-        'The data visualized as scatter point or lines on a geographic map',
-        'is provided either by longitude/latitude pairs in `lon` and `lat`',
-        'respectively or by geographic location IDs or names in `locations`.'
-    ].join(' ')
+    
 };
 
 module.exports = ScatterGeo;
@@ -88695,19 +87554,14 @@ function makeLineGeoJSON(trace) {
 }
 
 plotScatterGeo.plot = function(geo, scattergeoData) {
-    var gScatterGeo = geo.framework.select('g.scattergeolayer'),
-        topojson = geo.topojson;
-
-    // TODO move to more d3-idiomatic pattern (that's work on replot)
-    // N.B. html('') does not work in IE11
-    gScatterGeo.selectAll('*').remove();
-
-    var gScatterGeoTraces = gScatterGeo
-        .selectAll('g.trace.scatter')
+    var gScatterGeoTraces = geo.framework.select('.scattergeolayer')
+        .selectAll('g.trace.scattergeo')
         .data(scattergeoData);
 
     gScatterGeoTraces.enter().append('g')
-            .attr('class', 'trace scattergeo');
+        .attr('class', 'trace scattergeo');
+
+    gScatterGeoTraces.exit().remove();
 
     // TODO add hover - how?
     gScatterGeoTraces
@@ -88731,28 +87585,37 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 return;
             }
 
-            var cdi = plotScatterGeo.calcGeoJSON(trace, topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+            var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+                eventDataFunc = makeEventDataFunc(trace);
 
             var hoverinfo = trace.hoverinfo,
-                hasNameLabel = (hoverinfo === 'all' ||
-                    hoverinfo.indexOf('name') !== -1);
+                hasNameLabel = (
+                    hoverinfo === 'all' ||
+                    hoverinfo.indexOf('name') !== -1
+                );
 
-            function handleMouseOver(d) {
+            function handleMouseOver(pt, ptIndex) {
                 if(!geo.showHover) return;
 
-                var xy = geo.projection([d.lon, d.lat]);
-                cleanHoverLabelsFunc(d);
+                var xy = geo.projection([pt.lon, pt.lat]);
+                cleanHoverLabelsFunc(pt);
 
                 Fx.loneHover({
                     x: xy[0],
                     y: xy[1],
                     name: hasNameLabel ? trace.name : undefined,
-                    text: d.textLabel,
-                    color: d.mc || (trace.marker || {}).color
+                    text: pt.textLabel,
+                    color: pt.mc || (trace.marker || {}).color
                 }, {
                     container: geo.hoverContainer.node()
                 });
+
+                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+            }
+
+            function handleClick(pt, ptIndex) {
+                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
             }
 
             if(showMarkers) {
@@ -88761,6 +87624,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                     .enter().append('path')
                         .attr('class', 'point')
                         .on('mouseover', handleMouseOver)
+                        .on('click', handleClick)
                         .on('mouseout', function() {
                             Fx.loneUnhover(geo.hoverContainer);
                         })
@@ -88816,11 +87680,13 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     }
 
     var hoverinfoParts = (hoverinfo === 'all') ?
-        attributes.hoverinfo.flags :
-        hoverinfo.split('+');
+            attributes.hoverinfo.flags :
+            hoverinfo.split('+');
 
-    var hasLocation = (hoverinfoParts.indexOf('location') !== -1 &&
-           Array.isArray(trace.locations)),
+    var hasLocation = (
+            hoverinfoParts.indexOf('location') !== -1 &&
+            Array.isArray(trace.locations)
+        ),
         hasLon = (hoverinfoParts.indexOf('lon') !== -1),
         hasLat = (hoverinfoParts.indexOf('lat') !== -1),
         hasText = (hoverinfoParts.indexOf('text') !== -1);
@@ -88830,19 +87696,35 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         return Axes.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
     }
 
-    return function cleanHoverLabelsFunc(d) {
+    return function cleanHoverLabelsFunc(pt) {
         var thisText = [];
 
-        if(hasLocation) thisText.push(d.location);
+        if(hasLocation) thisText.push(pt.location);
         else if(hasLon && hasLat) {
-            thisText.push('(' + formatter(d.lon) + ', ' + formatter(d.lat) + ')');
+            thisText.push('(' + formatter(pt.lon) + ', ' + formatter(pt.lat) + ')');
         }
-        else if(hasLon) thisText.push('lon: ' + formatter(d.lon));
-        else if(hasLat) thisText.push('lat: ' + formatter(d.lat));
+        else if(hasLon) thisText.push('lon: ' + formatter(pt.lon));
+        else if(hasLat) thisText.push('lat: ' + formatter(pt.lat));
 
-        if(hasText) thisText.push(d.tx || trace.text);
+        if(hasText) thisText.push(pt.tx || trace.text);
 
-        d.textLabel = thisText.join('<br>');
+        pt.textLabel = thisText.join('<br>');
+    };
+}
+
+function makeEventDataFunc(trace) {
+    var hasLocation = Array.isArray(trace.locations);
+
+    return function(pt, ptIndex) {
+        return {points: [{
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: ptIndex,
+            lon: pt.lon,
+            lat: pt.lat,
+            location: hasLocation ? pt.location : null
+        }]};
     };
 }
 
@@ -88874,22 +87756,14 @@ module.exports = {
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
     text: extendFlat({}, scatterAttrs.text, {
-        description: [
-            'Sets text elements associated with each (x,y) pair to appear on hover.',
-            'If a single string, the same string appears over',
-            'all the data points.',
-            'If an array of string, the items are mapped in order to the',
-            'this trace\'s (x,y) coordinates.'
-        ].join(' ')
+        
     }),
     mode: {
         valType: 'flaglist',
         flags: ['lines', 'markers'],
         extras: ['none'],
         
-        description: [
-            'Determines the drawing mode for this scatter trace.'
-        ].join(' ')
+        
     },
     line: {
         color: scatterLineAttrs.color,
@@ -89595,12 +88469,7 @@ ScatterGl.name = 'scattergl';
 ScatterGl.basePlotModule = require('../../plots/gl2d');
 ScatterGl.categories = ['gl2d', 'symbols', 'errorBarsOK', 'markerColorscale', 'showLegend'];
 ScatterGl.meta = {
-    description: [
-        'The data visualized as scatter point or lines is set in `x` and `y`',
-        'using the WebGl plotting engine.',
-        'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'to a numerical arrays.'
-    ].join(' ')
+    
 };
 
 module.exports = ScatterGl;
@@ -89626,10 +88495,7 @@ function makeContourProjAttr(axLetter) {
         valType: 'boolean',
         
         dflt: false,
-        description: [
-            'Sets whether or not the dynamic contours are projected',
-            'along the', axLetter, 'axis.'
-        ].join(' ')
+        
     };
 }
 
@@ -89639,10 +88505,7 @@ function makeContourAttr(axLetter) {
             valType: 'boolean',
             
             dflt: false,
-            description: [
-                'Sets whether or not dynamic contours are shown along the',
-                axLetter, 'axis'
-            ].join(' ')
+            
         },
         project: {
             x: makeContourProjAttr('x'),
@@ -90251,16 +89114,7 @@ Surface.name = 'surface';
 Surface.basePlotModule = require('../../plots/gl3d');
 Surface.categories = ['gl3d', 'noOpacity'];
 Surface.meta = {
-    description: [
-        'The data the describes the coordinates of the surface is set in `z`.',
-        'Data in `z` should be a {2D array}.',
-
-        'Coordinates in `x` and `y` can either be 1D {arrays}',
-        'or {2D arrays} (e.g. to graph parametric surfaces).',
-
-        'If not provided in `x` and `y`, the x and y coordinates are assumed',
-        'to be linear starting at 0 with a unit step.'
-    ].join(' ')
+    
 };
 
 module.exports = Surface;

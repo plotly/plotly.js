@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.5.0
+* plotly.js v1.5.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -55227,7 +55227,7 @@ modeBarButtons.zoomInGeo = {
 
 modeBarButtons.zoomOutGeo = {
     name: 'zoomOutGeo',
-    title: 'Zoom in',
+    title: 'Zoom out',
     attr: 'zoom',
     val: 'out',
     icon: Icons.zoom_minus,
@@ -57265,7 +57265,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.5.0';
+exports.version = '1.5.1';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -60643,7 +60643,7 @@ Plotly.plot = function(gd, data, layout, config) {
     Events.init(gd);
 
     var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
-    if(okToPlot===false) return;
+    if(okToPlot===false) return Promise.reject();
 
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
@@ -60696,7 +60696,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // signal to drag handler that after everything else is done
         // we need to replot, because something has changed
         gd._replotPending = true;
-        return;
+        return Promise.reject();
     } else {
         // we're going ahead with a replot now
         gd._replotPending = false;
@@ -60835,7 +60835,7 @@ Plotly.plot = function(gd, data, layout, config) {
             subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
             modules = gd._modules;
 
-        var i, j, cd, trace, uid, subplot, subplotInfo,
+        var i, j, trace, subplot, subplotInfo,
             cdSubplot, cdError, cdModule, _module;
 
         function getCdSubplot(calcdata, subplot) {
@@ -60877,12 +60877,21 @@ Plotly.plot = function(gd, data, layout, config) {
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
         for (i = 0; i < calcdata.length; i++) {
-            cd = calcdata[i];
-            trace = cd[0].trace;
-            if (trace.visible !== true || !trace._module.colorbar) {
+            trace = calcdata[i][0].trace;
+
+            var isVisible = (trace.visible === true),
                 uid = trace.uid;
-                fullLayout._paper.selectAll('.hm'+uid+',.contour'+uid+',.cb'+uid+',#clip'+uid)
-                    .remove();
+
+            if(!isVisible || !Plots.traceIs(trace, '2dMap')) {
+                fullLayout._paper.selectAll(
+                    '.hm' + uid +
+                    ',.contour' + uid +
+                    ',#clip' + uid
+                ).remove();
+            }
+
+            if(!isVisible || !trace._module.colorbar) {
+                fullLayout._infolayer.selectAll('.cb' + uid).remove();
             }
         }
 
@@ -62156,7 +62165,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     }
     else {
         console.log('restyle fail',astr,val,traces);
-        return new Promise.reject();
+        return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
@@ -62679,7 +62688,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     gd = getGraphDiv(gd);
 
     if(gd.framework && gd.framework.isPolar) {
-        return new Promise.resolve(gd);
+        return Promise.resolve(gd);
     }
 
     var layout = gd.layout,
@@ -62697,7 +62706,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     else if(Lib.isPlainObject(astr)) aobj = astr;
     else {
         console.log('relayout fail',astr,val);
-        return new Promise.reject();
+        return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
@@ -63238,6 +63247,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
     // 4. scatter
     // 5. box plots
     function plotLayers(svg) {
+        svg.append('g').classed('imagelayer', true);
         svg.append('g').classed('maplayer', true);
         svg.append('g').classed('barlayer', true);
         svg.append('g').classed('errorlayer', true);
@@ -69825,6 +69835,7 @@ var topojsonFeature = require('topojson').feature;
 function Geo(options, fullLayout) {
 
     this.id = options.id;
+    this.graphDiv = options.graphDiv;
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
 
@@ -69832,7 +69843,7 @@ function Geo(options, fullLayout) {
     // a subset of https://github.com/d3/d3-geo-projection
     addProjectionsToD3();
 
-    this.showHover = fullLayout.hovermode==='closest';
+    this.showHover = (fullLayout.hovermode === 'closest');
     this.hoverContainer = null;
 
     this.topojsonName = null;
@@ -70306,6 +70317,7 @@ exports.plot = function plotGeo(gd) {
         if(geo === undefined) {
             geo = new Geo({
                 id: geoId,
+                graphDiv: gd,
                 container: fullLayout._geocontainer.node(),
                 topojsonURL: gd._context.topojsonURL
             },
@@ -75211,9 +75223,7 @@ plots.addLinks = function(gd) {
     // IE doesn't like getComputedTextLength if an element
     // isn't visible, which it (sometimes?) isn't
     // apparently offsetParent is null for invisibles.
-    // http://stackoverflow.com/questions/19669786/check-if-element-is-visible-in-dom
-    if (text && text.offsetParent &&
-            text.getComputedTextLength() >= (fullLayout.width - 20)) {
+    if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
         // Align the text at the left
         attrs['text-anchor'] = 'start';
         attrs.x = 5;
@@ -80252,46 +80262,49 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
 
 plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
     var framework = geo.framework,
-        topojson = geo.topojson,
         gChoropleth = framework.select('g.choroplethlayer'),
         gBaseLayer = framework.select('g.baselayer'),
         gBaseLayerOverChoropleth = framework.select('g.baselayeroverchoropleth'),
         baseLayersOverChoropleth = constants.baseLayersOverChoropleth,
         layerName;
 
-    // TODO move to more d3-idiomatic pattern (that's work on replot)
-    // N.B. html('') does not work in IE11
-    gChoropleth.selectAll('*').remove();
-    gBaseLayerOverChoropleth.selectAll('*').remove();
-
     var gChoroplethTraces = gChoropleth
-        .selectAll('g.trace.scatter')
+        .selectAll('g.trace.choropleth')
         .data(choroplethData);
 
     gChoroplethTraces.enter().append('g')
-            .attr('class', 'trace choropleth');
+        .attr('class', 'trace choropleth');
+
+    gChoroplethTraces.exit().remove();
 
     gChoroplethTraces
         .each(function(trace) {
             if(trace.visible !== true) return;
 
-            var cdi = plotChoropleth.calcGeoJSON(trace, topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+            var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+                eventDataFunc = makeEventDataFunc(trace);
 
-            function handleMouseOver(d) {
+            function handleMouseOver(pt, ptIndex) {
                 if(!geo.showHover) return;
 
-                var xy = geo.projection(d.properties.ct);
-                cleanHoverLabelsFunc(d);
+                var xy = geo.projection(pt.properties.ct);
+                cleanHoverLabelsFunc(pt);
 
                 Plotly.Fx.loneHover({
                     x: xy[0],
                     y: xy[1],
-                    name: d.nameLabel,
-                    text: d.textLabel
+                    name: pt.nameLabel,
+                    text: pt.textLabel
                 }, {
                     container: geo.hoverContainer.node()
                 });
+
+                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+            }
+
+            function handleClick(pt, ptIndex) {
+                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
             }
 
             d3.select(this)
@@ -80300,6 +80313,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 .enter().append('path')
                     .attr('class', 'choroplethlocation')
                     .on('mouseover', handleMouseOver)
+                    .on('click', handleClick)
                     .on('mouseout', function() {
                         Plotly.Fx.loneUnhover(geo.hoverContainer);
                     })
@@ -80311,6 +80325,8 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
         });
 
     // some baselayers are drawn over choropleth
+    gBaseLayerOverChoropleth.selectAll('*').remove();
+
     for(var i = 0; i < baseLayersOverChoropleth.length; i++) {
         layerName = baseLayersOverChoropleth[i];
         gBaseLayer.select('g.' + layerName).remove();
@@ -80333,11 +80349,11 @@ plotChoropleth.style = function(geo) {
                 sclFunc = makeScaleFunction(scl, zmin, zmax);
 
             s.selectAll('path.choroplethlocation')
-                .each(function(d) {
+                .each(function(pt) {
                     d3.select(this)
-                        .attr('fill', function(d) { return sclFunc(d.z); })
-                        .call(Color.stroke, d.mlc || markerLine.color)
-                        .call(Drawing.dashLine, '', d.mlw || markerLine.width);
+                        .attr('fill', function(pt) { return sclFunc(pt.z); })
+                        .call(Color.stroke, pt.mlc || markerLine.color)
+                        .call(Drawing.dashLine, '', pt.mlw || markerLine.width);
                 });
         });
 };
@@ -80346,9 +80362,9 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     var hoverinfo = trace.hoverinfo;
 
     if(hoverinfo === 'none') {
-        return function cleanHoverLabelsFunc(d) {
-            delete d.nameLabel;
-            delete d.textLabel;
+        return function cleanHoverLabelsFunc(pt) {
+            delete pt.nameLabel;
+            delete pt.textLabel;
         };
     }
 
@@ -80367,21 +80383,34 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
-    return function cleanHoverLabelsFunc(d) {
+    return function cleanHoverLabelsFunc(pt) {
         // put location id in name label container
         // if name isn't part of hoverinfo
         var thisText = [];
 
-        if(hasIdAsNameLabel) d.nameLabel = d.id;
+        if(hasIdAsNameLabel) pt.nameLabel = pt.id;
         else {
-            if(hasName) d.nameLabel = trace.name;
-            if(hasLocation) thisText.push(d.id);
+            if(hasName) pt.nameLabel = trace.name;
+            if(hasLocation) thisText.push(pt.id);
         }
 
-        if(hasZ) thisText.push(formatter(d.z));
-        if(hasText) thisText.push(d.tx);
+        if(hasZ) thisText.push(formatter(pt.z));
+        if(hasText) thisText.push(pt.tx);
 
-        d.textLabel = thisText.join('<br>');
+        pt.textLabel = thisText.join('<br>');
+    };
+}
+
+function makeEventDataFunc(trace) {
+    return function(pt, ptIndex) {
+        return {points: [{
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: ptIndex,
+            location: pt.id,
+            z: pt.z
+        }]};
     };
 }
 
@@ -80823,15 +80852,16 @@ function plotOne(gd, plotinfo, cd) {
         pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
 
     if(trace.visible !== true) {
-        fullLayout._paper.selectAll('.'+id+',.cb'+uid+',.hm'+uid).remove();
+        fullLayout._paper.selectAll('.' + id + ',.hm' + uid).remove();
+        fullLayout._infolayer.selectAll('.cb' + uid).remove();
         return;
     }
 
     // use a heatmap to fill - draw it behind the lines
-    if(contours.coloring==='heatmap') {
-        if(trace.zauto && trace.autocontour===false) {
+    if(contours.coloring === 'heatmap') {
+        if(trace.zauto && (trace.autocontour === false)) {
             trace._input.zmin = trace.zmin =
-                contours.start - contours.size/2;
+                contours.start - contours.size / 2;
             trace._input.zmax = trace.zmax =
                 trace.zmin + pathinfo.length * contours.size;
         }
@@ -80839,7 +80869,7 @@ function plotOne(gd, plotinfo, cd) {
         heatmapPlot(gd, plotinfo, [cd]);
     }
     // in case this used to be a heatmap (or have heatmap fill)
-    else fullLayout._paper.selectAll('.hm'+uid).remove();
+    else fullLayout._paper.selectAll('.hm' + uid).remove();
 
     makeCrossings(pathinfo);
     findAllPaths(pathinfo);
@@ -81230,12 +81260,15 @@ function getInterpPx(pi, loc, step) {
 
 function makeContourGroup(plotinfo, cd, id) {
     var plotgroup = plotinfo.plot.select('.maplayer')
-        .selectAll('g.contour.'+id)
+        .selectAll('g.contour.' + id)
         .data(cd);
+
     plotgroup.enter().append('g')
-        .classed('contour',true)
-        .classed(id,true);
+        .classed('contour', true)
+        .classed(id, true);
+
     plotgroup.exit().remove();
+
     return plotgroup;
 }
 
@@ -82460,11 +82493,13 @@ var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var maxRowLength = require('./max_row_length');
 
 
-// From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 module.exports = function(gd, plotinfo, cdheatmaps) {
-    cdheatmaps.forEach(function(cd) { plotOne(gd, plotinfo, cd); });
+    for(var i = 0; i < cdheatmaps.length; i++) {
+        plotOne(gd, plotinfo, cdheatmaps[i]);
+    }
 };
 
+// From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function plotOne(gd, plotinfo, cd) {
     Lib.markTime('in Heatmap.plot');
 
@@ -82473,14 +82508,14 @@ function plotOne(gd, plotinfo, cd) {
         xa = plotinfo.x(),
         ya = plotinfo.y(),
         fullLayout = gd._fullLayout,
-        id = 'hm' + uid,
-        cbId = 'cb' + uid;
+        id = 'hm' + uid;
 
-    fullLayout._paper.selectAll('.contour' + uid).remove(); // in case this used to be a contour map
+    // in case this used to be a contour map
+    fullLayout._paper.selectAll('.contour' + uid).remove();
 
     if(trace.visible !== true) {
         fullLayout._paper.selectAll('.' + id).remove();
-        fullLayout._paper.selectAll('.' + cbId).remove();
+        fullLayout._infolayer.selectAll('.cb' + uid).remove();
         return;
     }
 
@@ -82807,20 +82842,28 @@ function plotOne(gd, plotinfo, cd) {
     gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
     gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-    // put this right before making the new image, to minimize flicker
-    fullLayout._paper.selectAll('.'+id).remove();
-    plotinfo.plot.select('.maplayer').append('svg:image')
-        .classed(id, true)
-        .datum(cd[0])
-        .attr({
-            xmlns: xmlnsNamespaces.svg,
-            'xlink:href': canvas.toDataURL('image/png'),
-            height: imageHeight,
-            width: imageWidth,
-            x: left,
-            y: top,
-            preserveAspectRatio: 'none'
-        });
+    var plotgroup = plotinfo.plot.select('.imagelayer')
+        .selectAll('g.hm.' + id)
+        .data([0]);
+    plotgroup.enter().append('g')
+        .classed('hm', true)
+        .classed(id, true);
+    plotgroup.exit().remove();
+
+    var image3 = plotgroup.selectAll('image')
+        .data(cd);
+    image3.enter().append('svg:image');
+    image3.exit().remove();
+
+    image3.attr({
+        xmlns: xmlnsNamespaces.svg,
+        'xlink:href': canvas.toDataURL('image/png'),
+        height: imageHeight,
+        width: imageWidth,
+        x: left,
+        y: top,
+        preserveAspectRatio: 'none'
+    });
 
     Lib.markTime('done showing png');
 }
@@ -88695,19 +88738,14 @@ function makeLineGeoJSON(trace) {
 }
 
 plotScatterGeo.plot = function(geo, scattergeoData) {
-    var gScatterGeo = geo.framework.select('g.scattergeolayer'),
-        topojson = geo.topojson;
-
-    // TODO move to more d3-idiomatic pattern (that's work on replot)
-    // N.B. html('') does not work in IE11
-    gScatterGeo.selectAll('*').remove();
-
-    var gScatterGeoTraces = gScatterGeo
-        .selectAll('g.trace.scatter')
+    var gScatterGeoTraces = geo.framework.select('.scattergeolayer')
+        .selectAll('g.trace.scattergeo')
         .data(scattergeoData);
 
     gScatterGeoTraces.enter().append('g')
-            .attr('class', 'trace scattergeo');
+        .attr('class', 'trace scattergeo');
+
+    gScatterGeoTraces.exit().remove();
 
     // TODO add hover - how?
     gScatterGeoTraces
@@ -88731,28 +88769,37 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 return;
             }
 
-            var cdi = plotScatterGeo.calcGeoJSON(trace, topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace);
+            var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
+                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+                eventDataFunc = makeEventDataFunc(trace);
 
             var hoverinfo = trace.hoverinfo,
-                hasNameLabel = (hoverinfo === 'all' ||
-                    hoverinfo.indexOf('name') !== -1);
+                hasNameLabel = (
+                    hoverinfo === 'all' ||
+                    hoverinfo.indexOf('name') !== -1
+                );
 
-            function handleMouseOver(d) {
+            function handleMouseOver(pt, ptIndex) {
                 if(!geo.showHover) return;
 
-                var xy = geo.projection([d.lon, d.lat]);
-                cleanHoverLabelsFunc(d);
+                var xy = geo.projection([pt.lon, pt.lat]);
+                cleanHoverLabelsFunc(pt);
 
                 Fx.loneHover({
                     x: xy[0],
                     y: xy[1],
                     name: hasNameLabel ? trace.name : undefined,
-                    text: d.textLabel,
-                    color: d.mc || (trace.marker || {}).color
+                    text: pt.textLabel,
+                    color: pt.mc || (trace.marker || {}).color
                 }, {
                     container: geo.hoverContainer.node()
                 });
+
+                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+            }
+
+            function handleClick(pt, ptIndex) {
+                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
             }
 
             if(showMarkers) {
@@ -88761,6 +88808,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                     .enter().append('path')
                         .attr('class', 'point')
                         .on('mouseover', handleMouseOver)
+                        .on('click', handleClick)
                         .on('mouseout', function() {
                             Fx.loneUnhover(geo.hoverContainer);
                         })
@@ -88816,11 +88864,13 @@ function makeCleanHoverLabelsFunc(geo, trace) {
     }
 
     var hoverinfoParts = (hoverinfo === 'all') ?
-        attributes.hoverinfo.flags :
-        hoverinfo.split('+');
+            attributes.hoverinfo.flags :
+            hoverinfo.split('+');
 
-    var hasLocation = (hoverinfoParts.indexOf('location') !== -1 &&
-           Array.isArray(trace.locations)),
+    var hasLocation = (
+            hoverinfoParts.indexOf('location') !== -1 &&
+            Array.isArray(trace.locations)
+        ),
         hasLon = (hoverinfoParts.indexOf('lon') !== -1),
         hasLat = (hoverinfoParts.indexOf('lat') !== -1),
         hasText = (hoverinfoParts.indexOf('text') !== -1);
@@ -88830,19 +88880,35 @@ function makeCleanHoverLabelsFunc(geo, trace) {
         return Axes.tickText(axis, axis.c2l(val), 'hover').text + '\u00B0';
     }
 
-    return function cleanHoverLabelsFunc(d) {
+    return function cleanHoverLabelsFunc(pt) {
         var thisText = [];
 
-        if(hasLocation) thisText.push(d.location);
+        if(hasLocation) thisText.push(pt.location);
         else if(hasLon && hasLat) {
-            thisText.push('(' + formatter(d.lon) + ', ' + formatter(d.lat) + ')');
+            thisText.push('(' + formatter(pt.lon) + ', ' + formatter(pt.lat) + ')');
         }
-        else if(hasLon) thisText.push('lon: ' + formatter(d.lon));
-        else if(hasLat) thisText.push('lat: ' + formatter(d.lat));
+        else if(hasLon) thisText.push('lon: ' + formatter(pt.lon));
+        else if(hasLat) thisText.push('lat: ' + formatter(pt.lat));
 
-        if(hasText) thisText.push(d.tx || trace.text);
+        if(hasText) thisText.push(pt.tx || trace.text);
 
-        d.textLabel = thisText.join('<br>');
+        pt.textLabel = thisText.join('<br>');
+    };
+}
+
+function makeEventDataFunc(trace) {
+    var hasLocation = Array.isArray(trace.locations);
+
+    return function(pt, ptIndex) {
+        return {points: [{
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: ptIndex,
+            lon: pt.lon,
+            lat: pt.lat,
+            location: hasLocation ? pt.location : null
+        }]};
     };
 }
 
