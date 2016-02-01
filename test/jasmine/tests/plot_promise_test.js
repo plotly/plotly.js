@@ -1,4 +1,5 @@
 var Plotly = require('@src/plotly');
+var Events = require('@src/lib/events');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -26,6 +27,64 @@ describe('Plotly.___ methods', function() {
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
             expect(promiseGd.layout).toBeDefined();
+        });
+    });
+
+    describe('Plotly.plot promise', function() {
+        var gd,
+            promise,
+            promiseRejected = false;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }];
+
+            gd = createGraphDiv();
+
+            Events.init(gd);
+
+            gd.on('plotly_beforeplot', function() {
+                return false;
+            });
+
+            promise = Plotly.plot(gd, data, {});
+
+            promise.then(null, function(){
+                promiseRejected = true;
+                done();
+            });
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should be rejected when plotly_beforeplot event handlers return false', function() {
+            expect(promiseRejected).toBe(true);
+        });
+    });
+
+    describe('Plotly.plot promise', function() {
+        var gd,
+            promise,
+            promiseRejected = false;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }];
+
+            gd = createGraphDiv();
+
+            gd._dragging = true;
+
+            promise = Plotly.plot(gd, data, {});
+
+            promise.then(null, function(){
+                promiseRejected = true;
+                done();
+            });
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should reject the promise when graph is being dragged', function() {
+            expect(promiseRejected).toBe(true);
         });
     });
 
@@ -272,9 +331,9 @@ describe('Plotly.___ methods', function() {
         });
     });
 
-    describe('Plotly.relayout promise', function() {
+    describe('Plotly.restyle promise', function() {
         var promise,
-            promiseGd;
+            promiseRejected = false;
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
@@ -282,7 +341,32 @@ describe('Plotly.___ methods', function() {
 
             Plotly.plot(initialDiv, data, {});
 
-            promise = Plotly.relayout(initialDiv, 'title', 'Promise test!');
+            promise = Plotly.restyle(initialDiv, undefined, '');
+
+            promise.then(null, function(){
+                promiseRejected = true;
+                done();
+            });
+        });
+        afterEach(destroyGraphDiv);
+
+        it('should be rejected when the attribute is missing', function() {
+            expect(promiseRejected).toBe(true);
+        });
+    });
+
+    describe('Plotly.relayout promise', function() {
+        var promise,
+            promiseGd;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }],
+                layout = {hovermode:'closest'},
+                initialDiv = createGraphDiv();
+
+            Plotly.plot(initialDiv, data, layout);
+
+            promise = Plotly.relayout(initialDiv, 'hovermode', false);
 
             promise.then(function(gd){
                 promiseGd = gd;
@@ -296,6 +380,87 @@ describe('Plotly.___ methods', function() {
             expect(typeof promiseGd).toBe('object');
             expect(promiseGd.data).toBeDefined();
             expect(promiseGd.layout).toBeDefined();
+        });
+    });
+
+    describe('Plotly.relayout promise', function() {
+        var promise,
+            promiseGd;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }],
+                layout = {hovermode:'closest'},
+                initialDiv = createGraphDiv();
+
+            Plotly.plot(initialDiv, data, layout);
+
+            promise = Plotly.relayout(initialDiv, 'hovermode', false);
+
+            promise.then(function(gd){
+                promiseGd = gd;
+                done();
+            });
+        });
+        afterEach(destroyGraphDiv);
+
+        it('should be returned with the graph div as an argument', function() {
+            expect(promiseGd).toBeDefined();
+            expect(typeof promiseGd).toBe('object');
+            expect(promiseGd.data).toBeDefined();
+            expect(promiseGd.layout).toBeDefined();
+        });
+    });
+
+    describe('Plotly.relayout promise', function() {
+        var promise,
+            promiseGd;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }],
+                layout = {hovermode:'closest'},
+                initialDiv = createGraphDiv();
+
+            Plotly.plot(initialDiv, data, layout);
+
+            initialDiv.framework = { isPolar: true };
+            promise = Plotly.relayout(initialDiv, 'hovermode', false);
+
+            promise.then(function(gd){
+                promiseGd = gd;
+                done();
+            });
+        });
+        afterEach(destroyGraphDiv);
+
+        it('should be returned with the graph div unchanged when the framework is polar', function() {
+            expect(promiseGd).toBeDefined();
+            expect(typeof promiseGd).toBe('object');
+            expect(promiseGd.changed).toBeFalsy();
+        });
+    });
+
+    describe('Plotly.relayout promise', function() {
+        var promise,
+            promiseRejected = false;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }],
+                layout = {hovermode:'closest'},
+                initialDiv = createGraphDiv();
+
+            Plotly.plot(initialDiv, data, layout);
+
+            promise = Plotly.relayout(initialDiv, undefined, false);
+
+            promise.then(null, function(){
+                promiseRejected = true;
+                done();
+            });
+        });
+        afterEach(destroyGraphDiv);
+
+        it('should be rejected when the attribute is missing', function() {
+            expect(promiseRejected).toBe(true);
         });
     });
 

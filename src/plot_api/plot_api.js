@@ -59,7 +59,7 @@ Plotly.plot = function(gd, data, layout, config) {
     Events.init(gd);
 
     var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
-    if(okToPlot===false) return;
+    if(okToPlot===false) return Promise.reject();
 
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
@@ -112,7 +112,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // signal to drag handler that after everything else is done
         // we need to replot, because something has changed
         gd._replotPending = true;
-        return;
+        return Promise.reject();
     } else {
         // we're going ahead with a replot now
         gd._replotPending = false;
@@ -1581,7 +1581,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     }
     else {
         console.log('restyle fail',astr,val,traces);
-        return new Promise.reject();
+        return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
@@ -2104,7 +2104,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     gd = getGraphDiv(gd);
 
     if(gd.framework && gd.framework.isPolar) {
-        return new Promise.resolve(gd);
+        return Promise.resolve(gd);
     }
 
     var layout = gd.layout,
@@ -2122,7 +2122,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     else if(Lib.isPlainObject(astr)) aobj = astr;
     else {
         console.log('relayout fail',astr,val);
-        return new Promise.reject();
+        return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
