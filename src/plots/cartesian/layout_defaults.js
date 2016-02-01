@@ -16,7 +16,7 @@ var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var handleAxisDefaults = require('./axis_defaults');
 var handlePositionDefaults = require('./position_defaults');
-var utils = require('./utils');
+var axisIds = require('./axis_ids');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
@@ -36,8 +36,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     for(i = 0; i < fullData.length; i++) {
         var trace = fullData[i],
-            xaName = utils.id2name(trace.xaxis),
-            yaName = utils.id2name(trace.yaxis);
+            xaName = axisIds.id2name(trace.xaxis),
+            yaName = axisIds.id2name(trace.yaxis);
 
         // add axes implied by traces
         if(xaName && xaList.indexOf(xaName) === -1) xaList.push(xaName);
@@ -84,10 +84,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             },
             positioningOptions = {
                 letter: axLetter,
-                counterAxes: {x: yaList, y: xaList}[axLetter].map(utils.name2id),
+                counterAxes: {x: yaList, y: xaList}[axLetter].map(axisIds.name2id),
                 overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2){
                     return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
-                }).map(utils.name2id)
+                }).map(axisIds.name2id)
             };
 
         function coerce(attr, dflt) {

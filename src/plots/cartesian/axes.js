@@ -20,13 +20,13 @@ axes.supplyLayoutDefaults = require('./layout_defaults');
 
 axes.setConvert = require('./set_convert');
 
-var utils = require('./utils');
-axes.id2name = utils.id2name;
-axes.cleanId = utils.cleanId;
-axes.list = utils.list;
-axes.listIds = utils.listIds;
-axes.getFromId = utils.getFromId;
-axes.getFromTrace = utils.getFromTrace;
+var axisIds = require('./axisIds');
+axes.id2name = axisIds.id2name;
+axes.cleanId = axisIds.cleanId;
+axes.list = axisIds.list;
+axes.listIds = axisIds.listIds;
+axes.getFromId = axisIds.getFromId;
+axes.getFromTrace = axisIds.getFromTrace;
 
 
 // find the list of possible axes to reference with an xref or yref attribute

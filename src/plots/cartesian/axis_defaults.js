@@ -19,7 +19,7 @@ var handleTickValueDefaults = require('./tick_value_defaults');
 var handleTickDefaults = require('./tick_defaults');
 var setConvert = require('./set_convert');
 var cleanDatum = require('./clean_datum');
-var utils = require('./utils');
+var axisIds = require('./axis_ids');
 
 
 /**
@@ -44,7 +44,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     // set up some private properties
     if(options.name) {
         containerOut._name = options.name;
-        containerOut._id = utils.name2id(options.name);
+        containerOut._id = axisIds.name2id(options.name);
     }
 
     // now figure out type and do some more initialization

@@ -16,7 +16,7 @@ var Lib = require('../../lib');
 
 var constants = require('./constants');
 var cleanDatum = require('./clean_datum');
-var utils = require('./utils');
+var axisIds = require('./axis_ids');
 
 
 /**
@@ -74,7 +74,7 @@ module.exports = function setConvert(ax) {
         // make sure we have a domain (pull it in from the axis
         // this one is overlaying if necessary)
         if(ax.overlaying) {
-            var ax2 = utils.getFromId(ax._td, ax.overlaying);
+            var ax2 = axisIds.getFromId(ax._td, ax.overlaying);
             ax.domain = ax2.domain;
         }
 
