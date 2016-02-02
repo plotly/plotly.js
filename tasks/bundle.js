@@ -2,6 +2,7 @@ var fs = require('fs');
 
 var browserify = require('browserify');
 var UglifyJS = require('uglify-js');
+var derequire = require('derequire/plugin');
 
 var compressAttributes = require('./util/compress_attributes');
 var constants = require('./util/constants');
@@ -38,7 +39,8 @@ catch(e) {
 browserify(constants.pathToPlotlyIndex, {
     debug: DEV,
     standalone: 'Plotly',
-    transform: [compressAttributes]
+    transform: [compressAttributes],
+    plugin: [derequire]
 })
 .bundle(function(err, buf) {
     if(err) throw err;
@@ -56,7 +58,8 @@ browserify(constants.pathToPlotlyIndex, {
 
 // Browserify the geo assets
 browserify(constants.pathToPlotlyGeoAssetsSrc, {
-    standalone: 'PlotlyGeoAssets'
+    standalone: 'PlotlyGeoAssets',
+    plugin: [derequire]
 })
 .bundle(function(err) {
     if(err) throw err;
@@ -67,7 +70,8 @@ browserify(constants.pathToPlotlyGeoAssetsSrc, {
 // Browserify the plotly.js with meta
 browserify(constants.pathToPlotlyIndex, {
     debug: DEV,
-    standalone: 'Plotly'
+    standalone: 'Plotly',
+    plugin: [derequire]
 })
 .bundle(function(err) {
     if(err) throw err;

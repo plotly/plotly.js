@@ -81,6 +81,7 @@
     "brfs": "^1.4.3",
     "browserify": "^13.0.0",
     "browserify-transform-tools": "^1.5.1",
+    "derequire": "^2.0.3",
     "ecstatic": "^1.4.0",
     "eslint": "^1.10.3",
     "falafel": "^1.2.0",

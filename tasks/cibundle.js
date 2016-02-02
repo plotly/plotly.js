@@ -1,6 +1,7 @@
 var fs = require('fs');
 
 var browserify = require('browserify');
+var derequire = require('derequire/plugin');
 
 var compressAttributes = require('./util/compress_attributes');
 var constants = require('./util/constants');
@@ -18,7 +19,8 @@ var constants = require('./util/constants');
 // Browserify plotly.js
 browserify(constants.pathToPlotlyIndex, {
     standalone: 'Plotly',
-    transform: [compressAttributes]
+    transform: [compressAttributes],
+    plugin: [derequire]
 })
 .bundle(function(err) {
     if(err) throw err;
@@ -28,7 +30,8 @@ browserify(constants.pathToPlotlyIndex, {
 
 // Browserify the geo assets
 browserify(constants.pathToPlotlyGeoAssetsSrc, {
-    standalone: 'PlotlyGeoAssets'
+    standalone: 'PlotlyGeoAssets',
+    plugin: [derequire]
 })
 .bundle(function(err) {
     if(err) throw err;
