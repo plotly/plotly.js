@@ -21,14 +21,6 @@ var Titles = module.exports = {};
 // title can be 'xtitle', 'ytitle', 'gtitle',
 //  or empty to draw all
 Titles.draw = function(gd, title) {
-    if(!title) {
-        Plotly.Axes.listIds(gd).forEach(function(axId) {
-            Titles.draw(gd, axId + 'title');
-        });
-        Titles.draw(gd, 'gtitle');
-        return;
-    }
-
     var fullLayout = gd._fullLayout,
         gs = fullLayout._size,
         axletter = title.charAt(0),
