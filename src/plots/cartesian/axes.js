@@ -20,7 +20,7 @@ axes.supplyLayoutDefaults = require('./layout_defaults');
 
 axes.setConvert = require('./set_convert');
 
-var axisIds = require('./axisIds');
+var axisIds = require('./axis_ids');
 axes.id2name = axisIds.id2name;
 axes.cleanId = axisIds.cleanId;
 axes.list = axisIds.list;
