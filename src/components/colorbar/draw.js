@@ -18,6 +18,7 @@ var Fx = require('../../plots/cartesian/graph_interact');
 var Lib = require('../../lib');
 var Drawing = require('../drawing');
 var Color = require('../color');
+var Titles = require('../titles');
 
 var handleAxisDefaults = require('../../plots/cartesian/axis_defaults');
 var handleAxisPositionDefaults = require('../../plots/cartesian/position_defaults');
@@ -253,10 +254,10 @@ module.exports = function draw(gd, id) {
 
         cbAxisOut._axislayer = container.select('.cbaxis');
         var titleHeight = 0;
-        if(['top','bottom'].indexOf(opts.titleside)!==-1) {
+        if(['top', 'bottom'].indexOf(opts.titleside) !==- 1) {
             // draw the title so we know how much room it needs
             // when we squish the axis
-            Plotly.Titles.draw(gd, cbAxisOut._id + 'title');
+            Titles.draw(gd, cbAxisOut._id + 'title');
         }
 
         function drawAxis(){

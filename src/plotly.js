@@ -48,7 +48,6 @@ exports.Colorbar = require('./components/colorbar');
 exports.ErrorBars = require('./components/errorbars');
 exports.Annotations = require('./components/annotations');
 exports.Shapes = require('./components/shapes');
-exports.Titles = require('./components/titles');
 exports.Legend = require('./components/legend');
 exports.ModeBar = require('./components/modebar');
 
@@ -58,7 +57,6 @@ exports.register = function register(_modules) {
     } else if(_modules && !Array.isArray(_modules)){
         _modules = [_modules];
     }
-
 
     for(var i = 0; i < _modules.length; i++){
         var newModule = _modules[i];
