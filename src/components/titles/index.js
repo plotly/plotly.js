@@ -9,48 +9,47 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var plots = Plotly.Plots;
+var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
+var Lib = require('../../lib');
+var Drawing = require('../drawing');
+var Color = require('../color');
+var svgTextUtils = require('../../lib/svg_text_utils');
+var axisIds = require('../../plots/cartesian/axis_ids');
+
 
 var Titles = module.exports = {};
 
-// titles - (re)draw titles on the axes and plot
-// title can be 'xtitle', 'ytitle', 'gtitle',
-//  or empty to draw all
+/**
+ * Titles - (re)draw titles on the axes and plot:
+ *  title can be 'xtitle', 'ytitle', 'gtitle'
+ */
 Titles.draw = function(gd, title) {
-    if(!title) {
-        Plotly.Axes.listIds(gd).forEach(function(axId) {
-            Titles.draw(gd, axId + 'title');
-        });
-        Titles.draw(gd, 'gtitle');
-        return;
-    }
-
     var fullLayout = gd._fullLayout,
         gs = fullLayout._size,
         axletter = title.charAt(0),
-        colorbar = title.substr(1,2)==='cb';
+        colorbar = (title.substr(1, 2) === 'cb');
 
     var cbnum, cont, options;
 
     if(colorbar) {
-        var uid = title.substr(3).replace('title','');
+        var uid = title.substr(3).replace('title', '');
         gd._fullData.some(function(trace, i) {
-            if(trace.uid===uid) {
+            if(trace.uid === uid) {
                 cbnum = i;
                 cont = gd.calcdata[i][0].t.cb.axis;
                 return true;
             }
         });
     }
-    else cont = fullLayout[Plotly.Axes.id2name(title.replace('title',''))] || fullLayout;
+    else cont = fullLayout[axisIds.id2name(title.replace('title', ''))] || fullLayout;
 
-    var prop = cont===fullLayout ? 'title' : cont._name+'.title',
+    var prop = (cont === fullLayout) ? 'title' : cont._name+'.title',
         name = colorbar ? 'colorscale' :
-            ((cont._id||axletter).toUpperCase()+' axis'),
+            ((cont._id || axletter).toUpperCase()+' axis'),
         font = cont.titlefont.family,
         fontSize = cont.titlefont.size,
         fontColor = cont.titlefont.color,
@@ -68,7 +67,7 @@ Titles.draw = function(gd, title) {
         avoidTransform;
 
     // find the transform applied to the parents of the avoid selection
-    // which doesn't get picked up by Plotly.Drawing.bBox
+    // which doesn't get picked up by Drawing.bBox
     if(colorbar) {
         avoid.offsetLeft = gs.l;
         avoid.offsetTop = gs.t;
@@ -86,49 +85,53 @@ Titles.draw = function(gd, title) {
     if(colorbar && cont.titleside) {
         // argh, we only make it here if the title is on top or bottom,
         // not right
-        x = gs.l+cont.titlex*gs.w;
-        y = gs.t+(1-cont.titley)*gs.h + ((cont.titleside==='top') ?
-                3+fontSize*0.75 : - 3-fontSize*0.25);
-        options = {x: x, y: y, 'text-anchor':'start'};
+        x = gs.l + cont.titlex * gs.w;
+        y = gs.t + (1 - cont.titley) * gs.h + ((cont.titleside === 'top') ?
+                3 + fontSize * 0.75 : - 3 - fontSize * 0.25);
+        options = {x: x, y: y, 'text-anchor': 'start'};
         avoid = {};
 
         // convertToTspans rotates any 'y...' by 90 degrees...
         // TODO: need a better solution than this hack
-        title = 'h'+title;
+        title = 'h' + title;
     }
-    else if(axletter==='x'){
+    else if(axletter === 'x'){
         xa = cont;
-        ya = (xa.anchor==='free') ?
-            {_offset:gs.t+(1-(xa.position||0))*gs.h, _length:0} :
-            Plotly.Axes.getFromId(gd, xa.anchor);
-        x = xa._offset+xa._length/2;
-        y = ya._offset + ((xa.side==='top') ?
+        ya = (xa.anchor === 'free') ?
+            {_offset: gs.t + (1 - (xa.position || 0)) * gs.h, _length: 0} :
+            axisIds.getFromId(gd, xa.anchor);
+
+        x = xa._offset + xa._length / 2;
+        y = ya._offset + ((xa.side === 'top') ?
             -10 - fontSize*(offsetBase + (xa.showticklabels ? 1 : 0)) :
             ya._length + 10 +
                 fontSize*(offsetBase + (xa.showticklabels ? 1.5 : 0.5)));
+
         options = {x: x, y: y, 'text-anchor': 'middle'};
-        if(!avoid.side) { avoid.side = 'bottom'; }
+        if(!avoid.side) avoid.side = 'bottom';
     }
-    else if(axletter==='y'){
+    else if(axletter === 'y'){
         ya = cont;
-        xa = (ya.anchor==='free') ?
-            {_offset:gs.l+(ya.position||0)*gs.w, _length:0} :
-            Plotly.Axes.getFromId(gd, ya.anchor);
-        y = ya._offset+ya._length/2;
-        x = xa._offset + ((ya.side==='right') ?
+        xa = (ya.anchor === 'free') ?
+            {_offset: gs.l + (ya.position || 0) * gs.w, _length: 0} :
+            axisIds.getFromId(gd, ya.anchor);
+
+        y = ya._offset + ya._length / 2;
+        x = xa._offset + ((ya.side === 'right') ?
             xa._length + 10 +
                 fontSize*(offsetBase + (ya.showticklabels ? 1 : 0.5)) :
             -10 - fontSize*(offsetBase + (ya.showticklabels ? 0.5 : 0)));
+
         options = {x: x, y: y, 'text-anchor': 'middle'};
         transform = {rotate: '-90', offset: 0};
-        if(!avoid.side) { avoid.side = 'left'; }
+        if(!avoid.side) avoid.side = 'left';
     }
-    else{
+    else {
         // plot title
         name = 'Plot';
         fontSize = fullLayout.titlefont.size;
-        x = fullLayout.width/2;
-        y = fullLayout._size.t/2;
+        x = fullLayout.width / 2;
+        y = fullLayout._size.t / 2;
         options = {x: x, y: y, 'text-anchor': 'middle'};
         avoid = {};
     }
@@ -136,7 +139,7 @@ Titles.draw = function(gd, title) {
     var opacity = 1,
         isplaceholder = false,
         txt = cont.title.trim();
-    if(txt === '') { opacity = 0; }
+    if(txt === '') opacity = 0;
     if(txt.match(/Click to enter .+ title/)) {
         opacity = 0.2;
         isplaceholder = true;
@@ -145,20 +148,20 @@ Titles.draw = function(gd, title) {
     var group;
     if(colorbar) {
         group = d3.select(gd)
-            .selectAll('.'+cont._id.substr(1)+' .cbtitle');
+            .selectAll('.' + cont._id.substr(1) + ' .cbtitle');
         // this class-to-rotate thing with convertToTspans is
         // getting hackier and hackier... delete groups with the
         // wrong class
-        var otherClass = title.charAt(0)==='h' ?
-            title.substr(1) : ('h'+title);
-        group.selectAll('.'+otherClass+',.'+otherClass+'-math-group')
+        var otherClass = title.charAt(0) === 'h' ?
+            title.substr(1) : ('h' + title);
+        group.selectAll('.' + otherClass + ',.' + otherClass + '-math-group')
             .remove();
     }
     else {
-        group = fullLayout._infolayer.selectAll('.g-'+title)
+        group = fullLayout._infolayer.selectAll('.g-' + title)
             .data([0]);
         group.enter().append('g')
-            .classed('g-'+title, true);
+            .classed('g-' + title, true);
     }
 
     var el = group.selectAll('text')
@@ -173,36 +176,36 @@ Titles.draw = function(gd, title) {
         .attr('class', title);
 
     function titleLayout(titleEl){
-        Plotly.Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
+        Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
     }
 
     function drawTitle(titleEl) {
         titleEl.attr('transform', transform ?
             'rotate(' + [transform.rotate, options.x, options.y] +
-                ') translate(0, '+transform.offset+')' :
+                ') translate(0, ' + transform.offset + ')' :
             null);
 
         titleEl.style({
             'font-family': font,
-            'font-size': d3.round(fontSize,2)+'px',
-            fill: Plotly.Color.rgb(fontColor),
-            opacity: opacity*Plotly.Color.opacity(fontColor),
-            'font-weight': plots.fontWeight
+            'font-size': d3.round(fontSize,2) + 'px',
+            fill: Color.rgb(fontColor),
+            opacity: opacity * Color.opacity(fontColor),
+            'font-weight': Plots.fontWeight
         })
         .attr(options)
-        .call(Plotly.util.convertToTspans)
+        .call(svgTextUtils.convertToTspans)
         .attr(options);
 
         titleEl.selectAll('tspan.line')
             .attr(options);
-        return plots.previousPromises(gd);
+        return Plots.previousPromises(gd);
     }
 
     function scootTitle(titleElIn) {
         var titleGroup = d3.select(titleElIn.node().parentNode);
 
         if(avoid && avoid.selection && avoid.side && txt){
-            titleGroup.attr('transform',null);
+            titleGroup.attr('transform', null);
 
             // move toward avoid.side (= left, right, top, bottom) if needed
             // can include pad (pixels, default 2)
@@ -213,10 +216,10 @@ Titles.draw = function(gd, title) {
                     top: 'bottom',
                     bottom: 'top'
                 }[avoid.side],
-                shiftSign = (['left','top'].indexOf(avoid.side)!==-1) ?
+                shiftSign = (['left','top'].indexOf(avoid.side) !== -1) ?
                     -1 : 1,
                 pad = isNumeric(avoid.pad) ? avoid.pad : 2,
-                titlebb = Plotly.Drawing.bBox(titleGroup.node()),
+                titlebb = Drawing.bBox(titleGroup.node()),
                 paperbb = {
                     left: 0,
                     top: 0,
@@ -225,9 +228,9 @@ Titles.draw = function(gd, title) {
                 },
                 maxshift = colorbar ? fullLayout.width:
                     (paperbb[avoid.side]-titlebb[avoid.side]) *
-                    ((avoid.side==='left' || avoid.side==='top') ? -1 : 1);
+                    ((avoid.side === 'left' || avoid.side === 'top') ? -1 : 1);
             // Prevent the title going off the paper
-            if(maxshift<0) shift = maxshift;
+            if(maxshift < 0) shift = maxshift;
             else {
                 // so we don't have to offset each avoided element,
                 // give the title the opposite offset
@@ -239,16 +242,16 @@ Titles.draw = function(gd, title) {
                 // iterate over a set of elements (avoid.selection)
                 // to avoid collisions with
                 avoid.selection.each(function(){
-                    var avoidbb = Plotly.Drawing.bBox(this);
+                    var avoidbb = Drawing.bBox(this);
 
-                    if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
+                    if(Lib.bBoxIntersect(titlebb, avoidbb, pad)) {
                         shift = Math.max(shift, shiftSign * (
                             avoidbb[avoid.side] - titlebb[backside]) + pad);
                     }
                 });
                 shift = Math.min(maxshift, shift);
             }
-            if(shift>0 || maxshift<0) {
+            if(shift > 0 || maxshift < 0) {
                 var shiftTemplate = {
                     left: [-shift, 0],
                     right: [shift, 0],
@@ -264,43 +267,44 @@ Titles.draw = function(gd, title) {
     el.attr({'data-unformatted': txt})
         .call(titleLayout);
 
-    var placeholderText = 'Click to enter '+name.replace(/\d+/,'')+' title';
+    var placeholderText = 'Click to enter ' + name.replace(/\d+/, '') + ' title';
 
-    function setPlaceholder(){
+    function setPlaceholder() {
         opacity = 0;
         isplaceholder = true;
         txt = placeholderText;
-        fullLayout._infolayer.select('.'+title)
+        fullLayout._infolayer.select('.' + title)
             .attr({'data-unformatted': txt})
             .text(txt)
-            .on('mouseover.opacity',function(){
+            .on('mouseover.opacity', function() {
                 d3.select(this).transition()
-                    .duration(100).style('opacity',1);
+                    .duration(100).style('opacity', 1);
             })
-            .on('mouseout.opacity',function(){
+            .on('mouseout.opacity',function() {
                 d3.select(this).transition()
-                    .duration(1000).style('opacity',0);
+                    .duration(1000).style('opacity', 0);
             });
     }
 
     if(gd._context.editable){
         if(!txt) setPlaceholder();
 
-        el.call(Plotly.util.makeEditable)
-            .on('edit', function(text){
+        el.call(svgTextUtils.makeEditable)
+            .on('edit', function(text) {
                 if(colorbar) {
                     var trace = gd._fullData[cbnum];
-                    if(plots.traceIs(trace, 'markerColorscale')) {
+                    if(Plots.traceIs(trace, 'markerColorscale')) {
                         Plotly.restyle(gd, 'marker.colorbar.title', text, cbnum);
-                    } else Plotly.restyle(gd, 'colorbar.title', text, cbnum);
+                    }
+                    else Plotly.restyle(gd, 'colorbar.title', text, cbnum);
                 }
                 else Plotly.relayout(gd,prop,text);
             })
-            .on('cancel', function(){
+            .on('cancel', function() {
                 this.text(this.attr('data-unformatted'))
                     .call(titleLayout);
             })
-            .on('input', function(d){
+            .on('input', function(d) {
                 this.text(d || ' ').attr(options)
                     .selectAll('tspan.line')
                         .attr(options);
@@ -309,5 +313,5 @@ Titles.draw = function(gd, title) {
     else if(!txt || txt.match(/Click to enter .+ title/)) {
         el.remove();
     }
-    el.classed('js-placeholder',isplaceholder);
+    el.classed('js-placeholder', isplaceholder);
 };

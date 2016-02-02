@@ -9,9 +9,11 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+var Titles = require('../../components/titles');
 
 var axes = module.exports = {};
 
@@ -1439,7 +1441,7 @@ axes.doTicks = function(td, axid, skipTitle) {
         var tickLabels=container.selectAll('g.'+tcls).data(vals, datafn);
         if(!ax.showticklabels || !isNumeric(position)) {
             tickLabels.remove();
-            Plotly.Titles.draw(td, axid + 'title');
+            Titles.draw(td, axid + 'title');
             return;
         }
 
@@ -1607,7 +1609,7 @@ axes.doTicks = function(td, axid, skipTitle) {
             // (so it can move out of the way if needed)
             // TODO: separate out scoot so we don't need to do
             // a full redraw of the title (modtly relevant for MathJax)
-            if(!skipTitle) Plotly.Titles.draw(td, axid + 'title');
+            if(!skipTitle) Titles.draw(td, axid + 'title');
             return axid+' done';
         }
 
