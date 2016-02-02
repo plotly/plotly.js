@@ -9,11 +9,17 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var plots = Plotly.Plots;
+var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
+var Lib = require('../../lib');
+var Drawing = require('../drawing');
+var Color = require('../color');
+var svgTextUtils = require('../../lib/svg_text_utils');
+var axisIds = require('../../plots/cartesian/axis_ids');
+
 
 var Titles = module.exports = {};
 
@@ -38,7 +44,7 @@ Titles.draw = function(gd, title) {
             }
         });
     }
-    else cont = fullLayout[Plotly.Axes.id2name(title.replace('title',''))] || fullLayout;
+    else cont = fullLayout[axisIds.id2name(title.replace('title', ''))] || fullLayout;
 
     var prop = cont===fullLayout ? 'title' : cont._name+'.title',
         name = colorbar ? 'colorscale' :
@@ -92,9 +98,9 @@ Titles.draw = function(gd, title) {
         xa = cont;
         ya = (xa.anchor==='free') ?
             {_offset:gs.t+(1-(xa.position||0))*gs.h, _length:0} :
-            Plotly.Axes.getFromId(gd, xa.anchor);
         x = xa._offset+xa._length/2;
         y = ya._offset + ((xa.side==='top') ?
+            axisIds.getFromId(gd, xa.anchor);
             -10 - fontSize*(offsetBase + (xa.showticklabels ? 1 : 0)) :
             ya._length + 10 +
                 fontSize*(offsetBase + (xa.showticklabels ? 1.5 : 0.5)));
@@ -105,9 +111,9 @@ Titles.draw = function(gd, title) {
         ya = cont;
         xa = (ya.anchor==='free') ?
             {_offset:gs.l+(ya.position||0)*gs.w, _length:0} :
-            Plotly.Axes.getFromId(gd, ya.anchor);
         y = ya._offset+ya._length/2;
         x = xa._offset + ((ya.side==='right') ?
+            axisIds.getFromId(gd, ya.anchor);
             xa._length + 10 +
                 fontSize*(offsetBase + (ya.showticklabels ? 1 : 0.5)) :
             -10 - fontSize*(offsetBase + (ya.showticklabels ? 0.5 : 0)));
@@ -165,7 +171,7 @@ Titles.draw = function(gd, title) {
         .attr('class', title);
 
     function titleLayout(titleEl){
-        Plotly.Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
+        Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
     }
 
     function drawTitle(titleEl) {
@@ -176,18 +182,18 @@ Titles.draw = function(gd, title) {
 
         titleEl.style({
             'font-family': font,
-            'font-size': d3.round(fontSize,2)+'px',
-            fill: Plotly.Color.rgb(fontColor),
-            opacity: opacity*Plotly.Color.opacity(fontColor),
-            'font-weight': plots.fontWeight
+            'font-size': d3.round(fontSize,2) + 'px',
+            fill: Color.rgb(fontColor),
+            opacity: opacity * Color.opacity(fontColor),
+            'font-weight': Plots.fontWeight
         })
         .attr(options)
-        .call(Plotly.util.convertToTspans)
+        .call(svgTextUtils.convertToTspans)
         .attr(options);
 
         titleEl.selectAll('tspan.line')
             .attr(options);
-        return plots.previousPromises(gd);
+        return Plots.previousPromises(gd);
     }
 
     function scootTitle(titleElIn) {
@@ -208,7 +214,7 @@ Titles.draw = function(gd, title) {
                 shiftSign = (['left','top'].indexOf(avoid.side)!==-1) ?
                     -1 : 1,
                 pad = isNumeric(avoid.pad) ? avoid.pad : 2,
-                titlebb = Plotly.Drawing.bBox(titleGroup.node()),
+                titlebb = Drawing.bBox(titleGroup.node()),
                 paperbb = {
                     left: 0,
                     top: 0,
@@ -231,9 +237,9 @@ Titles.draw = function(gd, title) {
                 // iterate over a set of elements (avoid.selection)
                 // to avoid collisions with
                 avoid.selection.each(function(){
-                    var avoidbb = Plotly.Drawing.bBox(this);
+                    var avoidbb = Drawing.bBox(this);
 
-                    if(Plotly.Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
+                    if(Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
                         shift = Math.max(shift, shiftSign * (
                             avoidbb[avoid.side] - titlebb[backside]) + pad);
                     }
@@ -278,8 +284,8 @@ Titles.draw = function(gd, title) {
     if(gd._context.editable){
         if(!txt) setPlaceholder();
 
-        el.call(Plotly.util.makeEditable)
-            .on('edit', function(text){
+        el.call(svgTextUtils.makeEditable)
+            .on('edit', function(text) {
                 if(colorbar) {
                     var trace = gd._fullData[cbnum];
                     if(plots.traceIs(trace, 'markerColorscale')) {
