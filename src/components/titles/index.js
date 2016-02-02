@@ -244,7 +244,7 @@ Titles.draw = function(gd, title) {
                 avoid.selection.each(function(){
                     var avoidbb = Drawing.bBox(this);
 
-                    if(Lib.bBoxIntersect(titlebb,avoidbb,pad)) {
+                    if(Lib.bBoxIntersect(titlebb, avoidbb, pad)) {
                         shift = Math.max(shift, shiftSign * (
                             avoidbb[avoid.side] - titlebb[backside]) + pad);
                     }

@@ -254,7 +254,7 @@ module.exports = function draw(gd, id) {
 
         cbAxisOut._axislayer = container.select('.cbaxis');
         var titleHeight = 0;
-        if(['top', 'bottom'].indexOf(opts.titleside) !==- 1) {
+        if(['top', 'bottom'].indexOf(opts.titleside) !== -1) {
             // draw the title so we know how much room it needs
             // when we squish the axis
             Titles.draw(gd, cbAxisOut._id + 'title');
