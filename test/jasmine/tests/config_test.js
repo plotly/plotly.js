@@ -32,7 +32,6 @@ describe('config argument', function() {
 
             var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            console.log(link);
             expect(link.textContent).toBe('Edit chart »');
 
             var bBox = link.getBoundingClientRect();
