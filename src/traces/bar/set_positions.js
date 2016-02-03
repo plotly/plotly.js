@@ -138,9 +138,9 @@ module.exports = function setPositions(gd, plotinfo) {
                 ti,
                 scale;
 
-            for(i = 0; i<bl.length; i++){ // trace index
+            for(i = 0; i < bl.length; i++){ // trace index
                 ti = gd.calcdata[bl[i]];
-                for(j = 0; j<ti.length; j++) {
+                for(j = 0; j < ti.length; j++) {
                     sv = Math.round(ti[j].p / sumround);
                     var previousSum = sums[sv] || 0;
                     if(stack) ti[j].b = previousSum;
