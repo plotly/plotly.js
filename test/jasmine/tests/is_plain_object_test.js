@@ -1,9 +1,9 @@
-var Plotly = require('@src/plotly');
+var Lib = require('@src/lib');
 
 describe('isPlainObject', function() {
     'use strict';
 
-    var isPlainObject = Plotly.Lib.isPlainObject;
+    var isPlainObject = Lib.isPlainObject;
 
     function A() {}
 

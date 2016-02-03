@@ -1,5 +1,5 @@
-var Plotly = require('@src/plotly');
 var Choropleth = require('@src/traces/choropleth');
+var Plots = require('@src/plots/plots');
 
 
 describe('Test choropleth', function() {
@@ -11,7 +11,7 @@ describe('Test choropleth', function() {
 
         var defaultColor = '#444',
             layout = {
-                font: Plotly.Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font
             };
 
         beforeEach(function() {

@@ -1,5 +1,6 @@
-var Plotly = require('@src/plotly');
 var Colorscale = require('@src/components/colorscale');
+var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
 var Heatmap = require('@src/traces/heatmap');
 var Scatter = require('@src/traces/scatter');
 
@@ -187,13 +188,13 @@ describe('Test colorscale:', function() {
     describe('handleDefaults (heatmap-like version)', function() {
         var handleDefaults = Colorscale.handleDefaults,
             layout = {
-                font: Plotly.Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font
             },
             opts = {prefix: '', cLetter: 'z'};
         var traceIn, traceOut;
 
         function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Heatmap.attributes, attr, dflt);
+            return Lib.coerce(traceIn, traceOut, Heatmap.attributes, attr, dflt);
         }
 
         beforeEach(function() {
@@ -257,13 +258,13 @@ describe('Test colorscale:', function() {
     describe('handleDefaults (scatter-like version)', function() {
         var handleDefaults = Colorscale.handleDefaults,
             layout = {
-                font: Plotly.Plots.layoutAttributes.font
+                font: Plots.layoutAttributes.font
             },
             opts = {prefix: 'marker.', cLetter: 'c'};
         var traceIn, traceOut;
 
         function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(traceIn, traceOut, Scatter.attributes, attr, dflt);
+            return Lib.coerce(traceIn, traceOut, Scatter.attributes, attr, dflt);
         }
 
         beforeEach(function() {

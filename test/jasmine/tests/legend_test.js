@@ -1,10 +1,11 @@
-var Plotly = require('@src/plotly');
+var Legend = require('@src/components/legend');
+var Plots = require('@src/plots/plots');
 
 describe('Test legend:', function() {
     'use strict';
 
     describe('supplyLayoutDefaults', function() {
-        var supplyLayoutDefaults = Plotly.Legend.supplyLayoutDefaults;
+        var supplyLayoutDefaults = Legend.supplyLayoutDefaults;
 
         var layoutIn, layoutOut, fullData;
 
@@ -13,8 +14,8 @@ describe('Test legend:', function() {
                 showlegend: true
             };
             layoutOut = {
-                font: Plotly.Plots.layoutAttributes.font,
-                bg_color: Plotly.Plots.layoutAttributes.bg_color
+                font: Plots.layoutAttributes.font,
+                bg_color: Plots.layoutAttributes.bg_color
             };
         });
 
@@ -62,7 +63,7 @@ describe('Test legend:', function() {
     });
 
     describe('getLegendData', function() {
-        var getLegendData = Plotly.Legend.getLegendData;
+        var getLegendData = Legend.getLegendData;
 
         var calcdata, opts, legendData, expected;
 

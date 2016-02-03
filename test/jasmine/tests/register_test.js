@@ -1,4 +1,4 @@
-var Plotly = require('@src/plotly');
+var Plotly = require('@lib/index');
 
 describe('the register function', function() {
 

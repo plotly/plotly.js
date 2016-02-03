@@ -1,4 +1,4 @@
-var Plotly = require('@src/plotly');
+var Snapshot = require('@src/snapshot');
 
 describe('Test Snapshot.clone', function() {
     'use strict';
@@ -76,7 +76,7 @@ describe('Test Snapshot.clone', function() {
                 setBackground: 'opaque'
             };
 
-            var themeTile = Plotly.Snapshot.clone(dummyGraphObj, themeOptions);
+            var themeTile = Snapshot.clone(dummyGraphObj, themeOptions);
             expect(themeTile.layout.height).toEqual(THEMETILE_DEFAULT_LAYOUT.height);
             expect(themeTile.layout.width).toEqual(THEMETILE_DEFAULT_LAYOUT.width);
             expect(themeTile.td.defaultLayout).toEqual(THEMETILE_DEFAULT_LAYOUT);
@@ -101,7 +101,7 @@ describe('Test Snapshot.clone', function() {
                 'annotations': []
             };
 
-            var thumbTile = Plotly.Snapshot.clone(dummyGraphObj, thumbnailOptions);
+            var thumbTile = Snapshot.clone(dummyGraphObj, thumbnailOptions);
             expect(thumbTile.layout.hidesources).toEqual(THUMBNAIL_DEFAULT_LAYOUT.hidesources);
             expect(thumbTile.layout.showlegend).toEqual(THUMBNAIL_DEFAULT_LAYOUT.showlegend);
             expect(thumbTile.layout.borderwidth).toEqual(THUMBNAIL_DEFAULT_LAYOUT.borderwidth);
@@ -115,7 +115,7 @@ describe('Test Snapshot.clone', function() {
                 width: 888
             };
 
-            var customTile = Plotly.Snapshot.clone(dummyGraphObj, customOptions);
+            var customTile = Snapshot.clone(dummyGraphObj, customOptions);
             expect(customTile.layout.height).toEqual(customOptions.height);
             expect(customTile.layout.width).toEqual(customOptions.width);
         });
@@ -125,7 +125,7 @@ describe('Test Snapshot.clone', function() {
                 tileClass: 'notarealclass'
             };
 
-            var vanillaPlotTile = Plotly.Snapshot.clone(dummyGraphObj, vanillaOptions);
+            var vanillaPlotTile = Snapshot.clone(dummyGraphObj, vanillaOptions);
             expect(vanillaPlotTile.data[0].x).toEqual(data[0].x);
             expect(vanillaPlotTile.layout).toEqual(layout);
             expect(vanillaPlotTile.layout.height).toEqual(layout.height);
@@ -133,12 +133,12 @@ describe('Test Snapshot.clone', function() {
         });
 
         it('should set the background parameter appropriately', function() {
-            var pt = Plotly.Snapshot.clone(dummyGraphObj, {
+            var pt = Snapshot.clone(dummyGraphObj, {
                 setBackground: 'transparent'
             });
             expect(pt.config.setBackground).not.toBeDefined();
 
-            pt = Plotly.Snapshot.clone(dummyGraphObj, {
+            pt = Snapshot.clone(dummyGraphObj, {
                 setBackground: 'blue'
             });
             expect(pt.config.setBackground).toEqual('blue');

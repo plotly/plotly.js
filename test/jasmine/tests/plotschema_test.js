@@ -1,4 +1,5 @@
-var Plotly = require('@src/plotly');
+var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
 
 describe('plot schema', function() {
     'use strict';
@@ -7,7 +8,7 @@ describe('plot schema', function() {
         valObjects = plotSchema.defs.valObjects;
 
     var isValObject = Plotly.PlotSchema.isValObject,
-        isPlainObject = Plotly.Lib.isPlainObject;
+        isPlainObject = Lib.isPlainObject;
 
     var VALTYPES = Object.keys(valObjects),
         ROLES = ['info', 'style', 'data'];
@@ -95,7 +96,7 @@ describe('plot schema', function() {
         // check if the subplot objects have '_isSubplotObj'
         astrs.forEach(function(astr) {
             expect(
-                Plotly.Lib.nestedProperty(
+                Lib.nestedProperty(
                     plotSchema.layout.layoutAttributes,
                     astr + '.' + IS_SUBPLOT_OBJ
                 ).get()
@@ -117,7 +118,7 @@ describe('plot schema', function() {
         astrs.forEach(function(astr) {
             expect(
                 isPlainObject(
-                    Plotly.Lib.nestedProperty(
+                    Lib.nestedProperty(
                         plotSchema.layout.layoutAttributes, astr
                     ).get().items
                 )

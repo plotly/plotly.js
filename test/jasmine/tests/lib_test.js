@@ -1,36 +1,38 @@
-var Plotly = require('@src/plotly');
+var Lib = require('@src/lib');
+var Plots = require('@src/plots/plots');
+
 
 describe('Test lib.js:', function() {
     'use strict';
 
     describe('parseDate() should', function() {
         it('return false on bad (number) input:', function() {
-            expect(Plotly.Lib.parseDate(0)).toBe(false);
+            expect(Lib.parseDate(0)).toBe(false);
         });
         it('return false on bad (string) input:', function() {
-            expect(Plotly.Lib.parseDate('toto')).toBe(false);
+            expect(Lib.parseDate('toto')).toBe(false);
         });
         it('work with yyyy-mm-dd string input:', function() {
             var input = '2014-12-01',
-                res = Plotly.Lib.parseDate(input),
+                res = Lib.parseDate(input),
                 res0 = new Date(2014, 11, 1);
             expect(res.getTime()).toEqual(res0.getTime());
         });
         it('work with mm/dd/yyyy string input:', function() {
             var input = '12/01/2014',
-                res = Plotly.Lib.parseDate(input),
+                res = Lib.parseDate(input),
                 res0 = new Date(2014, 11, 1);
             expect(res.getTime()).toEqual(res0.getTime());
         });
         it('work with yyyy-mm-dd HH:MM:SS.sss string input:', function() {
             var input = '2014-12-01 09:50:05.124',
-                res = Plotly.Lib.parseDate(input),
+                res = Lib.parseDate(input),
                 res0 = new Date(2014, 11, 1, 9, 50, 5, 124);
             expect(res.getTime()).toEqual(res0.getTime());
         });
         it('work with mm/dd/yyyy HH:MM:SS string input:', function() {
             var input = '2014-12-01 09:50:05',
-                res = Plotly.Lib.parseDate(input),
+                res = Lib.parseDate(input),
                 res0 = new Date(2014, 11, 1, 9, 50, 5);
             expect(res.getTime()).toEqual(res0.getTime());
         });
@@ -39,32 +41,32 @@ describe('Test lib.js:', function() {
     describe('interp() should', function() {
         it('return 1.75 as Q1 of [1, 2, 3, 4, 5]:', function() {
             var input = [1, 2, 3, 4, 5],
-                res = Plotly.Lib.interp(input, 0.25),
+                res = Lib.interp(input, 0.25),
                 res0 = 1.75;
             expect(res).toEqual(res0);
         });
         it('return 4.25 as Q3 of [1, 2, 3, 4, 5]:', function() {
             var input = [1, 2, 3, 4, 5],
-                res = Plotly.Lib.interp(input, 0.75),
+                res = Lib.interp(input, 0.75),
                 res0 = 4.25;
             expect(res).toEqual(res0);
         });
         it('error if second input argument is a string:', function() {
             var input = [1, 2, 3, 4, 5];
             expect(function() {
-                Plotly.Lib.interp(input, 'apple');
+                Lib.interp(input, 'apple');
             }).toThrow('n should be a finite number');
         });
         it('error if second input argument is a date:', function() {
             var in1 = [1, 2, 3, 4, 5],
                 in2 = new Date(2014, 11, 1);
             expect(function() {
-                Plotly.Lib.interp(in1, in2);
+                Lib.interp(in1, in2);
             }).toThrow('n should be a finite number');
         });
         it('return the right boundary on input [-Inf, Inf]:', function() {
             var input = [-Infinity, Infinity],
-                res = Plotly.Lib.interp(input, 1),
+                res = Lib.interp(input, 1),
                 res0 = Infinity;
             expect(res).toEqual(res0);
         });
@@ -83,12 +85,12 @@ describe('Test lib.js:', function() {
                     [undefined, 4, undefined, undefined]
                 ];
 
-            expect(Plotly.Lib.transposeRagged(input)).toEqual(output);
+            expect(Lib.transposeRagged(input)).toEqual(output);
         });
     });
 
     describe('dot()', function() {
-        var dot = Plotly.Lib.dot;
+        var dot = Lib.dot;
 
         it('should return null for empty or unequal-length inputs', function() {
             expect(dot([], [])).toBeNull();
@@ -111,7 +113,7 @@ describe('Test lib.js:', function() {
     });
 
     describe('aggNums()', function() {
-        var aggNums = Plotly.Lib.aggNums;
+        var aggNums = Lib.aggNums;
 
         function summation(a, b) { return a + b; }
 
@@ -133,17 +135,17 @@ describe('Test lib.js:', function() {
     describe('mean() should', function() {
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
-                res = Plotly.Lib.mean(input);
+                res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
         it('toss out non-numerics (NaN):', function() {
             var input = [1, 2, NaN],
-                res = Plotly.Lib.mean(input);
+                res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
         it('evaluate numbers which are passed around as text strings:', function() {
             var input = ['1', '2'],
-                res = Plotly.Lib.mean(input);
+                res = Lib.mean(input);
             expect(res).toEqual(1.5);
         });
     });
@@ -151,22 +153,22 @@ describe('Test lib.js:', function() {
     describe('variance() should', function() {
         it('return 0 on input [2, 2, 2, 2, 2]:', function() {
             var input = [2, 2, 2, 2],
-                res = Plotly.Lib.variance(input);
+                res = Lib.variance(input);
             expect(res).toEqual(0);
         });
         it('return 2/3 on input [-1, 0, 1]:', function() {
             var input = [-1, 0, 1],
-                res = Plotly.Lib.variance(input);
+                res = Lib.variance(input);
             expect(res).toEqual(2/3);
         });
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
-                res = Plotly.Lib.variance(input);
+                res = Lib.variance(input);
             expect(res).toEqual(0.25);
         });
         it('toss out non-numerics (NaN):', function() {
             var input = [1, 2, NaN],
-                res = Plotly.Lib.variance(input);
+                res = Lib.variance(input);
             expect(res).toEqual(0.25);
         });
     });
@@ -174,22 +176,22 @@ describe('Test lib.js:', function() {
     describe('stdev() should', function() {
         it('return 0 on input [2, 2, 2, 2, 2]:', function() {
             var input = [2, 2, 2, 2],
-                res = Plotly.Lib.stdev(input);
+                res = Lib.stdev(input);
             expect(res).toEqual(0);
         });
         it('return sqrt(2/3) on input [-1, 0, 1]:', function() {
             var input = [-1, 0, 1],
-                res = Plotly.Lib.stdev(input);
+                res = Lib.stdev(input);
             expect(res).toEqual(Math.sqrt(2/3));
         });
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
-                res = Plotly.Lib.stdev(input);
+                res = Lib.stdev(input);
             expect(res).toEqual(0.5);
         });
         it('toss out non-numerics (NaN):', function() {
             var input = [1, 2, NaN],
-                res = Plotly.Lib.stdev(input);
+                res = Lib.stdev(input);
             expect(res).toEqual(0.5);
         });
     });
@@ -197,19 +199,19 @@ describe('Test lib.js:', function() {
     describe('smooth()', function() {
         it('should not alter the input for FWHM < 1.5', function() {
             var input = [1, 2, 1, 2, 1],
-                output = Plotly.Lib.smooth(input.slice(), 1.49);
+                output = Lib.smooth(input.slice(), 1.49);
 
             expect(output).toEqual(input);
 
-            output = Plotly.Lib.smooth(input.slice(), 'like butter');
+            output = Lib.smooth(input.slice(), 'like butter');
 
             expect(output).toEqual(input);
         });
 
         it('should preserve the length and integral even with multiple bounces', function() {
             var input = [1, 2, 4, 8, 16, 8, 10, 12],
-                output2 = Plotly.Lib.smooth(input.slice(), 2),
-                output30 = Plotly.Lib.smooth(input.slice(), 30),
+                output2 = Lib.smooth(input.slice(), 2),
+                output30 = Lib.smooth(input.slice(), 30),
                 sumIn = 0,
                 sum2 = 0,
                 sum30 = 0;
@@ -228,8 +230,8 @@ describe('Test lib.js:', function() {
 
         it('should use a hann window and bounce', function() {
             var input = [0, 0, 0, 7, 0, 0, 0],
-                out4 = Plotly.Lib.smooth(input, 4),
-                out7 = Plotly.Lib.smooth(input, 7),
+                out4 = Lib.smooth(input, 4),
+                out7 = Lib.smooth(input, 7),
                 expected4 = [
                     0.2562815664617711, 0.875, 1.4937184335382292, 1.75,
                     1.493718433538229, 0.875, 0.25628156646177086
@@ -245,7 +247,7 @@ describe('Test lib.js:', function() {
     });
 
     describe('nestedProperty', function() {
-        var np = Plotly.Lib.nestedProperty;
+        var np = Lib.nestedProperty;
 
         it('should access simple objects', function() {
             var obj = {a: 'b', c: 'd'},
@@ -434,7 +436,7 @@ describe('Test lib.js:', function() {
     });
 
     describe('coerce', function() {
-        var coerce = Plotly.Lib.coerce,
+        var coerce = Lib.coerce,
             out;
 
         // TODO: I tested font and string because I changed them, but all the other types need tests still
@@ -495,7 +497,7 @@ describe('Test lib.js:', function() {
         });
 
         describe('coerce2', function() {
-            var coerce2 = Plotly.Lib.coerce2;
+            var coerce2 = Lib.coerce2;
 
             it('should set a value and return the value it sets when user input is valid', function() {
                 var colVal = 'red',
@@ -589,9 +591,9 @@ describe('Test lib.js:', function() {
     });
 
     describe('coerceFont', function() {
-        var fontAttrs = Plotly.Plots.fontAttrs,
-            extendFlat = Plotly.Lib.extendFlat,
-            coerceFont = Plotly.Lib.coerceFont;
+        var fontAttrs = Plots.fontAttrs,
+            extendFlat = Lib.extendFlat,
+            coerceFont = Lib.coerceFont;
 
         var defaultFont = {
             family: '"Open sans", verdana, arial, sans-serif, DEFAULT',
@@ -611,7 +613,7 @@ describe('Test lib.js:', function() {
         var containerIn;
 
         function coerce(attr, dflt) {
-            return Plotly.Lib.coerce(containerIn, {}, attributes, attr, dflt);
+            return Lib.coerce(containerIn, {}, attributes, attr, dflt);
         }
 
         it('should insert the full default if no or empty input', function() {
@@ -666,7 +668,7 @@ describe('Test lib.js:', function() {
 
     describe('init2dArray', function() {
         it('should initialize a 2d array with the correct dimenstions', function() {
-            var array = Plotly.Lib.init2dArray(4, 5);
+            var array = Lib.init2dArray(4, 5);
             expect(array.length).toEqual(4);
             expect(array[0].length).toEqual(5);
             expect(array[3].length).toEqual(5);
