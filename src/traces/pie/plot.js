@@ -10,8 +10,11 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
+var Fx = require('../../plots/cartesian/graph_interact');
 var Color = require('../../components/color');
+var Drawing = require('../../components/drawing');
+var svgTextUtils = require('../../lib/svg_text_utils');
+
 var helpers = require('./helpers');
 
 module.exports = function plot(gd, cdpie) {
@@ -108,7 +111,7 @@ module.exports = function plot(gd, cdpie) {
                     if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v));
                     if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal));
 
-                    Plotly.Fx.loneHover({
+                    Fx.loneHover({
                         x0: hoverCenterX - rInscribed * cd0.r,
                         x1: hoverCenterX + rInscribed * cd0.r,
                         y: hoverCenterY,
@@ -121,14 +124,14 @@ module.exports = function plot(gd, cdpie) {
                         outerContainer: fullLayout2._paper.node()
                     });
 
-                    Plotly.Fx.hover(gd, evt, 'pie');
+                    Fx.hover(gd, evt, 'pie');
 
                     hasHoverData = true;
                 }
 
                 function handleMouseOut() {
                     if(hasHoverData) {
-                        Plotly.Fx.loneUnhover(fullLayout._hoverlayer.node());
+                        Fx.loneUnhover(fullLayout._hoverlayer.node());
                         hasHoverData = false;
                     }
                 }
@@ -136,7 +139,7 @@ module.exports = function plot(gd, cdpie) {
                 function handleClick() {
                     gd._hoverdata = [pt];
                     gd._hoverdata.trace = cd.trace;
-                    Plotly.Fx.click(gd, { target: true });
+                    Fx.click(gd, { target: true });
                 }
 
                 slicePath.enter().append('path')
@@ -229,14 +232,14 @@ module.exports = function plot(gd, cdpie) {
                             x: 0,
                             y: 0
                         })
-                        .call(Plotly.Drawing.font, textPosition === 'outside' ?
+                        .call(Drawing.font, textPosition === 'outside' ?
                             trace.outsidetextfont : trace.insidetextfont)
-                        .call(Plotly.util.convertToTspans);
+                        .call(svgTextUtils.convertToTspans);
                     sliceText.selectAll('tspan.line').attr({x: 0, y: 0});
 
                     // position the text relative to the slice
                     // TODO: so far this only accounts for flat
-                    var textBB = Plotly.Drawing.bBox(sliceText.node()),
+                    var textBB = Drawing.bBox(sliceText.node()),
                         transform;
 
                     if(textPosition === 'outside') {
@@ -244,11 +247,11 @@ module.exports = function plot(gd, cdpie) {
                     } else {
                         transform = transformInsideText(textBB, pt, cd0);
                         if(textPosition === 'auto' && transform.scale < 1) {
-                            sliceText.call(Plotly.Drawing.font, trace.outsidetextfont);
+                            sliceText.call(Drawing.font, trace.outsidetextfont);
                             if(trace.outsidetextfont.family !== trace.insidetextfont.family ||
                                     trace.outsidetextfont.size !== trace.insidetextfont.size) {
                                 sliceText.attr({'data-bb': ''});
-                                textBB = Plotly.Drawing.bBox(sliceText.node());
+                                textBB = Drawing.bBox(sliceText.node());
                             }
                             transform = transformOutsideText(textBB, pt);
                         }

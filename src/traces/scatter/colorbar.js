@@ -12,8 +12,8 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var Plots = require('../../plots/plots');
 var getColorscale = require('../../components/colorscale/get_scale');
 var drawColorbar = require('../../components/colorbar/draw');
 
@@ -29,7 +29,7 @@ module.exports = function colorbar(gd, cd) {
     // TODO make Plotly[module].colorbar support multiple colorbar per trace
 
     if((marker === undefined) || !marker.showscale){
-        Plotly.Plots.autoMargin(gd, cbId);
+        Plots.autoMargin(gd, cbId);
         return;
     }
 
@@ -38,8 +38,8 @@ module.exports = function colorbar(gd, cd) {
         cmin = marker.cmin,
         cmax = marker.cmax;
 
-    if(!isNumeric(cmin)) cmin = Plotly.Lib.aggNums(Math.min, null, vals);
-    if(!isNumeric(cmax)) cmax = Plotly.Lib.aggNums(Math.max, null, vals);
+    if(!isNumeric(cmin)) cmin = Lib.aggNums(Math.min, null, vals);
+    if(!isNumeric(cmax)) cmax = Lib.aggNums(Math.max, null, vals);
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
 

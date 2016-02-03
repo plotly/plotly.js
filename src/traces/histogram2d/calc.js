@@ -9,8 +9,8 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
 
 var binFunctions = require('../histogram/bin_functions');
 var normFunctions = require('../histogram/norm_functions');
@@ -18,9 +18,9 @@ var doAvg = require('../histogram/average');
 
 
 module.exports = function calc(gd, trace) {
-    var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
+    var xa = Axes.getFromId(gd, trace.xaxis||'x'),
         x = trace.x ? xa.makeCalcdata(trace, 'x') : [],
-        ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
+        ya = Axes.getFromId(gd, trace.yaxis||'y'),
         y = trace.y ? ya.makeCalcdata(trace, 'y') : [],
         x0,
         dx,
@@ -37,7 +37,7 @@ module.exports = function calc(gd, trace) {
 
     // calculate the bins
     if(trace.autobinx || !('xbins' in trace)) {
-        trace.xbins = Plotly.Axes.autoBin(x, xa, trace.nbinsx, '2d');
+        trace.xbins = Axes.autoBin(x, xa, trace.nbinsx, '2d');
         if(trace.type==='histogram2dcontour') {
             trace.xbins.start -= trace.xbins.size;
             trace.xbins.end += trace.xbins.size;
@@ -47,7 +47,7 @@ module.exports = function calc(gd, trace) {
         trace._input.xbins = trace.xbins;
     }
     if(trace.autobiny || !('ybins' in trace)) {
-        trace.ybins = Plotly.Axes.autoBin(y,ya,trace.nbinsy,'2d');
+        trace.ybins = Axes.autoBin(y,ya,trace.nbinsy,'2d');
         if(trace.type==='histogram2dcontour') {
             trace.ybins.start -= trace.ybins.size;
             trace.ybins.end += trace.ybins.size;
@@ -94,10 +94,10 @@ module.exports = function calc(gd, trace) {
     // decrease end a little in case of rounding errors
     var binspec = trace.xbins,
         binend = binspec.end +
-            (binspec.start - Plotly.Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
+            (binspec.start - Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
 
     for(i=binspec.start; i<binend;
-            i=Plotly.Axes.tickIncrement(i,binspec.size)) {
+            i=Axes.tickIncrement(i,binspec.size)) {
         onecol.push(sizeinit);
         if(Array.isArray(xbins)) xbins.push(i);
         if(doavg) zerocol.push(0);
@@ -111,10 +111,10 @@ module.exports = function calc(gd, trace) {
 
     binspec = trace.ybins;
     binend = binspec.end +
-        (binspec.start - Plotly.Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
+        (binspec.start - Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
 
     for(i=binspec.start; i<binend;
-            i=Plotly.Axes.tickIncrement(i,binspec.size)) {
+            i=Axes.tickIncrement(i,binspec.size)) {
         z.push(onecol.concat());
         if(Array.isArray(ybins)) ybins.push(i);
         if(doavg) counts.push(zerocol.concat());

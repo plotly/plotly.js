@@ -9,8 +9,8 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var colorbarDefaults = require('../../components/colorbar/defaults');
 var attributes = require('./attributes');
 
 
@@ -84,6 +84,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     if(traceOut.showscale) {
-        Plotly.Colorbar.supplyDefaults(traceIn, traceOut, layout);
+        colorbarDefaults(traceIn, traceOut, layout);
     }
 };

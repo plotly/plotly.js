@@ -11,8 +11,8 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var Drawing = require('../../components/drawing');
 
 var heatmapPlot = require('../heatmap/plot');
 
@@ -104,7 +104,7 @@ function plotOne(gd, plotinfo, cd) {
     makeLines(plotGroup, pathinfo, contours);
     clipGaps(plotGroup, plotinfo, cd[0], perimeter);
 
-    Plotly.Lib.markTime('done Contour.plot');
+    Lib.markTime('done Contour.plot');
 }
 
 function emptyPathinfo(contours, plotinfo, cd0) {
@@ -539,7 +539,7 @@ function joinAllPaths(pi, perimeter) {
     function isright(pt) { return Math.abs(pt[0] - perimeter[2][0]) < 0.01; }
 
     while(startsleft.length) {
-        addpath = Plotly.Drawing.smoothopen(pi.edgepaths[i], pi.smoothing);
+        addpath = Drawing.smoothopen(pi.edgepaths[i], pi.smoothing);
         fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
         startsleft.splice(startsleft.indexOf(i), 1);
         endpt = pi.edgepaths[i][pi.edgepaths[i].length-1];
@@ -604,7 +604,7 @@ function joinAllPaths(pi, perimeter) {
 
     // finally add the interior paths
     for(i = 0; i < pi.paths.length; i++) {
-        fullpath += Plotly.Drawing.smoothclosed(pi.paths[i], pi.smoothing);
+        fullpath += Drawing.smoothclosed(pi.paths[i], pi.smoothing);
     }
 
     return fullpath;
@@ -626,7 +626,7 @@ function makeLines(plotgroup, pathinfo, contours) {
     opencontourlines.exit().remove();
     opencontourlines
         .attr('d', function(d){
-            return Plotly.Drawing.smoothopen(d, smoothing);
+            return Drawing.smoothopen(d, smoothing);
         })
         .style('stroke-miterlimit',1);
 
@@ -637,7 +637,7 @@ function makeLines(plotgroup, pathinfo, contours) {
     closedcontourlines.exit().remove();
     closedcontourlines
         .attr('d', function(d){
-            return Plotly.Drawing.smoothclosed(d, smoothing);
+            return Drawing.smoothclosed(d, smoothing);
         })
         .style('stroke-miterlimit',1);
 }
@@ -685,9 +685,9 @@ function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
     }
     else clipId = null;
 
-    plotGroup.call(Plotly.Drawing.setClipUrl, clipId);
+    plotGroup.call(Drawing.setClipUrl, clipId);
     plotinfo.plot.selectAll('.hm' + cd0.trace.uid)
-        .call(Plotly.Drawing.setClipUrl, clipId);
+        .call(Drawing.setClipUrl, clipId);
 }
 
 function makeClipMask(cd0) {

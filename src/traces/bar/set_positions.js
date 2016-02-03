@@ -11,7 +11,8 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
+var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
 /*
@@ -27,22 +28,23 @@ module.exports = function setPositions(gd, plotinfo) {
         ya = plotinfo.y(),
         i, j;
 
-    ['v','h'].forEach(function(dir){
+    ['v', 'h'].forEach(function(dir){
         var bl = [],
-            pLetter = {v:'x',h:'y'}[dir],
-            sLetter = {v:'y',h:'x'}[dir],
+            pLetter = {v:'x', h:'y'}[dir],
+            sLetter = {v:'y', h:'x'}[dir],
             pa = plotinfo[pLetter](),
             sa = plotinfo[sLetter]();
 
         gd._fullData.forEach(function(trace,i) {
             if(trace.visible === true &&
-                    Plotly.Plots.traceIs(trace, 'bar') &&
+                    Plots.traceIs(trace, 'bar') &&
                     trace.orientation === dir &&
                     trace.xaxis === xa._id &&
                     trace.yaxis === ya._id) {
                 bl.push(i);
             }
         });
+
         if(!bl.length) return;
 
         // bar position offset and width calculation
@@ -53,9 +55,9 @@ module.exports = function setPositions(gd, plotinfo) {
         function barposition(bl1) {
             // find the min. difference between any points
             // in any traces in bl1
-            var pvals=[];
+            var pvals = [];
             bl1.forEach(function(i){
-                gd.calcdata[i].forEach(function(v){ pvals.push(v.p); });
+                gd.calcdata[i].forEach(function(v) { pvals.push(v.p); });
             });
             var dv = Lib.distinctVals(pvals),
                 pv2 = dv.vals,
@@ -65,7 +67,8 @@ module.exports = function setPositions(gd, plotinfo) {
             // if so, let them have full width even if mode is group
             var overlap = false,
                 comparelist = [];
-            if(fullLayout.barmode==='group') {
+
+            if(fullLayout.barmode === 'group') {
                 bl1.forEach(function(i) {
                     if(overlap) return;
                     gd.calcdata[i].forEach(function(v) {
@@ -82,36 +85,37 @@ module.exports = function setPositions(gd, plotinfo) {
             }
 
             // check forced minimum dtick
-            Plotly.Axes.minDtick(pa, barDiff, pv2[0], overlap);
+            Axes.minDtick(pa, barDiff, pv2[0], overlap);
 
             // position axis autorange - always tight fitting
-            Plotly.Axes.expand(pa, pv2, {vpad: barDiff/2});
+            Axes.expand(pa, pv2, {vpad: barDiff / 2});
 
             // bar widths and position offsets
-            barDiff *= 1-fullLayout.bargap;
-            if(overlap) barDiff/=bl.length;
+            barDiff *= 1 - fullLayout.bargap;
+            if(overlap) barDiff /= bl.length;
 
             var barCenter;
             function setBarCenter(v) { v[pLetter] = v.p + barCenter; }
 
-            for(var i=0; i<bl1.length; i++){
+            for(var i = 0; i < bl1.length; i++){
                 var t = gd.calcdata[bl1[i]][0].t;
-                t.barwidth = barDiff*(1-fullLayout.bargroupgap);
-                t.poffset = ((overlap ? (2*i+1-bl1.length)*barDiff : 0) -
-                    t.barwidth)/2;
+                t.barwidth = barDiff * (1 - fullLayout.bargroupgap);
+                t.poffset = ((overlap ? (2 * i + 1 - bl1.length) * barDiff : 0) -
+                    t.barwidth) / 2;
                 t.dbar = dv.minDiff;
 
                 // store the bar center in each calcdata item
-                barCenter = t.poffset + t.barwidth/2;
+                barCenter = t.poffset + t.barwidth / 2;
                 gd.calcdata[bl1[i]].forEach(setBarCenter);
             }
         }
-        if(fullLayout.barmode==='overlay') {
+
+        if(fullLayout.barmode === 'overlay') {
             bl.forEach(function(bli){ barposition([bli]); });
         }
         else barposition(bl);
 
-        var stack = fullLayout.barmode==='stack',
+        var stack = (fullLayout.barmode === 'stack'),
             norm = fullLayout.barnorm;
 
         // bar size range and stacking calculation
@@ -127,20 +131,20 @@ module.exports = function setPositions(gd, plotinfo) {
 
                 // make sure if p is different only by rounding,
                 // we still stack
-                sumround = gd.calcdata[bl[0]][0].t.barwidth/100,
+                sumround = gd.calcdata[bl[0]][0].t.barwidth / 100,
                 sv = 0,
                 padded = true,
                 barEnd,
                 ti,
                 scale;
 
-            for(i=0; i<bl.length; i++){ // trace index
+            for(i = 0; i<bl.length; i++){ // trace index
                 ti = gd.calcdata[bl[i]];
-                for(j=0; j<ti.length; j++) {
-                    sv = Math.round(ti[j].p/sumround);
-                    var previousSum = sums[sv]||0;
+                for(j = 0; j<ti.length; j++) {
+                    sv = Math.round(ti[j].p / sumround);
+                    var previousSum = sums[sv] || 0;
                     if(stack) ti[j].b = previousSum;
-                    barEnd = ti[j].b+ti[j].s;
+                    barEnd = ti[j].b + ti[j].s;
                     sums[sv] = previousSum + ti[j].s;
 
                     // store the bar top in each calcdata item
@@ -160,9 +164,9 @@ module.exports = function setPositions(gd, plotinfo) {
                     tiny = top/1e9; // in case of rounding error in sum
                 sMin = 0;
                 sMax = stack ? top : 0;
-                for(i=0; i<bl.length; i++){ // trace index
+                for(i = 0; i < bl.length; i++){ // trace index
                     ti = gd.calcdata[bl[i]];
-                    for(j=0; j<ti.length; j++) {
+                    for(j = 0; j < ti.length; j++) {
                         scale = top / sums[Math.round(ti[j].p/sumround)];
                         ti[j].b *= scale;
                         ti[j].s *= scale;
@@ -183,16 +187,16 @@ module.exports = function setPositions(gd, plotinfo) {
                 }
             }
 
-            Plotly.Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
+            Axes.expand(sa, [sMin, sMax], {tozero: true, padded: padded});
         }
         else {
             // for grouped or overlaid bars, just make sure zero is
             // included, along with the tops of each bar, and store
             // these bar tops in calcdata
-            var fs = function(v){ v[sLetter] = v.s; return v.s; };
+            var fs = function(v) { v[sLetter] = v.s; return v.s; };
 
-            for(i=0; i<bl.length; i++){
-                Plotly.Axes.expand(sa, gd.calcdata[bl[i]].map(fs),
+            for(i = 0; i < bl.length; i++){
+                Axes.expand(sa, gd.calcdata[bl[i]].map(fs),
                     {tozero: true, padded: true});
             }
         }

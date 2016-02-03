@@ -8,7 +8,9 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Axes = require('../../plots/cartesian/axes');
+var Fx = require('../../plots/cartesian/graph_interact');
+var Lib = require('../../lib');
 var Color = require('../../components/color');
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
@@ -28,11 +30,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     if (trace.orientation==='h') {
         dx = function(di){
-            return Plotly.Fx.inbox(di.min - xval, di.max - xval);
+            return Fx.inbox(di.min - xval, di.max - xval);
         };
         dy = function(di){
             var pos = di.pos + t.bPos - yval;
-            return Plotly.Fx.inbox(pos - boxDelta, pos + boxDelta);
+            return Fx.inbox(pos - boxDelta, pos + boxDelta);
         };
         posLetter = 'y';
         posAxis = ya;
@@ -41,10 +43,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     } else {
         dx = function(di){
             var pos = di.pos + t.bPos - xval;
-            return Plotly.Fx.inbox(pos - boxDelta, pos + boxDelta);
+            return Fx.inbox(pos - boxDelta, pos + boxDelta);
         };
         dy = function(di){
-            return Plotly.Fx.inbox(di.min - yval, di.max - yval);
+            return Fx.inbox(di.min - yval, di.max - yval);
         };
         posLetter = 'x';
         posAxis = xa;
@@ -52,8 +54,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         valAxis = ya;
     }
 
-    distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy);
-    Plotly.Fx.getClosest(cd, distfn, pointData);
+    distfn = Fx.getDistanceFunction(hovermode, dx, dy);
+    Fx.getClosest(cd, distfn, pointData);
 
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index===false) return;
@@ -71,7 +73,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     pointData[posLetter+'0'] = posAxis.c2p(di.pos + t.bPos - t.bdPos, true);
     pointData[posLetter+'1'] = posAxis.c2p(di.pos + t.bPos + t.bdPos, true);
 
-    Plotly.Axes.tickText(posAxis, posAxis.c2l(di.pos), 'hover').text;
+    Axes.tickText(posAxis, posAxis.c2l(di.pos), 'hover').text;
     pointData[posLetter+'LabelVal'] = di.pos;
 
     // box plots: each "point" gets many labels
@@ -90,7 +92,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
         // copy out to a new object for each value to label
         val = valAxis.c2p(di[attr], true);
-        pointData2 = Plotly.Lib.extendFlat({}, pointData);
+        pointData2 = Lib.extendFlat({}, pointData);
         pointData2[valLetter+'0'] = pointData2[valLetter+'1'] = val;
         pointData2[valLetter+'LabelVal'] = di[attr];
         pointData2.attr = attr;

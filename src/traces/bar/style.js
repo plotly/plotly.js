@@ -11,8 +11,8 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Color = require('../../components/color');
+var Drawing = require('../../components/drawing');
 
 
 module.exports = function style(gd) {
@@ -21,7 +21,7 @@ module.exports = function style(gd) {
         fullLayout = gd._fullLayout;
 
     // trace styling
-    s.style('opacity',function(d){ return d[0].trace.opacity; })
+    s.style('opacity', function(d) { return d[0].trace.opacity; })
 
     // for gapless (either stacked or neighboring grouped) bars use
     // crispEdges to turn off antialiasing so an artificial gap
@@ -41,8 +41,8 @@ module.exports = function style(gd) {
             marker = trace.marker,
             markerLine = marker.line,
             markerIn = (trace._input||{}).marker||{},
-            markerScale = Plotly.Drawing.tryColorscale(marker, markerIn, ''),
-            lineScale = Plotly.Drawing.tryColorscale(marker, markerIn, 'line.');
+            markerScale = Drawing.tryColorscale(marker, markerIn, ''),
+            lineScale = Drawing.tryColorscale(marker, markerIn, 'line.');
 
         d3.select(this).selectAll('path').each(function(d) {
             // allow all marker and marker line colors to be scaled

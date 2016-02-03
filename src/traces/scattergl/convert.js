@@ -9,8 +9,6 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 var createScatter = require('gl-scatter2d');
 var createFancyScatter = require('gl-scatter2d-fancy');
 var createLine = require('gl-line2d');
@@ -18,6 +16,7 @@ var createError = require('gl-error2d');
 var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
 var ErrorBars = require('../../components/errorbars');
 var str2RGBArray = require('../../lib/str2rgbarray');
 var formatColor = require('../../lib/gl_format_color');
@@ -544,8 +543,8 @@ proto.expandAxesFancy = function(x, y, ppad) {
     var scene = this.scene,
         expandOpts = { padded: true, ppad: ppad };
 
-    Plotly.Axes.expand(scene.xaxis, x, expandOpts);
-    Plotly.Axes.expand(scene.yaxis, y, expandOpts);
+    Axes.expand(scene.xaxis, x, expandOpts);
+    Axes.expand(scene.yaxis, y, expandOpts);
 };
 
 proto.dispose = function() {

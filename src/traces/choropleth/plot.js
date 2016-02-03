@@ -9,9 +9,10 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 
+var Axes = require('../../plots/cartesian/axes');
+var Fx = require('../../plots/cartesian/graph_interact');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 
@@ -88,7 +89,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 var xy = geo.projection(pt.properties.ct);
                 cleanHoverLabelsFunc(pt);
 
-                Plotly.Fx.loneHover({
+                Fx.loneHover({
                     x: xy[0],
                     y: xy[1],
                     name: pt.nameLabel,
@@ -112,11 +113,11 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                     .on('mouseover', handleMouseOver)
                     .on('click', handleClick)
                     .on('mouseout', function() {
-                        Plotly.Fx.loneUnhover(geo.hoverContainer);
+                        Fx.loneUnhover(geo.hoverContainer);
                     })
                     .on('mousedown', function() {
                         // to simulate the 'zoomon' event
-                        Plotly.Fx.loneUnhover(geo.hoverContainer);
+                        Fx.loneUnhover(geo.hoverContainer);
                     })
                     .on('mouseup', handleMouseOver);  // ~ 'zoomend'
         });
@@ -177,7 +178,7 @@ function makeCleanHoverLabelsFunc(geo, trace) {
 
     function formatter(val) {
         var axis = geo.mockAxis;
-        return Plotly.Axes.tickText(axis, axis.c2l(val), 'hover').text;
+        return Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
     return function cleanHoverLabelsFunc(pt) {

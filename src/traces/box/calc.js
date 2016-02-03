@@ -10,13 +10,13 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
 
 module.exports = function calc(gd, trace) {
     // outlier definition based on http://www.physics.csbsju.edu/stats/box2.html
-    var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
-        ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
+    var xa = Axes.getFromId(gd, trace.xaxis||'x'),
+        ya = Axes.getFromId(gd, trace.yaxis||'y'),
         orientation = trace.orientation,
         cd = [],
         valAxis, valLetter, val, valBinned,
@@ -39,7 +39,7 @@ module.exports = function calc(gd, trace) {
 
     // size autorange based on all source points
     // position happens afterward when we know all the pos
-    Plotly.Axes.expand(valAxis, val, {padded: true});
+    Axes.expand(valAxis, val, {padded: true});
 
     // In vertical (horizontal) box plots:
     // if no x (y) data, use x0 (y0), or name

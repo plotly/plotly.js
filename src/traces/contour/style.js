@@ -11,14 +11,14 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
+var Drawing = require('../../components/drawing');
 var getColorscale = require('../../components/colorscale/get_scale');
 var heatmapStyle = require('../heatmap/style');
 
 
 module.exports = function style(gd) {
     d3.select(gd).selectAll('g.contour')
-        .style('opacity',function(d){ return d.trace.opacity; })
+        .style('opacity', function(d) { return d.trace.opacity; })
         .each(function(d) {
             var c = d3.select(this),
                 trace = d.trace,
@@ -39,7 +39,7 @@ module.exports = function style(gd) {
 
             c.selectAll('g.contourlevel').each(function(d, i) {
                 d3.select(this).selectAll('path')
-                    .call(Plotly.Drawing.lineGroupStyle,
+                    .call(Drawing.lineGroupStyle,
                         line.width,
                         colorLines ? colormap(contours.start+i*cs) : line.color,
                         line.dash);
