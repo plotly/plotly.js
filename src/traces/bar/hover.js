@@ -9,7 +9,8 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Fx = require('../../plots/cartesian/graph_interact');
+var ErrorBars = require('../../components/errorbars');
 var Color = require('../../components/color');
 
 
@@ -32,25 +33,25 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         dx = function(di){
             // add a gradient so hovering near the end of a
             // bar makes it a little closer match
-            return Plotly.Fx.inbox(di.b-xval, di.x-xval) + (di.x-xval)/(di.x-di.b);
+            return Fx.inbox(di.b-xval, di.x-xval) + (di.x-xval)/(di.x-di.b);
         };
         dy = function(di){
             var centerPos = barPos(di) - yval;
-            return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+            return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
         };
     }
     else {
         dy = function(di){
-            return Plotly.Fx.inbox(di.b-yval, di.y-yval) + (di.y-yval)/(di.y-di.b);
+            return Fx.inbox(di.b-yval, di.y-yval) + (di.y-yval)/(di.y-di.b);
         };
         dx = function(di){
             var centerPos = barPos(di) - xval;
-            return Plotly.Fx.inbox(centerPos - barDelta, centerPos + barDelta);
+            return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
         };
     }
 
-    var distfn = Plotly.Fx.getDistanceFunction(hovermode, dx, dy);
-    Plotly.Fx.getClosest(cd, distfn, pointData);
+    var distfn = Fx.getDistanceFunction(hovermode, dx, dy);
+    Fx.getClosest(cd, distfn, pointData);
 
     // skip the rest (for this trace) if we didn't find a close point
     if(pointData.index===false) return;
@@ -82,7 +83,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     if(di.tx) pointData.text = di.tx;
 
-    Plotly.ErrorBars.hoverInfo(di, trace, pointData);
+    ErrorBars.hoverInfo(di, trace, pointData);
 
     return [pointData];
 };

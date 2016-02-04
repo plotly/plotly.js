@@ -10,8 +10,8 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var Drawing = require('../../components/drawing');
 
 
 // repeatable pseudorandom generator
@@ -191,7 +191,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                     });
                 })
                 .enter().append('path')
-                .call(Plotly.Drawing.translatePoints, xa, ya);
+                .call(Drawing.translatePoints, xa, ya);
         }
         // draw mean (and stdev diamond) if desired
         if(trace.boxmean) {

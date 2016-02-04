@@ -11,8 +11,8 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
 
 var binFunctions = require('./bin_functions');
 var normFunctions = require('./norm_functions');
@@ -28,7 +28,7 @@ module.exports = function calc(gd, trace) {
     var pos = [],
         size = [],
         i,
-        pa = Plotly.Axes.getFromId(gd,
+        pa = Axes.getFromId(gd,
             trace.orientation==='h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
         maindata = trace.orientation==='h' ? 'y' : 'x',
         counterdata = {x: 'y', y: 'x'}[maindata];
@@ -37,7 +37,7 @@ module.exports = function calc(gd, trace) {
     var pos0 = pa.makeCalcdata(trace, maindata);
     // calculate the bins
     if((trace['autobin' + maindata]!==false) || !(maindata + 'bins' in trace)) {
-        trace[maindata + 'bins'] = Plotly.Axes.autoBin(pos0, pa, trace['nbins' + maindata]);
+        trace[maindata + 'bins'] = Axes.autoBin(pos0, pa, trace['nbins' + maindata]);
 
         // copy bin info back to the source data.
         trace._input[maindata + 'bins'] = trace[maindata + 'bins'];
@@ -74,9 +74,9 @@ module.exports = function calc(gd, trace) {
     i = binspec.start;
     // decrease end a little in case of rounding errors
     binend = binspec.end +
-        (binspec.start - Plotly.Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
+        (binspec.start - Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
     while(i<binend && pos.length<5000) {
-        i2 = Plotly.Axes.tickIncrement(i, binspec.size);
+        i2 = Axes.tickIncrement(i, binspec.size);
         pos.push((i + i2) / 2);
         size.push(sizeinit);
         // nonuniform bins (like months) we need to search,

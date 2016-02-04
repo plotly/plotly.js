@@ -1,4 +1,4 @@
-var Plotly = require('@src/plotly');
+var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -32,7 +32,6 @@ describe('config argument', function() {
 
             var link = document.getElementsByClassName('js-plot-link-container')[0];
 
-            console.log(link);
             expect(link.textContent).toBe('Edit chart »');
 
             var bBox = link.getBoundingClientRect();

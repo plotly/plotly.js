@@ -1,4 +1,4 @@
-var Plotly = require('@src/plotly');
+var Color = require('@src/components/color');
 
 
 describe('Test color:', function() {
@@ -15,7 +15,7 @@ describe('Test color:', function() {
                 rgbacolor: 'rgba(51, 102, 153, 0.8)'
             };
 
-            Plotly.Color.clean(container);
+            Color.clean(container);
             expect(container).toEqual(expectedContainer);
         });
 
@@ -51,7 +51,7 @@ describe('Test color:', function() {
                 ]
             };
 
-            Plotly.Color.clean(container);
+            Color.clean(container);
             expect(container).toEqual(expectedContainer);
         });
 
@@ -70,7 +70,7 @@ describe('Test color:', function() {
                 fractionrgbacolor: 'rgba(0, 102, 204, 1)'
             };
 
-            Plotly.Color.clean(container);
+            Color.clean(container);
             expect(container).toEqual(expectedContainer);
         });
 
@@ -86,7 +86,7 @@ describe('Test color:', function() {
                 rgbacolor: 'rgba(51, 102, 153, 0.8)'
             };
 
-            Plotly.Color.clean(container);
+            Color.clean(container);
             expect(container).toEqual(expectedContainer);
         });
 
@@ -102,7 +102,7 @@ describe('Test color:', function() {
                 rgba2color: 'rgba(26, 51, 128, 1)'
             };
 
-            Plotly.Color.clean(container);
+            Color.clean(container);
             expect(container).toEqual(expectedContainer);
         });
 
@@ -117,7 +117,7 @@ describe('Test color:', function() {
             var expectedContainer = {};
             Object.keys(container).forEach(function(k) { expectedContainer[k] = container[k]; });
 
-            Plotly.Color.clean(container);
+            Color.clean(container);
             expect(container).toEqual(expectedContainer);
         });
 
@@ -125,7 +125,7 @@ describe('Test color:', function() {
             var container1 = null;
             var expectedContainer1 = null;
 
-            Plotly.Color.clean(container1);
+            Color.clean(container1);
             expect(container1).toEqual(expectedContainer1);
 
             var container2 = {
@@ -141,7 +141,7 @@ describe('Test color:', function() {
                 anarray: [null, {color: 'rgb(0.1, 0.1, 0.1)'}]
             };
 
-            Plotly.Color.clean(container2);
+            Color.clean(container2);
             expect(container2).toEqual(expectedContainer2);
         });
     });

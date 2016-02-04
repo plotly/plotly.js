@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Axes = require('../../plots/cartesian/axes');
 var heatmapCalc = require('../heatmap/calc');
 
 
@@ -26,15 +26,15 @@ module.exports = function calc(gd, trace) {
             type: 'linear',
             range: [trace.zmin, trace.zmax]
         };
-        Plotly.Axes.autoTicks(dummyAx,
+        Axes.autoTicks(dummyAx,
             (trace.zmax - trace.zmin) / (trace.ncontours||15));
-        contours.start = Plotly.Axes.tickFirst(dummyAx);
+        contours.start = Axes.tickFirst(dummyAx);
         contours.size = dummyAx.dtick;
         dummyAx.range.reverse();
-        contours.end = Plotly.Axes.tickFirst(dummyAx);
+        contours.end = Axes.tickFirst(dummyAx);
 
-        if(contours.start===trace.zmin) contours.start += contours.size;
-        if(contours.end===trace.zmax) contours.end -= contours.size;
+        if(contours.start === trace.zmin) contours.start += contours.size;
+        if(contours.end === trace.zmax) contours.end -= contours.size;
 
         // so rounding errors don't cause us to miss the last contour
         contours.end += contours.size/100;

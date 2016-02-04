@@ -8,18 +8,19 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
+var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
+
 
 module.exports = function setPositions(gd, plotinfo) {
     var fullLayout = gd._fullLayout,
         xa = plotinfo.x(),
         ya = plotinfo.y(),
-        orientations = ['v', 'h'],
-        posAxis, i, j, k;
+        orientations = ['v', 'h'];
+    var posAxis, i, j, k;
 
-    for (i=0; i < orientations.length; ++i) {
+    for(i = 0; i < orientations.length; ++i) {
         var orientation = orientations[i],
             boxlist = [],
             boxpointlist = [],
@@ -70,7 +71,7 @@ module.exports = function setPositions(gd, plotinfo) {
         if(boxpointlist.length===boxdv.vals.length) gd.numboxes = 1;
 
         // check for forced minimum dtick
-        Plotly.Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
+        Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
         // set the width of all boxes
         for (i=0; i < boxlist.length; ++i) {
@@ -82,7 +83,7 @@ module.exports = function setPositions(gd, plotinfo) {
         // their points as far out as the other boxes
         var padfactor = (1-fullLayout.boxgap) * (1-fullLayout.boxgroupgap) *
                 dPos / gd.numboxes;
-        Plotly.Axes.expand(posAxis, boxdv.vals, {
+        Axes.expand(posAxis, boxdv.vals, {
             vpadminus: dPos+minPad*padfactor,
             vpadplus: dPos+maxPad*padfactor
         });

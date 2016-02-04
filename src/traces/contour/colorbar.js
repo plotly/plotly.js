@@ -11,7 +11,7 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
 var getColorscale = require('../../components/colorscale/get_scale');
 var drawColorbar = require('../../components/colorbar/draw');
 
@@ -22,8 +22,8 @@ module.exports = function colorbar(gd, cd) {
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
-    if(trace.showscale===false){
-        Plotly.Plots.autoMargin(gd, cbId);
+    if(trace.showscale === false){
+        Plots.autoMargin(gd, cbId);
         return;
     }
 

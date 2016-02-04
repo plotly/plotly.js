@@ -11,7 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
+var Axes = require('../../plots/cartesian/axes');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var colorscaleCalc = require('../../components/colorscale/calc');
 
@@ -22,8 +22,8 @@ module.exports = function calc(gd, trace) {
     // note: this logic for choosing orientation is
     // duplicated in graph_obj->setstyles
 
-    var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
-        ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
+    var xa = Axes.getFromId(gd, trace.xaxis||'x'),
+        ya = Axes.getFromId(gd, trace.yaxis||'y'),
         orientation = trace.orientation || ((trace.x && !trace.y) ? 'h' : 'v'),
         pos, size, i;
 

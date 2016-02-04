@@ -11,8 +11,9 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
+var Plots = require('../../plots/plots');
 
 var histogram2dCalc = require('../histogram2d/calc');
 var colorscaleCalc = require('../../components/colorscale/calc');
@@ -26,10 +27,10 @@ module.exports = function calc(gd, trace) {
 
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
-    var xa = Plotly.Axes.getFromId(gd, trace.xaxis||'x'),
-        ya = Plotly.Axes.getFromId(gd, trace.yaxis||'y'),
-        isContour = Plotly.Plots.traceIs(trace, 'contour'),
-        isHist = Plotly.Plots.traceIs(trace, 'histogram'),
+    var xa = Axes.getFromId(gd, trace.xaxis||'x'),
+        ya = Axes.getFromId(gd, trace.yaxis||'y'),
+        isContour = Plots.traceIs(trace, 'contour'),
+        isHist = Plots.traceIs(trace, 'histogram'),
         zsmooth = isContour ? 'best' : trace.zsmooth,
         x,
         x0,
@@ -115,8 +116,8 @@ module.exports = function calc(gd, trace) {
         yIn = trace.ytype==='scaled' ? '' : trace.y,
         yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
 
-    Plotly.Axes.expand(xa, xArray);
-    Plotly.Axes.expand(ya, yArray);
+    Axes.expand(xa, xArray);
+    Axes.expand(ya, yArray);
 
     var cd0 = {x: xArray, y: yArray, z: z};
 
@@ -169,8 +170,8 @@ function cleanZ(trace) {
 
 function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [],
-        isContour = Plotly.Plots.traceIs(trace, 'contour'),
-        isHist = Plotly.Plots.traceIs(trace, 'histogram'),
+        isContour = Plots.traceIs(trace, 'contour'),
+        isHist = Plots.traceIs(trace, 'histogram'),
         v0,
         dv,
         i;
