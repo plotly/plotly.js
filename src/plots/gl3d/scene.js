@@ -34,7 +34,7 @@ var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
 
-    //Update size of svg container
+    // update size of svg container
     var svgContainer = scene.svgContainer;
     var clientRect = scene.container.getBoundingClientRect();
     var width = clientRect.width, height = clientRect.height;
@@ -45,7 +45,7 @@ function render(scene) {
     computeTickMarks(scene);
     scene.glplot.axes.update(scene.axesOptions);
 
-    //Check if pick has changed
+    // check if pick has changed
     var keys = Object.keys(scene.traces);
     var lastPicked = null;
     var selection = scene.glplot.selection;
@@ -59,7 +59,6 @@ function render(scene) {
     }
 
     function formatter(axisName, val) {
-        if(val === undefined) return undefined;
         if(typeof val === 'string') return val;
 
         var axis = scene.fullSceneLayout[axisName];
@@ -136,9 +135,9 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         autoBounds: false
     };
 
-      //For static plots, we reuse the WebGL context as WebKit doesn't collect them
-      //reliably
-    if (scene.staticMode) {
+    // for static plots, we reuse the WebGL context
+    //  as WebKit doesn't collect them reliably
+    if(scene.staticMode) {
         if(!STATIC_CONTEXT) {
             STATIC_CANVAS = document.createElement('canvas');
             try {
@@ -204,13 +203,14 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
 function Scene(options, fullLayout) {
 
-    //Create sub container for plot
+    // create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
 
     // keep a ref to the graph div to fire hover+click events
     this.graphDiv = options.graphDiv;
-    //Create SVG container for hover text
+
+    // create SVG container for hover text
     var svgContainer = document.createElementNS(
         'http://www.w3.org/2000/svg',
         'svg');
