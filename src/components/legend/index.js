@@ -682,7 +682,8 @@ legend.repositionLegend = function(td, traces){
     // Add scroll functionality
     var legendsvg = fullLayout._infolayer.selectAll('svg.legend'),
         scrollBox = fullLayout._infolayer.selectAll('svg.legend .scrollbox'),
-        scrollheight = Math.min(80, legendheight);
+        plotHeight = fullLayout.height - fullLayout.margin.t - fullLayout.margin.b,
+        scrollheight = Math.min(plotHeight, legendheight);
 
     scrollBox.attr('viewBox', '0 0 ' + legendwidth + ' ' + scrollheight);
     legendsvg.node().addEventListener('wheel', scrollHandler);
