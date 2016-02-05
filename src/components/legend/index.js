@@ -444,22 +444,28 @@ legend.draw = function(td) {
 
     var legendsvg = fullLayout._infolayer.selectAll('svg.legend')
         .data([0]);
-    legendsvg.enter(0).append('svg')
-        .attr('class','legend');
+    legendsvg.enter().append('svg')
+        .attr('class','legend')
+        .attr('pointer-events', 'all');
 
-    var bgRect = legendsvg.selectAll('rect.bg')
+    var bg = legendsvg.selectAll('rect.bg')
         .data([0]);
-    bgRect.enter(0).append('rect')
-        .attr('class','bg');
-    bgRect
+    bg.enter().append('rect')
+        .attr('class','bg')
         .call(Color.stroke, opts.bordercolor)
         .call(Color.fill, opts.bgcolor)
-        .style('stroke-width', opts.borderwidth+'px');
+        .style('stroke-width', opts.borderwidth + 'px');
 
-    var groups = legendsvg.selectAll('g.groups')
+    var scrollBox = legendsvg.selectAll('svg.scrollbox')
+        .data([0]);
+    scrollBox.enter().append('svg')
+        .attr('class', 'scrollbox');
+    scrollBox.exit().remove();
+
+    var groups = scrollBox.selectAll('g.groups')
         .data(legendData);
-
-    groups.enter().append('g').attr('class', 'groups');
+    groups.enter().append('g')
+        .attr('class', 'groups');
     groups.exit().remove();
 
     if(isGrouped(opts)) {
@@ -530,6 +536,7 @@ legend.draw = function(td) {
             });
         });
 
+    // Position and size the legend
     legend.repositionLegend(td, traces);
 
     if(td._context.editable) {
@@ -672,11 +679,37 @@ legend.repositionLegend = function(td, traces){
     lx = Math.round(lx);
     ly = Math.round(ly);
 
+    // Add scroll functionality
+    var legendsvg = fullLayout._infolayer.selectAll('svg.legend'),
+        scrollBox = fullLayout._infolayer.selectAll('svg.legend .scrollbox'),
+        scrollheight = Math.min(80, legendheight);
+
+    scrollBox.attr('viewBox', '0 0 ' + legendwidth + ' ' + scrollheight);
+    legendsvg.node().addEventListener('wheel', scrollHandler);
+
+    function scrollHandler(e){
+        e.preventDefault();
+
+        var scroll = scrollBox.attr('viewBox').split(' ');
+        scroll[1] = constrain(0, Math.max(legendheight - scrollheight, 0), +scroll[1] + e.deltaY);
+
+        scrollBox.attr('viewBox', scroll.join(' '));
+    }
+
+    function constrain(min, max, c){
+        if(c <= max && c >= min){
+            return c;
+        }else if(c > max){
+            return max;
+        }else{
+            return min;
+        }
+    }
+
     fullLayout._infolayer.selectAll('svg.legend')
-        .call(Drawing.setRect, lx, ly, legendwidth, legendheight);
+        .call(Drawing.setRect, lx, ly, legendwidth, scrollheight);
     fullLayout._infolayer.selectAll('svg.legend .bg')
-        .call(Drawing.setRect, borderwidth/2, borderwidth/2,
-            legendwidth-borderwidth, legendheight-borderwidth);
+        .style({ width: legendwidth, height: scrollheight });
 
     // lastly check if the margin auto-expand has changed
     Plots.autoMargin(td,'legend',{
