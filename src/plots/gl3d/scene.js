@@ -180,6 +180,8 @@ function Scene(options, fullLayout) {
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
 
+    // keep a ref to the graph div to fire hover+click events
+    this.graphDiv = options.graphDiv;
     //Create SVG container for hover text
     var svgContainer = document.createElementNS(
         'http://www.w3.org/2000/svg',
