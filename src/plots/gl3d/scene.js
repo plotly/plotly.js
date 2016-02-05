@@ -68,23 +68,28 @@ function render(scene) {
 
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate),
-            hoverinfo = lastPicked.data.hoverinfo;
+            trace = lastPicked.data,
+            hoverinfo = trace.hoverinfo;
+
+        var xVal = formatter('xaxis', selection.traceCoordinate[0]),
+            yVal = formatter('yaxis', selection.traceCoordinate[1]),
+            zVal = formatter('zaxis', selection.traceCoordinate[2]);
 
         if(hoverinfo !== 'all') {
             var hoverinfoParts = hoverinfo.split('+');
-            if(hoverinfoParts.indexOf('x') === -1) selection.traceCoordinate[0] = undefined;
-            if(hoverinfoParts.indexOf('y') === -1) selection.traceCoordinate[1] = undefined;
-            if(hoverinfoParts.indexOf('z') === -1) selection.traceCoordinate[2] = undefined;
+            if(hoverinfoParts.indexOf('x') === -1) xVal = undefined;
+            if(hoverinfoParts.indexOf('y') === -1) yVal = undefined;
+            if(hoverinfoParts.indexOf('z') === -1) zVal = undefined;
             if(hoverinfoParts.indexOf('text') === -1) selection.textLabel = undefined;
             if(hoverinfoParts.indexOf('name') === -1) lastPicked.name = undefined;
         }
 
         Fx.loneHover({
-            x: (0.5 + 0.5 * pdata[0]/pdata[3]) * width,
-            y: (0.5 - 0.5 * pdata[1]/pdata[3]) * height,
-            xLabel: formatter('xaxis', selection.traceCoordinate[0]),
-            yLabel: formatter('yaxis', selection.traceCoordinate[1]),
-            zLabel: formatter('zaxis', selection.traceCoordinate[2]),
+            x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
+            y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
+            xLabel: xVal,
+            yLabel: yVal,
+            zLabel: zVal,
             text: selection.textLabel,
             name: lastPicked.name,
             color: lastPicked.color
