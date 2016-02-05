@@ -66,6 +66,20 @@ function render(scene) {
         return Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
+    function makeEventData(xVal, yVal, zVal, trace, selection) {
+        return {points: [{
+            x: xVal,
+            y: yVal,
+            z: zVal,
+            data: trace._input,
+            fullData: trace,
+            curveNumber: trace.index,
+            pointNumber: selection.data.index
+        }]};
+    }
+
+    var oldEventData;
+
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate),
             trace = lastPicked.data,
@@ -96,8 +110,17 @@ function render(scene) {
         }, {
             container: svgContainer
         });
+
+        var eventType = (selection.buttons) ? 'plotly_click' : 'plotly_hover',
+            eventData = makeEventData(xVal, yVal, zVal, trace, selection);
+
+        scene.graphDiv.emit(eventType, eventData);
+        oldEventData = eventData;
     }
-    else Fx.loneUnhover(svgContainer);
+    else {
+        Fx.loneUnhover(svgContainer);
+        scene.graphDiv.emit('plotly_unhover', oldEventData);
+    }
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
