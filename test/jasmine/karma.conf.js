@@ -39,8 +39,20 @@ func.defaultConfig = {
         testFileGlob
     ],
 
-    // list of files to exclude
+    /*
+     * WebGL interaction test cases don't run consistently
+     * across machines. Before each release, please make sure
+     * to run these with:
+     *
+     *  npm run test-jasmine -- gl_plot_interact_test.js
+     *
+     * Or manually check their specs.
+     *
+     */
     exclude: [
+        (testFileGlob === 'tests/gl_plot_interact_test.js') ?
+            '' :
+            'tests/gl_plot_interact_test.js'
     ],
 
     // preprocess matching files before serving them to the browser
