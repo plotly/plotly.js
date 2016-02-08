@@ -6,8 +6,8 @@ module.exports = function(type, x, y, opts) {
     };
 
     // https://developer.mozilla.org/en-US/docs/Web/API/MouseEvent
-    if(opts) {
-        if(opts.buttons) fullOpts.buttons = opts.buttons;
+    if(opts && opts.buttons) {
+        fullOpts.buttons = opts.buttons;
     }
 
     var el = document.elementFromPoint(x,y);
