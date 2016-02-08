@@ -71,7 +71,6 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     coerce('borderwidth');
     Lib.coerceFont(coerce, 'font', layoutOut.font);
 
-    coerce('type');
     coerce('traceorder', defaultOrder);
     if(isGrouped(layoutOut.legend)) coerce('tracegroupgap');
 
@@ -462,6 +461,14 @@ legend.draw = function(td) {
         .attr('class', 'scrollbox');
     scrollBox.exit().remove();
 
+    var scrollBar = legendsvg.selectAll('rect.scrollbar')
+        .data([0]);
+    scrollBar.enter().append('rect')
+        .attr('class', 'scrollbar')
+        .attr('rx', 20)
+        .attr('ry', 2)
+        .call(Color.fill, '#808BA4');
+
     var groups = scrollBox.selectAll('g.groups')
         .data(legendData);
     groups.enter().append('g')
@@ -679,22 +686,39 @@ legend.repositionLegend = function(td, traces){
     lx = Math.round(lx);
     ly = Math.round(ly);
 
-    // Add scroll functionality
+
     var legendsvg = fullLayout._infolayer.selectAll('svg.legend'),
         scrollBox = fullLayout._infolayer.selectAll('svg.legend .scrollbox'),
-        plotHeight = fullLayout.height - fullLayout.margin.t - fullLayout.margin.b,
-        scrollheight = Math.min(plotHeight, legendheight);
+        scrollBar = fullLayout._infolayer.selectAll('svg.legend .scrollbar'),
+        bg = fullLayout._infolayer.selectAll('svg.legend .bg');
 
-    scrollBox.attr('viewBox', '0 0 ' + legendwidth + ' ' + scrollheight);
+    var plotHeight = fullLayout.height - fullLayout.margin.t - fullLayout.margin.b,
+        scrollheight = Math.min(plotHeight - ly, legendheight),
+        scrollPosition = scrollBox.attr('viewBox')? scrollBox.attr('viewBox').split(' ')[1] : 0;
+
     legendsvg.node().addEventListener('wheel', scrollHandler);
+    legendsvg.call(Drawing.setRect, lx, ly, legendwidth, scrollheight);
+
+    bg.style({ width: legendwidth, height: scrollheight });
+
+    scrollBox.attr('viewBox', '0 ' + scrollPosition +' ' + legendwidth + ' ' + scrollheight);
+
+    if(td.firstRender) scrollBar.call(Drawing.setRect, legendwidth - 6, 10, 4, 20);
 
     function scrollHandler(e){
         e.preventDefault();
 
-        var scroll = scrollBox.attr('viewBox').split(' ');
-        scroll[1] = constrain(0, Math.max(legendheight - scrollheight, 0), +scroll[1] + e.deltaY);
+        // Scale movement to simulate native scroll performance
+        var scrollDiff = e.deltaY / 25,
+            viewBox = scrollBox.attr('viewBox').split(' ');
 
-        scrollBox.attr('viewBox', scroll.join(' '));
+        var scrollBoxY = constrain(0, Math.max(legendheight - scrollheight, 0), +viewBox[1] + scrollDiff),
+            scrollBarY = scrollBoxY / legendheight * (scrollheight) + 10;
+
+        viewBox[1] = scrollBoxY;
+
+        scrollBox.attr('viewBox', viewBox.join(' '));
+        scrollBar.call(Drawing.setRect, legendwidth - 6, scrollBarY, 4, 20);
     }
 
     function constrain(min, max, c){
@@ -706,11 +730,6 @@ legend.repositionLegend = function(td, traces){
             return min;
         }
     }
-
-    fullLayout._infolayer.selectAll('svg.legend')
-        .call(Drawing.setRect, lx, ly, legendwidth, scrollheight);
-    fullLayout._infolayer.selectAll('svg.legend .bg')
-        .style({ width: legendwidth, height: scrollheight });
 
     // lastly check if the margin auto-expand has changed
     Plots.autoMargin(td,'legend',{
