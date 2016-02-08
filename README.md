@@ -51,7 +51,7 @@ Read the [Getting started page](https://plot.ly/javascript/getting-started/) for
 
 ## Modules
 
-If you would like to reduce the bundle size of plotly.js, you can create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*: 
+If you would like to reduce the bundle size of plotly.js, you can create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*:
 
 ```javascript
 // in custom-plotly.js
@@ -119,7 +119,7 @@ plotly.js is maintained under the [Semantic Versioning guidelines](http://semver
 
 See the [Releases section](https://github.com/plotly/plotly.js/releases) of our GitHub project for changelogs for each release version of plotly.js.
 
-## Clients for R, Python, and MATLAB
+## Clients for R, Python, Node, and MATLAB
 
 Open-source clients to the plotly.js APIs are available at these links:
 
@@ -128,7 +128,8 @@ Open-source clients to the plotly.js APIs are available at these links:
 |**R / RStudio**| [ropensci/plotly](https://github.com/ropensci/plotly) | [plot.ly/r/getting-started](https://plot.ly/r/getting-started) |
 |**Python / Pandas / IPython notebook**| [plotly/plotly.py](https://github.com/plotly/plotly.py) | [plot.ly/python/getting-started](https://plot.ly/python/getting-started) |
 |**MATLAB**| [plotly/matlab-api](https://github.com/plotly/matlab-api) | [plot.ly/matlab/getting-started](https://plot.ly/matlab/getting-started) |
-|**node.js**| [plotly/plotly-nodejs](https://github.com/plotly/plotly-nodejs) | [plot.ly/nodejs/getting-started](https://plot.ly/nodejs/getting-started) |
+|**node.js / Tonicdev / Jupyter notebook**| [plotly/plotly-notebook-js](https://github.com/plotly/plotly-notebook-js) | |
+|**node.js cloud client**| [plotly/plotly-nodejs](https://github.com/plotly/plotly-nodejs) | [plot.ly/nodejs/getting-started](https://plot.ly/nodejs/getting-started) |
 |**Julia**| [plotly/Plotly.jl](https://github.com/plotly/Plotly.jl) | [plot.ly/julia/getting-started](https://plot.ly/julia/getting-started) |
 
 plotly.js charts can also be created and saved online for free at [plot.ly/plot](https://plot.ly/plot).
