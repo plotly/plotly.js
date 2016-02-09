@@ -329,6 +329,8 @@ Plotly.plot = function(gd, data, layout, config) {
             for(j = 0; j < modules.length; j++) {
                 _module = modules[j];
 
+                if(_module.basePlotModule.name !== 'cartesian') continue;
+
                 if(!_module.plot && (_module.name === 'pie')) continue;
 
                 // plot all traces of this type on this subplot at once
