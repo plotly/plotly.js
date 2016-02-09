@@ -20,10 +20,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var scenes = Plotly.Plots.getSubplotIdsInData(fullData, 'gl3d');
     var i;
 
-    // until they play better together
-    delete layoutOut.xaxis;
-    delete layoutOut.yaxis;
-
     // Get number of scenes to compute default scene domain
     var scenesLength = scenes.length;
     var sceneLayoutIn, sceneLayoutOut;
