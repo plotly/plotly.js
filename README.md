@@ -63,7 +63,7 @@ plotlyCore.register([
     require('plotly.js/lib/choropleth')
 ]);
 
-module.exports = customPlotly;
+module.exports = plotlyCore;
 ```
 
 Then elsewhere in your code:
