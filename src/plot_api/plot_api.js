@@ -256,12 +256,16 @@ Plotly.plot = function(gd, data, layout, config) {
 
         function getCdSubplot(calcdata, subplot) {
             var cdSubplot = [];
-            var i, cd, trace;
-            for (i = 0; i < calcdata.length; i++) {
-                cd = calcdata[i];
-                trace = cd[0].trace;
-                if (trace.xaxis+trace.yaxis === subplot) cdSubplot.push(cd);
+
+            for(var i = 0; i < calcdata.length; i++) {
+                var cd = calcdata[i];
+                var trace = cd[0].trace;
+
+                if(trace.xaxis + trace.yaxis === subplot) {
+                    cdSubplot.push(cd);
+                }
             }
+
             return cdSubplot;
         }
 

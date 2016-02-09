@@ -9,26 +9,27 @@
 
 'use strict';
 
-var Plotly = require('../../../plotly');
+var Lib = require('../../../lib');
+var Plots = require('../../plots');
 var layoutAttributes = require('./layout_attributes');
 var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    if (!layoutOut._hasGL3D) return;
+    if(!layoutOut._hasGL3D) return;
 
-    var scenes = Plotly.Plots.getSubplotIdsInData(fullData, 'gl3d');
-    var i;
+    var scenes = Plots.getSubplotIdsInData(fullData, 'gl3d');
 
     // Get number of scenes to compute default scene domain
     var scenesLength = scenes.length;
+
     var sceneLayoutIn, sceneLayoutOut;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(sceneLayoutIn, sceneLayoutOut, layoutAttributes, attr, dflt);
+        return Lib.coerce(sceneLayoutIn, sceneLayoutOut, layoutAttributes, attr, dflt);
     }
 
-    for (i = 0; i < scenesLength; ++i) {
+    for(var i = 0; i < scenesLength; i++) {
         var scene = scenes[i];
         /*
          * Scene numbering proceeds as follows
@@ -41,7 +42,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
          * Also write back a blank scene object to user layout so that some
          * attributes like aspectratio can be written back dynamically.
          */
-        sceneLayoutIn;
+
         if(layoutIn[scene] !== undefined) sceneLayoutIn = layoutIn[scene];
         else layoutIn[scene] = sceneLayoutIn = {};
 
@@ -78,10 +79,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
          * for the mode. In this case we must force change it here as the default coerce
          * misses it above.
          */
-        if (!hasAspect) {
+        if(!hasAspect) {
             sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio = {x: 1, y: 1, z: 1};
 
-            if (aspectMode === 'manual') sceneLayoutOut.aspectmode = 'auto';
+            if(aspectMode === 'manual') sceneLayoutOut.aspectmode = 'auto';
         }
 
          /*
