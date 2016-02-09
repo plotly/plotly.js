@@ -31,7 +31,7 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
         hasLocationData = Array.isArray(trace.locations);
 
-    var len, features, getLonLat, lonlat, locations, calcItem;
+    var len, features, getLonLat, locations;
 
     if(hasLocationData) {
         locations = trace.locations;
@@ -53,11 +53,11 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
     }
 
     for(var i = 0; i < len; i++) {
-        lonlat = getLonLat(trace, i);
+        var lonlat = getLonLat(trace, i);
 
         if(!lonlat) continue;  // filter the blank points here
 
-        calcItem = {
+        var calcItem = {
             lon: lonlat[0],
             lat: lonlat[1],
             location: hasLocationData ? trace.locations[i] : null
@@ -104,7 +104,7 @@ function makeLineGeoJSON(trace) {
     var N = trace.lon.length,
         coordinates = new Array(N);
 
-    for (var i = 0; i < N; i++) {
+    for(var i = 0; i < N; i++) {
         coordinates[i] = [trace.lon[i], trace.lat[i]];
     }
 
