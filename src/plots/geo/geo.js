@@ -15,8 +15,6 @@ var d3 = require('d3');
 
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
-
-var Plots = require('../../plots/plots');
 var Axes = require('../../plots/cartesian/axes');
 
 var addProjectionsToD3 = require('./projections');
@@ -139,6 +137,20 @@ proto.plot = function(geoData, fullLayout, promises) {
     // to avoid making multiple request while streaming
 };
 
+// filter out non-visible trace
+// geo plot routine use the classic join/enter/exit pattern to update traces
+function filterData(dataIn) {
+    var dataOut = [];
+
+    for(var i = 0; i < dataIn.length; i++) {
+        var trace = dataIn[i];
+
+        if(trace.visible === true) dataOut.push(trace);
+    }
+
+    return dataOut;
+}
+
 proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
     var traceData = {};
 
@@ -153,8 +165,10 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
 
     var traceKeys = Object.keys(traceData);
     for(var j = 0; j < traceKeys.length; j++){
-        var traceKey = traceKeys[j];
-        Plots.getModule(traceKey).plot(this, traceData[traceKey], geoLayout);
+        var moduleData = traceData[traceKeys[j]];
+        var _module = moduleData[0]._module;
+
+        _module.plot(this, filterData(moduleData), geoLayout);
     }
 
     this.render();
