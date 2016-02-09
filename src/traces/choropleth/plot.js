@@ -77,8 +77,6 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
 
     gChoroplethTraces
         .each(function(trace) {
-            if(trace.visible !== true) return;
-
             var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
                 cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
                 eventDataFunc = makeEventDataFunc(trace);

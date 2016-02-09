@@ -128,7 +128,8 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
     // TODO add hover - how?
     gScatterGeoTraces
         .each(function(trace) {
-            if(!subTypes.hasLines(trace) || trace.visible !== true) return;
+            if(!subTypes.hasLines(trace)) return;
+
             d3.select(this)
                 .append('path')
                 .datum(makeLineGeoJSON(trace))
@@ -142,10 +143,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 showMarkers = subTypes.hasMarkers(trace),
                 showText = subTypes.hasText(trace);
 
-            if((!showMarkers && !showText) || trace.visible !== true) {
-                s.remove();
-                return;
-            }
+            if((!showMarkers && !showText)) return;
 
             var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
                 cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
