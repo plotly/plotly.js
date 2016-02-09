@@ -118,7 +118,7 @@ function makeLineGeoJSON(trace) {
 plotScatterGeo.plot = function(geo, scattergeoData) {
     var gScatterGeoTraces = geo.framework.select('.scattergeolayer')
         .selectAll('g.trace.scattergeo')
-        .data(scattergeoData);
+        .data(scattergeoData, function(trace) { return trace.uid; });
 
     gScatterGeoTraces.enter().append('g')
         .attr('class', 'trace scattergeo');

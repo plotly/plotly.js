@@ -68,7 +68,7 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
 
     var gChoroplethTraces = gChoropleth
         .selectAll('g.trace.choropleth')
-        .data(choroplethData);
+        .data(choroplethData, function(trace) { return trace.uid; });
 
     gChoroplethTraces.enter().append('g')
         .attr('class', 'trace choropleth');
