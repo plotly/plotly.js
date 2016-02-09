@@ -1171,7 +1171,7 @@ axes.getSubplots = function(gd, ax) {
         if(subplots.indexOf(sp) === -1) subplots.push(sp);
     }
 
-    // look for subplots in the xes/anchors, so that we at least draw all axes
+    // look for subplots in the axes/anchors, so that we at least draw all axes
     var axesList = axes.list(gd, '', true);
 
     function hasAx2(sp, ax2) {
