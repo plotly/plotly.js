@@ -25,6 +25,7 @@ var styleOne = require('../../traces/pie/style_one');
 
 var legend = module.exports = {};
 
+var constants = require('./constants');
 legend.layoutAttributes = require('./attributes');
 
 legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
@@ -294,12 +295,18 @@ legend.texts = function(context, td, d, i, traces){
     text.enter().append('text').classed('legendtext', true);
     text.attr({
         x: 40,
-        y: 0
+        y: 0,
+        'data-unformatted': name
     })
-    .style('text-anchor', 'start')
+    .style({
+        'text-anchor': 'start',
+        '-webkit-user-select': 'none',
+        '-moz-user-select': 'none',
+        '-ms-user-select': 'none',
+        'user-select': 'none'
+    })
     .call(Drawing.font, fullLayout.legend.font)
-    .text(name)
-    .attr({'data-unformatted': name});
+    .text(name);
 
     function textLayout(s){
         Plotly.util.convertToTspans(s, function(){
@@ -464,9 +471,11 @@ legend.draw = function(td) {
     var scrollBar = legendsvg.selectAll('rect.scrollbar')
         .data([0]);
     scrollBar.enter().append('rect')
-        .attr('class', 'scrollbar')
-        .attr('rx', 20)
-        .attr('ry', 2)
+        .attr({
+            'class': 'scrollbar',
+            'rx': 20,
+            'ry': 2
+        })
         .call(Color.fill, '#808BA4');
 
     var groups = scrollBox.selectAll('g.groups')
@@ -546,6 +555,78 @@ legend.draw = function(td) {
     // Position and size the legend
     legend.repositionLegend(td, traces);
 
+    // Scroll section must be executed after repositionLegend.
+    // It requires the legend width, height, x and y to position the scrollbox
+    // and these values are mutated in repositionLegend.
+    var gs = fullLayout._size,
+        lx = gs.l+gs.w*opts.x,
+        ly = gs.t+gs.h*(1-opts.y);
+
+    // Deal with scrolling
+    var plotHeight = fullLayout.height - fullLayout.margin.b,
+        scrollPosition = scrollBox.attr('viewBox') ? scrollBox.attr('viewBox').split(' ')[1] : 0,
+        scrollheight = Math.min(plotHeight - ly, opts.height);
+
+    bg.style({ width: opts.width, height: scrollheight });
+    scrollBox.attr('viewBox', '0 ' + scrollPosition +' ' + opts.width + ' ' + scrollheight);
+
+    legendsvg.call(Drawing.setRect, lx, ly, opts.width, scrollheight);
+
+    if(td.firstRender && opts.height - scrollheight > 0 && !td._context.staticPlot){
+
+        legendsvg.node().addEventListener('wheel', function(e){
+            e.preventDefault();
+            scrollHandler(Math.round(e.deltaY / 15));
+        });
+
+        scrollBar.node().addEventListener('mousedown', function(e) {
+            e.preventDefault();
+
+            function mMove(e) {
+                if(e.buttons === 1){
+                    scrollHandler(e.movementY);
+                }
+            }
+
+            function mUp() {
+                scrollBar.node().removeEventListener('mousemove', mMove);
+                window.removeEventListener('mouseup', mUp);
+            }
+
+            window.addEventListener('mousemove', mMove);
+            window.addEventListener('mouseup', mUp);
+        });
+
+            // Move scrollbar to starting position on the first render
+        scrollBar.call(
+            Drawing.setRect,
+            opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
+            constants.scrollBarMargin,
+            constants.scrollBarWidth,
+            constants.scrollBarHeight
+        );
+    }
+
+    function scrollHandler(delta){
+
+        // Scale movement to simulate native scroll performance
+        var viewBox = scrollBox.attr('viewBox').split(' '),
+            scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
+            scrollBoxY = Lib.constrain(+viewBox[1] + delta, 0, Math.max(opts.height - scrollheight, 0)),
+            scrollBarY = scrollBoxY / (opts.height - scrollheight) * scrollBarTrack + constants.scrollBarMargin;
+
+        viewBox[1] = scrollBoxY;
+
+        scrollBox.attr('viewBox', viewBox.join(' '));
+        scrollBar.call(
+            Drawing.setRect,
+            opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
+            scrollBarY,
+            constants.scrollBarWidth,
+            constants.scrollBarHeight
+        );
+    }
+
     if(td._context.editable) {
         var xf,
             yf,
@@ -579,7 +660,7 @@ legend.draw = function(td) {
             },
             doneFn: function(dragged) {
                 Fx.setCursor(legendsvg);
-                if(dragged && xf!==undefined && yf!==undefined) {
+                if(dragged && xf !== undefined && yf !== undefined) {
                     Plotly.relayout(td, {'legend.x': xf, 'legend.y': yf});
                 }
             }
@@ -591,12 +672,10 @@ legend.repositionLegend = function(td, traces){
     var fullLayout = td._fullLayout,
         gs = fullLayout._size,
         opts = fullLayout.legend,
-        borderwidth = opts.borderwidth,
+        borderwidth = opts.borderwidth;
 
-        // add the legend elements, keeping track of the
-        // legend size (in px) as we go
-        legendwidth = 0,
-        legendheight = 0;
+    opts.width = 0,
+    opts.height = 0,
 
     traces.each(function(d){
         var trace = d[0].trace,
@@ -605,7 +684,7 @@ legend.repositionLegend = function(td, traces){
             text = g.selectAll('.legendtext'),
             tspans = g.selectAll('.legendtext>tspan'),
             tHeight = opts.font.size * 1.3,
-            tLines = tspans[0].length||1,
+            tLines = tspans[0].length || 1,
             tWidth = text.node() && Drawing.bBox(text.node()).width,
             mathjaxGroup = g.select('g[class*=math-group]'),
             textY,
@@ -620,12 +699,12 @@ legend.repositionLegend = function(td, traces){
             var mathjaxBB = Drawing.bBox(mathjaxGroup.node());
             tHeight = mathjaxBB.height;
             tWidth = mathjaxBB.width;
-            mathjaxGroup.attr('transform','translate(0,'+(tHeight/4)+')');
+            mathjaxGroup.attr('transform','translate(0,' + (tHeight / 4) + ')');
         }
         else {
             // approximation to height offset to center the font
             // to avoid getBoundingClientRect
-            textY = tHeight * (0.3 + (1-tLines)/2);
+            textY = tHeight * (0.3 + (1-tLines) / 2);
             text.attr('y',textY);
             tspans.attr('y',textY);
         }
@@ -634,22 +713,23 @@ legend.repositionLegend = function(td, traces){
 
         g.attr('transform',
             'translate(' + borderwidth + ',' +
-                (5 + borderwidth + legendheight + tHeightFull/2) +
+                (5 + borderwidth + opts.height + tHeightFull / 2) +
             ')'
         );
         bg.attr({x: 0, y: -tHeightFull / 2, height: tHeightFull});
 
-        legendheight += tHeightFull;
-        legendwidth = Math.max(legendwidth, tWidth||0);
+        opts.height += tHeightFull;
+        opts.width = Math.max(opts.width, tWidth || 0);
     });
 
-    if(isGrouped(opts)) legendheight += (opts._lgroupsLength-1) * opts.tracegroupgap;
+
+    opts.width += 45 + borderwidth * 2;
+    opts.height += 10 + borderwidth * 2;
+
+    if(isGrouped(opts)) opts.height += (opts._lgroupsLength-1) * opts.tracegroupgap;
 
     traces.selectAll('.legendtoggle')
-        .attr('width', (td._context.editable ? 0 : legendwidth) + 40);
-
-    legendwidth += 45+borderwidth*2;
-    legendheight += 10+borderwidth*2;
+        .attr('width', (td._context.editable ? 0 : opts.width) + 40);
 
     // now position the legend. for both x,y the positions are recorded as
     // fractions of the plot area (left, bottom = 0,0). Outside the plot
@@ -661,83 +741,38 @@ legend.repositionLegend = function(td, traces){
         ly = gs.t+gs.h*(1-opts.y);
 
     var xanchor = 'left';
-    if(opts.xanchor==='right' || (opts.xanchor==='auto' && opts.x>=2/3)) {
-        lx -= legendwidth;
+    if(opts.xanchor === 'right' || (opts.xanchor === 'auto' && opts.x >= 2 / 3)) {
+        lx -= opts.width;
         xanchor = 'right';
     }
-    else if(opts.xanchor==='center' || (opts.xanchor==='auto' && opts.x>1/3)) {
-        lx -= legendwidth/2;
+    else if(opts.xanchor === 'center' || (opts.xanchor === 'auto' && opts.x > 1 / 3)) {
+        lx -= opts.width / 2;
         xanchor = 'center';
     }
 
     var yanchor = 'top';
-    if(opts.yanchor==='bottom' || (opts.yanchor==='auto' && opts.y<=1/3)) {
-        ly -= legendheight;
+    if(opts.yanchor === 'bottom' || (opts.yanchor === 'auto' && opts.y <= 1 / 3)) {
+        ly -= opts.width;
         yanchor = 'bottom';
     }
-    else if(opts.yanchor==='middle' || (opts.yanchor==='auto' && opts.y<2/3)) {
-        ly -= legendheight/2;
+    else if(opts.yanchor === 'middle' || (opts.yanchor === 'auto' && opts.y < 2 / 3)) {
+        ly -= opts.height / 2;
         yanchor = 'middle';
     }
 
     // make sure we're only getting full pixels
-    legendwidth = Math.ceil(legendwidth);
-    legendheight = Math.ceil(legendheight);
+    opts.width = Math.ceil(opts.width);
+    opts.height = Math.ceil(opts.height);
     lx = Math.round(lx);
     ly = Math.round(ly);
-
-
-    var legendsvg = fullLayout._infolayer.selectAll('svg.legend'),
-        scrollBox = fullLayout._infolayer.selectAll('svg.legend .scrollbox'),
-        scrollBar = fullLayout._infolayer.selectAll('svg.legend .scrollbar'),
-        bg = fullLayout._infolayer.selectAll('svg.legend .bg');
-
-    var plotHeight = fullLayout.height - fullLayout.margin.t - fullLayout.margin.b,
-        scrollheight = Math.min(plotHeight - ly, legendheight),
-        scrollPosition = scrollBox.attr('viewBox')? scrollBox.attr('viewBox').split(' ')[1] : 0;
-
-    legendsvg.node().addEventListener('wheel', scrollHandler);
-    legendsvg.call(Drawing.setRect, lx, ly, legendwidth, scrollheight);
-
-    bg.style({ width: legendwidth, height: scrollheight });
-
-    scrollBox.attr('viewBox', '0 ' + scrollPosition +' ' + legendwidth + ' ' + scrollheight);
-
-    if(td.firstRender) scrollBar.call(Drawing.setRect, legendwidth - 6, 10, 4, 20);
-
-    function scrollHandler(e){
-        e.preventDefault();
-
-        // Scale movement to simulate native scroll performance
-        var scrollDiff = e.deltaY / 25,
-            viewBox = scrollBox.attr('viewBox').split(' ');
-
-        var scrollBoxY = constrain(0, Math.max(legendheight - scrollheight, 0), +viewBox[1] + scrollDiff),
-            scrollBarY = scrollBoxY / legendheight * (scrollheight) + 10;
-
-        viewBox[1] = scrollBoxY;
-
-        scrollBox.attr('viewBox', viewBox.join(' '));
-        scrollBar.call(Drawing.setRect, legendwidth - 6, scrollBarY, 4, 20);
-    }
-
-    function constrain(min, max, c){
-        if(c <= max && c >= min){
-            return c;
-        }else if(c > max){
-            return max;
-        }else{
-            return min;
-        }
-    }
 
     // lastly check if the margin auto-expand has changed
     Plots.autoMargin(td,'legend',{
         x: opts.x,
         y: opts.y,
-        l: legendwidth * ({right:1, center:0.5}[xanchor]||0),
-        r: legendwidth * ({left:1, center:0.5}[xanchor]||0),
-        b: legendheight * ({top:1, middle:0.5}[yanchor]||0),
-        t: legendheight * ({bottom:1, middle:0.5}[yanchor]||0)
+        l: opts.width * ({right:1, center:0.5}[xanchor] || 0),
+        r: opts.width * ({left:1, center:0.5}[xanchor] || 0),
+        b: opts.height * ({top:1, middle:0.5}[yanchor] || 0),
+        t: opts.height * ({bottom:1, middle:0.5}[yanchor] || 0)
     });
 };
