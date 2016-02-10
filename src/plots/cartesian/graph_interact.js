@@ -79,7 +79,7 @@ fx.isHoriz = function(fullData) {
 fx.init = function(gd) {
     var fullLayout = gd._fullLayout;
 
-    if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
+    if(!fullLayout._hasCartesian || gd._context.staticPlot) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number

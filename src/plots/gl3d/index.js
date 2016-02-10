@@ -80,11 +80,6 @@ exports.setConvert = require('./set_convert');
 
 exports.initAxes = function(gd) {
     var fullLayout = gd._fullLayout;
-
-    // until they play better together
-    delete fullLayout.xaxis;
-    delete fullLayout.yaxis;
-
     var sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
 
     for(var i = 0; i < sceneIds.length; ++i) {
