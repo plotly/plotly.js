@@ -581,7 +581,7 @@ legend.draw = function(td) {
         scrollheight = Math.min(plotHeight - ly, opts.height),
         scrollPosition = scrollBox.attr('data-scroll') ? scrollBox.attr('data-scroll') : 0;
 
-    bg.style({ width: opts.width, height: scrollheight });
+    bg.attr({ width: opts.width, height: scrollheight });
     scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
 
     legendsvg.call(Drawing.setRect, lx, ly, opts.width, scrollheight);
