@@ -9,9 +9,10 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
 var Icons = require('../../../build/ploticon');
 
 
@@ -204,7 +205,11 @@ proto.updateActiveButton = function(buttonClicked) {
             }
         }
         else {
-            button3.classed('active', fullLayout[dataAttr]===thisval);
+            var val = (dataAttr === null) ?
+                dataAttr :
+                Lib.nestedProperty(fullLayout, dataAttr).get();
+
+            button3.classed('active', val === thisval);
         }
 
     });
@@ -260,7 +265,7 @@ proto.removeAllButtons = function() {
 };
 
 proto.destroy = function() {
-    Plotly.Lib.removeElement(this.container.querySelector('.modebar'));
+    Lib.removeElement(this.container.querySelector('.modebar'));
 };
 
 function createModeBar(gd, buttons) {
