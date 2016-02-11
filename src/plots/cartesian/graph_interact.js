@@ -26,6 +26,7 @@ fx.layoutAttributes = {
         valType: 'enumerated',
         role: 'info',
         values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable'],
+        dflt: 'zoom',
         description: [
             'Determines the mode of drag interactions.',
             '*select* and *lasso* apply only to scatter traces with',
@@ -50,7 +51,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
                                  attr, dflt);
     }
 
-    coerce('dragmode', layoutOut._hasGL3D ? 'turntable' : 'zoom');
+    coerce('dragmode');
 
     if(layoutOut._hasCartesian) {
         // flag for 'horizontal' plots:

@@ -29,8 +29,25 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         return Lib.coerce(sceneLayoutIn, sceneLayoutOut, layoutAttributes, attr, dflt);
     }
 
+    // some layout-wide attribute are used in all scenes
+    // if 3D is the only visible plot type
+    function getDfltFromLayout(attr) {
+        var isOnlyGL3D = !(
+            layoutOut._hasCartesian ||
+            layoutOut._hasGeo ||
+            layoutOut._hasGL2D ||
+            layoutOut._hasPie
+        );
+
+        var isValid = layoutAttributes[attr].values.indexOf(layoutIn[attr]) !== -1;
+
+        var dflt;
+        if(isOnlyGL3D && isValid) return layoutIn[attr];
+    }
+
     for(var i = 0; i < scenesLength; i++) {
         var scene = scenes[i];
+
         /*
          * Scene numbering proceeds as follows
          * scene
@@ -85,17 +102,20 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             if(aspectMode === 'manual') sceneLayoutOut.aspectmode = 'auto';
         }
 
-         /*
-          * scene arrangements need to be implemented: For now just splice
-          * along the horizontal direction. ie.
-          * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
-          *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
-          */
+        /*
+         * scene arrangements need to be implemented: For now just splice
+         * along the horizontal direction. ie.
+         * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
+         *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
+         */
         supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
             font: layoutOut.font,
             scene: scene,
             data: fullData
         });
+
+        coerce('dragmode', getDfltFromLayout('dragmode'));
+        coerce('hovermode', getDfltFromLayout('hovermode'));
 
         layoutOut[scene] = sceneLayoutOut;
     }
