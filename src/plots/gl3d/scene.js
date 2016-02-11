@@ -79,18 +79,20 @@ function render(scene) {
             if(hoverinfoParts.indexOf('name') === -1) lastPicked.name = undefined;
         }
 
-        Fx.loneHover({
-            x: (0.5 + 0.5 * pdata[0]/pdata[3]) * width,
-            y: (0.5 - 0.5 * pdata[1]/pdata[3]) * height,
-            xLabel: formatter('xaxis', selection.traceCoordinate[0]),
-            yLabel: formatter('yaxis', selection.traceCoordinate[1]),
-            zLabel: formatter('zaxis', selection.traceCoordinate[2]),
-            text: selection.textLabel,
-            name: lastPicked.name,
-            color: lastPicked.color
-        }, {
-            container: svgContainer
-        });
+        if(scene.fullSceneLayout.hovermode) {
+            Fx.loneHover({
+                x: (0.5 + 0.5 * pdata[0]/pdata[3]) * width,
+                y: (0.5 - 0.5 * pdata[1]/pdata[3]) * height,
+                xLabel: formatter('xaxis', selection.traceCoordinate[0]),
+                yLabel: formatter('yaxis', selection.traceCoordinate[1]),
+                zLabel: formatter('zaxis', selection.traceCoordinate[2]),
+                text: selection.textLabel,
+                name: lastPicked.name,
+                color: lastPicked.color
+            }, {
+                container: svgContainer
+            });
+        }
     }
     else Fx.loneUnhover(svgContainer);
 }
