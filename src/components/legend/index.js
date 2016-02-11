@@ -462,9 +462,9 @@ legend.draw = function(td) {
         .call(Color.fill, opts.bgcolor)
         .style('stroke-width', opts.borderwidth + 'px');
 
-    var scrollBox = legendsvg.selectAll('svg.scrollbox')
+    var scrollBox = legendsvg.selectAll('g.scrollbox')
         .data([0]);
-    scrollBox.enter().append('svg')
+    scrollBox.enter().append('g')
         .attr('class', 'scrollbox');
     scrollBox.exit().remove();
 
@@ -559,16 +559,30 @@ legend.draw = function(td) {
     // It requires the legend width, height, x and y to position the scrollbox
     // and these values are mutated in repositionLegend.
     var gs = fullLayout._size,
-        lx = gs.l+gs.w*opts.x,
-        ly = gs.t+gs.h*(1-opts.y);
+        lx = gs.l + gs.w * opts.x,
+        ly = gs.t + gs.h * (1-opts.y);
+
+    if(opts.xanchor === 'right' || (opts.xanchor === 'auto' && opts.x >= 2 / 3)) {
+        lx -= opts.width;
+    }
+    else if(opts.xanchor === 'center' || (opts.xanchor === 'auto' && opts.x > 1 / 3)) {
+        lx -= opts.width / 2;
+    }
+
+    if(opts.yanchor === 'bottom' || (opts.yanchor === 'auto' && opts.y <= 1 / 3)) {
+        ly -= opts.width;
+    }
+    else if(opts.yanchor === 'middle' || (opts.yanchor === 'auto' && opts.y < 2 / 3)) {
+        ly -= opts.height / 2;
+    }
 
     // Deal with scrolling
     var plotHeight = fullLayout.height - fullLayout.margin.b,
-        scrollPosition = scrollBox.attr('viewBox') ? scrollBox.attr('viewBox').split(' ')[1] : 0,
-        scrollheight = Math.min(plotHeight - ly, opts.height);
+        scrollheight = Math.min(plotHeight - ly, opts.height),
+        scrollPosition = scrollBox.attr('data-scroll') ? scrollBox.attr('data-scroll') : 0;
 
     bg.style({ width: opts.width, height: scrollheight });
-    scrollBox.attr('viewBox', '0 ' + scrollPosition +' ' + opts.width + ' ' + scrollheight);
+    scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
 
     legendsvg.call(Drawing.setRect, lx, ly, opts.width, scrollheight);
 
@@ -576,7 +590,7 @@ legend.draw = function(td) {
 
         legendsvg.node().addEventListener('wheel', function(e){
             e.preventDefault();
-            scrollHandler(Math.round(e.deltaY / 15));
+            scrollHandler(e.deltaY / 20);
         });
 
         scrollBar.node().addEventListener('mousedown', function(e) {
@@ -609,15 +623,13 @@ legend.draw = function(td) {
 
     function scrollHandler(delta){
 
-        // Scale movement to simulate native scroll performance
-        var viewBox = scrollBox.attr('viewBox').split(' '),
-            scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
-            scrollBoxY = Lib.constrain(+viewBox[1] + delta, 0, Math.max(opts.height - scrollheight, 0)),
-            scrollBarY = scrollBoxY / (opts.height - scrollheight) * scrollBarTrack + constants.scrollBarMargin;
+        var scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
+            translateY = scrollBox.attr('data-scroll'),
+            scrollBoxY = Lib.constrain(translateY - delta, Math.min(scrollheight - opts.height, 0), 0),
+            scrollBarY = -scrollBoxY / (opts.height - scrollheight) * scrollBarTrack + constants.scrollBarMargin;
 
-        viewBox[1] = scrollBoxY;
-
-        scrollBox.attr('viewBox', viewBox.join(' '));
+        scrollBox.attr('data-scroll', scrollBoxY);
+        scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
         scrollBar.call(
             Drawing.setRect,
             opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
@@ -737,8 +749,8 @@ legend.repositionLegend = function(td, traces){
     // values <1/3 align the low side at that fraction, 1/3-2/3 align the
     // center at that fraction, >2/3 align the right at that fraction
 
-    var lx = gs.l+gs.w*opts.x,
-        ly = gs.t+gs.h*(1-opts.y);
+    var lx = gs.l + gs.w * opts.x,
+        ly = gs.t + gs.h * (1-opts.y);
 
     var xanchor = 'left';
     if(opts.xanchor === 'right' || (opts.xanchor === 'auto' && opts.x >= 2 / 3)) {
