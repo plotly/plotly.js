@@ -82,7 +82,7 @@
     "browserify": "^13.0.0",
     "browserify-transform-tools": "^1.5.1",
     "ecstatic": "^1.4.0",
-    "eslint": "^1.10.3",
+    "eslint": "^2.1.0",
     "falafel": "^1.2.0",
     "glob": "^7.0.0",
     "jasmine-core": "^2.3.4",
