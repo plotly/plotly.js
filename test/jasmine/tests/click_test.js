@@ -9,47 +9,50 @@ var mouseEvent = require('../assets/mouse_event');
 describe('click event', function() {
     var mock = require('@mocks/14.json');
 
-    describe('event data', function() {
-        var mockCopy = Lib.extendDeep({}, mock),
-            clientX = 351,
-            clientY = 223,
-            gd;
+    afterEach(destroyGraphDiv);
 
-        function click() {
-            mouseEvent('mousemove', clientX, clientY);
-            mouseEvent('mousedown', clientX, clientY);
-            mouseEvent('mouseup', clientX, clientY);
-        }
+    var mockCopy = Lib.extendDeep({}, mock),
+        clientX = 351,
+        clientY = 223,
+        gd;
 
-        beforeEach(function(done) {
-            gd = createGraphDiv();
+    function click() {
+        mouseEvent('mousemove', clientX, clientY);
+        mouseEvent('mousedown', clientX, clientY);
+        mouseEvent('mouseup', clientX, clientY);
+    }
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            .then(done);
+    });
+
+    it('should contain the correct fields', function() {
+        var futureData;
+
+        gd.on('plotly_click', function(data) {
+            futureData = data;
         });
 
-        afterEach(destroyGraphDiv);
+        click();
 
-        it('should contain the correct fields', function() {
-            var futureData;
+        expect(futureData.points.length).toEqual(1);
 
-            gd.on('plotly_click', function(data) {
-                futureData = data;
-            });
+        var pt = futureData.points[0];
+        expect(Object.keys(pt)).toEqual([
+            'data', 'fullData', 'curveNumber', 'pointNumber',
+            'x', 'y', 'xaxis', 'yaxis'
+        ]);
+        expect(pt.curveNumber).toEqual(0);
+        expect(pt.pointNumber).toEqual(11);
+        expect(pt.x).toEqual(0.125);
+        expect(pt.y).toEqual(2.125);
+    });
 
-            click();
 
-            expect(futureData.points.length).toEqual(1);
 
-            var pt = futureData.points[0];
-            expect(Object.keys(pt)).toEqual([
-                'data', 'fullData', 'curveNumber', 'pointNumber',
-                'x', 'y', 'xaxis', 'yaxis'
-            ]);
-            expect(pt.curveNumber).toEqual(0);
-            expect(pt.pointNumber).toEqual(11);
-            expect(pt.x).toEqual(0.125);
-            expect(pt.y).toEqual(2.125);
         });
     });
 });
