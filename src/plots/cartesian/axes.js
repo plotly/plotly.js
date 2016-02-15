@@ -1053,7 +1053,6 @@ function numFormat(v, ax, fmtoverride, hover) {
 
     // 'epsilon' - rounding increment
     var e = isBase10 ? Math.pow(exponentbase, -tickRound) / 2 : 0;
-    // var e = 0;
 
     // exponentFormat codes:
     // 'e' (1.2e+6, default)
