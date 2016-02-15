@@ -39,6 +39,15 @@ describe('select box and lasso', function() {
         }, DBLCLICKDELAY / 2);
     }
 
+    function assertRange(actual, expected) {
+        var PRECISION = 4;
+
+        expect(actual.x[0]).toBeCloseTo(expected.x[0], PRECISION);
+        expect(actual.x[1]).toBeCloseTo(expected.x[1], PRECISION);
+        expect(actual.y[0]).toBeCloseTo(expected.y[0], PRECISION);
+        expect(actual.y[1]).toBeCloseTo(expected.y[1], PRECISION);
+    }
+
     describe('select events', function() {
         var mockCopy = Lib.extendDeep({}, mock);
         mockCopy.layout.dragmode = 'select';
@@ -85,7 +94,7 @@ describe('select box and lasso', function() {
                 x: 0.004,
                 y: 12.5
             }]);
-            expect(selectingData.range).toEqual({
+            assertRange(selectingData.range, {
                 x: [0.0019667582669138295, 0.004546754982054625],
                 y: [0.10209191961595454, 24.512223978291406]
             });
@@ -102,7 +111,7 @@ describe('select box and lasso', function() {
                 x: 0.004,
                 y: 12.5
             }]);
-            expect(selectedData.range).toEqual({
+            assertRange(selectedData.range, {
                 x: [0.0019667582669138295, 0.004546754982054625],
                 y: [0.10209191961595454, 24.512223978291406]
             });
