@@ -5,6 +5,7 @@ var Lib = require('@src/lib');
 var Color = require('@src/components/color');
 
 var handleTickValueDefaults = require('@src/plots/cartesian/tick_value_defaults');
+var handleTickDefaults = require('@src/plots/cartesian/tick_defaults');
 var Axes = PlotlyInternal.Axes;
 
 
@@ -344,6 +345,60 @@ describe('Test axes', function() {
             expect(axOut.tickvals).toEqual([2,4,6,8]);
             expect(axOut.ticktext).toEqual(['who','do','we','appreciate']);
         });
+    });
+
+    describe('handleTickDefaults', function() {
+        var out;
+
+        function mockSupplyDefaults(axIn, axOut, axType) {
+            function coerce(attr, dflt) {
+                return Lib.coerce(axIn, axOut, Axes.layoutAttributes, attr, dflt);
+            }
+
+            handleTickDefaults(axIn, axOut, coerce, axType, {});
+        }
+
+        it('should set correct defaults', function() {
+            out = {};
+            mockSupplyDefaults({}, out, 'linear');
+
+            expect(out.exponentbase).toBe(10);
+            expect(out.exponentformat).toBe('B');
+        });
+
+        it('should set format to power if not base 2 or 10', function() {
+            out = {};
+            mockSupplyDefaults({ exponentbase: 8 }, out, 'linear');
+            expect(out.exponentformat).toBe('power');
+
+            out = {};
+            mockSupplyDefaults({ exponentbase: 16 }, out, 'linear');
+            expect(out.exponentformat).toBe('power');
+
+            out = {};
+            mockSupplyDefaults({ exponentbase: 'e' }, out, 'linear');
+            expect(out.exponentformat).toBe('power');
+        });
+
+        it('should fallback to power format with base 2', function() {
+            out = {};
+            mockSupplyDefaults({ exponentbase: 2, exponentformat: 'B' }, out, 'linear');
+            expect(out.exponentformat).toBe('power');
+        });
+
+        it('should set the exponentbase to numerical e', function() {
+            out = {};
+            mockSupplyDefaults({ exponentbase: 'e' }, out, 'log');
+            expect(out.exponentbase).toBe(Math.E);
+        });
+
+        it('should force the plot type to log when used with e', function() {
+            out = {};
+            mockSupplyDefaults({ exponentbase: 'e' }, out, 'linear');
+            expect(out.type).toBe('log');
+        });
+
+
     });
 
     describe('saveRangeInitial', function() {
