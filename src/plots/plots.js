@@ -232,14 +232,14 @@ plots.redrawText = function(gd) {
 };
 
 // resize plot about the container size
-plots.resize = function (gd) {
+plots.resize = function(gd) {
     if (!gd || d3.select(gd).style('display') === 'none') return;
 
-    return new Promise(function (resolve) {
-        
+    return new Promise(function(resolve) {
+
         if (gd._redrawTimer) clearTimeout(gd._redrawTimer);
 
-        gd._redrawTimer = setTimeout(function () {
+        gd._redrawTimer = setTimeout(function() {
             if ((gd._fullLayout || {}).autosize) {
                 // autosizing doesn't count as a change that needs saving
                 var oldchanged = gd.changed;
