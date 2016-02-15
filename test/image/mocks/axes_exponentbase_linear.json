@@ -11,7 +11,7 @@
                 8192,
                 16384
             ],
-            "name": "yaxis1 data",
+            "name": "default",
             "type": "scatter"
         },
         {
@@ -25,7 +25,7 @@
                 50000,
                 60000
             ],
-            "name": "yaxis2 data",
+            "name": "base: 2<br>format: SI",
             "yaxis": "y2",
             "type": "scatter"
         },
@@ -40,7 +40,7 @@
                 5000,
                 16000
             ],
-            "name": "yaxis3 data",
+            "name": "base: 8<br>format: power",
             "yaxis": "y3",
             "type": "scatter"
         },
@@ -55,7 +55,7 @@
                 50000,
                 60000
             ],
-            "name": "yaxis4 data",
+            "name": "base: 16<br>format: power",
             "yaxis": "y4",
             "type": "scatter"
         },
@@ -70,7 +70,7 @@
                 500000,
                 600000
             ],
-            "name": "yaxis5 data",
+            "name": "base: 2<br>format: power",
             "yaxis": "y5",
             "type": "scatter"
         },
@@ -85,7 +85,7 @@
                 50000000,
                 60000000
             ],
-            "name": "yaxis6 data",
+            "name": "base: 10<br>format: E",
             "yaxis": "y6",
             "type": "scatter"
         }
@@ -95,7 +95,7 @@
         "xaxis": {
             "domain": [
                 0.3,
-                0.7
+                0.6
             ],
             "showline": true,
             "ticks": "outside",
@@ -153,8 +153,8 @@
             "anchor": "free",
             "position": 0,
             "overlaying": "y",
-            "exponentbase": 8,
-            "exponentformat": "B"
+            "exponentformat": "power",
+            "exponentbase": 8
         },
         "yaxis4": {
             "title": "yaxis4 title",
@@ -172,7 +172,7 @@
             "side": "right",
             "overlaying": "y",
             "exponentbase": 16,
-            "exonentformat": "SI"
+            "exponentformat": "power"
         },
         "yaxis5": {
             "title": "yaxis5 title",
@@ -186,12 +186,12 @@
                 "color": "#9467bd"
             },
             "exponentbase": 2,
-            "exponentformat": "e",
+            "exponentformat": "power",
             "showexponent": "first",
             "linecolor": "#9467bd",
             "anchor": "free",
             "side": "right",
-            "position": 0.85,
+            "position": 0.77,
             "overlaying": "y"
         },
         "yaxis6": {
@@ -205,12 +205,12 @@
             "tickfont": {
                 "color": "#8c564b"
             },
-            "exponentbase": "11",
+            "exponentbase": "10",
             "exponentformat": "E",
             "linecolor": "#8c564b",
             "anchor": "free",
             "side": "right",
-            "position": 1,
+            "position": 0.95,
             "overlaying": "y"
         }
     }
