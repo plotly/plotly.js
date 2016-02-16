@@ -570,7 +570,7 @@ legend.draw = function(td) {
     }
 
     if(opts.yanchor === 'bottom' || (opts.yanchor === 'auto' && opts.y <= 1 / 3)) {
-        ly -= opts.width;
+        ly -= opts.height;
     }
     else if(opts.yanchor === 'middle' || (opts.yanchor === 'auto' && opts.y < 2 / 3)) {
         ly -= opts.height / 2;
@@ -764,7 +764,7 @@ legend.repositionLegend = function(td, traces){
 
     var yanchor = 'top';
     if(opts.yanchor === 'bottom' || (opts.yanchor === 'auto' && opts.y <= 1 / 3)) {
-        ly -= opts.width;
+        ly -= opts.height;
         yanchor = 'bottom';
     }
     else if(opts.yanchor === 'middle' || (opts.yanchor === 'auto' && opts.y < 2 / 3)) {
