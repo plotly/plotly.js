@@ -381,7 +381,6 @@ Plotly.plot = function(gd, data, layout, config) {
         // so mark it as done and let other procedures call a replot
         Lib.markTime('done plot');
         gd.emit('plotly_afterplot');
-
     }
 
     var donePlotting = Lib.syncOrAsync([
