@@ -6,17 +6,19 @@ var modeBarButtons = require('@src/components/modebar/buttons');
 
 
 module.exports = function selectButton(modeBar, name) {
-    var button = d3.select(modeBar.element)
+    var button = {};
+
+    var node = button.node = d3.select(modeBar.element)
         .select('[data-title="' + modeBarButtons[name].title + '"]')
         .node();
 
     button.click = function() {
         var ev = new window.MouseEvent('click');
-        button.dispatchEvent(ev);
+        node.dispatchEvent(ev);
     };
 
     button.isActive = function() {
-        return d3.select(button).classed('active');
+        return d3.select(node).classed('active');
     };
 
     return button;
