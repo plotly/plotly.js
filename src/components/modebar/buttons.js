@@ -336,29 +336,19 @@ modeBarButtons.resetCameraLastSave3d = {
 function handleCamera3d(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
-        layout = gd.layout,
         fullLayout = gd._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
-            sceneLayout = layout[sceneId],
             fullSceneLayout = fullLayout[sceneId],
             scene = fullSceneLayout._scene;
 
-        if(!sceneLayout || attr==='resetDefault') scene.setCameraToDefault();
+        if(attr === 'resetDefault') scene.setCameraToDefault();
         else if(attr === 'resetLastSave') {
-
-            var cameraPos = sceneLayout.camera;
-            if(cameraPos) scene.setCamera(cameraPos);
-            else scene.setCameraToDefault();
+            scene.setCamera(fullSceneLayout.camera);
         }
     }
-
-    /*
-     * TODO have a sceneLastTouched in _fullLayout to only
-     * update the camera of the scene last touched by the user
-     */
 }
 
 modeBarButtons.hoverClosest3d = {
