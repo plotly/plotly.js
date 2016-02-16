@@ -109,6 +109,13 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     // buttons common to all plot types
     addGroup(['toImage', 'sendDataToCloud']);
 
+    // graphs with more than one plot types get 'union buttons'
+    // which reset the view or toggle hover labels across all subplots.
+    if((hasCartesian || hasGL2D || hasPie) + hasGeo + hasGL3D > 1) {
+        addGroup(['resetViews', 'toggleHover']);
+        return appendButtonsToAdd(groups);
+    }
+
     if(hasGL3D) {
         addGroup(['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation']);
         addGroup(['resetCameraDefault3d', 'resetCameraLastSave3d']);
@@ -136,13 +143,16 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
         addGroup(['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']);
     }
 
-    if(hasCartesian) {
-        addGroup(['hoverClosestCartesian', 'hoverCompareCartesian']);
+    if(hasCartesian && hasPie) {
+        addGroup(['toggleHover']);
     }
-    if(hasGL2D) {
+    else if(hasGL2D) {
         addGroup(['hoverClosestGl2d']);
     }
-    if(hasPie) {
+    else if(hasCartesian) {
+        addGroup(['hoverClosestCartesian', 'hoverCompareCartesian']);
+    }
+    else if(hasPie) {
         addGroup(['hoverClosestPie']);
     }
 

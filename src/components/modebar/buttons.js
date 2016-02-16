@@ -497,3 +497,42 @@ function toggleHover(gd) {
 
     Plotly.relayout(gd, 'hovermode', newHover);
 }
+
+// buttons when more then one plot types are present
+
+modeBarButtons.toggleHover = {
+    name: 'toggleHover',
+    title: 'Toggle show closest data on hover',
+    attr: 'hovermode',
+    val: null,
+    toggle: true,
+    icon: Icons.tooltip_basic,
+    gravity: 'ne',
+    click: function(gd, ev) {
+        toggleHover(gd);
+
+        // the 3d hovermode update must come
+        // last so that layout.hovermode update does not
+        // override scene?.hovermode?.layout.
+        handleHover3d(gd, ev);
+    }
+};
+
+modeBarButtons.resetViews = {
+    name: 'resetViews',
+    title: 'Reset views',
+    icon: Icons.home,
+    click: function(gd, ev) {
+        var button = ev.currentTarget;
+
+        button.setAttribute('data-attr', 'zoom');
+        button.setAttribute('data-val', 'reset');
+        handleCartesian(gd, ev);
+
+        button.setAttribute('data-attr', 'resetLastSave');
+        handleCamera3d(gd, ev);
+
+        // N.B handleCamera3d also triggers a replot for
+        // geo subplots.
+    }
+};

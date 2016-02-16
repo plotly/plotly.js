@@ -202,9 +202,9 @@ describe('ModeBar', function() {
             gd._fullLayout._hasCartesian = true;
             gd._fullLayout.xaxis = {fixedrange: false};
             gd._fullData = [{
-                type:'scatter',
+                type: 'scatter',
                 visible: true,
-                mode:'markers',
+                mode: 'markers',
                 _module: {selectPoints: true}
             }];
 
@@ -288,6 +288,91 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._hasPie = true;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (cartesian + gl3d version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._hasGL3D = true;
+            gd._fullLayout._hasGeo = false;
+            gd._fullLayout._hasGL2D = false;
+            gd._fullLayout._hasPie = false;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (cartesian + geo version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._hasGL3D = false;
+            gd._fullLayout._hasGeo = true;
+            gd._fullLayout._hasGL2D = false;
+            gd._fullLayout._hasPie = false;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (cartesian + pie version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d'],
+                ['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d'],
+                ['toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasCartesian = true;
+            gd._fullData = [{
+                type: 'scatter',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
+            gd._fullLayout.xaxis = {fixedrange: false};
+            gd._fullLayout._hasGL3D = false;
+            gd._fullLayout._hasGeo = false;
+            gd._fullLayout._hasGL2D = false;
+            gd._fullLayout._hasPie = true;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (gl3d + geo version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasCartesian = false;
+            gd._fullLayout._hasGL3D = true;
+            gd._fullLayout._hasGeo = true;
+            gd._fullLayout._hasGL2D = false;
+            gd._fullLayout._hasPie = false;
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
