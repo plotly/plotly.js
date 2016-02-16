@@ -493,7 +493,15 @@ modeBarButtons.hoverClosestPie = {
 };
 
 function toggleHover(gd) {
-    var newHover = gd._fullLayout.hovermode ? false : 'closest';
+    var fullLayout = gd._fullLayout;
+
+    var onHoverVal;
+    if(fullLayout._hasCartesian) {
+        onHoverVal = fullLayout._isHoriz ? 'y' : 'x';
+    }
+    else onHoverVal = 'closest';
+
+    var newHover = gd._fullLayout.hovermode ? false : onHoverVal;
 
     Plotly.relayout(gd, 'hovermode', newHover);
 }
