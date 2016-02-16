@@ -149,7 +149,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     }
 
     if(!scene.camera) {
-        var cameraData = fullLayout.scene.camera;
+        var cameraData = scene.fullSceneLayout.camera;
         scene.camera = createCamera(scene.container, {
             center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
             eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
@@ -166,7 +166,6 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     scene.glplot.oncontextloss = function() {
         scene.recoverContext();
     };
-
 
     scene.glplot.onrender = render.bind(null, scene);
 
@@ -203,6 +202,7 @@ function Scene(options, fullLayout) {
 
     this.fullLayout = fullLayout;
     this.id = options.id || 'scene';
+    this.fullSceneLayout = fullLayout[this.id];
 
     //Saved from last call to plot()
     this.plotArgs = [ [], {}, {} ];
