@@ -132,7 +132,7 @@ module.exports = function draw(gd, id) {
 
             // y positioning we can do correctly from the start
             yBottomFrac = opts.y + lenFrac *
-                (({top:-0.5, bottom:0.5}[opts.yanchor]||0)-0.5),
+                (({top: -0.5, bottom: 0.5}[opts.yanchor] || 0) - 0.5),
             yBottomPx = Math.round(fullLayout._size.h * (1-yBottomFrac)),
             yTopPx = yBottomPx-lenPx,
             titleEl,
@@ -431,7 +431,7 @@ module.exports = function draw(gd, id) {
             });
 
             // fix positioning for xanchor!='left'
-            var xoffset = ({center:0.5, right:1}[opts.xanchor]||0) *
+            var xoffset = ({center: 0.5, right: 1}[opts.xanchor] || 0) *
                 outerwidth;
             container.attr('transform',
                 'translate('+(fullLayout._size.l-xoffset)+','+fullLayout._size.t+')');
@@ -440,10 +440,10 @@ module.exports = function draw(gd, id) {
             Plots.autoMargin(gd, id,{
                 x: opts.x,
                 y: opts.y,
-                l: outerwidth*({right:1, center:0.5}[opts.xanchor]||0),
-                r: outerwidth*({left:1, center:0.5}[opts.xanchor]||0),
-                t: outerheight*({bottom:1, middle:0.5}[opts.yanchor]||0),
-                b: outerheight*({top:1, middle:0.5}[opts.yanchor]||0)
+                l: outerwidth * ({right: 1, center: 0.5}[opts.xanchor] || 0),
+                r: outerwidth * ({left: 1, center: 0.5}[opts.xanchor] || 0),
+                t: outerheight * ({bottom: 1, middle: 0.5}[opts.yanchor] || 0),
+                b: outerheight * ({top: 1, middle: 0.5}[opts.yanchor] || 0)
             });
         }
 

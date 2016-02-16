@@ -166,22 +166,22 @@ exports.ms2DateTime = function(ms, r) {
 // TODO: this is way out of date vs. the server-side version
 var timeFormats = {
     // 24 hour
-    H:['%H:%M:%S~%L', '%H:%M:%S', '%H:%M'],
+    H: ['%H:%M:%S~%L', '%H:%M:%S', '%H:%M'],
     // with am/pm
-    I:['%I:%M:%S~%L%p', '%I:%M:%S%p', '%I:%M%p'],
+    I: ['%I:%M:%S~%L%p', '%I:%M:%S%p', '%I:%M%p'],
     // no colon, ie only date or date with hour (could also support eg 12h34m?)
-    D:['%H', '%I%p', '%Hh']
+    D: ['%H', '%I%p', '%Hh']
 };
 
 var dateFormats = {
-    Y:[
+    Y: [
         '%Y~%m~%d',
         '%Y%m%d',
         '%y%m%d', // YYMMDD, has 6 digits together so will match Y, not y
         '%m~%d~%Y', // MM/DD/YYYY has first precedence
         '%d~%m~%Y' // then DD/MM/YYYY
     ],
-    Yb:[
+    Yb: [
         '%b~%d~%Y', // eg nov 21 2013
         '%d~%b~%Y', // eg 21 nov 2013
         '%Y~%d~%b', // eg 2013 21 nov (or 2013 q3, after replacement)
@@ -191,12 +191,12 @@ var dateFormats = {
      * the two-digit year cases have so many potential ambiguities
      * it's not even funny, but we'll try them anyway.
      */
-    y:[
+    y: [
         '%m~%d~%y',
         '%d~%m~%y',
         '%y~%m~%d'
     ],
-    yb:[
+    yb: [
         '%b~%d~%y',
         '%d~%b~%y',
         '%y~%d~%b',

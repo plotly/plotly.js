@@ -718,8 +718,8 @@ fx.loneHover = function(hoverItem, opts) {
             index: 0,
             hoverinfo: ''
         },
-        xa: {_offset:0},
-        ya: {_offset:0},
+        xa: {_offset: 0},
+        ya: {_offset: 0},
         index: 0
     };
 
@@ -819,7 +819,10 @@ function createHoverText(hoverData, opts) {
                     (outerTop-tbb.bottom-HOVERARROWSIZE-HOVERTEXTPAD) :
                     (outerTop-tbb.top+HOVERARROWSIZE+HOVERTEXTPAD)))
                 .selectAll('tspan.line')
-                    .attr({x:ltext.attr('x'), y:ltext.attr('y')});
+                    .attr({
+                        x: ltext.attr('x'),
+                        y: ltext.attr('y')
+                    });
 
             var topsign = xa.side==='top' ? '-' : '';
             lpath.attr('d','M0,0'+
@@ -839,7 +842,10 @@ function createHoverText(hoverData, opts) {
                     (ya.side==='right' ? 1 : -1)*(HOVERTEXTPAD+HOVERARROWSIZE),
                     outerTop-tbb.top-tbb.height/2)
                 .selectAll('tspan.line')
-                    .attr({x:ltext.attr('x'), y:ltext.attr('y')});
+                    .attr({
+                        x: ltext.attr('x'),
+                        y: ltext.attr('y')
+                    });
 
             var leftsign = ya.side==='right' ? '' : '-';
             lpath.attr('d','M0,0'+
@@ -967,7 +973,10 @@ function createHoverText(hoverData, opts) {
         }
 
         g.select('path')
-            .style({fill:traceColor, stroke:contrastColor});
+            .style({
+                fill: traceColor,
+                stroke: contrastColor
+            });
         var tbb = tx.node().getBoundingClientRect(),
             htx = xa._offset+(d.x0+d.x1)/2,
             hty = ya._offset+(d.y0+d.y1)/2,
@@ -1194,7 +1203,7 @@ function alignHoverText(hoverLabels, rotateLabels) {
         }
         var horzSign = d.anchor==='end' ? -1 : 1,
             tx = g.select('text.nums'),
-            alignShift = {start:1,end:-1,middle:0}[d.anchor],
+            alignShift = {start: 1, end: -1, middle: 0}[d.anchor],
             txx = alignShift*(HOVERARROWSIZE+HOVERTEXTPAD),
             tx2x = txx+alignShift*(d.txwidth+HOVERTEXTPAD),
             offsetX = 0,
@@ -1223,7 +1232,10 @@ function alignHoverText(hoverLabels, rotateLabels) {
         tx.call(Plotly.Drawing.setPosition,
                 txx+offsetX, offsetY+d.ty0-d.by/2+HOVERTEXTPAD)
             .selectAll('tspan.line')
-                .attr({x:tx.attr('x'), y:tx.attr('y')});
+                .attr({
+                    x: tx.attr('x'),
+                    y: tx.attr('y')
+                });
 
         if(d.tx2width) {
             g.select('text.name, text.name tspan.line')

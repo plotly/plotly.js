@@ -153,14 +153,14 @@ axes.doAutoRange = function(ax) {
         else if(mbest) {
             if(ax.type==='linear' || ax.type==='-') {
                 if(ax.rangemode==='tozero' && minbest.val>=0) {
-                    minbest = {val:0, pad:0};
+                    minbest = {val: 0, pad: 0};
                 }
                 else if(ax.rangemode==='nonnegative') {
                     if(minbest.val - mbest*minbest.pad<0) {
-                        minbest = {val:0, pad:0};
+                        minbest = {val: 0, pad: 0};
                     }
                     if(maxbest.val<0) {
-                        maxbest = {val:1, pad:0};
+                        maxbest = {val: 1, pad: 0};
                     }
                 }
 
@@ -309,8 +309,8 @@ axes.expand = function(ax, data, options) {
             }
             if(includeThis) {
                 ax._min.push({
-                    val:dmin,
-                    pad:(tozero && dmin===0) ? 0 : ppadiminus
+                    val: dmin,
+                    pad: (tozero && dmin===0) ? 0 : ppadiminus
                 });
             }
         }
@@ -329,8 +329,8 @@ axes.expand = function(ax, data, options) {
             }
             if(includeThis) {
                 ax._max.push({
-                    val:dmax,
-                    pad:(tozero && dmax===0) ? 0 : ppadiplus
+                    val: dmax,
+                    pad: (tozero && dmax===0) ? 0 : ppadiplus
                 });
             }
         }
@@ -375,7 +375,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
     // piggyback off autotick code to make "nice" bin sizes
     var dummyax = {
         type: ax.type==='log' ? 'linear' : ax.type,
-        range:[datamin, datamax]
+        range: [datamin, datamax]
     };
     axes.autoTicks(dummyax, size0);
     var binstart = axes.tickIncrement(
@@ -916,7 +916,7 @@ function formatDate(ax, out, hover, extraPrecision) {
     else {
         if(extraPrecision) {
             if(isNumeric(tr)) tr+=2;
-            else tr = {y:'m', m:'d', d:'H', H:'M', M:'S', S:2}[tr];
+            else tr = {y: 'm', m: 'd', d: 'H', H: 'M', M: 'S', S: 2}[tr];
         }
         if(tr==='y') tt = yearFormat(d);
         else if(tr==='m') tt = monthFormat(d);
@@ -1028,7 +1028,7 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
-            exponentformat:ax.exponentformat,
+            exponentformat: ax.exponentformat,
             dtick: ax.showexponent==='none' ? ax.dtick :
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent
@@ -1539,7 +1539,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                 else {
                     var mjShift =
                         Plotly.Drawing.bBox(mathjaxGroup.node()).width *
-                            {end:-0.5, start:0.5}[anchor];
+                            {end: -0.5, start: 0.5}[anchor];
                     mathjaxGroup.attr('transform', transform +
                         (mjShift ? 'translate(' + mjShift + ',0)' : ''));
                 }
@@ -1575,9 +1575,9 @@ axes.doTicks = function(td, axid, skipTitle) {
 
                     lbbArray.push({
                         // ignore about y, just deal with x overlaps
-                        top:0,
-                        bottom:10,
-                        height:10,
+                        top: 0,
+                        bottom: 10,
+                        height: 10,
                         left: x-bb.width/2,
                         // impose a 2px gap
                         right: x+bb.width/2 + 2,
@@ -1658,10 +1658,10 @@ axes.doTicks = function(td, axid, skipTitle) {
         }
         var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
             (ax.type==='linear' || ax.type==='-') && gridvals.length &&
-            (hasBarsOrFill || clipEnds({x:0}) || !ax.showline);
+            (hasBarsOrFill || clipEnds({x: 0}) || !ax.showline);
 
         var zl = zlcontainer.selectAll('path.'+zcls)
-            .data(showZl ? [{x:0}] : []);
+            .data(showZl ? [{x: 0}] : []);
         zl.enter().append('path').classed(zcls,1).classed('zl',1)
             .classed('crisp',1)
             .attr('d',gridpath);
@@ -1754,7 +1754,7 @@ function makeAxisGroups(gd, traces) {
         }
 
         if(!groupsi.length) {
-            groups.push({x:[xi], y: [yi]});
+            groups.push({x: [xi], y: [yi]});
             continue;
         }
 

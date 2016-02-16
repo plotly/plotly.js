@@ -21,7 +21,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
 
     var anchor = Lib.coerce(containerIn, containerOut, {
         anchor: {
-            valType:'enumerated',
+            valType: 'enumerated',
             values: ['free'].concat(counterAxes),
             dflt: isNumeric(containerIn.position) ? 'free' :
                 (counterAxes[0] || 'free')

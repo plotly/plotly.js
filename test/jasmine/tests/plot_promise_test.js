@@ -351,7 +351,7 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
-                layout = {hovermode:'closest'},
+                layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
@@ -378,7 +378,7 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
-                layout = {hovermode:'closest'},
+                layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
@@ -405,7 +405,7 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
-                layout = {hovermode:'closest'},
+                layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
@@ -432,7 +432,7 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
-                layout = {hovermode:'closest'},
+                layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);

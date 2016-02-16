@@ -19,7 +19,7 @@ module.exports = {
 
     histnorm: histogram2dAttrs.histnorm,
     histfunc: histogram2dAttrs.histfunc,
-    autobinx:histogram2dAttrs.autobinx,
+    autobinx: histogram2dAttrs.autobinx,
     nbinsx: histogram2dAttrs.nbinsx,
     xbins: histogram2dAttrs.xbins,
     autobiny: histogram2dAttrs.autobiny,

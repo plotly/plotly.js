@@ -141,7 +141,7 @@ function setAutoType(ax, data){
     // first check for histograms, as the count direction
     // should always default to a linear axis
     if(d0.type==='histogram' &&
-            axLetter === {v:'y', h:'x'}[d0.orientation || 'v']) {
+            axLetter === {v: 'y', h: 'x'}[d0.orientation || 'v']) {
         ax.type='linear';
         return;
     }
@@ -171,7 +171,7 @@ function setAutoType(ax, data){
 }
 
 function getBoxPosLetter(trace) {
-    return {v:'x', h:'y'}[trace.orientation || 'v'];
+    return {v: 'x', h: 'y'}[trace.orientation || 'v'];
 }
 
 function isBoxWithoutPositionCoords(trace, axLetter) {

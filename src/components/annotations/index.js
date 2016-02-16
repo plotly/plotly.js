@@ -572,7 +572,7 @@ annotations.draw = function(gd, index, opt, value) {
                 .attr({
                     'data-index': String(index),
                     d: 'M3,3H-3V-3H3ZM0,0L' + (arrowX0-arrowX) + ',' + (arrowY0-arrowY),
-                    transform:'translate('+arrowX+','+arrowY+')'
+                    transform: 'translate('+arrowX+','+arrowY+')'
                 })
                 .style('stroke-width', (strokewidth+6)+'px')
                 .call(Plotly.Color.stroke, 'rgba(0,0,0,0)')

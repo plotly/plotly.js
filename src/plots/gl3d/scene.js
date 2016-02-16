@@ -572,9 +572,9 @@ proto.getCamera = function getCamera() {
     var eye = this.glplot.camera.eye;
 
     return {
-        up: {x:up[0], y:up[1], z:up[2]},
-        center: {x:center[0], y:center[1], z:center[2]},
-        eye: {x:eye[0], y:eye[1], z:eye[2]}
+        up: {x: up[0], y: up[1], z: up[2]},
+        center: {x: center[0], y: center[1], z: center[2]},
+        eye: {x: eye[0], y: eye[1], z: eye[2]}
     };
 };
 

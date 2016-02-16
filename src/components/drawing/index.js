@@ -296,7 +296,7 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
 };
 
 // draw text at points
-var TEXTOFFSETSIGN = {start:1, end:-1, middle:0, bottom:1, top:-1},
+var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1},
     LINEEXPAND = 1.3;
 drawing.textPointStyle = function(s, trace) {
     s.each(function(d){
@@ -467,7 +467,10 @@ drawing.makeTester = function(gd) {
     testref.enter().append('path')
         .classed('js-reference-point', true)
         .attr('d','M0,0H1V1H0Z')
-        .style({'stroke-width':0, fill:'black'});
+        .style({
+            'stroke-width': 0,
+            fill: 'black'
+        });
 
     if(!tester.node()._cache) {
         tester.node()._cache = {};
@@ -498,7 +501,11 @@ drawing.bBox = function(node) {
     var testNode = node.cloneNode(true);
     tester.appendChild(testNode);
     // standardize its position... do we really want to do this?
-    d3.select(testNode).attr({x:0, y:0, transform:''});
+    d3.select(testNode).attr({
+        x: 0,
+        y: 0,
+        transform: ''
+    });
 
     var testRect = testNode.getBoundingClientRect(),
         refRect = test3.select('.js-reference-point')

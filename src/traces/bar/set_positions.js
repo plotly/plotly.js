@@ -30,8 +30,8 @@ module.exports = function setPositions(gd, plotinfo) {
 
     ['v', 'h'].forEach(function(dir){
         var bl = [],
-            pLetter = {v:'x', h:'y'}[dir],
-            sLetter = {v:'y', h:'x'}[dir],
+            pLetter = {v: 'x', h: 'y'}[dir],
+            sLetter = {v: 'y', h: 'x'}[dir],
             pa = plotinfo[pLetter](),
             sa = plotinfo[sLetter]();
 

@@ -326,7 +326,7 @@ plots.addLinks = function(gd) {
     linkContainer.enter().append('text')
         .classed('js-plot-link-container', true)
         .style({
-            'font-family':'"Open Sans", Arial, sans-serif',
+            'font-family': '"Open Sans", Arial, sans-serif',
             'font-size': '12px',
             'fill': Plotly.Color.defaultLine,
             'pointer-events': 'all'
@@ -382,7 +382,7 @@ function positionPlayWithData(gd, container){
         .attr({
             'xlink:xlink:href': '#',
             'class': 'link--impt link--embedview',
-            'font-weight':'bold'
+            'font-weight': 'bold'
         })
         .text(gd._context.linkText + ' ' + String.fromCharCode(187));
 
@@ -862,10 +862,10 @@ plots.autoMargin = function(gd,id,o) {
             if(o.b+o.t > fullLayout.height*0.5) o.b = o.t = 0;
 
             fullLayout._pushmargin[id] = {
-                l: {val:o.x, size: o.l+pad},
-                r: {val:o.x, size: o.r+pad},
-                b: {val:o.y, size: o.b+pad},
-                t: {val:o.y, size: o.t+pad}
+                l: {val: o.x, size: o.l+pad},
+                r: {val: o.x, size: o.r+pad},
+                b: {val: o.y, size: o.b+pad},
+                t: {val: o.y, size: o.t+pad}
             };
         }
 
@@ -891,10 +891,10 @@ plots.doAutoMargin = function(gd) {
     if(fullLayout.margin.autoexpand!==false) {
         // fill in the requested margins
         pm.base = {
-            l:{val:0, size:ml},
-            r:{val:1, size:mr},
-            t:{val:1, size:mt},
-            b:{val:0, size:mb}
+            l: {val: 0, size: ml},
+            r: {val: 1, size: mr},
+            t: {val: 1, size: mt},
+            b: {val: 0, size: mb}
         };
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
@@ -1046,7 +1046,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
     }
 
     var obj = {
-        data:(data||[]).map(function(v){
+        data: (data || []).map(function(v){
             var d = stripObj(v);
             // fit has some little arrays in it that don't contain data,
             // just fit params and meta

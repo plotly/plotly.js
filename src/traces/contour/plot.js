@@ -112,16 +112,16 @@ function emptyPathinfo(contours, plotinfo, cd0) {
         pathinfo = [];
     for(var ci = contours.start; ci < contours.end + cs/10; ci += cs) {
         pathinfo.push({
-            level:ci,
+            level: ci,
             // all the cells with nontrivial marching index
-            crossings:{},
+            crossings: {},
             // starting points on the edges of the lattice for each contour
-            starts:[],
+            starts: [],
             // all unclosed paths (may have less items than starts,
             // if a path is closed by rounding)
-            edgepaths:[],
+            edgepaths: [],
             // all closed paths
-            paths:[],
+            paths: [],
             // store axes so we can convert to px
             xaxis: plotinfo.x(),
             yaxis: plotinfo.y(),

@@ -35,8 +35,10 @@ function LineWithMarkers(scene, uid) {
     this.color = null;
     this.mode = '';
     this.dataPoints = [];
-    this.axesBounds = [[-Infinity,-Infinity,-Infinity],
-                       [Infinity,Infinity,Infinity]];
+    this.axesBounds = [
+        [-Infinity,-Infinity,-Infinity],
+        [Infinity,Infinity,Infinity]
+    ];
     this.textLabels = null;
     this.data = null;
 }
@@ -96,9 +98,9 @@ function constructDelaunay(points, color, axis) {
         }
     }
     return {
-        positions:  points,
-        cells:      cells,
-        meshColor:  color
+        positions: points,
+        cells: cells,
+        meshColor: color
     };
 }
 
@@ -197,8 +199,8 @@ function convertPlotlyOptions(scene, data) {
     //Build object parameters
     params = {
         position: points,
-        mode:     data.mode,
-        text:     text
+        mode: data.mode,
+        text: text
     };
 
     if ('line' in data) {
@@ -295,13 +297,13 @@ proto.update = function(data) {
     this.dataPoints = options.position;
 
     lineOptions = {
-        gl:         gl,
-        position:   options.position,
-        color:      options.lineColor,
-        lineWidth:  options.lineWidth || 1,
-        dashes:     dashPattern[0],
-        dashScale:  dashPattern[1],
-        opacity:    data.opacity
+        gl: gl,
+        position: options.position,
+        color: options.lineColor,
+        lineWidth: options.lineWidth || 1,
+        dashes: dashPattern[0],
+        dashScale: dashPattern[1],
+        opacity: data.opacity
     };
 
     if (this.mode.indexOf('lines') !== -1) {
@@ -321,16 +323,16 @@ proto.update = function(data) {
     if(data.marker && data.marker.opacity) scatterOpacity *= data.marker.opacity;
 
     scatterOptions = {
-        gl:           gl,
-        position:     options.position,
-        color:        options.scatterColor,
-        size:         options.scatterSize,
-        glyph:        options.scatterMarker,
-        opacity:      scatterOpacity,
+        gl: gl,
+        position: options.position,
+        color: options.scatterColor,
+        size: options.scatterSize,
+        glyph: options.scatterMarker,
+        opacity: scatterOpacity,
         orthographic: true,
-        lineWidth:    options.scatterLineWidth,
-        lineColor:    options.scatterLineColor,
-        project:      options.project,
+        lineWidth: options.scatterLineWidth,
+        lineColor: options.scatterLineColor,
+        project: options.project,
         projectScale: options.projectScale,
         projectOpacity: options.projectOpacity
     };
@@ -349,18 +351,18 @@ proto.update = function(data) {
     }
 
     textOptions = {
-        gl:           gl,
-        position:     options.position,
-        glyph:        options.text,
-        color:        options.textColor,
-        size:         options.textSize,
-        angle:        options.textAngle,
-        alignment:    options.textOffset,
-        font:         options.textFont,
+        gl: gl,
+        position: options.position,
+        glyph: options.text,
+        color: options.textColor,
+        size: options.textSize,
+        angle: options.textAngle,
+        alignment: options.textOffset,
+        font: options.textFont,
         orthographic: true,
-        lineWidth:    0,
-        project:      false,
-        opacity:      data.opacity
+        lineWidth: 0,
+        project: false,
+        opacity: data.opacity
     };
 
     this.textLabels = options.text;
@@ -379,13 +381,13 @@ proto.update = function(data) {
     }
 
     errorOptions = {
-        gl:           gl,
-        position:     options.position,
-        color:        options.errorColor,
-        error:        options.errorBounds,
-        lineWidth:    options.errorLineWidth,
-        capSize:      options.errorCapSize,
-        opacity:      data.opacity
+        gl: gl,
+        position: options.position,
+        color: options.errorColor,
+        error: options.errorBounds,
+        lineWidth: options.errorLineWidth,
+        capSize: options.errorCapSize,
+        opacity: data.opacity
     };
     if(this.errorBars) {
         if(options.errorBounds) {

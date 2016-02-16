@@ -59,8 +59,8 @@ Titles.draw = function(gd, title) {
         xa,
         ya,
         avoid = {
-            selection:d3.select(gd).selectAll('g.'+cont._id+'tick'),
-            side:cont.side
+            selection: d3.select(gd).selectAll('g.'+cont._id+'tick'),
+            side: cont.side
         },
         // multiples of fontsize to offset label from axis
         offsetBase = colorbar ? 0 : 1.5,

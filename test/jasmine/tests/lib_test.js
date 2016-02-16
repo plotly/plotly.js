@@ -375,7 +375,7 @@ describe('Test lib.js:', function() {
             propR.set([]);
             propS.set(null);
 
-            expect(obj).toEqual({c:[]});
+            expect(obj).toEqual({c: []});
         });
 
 

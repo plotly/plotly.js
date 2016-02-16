@@ -1831,7 +1831,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 // it flips everything and the axes
                 else if(ai==='orientationaxes') {
                     cont.orientation =
-                        {v:'h', h:'v'}[contFull.orientation];
+                        {v: 'h', h: 'v'}[contFull.orientation];
                 }
                 swapXYData(cont);
             }

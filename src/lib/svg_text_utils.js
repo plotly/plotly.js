@@ -149,7 +149,7 @@ util.convertToTspans = function(_context, _callback){
                 var newSvgW = getSize(newSvg, 'width'),
                     newSvgH = getSize(newSvg, 'height'),
                     newX = +that.attr('x') - newSvgW *
-                        {start:0, middle:0.5, end:1}[that.attr('text-anchor') || 'start'],
+                        {start: 0, middle: 0.5, end: 1}[that.attr('text-anchor') || 'start'],
                     // font baseline is about 1/4 fontSize below centerline
                     textHeight = parseInt(that.style('font-size'), 10) ||
                         getSize(that, 'height'),
