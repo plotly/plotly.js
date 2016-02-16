@@ -364,15 +364,24 @@ Plotly.plot = function(gd, data, layout, config) {
         // source links
         Plots.addLinks(gd);
 
+        // Mark the first render as complete
+        gd._replotting = false;
+
         return Plots.previousPromises(gd);
+    }
+
+    function finalDraw(){
+        Shapes.drawAll(gd);
+        Plotly.Annotations.drawAll(gd);
+        Legend.draw(gd);
     }
 
     function cleanUp() {
         // now we're REALLY TRULY done plotting...
         // so mark it as done and let other procedures call a replot
-        gd._replotting = false;
         Lib.markTime('done plot');
         gd.emit('plotly_afterplot');
+
     }
 
     var donePlotting = Lib.syncOrAsync([
@@ -382,7 +391,8 @@ Plotly.plot = function(gd, data, layout, config) {
         marginPushersAgain,
         positionAndAutorange,
         drawAxes,
-        drawData
+        drawData,
+        finalDraw
     ], gd, cleanUp);
 
     // even if everything we did was synchronous, return a promise
