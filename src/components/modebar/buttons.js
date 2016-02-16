@@ -267,7 +267,7 @@ function handleCartesian(gd, ev) {
 modeBarButtons.zoom3d = {
     name: 'zoom3d',
     title: 'Zoom',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'zoom',
     icon: Icons.zoombox,
     click: handleDrag3d
@@ -276,7 +276,7 @@ modeBarButtons.zoom3d = {
 modeBarButtons.pan3d = {
     name: 'pan3d',
     title: 'Pan',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'pan',
     icon: Icons.pan,
     click: handleDrag3d
@@ -285,7 +285,7 @@ modeBarButtons.pan3d = {
 modeBarButtons.orbitRotation = {
     name: 'orbitRotation',
     title: 'orbital rotation',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'orbit',
     icon: Icons['3d_rotate'],
     click: handleDrag3d
@@ -294,7 +294,7 @@ modeBarButtons.orbitRotation = {
 modeBarButtons.tableRotation = {
     name: 'tableRotation',
     title: 'turntable rotation',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'turntable',
     icon: Icons['z-axis'],
     click: handleDrag3d
@@ -304,14 +304,16 @@ function handleDrag3d(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
+        fullLayout = gd._fullLayout,
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
         layoutUpdate = {};
 
-    layoutUpdate[attr] = val;
+    var parts = attr.split('.');
 
-    /*
-     * Dragmode will go through the relayout -> doplot -> scene.plot()
-     * routine where the dragmode will be set in scene.plot()
-     */
+    for(var i = 0; i < sceneIds.length; i++) {
+        layoutUpdate[sceneIds[i] + '.' + parts[1]] = val;
+    }
+
     Plotly.relayout(gd, layoutUpdate);
 }
 
