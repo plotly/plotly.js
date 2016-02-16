@@ -395,7 +395,7 @@ describe('Test plot api', function() {
                 ]
             };
 
-            if (!Plotly.Queue) {
+            if(!Plotly.Queue) {
                 Plotly.Queue = {
                     add: function() {},
                     startSequence: function() {},

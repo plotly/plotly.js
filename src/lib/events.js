@@ -21,7 +21,7 @@ var Events = {
          * If we have already instantiated an emitter for this plot
          * return early.
          */
-        if (plotObj._ev instanceof EventEmitter) return plotObj;
+        if(plotObj._ev instanceof EventEmitter) return plotObj;
 
         var ev = new EventEmitter();
 
@@ -53,7 +53,7 @@ var Events = {
          * events.
          */
         plotObj.emit = function(event, data) {
-            if (typeof $ !== 'undefined') {
+            if(typeof $ !== 'undefined') {
                 $(plotObj).trigger(event, data);
             }
 
@@ -76,7 +76,7 @@ var Events = {
          * If Jquery exists run all its handlers for this event and
          * collect the return value of the LAST handler function
          */
-        if (typeof $ !== 'undefined') {
+        if(typeof $ !== 'undefined') {
             jQueryHandlerValue = $(plotObj).triggerHandler(event, data);
         }
 
@@ -84,21 +84,21 @@ var Events = {
          * Now run all the node style event handlers
          */
         var ev = plotObj._ev;
-        if (!ev) return jQueryHandlerValue;
+        if(!ev) return jQueryHandlerValue;
 
         var handlers = ev._events[event];
-        if (!handlers) return jQueryHandlerValue;
+        if(!handlers) return jQueryHandlerValue;
 
         /*
          * handlers can be function or an array of functions
          */
-        if (typeof handlers === 'function') handlers = [handlers];
+        if(typeof handlers === 'function') handlers = [handlers];
         var lastHandler = handlers.pop();
 
         /*
          * Call all the handlers except the last one.
          */
-        for (var i = 0; i < handlers.length; i++) {
+        for(var i = 0; i < handlers.length; i++) {
             handlers[i](data);
         }
 

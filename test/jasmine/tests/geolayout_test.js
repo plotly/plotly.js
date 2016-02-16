@@ -113,7 +113,7 @@ describe('Test Geo layout defaults', function() {
 
             projTypes.forEach(function(projType) {
                 testOne(projType);
-                if (projType.indexOf('conic') !== -1) {
+                if(projType.indexOf('conic') !== -1) {
                     expect(layoutOut.geo.projection.parallels).toBeDefined();
                 }
                 else {

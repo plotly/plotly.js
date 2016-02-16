@@ -175,7 +175,7 @@ shapes.draw = function(gd, index, opt, value) {
                     Plotly.Lib.extendFlat({}, value) :
                     {text: 'New text'};
 
-            if (layout.shapes) {
+            if(layout.shapes) {
                 layout.shapes.splice(index, 0, rule);
             } else {
                 layout.shapes = [rule];

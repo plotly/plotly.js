@@ -149,9 +149,9 @@ lib.randstr = function randstr(existing, bits, base) {
      * Include number of bits, the base of the string you want
      * and an optional array of existing strings to avoid.
      */
-    if (!base) base = 16;
-    if (bits === undefined) bits = 24;
-    if (bits <= 0) return '0';
+    if(!base) base = 16;
+    if(bits === undefined) bits = 24;
+    if(bits <= 0) return '0';
 
     var digits = Math.log(Math.pow(2, bits)) / Math.log(base),
         res = '',
@@ -159,25 +159,25 @@ lib.randstr = function randstr(existing, bits, base) {
         b,
         x;
 
-    for (i = 2; digits === Infinity; i *= 2) {
+    for(i = 2; digits === Infinity; i *= 2) {
         digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
     }
 
     var rem = digits - Math.floor(digits);
 
-    for (i = 0; i < Math.floor(digits); i++) {
+    for(i = 0; i < Math.floor(digits); i++) {
         x = Math.floor(Math.random() * base).toString(base);
         res = x + res;
     }
 
-    if (rem) {
+    if(rem) {
         b = Math.pow(base, rem);
         x = Math.floor(Math.random() * b).toString(base);
         res = x + res;
     }
 
     var parsed = parseInt(res, base);
-    if ((existing && (existing.indexOf(res) > -1)) ||
+    if((existing && (existing.indexOf(res) > -1)) ||
          (parsed !== Infinity && parsed >= Math.pow(2, bits))) {
         return randstr(existing, bits, base);
     }
@@ -194,8 +194,8 @@ lib.OptionControl = function(opt, optname) {
      *
      * See FitOpts for example of usage
      */
-    if (!opt) opt = {};
-    if (!optname) optname = 'opt';
+    if(!opt) opt = {};
+    if(!optname) optname = 'opt';
 
     var self = {};
     self.optionList = [];
@@ -305,7 +305,7 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
  * http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
  */
 lib.stripTrailingSlash = function(str) {
-    if (str.substr(-1) === '/') return str.substr(0, str.length - 1);
+    if(str.substr(-1) === '/') return str.substr(0, str.length - 1);
     return str;
 };
 

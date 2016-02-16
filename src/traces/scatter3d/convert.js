@@ -180,7 +180,7 @@ function convertPlotlyOptions(scene, data) {
         text;
 
     //Convert points
-    for (i = 0; i < len; i++) {
+    for(i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
         xc = xaxis.d2l(x[i]) * scaleFactor[0];
         yc = yaxis.d2l(y[i]) * scaleFactor[1];
@@ -203,13 +203,13 @@ function convertPlotlyOptions(scene, data) {
         text: text
     };
 
-    if ('line' in data) {
+    if('line' in data) {
         params.lineColor = str2RgbaArray(line.color);
         params.lineWidth = line.width;
         params.lineDashes = line.dash;
     }
 
-    if ('marker' in data) {
+    if('marker' in data) {
         var sizeFn = makeBubbleSizeFn(data);
 
         params.scatterColor = formatColor(marker, 1, len);
@@ -220,7 +220,7 @@ function convertPlotlyOptions(scene, data) {
         params.scatterAngle = 0;
     }
 
-    if ('textposition' in data) {
+    if('textposition' in data) {
         params.textOffset = calculateTextOffset(data.textposition);  // arrayOk === false
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
@@ -232,9 +232,9 @@ function convertPlotlyOptions(scene, data) {
     params.project = [false, false, false];
     params.projectScale = [1,1,1];
     params.projectOpacity = [1,1,1];
-    for (i = 0; i < 3; ++i) {
+    for(i = 0; i < 3; ++i) {
         var projection = data.projection[dims[i]];
-        if ((params.project[i] = projection.show)) {
+        if((params.project[i] = projection.show)) {
             params.projectOpacity[i] = projection.opacity;
             params.projectScale[i] = projection.scale;
         }
@@ -306,13 +306,13 @@ proto.update = function(data) {
         opacity: data.opacity
     };
 
-    if (this.mode.indexOf('lines') !== -1) {
-        if (this.linePlot) this.linePlot.update(lineOptions);
+    if(this.mode.indexOf('lines') !== -1) {
+        if(this.linePlot) this.linePlot.update(lineOptions);
         else {
             this.linePlot = createLinePlot(lineOptions);
             this.scene.glplot.add(this.linePlot);
         }
-    } else if (this.linePlot) {
+    } else if(this.linePlot) {
         this.scene.glplot.remove(this.linePlot);
         this.linePlot.dispose();
         this.linePlot = null;
@@ -338,7 +338,7 @@ proto.update = function(data) {
     };
 
     if(this.mode.indexOf('markers') !== -1) {
-        if (this.scatterPlot) this.scatterPlot.update(scatterOptions);
+        if(this.scatterPlot) this.scatterPlot.update(scatterOptions);
         else {
             this.scatterPlot = createScatterPlot(scatterOptions);
             this.scatterPlot.highlightScale = 1;
@@ -368,13 +368,13 @@ proto.update = function(data) {
     this.textLabels = options.text;
 
     if(this.mode.indexOf('text') !== -1) {
-        if (this.textMarkers) this.textMarkers.update(textOptions);
+        if(this.textMarkers) this.textMarkers.update(textOptions);
         else {
             this.textMarkers = createScatterPlot(textOptions);
             this.textMarkers.highlightScale = 1;
             this.scene.glplot.add(this.textMarkers);
         }
-    } else if (this.textMarkers) {
+    } else if(this.textMarkers) {
         this.scene.glplot.remove(this.textMarkers);
         this.textMarkers.dispose();
         this.textMarkers = null;

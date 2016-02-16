@@ -23,7 +23,7 @@ var noop = function() {};
  */
 module.exports = function showWebGlMsg(scene) {
     for(var prop in scene) {
-        if (typeof scene[prop] === 'function') scene[prop] = noop;
+        if(typeof scene[prop] === 'function') scene[prop] = noop;
     }
 
     scene.destroy = function() {

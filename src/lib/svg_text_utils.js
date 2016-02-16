@@ -35,7 +35,7 @@ d3.selection.prototype.appendSVG = function(_svgString) {
         this.node().appendChild(this.node().ownerDocument.importNode(childNode, true));
         childNode = childNode.nextSibling;
     }
-    if (dom.querySelector('parsererror')){
+    if(dom.querySelector('parsererror')){
         console.log(dom.querySelector('parsererror div').textContent);
         return null;
     }
@@ -297,13 +297,13 @@ function convertToSVG(_str){
                     return tspanStart + (style ? ' style="' + style + '"' : '') + '>';
                 }
             }
-            else{
+            else {
                 return Plotly.util.xml_entity_encode(d).replace(/</g, '&lt;');
             }
         });
 
     var indices = [];
-    for (var index = result.indexOf('<br>'); index > 0; index = result.indexOf('<br>', index+1)){
+    for(var index = result.indexOf('<br>'); index > 0; index = result.indexOf('<br>', index+1)){
         indices.push(index);
     }
     var count = 0;
@@ -463,7 +463,7 @@ util.makeEditable = function(context, _delegate, options){
                         .transition().remove();
                     dispatch.cancel.call(that, this.textContent);
                 }
-                else{
+                else {
                     dispatch.input.call(that, this.textContent);
                     d3.select(this).call(alignHTMLWith(that, container, options));
                 }

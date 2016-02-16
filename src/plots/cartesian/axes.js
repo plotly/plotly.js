@@ -650,7 +650,7 @@ axes.autoTicks = function(ax, roughDTick){
         ax.tick0 = 0;
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
-    else{
+    else {
         // auto ticks always start at 0
         ax.tick0 = 0;
         base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
@@ -858,8 +858,8 @@ axes.tickText = function(ax, x, hover){
     function isHidden(showAttr) {
         var first_or_last;
 
-        if (showAttr===undefined) return true;
-        if (hover) return showAttr==='none';
+        if(showAttr === undefined) return true;
+        if(hover) return showAttr==='none';
 
         first_or_last = {
             first: ax._tmin,
@@ -877,8 +877,8 @@ axes.tickText = function(ax, x, hover){
     else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
-    if (ax.tickprefix && !isHidden(ax.showtickprefix)) out.text = ax.tickprefix + out.text;
-    if (ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
+    if(ax.tickprefix && !isHidden(ax.showtickprefix)) out.text = ax.tickprefix + out.text;
+    if(ax.ticksuffix && !isHidden(ax.showticksuffix)) out.text += ax.ticksuffix;
 
     return out;
 };
@@ -1135,7 +1135,7 @@ function numSeparate(nStr, separators) {
     // even if there is a thousands separator, don't use it on
     // 4-digit integers (like years)
     if(thou && (x.length > 1 || x1.length>4)) {
-        while (findThousands.test(x1)) {
+        while(findThousands.test(x1)) {
             x1 = x1.replace(findThousands, '$1' + thou + '$2');
         }
     }

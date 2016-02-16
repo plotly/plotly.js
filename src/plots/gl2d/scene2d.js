@@ -201,7 +201,7 @@ proto.toImage = function(format) {
 
     var dataURL;
 
-    switch (format) {
+    switch(format) {
         case 'jpeg':
             dataURL = canvas.toDataURL('image/jpeg');
             break;

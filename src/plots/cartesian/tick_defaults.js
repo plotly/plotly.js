@@ -78,7 +78,8 @@ function getShowAttrDflt(containerIn) {
         sameVal = function(a){
             return containerIn[a]===containerIn[showAttrs[0]];
         };
-    if (showAttrs.every(sameVal) || showAttrs.length===1) {
+
+    if(showAttrs.every(sameVal) || showAttrs.length===1) {
         return containerIn[showAttrs[0]];
     }
 }

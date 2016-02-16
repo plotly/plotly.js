@@ -69,7 +69,7 @@ module.exports = function setConvert(ax) {
             i;
 
         // TODO cleaner way to handle this case
-        if (!ax._categories) ax._categories = [];
+        if(!ax._categories) ax._categories = [];
 
         // make sure we have a domain (pull it in from the axis
         // this one is overlaying if necessary)
@@ -112,7 +112,7 @@ module.exports = function setConvert(ax) {
             ax._b = -ax._m*ax.range[0];
         }
 
-        if (!isFinite(ax._m) || !isFinite(ax._b)) {
+        if(!isFinite(ax._m) || !isFinite(ax._b)) {
             Lib.notifier(
                 'Something went wrong with axis scaling',
                 'long');
@@ -140,7 +140,7 @@ module.exports = function setConvert(ax) {
             return isNumeric(v) ? Number(v) : constants.BADNUM;
         };
         ax.d2l = function(v, clip) {
-            if (ax.type === 'log') return ax.c2l(ax.d2c(v), clip);
+            if(ax.type === 'log') return ax.c2l(ax.d2c(v), clip);
             else return ax.d2c(v);
         };
     }

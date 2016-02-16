@@ -186,7 +186,7 @@ annotations.draw = function(gd, index, opt, value) {
                     Plotly.Lib.extendFlat({}, value) :
                     {text: 'New text'};
 
-            if (layout.annotations) {
+            if(layout.annotations) {
                 layout.annotations.splice(index, 0, rule);
             } else {
                 layout.annotations = [rule];

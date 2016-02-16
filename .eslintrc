@@ -20,6 +20,13 @@
     "semi": [2],
     "semi-spacing": [2, {"before": false, "after": true}],
     "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
+    "keyword-spacing": [2, {"overrides": {
+      "if": {"after": false},
+      "for": {"after": false},
+      "while": {"after": false},
+      "switch": {"after": false},
+      "catch": {"after": false}
+    }}],
     "no-spaced-func": [2],
     "space-in-parens": [2, "never"],
     "space-before-function-paren": [2, "never"],

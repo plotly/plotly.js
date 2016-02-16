@@ -28,7 +28,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     // adjust inbox w.r.t. to calculate box size
     boxDelta = (hovermode==='closest') ? 2.5*t.bdPos : t.bdPos;
 
-    if (trace.orientation==='h') {
+    if(trace.orientation === 'h') {
         dx = function(di){
             return Fx.inbox(di.min - xval, di.max - xval);
         };
@@ -84,7 +84,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     if(trace.boxmean) attrs.push('mean');
     if(trace.boxpoints) [].push.apply(attrs,['lf', 'uf']);
 
-    for (var i=0; i<attrs.length; i++) {
+    for(var i = 0; i < attrs.length; i++) {
         attr = attrs[i];
 
         if(!(attr in di) || (di[attr] in usedVals)) continue;
