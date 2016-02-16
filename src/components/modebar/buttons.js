@@ -359,50 +359,58 @@ modeBarButtons.hoverClosest3d = {
     toggle: true,
     icon: Icons.tooltip_basic,
     gravity: 'ne',
-    click: function(gd, ev) {
-        var button = ev.currentTarget,
-            val = JSON.parse(button.getAttribute('data-val')) || false,
-            fullLayout = gd._fullLayout,
-            sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
+    click: handleHover3d
+};
 
-        var axes = ['xaxis', 'yaxis', 'zaxis'],
-            spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
+function handleHover3d(gd, ev) {
+    var button = ev.currentTarget,
+        val = JSON.parse(button.getAttribute('data-val')) || false,
+        layout = gd.layout,
+        fullLayout = gd._fullLayout,
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
-        // initialize 'current spike' object to be stored in the DOM
-        var currentSpikes = {},
-            axisSpikes = {},
-            layoutUpdate = {};
+    var axes = ['xaxis', 'yaxis', 'zaxis'],
+        spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
 
-        if(val) {
-            layoutUpdate = val;
-            button.setAttribute('data-val', JSON.stringify(null));
-        }
-        else {
-            layoutUpdate = {'allaxes.showspikes': false};
+    // initialize 'current spike' object to be stored in the DOM
+    var currentSpikes = {},
+        axisSpikes = {},
+        layoutUpdate = {};
 
-            for(var i = 0; i < sceneIds.length; i++) {
-                var sceneId = sceneIds[i],
-                    sceneLayout = fullLayout[sceneId],
-                    sceneSpikes = currentSpikes[sceneId] = {};
+    if(val) {
+        layoutUpdate = Lib.extendDeep(layout, val);
+        button.setAttribute('data-val', JSON.stringify(null));
+    }
+    else {
+        layoutUpdate = {
+            'allaxes.showspikes': false
+        };
 
-                // copy all the current spike attrs
-                for(var j = 0; j < 3; j++) {
-                    var axis = axes[j];
-                    axisSpikes = sceneSpikes[axis] = {};
+        for(var i = 0; i < sceneIds.length; i++) {
+            var sceneId = sceneIds[i],
+                sceneLayout = fullLayout[sceneId],
+                sceneSpikes = currentSpikes[sceneId] = {};
 
-                    for(var k = 0; k < spikeAttrs.length; k++) {
-                        var spikeAttr = spikeAttrs[k];
-                        axisSpikes[spikeAttr] = sceneLayout[axis][spikeAttr];
-                    }
+            sceneSpikes.hovermode = sceneLayout.hovermode;
+            layoutUpdate[sceneId + '.hovermode'] = false;
+
+            // copy all the current spike attrs
+            for(var j = 0; j < 3; j++) {
+                var axis = axes[j];
+                axisSpikes = sceneSpikes[axis] = {};
+
+                for(var k = 0; k < spikeAttrs.length; k++) {
+                    var spikeAttr = spikeAttrs[k];
+                    axisSpikes[spikeAttr] = sceneLayout[axis][spikeAttr];
                 }
             }
-
-            button.setAttribute('data-val', JSON.stringify(currentSpikes));
         }
 
-        Plotly.relayout(gd, layoutUpdate);
+        button.setAttribute('data-val', JSON.stringify(currentSpikes));
     }
-};
+
+    Plotly.relayout(gd, layoutUpdate);
+}
 
 modeBarButtons.zoomInGeo = {
     name: 'zoomInGeo',
