@@ -131,7 +131,8 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
     try {
         scene.glplot = createPlot(glplotOptions);
-    } catch (e) {
+    }
+    catch (e) {
         /*
         * createPlot will throw when webgl is not enabled in the client.
         * Lets return an instance of the module with all functions noop'd.

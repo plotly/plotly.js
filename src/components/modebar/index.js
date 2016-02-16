@@ -11,7 +11,6 @@
 
 var d3 = require('d3');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Icons = require('../../../build/ploticon');
 

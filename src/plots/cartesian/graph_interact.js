@@ -14,6 +14,7 @@ var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
+var Lib = require('../../lib');
 var Events = require('../../lib/events');
 
 var prepSelect = require('./select');
@@ -43,20 +44,17 @@ fx.layoutAttributes = {
 };
 
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
-    var isHoriz, hovermodeDflt;
-
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(layoutIn, layoutOut,
-                                 fx.layoutAttributes,
-                                 attr, dflt);
+        return Lib.coerce(layoutIn, layoutOut, fx.layoutAttributes, attr, dflt);
     }
 
     coerce('dragmode');
 
+    var hovermodeDflt;
     if(layoutOut._hasCartesian) {
         // flag for 'horizontal' plots:
         // determines the state of the mode bar 'compare' hovermode button
-        isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
+        var isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
         hovermodeDflt = isHoriz ? 'y' : 'x';
     }
     else hovermodeDflt = 'closest';
@@ -66,14 +64,16 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
 fx.isHoriz = function(fullData) {
     var isHoriz = true;
-    var i, trace;
-    for (i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
-        if (trace.orientation !== 'h') {
+
+    for(var i = 0; i < fullData.length; i++) {
+        var trace = fullData[i];
+
+        if(trace.orientation !== 'h') {
             isHoriz = false;
             break;
         }
     }
+
     return isHoriz;
 };
 

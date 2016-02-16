@@ -41,7 +41,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         var isValid = layoutAttributes[attr].values.indexOf(layoutIn[attr]) !== -1;
 
-        var dflt;
         if(isOnlyGL3D && isValid) return layoutIn[attr];
     }
 
