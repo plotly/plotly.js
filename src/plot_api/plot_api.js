@@ -2275,7 +2275,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
              * hovermode and dragmode don't need any redrawing, since they just
              * affect reaction to user input. everything else, assume full replot.
              * height, width, autosize get dealt with below. Except for the case of
-             * of subplots - scenes - which require scene.handleDragmode to be called.
+             * of subplots - scenes - which require scene.updateFx to be called.
              */
             else if(['hovermode', 'dragmode'].indexOf(ai) !== -1) domodebar = true;
             else if(['hovermode','dragmode','height',
@@ -2343,7 +2343,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout[subplotIds[i]]._scene;
-                scene.handleDragmode(fullLayout.dragmode);
+                scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
             }
 
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');

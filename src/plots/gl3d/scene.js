@@ -300,7 +300,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.spikeOptions.merge(fullSceneLayout);
 
     // Update camera mode
-    this.handleDragmode(fullLayout.dragmode);
+    this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
 
     //Update scene
     this.glplot.update({});
@@ -586,16 +586,16 @@ proto.saveCamera = function saveCamera(layout) {
     return hasChanged;
 };
 
-proto.handleDragmode = function(dragmode) {
-
+proto.updateFx = function(dragmode, hovermode) {
     var camera = this.camera;
-    if (camera) {
+
+    if(camera) {
         // rotate and orbital are synonymous
-        if (dragmode === 'orbit') {
+        if(dragmode === 'orbit') {
             camera.mode = 'orbit';
             camera.keyBindingMode = 'rotate';
 
-        } else if (dragmode === 'turntable') {
+        } else if(dragmode === 'turntable') {
             camera.up = [0, 0, 1];
             camera.mode = 'turntable';
             camera.keyBindingMode = 'rotate';
@@ -606,6 +606,9 @@ proto.handleDragmode = function(dragmode) {
             camera.keyBindingMode = dragmode;
         }
     }
+
+    // to put dragmode and hovermode on the same grounds from relayout
+    this.fullSceneLayout.hovermode = hovermode;
 };
 
 proto.toImage = function(format) {
