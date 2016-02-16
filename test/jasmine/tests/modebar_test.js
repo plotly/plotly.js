@@ -564,7 +564,7 @@ describe('ModeBar', function() {
         afterEach(destroyGraphDiv);
 
         function assertRange(actual, expected) {
-            var PRECISION = 4;
+            var PRECISION = 2;
             expect(actual[0]).toBeCloseTo(expected[0], PRECISION);
             expect(actual[1]).toBeCloseTo(expected[1], PRECISION);
         }
