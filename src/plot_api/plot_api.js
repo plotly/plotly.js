@@ -2336,9 +2336,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) {
+            var subplotIds;
             manageModeBar(gd);
 
-            var subplotIds;
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout[subplotIds[i]]._scene;
@@ -2349,6 +2349,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout._plots[subplotIds[i]]._scene2d;
                 scene.updateFx(fullLayout);
+            }
+
+            subplotIds = Plots.getSubplotIds(fullLayout, 'geo');
+            for(i = 0; i < subplotIds.length; i++) {
+                var geo = fullLayout[subplotIds[i]]._geo;
+                geo.updateFx(fullLayout.hovermode);
             }
         }
     }

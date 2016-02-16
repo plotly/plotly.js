@@ -447,7 +447,7 @@ modeBarButtons.hoverClosestGeo = {
     toggle: true,
     icon: Icons.tooltip_basic,
     gravity: 'ne',
-    click: handleGeo
+    click: toggleHover
 };
 
 function handleGeo(gd, ev) {
@@ -468,7 +468,6 @@ function handleGeo(gd, ev) {
             geo.render();
         }
         else if(attr === 'reset') geo.zoomReset();
-        else if(attr === 'hovermode') geo.showHover = !geo.showHover;
     }
 }
 
