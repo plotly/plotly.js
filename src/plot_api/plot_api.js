@@ -598,29 +598,28 @@ function cleanLayout(layout) {
      * Clean up Scene layouts
      */
     var sceneIds = Plots.getSubplotIds(layout, 'gl3d');
-    var scene, cameraposition, rotation,
-        radius, center, mat, eye;
-    for (i = 0; i < sceneIds.length; i++) {
-        scene = layout[sceneIds[i]];
+    for(i = 0; i < sceneIds.length; i++) {
+        var scene = layout[sceneIds[i]];
 
-        /*
-         * Clean old Camera coords
-         */
-        cameraposition = scene.cameraposition;
-        if (Array.isArray(cameraposition) && cameraposition[0].length === 4) {
-            rotation = cameraposition[0];
-            center = cameraposition[1];
-            radius = cameraposition[2];
-            mat = m4FromQuat([], rotation);
-            eye = [];
-            for (j = 0; j < 3; ++j) {
+        // clean old Camera coords
+        var cameraposition = scene.cameraposition;
+        if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
+            var rotation = cameraposition[0],
+                center = cameraposition[1],
+                radius = cameraposition[2],
+                mat = m4FromQuat([], rotation),
+                eye = [];
+
+            for(j = 0; j < 3; ++j) {
                 eye[j] = center[i] + radius * mat[2 + 4 * j];
             }
+
             scene.camera = {
                 eye: {x: eye[0], y: eye[1], z: eye[2]},
                 center: {x: center[0], y: center[1], z: center[2]},
                 up: {x: mat[1], y: mat[5], z: mat[9]}
             };
+
             delete scene.cameraposition;
         }
     }
@@ -2275,7 +2274,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
              * hovermode and dragmode don't need any redrawing, since they just
              * affect reaction to user input. everything else, assume full replot.
              * height, width, autosize get dealt with below. Except for the case of
-             * of subplots - scenes - which require scene.handleDragmode to be called.
+             * of subplots - scenes - which require scene.updateFx to be called.
              */
             else if(['hovermode', 'dragmode'].indexOf(ai) !== -1) domodebar = true;
             else if(['hovermode','dragmode','height',
@@ -2337,19 +2336,25 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) {
+            var subplotIds;
             manageModeBar(gd);
 
-            var subplotIds;
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout[subplotIds[i]]._scene;
-                scene.handleDragmode(fullLayout.dragmode);
+                scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
             }
 
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout._plots[subplotIds[i]]._scene2d;
                 scene.updateFx(fullLayout);
+            }
+
+            subplotIds = Plots.getSubplotIds(fullLayout, 'geo');
+            for(i = 0; i < subplotIds.length; i++) {
+                var geo = fullLayout[subplotIds[i]]._geo;
+                geo.updateFx(fullLayout.hovermode);
             }
         }
     }

@@ -139,6 +139,25 @@ module.exports = {
     yaxis: gl3dAxisAttrs,
     zaxis: gl3dAxisAttrs,
 
+    dragmode: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['orbit', 'turntable', 'zoom', 'pan'],
+        dflt: 'turntable',
+        description: [
+            'Determines the mode of drag interactions for this scene.'
+        ].join(' ')
+    },
+    hovermode: {
+        valType: 'enumerated',
+        role: 'info',
+        values: ['closest', false],
+        dflt: 'closest',
+        description: [
+            'Determines the mode of hover interactions for this scene.'
+        ].join(' ')
+    },
+
     _deprecated: {
         cameraposition: {
             valType: 'info_array',

@@ -71,10 +71,15 @@ module.exports = function manageModeBar(gd) {
 // logic behind which buttons are displayed by default
 function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
-        groups = [],
-        i,
-        trace;
+        fullData = gd._fullData;
+
+    var hasCartesian = fullLayout._hasCartesian,
+        hasGL3D = fullLayout._hasGL3D,
+        hasGeo = fullLayout._hasGeo,
+        hasPie = fullLayout._hasPie,
+        hasGL2D = fullLayout._hasGL2D;
+
+    var groups = [];
 
     function addGroup(newGroup) {
         var out = [];
@@ -91,49 +96,33 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     // buttons common to all plot types
     addGroup(['toImage', 'sendDataToCloud']);
 
-    if(fullLayout._hasGL3D) {
+    // graphs with more than one plot types get 'union buttons'
+    // which reset the view or toggle hover labels across all subplots.
+    if((hasCartesian || hasGL2D || hasPie) + hasGeo + hasGL3D > 1) {
+        addGroup(['resetViews', 'toggleHover']);
+        return appendButtonsToGroups(groups, buttonsToAdd);
+    }
+
+    if(hasGL3D) {
         addGroup(['zoom3d', 'pan3d', 'orbitRotation', 'tableRotation']);
         addGroup(['resetCameraDefault3d', 'resetCameraLastSave3d']);
         addGroup(['hoverClosest3d']);
     }
 
-    if(fullLayout._hasGeo) {
+    if(hasGeo) {
         addGroup(['zoomInGeo', 'zoomOutGeo', 'resetGeo']);
         addGroup(['hoverClosestGeo']);
     }
 
-    var hasCartesian = fullLayout._hasCartesian,
-        hasGL2D = fullLayout._hasGL2D,
-        allAxesFixed = areAllAxesFixed(fullLayout),
+    var allAxesFixed = areAllAxesFixed(fullLayout),
         dragModeGroup = [];
 
     if((hasCartesian || hasGL2D) && !allAxesFixed) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     }
-    if(hasCartesian) {
-        // look for traces that support selection
-        // to be updated as we add more selectPoints handlers
-        var selectable = false;
-        for(i = 0; i < fullData.length; i++) {
-            if(selectable) break;
-            trace = fullData[i];
-            if(!trace._module || !trace._module.selectPoints) continue;
-
-            if(trace.type === 'scatter') {
-                if(scatterSubTypes.hasMarkers(trace) || scatterSubTypes.hasText(trace)) {
-                    selectable = true;
-                }
-            }
-            // assume that in general if the trace module has selectPoints,
-            // then it's selectable. Scatter is an exception to this because it must
-            // have markers or text, not just be a scatter type.
-            else selectable = true;
-        }
-
-        if(selectable) {
-            dragModeGroup.push('select2d');
-            dragModeGroup.push('lasso2d');
-        }
+    if(hasCartesian && isSelectable(fullData)) {
+        dragModeGroup.push('select2d');
+        dragModeGroup.push('lasso2d');
     }
     if(dragModeGroup.length) addGroup(dragModeGroup);
 
@@ -141,27 +130,20 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
         addGroup(['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']);
     }
 
-    if(hasCartesian) {
-        addGroup(['hoverClosestCartesian', 'hoverCompareCartesian']);
+    if(hasCartesian && hasPie) {
+        addGroup(['toggleHover']);
     }
-    if(hasGL2D) {
+    else if(hasGL2D) {
         addGroup(['hoverClosestGl2d']);
     }
-    if(fullLayout._hasPie) {
+    else if(hasCartesian) {
+        addGroup(['hoverClosestCartesian', 'hoverCompareCartesian']);
+    }
+    else if(hasPie) {
         addGroup(['hoverClosestPie']);
     }
 
-    // append buttonsToAdd to the groups
-    if(buttonsToAdd.length) {
-        if(Array.isArray(buttonsToAdd[0])) {
-            for(i = 0; i < buttonsToAdd.length; i++) {
-                groups.push(buttonsToAdd[i]);
-            }
-        }
-        else groups.push(buttonsToAdd);
-    }
-
-    return groups;
+    return appendButtonsToGroups(groups, buttonsToAdd);
 }
 
 function areAllAxesFixed(fullLayout) {
@@ -176,6 +158,45 @@ function areAllAxesFixed(fullLayout) {
     }
 
     return allFixed;
+}
+
+// look for traces that support selection
+// to be updated as we add more selectPoints handlers
+function isSelectable(fullData) {
+    var selectable = false;
+
+    for(var i = 0; i < fullData.length; i++) {
+        if(selectable) break;
+
+        var trace = fullData[i];
+
+        if(!trace._module || !trace._module.selectPoints) continue;
+
+        if(trace.type === 'scatter') {
+            if(scatterSubTypes.hasMarkers(trace) || scatterSubTypes.hasText(trace)) {
+                selectable = true;
+            }
+        }
+        // assume that in general if the trace module has selectPoints,
+        // then it's selectable. Scatter is an exception to this because it must
+        // have markers or text, not just be a scatter type.
+        else selectable = true;
+    }
+
+    return selectable;
+}
+
+function appendButtonsToGroups(groups, buttons) {
+    if(buttons.length) {
+        if(Array.isArray(buttons[0])) {
+            for(var i = 0; i < buttons.length; i++) {
+                groups.push(buttons[i]);
+            }
+        }
+        else groups.push(buttons);
+    }
+
+    return groups;
 }
 
 // fill in custom buttons referring to default mode bar buttons
