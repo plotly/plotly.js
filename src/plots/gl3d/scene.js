@@ -81,8 +81,8 @@ function render(scene) {
 
         if(scene.fullSceneLayout.hovermode) {
             Fx.loneHover({
-                x: (0.5 + 0.5 * pdata[0]/pdata[3]) * width,
-                y: (0.5 - 0.5 * pdata[1]/pdata[3]) * height,
+                x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
+                y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
                 xLabel: formatter('xaxis', selection.traceCoordinate[0]),
                 yLabel: formatter('yaxis', selection.traceCoordinate[1]),
                 zLabel: formatter('zaxis', selection.traceCoordinate[2]),
