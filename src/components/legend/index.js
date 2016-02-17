@@ -460,7 +460,10 @@ legend.draw = function(td) {
         .attr('class','bg')
         .call(Color.stroke, opts.bordercolor)
         .call(Color.fill, opts.bgcolor)
-        .style('stroke-width', opts.borderwidth + 'px');
+        .style({
+            'stroke-width': opts.borderwidth + 'px',
+            'box-sizing': 'border-box'
+        });
 
     var scrollBox = legendsvg.selectAll('g.scrollbox')
         .data([0]);
