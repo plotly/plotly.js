@@ -364,7 +364,7 @@ modeBarButtons.hoverClosest3d = {
 
 function handleHover3d(gd, ev) {
     var button = ev.currentTarget,
-        val = JSON.parse(button.getAttribute('data-val')) || false,
+        val = button._previousVal || false,
         layout = gd.layout,
         fullLayout = gd._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
@@ -379,7 +379,7 @@ function handleHover3d(gd, ev) {
 
     if(val) {
         layoutUpdate = Lib.extendDeep(layout, val);
-        button.setAttribute('data-val', JSON.stringify(null));
+        button._previousVal = null;
     }
     else {
         layoutUpdate = {
@@ -406,7 +406,7 @@ function handleHover3d(gd, ev) {
             }
         }
 
-        button.setAttribute('data-val', JSON.stringify(currentSpikes));
+        button._previousVal = Lib.extendDeep({}, currentSpikes);
     }
 
     Plotly.relayout(gd, layoutUpdate);
