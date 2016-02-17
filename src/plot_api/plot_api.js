@@ -370,6 +370,9 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plots.previousPromises(gd);
     }
 
+    // An initial paint must be completed before these components can be
+    // correctly sized and the whole plot re-margined. gd._replotting must
+    // be set to false before these will work properly.
     function finalDraw(){
         Shapes.drawAll(gd);
         Plotly.Annotations.drawAll(gd);
