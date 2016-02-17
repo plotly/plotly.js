@@ -233,9 +233,11 @@ plots.redrawText = function(gd) {
 
 // resize plot about the container size
 plots.resize = function(gd) {
-    if (!gd || d3.select(gd).style('display') === 'none') return;
+    return new Promise(function(resolve, reject) {
 
-    return new Promise(function(resolve) {
+        if (!gd || d3.select(gd).style('display') === 'none'){
+            reject(new Error('Resize must be passed a plot div element.'));
+        }
 
         if (gd._redrawTimer) clearTimeout(gd._redrawTimer);
 
@@ -249,7 +251,7 @@ plots.resize = function(gd) {
 
                 Plotly.relayout(gd, { autosize: true });
                 gd.changed = oldchanged;
-                resolve();
+                resolve(gd);
             }
         }, 100);
     });
