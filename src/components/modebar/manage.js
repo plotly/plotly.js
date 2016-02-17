@@ -93,19 +93,6 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
         groups.push(out);
     }
 
-    function appendButtonsToAdd(groups) {
-        if(buttonsToAdd.length) {
-            if(Array.isArray(buttonsToAdd[0])) {
-                for(var i = 0; i < buttonsToAdd.length; i++) {
-                    groups.push(buttonsToAdd[i]);
-                }
-            }
-            else groups.push(buttonsToAdd);
-        }
-
-        return groups;
-    }
-
     // buttons common to all plot types
     addGroup(['toImage', 'sendDataToCloud']);
 
@@ -113,7 +100,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     // which reset the view or toggle hover labels across all subplots.
     if((hasCartesian || hasGL2D || hasPie) + hasGeo + hasGL3D > 1) {
         addGroup(['resetViews', 'toggleHover']);
-        return appendButtonsToAdd(groups);
+        return appendButtonsToGroups(groups, buttonsToAdd);
     }
 
     if(hasGL3D) {
@@ -156,7 +143,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
         addGroup(['hoverClosestPie']);
     }
 
-    return appendButtonsToAdd(groups);
+    return appendButtonsToGroups(groups, buttonsToAdd);
 }
 
 function areAllAxesFixed(fullLayout) {
@@ -197,6 +184,19 @@ function isSelectable(fullData) {
     }
 
     return selectable;
+}
+
+function appendButtonsToGroups(groups, buttons) {
+    if(buttons.length) {
+        if(Array.isArray(buttons[0])) {
+            for(var i = 0; i < buttons.length; i++) {
+                groups.push(buttons[i]);
+            }
+        }
+        else groups.push(buttons);
+    }
+
+    return groups;
 }
 
 // fill in custom buttons referring to default mode bar buttons
