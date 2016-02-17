@@ -42,16 +42,13 @@ describe('The legend', function() {
         });
 
         it('should constrain scrolling to the contents', function() {
-            var scrollBox = legend.getElementsByClassName('scrollbox')[0],
-                scrollHeight = scrollBox.getBoundingClientRect().height,
-                legendHeight = legend.getAttribute('height'),
-                maxHeight = legendHeight - scrollHeight - 12;
+            var scrollBox = legend.getElementsByClassName('scrollbox')[0];
 
             legend.dispatchEvent(scrollTo(-100));
             expect(scrollBox.getAttribute('transform')).toBe('translate(0, 0)');
 
-            legend.dispatchEvent(scrollTo(10000));
-            expect(scrollBox.getAttribute('transform')).toBe('translate(0, ' + maxHeight + ')');
+            legend.dispatchEvent(scrollTo(100000));
+            expect(scrollBox.getAttribute('transform')).toBe('translate(0, -179)');
         });
 
         it('should scale the scrollbar movement from top to bottom', function() {
