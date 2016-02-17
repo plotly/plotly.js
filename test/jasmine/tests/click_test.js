@@ -17,6 +17,9 @@ describe('click event', function() {
         clientY = 223,
         gd;
 
+    // cartesian click events events use the hover data
+    // from the mousemove events and then simulate
+    // a click event on mouseup
     function click() {
         mouseEvent('mousemove', clientX, clientY);
         mouseEvent('mousedown', clientX, clientY);

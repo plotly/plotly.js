@@ -25,6 +25,9 @@ describe('select box and lasso', function() {
         mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
     }
 
+    // cartesian click events events use the hover data
+    // from the mousemove events and then simulate
+    // a click event on mouseup
     function click(x, y) {
         mouseEvent('mousemove', x, y);
         mouseEvent('mousedown', x, y);
