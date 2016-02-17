@@ -63,7 +63,7 @@ describe('select box and lasso', function() {
                 .then(done);
         });
 
-        it('should trigger events', function(done) {
+        it('should trigger selecting/selected/deselect events', function(done) {
             var selectingCnt = 0,
                 selectingData;
             gd.on('plotly_selecting', function(data) {
@@ -85,7 +85,7 @@ describe('select box and lasso', function() {
 
             drag([[100, 200], [150, 200]]);
 
-            expect(selectingCnt).toEqual(1);
+            expect(selectingCnt).toEqual(1, 'with the correct selecting count');
             expect(selectingData.points).toEqual([{
                 curveNumber: 0,
                 pointNumber: 0,
@@ -96,13 +96,13 @@ describe('select box and lasso', function() {
                 pointNumber: 1,
                 x: 0.004,
                 y: 12.5
-            }]);
+            }], 'with the correct selecting points');
             assertRange(selectingData.range, {
                 x: [0.0019667582669138295, 0.004546754982054625],
                 y: [0.10209191961595454, 24.512223978291406]
-            });
+            }, 'with the correct selecting range');
 
-            expect(selectedCnt).toEqual(1);
+            expect(selectedCnt).toEqual(1, 'with the correct selected count');
             expect(selectedData.points).toEqual([{
                 curveNumber: 0,
                 pointNumber: 0,
@@ -113,14 +113,14 @@ describe('select box and lasso', function() {
                 pointNumber: 1,
                 x: 0.004,
                 y: 12.5
-            }]);
+            }], 'with the correct selected points');
             assertRange(selectedData.range, {
                 x: [0.0019667582669138295, 0.004546754982054625],
                 y: [0.10209191961595454, 24.512223978291406]
-            });
+            }, 'with the correct selected range');
 
             doubleClick(250, 200, function() {
-                expect(doubleClickData).toBe(null);
+                expect(doubleClickData).toBe(null, 'with the correct deselect data');
                 done();
             });
         });
@@ -139,7 +139,7 @@ describe('select box and lasso', function() {
                 .then(done);
         });
 
-        it('should trigger events', function(done) {
+        it('should trigger selecting/selected/deselect events', function(done) {
             var selectingCnt = 0,
                 selectingData;
             gd.on('plotly_selecting', function(data) {
@@ -161,24 +161,24 @@ describe('select box and lasso', function() {
 
             drag([[331, 178], [333, 246], [350, 250], [343, 176]]);
 
-            expect(selectingCnt).toEqual(3);
+            expect(selectingCnt).toEqual(3, 'with the correct selecting count');
             expect(selectingData.points).toEqual([{
                 curveNumber: 0,
                 pointNumber: 10,
                 x: 0.099,
                 y: 2.75
-            }]);
+            }], 'with the correct selecting points');
 
-            expect(selectedCnt).toEqual(1);
+            expect(selectedCnt).toEqual(1, 'with the correct selected count');
             expect(selectedData.points).toEqual([{
                 curveNumber: 0,
                 pointNumber: 10,
                 x: 0.099,
                 y: 2.75
-            }]);
+            }], 'with the correct selected points');
 
             doubleClick(250, 200, function() {
-                expect(doubleClickData).toBe(null);
+                expect(doubleClickData).toBe(null, 'with the correct deselect data');
                 done();
             });
         });
