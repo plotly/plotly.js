@@ -451,19 +451,21 @@ legend.draw = function(td) {
     var legendsvg = fullLayout._infolayer.selectAll('svg.legend')
         .data([0]);
     legendsvg.enter().append('svg')
-        .attr('class','legend')
-        .attr('pointer-events', 'all');
+        .attr({
+            'class': 'legend',
+            'pointer-events': 'all'
+        });
 
     var bg = legendsvg.selectAll('rect.bg')
         .data([0]);
     bg.enter().append('rect')
-        .attr('class','bg')
+        .attr({
+            'class': 'bg',
+            'shape-rendering': 'crispEdges'
+        })
         .call(Color.stroke, opts.bordercolor)
         .call(Color.fill, opts.bgcolor)
-        .style({
-            'stroke-width': opts.borderwidth + 'px',
-            'box-sizing': 'border-box'
-        });
+        .style('stroke-width', opts.borderwidth + 'px');
 
     var scrollBox = legendsvg.selectAll('g.scrollbox')
         .data([0]);
@@ -584,12 +586,20 @@ legend.draw = function(td) {
         scrollheight = Math.min(plotHeight - ly, opts.height),
         scrollPosition = scrollBox.attr('data-scroll') ? scrollBox.attr('data-scroll') : 0;
 
-    bg.attr({ width: opts.width, height: scrollheight });
     scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
+    bg.attr({
+        width: opts.width - 2 * opts.borderwidth,
+        height: scrollheight - 2 * opts.borderwidth,
+        x: opts.borderwidth,
+        y: opts.borderwidth
+    });
 
     legendsvg.call(Drawing.setRect, lx, ly, opts.width, scrollheight);
 
+    // If scrollbar should be shown.
     if(td.firstRender && opts.height - scrollheight > 0 && !td._context.staticPlot){
+
+        bg.attr({ width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth });
 
         legendsvg.node().addEventListener('wheel', function(e){
             e.preventDefault();
