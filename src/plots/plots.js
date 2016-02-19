@@ -140,8 +140,52 @@ plots.registerSubplot = function(_module) {
     subplotsRegistry[plotType] = _module;
 };
 
-// TODO separate the 'find subplot' step (which looks in layout)
-// from the 'get subplot ids' step (which looks in fullLayout._plots)
+/**
+ * Find subplot ids in data and layout. Meant to be used
+ * in the defaults step. Use plots.getSubplotIds to grab the current
+ * subplot ids later on in Plotly.plot.
+ *
+ * @param {array} data plotly data array
+ *      (intended to be _fullData, but does not have to be).
+ * @param {object} layout plotly layout object
+ *      (intended to be _fullLayout, but does not have to be).
+ * @param {string} type subplot type to look for.
+ *
+ * @return {array} list of subplot ids (strings).
+ *      N.B. these ids possibly un-ordered.
+ *
+ * TODO incorporate cartesian/gl2d axis finders in this paradigm.
+ */
+plots.findSubplotIds = function findSubplotIds(data, layout, type) {
+    var subplotIds = [];
+    var i;
+
+    if(plots.subplotsRegistry[type] === undefined) return subplotIds;
+
+    var attr = plots.subplotsRegistry[type].attr;
+
+    for(i = 0; i < data.length; i++) {
+        var trace = data[i];
+
+        if(plots.traceIs(trace, type) && subplotIds.indexOf(trace[attr]) === -1) {
+            subplotIds.push(trace[attr]);
+        }
+    }
+
+    var attrRegex = plots.subplotsRegistry[type].attrRegex,
+        layoutKeys = Object.keys(layout);
+
+    for(i = 0; i < layoutKeys.length; i++) {
+        var layoutKey = layoutKeys[i];
+
+        if(subplotIds.indexOf(layoutKey) === -1 && attrRegex.test(layoutKey)) {
+            subplotIds.push(layoutKey);
+        }
+    }
+
+    return subplotIds;
+};
+
 plots.getSubplotIds = function getSubplotIds(layout, type) {
     if(plots.subplotsRegistry[type] === undefined) return [];
 
@@ -165,19 +209,6 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
     return subplotIds;
 };
 
-plots.getSubplotIdsInData = function getSubplotsInData(data, type) {
-    if(plots.subplotsRegistry[type] === undefined) return [];
-
-    var attr = plots.subplotsRegistry[type].attr,
-        subplotIds = [],
-        trace;
-
-    for (var i = 0; i < data.length; i++) {
-        trace = data[i];
-        if(Plotly.Plots.traceIs(trace, type) && subplotIds.indexOf(trace[attr])===-1) {
-            subplotIds.push(trace[attr]);
-        }
-    }
 
     return subplotIds;
 };
