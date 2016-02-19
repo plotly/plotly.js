@@ -20,16 +20,30 @@ describe('Test plot structure', function() {
     afterEach(destroyGraphDiv);
 
     describe('cartesian plots', function() {
+
+        function countSubplots() {
+            return d3.selectAll('g.subplot').size();
+        }
+
+        function countScatterTraces() {
+            return d3.selectAll('g.trace.scatter').size();
+        }
+
+        function countColorBars() {
+            return d3.selectAll('rect.cbbg').size();
+        }
+
         describe('scatter traces', function() {
             var mock = require('@mocks/14.json');
+            var gd;
 
             beforeEach(function(done) {
-                Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+                gd = createGraphDiv();
+                Plotly.plot(gd, mock.data, mock.layout).then(done);
             });
 
             it('has one *subplot xy* node', function() {
-                var nodes = d3.selectAll('g.subplot.xy');
-                expect(nodes.size()).toEqual(1);
+                expect(countSubplots()).toEqual(1);
             });
 
             it('has one *scatterlayer* node', function() {
@@ -38,8 +52,7 @@ describe('Test plot structure', function() {
             });
 
             it('has as many *trace scatter* nodes as there are traces', function() {
-                var nodes = d3.selectAll('g.trace.scatter');
-                expect(nodes.size()).toEqual(mock.data.length);
+                expect(countScatterTraces()).toEqual(mock.data.length);
             });
 
             it('has as many *point* nodes as there are traces', function() {
@@ -61,50 +74,73 @@ describe('Test plot structure', function() {
                     assertNamespaces(node);
                 });
             });
+
+            it('should delete be able to get deleted', function(done) {
+                expect(countScatterTraces()).toEqual(mock.data.length);
+                expect(countSubplots()).toEqual(1);
+
+                Plotly.deleteTraces(gd, [0]).then(function() {
+                    expect(countScatterTraces()).toEqual(0);
+                    expect(countSubplots()).toEqual(1);
+                    done();
+                });
+            });
         });
 
         describe('contour/heatmap traces', function() {
             var mock = require('@mocks/connectgaps_2d.json');
+            var gd;
 
             function extendMock() {
-                var mockCopy = Lib.extendDeep(mock);
+                var mockData = Lib.extendDeep([], mock.data),
+                    mockLayout = Lib.extendDeep({}, mock.layout);
 
                 // add a colorbar for testing
-                mockCopy.data[0].showscale = true;
+                mockData[0].showscale = true;
 
-                return mockCopy;
+                return {
+                    data: mockData,
+                    layout: mockLayout
+                };
+            }
+
+            function assertHeatmapNodes(expectedCnt) {
+                var hmNodes = d3.selectAll('g.hm');
+                expect(hmNodes.size()).toEqual(expectedCnt);
+
+                var imageNodes = d3.selectAll('image');
+                expect(imageNodes.size()).toEqual(expectedCnt);
+            }
+
+            function assertContourNodes(expectedCnt) {
+                var nodes = d3.selectAll('g.contour');
+                expect(nodes.size()).toEqual(expectedCnt);
             }
 
             describe('initial structure', function() {
                 beforeEach(function(done) {
                     var mockCopy = extendMock();
+                    var gd = createGraphDiv();
 
-                    Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout)
+                    Plotly.plot(gd, mockCopy.data, mockCopy.layout)
                         .then(done);
                 });
 
                 it('has four *subplot* nodes', function() {
-                    var nodes = d3.selectAll('g.subplot');
-                    expect(nodes.size()).toEqual(4);
+                    expect(countSubplots()).toEqual(4);
                 });
 
-                // N.B. the contour traces both have a heatmap fill
                 it('has four heatmap image nodes', function() {
-                    var hmNodes = d3.selectAll('g.hm');
-                    expect(hmNodes.size()).toEqual(4);
-
-                    var imageNodes = d3.selectAll('image');
-                    expect(imageNodes.size()).toEqual(4);
+                    // N.B. the contour traces both have a heatmap fill
+                    assertHeatmapNodes(4);
                 });
 
                 it('has two contour nodes', function() {
-                    var nodes = d3.selectAll('g.contour');
-                    expect(nodes.size()).toEqual(2);
+                    assertContourNodes(2);
                 });
 
                 it('has one colorbar nodes', function() {
-                    var nodes = d3.selectAll('rect.cbbg');
-                    expect(nodes.size()).toEqual(1);
+                    expect(countColorBars()).toEqual(1);
                 });
             });
 
@@ -129,33 +165,73 @@ describe('Test plot structure', function() {
                 });
 
                 it('has four *subplot* nodes', function() {
-                    var nodes = d3.selectAll('g.subplot');
-                    expect(nodes.size()).toEqual(4);
+                    expect(countSubplots()).toEqual(4);
                 });
 
                 it('has two heatmap image nodes', function() {
-                    var hmNodes = d3.selectAll('g.hm');
-                    expect(hmNodes.size()).toEqual(2);
-
-                    var imageNodes = d3.selectAll('image');
-                    expect(imageNodes.size()).toEqual(2);
+                    assertHeatmapNodes(2);
                 });
 
                 it('has two contour nodes', function() {
-                    var nodes = d3.selectAll('g.contour');
-                    expect(nodes.size()).toEqual(2);
+                    assertContourNodes(2);
                 });
 
                 it('has one scatter node', function() {
-                    var nodes = d3.selectAll('g.trace.scatter');
-                    expect(nodes.size()).toEqual(1);
+                    expect(countScatterTraces()).toEqual(1);
                 });
 
                 it('has no colorbar node', function() {
-                    var nodes = d3.selectAll('rect.cbbg');
-                    expect(nodes.size()).toEqual(0);
+                    expect(countColorBars()).toEqual(0);
                 });
             });
+
+            describe('structure after deleteTraces', function() {
+                beforeEach(function(done) {
+                    gd = createGraphDiv();
+
+                    var mockCopy = extendMock();
+                    Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                        .then(done);
+                });
+
+                it('should be removed of traces in sequence', function(done) {
+                    expect(countSubplots()).toEqual(4);
+                    assertHeatmapNodes(4);
+                    assertContourNodes(2);
+                    expect(countColorBars()).toEqual(1);
+
+                    Plotly.deleteTraces(gd, [0]).then(function() {
+                        expect(countSubplots()).toEqual(4);
+                        assertHeatmapNodes(3);
+                        assertContourNodes(2);
+                        expect(countColorBars()).toEqual(0);
+
+                        Plotly.deleteTraces(gd, [0]).then(function() {
+                            expect(countSubplots()).toEqual(4);
+                            assertHeatmapNodes(2);
+                            assertContourNodes(2);
+                            expect(countColorBars()).toEqual(0);
+
+                            Plotly.deleteTraces(gd, [0]).then(function() {
+                                expect(countSubplots()).toEqual(4);
+                                assertHeatmapNodes(1);
+                                assertContourNodes(1);
+                                expect(countColorBars()).toEqual(0);
+
+                                Plotly.deleteTraces(gd, [0]).then(function() {
+                                    expect(countSubplots()).toEqual(4);
+                                    assertHeatmapNodes(0);
+                                    assertContourNodes(0);
+                                    expect(countColorBars()).toEqual(0);
+                                    done();
+                                });
+                            });
+                        });
+                    });
+                });
+
+            });
+
         });
 
         describe('pie traces', function() {
