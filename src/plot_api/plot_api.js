@@ -1362,8 +1362,13 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
     // we want descending here so that splicing later doesn't affect indexing
     indices.sort(Lib.sorterDes);
     for (i = 0; i < indices.length; i += 1) {
-        deletedTrace = gd.data.splice(indices[i], 1)[0];
-        traces.push(deletedTrace);
+        if (gd.data.length > 1){
+            deletedTrace = gd.data.splice(indices[i], 1)[0];
+            traces.push(deletedTrace);
+        }else {
+            traces.push(gd.data[0]);
+            gd.data = [{ type: gd._fullData.type }];
+        }
     }
 
     var promise = Plotly.redraw(gd);
