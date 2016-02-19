@@ -1,0 +1,63 @@
+{
+    "data": [],
+    "layout": {
+        "xaxis": {
+            "domain": [
+                0,
+                0.5
+            ]
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.5
+            ]
+        },
+        "xaxis2": {
+            "anchor": "y2",
+            "domain": [
+                0.5,
+                1
+            ]
+        },
+        "yaxis2": {
+            "anchor": "x2",
+            "domain": [
+                0.5,
+                1
+            ]
+        },
+        "scene": {
+            "domain": {
+                "x": [
+                    0,
+                    0.5
+                ],
+                "y": [
+                    0.5,
+                    1
+                ]
+            },
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        },
+        "geo": {
+            "domain": {
+                "x": [
+                    0.5,
+                    1
+                ],
+                "y": [
+                    0,
+                    0.5
+                ]
+            }
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true
+    }
+}
