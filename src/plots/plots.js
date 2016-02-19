@@ -228,6 +228,16 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
     return subplotIds;
 };
 
+/**
+ * Get the data traces associated with a particular subplot.
+ *
+ * @param {object} layout plotly layout object
+ *      (intended to be _fullLayout, but does not have to be).
+ * @param {string} type subplot type to look for.
+ *
+ * @return {array} array of plotly traces.
+ *
+ */
 plots.getSubplotData = function getSubplotData(data, type, subplotId) {
     if(plots.subplotsRegistry[type] === undefined) return [];
 
@@ -435,12 +445,12 @@ plots.sendDataToCloud = function(gd) {
     return false;
 };
 
+// fill in default values:
+//  gd.data, gd.layout:
+//      are precisely what the user specified
+//  gd._fullData, gd._fullLayout:
+//      are complete descriptions of how to draw the plot
 plots.supplyDefaults = function(gd) {
-    // fill in default values:
-    // gd.data, gd.layout:
-    //   are precisely what the user specified
-    // gd._fullData, gd._fullLayout:
-    //   are complete descriptions of how to draw the plot
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
         newLayout = gd.layout || {},
@@ -722,7 +732,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var i, _module;
 
-    // TODO incorporate into subplotRegistry
+    // TODO incorporate into subplotsRegistry
     Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
     // plot module layout defaults

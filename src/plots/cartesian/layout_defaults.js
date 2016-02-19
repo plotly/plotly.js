@@ -103,6 +103,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     var xaList = xaListCartesian.concat(xaListGl2d).sort(axSort),
         yaList = yaListCartesian.concat(yaListGl2d).sort(axSort);
 
+    xaList.concat(yaList).forEach(function(axName) {
         var axLetter = axName.charAt(0),
             axLayoutIn = layoutIn[axName] || {},
             axLayoutOut = {},
@@ -132,7 +133,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         // so we don't have to repeat autotype unnecessarily,
         // copy an autotype back to layoutIn
-        if(!layoutIn[axName] && axLayoutIn.type!=='-') {
+        if(!layoutIn[axName] && axLayoutIn.type !== '-') {
             layoutIn[axName] = {type: axLayoutIn.type};
         }
 
