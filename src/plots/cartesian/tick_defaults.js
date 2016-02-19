@@ -29,28 +29,28 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
         delete containerOut.tickcolor;
     }
 
-    var showTickLabels = coerce('showticklabels');
+    var showAttrDflt = getShowAttrDflt(containerIn);
+
+    var showTickLabels = coerce('showticklabels'),
+        tickFormat = coerce('tickformat'),
+        tickPrefix = coerce('tickprefix'),
+        tickSuffix = coerce('ticksuffix');
+
+    if(tickPrefix) coerce('showtickprefix', showAttrDflt);
+    if(tickSuffix) coerce('showticksuffix', showAttrDflt);
+
     if(showTickLabels) {
         Lib.coerceFont(coerce, 'tickfont', options.font || {});
         coerce('tickangle');
+    }
 
-        var showAttrDflt = getShowAttrDflt(containerIn);
+    if(axType !== 'category') {
+        if(!options.noHover) coerce('hoverformat');
 
-        if(axType !== 'category') {
-            var tickFormat = coerce('tickformat');
-            if(!options.noHover) coerce('hoverformat');
-
-            if(!tickFormat && axType !== 'date') {
-                coerce('showexponent', showAttrDflt);
-                coerce('exponentformat');
-            }
+        if(!tickFormat && axType !== 'date') {
+            coerce('showexponent', showAttrDflt);
+            coerce('exponentformat');
         }
-
-        var tickPrefix = coerce('tickprefix');
-        if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-        var tickSuffix = coerce('ticksuffix');
-        if(tickSuffix) coerce('showticksuffix', showAttrDflt);
     }
 };
 
