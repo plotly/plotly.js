@@ -493,7 +493,8 @@ plots.supplyDefaults = function(gd) {
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
-    cleanScenes(newFullLayout, oldFullLayout);
+    // clean subplots and other artifact from previous plot calls
+    cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     /*
      * Relink functions and underscore attributes to promote consistency between
@@ -521,17 +522,47 @@ plots.supplyDefaults = function(gd) {
     }
 };
 
-function cleanScenes(newFullLayout, oldFullLayout) {
-    var oldSceneKey,
-        oldSceneKeys = plots.getSubplotIds(oldFullLayout, 'gl3d');
+function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var i, j;
 
-    for (var i = 0; i < oldSceneKeys.length; i++) {
-        oldSceneKey = oldSceneKeys[i];
-        if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
-            oldFullLayout[oldSceneKey]._scene.destroy();
+    var plotTypes = Object.keys(subplotsRegistry);
+    for(i = 0; i < plotTypes.length; i++) {
+        var _module = subplotsRegistry[plotTypes[i]];
+
+        if(_module.clean) {
+            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
         }
     }
 
+    var hasPaper = !!oldFullLayout._paper;
+    var hasInfoLayer = !!oldFullLayout._infolayer;
+
+    oldLoop:
+    for(i = 0; i < oldFullData.length; i++) {
+        var oldTrace = oldFullData[i];
+
+        for(j = 0; j < newFullData.length; j++) {
+            var newTrace = newFullData.length;
+
+            if(oldTrace.uid === newTrace.uid) continue oldLoop;
+        }
+
+        var uid = oldTrace.uid;
+
+        // clean old heatmap and contour traces
+        if(hasPaper) {
+            oldFullLayout._paper.selectAll(
+                '.hm' + uid +
+                ',.contour' + uid +
+                ',#clip' + uid
+            ).remove();
+        }
+
+        // clean old colorbars
+        if(hasInfoLayer) {
+            oldFullLayout._infolayer.selectAll('.cb' + uid).remove();
+        }
+    }
 }
 
 /**
