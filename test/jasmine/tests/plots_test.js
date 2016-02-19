@@ -102,12 +102,11 @@ describe('Test Plots', function() {
 
     describe('Plots.getSubplotIds', function() {
         var getSubplotIds = Plots.getSubplotIds;
-        var layout;
 
-        it('returns scene ids', function() {
-            layout = {
-                scene: {},
+        it('returns scene ids in order', function() {
+            var layout = {
                 scene2: {},
+                scene: {},
                 scene3: {}
             };
 
@@ -116,13 +115,32 @@ describe('Test Plots', function() {
 
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual([]);
+            expect(getSubplotIds(layout, 'geo'))
+                .toEqual([]);
+            expect(getSubplotIds(layout, 'no-valid-subplot-type'))
+                .toEqual([]);
+        });
 
+        it('returns geo ids in order', function() {
+            var layout = {
+                geo2: {},
+                geo: {},
+                geo3: {}
+            };
+
+            expect(getSubplotIds(layout, 'geo'))
+                .toEqual(['geo', 'geo2', 'geo3']);
+
+            expect(getSubplotIds(layout, 'cartesian'))
+                .toEqual([]);
+            expect(getSubplotIds(layout, 'gl3d'))
+                .toEqual([]);
             expect(getSubplotIds(layout, 'no-valid-subplot-type'))
                 .toEqual([]);
         });
 
         it('returns cartesian ids', function() {
-            layout = {
+            var layout = {
                 _plots: { xy: {}, x2y2: {} }
             };
 
