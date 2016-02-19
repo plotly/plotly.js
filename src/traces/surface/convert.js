@@ -323,7 +323,7 @@ proto.update = function(data) {
 
 
 proto.dispose = function() {
-    this.glplot.remove(this.surface);
+    this.scene.glplot.remove(this.surface);
     this.surface.dispose();
 };
 
