@@ -7,6 +7,7 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var selectButton = require('../assets/modebar_button');
+var customMatchers = require('../assets/custom_matchers');
 
 /*
  * WebGL interaction test cases fail on the CircleCI
@@ -17,6 +18,10 @@ var selectButton = require('../assets/modebar_button');
 
 describe('Test plot structure', function() {
     'use strict';
+
+    beforeEach(function() {
+        jasmine.addMatchers(customMatchers);
+    });
 
     afterEach(destroyGraphDiv);
 
@@ -148,7 +153,7 @@ describe('Test plot structure', function() {
 
         describe('buttons resetCameraDefault3d and resetCameraLastSave3d', function() {
             // changes in scene objects are not instantaneous
-            var DELAY = 1000;
+            var DELAY = 200;
 
             it('should update the scene camera', function(done) {
                 var sceneLayout = gd._fullLayout.scene,
@@ -166,22 +171,22 @@ describe('Test plot structure', function() {
                     expect(sceneLayout.camera.eye)
                         .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
                     expect(scene.camera.eye)
-                        .toEqual([1.2500000000000002, 1.25, 1.25]);
+                        .toBeCloseToArray([1.25, 1.25, 1.25], 4);
                     expect(sceneLayout2.camera.eye)
                         .toEqual({x: 2.5, y: 2.5, z: 2.5}, 'does not change the layout objects');
                     expect(scene2.camera.eye)
-                        .toEqual([1.2500000000000002, 1.25, 1.25]);
+                        .toBeCloseToArray([1.25, 1.25, 1.25], 4);
 
                     selectButton(modeBar, 'resetCameraLastSave3d').click();
                     setTimeout(function() {
                         expect(sceneLayout.camera.eye)
                             .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
                         expect(scene.camera.eye)
-                            .toEqual([ 0.10000000000000016, 0.10000000000000016, 1]);
+                            .toBeCloseToArray([ 0.1, 0.1, 1], 4);
                         expect(sceneLayout2.camera.eye)
                             .toEqual({x: 2.5, y: 2.5, z: 2.5}, 'does not change the layout objects');
                         expect(scene2.camera.eye)
-                            .toEqual([2.500000000000001, 2.5000000000000004, 2.5000000000000004]);
+                            .toBeCloseToArray([2.5, 2.5, 2.5], 4);
 
                         done();
                     }, DELAY);
