@@ -100,10 +100,8 @@ exports.plot = function(gd) {
         }
 
         // finally do all error bars at once
-        if(fullLayout._hasCartesian) {
-            ErrorBars.plot(gd, subplotInfo, cdError);
-            Lib.markTime('done ErrorBars');
-        }
+        ErrorBars.plot(gd, subplotInfo, cdError);
+        Lib.markTime('done ErrorBars');
     }
 
     // now draw stuff not on subplots (ie, only pies at the moment)
