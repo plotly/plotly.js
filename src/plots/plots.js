@@ -447,7 +447,8 @@ plots.supplyDefaults = function(gd) {
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
-    cleanScenes(newFullLayout, oldFullLayout);
+    // clean subplots and other artifacts from previous plot calls
+    cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     /*
      * Relink functions and underscore attributes to promote consistency between
@@ -475,16 +476,46 @@ plots.supplyDefaults = function(gd) {
     }
 };
 
-function cleanScenes(newFullLayout, oldFullLayout) {
-    var oldSceneKeys = plots.getSubplotIds(oldFullLayout, 'gl3d');
+function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var i, j;
 
-    for(var i = 0; i < oldSceneKeys.length; i++) {
-        var oldSceneKey = oldSceneKeys[i];
-        if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
-            oldFullLayout[oldSceneKey]._scene.destroy();
+    var plotTypes = Object.keys(subplotsRegistry);
+    for(i = 0; i < plotTypes.length; i++) {
+        var _module = subplotsRegistry[plotTypes[i]];
+
+        if(_module.clean) {
+            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
         }
     }
 
+    var hasPaper = !!oldFullLayout._paper;
+    var hasInfoLayer = !!oldFullLayout._infolayer;
+
+    oldLoop:
+    for(i = 0; i < oldFullData.length; i++) {
+        var oldTrace = oldFullData[i],
+            oldUid = oldTrace.uid;
+
+        for(j = 0; j < newFullData.length; j++) {
+            var newTrace = newFullData[j];
+
+            if(oldUid === newTrace.uid) continue oldLoop;
+        }
+
+        // clean old heatmap and contour traces
+        if(hasPaper) {
+            oldFullLayout._paper.selectAll(
+                '.hm' + oldUid +
+                ',.contour' + oldUid +
+                ',#clip' + oldUid
+            ).remove();
+        }
+
+        // clean old colorbars
+        if(hasInfoLayer) {
+            oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
+        }
+    }
 }
 
 /**
