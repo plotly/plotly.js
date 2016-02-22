@@ -206,27 +206,28 @@ describe('Test plot structure', function() {
                         assertContourNodes(2);
                         expect(countColorBars()).toEqual(0);
 
-                        Plotly.deleteTraces(gd, [0]).then(function() {
-                            expect(countSubplots()).toEqual(4);
-                            assertHeatmapNodes(2);
-                            assertContourNodes(2);
-                            expect(countColorBars()).toEqual(0);
+                        return Plotly.deleteTraces(gd, [0]);
+                    }).then(function() {
+                        expect(countSubplots()).toEqual(4);
+                        assertHeatmapNodes(2);
+                        assertContourNodes(2);
+                        expect(countColorBars()).toEqual(0);
 
-                            Plotly.deleteTraces(gd, [0]).then(function() {
-                                expect(countSubplots()).toEqual(4);
-                                assertHeatmapNodes(1);
-                                assertContourNodes(1);
-                                expect(countColorBars()).toEqual(0);
+                        return Plotly.deleteTraces(gd, [0]);
+                    }).then(function() {
+                        expect(countSubplots()).toEqual(4);
+                        assertHeatmapNodes(1);
+                        assertContourNodes(1);
+                        expect(countColorBars()).toEqual(0);
 
-                                Plotly.deleteTraces(gd, [0]).then(function() {
-                                    expect(countSubplots()).toEqual(4);
-                                    assertHeatmapNodes(0);
-                                    assertContourNodes(0);
-                                    expect(countColorBars()).toEqual(0);
-                                    done();
-                                });
-                            });
-                        });
+                        return Plotly.deleteTraces(gd, [0]);
+                    }).then(function() {
+                        expect(countSubplots()).toEqual(4);
+                        assertHeatmapNodes(0);
+                        assertContourNodes(0);
+                        expect(countColorBars()).toEqual(0);
+
+                        done();
                     });
                 });
 
