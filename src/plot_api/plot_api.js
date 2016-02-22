@@ -249,13 +249,13 @@ Plotly.plot = function(gd, data, layout, config) {
     function drawData() {
         var calcdata = gd.calcdata;
 
+        // in case of traces that were heatmaps or contour maps
+        // previously, remove them and their colorbars explicitly
         for(var i = 0; i < calcdata.length; i++) {
             var trace = calcdata[i][0].trace,
                 isVisible = (trace.visible === true),
                 uid = trace.uid;
 
-            // in case of traces that were heatmaps or contour maps
-            // previously, remove them and their colorbars explicitly
             if(!isVisible || !Plots.traceIs(trace, '2dMap')) {
                 fullLayout._paper.selectAll(
                     '.hm' + uid +

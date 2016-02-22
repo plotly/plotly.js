@@ -145,14 +145,14 @@ plots.registerSubplot = function(_module) {
  * in the defaults step. Use plots.getSubplotIds to grab the current
  * subplot ids later on in Plotly.plot.
  *
- * @param {array} data plotly data array
+ * @param {array} data : plotly data array
  *      (intended to be _fullData, but does not have to be).
- * @param {object} layout plotly layout object
+ * @param {object} layout : plotly layout object
  *      (intended to be _fullLayout, but does not have to be).
- * @param {string} type subplot type to look for.
+ * @param {string} type : subplot type to look for.
  *
  * @return {array} list of subplot ids (strings).
- *      N.B. these ids possibly un-ordered.
+ *      N.B. these ids are possibly un-ordered.
  *
  * TODO incorporate cartesian/gl2d axis finders in this paradigm.
  */
@@ -189,8 +189,8 @@ plots.findSubplotIds = function findSubplotIds(data, layout, type) {
 /**
  * Get the ids of the current subplots.
  *
- * @param {object} layout plotly full layout object.
- * @param {string} type subplot type to look for.
+ * @param {object} layout : plotly full layout object.
+ * @param {string} type : subplot type to look for.
  *
  * @return {array} list of ordered subplot ids (strings).
  *
@@ -231,9 +231,9 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
 /**
  * Get the data traces associated with a particular subplot.
  *
- * @param {object} layout plotly layout object
+ * @param {object} layout : plotly layout object
  *      (intended to be _fullLayout, but does not have to be).
- * @param {string} type subplot type to look for.
+ * @param {string} type : subplot type to look for.
  *
  * @return {array} array of plotly traces.
  *
@@ -503,7 +503,7 @@ plots.supplyDefaults = function(gd) {
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
-    // clean subplots and other artifact from previous plot calls
+    // clean subplots and other artifacts from previous plot calls
     cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     /*
@@ -550,27 +550,26 @@ function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     oldLoop:
     for(i = 0; i < oldFullData.length; i++) {
         var oldTrace = oldFullData[i];
+        var oldUid = oldTrace.uid;
 
         for(j = 0; j < newFullData.length; j++) {
-            var newTrace = newFullData.length;
+            var newTrace = newFullData[j];
 
-            if(oldTrace.uid === newTrace.uid) continue oldLoop;
+            if(oldUid === newTrace.uid) continue oldLoop;
         }
-
-        var uid = oldTrace.uid;
 
         // clean old heatmap and contour traces
         if(hasPaper) {
             oldFullLayout._paper.selectAll(
-                '.hm' + uid +
-                ',.contour' + uid +
-                ',#clip' + uid
+                '.hm' + oldUid +
+                ',.contour' + oldUid +
+                ',#clip' + oldUid
             ).remove();
         }
 
         // clean old colorbars
         if(hasInfoLayer) {
-            oldFullLayout._infolayer.selectAll('.cb' + uid).remove();
+            oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
         }
     }
 }
