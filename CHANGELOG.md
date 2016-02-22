@@ -9,6 +9,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.5.2] -- 2016-02-10
+
+### Fixed
+- Fix geo trace visibility toggling (bug introduced in 1.5.1) [#245]
+
+
 ## [1.5.1] -- 2016-02-01
 
 ### Fixed
@@ -18,7 +24,7 @@ where X.Y.Z is the semver of most recent plotly.js release.
 - Soon to be deprecated `SVGElement.offsetParent` calls are removed [#222]
 - Geo zoom in button is now correctly titled `Zoom in` [#219]
 - All attribute description are correctly stripped from the dist files (bug
-  introduce in 1.5.0) [#223]
+  introduced in 1.5.0) [#223]
 - Insecure dev dependencies `ecstatic` and `uglify-js` are bumped [#225]
 - Outdated karma-browserify dev dependency is bumped [#229]
 

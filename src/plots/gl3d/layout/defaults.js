@@ -9,31 +9,44 @@
 
 'use strict';
 
-var Plotly = require('../../../plotly');
+var Lib = require('../../../lib');
+var Plots = require('../../plots');
 var layoutAttributes = require('./layout_attributes');
 var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    if (!layoutOut._hasGL3D) return;
+    if(!layoutOut._hasGL3D) return;
 
-    var scenes = Plotly.Plots.getSubplotIdsInData(fullData, 'gl3d');
-    var i;
-
-    // until they play better together
-    delete layoutOut.xaxis;
-    delete layoutOut.yaxis;
+    var scenes = Plots.getSubplotIdsInData(fullData, 'gl3d');
 
     // Get number of scenes to compute default scene domain
     var scenesLength = scenes.length;
+
     var sceneLayoutIn, sceneLayoutOut;
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(sceneLayoutIn, sceneLayoutOut, layoutAttributes, attr, dflt);
+        return Lib.coerce(sceneLayoutIn, sceneLayoutOut, layoutAttributes, attr, dflt);
     }
 
-    for (i = 0; i < scenesLength; ++i) {
+    // some layout-wide attribute are used in all scenes
+    // if 3D is the only visible plot type
+    function getDfltFromLayout(attr) {
+        var isOnlyGL3D = !(
+            layoutOut._hasCartesian ||
+            layoutOut._hasGeo ||
+            layoutOut._hasGL2D ||
+            layoutOut._hasPie
+        );
+
+        var isValid = layoutAttributes[attr].values.indexOf(layoutIn[attr]) !== -1;
+
+        if(isOnlyGL3D && isValid) return layoutIn[attr];
+    }
+
+    for(var i = 0; i < scenesLength; i++) {
         var scene = scenes[i];
+
         /*
          * Scene numbering proceeds as follows
          * scene
@@ -45,7 +58,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
          * Also write back a blank scene object to user layout so that some
          * attributes like aspectratio can be written back dynamically.
          */
-        sceneLayoutIn;
+
         if(layoutIn[scene] !== undefined) sceneLayoutIn = layoutIn[scene];
         else layoutIn[scene] = sceneLayoutIn = {};
 
@@ -82,23 +95,26 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
          * for the mode. In this case we must force change it here as the default coerce
          * misses it above.
          */
-        if (!hasAspect) {
+        if(!hasAspect) {
             sceneLayoutIn.aspectratio = sceneLayoutOut.aspectratio = {x: 1, y: 1, z: 1};
 
-            if (aspectMode === 'manual') sceneLayoutOut.aspectmode = 'auto';
+            if(aspectMode === 'manual') sceneLayoutOut.aspectmode = 'auto';
         }
 
-         /*
-          * scene arrangements need to be implemented: For now just splice
-          * along the horizontal direction. ie.
-          * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
-          *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
-          */
+        /*
+         * scene arrangements need to be implemented: For now just splice
+         * along the horizontal direction. ie.
+         * x:[0,1] -> x:[0,0.5], x:[0.5,1] ->
+         *     x:[0, 0.333] x:[0.333,0.666] x:[0.666, 1]
+         */
         supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
             font: layoutOut.font,
             scene: scene,
             data: fullData
         });
+
+        coerce('dragmode', getDfltFromLayout('dragmode'));
+        coerce('hovermode', getDfltFromLayout('hovermode'));
 
         layoutOut[scene] = sceneLayoutOut;
     }

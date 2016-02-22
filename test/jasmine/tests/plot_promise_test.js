@@ -464,4 +464,31 @@ describe('Plotly.___ methods', function() {
         });
     });
 
+    describe('Plotly.Plots.resize promise', function() {
+        var initialDiv;
+
+        beforeEach(function(done) {
+            var data = [{ x: [1,2,3], y: [4,5,6] }];
+
+            initialDiv = createGraphDiv();
+
+            Plotly.plot(initialDiv, data, {}).then(done);
+        });
+
+        it('should return a resolved promise of the gd', function(done) {
+            Plotly.Plots.resize(initialDiv).then(function(gd) {
+                expect(gd).toBeDefined();
+                expect(typeof gd).toBe('object');
+                expect(gd.layout).toBeDefined();
+            }).then(done);
+        });
+
+        it('should return a rejected promise with no argument', function(done) {
+            Plotly.Plots.resize().then(null, function(err) {
+                expect(err).toBeDefined();
+                expect(err.message).toBe('Resize must be passed a plot div element.');
+            }).then(done);
+        });
+    });
+
 });

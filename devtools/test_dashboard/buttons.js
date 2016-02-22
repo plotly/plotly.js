@@ -1,5 +1,7 @@
 /* global Plotly:false Tabs:false */
 
+var Lib = require('@src/lib');
+
 var plotlist = document.getElementById('plot-list');
 var anchor = document.getElementById('embedded-graph');
 var image = document.getElementById('embedded-image');
@@ -40,9 +42,10 @@ function plotButtons(plots, figDir) {
             anchor.appendChild(gd);
 
             var plot = plots[plotname];
-            Plotly.plot(gd, plot.data, plot.layout);
+            var data = Lib.extendDeep([], plot.data);
+            var layout = Lib.extendDeep({}, plot.layout);
 
-
+            Plotly.plot(gd, data, layout);
         });
     });
 

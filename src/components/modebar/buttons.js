@@ -267,7 +267,7 @@ function handleCartesian(gd, ev) {
 modeBarButtons.zoom3d = {
     name: 'zoom3d',
     title: 'Zoom',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'zoom',
     icon: Icons.zoombox,
     click: handleDrag3d
@@ -276,7 +276,7 @@ modeBarButtons.zoom3d = {
 modeBarButtons.pan3d = {
     name: 'pan3d',
     title: 'Pan',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'pan',
     icon: Icons.pan,
     click: handleDrag3d
@@ -285,7 +285,7 @@ modeBarButtons.pan3d = {
 modeBarButtons.orbitRotation = {
     name: 'orbitRotation',
     title: 'orbital rotation',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'orbit',
     icon: Icons['3d_rotate'],
     click: handleDrag3d
@@ -294,7 +294,7 @@ modeBarButtons.orbitRotation = {
 modeBarButtons.tableRotation = {
     name: 'tableRotation',
     title: 'turntable rotation',
-    attr: 'dragmode',
+    attr: 'scene.dragmode',
     val: 'turntable',
     icon: Icons['z-axis'],
     click: handleDrag3d
@@ -304,14 +304,16 @@ function handleDrag3d(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
         val = button.getAttribute('data-val') || true,
+        fullLayout = gd._fullLayout,
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
         layoutUpdate = {};
 
-    layoutUpdate[attr] = val;
+    var parts = attr.split('.');
 
-    /*
-     * Dragmode will go through the relayout -> doplot -> scene.plot()
-     * routine where the dragmode will be set in scene.plot()
-     */
+    for(var i = 0; i < sceneIds.length; i++) {
+        layoutUpdate[sceneIds[i] + '.' + parts[1]] = val;
+    }
+
     Plotly.relayout(gd, layoutUpdate);
 }
 
@@ -334,29 +336,19 @@ modeBarButtons.resetCameraLastSave3d = {
 function handleCamera3d(gd, ev) {
     var button = ev.currentTarget,
         attr = button.getAttribute('data-attr'),
-        layout = gd.layout,
         fullLayout = gd._fullLayout,
         sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
-            sceneLayout = layout[sceneId],
             fullSceneLayout = fullLayout[sceneId],
             scene = fullSceneLayout._scene;
 
-        if(!sceneLayout || attr==='resetDefault') scene.setCameraToDefault();
+        if(attr === 'resetDefault') scene.setCameraToDefault();
         else if(attr === 'resetLastSave') {
-
-            var cameraPos = sceneLayout.camera;
-            if(cameraPos) scene.setCamera(cameraPos);
-            else scene.setCameraToDefault();
+            scene.setCamera(fullSceneLayout.camera);
         }
     }
-
-    /*
-     * TODO have a sceneLastTouched in _fullLayout to only
-     * update the camera of the scene last touched by the user
-     */
 }
 
 modeBarButtons.hoverClosest3d = {
@@ -367,50 +359,58 @@ modeBarButtons.hoverClosest3d = {
     toggle: true,
     icon: Icons.tooltip_basic,
     gravity: 'ne',
-    click: function(gd, ev) {
-        var button = ev.currentTarget,
-            val = JSON.parse(button.getAttribute('data-val')) || false,
-            fullLayout = gd._fullLayout,
-            sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
+    click: handleHover3d
+};
 
-        var axes = ['xaxis', 'yaxis', 'zaxis'],
-            spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
+function handleHover3d(gd, ev) {
+    var button = ev.currentTarget,
+        val = button._previousVal || false,
+        layout = gd.layout,
+        fullLayout = gd._fullLayout,
+        sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d');
 
-        // initialize 'current spike' object to be stored in the DOM
-        var currentSpikes = {},
-            axisSpikes = {},
-            layoutUpdate = {};
+    var axes = ['xaxis', 'yaxis', 'zaxis'],
+        spikeAttrs = ['showspikes', 'spikesides', 'spikethickness', 'spikecolor'];
 
-        if(val) {
-            layoutUpdate = val;
-            button.setAttribute('data-val', JSON.stringify(null));
-        }
-        else {
-            layoutUpdate = {'allaxes.showspikes': false};
+    // initialize 'current spike' object to be stored in the DOM
+    var currentSpikes = {},
+        axisSpikes = {},
+        layoutUpdate = {};
 
-            for(var i = 0; i < sceneIds.length; i++) {
-                var sceneId = sceneIds[i],
-                    sceneLayout = fullLayout[sceneId],
-                    sceneSpikes = currentSpikes[sceneId] = {};
+    if(val) {
+        layoutUpdate = Lib.extendDeep(layout, val);
+        button._previousVal = null;
+    }
+    else {
+        layoutUpdate = {
+            'allaxes.showspikes': false
+        };
 
-                // copy all the current spike attrs
-                for(var j = 0; j < 3; j++) {
-                    var axis = axes[j];
-                    axisSpikes = sceneSpikes[axis] = {};
+        for(var i = 0; i < sceneIds.length; i++) {
+            var sceneId = sceneIds[i],
+                sceneLayout = fullLayout[sceneId],
+                sceneSpikes = currentSpikes[sceneId] = {};
 
-                    for(var k = 0; k < spikeAttrs.length; k++) {
-                        var spikeAttr = spikeAttrs[k];
-                        axisSpikes[spikeAttr] = sceneLayout[axis][spikeAttr];
-                    }
+            sceneSpikes.hovermode = sceneLayout.hovermode;
+            layoutUpdate[sceneId + '.hovermode'] = false;
+
+            // copy all the current spike attrs
+            for(var j = 0; j < 3; j++) {
+                var axis = axes[j];
+                axisSpikes = sceneSpikes[axis] = {};
+
+                for(var k = 0; k < spikeAttrs.length; k++) {
+                    var spikeAttr = spikeAttrs[k];
+                    axisSpikes[spikeAttr] = sceneLayout[axis][spikeAttr];
                 }
             }
-
-            button.setAttribute('data-val', JSON.stringify(currentSpikes));
         }
 
-        Plotly.relayout(gd, layoutUpdate);
+        button._previousVal = Lib.extendDeep({}, currentSpikes);
     }
-};
+
+    Plotly.relayout(gd, layoutUpdate);
+}
 
 modeBarButtons.zoomInGeo = {
     name: 'zoomInGeo',
@@ -447,7 +447,7 @@ modeBarButtons.hoverClosestGeo = {
     toggle: true,
     icon: Icons.tooltip_basic,
     gravity: 'ne',
-    click: handleGeo
+    click: toggleHover
 };
 
 function handleGeo(gd, ev) {
@@ -468,7 +468,6 @@ function handleGeo(gd, ev) {
             geo.render();
         }
         else if(attr === 'reset') geo.zoomReset();
-        else if(attr === 'hovermode') geo.showHover = !geo.showHover;
     }
 }
 
@@ -494,7 +493,54 @@ modeBarButtons.hoverClosestPie = {
 };
 
 function toggleHover(gd) {
-    var newHover = gd._fullLayout.hovermode ? false : 'closest';
+    var fullLayout = gd._fullLayout;
+
+    var onHoverVal;
+    if(fullLayout._hasCartesian) {
+        onHoverVal = fullLayout._isHoriz ? 'y' : 'x';
+    }
+    else onHoverVal = 'closest';
+
+    var newHover = gd._fullLayout.hovermode ? false : onHoverVal;
 
     Plotly.relayout(gd, 'hovermode', newHover);
 }
+
+// buttons when more then one plot types are present
+
+modeBarButtons.toggleHover = {
+    name: 'toggleHover',
+    title: 'Toggle show closest data on hover',
+    attr: 'hovermode',
+    val: null,
+    toggle: true,
+    icon: Icons.tooltip_basic,
+    gravity: 'ne',
+    click: function(gd, ev) {
+        toggleHover(gd);
+
+        // the 3d hovermode update must come
+        // last so that layout.hovermode update does not
+        // override scene?.hovermode?.layout.
+        handleHover3d(gd, ev);
+    }
+};
+
+modeBarButtons.resetViews = {
+    name: 'resetViews',
+    title: 'Reset views',
+    icon: Icons.home,
+    click: function(gd, ev) {
+        var button = ev.currentTarget;
+
+        button.setAttribute('data-attr', 'zoom');
+        button.setAttribute('data-val', 'reset');
+        handleCartesian(gd, ev);
+
+        button.setAttribute('data-attr', 'resetLastSave');
+        handleCamera3d(gd, ev);
+
+        // N.B handleCamera3d also triggers a replot for
+        // geo subplots.
+    }
+};

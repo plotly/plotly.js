@@ -245,57 +245,15 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
+    // Now plot the data
     function drawData() {
-        // Now plot the data
-        var calcdata = gd.calcdata,
-            subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
-            modules = gd._modules;
-
-        var i, j, trace, subplot, subplotInfo,
-            cdSubplot, cdError, cdModule, _module;
-
-        function getCdSubplot(calcdata, subplot) {
-            var cdSubplot = [];
-            var i, cd, trace;
-            for (i = 0; i < calcdata.length; i++) {
-                cd = calcdata[i];
-                trace = cd[0].trace;
-                if (trace.xaxis+trace.yaxis === subplot) cdSubplot.push(cd);
-            }
-            return cdSubplot;
-        }
-
-        function getCdModule(cdSubplot, _module) {
-            var cdModule = [];
-
-            for(var i = 0; i < cdSubplot.length; i++) {
-                var cd = cdSubplot[i];
-                var trace = cd[0].trace;
-
-                if((trace._module === _module) && (trace.visible === true)) {
-                    cdModule.push(cd);
-                }
-            }
-
-            return cdModule;
-        }
-
-        // clean up old scenes that no longer have associated data
-        // will this be a performance hit?
-
-        var plotRegistry = Plots.subplotsRegistry;
-
-        // TODO incorporate cartesian and polar plots into this paradigm
-        if(fullLayout._hasGL3D) plotRegistry.gl3d.plot(gd);
-        if(fullLayout._hasGeo) plotRegistry.geo.plot(gd);
-        if(fullLayout._hasGL2D) plotRegistry.gl2d.plot(gd);
+        var calcdata = gd.calcdata;
 
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
-        for (i = 0; i < calcdata.length; i++) {
-            trace = calcdata[i][0].trace;
-
-            var isVisible = (trace.visible === true),
+        for(var i = 0; i < calcdata.length; i++) {
+            var trace = calcdata[i][0].trace,
+                isVisible = (trace.visible === true),
                 uid = trace.uid;
 
             if(!isVisible || !Plots.traceIs(trace, '2dMap')) {
@@ -311,47 +269,17 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        for (i = 0; i < subplots.length; i++) {
-            subplot = subplots[i];
-            subplotInfo = fullLayout._plots[subplot];
-            cdSubplot = getCdSubplot(calcdata, subplot);
-            cdError = [];
+        var plotRegistry = Plots.subplotsRegistry;
 
-            // remove old traces, then redraw everything
-            // TODO: use enter/exit appropriately in the plot functions
-            // so we don't need this - should sometimes be a big speedup
-            if(subplotInfo.plot) subplotInfo.plot.selectAll('g.trace').remove();
-
-            for(j = 0; j < modules.length; j++) {
-                _module = modules[j];
-
-                if(!_module.plot && (_module.name === 'pie')) continue;
-
-                // plot all traces of this type on this subplot at once
-                cdModule = getCdModule(cdSubplot, _module);
-                _module.plot(gd, subplotInfo, cdModule);
-                Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
-
-                // collect the traces that may have error bars
-                if(cdModule[0] && cdModule[0][0].trace && Plots.traceIs(cdModule[0][0].trace, 'errorBarsOK')) {
-                    cdError = cdError.concat(cdModule);
-                }
-            }
-
-            // finally do all error bars at once
-            if(fullLayout._hasCartesian) {
-                ErrorBars.plot(gd, subplotInfo, cdError);
-                Lib.markTime('done ErrorBars');
-            }
+        if(fullLayout._hasGL3D) plotRegistry.gl3d.plot(gd);
+        if(fullLayout._hasGeo) plotRegistry.geo.plot(gd);
+        if(fullLayout._hasGL2D) plotRegistry.gl2d.plot(gd);
+        if(fullLayout._hasCartesian || fullLayout._hasPie) {
+            plotRegistry.cartesian.plot(gd);
         }
 
-        // now draw stuff not on subplots (ie, only pies at the moment)
-        if(fullLayout._hasPie) {
-            var Pie = Plots.getModule('pie');
-            var cdPie = getCdModule(calcdata, Pie);
-
-            if(cdPie.length) Pie.plot(gd, cdPie);
-        }
+        // clean up old scenes that no longer have associated data
+        // will this be a performance hit?
 
         // styling separate from drawing
         Plots.style(gd);
@@ -682,29 +610,28 @@ function cleanLayout(layout) {
      * Clean up Scene layouts
      */
     var sceneIds = Plots.getSubplotIds(layout, 'gl3d');
-    var scene, cameraposition, rotation,
-        radius, center, mat, eye;
-    for (i = 0; i < sceneIds.length; i++) {
-        scene = layout[sceneIds[i]];
+    for(i = 0; i < sceneIds.length; i++) {
+        var scene = layout[sceneIds[i]];
 
-        /*
-         * Clean old Camera coords
-         */
-        cameraposition = scene.cameraposition;
-        if (Array.isArray(cameraposition) && cameraposition[0].length === 4) {
-            rotation = cameraposition[0];
-            center = cameraposition[1];
-            radius = cameraposition[2];
-            mat = m4FromQuat([], rotation);
-            eye = [];
-            for (j = 0; j < 3; ++j) {
+        // clean old Camera coords
+        var cameraposition = scene.cameraposition;
+        if(Array.isArray(cameraposition) && cameraposition[0].length === 4) {
+            var rotation = cameraposition[0],
+                center = cameraposition[1],
+                radius = cameraposition[2],
+                mat = m4FromQuat([], rotation),
+                eye = [];
+
+            for(j = 0; j < 3; ++j) {
                 eye[j] = center[i] + radius * mat[2 + 4 * j];
             }
+
             scene.camera = {
                 eye: {x: eye[0], y: eye[1], z: eye[2]},
                 center: {x: center[0], y: center[1], z: center[2]},
                 up: {x: mat[1], y: mat[5], z: mat[9]}
             };
+
             delete scene.cameraposition;
         }
     }
@@ -2359,7 +2286,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
              * hovermode and dragmode don't need any redrawing, since they just
              * affect reaction to user input. everything else, assume full replot.
              * height, width, autosize get dealt with below. Except for the case of
-             * of subplots - scenes - which require scene.handleDragmode to be called.
+             * of subplots - scenes - which require scene.updateFx to be called.
              */
             else if(['hovermode', 'dragmode'].indexOf(ai) !== -1) domodebar = true;
             else if(['hovermode','dragmode','height',
@@ -2421,19 +2348,25 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) {
+            var subplotIds;
             manageModeBar(gd);
 
-            var subplotIds;
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout[subplotIds[i]]._scene;
-                scene.handleDragmode(fullLayout.dragmode);
+                scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
             }
 
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout._plots[subplotIds[i]]._scene2d;
                 scene.updateFx(fullLayout);
+            }
+
+            subplotIds = Plots.getSubplotIds(fullLayout, 'geo');
+            for(i = 0; i < subplotIds.length; i++) {
+                var geo = fullLayout[subplotIds[i]]._geo;
+                geo.updateFx(fullLayout.hovermode);
             }
         }
     }
