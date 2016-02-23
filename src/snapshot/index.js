@@ -9,8 +9,6 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
-
 function getDelay(fullLayout) {
     return (fullLayout._hasGL3D || fullLayout._hasGL2D) ? 500 : 0;
 }
@@ -24,8 +22,6 @@ function getRedrawFunc(gd) {
             (gd.data && gd.data[0] && gd.data[0].r)
         ) return;
 
-        Plotly.Annotations.drawAll(gd);
-        Plotly.Legend.draw(gd, fullLayout.showlegend);
         (gd.calcdata || []).forEach(function(d) {
             if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
         });
