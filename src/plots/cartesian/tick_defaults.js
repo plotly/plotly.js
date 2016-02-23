@@ -42,10 +42,12 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
         Lib.coerceFont(coerce, 'tickfont', options.font || {});
         coerce('tickangle');
 
-        var tickFormat = coerce('tickformat');
-        if(!tickFormat && axType !== 'date') {
-            coerce('showexponent', showAttrDflt);
-            coerce('exponentformat');
+        if(axType !== 'category'){
+            var tickFormat = coerce('tickformat');
+            if(!tickFormat && axType !== 'date') {
+                coerce('showexponent', showAttrDflt);
+                coerce('exponentformat');
+            }
         }
     }
 
