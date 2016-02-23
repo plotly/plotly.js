@@ -75,13 +75,22 @@ describe('Test plot structure', function() {
                 });
             });
 
-            it('should delete be able to get deleted', function(done) {
+            it('should be able to get deleted', function(done) {
                 expect(countScatterTraces()).toEqual(mock.data.length);
                 expect(countSubplots()).toEqual(1);
 
                 Plotly.deleteTraces(gd, [0]).then(function() {
                     expect(countScatterTraces()).toEqual(0);
                     expect(countSubplots()).toEqual(1);
+
+                    return Plotly.relayout(gd, {xaxis: null, yaxis: null});
+                }).then(function() {
+                    expect(countScatterTraces()).toEqual(0);
+                    expect(countSubplots()).toEqual(0);
+
+                    done();
+                });
+            });
                     done();
                 });
             });
@@ -222,7 +231,7 @@ describe('Test plot structure', function() {
 
                         return Plotly.deleteTraces(gd, [0]);
                     }).then(function() {
-                        expect(countSubplots()).toEqual(4);
+                        expect(countSubplots()).toEqual(3);
                         assertHeatmapNodes(0);
                         assertContourNodes(0);
                         expect(countColorBars()).toEqual(0);

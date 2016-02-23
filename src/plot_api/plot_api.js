@@ -141,6 +141,10 @@ Plotly.plot = function(gd, data, layout, config) {
             makePlotFramework(gd);
         }
     }
+    else if(!hasSameSubplots) {
+        gd.framework = makePlotFramework;
+        makePlotFramework(gd);
+    }
     else if(graphWasEmpty) makePlotFramework(gd);
 
     var fullLayout = gd._fullLayout;
