@@ -292,9 +292,23 @@ describe('Test plot structure', function() {
 
         describe('pie traces', function() {
             var mock = require('@mocks/pie_simple.json');
+            var gd;
+
+            function countPieTraces() {
+                return d3.select('g.pielayer').selectAll('g.trace').size();
+            }
+
+            function countBarTraces() {
+                return d3.selectAll('g.trace.bars').size();
+            }
 
             beforeEach(function(done) {
-                Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+                gd = createGraphDiv();
+
+                var mockData = Lib.extendDeep([], mock.data),
+                    mockLayout = Lib.extendDeep({}, mock.layout);
+
+                Plotly.plot(gd, mockData, mockLayout).then(done);
             });
 
             it('has as many *slice* nodes as there are pie items', function() {
@@ -318,6 +332,39 @@ describe('Test plot structure', function() {
 
                 var testerSVG = d3.selectAll('#js-plotly-tester');
                 assertNamespaces(testerSVG.node());
+            });
+
+            it('should be able to get deleted', function(done) {
+                expect(countPieTraces()).toEqual(1);
+                expect(countSubplots()).toEqual(0);
+
+                Plotly.deleteTraces(gd, [0]).then(function() {
+                    expect(countPieTraces()).toEqual(0);
+                    expect(countSubplots()).toEqual(0);
+
+                    done();
+                });
+            });
+
+            it('should be able to be restyled to a bar chart and back', function(done) {
+                expect(countPieTraces()).toEqual(1);
+                expect(countBarTraces()).toEqual(0);
+                expect(countSubplots()).toEqual(0);
+
+                Plotly.restyle(gd, 'type', 'bar').then(function() {
+                    expect(countPieTraces()).toEqual(0);
+                    expect(countBarTraces()).toEqual(1);
+                    expect(countSubplots()).toEqual(1);
+
+                    return Plotly.restyle(gd, 'type', 'pie');
+                }).then(function() {
+                    expect(countPieTraces()).toEqual(1);
+                    expect(countBarTraces()).toEqual(0);
+                    expect(countSubplots()).toEqual(0);
+
+                    done();
+                });
+
             });
         });
     });
