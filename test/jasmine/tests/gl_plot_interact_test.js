@@ -153,7 +153,7 @@ describe('Test plot structure', function() {
 
         describe('buttons resetCameraDefault3d and resetCameraLastSave3d', function() {
             // changes in scene objects are not instantaneous
-            var DELAY = 200;
+            var DELAY = 500;
 
             it('should update the scene camera', function(done) {
                 var sceneLayout = gd._fullLayout.scene,
