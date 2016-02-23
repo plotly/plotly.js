@@ -112,3 +112,9 @@ exports.plot = function(gd) {
         if(cdPie.length) Pie.plot(gd, cdPie);
     }
 };
+
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    if(oldFullLayout._hasPie && !newFullLayout._hasPie) {
+        oldFullLayout._pielayer.selectAll('g.trace').remove();
+    }
+};
