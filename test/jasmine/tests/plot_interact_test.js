@@ -39,7 +39,11 @@ describe('Test plot structure', function() {
 
             beforeEach(function(done) {
                 gd = createGraphDiv();
-                Plotly.plot(gd, mock.data, mock.layout).then(done);
+
+                var mockData = Lib.extendDeep([], mock.data),
+                    mockLayout = Lib.extendDeep({}, mock.layout);
+
+                Plotly.plot(gd, mockData, mockLayout).then(done);
             });
 
             it('has one *subplot xy* node', function() {
@@ -91,6 +95,35 @@ describe('Test plot structure', function() {
                     done();
                 });
             });
+
+            it('should restore layout axes when they get deleted', function(done) {
+                expect(countScatterTraces()).toEqual(mock.data.length);
+                expect(countSubplots()).toEqual(1);
+
+                Plotly.relayout(gd, {xaxis: null, yaxis: null}).then(function() {
+                    expect(countScatterTraces()).toEqual(1);
+                    expect(countSubplots()).toEqual(1);
+
+                    return Plotly.relayout(gd, 'xaxis', null);
+                }).then(function() {
+                    expect(countScatterTraces()).toEqual(1);
+                    expect(countSubplots()).toEqual(1);
+
+                    return Plotly.relayout(gd, 'xaxis', {});
+                }).then(function() {
+                    expect(countScatterTraces()).toEqual(1);
+                    expect(countSubplots()).toEqual(1);
+
+                    return Plotly.relayout(gd, 'yaxis', null);
+                }).then(function() {
+                    expect(countScatterTraces()).toEqual(1);
+                    expect(countSubplots()).toEqual(1);
+
+                    return Plotly.relayout(gd, 'yaxis', {});
+                }).then(function() {
+                    expect(countScatterTraces()).toEqual(1);
+                    expect(countSubplots()).toEqual(1);
+
                     done();
                 });
             });
