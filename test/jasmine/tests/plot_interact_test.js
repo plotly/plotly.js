@@ -5,6 +5,7 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customMatchers = require('../assets/custom_matchers');
 
 
 describe('Test plot structure', function() {
@@ -97,32 +98,44 @@ describe('Test plot structure', function() {
             });
 
             it('should restore layout axes when they get deleted', function(done) {
+                jasmine.addMatchers(customMatchers);
+
                 expect(countScatterTraces()).toEqual(mock.data.length);
                 expect(countSubplots()).toEqual(1);
 
                 Plotly.relayout(gd, {xaxis: null, yaxis: null}).then(function() {
                     expect(countScatterTraces()).toEqual(1);
                     expect(countSubplots()).toEqual(1);
+                    expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
+                    expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
 
                     return Plotly.relayout(gd, 'xaxis', null);
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(1);
                     expect(countSubplots()).toEqual(1);
+                    expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
+                    expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
 
                     return Plotly.relayout(gd, 'xaxis', {});
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(1);
                     expect(countSubplots()).toEqual(1);
+                    expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
+                    expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
 
                     return Plotly.relayout(gd, 'yaxis', null);
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(1);
                     expect(countSubplots()).toEqual(1);
+                    expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
+                    expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
 
                     return Plotly.relayout(gd, 'yaxis', {});
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(1);
                     expect(countSubplots()).toEqual(1);
+                    expect(gd.layout.xaxis.range).toBeCloseToArray([-4.79980, 74.48580], 4);
+                    expect(gd.layout.yaxis.range).toBeCloseToArray([-1.2662, 17.67023], 4);
 
                     done();
                 });
