@@ -31,16 +31,16 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
 
     var showAttrDflt = getShowAttrDflt(containerIn);
 
+    var tickPrefix = coerce('tickprefix');
+    if(tickPrefix) coerce('showtickprefix', showAttrDflt);
+
+    var tickSuffix = coerce('ticksuffix');
+    if(tickSuffix) coerce('showticksuffix', showAttrDflt);
+
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
         Lib.coerceFont(coerce, 'tickfont', options.font || {});
         coerce('tickangle');
-
-        var tickPrefix = coerce('tickprefix');
-        if(tickPrefix) coerce('showtickprefix', showAttrDflt);
-
-        var tickSuffix = coerce('ticksuffix');
-        if(tickSuffix) coerce('showticksuffix', showAttrDflt);
 
         var tickFormat = coerce('tickformat');
         if(!tickFormat && axType !== 'date') {
