@@ -2172,6 +2172,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
         else if(pleaf === 'tickmode') {
             doextra([ptrunk + '.tick0', ptrunk + '.dtick'], undefined);
         }
+        else if(/[xy]axis[0-9]*?$/.test(pleaf) && !Object.keys(vi || {}).length) {
+            docalc = true;
+        }
+
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
