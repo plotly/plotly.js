@@ -3,8 +3,11 @@ var Events = require('@src/lib/events');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
+
 describe('Plotly.___ methods', function() {
     'use strict';
+
+    afterEach(destroyGraphDiv);
 
     describe('Plotly.plot promise', function() {
         var promise,
@@ -20,7 +23,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -54,7 +56,6 @@ describe('Plotly.___ methods', function() {
             });
         });
 
-        afterEach(destroyGraphDiv);
 
         it('should be rejected when plotly_beforeplot event handlers return false', function() {
             expect(promiseRejected).toBe(true);
@@ -81,7 +82,6 @@ describe('Plotly.___ methods', function() {
             });
         });
 
-        afterEach(destroyGraphDiv);
 
         it('should reject the promise when graph is being dragged', function() {
             expect(promiseRejected).toBe(true);
@@ -105,7 +105,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -129,7 +128,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -156,7 +154,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -183,7 +180,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -210,7 +206,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -237,7 +232,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -264,7 +258,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -294,7 +287,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -321,7 +313,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -348,7 +339,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be rejected when the attribute is missing', function() {
             expect(promiseRejected).toBe(true);
@@ -373,7 +363,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -401,7 +390,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div as an argument', function() {
             expect(promiseGd).toBeDefined();
@@ -430,7 +418,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be returned with the graph div unchanged when the framework is polar', function() {
             expect(promiseGd).toBeDefined();
@@ -457,7 +444,6 @@ describe('Plotly.___ methods', function() {
                 done();
             });
         });
-        afterEach(destroyGraphDiv);
 
         it('should be rejected when the attribute is missing', function() {
             expect(promiseRejected).toBe(true);
