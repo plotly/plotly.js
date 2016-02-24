@@ -5,10 +5,15 @@ var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var customMatchers = require('../assets/custom_matchers');
 
 
 describe('select box and lasso', function() {
     var mock = require('@mocks/14.json');
+
+    beforeEach(function() {
+        jasmine.addMatchers(customMatchers);
+    });
 
     afterEach(destroyGraphDiv);
 
@@ -45,10 +50,8 @@ describe('select box and lasso', function() {
     function assertRange(actual, expected) {
         var PRECISION = 4;
 
-        expect(actual.x[0]).toBeCloseTo(expected.x[0], PRECISION);
-        expect(actual.x[1]).toBeCloseTo(expected.x[1], PRECISION);
-        expect(actual.y[0]).toBeCloseTo(expected.y[0], PRECISION);
-        expect(actual.y[1]).toBeCloseTo(expected.y[1], PRECISION);
+        expect(actual.x).toBeCloseToArray(expected.x, PRECISION);
+        expect(actual.y).toBeCloseToArray(expected.y, PRECISION);
     }
 
     describe('select events', function() {
@@ -79,7 +82,7 @@ describe('select box and lasso', function() {
             });
 
             var doubleClickData;
-            gd.on('plotly_doubleclick', function(data) {
+            gd.on('plotly_deselect', function(data) {
                 doubleClickData = data;
             });
 
@@ -155,7 +158,7 @@ describe('select box and lasso', function() {
             });
 
             var doubleClickData;
-            gd.on('plotly_doubleclick', function(data) {
+            gd.on('plotly_deselect', function(data) {
                 doubleClickData = data;
             });
 

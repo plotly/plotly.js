@@ -7,29 +7,29 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 
 
-describe('click event', function() {
-    var mock = require('@mocks/14.json');
+describe('click interactions', function() {
+    var mock = require('@mocks/14.json'),
+        mockCopy = Lib.extendDeep({}, mock),
+        gd;
+
+    var pointPos = [351, 223],
+        blankPos = [70, 363];
 
     afterEach(destroyGraphDiv);
-
-    var mockCopy = Lib.extendDeep({}, mock),
-        clientX = 351,
-        clientY = 223,
-        gd;
 
     // cartesian click events events use the hover data
     // from the mousemove events and then simulate
     // a click event on mouseup
-    function click() {
-        mouseEvent('mousemove', clientX, clientY);
-        mouseEvent('mousedown', clientX, clientY);
-        mouseEvent('mouseup', clientX, clientY);
+    function click(x, y) {
+        mouseEvent('mousemove', x, y);
+        mouseEvent('mousedown', x, y);
+        mouseEvent('mouseup', x, y);
     }
 
-    function doubleClick(cb) {
-        click();
+    function doubleClick(x, y, cb) {
+        click(x, y);
         setTimeout(function() {
-            click();
+            click(x, y);
             cb();
         }, DBLCLICKDELAY / 2);
     }
@@ -41,38 +41,50 @@ describe('click event', function() {
             .then(done);
     });
 
-    it('should contain the correct fields', function() {
+    describe('click events', function() {
         var futureData;
 
-        gd.on('plotly_click', function(data) {
-            futureData = data;
+        beforeEach(function() {
+            gd.on('plotly_click', function(data) {
+                futureData = data;
+            });
         });
 
-        click();
+        it('should not be trigged when not on data points', function() {
+            click(blankPos[0], blankPos[1]);
+            expect(futureData).toBe(undefined);
+        });
 
-        expect(futureData.points.length).toEqual(1);
+        it('should contain the correct fields', function() {
+            click(pointPos[0], pointPos[1]);
+            expect(futureData.points.length).toEqual(1);
 
-        var pt = futureData.points[0];
-        expect(Object.keys(pt)).toEqual([
-            'data', 'fullData', 'curveNumber', 'pointNumber',
-            'x', 'y', 'xaxis', 'yaxis'
-        ]);
-        expect(pt.curveNumber).toEqual(0);
-        expect(pt.pointNumber).toEqual(11);
-        expect(pt.x).toEqual(0.125);
-        expect(pt.y).toEqual(2.125);
+            var pt = futureData.points[0];
+            expect(Object.keys(pt)).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber',
+                'x', 'y', 'xaxis', 'yaxis'
+            ]);
+            expect(pt.curveNumber).toEqual(0);
+            expect(pt.pointNumber).toEqual(11);
+            expect(pt.x).toEqual(0.125);
+            expect(pt.y).toEqual(2.125);
+        });
     });
 
-    it('should trigger double click if two clicks are \'close\' together', function(done) {
+    describe('double click events', function() {
         var futureData;
 
-        gd.on('plotly_doubleclick', function(data) {
-            futureData = data;
+        beforeEach(function() {
+            gd.on('plotly_doubleclick', function(data) {
+                futureData = data;
+            });
         });
 
-        doubleClick(function() {
-            expect(futureData).toBe(null);
-            done();
+        it('should return null', function(done) {
+            doubleClick(pointPos[0], pointPos[1], function() {
+                expect(futureData).toBe(null);
+                done();
+            });
         });
     });
 });
