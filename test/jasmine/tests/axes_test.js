@@ -7,6 +7,9 @@ var Color = require('@src/components/color');
 var handleTickValueDefaults = require('@src/plots/cartesian/tick_value_defaults');
 var Axes = PlotlyInternal.Axes;
 
+var createGraph = require('../assets/create_graph_div');
+var destroyGraph = require('../assets/destroy_graph_div');
+
 
 describe('Test axes', function() {
     'use strict';
@@ -249,6 +252,79 @@ describe('Test axes', function() {
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.zerolinewidth).toBe(undefined);
             expect(layoutOut.xaxis.zerolinecolor).toBe(undefined);
+        });
+    });
+
+    describe('handleTickDefaults', function() {
+        var data = [{ x: [1,2,3], y: [3,4,5] }],
+            gd;
+
+        beforeEach(function() {
+            gd = createGraph();
+        });
+
+        afterEach(destroyGraph);
+
+        it('should set defaults on bad inputs', function() {
+            var layout = {
+                yaxis: {
+                    ticklen: 'invalid',
+                    tickwidth: 'invalid',
+                    tickcolor: 'invalid',
+                    showticklabels: 'invalid',
+                    tickfont: 'invalid',
+                    tickangle: 'invalid'
+                }
+            };
+
+            PlotlyInternal.plot(gd, data, layout);
+
+            var yaxis = gd._fullLayout.yaxis;
+            expect(yaxis.ticklen).toBe(5);
+            expect(yaxis.tickwidth).toBe(1);
+            expect(yaxis.tickcolor).toBe('#444');
+            expect(yaxis.ticks).toBe('outside');
+            expect(yaxis.showticklabels).toBe(true);
+            expect(yaxis.tickfont).toEqual({ family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444' });
+            expect(yaxis.tickangle).toBe('auto');
+        });
+
+        it('should use valid inputs', function() {
+            var layout = {
+                yaxis: {
+                    ticklen: 10,
+                    tickwidth: 5,
+                    tickcolor: '#F00',
+                    showticklabels: true,
+                    tickfont: { family: 'Garamond', size: 72, color: '#0FF' },
+                    tickangle: -20
+                }
+            };
+
+            PlotlyInternal.plot(gd, data, layout);
+
+            var yaxis = gd._fullLayout.yaxis;
+            expect(yaxis.ticklen).toBe(10);
+            expect(yaxis.tickwidth).toBe(5);
+            expect(yaxis.tickcolor).toBe('#F00');
+            expect(yaxis.ticks).toBe('outside');
+            expect(yaxis.showticklabels).toBe(true);
+            expect(yaxis.tickfont).toEqual({ family: 'Garamond', size: 72, color: '#0FF' });
+            expect(yaxis.tickangle).toBe(-20);
+        });
+
+        it('should conditionally coerce based on showticklabels', function() {
+            var layout = {
+                yaxis: {
+                    showticklabels: false,
+                    tickangle: -90
+                }
+            };
+
+            PlotlyInternal.plot(gd, data, layout);
+
+            var yaxis = gd._fullLayout.yaxis;
+            expect(yaxis.tickangle).toBeUndefined();
         });
     });
 
