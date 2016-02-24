@@ -112,10 +112,15 @@ function render(scene) {
             });
         }
 
-        var eventType = (selection.buttons) ? 'plotly_click' : 'plotly_hover',
-            eventData = makeEventData(xVal, yVal, zVal, trace, selection);
+        var eventData = makeEventData(xVal, yVal, zVal, trace, selection);
 
-        scene.graphDiv.emit(eventType, eventData);
+        if(selection.buttons && selection.distance < 5) {
+            scene.graphDiv.emit('plotly_click', eventData);
+        }
+        else {
+            scene.graphDiv.emit('plotly_hover', eventData);
+        }
+
         oldEventData = eventData;
     }
     else {
