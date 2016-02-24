@@ -39,7 +39,6 @@ function Geo(options, fullLayout) {
     // a subset of https://github.com/d3/d3-geo-projection
     addProjectionsToD3();
 
-    this.showHover = (fullLayout.hovermode === 'closest');
     this.hoverContainer = null;
 
     this.topojsonName = null;
@@ -56,6 +55,7 @@ function Geo(options, fullLayout) {
     this.zoomReset = null;
 
     this.makeFramework();
+    this.updateFx(fullLayout.hovermode);
 }
 
 module.exports = Geo;
@@ -172,6 +172,15 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
     }
 
     this.render();
+};
+
+proto.updateFx = function(hovermode) {
+    this.showHover = (hovermode !== false);
+
+    // TODO should more strict, any layout.hovermode other
+    // then false will make all geo subplot display hover text.
+    // Instead each geo should have its own geo.hovermode
+    // to control hover visibility independently of other subplots.
 };
 
 proto.makeProjection = function(geoLayout) {
