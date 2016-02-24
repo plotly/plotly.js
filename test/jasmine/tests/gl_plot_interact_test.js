@@ -23,11 +23,31 @@ var MOUSE_DELAY = 20;
 describe('Test gl plot interactions', function() {
     'use strict';
 
+    var gd;
+
     beforeEach(function() {
         jasmine.addMatchers(customMatchers);
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        var fullLayout = gd._fullLayout,
+            sceneIds;
+
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
+        sceneIds.forEach(function(id) {
+            fullLayout[id]._scene.destroy();
+        });
+
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl2d');
+        sceneIds.forEach(function(id) {
+            var scene2d = fullLayout._plots[id]._scene2d;
+            scene2d.stopped = true;
+            scene2d.destroy();
+        });
+
+        destroyGraphDiv();
+    });
+
 
     describe('gl3d plots', function() {
         var mock = require('@mocks/gl3d_marker-arrays.json');
