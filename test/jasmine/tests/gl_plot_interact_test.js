@@ -16,8 +16,9 @@ var customMatchers = require('../assets/custom_matchers');
  *
  */
 
-var PLOT_DELAY = 100;
+var PLOT_DELAY = 200;
 var MOUSE_DELAY = 20;
+var MODEBAR_DELAY = 500;
 
 
 describe('Test gl plot interactions', function() {
@@ -48,10 +49,14 @@ describe('Test gl plot interactions', function() {
         destroyGraphDiv();
     });
 
+    function delay(done) {
+        setTimeout(function() {
+            done();
+        }, PLOT_DELAY);
+    }
 
     describe('gl3d plots', function() {
         var mock = require('@mocks/gl3d_marker-arrays.json');
-        var gd;
 
         function mouseEventScatter3d(type, opts) {
             mouseEvent(type, 605, 271, opts);
@@ -59,10 +64,13 @@ describe('Test gl plot interactions', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mock.data, mock.layout).then(done);
+            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+                delay(done);
+            });
         });
 
         describe('scatter3d hover', function() {
+
             var node, ptData;
 
             beforeEach(function(done) {
@@ -70,10 +78,11 @@ describe('Test gl plot interactions', function() {
                     ptData = eventData.points[0];
                 });
 
+                mouseEventScatter3d('mouseover');
+
                 setTimeout(function() {
-                    mouseEventScatter3d('mouseover');
-                    setTimeout(done, MOUSE_DELAY);
-                }, PLOT_DELAY);
+                    done();
+                }, MOUSE_DELAY);
             });
 
             it('should have', function() {
@@ -110,13 +119,13 @@ describe('Test gl plot interactions', function() {
                     ptData = eventData.points[0];
                 });
 
-                setTimeout(function() {
+                // N.B. gl3d click events are 'mouseover' events
+                // with button 1 pressed
+                mouseEventScatter3d('mouseover', {buttons: 1});
 
-                    // N.B. gl3d click events are 'mouseover' events
-                    // with button 1 pressed
-                    mouseEventScatter3d('mouseover', {buttons: 1});
-                    setTimeout(done, MOUSE_DELAY);
-                }, PLOT_DELAY);
+                setTimeout(function() {
+                    done();
+                }, MOUSE_DELAY);
             });
 
             it('should have', function() {
@@ -139,7 +148,11 @@ describe('Test gl plot interactions', function() {
         var mock = require('@mocks/gl2d_10.json');
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+                delay(done);
+            });
         });
 
         it('has one *canvas* node', function() {
@@ -149,7 +162,7 @@ describe('Test gl plot interactions', function() {
     });
 
     describe('gl3d modebar click handlers', function() {
-        var gd, modeBar;
+        var modeBar;
 
         beforeEach(function(done) {
             var mockData = [{
@@ -166,7 +179,8 @@ describe('Test gl plot interactions', function() {
             gd = createGraphDiv();
             Plotly.plot(gd, mockData, mockLayout).then(function() {
                 modeBar = gd._fullLayout._modeBar;
-                done();
+
+                delay(done);
             });
         });
 
@@ -249,9 +263,6 @@ describe('Test gl plot interactions', function() {
         });
 
         describe('buttons resetCameraDefault3d and resetCameraLastSave3d', function() {
-            // changes in scene objects are not instantaneous
-            var DELAY = 500;
-
             it('should update the scene camera', function(done) {
                 var sceneLayout = gd._fullLayout.scene,
                     sceneLayout2 = gd._fullLayout.scene2,
@@ -286,8 +297,8 @@ describe('Test gl plot interactions', function() {
                             .toBeCloseToArray([2.5, 2.5, 2.5], 4);
 
                         done();
-                    }, DELAY);
-                }, DELAY);
+                    }, MODEBAR_DELAY);
+                }, MODEBAR_DELAY);
             });
         });
 
