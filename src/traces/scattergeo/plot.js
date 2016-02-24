@@ -31,7 +31,7 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
     var cdi = [],
         hasLocationData = Array.isArray(trace.locations);
 
-    var len, features, getLonLat, lonlat, locations, calcItem;
+    var len, features, getLonLat, locations;
 
     if(hasLocationData) {
         locations = trace.locations;
@@ -53,11 +53,11 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
     }
 
     for(var i = 0; i < len; i++) {
-        lonlat = getLonLat(trace, i);
+        var lonlat = getLonLat(trace, i);
 
         if(!lonlat) continue;  // filter the blank points here
 
-        calcItem = {
+        var calcItem = {
             lon: lonlat[0],
             lat: lonlat[1],
             location: hasLocationData ? trace.locations[i] : null
@@ -104,7 +104,7 @@ function makeLineGeoJSON(trace) {
     var N = trace.lon.length,
         coordinates = new Array(N);
 
-    for (var i = 0; i < N; i++) {
+    for(var i = 0; i < N; i++) {
         coordinates[i] = [trace.lon[i], trace.lat[i]];
     }
 
@@ -118,7 +118,7 @@ function makeLineGeoJSON(trace) {
 plotScatterGeo.plot = function(geo, scattergeoData) {
     var gScatterGeoTraces = geo.framework.select('.scattergeolayer')
         .selectAll('g.trace.scattergeo')
-        .data(scattergeoData);
+        .data(scattergeoData, function(trace) { return trace.uid; });
 
     gScatterGeoTraces.enter().append('g')
         .attr('class', 'trace scattergeo');
@@ -128,7 +128,8 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
     // TODO add hover - how?
     gScatterGeoTraces
         .each(function(trace) {
-            if(!subTypes.hasLines(trace) || trace.visible !== true) return;
+            if(!subTypes.hasLines(trace)) return;
+
             d3.select(this)
                 .append('path')
                 .datum(makeLineGeoJSON(trace))
@@ -142,10 +143,7 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
                 showMarkers = subTypes.hasMarkers(trace),
                 showText = subTypes.hasText(trace);
 
-            if((!showMarkers && !showText) || trace.visible !== true) {
-                s.remove();
-                return;
-            }
+            if((!showMarkers && !showText)) return;
 
             var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
                 cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),

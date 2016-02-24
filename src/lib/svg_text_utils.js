@@ -80,7 +80,6 @@ util.convertToTspans = function(_context, _callback){
     parent.selectAll('svg.' + svgClass).remove();
     parent.selectAll('g.' + svgClass + '-group').remove();
     _context.style({visibility: null});
-    // for Plotly.Drawing.bBox: unlink text and all parents from its cached box
     for(var up = _context.node(); up && up.removeAttribute; up = up.parentNode) {
         up.removeAttribute('data-bb');
     }

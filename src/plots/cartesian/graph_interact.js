@@ -14,6 +14,7 @@ var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
+var Lib = require('../../lib');
 var Events = require('../../lib/events');
 
 var prepSelect = require('./select');
@@ -26,6 +27,7 @@ fx.layoutAttributes = {
         valType: 'enumerated',
         role: 'info',
         values: ['zoom', 'pan', 'select', 'lasso', 'orbit', 'turntable'],
+        dflt: 'zoom',
         description: [
             'Determines the mode of drag interactions.',
             '*select* and *lasso* apply only to scatter traces with',
@@ -42,20 +44,17 @@ fx.layoutAttributes = {
 };
 
 fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
-    var isHoriz, hovermodeDflt;
-
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(layoutIn, layoutOut,
-                                 fx.layoutAttributes,
-                                 attr, dflt);
+        return Lib.coerce(layoutIn, layoutOut, fx.layoutAttributes, attr, dflt);
     }
 
-    coerce('dragmode', layoutOut._hasGL3D ? 'turntable' : 'zoom');
+    coerce('dragmode');
 
+    var hovermodeDflt;
     if(layoutOut._hasCartesian) {
         // flag for 'horizontal' plots:
         // determines the state of the mode bar 'compare' hovermode button
-        isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
+        var isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
         hovermodeDflt = isHoriz ? 'y' : 'x';
     }
     else hovermodeDflt = 'closest';
@@ -65,21 +64,23 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
 fx.isHoriz = function(fullData) {
     var isHoriz = true;
-    var i, trace;
-    for (i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
-        if (trace.orientation !== 'h') {
+
+    for(var i = 0; i < fullData.length; i++) {
+        var trace = fullData[i];
+
+        if(trace.orientation !== 'h') {
             isHoriz = false;
             break;
         }
     }
+
     return isHoriz;
 };
 
 fx.init = function(gd) {
     var fullLayout = gd._fullLayout;
 
-    if(fullLayout._hasGL3D || fullLayout._hasGeo || gd._context.staticPlot) return;
+    if(!fullLayout._hasCartesian || gd._context.staticPlot) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number
@@ -1821,6 +1822,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
 
+        gd.emit('plotly_doubleclick', null);
         Plotly.relayout(gd, attrs);
     }
 

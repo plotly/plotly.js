@@ -97,18 +97,20 @@ function render(scene) {
             if(hoverinfoParts.indexOf('name') === -1) lastPicked.name = undefined;
         }
 
-        Fx.loneHover({
-            x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
-            y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
-            xLabel: xVal,
-            yLabel: yVal,
-            zLabel: zVal,
-            text: selection.textLabel,
-            name: lastPicked.name,
-            color: lastPicked.color
-        }, {
-            container: svgContainer
-        });
+        if(scene.fullSceneLayout.hovermode) {
+            Fx.loneHover({
+                x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
+                y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
+                xLabel: xVal,
+                yLabel: yVal,
+                zLabel: zVal,
+                text: selection.textLabel,
+                name: lastPicked.name,
+                color: lastPicked.color
+            }, {
+                container: svgContainer
+            });
+        }
 
         var eventType = (selection.buttons) ? 'plotly_click' : 'plotly_hover',
             eventData = makeEventData(xVal, yVal, zVal, trace, selection);
@@ -156,7 +158,8 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
     try {
         scene.glplot = createPlot(glplotOptions);
-    } catch (e) {
+    }
+    catch (e) {
         /*
         * createPlot will throw when webgl is not enabled in the client.
         * Lets return an instance of the module with all functions noop'd.
@@ -174,7 +177,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     }
 
     if(!scene.camera) {
-        var cameraData = fullLayout.scene.camera;
+        var cameraData = scene.fullSceneLayout.camera;
         scene.camera = createCamera(scene.container, {
             center: [cameraData.center.x, cameraData.center.y, cameraData.center.z],
             eye: [cameraData.eye.x, cameraData.eye.y, cameraData.eye.z],
@@ -191,7 +194,6 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     scene.glplot.oncontextloss = function() {
         scene.recoverContext();
     };
-
 
     scene.glplot.onrender = render.bind(null, scene);
 
@@ -231,6 +233,7 @@ function Scene(options, fullLayout) {
 
     this.fullLayout = fullLayout;
     this.id = options.id || 'scene';
+    this.fullSceneLayout = fullLayout[this.id];
 
     //Saved from last call to plot()
     this.plotArgs = [ [], {}, {} ];
@@ -328,7 +331,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.spikeOptions.merge(fullSceneLayout);
 
     // Update camera mode
-    this.handleDragmode(fullLayout.dragmode);
+    this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
 
     //Update scene
     this.glplot.update({});
@@ -614,16 +617,16 @@ proto.saveCamera = function saveCamera(layout) {
     return hasChanged;
 };
 
-proto.handleDragmode = function(dragmode) {
-
+proto.updateFx = function(dragmode, hovermode) {
     var camera = this.camera;
-    if (camera) {
+
+    if(camera) {
         // rotate and orbital are synonymous
-        if (dragmode === 'orbit') {
+        if(dragmode === 'orbit') {
             camera.mode = 'orbit';
             camera.keyBindingMode = 'rotate';
 
-        } else if (dragmode === 'turntable') {
+        } else if(dragmode === 'turntable') {
             camera.up = [0, 0, 1];
             camera.mode = 'turntable';
             camera.keyBindingMode = 'rotate';
@@ -634,6 +637,9 @@ proto.handleDragmode = function(dragmode) {
             camera.keyBindingMode = dragmode;
         }
     }
+
+    // to put dragmode and hovermode on the same grounds from relayout
+    this.fullSceneLayout.hovermode = hovermode;
 };
 
 proto.toImage = function(format) {

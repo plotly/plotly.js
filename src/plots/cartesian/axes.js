@@ -1186,7 +1186,7 @@ axes.getSubplots = function(gd, ax) {
                 ax2.anchor,
             ax3 = axes.getFromId(gd, ax3Id);
 
-        // if a free axis is already represented in the data, ignore it
+        // look if ax2 is already represented in the data
         var foundAx2 = false;
         for(j = 0; j < subplots.length; j++) {
             if(hasAx2(subplots[j], ax2)) {
@@ -1194,15 +1194,12 @@ axes.getSubplots = function(gd, ax) {
                 break;
             }
         }
+
+        // ignore free axes that already represented in the data
         if(ax2.anchor === 'free' && foundAx2) continue;
 
-        if(!ax3) {
-            console.log([
-                'Warning: couldnt find anchor', ax3Id,
-                'for axis', ax2._id
-            ].join(' '));
-            return;
-        }
+        // ignore anchor-less axes
+        if(!ax3) continue;
 
         sp = (ax2Letter === 'x') ?
             ax2._id + ax3._id :

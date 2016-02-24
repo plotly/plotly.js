@@ -233,22 +233,28 @@ plots.redrawText = function(gd) {
 
 // resize plot about the container size
 plots.resize = function(gd) {
-    if(!gd || d3.select(gd).style('display') === 'none') return;
+    return new Promise(function(resolve, reject) {
 
-    if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
-
-    gd._redrawTimer = setTimeout(function() {
-        if((gd._fullLayout || {}).autosize) {
-            // autosizing doesn't count as a change that needs saving
-            var oldchanged = gd.changed;
-
-            // nor should it be included in the undo queue
-            gd.autoplay = true;
-
-            Plotly.relayout(gd, {autosize: true});
-            gd.changed = oldchanged;
+        if (!gd || d3.select(gd).style('display') === 'none'){
+            reject(new Error('Resize must be passed a plot div element.'));
         }
-    }, 100);
+
+        if (gd._redrawTimer) clearTimeout(gd._redrawTimer);
+
+        gd._redrawTimer = setTimeout(function() {
+            if ((gd._fullLayout || {}).autosize) {
+                // autosizing doesn't count as a change that needs saving
+                var oldchanged = gd.changed;
+
+                // nor should it be included in the undo queue
+                gd.autoplay = true;
+
+                Plotly.relayout(gd, { autosize: true });
+                gd.changed = oldchanged;
+                resolve(gd);
+            }
+        }, 100);
+    });
 };
 
 

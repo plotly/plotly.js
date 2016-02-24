@@ -180,5 +180,43 @@ describe('Test geo interactions', function() {
             });
         });
 
+        describe('trace visibility toggle', function() {
+            function countTraces(type) {
+                return d3.selectAll('g.trace.' + type).size();
+            }
+
+            it('should toggle scattergeo elements', function(done) {
+                expect(countTraces('scattergeo')).toBe(1);
+                expect(countTraces('choropleth')).toBe(1);
+
+                Plotly.restyle(gd, 'visible', false, [0]).then(function() {
+                    expect(countTraces('scattergeo')).toBe(0);
+                    expect(countTraces('choropleth')).toBe(1);
+
+                    Plotly.restyle(gd, 'visible', true, [0]).then(function() {
+                        expect(countTraces('scattergeo')).toBe(1);
+                        expect(countTraces('choropleth')).toBe(1);
+                        done();
+                    });
+                });
+            });
+
+            it('should toggle choropleth elements', function(done) {
+                expect(countTraces('scattergeo')).toBe(1);
+                expect(countTraces('choropleth')).toBe(1);
+
+                Plotly.restyle(gd, 'visible', false, [1]).then(function() {
+                    expect(countTraces('scattergeo')).toBe(1);
+                    expect(countTraces('choropleth')).toBe(0);
+
+                    Plotly.restyle(gd, 'visible', true, [1]).then(function() {
+                        expect(countTraces('scattergeo')).toBe(1);
+                        expect(countTraces('choropleth')).toBe(1);
+                        done();
+                    });
+                });
+            });
+
+        });
     });
 });

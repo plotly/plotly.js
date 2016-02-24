@@ -6,6 +6,7 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var mouseEvent = require('../assets/mouse_event');
 
 describe('hover info', function() {
     'use strict';
@@ -240,6 +241,44 @@ describe('hover info', function() {
             expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][0].innerHTML).toEqual('hover');
             expect(d3.selectAll('g.hovertext').selectAll('tspan')[0][1].innerHTML).toEqual('text');
             expect(d3.selectAll('g.hovertext').select('text').selectAll('tspan').size()).toEqual(2);
+        });
+    });
+
+    describe('hoverformat', function() {
+
+        var data = [{
+                x: [1, 2, 3],
+                y: [0.12345, 0.23456, 0.34567]
+            }],
+            layout = {
+                yaxis: { showticklabels: true, hoverformat: ',.2r' },
+                width: 600,
+                height: 400
+            };
+
+        beforeEach(function() {
+            this. gd = createGraphDiv();
+        });
+
+        it('should display the correct format when ticklabels true', function() {
+            Plotly.plot(this.gd, data, layout);
+            mouseEvent('mousemove', 310, 220);
+
+            var hovers = d3.selectAll('g.hovertext');
+
+            expect(hovers.size()).toEqual(1);
+            expect(hovers.select('text')[0][0].textContent).toEqual('0.23');
+        });
+
+        it('should display the correct format when ticklabels false', function() {
+            layout.yaxis.showticklabels = false;
+            Plotly.plot(this.gd, data, layout);
+            mouseEvent('mousemove', 310, 220);
+
+            var hovers = d3.selectAll('g.hovertext');
+
+            expect(hovers.size()).toEqual(1);
+            expect(hovers.select('text')[0][0].textContent).toEqual('0.23');
         });
     });
 });

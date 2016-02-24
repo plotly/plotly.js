@@ -98,8 +98,24 @@ function testMock(fileName, t) {
         var options = {
             file: diffPath,
             highlightColor: 'purple',
-            tolerance: 0.0
+            tolerance: 1e-6
         };
+
+        /*
+         * N.B. The non-zero tolerance was added in
+         * https://github.com/plotly/plotly.js/pull/243
+         * where some legend mocks started generating different png outputs
+         * on `npm run test-image` and `npm run test-image -- mock.json`.
+         *
+         * Note that the svg outputs for the problematic mocks were the same
+         * and playing around with the batch size and timeout durations
+         * did not seem to affect the results.
+         *
+         * With the above tolerance individual `npm run test-image` and
+         * `npm run test-image -- mock.json` give the same result.
+         *
+         * Further investigation is needed.
+         */
 
         gm.compare(
             savedImagePath,

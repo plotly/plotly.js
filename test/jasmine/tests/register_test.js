@@ -1,6 +1,27 @@
 var Plotly = require('@lib/index');
 
 describe('the register function', function() {
+    'use strict';
+
+    var Plots = Plotly.Plots;
+
+    beforeEach(function() {
+        this.modulesKeys = Object.keys(Plots.modules);
+        this.allTypesKeys = Object.keys(Plots.allTypes);
+        this.allCategoriesKeys = Object.keys(Plots.allCategories);
+    });
+
+    afterEach(function() {
+        function revertObj(obj, initialKeys) {
+            Object.keys(obj).forEach(function(k) {
+                if(initialKeys.indexOf(k) === -1) delete obj[k];
+            });
+        }
+
+        revertObj(Plots.modules, this.modulesKeys);
+        revertObj(Plots.allTypes, this.allTypesKeys);
+        revertObj(Plots.allCategories, this.allCategoriesKeys);
+    });
 
     it('should throw an error when no argument is given', function() {
         expect(function() {
