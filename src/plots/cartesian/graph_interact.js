@@ -1822,8 +1822,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             }
         }
 
-        var dblClickData = gd._hoverdata ? {points: gd._hoverdata} : null;
-        gd.emit('plotly_doubleclick', dblClickData);
+        gd.emit('plotly_doubleclick', null);
         Plotly.relayout(gd, attrs);
     }
 
