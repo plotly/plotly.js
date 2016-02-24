@@ -140,10 +140,65 @@ plots.registerSubplot = function(_module) {
     subplotsRegistry[plotType] = _module;
 };
 
-// TODO separate the 'find subplot' step (which looks in layout)
-// from the 'get subplot ids' step (which looks in fullLayout._plots)
+/**
+ * Find subplot ids in data and layout. Meant to be used
+ * in the defaults step. Use plots.getSubplotIds to grab the current
+ * subplot ids later on in Plotly.plot.
+ *
+ * @param {array} data : plotly data array
+ *      (intended to be _fullData, but does not have to be).
+ * @param {object} layout : plotly layout object
+ *      (intended to be _fullLayout, but does not have to be).
+ * @param {string} type : subplot type to look for.
+ *
+ * @return {array} list of subplot ids (strings).
+ *      N.B. these ids are possibly un-ordered.
+ *
+ * TODO incorporate cartesian/gl2d axis finders in this paradigm.
+ */
+plots.findSubplotIds = function findSubplotIds(data, layout, type) {
+    var subplotIds = [];
+    var i;
+
+    if(plots.subplotsRegistry[type] === undefined) return subplotIds;
+
+    var attr = plots.subplotsRegistry[type].attr;
+
+    for(i = 0; i < data.length; i++) {
+        var trace = data[i];
+
+        if(plots.traceIs(trace, type) && subplotIds.indexOf(trace[attr]) === -1) {
+            subplotIds.push(trace[attr]);
+        }
+    }
+
+    var attrRegex = plots.subplotsRegistry[type].attrRegex,
+        layoutKeys = Object.keys(layout);
+
+    for(i = 0; i < layoutKeys.length; i++) {
+        var layoutKey = layoutKeys[i];
+
+        if(subplotIds.indexOf(layoutKey) === -1 && attrRegex.test(layoutKey)) {
+            subplotIds.push(layoutKey);
+        }
+    }
+
+    return subplotIds;
+};
+
+/**
+ * Get the ids of the current subplots.
+ *
+ * @param {object} layout : plotly full layout object.
+ * @param {string} type : subplot type to look for.
+ *
+ * @return {array} list of ordered subplot ids (strings).
+ *
+ */
 plots.getSubplotIds = function getSubplotIds(layout, type) {
-    if(plots.subplotsRegistry[type] === undefined) return [];
+    var _module = plots.subplotsRegistry[type];
+
+    if(_module === undefined) return [];
 
     // layout must be 'fullLayout' here
     if(type === 'cartesian' && !layout._hasCartesian) return [];
@@ -152,36 +207,37 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
         return Object.keys(layout._plots);
     }
 
-    var idRegex = plots.subplotsRegistry[type].idRegex,
+    var idRegex = _module.idRegex,
         layoutKeys = Object.keys(layout),
-        subplotIds = [],
-        layoutKey;
+        subplotIds = [];
 
     for(var i = 0; i < layoutKeys.length; i++) {
-        layoutKey = layoutKeys[i];
+        var layoutKey = layoutKeys[i];
+
         if(idRegex.test(layoutKey)) subplotIds.push(layoutKey);
     }
 
-    return subplotIds;
-};
-
-plots.getSubplotIdsInData = function getSubplotsInData(data, type) {
-    if(plots.subplotsRegistry[type] === undefined) return [];
-
-    var attr = plots.subplotsRegistry[type].attr,
-        subplotIds = [],
-        trace;
-
-    for (var i = 0; i < data.length; i++) {
-        trace = data[i];
-        if(Plotly.Plots.traceIs(trace, type) && subplotIds.indexOf(trace[attr])===-1) {
-            subplotIds.push(trace[attr]);
-        }
-    }
+    // order the ids
+    var idLen = _module.idRoot.length;
+    subplotIds.sort(function(a, b) {
+        var aNum = +(a.substr(idLen) || 1),
+            bNum = +(b.substr(idLen) || 1);
+        return aNum - bNum;
+    });
 
     return subplotIds;
 };
 
+/**
+ * Get the data traces associated with a particular subplot.
+ *
+ * @param {object} layout : plotly layout object
+ *      (intended to be _fullLayout, but does not have to be).
+ * @param {string} type : subplot type to look for.
+ *
+ * @return {array} array of plotly traces.
+ *
+ */
 plots.getSubplotData = function getSubplotData(data, type, subplotId) {
     if(plots.subplotsRegistry[type] === undefined) return [];
 
@@ -389,12 +445,12 @@ plots.sendDataToCloud = function(gd) {
     return false;
 };
 
+// fill in default values:
+//  gd.data, gd.layout:
+//      are precisely what the user specified
+//  gd._fullData, gd._fullLayout:
+//      are complete descriptions of how to draw the plot
 plots.supplyDefaults = function(gd) {
-    // fill in default values:
-    // gd.data, gd.layout:
-    //   are precisely what the user specified
-    // gd._fullData, gd._fullLayout:
-    //   are complete descriptions of how to draw the plot
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
         newLayout = gd.layout || {},
@@ -447,7 +503,8 @@ plots.supplyDefaults = function(gd) {
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
-    cleanScenes(newFullLayout, oldFullLayout);
+    // clean subplots and other artifacts from previous plot calls
+    cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     /*
      * Relink functions and underscore attributes to promote consistency between
@@ -475,17 +532,46 @@ plots.supplyDefaults = function(gd) {
     }
 };
 
-function cleanScenes(newFullLayout, oldFullLayout) {
-    var oldSceneKey,
-        oldSceneKeys = plots.getSubplotIds(oldFullLayout, 'gl3d');
+function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var i, j;
 
-    for (var i = 0; i < oldSceneKeys.length; i++) {
-        oldSceneKey = oldSceneKeys[i];
-        if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
-            oldFullLayout[oldSceneKey]._scene.destroy();
+    var plotTypes = Object.keys(subplotsRegistry);
+    for(i = 0; i < plotTypes.length; i++) {
+        var _module = subplotsRegistry[plotTypes[i]];
+
+        if(_module.clean) {
+            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
         }
     }
 
+    var hasPaper = !!oldFullLayout._paper;
+    var hasInfoLayer = !!oldFullLayout._infolayer;
+
+    oldLoop:
+    for(i = 0; i < oldFullData.length; i++) {
+        var oldTrace = oldFullData[i];
+        var oldUid = oldTrace.uid;
+
+        for(j = 0; j < newFullData.length; j++) {
+            var newTrace = newFullData[j];
+
+            if(oldUid === newTrace.uid) continue oldLoop;
+        }
+
+        // clean old heatmap and contour traces
+        if(hasPaper) {
+            oldFullLayout._paper.selectAll(
+                '.hm' + oldUid +
+                ',.contour' + oldUid +
+                ',#clip' + oldUid
+            ).remove();
+        }
+
+        // clean old colorbars
+        if(hasInfoLayer) {
+            oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
+        }
+    }
 }
 
 /**
@@ -645,7 +731,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var i, _module;
 
-    // TODO incorporate into subplotRegistry
+    // TODO incorporate into subplotsRegistry
     Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
     // plot module layout defaults

@@ -24,6 +24,18 @@ describe('Test geo interactions', function() {
             mouseEvent(type, 400, 160);
         }
 
+        function countTraces(type) {
+            return d3.selectAll('g.trace.' + type).size();
+        }
+
+        function countGeos() {
+            return d3.select('div.geo-container').selectAll('div').size();
+        }
+
+        function countColorBars() {
+            return d3.select('g.infolayer').selectAll('.cbbg').size();
+        }
+
         beforeEach(function(done) {
             gd = createGraphDiv();
             Plotly.plot(gd, mock.data, mock.layout).then(done);
@@ -181,10 +193,6 @@ describe('Test geo interactions', function() {
         });
 
         describe('trace visibility toggle', function() {
-            function countTraces(type) {
-                return d3.selectAll('g.trace.' + type).size();
-            }
-
             it('should toggle scattergeo elements', function(done) {
                 expect(countTraces('scattergeo')).toBe(1);
                 expect(countTraces('choropleth')).toBe(1);
@@ -193,11 +201,12 @@ describe('Test geo interactions', function() {
                     expect(countTraces('scattergeo')).toBe(0);
                     expect(countTraces('choropleth')).toBe(1);
 
-                    Plotly.restyle(gd, 'visible', true, [0]).then(function() {
-                        expect(countTraces('scattergeo')).toBe(1);
-                        expect(countTraces('choropleth')).toBe(1);
-                        done();
-                    });
+                    return Plotly.restyle(gd, 'visible', true, [0]);
+                }).then(function() {
+                    expect(countTraces('scattergeo')).toBe(1);
+                    expect(countTraces('choropleth')).toBe(1);
+
+                    done();
                 });
             });
 
@@ -209,14 +218,48 @@ describe('Test geo interactions', function() {
                     expect(countTraces('scattergeo')).toBe(1);
                     expect(countTraces('choropleth')).toBe(0);
 
-                    Plotly.restyle(gd, 'visible', true, [1]).then(function() {
-                        expect(countTraces('scattergeo')).toBe(1);
-                        expect(countTraces('choropleth')).toBe(1);
-                        done();
-                    });
+                    return Plotly.restyle(gd, 'visible', true, [1]);
+                }).then(function() {
+                    expect(countTraces('scattergeo')).toBe(1);
+                    expect(countTraces('choropleth')).toBe(1);
+
+                    done();
                 });
             });
 
         });
+
+        describe('deleting traces and geos', function() {
+            it('should delete traces in succession', function(done) {
+                expect(countTraces('scattergeo')).toBe(1);
+                expect(countTraces('choropleth')).toBe(1);
+                expect(countGeos()).toBe(1);
+                expect(countColorBars()).toBe(1);
+
+                Plotly.deleteTraces(gd, [0]).then(function() {
+                    expect(countTraces('scattergeo')).toBe(0);
+                    expect(countTraces('choropleth')).toBe(1);
+                    expect(countGeos()).toBe(1);
+                    expect(countColorBars()).toBe(1);
+
+                    return Plotly.deleteTraces(gd, [0]);
+                }).then(function() {
+                    expect(countTraces('scattergeo')).toBe(0);
+                    expect(countTraces('choropleth')).toBe(0);
+                    expect(countGeos()).toBe(1);
+                    expect(countColorBars()).toBe(0);
+
+                    return Plotly.relayout(gd, 'geo', null);
+                }).then(function() {
+                    expect(countTraces('scattergeo')).toBe(0);
+                    expect(countTraces('choropleth')).toBe(0);
+                    expect(countGeos()).toBe(0);
+                    expect(countColorBars()).toBe(0);
+
+                    done();
+                });
+            });
+        });
+
     });
 });

@@ -50,16 +50,13 @@ var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 Plotly.plot = function(gd, data, layout, config) {
     Lib.markTime('in plot');
 
-
     gd = getGraphDiv(gd);
 
-    /*
-     * Events.init is idempotent and bails early if gd has already been init'd
-     */
+    // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
 
     var okToPlot = Events.triggerHandler(gd, 'plotly_beforeplot', [data, layout, config]);
-    if(okToPlot===false) return Promise.reject();
+    if(okToPlot === false) return Promise.reject();
 
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
@@ -89,22 +86,23 @@ Plotly.plot = function(gd, data, layout, config) {
     // complete, and empty out the promise list again.
     gd._promises = [];
 
+    var graphWasEmpty = ((gd.data || []).length === 0 && Array.isArray(data));
+
     // if there is already data on the graph, append the new data
     // if you only want to redraw, pass a non-array for data
-    var graphwasempty = ((gd.data||[]).length===0 && Array.isArray(data));
     if(Array.isArray(data)) {
         cleanData(data, gd.data);
 
-        if(graphwasempty) gd.data=data;
-        else gd.data.push.apply(gd.data,data);
+        if(graphWasEmpty) gd.data = data;
+        else gd.data.push.apply(gd.data, data);
 
         // for routines outside graph_obj that want a clean tab
         // (rather than appending to an existing one) gd.empty
         // is used to determine whether to make a new tab
-        gd.empty=false;
+        gd.empty = false;
     }
 
-    if(!gd.layout || graphwasempty) gd.layout = cleanLayout(layout);
+    if(!gd.layout || graphWasEmpty) gd.layout = cleanLayout(layout);
 
     // if the user is trying to drag the axes, allow new data and layout
     // to come in but don't allow a replot.
@@ -126,23 +124,28 @@ Plotly.plot = function(gd, data, layout, config) {
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
     gd._replotting = true;
-    var hasData = gd._fullData.length>0;
+    var hasData = gd._fullData.length > 0;
+
+    var subplots = Plotly.Axes.getSubplots(gd).join(''),
+        oldSubplots = Object.keys(gd._fullLayout._plots || {}).join(''),
+        hasSameSubplots = (oldSubplots === subplots);
 
     // Make or remake the framework (ie container and axes) if we need to
     // note: if they container already exists and has data,
     //  the new layout gets ignored (as it should)
     //  but if there's no data there yet, it's just a placeholder...
     //  then it should destroy and remake the plot
-    if (hasData) {
-        var subplots = Plotly.Axes.getSubplots(gd).join(''),
-            oldSubplots = Object.keys(gd._fullLayout._plots || {}).join('');
-
-        if(gd.framework!==makePlotFramework || graphwasempty || (oldSubplots!==subplots)) {
+    if(hasData) {
+        if(gd.framework !== makePlotFramework || graphWasEmpty || !hasSameSubplots) {
             gd.framework = makePlotFramework;
             makePlotFramework(gd);
         }
     }
-    else if(graphwasempty) makePlotFramework(gd);
+    else if(!hasSameSubplots) {
+        gd.framework = makePlotFramework;
+        makePlotFramework(gd);
+    }
+    else if(graphWasEmpty) makePlotFramework(gd);
 
     var fullLayout = gd._fullLayout;
 
@@ -160,7 +163,7 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     // in case it has changed, attach fullData traces to calcdata
-    for (var i = 0; i < gd.calcdata.length; i++) {
+    for(var i = 0; i < gd.calcdata.length; i++) {
         gd.calcdata[i][0].trace = gd._fullData[i];
     }
 
@@ -501,6 +504,7 @@ function cleanLayout(layout) {
         if(!layout.xaxis) layout.xaxis = layout.xaxis1;
         delete layout.xaxis1;
     }
+
     if(layout.yaxis1) {
         if(!layout.yaxis) layout.yaxis = layout.yaxis1;
         delete layout.yaxis1;
@@ -2144,8 +2148,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
         undoit[ai] = (pleaf === 'reverse') ? vi : p.get();
 
         // check autosize or autorange vs size and range
-        if(hw.indexOf(ai)!==-1) { doextra('autosize', false); }
-        else if(ai==='autosize') { doextra(hw, undefined); }
+        if(hw.indexOf(ai) !== -1) {
+            doextra('autosize', false);
+        }
+        else if(ai === 'autosize') {
+            doextra(hw, undefined);
+        }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
             doextra(ptrunk+'.autorange', false);
         }
@@ -2165,6 +2173,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
         else if(pleaf === 'tickmode') {
             doextra([ptrunk + '.tick0', ptrunk + '.dtick'], undefined);
         }
+        else if(/[xy]axis[0-9]*?$/.test(pleaf) && !Object.keys(vi || {}).length) {
+            docalc = true;
+        }
+
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
@@ -2318,10 +2330,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
         seq.push(function layoutReplot() {
             // force plot() to redo the layout
             gd.layout = undefined;
+
             // force it to redo calcdata?
             if(docalc) gd.calcdata = undefined;
+
             // replot with the modified layout
-            return Plotly.plot(gd,'',layout);
+            return Plotly.plot(gd, '', layout);
         });
     }
     else if(ak.length) {

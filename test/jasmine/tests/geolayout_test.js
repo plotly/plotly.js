@@ -8,15 +8,11 @@ describe('Test Geo layout defaults', function() {
     var supplyLayoutDefaults = Geo.supplyLayoutDefaults;
 
     describe('supplyLayoutDefaults', function() {
-        var layoutIn, layoutOut;
-
-        var fullData = [{
-            type: 'scattergeo',
-            geo: 'geo'
-        }];
+        var layoutIn, layoutOut, fullData;
 
         beforeEach(function() {
             layoutOut = {};
+            fullData = [];
         });
 
         it('should not coerce projection.rotation if type is albers usa', function() {
@@ -175,6 +171,34 @@ describe('Test Geo layout defaults', function() {
                     });
                 }
             });
+        });
+
+        it('should detect orphan geos', function() {
+            layoutIn = { geo: {} };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut._hasGeo).toBe(true);
+        });
+
+        it('should detect orphan geos (converse)', function() {
+            layoutIn = { 'not-gonna-work': {} };
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut._hasGeo).toBe(undefined);
+        });
+
+        it('should add geo data-only geos into layoutIn', function() {
+            layoutIn = {};
+            fullData = [{ type: 'scattergeo', geo: 'geo' }];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutIn.geo).toEqual({});
+        });
+
+        it('should add geo data-only geos into layoutIn (converse)', function() {
+            layoutIn = {};
+            fullData = [{ type: 'scatter' }];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutIn.geo).toBe(undefined);
         });
 
     });

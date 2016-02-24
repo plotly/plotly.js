@@ -16,12 +16,11 @@ var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    if(!layoutOut._hasGL3D) return;
+    var scenes = Plots.findSubplotIds(fullData, layoutIn, 'gl3d'),
+        scenesLength = scenes.length;
 
-    var scenes = Plots.getSubplotIdsInData(fullData, 'gl3d');
-
-    // Get number of scenes to compute default scene domain
-    var scenesLength = scenes.length;
+    if(scenes.length) layoutOut._hasGL3D = true;
+    else return;
 
     var sceneLayoutIn, sceneLayoutOut;
 
@@ -59,6 +58,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
          * attributes like aspectratio can be written back dynamically.
          */
 
+        // gl3d traces get a layout scene for free!
         if(layoutIn[scene] !== undefined) sceneLayoutIn = layoutIn[scene];
         else layoutIn[scene] = sceneLayoutIn = {};
 

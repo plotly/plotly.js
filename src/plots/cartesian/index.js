@@ -100,10 +100,8 @@ exports.plot = function(gd) {
         }
 
         // finally do all error bars at once
-        if(fullLayout._hasCartesian) {
-            ErrorBars.plot(gd, subplotInfo, cdError);
-            Lib.markTime('done ErrorBars');
-        }
+        ErrorBars.plot(gd, subplotInfo, cdError);
+        Lib.markTime('done ErrorBars');
     }
 
     // now draw stuff not on subplots (ie, only pies at the moment)
@@ -112,5 +110,11 @@ exports.plot = function(gd) {
         var cdPie = getCdModule(calcdata, Pie);
 
         if(cdPie.length) Pie.plot(gd, cdPie);
+    }
+};
+
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    if(oldFullLayout._hasPie && !newFullLayout._hasPie) {
+        oldFullLayout._pielayer.selectAll('g.trace').remove();
     }
 };

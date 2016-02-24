@@ -167,9 +167,12 @@ describe('Test axes', function() {
     });
 
     describe('supplyLayoutDefaults', function() {
-        var layoutIn = {},
-            layoutOut = {},
+        var layoutIn, layoutOut, fullData;
+
+        beforeEach(function() {
+            layoutOut = {};
             fullData = [];
+        });
 
         var supplyLayoutDefaults = Axes.supplyLayoutDefaults;
 
@@ -196,7 +199,7 @@ describe('Test axes', function() {
 
         it('should set linewidth to default if linecolor is supplied and valid', function() {
             layoutIn = {
-                xaxis: {linecolor:'black'}
+                xaxis: { linecolor: 'black' }
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.linecolor).toBe('black');
@@ -205,7 +208,7 @@ describe('Test axes', function() {
 
         it('should set linecolor to default if linewidth is supplied and valid', function() {
             layoutIn = {
-                yaxis: {linewidth:2}
+                yaxis: { linewidth: 2 }
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.yaxis.linewidth).toBe(2);
@@ -252,6 +255,69 @@ describe('Test axes', function() {
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.xaxis.zerolinewidth).toBe(undefined);
             expect(layoutOut.xaxis.zerolinecolor).toBe(undefined);
+        });
+
+        it('should detect orphan axes (lone axes case)', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            fullData = [];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut._hasCartesian).toBe(true);
+        });
+
+        it('should detect orphan axes (gl2d trace conflict case)', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            fullData = [{
+                type: 'scattergl',
+                xaxis: 'x',
+                yaxis: 'y'
+            }];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut._hasCartesian).toBe(undefined);
+        });
+
+        it('should detect orphan axes (gl2d + cartesian case)', function() {
+            layoutIn = {
+                xaxis2: {},
+                yaxis2: {}
+            };
+            fullData = [{
+                type: 'scattergl',
+                xaxis: 'x',
+                yaxis: 'y'
+            }];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut._hasCartesian).toBe(true);
+        });
+
+        it('should detect orphan axes (gl3d present case)', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            layoutOut._hasGL3D = true;
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut._hasCartesian).toBe(undefined);
+        });
+
+        it('should detect orphan axes (gl3d present case)', function() {
+            layoutIn = {
+                xaxis: {},
+                yaxis: {}
+            };
+            layoutOut._hasGeo = true;
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut._hasCartesian).toBe(undefined);
         });
     });
 
