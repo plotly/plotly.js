@@ -1807,15 +1807,24 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         else if(doubleClickConfig === 'reset') {
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
-                attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+
+                if(!ax._rangeInitial) {
+                    attrs[ax._name + '.autorange'] = true;
+                }
+                else {
+                    attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+                }
             }
         }
         else if(doubleClickConfig === 'reset+autosize') {
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
+
                 if(ax.fixedrange) continue;
                 if(ax._rangeInitial === undefined ||
-                    ax.range[0]===ax._rangeInitial[0] && ax.range[1]===ax._rangeInitial[1]) {
+                    ax.range[0] === ax._rangeInitial[0] &&
+                    ax.range[1] === ax._rangeInitial[1]
+                ) {
                     attrs[ax._name + '.autorange'] = true;
                 }
                 else attrs[ax._name + '.range'] = ax._rangeInitial.slice();
