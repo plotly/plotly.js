@@ -187,10 +187,10 @@ module.exports = function setConvert(ax) {
 
             if(v !== null && v !== undefined && ax._categories.indexOf(v) === -1){
                 ax._categories.push(v);
-                return ax._categories.length - 1;
-            }else{
-                return constants.BADNUM;
             }
+
+            var c = ax._categories.indexOf(v);
+            return c === -1 ? constants.BADNUM : c;
         };
 
         ax.d2l = ax.d2c;
