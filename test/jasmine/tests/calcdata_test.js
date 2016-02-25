@@ -3,7 +3,7 @@ var Plotly = require('@lib/index');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-fdescribe('calculated data and points', function() {
+describe('calculated data and points', function() {
     describe('connectGaps', function() {
 
         var gd;
