@@ -1807,7 +1807,13 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         else if(doubleClickConfig === 'reset') {
             for(i = 0; i < axList.length; i++) {
                 ax = axList[i];
-                attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+
+                if(!ax._rangeInitial) {
+                    attrs[ax._name + '.autorange'] = true;
+                }
+                else {
+                    attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+                }
             }
         }
         else if(doubleClickConfig === 'reset+autosize') {
