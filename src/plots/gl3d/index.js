@@ -51,8 +51,9 @@ exports.plot = function plotGl3d(gd) {
         // If Scene is not instantiated, create one!
         if(scene === undefined) {
             scene = new Scene({
-                container: gd.querySelector('.gl-container'),
                 id: sceneId,
+                graphDiv: gd,
+                container: gd.querySelector('.gl-container'),
                 staticPlot: gd._context.staticPlot,
                 plotGlPixelRatio: gd._context.plotGlPixelRatio
             },

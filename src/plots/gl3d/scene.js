@@ -34,7 +34,7 @@ var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
 
-    //Update size of svg container
+    // update size of svg container
     var svgContainer = scene.svgContainer;
     var clientRect = scene.container.getBoundingClientRect();
     var width = clientRect.width, height = clientRect.height;
@@ -45,7 +45,7 @@ function render(scene) {
     computeTickMarks(scene);
     scene.glplot.axes.update(scene.axesOptions);
 
-    //Check if pick has changed
+    // check if pick has changed
     var keys = Object.keys(scene.traces);
     var lastPicked = null;
     var selection = scene.glplot.selection;
@@ -59,22 +59,28 @@ function render(scene) {
     }
 
     function formatter(axisName, val) {
-        if(val === undefined) return undefined;
         if(typeof val === 'string') return val;
 
         var axis = scene.fullSceneLayout[axisName];
         return Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
+    var oldEventData;
+
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate),
-            hoverinfo = lastPicked.data.hoverinfo;
+            trace = lastPicked.data,
+            hoverinfo = trace.hoverinfo;
+
+        var xVal = formatter('xaxis', selection.traceCoordinate[0]),
+            yVal = formatter('yaxis', selection.traceCoordinate[1]),
+            zVal = formatter('zaxis', selection.traceCoordinate[2]);
 
         if(hoverinfo !== 'all') {
             var hoverinfoParts = hoverinfo.split('+');
-            if(hoverinfoParts.indexOf('x') === -1) selection.traceCoordinate[0] = undefined;
-            if(hoverinfoParts.indexOf('y') === -1) selection.traceCoordinate[1] = undefined;
-            if(hoverinfoParts.indexOf('z') === -1) selection.traceCoordinate[2] = undefined;
+            if(hoverinfoParts.indexOf('x') === -1) xVal = undefined;
+            if(hoverinfoParts.indexOf('y') === -1) yVal = undefined;
+            if(hoverinfoParts.indexOf('z') === -1) zVal = undefined;
             if(hoverinfoParts.indexOf('text') === -1) selection.textLabel = undefined;
             if(hoverinfoParts.indexOf('name') === -1) lastPicked.name = undefined;
         }
@@ -83,9 +89,9 @@ function render(scene) {
             Fx.loneHover({
                 x: (0.5 + 0.5 * pdata[0] / pdata[3]) * width,
                 y: (0.5 - 0.5 * pdata[1] / pdata[3]) * height,
-                xLabel: formatter('xaxis', selection.traceCoordinate[0]),
-                yLabel: formatter('yaxis', selection.traceCoordinate[1]),
-                zLabel: formatter('zaxis', selection.traceCoordinate[2]),
+                xLabel: xVal,
+                yLabel: yVal,
+                zLabel: zVal,
                 text: selection.textLabel,
                 name: lastPicked.name,
                 color: lastPicked.color
@@ -93,8 +99,32 @@ function render(scene) {
                 container: svgContainer
             });
         }
+
+        var eventData = {
+            points: [{
+                x: xVal,
+                y: yVal,
+                z: zVal,
+                data: trace._input,
+                fullData: trace,
+                curveNumber: trace.index,
+                pointNumber: selection.data.index
+            }]
+        };
+
+        if(selection.buttons && selection.distance < 5) {
+            scene.graphDiv.emit('plotly_click', eventData);
+        }
+        else {
+            scene.graphDiv.emit('plotly_hover', eventData);
+        }
+
+        oldEventData = eventData;
     }
-    else Fx.loneUnhover(svgContainer);
+    else {
+        Fx.loneUnhover(svgContainer);
+        scene.graphDiv.emit('plotly_unhover', oldEventData);
+    }
 }
 
 function initializeGLPlot(scene, fullLayout, canvas, gl) {
@@ -110,9 +140,9 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         autoBounds: false
     };
 
-      //For static plots, we reuse the WebGL context as WebKit doesn't collect them
-      //reliably
-    if (scene.staticMode) {
+    // for static plots, we reuse the WebGL context
+    //  as WebKit doesn't collect them reliably
+    if(scene.staticMode) {
         if(!STATIC_CONTEXT) {
             STATIC_CANVAS = document.createElement('canvas');
             try {
@@ -178,11 +208,14 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
 function Scene(options, fullLayout) {
 
-    //Create sub container for plot
+    // create sub container for plot
     var sceneContainer = document.createElement('div');
     var plotContainer = options.container;
 
-    //Create SVG container for hover text
+    // keep a ref to the graph div to fire hover+click events
+    this.graphDiv = options.graphDiv;
+
+    // create SVG container for hover text
     var svgContainer = document.createElementNS(
         'http://www.w3.org/2000/svg',
         'svg');

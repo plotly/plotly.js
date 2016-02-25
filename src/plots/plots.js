@@ -476,11 +476,10 @@ plots.supplyDefaults = function(gd) {
 };
 
 function cleanScenes(newFullLayout, oldFullLayout) {
-    var oldSceneKey,
-        oldSceneKeys = plots.getSubplotIds(oldFullLayout, 'gl3d');
+    var oldSceneKeys = plots.getSubplotIds(oldFullLayout, 'gl3d');
 
-    for (var i = 0; i < oldSceneKeys.length; i++) {
-        oldSceneKey = oldSceneKeys[i];
+    for(var i = 0; i < oldSceneKeys.length; i++) {
+        var oldSceneKey = oldSceneKeys[i];
         if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
             oldFullLayout[oldSceneKey]._scene.destroy();
         }

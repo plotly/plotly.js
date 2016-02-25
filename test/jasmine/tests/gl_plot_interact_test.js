@@ -6,6 +6,7 @@ var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var mouseEvent = require('../assets/mouse_event');
 var selectButton = require('../assets/modebar_button');
 var customMatchers = require('../assets/custom_matchers');
 
@@ -15,26 +16,131 @@ var customMatchers = require('../assets/custom_matchers');
  *
  */
 
+var PLOT_DELAY = 200;
+var MOUSE_DELAY = 20;
+var MODEBAR_DELAY = 500;
 
-describe('Test plot structure', function() {
+
+describe('Test gl plot interactions', function() {
     'use strict';
+
+    var gd;
 
     beforeEach(function() {
         jasmine.addMatchers(customMatchers);
     });
 
-    afterEach(destroyGraphDiv);
+    afterEach(function() {
+        var fullLayout = gd._fullLayout,
+            sceneIds;
+
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
+        sceneIds.forEach(function(id) {
+            fullLayout[id]._scene.destroy();
+        });
+
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl2d');
+        sceneIds.forEach(function(id) {
+            var scene2d = fullLayout._plots[id]._scene2d;
+            scene2d.stopped = true;
+            scene2d.destroy();
+        });
+
+        destroyGraphDiv();
+    });
+
+    function delay(done) {
+        setTimeout(function() {
+            done();
+        }, PLOT_DELAY);
+    }
 
     describe('gl3d plots', function() {
         var mock = require('@mocks/gl3d_marker-arrays.json');
 
+        function mouseEventScatter3d(type, opts) {
+            mouseEvent(type, 605, 271, opts);
+        }
+
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+            gd = createGraphDiv();
+            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+                delay(done);
+            });
         });
 
-        it('has one *canvas* node', function() {
-            var nodes = d3.selectAll('canvas');
-            expect(nodes[0].length).toEqual(1);
+        describe('scatter3d hover', function() {
+
+            var node, ptData;
+
+            beforeEach(function(done) {
+                gd.on('plotly_hover', function(eventData) {
+                    ptData = eventData.points[0];
+                });
+
+                mouseEventScatter3d('mouseover');
+
+                setTimeout(function() {
+                    done();
+                }, MOUSE_DELAY);
+            });
+
+            it('should have', function() {
+                node = d3.selectAll('canvas');
+                expect(node[0].length).toEqual(1, 'one canvas node');
+
+                node = d3.selectAll('g.hovertext');
+                expect(node.size()).toEqual(1, 'one hover text group');
+
+                node = d3.selectAll('g.hovertext').selectAll('tspan')[0];
+                expect(node[0].innerHTML).toEqual('x: 140.72', 'x val on hover');
+                expect(node[1].innerHTML).toEqual('y: −96.97', 'y val on hover');
+                expect(node[2].innerHTML).toEqual('z: −96.97', 'z val on hover');
+
+                expect(Object.keys(ptData)).toEqual([
+                    'x', 'y', 'z',
+                    'data', 'fullData', 'curveNumber', 'pointNumber'
+                ], 'correct hover data fields');
+
+                expect(ptData.x).toBe('140.72', 'x val hover data');
+                expect(ptData.y).toBe('−96.97', 'y val hover data');
+                expect(ptData.z).toEqual('−96.97', 'z val hover data');
+                expect(ptData.curveNumber).toEqual(0, 'curveNumber hover data');
+                expect(ptData.pointNumber).toEqual(2, 'pointNumber hover data');
+            });
+
+        });
+
+        describe('scatter3d click events', function() {
+            var ptData;
+
+            beforeEach(function(done) {
+                gd.on('plotly_click', function(eventData) {
+                    ptData = eventData.points[0];
+                });
+
+                // N.B. gl3d click events are 'mouseover' events
+                // with button 1 pressed
+                mouseEventScatter3d('mouseover', {buttons: 1});
+
+                setTimeout(function() {
+                    done();
+                }, MOUSE_DELAY);
+            });
+
+            it('should have', function() {
+                expect(Object.keys(ptData)).toEqual([
+                    'x', 'y', 'z',
+                    'data', 'fullData', 'curveNumber', 'pointNumber'
+                ], 'correct hover data fields');
+
+
+                expect(ptData.x).toBe('140.72', 'x val click data');
+                expect(ptData.y).toBe('−96.97', 'y val click data');
+                expect(ptData.z).toEqual('−96.97', 'z val click data');
+                expect(ptData.curveNumber).toEqual(0, 'curveNumber click data');
+                expect(ptData.pointNumber).toEqual(2, 'pointNumber click data');
+            });
         });
     });
 
@@ -42,7 +148,11 @@ describe('Test plot structure', function() {
         var mock = require('@mocks/gl2d_10.json');
 
         beforeEach(function(done) {
-            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+                delay(done);
+            });
         });
 
         it('has one *canvas* node', function() {
@@ -52,7 +162,7 @@ describe('Test plot structure', function() {
     });
 
     describe('gl3d modebar click handlers', function() {
-        var gd, modeBar;
+        var modeBar;
 
         beforeEach(function(done) {
             var mockData = [{
@@ -69,7 +179,8 @@ describe('Test plot structure', function() {
             gd = createGraphDiv();
             Plotly.plot(gd, mockData, mockLayout).then(function() {
                 modeBar = gd._fullLayout._modeBar;
-                done();
+
+                delay(done);
             });
         });
 
@@ -152,9 +263,6 @@ describe('Test plot structure', function() {
         });
 
         describe('buttons resetCameraDefault3d and resetCameraLastSave3d', function() {
-            // changes in scene objects are not instantaneous
-            var DELAY = 500;
-
             it('should update the scene camera', function(done) {
                 var sceneLayout = gd._fullLayout.scene,
                     sceneLayout2 = gd._fullLayout.scene2,
@@ -189,8 +297,8 @@ describe('Test plot structure', function() {
                             .toBeCloseToArray([2.5, 2.5, 2.5], 4);
 
                         done();
-                    }, DELAY);
-                }, DELAY);
+                    }, MODEBAR_DELAY);
+                }, MODEBAR_DELAY);
             });
         });
 
