@@ -65,18 +65,6 @@ function render(scene) {
         return Axes.tickText(axis, axis.c2l(val), 'hover').text;
     }
 
-    function makeEventData(xVal, yVal, zVal, trace, selection) {
-        return {points: [{
-            x: xVal,
-            y: yVal,
-            z: zVal,
-            data: trace._input,
-            fullData: trace,
-            curveNumber: trace.index,
-            pointNumber: selection.data.index
-        }]};
-    }
-
     var oldEventData;
 
     if(lastPicked !== null) {
@@ -112,7 +100,17 @@ function render(scene) {
             });
         }
 
-        var eventData = makeEventData(xVal, yVal, zVal, trace, selection);
+        var eventData = {
+            points: [{
+                x: xVal,
+                y: yVal,
+                z: zVal,
+                data: trace._input,
+                fullData: trace,
+                curveNumber: trace.index,
+                pointNumber: selection.data.index
+            }]
+        };
 
         if(selection.buttons && selection.distance < 5) {
             scene.graphDiv.emit('plotly_click', eventData);
