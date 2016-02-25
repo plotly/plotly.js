@@ -14,7 +14,7 @@ var Lib = require('../../lib');
 var constants = require('./constants');
 
 
-// convert between axis names (xaxis, xaxis2, etc, elements of td.layout)
+// convert between axis names (xaxis, xaxis2, etc, elements of gd.layout)
 // and axis id's (x, x2, etc). Would probably have ditched 'xaxis'
 // completely in favor of just 'x' if it weren't ingrained in the API etc.
 exports.id2name = function id2name(id) {
@@ -43,8 +43,8 @@ exports.cleanId = function cleanId(id, axLetter) {
 // get all axis object names
 // optionally restricted to only x or y or z by string axLetter
 // and optionally 2D axes only, not those inside 3D scenes
-function listNames(td, axLetter, only2d) {
-    var fullLayout = td._fullLayout;
+function listNames(gd, axLetter, only2d) {
+    var fullLayout = gd._fullLayout;
     if(!fullLayout) return [];
 
     function filterAxis(obj, extra) {
@@ -76,23 +76,23 @@ function listNames(td, axLetter, only2d) {
 }
 
 // get all axis objects, as restricted in listNames
-exports.list = function(td, axletter, only2d) {
-    return listNames(td, axletter, only2d)
+exports.list = function(gd, axletter, only2d) {
+    return listNames(gd, axletter, only2d)
         .map(function(axName) {
-            return Lib.nestedProperty(td._fullLayout, axName).get();
+            return Lib.nestedProperty(gd._fullLayout, axName).get();
         });
 };
 
 // get all axis ids, optionally restricted by letter
 // this only makes sense for 2d axes
-exports.listIds = function(td, axletter) {
-    return listNames(td, axletter, true).map(exports.name2id);
+exports.listIds = function(gd, axletter) {
+    return listNames(gd, axletter, true).map(exports.name2id);
 };
 
 // get an axis object from its id 'x','x2' etc
 // optionally, id can be a subplot (ie 'x2y3') and type gets x or y from it
-exports.getFromId = function(td, id, type) {
-    var fullLayout = td._fullLayout;
+exports.getFromId = function(gd, id, type) {
+    var fullLayout = gd._fullLayout;
 
     if(type === 'x') id = id.replace(/y[0-9]*/,'');
     else if(type === 'y') id = id.replace(/x[0-9]*/,'');
@@ -101,8 +101,8 @@ exports.getFromId = function(td, id, type) {
 };
 
 // get an axis object of specified type from the containing trace
-exports.getFromTrace = function(td, fullTrace, type) {
-    var fullLayout = td._fullLayout;
+exports.getFromTrace = function(gd, fullTrace, type) {
+    var fullLayout = gd._fullLayout;
     var ax = null;
 
     if(Plots.traceIs(fullTrace, 'gl3d')) {
@@ -112,7 +112,7 @@ exports.getFromTrace = function(td, fullTrace, type) {
         }
     }
     else {
-        ax = exports.getFromId(td, fullTrace[type + 'axis'] || type);
+        ax = exports.getFromId(gd, fullTrace[type + 'axis'] || type);
     }
 
     return ax;

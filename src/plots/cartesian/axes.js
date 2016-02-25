@@ -202,16 +202,18 @@ axes.saveRangeInitial = function(gd, overwrite) {
     var axList = axes.list(gd, '', true),
         hasOneAxisChanged = false;
 
-    var ax, isNew, hasChanged;
-
     for(var i = 0; i < axList.length; i++) {
-        ax = axList[i];
+        var ax = axList[i];
 
-        isNew = ax._rangeInitial===undefined;
-        hasChanged = isNew ||
-            !(ax.range[0]===ax._rangeInitial[0] && ax.range[1]===ax._rangeInitial[1]);
+        var isNew = (ax._rangeInitial === undefined);
+        var hasChanged = (
+            isNew || !(
+                ax.range[0] === ax._rangeInitial[0] &&
+                ax.range[1] === ax._rangeInitial[1]
+            )
+        );
 
-        if((isNew && ax.autorange===false) || (overwrite && hasChanged)) {
+        if((isNew && ax.autorange === false) || (overwrite && hasChanged)) {
             ax._rangeInitial = ax.range.slice();
             hasOneAxisChanged = true;
         }
