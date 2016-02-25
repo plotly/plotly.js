@@ -123,13 +123,13 @@ proto.update = function(data) {
         config.vertexIntensity = data.intensity;
         config.colormap = parseColorScale(data.colorscale);
     }
-    else if(data.vertexColor) {
-        this.color = data.vertexColor[0];
-        config.vertexColors = parseColorArray(data.vertexColor);
+    else if(data.vertexcolor) {
+        this.color = data.vertexcolors[0];
+        config.vertexColors = parseColorArray(data.vertexcolor);
     }
-    else if(data.faceColor) {
-        this.color = data.faceColor[0];
-        config.cellColors = parseColorArray(data.faceColor);
+    else if(data.facecolor) {
+        this.color = data.facecolor[0];
+        config.cellColors = parseColorArray(data.facecolor);
     }
     else {
         this.color = data.color;
