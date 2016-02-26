@@ -174,8 +174,19 @@ plots.findSubplotIds = function findSubplotIds(data, type) {
     return subplotIds;
 };
 
+/**
+ * Get the ids of the current subplots.
+ *
+ * @param {object} layout plotly full layout object.
+ * @param {string} type subplot type to look for.
+ *
+ * @return {array} list of ordered subplot ids (strings).
+ *
+ */
 plots.getSubplotIds = function getSubplotIds(layout, type) {
-    if(plots.subplotsRegistry[type] === undefined) return [];
+    var _module = plots.subplotsRegistry[type];
+
+    if(_module === undefined) return [];
 
     // layout must be 'fullLayout' here
     if(type === 'cartesian' && !layout._hasCartesian) return [];
@@ -184,19 +195,23 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
         return Object.keys(layout._plots);
     }
 
-    var idRegex = plots.subplotsRegistry[type].idRegex,
+    var idRegex = _module.idRegex,
         layoutKeys = Object.keys(layout),
-        subplotIds = [],
-        layoutKey;
+        subplotIds = [];
 
     for(var i = 0; i < layoutKeys.length; i++) {
-        layoutKey = layoutKeys[i];
+        var layoutKey = layoutKeys[i];
+
         if(idRegex.test(layoutKey)) subplotIds.push(layoutKey);
     }
 
-    return subplotIds;
-};
-
+    // order the ids
+    var idLen = _module.idRoot.length;
+    subplotIds.sort(function(a, b) {
+        var aNum = +(a.substr(idLen) || 1),
+            bNum = +(b.substr(idLen) || 1);
+        return aNum - bNum;
+    });
 
     return subplotIds;
 };
