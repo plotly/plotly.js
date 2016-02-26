@@ -32,103 +32,111 @@ var height = 60;
 var svg = document.getElementById('svg');
 
 
-function makeLine(traces){
+function makeLine(traces, minStart, maxStart){
 
     var svgNS = 'http://www.w3.org/2000/svg';
 
     var slider = document.createElementNS(svgNS, 'g');
-    slider.setAttribute('class', 'slider');
+    setAttributes(slider, {
+        'class': 'slider',
+        'data-min': minStart,
+        'data-max': maxStart
+    });
 
     var sliderBg = document.createElementNS(svgNS, 'rect');
-    sliderBg.setAttribute('stroke', 'black');
-    sliderBg.setAttribute('fill', 'none');
-    sliderBg.setAttribute('width', width);
-    sliderBg.setAttribute('height', height);
-    sliderBg.setAttribute('shape-rendering', 'crispEdges');
+    setAttributes(sliderBg, {
+        'stroke': 'black',
+        'fill': 'transparent',
+        'height': height,
+        'width': width,
+        'shape-rendering': 'crispEdges'
+    });
 
-    var slide = document.createElementNS(svgNS, 'g');
-    slide.setAttribute('data-min', 0);
-    slide.setAttribute('data-max', 100);
+    var maskMin = document.createElementNS(svgNS, 'rect');
+    setAttributes(maskMin, {
+        'x': 0,
+        'width': minStart,
+        'height': height,
+        'fill': 'rgba(0,0,0,0.1)'
+    });
 
-    var slideHandleLeft = document.createElementNS(svgNS, 'rect');
-    slideHandleLeft.setAttribute('class', 'handle-min');
-    slideHandleLeft.setAttribute('width', 8);
-    slideHandleLeft.setAttribute('x', -4);
-    slideHandleLeft.setAttribute('height', height);
-    slideHandleLeft.setAttribute('fill', 'transparent');
-    slideHandleLeft.setAttribute('cursor', 'col-resize');
+    var maskMax = document.createElementNS(svgNS, 'rect');
+    setAttributes(maskMax, {
+        'x': maxStart,
+        'width': width - maxStart,
+        'height': height,
+        'fill': 'rgba(0,0,0,0.1)'
+    });
 
-    var slideHandleMax = document.createElementNS(svgNS, 'rect');
-    slideHandleMax.setAttribute('class', 'handle-max');
-    slideHandleMax.setAttribute('width', 8);
-    slideHandleMax.setAttribute('x', 100 - 4);
-    slideHandleMax.setAttribute('height', height);
-    slideHandleMax.setAttribute('fill', 'transparent');
-    slideHandleMax.setAttribute('cursor', 'col-resize');
+    var handleMin = document.createElementNS(svgNS, 'rect');
+    setAttributes(handleMin, {
+        'class': 'handle-min',
+        'width': 6,
+        'x': 0,
+        'height': height,
+        'fill': 'transparent',
+        'cursor': 'col-resize'
+    });
+
+    var handleMax = document.createElementNS(svgNS, 'rect');
+    setAttributes(handleMax, {
+        'class': 'handle-max',
+        'width': 6,
+        'x': maxStart - 6,
+        'height': height,
+        'fill': 'transparent',
+        'cursor': 'col-resize'
+    });
 
     var slideBox = document.createElementNS(svgNS, 'rect');
-    slideBox.setAttribute('class', 'slide-box');
-    slideBox.setAttribute('width', 100);
-    slideBox.setAttribute('height', height);
-    slideBox.setAttribute('x', 0);
-    slideBox.setAttribute('fill', 'rgba(0,0,0,0.1)');
-    slideBox.setAttribute('stroke', '#888');
-    slideBox.setAttribute('class', 'slide-box');
-    slideBox.setAttribute('cursor', 'ew-resize');
+    setAttributes(slideBox, {
+        'class': 'slide-box',
+        'x': minStart,
+        'width': maxStart - minStart,
+        'height': height,
+        'cursor': 'ew-resize',
+        'fill': 'transparent',
+        'stroke': 'black',
+        'shape-rendering': 'crispEdges'
+    });
 
-
-    slide.addEventListener('mousedown', function(event){
-        var startX = event.x,
+    slider.addEventListener('mousedown', function(event){
+        var startX = event.clientX,
+            offsetX = event.offsetX,
             target = event.target,
-            rangeMin = slide.getAttribute('data-min'),
-            rangeMax = slide.getAttribute('data-max');
+            minVal = slider.getAttribute('data-min'),
+            maxVal = slider.getAttribute('data-max');
 
         window.addEventListener('mousemove', mouseMove);
         window.addEventListener('mouseup', mouseUp);
 
         function mouseMove(e){
-            var offset = e.x - startX,
-                max, min;
+            var delta = +e.clientX - startX;
 
-            if(event.target.className.baseVal === 'slide-box'){
-                // dragging the whole box
-                document.body.style.cursor = 'ew-resize';
-                min = +rangeMin + offset;
-                max = +rangeMax + offset;
-                setRange(min, max);
-            }else{
-                // changing the bounds
-                document.body.style.cursor = 'col-resize';
+            switch(target){
+                case slideBox:
+                    document.body.style.cursor = 'ew-resize';
+                    setRange(+maxVal + delta, +minVal + delta);
+                    break;
 
-                if(target === slideHandleLeft){
-                    var newMin = +rangeMin + offset;
+                case handleMin:
+                    document.body.style.cursor = 'col-resize';
+                    setRange(+minVal + delta, +maxVal);
+                    break;
 
-                    if(+rangeMin + offset < rangeMax){
-                        min = Math.max(0, newMin);
-                        max = rangeMax;
-                    }else{
-                        min = rangeMax;
-                        max = Math.max(0, newMin);
-                    }
-                } else {
-                    var newMax = +rangeMax + offset;
+                case handleMax:
+                    document.body.style.cursor = 'col-resize';
+                    setRange(+minVal, +maxVal + delta);
+                    break;
 
-                    if(+rangeMax + offset > rangeMin){
-                        min = rangeMin;
-                        max = Math.min(width, newMax);
-                    }else{
-                        min = Math.min(width, newMax);
-                        max = rangeMin;
-                    }
-                }
-
-                setRange(min, max);
+                default:
+                    document.body.style.cursor = 'ew-resize';
+                    setRange(offsetX, offsetX + delta);
+                    break;
             }
         }
 
         function mouseUp(){
-            // return the new ranges to whoever needs it?
-
             window.removeEventListener('mousemove', mouseMove);
             window.removeEventListener('mouseup', mouseUp);
             document.body.style.cursor = 'auto';
@@ -136,28 +144,35 @@ function makeLine(traces){
     });
 
 
-    function setRange(min, max){
-
-        if(min < 0){
-            min = 0;
-            max = max - min;
-        }else if(max > width){
-            max = width;
-            min = min - (max - width);
-        }
+    function setRange(min, max) {
 
         min = Lib.constrain(min, 0, width);
         max = Lib.constrain(max, 0, width);
 
-        var slideWidth = Math.abs(max - min);
+        if(max < min){
+            var temp = max;
+            max = min;
+            min = temp;
+        }
 
-        slide.setAttribute('transform', 'translate(' + min + ')');
-        slide.setAttribute('data-min', min);
-        slide.setAttribute('data-max', max);
+        setAttributes(slider, {
+            'data-min': min,
+            'data-max': max
+        });
 
-        slideHandleMax.setAttribute('x', slideWidth - 4);
+        setAttributes(slideBox, {
+            'x': min,
+            'width': max - min
+        });
 
-        slideBox.setAttribute('width', slideWidth);
+        setAttributes(maskMin, { 'width': min });
+        setAttributes(maskMax, {
+            'x': max,
+            'width': width - max
+        });
+
+        setAttributes(handleMin, { 'x': min });
+        setAttributes(handleMax, { 'x': max - 6 });
     }
 
 
@@ -188,22 +203,38 @@ function makeLine(traces){
         }
 
         var line = document.createElementNS(svgNS, 'polyline');
-        line.setAttribute('points', points.join(' '));
-        line.setAttribute('fill', 'none');
-        line.setAttribute('stroke', ['blue', 'red', 'green'][i]);
-        line.setAttribute('opacity', 0.5);
+        setAttributes(line, {
+            'points': points.join(' '),
+            'fill': 'none',
+            'stroke': ['blue', 'red', 'green'][i],
+            'opacity': 0.5
+        });
 
         slider.appendChild(line);
     }
 
+    appendChildren(slider, [
+        sliderBg,
+        maskMin,
+        maskMax,
+        slideBox,
+        handleMin,
+        handleMax
+    ]);
 
-    slide.appendChild(slideBox);
-    slide.appendChild(slideHandleLeft);
-    slide.appendChild(slideHandleMax);
-
-    slider.appendChild(sliderBg);
-    slider.appendChild(slide);
     svg.appendChild(slider);
+};
+
+function setAttributes(el, attrs){
+    for(var key in attrs) {
+        el.setAttribute(key, attrs[key]);
+    }
 }
 
-makeLine(traces);
+function appendChildren(el, children){
+    for(var i = 0; i < children.length; i++){
+        el.appendChild(children[i]);
+    }
+}
+
+makeLine(traces, 0, 100);
