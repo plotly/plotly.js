@@ -246,7 +246,7 @@ describe('Test geo interactions', function() {
                 }).then(function() {
                     expect(countTraces('scattergeo')).toBe(0);
                     expect(countTraces('choropleth')).toBe(0);
-                    expect(countGeos()).toBe(1);
+                    expect(countGeos()).toBe(0, '- trace-less geo subplot are deleted');
                     expect(countColorBars()).toBe(0);
 
                     return Plotly.relayout(gd, 'geo', null);
