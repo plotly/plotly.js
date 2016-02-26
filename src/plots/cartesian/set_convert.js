@@ -184,10 +184,13 @@ module.exports = function setConvert(ax) {
             // that aren't in the first etc.
             // TODO: sorting options - do the sorting
             // progressively here as we insert?
-            if(ax._categories.indexOf(v)===-1) ax._categories.push(v);
+
+            if(v !== null && v !== undefined && ax._categories.indexOf(v) === -1){
+                ax._categories.push(v);
+            }
 
             var c = ax._categories.indexOf(v);
-            return c===-1 ? constants.BADNUM : c;
+            return c === -1 ? constants.BADNUM : c;
         };
 
         ax.d2l = ax.d2c;
