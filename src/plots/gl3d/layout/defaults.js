@@ -57,7 +57,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
          * attributes like aspectratio can be written back dynamically.
          */
 
-        if(layoutIn[scene] !== undefined) sceneLayoutIn = layoutIn[scene];
+        // gl3d traces get a layout scene for free!
+        if(layoutIn[scene]) sceneLayoutIn = layoutIn[scene];
         else layoutIn[scene] = sceneLayoutIn = {};
 
         sceneLayoutOut = layoutOut[scene] || {};

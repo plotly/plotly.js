@@ -17,6 +17,8 @@ var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
+    if(!layoutOut._hasGeo) return;
+
     var geos = Plots.findSubplotIds(fullData, 'geo'),
         geosLength = geos.length;
 
@@ -28,7 +30,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     for(var i = 0; i < geosLength; i++) {
         var geo = geos[i];
-        geoLayoutIn = layoutIn[geo] || {};
+
+        // geo traces get a layout geo for free!
+        if(layoutIn[geo]) geoLayoutIn = layoutIn[geo];
+        else geoLayoutIn = layoutIn[geo] = {};
+
+        geoLayoutIn = layoutIn[geo];
         geoLayoutOut = {};
 
         coerce('domain.x');
