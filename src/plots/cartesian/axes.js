@@ -1302,8 +1302,8 @@ axes.makeClipPaths = function(td) {
 //     'redraw' to force full redraw, and reset ax._r
 //          (stored range for use by zoom/pan)
 //     or can pass in an axis object directly
-axes.doTicks = function(td, axid, skipTitle) {
-    var fullLayout = td._fullLayout,
+axes.doTicks = function(gd, axid, skipTitle) {
+    var fullLayout = gd._fullLayout,
         ax,
         independent = false;
 
@@ -1314,7 +1314,7 @@ axes.doTicks = function(td, axid, skipTitle) {
         independent = true;
     }
     else {
-        ax = axes.getFromId(td,axid);
+        ax = axes.getFromId(gd,axid);
 
         if(axid==='redraw') {
             fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
@@ -1335,10 +1335,15 @@ axes.doTicks = function(td, axid, skipTitle) {
         }
 
         if(!axid || axid==='redraw') {
+<<<<<<< a032a9b23d0750202a68911c54b14bc543e0f51e
             return Plotly.Lib.syncOrAsync(axes.list(td, '', true).map(function(ax) {
                 return function() {
+=======
+            return Plotly.Lib.syncOrAsync(axes.list(gd, '', true).map(function(ax) {
+                return function(){
+>>>>>>> Change td to gd
                     if(!ax._id) return;
-                    var axDone = axes.doTicks(td,ax._id);
+                    var axDone = axes.doTicks(gd,ax._id);
                     if(axid==='redraw') ax._r = ax.range.slice();
                     return axDone;
                 };
@@ -1373,9 +1378,9 @@ axes.doTicks = function(td, axid, skipTitle) {
         pad = (ax.linewidth||1) / 2,
         labelStandoff =
             (ax.ticks==='outside' ? ax.ticklen : 1) + (ax.linewidth||0),
-        gridWidth = Plotly.Drawing.crispRound(td, ax.gridwidth, 1),
-        zeroLineWidth = Plotly.Drawing.crispRound(td, ax.zerolinewidth, gridWidth),
-        tickWidth = Plotly.Drawing.crispRound(td, ax.tickwidth, 1),
+        gridWidth = Plotly.Drawing.crispRound(gd, ax.gridwidth, 1),
+        zeroLineWidth = Plotly.Drawing.crispRound(gd, ax.zerolinewidth, gridWidth),
+        tickWidth = Plotly.Drawing.crispRound(gd, ax.tickwidth, 1),
         sides, transfn, tickprefix, tickmid,
         i;
 
@@ -1440,7 +1445,7 @@ axes.doTicks = function(td, axid, skipTitle) {
         var tickLabels=container.selectAll('g.'+tcls).data(vals, datafn);
         if(!ax.showticklabels || !isNumeric(position)) {
             tickLabels.remove();
-            Titles.draw(td, axid + 'title');
+            Titles.draw(gd, axid + 'title');
             return;
         }
 
@@ -1484,7 +1489,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                 .attr('text-anchor', 'middle')
                 .each(function(d) {
                     var thisLabel = d3.select(this),
-                        newPromise = td._promises.length;
+                        newPromise = gd._promises.length;
                     thisLabel
                         .call(Plotly.Drawing.setPosition,
                             labelx(d), labely(d))
@@ -1492,13 +1497,17 @@ axes.doTicks = function(td, axid, skipTitle) {
                             d.font, d.fontSize, d.fontColor)
                         .text(d.text)
                         .call(Plotly.util.convertToTspans);
-                    newPromise = td._promises[newPromise];
+                    newPromise = gd._promises[newPromise];
                     if(newPromise) {
                         // if we have an async label, we'll deal with that
-                        // all here so take it out of td._promises and
+                        // all here so take it out of gd._promises and
                         // instead position the label and promise this in
                         // labelsReady
+<<<<<<< a032a9b23d0750202a68911c54b14bc543e0f51e
                         labelsReady.push(td._promises.pop().then(function() {
+=======
+                        labelsReady.push(gd._promises.pop().then(function(){
+>>>>>>> Change td to gd
                             positionLabels(thisLabel, ax.tickangle);
                         }));
                     }
@@ -1608,7 +1617,7 @@ axes.doTicks = function(td, axid, skipTitle) {
             // (so it can move out of the way if needed)
             // TODO: separate out scoot so we don't need to do
             // a full redraw of the title (modtly relevant for MathJax)
-            if(!skipTitle) Titles.draw(td, axid + 'title');
+            if(!skipTitle) Titles.draw(gd, axid + 'title');
             return axid+' done';
         }
 
@@ -1616,7 +1625,7 @@ axes.doTicks = function(td, axid, skipTitle) {
             allLabelsReady,
             fixLabelOverlaps
         ]);
-        if(done && done.then) td._promises.push(done);
+        if(done && done.then) gd._promises.push(done);
         return done;
     }
 
@@ -1650,8 +1659,8 @@ axes.doTicks = function(td, axid, skipTitle) {
 
         // zero line
         var hasBarsOrFill = false;
-        for(var i = 0; i < td._fullData.length; i++) {
-            if(traceHasBarsOrFill(td._fullData[i], subplot)) {
+        for(var i = 0; i < gd._fullData.length; i++) {
+            if(traceHasBarsOrFill(gd._fullData[i], subplot)) {
                 hasBarsOrFill = true;
                 break;
             }
@@ -1677,7 +1686,7 @@ axes.doTicks = function(td, axid, skipTitle) {
         return drawLabels(ax._axislayer,ax._pos);
     }
     else {
-        var alldone = axes.getSubplots(td,ax).map(function(subplot) {
+        var alldone = axes.getSubplots(gd,ax).map(function(subplot) {
             var plotinfo = fullLayout._plots[subplot];
 
             if(!fullLayout._hasCartesian) return;
