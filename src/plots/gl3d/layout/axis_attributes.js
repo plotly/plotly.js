@@ -95,6 +95,7 @@ module.exports = {
     showticksuffix: axesAttrs.showticksuffix,
     showexponent: axesAttrs.showexponent,
     exponentformat: axesAttrs.exponentformat,
+    exponentbase: axesAttrs.exponentbase,
     tickformat: axesAttrs.tickformat,
     hoverformat: axesAttrs.hoverformat,
     // lines and grids

@@ -30,7 +30,6 @@ axes.listIds = axisIds.listIds;
 axes.getFromId = axisIds.getFromId;
 axes.getFromTrace = axisIds.getFromTrace;
 
-
 // find the list of possible axes to reference with an xref or yref attribute
 // and coerce it to that list
 axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
@@ -346,7 +345,9 @@ axes.expand = function(ax, data, options) {
 
 axes.autoBin = function(data,ax,nbins,is2d) {
     var datamin = Plotly.Lib.aggNums(Math.min, null, data),
-        datamax = Plotly.Lib.aggNums(Math.max, null, data);
+        datamax = Plotly.Lib.aggNums(Math.max, null, data),
+        exponentbase = ax.exponentbase || 10;
+
     if(ax.type==='category') {
         return {
             start: datamin - 0.5,
@@ -363,8 +364,8 @@ axes.autoBin = function(data,ax,nbins,is2d) {
         // the size get smaller than the 'nice' rounded down minimum
         // difference between values
         var distinctData = Plotly.Lib.distinctVals(data),
-            msexp = Math.pow(10, Math.floor(
-                Math.log(distinctData.minDiff) / Math.LN10)),
+            msexp = Math.pow(exponentbase, Math.floor(
+                Math.log(distinctData.minDiff) / Math.log(exponentbase))),
             // TODO: there are some date cases where this will fail...
             minSize = msexp*Plotly.Lib.roundUp(
                 distinctData.minDiff/msexp, [0.9, 1.9, 4.9, 9.9], true);
@@ -584,7 +585,8 @@ function roundDTick(roughDTick, base, roundingSet) {
 //      log showing powers plus some intermediates:
 //          D1 shows all digits, D2 shows 2 and 5
 axes.autoTicks = function(ax, roughDTick){
-    var base;
+    var base,
+        exponentbase = ax.exponentbase || 10;
 
     if(ax.type === 'date'){
         ax.tick0 = new Date(2000, 0, 1).getTime();
@@ -634,9 +636,9 @@ axes.autoTicks = function(ax, roughDTick){
             var nt = 1.5 * Math.abs((ax.range[1] - ax.range[0]) / roughDTick);
 
             // ticks on a linear scale, labeled fully
-            roughDTick = Math.abs(Math.pow(10, ax.range[1]) -
-                Math.pow(10, ax.range[0])) / nt;
-            base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+            roughDTick = Math.abs(Math.pow(exponentbase, ax.range[1]) -
+                Math.pow(exponentbase, ax.range[0])) / nt;
+            base = Math.pow(exponentbase, Math.floor(Math.log(roughDTick) / Math.log(exponentbase)));
             ax.dtick = 'L' + roundDTick(roughDTick, base, roundBase10);
         }
         else {
@@ -651,9 +653,9 @@ axes.autoTicks = function(ax, roughDTick){
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
     else{
-        // auto ticks always start at 0
+        // auto ticks always start at 0 and increment
         ax.tick0 = 0;
-        base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
+        base = Math.pow(exponentbase, Math.floor(Math.log(roughDTick) / Math.log(exponentbase)));
         ax.dtick = roundDTick(roughDTick, base, roundBase10);
     }
 
@@ -675,7 +677,8 @@ axes.autoTicks = function(ax, roughDTick){
 //      or an integer # digits past seconds
 function autoTickRound(ax) {
     var dtick = ax.dtick,
-        maxend;
+        maxend,
+        exponentbase = ax.exponentbase || 10;
 
     ax._tickexponent = 0;
     if(!isNumeric(dtick) && typeof dtick !== 'string') dtick = 1;
@@ -692,14 +695,14 @@ function autoTickRound(ax) {
         else {
             if(!isNumeric(dtick)) dtick = Number(dtick.substr(1));
             // 2 digits past largest digit of dtick
-            ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.LN10 + 0.01);
+            ax._tickround = 2 - Math.floor(Math.log(dtick) / Math.log(exponentbase) + 0.01);
 
             if(ax.type === 'log') {
-                maxend = Math.pow(10, Math.max(ax.range[0], ax.range[1]));
+                maxend = Math.pow(exponentbase, Math.max(ax.range[0], ax.range[1]));
             }
             else maxend = Math.max(Math.abs(ax.range[0]), Math.abs(ax.range[1]));
 
-            var rangeexp = Math.floor(Math.log(maxend) / Math.LN10 + 0.01);
+            var rangeexp = Math.floor(Math.log(maxend) / Math.log(exponentbase) + 0.01);
             if(Math.abs(rangeexp) > 3) {
                 if(ax.exponentformat === 'SI' || ax.exponentformat === 'B') {
                     ax._tickexponent = 3 * Math.round((rangeexp - 1) / 3);
@@ -759,7 +762,9 @@ axes.tickFirst = function(ax){
         // that may have been rounded out
         r0 = ax.range[0] * 1.0001 - ax.range[1] * 0.0001,
         dtick = ax.dtick,
-        tick0 = ax.tick0;
+        tick0 = ax.tick0,
+        exponentbase = ax.exponentbase || 10;
+
     if(isNumeric(dtick)) {
         var tmin = sRound((r0 - tick0) / dtick) * dtick + tick0;
 
@@ -794,14 +799,14 @@ axes.tickFirst = function(ax){
     // Log scales: Linear, Digits
     else if(tType === 'L') {
         return Math.log(sRound(
-            (Math.pow(10, r0) - tick0) / dtNum) * dtNum + tick0) / Math.LN10;
+            (Math.pow(exponentbase, r0) - tick0) / dtNum) * dtNum + tick0) / Math.log(exponentbase);
     }
     else if(tType === 'D') {
         var tickset = (dtick === 'D2') ? roundLog2 : roundLog1,
             frac = Plotly.Lib.roundUp(mod(r0, 1), tickset, axrev);
 
         return Math.floor(r0) +
-            Math.log(d3.round(Math.pow(10, frac), 1)) / Math.LN10;
+            Math.log(d3.round(Math.pow(exponentbase, frac), 1)) / Math.log(exponentbase);
     }
     else throw 'unrecognized dtick ' + String(dtick);
 };
@@ -948,31 +953,33 @@ function formatDate(ax, out, hover, extraPrecision) {
 
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
     var dtick = ax.dtick,
+        exponentbase = ax.exponentbase || 10,
         x = out.x;
     if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0)!=='L')) dtick = 'L3';
 
     if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
-        out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
+        out.text = numFormat(Math.pow(exponentbase, x), ax, hideexp, extraPrecision);
     }
     else if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
         if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
+            exponentbase = exponentbase === Math.E ? 'e' : exponentbase;
             var p = Math.round(x);
-            if(p === 0) out.text = 1;
-            else if(p === 1) out.text = '10';
-            else if(p > 1) out.text = '10<sup>' + p + '</sup>';
-            else out.text = '10<sup>\u2212' + -p + '</sup>';
+            if(p === 0) out.text = '1';
+            else if(p === 1) out.text = String(exponentbase);
+            else if(p > 1) out.text = exponentbase + '<sup>' + p + '</sup>';
+            else out.text = exponentbase + '<sup>\u2212' + -p + '</sup>';
 
             out.fontSize *= 1.25;
         }
         else {
-            out.text = numFormat(Math.pow(10,x), ax,'','fakehover');
+            out.text = numFormat(Math.pow(exponentbase, x), ax,'','fakehover');
             if(dtick==='D1' && ax._id.charAt(0)==='y') {
                 out.dy -= out.fontSize/6;
             }
         }
     }
     else if(dtick.charAt(0) === 'D') {
-        out.text = String(Math.round(Math.pow(10, mod(x, 1))));
+        out.text = String(Math.round(Math.pow(exponentbase, mod(x, 1))));
         out.fontSize *= 0.75;
     }
     else throw 'unrecognized dtick ' + String(dtick);
@@ -1015,12 +1022,14 @@ function formatLinear(ax, out, hover, extraPrecision, hideexp) {
 // also automatically switch to sci. notation
 var SIPREFIXES = ['f', 'p', 'n', '&mu;', 'm', '', 'k', 'M', 'G', 'T'];
 function numFormat(v, ax, fmtoverride, hover) {
-        // negative?
+    // negative?
     var isNeg = v < 0,
         // max number of digits past decimal point to show
         tickRound = ax._tickround,
         exponentFormat = fmtoverride || ax.exponentformat || 'B',
         exponent = ax._tickexponent,
+        exponentbase = ax.exponentbase || 10,
+        isBase10 = (exponentbase === 10),
         tickformat = ax.tickformat;
 
     // special case for hover: set exponent just for this value, and
@@ -1029,6 +1038,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
             exponentformat:ax.exponentformat,
+            exponentbase: exponentbase,
             dtick: ax.showexponent==='none' ? ax.dtick :
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent
@@ -1044,7 +1054,7 @@ function numFormat(v, ax, fmtoverride, hover) {
     if(tickformat) return d3.format(tickformat)(v).replace(/-/g,'\u2212');
 
     // 'epsilon' - rounding increment
-    var e = Math.pow(10, -tickRound) / 2;
+    var e = isBase10 ? Math.pow(exponentbase, -tickRound) / 2 : 0;
 
     // exponentFormat codes:
     // 'e' (1.2e+6, default)
@@ -1060,18 +1070,20 @@ function numFormat(v, ax, fmtoverride, hover) {
     // take the sign out, put it back manually at the end
     // - makes cases easier
     v = Math.abs(v);
+
     if(v < e) {
         // 0 is just 0, but may get exponent if it's the last tick
         v = '0';
         isNeg = false;
-    }
-    else {
+    } else {
         v += e;
         // take out a common exponent, if any
-        if(exponent) {
-            v *= Math.pow(10, -exponent);
+        // Special case for base 2 to follow "SI"
+        if(exponent){
+            v *= Math.pow(exponentbase, -exponent);
             tickRound += exponent;
         }
+
         // round the mantissa
         if(tickRound === 0) v = String(Math.floor(v));
         else if(tickRound < 0) {
@@ -1091,26 +1103,30 @@ function numFormat(v, ax, fmtoverride, hover) {
     // add exponent
     if(exponent && exponentFormat !== 'hide') {
         var signedExponent;
+
         if(exponent < 0) signedExponent = '\u2212' + -exponent;
         else if(exponentFormat !== 'power') signedExponent = '+' + exponent;
         else signedExponent = String(exponent);
 
         if(exponentFormat === 'e' ||
                 ((exponentFormat === 'SI' || exponentFormat === 'B') &&
-                 (exponent > 12 || exponent < -15))) {
+                 (exponent > 12 || exponent < -15)) && isBase10) {
             v += 'e' + signedExponent;
-        }
-        else if(exponentFormat === 'E') {
+        } else if(exponentFormat === 'E') {
             v += 'E' + signedExponent;
-        }
-        else if(exponentFormat === 'power') {
-            v += '&times;10<sup>' + signedExponent + '</sup>';
-        }
-        else if(exponentFormat === 'B' && exponent === 9) {
+        } else if(exponentFormat === 'B' && exponent === 9) {
             v += 'B';
-        }
-        else if(exponentFormat === 'SI' || exponentFormat === 'B') {
+        } else if(exponentFormat === 'SI' || exponentFormat === 'B') {
+            if(exponentbase === 2 && exponent >= 10){
+                v = v * Math.pow(exponentbase, (exponent - 10));
+                exponent -= 9;
+            } else if(exponentbase === 2 && exponent < 10){
+                v = v * Math.pow(exponentbase, (exponent));
+                exponent = 0;
+            }
             v += SIPREFIXES[exponent / 3 + 5];
+        } else {
+            v += '&times;' + exponentbase + '<sup>' + signedExponent + '</sup>';
         }
     }
 

@@ -2257,6 +2257,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
             else if(ai.indexOf('title')!==-1) doticks = true;
             else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;
+            else if(pleaf.indexOf('exponentbase' !== -1)) docalc = true;
             else if(p.parts.length>1 &&
                     Lib.containsAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
                 doticks = true;

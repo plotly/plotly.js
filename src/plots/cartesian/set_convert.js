@@ -43,9 +43,9 @@ module.exports = function setConvert(ax) {
     var clipMult = 10;
 
     function toLog(v, clip){
-        if(v>0) return Math.log(v)/Math.LN10;
+        if(v > 0) return Math.log(v) / Math.log(ax.exponentbase || 10);
 
-        else if(v<=0 && clip && ax.range && ax.range.length===2) {
+        else if(v <= 0 && clip && ax.range && ax.range.length === 2) {
             // clip NaN (ie past negative infinity) to clipMult axis
             // length past the negative edge
             var r0 = ax.range[0],
@@ -55,7 +55,7 @@ module.exports = function setConvert(ax) {
 
         else return constants.BADNUM;
     }
-    function fromLog(v){ return Math.pow(10,v); }
+    function fromLog(v){ return Math.pow(ax.exponentbase, v); }
     function num(v){ return isNumeric(v) ? Number(v) : constants.BADNUM; }
 
     ax.c2l = (ax.type==='log') ? toLog : num;

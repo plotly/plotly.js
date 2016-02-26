@@ -588,6 +588,44 @@ describe('Test lib.js:', function() {
 
 
         });
+
+        describe('enumerated types', function() {
+            var attrs = {
+                a: { valType: 'enumerated', dflt: 8, coerceNumber: true, values: [2, 'e', true, 8] },
+                b: { valType: 'enumerated', dflt: 8, values: [2, 'e', true, 8] }
+            };
+
+            it('should allow only the enum values', function() {
+                out = coerce(undefined, {}, attrs, 'a');
+                expect(out).toBe(8);
+            });
+
+            it('should be strict about numbers when coerceNumber isn\'t set', function() {
+                out = coerce({ b: '2' }, {}, attrs, 'b');
+                expect(out).toBe(8);
+            });
+
+            it('should coerce when coerceNumber is set', function() {
+                out = coerce({ a: '2' }, {}, attrs, 'a');
+                expect(out).toBe(2);
+            });
+
+            it('should use the default when given an invalid value', function() {
+                out = coerce({ a: 'invalid' }, {}, attrs, 'a');
+                expect(out).toBe(8);
+            });
+
+            it('should work with mixed types', function() {
+                out = coerce({ a: true }, {}, attrs, 'a');
+                expect(out).toBe(true);
+
+                out = coerce({ a: 'e' }, {}, attrs, 'a');
+                expect(out).toBe('e');
+
+                out = coerce({ a: 2 }, {}, attrs, 'a');
+                expect(out).toBe(2);
+            });
+        });
     });
 
     describe('coerceFont', function() {
