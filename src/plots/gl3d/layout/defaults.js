@@ -18,10 +18,8 @@ var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     if(!layoutOut._hasGL3D) return;
 
-    var scenes = Plots.getSubplotIdsInData(fullData, 'gl3d');
-
-    // Get number of scenes to compute default scene domain
-    var scenesLength = scenes.length;
+    var scenes = Plots.findSubplotIds(fullData, 'gl3d'),
+        scenesLength = scenes.length;
 
     var sceneLayoutIn, sceneLayoutOut;
 

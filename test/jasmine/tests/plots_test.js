@@ -145,31 +145,26 @@ describe('Test Plots', function() {
         });
     });
 
-    describe('Plots.getSubplotIdsInData', function() {
-        var getSubplotIdsInData = Plots.getSubplotIdsInData;
+    describe('Plots.findSubplotIds', function() {
+        var findSubplotIds = Plots.findSubplotIds;
+        var ids;
 
-        var ids, data;
+        it('should return subplots ids found in the data', function() {
+            var data = [{
+                type: 'scatter3d',
+                scene: 'scene'
+            }, {
+                type: 'surface',
+                scene: 'scene2'
+            }, {
+                type: 'choropleth',
+                geo: 'geo'
+            }];
 
-        it('it should return scene ids', function() {
-            data = [
-                {
-                    type: 'scatter3d',
-                    scene: 'scene'
-                },
-                {
-                    type: 'surface',
-                    scene: 'scene2'
-                },
-                {
-                    type: 'choropleth',
-                    geo: 'geo'
-                }
-            ];
-
-            ids = getSubplotIdsInData(data, 'geo');
+            ids = findSubplotIds(data, 'geo');
             expect(ids).toEqual(['geo']);
 
-            ids = getSubplotIdsInData(data, 'gl3d');
+            ids = findSubplotIds(data, 'gl3d');
             expect(ids).toEqual(['scene', 'scene2']);
         });
 

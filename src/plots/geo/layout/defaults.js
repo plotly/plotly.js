@@ -17,7 +17,7 @@ var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    var geos = Plots.getSubplotIdsInData(fullData, 'geo'),
+    var geos = Plots.findSubplotIds(fullData, 'geo'),
         geosLength = geos.length;
 
     var geoLayoutIn, geoLayoutOut;
