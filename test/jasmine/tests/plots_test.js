@@ -4,7 +4,6 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
-
 describe('Test Plots', function() {
     'use strict';
 

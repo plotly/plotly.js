@@ -386,7 +386,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
         neighborSum = 0;
         neighborCount = 0;
 
-        for (q = 0; q < 4; q++) {
+        for(q = 0; q < 4; q++) {
             neighborShift = NEIGHBORSHIFTS[q];
             neighborRow = z[i + neighborShift[0]];
             if(!neighborRow) continue;

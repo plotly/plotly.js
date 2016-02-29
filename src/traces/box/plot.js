@@ -47,7 +47,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
       .enter().append('g')
         .attr('class','trace boxes');
 
-    boxtraces.each(function(d){
+    boxtraces.each(function(d) {
         var t = d[0].t,
             trace = d[0].trace,
             group = (fullLayout.boxmode==='group' && gd.numboxes>1),
@@ -63,7 +63,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
         }
 
         // set axis via orientation
-        if (trace.orientation==='h') {
+        if(trace.orientation==='h') {
             posAxis = ya;
             valAxis = xa;
         } else {
@@ -83,7 +83,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
             .data(Lib.identity)
             .enter().append('path')
             .attr('class','box')
-            .each(function(d){
+            .each(function(d) {
                 var posc = posAxis.c2p(d.pos + bPos, true),
                     pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
                     pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),
@@ -97,7 +97,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                         Math.min(q1, q3)+1, Math.max(q1, q3)-1),
                     lf = valAxis.c2p(trace.boxpoints===false ? d.min : d.lf, true),
                     uf = valAxis.c2p(trace.boxpoints===false ? d.max : d.uf, true);
-                if (trace.orientation==='h') {
+                if(trace.orientation === 'h') {
                     d3.select(this).attr('d',
                         'M'+m+','+pos0+'V'+pos1+ // median line
                         'M'+q1+','+pos0+'V'+pos1+'H'+q3+'V'+pos0+'Z'+ // box
@@ -119,8 +119,8 @@ module.exports = function plot(gd, plotinfo, cdbox) {
             d3.select(this).selectAll('g.points')
                 // since box plot points get an extra level of nesting, each
                 // box needs the trace styling info
-                .data(function(d){
-                    d.forEach(function(v){
+                .data(function(d) {
+                    d.forEach(function(v) {
                         v.t = t;
                         v.trace = trace;
                     });
@@ -129,9 +129,9 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                 .enter().append('g')
                 .attr('class','points')
               .selectAll('path')
-                .data(function(d){
+                .data(function(d) {
                     var pts = (trace.boxpoints==='all') ? d.val :
-                            d.val.filter(function(v){ return (v<d.lf || v>d.uf); }),
+                            d.val.filter(function(v) { return (v<d.lf || v>d.uf); }),
                         spreadLimit = (d.q3 - d.q1) * JITTERSPREAD,
                         jitterFactors = [],
                         maxJitterFactor = 0,
@@ -164,14 +164,14 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                         newJitter = trace.jitter * 2 / maxJitterFactor;
                     }
 
-                    return pts.map(function(v, i){
+                    return pts.map(function(v, i) {
                         var posOffset = trace.pointpos,
                             p;
                         if(trace.jitter) {
                             posOffset += newJitter * jitterFactors[i] * (rand()-0.5);
                         }
 
-                        if (trace.orientation==='h') {
+                        if(trace.orientation === 'h') {
                             p = {
                                 y: d.pos + posOffset*bdPos + bPos,
                                 x: v
@@ -200,7 +200,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                 .enter().append('path')
                 .attr('class','mean')
                 .style('fill','none')
-                .each(function(d){
+                .each(function(d) {
                     var posc = posAxis.c2p(d.pos + bPos, true),
                         pos0 = posAxis.c2p(d.pos + bPos - bdPos, true),
                         pos1 = posAxis.c2p(d.pos + bPos + bdPos, true),

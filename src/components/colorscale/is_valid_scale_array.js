@@ -20,7 +20,7 @@ module.exports = function isValidScaleArray(scl) {
     if(!Array.isArray(scl)) return false;
     else {
         if(+scl[0][0]!==0 || +scl[scl.length-1][0]!==1) return false;
-        for (var i = 0; i < scl.length; i++) {
+        for(var i = 0; i < scl.length; i++) {
             si = scl[i];
             if(si.length!==2 || +si[0]<highestVal || !tinycolor(si[1]).isValid()) {
                 isValid = false;

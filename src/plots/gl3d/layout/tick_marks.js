@@ -40,13 +40,13 @@ function computeTickMarks(scene) {
 
     var ticks = [[],[],[]];
 
-    for (var i = 0; i < 3; ++i) {
+    for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
         axes._length = (glRange[i].hi - glRange[i].lo) *
             glRange[i].pixelsPerDataUnit / scene.dataScale[i];
 
-        if (Math.abs(axes._length) === Infinity) {
+        if(Math.abs(axes._length) === Infinity) {
             ticks[i] = [];
         } else {
             axes.range[0] = (glRange[i].lo) / scene.dataScale[i];
@@ -62,7 +62,7 @@ function computeTickMarks(scene) {
             // running the autoticks here, then setting
             // autoticks to false to get around the 2D handling in calcTicks.
             var tickModeCached = axes.tickmode;
-            if (axes.tickmode === 'auto') {
+            if(axes.tickmode === 'auto') {
                 axes.tickmode = 'linear';
                 var nticks = axes.nticks || Plotly.Lib.constrain((axes._length/40), 4, 9);
                 Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);

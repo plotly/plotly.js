@@ -225,12 +225,12 @@ proto.hasButtons = function(buttons) {
 
     if(!currentButtons) return false;
 
-    if (buttons.length !== currentButtons.length) return false;
+    if(buttons.length !== currentButtons.length) return false;
 
-    for (var i = 0; i < buttons.length; ++i) {
-        if (buttons[i].length !== currentButtons[i].length) return false;
-        for (var j = 0; j < buttons[i].length; j++) {
-            if (buttons[i][j].name !== currentButtons[i][j].name) return false;
+    for(var i = 0; i < buttons.length; ++i) {
+        if(buttons[i].length !== currentButtons[i].length) return false;
+        for(var j = 0; j < buttons[i].length; j++) {
+            if(buttons[i][j].name !== currentButtons[i][j].name) return false;
         }
     }
 

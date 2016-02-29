@@ -18,7 +18,7 @@ var extendDeep = Plotly.Lib.extendDeep;
 function cloneLayoutOverride(tileClass) {
     var override;
 
-    switch (tileClass) {
+    switch(tileClass) {
         case 'themes__thumb':
             override = {
                 autosize: true,
@@ -60,7 +60,7 @@ function keyIsAxis(keyName) {
 module.exports = function clonePlot(graphObj, options) {
 
     // Polar plot compatibility
-    if (graphObj.framework && graphObj.framework.isPolar) {
+    if(graphObj.framework && graphObj.framework.isPolar) {
         graphObj = graphObj.framework.getConfig();
     }
 
@@ -70,22 +70,22 @@ module.exports = function clonePlot(graphObj, options) {
     var newData = extendDeep([], oldData);
     var newLayout = extendDeep({}, oldLayout, cloneLayoutOverride(options.tileClass));
 
-    if (options.width) newLayout.width = options.width;
-    if (options.height) newLayout.height = options.height;
+    if(options.width) newLayout.width = options.width;
+    if(options.height) newLayout.height = options.height;
 
-    if (options.tileClass === 'thumbnail' || options.tileClass === 'themes__thumb') {
+    if(options.tileClass === 'thumbnail' || options.tileClass === 'themes__thumb') {
         // kill annotations
         newLayout.annotations = [];
         var keys = Object.keys(newLayout);
 
-        for (i = 0; i < keys.length; i++) {
-            if (keyIsAxis(keys[i])) {
+        for(i = 0; i < keys.length; i++) {
+            if(keyIsAxis(keys[i])) {
                 newLayout[keys[i]].title = '';
             }
         }
 
         // kill colorbar and pie labels
-        for (i = 0; i < newData.length; i++) {
+        for(i = 0; i < newData.length; i++) {
             var trace = newData[i];
             trace.showscale = false;
             if(trace.marker) trace.marker.showscale = false;
@@ -93,17 +93,17 @@ module.exports = function clonePlot(graphObj, options) {
         }
     }
 
-    if (Array.isArray(options.annotations)) {
-        for (i = 0; i < options.annotations.length; i++) {
+    if(Array.isArray(options.annotations)) {
+        for(i = 0; i < options.annotations.length; i++) {
             newLayout.annotations.push(options.annotations[i]);
         }
     }
 
     var sceneIds = Plotly.Plots.getSubplotIds(newLayout, 'gl3d');
 
-    if (sceneIds.length) {
+    if(sceneIds.length) {
         var axesImageOverride = {};
-        if (options.tileClass === 'thumbnail') {
+        if(options.tileClass === 'thumbnail') {
             axesImageOverride = {
                 title: '',
                 showaxeslabels: false,
@@ -111,7 +111,7 @@ module.exports = function clonePlot(graphObj, options) {
                 linetickenable: false
             };
         }
-        for (i = 0; i < sceneIds.length; i++) {
+        for(i = 0; i < sceneIds.length; i++) {
             var sceneId = sceneIds[i];
 
             extendFlat(newLayout[sceneId].xaxis, axesImageOverride);
@@ -124,7 +124,7 @@ module.exports = function clonePlot(graphObj, options) {
     }
 
     var td = document.createElement('div');
-    if (options.tileClass) td.className = options.tileClass;
+    if(options.tileClass) td.className = options.tileClass;
 
     var plotTile = {
         td: td,
@@ -143,7 +143,7 @@ module.exports = function clonePlot(graphObj, options) {
         }
     };
 
-    if (options.setBackground !== 'transparent') {
+    if(options.setBackground !== 'transparent') {
         plotTile.config.setBackground = options.setBackground || 'opaque';
     }
 

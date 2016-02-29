@@ -85,7 +85,7 @@ lib.swapAttrs = function(cont, attrList, part1, part2) {
  * for maximum effect use:
  *      return pauseEvent(e);
  */
-lib.pauseEvent = function(e){
+lib.pauseEvent = function(e) {
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
     e.cancelBubble = true;
@@ -105,7 +105,7 @@ lib.VERBOSE = false;
 lib.TIMER = new Date().getTime();
 
 // console.log that only runs if VERBOSE is on
-lib.log = function(){
+lib.log = function() {
     if(lib.VERBOSE) console.log.apply(console, arguments);
 };
 
@@ -113,7 +113,7 @@ lib.log = function(){
  * markTime - for debugging, mark the number of milliseconds
  * since the previous call to markTime and log arbitrary info too
  */
-lib.markTime = function(v){
+lib.markTime = function(v) {
     if(!lib.VERBOSE) return;
     var t2 = new Date().getTime();
     console.log(v, t2 - lib.TIMER, '(msec)');
@@ -132,7 +132,7 @@ lib.constrain = function(v, v0, v1) {
  * ie {left,right,top,bottom,width,height}, overlap?
  * takes optional padding pixels
  */
-lib.bBoxIntersect = function(a, b, pad){
+lib.bBoxIntersect = function(a, b, pad) {
     pad = pad || 0;
     return (a.left <= b.right + pad &&
             b.left <= a.right + pad &&
@@ -149,9 +149,9 @@ lib.randstr = function randstr(existing, bits, base) {
      * Include number of bits, the base of the string you want
      * and an optional array of existing strings to avoid.
      */
-    if (!base) base = 16;
-    if (bits === undefined) bits = 24;
-    if (bits <= 0) return '0';
+    if(!base) base = 16;
+    if(bits === undefined) bits = 24;
+    if(bits <= 0) return '0';
 
     var digits = Math.log(Math.pow(2, bits)) / Math.log(base),
         res = '',
@@ -159,25 +159,25 @@ lib.randstr = function randstr(existing, bits, base) {
         b,
         x;
 
-    for (i = 2; digits === Infinity; i *= 2) {
+    for(i = 2; digits === Infinity; i *= 2) {
         digits = Math.log(Math.pow(2, bits / i)) / Math.log(base) * i;
     }
 
     var rem = digits - Math.floor(digits);
 
-    for (i = 0; i < Math.floor(digits); i++) {
+    for(i = 0; i < Math.floor(digits); i++) {
         x = Math.floor(Math.random() * base).toString(base);
         res = x + res;
     }
 
-    if (rem) {
+    if(rem) {
         b = Math.pow(base, rem);
         x = Math.floor(Math.random() * b).toString(base);
         res = x + res;
     }
 
     var parsed = parseInt(res, base);
-    if ((existing && (existing.indexOf(res) > -1)) ||
+    if((existing && (existing.indexOf(res) > -1)) ||
          (parsed !== Infinity && parsed >= Math.pow(2, bits))) {
         return randstr(existing, bits, base);
     }
@@ -194,8 +194,8 @@ lib.OptionControl = function(opt, optname) {
      *
      * See FitOpts for example of usage
      */
-    if (!opt) opt = {};
-    if (!optname) optname = 'opt';
+    if(!opt) opt = {};
+    if(!optname) optname = 'opt';
 
     var self = {};
     self.optionList = [];
@@ -281,7 +281,7 @@ lib.promiseError = function(err) { console.log(err, err.stack); };
 lib.syncOrAsync = function(sequence, arg, finalStep) {
     var ret, fni;
 
-    function continueAsync(){
+    function continueAsync() {
         lib.markTime('async done ' + fni.name);
         return lib.syncOrAsync(sequence, arg, finalStep);
     }
@@ -305,7 +305,7 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
  * http://stackoverflow.com/questions/6680825/return-string-without-trailing-slash
  */
 lib.stripTrailingSlash = function(str) {
-    if (str.substr(-1) === '/') return str.substr(0, str.length - 1);
+    if(str.substr(-1) === '/') return str.substr(0, str.length - 1);
     return str;
 };
 

@@ -186,7 +186,7 @@ annotations.draw = function(gd, index, opt, value) {
                     Plotly.Lib.extendFlat({}, value) :
                     {text: 'New text'};
 
-            if (layout.annotations) {
+            if(layout.annotations) {
                 layout.annotations.splice(index, 0, rule);
             } else {
                 layout.annotations = [rule];
@@ -363,7 +363,7 @@ annotations.draw = function(gd, index, opt, value) {
         .attr('data-unformatted', options.text)
         .text(options.text);
 
-    function textLayout(s){
+    function textLayout(s) {
         s.call(Plotly.Drawing.font, font)
         .attr({
             'text-anchor': {
@@ -375,7 +375,7 @@ annotations.draw = function(gd, index, opt, value) {
         return s;
     }
 
-    function drawGraphicalElements(){
+    function drawGraphicalElements() {
 
         // make sure lines are aligned the way they will be
         // at the end, even if their position changes
@@ -395,8 +395,8 @@ annotations.draw = function(gd, index, opt, value) {
         options._w = annwidth;
         options._h = annheight;
 
-        function shiftFraction(v, anchor){
-            if(anchor==='auto'){
+        function shiftFraction(v, anchor) {
+            if(anchor==='auto') {
                 if(v < 1/3) anchor = 'left';
                 else if(v > 2/3) anchor = 'right';
                 else anchor = 'center';
@@ -469,7 +469,7 @@ annotations.draw = function(gd, index, opt, value) {
 
         // make sure the arrowhead (if there is one)
         // and the annotation center are visible
-        if(options.showarrow){
+        if(options.showarrow) {
             arrowX = Plotly.Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
             arrowY = Plotly.Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
         }
@@ -498,7 +498,7 @@ annotations.draw = function(gd, index, opt, value) {
 
         // add the arrow
         // uses options[arrowwidth,arrowcolor,arrowhead] for styling
-        var drawArrow = function(dx, dy){
+        var drawArrow = function(dx, dy) {
             d3.select(gd)
                 .selectAll('.annotation-arrow-g[data-index="' + index + '"]')
                 .remove();
@@ -541,7 +541,7 @@ annotations.draw = function(gd, index, opt, value) {
                 return;
             }
 
-            edges.forEach(function(x){
+            edges.forEach(function(x) {
                 var p = lineIntersect(arrowX0, arrowY0, arrowX, arrowY,
                             x[0], x[1], x[2], x[3]);
                 if(p) {
@@ -572,7 +572,7 @@ annotations.draw = function(gd, index, opt, value) {
                 .attr({
                     'data-index': String(index),
                     d: 'M3,3H-3V-3H3ZM0,0L' + (arrowX0-arrowX) + ',' + (arrowY0-arrowY),
-                    transform:'translate('+arrowX+','+arrowY+')'
+                    transform: 'translate('+arrowX+','+arrowY+')'
                 })
                 .style('stroke-width', (strokewidth+6)+'px')
                 .call(Plotly.Color.stroke, 'rgba(0,0,0,0)')
@@ -711,7 +711,7 @@ annotations.draw = function(gd, index, opt, value) {
     if(gd._context.editable) {
         anntext.call(Plotly.util.makeEditable, ann)
             .call(textLayout)
-            .on('edit', function(_text){
+            .on('edit', function(_text) {
                 options.text = _text;
                 this.attr({'data-unformatted': options.text});
                 this.call(textLayout);
@@ -839,7 +839,7 @@ annotations.calcAutorange = function(gd) {
     if(!annotationList.length || !gd._fullData.length) return;
 
     var annotationAxes = {};
-    annotationList.forEach(function(ann){
+    annotationList.forEach(function(ann) {
         annotationAxes[ann.xref] = true;
         annotationAxes[ann.yref] = true;
     });
@@ -863,7 +863,7 @@ function annAutorange(gd) {
     // relative to their anchor points
     // use the arrow and the text bg rectangle,
     // as the whole anno may include hidden text in its bbox
-    fullLayout.annotations.forEach(function(ann){
+    fullLayout.annotations.forEach(function(ann) {
         var xa = Plotly.Axes.getFromId(gd, ann.xref),
             ya = Plotly.Axes.getFromId(gd, ann.yref);
         if(!(xa || ya)) return;

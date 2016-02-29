@@ -8,7 +8,7 @@
   },
   "rules": {
     "no-trailing-spaces": [2],
-    "no-multiple-empty-lines": [2, {"max": 3, "maxEOF": 1}],
+    "no-multiple-empty-lines": [2, {"max": 2, "maxEOF": 1}],
     "linebreak-style": [2, "unix"],
     "indent": [2, 4, {"SwitchCase": 1}],
     "max-len": [0, 80],
@@ -19,10 +19,18 @@
     "comma-style": [2, "last"],
     "semi": [2],
     "semi-spacing": [2, {"before": false, "after": true}],
-    "key-spacing": [0, {"beforeColon": false, "afterColon": true}],
+    "key-spacing": [2, {"beforeColon": false, "afterColon": true}],
+    "keyword-spacing": [2, {"overrides": {
+      "if": {"after": false},
+      "for": {"after": false},
+      "while": {"after": false},
+      "switch": {"after": false},
+      "catch": {"after": false}
+    }}],
     "no-spaced-func": [2],
     "space-in-parens": [2, "never"],
     "space-before-function-paren": [2, "never"],
+    "space-before-blocks": [2],
     "no-multi-spaces": [2],
     "space-infix-ops": [0, {"int32Hint": false}],
     "quotes": [2, "single"],

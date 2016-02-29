@@ -81,10 +81,10 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
 // clean scene ids, 'scene1' -> 'scene'
 exports.cleanId = function cleanId(id) {
-    if (!id.match(/^scene[0-9]*$/)) return;
+    if(!id.match(/^scene[0-9]*$/)) return;
 
     var sceneNum = id.substr(5);
-    if (sceneNum === '1') sceneNum = '';
+    if(sceneNum === '1') sceneNum = '';
 
     return 'scene' + sceneNum;
 };

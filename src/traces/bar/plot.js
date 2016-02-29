@@ -31,7 +31,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
 
     bartraces.append('g')
         .attr('class','points')
-        .each(function(d){
+        .each(function(d) {
             var t = d[0].t,
                 trace = d[0].trace;
 
@@ -40,7 +40,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
             d3.select(this).selectAll('path')
                 .data(Lib.identity)
               .enter().append('path')
-                .each(function(di){
+                .each(function(di) {
                     // now display the bar
                     // clipped xf/yf (2nd arg true): non-positive
                     // log values go off-screen by plotwidth

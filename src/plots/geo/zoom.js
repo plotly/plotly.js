@@ -218,7 +218,7 @@ function zoomClipped(geo, projLayout) {
     });
 
     function zoomstarted(dispatch) {
-        if (!zooming++) dispatch({type: 'zoomstart'});
+        if(!zooming++) dispatch({type: 'zoomstart'});
     }
 
     function zoomed(dispatch) {
@@ -226,7 +226,7 @@ function zoomClipped(geo, projLayout) {
     }
 
     function zoomended(dispatch) {
-        if (!--zooming) dispatch({type: 'zoomend'});
+        if(!--zooming) dispatch({type: 'zoomend'});
     }
 
     return d3.rebind(zoom, event, 'on');
@@ -266,7 +266,7 @@ function multiply(a, b) {
 }
 
 function rotateBetween(a, b) {
-    if (!a || !b) return;
+    if(!a || !b) return;
     var axis = cross(a, b),
         norm = Math.sqrt(dot(axis, axis)),
         halfgamma = 0.5 * Math.acos(Math.max(-1, Math.min(1, dot(a, b)))),
@@ -373,7 +373,7 @@ function cartesian(spherical) {
 
 function dot(a, b) {
     var s = 0;
-    for (var i = 0, n = a.length; i < n; ++i) s += a[i] * b[i];
+    for(var i = 0, n = a.length; i < n; ++i) s += a[i] * b[i];
     return s;
 }
 
@@ -394,7 +394,7 @@ function d3_eventDispatch(target) {
         n = arguments.length,
         argumentz = [];
 
-    while (++i < n) argumentz.push(arguments[i]);
+    while(++i < n) argumentz.push(arguments[i]);
 
     var dispatch = d3.dispatch.apply(null, argumentz);
 

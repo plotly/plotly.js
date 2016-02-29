@@ -242,7 +242,7 @@ function getModule(arg) {
 }
 
 function removeUnderscoreAttrs(attributes) {
-    Object.keys(attributes).forEach(function(k){
+    Object.keys(attributes).forEach(function(k) {
         if(k.charAt(0) === '_' &&
             UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
     });

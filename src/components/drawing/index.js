@@ -41,8 +41,8 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
-drawing.translatePoints = function(s, xa, ya){
-    s.each(function(d){
+drawing.translatePoints = function(s, xa, ya) {
+    s.each(function(d) {
         // put xp and yp into d if pixel scaling is already done
         var x = d.xp || xa.c2p(d.x),
             y = d.yp || ya.c2p(d.y),
@@ -77,7 +77,7 @@ drawing.crispRound = function(td, lineWidth, dflt) {
 
 drawing.lineGroupStyle = function(s, lw, lc, ld) {
     s.style('fill','none')
-    .each(function(d){
+    .each(function(d) {
         var line = (((d||[])[0]||{}).trace||{}).line||{},
             lw1 = lw||line.width||0,
             dash = ld||line.dash||'';
@@ -111,7 +111,7 @@ drawing.dashLine = function(s, dash, lineWidth) {
 
 drawing.fillGroupStyle = function(s) {
     s.style('stroke-width',0)
-    .each(function(d){
+    .each(function(d) {
         var shape = d3.select(this);
         try {
             shape.call(Plotly.Color.fill, d[0].trace.fillcolor);
@@ -203,7 +203,7 @@ drawing.pointStyle = function(s, trace) {
             return drawing.symbolFuncs[xBase](r) +
                 (x >= 200 ? DOTPATH : '');
         })
-        .style('opacity',function(d){
+        .style('opacity',function(d) {
             return (d.mo+1 || marker.opacity+1) - 1;
         });
     }
@@ -213,7 +213,7 @@ drawing.pointStyle = function(s, trace) {
         markerScale = drawing.tryColorscale(marker, markerIn, ''),
         lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
 
-    s.each(function(d){
+    s.each(function(d) {
         // 'so' is suspected outliers, for box plots
         var fillColor,
             lineColor,
@@ -296,10 +296,10 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
 };
 
 // draw text at points
-var TEXTOFFSETSIGN = {start:1, end:-1, middle:0, bottom:1, top:-1},
+var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1},
     LINEEXPAND = 1.3;
 drawing.textPointStyle = function(s, trace) {
-    s.each(function(d){
+    s.each(function(d) {
         var p = d3.select(this),
             text = d.tx || trace.text;
         if(!text || Array.isArray(text)) {
@@ -467,7 +467,10 @@ drawing.makeTester = function(gd) {
     testref.enter().append('path')
         .classed('js-reference-point', true)
         .attr('d','M0,0H1V1H0Z')
-        .style({'stroke-width':0, fill:'black'});
+        .style({
+            'stroke-width': 0,
+            fill: 'black'
+        });
 
     if(!tester.node()._cache) {
         tester.node()._cache = {};
@@ -498,7 +501,11 @@ drawing.bBox = function(node) {
     var testNode = node.cloneNode(true);
     tester.appendChild(testNode);
     // standardize its position... do we really want to do this?
-    d3.select(testNode).attr({x:0, y:0, transform:''});
+    d3.select(testNode).attr({
+        x: 0,
+        y: 0,
+        transform: ''
+    });
 
     var testRect = testNode.getBoundingClientRect(),
         refRect = test3.select('.js-reference-point')

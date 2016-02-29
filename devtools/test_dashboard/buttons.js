@@ -65,12 +65,12 @@ function plotButtons(plots, figDir) {
         /*
          * Grab the currently loaded plot and make an image - replacing the plot.
          */
-        if (!gd) return;
+        if(!gd) return;
 
         var layout = gd.layout;
         var data = gd.data;
 
-        if (!layout || !data) return;
+        if(!layout || !data) return;
 
         Plotly.Plots.getSubplotIds(gd._fullLayout, 'gl3d').forEach(function(key) {
             var scene = gd._fullLayout[key]._scene;

@@ -11,7 +11,7 @@ describe('Test Gl3dAxes', function() {
         var options = {
             font: 'Open Sans',
             scene: {id: 'scene'},
-            data: [{x:[], y:[]}]
+            data: [{x: [], y: []}]
         };
 
         beforeEach(function() {
@@ -62,9 +62,9 @@ describe('Test Gl3dAxes', function() {
 
             function checkKeys(validObject, testObject) {
                 var keys = Object.keys(validObject);
-                for (var i = 0; i < keys.length; i++) {
+                for(var i = 0; i < keys.length; i++) {
                     var k = keys[i];
-                    if (validObject[k] !== testObject[k]) return false;
+                    if(validObject[k] !== testObject[k]) return false;
                 }
                 return true;
             }

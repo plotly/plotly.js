@@ -27,8 +27,8 @@ module.exports = function(text, displayLength) {
     NOTEDATA.push(text);
 
     var ts = 1000;
-    if (isNumeric(displayLength)) ts = displayLength;
-    else if (displayLength === 'long') ts = 3000;
+    if(isNumeric(displayLength)) ts = displayLength;
+    else if(displayLength === 'long') ts = 3000;
 
     var notifierContainer = d3.select('body')
         .selectAll('.plotly-notifier')

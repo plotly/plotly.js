@@ -34,18 +34,18 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('x');
     coerce('y');
 
-    if (!Array.isArray(traceOut.x)) {
+    if(!Array.isArray(traceOut.x)) {
         // build a linearly scaled x
         traceOut.x = [];
-        for (i = 0; i < xlen; ++i) {
+        for(i = 0; i < xlen; ++i) {
             traceOut.x[i] = i;
         }
     }
 
     coerce('text');
-    if (!Array.isArray(traceOut.y)) {
+    if(!Array.isArray(traceOut.y)) {
         traceOut.y = [];
-        for (i = 0; i < ylen; ++i) {
+        for(i = 0; i < ylen; ++i) {
             traceOut.y[i] = i;
         }
     }
@@ -61,25 +61,25 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('colorscale');
 
     var dims = ['x', 'y', 'z'];
-    for (i = 0; i < 3; ++i) {
+    for(i = 0; i < 3; ++i) {
 
         var contourDim = 'contours.' + dims[i];
         var show = coerce(contourDim + '.show');
         var highlight = coerce(contourDim + '.highlight');
 
-        if (show || highlight) {
-            for (j = 0; j < 3; ++j) {
+        if(show || highlight) {
+            for(j = 0; j < 3; ++j) {
                 coerce(contourDim + '.project.' + dims[j]);
             }
         }
 
-        if (show) {
+        if(show) {
             coerce(contourDim + '.color');
             coerce(contourDim + '.width');
             coerce(contourDim + '.usecolormap');
         }
 
-        if (highlight) {
+        if(highlight) {
             coerce(contourDim + '.highlightColor');
             coerce(contourDim + '.highlightWidth');
         }

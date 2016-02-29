@@ -161,8 +161,8 @@ function plotOne(gd, plotinfo, cd) {
     // interpolate for color scale
     // use an array instead of color strings, so we preserve alpha
     var s = d3.scale.linear()
-        .domain(scl.map(function(si){ return si[0]; }))
-        .range(scl.map(function(si){
+        .domain(scl.map(function(si) { return si[0]; }))
+        .range(scl.map(function(si) {
             var c = tinycolor(si[1]).toRgb();
             return [c.r, c.g, c.b, c.a];
         }))
@@ -180,11 +180,11 @@ function plotOne(gd, plotinfo, cd) {
             Lib.identity;
     }
     else {
-        xpx = function(index){
+        xpx = function(index) {
             return Lib.constrain(Math.round(xa.c2p(x[index]) - left),
                 0, imageWidth);
         };
-        ypx = function(index){
+        ypx = function(index) {
             return Lib.constrain(Math.round(ya.c2p(y[index]) - top),
                 0, imageHeight);
         };

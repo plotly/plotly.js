@@ -42,7 +42,7 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
         Lib.coerceFont(coerce, 'tickfont', options.font || {});
         coerce('tickangle');
 
-        if(axType !== 'category'){
+        if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
             if(!tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
@@ -72,13 +72,14 @@ function getShowAttrDflt(containerIn) {
     var showAttrsAll = ['showexponent',
                         'showtickprefix',
                         'showticksuffix'],
-        showAttrs = showAttrsAll.filter(function(a){
+        showAttrs = showAttrsAll.filter(function(a) {
             return containerIn[a]!==undefined;
         }),
-        sameVal = function(a){
+        sameVal = function(a) {
             return containerIn[a]===containerIn[showAttrs[0]];
         };
-    if (showAttrs.every(sameVal) || showAttrs.length===1) {
+
+    if(showAttrs.every(sameVal) || showAttrs.length===1) {
         return containerIn[showAttrs[0]];
     }
 }

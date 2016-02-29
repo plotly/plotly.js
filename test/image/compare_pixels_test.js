@@ -126,11 +126,11 @@ function testMock(fileName, t) {
     }
 
     function onEqualityCheck(err, isEqual) {
-        if (err) {
+        if(err) {
             touch(diffPath);
             return console.error(err, imageFileName);
         }
-        if (isEqual) {
+        if(isEqual) {
             fs.unlinkSync(diffPath);
         }
 
