@@ -795,9 +795,9 @@ legend.repositionLegend = function(td, traces) {
     Plots.autoMargin(td,'legend',{
         x: opts.x,
         y: opts.y,
-        l: opts.width * ({right:1, center:0.5}[xanchor] || 0),
-        r: opts.width * ({left:1, center:0.5}[xanchor] || 0),
-        b: opts.height * ({top:1, middle:0.5}[yanchor] || 0),
-        t: opts.height * ({bottom:1, middle:0.5}[yanchor] || 0)
+        l: opts.width * ({right: 1, center: 0.5}[xanchor] || 0),
+        r: opts.width * ({left: 1, center: 0.5}[xanchor] || 0),
+        b: opts.height * ({top: 1, middle: 0.5}[yanchor] || 0),
+        t: opts.height * ({bottom: 1, middle: 0.5}[yanchor] || 0)
     });
 };

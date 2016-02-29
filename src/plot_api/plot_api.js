@@ -181,10 +181,10 @@ Plotly.plot = function(gd, data, layout, config) {
 
         Legend.draw(gd);
 
-        for (i = 0; i < calcdata.length; i++) {
+        for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
             trace = cd[0].trace;
-            if (trace.visible !== true || !trace._module.colorbar) {
+            if(trace.visible !== true || !trace._module.colorbar) {
                 Plots.autoMargin(gd, 'cb'+trace.uid);
             }
             else trace._module.colorbar(gd, cd);
@@ -601,7 +601,7 @@ function cleanLayout(layout) {
     /*
      * Moved from rotate -> orbit for dragmode
      */
-    if (layout.dragmode === 'rotate') layout.dragmode = 'orbit';
+    if(layout.dragmode === 'rotate') layout.dragmode = 'orbit';
 
     // cannot have scene1, numbering goes scene, scene2, scene3...
     if(layout.scene1) {
@@ -671,7 +671,7 @@ function cleanData(data, existingData) {
     for(var tracei = 0; tracei < data.length; tracei++) {
         var trace = data[tracei];
         // assign uids to each trace and detect collisions.
-        if (!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
+        if(!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
             var newUid, i;
             for(i=0; i<100; i++) {
                 newUid = Lib.randstr(uids);
@@ -841,28 +841,28 @@ function doCalcdata(gd) {
 
     // delete category list, if there is one, so we start over
     // to be filled in later by ax.d2c
-    for (i = 0; i < axList.length; i++) {
+    for(i = 0; i < axList.length; i++) {
         axList[i]._categories = [];
     }
 
-    for (i = 0; i < fullData.length; i++) {
+    for(i = 0; i < fullData.length; i++) {
         trace = fullData[i];
         module = trace._module;
         cd = [];
 
-        if (module && trace.visible === true) {
-            if (module.calc) cd = module.calc(gd, trace);
+        if(module && trace.visible === true) {
+            if(module.calc) cd = module.calc(gd, trace);
         }
 
         // make sure there is a first point
         // this ensures there is a calcdata item for every trace,
         // even if cartesian logic doesn't handle it
-        if (!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+        if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
 
         // add the trace-wide properties to the first point,
         // per point properties to every point
         // t is the holder for trace-wide properties
-        if (!cd[0].t) cd[0].t = {};
+        if(!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
         Lib.markTime('done with calcdata for '+i);
@@ -882,9 +882,9 @@ function positivifyIndices(indices, maxIndex) {
         i,
         index;
 
-    for (i = 0; i < indices.length; i++) {
+    for(i = 0; i < indices.length; i++) {
         index = indices[i];
-        if (index < 0) {
+        if(index < 0) {
             positiveIndices.push(parentLength + index);
         } else {
             positiveIndices.push(index);
@@ -906,21 +906,21 @@ function assertIndexArray(gd, indices, arrayName) {
     var i,
         index;
 
-    for (i = 0; i < indices.length; i++) {
+    for(i = 0; i < indices.length; i++) {
         index = indices[i];
 
         // validate that indices are indeed integers
-        if (index !== parseInt(index, 10)) {
+        if(index !== parseInt(index, 10)) {
             throw new Error('all values in ' + arrayName + ' must be integers');
         }
 
         // check that all indices are in bounds for given gd.data array length
-        if (index >= gd.data.length || index < -gd.data.length) {
+        if(index >= gd.data.length || index < -gd.data.length) {
             throw new Error(arrayName + ' must be valid indices for gd.data.');
         }
 
         // check that indices aren't repeated
-        if (indices.indexOf(index, i + 1) > -1 ||
+        if(indices.indexOf(index, i + 1) > -1 ||
                 index >= 0 && indices.indexOf(-gd.data.length + index) > -1 ||
                 index < 0 && indices.indexOf(gd.data.length + index) > -1) {
             throw new Error('each index in ' + arrayName + ' must be unique.');
@@ -938,28 +938,28 @@ function assertIndexArray(gd, indices, arrayName) {
 function checkMoveTracesArgs(gd, currentIndices, newIndices) {
 
     // check that gd has attribute 'data' and 'data' is array
-    if (!Array.isArray(gd.data)) {
+    if(!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array.');
     }
 
     // validate currentIndices array
-    if (typeof currentIndices === 'undefined') {
+    if(typeof currentIndices === 'undefined') {
         throw new Error('currentIndices is a required argument.');
-    } else if (!Array.isArray(currentIndices)) {
+    } else if(!Array.isArray(currentIndices)) {
         currentIndices = [currentIndices];
     }
     assertIndexArray(gd, currentIndices, 'currentIndices');
 
     // validate newIndices array if it exists
-    if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+    if(typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
         newIndices = [newIndices];
     }
-    if (typeof newIndices !== 'undefined') {
+    if(typeof newIndices !== 'undefined') {
         assertIndexArray(gd, newIndices, 'newIndices');
     }
 
     // check currentIndices and newIndices are the same length if newIdices exists
-    if (typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
+    if(typeof newIndices !== 'undefined' && currentIndices.length !== newIndices.length) {
         throw new Error('current and new indices must be of equal length.');
     }
 
@@ -976,33 +976,33 @@ function checkAddTracesArgs(gd, traces, newIndices) {
         value;
 
     // check that gd has attribute 'data' and 'data' is array
-    if (!Array.isArray(gd.data)) {
+    if(!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array.');
     }
 
     // make sure traces exists
-    if (typeof traces === 'undefined') {
+    if(typeof traces === 'undefined') {
         throw new Error('traces must be defined.');
     }
 
     // make sure traces is an array
-    if (!Array.isArray(traces)) {
+    if(!Array.isArray(traces)) {
         traces = [traces];
     }
 
     // make sure each value in traces is an object
-    for (i = 0; i < traces.length; i++) {
+    for(i = 0; i < traces.length; i++) {
         value = traces[i];
-        if (typeof value !== 'object' || (Array.isArray(value) || value === null)) {
+        if(typeof value !== 'object' || (Array.isArray(value) || value === null)) {
             throw new Error('all values in traces array must be non-array objects');
         }
     }
 
     // make sure we have an index for each trace
-    if (typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
+    if(typeof newIndices !== 'undefined' && !Array.isArray(newIndices)) {
         newIndices = [newIndices];
     }
-    if (typeof newIndices !== 'undefined' && newIndices.length !== traces.length) {
+    if(typeof newIndices !== 'undefined' && newIndices.length !== traces.length) {
         throw new Error(
             'if indices is specified, traces.length must equal indices.length'
         );
@@ -1023,33 +1023,33 @@ function assertExtendTracesArgs(gd, update, indices, maxPoints) {
 
     var maxPointsIsObject = Lib.isPlainObject(maxPoints);
 
-    if (!Array.isArray(gd.data)) {
+    if(!Array.isArray(gd.data)) {
         throw new Error('gd.data must be an array');
     }
-    if (!Lib.isPlainObject(update)) {
+    if(!Lib.isPlainObject(update)) {
         throw new Error('update must be a key:value object');
     }
 
-    if (typeof indices === 'undefined') {
+    if(typeof indices === 'undefined') {
         throw new Error('indices must be an integer or array of integers');
     }
 
     assertIndexArray(gd, indices, 'indices');
 
-    for (var key in update) {
+    for(var key in update) {
 
         /*
          * Verify that the attribute to be updated contains as many trace updates
          * as indices. Failure must result in throw and no-op
          */
-        if (!Array.isArray(update[key]) || update[key].length !== indices.length) {
+        if(!Array.isArray(update[key]) || update[key].length !== indices.length) {
             throw new Error('attribute ' + key + ' must be an array of length equal to indices array length');
         }
 
         /*
          * if maxPoints is an object it must match keys and array lengths of 'update' 1:1
          */
-        if (maxPointsIsObject &&
+        if(maxPointsIsObject &&
             (!(key in maxPoints) || !Array.isArray(maxPoints[key]) ||
             maxPoints[key].length !== update[key].length)) {
             throw new Error('when maxPoints is set as a key:value object it must contain a 1:1 ' +
@@ -1074,15 +1074,15 @@ function getExtendProperties(gd, update, indices, maxPoints) {
     var trace, target, prop, insert, maxp;
 
     // allow scalar index to represent a single trace position
-    if (!Array.isArray(indices)) indices = [indices];
+    if(!Array.isArray(indices)) indices = [indices];
 
     // negative indices are wrapped around to their positive value. Equivalent to python indexing.
     indices = positivifyIndices(indices, gd.data.length - 1);
 
     // loop through all update keys and traces and harvest validated data.
-    for (var key in update) {
+    for(var key in update) {
 
-        for (var j = 0; j < indices.length; j++) {
+        for(var j = 0; j < indices.length; j++) {
 
             /*
              * Choose the trace indexed by the indices map argument and get the prop setter-getter
@@ -1098,10 +1098,10 @@ function getExtendProperties(gd, update, indices, maxPoints) {
             target = prop.get();
             insert = update[key][j];
 
-            if (!Array.isArray(insert)) {
+            if(!Array.isArray(insert)) {
                 throw new Error('attribute: ' + key + ' index: ' + j + ' must be an array');
             }
-            if (!Array.isArray(target)) {
+            if(!Array.isArray(target)) {
                 throw new Error('cannot extend missing or non-array attribute: ' + key);
             }
 
@@ -1112,7 +1112,7 @@ function getExtendProperties(gd, update, indices, maxPoints) {
             maxp = maxPointsIsObject ? maxPoints[key][j] : maxPoints;
 
             // could have chosen null here, -1 just tells us to not take a window
-            if (!isNumeric(maxp)) maxp = -1;
+            if(!isNumeric(maxp)) maxp = -1;
 
             /*
              * Wrap the nestedProperty in an object containing required data
@@ -1153,7 +1153,7 @@ function spliceTraces(gd, update, indices, maxPoints, lengthenArray, spliceArray
         undoPoints = {};
     var target, prop, maxp;
 
-    for (var i = 0; i < updateProps.length; i++) {
+    for(var i = 0; i < updateProps.length; i++) {
 
         /*
          * prop is the object returned by Lib.nestedProperties
@@ -1167,7 +1167,7 @@ function spliceTraces(gd, update, indices, maxPoints, lengthenArray, spliceArray
          * If maxp is set within post-extension trace.length, splice to maxp length.
          * Otherwise skip function call as splice op will have no effect anyway.
          */
-        if (maxp >= 0 && maxp < target.length) remainder = spliceArray(target, maxp);
+        if(maxp >= 0 && maxp < target.length) remainder = spliceArray(target, maxp);
 
         /*
          * to reverse this operation we need the size of the original trace as the reverse
@@ -1180,8 +1180,8 @@ function spliceTraces(gd, update, indices, maxPoints, lengthenArray, spliceArray
          */
         prop.set(target);
 
-        if (!Array.isArray(undoUpdate[prop.astr])) undoUpdate[prop.astr] = [];
-        if (!Array.isArray(undoPoints[prop.astr])) undoPoints[prop.astr] = [];
+        if(!Array.isArray(undoUpdate[prop.astr])) undoUpdate[prop.astr] = [];
+        if(!Array.isArray(undoPoints[prop.astr])) undoPoints[prop.astr] = [];
 
         /*
          * build the inverse update object for the undo operation
@@ -1236,7 +1236,7 @@ Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if (Queue) {
+    if(Queue) {
         Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
     }
 
@@ -1265,7 +1265,7 @@ Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if (Queue) {
+    if(Queue) {
         Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
     }
 
@@ -1296,31 +1296,31 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     checkAddTracesArgs(gd, traces, newIndices);
 
     // make sure traces is an array
-    if (!Array.isArray(traces)) {
+    if(!Array.isArray(traces)) {
         traces = [traces];
     }
     cleanData(traces, gd.data);
 
     // add the traces to gd.data (no redrawing yet!)
-    for (i = 0; i < traces.length; i += 1) {
+    for(i = 0; i < traces.length; i += 1) {
         gd.data.push(traces[i]);
     }
 
     // to continue, we need to call moveTraces which requires currentIndices
-    for (i = 0; i < traces.length; i++) {
+    for(i = 0; i < traces.length; i++) {
         currentIndices.push(-traces.length + i);
     }
 
     // if the user didn't define newIndices, they just want the traces appended
     // i.e., we can simply redraw and be done
-    if (typeof newIndices === 'undefined') {
+    if(typeof newIndices === 'undefined') {
         promise = Plotly.redraw(gd);
-        if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return promise;
     }
 
     // make sure indices is property defined
-    if (!Array.isArray(newIndices)) {
+    if(!Array.isArray(newIndices)) {
         newIndices = [newIndices];
     }
 
@@ -1338,10 +1338,10 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
 
     // if we're here, the user has defined specific places to place the new traces
     // this requires some extra work that moveTraces will do
-    if (Queue) Queue.startSequence(gd);
-    if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if(Queue) Queue.startSequence(gd);
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
     promise = Plotly.moveTraces(gd, currentIndices, newIndices);
-    if (Queue) Queue.stopSequence(gd);
+    if(Queue) Queue.stopSequence(gd);
     return promise;
 };
 
@@ -1364,9 +1364,9 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
         deletedTrace;
 
     // make sure indices are defined
-    if (typeof indices === 'undefined') {
+    if(typeof indices === 'undefined') {
         throw new Error('indices must be an integer or array of integers.');
-    } else if (!Array.isArray(indices)) {
+    } else if(!Array.isArray(indices)) {
         indices = [indices];
     }
     assertIndexArray(gd, indices, 'indices');
@@ -1376,14 +1376,14 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
 
     // we want descending here so that splicing later doesn't affect indexing
     indices.sort(Lib.sorterDes);
-    for (i = 0; i < indices.length; i += 1) {
+    for(i = 0; i < indices.length; i += 1) {
         deletedTrace = gd.data.splice(indices[i], 1)[0];
         traces.push(deletedTrace);
     }
 
     var promise = Plotly.redraw(gd);
 
-    if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
 };
@@ -1438,9 +1438,9 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     currentIndices = Array.isArray(currentIndices) ? currentIndices : [currentIndices];
 
     // if undefined, define newIndices to point to the end of gd.data array
-    if (typeof newIndices === 'undefined') {
+    if(typeof newIndices === 'undefined') {
         newIndices = [];
-        for (i = 0; i < currentIndices.length; i++) {
+        for(i = 0; i < currentIndices.length; i++) {
             newIndices.push(-currentIndices.length + i);
         }
     }
@@ -1455,16 +1455,16 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     // at this point, we've coerced the index arrays into predictable forms
 
     // get the traces that aren't being moved around
-    for (i = 0; i < gd.data.length; i++) {
+    for(i = 0; i < gd.data.length; i++) {
 
         // if index isn't in currentIndices, include it in ignored!
-        if (currentIndices.indexOf(i) === -1) {
+        if(currentIndices.indexOf(i) === -1) {
             newData.push(gd.data[i]);
         }
     }
 
     // get a mapping of indices to moving traces
-    for (i = 0; i < currentIndices.length; i++) {
+    for(i = 0; i < currentIndices.length; i++) {
         movingTraceMap.push({newIndex: newIndices[i], trace: gd.data[currentIndices[i]]});
     }
 
@@ -1474,7 +1474,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     });
 
     // now, add the moving traces back in, in order!
-    for (i = 0; i < movingTraceMap.length; i += 1) {
+    for(i = 0; i < movingTraceMap.length; i += 1) {
         newData.splice(movingTraceMap[i].newIndex, 0, movingTraceMap[i].trace);
     }
 
@@ -1482,7 +1482,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 
     var promise = Plotly.redraw(gd);
 
-    if (Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
 };
@@ -1846,11 +1846,11 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         }
 
         // swap hovermode if set to "compare x/y data"
-        if (ai === 'orientationaxes') {
+        if(ai === 'orientationaxes') {
             var hovermode = Lib.nestedProperty(gd.layout, 'hovermode');
-            if (hovermode.get() === 'x') {
+            if(hovermode.get() === 'x') {
                 hovermode.set('y');
-            } else if (hovermode.get() === 'y') {
+            } else if(hovermode.get() === 'y') {
                 hovermode.set('x');
             }
         }
@@ -1927,7 +1927,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     // do we need to force a recalc?
     var autorangeOn = false;
-    Plotly.Axes.list(gd).forEach(function(ax){
+    Plotly.Axes.list(gd).forEach(function(ax) {
         if(ax.autorange) autorangeOn = true;
     });
     if(docalc || dolayout || (docalcAutorange && autorangeOn)) {
@@ -2180,7 +2180,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
             var ax = parentIn;
-            if (!ax || !ax.range) {
+            if(!ax || !ax.range) {
                 doextra(ptrunk+'.autorange', true);
             }
             else if(!parentFull.autorange) {
@@ -2259,8 +2259,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
         else {
             // check whether we can short-circuit a full redraw
             // 3d or geo at this point just needs to redraw.
-            if (p.parts[0].indexOf('scene') === 0) doplot = true;
-            else if (p.parts[0].indexOf('geo') === 0) doplot = true;
+            if(p.parts[0].indexOf('scene') === 0) doplot = true;
+            else if(p.parts[0].indexOf('geo') === 0) doplot = true;
             else if(fullLayout._hasGL2D &&
                 (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
             ) doplot = true;
@@ -2404,9 +2404,9 @@ function calculateReservedMargins(margins) {
     var resultingMargin = {left: 0, right: 0, bottom: 0, top: 0},
         marginName;
 
-    if (margins) {
-        for (marginName in margins) {
-            if (margins.hasOwnProperty(marginName)) {
+    if(margins) {
+        for(marginName in margins) {
+            if(margins.hasOwnProperty(marginName)) {
                 resultingMargin.left += margins[marginName].left || 0;
                 resultingMargin.right += margins[marginName].right || 0;
                 resultingMargin.bottom += margins[marginName].bottom || 0;
