@@ -14,6 +14,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
 var Titles = require('../../components/titles');
+var Range = require('../../components/range');
 
 var axes = module.exports = {};
 
@@ -1314,9 +1315,9 @@ axes.doTicks = function(gd, axid, skipTitle) {
         independent = true;
     }
     else {
-        ax = axes.getFromId(gd,axid);
+        ax = axes.getFromId(gd, axid);
 
-        if(axid==='redraw') {
+        if(axid === 'redraw') {
             fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
                 var plotinfo = fullLayout._plots[subplot],
                     xa = plotinfo.x(),
@@ -1334,17 +1335,12 @@ axes.doTicks = function(gd, axid, skipTitle) {
             });
         }
 
-        if(!axid || axid==='redraw') {
-<<<<<<< a032a9b23d0750202a68911c54b14bc543e0f51e
-            return Plotly.Lib.syncOrAsync(axes.list(td, '', true).map(function(ax) {
-                return function() {
-=======
+        if(!axid || axid === 'redraw') {
             return Plotly.Lib.syncOrAsync(axes.list(gd, '', true).map(function(ax) {
-                return function(){
->>>>>>> Change td to gd
+                return function() {
                     if(!ax._id) return;
                     var axDone = axes.doTicks(gd,ax._id);
-                    if(axid==='redraw') ax._r = ax.range.slice();
+                    if(axid === 'redraw') ax._r = ax.range.slice();
                     return axDone;
                 };
             }));
@@ -1385,20 +1381,20 @@ axes.doTicks = function(gd, axid, skipTitle) {
         i;
 
     // positioning arguments for x vs y axes
-    if(axletter==='x') {
+    if(axletter === 'x') {
         sides = ['bottom', 'top'];
-        transfn = function(d) {
-            return 'translate('+ax.l2p(d.x)+',0)';
+        transfn = function(d){
+            return 'translate(' + ax.l2p(d.x) + ',0)';
         };
         // dumb templating with string concat
         // would be better to use an actual template
         tickprefix = 'M0,';
         tickmid = 'v';
     }
-    else if(axletter==='y') {
+    else if(axletter === 'y') {
         sides = ['left', 'right'];
-        transfn = function(d) {
-            return 'translate(0,'+ax.l2p(d.x)+')';
+        transfn = function(d){
+            return 'translate(0,' + ax.l2p(d.x) + ')';
         };
         tickprefix = 'M';
         tickmid = ',0h';
@@ -1407,12 +1403,12 @@ axes.doTicks = function(gd, axid, skipTitle) {
         console.log('unrecognized doTicks axis', axid);
         return;
     }
-    var axside = ax.side||sides[0],
+    var axside = ax.side || sides[0],
     // which direction do the side[0], side[1], and free ticks go?
     // then we flip if outside XOR y axis
-        ticksign = [-1, 1, axside===sides[1] ? 1 : -1];
-    if((ax.ticks!=='inside') === (axletter==='x')) {
-        ticksign = ticksign.map(function(v) { return -v; });
+        ticksign = [-1, 1, axside === sides[1] ? 1 : -1];
+    if((ax.ticks !== 'inside') === (axletter === 'x')) {
+        ticksign = ticksign.map(function(v){ return -v; });
     }
 
     // remove zero lines, grid lines, and inside ticks if they're within
@@ -1442,7 +1438,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     function drawLabels(container, position) {
         // tick labels - for now just the main labels.
         // TODO: mirror labels, esp for subplots
-        var tickLabels=container.selectAll('g.'+tcls).data(vals, datafn);
+        var tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
         if(!ax.showticklabels || !isNumeric(position)) {
             tickLabels.remove();
             Titles.draw(gd, axid + 'title');
@@ -1503,11 +1499,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                         // all here so take it out of gd._promises and
                         // instead position the label and promise this in
                         // labelsReady
-<<<<<<< a032a9b23d0750202a68911c54b14bc543e0f51e
-                        labelsReady.push(td._promises.pop().then(function() {
-=======
-                        labelsReady.push(gd._promises.pop().then(function(){
->>>>>>> Change td to gd
+                        labelsReady.push(gd._promises.pop().then(function() {
                             positionLabels(thisLabel, ax.tickangle);
                         }));
                     }

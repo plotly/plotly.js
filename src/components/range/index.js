@@ -1,46 +1,47 @@
-// var Lib = require('../../lib');
-
 'use strict';
-var Lib = {
-    constrain: function(v, v0, v1) {
-        if(v0 > v1) return Math.max(v1, Math.min(v0, v));
-        return Math.max(v0, Math.min(v1, v));
-    }
-};
+
+var Lib = require('../../lib');
+
+var svgNS = 'http://www.w3.org/2000/svg';
+// var Lib = {
+//     constrain: function(v, v0, v1) {
+//         if(v0 > v1) return Math.max(v1, Math.min(v0, v));
+//         return Math.max(v0, Math.min(v1, v));
+//     }
+// };
 
 // Mock traces
-var traces = [
-  { name: 'trace1', color: 'blue', x: [], y: [] },
-  { name: 'trace2', color: 'green', x: [], y: [] },
-  { name: 'trace3', color: 'red', x: [], y: [] }
-];
+// var traces = [
+//   { name: 'trace1', color: 'blue', x: [], y: [] },
+//   { name: 'trace2', color: 'green', x: [], y: [] },
+//   { name: 'trace3', color: 'red', x: [], y: [] }
+// ];
 
-traces = traces.map(function(trace){
+// traces = traces.map(function(trace) {
 
-    for(var i = 0; i < 100; i++){
-        var lastY = trace.y[i] ? trace.y[i - 1] : 0;
-        trace.x[i] = i;
-        trace.y[i] = lastY - 8 * (lastY/100 - Math.random());
-    }
+//     for(var i = 0; i < 100; i++){
+//         var lastY = trace.y[i] ? trace.y[i - 1] : 0;
+//         trace.x[i] = i;
+//         trace.y[i] = lastY - 8 * (lastY/100 - Math.random());
+//     }
 
-    return trace;
-});
+//     return trace;
+// });
 
 var width = 480;
 var height = 60;
 
-var svg = document.getElementById('svg');
+// var svg = document.getElementById('svg');
 
 
-function makeLine(traces, minStart, maxStart){
-
-    var svgNS = 'http://www.w3.org/2000/svg';
+exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
 
     var slider = document.createElementNS(svgNS, 'g');
     setAttributes(slider, {
         'class': 'range-slider',
         'data-min': minStart,
-        'data-max': maxStart
+        'data-max': maxStart,
+        'pointer-events': 'all'
     });
 
     var sliderBg = document.createElementNS(svgNS, 'rect');
@@ -121,46 +122,46 @@ function makeLine(traces, minStart, maxStart){
         'fill': 'transparent'
     });
 
-    slider.addEventListener('mousedown', function(event){
-        var startX = event.clientX,
-            offsetX = event.offsetX,
-            target = event.target,
+    slider.addEventListener('mousedown', function(event) {
+        var target = event.target,
+            startX = event.clientX,
+            offsetX = startX - slider.getBoundingClientRect().left,
             minVal = slider.getAttribute('data-min'),
             maxVal = slider.getAttribute('data-max');
 
         window.addEventListener('mousemove', mouseMove);
         window.addEventListener('mouseup', mouseUp);
 
-        function mouseMove(e){
+        function mouseMove(e) {
             var delta = +e.clientX - startX;
 
-            switch(target){
+            switch(target) {
                 case slideBox:
-                    document.body.style.cursor = 'ew-resize';
+                    slider.style.cursor = 'ew-resize';
                     setRange(+maxVal + delta, +minVal + delta);
                     break;
 
                 case grabAreaMin:
-                    document.body.style.cursor = 'col-resize';
+                    slider.style.cursor = 'col-resize';
                     setRange(+minVal + delta, +maxVal);
                     break;
 
                 case grabAreaMax:
-                    document.body.style.cursor = 'col-resize';
+                    slider.style.cursor = 'col-resize';
                     setRange(+minVal, +maxVal + delta);
                     break;
 
                 default:
-                    document.body.style.cursor = 'ew-resize';
+                    slider.style.cursor = 'ew-resize';
                     setRange(offsetX, offsetX + delta);
                     break;
             }
         }
 
-        function mouseUp(){
+        function mouseUp() {
             window.removeEventListener('mousemove', mouseMove);
             window.removeEventListener('mouseup', mouseUp);
-            document.body.style.cursor = 'auto';
+            slider.style.cursor = 'auto';
         }
     });
 
@@ -170,7 +171,7 @@ function makeLine(traces, minStart, maxStart){
         min = Lib.constrain(min, 0, width);
         max = Lib.constrain(max, 0, width);
 
-        if(max < min){
+        if(max < min) {
             var temp = max;
             max = min;
             min = temp;
@@ -198,45 +199,8 @@ function makeLine(traces, minStart, maxStart){
         // call to set range on plot here
     }
 
-
-    // dealing with the underlaying visual:
-    // this should be swappable in the future
-    // for scatter/heatmap/bar etc.
-    for(var i = 0; i < traces.length; i++){
-        var points = [],
-            maxX, minX,
-            maxY, minY;
-
-
-        maxX = minX = traces[i].x[0];
-        maxY = minY = traces[i].y[0];
-
-        for(var j = 0; j < traces[i].x.length; j++){
-            maxX = Math.max(maxX, traces[i].x[j]);
-            minX = Math.min(minX, traces[i].x[j]);
-            maxY = Math.max(maxY, traces[i].y[j]);
-            minY = Math.min(minY, traces[i].y[j]);
-        }
-
-        for(var k = 0; k < traces[i].x.length; k++){
-            var traceX = width * traces[i].x[k] / (maxX - minX),
-                traceY = height * traces[i].y[k] / (maxY - minY) * 0.8;
-
-            points.push(traceX + ',' + traceY);
-        }
-
-        var line = document.createElementNS(svgNS, 'polyline');
-        setAttributes(line, {
-            'points': points.join(' '),
-            'fill': 'none',
-            'stroke': ['blue', 'red', 'green'][i],
-            'opacity': 0.5
-        });
-
-        slider.appendChild(line);
-    }
-
     appendChildren(slider, [
+        makeScatterLines(gd),
         sliderBg,
         maskMin,
         maskMax,
@@ -245,19 +209,58 @@ function makeLine(traces, minStart, maxStart){
         grabberMax
     ]);
 
-    svg.appendChild(slider);
-}
+    return slider;
+};
 
-function setAttributes(el, attrs){
+
+function setAttributes(el, attrs) {
     for(var key in attrs) {
         el.setAttribute(key, attrs[key]);
     }
 }
 
-function appendChildren(el, children){
-    for(var i = 0; i < children.length; i++){
+function appendChildren(el, children) {
+    for(var i = 0; i < children.length; i++) {
         el.appendChild(children[i]);
     }
 }
 
-makeLine(traces, 100, 120);
+function makeScatterLines(gd) {
+
+    var traces = gd._fullData,
+        minX = gd._fullLayout.xaxis.range[0],
+        maxX = gd._fullLayout.xaxis.range[1],
+        minY = gd._fullLayout.yaxis.range[0],
+        maxY = gd._fullLayout.yaxis.range[1];
+
+
+    // dealing with the underlaying visual:
+    // this should be swappable in the future
+    // for scatter/heatmap/bar etc.
+    var lines = document.createElementNS(svgNS, 'g');
+
+    for(var i = 0; i < traces.length; i++) {
+        var points = [];
+
+        for(var k = 0; k < traces[i].x.length; k++) {
+            var traceX = width * (traces[i].x[k] - minX) / (maxX - minX),
+                traceY = height * (0.9 - 0.8 * (traces[i].y[k] - minY) / (maxY - minY));
+
+            points.push(traceX + ',' + traceY);
+        }
+
+        var line = document.createElementNS(svgNS, 'polyline');
+        setAttributes(line, {
+            'points': points.join(' '),
+            'fill': 'none',
+            'stroke': traces[i].marker.color,
+            'opacity': 0.5
+        });
+
+        lines.appendChild(line);
+    }
+
+    return lines;
+}
+
+// exports.makeSlider(traces, 100, 120);
