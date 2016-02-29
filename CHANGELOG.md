@@ -9,6 +9,47 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.6.0] -- 2016-02-29
+
+### Added
+- SVG cartesian, 3D geographic maps and pie chart can now coexist on the same
+  graph [#246, #258, #289]
+- Legends with long item lists are now scrollable (instead of being cropped)
+  [#243]
+- Event `plotly_deselect` is now emitted after double-clicking in `select` and
+  `lasso` drag modes.
+- Event `plotly_doubleclick` is now emitted after double-clicking on SVG cartesian
+  graphs in `zoom` and `pan` drag modes.
+- Layout attributes `dragmode` and `hovermode` can now be set individually in
+  each scene [#258]
+- `Plotly.Plots.resize` now returns a promise. [#253, #262]
+
+### Fixed
+
+- `Plotly.deleteTraces` now properly deletes the last trace of a cartesian
+  subplot [#289]
+- `Plotly.deleteTraces` now works on heatmap, contour, pie, surface, mesh3d and
+  geo trace types [#289]
+- `Plotly.deleteTraces` now properly delete color bars associated with deleted
+  traces
+- Clearing cartesian axes via `relayout` no longer results in an uncaught error
+  [#289]
+- Events `plotly_hover`, `plotly_unhover` and `plotly_click` are properly
+  emitted on 3D graphs [#240]
+- Null and undefined categories are properly skipped over [#286]
+- Hover labels on 3D graphs are now properly hidden when `hovermode` is set to
+  false [#258]
+- Multi-scene 3D graphs now set their camera position via their own scene
+  attributes [#258]
+- Toggling `hovermode` on 3D graphs no longer resets the scene domain [#258]
+- Resetting the camera position on scenes where the `camera` attribute was
+  supplied no longer results in an uncaught error [#258]
+- Axis attributes `hoverformat`, `tickprefix`, `ticksuffix` are honored even
+  when `showticklabels` is set to false [#267]
+- Config option `doubleClick` set to `'reset'` now properly handles auto-ranged
+  axes [#285]
+
+
 ## [1.5.2] -- 2016-02-10
 
 ### Fixed
