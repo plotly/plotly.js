@@ -67,6 +67,18 @@ exports.plot = function plotGl3d(gd) {
     }
 };
 
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, 'gl3d');
+
+    for(var i = 0; i < oldSceneKeys.length; i++) {
+        var oldSceneKey = oldSceneKeys[i];
+
+        if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
+            oldFullLayout[oldSceneKey]._scene.destroy();
+        }
+    }
+};
+
 // clean scene ids, 'scene1' -> 'scene'
 exports.cleanId = function cleanId(id) {
     if (!id.match(/^scene[0-9]*$/)) return;

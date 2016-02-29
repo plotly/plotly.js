@@ -56,6 +56,8 @@ function Geo(options, fullLayout) {
 
     this.makeFramework();
     this.updateFx(fullLayout.hovermode);
+
+    this.traceHash = {};
 }
 
 module.exports = Geo;
@@ -152,24 +154,46 @@ function filterData(dataIn) {
 }
 
 proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
-    var traceData = {};
+    var i;
 
     this.drawLayout(geoLayout);
 
-    for(var i = 0; i < geoData.length; i++) {
+    var traceHashOld = this.traceHash;
+    var traceHash = {};
+
+    for(i = 0; i < geoData.length; i++) {
         var trace = geoData[i];
 
-        traceData[trace.type] = traceData[trace.type] || [];
-        traceData[trace.type].push(trace);
+        traceHash[trace.type] = traceHash[trace.type] || [];
+        traceHash[trace.type].push(trace);
     }
 
-    var traceKeys = Object.keys(traceData);
-    for(var j = 0; j < traceKeys.length; j++){
-        var moduleData = traceData[traceKeys[j]];
+    var moduleNamesOld = Object.keys(traceHashOld);
+    var moduleNames = Object.keys(traceHash);
+
+    // when a trace gets deleted, make sure that its module's
+    // plot method is called so that it is properly
+    // removed from the DOM.
+    for(i = 0; i < moduleNamesOld.length; i++) {
+        var moduleName = moduleNamesOld[i];
+
+        if(moduleNames.indexOf(moduleName) === -1) {
+            var fakeModule = traceHashOld[moduleName][0];
+            fakeModule.visible = false;
+            traceHash[moduleName] = [fakeModule];
+        }
+    }
+
+    moduleNames = Object.keys(traceHash);
+
+    for(i = 0; i < moduleNames.length; i++) {
+        var moduleData = traceHash[moduleNames[i]];
         var _module = moduleData[0]._module;
 
         _module.plot(this, filterData(moduleData), geoLayout);
     }
+
+    this.traceHash = traceHash;
 
     this.render();
 };

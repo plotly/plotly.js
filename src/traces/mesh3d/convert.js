@@ -141,7 +141,7 @@ proto.update = function(data) {
 };
 
 proto.dispose = function() {
-    this.glplot.remove(this.mesh);
+    this.scene.glplot.remove(this.mesh);
     this.mesh.dispose();
 };
 

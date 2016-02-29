@@ -65,3 +65,16 @@ exports.plot = function plotGeo(gd) {
         geo.plot(fullGeoData, fullLayout, gd._promises);
     }
 };
+
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldGeoKeys = Plots.getSubplotIds(oldFullLayout, 'geo');
+
+    for(var i = 0; i < oldGeoKeys.length; i++) {
+        var oldGeoKey = oldGeoKeys[i];
+        var oldGeo = oldFullLayout[oldGeoKey]._geo;
+
+        if(!newFullLayout[oldGeoKey] && !!oldGeo) {
+            oldGeo.geoDiv.remove();
+        }
+    }
+};

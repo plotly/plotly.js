@@ -5,16 +5,19 @@ describe('Test Gl3d layout defaults', function() {
     'use strict';
 
     describe('supplyLayoutDefaults', function() {
-        var supplyLayoutDefaults = Gl3d.supplyLayoutDefaults;
         var layoutIn, layoutOut, fullData;
 
+        var supplyLayoutDefaults = Gl3d.supplyLayoutDefaults;
+
         beforeEach(function() {
-            layoutOut = {_hasGL3D: true};
-            fullData = [{scene: 'scene', type: 'scatter3d'}];
+            // if hasGL3D is not at this stage, the default step is skipped
+            layoutOut = { _hasGL3D: true };
+
+            // needs a scene-ref in a trace in order to be detected
+            fullData = [ { type: 'scatter3d', scene: 'scene' }];
         });
 
         it('should coerce aspectmode=ratio when ratio data is valid', function() {
-
             var aspectratio = {
                 x: 1,
                 y: 2,
@@ -44,7 +47,6 @@ describe('Test Gl3d layout defaults', function() {
 
 
         it('should coerce aspectmode=auto when aspect ratio data is invalid', function() {
-
             var aspectratio = {
                 x: 'g',
                 y: 2,
@@ -72,7 +74,6 @@ describe('Test Gl3d layout defaults', function() {
 
 
         it('should coerce manual when valid ratio data but invalid aspectmode', function() {
-
             var aspectratio = {
                 x: 1,
                 y: 2,
@@ -100,7 +101,6 @@ describe('Test Gl3d layout defaults', function() {
 
 
         it('should not coerce manual when invalid ratio data but invalid aspectmode', function() {
-
             var aspectratio = {
                 x: 'g',
                 y: 2,
@@ -128,7 +128,6 @@ describe('Test Gl3d layout defaults', function() {
 
 
         it('should not coerce manual when valid ratio data and valid non-manual aspectmode', function() {
-
             var aspectratio = {
                 x: 1,
                 y: 2,
@@ -155,7 +154,7 @@ describe('Test Gl3d layout defaults', function() {
         });
 
         it('should coerce dragmode', function() {
-            layoutIn = {};
+            layoutIn = { scene: {} };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('turntable', 'to turntable by default');
@@ -165,25 +164,25 @@ describe('Test Gl3d layout defaults', function() {
             expect(layoutOut.scene.dragmode)
                 .toBe('orbit', 'to user val if valid');
 
-            layoutIn = { dragmode: 'orbit' };
+            layoutIn = { scene: {}, dragmode: 'orbit' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('orbit', 'to user layout val if valid and 3d only');
 
-            layoutIn = { dragmode: 'orbit' };
+            layoutIn = { scene: {}, dragmode: 'orbit' };
             layoutOut._hasCartesian = true;
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('turntable', 'to default if not 3d only');
 
-            layoutIn = { dragmode: 'not gonna work' };
+            layoutIn = { scene: {}, dragmode: 'not gonna work' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('turntable', 'to default if not valid');
         });
 
         it('should coerce hovermode', function() {
-            layoutIn = {};
+            layoutIn = { scene: {} };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe('closest', 'to closest by default');
@@ -193,21 +192,39 @@ describe('Test Gl3d layout defaults', function() {
             expect(layoutOut.scene.hovermode)
                 .toBe(false, 'to user val if valid');
 
-            layoutIn = { hovermode: false };
+            layoutIn = { scene: {}, hovermode: false };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe(false, 'to user layout val if valid and 3d only');
 
-            layoutIn = { hovermode: false };
+            layoutIn = { scene: {}, hovermode: false };
             layoutOut._hasCartesian = true;
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe('closest', 'to default if not 3d only');
 
-            layoutIn = { hovermode: 'not gonna work' };
+            layoutIn = { scene: {}, hovermode: 'not gonna work' };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe('closest', 'to default if not valid');
+        });
+
+        it('should add data-only scenes into layoutIn', function() {
+            layoutIn = {};
+            fullData = [{ type: 'scatter3d', scene: 'scene' }];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutIn.scene).toEqual({
+                aspectratio: { x: 1, y: 1, z: 1 }
+            });
+        });
+
+        it('should add scene data-only scenes into layoutIn (converse)', function() {
+            layoutIn = {};
+            fullData = [{ type: 'scatter' }];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutIn.scene).toBe(undefined);
         });
     });
 });

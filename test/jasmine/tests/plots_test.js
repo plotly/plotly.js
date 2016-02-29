@@ -102,12 +102,11 @@ describe('Test Plots', function() {
 
     describe('Plots.getSubplotIds', function() {
         var getSubplotIds = Plots.getSubplotIds;
-        var layout;
 
-        it('returns scene ids', function() {
-            layout = {
-                scene: {},
+        it('returns scene ids in order', function() {
+            var layout = {
                 scene2: {},
+                scene: {},
                 scene3: {}
             };
 
@@ -116,13 +115,32 @@ describe('Test Plots', function() {
 
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual([]);
+            expect(getSubplotIds(layout, 'geo'))
+                .toEqual([]);
+            expect(getSubplotIds(layout, 'no-valid-subplot-type'))
+                .toEqual([]);
+        });
 
+        it('returns geo ids in order', function() {
+            var layout = {
+                geo2: {},
+                geo: {},
+                geo3: {}
+            };
+
+            expect(getSubplotIds(layout, 'geo'))
+                .toEqual(['geo', 'geo2', 'geo3']);
+
+            expect(getSubplotIds(layout, 'cartesian'))
+                .toEqual([]);
+            expect(getSubplotIds(layout, 'gl3d'))
+                .toEqual([]);
             expect(getSubplotIds(layout, 'no-valid-subplot-type'))
                 .toEqual([]);
         });
 
         it('returns cartesian ids', function() {
-            layout = {
+            var layout = {
                 _plots: { xy: {}, x2y2: {} }
             };
 
@@ -145,34 +163,28 @@ describe('Test Plots', function() {
         });
     });
 
-    describe('Plots.getSubplotIdsInData', function() {
-        var getSubplotIdsInData = Plots.getSubplotIdsInData;
+    describe('Plots.findSubplotIds', function() {
+        var findSubplotIds = Plots.findSubplotIds;
+        var ids;
 
-        var ids, data;
+        it('should return subplots ids found in the data', function() {
+            var data = [{
+                type: 'scatter3d',
+                scene: 'scene'
+            }, {
+                type: 'surface',
+                scene: 'scene2'
+            }, {
+                type: 'choropleth',
+                geo: 'geo'
+            }];
 
-        it('it should return scene ids', function() {
-            data = [
-                {
-                    type: 'scatter3d',
-                    scene: 'scene'
-                },
-                {
-                    type: 'surface',
-                    scene: 'scene2'
-                },
-                {
-                    type: 'choropleth',
-                    geo: 'geo'
-                }
-            ];
-
-            ids = getSubplotIdsInData(data, 'geo');
+            ids = findSubplotIds(data, 'geo');
             expect(ids).toEqual(['geo']);
 
-            ids = getSubplotIdsInData(data, 'gl3d');
+            ids = findSubplotIds(data, 'gl3d');
             expect(ids).toEqual(['scene', 'scene2']);
         });
-
     });
 
     describe('Plots.register, getModule, and traceIs', function() {
