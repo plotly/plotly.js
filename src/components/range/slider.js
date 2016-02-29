@@ -8,7 +8,7 @@ var Lib = {
     }
 };
 
-// Mock things for jsbin
+// Mock traces
 var traces = [
   { name: 'trace1', color: 'blue', x: [], y: [] },
   { name: 'trace2', color: 'green', x: [], y: [] },
@@ -38,15 +38,15 @@ function makeLine(traces, minStart, maxStart){
 
     var slider = document.createElementNS(svgNS, 'g');
     setAttributes(slider, {
-        'class': 'slider',
+        'class': 'range-slider',
         'data-min': minStart,
         'data-max': maxStart
     });
 
     var sliderBg = document.createElementNS(svgNS, 'rect');
     setAttributes(sliderBg, {
-        'stroke': 'black',
         'fill': 'transparent',
+        'stroke': 'black',
         'height': height,
         'width': width,
         'shape-rendering': 'crispEdges'
@@ -57,7 +57,7 @@ function makeLine(traces, minStart, maxStart){
         'x': 0,
         'width': minStart,
         'height': height,
-        'fill': 'rgba(0,0,0,0.1)'
+        'fill': 'rgba(0,0,0,0.25)'
     });
 
     var maskMax = document.createElementNS(svgNS, 'rect');
@@ -65,39 +65,60 @@ function makeLine(traces, minStart, maxStart){
         'x': maxStart,
         'width': width - maxStart,
         'height': height,
-        'fill': 'rgba(0,0,0,0.1)'
+        'fill': 'rgba(0,0,0,0.25)'
     });
 
+    var grabberMin = document.createElementNS(svgNS, 'g');
+    var grabAreaMin = document.createElementNS(svgNS, 'rect');
     var handleMin = document.createElementNS(svgNS, 'rect');
+    setAttributes(grabberMin, { 'transform': 'translate(' + (minStart - 2) + ')' });
+    setAttributes(grabAreaMin, {
+        'width': 10,
+        'height': height,
+        'x': -4,
+        'fill': 'transparent',
+        'cursor': 'col-resize'
+    });
     setAttributes(handleMin, {
-        'class': 'handle-min',
-        'width': 6,
-        'x': 0,
-        'height': height,
-        'fill': 'transparent',
-        'cursor': 'col-resize'
+        'width': 2,
+        'height': height / 2,
+        'y': height / 4,
+        'rx': 1,
+        'fill': 'white',
+        'stroke': '#666',
+        'shape-rendering': 'crispEdges'
     });
+    appendChildren(grabberMin, [handleMin, grabAreaMin]);
 
+    var grabberMax = document.createElementNS(svgNS, 'g');
+    var grabAreaMax = document.createElementNS(svgNS, 'rect');
     var handleMax = document.createElementNS(svgNS, 'rect');
-    setAttributes(handleMax, {
-        'class': 'handle-max',
-        'width': 6,
-        'x': maxStart - 6,
+    setAttributes(grabberMax, { 'transform': 'translate(' + maxStart + ')' });
+    setAttributes(grabAreaMax, {
+        'width': 10,
         'height': height,
+        'x': -4,
         'fill': 'transparent',
         'cursor': 'col-resize'
     });
+    setAttributes(handleMax, {
+        'width': 2,
+        'height': height / 2,
+        'y': height / 4,
+        'rx': 1,
+        'fill': 'white',
+        'stroke': '#666',
+        'shape-rendering': 'crispEdges'
+    });
+    appendChildren(grabberMax, [handleMax, grabAreaMax]);
 
     var slideBox = document.createElementNS(svgNS, 'rect');
     setAttributes(slideBox, {
-        'class': 'slide-box',
         'x': minStart,
         'width': maxStart - minStart,
         'height': height,
         'cursor': 'ew-resize',
-        'fill': 'transparent',
-        'stroke': 'black',
-        'shape-rendering': 'crispEdges'
+        'fill': 'transparent'
     });
 
     slider.addEventListener('mousedown', function(event){
@@ -119,12 +140,12 @@ function makeLine(traces, minStart, maxStart){
                     setRange(+maxVal + delta, +minVal + delta);
                     break;
 
-                case handleMin:
+                case grabAreaMin:
                     document.body.style.cursor = 'col-resize';
                     setRange(+minVal + delta, +maxVal);
                     break;
 
-                case handleMax:
+                case grabAreaMax:
                     document.body.style.cursor = 'col-resize';
                     setRange(+minVal, +maxVal + delta);
                     break;
@@ -171,8 +192,10 @@ function makeLine(traces, minStart, maxStart){
             'width': width - max
         });
 
-        setAttributes(handleMin, { 'x': min });
-        setAttributes(handleMax, { 'x': max - 6 });
+        setAttributes(grabberMin, { 'transform': 'translate(' + (min - 2) + ')' });
+        setAttributes(grabberMax, { 'transform': 'translate(' + max + ')' });
+
+        // call to set range on plot here
     }
 
 
@@ -218,12 +241,12 @@ function makeLine(traces, minStart, maxStart){
         maskMin,
         maskMax,
         slideBox,
-        handleMin,
-        handleMax
+        grabberMin,
+        grabberMax
     ]);
 
     svg.appendChild(slider);
-};
+}
 
 function setAttributes(el, attrs){
     for(var key in attrs) {
@@ -237,4 +260,4 @@ function appendChildren(el, children){
     }
 }
 
-makeLine(traces, 0, 100);
+makeLine(traces, 100, 120);
