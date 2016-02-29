@@ -124,7 +124,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     return containerOut;
 };
 
-function setAutoType(ax, data){
+function setAutoType(ax, data) {
     // new logic: let people specify any type they want,
     // only autotype if type is '-'
     if(ax.type!=='-') return;

@@ -28,7 +28,7 @@ module.exports = function setPositions(gd, plotinfo) {
         ya = plotinfo.y(),
         i, j;
 
-    ['v', 'h'].forEach(function(dir){
+    ['v', 'h'].forEach(function(dir) {
         var bl = [],
             pLetter = {v: 'x', h: 'y'}[dir],
             sLetter = {v: 'y', h: 'x'}[dir],
@@ -56,7 +56,7 @@ module.exports = function setPositions(gd, plotinfo) {
             // find the min. difference between any points
             // in any traces in bl1
             var pvals = [];
-            bl1.forEach(function(i){
+            bl1.forEach(function(i) {
                 gd.calcdata[i].forEach(function(v) { pvals.push(v.p); });
             });
             var dv = Lib.distinctVals(pvals),
@@ -97,7 +97,7 @@ module.exports = function setPositions(gd, plotinfo) {
             var barCenter;
             function setBarCenter(v) { v[pLetter] = v.p + barCenter; }
 
-            for(var i = 0; i < bl1.length; i++){
+            for(var i = 0; i < bl1.length; i++) {
                 var t = gd.calcdata[bl1[i]][0].t;
                 t.barwidth = barDiff * (1 - fullLayout.bargroupgap);
                 t.poffset = ((overlap ? (2 * i + 1 - bl1.length) * barDiff : 0) -
@@ -111,7 +111,7 @@ module.exports = function setPositions(gd, plotinfo) {
         }
 
         if(fullLayout.barmode === 'overlay') {
-            bl.forEach(function(bli){ barposition([bli]); });
+            bl.forEach(function(bli) { barposition([bli]); });
         }
         else barposition(bl);
 
@@ -119,7 +119,7 @@ module.exports = function setPositions(gd, plotinfo) {
             norm = fullLayout.barnorm;
 
         // bar size range and stacking calculation
-        if(stack || norm){
+        if(stack || norm) {
             // for stacked bars, we need to evaluate every step in every
             // stack, because negative bars mean the extremes could be
             // anywhere
@@ -138,7 +138,7 @@ module.exports = function setPositions(gd, plotinfo) {
                 ti,
                 scale;
 
-            for(i = 0; i < bl.length; i++){ // trace index
+            for(i = 0; i < bl.length; i++) { // trace index
                 ti = gd.calcdata[bl[i]];
                 for(j = 0; j < ti.length; j++) {
                     sv = Math.round(ti[j].p / sumround);
@@ -164,7 +164,7 @@ module.exports = function setPositions(gd, plotinfo) {
                     tiny = top/1e9; // in case of rounding error in sum
                 sMin = 0;
                 sMax = stack ? top : 0;
-                for(i = 0; i < bl.length; i++){ // trace index
+                for(i = 0; i < bl.length; i++) { // trace index
                     ti = gd.calcdata[bl[i]];
                     for(j = 0; j < ti.length; j++) {
                         scale = top / sums[Math.round(ti[j].p/sumround)];
@@ -195,7 +195,7 @@ module.exports = function setPositions(gd, plotinfo) {
             // these bar tops in calcdata
             var fs = function(v) { v[sLetter] = v.s; return v.s; };
 
-            for(i = 0; i < bl.length; i++){
+            for(i = 0; i < bl.length; i++) {
                 Axes.expand(sa, gd.calcdata[bl[i]].map(fs),
                     {tozero: true, padded: true});
             }

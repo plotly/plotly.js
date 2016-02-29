@@ -109,7 +109,7 @@ exports.isDateTime = function(s) {
 };
 
 // pad a number with zeroes, to given # of digits before the decimal point
-function lpad(val, digits){
+function lpad(val, digits) {
     return String(val + Math.pow(10, digits)).substr(1);
 }
 
@@ -121,7 +121,7 @@ function lpad(val, digits){
  * If rng is big, the later parts of time will be omitted
  */
 exports.ms2DateTime = function(ms, r) {
-    if(typeof(d3)==='undefined'){
+    if(typeof(d3)==='undefined') {
         console.log('d3 is not defined');
         return;
     }

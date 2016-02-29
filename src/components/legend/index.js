@@ -87,7 +87,7 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 // same functions for styling traces in the popovers
 // -----------------------------------------------------
 
-legend.lines = function(d){
+legend.lines = function(d) {
     var trace = d[0].trace,
         showFill = trace.visible && trace.fill && trace.fill!=='none',
         showLine = subTypes.hasLines(trace);
@@ -107,7 +107,7 @@ legend.lines = function(d){
     line.call(Drawing.lineGroupStyle);
 };
 
-legend.points = function(d){
+legend.points = function(d) {
     var d0 = d[0],
         trace = d0.trace,
         showMarkers = subTypes.hasMarkers(trace),
@@ -192,7 +192,7 @@ legend.points = function(d){
 
 };
 
-legend.bars = function(d){
+legend.bars = function(d) {
     var trace = d[0].trace,
         marker = trace.marker||{},
         markerLine = marker.line||{},
@@ -203,7 +203,7 @@ legend.bars = function(d){
         .attr('d','M6,6H-6V-6H6Z')
         .attr('transform','translate(20,0)');
     barpath.exit().remove();
-    barpath.each(function(d){
+    barpath.each(function(d) {
         var w = (d.mlw+1 || markerLine.width+1) - 1,
             p = d3.select(this);
         p.style('stroke-width',w+'px')
@@ -214,7 +214,7 @@ legend.bars = function(d){
     });
 };
 
-legend.boxes = function(d){
+legend.boxes = function(d) {
     var trace = d[0].trace,
         pts = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendbox')
@@ -224,7 +224,7 @@ legend.boxes = function(d){
         .attr('d', 'M6,6H-6V-6H6Z')
         .attr('transform', 'translate(20,0)');
     pts.exit().remove();
-    pts.each(function(d){
+    pts.each(function(d) {
         var w = (d.lw+1 || trace.line.width+1) - 1,
             p = d3.select(this);
         p.style('stroke-width', w+'px')
@@ -249,7 +249,7 @@ legend.pie = function(d) {
 };
 
 legend.style = function(s) {
-    s.each(function(d){
+    s.each(function(d) {
         var traceGroup = d3.select(this);
 
         var fill = traceGroup
@@ -283,7 +283,7 @@ legend.style = function(s) {
     .each(legend.points);
 };
 
-legend.texts = function(context, td, d, i, traces){
+legend.texts = function(context, td, d, i, traces) {
     var fullLayout = td._fullLayout,
         trace = d[0].trace,
         isPie = Plots.traceIs(trace, 'pie'),
@@ -308,17 +308,17 @@ legend.texts = function(context, td, d, i, traces){
     .call(Drawing.font, fullLayout.legend.font)
     .text(name);
 
-    function textLayout(s){
-        Plotly.util.convertToTspans(s, function(){
+    function textLayout(s) {
+        Plotly.util.convertToTspans(s, function() {
             if(td.firstRender) legend.repositionLegend(td, traces);
         });
         s.selectAll('tspan.line').attr({x: s.attr('x')});
     }
 
-    if(td._context.editable && !isPie){
+    if(td._context.editable && !isPie) {
         text.call(Plotly.util.makeEditable)
             .call(textLayout)
-            .on('edit', function(text){
+            .on('edit', function(text) {
                 this.attr({'data-unformatted': text});
                 this.text(text)
                     .call(textLayout);
@@ -597,11 +597,11 @@ legend.draw = function(td) {
     legendsvg.call(Drawing.setRect, lx, ly, opts.width, scrollheight);
 
     // If scrollbar should be shown.
-    if(td.firstRender && opts.height - scrollheight > 0 && !td._context.staticPlot){
+    if(td.firstRender && opts.height - scrollheight > 0 && !td._context.staticPlot) {
 
         bg.attr({ width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth });
 
-        legendsvg.node().addEventListener('wheel', function(e){
+        legendsvg.node().addEventListener('wheel', function(e) {
             e.preventDefault();
             scrollHandler(e.deltaY / 20);
         });
@@ -610,7 +610,7 @@ legend.draw = function(td) {
             e.preventDefault();
 
             function mMove(e) {
-                if(e.buttons === 1){
+                if(e.buttons === 1) {
                     scrollHandler(e.movementY);
                 }
             }
@@ -634,7 +634,7 @@ legend.draw = function(td) {
         );
     }
 
-    function scrollHandler(delta){
+    function scrollHandler(delta) {
 
         var scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
             translateY = scrollBox.attr('data-scroll'),
@@ -693,7 +693,7 @@ legend.draw = function(td) {
     }
 };
 
-legend.repositionLegend = function(td, traces){
+legend.repositionLegend = function(td, traces) {
     var fullLayout = td._fullLayout,
         gs = fullLayout._size,
         opts = fullLayout.legend,
@@ -702,7 +702,7 @@ legend.repositionLegend = function(td, traces){
     opts.width = 0,
     opts.height = 0,
 
-    traces.each(function(d){
+    traces.each(function(d) {
         var trace = d[0].trace,
             g = d3.select(this),
             bg = g.selectAll('.legendtoggle'),

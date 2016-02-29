@@ -300,7 +300,7 @@ describe('Test lib.js:', function() {
             // we don't need this, it's better just to set the whole
             // array, ie np(obj, 'arr')
             var obj = {arr: [1, 2, 3]};
-            expect(function(){ np(obj, 'arr[-1]'); }).toThrow('bad property string');
+            expect(function() { np(obj, 'arr[-1]'); }).toThrow('bad property string');
         });
 
         it('should access properties of objects in an array with index -1', function() {

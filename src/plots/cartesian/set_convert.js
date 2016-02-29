@@ -42,7 +42,7 @@ module.exports = function setConvert(ax) {
     // also, clipping can affect the direction of lines off the edge...
     var clipMult = 10;
 
-    function toLog(v, clip){
+    function toLog(v, clip) {
         if(v>0) return Math.log(v)/Math.LN10;
 
         else if(v<=0 && clip && ax.range && ax.range.length===2) {
@@ -55,8 +55,8 @@ module.exports = function setConvert(ax) {
 
         else return constants.BADNUM;
     }
-    function fromLog(v){ return Math.pow(10,v); }
-    function num(v){ return isNumeric(v) ? Number(v) : constants.BADNUM; }
+    function fromLog(v) { return Math.pow(10,v); }
+    function num(v) { return isNumeric(v) ? Number(v) : constants.BADNUM; }
 
     ax.c2l = (ax.type==='log') ? toLog : num;
     ax.l2c = (ax.type==='log') ? fromLog : num;
@@ -64,7 +64,7 @@ module.exports = function setConvert(ax) {
     ax.p2d = function(v) { return ax.l2d(ax.p2l(v)); };
 
     // set scaling to pixels
-    ax.setScale = function(){
+    ax.setScale = function() {
         var gs = ax._td._fullLayout._size,
             i;
 
@@ -131,11 +131,11 @@ module.exports = function setConvert(ax) {
     ax.p2l = function(px) { return (px-ax._b)/ax._m; };
 
     ax.c2p = function(v, clip) { return ax.l2p(ax.c2l(v, clip)); };
-    ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
+    ax.p2c = function(px) { return ax.l2c(ax.p2l(px)); };
 
     if(['linear','log','-'].indexOf(ax.type)!==-1) {
         ax.c2d = num;
-        ax.d2c = function(v){
+        ax.d2c = function(v) {
             v = cleanDatum(v);
             return isNumeric(v) ? Number(v) : constants.BADNUM;
         };
@@ -149,7 +149,7 @@ module.exports = function setConvert(ax) {
             return isNumeric(v) ? Lib.ms2DateTime(v) : constants.BADNUM;
         };
 
-        ax.d2c = function(v){
+        ax.d2c = function(v) {
             return (isNumeric(v)) ? Number(v) : Lib.dateTime2ms(v);
         };
 
@@ -185,7 +185,7 @@ module.exports = function setConvert(ax) {
             // TODO: sorting options - do the sorting
             // progressively here as we insert?
 
-            if(v !== null && v !== undefined && ax._categories.indexOf(v) === -1){
+            if(v !== null && v !== undefined && ax._categories.indexOf(v) === -1) {
                 ax._categories.push(v);
             }
 

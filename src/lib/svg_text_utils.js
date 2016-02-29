@@ -35,7 +35,7 @@ d3.selection.prototype.appendSVG = function(_svgString) {
         this.node().appendChild(this.node().ownerDocument.importNode(childNode, true));
         childNode = childNode.nextSibling;
     }
-    if(dom.querySelector('parsererror')){
+    if(dom.querySelector('parsererror')) {
         console.log(dom.querySelector('parsererror div').textContent);
         return null;
     }
@@ -46,7 +46,7 @@ d3.selection.prototype.appendSVG = function(_svgString) {
 
 util.html_entity_decode = function(s) {
     var hiddenDiv = d3.select('body').append('div').style({display: 'none'}).html('');
-    var replaced = s.replace(/(&[^;]*;)/gi, function(d){
+    var replaced = s.replace(/(&[^;]*;)/gi, function(d) {
         if(d==='&lt;') { return '&#60;'; } // special handling for brackets
         if(d==='&rt;') { return '&#62;'; }
         return hiddenDiv.html(d).text(); // everything else, let the browser decode it to unicode
@@ -55,17 +55,17 @@ util.html_entity_decode = function(s) {
     return replaced;
 };
 
-util.xml_entity_encode = function(str){
+util.xml_entity_encode = function(str) {
     return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g,'&amp;');
 };
 
 // text converter
 
-function getSize(_selection, _dimension){
+function getSize(_selection, _dimension) {
     return _selection.node().getBoundingClientRect()[_dimension];
 }
 
-util.convertToTspans = function(_context, _callback){
+util.convertToTspans = function(_context, _callback) {
     var str = _context.text();
     var converted = convertToSVG(str);
     var that = _context;
@@ -85,7 +85,7 @@ util.convertToTspans = function(_context, _callback){
     }
 
     function showText() {
-        if(!parent.empty()){
+        if(!parent.empty()) {
             svgClass = that.attr('class') + '-math';
             parent.select('svg.' + svgClass).remove();
         }
@@ -107,7 +107,7 @@ util.convertToTspans = function(_context, _callback){
         if(_callback) _callback.call(that);
     }
 
-    if(tex){
+    if(tex) {
         var td = Plotly.Lib.getPlotDiv(that.node());
         ((td && td._promises)||[]).push(new Promise(function(resolve) {
             that.style({visibility: 'hidden'});
@@ -155,17 +155,17 @@ util.convertToTspans = function(_context, _callback){
                         getSize(that, 'height'),
                     dy = -textHeight/4;
 
-                if(svgClass[0] === 'y'){
+                if(svgClass[0] === 'y') {
                     mathjaxGroup.attr({
                         transform: 'rotate(' + [-90, +that.attr('x'), +that.attr('y')] +
                         ') translate(' + [-newSvgW / 2, dy - newSvgH / 2] + ')'
                     });
                     newSvg.attr({x: +that.attr('x'), y: +that.attr('y')});
                 }
-                else if(svgClass[0] === 'l'){
+                else if(svgClass[0] === 'l') {
                     newSvg.attr({x: that.attr('x'), y: dy - (newSvgH / 2)});
                 }
-                else if(svgClass[0] === 'a'){
+                else if(svgClass[0] === 'a') {
                     newSvg.attr({x: 0, y: dy});
                 }
                 else {
@@ -190,7 +190,7 @@ function cleanEscapesForTex(s) {
         .replace(/(>|&gt;|&#62;)/g, '\\gt ');
 }
 
-function texToSVG(_texString, _config, _callback){
+function texToSVG(_texString, _config, _callback) {
     var randomID = 'math-output-' + Plotly.Lib.randstr([],64);
     var tmpDiv = d3.select('body').append('div')
         .attr({id: randomID})
@@ -198,10 +198,10 @@ function texToSVG(_texString, _config, _callback){
         .style({'font-size': _config.fontSize + 'px'})
         .text(cleanEscapesForTex(_texString));
 
-    MathJax.Hub.Queue(['Typeset', MathJax.Hub, tmpDiv.node()], function(){
+    MathJax.Hub.Queue(['Typeset', MathJax.Hub, tmpDiv.node()], function() {
         var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
 
-        if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()){
+        if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
             console.log('There was an error in the tex syntax.', _texString);
             _callback();
         }
@@ -232,20 +232,20 @@ var PROTOCOLS = ['http:', 'https:', 'mailto:'];
 
 var STRIP_TAGS = new RegExp('</?(' + Object.keys(TAG_STYLES).join('|') + ')( [^>]*)?/?>', 'g');
 
-util.plainText = function(_str){
+util.plainText = function(_str) {
     // strip out our pseudo-html so we have a readable
     // version to put into text fields
     return (_str||'').replace(STRIP_TAGS, ' ');
 };
 
-function convertToSVG(_str){
+function convertToSVG(_str) {
     var htmlEntitiesDecoded = Plotly.util.html_entity_decode(_str);
     var result = htmlEntitiesDecoded
-        .split(/(<[^<>]*>)/).map(function(d){
+        .split(/(<[^<>]*>)/).map(function(d) {
             var match = d.match(/<(\/?)([^ >]*)\s*(.*)>/i),
                 tag = match && match[2].toLowerCase(),
                 style = TAG_STYLES[tag];
-            if(style !== undefined){
+            if(style !== undefined) {
                 var close = match[1],
                     extra = match[3],
                     /**
@@ -258,7 +258,7 @@ function convertToSVG(_str){
                      */
                     extraStyle = extra.match(/^style\s*=\s*"([^"]+)"\s*/i);
                 // anchor and br are the only ones that don't turn into a tspan
-                if(tag === 'a'){
+                if(tag === 'a') {
                     if(close) return '</a>';
                     else if(extra.substr(0,4).toLowerCase() !== 'href') return '<a>';
                     else {
@@ -303,22 +303,22 @@ function convertToSVG(_str){
         });
 
     var indices = [];
-    for(var index = result.indexOf('<br>'); index > 0; index = result.indexOf('<br>', index+1)){
+    for(var index = result.indexOf('<br>'); index > 0; index = result.indexOf('<br>', index+1)) {
         indices.push(index);
     }
     var count = 0;
-    indices.forEach(function(d){
+    indices.forEach(function(d) {
         var brIndex = d + count;
         var search = result.slice(0, brIndex);
         var previousOpenTag = '';
-        for(var i2=search.length-1; i2>=0; i2--){
+        for(var i2=search.length-1; i2>=0; i2--) {
             var isTag = search[i2].match(/<(\/?).*>/i);
-            if(isTag && search[i2] !== '<br>'){
+            if(isTag && search[i2] !== '<br>') {
                 if(!isTag[1]) previousOpenTag = search[i2];
                 break;
             }
         }
-        if(previousOpenTag){
+        if(previousOpenTag) {
             result.splice(brIndex+1, 0, previousOpenTag);
             result.splice(brIndex, 0, '</tspan>');
             count += 2;
@@ -327,8 +327,8 @@ function convertToSVG(_str){
 
     var joined = result.join('');
     var splitted = joined.split(/<br>/gi);
-    if(splitted.length > 1){
-        result = splitted.map(function(d, i){
+    if(splitted.length > 1) {
+        result = splitted.map(function(d, i) {
             // TODO: figure out max font size of this line and alter dy
             // this requires either:
             // 1) bringing the base font size into convertToTspans, or
@@ -341,7 +341,7 @@ function convertToSVG(_str){
     return result.join('');
 }
 
-function alignHTMLWith(_base, container, options){
+function alignHTMLWith(_base, container, options) {
     var alignH = options.horizontalAlign,
         alignV = options.verticalAlign || 'top',
         bRect = _base.node().getBoundingClientRect(),
@@ -366,7 +366,7 @@ function alignHTMLWith(_base, container, options){
         getLeft = function() { return bRect.left; };
     }
 
-    return function(){
+    return function() {
         thisRect = this.node().getBoundingClientRect();
         this.style({
             top: (getTop() - cRect.top) + 'px',
@@ -379,7 +379,7 @@ function alignHTMLWith(_base, container, options){
 
 // Editable title
 
-util.makeEditable = function(context, _delegate, options){
+util.makeEditable = function(context, _delegate, options) {
     if(!options) options = {};
     var that = this;
     var dispatch = d3.dispatch('edit', 'input', 'cancel');
@@ -389,7 +389,7 @@ util.makeEditable = function(context, _delegate, options){
     var handlerElement = _delegate || textSelection;
     if(_delegate) textSelection.style({'pointer-events': 'none'});
 
-    function handleClick(){
+    function handleClick() {
         appendEditable();
         that.style({opacity: 0});
         // also hide any mathjax svg
@@ -412,7 +412,7 @@ util.makeEditable = function(context, _delegate, options){
         el.focus();
     }
 
-    function appendEditable(){
+    function appendEditable() {
         var plotDiv = d3.select(Plotly.Lib.getPlotDiv(that.node())),
             container = plotDiv.select('.svg-container'),
             div = container.append('div');
@@ -432,7 +432,7 @@ util.makeEditable = function(context, _delegate, options){
             .attr({contenteditable: true})
             .text(options.text || that.attr('data-unformatted'))
             .call(alignHTMLWith(that, container, options))
-            .on('blur', function(){
+            .on('blur', function() {
                 that.text(this.textContent)
                     .style({opacity: 1});
                 var svgClass = d3.select(this).attr('class'),
@@ -447,19 +447,19 @@ util.makeEditable = function(context, _delegate, options){
                 d3.select(document).on('mouseup', null);
                 dispatch.edit.call(that, text);
             })
-            .on('focus', function(){
+            .on('focus', function() {
                 var context = this;
-                d3.select(document).on('mouseup', function(){
+                d3.select(document).on('mouseup', function() {
                     if(d3.event.target === context) return false;
                     if(document.activeElement === div.node()) div.node().blur();
                 });
             })
-            .on('keyup', function(){
-                if(d3.event.which === 27){
+            .on('keyup', function() {
+                if(d3.event.which === 27) {
                     that.style({opacity: 1});
                     d3.select(this)
                         .style({opacity: 0})
-                        .on('blur', function(){ return false; })
+                        .on('blur', function() { return false; })
                         .transition().remove();
                     dispatch.cancel.call(that, this.textContent);
                 }
@@ -468,7 +468,7 @@ util.makeEditable = function(context, _delegate, options){
                     d3.select(this).call(alignHTMLWith(that, container, options));
                 }
             })
-            .on('keydown', function(){
+            .on('keydown', function() {
                 if(d3.event.which === 13) this.blur();
             })
             .call(selectElementContents);

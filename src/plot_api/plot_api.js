@@ -304,7 +304,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // An initial paint must be completed before these components can be
     // correctly sized and the whole plot re-margined. gd._replotting must
     // be set to false before these will work properly.
-    function finalDraw(){
+    function finalDraw() {
         Shapes.drawAll(gd);
         Plotly.Annotations.drawAll(gd);
         Legend.draw(gd);
@@ -451,9 +451,9 @@ function plotPolar(gd, data, layout) {
     var title = polarPlotSVG.select('.title-group text')
         .call(titleLayout);
 
-    if(gd._context.editable){
+    if(gd._context.editable) {
         title.attr({'data-unformatted': txt});
-        if(!txt || txt === placeholderText){
+        if(!txt || txt === placeholderText) {
             opacity = 0.2;
             title.attr({'data-unformatted': placeholderText})
                 .text(placeholderText)
@@ -470,7 +470,7 @@ function plotPolar(gd, data, layout) {
 
         var setContenteditable = function() {
             this.call(Plotly.util.makeEditable)
-                .on('edit', function(text){
+                .on('edit', function(text) {
                     gd.framework({layout: {title: text}});
                     this.attr({'data-unformatted': text})
                         .text(text)
@@ -1530,7 +1530,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     if(isNumeric(traces)) traces=[traces];
     else if(!Array.isArray(traces) || !traces.length) {
-        traces=gd._fullData.map(function(v,i){ return i; });
+        traces=gd._fullData.map(function(v,i) { return i; });
     }
 
     // recalcAttrs attributes need a full regeneration of calcdata
@@ -1686,7 +1686,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             newVal;
         redoit[ai] = vi;
 
-        if(ai.substr(0,6)==='LAYOUT'){
+        if(ai.substr(0,6)==='LAYOUT') {
             param = Lib.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [param.get()];
             // since we're allowing val to be an array, allow it here too,

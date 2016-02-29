@@ -38,7 +38,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
     var prevpath = '',
         tozero, tonext, nexttonext;
 
-    scattertraces.each(function(d){
+    scattertraces.each(function(d) {
         var trace = d[0].trace,
             line = trace.line,
             tr = d3.select(this);
@@ -145,7 +145,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
     // remove paths that didn't get used
     scattertraces.selectAll('path:not([d])').remove();
 
-    function visFilter(d){
+    function visFilter(d) {
         return d.filter(function(v) { return v.vis; });
     }
 

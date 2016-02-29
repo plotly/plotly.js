@@ -39,7 +39,7 @@ color.addOpacity = function(cstr, op) {
 // combine two colors into one apparent color
 // if back has transparency or is missing,
 // color.background is assumed behind it
-color.combine = function(front, back){
+color.combine = function(front, back) {
     var fc = tinycolor(front).toRgb();
     if(fc.a===1) return tinycolor(front).toRgbString();
 

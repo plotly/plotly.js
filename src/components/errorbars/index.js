@@ -70,7 +70,7 @@ errorBars.plot = function(gd, plotinfo, cd) {
         .data(cd)
       .enter().append('g')
         .attr('class','errorbars')
-        .each(function(d){
+        .each(function(d) {
             var trace = d[0].trace,
                 xObj = trace.error_x,
                 yObj = trace.error_y,
@@ -82,7 +82,7 @@ errorBars.plot = function(gd, plotinfo, cd) {
             d3.select(this).selectAll('g')
                 .data(Lib.identity)
               .enter().append('g')
-                .each(function(d){
+                .each(function(d) {
                     coords = errorcoords(d, xa, ya);
                     var eb = d3.select(this),
                         path;
@@ -90,7 +90,7 @@ errorBars.plot = function(gd, plotinfo, cd) {
 
                     if(yObj.visible && isNumeric(coords.x) &&
                             isNumeric(coords.yh) &&
-                            isNumeric(coords.ys)){
+                            isNumeric(coords.ys)) {
                         var yw = yObj.width;
                         path = 'M'+(coords.x-yw)+','+coords.yh+'h'+(2*yw) + // hat
                             'm-'+yw+',0V'+coords.ys; // bar
@@ -102,7 +102,7 @@ errorBars.plot = function(gd, plotinfo, cd) {
                     }
                     if(xObj.visible && isNumeric(coords.y) &&
                             isNumeric(coords.xh) &&
-                            isNumeric(coords.xs)){
+                            isNumeric(coords.xs)) {
                         var xw = (xObj.copy_ystyle ? yObj : xObj).width;
                         path = 'M'+coords.xh+','+(coords.y-xw)+'v'+(2*xw) + // hat
                             'm0,-'+xw+'H'+coords.xs; // bar
@@ -116,8 +116,8 @@ errorBars.plot = function(gd, plotinfo, cd) {
         });
 };
 
-errorBars.style = function(gd){
-    d3.select(gd).selectAll('g.errorbars').each(function(d){
+errorBars.style = function(gd) {
+    d3.select(gd).selectAll('g.errorbars').each(function(d) {
         var eb = d3.select(this),
             trace = d[0].trace,
             yObj = trace.error_y||{},

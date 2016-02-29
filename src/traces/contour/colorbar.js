@@ -22,7 +22,7 @@ module.exports = function colorbar(gd, cd) {
 
     gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
 
-    if(trace.showscale === false){
+    if(trace.showscale === false) {
         Plots.autoMargin(gd, cbId);
         return;
     }
@@ -37,11 +37,11 @@ module.exports = function colorbar(gd, cd) {
         scl = getColorscale(trace.colorscale),
         extraLevel = contours.coloring==='lines' ? 0 : 1,
         colormap = d3.scale.linear().interpolate(d3.interpolateRgb),
-        colorDomain = scl.map(function(si){
+        colorDomain = scl.map(function(si) {
             return (si[0]*(nc+extraLevel-1)-(extraLevel/2)) * cs +
                 contours.start;
         }),
-        colorRange = scl.map(function(si){ return si[1]; });
+        colorRange = scl.map(function(si) { return si[1]; });
 
     // colorbar fill and lines
     if(contours.coloring==='heatmap') {
@@ -54,7 +54,7 @@ module.exports = function colorbar(gd, cd) {
             end: trace.zmax,
             size: (trace.zmax-trace.zmin)/254
         });
-        colorDomain = scl.map(function(si){
+        colorDomain = scl.map(function(si) {
             return si[0]*(trace.zmax-trace.zmin) + trace.zmin;
         });
 

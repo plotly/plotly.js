@@ -264,10 +264,10 @@ plots.redrawText = function(gd) {
     }
 
     return new Promise(function(resolve) {
-        setTimeout(function(){
+        setTimeout(function() {
             Plotly.Annotations.drawAll(gd);
             Plotly.Legend.draw(gd);
-            (gd.calcdata||[]).forEach(function(d){
+            (gd.calcdata||[]).forEach(function(d) {
                 if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
             });
             resolve(plots.previousPromises(gd));
@@ -307,7 +307,7 @@ plots.resize = function(gd) {
 plots.previousPromises = function(gd) {
     if((gd._promises || []).length) {
         return Promise.all(gd._promises)
-            .then(function(){ gd._promises=[]; });
+            .then(function() { gd._promises=[]; });
     }
 };
 
@@ -331,7 +331,7 @@ plots.addLinks = function(gd) {
             'fill': Plotly.Color.defaultLine,
             'pointer-events': 'all'
         })
-        .each(function(){
+        .each(function() {
             var links = d3.select(this);
             links.append('tspan').classed('js-link-to-tool', true);
             links.append('tspan').classed('js-link-spacer', true);
@@ -376,7 +376,7 @@ plots.addLinks = function(gd) {
 
 // note that now this function is only adding the brand in
 // iframes and 3rd-party apps
-function positionPlayWithData(gd, container){
+function positionPlayWithData(gd, container) {
     container.text('');
     var link = container.append('a')
         .attr({
@@ -975,7 +975,7 @@ plots.doAutoMargin = function(gd) {
  * @param {Boolean} useDefaults If truthy, use _fullLayout and _fullData
  * @returns {Object|String}
  */
-plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
+plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     // if the defaults aren't supplied yet, we need to do that...
     if ((useDefaults && dataonly && !gd._fullData) ||
             (useDefaults && !dataonly && !gd._fullLayout)) {
@@ -1046,7 +1046,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
     }
 
     var obj = {
-        data: (data || []).map(function(v){
+        data: (data || []).map(function(v) {
             var d = stripObj(v);
             // fit has some little arrays in it that don't contain data,
             // just fit params and meta

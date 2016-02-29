@@ -254,7 +254,7 @@ axes.expand = function(ax, data, options) {
         }
         else {
             var v = Math.max(Number(item||0),0);
-            return function(){ return v; };
+            return function() { return v; };
         }
     }
     var ppadplus = getPad((ax._m>0 ?
@@ -459,7 +459,7 @@ axes.calcTicks = function calcTicks(ax) {
     if(ax.tickmode === 'array') return arrayTicks(ax);
 
     // calculate max number of (auto) ticks to display based on plot size
-    if(ax.tickmode === 'auto' || !ax.dtick){
+    if(ax.tickmode === 'auto' || !ax.dtick) {
         var nt = ax.nticks,
             minPx;
         if(!nt) {
@@ -583,38 +583,38 @@ function roundDTick(roughDTick, base, roundingSet) {
 //      log with linear ticks: L# where # is the linear tick spacing
 //      log showing powers plus some intermediates:
 //          D1 shows all digits, D2 shows 2 and 5
-axes.autoTicks = function(ax, roughDTick){
+axes.autoTicks = function(ax, roughDTick) {
     var base;
 
-    if(ax.type === 'date'){
+    if(ax.type === 'date') {
         ax.tick0 = new Date(2000, 0, 1).getTime();
 
-        if(roughDTick > 15778800000){
+        if(roughDTick > 15778800000) {
             // years if roughDTick > 6mo
             roughDTick /= 31557600000;
             base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
             ax.dtick = 'M' + (12 * roundDTick(roughDTick, base, roundBase10));
         }
-        else if(roughDTick > 1209600000){
+        else if(roughDTick > 1209600000) {
             // months if roughDTick > 2wk
             roughDTick /= 2629800000;
             ax.dtick = 'M' + roundDTick(roughDTick, 1, roundBase24);
         }
-        else if(roughDTick > 43200000){
+        else if(roughDTick > 43200000) {
             // days if roughDTick > 12h
             ax.dtick = roundDTick(roughDTick, 86400000, roundDays);
             // get week ticks on sunday
             ax.tick0 = new Date(2000, 0, 2).getTime();
         }
-        else if(roughDTick > 1800000){
+        else if(roughDTick > 1800000) {
             // hours if roughDTick > 30m
             ax.dtick = roundDTick(roughDTick, 3600000, roundBase24);
         }
-        else if(roughDTick > 30000){
+        else if(roughDTick > 30000) {
             // minutes if roughDTick > 30sec
             ax.dtick = roundDTick(roughDTick, 60000, roundBase60);
         }
-        else if(roughDTick > 500){
+        else if(roughDTick > 500) {
             // seconds if roughDTick > 0.5sec
             ax.dtick = roundDTick(roughDTick, 1000, roundBase60);
         }
@@ -624,12 +624,12 @@ axes.autoTicks = function(ax, roughDTick){
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
     }
-    else if(ax.type === 'log'){
+    else if(ax.type === 'log') {
         ax.tick0 = 0;
 
         //only show powers of 10
         if(roughDTick > 0.7) ax.dtick = Math.ceil(roughDTick);
-        else if(Math.abs(ax.range[1] - ax.range[0]) < 1){
+        else if(Math.abs(ax.range[1] - ax.range[0]) < 1) {
             // span is less than one power of 10
             var nt = 1.5 * Math.abs((ax.range[1] - ax.range[0]) / roughDTick);
 
@@ -718,7 +718,7 @@ function autoTickRound(ax) {
 // for pure powers of 10
 // numeric ticks always have constant differences, other datetime ticks
 // can all be calculated as constant number of milliseconds
-axes.tickIncrement = function(x, dtick, axrev){
+axes.tickIncrement = function(x, dtick, axrev) {
     var axSign = axrev ? -1 : 1;
 
     // includes all dates smaller than month, and pure 10^n in log
@@ -728,7 +728,7 @@ axes.tickIncrement = function(x, dtick, axrev){
         dtSigned = axSign * Number(dtick.substr(1));
 
     // Dates: months (or years)
-    if(tType === 'M'){
+    if(tType === 'M') {
         var y = new Date(x);
         // is this browser consistent? setMonth edits a date but
         // returns that date's milliseconds
@@ -752,7 +752,7 @@ axes.tickIncrement = function(x, dtick, axrev){
 };
 
 // calculate the first tick on an axis
-axes.tickFirst = function(ax){
+axes.tickFirst = function(ax) {
     var axrev = ax.range[1] < ax.range[0],
         sRound = axrev ? Math.floor : Math.ceil,
         // add a tiny extra bit to make sure we get ticks
@@ -777,7 +777,7 @@ axes.tickFirst = function(ax){
         t1;
 
     // Dates: months (or years)
-    if(tType === 'M'){
+    if(tType === 'M') {
         t0 = new Date(tick0);
         r0 = new Date(r0);
         mdif = (r0.getFullYear() - t0.getFullYear()) * 12 +
@@ -837,7 +837,7 @@ function modDateFormat(fmt,x) {
 // ax is the axis layout, x is the tick value
 // hover is a (truthy) flag for whether to show numbers with a bit
 // more precision for hovertext
-axes.tickText = function(ax, x, hover){
+axes.tickText = function(ax, x, hover) {
     var out = tickTextObj(ax, x),
         hideexp,
         arrayMode = ax.tickmode === 'array',
@@ -933,7 +933,7 @@ function formatDate(ax, out, hover, extraPrecision) {
                 }
 
                 tt = minuteFormat(d);
-                if(tr!=='M'){
+                if(tr!=='M') {
                     tt += secondFormat(d);
                     if(tr!=='S') {
                         tt += numFormat(mod(x/1000,1),ax,'none',hover)
@@ -1336,7 +1336,7 @@ axes.doTicks = function(td, axid, skipTitle) {
 
         if(!axid || axid==='redraw') {
             return Plotly.Lib.syncOrAsync(axes.list(td, '', true).map(function(ax) {
-                return function(){
+                return function() {
                     if(!ax._id) return;
                     var axDone = axes.doTicks(td,ax._id);
                     if(axid==='redraw') ax._r = ax.range.slice();
@@ -1366,7 +1366,7 @@ axes.doTicks = function(td, axid, skipTitle) {
     var axletter = axid.charAt(0),
         counterLetter = axes.counterLetter(axid),
         vals = axes.calcTicks(ax),
-        datafn = function(d){ return d.text + d.x + ax.mirror; },
+        datafn = function(d) { return d.text + d.x + ax.mirror; },
         tcls = axid+'tick',
         gcls = axid+'grid',
         zcls = axid+'zl',
@@ -1382,7 +1382,7 @@ axes.doTicks = function(td, axid, skipTitle) {
     // positioning arguments for x vs y axes
     if(axletter==='x') {
         sides = ['bottom', 'top'];
-        transfn = function(d){
+        transfn = function(d) {
             return 'translate('+ax.l2p(d.x)+',0)';
         };
         // dumb templating with string concat
@@ -1392,7 +1392,7 @@ axes.doTicks = function(td, axid, skipTitle) {
     }
     else if(axletter==='y') {
         sides = ['left', 'right'];
-        transfn = function(d){
+        transfn = function(d) {
             return 'translate(0,'+ax.l2p(d.x)+')';
         };
         tickprefix = 'M';
@@ -1407,7 +1407,7 @@ axes.doTicks = function(td, axid, skipTitle) {
     // then we flip if outside XOR y axis
         ticksign = [-1, 1, axside===sides[1] ? 1 : -1];
     if((ax.ticks!=='inside') === (axletter==='x')) {
-        ticksign = ticksign.map(function(v){ return -v; });
+        ticksign = ticksign.map(function(v) { return -v; });
     }
 
     // remove zero lines, grid lines, and inside ticks if they're within
@@ -1447,13 +1447,13 @@ axes.doTicks = function(td, axid, skipTitle) {
         var labelx, labely, labelanchor, labelpos0;
         if(axletter==='x') {
             var flipit = axside==='bottom' ? 1 : -1;
-            labelx = function(d){ return d.dx; };
+            labelx = function(d) { return d.dx; };
             labelpos0 = position + (labelStandoff+pad)*flipit;
-            labely = function(d){
+            labely = function(d) {
                 return d.dy+labelpos0+d.fontSize *
                     (axside==='bottom' ? 1 : -0.5);
             };
-            labelanchor = function(angle){
+            labelanchor = function(angle) {
                 if(!isNumeric(angle) || angle===0 || angle===180) {
                     return 'middle';
                 }
@@ -1461,13 +1461,13 @@ axes.doTicks = function(td, axid, skipTitle) {
             };
         }
         else {
-            labely = function(d){ return d.dy+d.fontSize/2; };
-            labelx = function(d){
+            labely = function(d) { return d.dy+d.fontSize/2; };
+            labelx = function(d) {
                 return d.dx + position + (labelStandoff + pad +
                     (Math.abs(ax.tickangle)===90 ? d.fontSize/2 : 0)) *
                     (axside==='right' ? 1 : -1);
             };
-            labelanchor = function(angle){
+            labelanchor = function(angle) {
                 if(isNumeric(angle) && Math.abs(angle)===90) {
                     return 'middle';
                 }
@@ -1482,7 +1482,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                 // only so tex has predictable alignment that we can
                 // alter later
                 .attr('text-anchor', 'middle')
-                .each(function(d){
+                .each(function(d) {
                     var thisLabel = d3.select(this),
                         newPromise = td._promises.length;
                     thisLabel
@@ -1498,7 +1498,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                         // all here so take it out of td._promises and
                         // instead position the label and promise this in
                         // labelsReady
-                        labelsReady.push(td._promises.pop().then(function(){
+                        labelsReady.push(td._promises.pop().then(function() {
                             positionLabels(thisLabel, ax.tickangle);
                         }));
                     }
@@ -1509,7 +1509,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                 });
         tickLabels.exit().remove();
 
-        tickLabels.each(function(d){
+        tickLabels.each(function(d) {
             maxFontSize = Math.max(maxFontSize, d.fontSize);
         });
 
@@ -1553,11 +1553,11 @@ axes.doTicks = function(td, axid, skipTitle) {
         // there, putting back the prescribed angle to check for overlaps.
         positionLabels(tickLabels,ax._lastangle || ax.tickangle);
 
-        function allLabelsReady(){
+        function allLabelsReady() {
             return labelsReady.length && Promise.all(labelsReady);
         }
 
-        function fixLabelOverlaps(){
+        function fixLabelOverlaps() {
             positionLabels(tickLabels,ax.tickangle);
 
             // check for auto-angling if x labels overlap
@@ -1566,7 +1566,7 @@ axes.doTicks = function(td, axid, skipTitle) {
             if(axletter==='x' && !isNumeric(ax.tickangle) &&
                     (ax.type!=='log' || String(ax.dtick).charAt(0)!=='D')) {
                 var lbbArray = [];
-                tickLabels.each(function(d){
+                tickLabels.each(function(d) {
                     var s = d3.select(this),
                         thisLabel = s.select('.text-math-group'),
                         x = ax.l2p(d.x);
@@ -1873,4 +1873,4 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
 
 // mod - version of modulus that always restricts to [0,divisor)
 // rather than built-in % which gives a negative value for negative v
-function mod(v,d){ return ((v%d) + d) % d; }
+function mod(v,d) { return ((v%d) + d) % d; }

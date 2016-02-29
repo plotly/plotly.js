@@ -48,12 +48,12 @@ exports.aggNums = function(f, v, a, len) {
  * even need to use aggNums instead of .length, to toss out non-numerics
  */
 exports.len = function(data) {
-    return exports.aggNums(function(a){ return a + 1; }, 0, data);
+    return exports.aggNums(function(a) { return a + 1; }, 0, data);
 };
 
 exports.mean = function(data, len) {
     if(!len) len = exports.len(data);
-    return exports.aggNums(function(a, b){ return a + b; }, 0, data) / len;
+    return exports.aggNums(function(a, b) { return a + b; }, 0, data) / len;
 };
 
 exports.variance = function(data, len, mean) {

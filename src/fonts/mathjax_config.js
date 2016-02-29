@@ -13,7 +13,7 @@
 /**
  * Check and configure MathJax
  */
-if(typeof MathJax !== 'undefined'){
+if(typeof MathJax !== 'undefined') {
     exports.MathJax = true;
 
     MathJax.Hub.Config({

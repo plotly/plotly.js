@@ -226,7 +226,7 @@ function p2c(axArray, v) {
 }
 
 function quadrature(dx, dy) {
-    return function(di){
+    return function(di) {
         var x = dx(di),
             y = dy(di);
         return Math.sqrt(x*x + y*y);
@@ -270,13 +270,13 @@ fx.hover = function(gd, evt, subplot) {
     if(gd._lastHoverTime === undefined) gd._lastHoverTime = 0;
 
     // If we have an update queued, discard it now
-    if (gd._hoverTimer !== undefined) {
+    if(gd._hoverTimer !== undefined) {
         clearTimeout(gd._hoverTimer);
         gd._hoverTimer = undefined;
     }
     // Is it more than 100ms since the last update?  If so, force
     // an update now (synchronously) and exit
-    if (Date.now() > gd._lastHoverTime + constants.HOVERMINTIME) {
+    if(Date.now() > gd._lastHoverTime + constants.HOVERMINTIME) {
         hover(gd,evt,subplot);
         gd._lastHoverTime = Date.now();
         return;
@@ -292,7 +292,7 @@ fx.hover = function(gd, evt, subplot) {
 fx.unhover = function(gd, evt, subplot) {
     if(typeof gd === 'string') gd = document.getElementById(gd);
     // Important, clear any queued hovers
-    if (gd._hoverTimer) {
+    if(gd._hoverTimer) {
         clearTimeout(gd._hoverTimer);
         gd._hoverTimer = undefined;
     }
@@ -301,8 +301,8 @@ fx.unhover = function(gd, evt, subplot) {
 
 // The actual implementation is here:
 
-function hover(gd, evt, subplot){
-    if(subplot === 'pie'){
+function hover(gd, evt, subplot) {
+    if(subplot === 'pie') {
         gd.emit('plotly_hover', {
             points: [evt]
         });
@@ -315,7 +315,7 @@ function hover(gd, evt, subplot){
         plotinfo = fullLayout._plots[subplot],
         // list of all overlaid subplots to look at
         subplots = [subplot].concat(plotinfo.overlays
-            .map(function(pi){ return pi.id; })),
+            .map(function(pi) { return pi.id; })),
         xaArray = subplots.map(function(spId) {
             return Plotly.Axes.getFromId(gd, spId, 'x');
         }),
@@ -358,7 +358,7 @@ function hover(gd, evt, subplot){
     // Figure out what we're hovering on:
     // mouse location or user-supplied data
 
-    if(Array.isArray(evt)){
+    if(Array.isArray(evt)) {
         // user specified an array of points to highlight
         hovermode = 'array';
         for(itemnum = 0; itemnum<evt.length; itemnum++) {
@@ -776,10 +776,10 @@ function createHoverText(hoverData, opts) {
     // all hover traces hoverinfo must contain the hovermode
     // to have common labels
     var i, traceHoverinfo;
-    for (i = 0; i < hoverData.length; i++) {
+    for(i = 0; i < hoverData.length; i++) {
         traceHoverinfo = hoverData[i].trace.hoverinfo;
         var parts = traceHoverinfo.split('+');
-        if (parts.indexOf('all') === -1 &&
+        if(parts.indexOf('all') === -1 &&
             parts.indexOf(hovermode) === -1) {
             showCommonLabel = false;
             break;
@@ -813,7 +813,7 @@ function createHoverText(hoverData, opts) {
         label.attr('transform','');
 
         var tbb = ltext.node().getBoundingClientRect();
-        if(hovermode==='x'){
+        if(hovermode==='x') {
             ltext.attr('text-anchor','middle')
                 .call(Plotly.Drawing.setPosition,0,(xa.side==='top' ?
                     (outerTop-tbb.bottom-HOVERARROWSIZE-HOVERTEXTPAD) :
@@ -861,7 +861,7 @@ function createHoverText(hoverData, opts) {
         }
         // remove the "close but not quite" points
         // because of error bars, only take up to a space
-        hoverData = hoverData.filter(function(d){
+        hoverData = hoverData.filter(function(d) {
             return (d.zLabelVal!==undefined) ||
                 (d[commonAttr]||'').split(' ')[0]===t00;
         });
@@ -871,7 +871,7 @@ function createHoverText(hoverData, opts) {
 
     // first create the objects
     var hoverLabels = container.selectAll('g.hovertext')
-        .data(hoverData,function(d){
+        .data(hoverData,function(d) {
             return [d.trace.index,d.index,d.x0,d.y0,d.name,d.attr||''].join(',');
         });
     hoverLabels.enter().append('g')
@@ -894,7 +894,7 @@ function createHoverText(hoverData, opts) {
 
     // then put the text in, position the pointer to the data,
     // and figure out sizes
-    hoverLabels.each(function(d){
+    hoverLabels.each(function(d) {
         var g = d3.select(this).attr('transform', ''),
             name = '',
             text = '',
@@ -937,9 +937,9 @@ function createHoverText(hoverData, opts) {
 
         // if 'text' is empty at this point,
         // put 'name' in main label and don't show secondary label
-        if (text === '') {
+        if(text === '') {
             // if 'name' is also empty, remove entire label
-            if (name === '') g.remove();
+            if(name === '') g.remove();
             text = name;
         }
 
@@ -957,7 +957,7 @@ function createHoverText(hoverData, opts) {
             tx2width = 0;
 
         // secondary label for non-empty 'name'
-        if (name && name!==text) {
+        if(name && name!==text) {
             tx2.style('fill',traceColor)
                 .text(name)
                 .call(Plotly.Drawing.setPosition,0,0)
@@ -1047,7 +1047,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
 
         // make groups of touching points
         pointgroups = hoverData
-            .map(function(d,i){
+            .map(function(d,i) {
                 return [{
                     i: i,
                     dp: 0,
@@ -1056,7 +1056,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
                     size: d.by*(ax._id.charAt(0)==='x' ? YFACTOR : 1)/2
                 }];
             })
-            .sort(function(a,b){ return a[0].posref-b[0].posref; }),
+            .sort(function(a,b) { return a[0].posref-b[0].posref; }),
         donepositioning,
         topOverlap,
         bottomOverlap,
@@ -1064,7 +1064,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
         pti,
         sumdp;
 
-    function constrainGroup(grp){
+    function constrainGroup(grp) {
         var minPt = grp[0],
             maxPt = grp[grp.length-1];
 
@@ -1195,7 +1195,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
 function alignHoverText(hoverLabels, rotateLabels) {
     // finally set the text positioning relative to the data and draw the
     // box around it
-    hoverLabels.each(function(d){
+    hoverLabels.each(function(d) {
         var g = d3.select(this);
         if(d.del) {
             g.remove();
@@ -1269,7 +1269,7 @@ function hoverChanged(gd, evt, oldhoverdata) {
 }
 
 // remove hover effects on mouse out, and emit unhover event
-function unhover(gd, evt){
+function unhover(gd, evt) {
     var fullLayout = gd._fullLayout;
     if(!evt) evt = {};
     if(evt.target &&
@@ -1284,7 +1284,7 @@ function unhover(gd, evt){
 }
 
 // on click
-fx.click = function(gd,evt){
+fx.click = function(gd,evt) {
     if(gd._hoverdata && evt && evt.target) {
         gd.emit('plotly_click', {points: gd._hoverdata});
         // why do we get a double event without this???
@@ -1691,7 +1691,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // then replot after a delay to make sure
         // no more scrolling is coming
-        redrawTimer = setTimeout(function(){
+        redrawTimer = setTimeout(function() {
             scrollViewBox = [0,0,pw,ph];
             dragTail();
         }, REDRAWDELAY);
@@ -1771,7 +1771,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         ticksAndAnnotations(yActive, xActive);
     }
 
-    function ticksAndAnnotations(ns, ew){
+    function ticksAndAnnotations(ns, ew) {
         var activeAxIds = [],
             i;
 
@@ -1910,7 +1910,7 @@ function getEndText(ax, end) {
         diff = Math.abs(initialVal - ax.range[1 - end]),
         dig;
 
-    if(ax.type === 'date'){
+    if(ax.type === 'date') {
         return Plotly.Lib.ms2DateTime(initialVal, diff);
     }
     else if(ax.type==='log') {
@@ -1977,7 +1977,7 @@ fx.dragAlign = function(v, dv, v0, v1, anchor) {
 var cursorset = [['sw-resize','s-resize','se-resize'],
             ['w-resize','move','e-resize'],
             ['nw-resize','n-resize','ne-resize']];
-fx.dragCursors = function(x,y,xanchor,yanchor){
+fx.dragCursors = function(x,y,xanchor,yanchor) {
     if(xanchor==='left') x=0;
     else if(xanchor==='center') x=1;
     else if(xanchor==='right') x=2;
@@ -2134,7 +2134,7 @@ function coverSlip() {
 }
 
 fx.setCursor = function(el3,csr) {
-    (el3.attr('class')||'').split(' ').forEach(function(cls){
+    (el3.attr('class')||'').split(' ').forEach(function(cls) {
         if(cls.indexOf('cursor-')===0) { el3.classed(cls,false); }
     });
     if(csr) { el3.classed('cursor-'+csr, true); }
@@ -2148,7 +2148,7 @@ fx.setCursor = function(el3,csr) {
 // note that for closest mode, two inbox's will get added in quadrature
 // args are (signed) difference from the two opposite edges
 // count one edge as in, so that over continuous ranges you never get a gap
-fx.inbox = function(v0,v1){
+fx.inbox = function(v0,v1) {
     if(v0*v1<0 || v0===0) {
         return constants.MAXDIST*(0.6-0.3/Math.max(3,Math.abs(v0-v1)));
     }

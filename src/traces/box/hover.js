@@ -29,10 +29,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     boxDelta = (hovermode==='closest') ? 2.5*t.bdPos : t.bdPos;
 
     if(trace.orientation === 'h') {
-        dx = function(di){
+        dx = function(di) {
             return Fx.inbox(di.min - xval, di.max - xval);
         };
-        dy = function(di){
+        dy = function(di) {
             var pos = di.pos + t.bPos - yval;
             return Fx.inbox(pos - boxDelta, pos + boxDelta);
         };
@@ -41,11 +41,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         valLetter = 'x';
         valAxis = xa;
     } else {
-        dx = function(di){
+        dx = function(di) {
             var pos = di.pos + t.bPos - xval;
             return Fx.inbox(pos - boxDelta, pos + boxDelta);
         };
-        dy = function(di){
+        dy = function(di) {
             return Fx.inbox(di.min - yval, di.max - yval);
         };
         posLetter = 'x';

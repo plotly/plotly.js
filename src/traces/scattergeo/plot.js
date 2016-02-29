@@ -212,7 +212,7 @@ plotScatterGeo.style = function(geo) {
     selection.style('opacity', function(trace) { return trace.opacity; });
 
     selection.selectAll('g.points')
-        .each(function(trace){
+        .each(function(trace) {
             d3.select(this).selectAll('path.point')
                 .call(Drawing.pointStyle, trace);
             d3.select(this).selectAll('text')

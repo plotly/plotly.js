@@ -95,7 +95,7 @@ Titles.draw = function(gd, title) {
         // TODO: need a better solution than this hack
         title = 'h' + title;
     }
-    else if(axletter === 'x'){
+    else if(axletter === 'x') {
         xa = cont;
         ya = (xa.anchor === 'free') ?
             {_offset: gs.t + (1 - (xa.position || 0)) * gs.h, _length: 0} :
@@ -110,7 +110,7 @@ Titles.draw = function(gd, title) {
         options = {x: x, y: y, 'text-anchor': 'middle'};
         if(!avoid.side) avoid.side = 'bottom';
     }
-    else if(axletter === 'y'){
+    else if(axletter === 'y') {
         ya = cont;
         xa = (ya.anchor === 'free') ?
             {_offset: gs.l + (ya.position || 0) * gs.w, _length: 0} :
@@ -175,7 +175,7 @@ Titles.draw = function(gd, title) {
         // for now) - ie don't use .classed
         .attr('class', title);
 
-    function titleLayout(titleEl){
+    function titleLayout(titleEl) {
         Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
     }
 
@@ -204,7 +204,7 @@ Titles.draw = function(gd, title) {
     function scootTitle(titleElIn) {
         var titleGroup = d3.select(titleElIn.node().parentNode);
 
-        if(avoid && avoid.selection && avoid.side && txt){
+        if(avoid && avoid.selection && avoid.side && txt) {
             titleGroup.attr('transform', null);
 
             // move toward avoid.side (= left, right, top, bottom) if needed
@@ -241,7 +241,7 @@ Titles.draw = function(gd, title) {
 
                 // iterate over a set of elements (avoid.selection)
                 // to avoid collisions with
-                avoid.selection.each(function(){
+                avoid.selection.each(function() {
                     var avoidbb = Drawing.bBox(this);
 
                     if(Lib.bBoxIntersect(titlebb, avoidbb, pad)) {
@@ -286,7 +286,7 @@ Titles.draw = function(gd, title) {
             });
     }
 
-    if(gd._context.editable){
+    if(gd._context.editable) {
         if(!txt) setPlaceholder();
 
         el.call(svgTextUtils.makeEditable)

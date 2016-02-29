@@ -85,7 +85,7 @@ lib.swapAttrs = function(cont, attrList, part1, part2) {
  * for maximum effect use:
  *      return pauseEvent(e);
  */
-lib.pauseEvent = function(e){
+lib.pauseEvent = function(e) {
     if(e.stopPropagation) e.stopPropagation();
     if(e.preventDefault) e.preventDefault();
     e.cancelBubble = true;
@@ -105,7 +105,7 @@ lib.VERBOSE = false;
 lib.TIMER = new Date().getTime();
 
 // console.log that only runs if VERBOSE is on
-lib.log = function(){
+lib.log = function() {
     if(lib.VERBOSE) console.log.apply(console, arguments);
 };
 
@@ -113,7 +113,7 @@ lib.log = function(){
  * markTime - for debugging, mark the number of milliseconds
  * since the previous call to markTime and log arbitrary info too
  */
-lib.markTime = function(v){
+lib.markTime = function(v) {
     if(!lib.VERBOSE) return;
     var t2 = new Date().getTime();
     console.log(v, t2 - lib.TIMER, '(msec)');
@@ -132,7 +132,7 @@ lib.constrain = function(v, v0, v1) {
  * ie {left,right,top,bottom,width,height}, overlap?
  * takes optional padding pixels
  */
-lib.bBoxIntersect = function(a, b, pad){
+lib.bBoxIntersect = function(a, b, pad) {
     pad = pad || 0;
     return (a.left <= b.right + pad &&
             b.left <= a.right + pad &&
@@ -281,7 +281,7 @@ lib.promiseError = function(err) { console.log(err, err.stack); };
 lib.syncOrAsync = function(sequence, arg, finalStep) {
     var ret, fni;
 
-    function continueAsync(){
+    function continueAsync() {
         lib.markTime('async done ' + fni.name);
         return lib.syncOrAsync(sequence, arg, finalStep);
     }
