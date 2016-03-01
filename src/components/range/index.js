@@ -1,51 +1,30 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Helpers = require('./helpers');
+
+var makeScatterLines = require('./scatter');
 
 var svgNS = 'http://www.w3.org/2000/svg';
-// var Lib = {
-//     constrain: function(v, v0, v1) {
-//         if(v0 > v1) return Math.max(v1, Math.min(v0, v));
-//         return Math.max(v0, Math.min(v1, v));
-//     }
-// };
-
-// Mock traces
-// var traces = [
-//   { name: 'trace1', color: 'blue', x: [], y: [] },
-//   { name: 'trace2', color: 'green', x: [], y: [] },
-//   { name: 'trace3', color: 'red', x: [], y: [] }
-// ];
-
-// traces = traces.map(function(trace) {
-
-//     for(var i = 0; i < 100; i++){
-//         var lastY = trace.y[i] ? trace.y[i - 1] : 0;
-//         trace.x[i] = i;
-//         trace.y[i] = lastY - 8 * (lastY/100 - Math.random());
-//     }
-
-//     return trace;
-// });
-
-var width = 480;
-var height = 60;
-
-// var svg = document.getElementById('svg');
-
 
 exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
+    var width = gd._fullLayout._size.w,
+        height = width / 10;
+
+    minStart = minStart || 0;
+    maxStart = maxStart || width;
 
     var slider = document.createElementNS(svgNS, 'g');
-    setAttributes(slider, {
+    Helpers.setAttributes(slider, {
         'class': 'range-slider',
         'data-min': minStart,
         'data-max': maxStart,
-        'pointer-events': 'all'
+        'pointer-events': 'all',
+        'transform': 'translate(5)'
     });
 
     var sliderBg = document.createElementNS(svgNS, 'rect');
-    setAttributes(sliderBg, {
+    Helpers.setAttributes(sliderBg, {
         'fill': 'transparent',
         'stroke': 'black',
         'height': height,
@@ -54,7 +33,7 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
     });
 
     var maskMin = document.createElementNS(svgNS, 'rect');
-    setAttributes(maskMin, {
+    Helpers.setAttributes(maskMin, {
         'x': 0,
         'width': minStart,
         'height': height,
@@ -62,7 +41,7 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
     });
 
     var maskMax = document.createElementNS(svgNS, 'rect');
-    setAttributes(maskMax, {
+    Helpers.setAttributes(maskMax, {
         'x': maxStart,
         'width': width - maxStart,
         'height': height,
@@ -72,15 +51,15 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
     var grabberMin = document.createElementNS(svgNS, 'g');
     var grabAreaMin = document.createElementNS(svgNS, 'rect');
     var handleMin = document.createElementNS(svgNS, 'rect');
-    setAttributes(grabberMin, { 'transform': 'translate(' + (minStart - 2) + ')' });
-    setAttributes(grabAreaMin, {
+    Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (minStart - 2) + ')' });
+    Helpers.setAttributes(grabAreaMin, {
         'width': 10,
         'height': height,
         'x': -4,
         'fill': 'transparent',
         'cursor': 'col-resize'
     });
-    setAttributes(handleMin, {
+    Helpers.setAttributes(handleMin, {
         'width': 2,
         'height': height / 2,
         'y': height / 4,
@@ -89,20 +68,20 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
         'stroke': '#666',
         'shape-rendering': 'crispEdges'
     });
-    appendChildren(grabberMin, [handleMin, grabAreaMin]);
+    Helpers.appendChildren(grabberMin, [handleMin, grabAreaMin]);
 
     var grabberMax = document.createElementNS(svgNS, 'g');
     var grabAreaMax = document.createElementNS(svgNS, 'rect');
     var handleMax = document.createElementNS(svgNS, 'rect');
-    setAttributes(grabberMax, { 'transform': 'translate(' + maxStart + ')' });
-    setAttributes(grabAreaMax, {
+    Helpers.setAttributes(grabberMax, { 'transform': 'translate(' + maxStart + ')' });
+    Helpers.setAttributes(grabAreaMax, {
         'width': 10,
         'height': height,
         'x': -4,
         'fill': 'transparent',
         'cursor': 'col-resize'
     });
-    setAttributes(handleMax, {
+    Helpers.setAttributes(handleMax, {
         'width': 2,
         'height': height / 2,
         'y': height / 4,
@@ -111,10 +90,10 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
         'stroke': '#666',
         'shape-rendering': 'crispEdges'
     });
-    appendChildren(grabberMax, [handleMax, grabAreaMax]);
+    Helpers.appendChildren(grabberMax, [handleMax, grabAreaMax]);
 
     var slideBox = document.createElementNS(svgNS, 'rect');
-    setAttributes(slideBox, {
+    Helpers.setAttributes(slideBox, {
         'x': minStart,
         'width': maxStart - minStart,
         'height': height,
@@ -177,30 +156,32 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
             min = temp;
         }
 
-        setAttributes(slider, {
+        Helpers.setAttributes(slider, {
             'data-min': min,
             'data-max': max
         });
 
-        setAttributes(slideBox, {
+        Helpers.setAttributes(slideBox, {
             'x': min,
             'width': max - min
         });
 
-        setAttributes(maskMin, { 'width': min });
-        setAttributes(maskMax, {
+        Helpers.setAttributes(maskMin, { 'width': min });
+        Helpers.setAttributes(maskMax, {
             'x': max,
             'width': width - max
         });
 
-        setAttributes(grabberMin, { 'transform': 'translate(' + (min - 2) + ')' });
-        setAttributes(grabberMax, { 'transform': 'translate(' + max + ')' });
+        Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (min - 2) + ')' });
+        Helpers.setAttributes(grabberMax, { 'transform': 'translate(' + max + ')' });
 
         // call to set range on plot here
     }
 
-    appendChildren(slider, [
-        makeScatterLines(gd),
+    var rangePlot = makeScatterLines(gd, width, height);
+
+    Helpers.appendChildren(slider, [
+        rangePlot,
         sliderBg,
         maskMin,
         maskMax,
@@ -209,58 +190,10 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
         grabberMax
     ]);
 
-    return slider;
+    var infoLayer = gd._fullLayout._infolayer;
+    infoLayer.selectAll('g.range-slider')
+        .data([0])
+    .enter().append(function() {
+        return slider;
+    });
 };
-
-
-function setAttributes(el, attrs) {
-    for(var key in attrs) {
-        el.setAttribute(key, attrs[key]);
-    }
-}
-
-function appendChildren(el, children) {
-    for(var i = 0; i < children.length; i++) {
-        el.appendChild(children[i]);
-    }
-}
-
-function makeScatterLines(gd) {
-
-    var traces = gd._fullData,
-        minX = gd._fullLayout.xaxis.range[0],
-        maxX = gd._fullLayout.xaxis.range[1],
-        minY = gd._fullLayout.yaxis.range[0],
-        maxY = gd._fullLayout.yaxis.range[1];
-
-
-    // dealing with the underlaying visual:
-    // this should be swappable in the future
-    // for scatter/heatmap/bar etc.
-    var lines = document.createElementNS(svgNS, 'g');
-
-    for(var i = 0; i < traces.length; i++) {
-        var points = [];
-
-        for(var k = 0; k < traces[i].x.length; k++) {
-            var traceX = width * (traces[i].x[k] - minX) / (maxX - minX),
-                traceY = height * (0.9 - 0.8 * (traces[i].y[k] - minY) / (maxY - minY));
-
-            points.push(traceX + ',' + traceY);
-        }
-
-        var line = document.createElementNS(svgNS, 'polyline');
-        setAttributes(line, {
-            'points': points.join(' '),
-            'fill': 'none',
-            'stroke': traces[i].marker.color,
-            'opacity': 0.5
-        });
-
-        lines.appendChild(line);
-    }
-
-    return lines;
-}
-
-// exports.makeSlider(traces, 100, 120);
