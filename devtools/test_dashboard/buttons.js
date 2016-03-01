@@ -2,7 +2,7 @@
 
 var Lib = require('@src/lib');
 
-var plotlist = document.getElementById('plot-list');
+var plotList = document.getElementById('plot-list');
 var anchor = document.getElementById('embedded-graph');
 var image = document.getElementById('embedded-image');
 
@@ -14,18 +14,15 @@ anchor.style.height = '600px';
 anchor.style.width = '1000px';
 
 function plotButtons(plots, figDir) {
-
     Object.keys(plots).forEach(function(plotname) {
-
         var button = document.createElement('button');
 
         button.style.cssFloat = 'left';
         button.style.width = '100px';
         button.style.height = '40px';
-
         button.innerHTML = plotname;
 
-        plotlist.appendChild(button);
+        plotList.appendChild(button);
 
         button.addEventListener('click', function() {
 
@@ -58,7 +55,7 @@ function plotButtons(plots, figDir) {
     snapshot.innerHTML = 'snapshot';
     snapshot.style.background = 'blue';
 
-    plotlist.appendChild(snapshot);
+    plotList.appendChild(snapshot);
 
     snapshot.addEventListener('click', function() {
 
@@ -111,7 +108,7 @@ function plotButtons(plots, figDir) {
     pummelButton.style.marginLeft = '25px';
     pummelButton.innerHTML = 'pummel3d';
     pummelButton.style.background = 'blue';
-    plotlist.appendChild(pummelButton);
+    plotList.appendChild(pummelButton);
 
     var i = 0;
     var mock = require('@mocks/gl3d_marker-color.json');
@@ -147,7 +144,7 @@ function plotButtons(plots, figDir) {
     scrapeButton.style.marginLeft = '25px';
     scrapeButton.innerHTML = 'scrape SVG';
     scrapeButton.style.background = 'blue';
-    plotlist.appendChild(scrapeButton);
+    plotList.appendChild(scrapeButton);
 
     scrapeButton.addEventListener('click', function() {
         Plotly.Snapshot.toSVG(Tabs.get());
