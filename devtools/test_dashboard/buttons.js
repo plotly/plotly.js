@@ -25,17 +25,16 @@ function plotButtons(plots, figDir) {
         plotList.appendChild(button);
 
         button.addEventListener('click', function() {
-
             var myImage = new Image();
             myImage.src = figDir + plotname + '.png';
 
             image.innerHTML = '';
             image.appendChild(myImage);
 
+            gd = document.createElement('div');
+            gd.id = 'graph';
 
             anchor.innerHTML = '';
-
-            gd = document.createElement('div');
             anchor.appendChild(gd);
 
             var plot = plots[plotname];
