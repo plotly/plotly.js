@@ -254,7 +254,7 @@ module.exports = {
         role: 'style',
         description: [
             'Sets extra padding between ticks.',
-            'This can be used to control the number of ticks displayed without explicitly specifying nticks.',
+            'This can be used to control the number of ticks displayed without explicitly specifying nticks.'
         ].join(' ')
     },
     tickprefix: {
