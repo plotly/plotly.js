@@ -319,7 +319,7 @@ function hover(gd, evt, subplot) {
             subplot :
             // list of all overlaid subplots to look at
             [subplot].concat(plotinfo.overlays
-                .map(function(pi){ return pi.id; })),
+                .map(function(pi) { return pi.id; })),
 
         xaArray = subplots.map(function(spId) {
             return Plotly.Axes.getFromId(gd, spId, 'x');
@@ -876,7 +876,7 @@ function createHoverText(hoverData, opts) {
 
     // first create the objects
     var hoverLabels = container.selectAll('g.hovertext')
-        .data(hoverData,function(d){
+        .data(hoverData,function(d) {
             return [d.trace.index,d.index,d.x0,d.y0,d.name,d.attr,d.xa,d.ya ||''].join(',');
         });
     hoverLabels.enter().append('g')
@@ -1050,7 +1050,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
 
         // make groups of touching points
         pointgroups = hoverData
-            .map(function(d,i){
+            .map(function(d,i) {
                 var axis = d[ax];
                 return [{
                     i: i,
