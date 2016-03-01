@@ -46,7 +46,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             }
         }
     }
-    
+
     coerce('tickpadding');
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
