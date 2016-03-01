@@ -14,7 +14,6 @@ var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
 var Titles = require('../../components/titles');
-var Range = require('../../components/range');
 
 var axes = module.exports = {};
 

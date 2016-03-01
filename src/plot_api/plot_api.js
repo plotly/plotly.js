@@ -25,6 +25,7 @@ var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
 var Legend = require('../components/legend');
+var Range = require('../components/range');
 var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
 var manageModeBar = require('../components/modebar/manage');
@@ -245,6 +246,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function drawAxes() {
         // draw ticks, titles, and calculate axis scaling (._b, ._m)
+        Range.makeSlider(gd);
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
