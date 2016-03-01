@@ -2394,6 +2394,26 @@ Plotly.relayout = function relayout(gd, astr, val) {
     });
 };
 
+Plotly.purge = function purge(gd) {
+    gd = getGraphDiv(gd);
+
+    var fullLayout = gd._fullLayout || {},
+        fullData = gd._fullData || [];
+
+    // remove gl contexts
+    Plots.cleanPlot([], {}, fullData, fullLayout);
+
+    // purge properties
+    Plots.purge(gd);
+
+    // remove plot container
+    if(fullLayout._container) fullLayout._container.remove();
+
+    // other stuff to delete ???
+
+    return gd;
+};
+
 /**
  * Reduce all reserved margin objects to a single required margin reservation.
  *
@@ -2493,7 +2513,7 @@ function makePlotFramework(gd) {
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
     fullLayout._paperdiv.enter().append('div')
-        .classed('svg-container',true)
+        .classed('svg-container', true)
         .style('position','relative');
 
     // Initial autosize
