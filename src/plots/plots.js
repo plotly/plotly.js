@@ -560,7 +560,7 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
         }
     }
-}
+};
 
 /**
  * Relink private _keys and keys with a function value from one layout
