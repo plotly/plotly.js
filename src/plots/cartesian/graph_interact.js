@@ -314,14 +314,12 @@ function hover(gd, evt, subplot){
     var fullLayout = gd._fullLayout,
         plotinfo = fullLayout._plots[subplot],
         //If the user passed in an array of subplots, use those instead of finding overlayed plots
-        subplots = (Object.prototype.toString.call(subplot) == "[object Array]") ? 
+        subplots = Array.isArray(subplot) ?
             subplot :
-
-            subplots = [subplot].concat(plotinfo.overlays
+            // list of all overlaid subplots to look at
+            [subplot].concat(plotinfo.overlays
                 .map(function(pi){ return pi.id; })),
 
-        // list of all overlaid subplots to look at
-        
         xaArray = subplots.map(function(spId) {
             return Plotly.Axes.getFromId(gd, spId, 'x');
         }),
@@ -539,7 +537,7 @@ function hover(gd, evt, subplot){
     };
     var hoverLabels = createHoverText(hoverData, labelOpts);
 
-    hoverAvoidOverlaps(hoverData, rotateLabels ? "xa" : "ya");
+    hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya');
 
     alignHoverText(hoverLabels, rotateLabels);
 
@@ -1156,9 +1154,9 @@ function hoverAvoidOverlaps(hoverData, ax) {
                 p0 = g0[g0.length-1],
                 p1 = g1[0];
             topOverlap = p0.pos+p0.dp+p0.size-p1.pos-p1.dp+p1.size;
-            
+
             //Only group points that lie on the same axes
-            if(topOverlap>0.01 && (p0.pmin == p1.pmin) && (p0.pmax == p1.pmax)) {
+            if(topOverlap>0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
                 // push the new point(s) added to this group out of the way
                 for(j=g1.length-1; j>=0; j--) g1[j].dp += topOverlap;
 
