@@ -21,6 +21,10 @@ a {
 }
 
 .crisp { shape-rendering: crispEdges; }
+
+//Required for IE11. Other browsers set this by default.
+svg { overflow: hidden; }
+
 svg a { fill: $color-brand-primary; }
 svg a:hover { fill: #3c6dc5; }
 
