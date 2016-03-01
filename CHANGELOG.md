@@ -14,7 +14,6 @@ where X.Y.Z is the semver of most recent plotly.js release.
 ### Fixed
 - Legend scroll bars are no longer invalid SVG elements (bug introduced in 1.6.0) [#304]
 - Colorscale YlGnBu and YlOrRd are now properly identified [#295]
-- SVG overflow property is now properly set for IE11 [#305]
 
 
 ## [1.6.0] -- 2016-02-29
