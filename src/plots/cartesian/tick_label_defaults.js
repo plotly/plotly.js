@@ -37,6 +37,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             color: dfltFontColor
         });
         coerce('tickangle');
+	coerce('tickpadding');
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');

@@ -465,10 +465,12 @@ axes.calcTicks = function calcTicks(ax) {
         if(!nt) {
             if(ax.type === 'category') {
                 minPx = ax.tickfont ? (ax.tickfont.size || 12) * 1.2 : 15;
+                minPx += ax.tickpadding;
                 nt = ax._length / minPx;
             }
             else {
                 minPx = ax._id.charAt(0) === 'y' ? 40 : 80;
+                minPx += ax.tickpadding;
                 nt = Plotly.Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
         }

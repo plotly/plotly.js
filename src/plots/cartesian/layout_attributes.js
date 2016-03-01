@@ -248,6 +248,15 @@ module.exports = {
             'vertically.'
         ].join(' ')
     },
+    tickpadding: {
+        valType: 'number',
+        dflt: 0,
+        role: 'style',
+        description: [
+            'Sets extra padding between ticks.',
+            'This can be used to control the number of ticks displayed without explicitly specifying nticks.',
+        ].join(' ')
+    },
     tickprefix: {
         valType: 'string',
         dflt: '',
