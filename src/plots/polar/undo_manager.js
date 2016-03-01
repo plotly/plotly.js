@@ -16,7 +16,7 @@ module.exports = function UndoManager() {
         isExecuting = false,
         callback;
 
-    function execute(command, action){
+    function execute(command, action) {
         if(!command) return this;
 
         isExecuting = true;
@@ -27,15 +27,15 @@ module.exports = function UndoManager() {
     }
 
     return {
-        add: function(command){
+        add: function(command) {
             if(isExecuting) return this;
             undoCommands.splice(index + 1, undoCommands.length - index);
             undoCommands.push(command);
             index = undoCommands.length - 1;
             return this;
         },
-        setCallback: function(callbackFunc){ callback = callbackFunc; },
-        undo: function(){
+        setCallback: function(callbackFunc) { callback = callbackFunc; },
+        undo: function() {
             var command = undoCommands[index];
             if(!command) return this;
             execute(command, 'undo');
@@ -43,7 +43,7 @@ module.exports = function UndoManager() {
             if(callback) callback(command.undo);
             return this;
         },
-        redo: function(){
+        redo: function() {
             var command = undoCommands[index + 1];
             if(!command) return this;
             execute(command, 'redo');
@@ -51,14 +51,14 @@ module.exports = function UndoManager() {
             if(callback) callback(command.redo);
             return this;
         },
-        clear: function(){
+        clear: function() {
             undoCommands = [];
             index = -1;
         },
-        hasUndo: function(){ return index !== -1; },
-        hasRedo: function(){ return index < (undoCommands.length - 1); },
-        getCommands: function(){ return undoCommands; },
-        getPreviousCommand: function(){ return undoCommands[index-1]; },
-        getIndex: function(){ return index; }
+        hasUndo: function() { return index !== -1; },
+        hasRedo: function() { return index < (undoCommands.length - 1); },
+        getCommands: function() { return undoCommands; },
+        getPreviousCommand: function() { return undoCommands[index-1]; },
+        getIndex: function() { return index; }
     };
 };

@@ -52,21 +52,21 @@ exports.Legend = require('./components/legend');
 exports.ModeBar = require('./components/modebar');
 
 exports.register = function register(_modules) {
-    if(!_modules){
+    if(!_modules) {
         throw new Error('No argument passed to Plotly.register.');
-    } else if(_modules && !Array.isArray(_modules)){
+    } else if(_modules && !Array.isArray(_modules)) {
         _modules = [_modules];
     }
 
-    for(var i = 0; i < _modules.length; i++){
+    for(var i = 0; i < _modules.length; i++) {
         var newModule = _modules[i];
 
-        if(newModule && newModule.moduleType !== 'trace'){
+        if(newModule && newModule.moduleType !== 'trace') {
             throw new Error('Invalid module was attempted to be registered!');
         } else {
             Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
 
-            if(!Plots.subplotsRegistry[newModule.basePlotModule.name]){
+            if(!Plots.subplotsRegistry[newModule.basePlotModule.name]) {
                 Plots.registerSubplot(newModule.basePlotModule);
             }
         }

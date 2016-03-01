@@ -127,11 +127,11 @@ module.exports = function calc(gd, trace) {
     y0 += dy/2;
 
     if(densitynorm) {
-        xinc = onecol.map(function(v,i){
+        xinc = onecol.map(function(v,i) {
             if(Array.isArray(xbins)) return 1/(xbins[i+1]-xbins[i]);
             return 1/dx;
         });
-        yinc = z.map(function(v,i){
+        yinc = z.map(function(v,i) {
             if(Array.isArray(ybins)) return 1/(ybins[i+1]-ybins[i]);
             return 1/dy;
         });

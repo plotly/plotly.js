@@ -57,7 +57,7 @@ function toImage(gd, opts) {
             });
 
             ev.clean = function() {
-                if (clonedGd) clonedGd.remove();
+                if(clonedGd) clonedGd.remove();
             };
 
         }, delay);

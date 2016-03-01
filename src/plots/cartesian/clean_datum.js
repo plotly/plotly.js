@@ -20,7 +20,7 @@ var Lib = require('../../lib');
  * but also handling dates, numbers, and NaN, null, Infinity etc
  */
 module.exports = function cleanDatum(c) {
-    try{
+    try {
         if(typeof c === 'object' && c !== null && c.getTime) {
             return Lib.ms2DateTime(c);
         }

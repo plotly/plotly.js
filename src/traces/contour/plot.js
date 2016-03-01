@@ -112,16 +112,16 @@ function emptyPathinfo(contours, plotinfo, cd0) {
         pathinfo = [];
     for(var ci = contours.start; ci < contours.end + cs/10; ci += cs) {
         pathinfo.push({
-            level:ci,
+            level: ci,
             // all the cells with nontrivial marching index
-            crossings:{},
+            crossings: {},
             // starting points on the edges of the lattice for each contour
-            starts:[],
+            starts: [],
             // all unclosed paths (may have less items than starts,
             // if a path is closed by rounding)
-            edgepaths:[],
+            edgepaths: [],
             // all closed paths
-            paths:[],
+            paths: [],
             // store axes so we can convert to px
             xaxis: plotinfo.x(),
             yaxis: plotinfo.y(),
@@ -507,7 +507,7 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
         .data(contours.coloring==='fill' ? pathinfo : []);
     fillitems.enter().append('path');
     fillitems.exit().remove();
-    fillitems.each(function(pi){
+    fillitems.each(function(pi) {
         // join all paths for this level together into a single path
         // first follow clockwise around the perimeter to close any open paths
         // if the whole perimeter is above this level, start with a path
@@ -524,7 +524,7 @@ function joinAllPaths(pi, perimeter) {
     var fullpath = (pi.edgepaths.length || pi.z[0][0] < pi.level) ?
             '' : ('M'+perimeter.join('L')+'Z'),
         i = 0,
-        startsleft = pi.edgepaths.map(function(v,i){ return i; }),
+        startsleft = pi.edgepaths.map(function(v,i) { return i; }),
         newloop = true,
         endpt,
         newendpt,
@@ -620,23 +620,23 @@ function makeLines(plotgroup, pathinfo, contours) {
     linegroup.exit().remove();
 
     var opencontourlines = linegroup.selectAll('path.openline')
-        .data(function(d){ return d.edgepaths; });
+        .data(function(d) { return d.edgepaths; });
     opencontourlines.enter().append('path')
         .classed('openline',true);
     opencontourlines.exit().remove();
     opencontourlines
-        .attr('d', function(d){
+        .attr('d', function(d) {
             return Drawing.smoothopen(d, smoothing);
         })
         .style('stroke-miterlimit',1);
 
     var closedcontourlines = linegroup.selectAll('path.closedline')
-        .data(function(d){ return d.paths; });
+        .data(function(d) { return d.paths; });
     closedcontourlines.enter().append('path')
         .classed('closedline',true);
     closedcontourlines.exit().remove();
     closedcontourlines
-        .attr('d', function(d){
+        .attr('d', function(d) {
             return Drawing.smoothclosed(d, smoothing);
         })
         .style('stroke-miterlimit',1);

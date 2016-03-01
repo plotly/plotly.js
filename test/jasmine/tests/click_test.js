@@ -131,7 +131,7 @@ describe('click interactions', function() {
         }
 
         it('when set to \'reset+autorange\' (the default) should work when \'autorange\' is on', function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function(){
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
@@ -152,7 +152,7 @@ describe('click interactions', function() {
         it('when set to \'reset+autorange\' (the default) should reset to set range on double click', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function(){
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
@@ -173,7 +173,7 @@ describe('click interactions', function() {
         it('when set to \'reset+autorange\' (the default) should autosize on 1st double click and reset on 2nd', function(done) {
             mockCopy = setRanges(mockCopy);
 
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function(){
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 

@@ -40,7 +40,7 @@ exports.plot = function plotGeo(gd) {
      * initialize object to keep reference to every loaded topojson
      */
     if(window.PlotlyGeoAssets === undefined) {
-        window.PlotlyGeoAssets = { topojson : {} };
+        window.PlotlyGeoAssets = { topojson: {} };
     }
 
     for(var i = 0; i < geoIds.length; i++) {

@@ -31,22 +31,22 @@ module.exports = function setPositions(gd, plotinfo) {
             trace;
 
         // set axis via orientation
-        if (orientation==='h') posAxis = ya;
+        if(orientation === 'h') posAxis = ya;
         else posAxis = xa;
 
         // make list of boxes
-        for (j=0; j < gd.calcdata.length; ++j) {
+        for(j = 0; j < gd.calcdata.length; ++j) {
             cd = gd.calcdata[j];
             t = cd[0].t;
             trace = cd[0].trace;
 
-            if (trace.visible === true && Plots.traceIs(trace, 'box') &&
+            if(trace.visible === true && Plots.traceIs(trace, 'box') &&
                     !t.emptybox &&
                     trace.orientation === orientation &&
                     trace.xaxis === xa._id &&
                     trace.yaxis === ya._id) {
                 boxlist.push(j);
-                if (trace.boxpoints !== false) {
+                if(trace.boxpoints !== false) {
                     minPad = Math.max(minPad, trace.jitter-trace.pointpos-1);
                     maxPad = Math.max(maxPad, trace.jitter+trace.pointpos-1);
                 }
@@ -54,11 +54,11 @@ module.exports = function setPositions(gd, plotinfo) {
         }
 
         // make list of box points
-        for (j = 0; j < boxlist.length; j++) {
+        for(j = 0; j < boxlist.length; j++) {
             cd = gd.calcdata[boxlist[j]];
-            for (k = 0; k < cd.length; k++) boxpointlist.push(cd[k].pos);
+            for(k = 0; k < cd.length; k++) boxpointlist.push(cd[k].pos);
         }
-        if (!boxpointlist.length) continue;
+        if(!boxpointlist.length) continue;
 
         // box plots - update dPos based on multiple traces
         // and then use for posAxis autorange
@@ -74,7 +74,7 @@ module.exports = function setPositions(gd, plotinfo) {
         Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
 
         // set the width of all boxes
-        for (i=0; i < boxlist.length; ++i) {
+        for(i = 0; i < boxlist.length; ++i) {
             gd.calcdata[i][0].t.dPos = dPos;
         }
 

@@ -18,7 +18,7 @@ module.exports = function style(gd) {
     var s = d3.select(gd).selectAll('g.trace.boxes');
 
     s.style('opacity', function(d) { return d[0].trace.opacity; })
-        .each(function(d){
+        .each(function(d) {
             var trace = d[0].trace,
                 lineWidth = trace.line.width;
             d3.select(this).selectAll('path.box')

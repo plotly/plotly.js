@@ -40,7 +40,7 @@ exports.findBin = function(val, bins, linelow) {
             test = linelow ? greaterOrEqual : greaterThan;
         }
         // c is just to avoid infinite loops if there's an error
-        while(n1 < n2 && c++ < 100){
+        while(n1 < n2 && c++ < 100) {
             n = Math.floor((n1 + n2) / 2);
             if(test(bins[n], val)) n1 = n + 1;
             else n2 = n;
@@ -90,7 +90,7 @@ exports.distinctVals = function(valsIn) {
  * particularly useful for date/time where things are not powers of 10
  * binary search is probably overkill here...
  */
-exports.roundUp = function(val, arrayIn, reverse){
+exports.roundUp = function(val, arrayIn, reverse) {
     var low = 0,
         high = arrayIn.length - 1,
         mid,
@@ -99,7 +99,7 @@ exports.roundUp = function(val, arrayIn, reverse){
         dhigh = reverse ? 1 : 0,
         rounded = reverse ? Math.ceil : Math.floor;
     // c is just to avoid infinite loops if there's an error
-    while(low < high && c++ < 100){
+    while(low < high && c++ < 100) {
         mid = rounded((low + high) / 2);
         if(arrayIn[mid] <= val) low = mid + dlow;
         else high = mid - dhigh;

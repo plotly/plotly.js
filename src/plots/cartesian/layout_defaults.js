@@ -118,7 +118,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             positioningOptions = {
                 letter: axLetter,
                 counterAxes: {x: yaList, y: xaList}[axLetter].map(axisIds.name2id),
-                overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2){
+                overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2) {
                     return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
                 }).map(axisIds.name2id)
             };

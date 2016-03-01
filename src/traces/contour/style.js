@@ -30,12 +30,12 @@ module.exports = function style(gd) {
                 scl = getColorscale(trace.colorscale),
                 extraLevel = colorLines ? 0 : 1,
                 colormap = d3.scale.linear()
-                    .domain(scl.map(function(si){
+                    .domain(scl.map(function(si) {
                         return (si[0]*(nc+extraLevel-1)-(extraLevel/2)) * cs +
                             contours.start;
                     }))
                     .interpolate(d3.interpolateRgb)
-                    .range(scl.map(function(si){ return si[1]; }));
+                    .range(scl.map(function(si) { return si[1]; }));
 
             c.selectAll('g.contourlevel').each(function(d, i) {
                 d3.select(this).selectAll('path')
@@ -47,7 +47,7 @@ module.exports = function style(gd) {
             c.selectAll('g.contourbg path')
                 .style('fill', colormap(contours.start - cs/2));
             c.selectAll('g.contourfill path')
-                .style('fill',function(d, i){
+                .style('fill',function(d, i) {
                     return colormap(contours.start + (i+0.5)*cs);
                 });
         });

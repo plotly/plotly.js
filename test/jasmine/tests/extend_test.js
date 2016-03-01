@@ -45,7 +45,6 @@ var undef = {
 };
 
 
-
 describe('extendFlat', function() {
     'use strict';
 

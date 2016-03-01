@@ -37,7 +37,7 @@ function svgToImg(opts) {
         DOMURL.revokeObjectURL(url);
         ctx.drawImage(img, 0, 0);
 
-        switch (format) {
+        switch(format) {
             case 'jpeg':
                 imgData = canvas.toDataURL('image/jpeg');
                 break;
