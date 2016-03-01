@@ -156,6 +156,7 @@ module.exports = function draw(gd, id) {
                 showticklabels: opts.showticklabels,
                 tickfont: opts.tickfont,
                 tickangle: opts.tickangle,
+                tickpadding: opts.tickpadding,
                 tickformat: opts.tickformat,
                 exponentformat: opts.exponentformat,
                 showexponent: opts.showexponent,

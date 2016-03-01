@@ -37,7 +37,6 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             color: dfltFontColor
         });
         coerce('tickangle');
-        coerce('tickpadding');
 
         if(axType !== 'category') {
             var tickFormat = coerce('tickformat');
@@ -47,6 +46,8 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             }
         }
     }
+    
+    coerce('tickpadding');
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
 };

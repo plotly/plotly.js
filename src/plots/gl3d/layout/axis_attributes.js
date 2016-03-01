@@ -90,6 +90,7 @@ module.exports = {
     showticklabels: axesAttrs.showticklabels,
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
+    tickpadding: axesAttrs.tickpadding,
     tickprefix: axesAttrs.tickprefix,
     showtickprefix: axesAttrs.showtickprefix,
     ticksuffix: axesAttrs.ticksuffix,
