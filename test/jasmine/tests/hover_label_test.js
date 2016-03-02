@@ -8,7 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 
-fdescribe('hover info', function() {
+describe('hover info', function() {
     'use strict';
 
     var mock = require('@mocks/14.json'),
