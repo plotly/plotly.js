@@ -11,14 +11,14 @@ module.exports = function makeScatterLines(gd, w, h) {
         minY = gd._fullLayout.yaxis.range[0],
         maxY = gd._fullLayout.yaxis.range[1];
 
-    var processor = {
+    var dataProcessors = {
         'linear': function(val) { return val; },
         'log': Math.log,
         'date': function(val) { return new Date(val).getTime(); }
     };
 
-    var processX = processor[gd._fullLayout.xaxis.type],
-        processY = processor[gd._fullLayout.yaxis.type];
+    var processX = dataProcessors[gd._fullLayout.xaxis.type],
+        processY = dataProcessors[gd._fullLayout.yaxis.type];
 
     var rangePlot = document.createElementNS(svgNS, 'g');
 

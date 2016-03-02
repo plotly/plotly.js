@@ -8,6 +8,7 @@ var makeScatterLines = require('./scatter');
 var svgNS = 'http://www.w3.org/2000/svg';
 
 exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
+
     var width = gd._fullLayout._size.w,
         height = width / 10;
 
