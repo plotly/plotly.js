@@ -9,6 +9,16 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+
+## [1.6.2] -- 2016-03-03
+
+### Fixed
+- SVG overflow property is now properly set for IE11 [#305, #306]
+- Hover labels associated with `text` arrays with falsy values are properly
+  skipped over [#310]
+- Snapshot routines now strip browser-only user-select style attributes [#311]
+
+
 ## [1.6.1] -- 2016-03-01
 
 ### Fixed
