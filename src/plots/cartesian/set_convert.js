@@ -42,7 +42,7 @@ module.exports = function setConvert(ax) {
     // also, clipping can affect the direction of lines off the edge...
     var clipMult = 10;
 
-    function toLog(v, clip){
+    function toLog(v, clip) {
         if(v>0) return Math.log(v)/Math.LN10;
 
         else if(v<=0 && clip && ax.range && ax.range.length===2) {
@@ -55,8 +55,8 @@ module.exports = function setConvert(ax) {
 
         else return constants.BADNUM;
     }
-    function fromLog(v){ return Math.pow(10,v); }
-    function num(v){ return isNumeric(v) ? Number(v) : constants.BADNUM; }
+    function fromLog(v) { return Math.pow(10,v); }
+    function num(v) { return isNumeric(v) ? Number(v) : constants.BADNUM; }
 
     ax.c2l = (ax.type==='log') ? toLog : num;
     ax.l2c = (ax.type==='log') ? fromLog : num;
@@ -64,12 +64,12 @@ module.exports = function setConvert(ax) {
     ax.p2d = function(v) { return ax.l2d(ax.p2l(v)); };
 
     // set scaling to pixels
-    ax.setScale = function(){
+    ax.setScale = function() {
         var gs = ax._td._fullLayout._size,
             i;
 
         // TODO cleaner way to handle this case
-        if (!ax._categories) ax._categories = [];
+        if(!ax._categories) ax._categories = [];
 
         // make sure we have a domain (pull it in from the axis
         // this one is overlaying if necessary)
@@ -112,7 +112,7 @@ module.exports = function setConvert(ax) {
             ax._b = -ax._m*ax.range[0];
         }
 
-        if (!isFinite(ax._m) || !isFinite(ax._b)) {
+        if(!isFinite(ax._m) || !isFinite(ax._b)) {
             Lib.notifier(
                 'Something went wrong with axis scaling',
                 'long');
@@ -131,16 +131,16 @@ module.exports = function setConvert(ax) {
     ax.p2l = function(px) { return (px-ax._b)/ax._m; };
 
     ax.c2p = function(v, clip) { return ax.l2p(ax.c2l(v, clip)); };
-    ax.p2c = function(px){ return ax.l2c(ax.p2l(px)); };
+    ax.p2c = function(px) { return ax.l2c(ax.p2l(px)); };
 
     if(['linear','log','-'].indexOf(ax.type)!==-1) {
         ax.c2d = num;
-        ax.d2c = function(v){
+        ax.d2c = function(v) {
             v = cleanDatum(v);
             return isNumeric(v) ? Number(v) : constants.BADNUM;
         };
         ax.d2l = function(v, clip) {
-            if (ax.type === 'log') return ax.c2l(ax.d2c(v), clip);
+            if(ax.type === 'log') return ax.c2l(ax.d2c(v), clip);
             else return ax.d2c(v);
         };
     }
@@ -149,7 +149,7 @@ module.exports = function setConvert(ax) {
             return isNumeric(v) ? Lib.ms2DateTime(v) : constants.BADNUM;
         };
 
-        ax.d2c = function(v){
+        ax.d2c = function(v) {
             return (isNumeric(v)) ? Number(v) : Lib.dateTime2ms(v);
         };
 
@@ -184,10 +184,13 @@ module.exports = function setConvert(ax) {
             // that aren't in the first etc.
             // TODO: sorting options - do the sorting
             // progressively here as we insert?
-            if(ax._categories.indexOf(v)===-1) ax._categories.push(v);
+
+            if(v !== null && v !== undefined && ax._categories.indexOf(v) === -1) {
+                ax._categories.push(v);
+            }
 
             var c = ax._categories.indexOf(v);
-            return c===-1 ? constants.BADNUM : c;
+            return c === -1 ? constants.BADNUM : c;
         };
 
         ax.d2l = ax.d2c;

@@ -53,7 +53,7 @@ module.exports = function calc(gd, trace) {
         marker = trace.marker;
         s = marker.size;
 
-        if (Array.isArray(s)) {
+        if(Array.isArray(s)) {
             // I tried auto-type but category and dates dont make much sense.
             var ax = {type: 'linear'};
             Axes.setConvert(ax);
@@ -125,7 +125,7 @@ module.exports = function calc(gd, trace) {
     }
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if (typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
+    if(typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
 
     gd.firstscatter = false;
     return cd;

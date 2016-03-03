@@ -62,6 +62,10 @@ describe('Test gl plot interactions', function() {
             mouseEvent(type, 605, 271, opts);
         }
 
+        function countCanvases() {
+            return d3.selectAll('canvas').size();
+        }
+
         beforeEach(function(done) {
             gd = createGraphDiv();
             Plotly.plot(gd, mock.data, mock.layout).then(function() {
@@ -86,9 +90,6 @@ describe('Test gl plot interactions', function() {
             });
 
             it('should have', function() {
-                node = d3.selectAll('canvas');
-                expect(node[0].length).toEqual(1, 'one canvas node');
-
                 node = d3.selectAll('g.hovertext');
                 expect(node.size()).toEqual(1, 'one hover text group');
 
@@ -142,6 +143,48 @@ describe('Test gl plot interactions', function() {
                 expect(ptData.pointNumber).toEqual(2, 'pointNumber click data');
             });
         });
+
+        it('should be able to reversibly change trace type', function(done) {
+            var sceneLayout = { aspectratio: { x: 1, y: 1, z: 1 } };
+
+            expect(countCanvases()).toEqual(1);
+            expect(gd.layout.scene).toEqual(sceneLayout);
+            expect(gd.layout.xaxis).toBeUndefined();
+            expect(gd.layout.yaxis).toBeUndefined();
+            expect(gd._fullLayout._hasGL3D).toBe(true);
+            expect(gd._fullLayout.scene._scene).toBeDefined();
+
+            Plotly.restyle(gd, 'type', 'scatter').then(function() {
+                expect(countCanvases()).toEqual(0);
+                expect(gd.layout.scene).toEqual(sceneLayout);
+                expect(gd.layout.xaxis).toBeDefined();
+                expect(gd.layout.yaxis).toBeDefined();
+                expect(gd._fullLayout._hasGL3D).toBe(false);
+                expect(gd._fullLayout.scene).toBeUndefined();
+
+                return Plotly.restyle(gd, 'type', 'scatter3d');
+            }).then(function() {
+                expect(countCanvases()).toEqual(1);
+                expect(gd.layout.scene).toEqual(sceneLayout);
+                expect(gd.layout.xaxis).toBeDefined();
+                expect(gd.layout.yaxis).toBeDefined();
+                expect(gd._fullLayout._hasGL3D).toBe(true);
+                expect(gd._fullLayout.scene._scene).toBeDefined();
+
+                done();
+            });
+        });
+
+        it('should be able to delete the last trace', function(done) {
+            Plotly.deleteTraces(gd, [0]).then(function() {
+                expect(countCanvases()).toEqual(0);
+                expect(gd._fullLayout._hasGL3D).toBe(false);
+                expect(gd._fullLayout.scene).toBeUndefined();
+
+                done();
+            });
+        });
+
     });
 
     describe('gl2d plots', function() {

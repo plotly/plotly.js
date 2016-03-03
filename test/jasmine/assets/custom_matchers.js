@@ -1,10 +1,10 @@
 module.exports = {
 
     // toBeCloseTo... but for arrays
-    toBeCloseToArray: function(){
+    toBeCloseToArray: function() {
         return {
             compare: function(actual, expected, precision) {
-                if(precision !== 0){
+                if(precision !== 0) {
                     precision = Math.pow(10, -precision) / 2 || 0.005;
                 }
 

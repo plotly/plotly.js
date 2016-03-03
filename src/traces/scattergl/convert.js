@@ -49,7 +49,7 @@ function LineWithMarkers(scene, uid) {
         color: [0, 0, 0, 1],
         width: 1,
         fill: [false, false, false, false],
-        fillColor:  [
+        fillColor: [
             [0, 0, 0, 1],
             [0, 0, 0, 1],
             [0, 0, 0, 1],

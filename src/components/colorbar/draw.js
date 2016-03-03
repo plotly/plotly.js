@@ -50,7 +50,7 @@ module.exports = function draw(gd, id) {
     // evaluated halfway between levels
     opts.filllevels = null;
 
-    function component(){
+    function component() {
         var fullLayout = gd._fullLayout;
         if((typeof opts.fillcolor !== 'function') &&
                 (typeof opts.line.color !== 'function')) {
@@ -63,9 +63,9 @@ module.exports = function draw(gd, id) {
             filllevels = [],
             l,
             linecolormap = typeof opts.line.color === 'function' ?
-                opts.line.color : function(){ return opts.line.color; },
+                opts.line.color : function() { return opts.line.color; },
             fillcolormap = typeof opts.fillcolor === 'function' ?
-                opts.fillcolor : function(){ return opts.fillcolor; };
+                opts.fillcolor : function() { return opts.fillcolor; };
 
         var l0 = opts.levels.end + opts.levels.size/100,
             ls = opts.levels.size,
@@ -84,7 +84,7 @@ module.exports = function draw(gd, id) {
                 }
             }
             else {
-                filllevels = linelevels.map(function(v){
+                filllevels = linelevels.map(function(v) {
                     return v-opts.levels.size / 2;
                 });
                 filllevels.push(filllevels[filllevels.length - 1] +
@@ -132,7 +132,7 @@ module.exports = function draw(gd, id) {
 
             // y positioning we can do correctly from the start
             yBottomFrac = opts.y + lenFrac *
-                (({top:-0.5, bottom:0.5}[opts.yanchor]||0)-0.5),
+                (({top: -0.5, bottom: 0.5}[opts.yanchor] || 0) - 0.5),
             yBottomPx = Math.round(fullLayout._size.h * (1-yBottomFrac)),
             yTopPx = yBottomPx-lenPx,
             titleEl,
@@ -233,7 +233,7 @@ module.exports = function draw(gd, id) {
         // now draw the elements
         var container = fullLayout._infolayer.selectAll('g.'+id).data([0]);
         container.enter().append('g').classed(id,true)
-            .each(function(){
+            .each(function() {
                 var s = d3.select(this);
                 s.append('rect').classed('cbbg',true);
                 s.append('g').classed('cbfills',true);
@@ -260,7 +260,7 @@ module.exports = function draw(gd, id) {
             Titles.draw(gd, cbAxisOut._id + 'title');
         }
 
-        function drawAxis(){
+        function drawAxis() {
             if(['top','bottom'].indexOf(opts.titleside)!==-1) {
                 // squish the axis top to make room for the title
                 var titleGroup = container.select('.cbtitle'),
@@ -373,7 +373,7 @@ module.exports = function draw(gd, id) {
             return Axes.doTicks(gd, cbAxisOut);
         }
 
-        function positionCB(){
+        function positionCB() {
             // wait for the axis & title to finish rendering before
             // continuing positioning
             // TODO: why are we redrawing multiple times now with this?
@@ -431,7 +431,7 @@ module.exports = function draw(gd, id) {
             });
 
             // fix positioning for xanchor!='left'
-            var xoffset = ({center:0.5, right:1}[opts.xanchor]||0) *
+            var xoffset = ({center: 0.5, right: 1}[opts.xanchor] || 0) *
                 outerwidth;
             container.attr('transform',
                 'translate('+(fullLayout._size.l-xoffset)+','+fullLayout._size.t+')');
@@ -440,10 +440,10 @@ module.exports = function draw(gd, id) {
             Plots.autoMargin(gd, id,{
                 x: opts.x,
                 y: opts.y,
-                l: outerwidth*({right:1, center:0.5}[opts.xanchor]||0),
-                r: outerwidth*({left:1, center:0.5}[opts.xanchor]||0),
-                t: outerheight*({bottom:1, middle:0.5}[opts.yanchor]||0),
-                b: outerheight*({top:1, middle:0.5}[opts.yanchor]||0)
+                l: outerwidth * ({right: 1, center: 0.5}[opts.xanchor] || 0),
+                r: outerwidth * ({left: 1, center: 0.5}[opts.xanchor] || 0),
+                t: outerheight * ({bottom: 1, middle: 0.5}[opts.yanchor] || 0),
+                b: outerheight * ({top: 1, middle: 0.5}[opts.yanchor] || 0)
             });
         }
 

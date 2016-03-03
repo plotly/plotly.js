@@ -8,6 +8,7 @@ var rules = {
     "X a": "text-decoration:none;",
     "X a:hover": "text-decoration:none;",
     "X .crisp": "shape-rendering:crispEdges;",
+    "X svg": "overflow:hidden;",
     "X svg a": "fill:#447adb;",
     "X svg a:hover": "fill:#3c6dc5;",
     "X .main-svg": "position:absolute;top:0;left:0;pointer-events:none;",

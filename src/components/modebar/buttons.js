@@ -50,13 +50,13 @@ modeBarButtons.toImage = {
     click: function(gd) {
         var format = 'png';
 
-        if (Lib.isIE()) {
+        if(Lib.isIE()) {
             Lib.notifier('Snapshotting is unavailable in Internet Explorer. ' +
                          'Consider exporting your images using the Plotly Cloud', 'long');
             return;
         }
 
-        if (gd._snapshotInProgress) {
+        if(gd._snapshotInProgress) {
             Lib.notifier('Snapshotting is still in progress - please hold', 'long');
             return;
         }
@@ -242,7 +242,7 @@ function handleCartesian(gd, ev) {
     }
     else {
         // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
-        if (astr==='hovermode' && (val==='x' || val==='y')) {
+        if(astr==='hovermode' && (val==='x' || val==='y')) {
             val = fullLayout._isHoriz ? 'y' : 'x';
             button.setAttribute('data-val', val);
         }

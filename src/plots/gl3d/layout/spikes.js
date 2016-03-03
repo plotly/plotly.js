@@ -25,7 +25,7 @@ function SpikeOptions() {
 var proto = SpikeOptions.prototype;
 
 proto.merge = function(sceneLayout) {
-    for (var i = 0; i < 3; ++i) {
+    for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
         this.enabled[i] = axes.showspikes;

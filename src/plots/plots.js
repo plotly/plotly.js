@@ -140,10 +140,53 @@ plots.registerSubplot = function(_module) {
     subplotsRegistry[plotType] = _module;
 };
 
-// TODO separate the 'find subplot' step (which looks in layout)
-// from the 'get subplot ids' step (which looks in fullLayout._plots)
+/**
+ * Find subplot ids in data.
+ * Meant to be used in the defaults step.
+ *
+ * Use plots.getSubplotIds to grab the current
+ * subplot ids later on in Plotly.plot.
+ *
+ * @param {array} data plotly data array
+ *      (intended to be _fullData, but does not have to be).
+ * @param {string} type subplot type to look for.
+ *
+ * @return {array} list of subplot ids (strings).
+ *      N.B. these ids possibly un-ordered.
+ *
+ * TODO incorporate cartesian/gl2d axis finders in this paradigm.
+ */
+plots.findSubplotIds = function findSubplotIds(data, type) {
+    var subplotIds = [];
+
+    if(plots.subplotsRegistry[type] === undefined) return subplotIds;
+
+    var attr = plots.subplotsRegistry[type].attr;
+
+    for(var i = 0; i < data.length; i++) {
+        var trace = data[i];
+
+        if(plots.traceIs(trace, type) && subplotIds.indexOf(trace[attr]) === -1) {
+            subplotIds.push(trace[attr]);
+        }
+    }
+
+    return subplotIds;
+};
+
+/**
+ * Get the ids of the current subplots.
+ *
+ * @param {object} layout plotly full layout object.
+ * @param {string} type subplot type to look for.
+ *
+ * @return {array} list of ordered subplot ids (strings).
+ *
+ */
 plots.getSubplotIds = function getSubplotIds(layout, type) {
-    if(plots.subplotsRegistry[type] === undefined) return [];
+    var _module = plots.subplotsRegistry[type];
+
+    if(_module === undefined) return [];
 
     // layout must be 'fullLayout' here
     if(type === 'cartesian' && !layout._hasCartesian) return [];
@@ -152,36 +195,37 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
         return Object.keys(layout._plots);
     }
 
-    var idRegex = plots.subplotsRegistry[type].idRegex,
+    var idRegex = _module.idRegex,
         layoutKeys = Object.keys(layout),
-        subplotIds = [],
-        layoutKey;
+        subplotIds = [];
 
     for(var i = 0; i < layoutKeys.length; i++) {
-        layoutKey = layoutKeys[i];
+        var layoutKey = layoutKeys[i];
+
         if(idRegex.test(layoutKey)) subplotIds.push(layoutKey);
     }
 
-    return subplotIds;
-};
-
-plots.getSubplotIdsInData = function getSubplotsInData(data, type) {
-    if(plots.subplotsRegistry[type] === undefined) return [];
-
-    var attr = plots.subplotsRegistry[type].attr,
-        subplotIds = [],
-        trace;
-
-    for (var i = 0; i < data.length; i++) {
-        trace = data[i];
-        if(Plotly.Plots.traceIs(trace, type) && subplotIds.indexOf(trace[attr])===-1) {
-            subplotIds.push(trace[attr]);
-        }
-    }
+    // order the ids
+    var idLen = _module.idRoot.length;
+    subplotIds.sort(function(a, b) {
+        var aNum = +(a.substr(idLen) || 1),
+            bNum = +(b.substr(idLen) || 1);
+        return aNum - bNum;
+    });
 
     return subplotIds;
 };
 
+/**
+ * Get the data trace(s) associated with a given subplot.
+ *
+ * @param {array} data  plotly full data array.
+ * @param {object} layout plotly full layout object.
+ * @param {string} subplotId subplot ids to look for.
+ *
+ * @return {array} list of trace objects.
+ *
+ */
 plots.getSubplotData = function getSubplotData(data, type, subplotId) {
     if(plots.subplotsRegistry[type] === undefined) return [];
 
@@ -220,10 +264,10 @@ plots.redrawText = function(gd) {
     }
 
     return new Promise(function(resolve) {
-        setTimeout(function(){
+        setTimeout(function() {
             Plotly.Annotations.drawAll(gd);
             Plotly.Legend.draw(gd);
-            (gd.calcdata||[]).forEach(function(d){
+            (gd.calcdata||[]).forEach(function(d) {
                 if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
             });
             resolve(plots.previousPromises(gd));
@@ -235,14 +279,14 @@ plots.redrawText = function(gd) {
 plots.resize = function(gd) {
     return new Promise(function(resolve, reject) {
 
-        if (!gd || d3.select(gd).style('display') === 'none'){
+        if(!gd || d3.select(gd).style('display') === 'none') {
             reject(new Error('Resize must be passed a plot div element.'));
         }
 
-        if (gd._redrawTimer) clearTimeout(gd._redrawTimer);
+        if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
 
         gd._redrawTimer = setTimeout(function() {
-            if ((gd._fullLayout || {}).autosize) {
+            if((gd._fullLayout || {}).autosize) {
                 // autosizing doesn't count as a change that needs saving
                 var oldchanged = gd.changed;
 
@@ -263,7 +307,7 @@ plots.resize = function(gd) {
 plots.previousPromises = function(gd) {
     if((gd._promises || []).length) {
         return Promise.all(gd._promises)
-            .then(function(){ gd._promises=[]; });
+            .then(function() { gd._promises=[]; });
     }
 };
 
@@ -282,12 +326,12 @@ plots.addLinks = function(gd) {
     linkContainer.enter().append('text')
         .classed('js-plot-link-container', true)
         .style({
-            'font-family':'"Open Sans", Arial, sans-serif',
+            'font-family': '"Open Sans", Arial, sans-serif',
             'font-size': '12px',
             'fill': Plotly.Color.defaultLine,
             'pointer-events': 'all'
         })
-        .each(function(){
+        .each(function() {
             var links = d3.select(this);
             links.append('tspan').classed('js-link-to-tool', true);
             links.append('tspan').classed('js-link-spacer', true);
@@ -304,7 +348,7 @@ plots.addLinks = function(gd) {
     // IE doesn't like getComputedTextLength if an element
     // isn't visible, which it (sometimes?) isn't
     // apparently offsetParent is null for invisibles.
-    if (text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
+    if(text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
         // Align the text at the left
         attrs['text-anchor'] = 'start';
         attrs.x = 5;
@@ -332,13 +376,13 @@ plots.addLinks = function(gd) {
 
 // note that now this function is only adding the brand in
 // iframes and 3rd-party apps
-function positionPlayWithData(gd, container){
+function positionPlayWithData(gd, container) {
     container.text('');
     var link = container.append('a')
         .attr({
             'xlink:xlink:href': '#',
             'class': 'link--impt link--embedview',
-            'font-weight':'bold'
+            'font-weight': 'bold'
         })
         .text(gd._context.linkText + ' ' + String.fromCharCode(187));
 
@@ -414,7 +458,7 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._dataLength = newData.length;
 
     // then do the data
-    for (i = 0; i < newData.length; i++) {
+    for(i = 0; i < newData.length; i++) {
         trace = newData[i];
 
         fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout);
@@ -429,17 +473,17 @@ plots.supplyDefaults = function(gd) {
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         _module = fullTrace._module;
-        if (_module && modules.indexOf(_module)===-1) modules.push(_module);
+        if(_module && modules.indexOf(_module)===-1) modules.push(_module);
     }
 
     // special cases that introduce interactions between traces
-    for (i = 0; i < modules.length; i++) {
+    for(i = 0; i < modules.length; i++) {
         _module = modules[i];
-        if (_module.cleanData) _module.cleanData(newFullData);
+        if(_module.cleanData) _module.cleanData(newFullData);
     }
 
-    if (oldFullData.length === newData.length) {
-        for (i = 0; i < newFullData.length; i++) {
+    if(oldFullData.length === newData.length) {
+        for(i = 0; i < newFullData.length; i++) {
             relinkPrivateKeys(newFullData[i], oldFullData[i]);
         }
     }
@@ -447,7 +491,8 @@ plots.supplyDefaults = function(gd) {
     // finally, fill in the pieces of layout that may need to look at data
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
-    cleanScenes(newFullLayout, oldFullLayout);
+    // clean subplots and other artifacts from previous plot calls
+    cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     /*
      * Relink functions and underscore attributes to promote consistency between
@@ -460,31 +505,61 @@ plots.supplyDefaults = function(gd) {
     // can't quite figure out how to get rid of this... each axis needs
     // a reference back to the DOM object for just a few purposes
     axList = Plotly.Axes.list(gd);
-    for (i = 0; i < axList.length; i++) {
+    for(i = 0; i < axList.length; i++) {
         ax = axList[i];
         ax._td = gd;
         ax.setScale();
     }
 
     // update object references in calcdata
-    if ((gd.calcdata || []).length === newFullData.length) {
-        for (i = 0; i < newFullData.length; i++) {
+    if((gd.calcdata || []).length === newFullData.length) {
+        for(i = 0; i < newFullData.length; i++) {
             trace = newFullData[i];
             (gd.calcdata[i][0] || {}).trace = trace;
         }
     }
 };
 
-function cleanScenes(newFullLayout, oldFullLayout) {
-    var oldSceneKeys = plots.getSubplotIds(oldFullLayout, 'gl3d');
+function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var i, j;
 
-    for(var i = 0; i < oldSceneKeys.length; i++) {
-        var oldSceneKey = oldSceneKeys[i];
-        if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
-            oldFullLayout[oldSceneKey]._scene.destroy();
+    var plotTypes = Object.keys(subplotsRegistry);
+    for(i = 0; i < plotTypes.length; i++) {
+        var _module = subplotsRegistry[plotTypes[i]];
+
+        if(_module.clean) {
+            _module.clean(newFullData, newFullLayout, oldFullData, oldFullLayout);
         }
     }
 
+    var hasPaper = !!oldFullLayout._paper;
+    var hasInfoLayer = !!oldFullLayout._infolayer;
+
+    oldLoop:
+    for(i = 0; i < oldFullData.length; i++) {
+        var oldTrace = oldFullData[i],
+            oldUid = oldTrace.uid;
+
+        for(j = 0; j < newFullData.length; j++) {
+            var newTrace = newFullData[j];
+
+            if(oldUid === newTrace.uid) continue oldLoop;
+        }
+
+        // clean old heatmap and contour traces
+        if(hasPaper) {
+            oldFullLayout._paper.selectAll(
+                '.hm' + oldUid +
+                ',.contour' + oldUid +
+                ',#clip' + oldUid
+            ).remove();
+        }
+
+        // clean old colorbars
+        if(hasInfoLayer) {
+            oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
+        }
+    }
 }
 
 /**
@@ -498,7 +573,7 @@ function relinkPrivateKeys(toLayout, fromLayout) {
     var keys = Object.keys(fromLayout);
     var j;
 
-    for (var i = 0; i < keys.length; ++i) {
+    for(var i = 0; i < keys.length; ++i) {
         var k = keys[i];
         if(k.charAt(0)==='_' || typeof fromLayout[k]==='function') {
             // if it already exists at this point, it's something
@@ -507,7 +582,7 @@ function relinkPrivateKeys(toLayout, fromLayout) {
 
             toLayout[k] = fromLayout[k];
         }
-        else if (Array.isArray(fromLayout[k]) &&
+        else if(Array.isArray(fromLayout[k]) &&
                  Array.isArray(toLayout[k]) &&
                  fromLayout[k].length &&
                  Lib.isPlainObject(fromLayout[k][0])) {
@@ -522,11 +597,11 @@ function relinkPrivateKeys(toLayout, fromLayout) {
                 relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
             }
         }
-        else if (Lib.isPlainObject(fromLayout[k]) &&
+        else if(Lib.isPlainObject(fromLayout[k]) &&
                  Lib.isPlainObject(toLayout[k])) {
             // recurse into objects, but only if they still exist
             relinkPrivateKeys(toLayout[k], fromLayout[k]);
-            if (!Object.keys(toLayout[k]).length) delete toLayout[k];
+            if(!Object.keys(toLayout[k]).length) delete toLayout[k];
         }
     }
 }
@@ -756,13 +831,13 @@ plots.sanitizeMargins = function(fullLayout) {
     // as width >= 10 by supplyDefaults
     // similarly for margin.t + margin.b
 
-    if (plotWidth < 0) {
+    if(plotWidth < 0) {
         correction = (width - 1) / (margin.l + margin.r);
         margin.l = Math.floor(correction * margin.l);
         margin.r = Math.floor(correction * margin.r);
     }
 
-    if (plotHeight < 0) {
+    if(plotHeight < 0) {
         correction = (height - 1) / (margin.t + margin.b);
         margin.t = Math.floor(correction * margin.t);
         margin.b = Math.floor(correction * margin.b);
@@ -787,10 +862,10 @@ plots.autoMargin = function(gd,id,o) {
             if(o.b+o.t > fullLayout.height*0.5) o.b = o.t = 0;
 
             fullLayout._pushmargin[id] = {
-                l: {val:o.x, size: o.l+pad},
-                r: {val:o.x, size: o.r+pad},
-                b: {val:o.y, size: o.b+pad},
-                t: {val:o.y, size: o.t+pad}
+                l: {val: o.x, size: o.l+pad},
+                r: {val: o.x, size: o.r+pad},
+                b: {val: o.y, size: o.b+pad},
+                t: {val: o.y, size: o.t+pad}
             };
         }
 
@@ -816,10 +891,10 @@ plots.doAutoMargin = function(gd) {
     if(fullLayout.margin.autoexpand!==false) {
         // fill in the requested margins
         pm.base = {
-            l:{val:0, size:ml},
-            r:{val:1, size:mr},
-            t:{val:1, size:mt},
-            b:{val:0, size:mb}
+            l: {val: 0, size: ml},
+            r: {val: 1, size: mr},
+            t: {val: 1, size: mt},
+            b: {val: 0, size: mb}
         };
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
@@ -900,9 +975,9 @@ plots.doAutoMargin = function(gd) {
  * @param {Boolean} useDefaults If truthy, use _fullLayout and _fullData
  * @returns {Object|String}
  */
-plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
+plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     // if the defaults aren't supplied yet, we need to do that...
-    if ((useDefaults && dataonly && !gd._fullData) ||
+    if((useDefaults && dataonly && !gd._fullData) ||
             (useDefaults && !dataonly && !gd._fullLayout)) {
         plots.supplyDefaults(gd);
     }
@@ -971,7 +1046,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults){
     }
 
     var obj = {
-        data:(data||[]).map(function(v){
+        data: (data || []).map(function(v) {
             var d = stripObj(v);
             // fit has some little arrays in it that don't contain data,
             // just fit params and meta

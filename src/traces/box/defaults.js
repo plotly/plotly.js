@@ -22,10 +22,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
         x = coerce('x'),
         defaultOrientation;
 
-    if (y && y.length) {
+    if(y && y.length) {
         defaultOrientation = 'v';
-        if (!x) coerce('x0');
-    } else if (x && x.length) {
+        if(!x) coerce('x0');
+    } else if(x && x.length) {
         defaultOrientation = 'h';
         coerce('y0');
     } else {

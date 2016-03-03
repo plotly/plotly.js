@@ -85,7 +85,7 @@ proto.handlePick = function(selection) {
 };
 
 function parseColorScale(colorscale, alpha) {
-    if (alpha === undefined) alpha = 1;
+    if(alpha === undefined) alpha = 1;
 
     return colorscale.map(function(elem) {
         var index = elem[0];
@@ -207,7 +207,7 @@ proto.update = function(data) {
     });
 
     // coords x
-    if (Array.isArray(x[0])) {
+    if(Array.isArray(x[0])) {
         fill(xc, function(row, col) {
             return xaxis.d2l(x[col][row]) * scaleFactor[0];
         });
@@ -219,7 +219,7 @@ proto.update = function(data) {
     }
 
     // coords y
-    if (Array.isArray(y[0])) {
+    if(Array.isArray(y[0])) {
         fill(yc, function(row, col) {
             return yaxis.d2l(y[col][row]) * scaleFactor[1];
         });
@@ -278,7 +278,7 @@ proto.update = function(data) {
             contourParams.project.z
         ];
 
-        if (contourParams.show) {
+        if(contourParams.show) {
             this.showContour[i] = true;
             params.levels[i] = contourLevels[i];
             surface.highlightColor[i] = params.contourColor[i] = str2RgbaArray(contourParams.color);
@@ -293,7 +293,7 @@ proto.update = function(data) {
             this.showContour[i] = false;
         }
 
-        if (contourParams.highlight) {
+        if(contourParams.highlight) {
             params.dynamicColor[i] = str2RgbaArray(contourParams.highlightColor);
             params.dynamicWidth[i] = contourParams.highlightWidth;
         }
@@ -308,7 +308,7 @@ proto.update = function(data) {
 
     surface.snapToData = true;
 
-    if ('lighting' in data) {
+    if('lighting' in data) {
         surface.ambientLight = data.lighting.ambient;
         surface.diffuseLight = data.lighting.diffuse;
         surface.specularLight = data.lighting.specular;
@@ -316,14 +316,14 @@ proto.update = function(data) {
         surface.fresnel = data.lighting.fresnel;
     }
 
-    if (alpha && alpha < 1) {
+    if(alpha && alpha < 1) {
         surface.supportsTransparency = true;
     }
 };
 
 
 proto.dispose = function() {
-    this.glplot.remove(this.surface);
+    this.scene.glplot.remove(this.surface);
     this.surface.dispose();
 };
 

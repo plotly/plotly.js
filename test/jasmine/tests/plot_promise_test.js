@@ -18,7 +18,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.plot(createGraphDiv(), data, {});
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -50,7 +50,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.plot(gd, data, {});
 
-            promise.then(null, function(){
+            promise.then(null, function() {
                 promiseRejected = true;
                 done();
             });
@@ -76,7 +76,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.plot(gd, data, {});
 
-            promise.then(null, function(){
+            promise.then(null, function() {
                 promiseRejected = true;
                 done();
             });
@@ -100,7 +100,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.redraw(initialDiv);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -123,7 +123,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.newPlot(createGraphDiv(), data, {});
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -149,7 +149,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.extendTraces(initialDiv, { y: [[2]] }, [0], 3);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -175,7 +175,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.prependTraces(initialDiv, { y: [[2]] }, [0], 3);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -201,7 +201,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.addTraces(initialDiv, [{ x: [1,2,3], y: [1,2,3] }], [1]);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -227,7 +227,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.deleteTraces(initialDiv, [0]);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -253,7 +253,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.deleteTraces(initialDiv, [0]);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -282,7 +282,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.moveTraces(initialDiv, 0, 1);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -308,7 +308,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.restyle(initialDiv, 'marker.color', 'rgb(255,0,0)');
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -334,7 +334,7 @@ describe('Plotly.___ methods', function() {
 
             promise = Plotly.restyle(initialDiv, undefined, '');
 
-            promise.then(null, function(){
+            promise.then(null, function() {
                 promiseRejected = true;
                 done();
             });
@@ -351,14 +351,14 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
-                layout = {hovermode:'closest'},
+                layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
 
             promise = Plotly.relayout(initialDiv, 'hovermode', false);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -378,14 +378,14 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
-                layout = {hovermode:'closest'},
+                layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
 
             promise = Plotly.relayout(initialDiv, 'hovermode', false);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -405,7 +405,7 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
-                layout = {hovermode:'closest'},
+                layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
@@ -413,7 +413,7 @@ describe('Plotly.___ methods', function() {
             initialDiv.framework = { isPolar: true };
             promise = Plotly.relayout(initialDiv, 'hovermode', false);
 
-            promise.then(function(gd){
+            promise.then(function(gd) {
                 promiseGd = gd;
                 done();
             });
@@ -432,14 +432,14 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [{ x: [1,2,3], y: [4,5,6] }],
-                layout = {hovermode:'closest'},
+                layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, layout);
 
             promise = Plotly.relayout(initialDiv, undefined, false);
 
-            promise.then(null, function(){
+            promise.then(null, function() {
                 promiseRejected = true;
                 done();
             });

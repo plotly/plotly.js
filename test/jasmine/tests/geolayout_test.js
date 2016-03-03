@@ -8,16 +8,28 @@ describe('Test Geo layout defaults', function() {
     var supplyLayoutDefaults = Geo.supplyLayoutDefaults;
 
     describe('supplyLayoutDefaults', function() {
-        var layoutIn, layoutOut;
-
-        var fullData = [{
-            type: 'scattergeo',
-            geo: 'geo'
-        }];
+        var layoutIn, layoutOut, fullData;
 
         beforeEach(function() {
-            layoutOut = {};
+            // if hasGeo is not at this stage, the default step is skipped
+            layoutOut = { _hasGeo: true };
+
+            // needs a geo-ref in a trace in order to be detected
+            fullData = [{ type: 'scattergeo', geo: 'geo' }];
         });
+
+        var seaFields = [
+            'showcoastlines', 'coastlinecolor', 'coastlinewidth',
+            'showocean', 'oceancolor'
+        ];
+
+        var subunitFields = [
+            'showsubunits', 'subunitcolor', 'subunitwidth'
+        ];
+
+        var frameFields = [
+            'showframe', 'framecolor', 'framewidth'
+        ];
 
         it('should not coerce projection.rotation if type is albers usa', function() {
             layoutIn = {
@@ -34,19 +46,25 @@ describe('Test Geo layout defaults', function() {
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.geo.projection.rotation).toBeUndefined();
+        });
 
-            delete layoutIn.geo.projection.type;
-            layoutOut = {};
+        it('should not coerce projection.rotation if type is albers usa (converse)', function() {
+            layoutIn = {
+                geo: {
+                    projection: {
+                        rotation: {
+                            lon: 10,
+                            lat: 10
+                        }
+                    }
+                }
+            };
+
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.geo.projection.rotation).toBeDefined();
         });
 
         it('should not coerce coastlines and ocean if type is albers usa', function() {
-            var fields = [
-                'showcoastlines', 'coastlinecolor', 'coastlinewidth',
-                'showocean', 'oceancolor'
-            ];
-
             layoutIn = {
                 geo: {
                     projection: {
@@ -58,14 +76,21 @@ describe('Test Geo layout defaults', function() {
             };
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            fields.forEach(function(field) {
+            seaFields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeUndefined();
             });
+        });
 
-            delete layoutIn.geo.projection.type;
-            layoutOut = {};
+        it('should not coerce coastlines and ocean if type is albers usa (converse)', function() {
+            layoutIn = {
+                geo: {
+                    showcoastlines: true,
+                    showocean: true
+                }
+            };
+
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            fields.forEach(function(field) {
+            seaFields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeDefined();
             });
         });
@@ -82,99 +107,122 @@ describe('Test Geo layout defaults', function() {
                         }
                     }
                 };
-                layoutOut = {};
+
                 supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             }
 
             projTypes.forEach(function(projType) {
                 testOne(projType);
-                if (projType.indexOf('conic') !== -1) {
+                if(projType.indexOf('conic') !== -1) {
                     expect(layoutOut.geo.projection.parallels).toBeDefined();
-                } else {
+                }
+                else {
                     expect(layoutOut.geo.projection.parallels).toBeUndefined();
                 }
             });
         });
 
-        it('should coerce subunits only when available ', function() {
-            var fields = [
-                'showsubunits', 'subunitcolor', 'subunitwidth'
-            ];
-
+        it('should coerce subunits only when available (usa case)', function() {
             layoutIn = {
                 geo: { scope: 'usa' }
             };
-            layoutOut = {};
+
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            fields.forEach(function(field) {
+            subunitFields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeDefined();
             });
+        });
 
-            delete layoutIn.geo.scope;
-            layoutOut = {};
+        it('should coerce subunits only when available (default case)', function() {
+            layoutIn = { geo: {} };
+
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            fields.forEach(function(field) {
+            subunitFields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeUndefined();
             });
+        });
 
+        it('should coerce subunits only when available (NA case)', function() {
             layoutIn = {
                 geo: {
                     scope: 'north america',
                     resolution: 50
                 }
             };
-            layoutOut = {};
+
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            fields.forEach(function(field) {
+            subunitFields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeDefined();
             });
+        });
 
+        it('should coerce subunits only when available (NA case 2)', function() {
             layoutIn = {
                 geo: {
                     scope: 'north america',
                     resolution: '50'
                 }
             };
-            layoutOut = {};
+
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            fields.forEach(function(field) {
+            subunitFields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeDefined();
             });
+        });
 
-            delete layoutIn.geo.resolution;
-            layoutOut = {};
+        it('should coerce subunits only when available (NA case 2)', function() {
+            layoutIn = {
+                geo: {
+                    scope: 'north america'
+                }
+            };
+
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            fields.forEach(function(field) {
+            subunitFields.forEach(function(field) {
                 expect(layoutOut.geo[field]).toBeUndefined();
             });
         });
 
         it('should not coerce frame unless for world scope', function() {
-            var fields = [
-                    'showframe', 'framecolor', 'framewidth'
-                ],
-                scopes = layoutAttributes.scope.values;
+            var scopes = layoutAttributes.scope.values;
 
             function testOne(scope) {
                 layoutIn = {
                     geo: { scope: scope }
                 };
-                layoutOut = {};
+
                 supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             }
 
             scopes.forEach(function(scope) {
                 testOne(scope);
                 if(scope === 'world') {
-                    fields.forEach(function(field) {
+                    frameFields.forEach(function(field) {
                         expect(layoutOut.geo[field]).toBeDefined();
                     });
-                } else {
-                    fields.forEach(function(field) {
+                }
+                else {
+                    frameFields.forEach(function(field) {
                         expect(layoutOut.geo[field]).toBeUndefined();
                     });
                 }
             });
+        });
+
+        it('should add geo data-only geos into layoutIn', function() {
+            layoutIn = {};
+            fullData = [{ type: 'scattergeo', geo: 'geo' }];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutIn.geo).toEqual({});
+        });
+
+        it('should add geo data-only geos into layoutIn (converse)', function() {
+            layoutIn = {};
+            fullData = [{ type: 'scatter' }];
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutIn.geo).toBe(undefined);
         });
 
     });

@@ -30,21 +30,21 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
     var dx, dy;
     if(trace.orientation==='h') {
-        dx = function(di){
+        dx = function(di) {
             // add a gradient so hovering near the end of a
             // bar makes it a little closer match
             return Fx.inbox(di.b-xval, di.x-xval) + (di.x-xval)/(di.x-di.b);
         };
-        dy = function(di){
+        dy = function(di) {
             var centerPos = barPos(di) - yval;
             return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
         };
     }
     else {
-        dy = function(di){
+        dy = function(di) {
             return Fx.inbox(di.b-yval, di.y-yval) + (di.y-yval)/(di.y-di.b);
         };
-        dx = function(di){
+        dx = function(di) {
             var centerPos = barPos(di) - xval;
             return Fx.inbox(centerPos - barDelta, centerPos + barDelta);
         };

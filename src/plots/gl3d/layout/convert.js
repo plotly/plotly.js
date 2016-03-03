@@ -73,61 +73,61 @@ var proto = AxesOptions.prototype;
 
 proto.merge = function(sceneLayout) {
     var opts = this;
-    for (var i = 0; i < 3; ++i) {
+    for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
         /////// Axes labels //
         opts.labels[i] = convertHTML(axes.title);
-        if ('titlefont' in axes) {
-            if (axes.titlefont.color) opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
-            if (axes.titlefont.family) opts.labelFont[i] = axes.titlefont.family;
-            if (axes.titlefont.size) opts.labelSize[i] = axes.titlefont.size;
+        if('titlefont' in axes) {
+            if(axes.titlefont.color) opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
+            if(axes.titlefont.family) opts.labelFont[i] = axes.titlefont.family;
+            if(axes.titlefont.size) opts.labelSize[i] = axes.titlefont.size;
         }
 
         /////// LINES ////////
-        if ('showline' in axes) opts.lineEnable[i] = axes.showline;
-        if ('linecolor' in axes) opts.lineColor[i] = str2RgbaArray(axes.linecolor);
-        if ('linewidth' in axes) opts.lineWidth[i] = axes.linewidth;
+        if('showline' in axes) opts.lineEnable[i] = axes.showline;
+        if('linecolor' in axes) opts.lineColor[i] = str2RgbaArray(axes.linecolor);
+        if('linewidth' in axes) opts.lineWidth[i] = axes.linewidth;
 
-        if ('showgrid' in axes) opts.gridEnable[i] = axes.showgrid;
-        if ('gridcolor' in axes) opts.gridColor[i] = str2RgbaArray(axes.gridcolor);
-        if ('gridwidth' in axes) opts.gridWidth[i] = axes.gridwidth;
+        if('showgrid' in axes) opts.gridEnable[i] = axes.showgrid;
+        if('gridcolor' in axes) opts.gridColor[i] = str2RgbaArray(axes.gridcolor);
+        if('gridwidth' in axes) opts.gridWidth[i] = axes.gridwidth;
 
         // Remove zeroline if axis type is log
         // otherwise the zeroline is incorrectly drawn at 1 on log axes
-        if (axes.type === 'log') opts.zeroEnable[i] = false;
-        else if ('zeroline' in axes) opts.zeroEnable[i] = axes.zeroline;
-        if ('zerolinecolor' in axes) opts.zeroLineColor[i] = str2RgbaArray(axes.zerolinecolor);
-        if ('zerolinewidth' in axes) opts.zeroLineWidth[i] = axes.zerolinewidth;
+        if(axes.type === 'log') opts.zeroEnable[i] = false;
+        else if('zeroline' in axes) opts.zeroEnable[i] = axes.zeroline;
+        if('zerolinecolor' in axes) opts.zeroLineColor[i] = str2RgbaArray(axes.zerolinecolor);
+        if('zerolinewidth' in axes) opts.zeroLineWidth[i] = axes.zerolinewidth;
 
         //////// TICKS /////////
         /// tick lines
-        if ('ticks' in axes && !!axes.ticks) opts.lineTickEnable[i] = true;
+        if('ticks' in axes && !!axes.ticks) opts.lineTickEnable[i] = true;
         else opts.lineTickEnable[i] = false;
 
-        if ('ticklen' in axes) {
+        if('ticklen' in axes) {
             opts.lineTickLength[i] = opts._defaultLineTickLength[i] = axes.ticklen;
         }
-        if ('tickcolor' in axes) opts.lineTickColor[i] = str2RgbaArray(axes.tickcolor);
-        if ('tickwidth' in axes) opts.lineTickWidth[i] = axes.tickwidth;
-        if ('tickangle' in axes) {
+        if('tickcolor' in axes) opts.lineTickColor[i] = str2RgbaArray(axes.tickcolor);
+        if('tickwidth' in axes) opts.lineTickWidth[i] = axes.tickwidth;
+        if('tickangle' in axes) {
             opts.tickAngle[i] = (axes.tickangle === 'auto') ?
                 0 :
                 Math.PI * -axes.tickangle / 180;
         }
-        //// tick labels
-        if ('showticklabels' in axes) opts.tickEnable[i] = axes.showticklabels;
-        if ('tickfont' in axes) {
-            if (axes.tickfont.color) opts.tickColor[i] = str2RgbaArray(axes.tickfont.color);
-            if (axes.tickfont.family) opts.tickFont[i] = axes.tickfont.family;
-            if (axes.tickfont.size) opts.tickSize[i] = axes.tickfont.size;
+        // tick labels
+        if('showticklabels' in axes) opts.tickEnable[i] = axes.showticklabels;
+        if('tickfont' in axes) {
+            if(axes.tickfont.color) opts.tickColor[i] = str2RgbaArray(axes.tickfont.color);
+            if(axes.tickfont.family) opts.tickFont[i] = axes.tickfont.family;
+            if(axes.tickfont.size) opts.tickSize[i] = axes.tickfont.size;
         }
 
-        if ('mirror' in axes) {
-            if (['ticks','all','allticks'].indexOf(axes.mirror) !== -1) {
+        if('mirror' in axes) {
+            if(['ticks','all','allticks'].indexOf(axes.mirror) !== -1) {
                 opts.lineTickMirror[i] = true;
                 opts.lineMirror[i] = true;
-            } else if (axes.mirror === true) {
+            } else if(axes.mirror === true) {
                 opts.lineTickMirror[i] = false;
                 opts.lineMirror[i] = true;
             } else {
@@ -136,8 +136,8 @@ proto.merge = function(sceneLayout) {
             }
         } else opts.lineMirror[i] = false;
 
-        ////// grid background
-        if ('showbackground' in axes && axes.showbackground !== false) {
+        // grid background
+        if('showbackground' in axes && axes.showbackground !== false) {
             opts.backgroundEnable[i] = true;
             opts.backgroundColor[i] = str2RgbaArray(axes.backgroundcolor);
         } else opts.backgroundEnable[i] = false;

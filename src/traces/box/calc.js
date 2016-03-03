@@ -24,7 +24,7 @@ module.exports = function calc(gd, trace) {
         posAxis, posLetter, pos, posDistinct, dPos;
 
     // Set value (val) and position (pos) keys via orientation
-    if (orientation==='h') {
+    if(orientation==='h') {
         valAxis = xa;
         valLetter = 'x';
         posAxis = ya;
@@ -49,10 +49,10 @@ module.exports = function calc(gd, trace) {
     // (or set x (y) to a constant array matching y (x))
     function getPos(gd, trace, posLetter, posAxis, val) {
         var pos0;
-        if (posLetter in trace) pos = posAxis.makeCalcdata(trace, posLetter);
+        if(posLetter in trace) pos = posAxis.makeCalcdata(trace, posLetter);
         else {
-            if (posLetter+'0' in trace) pos0 = trace[posLetter+'0'];
-            else if ('name' in trace && (
+            if(posLetter+'0' in trace) pos0 = trace[posLetter+'0'];
+            else if('name' in trace && (
                         posAxis.type==='category' ||
                         (isNumeric(trace.name) &&
                             ['linear','log'].indexOf(posAxis.type)!==-1) ||
@@ -83,7 +83,7 @@ module.exports = function calc(gd, trace) {
             i, p, n, v;
 
         // store distinct pos in cd, find bins, init. valBinned
-        for (i = 0; i < posDistinctLength; ++i) {
+        for(i = 0; i < posDistinctLength; ++i) {
             p = posDistinct[i];
             cd[i] = {pos: p};
             bins[i] = p - dPos;
@@ -92,7 +92,7 @@ module.exports = function calc(gd, trace) {
         bins.push(posDistinct[posDistinctLength-1] + dPos);
 
         // bin the values
-        for (i = 0; i < valLength; ++i) {
+        for(i = 0; i < valLength; ++i) {
             v = val[i];
             if(!isNumeric(v)) continue;
             n = Lib.findBin(pos[i], bins);
@@ -108,7 +108,7 @@ module.exports = function calc(gd, trace) {
     function calculateStats(cd, valBinned) {
         var v, l, cdi, i;
 
-        for (i = 0; i < valBinned.length; ++i) {
+        for(i = 0; i < valBinned.length; ++i) {
             v = valBinned[i].sort(Lib.sorterAsc);
             l = v.length;
             cdi = cd[i];

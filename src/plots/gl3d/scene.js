@@ -49,13 +49,13 @@ function render(scene) {
     var keys = Object.keys(scene.traces);
     var lastPicked = null;
     var selection = scene.glplot.selection;
-    for (var i = 0; i < keys.length; ++i) {
+    for(var i = 0; i < keys.length; ++i) {
         var trace = scene.traces[keys[i]];
         if(trace.handlePick(selection)) {
             lastPicked = trace;
         }
 
-        if (trace.setContourLevels) trace.setContourLevels();
+        if(trace.setContourLevels) trace.setContourLevels();
     }
 
     function formatter(axisName, val) {
@@ -162,7 +162,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     try {
         scene.glplot = createPlot(glplotOptions);
     }
-    catch (e) {
+    catch(e) {
         /*
         * createPlot will throw when webgl is not enabled in the client.
         * Lets return an instance of the module with all functions noop'd.
@@ -321,7 +321,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var fullSceneLayout = fullLayout[this.id];
     var sceneLayout = layout[this.id];
 
-    if (fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
+    if(fullSceneLayout.bgcolor) this.glplot.clearColor = str2RGBAarray(fullSceneLayout.bgcolor);
     else this.glplot.clearColor = [0, 0, 0, 0];
 
     this.glplot.snapToData = true;
@@ -340,7 +340,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.glplot.update({});
 
     // Update axes functions BEFORE updating traces
-    for (i = 0; i < 3; ++i) {
+    for(i = 0; i < 3; ++i) {
         var axis = fullSceneLayout[axisProperties[i]];
         setConvert(axis);
     }
@@ -484,9 +484,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var axisAutoScaleFactor = 4;
     var aspectRatio;
 
-    if (fullSceneLayout.aspectmode === 'auto') {
+    if(fullSceneLayout.aspectmode === 'auto') {
 
-        if (Math.max.apply(null, axesScaleRatio)/Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
+        if(Math.max.apply(null, axesScaleRatio)/Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
 
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
@@ -501,13 +501,13 @@ proto.plot = function(sceneData, fullLayout, layout) {
             aspectRatio = [1, 1, 1];
         }
 
-    } else if (fullSceneLayout.aspectmode === 'cube') {
+    } else if(fullSceneLayout.aspectmode === 'cube') {
         aspectRatio = [1, 1, 1];
 
-    } else if (fullSceneLayout.aspectmode === 'data') {
+    } else if(fullSceneLayout.aspectmode === 'data') {
         aspectRatio = axesScaleRatio;
 
-    } else if (fullSceneLayout.aspectmode === 'manual') {
+    } else if(fullSceneLayout.aspectmode === 'manual') {
         var userRatio = fullSceneLayout.aspectratio;
         aspectRatio = [userRatio.x, userRatio.y, userRatio.z];
 
@@ -534,7 +534,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var domain = fullSceneLayout.domain || null,
         size = fullLayout._size || null;
 
-    if (domain && size) {
+    if(domain && size) {
         var containerStyle = this.container.style;
         containerStyle.position = 'absolute';
         containerStyle.left = (size.l + domain.x[0] * size.w) + 'px';
@@ -572,9 +572,9 @@ proto.getCamera = function getCamera() {
     var eye = this.glplot.camera.eye;
 
     return {
-        up: {x:up[0], y:up[1], z:up[2]},
-        center: {x:center[0], y:center[1], z:center[2]},
-        eye: {x:eye[0], y:eye[1], z:eye[2]}
+        up: {x: up[0], y: up[1], z: up[2]},
+        center: {x: center[0], y: center[1], z: center[2]},
+        eye: {x: eye[0], y: eye[1], z: eye[2]}
     };
 };
 
@@ -646,7 +646,7 @@ proto.updateFx = function(dragmode, hovermode) {
 };
 
 proto.toImage = function(format) {
-    if (!format) format = 'png';
+    if(!format) format = 'png';
 
     if(this.staticMode) this.container.appendChild(STATIC_CANVAS);
 

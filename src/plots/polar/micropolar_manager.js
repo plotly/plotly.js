@@ -17,11 +17,11 @@ var manager = module.exports = {};
 
 var extendDeepAll = Plotly.Lib.extendDeepAll;
 
-manager.framework = function(_gd){
+manager.framework = function(_gd) {
     var config, previousConfigClone, plot, convertedInput, container;
     var undoManager = new UndoManager();
 
-    function exports(_inputConfig, _container){
+    function exports(_inputConfig, _container) {
         if(_container) container = _container;
         d3.select(d3.select(container).node().parentNode).selectAll('.svg-container>*:not(.chart-root)').remove();
 
@@ -38,22 +38,22 @@ manager.framework = function(_gd){
         return config;
     }
     exports.isPolar = true;
-    exports.svg = function(){ return plot.svg(); };
-    exports.getConfig = function(){ return config; };
-    exports.getLiveConfig = function(){
+    exports.svg = function() { return plot.svg(); };
+    exports.getConfig = function() { return config; };
+    exports.getLiveConfig = function() {
         return Plotly.micropolar.adapter.plotly().convert(plot.getLiveConfig(), true);
     };
-    exports.getLiveScales = function(){ return {t: plot.angularScale(), r: plot.radialScale()}; };
-    exports.setUndoPoint = function(){
+    exports.getLiveScales = function() { return {t: plot.angularScale(), r: plot.radialScale()}; };
+    exports.setUndoPoint = function() {
         var that = this;
         var configClone = Plotly.micropolar.util.cloneJson(config);
-        (function(_configClone, _previousConfigClone){
+        (function(_configClone, _previousConfigClone) {
             undoManager.add({
-                undo: function(){
+                undo: function() {
                     //console.log('undo', _previousConfigClone);
                     if(_previousConfigClone) that(_previousConfigClone);
                 },
-                redo: function(){
+                redo: function() {
                     //console.log('redo', _configClone);
                     that(_configClone);
                 }
@@ -61,8 +61,8 @@ manager.framework = function(_gd){
         })(configClone, previousConfigClone);
         previousConfigClone = Plotly.micropolar.util.cloneJson(configClone);
     };
-    exports.undo = function(){ undoManager.undo(); };
-    exports.redo = function(){ undoManager.redo(); };
+    exports.undo = function() { undoManager.undo(); };
+    exports.redo = function() { undoManager.redo(); };
     return exports;
 };
 

@@ -26,17 +26,17 @@ module.exports = function style(gd) {
     // for gapless (either stacked or neighboring grouped) bars use
     // crispEdges to turn off antialiasing so an artificial gap
     // isn't introduced.
-    .each(function(d){
+    .each(function(d) {
         if((fullLayout.barmode==='stack' && barcount>1) ||
                 (fullLayout.bargap===0 &&
                  fullLayout.bargroupgap===0 &&
-                 !d[0].trace.marker.line.width)){
+                 !d[0].trace.marker.line.width)) {
             d3.select(this).attr('shape-rendering','crispEdges');
         }
     });
 
     // then style the individual bars
-    s.selectAll('g.points').each(function(d){
+    s.selectAll('g.points').each(function(d) {
         var trace = d[0].trace,
             marker = trace.marker,
             markerLine = marker.line,

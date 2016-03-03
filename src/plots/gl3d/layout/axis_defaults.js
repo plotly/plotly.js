@@ -24,7 +24,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
         return Lib.coerce(containerIn, containerOut, layoutAttributes, attr, dflt);
     }
 
-    for (var j = 0; j < axesNames.length; j++) {
+    for(var j = 0; j < axesNames.length; j++) {
         var axName = axesNames[j];
         containerIn = layoutIn[axName] || {};
 
@@ -48,12 +48,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
 
         containerOut.setScale = noop;
 
-        if (coerce('showspikes')) {
+        if(coerce('showspikes')) {
             coerce('spikesides');
             coerce('spikethickness');
             coerce('spikecolor');
         }
-        if (coerce('showbackground')) coerce('backgroundcolor');
+        if(coerce('showbackground')) coerce('backgroundcolor');
 
         coerce('showaxeslabels');
     }
