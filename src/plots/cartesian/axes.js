@@ -13,6 +13,7 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
+var Plots = require('../../plots/plots');
 var Titles = require('../../components/titles');
 
 var axes = module.exports = {};
@@ -1492,6 +1493,19 @@ axes.doTicks = function(td, axid, skipTitle) {
                             d.font, d.fontSize, d.fontColor)
                         .text(d.text)
                         .call(Plotly.util.convertToTspans);
+
+                    var bb = Plotly.Drawing.bBox(thisLabel.node());
+                    var horizontalShift = ax.l2p(d.x)/fullLayout.width/2;
+                    var verticalShift = (bb.height + bb.bottom + bb.top) / fullLayout.height;
+                    Plots.autoMargin(td,'axis'+axid,{
+                        x: -horizontalShift,
+                        y: -verticalShift,
+                        l: 0,
+                        r: 0,
+                        b: 0,
+                        t: 0
+                    });
+
                     newPromise = td._promises[newPromise];
                     if(newPromise) {
                         // if we have an async label, we'll deal with that
