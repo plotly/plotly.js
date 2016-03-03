@@ -50,7 +50,8 @@ function runAll() {
         var fileNames = [
             '0.json',
             'geo_first.json',
-            'gl3d_z-range.json'
+            'gl3d_z-range.json',
+            'text_export.json'
         ];
 
         t.plan(fileNames.length * FORMATS.length);

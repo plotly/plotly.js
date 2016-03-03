@@ -104,6 +104,11 @@ module.exports = function toSVG(gd, format) {
 
     svg.selectAll('text')
         .attr({'data-unformatted': null})
+        .style({
+            '-webkit-user-select': null,
+            '-moz-user-select': null,
+            '-ms-user-select': null
+        })
         .each(function() {
             // hidden text is pre-formatting mathjax, the browser ignores it but it can still confuse batik
             var txt = d3.select(this);
