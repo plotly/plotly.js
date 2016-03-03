@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.6.1
+* plotly.js v1.6.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -57537,7 +57537,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.6.1';
+exports.version = '1.6.2';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -67748,7 +67748,7 @@ function createHoverText(hoverData, opts) {
         else if(d.yLabel===undefined) text = d.xLabel;
         else text = '('+d.xLabel+', '+d.yLabel+')';
 
-        if(d.text) text += (text ? '<br>' : '') + d.text;
+        if(d.text && !Array.isArray(d.text)) text += (text ? '<br>' : '') + d.text;
 
         // if 'text' is empty at this point,
         // put 'name' in main label and don't show secondary label
@@ -78910,6 +78910,11 @@ module.exports = function toSVG(gd, format) {
 
     svg.selectAll('text')
         .attr({'data-unformatted': null})
+        .style({
+            '-webkit-user-select': null,
+            '-moz-user-select': null,
+            '-ms-user-select': null
+        })
         .each(function() {
             // hidden text is pre-formatting mathjax, the browser ignores it but it can still confuse batik
             var txt = d3.select(this);
