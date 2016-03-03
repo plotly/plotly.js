@@ -933,7 +933,7 @@ function createHoverText(hoverData, opts) {
         else if(d.yLabel===undefined) text = d.xLabel;
         else text = '('+d.xLabel+', '+d.yLabel+')';
 
-        if(d.text) text += (text ? '<br>' : '') + d.text;
+        if(d.text && !Array.isArray(d.text)) text += (text ? '<br>' : '') + d.text;
 
         // if 'text' is empty at this point,
         // put 'name' in main label and don't show secondary label
