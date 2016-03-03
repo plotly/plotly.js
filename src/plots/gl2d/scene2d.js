@@ -404,7 +404,7 @@ proto.plot = function(fullData, fullLayout) {
 };
 
 proto.draw = function() {
-    if(this.stopped) return;
+    if(this.stopped || !document.body.contains(this.canvas)) return;
     requestAnimationFrame(this.redraw);
 
     var glplot = this.glplot,
