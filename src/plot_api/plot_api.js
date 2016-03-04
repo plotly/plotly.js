@@ -2418,7 +2418,11 @@ Plotly.purge = function purge(gd) {
     // remove plot container
     if(fullLayout._container) fullLayout._container.remove();
 
-    // other stuff to delete ???
+    delete gd._context;
+    delete gd._replotPending;
+    delete gd._mouseDownTime;
+    delete gd._hmpixcount;
+    delete gd._hmlumcount;
 
     return gd;
 };
