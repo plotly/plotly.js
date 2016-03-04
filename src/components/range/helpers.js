@@ -9,6 +9,8 @@ exports.setAttributes = function setAttributes(el, attributes) {
 
 exports.appendChildren = function appendChildren(el, children) {
     for(var i = 0; i < children.length; i++) {
-        el.appendChild(children[i]);
+        if(children[i]) {
+            el.appendChild(children[i]);
+        }
     }
 };
