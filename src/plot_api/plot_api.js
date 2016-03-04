@@ -2394,6 +2394,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
     });
 };
 
+/**
+ * Purge a graph container div back to its initial pre-Plotly.plot state
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ */
 Plotly.purge = function purge(gd) {
     gd = getGraphDiv(gd);
 
