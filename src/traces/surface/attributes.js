@@ -95,6 +95,13 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the text elements associated with each z value.'
     },
+    intensity: {
+        valType: 'data_array',
+        description: [
+            'Sets the surface intensity values,',
+            'used for setting a color scale independent of z'
+        ].join(' ')
+    },
     zauto: colorscaleAttrs.zauto,
     zmin: colorscaleAttrs.zmin,
     zmax: colorscaleAttrs.zmax,

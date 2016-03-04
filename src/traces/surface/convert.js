@@ -20,7 +20,6 @@ var str2RgbaArray = require('../../lib/str2rgbarray');
 
 var MIN_RESOLUTION = 128;
 
-
 function SurfaceTrace(scene, surface, uid) {
     this.scene = scene;
     this.uid = uid;
@@ -136,7 +135,7 @@ function refine(coords) {
             Math.floor((coords[0].shape[1]) * scaleF+1)|0 ];
         var nsize = nshape[0] * nshape[1];
 
-        for(var i = 0; i < 3; ++i) {
+        for(var i = 0; i < coords.length; ++i) {
             var padImg = padField(coords[i]);
             var scaledImg = ndarray(new Float32Array(nsize), nshape);
             homography(scaledImg, padImg, [scaleF, 0, 0,
@@ -230,9 +229,6 @@ proto.update = function(data) {
         });
     }
 
-    //Refine if necessary
-    this.dataScale = refine(coords);
-
     var params = {
         colormap: colormap,
         levels: [[], [], []],
@@ -249,10 +245,30 @@ proto.update = function(data) {
         dynamicColor: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
         dynamicWidth: [1, 1, 1],
         dynamicTint: [1, 1, 1],
-        opacity: 1,
-        colorBounds: [data.zmin * scaleFactor[2], data.zmax * scaleFactor[2]]
+        opacity: 1
+        // TODO: Need to think about how to calculate this
+        /*
+        intensityBounds: [
+          data.zmin * scaleFactor[2],
+          data.zmax * scaleFactor[2]]
+        */
     };
 
+    //Refine if necessary
+    if('intensity' in data) {
+        var intensity = ndarray(
+          new Float32Array(xlen * ylen), [xlen, ylen]);
+        fill(intensity, function(row, col) {
+            return data.intensity[col][row];
+        });
+        coords.push(intensity);
+    }
+
+    this.dataScale = refine(coords);
+
+    if('intensity' in data) {
+        params.intensity = coords.pop();
+    }
 
     if('opacity' in data) {
         if(data.opacity < 1) {
@@ -300,6 +316,8 @@ proto.update = function(data) {
     }
 
     params.coords = coords;
+
+
     surface.update(params);
 
     surface.highlightEnable = highlightEnable;

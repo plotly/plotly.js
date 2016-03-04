@@ -58,6 +58,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hidesurface');
     coerce('opacity');
 
+    coerce('intensity');
+
     coerce('colorscale');
 
     var dims = ['x', 'y', 'z'];
