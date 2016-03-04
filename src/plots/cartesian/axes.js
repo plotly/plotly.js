@@ -1382,7 +1382,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     // positioning arguments for x vs y axes
     if(axletter === 'x') {
         sides = ['bottom', 'top'];
-        transfn = function(d){
+        transfn = function(d) {
             return 'translate(' + ax.l2p(d.x) + ',0)';
         };
         // dumb templating with string concat
@@ -1392,7 +1392,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     }
     else if(axletter === 'y') {
         sides = ['left', 'right'];
-        transfn = function(d){
+        transfn = function(d) {
             return 'translate(0,' + ax.l2p(d.x) + ')';
         };
         tickprefix = 'M';
@@ -1407,7 +1407,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
     // then we flip if outside XOR y axis
         ticksign = [-1, 1, axside === sides[1] ? 1 : -1];
     if((ax.ticks !== 'inside') === (axletter === 'x')) {
-        ticksign = ticksign.map(function(v){ return -v; });
+        ticksign = ticksign.map(function(v) { return -v; });
     }
 
     // remove zero lines, grid lines, and inside ticks if they're within
