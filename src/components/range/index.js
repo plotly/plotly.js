@@ -26,8 +26,8 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
 
     var sliderBg = document.createElementNS(svgNS, 'rect');
     Helpers.setAttributes(sliderBg, {
-        'fill': 'transparent',
-        'stroke': 'black',
+        'fill': gd._fullLayout.plot_bgcolor,
+        'stroke': 'transparent',
         'height': height,
         'width': width,
         'shape-rendering': 'crispEdges'
@@ -52,7 +52,7 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
     var grabberMin = document.createElementNS(svgNS, 'g');
     var grabAreaMin = document.createElementNS(svgNS, 'rect');
     var handleMin = document.createElementNS(svgNS, 'rect');
-    Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (minStart - 2) + ')' });
+    Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (minStart - 3) + ')' });
     Helpers.setAttributes(grabAreaMin, {
         'width': 10,
         'height': height,
@@ -173,17 +173,17 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
             'width': width - max
         });
 
-        Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (min - 2) + ')' });
+        Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (min - 3) + ')' });
         Helpers.setAttributes(grabberMax, { 'transform': 'translate(' + max + ')' });
 
         // call to set range on plot here
     }
 
-    var rangePlot = makeScatterLines(gd, width, height);
+    var rangePlots = rangePlot(gd, width, height);
 
     Helpers.appendChildren(slider, [
-        rangePlot,
         sliderBg,
+        rangePlots,
         maskMin,
         maskMax,
         slideBox,
