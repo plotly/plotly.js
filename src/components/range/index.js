@@ -3,7 +3,7 @@
 var Lib = require('../../lib');
 var Helpers = require('./helpers');
 
-var makeScatterLines = require('./scatter');
+var rangePlot = require('./range_plot');
 
 var svgNS = 'http://www.w3.org/2000/svg';
 
