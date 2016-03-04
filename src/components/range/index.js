@@ -49,19 +49,21 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
         'fill': 'rgba(0,0,0,0.25)'
     });
 
+    var handleWidth = 2;
+
     var grabberMin = document.createElementNS(svgNS, 'g');
     var grabAreaMin = document.createElementNS(svgNS, 'rect');
     var handleMin = document.createElementNS(svgNS, 'rect');
-    Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (minStart - 3) + ')' });
+    Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (minStart - handleWidth - 1) + ')' });
     Helpers.setAttributes(grabAreaMin, {
         'width': 10,
         'height': height,
-        'x': -4,
+        'x': -3,
         'fill': 'transparent',
         'cursor': 'col-resize'
     });
     Helpers.setAttributes(handleMin, {
-        'width': 2,
+        'width': handleWidth,
         'height': height / 2,
         'y': height / 4,
         'rx': 1,
@@ -83,7 +85,7 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
         'cursor': 'col-resize'
     });
     Helpers.setAttributes(handleMax, {
-        'width': 2,
+        'width': handleWidth,
         'height': height / 2,
         'y': height / 4,
         'rx': 1,
@@ -173,7 +175,7 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
             'width': width - max
         });
 
-        Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (min - 3) + ')' });
+        Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (min - handleWidth - 1) + ')' });
         Helpers.setAttributes(grabberMax, { 'transform': 'translate(' + max + ')' });
 
         // call to set range on plot here
