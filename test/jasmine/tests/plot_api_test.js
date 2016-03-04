@@ -10,6 +10,7 @@ var pkg = require('../../../package.json');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
+
 describe('Test plot api', function() {
     'use strict';
 
@@ -637,6 +638,56 @@ describe('Test plot api', function() {
 
                 done();
             });
+        });
+    });
+
+    describe('cleanData', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should rename \'YIGnBu\' colorscales YlGnBu (2dMap case)', function() {
+            var data = [{
+                type: 'heatmap',
+                colorscale: 'YIGnBu'
+            }];
+
+            Plotly.plot(gd, data);
+            expect(gd.data[0].colorscale).toBe('YlGnBu');
+        });
+
+        it('should rename \'YIGnBu\' colorscales YlGnBu (markerColorscale case)', function() {
+            var data = [{
+                type: 'scattergeo',
+                marker: { colorscale: 'YIGnBu' }
+            }];
+
+            Plotly.plot(gd, data);
+            expect(gd.data[0].marker.colorscale).toBe('YlGnBu');
+        });
+
+        it('should rename \'YIOrRd\' colorscales YlOrRd (2dMap case)', function() {
+            var data = [{
+                type: 'contour',
+                colorscale: 'YIOrRd'
+            }];
+
+            Plotly.plot(gd, data);
+            expect(gd.data[0].colorscale).toBe('YlOrRd');
+        });
+
+        it('should rename \'YIOrRd\' colorscales YlOrRd (markerColorscale case)', function() {
+            var data = [{
+                type: 'scattergeo',
+                marker: { colorscale: 'YIOrRd' }
+            }];
+
+            Plotly.plot(gd, data);
+            expect(gd.data[0].marker.colorscale).toBe('YlOrRd');
         });
     });
 });

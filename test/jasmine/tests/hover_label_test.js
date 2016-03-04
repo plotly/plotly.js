@@ -257,7 +257,7 @@ describe('hover info', function() {
             };
 
         beforeEach(function() {
-            this. gd = createGraphDiv();
+            this.gd = createGraphDiv();
         });
 
         it('should display the correct format when ticklabels true', function() {
@@ -279,6 +279,51 @@ describe('hover info', function() {
 
             expect(hovers.size()).toEqual(1);
             expect(hovers.select('text')[0][0].textContent).toEqual('0.23');
+        });
+    });
+
+    describe('textmode', function() {
+
+        var data = [{
+                x: [1,2,3,4],
+                y: [2,3,4,5],
+                mode: 'text',
+                hoverinfo: 'text',
+                text: ['test', null, 42, undefined]
+            }],
+            layout = {
+                width: 600,
+                height: 400
+            };
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), data, layout).then(done);
+        });
+
+        it('should show text labels', function() {
+            mouseEvent('mousemove', 115, 310);
+            var hovers = d3.selectAll('g.hovertext');
+            expect(hovers.size()).toEqual(1);
+            expect(hovers.select('text')[0][0].textContent).toEqual('test');
+        });
+
+        it('should show number labels', function() {
+            mouseEvent('mousemove', 370, 180);
+            var hovers = d3.selectAll('g.hovertext');
+            expect(hovers.size()).toEqual(1);
+            expect(hovers.select('text')[0][0].textContent).toEqual('42');
+        });
+
+        it('should not show null text labels', function() {
+            mouseEvent('mousemove', 236, 246);
+            var hovers = d3.selectAll('g.hovertext');
+            expect(hovers.size()).toEqual(0);
+        });
+
+        it('should not show undefined text labels', function() {
+            mouseEvent('mousemove', 500, 115);
+            var hovers = d3.selectAll('g.hovertext');
+            expect(hovers.size()).toEqual(0);
         });
     });
 });

@@ -670,6 +670,7 @@ function cleanData(data, existingData) {
 
     for(var tracei = 0; tracei < data.length; tracei++) {
         var trace = data[tracei];
+
         // assign uids to each trace and detect collisions.
         if(!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
             var newUid, i;
@@ -748,6 +749,17 @@ function cleanData(data, existingData) {
             else if(trace.textposition) {
                 trace.textposition = cleanTextPosition(trace.textposition);
             }
+        }
+
+        // fix typo in colorscale definition
+        if(Plots.traceIs(trace, '2dMap')) {
+            if(trace.colorscale === 'YIGnBu') trace.colorscale = 'YlGnBu';
+            if(trace.colorscale === 'YIOrRd') trace.colorscale = 'YlOrRd';
+        }
+        if(Plots.traceIs(trace, 'markerColorscale') && trace.marker) {
+            var cont = trace.marker;
+            if(cont.colorscale === 'YIGnBu') cont.colorscale = 'YlGnBu';
+            if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
         }
 
         // prune empty containers made before the new nestedProperty

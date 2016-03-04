@@ -479,7 +479,9 @@ legend.draw = function(td) {
         .attr({
             'class': 'scrollbar',
             'rx': 20,
-            'ry': 2
+            'ry': 2,
+            'width': 0,
+            'height': 0
         })
         .call(Color.fill, '#808BA4');
 
@@ -624,7 +626,7 @@ legend.draw = function(td) {
             window.addEventListener('mouseup', mUp);
         });
 
-            // Move scrollbar to starting position on the first render
+        // Move scrollbar to starting position on the first render
         scrollBar.call(
             Drawing.setRect,
             opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),

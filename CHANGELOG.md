@@ -9,10 +9,27 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+
+## [1.6.2] -- 2016-03-03
+
+### Fixed
+- SVG overflow property is now properly set for IE11 [#305, #306]
+- Hover labels associated with `text` arrays with falsy values are properly
+  skipped over [#310]
+- Snapshot routines now strip browser-only user-select style attributes [#311]
+
+
+## [1.6.1] -- 2016-03-01
+
+### Fixed
+- Legend scroll bars are no longer invalid SVG elements (bug introduced in 1.6.0) [#304]
+- Colorscale YlGnBu and YlOrRd are now properly identified [#295]
+
+
 ## [1.6.0] -- 2016-02-29
 
 ### Added
-- SVG cartesian, 3D geographic maps and pie chart can now coexist on the same
+- SVG cartesian, 3D, geographic maps and pie charts can now coexist on the same
   graph [#246, #258, #289]
 - Legends with long item lists are now scrollable (instead of being cropped)
   [#243]
