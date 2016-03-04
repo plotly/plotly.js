@@ -2412,6 +2412,9 @@ Plotly.purge = function purge(gd) {
     // purge properties
     Plots.purge(gd);
 
+    // purge event emitter methods
+    Events.purge(gd);
+
     // remove plot container
     if(fullLayout._container) fullLayout._container.remove();
 
