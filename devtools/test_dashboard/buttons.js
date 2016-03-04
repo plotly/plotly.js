@@ -31,6 +31,9 @@ function plotButtons(plots, figDir) {
             image.innerHTML = '';
             image.appendChild(myImage);
 
+            var currentGraphDiv = Tabs.getGraph();
+            if(currentGraphDiv) Plotly.purge(currentGraphDiv);
+
             gd = document.createElement('div');
             gd.id = 'graph';
 
