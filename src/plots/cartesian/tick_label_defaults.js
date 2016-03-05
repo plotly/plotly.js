@@ -47,7 +47,12 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
         }
     }
 
-    coerce('tickpadding');
+    //Only use tickpadding if the user doesn't specify nticks
+    if(containerOut.nticks === layoutAttributes.nticks.dflt) {
+        coerce('tickpadding');
+    } else {
+        containerOut.tickpadding = layoutAttributes.tickpadding.dflt;
+    }
 
     if(axType !== 'category' && !options.noHover) coerce('hoverformat');
 };

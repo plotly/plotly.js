@@ -416,6 +416,7 @@ describe('Test axes', function() {
             expect(yaxis.showticklabels).toBe(true);
             expect(yaxis.tickfont).toEqual({ family: '"Open Sans", verdana, arial, sans-serif', size: 12, color: '#444' });
             expect(yaxis.tickangle).toBe('auto');
+            expect(yaxis.tickpadding).toBe(0);
         });
 
         it('should use valid inputs', function() {
@@ -426,7 +427,9 @@ describe('Test axes', function() {
                     tickcolor: '#F00',
                     showticklabels: true,
                     tickfont: { family: 'Garamond', size: 72, color: '#0FF' },
-                    tickangle: -20
+                    tickangle: -20,
+                    tickmode:'auto',
+                    tickpadding: 15
                 }
             };
 
@@ -440,6 +443,7 @@ describe('Test axes', function() {
             expect(yaxis.showticklabels).toBe(true);
             expect(yaxis.tickfont).toEqual({ family: 'Garamond', size: 72, color: '#0FF' });
             expect(yaxis.tickangle).toBe(-20);
+            expect(yaxis.tickpadding).toBe(15);
         });
 
         it('should conditionally coerce based on showticklabels', function() {
@@ -454,6 +458,21 @@ describe('Test axes', function() {
 
             var yaxis = gd._fullLayout.yaxis;
             expect(yaxis.tickangle).toBeUndefined();
+        });
+        
+        it('should conditionally coerce tickpadding if nticks is set', function() {
+            var layout = {
+                yaxis: {
+                    tickmode: 'auto',
+                    nticks: 5,
+                    tickpadding: 20
+                }
+            };
+
+            PlotlyInternal.plot(gd, data, layout);
+
+            var yaxis = gd._fullLayout.yaxis;
+            expect(yaxis.tickpadding).toBe(0);
         });
     });
 
