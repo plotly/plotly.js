@@ -428,7 +428,7 @@ describe('Test axes', function() {
                     showticklabels: true,
                     tickfont: { family: 'Garamond', size: 72, color: '#0FF' },
                     tickangle: -20,
-                    tickmode:'auto',
+                    tickmode: 'auto',
                     tickpadding: 15
                 }
             };
@@ -459,7 +459,7 @@ describe('Test axes', function() {
             var yaxis = gd._fullLayout.yaxis;
             expect(yaxis.tickangle).toBeUndefined();
         });
-        
+
         it('should conditionally coerce tickpadding if nticks is set', function() {
             var layout = {
                 yaxis: {
