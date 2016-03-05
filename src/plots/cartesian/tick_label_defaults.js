@@ -47,8 +47,8 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
         }
     }
 
-    //Only use tickpadding if the user doesn't specify nticks
-    if(containerOut.nticks === layoutAttributes.nticks.dflt) {
+    //Only use tickpadding if tickmode is 'auto' and the user doesn't specify nticks
+    if(containerOut.tickmode === 'auto' && containerOut.nticks === layoutAttributes.nticks.dflt) {
         coerce('tickpadding');
     } else {
         containerOut.tickpadding = layoutAttributes.tickpadding.dflt;
