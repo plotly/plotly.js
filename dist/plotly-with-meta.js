@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.6.2
+* plotly.js v1.6.3
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -57537,7 +57537,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.6.2';
+exports.version = '1.6.3';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -85077,13 +85077,13 @@ proto.update = function(data) {
         config.vertexIntensity = data.intensity;
         config.colormap = parseColorScale(data.colorscale);
     }
-    else if(data.vertexColor) {
-        this.color = data.vertexColor[0];
-        config.vertexColors = parseColorArray(data.vertexColor);
+    else if(data.vertexcolor) {
+        this.color = data.vertexcolors[0];
+        config.vertexColors = parseColorArray(data.vertexcolor);
     }
-    else if(data.faceColor) {
-        this.color = data.faceColor[0];
-        config.cellColors = parseColorArray(data.faceColor);
+    else if(data.facecolor) {
+        this.color = data.facecolor[0];
+        config.cellColors = parseColorArray(data.facecolor);
     }
     else {
         this.color = data.color;
@@ -85185,8 +85185,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     else {
         traceOut.showscale = false;
 
-        if('vertexColor' in traceIn) coerce('vertexColor');
-        else if('faceColor' in traceIn) coerce('faceColor');
+        if('vertexcolor' in traceIn) coerce('vertexcolor');
+        else if('facecolor' in traceIn) coerce('facecolor');
         else coerce('color', defaultColor);
     }
 
