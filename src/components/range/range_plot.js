@@ -37,6 +37,7 @@ module.exports = function rangePlot(gd, w, h) {
     rangePlot.appendChild(clip);
 
 
+    // for now, only scatter traces are supported
     var allowedTypes = ['scatter', 'scattergl'];
 
     for(var i = 0; i < traces.length; i++) {
@@ -60,58 +61,64 @@ module.exports = function rangePlot(gd, w, h) {
         }
 
 
-        // create the line
-        var line = document.createElementNS(svgNS, 'polyline'),
-            linePoints = pointPairs.map(function(p) {
-                return p[0] + ',' + p[1];
-            }).join(' ');
-
-        Helpers.setAttributes(line, {
-            'points': linePoints,
-            'fill': 'none',
-            'stroke': trace.line ? trace.line.color : 'transparent',
-            'opacity': 1
-        });
-
-        Helpers.appendChildren(rangePlot, [line]);
-
-
-        // create points if there's markers
-        if(trace.marker) {
-            var points = pointPairs.map(function(p, i) {
-                var point = document.createElementNS(svgNS, 'g'),
-                    symbol = document.createElementNS(svgNS, 'path'),
-                    size;
-
-                if(Array.isArray(trace.marker.size)) {
-                    console.log('hello');
-                    size = typeof trace.marker.size[i] === 'number' ?
-                        Math.max(trace.marker.size[i] / (trace.marker.sizeref || 1) / 15, 0) :
-                        0;
-                } else {
-                    size = Math.max(trace.marker.size / 15, 2);
-                }
-
-                Helpers.setAttributes(symbol, {
-                    'd': Symbols[trace.marker.symbol].f(size),
-                    'fill': trace.marker.color,
-                    'stroke': trace.marker.line.color,
-                    'stroke-width': trace.marker.line.width,
-                    'opacity': trace.marker.opacity
-                });
-
-                Helpers.setAttributes(point, {
-                    'transform': 'translate(' + p[0] + ',' + p[1] + ')'
-                });
-
-                point.appendChild(symbol);
-
-                return point;
-            });
-
-            Helpers.appendChildren(rangePlot, points);
-        }
+        // more trace type range plots can be added here
+        makeScatter(rangePlot, trace, pointPairs);
     }
 
     return rangePlot;
 };
+
+
+function makeScatter(rangePlot, trace, pointPairs) {
+    // create the line
+    var line = document.createElementNS(svgNS, 'polyline'),
+        linePoints = pointPairs.map(function(p) {
+            return p[0] + ',' + p[1];
+        }).join(' ');
+
+    Helpers.setAttributes(line, {
+        'points': linePoints,
+        'fill': 'none',
+        'stroke': trace.line ? trace.line.color : 'transparent',
+        'opacity': 1
+    });
+
+    Helpers.appendChildren(rangePlot, [line]);
+
+
+    // create points if there's markers
+    if(trace.marker) {
+        var points = pointPairs.map(function(p, i) {
+            var point = document.createElementNS(svgNS, 'g'),
+                symbol = document.createElementNS(svgNS, 'path'),
+                size;
+
+            if(Array.isArray(trace.marker.size)) {
+                console.log('hello');
+                size = typeof trace.marker.size[i] === 'number' ?
+                    Math.max(trace.marker.size[i] / (trace.marker.sizeref || 1) / 15, 0) :
+                    0;
+            } else {
+                size = Math.max(trace.marker.size / 15, 2);
+            }
+
+            Helpers.setAttributes(symbol, {
+                'd': Symbols[trace.marker.symbol].f(size),
+                'fill': trace.marker.color,
+                'stroke': trace.marker.line.color,
+                'stroke-width': trace.marker.line.width,
+                'opacity': trace.marker.opacity
+            });
+
+            Helpers.setAttributes(point, {
+                'transform': 'translate(' + p[0] + ',' + p[1] + ')'
+            });
+
+            point.appendChild(symbol);
+
+            return point;
+        });
+
+        Helpers.appendChildren(rangePlot, points);
+    }
+}
