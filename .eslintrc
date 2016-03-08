@@ -9,6 +9,7 @@
   "rules": {
     "no-trailing-spaces": [2],
     "no-multiple-empty-lines": [2, {"max": 2, "maxEOF": 1}],
+    "eol-last": [2],
     "linebreak-style": [2, "unix"],
     "indent": [2, 4, {"SwitchCase": 1}],
     "max-len": [0, 80],
