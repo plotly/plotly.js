@@ -78,15 +78,26 @@ module.exports = function rangePlot(gd, w, h) {
 
         // create points if there's markers
         if(trace.marker) {
-            var points = pointPairs.map(function(p) {
+            var points = pointPairs.map(function(p, i) {
                 var point = document.createElementNS(svgNS, 'g'),
-                    symbol = document.createElementNS(svgNS, 'path');
+                    symbol = document.createElementNS(svgNS, 'path'),
+                    size;
+
+                if(Array.isArray(trace.marker.size)) {
+                    console.log('hello');
+                    size = typeof trace.marker.size[i] === 'number' ?
+                        Math.max(trace.marker.size[i] / (trace.marker.sizeref || 1) / 15, 0) :
+                        0;
+                } else {
+                    size = Math.max(trace.marker.size / 15, 2);
+                }
 
                 Helpers.setAttributes(symbol, {
-                    'd': Symbols[trace.marker.symbol].f(2),
+                    'd': Symbols[trace.marker.symbol].f(size),
                     'fill': trace.marker.color,
                     'stroke': trace.marker.line.color,
-                    'stroke-width': trace.marker.line.width
+                    'stroke-width': trace.marker.line.width,
+                    'opacity': trace.marker.opacity
                 });
 
                 Helpers.setAttributes(point, {
