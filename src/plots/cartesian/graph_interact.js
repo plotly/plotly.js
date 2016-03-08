@@ -313,9 +313,14 @@ function hover(gd, evt, subplot) {
 
     var fullLayout = gd._fullLayout,
         plotinfo = fullLayout._plots[subplot],
-        // list of all overlaid subplots to look at
-        subplots = [subplot].concat(plotinfo.overlays
-            .map(function(pi) { return pi.id; })),
+
+        //If the user passed in an array of subplots, use those instead of finding overlayed plots
+        subplots = Array.isArray(subplot) ?
+            subplot :
+            // list of all overlaid subplots to look at
+            [subplot].concat(plotinfo.overlays
+                .map(function(pi) { return pi.id; })),
+
         xaArray = subplots.map(function(spId) {
             return Plotly.Axes.getFromId(gd, spId, 'x');
         }),
@@ -533,7 +538,7 @@ function hover(gd, evt, subplot) {
     };
     var hoverLabels = createHoverText(hoverData, labelOpts);
 
-    hoverAvoidOverlaps(hoverData, rotateLabels ? xaArray[0] : yaArray[0]);
+    hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya');
 
     alignHoverText(hoverLabels, rotateLabels);
 
@@ -872,7 +877,7 @@ function createHoverText(hoverData, opts) {
     // first create the objects
     var hoverLabels = container.selectAll('g.hovertext')
         .data(hoverData,function(d) {
-            return [d.trace.index,d.index,d.x0,d.y0,d.name,d.attr||''].join(',');
+            return [d.trace.index,d.index,d.x0,d.y0,d.name,d.attr,d.xa,d.ya ||''].join(',');
         });
     hoverLabels.enter().append('g')
         .classed('hovertext',true)
@@ -978,8 +983,8 @@ function createHoverText(hoverData, opts) {
                 stroke: contrastColor
             });
         var tbb = tx.node().getBoundingClientRect(),
-            htx = xa._offset+(d.x0+d.x1)/2,
-            hty = ya._offset+(d.y0+d.y1)/2,
+            htx = d.xa._offset+(d.x0+d.x1)/2,
+            hty = d.ya._offset+(d.y0+d.y1)/2,
             dx = Math.abs(d.x1-d.x0),
             dy = Math.abs(d.y1-d.y0),
             txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width,
@@ -1042,18 +1047,19 @@ function createHoverText(hoverData, opts) {
 // information then.
 function hoverAvoidOverlaps(hoverData, ax) {
     var nummoves = 0,
-        pmin = ax._offset,
-        pmax = ax._offset+ax._length,
 
         // make groups of touching points
         pointgroups = hoverData
             .map(function(d,i) {
+                var axis = d[ax];
                 return [{
                     i: i,
                     dp: 0,
                     pos: d.pos,
                     posref: d.posref,
-                    size: d.by*(ax._id.charAt(0)==='x' ? YFACTOR : 1)/2
+                    size: d.by*(axis._id.charAt(0)==='x' ? YFACTOR : 1)/2,
+                    pmin: axis._offset,
+                    pmax: axis._offset+axis._length
                 }];
             })
             .sort(function(a,b) { return a[0].posref-b[0].posref; }),
@@ -1069,10 +1075,10 @@ function hoverAvoidOverlaps(hoverData, ax) {
             maxPt = grp[grp.length-1];
 
         // overlap with the top - positive vals are overlaps
-        topOverlap = pmin-minPt.pos-minPt.dp+minPt.size;
+        topOverlap = minPt.pmin-minPt.pos-minPt.dp+minPt.size;
 
         // overlap with the bottom - positive vals are overlaps
-        bottomOverlap = maxPt.pos+maxPt.dp+maxPt.size-pmax;
+        bottomOverlap = maxPt.pos+maxPt.dp+maxPt.size-minPt.pmax;
 
         // check for min overlap first, so that we always
         // see the largest labels
@@ -1096,7 +1102,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
         var deleteCount = 0;
         for(i=0; i<grp.length; i++) {
             pti = grp[i];
-            if(pti.pos+pti.dp+pti.size>pmax) deleteCount++;
+            if(pti.pos+pti.dp+pti.size>minPt.pmax) deleteCount++;
         }
 
         // start by deleting points whose data is off screen
@@ -1106,7 +1112,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
 
             // pos has already been constrained to [pmin,pmax]
             // so look for points close to that to delete
-            if(pti.pos>pmax-1) {
+            if(pti.pos>minPt.pmax-1) {
                 pti.del = true;
                 deleteCount--;
             }
@@ -1117,7 +1123,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
 
             // pos has already been constrained to [pmin,pmax]
             // so look for points close to that to delete
-            if(pti.pos<pmin+1) {
+            if(pti.pos<minPt.pmin+1) {
                 pti.del = true;
                 deleteCount--;
 
@@ -1130,7 +1136,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
         for(i=grp.length-1; i>=0; i--) {
             if(deleteCount<=0) break;
             pti = grp[i];
-            if(pti.pos+pti.dp+pti.size>pmax) {
+            if(pti.pos+pti.dp+pti.size>minPt.pmax) {
                 pti.del = true;
                 deleteCount--;
             }
@@ -1158,7 +1164,9 @@ function hoverAvoidOverlaps(hoverData, ax) {
                 p0 = g0[g0.length-1],
                 p1 = g1[0];
             topOverlap = p0.pos+p0.dp+p0.size-p1.pos-p1.dp+p1.size;
-            if(topOverlap>0.01) {
+
+            //Only group points that lie on the same axes
+            if(topOverlap>0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
                 // push the new point(s) added to this group out of the way
                 for(j=g1.length-1; j>=0; j--) g1[j].dp += topOverlap;
 
