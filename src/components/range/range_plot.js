@@ -37,7 +37,7 @@ module.exports = function rangePlot(gd, w, h) {
     rangePlot.appendChild(clip);
 
 
-    var allowedTypes = 'scatter';
+    var allowedTypes = ['scatter', 'scattergl'];
 
     for(var i = 0; i < traces.length; i++) {
 
