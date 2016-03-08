@@ -1,8 +1,9 @@
 'use strict';
 
 var Lib = require('../../lib');
-var Helpers = require('./helpers');
+var Plots = require('../../plots/plots');
 
+var Helpers = require('./helpers');
 var rangePlot = require('./range_plot');
 
 var svgNS = 'http://www.w3.org/2000/svg';
@@ -10,10 +11,13 @@ var svgNS = 'http://www.w3.org/2000/svg';
 exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
 
     var width = gd._fullLayout._size.w,
-        height = width / 10;
+        height = width / 15;
 
     minStart = minStart || 0;
     maxStart = maxStart || width;
+
+    var x = gd._fullLayout._size.l,
+        y = gd._fullLayout.height - height - gd._fullLayout._size.b / 2;
 
     var slider = document.createElementNS(svgNS, 'g');
     Helpers.setAttributes(slider, {
@@ -21,7 +25,7 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
         'data-min': minStart,
         'data-max': maxStart,
         'pointer-events': 'all',
-        'transform': 'translate(5)'
+        'transform': 'translate(' + x + ',' + y + ')'
     });
 
     var sliderBg = document.createElementNS(svgNS, 'rect');
@@ -198,5 +202,15 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
         .data([0])
     .enter().append(function() {
         return slider;
+    });
+
+    console.log(gd._fullLayout);
+    Plots.autoMargin(gd, 'range-slider', {
+        x: 0,
+        y: 0,
+        l: 0,
+        r: 0,
+        t: 0,
+        b: height + gd._fullLayout.margin.b
     });
 };
