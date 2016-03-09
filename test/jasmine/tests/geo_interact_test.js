@@ -1,6 +1,7 @@
 var d3 = require('d3');
 
 var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -38,7 +39,10 @@ describe('Test geo interactions', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mock.data, mock.layout).then(done);
+
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         describe('scattergeo hover labels', function() {
@@ -261,5 +265,221 @@ describe('Test geo interactions', function() {
             });
         });
 
+        describe('streaming calls', function() {
+            var INTERVAL = 10;
+
+            var N_MARKERS_AT_START = Math.min(
+                mock.data[0].lat.length,
+                mock.data[0].lon.length
+            );
+
+            var N_LOCATIONS_AT_START = mock.data[1].locations.length;
+
+            var lonQueue = [45, -45, 12, 20],
+                latQueue = [-75, 80, 5, 10],
+                textQueue = ['c', 'd', 'e', 'f'],
+                locationsQueue = ['AUS', 'FRA', 'DEU', 'MEX'],
+                zQueue = [100, 20, 30, 12];
+
+            beforeEach(function(done) {
+                var update = {
+                    mode: 'lines+markers+text',
+                    text: [['a', 'b']],
+                    'marker.size': 10
+                };
+
+                Plotly.restyle(gd, update, [0]).then(done);
+            });
+
+            function countScatterGeoLines() {
+                return d3.selectAll('g.trace.scattergeo')
+                    .selectAll('path.js-line')
+                    .size();
+            }
+
+            function countScatterGeoMarkers() {
+                return d3.selectAll('g.trace.scattergeo')
+                    .selectAll('path.point')
+                    .size();
+            }
+
+            function countScatterGeoTextGroups() {
+                return d3.selectAll('g.trace.scattergeo')
+                    .selectAll('g')
+                    .size();
+            }
+
+            function countScatterGeoTextNodes() {
+                return d3.selectAll('g.trace.scattergeo')
+                    .selectAll('g')
+                    .select('text')
+                    .size();
+            }
+
+            function checkScatterGeoOrder() {
+                var order = ['js-path', 'point', null];
+                var nodes = d3.selectAll('g.trace.scattergeo');
+
+                nodes.each(function() {
+                    var list = [];
+
+                    d3.select(this).selectAll('*').each(function() {
+                        var className = d3.select(this).attr('class');
+                        list.push(className);
+                    });
+
+                    var listSorted = list.slice().sort(function(a, b) {
+                        return order.indexOf(a) - order.indexOf(b);
+                    });
+
+                    expect(list).toEqual(listSorted);
+                });
+            }
+
+            function countChoroplethPaths() {
+                return d3.selectAll('g.trace.choropleth')
+                    .selectAll('path.choroplethlocation')
+                    .size();
+            }
+
+            it('should be able to add line/marker/text nodes', function(done) {
+                var i = 0;
+
+                var interval = setInterval(function() {
+                    expect(countTraces('scattergeo')).toBe(1);
+                    expect(countTraces('choropleth')).toBe(1);
+                    expect(countScatterGeoLines()).toBe(1);
+                    expect(countScatterGeoMarkers()).toBe(N_MARKERS_AT_START + i);
+                    expect(countScatterGeoTextGroups()).toBe(N_MARKERS_AT_START + i);
+                    expect(countScatterGeoTextNodes()).toBe(N_MARKERS_AT_START + i);
+                    checkScatterGeoOrder();
+
+                    var trace = gd.data[0];
+                    trace.lon.push(lonQueue[i]);
+                    trace.lat.push(latQueue[i]);
+                    trace.text.push(textQueue[i]);
+
+                    if(i === lonQueue.length - 1) {
+                        clearInterval(interval);
+                        done();
+                    }
+
+                    Plotly.plot(gd);
+                    i++;
+                }, INTERVAL);
+            });
+
+            it('should be able to shift line/marker/text nodes', function(done) {
+                var i = 0;
+
+                var interval = setInterval(function() {
+                    expect(countTraces('scattergeo')).toBe(1);
+                    expect(countTraces('choropleth')).toBe(1);
+                    expect(countScatterGeoLines()).toBe(1);
+                    expect(countScatterGeoMarkers()).toBe(N_MARKERS_AT_START);
+                    expect(countScatterGeoTextGroups()).toBe(N_MARKERS_AT_START);
+                    expect(countScatterGeoTextNodes()).toBe(N_MARKERS_AT_START);
+                    checkScatterGeoOrder();
+
+                    var trace = gd.data[0];
+                    trace.lon.push(lonQueue[i]);
+                    trace.lat.push(latQueue[i]);
+                    trace.text.push(textQueue[i]);
+                    trace.lon.shift();
+                    trace.lat.shift();
+                    trace.text.shift();
+
+                    if(i === lonQueue.length - 1) {
+                        clearInterval(interval);
+                        done();
+                    }
+
+                    Plotly.plot(gd);
+                    i++;
+                }, INTERVAL);
+            });
+
+            it('should be able to update line/marker/text nodes', function(done) {
+                var i = 0;
+
+                var interval = setInterval(function() {
+                    expect(countTraces('scattergeo')).toBe(1);
+                    expect(countTraces('choropleth')).toBe(1);
+                    expect(countScatterGeoLines()).toBe(1);
+                    expect(countScatterGeoMarkers()).toBe(N_MARKERS_AT_START);
+                    expect(countScatterGeoTextGroups()).toBe(N_MARKERS_AT_START);
+                    expect(countScatterGeoTextNodes()).toBe(N_MARKERS_AT_START);
+                    checkScatterGeoOrder();
+
+                    var trace = gd.data[0];
+                    trace.lon.push(lonQueue[i]);
+                    trace.lat.push(latQueue[i]);
+                    trace.text.push(textQueue[i]);
+                    trace.lon.shift();
+                    trace.lat.shift();
+                    trace.text.shift();
+
+                    if(i === lonQueue.length - 1) {
+                        clearInterval(interval);
+                        done();
+                    }
+
+                    Plotly.plot(gd);
+                    i++;
+                }, INTERVAL);
+            });
+
+            it('should be able to delete line/marker/text nodes and choropleth paths', function(done) {
+                var trace0 = gd.data[0];
+                trace0.lon.shift();
+                trace0.lat.shift();
+                trace0.text.shift();
+
+                var trace1 = gd.data[1];
+                trace1.locations.shift();
+
+                Plotly.plot(gd).then(function() {
+                    expect(countTraces('scattergeo')).toBe(1);
+                    expect(countTraces('choropleth')).toBe(1);
+
+                    expect(countScatterGeoLines()).toBe(1);
+                    expect(countScatterGeoMarkers()).toBe(N_MARKERS_AT_START - 1);
+                    expect(countScatterGeoTextGroups()).toBe(N_MARKERS_AT_START - 1);
+                    expect(countScatterGeoTextNodes()).toBe(N_MARKERS_AT_START - 1);
+                    checkScatterGeoOrder();
+
+                    expect(countChoroplethPaths()).toBe(N_LOCATIONS_AT_START - 1);
+
+                    done();
+                });
+            });
+
+            it('should be able to update line/marker/text nodes and choropleth paths', function(done) {
+                var trace0 = gd.data[0];
+                trace0.lon = lonQueue;
+                trace0.lat = latQueue;
+                trace0.text = textQueue;
+
+                var trace1 = gd.data[1];
+                trace1.locations = locationsQueue;
+                trace1.z = zQueue;
+
+                Plotly.plot(gd).then(function() {
+                    expect(countTraces('scattergeo')).toBe(1);
+                    expect(countTraces('choropleth')).toBe(1);
+
+                    expect(countScatterGeoLines()).toBe(1);
+                    expect(countScatterGeoMarkers()).toBe(lonQueue.length);
+                    expect(countScatterGeoTextGroups()).toBe(textQueue.length);
+                    expect(countScatterGeoTextNodes()).toBe(textQueue.length);
+                    checkScatterGeoOrder();
+
+                    expect(countChoroplethPaths()).toBe(locationsQueue.length);
+
+                    done();
+                });
+            });
+
+        });
     });
 });
