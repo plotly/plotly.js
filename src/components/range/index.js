@@ -1,3 +1,11 @@
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
 'use strict';
 
 var Lib = require('../../lib');
@@ -8,7 +16,9 @@ var rangePlot = require('./range_plot');
 
 var svgNS = 'http://www.w3.org/2000/svg';
 
-exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
+exports.draw = function draw(gd, minStart, maxStart) {
+
+    if(gd._fullData.length <= 0) return;
 
     var width = gd._fullLayout._size.w,
         height = width / 15;
@@ -204,7 +214,6 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
         return slider;
     });
 
-    console.log(gd._fullLayout);
     Plots.autoMargin(gd, 'range-slider', {
         x: 0,
         y: 0,
@@ -213,4 +222,11 @@ exports.makeSlider = function makeSlider(gd, minStart, maxStart) {
         t: 0,
         b: height + gd._fullLayout.margin.b
     });
+};
+
+
+exports.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+    console.log('layoutIn', layoutIn);
+    console.log('layoutOut', layoutOut);
+    console.log('fulldata', fullData);
 };

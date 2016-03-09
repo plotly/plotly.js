@@ -246,7 +246,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function drawAxes() {
         // draw ticks, titles, and calculate axis scaling (._b, ._m)
-        Range.makeSlider(gd);
+        Range.draw(gd);
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
