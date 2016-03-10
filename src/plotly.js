@@ -47,6 +47,7 @@ exports.Colorscale = require('./components/colorscale');
 exports.Colorbar = require('./components/colorbar');
 exports.ErrorBars = require('./components/errorbars');
 exports.Annotations = require('./components/annotations');
+exports.Range = require('./components/range');
 exports.Shapes = require('./components/shapes');
 exports.Legend = require('./components/legend');
 exports.ModeBar = require('./components/modebar');

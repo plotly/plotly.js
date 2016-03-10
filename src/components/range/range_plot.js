@@ -1,7 +1,16 @@
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
 'use strict';
 
 var Helpers = require('./helpers');
 var Symbols = require('../drawing/symbol_defs');
+var Drawing = require('../drawing');
 
 var svgNS = 'http://www.w3.org/2000/svg';
 
@@ -13,6 +22,20 @@ module.exports = function rangePlot(gd, w, h) {
         minY = gd._fullLayout.yaxis.range[0],
         maxY = gd._fullLayout.yaxis.range[1];
 
+
+    // create elements for plot and its clip
+    var clipPath = document.createElementNS(svgNS, 'path');
+    clipPath.setAttribute('d', ['M0,0', w + ',0', w + ',' + h, '0,' + h, 'Z'].join(' '));
+
+    var clip = document.createElementNS(svgNS, 'clipPath');
+    clip.setAttribute('id', 'range-clip-path');
+    clip.appendChild(clipPath);
+
+    var rangePlot = document.createElementNS(svgNS, 'g');
+    rangePlot.setAttribute('clip-path', 'url(#range-clip-path)');
+    rangePlot.appendChild(clip);
+
+
     var dataProcessors = {
         'linear': function(val) { return val; },
         'log': function(val) { return Math.log(val)/Math.log(10); },
@@ -22,19 +45,6 @@ module.exports = function rangePlot(gd, w, h) {
 
     var processX = dataProcessors[gd._fullLayout.xaxis.type || 'category'],
         processY = dataProcessors[gd._fullLayout.yaxis.type || 'category'];
-
-
-    var rangePlot = document.createElementNS(svgNS, 'g');
-    var clip = document.createElementNS(svgNS, 'clipPath');
-    var clipPath = document.createElementNS(svgNS, 'path');
-
-    clipPath.setAttribute('d', ['M0,0', w + ',0', w + ',' + h, '0,' + h, 'Z'].join(' '));
-
-    clip.setAttribute('id', 'range-clip-path');
-    clip.appendChild(clipPath);
-
-    rangePlot.setAttribute('clip-path', 'url(#range-clip-path)');
-    rangePlot.appendChild(clip);
 
 
     // for now, only scatter traces are supported
@@ -60,41 +70,42 @@ module.exports = function rangePlot(gd, w, h) {
             pointPairs.push([posX, posY]);
         }
 
-
         // more trace type range plots can be added here
-        makeScatter(rangePlot, trace, pointPairs);
+        Helpers.appendChildren(rangePlot, makeScatter(trace, pointPairs, w, h));
     }
+
 
     return rangePlot;
 };
 
 
-function makeScatter(rangePlot, trace, pointPairs) {
+function makeScatter(trace, pointPairs, w, h) {
+
     // create the line
-    var line = document.createElementNS(svgNS, 'polyline'),
-        linePoints = pointPairs.map(function(p) {
-            return p[0] + ',' + p[1];
-        }).join(' ');
+    var line = document.createElementNS(svgNS, 'path');
+    if(trace.line) {
+        var linePath = Drawing.smoothopen(pointPairs, trace.line.smoothing || 0);
 
-    Helpers.setAttributes(line, {
-        'points': linePoints,
-        'fill': 'none',
-        'stroke': trace.line ? trace.line.color : 'transparent',
-        'opacity': 1
-    });
-
-    Helpers.appendChildren(rangePlot, [line]);
+        Helpers.setAttributes(line, {
+            'd': linePath,
+            'fill': 'none',
+            'stroke': trace.line ? trace.line.color : 'transparent',
+            'stroke-width': trace.line.width / 2 || 1,
+            'opacity': 1
+        });
+    }
 
 
     // create points if there's markers
+    var markers = document.createElementNS(svgNS, 'g');
     if(trace.marker) {
+
         var points = pointPairs.map(function(p, i) {
             var point = document.createElementNS(svgNS, 'g'),
                 symbol = document.createElementNS(svgNS, 'path'),
                 size;
 
             if(Array.isArray(trace.marker.size)) {
-                console.log('hello');
                 size = typeof trace.marker.size[i] === 'number' ?
                     Math.max(trace.marker.size[i] / (trace.marker.sizeref || 1) / 15, 0) :
                     0;
@@ -119,6 +130,37 @@ function makeScatter(rangePlot, trace, pointPairs) {
             return point;
         });
 
-        Helpers.appendChildren(rangePlot, points);
+        Helpers.appendChildren(markers, points);
     }
+
+
+    // create fill if set
+    var fill = document.createElementNS(svgNS, 'path');
+    if(trace.fill !== 'none') {
+
+        switch(trace.fill) {
+            case 'tozeroy':
+                pointPairs.unshift([pointPairs[0][0], h]);
+                pointPairs.push([pointPairs[pointPairs.length - 1][0], h]);
+                break;
+
+            case 'tozerox':
+                pointPairs.unshift([0, pointPairs[pointPairs.length - 1][1]]);
+                break;
+
+            default:
+                console.log('Fill type ' + trace.fill + ' not supported for range slider! (yet...)');
+                break;
+        }
+
+        var fillPath = Drawing.smoothopen(pointPairs, trace.line.smoothing || 0);
+
+        Helpers.setAttributes(fill, {
+            'd': fillPath,
+            'fill': trace.fillcolor || 'transparent'
+        });
+    }
+
+
+    return [line, markers, fill];
 }

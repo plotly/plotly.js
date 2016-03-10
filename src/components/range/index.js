@@ -13,21 +13,26 @@ var Plots = require('../../plots/plots');
 
 var Helpers = require('./helpers');
 var rangePlot = require('./range_plot');
+var attributes = require('./attributes');
 
 var svgNS = 'http://www.w3.org/2000/svg';
 
 exports.draw = function draw(gd, minStart, maxStart) {
 
-    if(gd._fullData.length <= 0) return;
+    var options = gd._fullLayout.xaxis.rangeslider;
+
+    if(!options.visible) return;
 
     var width = gd._fullLayout._size.w,
-        height = width / 15;
+        height = width * options.height,
+        handleWidth = 2,
+        offsetShift = Math.floor(options.borderwidth / 2);
 
     minStart = minStart || 0;
     maxStart = maxStart || width;
 
-    var x = gd._fullLayout._size.l,
-        y = gd._fullLayout.height - height - gd._fullLayout._size.b / 2;
+    var x = gd._fullLayout.margin.l,
+        y = gd._fullLayout.height - height - gd._fullLayout.margin.b;
 
     var slider = document.createElementNS(svgNS, 'g');
     Helpers.setAttributes(slider, {
@@ -38,36 +43,41 @@ exports.draw = function draw(gd, minStart, maxStart) {
         'transform': 'translate(' + x + ',' + y + ')'
     });
 
-    var sliderBg = document.createElementNS(svgNS, 'rect');
+
+    var sliderBg = document.createElementNS(svgNS, 'rect'),
+        borderCorrect = options.borderwidth % 2 === 0 ? options.borderwidth : options.borderwidth - 1;
     Helpers.setAttributes(sliderBg, {
-        'fill': gd._fullLayout.plot_bgcolor,
-        'stroke': 'transparent',
-        'height': height,
-        'width': width,
+        'fill': options.backgroundcolor,
+        'stroke': options.bordercolor,
+        'stroke-width': options.borderwidth,
+        'height': height + borderCorrect,
+        'width': width + borderCorrect,
+        'transform': 'translate(-' + offsetShift + ', -' + offsetShift + ')',
         'shape-rendering': 'crispEdges'
     });
+
 
     var maskMin = document.createElementNS(svgNS, 'rect');
     Helpers.setAttributes(maskMin, {
         'x': 0,
         'width': minStart,
         'height': height,
-        'fill': 'rgba(0,0,0,0.25)'
+        'fill': 'rgba(0,0,0,0.4)'
     });
+
 
     var maskMax = document.createElementNS(svgNS, 'rect');
     Helpers.setAttributes(maskMax, {
         'x': maxStart,
         'width': width - maxStart,
         'height': height,
-        'fill': 'rgba(0,0,0,0.25)'
+        'fill': 'rgba(0,0,0,0.4)'
     });
 
-    var handleWidth = 2;
 
-    var grabberMin = document.createElementNS(svgNS, 'g');
-    var grabAreaMin = document.createElementNS(svgNS, 'rect');
-    var handleMin = document.createElementNS(svgNS, 'rect');
+    var grabberMin = document.createElementNS(svgNS, 'g'),
+        grabAreaMin = document.createElementNS(svgNS, 'rect'),
+        handleMin = document.createElementNS(svgNS, 'rect');
     Helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (minStart - handleWidth - 1) + ')' });
     Helpers.setAttributes(grabAreaMin, {
         'width': 10,
@@ -87,9 +97,10 @@ exports.draw = function draw(gd, minStart, maxStart) {
     });
     Helpers.appendChildren(grabberMin, [handleMin, grabAreaMin]);
 
-    var grabberMax = document.createElementNS(svgNS, 'g');
-    var grabAreaMax = document.createElementNS(svgNS, 'rect');
-    var handleMax = document.createElementNS(svgNS, 'rect');
+
+    var grabberMax = document.createElementNS(svgNS, 'g'),
+        grabAreaMax = document.createElementNS(svgNS, 'rect'),
+        handleMax = document.createElementNS(svgNS, 'rect');
     Helpers.setAttributes(grabberMax, { 'transform': 'translate(' + maxStart + ')' });
     Helpers.setAttributes(grabAreaMax, {
         'width': 10,
@@ -109,6 +120,7 @@ exports.draw = function draw(gd, minStart, maxStart) {
     });
     Helpers.appendChildren(grabberMax, [handleMax, grabAreaMax]);
 
+
     var slideBox = document.createElementNS(svgNS, 'rect');
     Helpers.setAttributes(slideBox, {
         'x': minStart,
@@ -117,6 +129,7 @@ exports.draw = function draw(gd, minStart, maxStart) {
         'cursor': 'ew-resize',
         'fill': 'transparent'
     });
+
 
     slider.addEventListener('mousedown', function(event) {
         var target = event.target,
@@ -195,6 +208,7 @@ exports.draw = function draw(gd, minStart, maxStart) {
         // call to set range on plot here
     }
 
+
     var rangePlots = rangePlot(gd, width, height);
 
     Helpers.appendChildren(slider, [
@@ -215,18 +229,25 @@ exports.draw = function draw(gd, minStart, maxStart) {
     });
 
     Plots.autoMargin(gd, 'range-slider', {
-        x: 0,
-        y: 0,
-        l: 0,
-        r: 0,
-        t: 0,
-        b: height + gd._fullLayout.margin.b
+        x: 0, y: 0, l: 0, r: 0, t: 0,
+        b: height + gd._fullLayout.margin.b + offsetShift,
+        pad: gd._fullLayout.xaxis.tickfont.size * 2 + offsetShift
     });
 };
 
 
-exports.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
-    console.log('layoutIn', layoutIn);
-    console.log('layoutOut', layoutOut);
-    console.log('fulldata', fullData);
+exports.supplyLayoutDefaults = function(layoutIn, layoutOut) {
+    var containerIn = layoutIn.xaxis.rangeslider || {},
+        containerOut = layoutOut.xaxis.rangeslider = {};
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(containerIn, containerOut,
+            attributes, attr, dflt);
+    }
+
+    coerce('visible');
+    coerce('height');
+    coerce('backgroundcolor');
+    coerce('bordercolor');
+    coerce('borderwidth');
 };
