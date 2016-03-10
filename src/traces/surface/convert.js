@@ -245,11 +245,11 @@ proto.update = function(data) {
         dynamicColor: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
         dynamicWidth: [1, 1, 1],
         dynamicTint: [1, 1, 1],
-        opacity: 1,
+        opacity: 1
     };
 
     if('cmin' in data && 'cmax' in data) {
-      params.intensityBounds = [ data.cmin, data.cmax ]
+        params.intensityBounds = [ data.cmin, data.cmax ];
     }
 
     //Refine if necessary

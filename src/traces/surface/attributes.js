@@ -171,8 +171,8 @@ module.exports = {
     },
 
     _deprecated: {
-      zauto: colorscaleAttrs.zauto,
-      zmin: colorscaleAttrs.zmin,
-      zmax: colorscaleAttrs.zmax
+        zauto: colorscaleAttrs.zauto,
+        zmin: colorscaleAttrs.zmin,
+        zmax: colorscaleAttrs.zmax
     }
 };
