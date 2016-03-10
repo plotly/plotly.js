@@ -48,6 +48,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 showGrid: true,
                 bgColor: options.bgColor
             });
+            
+        delete containerOut.tickpadding;  //gl3d doesn't currently implement tickpadding property
 
         coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());
         coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
