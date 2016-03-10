@@ -75,50 +75,51 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
 
     gChoroplethTraces.exit().remove();
 
-    gChoroplethTraces
-        .each(function(trace) {
-            var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
-                eventDataFunc = makeEventDataFunc(trace);
+    gChoroplethTraces.each(function(trace) {
+        var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
+            cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+            eventDataFunc = makeEventDataFunc(trace);
 
-            function handleMouseOver(pt, ptIndex) {
-                if(!geo.showHover) return;
+        function handleMouseOver(pt, ptIndex) {
+            if(!geo.showHover) return;
 
-                var xy = geo.projection(pt.properties.ct);
-                cleanHoverLabelsFunc(pt);
+            var xy = geo.projection(pt.properties.ct);
+            cleanHoverLabelsFunc(pt);
 
-                Fx.loneHover({
-                    x: xy[0],
-                    y: xy[1],
-                    name: pt.nameLabel,
-                    text: pt.textLabel
-                }, {
-                    container: geo.hoverContainer.node()
-                });
+            Fx.loneHover({
+                x: xy[0],
+                y: xy[1],
+                name: pt.nameLabel,
+                text: pt.textLabel
+            }, {
+                container: geo.hoverContainer.node()
+            });
 
-                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
-            }
+            geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+        }
 
-            function handleClick(pt, ptIndex) {
-                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
-            }
+        function handleClick(pt, ptIndex) {
+            geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
+        }
 
-            d3.select(this)
-                .selectAll('path.choroplethlocation')
-                    .data(cdi)
-                .enter().append('path')
-                    .attr('class', 'choroplethlocation')
-                    .on('mouseover', handleMouseOver)
-                    .on('click', handleClick)
-                    .on('mouseout', function() {
-                        Fx.loneUnhover(geo.hoverContainer);
-                    })
-                    .on('mousedown', function() {
-                        // to simulate the 'zoomon' event
-                        Fx.loneUnhover(geo.hoverContainer);
-                    })
-                    .on('mouseup', handleMouseOver);  // ~ 'zoomend'
-        });
+        var paths = d3.select(this).selectAll('path.choroplethlocation')
+                .data(cdi);
+
+        paths.enter().append('path')
+            .classed('choroplethlocation', true)
+            .on('mouseover', handleMouseOver)
+            .on('click', handleClick)
+            .on('mouseout', function() {
+                Fx.loneUnhover(geo.hoverContainer);
+            })
+            .on('mousedown', function() {
+                // to simulate the 'zoomon' event
+                Fx.loneUnhover(geo.hoverContainer);
+            })
+            .on('mouseup', handleMouseOver);  // ~ 'zoomend'
+
+        paths.exit().remove();
+    });
 
     // some baselayers are drawn over choropleth
     gBaseLayerOverChoropleth.selectAll('*').remove();
