@@ -58,7 +58,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hidesurface');
     coerce('opacity');
 
-    coerce('intensity');
+    coerce('surfacecolor');
 
     coerce('colorscale');
 
@@ -88,6 +88,6 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     colorscaleDefaults(
-        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'}
     );
 };

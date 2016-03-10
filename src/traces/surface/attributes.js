@@ -95,16 +95,16 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the text elements associated with each z value.'
     },
-    intensity: {
+    surfacecolor: {
         valType: 'data_array',
         description: [
             'Sets the surface intensity values,',
             'used for setting a color scale independent of z'
         ].join(' ')
     },
-    zauto: colorscaleAttrs.zauto,
-    zmin: colorscaleAttrs.zmin,
-    zmax: colorscaleAttrs.zmax,
+    cauto: colorscaleAttrs.zauto,
+    cmin: colorscaleAttrs.zmin,
+    cmax: colorscaleAttrs.zmax,
     colorscale: colorscaleAttrs.colorscale,
     autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale,
         {dflt: false}),
@@ -168,5 +168,11 @@ module.exports = {
 
     _nestedModules: {  // nested module coupling
         'colorbar': 'Colorbar'
+    },
+
+    _deprecated: {
+      zauto: colorscaleAttrs.zauto,
+      zmin: colorscaleAttrs.zmin,
+      zmax: colorscaleAttrs.zmax
     }
 };

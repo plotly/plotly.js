@@ -245,28 +245,26 @@ proto.update = function(data) {
         dynamicColor: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
         dynamicWidth: [1, 1, 1],
         dynamicTint: [1, 1, 1],
-        opacity: 1
-        // TODO: Need to think about how to calculate this
-        /*
-        intensityBounds: [
-          data.zmin * scaleFactor[2],
-          data.zmax * scaleFactor[2]]
-        */
+        opacity: 1,
     };
 
+    if('cmin' in data && 'cmax' in data) {
+      params.intensityBounds = [ data.cmin, data.cmax ]
+    }
+
     //Refine if necessary
-    if('intensity' in data) {
+    if(data.surfacecolor) {
         var intensity = ndarray(
           new Float32Array(xlen * ylen), [xlen, ylen]);
         fill(intensity, function(row, col) {
-            return data.intensity[col][row];
+            return data.surfacecolor[col][row];
         });
         coords.push(intensity);
     }
 
     this.dataScale = refine(coords);
 
-    if('intensity' in data) {
+    if(data.surfacecolor) {
         params.intensity = coords.pop();
     }
 
@@ -316,7 +314,6 @@ proto.update = function(data) {
     }
 
     params.coords = coords;
-
 
     surface.update(params);
 
