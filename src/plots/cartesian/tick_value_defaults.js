@@ -10,7 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
-
+var layoutAttributes = require('./layout_attributes');
 
 module.exports = function handleTickValueDefaults(containerIn, containerOut, coerce, axType) {
     var tickmodeDefault = 'auto';
@@ -25,8 +25,18 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
         tickmodeDefault = 'linear';
     }
     var tickmode = coerce('tickmode', tickmodeDefault);
-
-    if(tickmode === 'auto') coerce('nticks');
+    
+    if(tickmode === 'auto') {
+        var nticks = coerce('nticks');
+        
+        //Only use tickpadding if tickmode is 'auto' and the user doesn't specify nticks
+        if(nticks === layoutAttributes.nticks.dflt) {
+            coerce('tickpadding');
+        }
+        else {
+            containerOut.tickpadding = layoutAttributes.tickpadding.dflt;
+        }
+    }
     else if(tickmode === 'linear') {
         coerce('tick0');
         coerce('dtick');
