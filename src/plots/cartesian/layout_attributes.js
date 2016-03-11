@@ -7,6 +7,7 @@
 */
 
 'use strict';
+
 var Cartesian = require('./index');
 var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
