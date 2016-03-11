@@ -119,7 +119,7 @@ function npGet(cont, parts) {
  */
 function isDataArray(val, key) {
 
-    var containers = ['annotations', 'shapes', 'range', 'domain'],
+    var containers = ['annotations', 'shapes', 'range', 'domain', 'buttons'],
         isNotAContainer = containers.indexOf(key) === -1;
 
     return Array.isArray(val) && isNotAContainer;
