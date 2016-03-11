@@ -39,7 +39,7 @@ module.exports = {
     },
     height: {
         valType: 'number',
-        dflt: 0.05,
+        dflt: 0.15,
         min: 0,
         max: 1,
         role: 'style',

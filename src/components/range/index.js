@@ -18,21 +18,22 @@ var attributes = require('./attributes');
 var svgNS = 'http://www.w3.org/2000/svg';
 
 exports.draw = function draw(gd, minStart, maxStart) {
+    var fullLayout = gd._fullLayout;
 
-    var options = gd._fullLayout.xaxis.rangeslider;
+    var options = fullLayout.xaxis.rangeslider;
 
     if(!options.visible) return;
-
-    var width = gd._fullLayout._size.w,
-        height = width * options.height,
+    console.log(fullLayout._size.h);
+    var width = fullLayout._size.w,
+        height = (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * options.height,
         handleWidth = 2,
         offsetShift = Math.floor(options.borderwidth / 2);
 
     minStart = minStart || 0;
     maxStart = maxStart || width;
 
-    var x = gd._fullLayout.margin.l,
-        y = gd._fullLayout.height - height - gd._fullLayout.margin.b;
+    var x = fullLayout.margin.l,
+        y = fullLayout.height - height - fullLayout.margin.b;
 
     var slider = document.createElementNS(svgNS, 'g');
     Helpers.setAttributes(slider, {
@@ -221,7 +222,7 @@ exports.draw = function draw(gd, minStart, maxStart) {
         grabberMax
     ]);
 
-    var infoLayer = gd._fullLayout._infolayer;
+    var infoLayer = fullLayout._infolayer;
     infoLayer.selectAll('g.range-slider')
         .data([0])
     .enter().append(function() {
@@ -230,8 +231,8 @@ exports.draw = function draw(gd, minStart, maxStart) {
 
     Plots.autoMargin(gd, 'range-slider', {
         x: 0, y: 0, l: 0, r: 0, t: 0,
-        b: height + gd._fullLayout.margin.b + offsetShift,
-        pad: gd._fullLayout.xaxis.tickfont.size * 2 + offsetShift
+        b: height + fullLayout.margin.b + offsetShift,
+        pad: fullLayout.xaxis.tickfont.size * 2 + offsetShift
     });
 };
 
