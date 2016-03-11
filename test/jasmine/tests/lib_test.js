@@ -588,6 +588,46 @@ describe('Test lib.js:', function() {
 
 
         });
+
+        describe('subplotid valtype', function() {
+            var dflt = 'slice';
+            var idAttrs = {
+                pizza: {
+                    valType: 'subplotid',
+                    dflt: dflt
+                }
+            };
+
+            var goodVals = ['slice', 'slice2', 'slice1492'];
+
+            goodVals.forEach(function(goodVal) {
+                it('should allow "' + goodVal + '"', function() {
+                    expect(coerce({pizza: goodVal}, {}, idAttrs, 'pizza'))
+                        .toEqual(goodVal);
+                });
+            });
+
+            var badVals = [
+                'slice0',
+                'slice1',
+                'Slice2',
+                '2slice',
+                '2',
+                2,
+                'slice2 ',
+                'slice2.0',
+                ' slice2',
+                'slice 2',
+                'slice01'
+            ];
+
+            badVals.forEach(function(badVal) {
+                it('should not allow "' + badVal + '"', function() {
+                    expect(coerce({pizza: badVal}, {}, idAttrs, 'pizza'))
+                        .toEqual(dflt);
+                });
+            });
+        });
     });
 
     describe('coerceFont', function() {
