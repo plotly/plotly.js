@@ -114,7 +114,19 @@ var Events = {
          */
         return jQueryHandlerValue !== undefined ? jQueryHandlerValue :
             nodeEventHandlerValue;
+    },
+
+    purge: function(plotObj) {
+        delete plotObj._ev;
+        delete plotObj.on;
+        delete plotObj.once;
+        delete plotObj.removeListener;
+        delete plotObj.removeAllListeners;
+        delete plotObj.emit;
+
+        return plotObj;
     }
+
 };
 
 module.exports = Events;

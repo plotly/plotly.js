@@ -292,6 +292,13 @@ proto.cameraChanged = function() {
 
 proto.destroy = function() {
     this.glplot.dispose();
+
+    this.container.removeChild(this.canvas);
+    this.container.removeChild(this.svgContainer);
+    this.container.removeChild(this.mouseContainer);
+
+    this.glplot = null;
+    this.stopped = true;
 };
 
 proto.plot = function(fullData, fullLayout) {
@@ -405,6 +412,7 @@ proto.plot = function(fullData, fullLayout) {
 
 proto.draw = function() {
     if(this.stopped) return;
+
     requestAnimationFrame(this.redraw);
 
     var glplot = this.glplot,
