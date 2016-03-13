@@ -18,48 +18,72 @@ var scatterMarkerAttrs = scatterAttrs.marker,
 
 
 module.exports = {
-    lon: {
-        valType: 'data_array',
-        description: 'Sets the longitude coordinates (in degrees East).'
-    },
-    lat: {
-        valType: 'data_array',
-        description: 'Sets the latitude coordinates (in degrees North).'
-    },
-    locations: {
+    a: {
         valType: 'data_array',
         description: [
-            'Sets the coordinates via location IDs or names.',
-            'Coordinates correspond to the centroid of each location given.',
-            'See `locationmode` for more info.'
+            'Sets the quantity of component `a` in each data point.',
+            'If `a`, `b`, and `c` are all provided, they need not be',
+            'normalized, only the relative values matter. If only two',
+            'arrays are provided they must be normalized to match',
+            '`ternary<i>.sum`.'
         ].join(' ')
     },
-    locationmode: {
-        valType: 'enumerated',
-        values: ['ISO-3', 'USA-states', 'country names'],
-        role: 'info',
-        dflt: 'ISO-3',
+    b: {
+        valType: 'data_array',
         description: [
-            'Determines the set of locations used to match entries in `locations`',
-            'to regions on the map.'
+            'Sets the quantity of component `a` in each data point.',
+            'If `a`, `b`, and `c` are all provided, they need not be',
+            'normalized, only the relative values matter. If only two',
+            'arrays are provided they must be normalized to match',
+            '`ternary(i).sum`.'
+        ].join(' ')
+    },
+    c: {
+        valType: 'data_array',
+        description: [
+            'Sets the quantity of component `a` in each data point.',
+            'If `a`, `b`, and `c` are all provided, they need not be',
+            'normalized, only the relative values matter. If only two',
+            'arrays are provided they must be normalized to match',
+            '`ternary<i>.sum`.'
+        ].join(' ')
+    },
+    sum: {
+        valType: 'number',
+        role: 'info',
+        dflt: 1,
+        min: 0,
+        description: [
+            'The number each triplet should sum to,',
+            'if only two of `a`, `b`, and `c` are provided.',
+            'This overrides `ternary<i>.sum` to normalize this specific',
+            'trace, but does not affect the values displayed on the axes.'
         ].join(' ')
     },
     mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
     text: extendFlat({}, scatterAttrs.text, {
         description: [
-            'Sets text elements associated with each (lon,lat) pair',
-            'or item in `locations`.',
+            'Sets text elements associated with each (a,b,c) point.',
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (lon,lat) or `locations` coordinates.'
+            'this trace\'s (a,b,c) coordinates.'
         ].join(' ')
     }),
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash
+        dash: scatterLineAttrs.dash,
+        shape: extendFlat({}, scatterLineAttrs.shape,
+            {values: ['linear', 'spline']}),
+        smoothing: scatterLineAttrs.smoothing
     },
+    connectgaps: scatterAttrs.connectgaps,
+    fill: extendFlat({}, scatterAttrs.fill, {
+        values: ['none', 'tozeroa', 'tozerob', 'tozeroc',
+            'tonexta', 'tonextb', 'tonextc']
+    }),
+    fillcolor: scatterAttrs.fillcolor,
     marker: {
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
@@ -89,7 +113,7 @@ module.exports = {
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
-        flags: ['lon', 'lat', 'location', 'text', 'name']
+        flags: ['a', 'b', 'c', 'text', 'name']
     }),
     _nestedModules: {
         'marker.colorbar': 'Colorbar'
