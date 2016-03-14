@@ -28,60 +28,7 @@ var legend = module.exports = {};
 var constants = require('./constants');
 legend.layoutAttributes = require('./attributes');
 
-legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
-    var containerIn = layoutIn.legend || {},
-        containerOut = layoutOut.legend = {};
-
-    var visibleTraces = 0,
-        defaultOrder = 'normal',
-        trace;
-
-    for(var i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
-
-        if(legendGetsTrace(trace)) {
-            visibleTraces++;
-            // always show the legend by default if there's a pie
-            if(Plots.traceIs(trace, 'pie')) visibleTraces++;
-        }
-
-        if((Plots.traceIs(trace, 'bar') && layoutOut.barmode==='stack') ||
-                ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
-            defaultOrder = isGrouped({traceorder: defaultOrder}) ?
-                'grouped+reversed' : 'reversed';
-        }
-
-        if(trace.legendgroup !== undefined && trace.legendgroup !== '') {
-            defaultOrder = isReversed({traceorder: defaultOrder}) ?
-                'reversed+grouped' : 'grouped';
-        }
-    }
-
-    function coerce(attr, dflt) {
-        return Lib.coerce(containerIn, containerOut,
-            legend.layoutAttributes, attr, dflt);
-    }
-
-    var showLegend = Lib.coerce(layoutIn, layoutOut,
-        Plots.layoutAttributes, 'showlegend', visibleTraces > 1);
-
-    if(showLegend === false) return;
-
-    coerce('bgcolor', layoutOut.paper_bgcolor);
-    coerce('bordercolor');
-    coerce('borderwidth');
-    Lib.coerceFont(coerce, 'font', layoutOut.font);
-
-    coerce('traceorder', defaultOrder);
-    if(isGrouped(layoutOut.legend)) coerce('tracegroupgap');
-
-    coerce('x');
-    coerce('xanchor');
-    coerce('y');
-    coerce('yanchor');
-    Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
-};
-
+legend.supplyLayoutDefaults = require('./defaults');
 // -----------------------------------------------------
 // styling functions for traces in legends.
 // same functions for styling traces in the popovers
