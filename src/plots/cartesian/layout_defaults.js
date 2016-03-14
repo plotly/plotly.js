@@ -134,7 +134,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
 
-        if(axLetter === 'x') {
+        if(axLetter === 'x' && axLayoutOut.type === 'date') {
             // TODO add check on axis type 'date'
             rangeSelectorDefaults(axLayoutIn, axLayoutOut, layoutOut);
         }

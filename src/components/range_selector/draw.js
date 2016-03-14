@@ -107,7 +107,9 @@ function makeSelectorData(gd) {
     for(var i = 0; i < axes.length; i++) {
         var axis = axes[i];
 
-        if(axis.rangeselector.visible) data.push(axis);
+        if(axis.rangeselector && axis.rangeselector.visible) {
+            data.push(axis);
+        }
     }
 
     return data;
