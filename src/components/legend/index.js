@@ -329,22 +329,6 @@ legend.texts = function(context, td, d, i, traces) {
     else text.call(textLayout);
 };
 
-// -----------------------------------------------------
-// legend drawing
-// -----------------------------------------------------
-
-function legendGetsTrace(trace) {
-    return trace.visible && Plots.traceIs(trace, 'showLegend');
-}
-
-function isGrouped(legendLayout) {
-    return (legendLayout.traceorder || '').indexOf('grouped') !== -1;
-}
-
-function isReversed(legendLayout) {
-    return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
-}
-
 legend.getLegendData = function(calcdata, opts) {
 
     // build an { legendgroup: [cd0, cd0], ... } object
