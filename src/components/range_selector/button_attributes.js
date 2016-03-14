@@ -22,7 +22,7 @@ module.exports = {
     stepmode: {
         valType: 'enumerated',
         role: 'info',
-        values: ['backward', 'to day'],
+        values: ['backward', 'to date'],
         dflt: 'backward',
         description: [
             ''

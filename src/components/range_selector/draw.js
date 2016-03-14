@@ -14,6 +14,8 @@ var d3 = require('d3');
 var Plotly = require('../../plotly');
 var axisIds = require('../../plots/cartesian/axis_ids');
 
+var getUpdateObject = require('./get_update_object');
+
 var width1 = 50;
 var height1 = 40;
 
@@ -22,7 +24,7 @@ module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
 
     var selectors = fullLayout._infolayer.selectAll('.rangeselector')
-        .data(makeSelectorData(gd), function(d) { return d._id; });
+        .data(makeSelectorData(gd), SelectorKeyFunc);
 
     selectors.enter().append('g')
         .classed('rangeselector', true);
@@ -30,8 +32,8 @@ module.exports = function draw(gd) {
     selectors.exit().remove();
 
     selectors.style({
-        'pointer-events': 'all',
-        'cursor': 'pointer'
+        cursor: 'pointer',
+        'pointer-events': 'all'
     });
 
 //     selector.attr({ 'translate': });
@@ -73,22 +75,7 @@ module.exports = function draw(gd) {
                 .text(d.label || d.count + ' ' + d.step.charAt(0));
 
             button.on('click', function() {
-                var update;
-
-                if(d.step === 'all') {
-                    update = {
-                        'xaxis.autorange': true,
-                        'xaxis.range': null
-                    };
-                }
-                else {
-                    var xrange = getXRange(axisLayout, d);
-
-                    update = {
-                        'xaxis.range[0]': xrange[0],
-                        'xaxis.range[1]': xrange[1]
-                    };
-                }
+                var update = getUpdateObject(axisLayout, d);
 
                 Plotly.relayout(gd, update);
             });
@@ -115,23 +102,6 @@ function makeSelectorData(gd) {
     return data;
 }
 
-function getXRange(axisLayout, opts) {
-    var currentRange = axisLayout.range;
-    var base = new Date(currentRange[1]);
-
-    var range0, range1;
-
-    switch(opts.stepmode) {
-        case 'backward':
-            range1 = currentRange[1];
-            range0 = d3.time[opts.step].offset(base, -opts.count).getTime();
-            break;
-
-        case 'to day':
-            range1 = currentRange[1];
-            range0 = d3.time[opts.step].floor(base).getTime();
-            break;
-    }
-
-    return [range0, range1];
+function SelectorKeyFunc(d) {
+    return d._id;
 }
