@@ -1,6 +1,7 @@
 var Legend = require('@src/components/legend');
 var Plots = require('@src/plots/plots');
 
+var getLegendData = require('@src/components/legend/get_legend_data');
 var helpers = require('@src/components/legend/helpers');
 var anchorUtils = require('@src/components/legend/anchor_utils');
 describe('Test legend:', function() {
@@ -65,8 +66,6 @@ describe('Test legend:', function() {
     });
 
     describe('getLegendData', function() {
-        var getLegendData = Legend.getLegendData;
-
         var calcdata, opts, legendData, expected;
 
         it('should group legendgroup traces', function() {
