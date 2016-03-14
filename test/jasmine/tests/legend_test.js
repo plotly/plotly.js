@@ -1,9 +1,11 @@
-var Legend = require('@src/components/legend');
 var Plots = require('@src/plots/plots');
 
+var Legend = require('@src/components/legend');
 var getLegendData = require('@src/components/legend/get_legend_data');
 var helpers = require('@src/components/legend/helpers');
 var anchorUtils = require('@src/components/legend/anchor_utils');
+
+
 describe('Test legend:', function() {
     'use strict';
 
