@@ -33,10 +33,6 @@ module.exports = {
         role: 'style',
         description: 'Sets the background color of the range slider.'
     },
-    initialrange: {
-        valType: 'data_array',
-        description: 'The starting range of the range slider, in data coordinates.'
-    },
     height: {
         valType: 'number',
         dflt: 0.15,
