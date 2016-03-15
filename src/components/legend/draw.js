@@ -27,6 +27,7 @@ var anchorUtils = require('./anchor_utils');
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout;
+    var clipId = 'legend' + fullLayout._uid;
 
     if(!fullLayout._infolayer || !gd.calcdata) return;
 
@@ -36,6 +37,8 @@ module.exports = function draw(gd) {
 
     if(!fullLayout.showlegend || !legendData.length) {
         fullLayout._infolayer.selectAll('.legend').remove();
+        fullLayout._topdefs.select('#' + clipId).remove();
+
         Plots.autoMargin(gd, 'legend');
         return;
     }
@@ -51,6 +54,12 @@ module.exports = function draw(gd) {
             'class': 'legend',
             'pointer-events': 'all'
         });
+
+    var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
+        .data([0])
+      .enter().append('clipPath')
+        .attr('id', clipId)
+        .append('rect');
 
     var bg = legend.selectAll('rect.bg')
         .data([0]);
@@ -201,8 +210,6 @@ module.exports = function draw(gd) {
 
     legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
 
-    var clipPath = selectClipPath(gd);
-
     clipPath.attr({
         width: opts.width,
         height: scrollheight,
@@ -210,7 +217,7 @@ module.exports = function draw(gd) {
         y: 0
     });
 
-    legend.call(Drawing.setClipUrl, constants.clipId);
+    legend.call(Drawing.setClipUrl, clipId);
 
     // If scrollbar should be shown.
     if(gd.firstRender && opts.height - scrollheight > 0 && !gd._context.staticPlot) {
@@ -469,22 +476,4 @@ function repositionLegend(gd, traces) {
         b: opts.height * ({top: 1, middle: 0.5}[yanchor] || 0),
         t: opts.height * ({bottom: 1, middle: 0.5}[yanchor] || 0)
     });
-}
-
-function selectClipPath(gd) {
-    var container = gd._fullLayout._infolayer.node().parentNode;
-
-    var defs = d3.select(container).selectAll('defs')
-        .data([0]);
-
-    defs.enter().append('defs');
-
-    var clipPath = defs.selectAll('#' + constants.clipId)
-        .data([0]);
-
-    var path = clipPath.enter().append('clipPath')
-        .attr('id', constants.clipId)
-        .append('rect');
-
-    return path;
 }
