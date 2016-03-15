@@ -10,6 +10,16 @@ describe('The legend', function() {
 
     var gd, legend;
 
+    function countLegendGroups(gd) {
+        return gd._fullLayout._toppaper.selectAll('g.legend').size();
+    }
+
+    function countLegendClipPaths(gd) {
+        var uid = gd._fullLayout._uid;
+
+        return gd._fullLayout._topdefs.selectAll('#legend' + uid).size();
+    }
+
     describe('when plotted with many traces', function() {
         beforeEach(function() {
             gd = createGraph();
@@ -66,6 +76,18 @@ describe('The legend', function() {
             legend.dispatchEvent(scrollTo(10000));
             expect(+scrollBar.getAttribute('y')).toBe(legendHeight - 4 - 20);
         });
+
+        it('should be removed from DOM when \'showlegend\' is relayout\'ed to false', function(done) {
+            expect(countLegendGroups(gd)).toBe(1);
+            expect(countLegendClipPaths(gd)).toBe(1);
+
+            Plotly.relayout(gd, 'showlegend', false).then(function() {
+                expect(countLegendGroups(gd)).toBe(0);
+                expect(countLegendClipPaths(gd)).toBe(0);
+
+                done();
+            });
+        });
     });
 
     describe('when plotted with few traces', function() {
@@ -73,7 +95,11 @@ describe('The legend', function() {
 
         beforeEach(function() {
             gd = createGraph();
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4], name: 'Test' }], {});
+
+            var data = [{ x: [1,2,3], y: [2,3,4], name: 'Test' }];
+            var layout = { showlegend: true };
+
+            Plotly.plot(gd, data, layout);
         });
 
         afterEach(destroyGraph);
@@ -81,7 +107,20 @@ describe('The legend', function() {
         it('should not display the scrollbar', function() {
             var scrollBar = document.getElementsByClassName('scrollbar')[0];
 
-            expect(scrollBar).toBeUndefined();
+            expect(+scrollBar.getAttribute('width')).toBe(0);
+            expect(+scrollBar.getAttribute('height')).toBe(0);
+        });
+
+        it('should be removed from DOM when \'showlegend\' is relayout\'ed to false', function(done) {
+            expect(countLegendGroups(gd)).toBe(1);
+            expect(countLegendClipPaths(gd)).toBe(1);
+
+            Plotly.relayout(gd, 'showlegend', false).then(function() {
+                expect(countLegendGroups(gd)).toBe(0);
+                expect(countLegendClipPaths(gd)).toBe(0);
+
+                done();
+            });
         });
     });
 });
