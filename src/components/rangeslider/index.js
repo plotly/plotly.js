@@ -182,9 +182,11 @@ function draw(gd, minStart, maxStart) {
 
 
     function setRange(min, max) {
-        var range = fullLayout.xaxis.range[1] - fullLayout.xaxis.range[0],
-            pixelMin = min / range * width,
-            pixelMax = max / range * width;
+        var rangeMin = fullLayout.xaxis.range[0],
+            rangeMax = fullLayout.xaxis.range[1],
+            range = rangeMax - rangeMin,
+            pixelMin = (min - rangeMin) / range * width,
+            pixelMax = (max - rangeMin) / range * width;
 
         setPixelRange(pixelMin, pixelMax);
     }

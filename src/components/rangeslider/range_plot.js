@@ -8,19 +8,22 @@
 
 'use strict';
 
-var Helpers = require('./helpers');
 var Symbols = require('../drawing/symbol_defs');
 var Drawing = require('../drawing');
 
+var helpers = require('./helpers');
+var dataProcessors = require('./data_processors');
 var svgNS = 'http://www.w3.org/2000/svg';
 
 module.exports = function rangePlot(gd, w, h) {
 
     var traces = gd._fullData,
-        minX = gd._fullLayout.xaxis.range[0],
-        maxX = gd._fullLayout.xaxis.range[1],
-        minY = gd._fullLayout.yaxis.range[0],
-        maxY = gd._fullLayout.yaxis.range[1];
+        xaxis = gd._fullLayout.xaxis,
+        yaxis = gd._fullLayout.yaxis,
+        minX = xaxis.range[0],
+        maxX = xaxis.range[1],
+        minY = yaxis.range[0],
+        maxY = yaxis.range[1];
 
 
     // create elements for plot and its clip
@@ -35,13 +38,6 @@ module.exports = function rangePlot(gd, w, h) {
     rangePlot.setAttribute('clip-path', 'url(#range-clip-path)');
     rangePlot.appendChild(clip);
 
-
-    var dataProcessors = {
-        'linear': function(val) { return val; },
-        'log': function(val) { return Math.log(val)/Math.log(10); },
-        'date': function(val) { return new Date(val).getTime(); },
-        'category': function(_, i) { return i; }
-    };
 
     var processX = dataProcessors[gd._fullLayout.xaxis.type || 'category'],
         processY = dataProcessors[gd._fullLayout.yaxis.type || 'category'];
@@ -71,7 +67,7 @@ module.exports = function rangePlot(gd, w, h) {
         }
 
         // more trace type range plots can be added here
-        Helpers.appendChildren(rangePlot, makeScatter(trace, pointPairs, w, h));
+        helpers.appendChildren(rangePlot, makeScatter(trace, pointPairs, w, h));
     }
 
 
@@ -86,7 +82,7 @@ function makeScatter(trace, pointPairs, w, h) {
     if(trace.line) {
         var linePath = Drawing.smoothopen(pointPairs, trace.line.smoothing || 0);
 
-        Helpers.setAttributes(line, {
+        helpers.setAttributes(line, {
             'd': linePath,
             'fill': 'none',
             'stroke': trace.line ? trace.line.color : 'transparent',
@@ -94,7 +90,6 @@ function makeScatter(trace, pointPairs, w, h) {
             'opacity': 1
         });
     }
-
 
     // create points if there's markers
     var markers = document.createElementNS(svgNS, 'g');
@@ -113,7 +108,7 @@ function makeScatter(trace, pointPairs, w, h) {
                 size = Math.max(trace.marker.size / 15, 2);
             }
 
-            Helpers.setAttributes(symbol, {
+            helpers.setAttributes(symbol, {
                 'd': Symbols[trace.marker.symbol].f(size),
                 'fill': trace.marker.color,
                 'stroke': trace.marker.line.color,
@@ -121,7 +116,7 @@ function makeScatter(trace, pointPairs, w, h) {
                 'opacity': trace.marker.opacity
             });
 
-            Helpers.setAttributes(point, {
+            helpers.setAttributes(point, {
                 'transform': 'translate(' + p[0] + ',' + p[1] + ')'
             });
 
@@ -130,7 +125,7 @@ function makeScatter(trace, pointPairs, w, h) {
             return point;
         });
 
-        Helpers.appendChildren(markers, points);
+        helpers.appendChildren(markers, points);
     }
 
 
@@ -155,7 +150,7 @@ function makeScatter(trace, pointPairs, w, h) {
 
         var fillPath = Drawing.smoothopen(pointPairs, trace.line.smoothing || 0);
 
-        Helpers.setAttributes(fill, {
+        helpers.setAttributes(fill, {
             'd': fillPath,
             'fill': trace.fillcolor || 'transparent'
         });
