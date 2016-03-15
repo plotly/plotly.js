@@ -32,7 +32,7 @@ exports.isCenterAnchor = function isCenterAnchor(opts) {
     );
 };
 
-exports.isBottomAnchor = function isTopAnchor(opts) {
+exports.isBottomAnchor = function isBottomAnchor(opts) {
     return (
         opts.yanchor === 'bottom' ||
         (opts.yanchor === 'auto' && opts.y <= 1 / 3)
