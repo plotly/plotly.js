@@ -43,16 +43,18 @@ module.exports = function draw(gd) {
     if(typeof gd.firstRender === 'undefined') gd.firstRender = true;
     else if(gd.firstRender) gd.firstRender = false;
 
-    var legendsvg = fullLayout._infolayer.selectAll('svg.legend')
+    var legend = fullLayout._infolayer.selectAll('g.legend')
         .data([0]);
-    legendsvg.enter().append('svg')
+
+    legend.enter().append('g')
         .attr({
             'class': 'legend',
             'pointer-events': 'all'
         });
 
-    var bg = legendsvg.selectAll('rect.bg')
+    var bg = legend.selectAll('rect.bg')
         .data([0]);
+
     bg.enter().append('rect')
         .attr({
             'class': 'bg',
@@ -62,14 +64,16 @@ module.exports = function draw(gd) {
         .call(Color.fill, opts.bgcolor)
         .style('stroke-width', opts.borderwidth + 'px');
 
-    var scrollBox = legendsvg.selectAll('g.scrollbox')
+    var scrollBox = legend.selectAll('g.scrollbox')
         .data([0]);
+
     scrollBox.enter().append('g')
         .attr('class', 'scrollbox');
     scrollBox.exit().remove();
 
-    var scrollBar = legendsvg.selectAll('rect.scrollbar')
+    var scrollBar = legend.selectAll('rect.scrollbar')
         .data([0]);
+
     scrollBar.enter().append('rect')
         .attr({
             'class': 'scrollbar',
@@ -191,14 +195,14 @@ module.exports = function draw(gd) {
         y: opts.borderwidth
     });
 
-    legendsvg.call(Drawing.setRect, lx, ly, opts.width, scrollheight);
+    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
 
     // If scrollbar should be shown.
     if(gd.firstRender && opts.height - scrollheight > 0 && !gd._context.staticPlot) {
 
         bg.attr({ width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth });
 
-        legendsvg.node().addEventListener('wheel', function(e) {
+        legend.node().addEventListener('wheel', function(e) {
             e.preventDefault();
             scrollHandler(e.deltaY / 20);
         });
@@ -258,18 +262,18 @@ module.exports = function draw(gd) {
             lh;
 
         Fx.dragElement({
-            element: legendsvg.node(),
+            element: legend.node(),
             prepFn: function() {
-                x0 = Number(legendsvg.attr('x'));
-                y0 = Number(legendsvg.attr('y'));
-                lw = Number(legendsvg.attr('width'));
-                lh = Number(legendsvg.attr('height'));
-                Fx.setCursor(legendsvg);
+                x0 = Number(legend.attr('x'));
+                y0 = Number(legend.attr('y'));
+                lw = Number(legend.attr('width'));
+                lh = Number(legend.attr('height'));
+                Fx.setCursor(legend);
             },
             moveFn: function(dx, dy) {
                 var gs = gd._fullLayout._size;
 
-                legendsvg.call(Drawing.setPosition, x0+dx, y0+dy);
+                legend.call(Drawing.setPosition, x0+dx, y0+dy);
 
                 xf = Fx.dragAlign(x0+dx, lw, gs.l, gs.l+gs.w,
                     opts.xanchor);
@@ -278,10 +282,10 @@ module.exports = function draw(gd) {
 
                 var csr = Fx.dragCursors(xf, yf,
                     opts.xanchor, opts.yanchor);
-                Fx.setCursor(legendsvg, csr);
+                Fx.setCursor(legend, csr);
             },
             doneFn: function(dragged) {
-                Fx.setCursor(legendsvg);
+                Fx.setCursor(legend);
                 if(dragged && xf !== undefined && yf !== undefined) {
                     Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
                 }
