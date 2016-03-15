@@ -41,7 +41,7 @@ module.exports = {
         role: 'style',
         description: [
             'The height of the range slider as a fraction of the',
-            'total plot height.'
+            'total plot area height.'
         ].join(' ')
     }
 };

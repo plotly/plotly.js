@@ -2403,7 +2403,19 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
-        gd.emit('plotly_relayout', Lib.extendDeep({}, redoit));
+        var changes = Lib.extendDeep({}, redoit),
+            newMin = changes['xaxis.range[0]'],
+            newMax = changes['xaxis.range[1]'];
+
+        if(fullLayout.xaxis.rangeslider.visible){
+            if(newMin && newMax) {
+                fullLayout.xaxis.rangeslider.setRange(newMin, newMax);
+            } else if(changes['xaxis.autorange']) {
+                fullLayout.xaxis.rangeslider.setRange(-Infinity, Infinity);
+            }
+        }
+
+        gd.emit('plotly_relayout', changes);
         return gd;
     });
 };
