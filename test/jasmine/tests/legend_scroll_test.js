@@ -1,11 +1,14 @@
 var Plotly = require('@lib/index');
 var createGraph = require('../assets/create_graph_div');
 var destroyGraph = require('../assets/destroy_graph_div');
+var getBBox = require('../assets/get_bbox');
 var mock = require('../../image/mocks/legend_scroll.json');
 
+
 describe('The legend', function() {
-    var gd,
-        legend;
+    'use strict';
+
+    var gd, legend;
 
     describe('when plotted with many traces', function() {
         beforeEach(function() {
@@ -17,7 +20,7 @@ describe('The legend', function() {
         afterEach(destroyGraph);
 
         it('should not exceed plot height', function() {
-            var legendHeight = legend.getAttribute('height'),
+            var legendHeight = getBBox(legend).height,
                 plotHeight = gd._fullLayout.height - gd._fullLayout.margin.t - gd._fullLayout.margin.b;
 
             expect(+legendHeight).toBe(plotHeight);
@@ -53,7 +56,7 @@ describe('The legend', function() {
 
         it('should scale the scrollbar movement from top to bottom', function() {
             var scrollBar = legend.getElementsByClassName('scrollbar')[0],
-                legendHeight = legend.getAttribute('height');
+                legendHeight = getBBox(legend).height;
 
             // The scrollbar is 20px tall and has 4px margins
 
