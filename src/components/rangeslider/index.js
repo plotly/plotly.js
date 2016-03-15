@@ -8,6 +8,8 @@
 
 'use strict';
 
+var Plotly = require('../../plotly');
+
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
 
@@ -223,6 +225,13 @@ function draw(gd, minStart, maxStart) {
         helpers.setAttributes(grabberMax, { 'transform': 'translate(' + max + ')' });
 
         // call to set range on plot here
+        var rangeMin = fullLayout.xaxis.range[0],
+            rangeMax = fullLayout.xaxis.range[1],
+            range = rangeMax - rangeMin,
+            dataMin = min / width * range + rangeMin,
+            dataMax = max / width * range + rangeMin;
+
+        Plotly.relayout(gd, 'xaxis.range', [dataMin, dataMax]);
     }
 
 
