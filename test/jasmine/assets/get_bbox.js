@@ -2,6 +2,8 @@
 
 var d3 = require('d3');
 
+var ATTRS = ['x', 'y', 'width', 'height'];
+
 
 // In-house implementation of SVG getBBox that takes clip paths into account
 module.exports = function getBBox(element) {
@@ -14,21 +16,42 @@ module.exports = function getBBox(element) {
 
     // only supports 'url(#<id>)' at the moment
     var clipPathId = clipPathAttr.substring(5, clipPathAttr.length-1);
-    var clipPath = d3.select('#' + clipPathId).node();
+    var clipBBox = getClipBBox(clipPathId);
 
-    return minBBox(elementBBox, clipPath.getBBox());
+    return minBBox(elementBBox, clipBBox);
 };
 
+function getClipBBox(clipPathId) {
+    var clipPath = d3.select('#' + clipPathId);
+    var clipBBox;
+
+    try {
+        // this line throws an error in FF (38 and 45 at least)
+        clipBBox = clipPath.node().getBBox();
+    }
+    catch(e) {
+        // use DOM attributes as fallback
+        var path = d3.select(clipPath.node().firstChild);
+
+        clipBBox = {};
+
+        ATTRS.forEach(function(attr) {
+            clipBBox[attr] = path.attr(attr);
+        });
+    }
+
+    return clipBBox;
+}
+
 function minBBox(bbox1, bbox2) {
-    var keys = ['x', 'y', 'width', 'height'];
     var out = {};
 
     function min(attr) {
         return Math.min(bbox1[attr], bbox2[attr]);
     }
 
-    keys.forEach(function(key) {
-        out[key] = min(key);
+    ATTRS.forEach(function(attr) {
+        out[attr] = min(attr);
     });
 
     return out;
