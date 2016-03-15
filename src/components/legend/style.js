@@ -28,25 +28,25 @@ module.exports = function style(s) {
             .selectAll('g.legendfill')
                 .data([d]);
         fill.enter().append('g')
-            .classed('legendfill',true);
+            .classed('legendfill', true);
 
         var line = traceGroup
             .selectAll('g.legendlines')
                 .data([d]);
         line.enter().append('g')
-            .classed('legendlines',true);
+            .classed('legendlines', true);
 
         var symbol = traceGroup
             .selectAll('g.legendsymbols')
                 .data([d]);
         symbol.enter().append('g')
-            .classed('legendsymbols',true);
+            .classed('legendsymbols', true);
         symbol.style('opacity', d[0].trace.opacity);
 
         symbol.selectAll('g.legendpoints')
             .data([d])
           .enter().append('g')
-            .classed('legendpoints',true);
+            .classed('legendpoints', true);
     })
     .each(styleBars)
     .each(styleBoxes)
@@ -62,14 +62,14 @@ function styleLines(d) {
 
     var fill = d3.select(this).select('.legendfill').selectAll('path')
         .data(showFill ? [d] : []);
-    fill.enter().append('path').classed('js-fill',true);
+    fill.enter().append('path').classed('js-fill', true);
     fill.exit().remove();
     fill.attr('d', 'M5,0h30v6h-30z')
         .call(Drawing.fillGroupStyle);
 
     var line = d3.select(this).select('.legendlines').selectAll('path')
         .data(showLine ? [d] : []);
-    line.enter().append('path').classed('js-line',true)
+    line.enter().append('path').classed('js-line', true)
         .attr('d', 'M5,0h30');
     line.exit().remove();
     line.call(Drawing.lineGroupStyle);
@@ -161,20 +161,22 @@ function stylePoints(d) {
 
 function styleBars(d) {
     var trace = d[0].trace,
-        marker = trace.marker||{},
-        markerLine = marker.line||{},
+        marker = trace.marker || {},
+        markerLine = marker.line || {},
         barpath = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendbar')
             .data(Plots.traceIs(trace, 'bar') ? [d] : []);
-    barpath.enter().append('path').classed('legendbar',true)
+    barpath.enter().append('path').classed('legendbar', true)
         .attr('d','M6,6H-6V-6H6Z')
-        .attr('transform','translate(20,0)');
+        .attr('transform', 'translate(20,0)');
     barpath.exit().remove();
     barpath.each(function(d) {
-        var w = (d.mlw+1 || markerLine.width+1) - 1,
+        var w = (d.mlw + 1 || markerLine.width + 1) - 1,
             p = d3.select(this);
+
         p.style('stroke-width',w+'px')
             .call(Color.fill, d.mc || marker.color);
+
         if(w) {
             p.call(Color.stroke, d.mlc || markerLine.color);
         }
@@ -192,10 +194,12 @@ function styleBoxes(d) {
         .attr('transform', 'translate(20,0)');
     pts.exit().remove();
     pts.each(function(d) {
-        var w = (d.lw+1 || trace.line.width+1) - 1,
+        var w = (d.lw + 1 || trace.line.width + 1) - 1,
             p = d3.select(this);
+
         p.style('stroke-width', w+'px')
             .call(Color.fill, d.fc || trace.fillcolor);
+
         if(w) {
             p.call(Color.stroke, d.lc || trace.line.color);
         }
