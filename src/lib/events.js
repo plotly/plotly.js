@@ -53,7 +53,7 @@ var Events = {
          * events.
          */
         plotObj.emit = function(event, data) {
-            if(typeof $ !== 'undefined') {
+            if(typeof jQuery !== 'undefined') {
                 $(plotObj).trigger(event, data);
             }
 
@@ -76,7 +76,7 @@ var Events = {
          * If Jquery exists run all its handlers for this event and
          * collect the return value of the LAST handler function
          */
-        if(typeof $ !== 'undefined') {
+        if(typeof jQuery !== 'undefined') {
             jQueryHandlerValue = $(plotObj).triggerHandler(event, data);
         }
 
@@ -114,7 +114,19 @@ var Events = {
          */
         return jQueryHandlerValue !== undefined ? jQueryHandlerValue :
             nodeEventHandlerValue;
+    },
+
+    purge: function(plotObj) {
+        delete plotObj._ev;
+        delete plotObj.on;
+        delete plotObj.once;
+        delete plotObj.removeListener;
+        delete plotObj.removeAllListeners;
+        delete plotObj.emit;
+
+        return plotObj;
     }
+
 };
 
 module.exports = Events;

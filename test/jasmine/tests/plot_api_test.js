@@ -620,6 +620,27 @@ describe('Test plot api', function() {
         });
     });
 
+    describe('Plotly.purge', function() {
+
+        afterEach(destroyGraphDiv);
+
+        it('should return the graph div in its original state', function(done) {
+            var gd = createGraphDiv();
+            var initialKeys = Object.keys(gd);
+            var intialHTML = gd.innerHTML;
+            var mockData = [{ x: [1,2,3], y: [2,3,4] }];
+
+            Plotly.plot(gd, mockData).then(function() {
+                Plotly.purge(gd);
+
+                expect(Object.keys(gd)).toEqual(initialKeys);
+                expect(gd.innerHTML).toEqual(intialHTML);
+
+                done();
+            });
+        });
+    });
+
     describe('cleanData', function() {
         var gd;
 

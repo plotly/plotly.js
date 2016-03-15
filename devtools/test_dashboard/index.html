@@ -27,6 +27,7 @@
         getGraph: function() {
             return document.getElementById('embedded-graph').children[0];
         },
+
         fresh: function() {
             var anchor = document.getElementById('embedded-graph'),
                 graphDiv = Tabs.getGraph();
@@ -37,6 +38,7 @@
 
             return graphDiv;
         },
+
         plotMock: function(mockName) {
             var mockURL = '../../test/image/mocks/' + mockName + '.json';
 

@@ -181,8 +181,15 @@ describe('Events', function() {
             expect(eventBaton).toBe(3);
             expect(result).toBe('pong');
         });
+    });
 
+    describe('purge', function() {
+        it('should remove all method from the plotObj', function() {
+            Events.init(plotObj);
+            Events.purge(plotObj);
 
+            expect(plotObj).toEqual({});
+        });
     });
 
 });

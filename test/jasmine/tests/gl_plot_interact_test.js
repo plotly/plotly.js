@@ -36,14 +36,19 @@ describe('Test gl plot interactions', function() {
 
         sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
         sceneIds.forEach(function(id) {
-            fullLayout[id]._scene.destroy();
+            var scene = fullLayout[id]._scene;
+
+            if(scene.glplot) scene.destroy();
         });
 
         sceneIds = Plots.getSubplotIds(fullLayout, 'gl2d');
         sceneIds.forEach(function(id) {
             var scene2d = fullLayout._plots[id]._scene2d;
-            scene2d.stopped = true;
-            scene2d.destroy();
+
+            if(scene2d.glplot) {
+                scene2d.stopped = true;
+                scene2d.destroy();
+            }
         });
 
         destroyGraphDiv();
@@ -368,5 +373,44 @@ describe('Test gl plot interactions', function() {
             });
         });
 
+    });
+
+    describe('Plots.cleanPlot', function() {
+
+        it('should remove gl context from the graph div of a gl3d plot', function(done) {
+            gd = createGraphDiv();
+
+            var mockData = [{
+                type: 'scatter3d'
+            }];
+
+            Plotly.plot(gd, mockData).then(function() {
+                expect(gd._fullLayout.scene._scene.glplot).toBeDefined();
+
+                Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
+                expect(gd._fullLayout.scene._scene.glplot).toBe(null);
+
+                done();
+            });
+        });
+
+        it('should remove gl context from the graph div of a gl2d plot', function(done) {
+            gd = createGraphDiv();
+
+            var mockData = [{
+                type: 'scattergl',
+                x: [1,2,3],
+                y: [1,2,3]
+            }];
+
+            Plotly.plot(gd, mockData).then(function() {
+                expect(gd._fullLayout._plots.xy._scene2d.glplot).toBeDefined();
+
+                Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
+                expect(gd._fullLayout._plots.xy._scene2d.glplot).toBe(null);
+
+                done();
+            });
+        });
     });
 });

@@ -492,7 +492,7 @@ plots.supplyDefaults = function(gd) {
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
     // clean subplots and other artifacts from previous plot calls
-    cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     /*
      * Relink functions and underscore attributes to promote consistency between
@@ -520,7 +520,7 @@ plots.supplyDefaults = function(gd) {
     }
 };
 
-function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var i, j;
 
     var plotTypes = Object.keys(subplotsRegistry);
@@ -560,7 +560,7 @@ function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
             oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
         }
     }
-}
+};
 
 /**
  * Relink private _keys and keys with a function value from one layout
@@ -755,16 +755,13 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     }
 };
 
+// Remove all plotly attributes from a div so it can be replotted fresh
+// TODO: these really need to be encapsulated into a much smaller set...
 plots.purge = function(gd) {
-    // remove all plotly attributes from a div so it can be replotted fresh
-    // TODO: these really need to be encapsulated into a much smaller set...
 
     // note: we DO NOT remove _context because it doesn't change when we insert
     // a new plot, and may have been set outside of our scope.
 
-    // clean up the gl and geo containers
-    // TODO unify subplot creation/update with d3.selection.order
-    // and/or subplot ids
     var fullLayout = gd._fullLayout || {};
     if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
     if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
