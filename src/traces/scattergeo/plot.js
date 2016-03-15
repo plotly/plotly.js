@@ -125,83 +125,84 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
 
     gScatterGeoTraces.exit().remove();
 
-    // TODO add hover - how?
-    gScatterGeoTraces
-        .each(function(trace) {
-            if(!subTypes.hasLines(trace)) return;
+    // TODO find a way to order the inner nodes on update
+    gScatterGeoTraces.selectAll('*').remove();
 
-            d3.select(this)
-                .append('path')
-                .datum(makeLineGeoJSON(trace))
-                .attr('class', 'js-line');
-        });
+    gScatterGeoTraces.each(function(trace) {
+        var s = d3.select(this);
 
-    gScatterGeoTraces.append('g')
-        .attr('class', 'points')
-        .each(function(trace) {
-            var s = d3.select(this),
-                showMarkers = subTypes.hasMarkers(trace),
-                showText = subTypes.hasText(trace);
+        if(!subTypes.hasLines(trace)) return;
 
-            if((!showMarkers && !showText)) return;
+        s.selectAll('path.js-line')
+            .data([makeLineGeoJSON(trace)])
+          .enter().append('path')
+            .classed('js-line', true);
 
-            var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
-                eventDataFunc = makeEventDataFunc(trace);
+        // TODO add hover - how?
+    });
 
-            var hoverinfo = trace.hoverinfo,
-                hasNameLabel = (
-                    hoverinfo === 'all' ||
-                    hoverinfo.indexOf('name') !== -1
-                );
+    gScatterGeoTraces.each(function(trace) {
+        var s = d3.select(this),
+            showMarkers = subTypes.hasMarkers(trace),
+            showText = subTypes.hasText(trace);
 
-            function handleMouseOver(pt, ptIndex) {
-                if(!geo.showHover) return;
+        if(!showMarkers && !showText) return;
 
-                var xy = geo.projection([pt.lon, pt.lat]);
-                cleanHoverLabelsFunc(pt);
+        var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
+            cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+            eventDataFunc = makeEventDataFunc(trace);
 
-                Fx.loneHover({
-                    x: xy[0],
-                    y: xy[1],
-                    name: hasNameLabel ? trace.name : undefined,
-                    text: pt.textLabel,
-                    color: pt.mc || (trace.marker || {}).color
-                }, {
-                    container: geo.hoverContainer.node()
-                });
+        var hoverinfo = trace.hoverinfo,
+            hasNameLabel = (
+                hoverinfo === 'all' ||
+                hoverinfo.indexOf('name') !== -1
+            );
 
-                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
-            }
+        function handleMouseOver(pt, ptIndex) {
+            if(!geo.showHover) return;
 
-            function handleClick(pt, ptIndex) {
-                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
-            }
+            var xy = geo.projection([pt.lon, pt.lat]);
+            cleanHoverLabelsFunc(pt);
 
-            if(showMarkers) {
-                s.selectAll('path.point')
-                    .data(cdi)
-                    .enter().append('path')
-                        .attr('class', 'point')
-                        .on('mouseover', handleMouseOver)
-                        .on('click', handleClick)
-                        .on('mouseout', function() {
-                            Fx.loneUnhover(geo.hoverContainer);
-                        })
-                        .on('mousedown', function() {
-                            // to simulate the 'zoomon' event
-                            Fx.loneUnhover(geo.hoverContainer);
-                        })
-                        .on('mouseup', handleMouseOver);  // ~ 'zoomend'
-            }
+            Fx.loneHover({
+                x: xy[0],
+                y: xy[1],
+                name: hasNameLabel ? trace.name : undefined,
+                text: pt.textLabel,
+                color: pt.mc || (trace.marker || {}).color
+            }, {
+                container: geo.hoverContainer.node()
+            });
 
-            if(showText) {
-                s.selectAll('g')
-                    .data(cdi)
-                    .enter().append('g')
-                        .append('text');
-            }
-        });
+            geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+        }
+
+        function handleClick(pt, ptIndex) {
+            geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
+        }
+
+        if(showMarkers) {
+            s.selectAll('path.point').data(cdi)
+              .enter().append('path')
+                .classed('point', true)
+                .on('mouseover', handleMouseOver)
+                .on('click', handleClick)
+                .on('mouseout', function() {
+                    Fx.loneUnhover(geo.hoverContainer);
+                })
+                .on('mousedown', function() {
+                    // to simulate the 'zoomon' event
+                    Fx.loneUnhover(geo.hoverContainer);
+                })
+                .on('mouseup', handleMouseOver);  // ~ 'zoomend'
+        }
+
+        if(showText) {
+            s.selectAll('g').data(cdi)
+              .enter().append('g')
+              .append('text');
+        }
+    });
 
     plotScatterGeo.style(geo);
 };
@@ -209,15 +210,16 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
 plotScatterGeo.style = function(geo) {
     var selection = geo.framework.selectAll('g.trace.scattergeo');
 
-    selection.style('opacity', function(trace) { return trace.opacity; });
+    selection.style('opacity', function(trace) {
+        return trace.opacity;
+    });
 
-    selection.selectAll('g.points')
-        .each(function(trace) {
-            d3.select(this).selectAll('path.point')
-                .call(Drawing.pointStyle, trace);
-            d3.select(this).selectAll('text')
-                .call(Drawing.textPointStyle, trace);
-        });
+    selection.each(function(trace) {
+        d3.select(this).selectAll('path.point')
+            .call(Drawing.pointStyle, trace);
+        d3.select(this).selectAll('text')
+            .call(Drawing.textPointStyle, trace);
+    });
 
     // GeoJSON calc data is incompatible with Drawing.lineGroupStyle
     selection.selectAll('path.js-line')

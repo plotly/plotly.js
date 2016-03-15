@@ -2412,6 +2412,39 @@ Plotly.relayout = function relayout(gd, astr, val) {
 };
 
 /**
+ * Purge a graph container div back to its initial pre-Plotly.plot state
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ */
+Plotly.purge = function purge(gd) {
+    gd = getGraphDiv(gd);
+
+    var fullLayout = gd._fullLayout || {},
+        fullData = gd._fullData || [];
+
+    // remove gl contexts
+    Plots.cleanPlot([], {}, fullData, fullLayout);
+
+    // purge properties
+    Plots.purge(gd);
+
+    // purge event emitter methods
+    Events.purge(gd);
+
+    // remove plot container
+    if(fullLayout._container) fullLayout._container.remove();
+
+    delete gd._context;
+    delete gd._replotPending;
+    delete gd._mouseDownTime;
+    delete gd._hmpixcount;
+    delete gd._hmlumcount;
+
+    return gd;
+};
+
+/**
  * Reduce all reserved margin objects to a single required margin reservation.
  *
  * @param {Object} margins
@@ -2510,7 +2543,7 @@ function makePlotFramework(gd) {
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
     fullLayout._paperdiv.enter().append('div')
-        .classed('svg-container',true)
+        .classed('svg-container', true)
         .style('position','relative');
 
     // Initial autosize

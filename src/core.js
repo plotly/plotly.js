@@ -15,7 +15,7 @@
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.6.2';
+exports.version = '1.6.3';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -28,6 +28,7 @@ exports.prependTraces = Plotly.prependTraces;
 exports.addTraces = Plotly.addTraces;
 exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
+exports.purge = Plotly.purge;
 exports.setPlotConfig = require('./plot_api/set_plot_config');
 exports.register = Plotly.register;
 

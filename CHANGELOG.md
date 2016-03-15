@@ -9,6 +9,12 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.6.3] -- 2016-03-07
+
+### Fixed
+-  Argument parsing for vertex and face colors of mesh3d traces is now
+   functional [#287]
+
 
 ## [1.6.2] -- 2016-03-03
 

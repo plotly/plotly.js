@@ -65,3 +65,17 @@ exports.plot = function plotGl2d(gd) {
         scene.plot(fullSubplotData, fullLayout, gd.layout);
     }
 };
+
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, 'gl2d');
+
+    for(var i = 0; i < oldSceneKeys.length; i++) {
+        var oldSubplot = oldFullLayout._plots[oldSceneKeys[i]],
+            xaName = oldSubplot.xaxis._name,
+            yaName = oldSubplot.yaxis._name;
+
+        if(!!oldSubplot._scene2d && (!newFullLayout[xaName] || !newFullLayout[yaName])) {
+            oldSubplot._scene2d.destroy();
+        }
+    }
+};

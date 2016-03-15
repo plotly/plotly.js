@@ -20,12 +20,15 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 
 | Label | Purpose |
 |--------|---------|
-| bug | bug report confirmed by a plotly team member |
-| enhancement | planned feature or task |
-| community | issue left open for community input and pull requests |
-| cleanup | source code cleanup resulting in no enhancement for users | 
-| duplicate | *self-explanatory* |
-| wontfix | *self-explanatory* |
+| `type: bug` | bug report confirmed by a plotly team member |
+| `type: enhancement` | planned feature or task |
+| `type: community` | issue left open for community input and pull requests |
+| `type: maintenace` | source code cleanup resulting in no enhancement for users | 
+| `type: duplicate` | *self-explanatory* |
+| `type: wontfix` | *self-explanatory* |
+| `status: in progress` | PRs that required some intial feedback but not ready to merge |
+| `status: reviewable` | PRs that are completed from the author's perspective |
+| `status: on hold` | PRs that are put on hold | 
 
 ### Development
 
