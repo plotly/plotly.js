@@ -197,10 +197,26 @@ module.exports = function draw(gd) {
 
     legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
 
+    var clipPath = selectClipPath(gd);
+
+    clipPath.attr({
+        width: opts.width,
+        height: scrollheight,
+        x: 0,
+        y: 0
+    });
+
+    legend.call(Drawing.setClipUrl, constants.clipId);
+
     // If scrollbar should be shown.
     if(gd.firstRender && opts.height - scrollheight > 0 && !gd._context.staticPlot) {
+        bg.attr({
+            width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth
+        });
 
-        bg.attr({ width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth });
+        clipPath.attr({
+            width: opts.width + constants.scrollBarWidth
+        });
 
         legend.node().addEventListener('wheel', function(e) {
             e.preventDefault();
@@ -449,4 +465,22 @@ function repositionLegend(gd, traces) {
         b: opts.height * ({top: 1, middle: 0.5}[yanchor] || 0),
         t: opts.height * ({bottom: 1, middle: 0.5}[yanchor] || 0)
     });
+}
+
+function selectClipPath(gd) {
+    var container = gd._fullLayout._infolayer.node().parentNode;
+
+    var defs = d3.select(container).selectAll('defs')
+        .data([0]);
+
+    defs.enter().append('defs');
+
+    var clipPath = defs.selectAll('#' + constants.clipId)
+        .data([0]);
+
+    var path = clipPath.enter().append('clipPath')
+        .attr('id', constants.clipId)
+        .append('rect');
+
+    return path;
 }
