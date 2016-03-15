@@ -69,7 +69,6 @@ module.exports = function draw(gd) {
 
     scrollBox.enter().append('g')
         .attr('class', 'scrollbox');
-    scrollBox.exit().remove();
 
     var scrollBar = legend.selectAll('rect.scrollbar')
         .data([0]);
@@ -86,8 +85,10 @@ module.exports = function draw(gd) {
 
     var groups = scrollBox.selectAll('g.groups')
         .data(legendData);
+
     groups.enter().append('g')
         .attr('class', 'groups');
+
     groups.exit().remove();
 
     if(helpers.isGrouped(opts)) {
@@ -116,11 +117,13 @@ module.exports = function draw(gd) {
 
             var traceToggle = d3.select(this).selectAll('rect')
                 .data([0]);
+
             traceToggle.enter().append('rect')
                 .classed('legendtoggle', true)
                 .style('cursor', 'pointer')
                 .attr('pointer-events', 'all')
                 .call(Color.fill, 'rgba(0,0,0,0)');
+
             traceToggle.on('click', function() {
                 if(gd._dragged) return;
 
@@ -188,6 +191,7 @@ module.exports = function draw(gd) {
         scrollPosition = scrollBox.attr('data-scroll') ? scrollBox.attr('data-scroll') : 0;
 
     scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
+
     bg.attr({
         width: opts.width - 2 * opts.borderwidth,
         height: scrollheight - 2 * opts.borderwidth,
