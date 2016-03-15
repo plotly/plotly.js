@@ -25,10 +25,10 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
         tickmodeDefault = 'linear';
     }
     var tickmode = coerce('tickmode', tickmodeDefault);
-    
+
     if(tickmode === 'auto') {
         var nticks = coerce('nticks');
-        
+
         //Only use tickpadding if tickmode is 'auto' and the user doesn't specify nticks
         if(nticks === layoutAttributes.nticks.dflt) {
             coerce('tickpadding');
