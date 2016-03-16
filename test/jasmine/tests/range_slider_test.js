@@ -12,7 +12,7 @@ describe('the range slider', function() {
 
     describe('when specified as visible', function() {
 
-        beforeAll(function(done) {
+        beforeEach(function(done) {
             gd = createGraphDiv();
 
             Plotly.plot(gd, mock.data, mock.layout).then(function() {
@@ -22,7 +22,7 @@ describe('the range slider', function() {
             });
         });
 
-        afterAll(destroyGraphDiv);
+        afterEach(destroyGraphDiv);
 
         it('should be added to the DOM when specified', function() {
             expect(rangeSlider).toBeDefined();
@@ -48,7 +48,7 @@ describe('the range slider', function() {
             var start = 86,
                 end = 140,
                 dataMinStart = rangeSlider.getAttribute('data-min'),
-                diff = Math.abs(end - start);
+                diff = end - start;
 
             slide(start, 400, end, 400);
 
@@ -64,46 +64,65 @@ describe('the range slider', function() {
             var start = 706,
                 end = 500,
                 dataMaxStart = rangeSlider.getAttribute('data-max'),
-                diff = Math.abs(end - start);
+                diff = end - start;
 
             slide(start, 400, end, 400);
 
             var maskMax = children[3],
                 handleMax = children[6];
 
-            expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart - diff));
-            expect(maskMax.getAttribute('width')).toEqual(String(diff));
-            expect(handleMax.getAttribute('transform')).toBe('translate(' + (dataMaxStart - diff) + ')');
+            expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
+            expect(maskMax.getAttribute('width')).toEqual(String(-diff));
+            expect(handleMax.getAttribute('transform')).toBe('translate(' + (+dataMaxStart + diff) + ')');
         });
 
-        it('should react to moving the slidebox', function() {
-            var start = 210,
+        it('should react to moving the slidebox left to right', function() {
+            var start = 250,
                 end = 300,
                 dataMinStart = rangeSlider.getAttribute('data-min'),
-                dataMaxStart = rangeSlider.getAttribute('data-max'),
-                maskMaxWidth = children[3].getAttribute('width'),
-                diff = Math.abs(end - start);
+                diff = end - start;
 
             slide(start, 400, end, 400);
 
             var maskMin = children[2],
-                maskMax = children[3],
-                handleMin = children[5],
-                handleMax = children[6];
+                handleMin = children[5];
 
             expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
-            expect(maskMin.getAttribute('width')).toEqual(String(+dataMinStart + diff));
+            expect(maskMin.getAttribute('width')).toEqual(String(diff));
             expect(handleMin.getAttribute('transform')).toEqual('translate(' + (+dataMinStart + diff - 3) + ')');
+        });
+
+        it('should react to moving the slidebox right to left', function() {
+            var start = 300,
+                end = 250,
+                dataMaxStart = rangeSlider.getAttribute('data-max'),
+                diff = end - start;
+
+            slide(start, 400, end, 400);
+
+            var maskMax = children[3],
+                handleMax = children[6];
 
             expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
-            expect(maskMax.getAttribute('width')).toEqual(String(maskMaxWidth - diff));
+            expect(maskMax.getAttribute('width')).toEqual(String(-diff));
             expect(handleMax.getAttribute('transform')).toEqual('translate(' + (+dataMaxStart + diff) + ')');
+        });
+
+        it('should resize the main plot when rangeslider has moved', function() {
+            var start = 300,
+                end = 400;
+
+            slide(start, 400, end, 400);
+
+            var rangeDiff = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
+
+            expect(rangeDiff).toBeCloseTo(21.009, 2);
         });
     });
 
 
     describe('when not specified as visible', function() {
-        beforeAll(function(done) {
+        beforeEach(function(done) {
             gd = createGraphDiv();
 
             Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {}).then(function() {
