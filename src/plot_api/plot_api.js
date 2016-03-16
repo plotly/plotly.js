@@ -2585,6 +2585,9 @@ function makePlotFramework(gd) {
     fullLayout._defs = fullLayout._paper.append('defs')
         .attr('id', 'defs-' + fullLayout._uid);
 
+    fullLayout._topdefs = fullLayout._toppaper.append('defs')
+        .attr('id', 'topdefs-' + fullLayout._uid);
+
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 

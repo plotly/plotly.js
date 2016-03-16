@@ -85,14 +85,18 @@ module.exports = function toSVG(gd, format) {
             .appendChild(geoFramework.node());
     }
 
-    // now that we've got the 3d images in the right layer, add top items above them
-    // assumes everything in toppaper is a group, and if it's empty (like hoverlayer)
-    // we can ignore it
+    // now that we've got the 3d images in the right layer,
+    // add top items above them assumes everything in toppaper is either
+    // a group or a defs, and if it's empty (like hoverlayer) we can ignore it.
     if(fullLayout._toppaper) {
-        var topGroups = fullLayout._toppaper.node().childNodes,
-            topGroup;
+        var nodes = fullLayout._toppaper.node().childNodes;
+
+        // make copy of nodes as childNodes prop gets mutated in loop below
+        var topGroups = Array.prototype.slice.call(nodes);
+
         for(i = 0; i < topGroups.length; i++) {
-            topGroup = topGroups[i];
+            var topGroup = topGroups[i];
+
             if(topGroup.childNodes.length) svg.node().appendChild(topGroup);
         }
     }
@@ -103,12 +107,7 @@ module.exports = function toSVG(gd, format) {
     svg.node().style.background = '';
 
     svg.selectAll('text')
-        .attr({'data-unformatted': null})
-        .style({
-            '-webkit-user-select': null,
-            '-moz-user-select': null,
-            '-ms-user-select': null
-        })
+        .attr('data-unformatted', null)
         .each(function() {
             // hidden text is pre-formatting mathjax, the browser ignores it but it can still confuse batik
             var txt = d3.select(this);
