@@ -13,7 +13,7 @@ var Surface = {};
 
 Surface.attributes = require('./attributes');
 Surface.supplyDefaults = require('./defaults');
-Surface.colorbar = require('../heatmap/colorbar');
+Surface.colorbar = require('./colorbar');
 Surface.calc = require('./calc');
 Surface.plot = require('./convert');
 

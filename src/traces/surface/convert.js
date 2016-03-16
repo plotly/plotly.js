@@ -248,10 +248,6 @@ proto.update = function(data) {
         opacity: 1
     };
 
-    if('cmin' in data && 'cmax' in data) {
-        params.intensityBounds = [ data.cmin, data.cmax ];
-    }
-
     //Refine if necessary
     if(data.surfacecolor) {
         var intensity = ndarray(
