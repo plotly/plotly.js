@@ -274,6 +274,8 @@ function supplyLayoutDefaults(layoutIn, layoutOut) {
             attributes, attr, dflt);
     }
 
+    layoutOut.yaxis.fixedrange = true;
+
     coerce('visible');
     coerce('height');
     coerce('backgroundcolor');
