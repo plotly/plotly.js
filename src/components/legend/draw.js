@@ -336,13 +336,8 @@ function drawTexts(context, gd, d, i, traces) {
         y: 0,
         'data-unformatted': name
     })
-    .style({
-        'text-anchor': 'start',
-        '-webkit-user-select': 'none',
-        '-moz-user-select': 'none',
-        '-ms-user-select': 'none',
-        'user-select': 'none'
-    })
+    .style('text-anchor', 'start')
+    .classed('user-select-none', true)
     .call(Drawing.font, fullLayout.legend.font)
     .text(name);
 
