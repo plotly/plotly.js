@@ -166,7 +166,7 @@ fdescribe('the range slider', function() {
                 expected = { xaxis: { rangeslider: {
                     visible: true,
                     height: 0.15,
-                    backgroundcolor: 'transparent',
+                    backgroundcolor: '#ffffff',
                     borderwidth: 1,
                     bordercolor: 'transparent'
                 }}};
@@ -188,7 +188,7 @@ fdescribe('the range slider', function() {
                 expected = { xaxis: { rangeslider: {
                     visible: false,
                     height: 0.15,
-                    backgroundcolor: 'transparent',
+                    backgroundcolor: '#ffffff',
                     borderwidth: 1,
                     bordercolor: 'transparent'
                 }}};

@@ -29,7 +29,7 @@ module.exports = {
     },
     backgroundcolor: {
         valType: 'color',
-        dflt: 'transparent',
+        dflt: '#ffffff',
         role: 'style',
         description: 'Sets the background color of the range slider.'
     },
