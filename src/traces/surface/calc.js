@@ -14,5 +14,9 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 
 // Compute auto-z and autocolorscale if applicable
 module.exports = function calc(gd, trace) {
-    colorscaleCalc(trace, trace.z, '', 'z');
+    if(trace.surfacecolor) {
+        colorscaleCalc(trace, trace.surfacecolor, '', 'c');
+    } else {
+        colorscaleCalc(trace, trace.z, '', 'c');
+    }
 };
