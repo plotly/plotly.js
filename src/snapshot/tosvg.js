@@ -89,15 +89,7 @@ module.exports = function toSVG(gd, format) {
     // assumes everything in toppaper is a group, and if it's empty (like hoverlayer)
     // we can ignore it
     if(fullLayout._toppaper) {
-        var topDefs = fullLayout._topdefs.node().childNodes;
 
-        for(i = 0; i < topDefs.length; i++) {
-            var topDef = topDefs[i];
-
-            fullLayout._defs.node().appendChild(topDef);
-        }
-
-        fullLayout._topdefs.remove();
 
         var topGroups = fullLayout._toppaper.node().childNodes;
 
