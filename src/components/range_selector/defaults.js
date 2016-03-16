@@ -24,20 +24,19 @@ module.exports = function rangeSelectorDefaults(containerIn, containerOut, layou
 
     var buttons = buttonsDefaults(selectorIn, selectorOut);
 
-    var visible = coerce('visible', !!buttons.length);
+    var visible = coerce('visible', buttons.length > 0);
     if(!visible) return;
 
     coerce('x');
-    coerce('xanchor');
     coerce('y');
-    coerce('yanchor');
+    Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 
-//     coerce('width');
-//     coerce('height');
+    coerce('xanchor');
+    coerce('yanchor');
 
     Lib.coerceFont(coerce, 'font', layout.font);
 
-    coerce('bgcolor');
+    coerce('bgcolor', layout.paper_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
 };

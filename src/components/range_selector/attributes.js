@@ -13,6 +13,7 @@ var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var buttonAttrs = require('./button_attributes');
 
+
 module.exports = {
     visible: {
         valType: 'boolean',
