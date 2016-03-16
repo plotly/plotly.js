@@ -1,10 +1,11 @@
 var Plotly = require('@lib/index');
+var RangeSlider = require('@src/components/rangeslider');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mock = require('../../image/mocks/range_slider.json');
 var mouseEvent = require('../assets/mouse_event');
 
-describe('the range slider', function() {
+fdescribe('the range slider', function() {
 
     var gd,
         rangeSlider,
@@ -131,10 +132,70 @@ describe('the range slider', function() {
             });
         });
 
-        afterAll(destroyGraphDiv);
+        afterEach(destroyGraphDiv);
 
         it('should not be added to the DOM by default', function() {
             expect(rangeSlider).not.toBeDefined();
+        });
+    });
+
+    describe('supplyLayoutDefaults function', function() {
+
+        it('should not mutate layoutIn', function() {
+            var layoutIn = { xaxis: { rangeslider: { visible: true }}},
+                layoutOut = { xaxis: { rangeslider: {}}},
+                expected = { xaxis: { rangeslider: { visible: true }}};
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
+
+            expect(layoutIn).toEqual(expected);
+        });
+
+        it('should ignore if there is no xaxis or rangeslider properties', function() {
+            var layoutIn = {},
+                layoutOut = {};
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
+
+            expect(layoutOut).toEqual(layoutIn);
+        });
+
+        it('should set defaults if rangeslider.visible is true', function() {
+            var layoutIn = { xaxis: { rangeslider: { visible: true }}},
+                layoutOut = { xaxis: { rangeslider: {}}},
+                expected = { xaxis: { rangeslider: {
+                    visible: true,
+                    height: 0.15,
+                    backgroundcolor: 'transparent',
+                    borderwidth: 1,
+                    bordercolor: 'transparent'
+                }}};
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
+
+            expect(layoutOut).toEqual(expected);
+        });
+
+        it('should set defaults if properties are invalid', function() {
+            var layoutIn = { xaxis: { rangeslider: {
+                    visible: 'invalid',
+                    height: 'invalid',
+                    backgroundcolor: 42,
+                    bordercolor: 42,
+                    borderwidth: 'superfat'
+                }}},
+                layoutOut = { xaxis: { rangeslider: {}}},
+                expected = { xaxis: { rangeslider: {
+                    visible: false,
+                    height: 0.15,
+                    backgroundcolor: 'transparent',
+                    borderwidth: 1,
+                    bordercolor: 'transparent'
+                }}};
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
+
+            expect(layoutOut).toEqual(expected);
         });
     });
 });

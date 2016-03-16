@@ -25,9 +25,8 @@ module.exports = {
 };
 
 function draw(gd, minStart, maxStart) {
-    var fullLayout = gd._fullLayout;
-
-    var options = fullLayout.xaxis.rangeslider;
+    var fullLayout = gd._fullLayout,
+        options = fullLayout.xaxis.rangeslider;
 
     if(!options.visible) return;
 
@@ -264,6 +263,9 @@ function draw(gd, minStart, maxStart) {
 
 
 function supplyLayoutDefaults(layoutIn, layoutOut) {
+
+    if(!layoutIn.xaxis || !layoutOut.xaxis) return;
+
     var containerIn = layoutIn.xaxis.rangeslider || {},
         containerOut = layoutOut.xaxis.rangeslider = {};
 
