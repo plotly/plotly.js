@@ -85,13 +85,14 @@ module.exports = function toSVG(gd, format) {
             .appendChild(geoFramework.node());
     }
 
-    // now that we've got the 3d images in the right layer, add top items above them
-    // assumes everything in toppaper is a group, and if it's empty (like hoverlayer)
-    // we can ignore it
+    // now that we've got the 3d images in the right layer,
+    // add top items above them assumes everything in toppaper is either
+    // a group or a defs, and if it's empty (like hoverlayer) we can ignore it.
     if(fullLayout._toppaper) {
+        var nodes = fullLayout._toppaper.node().childNodes;
 
-
-        var topGroups = fullLayout._toppaper.node().childNodes;
+        // make copy of nodes as childNodes prop gets mutated in loop below
+        var topGroups = Array.prototype.slice.call(nodes);
 
         for(i = 0; i < topGroups.length; i++) {
             var topGroup = topGroups[i];
