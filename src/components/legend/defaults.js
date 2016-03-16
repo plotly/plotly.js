@@ -21,11 +21,10 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         containerOut = layoutOut.legend = {};
 
     var visibleTraces = 0,
-        defaultOrder = 'normal',
-        trace;
+        defaultOrder = 'normal';
 
     for(var i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
+        var trace = fullData[i];
 
         if(helpers.legendGetsTrace(trace)) {
             visibleTraces++;
