@@ -32,8 +32,11 @@ describe('the range slider', function() {
         it('should have the correct width and height', function() {
             var bg = children[0];
 
+            var options = mock.layout.xaxis.rangeslider,
+                expectedWidth = gd._fullLayout._size.w + options.borderwidth;
+
             // width incorporates border widths
-            expect(+bg.getAttribute('width')).toEqual(617);
+            expect(+bg.getAttribute('width')).toEqual(expectedWidth);
             expect(+bg.getAttribute('height')).toEqual(66);
         });
 
@@ -111,13 +114,23 @@ describe('the range slider', function() {
 
         it('should resize the main plot when rangeslider has moved', function() {
             var start = 300,
-                end = 400;
+                end = 400,
+                rangeDiff1 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
 
             slide(start, 400, end, 400);
 
-            var rangeDiff = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
+            var rangeDiff2 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
 
-            expect(rangeDiff).toBeCloseTo(21, 1);
+            expect(rangeDiff2).toBeLessThan(rangeDiff1);
+
+            start = 400;
+            end = 200;
+
+            slide(start, 400, end, 400);
+
+            var rangeDiff3 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
+
+            expect(rangeDiff3).toBeLessThan(rangeDiff2);
         });
     });
 
