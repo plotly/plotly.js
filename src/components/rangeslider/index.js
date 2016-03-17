@@ -28,7 +28,12 @@ function draw(gd, minStart, maxStart) {
     var fullLayout = gd._fullLayout,
         options = fullLayout.xaxis.rangeslider;
 
-    if(!options.visible) return;
+    // don't draw if being exported
+    if(!options.visible || gd._context.staticPlot) {
+        options.visible = false;
+        return;
+    }
+
 
     var width = fullLayout._size.w,
         height = (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * options.height,
@@ -40,6 +45,7 @@ function draw(gd, minStart, maxStart) {
 
     var x = fullLayout.margin.l,
         y = fullLayout.height - height - fullLayout.margin.b;
+
 
     var slider = document.createElementNS(svgNS, 'g');
     helpers.setAttributes(slider, {
@@ -274,12 +280,13 @@ function supplyLayoutDefaults(layoutIn, layoutOut) {
             attributes, attr, dflt);
     }
 
-    var yaxis = layoutOut.yaxis || {};
-    yaxis.fixedrange = true;
-
     coerce('visible');
     coerce('height');
     coerce('backgroundcolor');
     coerce('bordercolor');
     coerce('borderwidth');
+
+    if(containerOut.visible) {
+        layoutOut.yaxis.fixedrange = true;
+    }
 }
