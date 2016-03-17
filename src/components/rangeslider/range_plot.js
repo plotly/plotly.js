@@ -13,7 +13,7 @@ var Drawing = require('../drawing');
 
 var helpers = require('./helpers');
 var dataProcessors = require('./data_processors');
-var svgNS = 'http://www.w3.org/2000/svg';
+var svgNS = require('../../constants/xmlns_namespaces').svg;
 
 module.exports = function rangePlot(gd, w, h) {
 

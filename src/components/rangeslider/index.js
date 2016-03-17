@@ -13,11 +13,11 @@ var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
 
+var svgNS = require('../../constants/xmlns_namespaces').svg;
 var helpers = require('./helpers');
 var rangePlot = require('./range_plot');
 var attributes = require('./attributes');
 
-var svgNS = 'http://www.w3.org/2000/svg';
 
 module.exports = {
     draw: draw,
@@ -29,10 +29,7 @@ function draw(gd, minStart, maxStart) {
         options = fullLayout.xaxis.rangeslider;
 
     // don't draw if being exported
-    if(!options.visible || gd._context.staticPlot) {
-        options.visible = false;
-        return;
-    }
+    if(!options.visible) return;
 
 
     var width = fullLayout._size.w,
