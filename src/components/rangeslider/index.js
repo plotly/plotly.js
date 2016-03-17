@@ -16,7 +16,7 @@ var Plots = require('../../plots/plots');
 var svgNS = require('../../constants/xmlns_namespaces').svg;
 var helpers = require('./helpers');
 var rangePlot = require('./range_plot');
-var attributes = require('./attributes');
+var supplyLayoutDefaults = require('./defaults');
 
 
 module.exports = {
@@ -262,28 +262,4 @@ function draw(gd, minStart, maxStart) {
         b: height + fullLayout.margin.b + offsetShift,
         pad: fullLayout.xaxis.tickfont.size * 2 + offsetShift
     });
-}
-
-
-function supplyLayoutDefaults(layoutIn, layoutOut) {
-
-    if(!layoutIn.xaxis || !layoutOut.xaxis) return;
-
-    var containerIn = layoutIn.xaxis.rangeslider || {},
-        containerOut = layoutOut.xaxis.rangeslider = {};
-
-    function coerce(attr, dflt) {
-        return Lib.coerce(containerIn, containerOut,
-            attributes, attr, dflt);
-    }
-
-    coerce('visible');
-    coerce('height');
-    coerce('backgroundcolor');
-    coerce('bordercolor');
-    coerce('borderwidth');
-
-    if(containerOut.visible) {
-        layoutOut.yaxis.fixedrange = true;
-    }
 }
