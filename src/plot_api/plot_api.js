@@ -179,6 +179,7 @@ Plotly.plot = function(gd, data, layout, config) {
         var i, cd, trace;
 
         Legend.draw(gd);
+        RangeSelector.draw(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -243,11 +244,6 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function drawAxes() {
-
-        // TODO is there a better place for this???
-        RangeSelector.draw(gd);
-
-
         // draw ticks, titles, and calculate axis scaling (._b, ._m)
         RangeSlider.draw(gd);
         return Plotly.Axes.doTicks(gd, 'redraw');
@@ -313,6 +309,7 @@ Plotly.plot = function(gd, data, layout, config) {
         Shapes.drawAll(gd);
         Plotly.Annotations.drawAll(gd);
         Legend.draw(gd);
+        RangeSelector.draw(gd);
     }
 
     function cleanUp() {
