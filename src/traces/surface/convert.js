@@ -248,6 +248,8 @@ proto.update = function(data) {
         opacity: 1
     };
 
+    params.intensityBounds = [data.cmin, data.cmax];
+
     //Refine if necessary
     if(data.surfacecolor) {
         var intensity = ndarray(
@@ -256,6 +258,12 @@ proto.update = function(data) {
             return data.surfacecolor[col][row];
         });
         coords.push(intensity);
+    }
+    else {
+        // when 'z' is used as 'intensity',
+        // we must scale its value
+        params.intensityBounds[0] *= scaleFactor[2];
+        params.intensityBounds[1] *= scaleFactor[2];
     }
 
     this.dataScale = refine(coords);
