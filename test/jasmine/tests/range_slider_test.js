@@ -5,7 +5,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mock = require('../../image/mocks/range_slider.json');
 var mouseEvent = require('../assets/mouse_event');
 
-fdescribe('the range slider', function() {
+describe('the range slider', function() {
 
     var gd,
         rangeSlider,
