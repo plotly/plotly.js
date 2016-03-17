@@ -274,12 +274,13 @@ function supplyLayoutDefaults(layoutIn, layoutOut) {
             attributes, attr, dflt);
     }
 
-    var yaxis = layoutOut.yaxis || {};
-    yaxis.fixedrange = true;
-
     coerce('visible');
     coerce('height');
     coerce('backgroundcolor');
     coerce('bordercolor');
     coerce('borderwidth');
+
+    if(containerOut.visible) {
+        layoutOut.yaxis.fixedrange = true;
+    }
 }
