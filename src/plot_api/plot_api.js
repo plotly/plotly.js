@@ -761,11 +761,6 @@ function cleanData(data, existingData) {
             if(cont.colorscale === 'YIGnBu') cont.colorscale = 'YlGnBu';
             if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
         }
-        if(Plots.traceIs(trace, 'surface')) {
-            if('zmin' in trace) trace.cmin = trace.zmin;
-            if('zmax' in trace) trace.cmax = trace.zmax;
-            if('zauto' in trace) trace.cauto = trace.zauto;
-        }
 
         // prune empty containers made before the new nestedProperty
         if(emptyContainer(trace, 'line')) delete trace.line;
