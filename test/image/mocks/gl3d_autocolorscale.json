@@ -25,8 +25,8 @@
                 ["zero two", "one two", "two two"]
             ],
             "autocolorscale": true,
-            "cmin": 0,
-            "cmax": "50"
+            "zmin": 0,
+            "zmax": "50"
         }
     ],
     "layout": {
