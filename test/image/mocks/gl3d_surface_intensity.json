@@ -245,7 +245,9 @@
           8
         ]
       ],
-      "type": "surface"
+      "type": "surface",
+      "cmin": 0,
+      "cmax": 5
     }
   ],
   "layout": {
