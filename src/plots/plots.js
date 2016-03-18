@@ -805,10 +805,11 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars);
+    var _modules = gd._modules;
 
-    for(var i = 0; i < modulesWithErrorBars.length; i++) {
-        var _module = modulesWithErrorBars[i];
+    for(var i = 0; i < _modules.length; i++) {
+        var _module = _modules[i];
+
         if(_module.style) _module.style(gd);
     }
 };
