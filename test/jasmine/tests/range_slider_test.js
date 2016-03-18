@@ -135,7 +135,7 @@ describe('the range slider', function() {
     });
 
 
-    fdescribe('visibility property', function() {
+    describe('visibility property', function() {
         beforeEach(function() {
             gd = createGraphDiv();
         });
