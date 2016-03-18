@@ -14,6 +14,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Color = require('../../components/color');
+var ErrorBars = require('../../components/errorbars');
 
 var arraysToCalcdata = require('./arrays_to_calcdata');
 
@@ -102,4 +103,8 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                         'M'+x0+','+y0+'V'+y1+'H'+x1+'V'+y0+'Z');
                 });
         });
+
+    // error bars are on the top
+    bartraces.call(ErrorBars.plot, plotinfo);
+
 };

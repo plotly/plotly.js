@@ -13,6 +13,7 @@ var d3 = require('d3');
 
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+var ErrorBars = require('../../components/errorbars');
 
 var subTypes = require('./subtypes');
 var arraysToCalcdata = require('./arrays_to_calcdata');
@@ -30,9 +31,13 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
     var scattertraces = plotinfo.plot.select('.scatterlayer')
         .selectAll('g.trace.scatter')
         .data(cdscatter);
+
     scattertraces.enter().append('g')
         .attr('class', 'trace scatter')
         .style('stroke-miterlimit', 2);
+
+    // error bars are at the bottom
+    scattertraces.call(ErrorBars.plot, plotinfo);
 
     // BUILD LINES AND FILLS
     var prevpath = '',
