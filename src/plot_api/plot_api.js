@@ -2408,10 +2408,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
             newMax = changes['xaxis.range[1]'];
 
         if(fullLayout.xaxis && fullLayout.xaxis.rangeslider.visible) {
-            if(newMin && newMax) {
+            if(newMin || newMax) {
                 fullLayout.xaxis.rangeslider.setRange(newMin, newMax);
             } else if(changes['xaxis.autorange']) {
-                fullLayout.xaxis.rangeslider.setRange(-Infinity, Infinity);
+                fullLayout.xaxis.rangeslider.setRange();
             }
         }
 

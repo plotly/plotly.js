@@ -195,6 +195,9 @@ function draw(gd, minStart, maxStart) {
 
 
     function setRange(min, max) {
+        min = min || -Infinity;
+        max = max || Infinity;
+
         var rangeMin = fullLayout.xaxis.range[0],
             rangeMax = fullLayout.xaxis.range[1],
             range = rangeMax - rangeMin,
