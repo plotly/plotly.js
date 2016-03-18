@@ -78,8 +78,11 @@ module.exports = function rangePlot(gd, w, h) {
 function makeScatter(trace, pointPairs, w, h) {
 
     // create the line
-    var line = document.createElementNS(svgNS, 'path');
+    var line, markers, fill;
+
     if(trace.line) {
+        line = document.createElementNS(svgNS, 'path');
+
         var linePath = Drawing.smoothopen(pointPairs, trace.line.smoothing || 0);
 
         helpers.setAttributes(line, {
@@ -92,8 +95,8 @@ function makeScatter(trace, pointPairs, w, h) {
     }
 
     // create points if there's markers
-    var markers = document.createElementNS(svgNS, 'g');
     if(trace.marker) {
+        markers = document.createElementNS(svgNS, 'g');
 
         var points = pointPairs.map(function(p, i) {
             var point = document.createElementNS(svgNS, 'g'),
@@ -130,8 +133,8 @@ function makeScatter(trace, pointPairs, w, h) {
 
 
     // create fill if set
-    var fill = document.createElementNS(svgNS, 'path');
     if(trace.fill !== 'none') {
+        fill = document.createElementNS(svgNS, 'path');
 
         switch(trace.fill) {
             case 'tozeroy':
