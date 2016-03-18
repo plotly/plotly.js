@@ -19,6 +19,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     var containerIn = layoutIn.xaxis.rangeslider || {},
         containerOut = layoutOut.xaxis.rangeslider = {};
 
+    if(!containerIn.visible) return;
+
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut,
             attributes, attr, dflt);

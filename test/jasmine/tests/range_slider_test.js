@@ -154,6 +154,16 @@ describe('the range slider', function() {
 
     describe('supplyLayoutDefaults function', function() {
 
+        it('should not coerce anything if rangeslider isn\'t set', function() {
+            var layoutIn = { xaxis: {}, yaxis: {}},
+                layoutOut = { xaxis: {}, yaxis: {}},
+                expected = { xaxis: {}, yaxis: {}};
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
+
+            expect(layoutIn).toEqual(expected);
+        });
+
         it('should not mutate layoutIn', function() {
             var layoutIn = { xaxis: { rangeslider: { visible: true }}, yaxis: {}},
                 layoutOut = { xaxis: { rangeslider: {}}, yaxis: {}},
@@ -181,9 +191,9 @@ describe('the range slider', function() {
                         rangeslider: {
                             visible: true,
                             height: 0.15,
-                            backgroundcolor: '#ffffff',
-                            borderwidth: 1,
-                            bordercolor: 'transparent'
+                            backgroundcolor: '#fff',
+                            borderwidth: 0,
+                            bordercolor: '#444'
                         }
                     },
                     yaxis: {
@@ -208,9 +218,9 @@ describe('the range slider', function() {
                 expected = { xaxis: { rangeslider: {
                     visible: false,
                     height: 0.15,
-                    backgroundcolor: '#ffffff',
-                    borderwidth: 1,
-                    bordercolor: 'transparent'
+                    backgroundcolor: '#fff',
+                    borderwidth: 0,
+                    bordercolor: '#444'
                 }}, yaxis: {}};
 
             RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);

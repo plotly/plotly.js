@@ -8,6 +8,7 @@
 
 'use strict';
 
+var colorAttributes = require('../color/attributes');
 
 module.exports = {
     visible: {
@@ -17,19 +18,19 @@ module.exports = {
     },
     bordercolor: {
         valType: 'color',
-        dflt: 'transparent',
+        dflt: colorAttributes.defaultLine,
         role: 'style',
         description: 'Sets the border color of the range slider.'
     },
     borderwidth: {
         valType: 'integer',
-        dflt: 1,
+        dflt: 0,
         role: 'style',
         description: 'Sets the border color of the range slider.'
     },
     backgroundcolor: {
         valType: 'color',
-        dflt: '#ffffff',
+        dflt: colorAttributes.background,
         role: 'style',
         description: 'Sets the background color of the range slider.'
     },
