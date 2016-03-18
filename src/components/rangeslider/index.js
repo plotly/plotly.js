@@ -25,11 +25,20 @@ module.exports = {
 };
 
 function draw(gd, minStart, maxStart) {
+    if(!gd._fullLayout.xaxis) return;
+
     var fullLayout = gd._fullLayout,
         options = fullLayout.xaxis.rangeslider;
 
-    // don't draw if being exported
-    if(!options.visible) return;
+    if(!options || !options.visible) {
+        fullLayout._infolayer.selectAll('g.range-slider')
+            .data([])
+        .exit().remove();
+
+        Plots.autoMargin(gd, 'range-slider');
+
+        return;
+    }
 
 
     var width = fullLayout._size.w,
@@ -249,8 +258,7 @@ function draw(gd, minStart, maxStart) {
         grabberMax
     ]);
 
-    var infoLayer = fullLayout._infolayer;
-    infoLayer.selectAll('g.range-slider')
+    fullLayout._infolayer.selectAll('g.range-slider')
         .data([0])
     .enter().append(function() {
         options.setRange = setRange;

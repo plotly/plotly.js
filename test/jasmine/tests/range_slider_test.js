@@ -135,20 +135,40 @@ describe('the range slider', function() {
     });
 
 
-    describe('when not specified as visible', function() {
-        beforeEach(function(done) {
+    fdescribe('visibility property', function() {
+        beforeEach(function() {
             gd = createGraphDiv();
-
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {}).then(function() {
-                rangeSlider = document.getElementsByClassName('range-slider')[0];
-                done();
-            });
         });
 
         afterEach(destroyGraphDiv);
 
-        it('should not be added to the DOM by default', function() {
-            expect(rangeSlider).not.toBeDefined();
+        it('should not add the slider to the DOM by default', function(done) {
+            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
+                .then(function() {
+                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    expect(rangeSlider).not.toBeDefined();
+                })
+                .then(done);
+        });
+
+        it('should add the slider if changed to `true`', function(done) {
+            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
+                .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', true); })
+                .then(function() {
+                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    expect(rangeSlider).toBeDefined();
+                })
+                .then(done);
+        });
+
+        it('should remove the slider if changed to `false` or `undefined`', function(done) {
+            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], { xaxis: { rangeslider: { visible: true }}})
+                .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', false); })
+                .then(function() {
+                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    expect(rangeSlider).not.toBeDefined();
+                })
+                .then(done);
         });
     });
 
