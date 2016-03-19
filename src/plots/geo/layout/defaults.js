@@ -9,8 +9,7 @@
 
 'use strict';
 
-var Lib = require('../../../lib');
-var Plots = require('../../plots');
+var handleSubplotDefaults = require('../../subplot_defaults');
 var constants = require('../../../constants/geo_constants');
 var layoutAttributes = require('./layout_attributes');
 var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
@@ -19,31 +18,12 @@ var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     if(!layoutOut._hasGeo) return;
 
-    var geos = Plots.findSubplotIds(fullData, 'geo'),
-        geosLength = geos.length;
-
-    var geoLayoutIn, geoLayoutOut;
-
-    function coerce(attr, dflt) {
-        return Lib.coerce(geoLayoutIn, geoLayoutOut, layoutAttributes, attr, dflt);
-    }
-
-    for(var i = 0; i < geosLength; i++) {
-        var geo = geos[i];
-
-        // geo traces get a layout geo for free!
-        if(layoutIn[geo]) geoLayoutIn = layoutIn[geo];
-        else geoLayoutIn = layoutIn[geo] = {};
-
-        geoLayoutIn = layoutIn[geo];
-        geoLayoutOut = {};
-
-        coerce('domain.x');
-        coerce('domain.y', [i / geosLength, (i + 1) / geosLength]);
-
-        handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce);
-        layoutOut[geo] = geoLayoutOut;
-    }
+    handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+        type: 'geo',
+        attributes: layoutAttributes,
+        handleDefaults: handleGeoDefaults,
+        partition: 'y'
+    });
 };
 
 function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
