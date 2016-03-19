@@ -470,6 +470,7 @@ plots.supplyDefaults = function(gd) {
         else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
         else if(plots.traceIs(fullTrace, 'pie')) newFullLayout._hasPie = true;
         else if(plots.traceIs(fullTrace, 'gl2d')) newFullLayout._hasGL2D = true;
+        else if(plots.traceIs(fullTrace, 'ternary')) newFullLayout._hasTernary = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         _module = fullTrace._module;
@@ -714,6 +715,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('_hasGeo');
     coerce('_hasPie');
     coerce('_hasGL2D');
+    coerce('_hasTernary');
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {

@@ -280,6 +280,7 @@ Plotly.plot = function(gd, data, layout, config) {
         if(fullLayout._hasCartesian || fullLayout._hasPie) {
             plotRegistry.cartesian.plot(gd);
         }
+        if(fullLayout._hasTernary) plotRegistry.ternary.plot(gd);
 
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
@@ -2595,7 +2596,8 @@ function makePlotFramework(gd) {
 
     if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
 
-    // single shape and pie layers for the whole plot
+    // single ternary, shape and pie layers for the whole plot
+    fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
     fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
