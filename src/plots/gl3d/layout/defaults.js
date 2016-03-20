@@ -9,6 +9,8 @@
 
 'use strict';
 
+var Color = require('../../../components/color');
+
 var handleSubplotDefaults = require('../../subplot_defaults');
 var layoutAttributes = require('./layout_attributes');
 var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
@@ -40,7 +42,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         handleDefaults: handleGl3dDefaults,
         font: layoutOut.font,
         fullData: fullData,
-        getDfltFromLayout: getDfltFromLayout
+        getDfltFromLayout: getDfltFromLayout,
+        paper_bgcolor: layoutOut.paper_bgcolor
     });
 };
 
@@ -57,7 +60,8 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
      * attributes like aspectratio can be written back dynamically.
      */
 
-    coerce('bgcolor');
+    var bgcolor = coerce('bgcolor'),
+        bgColorCombined = Color.combine(bgcolor, opts.paper_bgcolor);
 
     var cameraKeys = Object.keys(layoutAttributes.camera);
 
@@ -94,7 +98,8 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     supplyGl3dAxisLayoutDefaults(sceneLayoutIn, sceneLayoutOut, {
         font: opts.font,
         scene: opts.id,
-        data: opts.fullData
+        data: opts.fullData,
+        bgColor: bgColorCombined
     });
 
     coerce('dragmode', opts.getDfltFromLayout('dragmode'));

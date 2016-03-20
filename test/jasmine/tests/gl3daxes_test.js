@@ -30,7 +30,7 @@ describe('Test Gl3dAxes', function() {
                     'showspikes': true,
                     'spikesides': true,
                     'spikethickness': 2,
-                    'spikecolor': 'rgb(0,0,0)',
+                    'spikecolor': '#444',
                     'showbackground': false,
                     'showaxeslabels': true
                 },
@@ -42,7 +42,7 @@ describe('Test Gl3dAxes', function() {
                     'showspikes': true,
                     'spikesides': true,
                     'spikethickness': 2,
-                    'spikecolor': 'rgb(0,0,0)',
+                    'spikecolor': '#444',
                     'showbackground': false,
                     'showaxeslabels': true
                 },
@@ -54,7 +54,7 @@ describe('Test Gl3dAxes', function() {
                     'showspikes': true,
                     'spikesides': true,
                     'spikethickness': 2,
-                    'spikecolor': 'rgb(0,0,0)',
+                    'spikecolor': '#444',
                     'showbackground': false,
                     'showaxeslabels': true
                 }
@@ -64,14 +64,17 @@ describe('Test Gl3dAxes', function() {
                 var keys = Object.keys(validObject);
                 for(var i = 0; i < keys.length; i++) {
                     var k = keys[i];
-                    if(validObject[k] !== testObject[k]) return false;
+                    expect(validObject[k]).toBe(testObject[k]);
+                    // if(validObject[k] !== testObject[k]) return false;
                 }
                 return true;
             }
 
             supplyLayoutDefaults(layoutIn, layoutOut, options);
             ['xaxis', 'yaxis', 'zaxis'].forEach(function(axis) {
-                expect(checkKeys(expected[axis], layoutOut[axis])).toBe(true);
+                // expect(
+                checkKeys(expected[axis], layoutOut[axis]);
+                // ).toBe(true);
             });
         });
     });

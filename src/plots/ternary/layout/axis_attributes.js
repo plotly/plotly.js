@@ -10,22 +10,13 @@
 
 
 var axesAttrs = require('../../cartesian/layout_attributes');
-var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 
 
 module.exports = {
     title: axesAttrs.title,
     titlefont: axesAttrs.titlefont,
-    color: {  // TODO: support this for all other kinds of axes as well
-        valType: 'color',
-        dflt: colorAttrs.defaultLine,
-        role: 'style',
-        description: [
-            'Sets line, font, tick, and grid color for this axis',
-            'all at once. Individual pieces can override this.'
-        ].join(' ')
-    },
+    color: axesAttrs.color,
     // ticks
     nticks: axesAttrs.nticks,
     ticks: axesAttrs.ticks,

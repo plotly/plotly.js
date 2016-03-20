@@ -13,6 +13,16 @@ var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
+    color: {
+        valType: 'color',
+        dflt: colorAttrs.defaultLine,
+        role: 'style',
+        description: [
+            'Sets default for all colors associated with this axis',
+            'all at once: line, font, tick, and grid colors.',
+            'Individual pieces can override this.'
+        ].join(' ')
+    },
     title: {
         valType: 'string',
         role: 'info',

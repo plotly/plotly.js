@@ -20,7 +20,7 @@ var layoutAttributes = require('./layout_attributes');
 module.exports = function handleTickDefaults(containerIn, containerOut, coerce, axType, options) {
     var tickLen = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'ticklen'),
         tickWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'tickwidth'),
-        tickColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'tickcolor'),
+        tickColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'tickcolor', containerOut.color),
         showTicks = coerce('ticks', (options.outerTicks || tickLen || tickWidth || tickColor) ? 'outside' : '');
 
     if(!showTicks) {
@@ -39,7 +39,12 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
-        Lib.coerceFont(coerce, 'tickfont', options.font || {});
+        var font = options.font || {};
+        Lib.coerceFont(coerce, 'tickfont', {
+            family: font.family,
+            size: font.size,
+            color: font.color || containerOut.color
+        });
         coerce('tickangle');
 
         if(axType !== 'category') {

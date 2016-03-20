@@ -13,6 +13,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Plots = require('../plots');
+var lightColor = require('../../components/color').lightColor;
 
 var layoutAttributes = require('./layout_attributes');
 var handleTickValueDefaults = require('./tick_value_defaults');
@@ -33,6 +34,7 @@ var axisIds = require('./axis_ids');
  *  showGrid: boolean, should gridlines be shown by default?
  *  noHover: boolean, this axis doesn't support hover effects?
  *  data: the plot data to use in choosing auto type
+ *  bgColor: the plot background color, to calculate default gridline colors
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options) {
     var letter = options.letter,
@@ -66,11 +68,13 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     setConvert(containerOut);
 
+    var dfltColor = coerce('color');
+
     coerce('title', defaultTitle);
     Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
-        color: font.color
+        color: font.color || dfltColor
     });
 
     var validRange = (
@@ -92,7 +96,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
     handleTickDefaults(containerIn, containerOut, coerce, axType, options);
 
-    var lineColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'linecolor'),
+    var lineColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'linecolor', dfltColor),
         lineWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'linewidth'),
         showLine = coerce('showline', !!lineColor || !!lineWidth);
 
@@ -103,7 +107,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     if(showLine || containerOut.ticks) coerce('mirror');
 
-    var gridColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'gridcolor'),
+    var gridColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'gridcolor', lightColor(dfltColor, options.bgColor)),
         gridWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'gridwidth'),
         showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
 
@@ -112,7 +116,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         delete containerOut.gridwidth;
     }
 
-    var zeroLineColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'zerolinecolor'),
+    var zeroLineColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'zerolinecolor', dfltColor),
         zeroLineWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'zerolinewidth'),
         showZeroLine = coerce('zeroline', options.showGrid || !!zeroLineColor || !!zeroLineWidth);
 

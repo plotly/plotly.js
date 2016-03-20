@@ -3,6 +3,7 @@ var PlotlyInternal = require('@src/plotly');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 var Color = require('@src/components/color');
+var tinycolor = require('tinycolor2');
 
 var handleTickValueDefaults = require('@src/plots/cartesian/tick_value_defaults');
 var Axes = PlotlyInternal.Axes;
@@ -221,10 +222,11 @@ describe('Test axes', function() {
                 yaxis: {}
             };
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            var lightLine = tinycolor(Color.lightLine).toRgbString();
             expect(layoutOut.xaxis.gridwidth).toBe(1);
-            expect(layoutOut.xaxis.gridcolor).toBe(Color.lightLine);
+            expect(tinycolor(layoutOut.xaxis.gridcolor).toRgbString()).toBe(lightLine);
             expect(layoutOut.yaxis.gridwidth).toBe(1);
-            expect(layoutOut.yaxis.gridcolor).toBe(Color.lightLine);
+            expect(tinycolor(layoutOut.yaxis.gridcolor).toRgbString()).toBe(lightLine);
         });
 
         it('should set gridcolor/gridwidth to undefined if showgrid is false', function() {

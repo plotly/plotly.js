@@ -10,12 +10,17 @@
 'use strict';
 
 var Lib = require('../../../lib');
+var Color = require('../../../components/color');
+
 var layoutAttributes = require('./axis_attributes');
 var handleAxisDefaults = require('../../cartesian/axis_defaults');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
 var noop = function() {};
 
+// TODO: hard-coded lightness fraction based on gridline default colors
+// that differ from other subplot types.
+var gridLightness = (204 - 0x44) / (255 - 0x44);
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     var containerIn, containerOut;
@@ -40,10 +45,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 font: options.font,
                 letter: axName[0],
                 data: options.data,
-                showGrid: true
+                showGrid: true,
+                bgColor: options.bgColorCombined
             });
 
-        coerce('gridcolor');
+        coerce('gridcolor', Color.lightColor(containerOut.color, options.bgColorCombined, gridLightness));
         coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
 
         containerOut.setScale = noop;
@@ -51,10 +57,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
         if(coerce('showspikes')) {
             coerce('spikesides');
             coerce('spikethickness');
-            coerce('spikecolor');
+            // TODO: this makes the default spikes #444 rather than
+            // #000, is that OK?
+            coerce('spikecolor', containerOut.color);
         }
-        if(coerce('showbackground')) coerce('backgroundcolor');
 
         coerce('showaxeslabels');
+        // TODO: relate backgroundcolor to common containerOut.color?
+        if(coerce('showbackground')) coerce('backgroundcolor');
     }
 };
