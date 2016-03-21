@@ -1531,7 +1531,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Lib.isPlainObject(astr)) {
         aobj = astr;
-        if(traces===undefined) traces = val; // the 3-arg form
+        if(traces === undefined) traces = val; // the 3-arg form
     }
     else {
         console.log('restyle fail',astr,val,traces);
