@@ -2398,24 +2398,32 @@ Plotly.relayout = function relayout(gd, astr, val) {
         }
     }
 
-    var plotDone = Lib.syncOrAsync(seq, gd);
-
-    if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
-
-    return plotDone.then(function() {
-        var changes = Lib.extendDeep({}, redoit),
-            newMin = changes['xaxis.range[0]'],
+    function setRange(changes) {
+        var newMin = changes['xaxis.range[0]'],
             newMax = changes['xaxis.range[1]'];
 
-        if(fullLayout.xaxis && fullLayout.xaxis.rangeslider.visible) {
+        var rangeSlider = fullLayout.xaxis && fullLayout.xaxis.rangeslider ?
+            fullLayout.xaxis.rangeslider : {};
+
+        if(rangeSlider.visible) {
             if(newMin || newMax) {
                 fullLayout.xaxis.rangeslider.setRange(newMin, newMax);
             } else if(changes['xaxis.autorange']) {
                 fullLayout.xaxis.rangeslider.setRange();
             }
         }
+    }
 
+    var plotDone = Lib.syncOrAsync(seq, gd);
+
+    if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
+
+    return plotDone.then(function() {
+        var changes = Lib.extendDeep({}, redoit);
+
+        setRange(changes);
         gd.emit('plotly_relayout', changes);
+
         return gd;
     });
 };

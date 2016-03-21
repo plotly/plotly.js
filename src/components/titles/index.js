@@ -107,8 +107,9 @@ Titles.draw = function(gd, title) {
             ya._length + 10 +
                 fontSize*(offsetBase + (xa.showticklabels ? 1.5 : 0.5)));
 
-        if(xa.rangeslider && xa.rangeslider.visible) {
-            y += (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * xa.rangeslider.height;
+        if(xa.rangeslider && xa.rangeslider.visible && xa._boundingBox) {
+            y += (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * xa.rangeslider.height +
+                xa._boundingBox.height;
         }
 
         options = {x: x, y: y, 'text-anchor': 'middle'};

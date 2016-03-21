@@ -1612,9 +1612,14 @@ axes.doTicks = function(gd, axid, skipTitle) {
             return axid+' done';
         }
 
+        function calcBoundingBox() {
+            ax._boundingBox = container.node().getBoundingClientRect();
+        }
+
         var done = Plotly.Lib.syncOrAsync([
             allLabelsReady,
-            fixLabelOverlaps
+            fixLabelOverlaps,
+            calcBoundingBox
         ]);
         if(done && done.then) gd._promises.push(done);
         return done;
