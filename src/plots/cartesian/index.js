@@ -11,8 +11,6 @@
 
 var Lib = require('../../lib');
 var Plots = require('../plots');
-var ErrorBars = require('../../components/errorbars');
-
 
 exports.name = 'cartesian';
 
@@ -71,8 +69,7 @@ exports.plot = function(gd) {
     for(var i = 0; i < subplots.length; i++) {
         var subplot = subplots[i],
             subplotInfo = fullLayout._plots[subplot],
-            cdSubplot = getCdSubplot(calcdata, subplot),
-            cdError = [];
+            cdSubplot = getCdSubplot(calcdata, subplot);
 
         // remove old traces, then redraw everything
         // TODO: use enter/exit appropriately in the plot functions
@@ -91,17 +88,9 @@ exports.plot = function(gd) {
             // plot all traces of this type on this subplot at once
             var cdModule = getCdModule(cdSubplot, _module);
             _module.plot(gd, subplotInfo, cdModule);
+
             Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
-
-            // collect the traces that may have error bars
-            if(cdModule[0] && cdModule[0][0].trace && Plots.traceIs(cdModule[0][0].trace, 'errorBarsOK')) {
-                cdError = cdError.concat(cdModule);
-            }
         }
-
-        // finally do all error bars at once
-        ErrorBars.plot(gd, subplotInfo, cdError);
-        Lib.markTime('done ErrorBars');
     }
 
     // now draw stuff not on subplots (ie, only pies at the moment)

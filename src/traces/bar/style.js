@@ -13,6 +13,7 @@ var d3 = require('d3');
 
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var ErrorBars = require('../../components/errorbars');
 
 
 module.exports = function style(gd) {
@@ -71,4 +72,6 @@ module.exports = function style(gd) {
         // d3.select(this).selectAll('text')
         //     .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
     });
+
+    s.call(ErrorBars.style);
 };

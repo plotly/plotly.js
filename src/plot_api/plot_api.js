@@ -2672,7 +2672,6 @@ function makeCartesianPlotFramwork(gd, subplots) {
         svg.append('g').classed('imagelayer', true);
         svg.append('g').classed('maplayer', true);
         svg.append('g').classed('barlayer', true);
-        svg.append('g').classed('errorlayer', true);
         svg.append('g').classed('boxlayer', true);
         svg.append('g').classed('scatterlayer', true);
     }
