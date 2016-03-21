@@ -252,11 +252,12 @@ proto.update = function(data) {
 
     //Refine if necessary
     if(data.surfacecolor) {
-        var intensity = ndarray(
-          new Float32Array(xlen * ylen), [xlen, ylen]);
+        var intensity = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]);
+
         fill(intensity, function(row, col) {
             return data.surfacecolor[col][row];
         });
+
         coords.push(intensity);
     }
     else {
