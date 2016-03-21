@@ -34,9 +34,12 @@ module.exports = function rangePlot(gd, w, h) {
     clip.setAttribute('id', 'range-clip-path');
     clip.appendChild(clipPath);
 
+    var clipDefs = document.createElementNS(svgNS, 'defs');
+    clipDefs.appendChild(clip);
+
     var rangePlot = document.createElementNS(svgNS, 'g');
     rangePlot.setAttribute('clip-path', 'url(#range-clip-path)');
-    rangePlot.appendChild(clip);
+    rangePlot.appendChild(clipDefs);
 
 
     var processX = dataProcessors[gd._fullLayout.xaxis.type || 'category'],
