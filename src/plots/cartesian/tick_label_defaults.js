@@ -11,24 +11,11 @@
 
 var Lib = require('../../lib');
 
-var layoutAttributes = require('./layout_attributes');
-
 
 /**
  * options: inherits font, outerTicks, noHover from axes.handleAxisDefaults
  */
-module.exports = function handleTickDefaults(containerIn, containerOut, coerce, axType, options) {
-    var tickLen = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'ticklen'),
-        tickWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'tickwidth'),
-        tickColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'tickcolor', containerOut.color),
-        showTicks = coerce('ticks', (options.outerTicks || tickLen || tickWidth || tickColor) ? 'outside' : '');
-
-    if(!showTicks) {
-        delete containerOut.ticklen;
-        delete containerOut.tickwidth;
-        delete containerOut.tickcolor;
-    }
-
+module.exports = function handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options) {
     var showAttrDflt = getShowAttrDflt(containerIn);
 
     var tickPrefix = coerce('tickprefix');
@@ -43,7 +30,7 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
         Lib.coerceFont(coerce, 'tickfont', {
             family: font.family,
             size: font.size,
-            color: font.color || containerOut.color
+            color: containerOut.color || font.color
         });
         coerce('tickangle');
 

@@ -17,7 +17,8 @@ var lightColor = require('../../components/color').lightColor;
 
 var layoutAttributes = require('./layout_attributes');
 var handleTickValueDefaults = require('./tick_value_defaults');
-var handleTickDefaults = require('./tick_defaults');
+var handleTickMarkDefaults = require('./tick_mark_defaults');
+var handleTickLabelDefaults = require('./tick_label_defaults');
 var setConvert = require('./set_convert');
 var cleanDatum = require('./clean_datum');
 var axisIds = require('./axis_ids');
@@ -74,7 +75,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
-        color: font.color || dfltColor
+        color: dfltColor
     });
 
     var validRange = (
@@ -94,7 +95,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('fixedrange');
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
-    handleTickDefaults(containerIn, containerOut, coerce, axType, options);
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
+    handleTickMarkDefaults(containerIn, containerOut, coerce, options);
 
     var lineColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'linecolor', dfltColor),
         lineWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'linewidth'),

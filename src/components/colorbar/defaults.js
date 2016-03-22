@@ -11,7 +11,8 @@
 
 var Lib = require('../../lib');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
-var handleTickDefaults = require('../../plots/cartesian/tick_defaults');
+var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
+var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
 
 var attributes = require('./attributes');
 
@@ -52,7 +53,10 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
 
     handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
-    handleTickDefaults(colorbarIn, colorbarOut, coerce, 'linear',
+    handleTickLabelDefaults(colorbarIn, colorbarOut, coerce,
+        {outerTicks: false, font: layout.font, noHover: true});
+
+    handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear',
         {outerTicks: false, font: layout.font, noHover: true});
 
     coerce('title');
