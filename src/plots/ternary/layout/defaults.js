@@ -9,9 +9,13 @@
 
 'use strict';
 
+var Color = require('../../components/color');
+
 var handleSubplotDefaults = require('../../subplot_defaults');
 var layoutAttributes = require('./layout_attributes');
-var supplyTernaryAxisLayoutDefaults = require('./axis_defaults');
+var handleAxisDefaults = require('./axis_defaults');
+
+var axesNames = ['aaxis', 'baxis', 'caxis'];
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     if(!layoutOut._hasTernary) return;
@@ -20,13 +24,22 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         type: 'ternary',
         attributes: layoutAttributes,
         handleDefaults: handleTernaryDefaults,
-        font: layoutOut.font
+        font: layoutOut.font,
+        paper_bgcolor: layoutOut.paper_bgcolor
     });
 };
 
 function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, options) {
-    coerce('bgcolor');
+    var bgColor = coerce('bgcolor');
     coerce('sum');
+    options.bgColor = Color.combine(bgColor, options.paper_bgcolor);
+    var axName, containerIn, containerOut;
 
-    supplyTernaryAxisLayoutDefaults(ternaryLayoutIn, ternaryLayoutOut, options);
+    for(var j = 0; j < axesNames.length; j++) {
+        axName = axesNames[j];
+        containerIn = ternaryLayoutIn[axName] || {};
+        containerOut = {_name: axName};
+
+        handleAxisDefaults(containerIn, containerOut, options);
+    }
 }

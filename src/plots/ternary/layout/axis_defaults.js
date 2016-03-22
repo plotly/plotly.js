@@ -10,26 +10,73 @@
 'use strict';
 
 var Lib = require('../../../lib');
+var lightColor = require('../../components/color').lightColor;
+
 var layoutAttributes = require('./axis_attributes');
+var handleTickMarkDefaults = require('../../cartesian/tick_mark_defaults');
 
-var axesNames = ['aaxis', 'baxis', 'caxis'];
-
-
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
-    var containerIn, containerOut;
+module.exports = function supplyLayoutDefaults(containerIn, containerOut, options) {
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut, layoutAttributes, attr, dflt);
     }
 
-    for(var j = 0; j < axesNames.length; j++) {
-        var axName = axesNames[j];
-        containerIn = layoutIn[axName] || {};
+    function coerce2(attr, dflt) {
+        return Lib.coerce2(containerIn, containerOut, layoutAttributes, attr, dflt);
+    }
 
-        containerOut = {
-            _name: axName
-        };
+    containerOut.type = 'linear'; // no other types allowed for ternary
 
-        // TODO - what can we reuse from cartesian?
+    var axName = containerOut._name;
+
+    var dfltColor = coerce('color');
+
+    coerce('title', 'Click to enter component ' +
+        axName.charAt(0).toUpperCase() + ' title');
+    Lib.coerceFont(coerce, 'titlefont', {
+        family: options.font.family,
+        size: Math.round(options.font.size * 1.2),
+        color: dfltColor
+    });
+
+    // range is just set by 'min' - max is determined by the other axes mins
+    coerce('min');
+
+    coerce('nticks');
+
+    handleTickMarkDefaults(containerIn, containerOut, coerce, 'linear',
+        {outerticks: false});
+
+    // TODO - below is a bit repetitious from cartesian still...
+
+    var showTickLabels = coerce('showticklabels');
+    if(showTickLabels) {
+        Lib.coerceFont(coerce, 'tickfont', {
+            family: options.font.family,
+            size: options.font.size,
+            color: containerOut.color
+        });
+        coerce('tickangle');
+        coerce('tickformat');
+    }
+
+    coerce('hoverformat');
+
+    var lineColor = coerce2('linecolor', dfltColor),
+        lineWidth = coerce2('linewidth'),
+        showLine = coerce('showline', !!lineColor || !!lineWidth);
+
+    if(!showLine) {
+        delete containerOut.linecolor;
+        delete containerOut.linewidth;
+    }
+
+    var gridColor = coerce2('gridcolor', lightColor(dfltColor, options.bgColor)),
+        gridWidth = coerce2('gridwidth'),
+        showGridLines = coerce('showgrid', !!gridColor || !!gridWidth);
+
+    if(!showGridLines) {
+        delete containerOut.gridcolor;
+        delete containerOut.gridwidth;
     }
 };

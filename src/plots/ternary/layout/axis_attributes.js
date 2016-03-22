@@ -26,11 +26,13 @@ module.exports = {
     showticklabels: axesAttrs.showticklabels,
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
+    tickformat: axesAttrs.tickformat,
+    hoverformat: axesAttrs.hoverformat,
     // lines and grids
     showline: extendFlat({}, axesAttrs.showline, {dflt: true}),
     linecolor: axesAttrs.linecolor,
     linewidth: axesAttrs.linewidth,
-    showgrid: axesAttrs.showgrid,
+    showgrid: extendFlat({}, axesAttrs.showgrid, {dflt: true}),
     gridcolor: axesAttrs.gridcolor,
     gridwidth: axesAttrs.gridwidth,
     // range
