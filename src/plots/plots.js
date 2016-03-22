@@ -745,7 +745,7 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
 
     // TODO register these
     // Legend must come after traces (e.g. it depends on 'barmode')
-    var moduleLayoutDefaults = ['Fx', 'Annotations', 'Shapes', 'Legend', 'RangeSlider'];
+    var moduleLayoutDefaults = ['Fx', 'Annotations', 'Shapes', 'Legend'];
     for(i = 0; i < moduleLayoutDefaults.length; i++) {
         _module = moduleLayoutDefaults[i];
 

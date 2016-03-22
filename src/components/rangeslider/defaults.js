@@ -12,14 +12,13 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
+module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes) {
 
-    if(!layoutIn.xaxis || !layoutOut.xaxis) return;
+    if(!layoutIn[axName].rangeslider) return;
 
-    var containerIn = layoutIn.xaxis.rangeslider || {},
-        containerOut = layoutOut.xaxis.rangeslider = {};
-
-    if(!containerIn.visible) return;
+    var containerIn = typeof layoutIn[axName].rangeslider === 'object' ?
+            layoutIn[axName].rangeslider : {},
+        containerOut = layoutOut[axName].rangeslider = {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(containerIn, containerOut,
@@ -33,6 +32,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('borderwidth');
 
     if(containerOut.visible) {
-        layoutOut.yaxis.fixedrange = true;
+        counterAxes.forEach(function(ax) {
+            var opposing = layoutOut[ax] || {};
+            opposing.fixedrange = true;
+            layoutOut[ax] = opposing;
+        });
     }
 };

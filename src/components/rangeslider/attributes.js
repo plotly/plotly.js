@@ -13,7 +13,7 @@ var colorAttributes = require('../color/attributes');
 module.exports = {
     visible: {
         valType: 'boolean',
-        dflt: false,
+        dflt: true,
         description: 'Determines whether or not the range slider will be visible.'
     },
     bordercolor: {

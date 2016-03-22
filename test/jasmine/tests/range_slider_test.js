@@ -151,7 +151,17 @@ describe('the range slider', function() {
                 .then(done);
         });
 
-        it('should add the slider if changed to `true`', function(done) {
+        it('should add the slider if rangeslider is set to anything', function(done) {
+            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
+                .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider', 'exists'); })
+                .then(function() {
+                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    expect(rangeSlider).toBeDefined();
+                })
+                .then(done);
+        });
+
+        it('should add the slider if visible changed to `true`', function(done) {
             Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', true); })
                 .then(function() {
@@ -177,9 +187,11 @@ describe('the range slider', function() {
         it('should not coerce anything if rangeslider isn\'t set', function() {
             var layoutIn = { xaxis: {}, yaxis: {}},
                 layoutOut = { xaxis: {}, yaxis: {}},
+                axName = 'xaxis',
+                counterAxes = ['yaxis'],
                 expected = { xaxis: {}, yaxis: {}};
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutIn).toEqual(expected);
         });
@@ -187,25 +199,20 @@ describe('the range slider', function() {
         it('should not mutate layoutIn', function() {
             var layoutIn = { xaxis: { rangeslider: { visible: true }}, yaxis: {}},
                 layoutOut = { xaxis: { rangeslider: {}}, yaxis: {}},
+                axName = 'xaxis',
+                counterAxes = ['yaxis'],
                 expected = { xaxis: { rangeslider: { visible: true }}, yaxis: {}};
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutIn).toEqual(expected);
         });
 
-        it('should ignore if there is no xaxis or rangeslider properties', function() {
-            var layoutIn = {},
-                layoutOut = {};
-
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
-
-            expect(layoutOut).toEqual(layoutIn);
-        });
-
-        it('should set defaults if rangeslider.visible is true', function() {
-            var layoutIn = { xaxis: { rangeslider: { visible: true }}, yaxis: {}},
-                layoutOut = { xaxis: { rangeslider: {}}, yaxis: {}},
+        it('should set defaults if rangeslider is set to anything truthy', function() {
+            var layoutIn = { xaxis: { rangeslider: {}}, yaxis: {}},
+                layoutOut = { xaxis: {}, yaxis: {}},
+                axName = 'xaxis',
+                counterAxes = ['yaxis'],
                 expected = {
                     xaxis: {
                         rangeslider: {
@@ -221,7 +228,32 @@ describe('the range slider', function() {
                     }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+
+            expect(layoutOut).toEqual(expected);
+        });
+
+        it('should set defaults if rangeslider.visible is true', function() {
+            var layoutIn = { xaxis: { rangeslider: { visible: true }}, yaxis: {}},
+                layoutOut = { xaxis: { rangeslider: {}}, yaxis: {}},
+                axName = 'xaxis',
+                counterAxes = ['yaxis'],
+                expected = {
+                    xaxis: {
+                        rangeslider: {
+                            visible: true,
+                            thickness: 0.15,
+                            bgcolor: '#fff',
+                            borderwidth: 0,
+                            bordercolor: '#444'
+                        }
+                    },
+                    yaxis: {
+                        fixedrange: true
+                    }
+                };
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -234,16 +266,42 @@ describe('the range slider', function() {
                     bordercolor: 42,
                     borderwidth: 'superfat'
                 }}, yaxis: {}},
-                layoutOut = { xaxis: { rangeslider: {}}, yaxis: {}},
+                layoutOut = { xaxis: {}, yaxis: {}},
+                axName = 'xaxis',
+                counterAxes = ['yaxis'],
                 expected = { xaxis: { rangeslider: {
-                    visible: false,
+                    visible: true,
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
                     bordercolor: '#444'
-                }}, yaxis: {}};
+                }}, yaxis: {
+                    fixedrange: true
+                }};
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut);
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+
+            expect(layoutOut).toEqual(expected);
+        });
+
+        it('should set all counterAxes to fixedrange', function() {
+            var layoutIn = { xaxis: { rangeslider: true}, yaxis: {}, yaxis2: {}},
+                layoutOut = { xaxis: {}, yaxis: {}, yaxis2: {}},
+                axName = 'xaxis',
+                counterAxes = ['yaxis', 'yaxis2'],
+                expected = {
+                    xaxis: { rangeslider: {
+                        visible: true,
+                        thickness: 0.15,
+                        bgcolor: '#fff',
+                        borderwidth: 0,
+                        bordercolor: '#444'
+                    }},
+                    yaxis: { fixedrange: true},
+                    yaxis2: { fixedrange: true }
+                };
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
