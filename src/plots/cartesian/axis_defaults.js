@@ -44,6 +44,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
             (options.title || (letter.toUpperCase() + ' axis')) +
             ' title';
 
+    function coerce2(attr, dflt) {
+        return Lib.coerce2(containerIn, containerOut, layoutAttributes, attr, dflt);
+    }
+
     // set up some private properties
     if(options.name) {
         containerOut._name = options.name;
@@ -98,8 +102,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
     handleTickMarkDefaults(containerIn, containerOut, coerce, options);
 
-    var lineColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'linecolor', dfltColor),
-        lineWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'linewidth'),
+    var lineColor = coerce2('linecolor', dfltColor),
+        lineWidth = coerce2('linewidth'),
         showLine = coerce('showline', !!lineColor || !!lineWidth);
 
     if(!showLine) {
@@ -109,8 +113,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     if(showLine || containerOut.ticks) coerce('mirror');
 
-    var gridColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'gridcolor', lightColor(dfltColor, options.bgColor)),
-        gridWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'gridwidth'),
+    var gridColor = coerce2('gridcolor', lightColor(dfltColor, options.bgColor)),
+        gridWidth = coerce2('gridwidth'),
         showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
 
     if(!showGridLines) {
@@ -118,8 +122,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         delete containerOut.gridwidth;
     }
 
-    var zeroLineColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'zerolinecolor', dfltColor),
-        zeroLineWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'zerolinewidth'),
+    var zeroLineColor = coerce2('zerolinecolor', dfltColor),
+        zeroLineWidth = coerce2('zerolinewidth'),
         showZeroLine = coerce('zeroline', options.showGrid || !!zeroLineColor || !!zeroLineWidth);
 
     if(!showZeroLine) {
