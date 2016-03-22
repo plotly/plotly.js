@@ -14,7 +14,7 @@ var Choropleth = {};
 Choropleth.attributes = require('./attributes');
 Choropleth.supplyDefaults = require('./defaults');
 Choropleth.colorbar = require('../heatmap/colorbar');
-Choropleth.calc = require('../surface/calc');
+Choropleth.calc = require('./calc');
 Choropleth.plot = require('./plot').plot;
 
 Choropleth.moduleType = 'trace';

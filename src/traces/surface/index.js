@@ -13,7 +13,7 @@ var Surface = {};
 
 Surface.attributes = require('./attributes');
 Surface.supplyDefaults = require('./defaults');
-Surface.colorbar = require('../heatmap/colorbar');
+Surface.colorbar = require('./colorbar');
 Surface.calc = require('./calc');
 Surface.plot = require('./convert');
 
@@ -30,7 +30,11 @@ Surface.meta = {
         'or {2D arrays} (e.g. to graph parametric surfaces).',
 
         'If not provided in `x` and `y`, the x and y coordinates are assumed',
-        'to be linear starting at 0 with a unit step.'
+        'to be linear starting at 0 with a unit step.',
+
+        'The color scale corresponds to the `z` values by default.',
+        'For custom color scales, use `surfacecolor` which should be a {2D array},',
+        'where its bounds can be controlled using `cmin` and `cmax`.'
     ].join(' ')
 };
 
