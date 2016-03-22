@@ -18,8 +18,8 @@
         "xaxis": {
             "rangeslider": {
                 "visible": true,
-                "height": 0.2,
-                "backgroundcolor": "#fafafa",
+                "thickness": 0.2,
+                "bgcolor": "#fafafa",
                 "bordercolor": "black",
                 "borderwidth": 2
             },

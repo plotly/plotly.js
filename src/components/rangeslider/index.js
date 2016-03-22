@@ -38,7 +38,7 @@ function draw(gd, minStart, maxStart) {
     }
 
 
-    var height = (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * options.height,
+    var height = (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * options.thickness,
         offsetShift = Math.floor(options.borderwidth / 2);
 
     if(sliderContainer[0].length === 0) createSlider(gd, minStart, maxStart);

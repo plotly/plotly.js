@@ -23,7 +23,7 @@ module.exports = function createSlider(gd, minStart, maxStart) {
         sliderContainer = fullLayout._infolayer.selectAll('g.range-slider'),
         options = fullLayout.xaxis.rangeslider,
         width = fullLayout._size.w,
-        height = (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * options.height,
+        height = (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * options.thickness,
         handleWidth = 2,
         offsetShift = Math.floor(options.borderwidth / 2),
         x = fullLayout.margin.l,
@@ -45,7 +45,7 @@ module.exports = function createSlider(gd, minStart, maxStart) {
     var sliderBg = document.createElementNS(svgNS, 'rect'),
         borderCorrect = options.borderwidth % 2 === 0 ? options.borderwidth : options.borderwidth - 1;
     helpers.setAttributes(sliderBg, {
-        'fill': options.backgroundcolor,
+        'fill': options.bgcolor,
         'stroke': options.bordercolor,
         'stroke-width': options.borderwidth,
         'height': height + borderCorrect,

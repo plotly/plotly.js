@@ -210,8 +210,8 @@ describe('the range slider', function() {
                     xaxis: {
                         rangeslider: {
                             visible: true,
-                            height: 0.15,
-                            backgroundcolor: '#fff',
+                            thickness: 0.15,
+                            bgcolor: '#fff',
                             borderwidth: 0,
                             bordercolor: '#444'
                         }
@@ -229,16 +229,16 @@ describe('the range slider', function() {
         it('should set defaults if properties are invalid', function() {
             var layoutIn = { xaxis: { rangeslider: {
                     visible: 'invalid',
-                    height: 'invalid',
-                    backgroundcolor: 42,
+                    thickness: 'invalid',
+                    bgcolor: 42,
                     bordercolor: 42,
                     borderwidth: 'superfat'
                 }}, yaxis: {}},
                 layoutOut = { xaxis: { rangeslider: {}}, yaxis: {}},
                 expected = { xaxis: { rangeslider: {
                     visible: false,
-                    height: 0.15,
-                    backgroundcolor: '#fff',
+                    thickness: 0.15,
+                    bgcolor: '#fff',
                     borderwidth: 0,
                     bordercolor: '#444'
                 }}, yaxis: {}};

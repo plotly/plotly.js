@@ -27,8 +27,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 
     coerce('visible');
-    coerce('height');
-    coerce('backgroundcolor');
+    coerce('thickness');
+    coerce('bgcolor');
     coerce('bordercolor');
     coerce('borderwidth');
 

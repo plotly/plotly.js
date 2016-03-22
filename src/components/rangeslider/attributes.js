@@ -28,13 +28,13 @@ module.exports = {
         role: 'style',
         description: 'Sets the border color of the range slider.'
     },
-    backgroundcolor: {
+    bgcolor: {
         valType: 'color',
         dflt: colorAttributes.background,
         role: 'style',
         description: 'Sets the background color of the range slider.'
     },
-    height: {
+    thickness: {
         valType: 'number',
         dflt: 0.15,
         min: 0,
