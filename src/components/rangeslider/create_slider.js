@@ -80,7 +80,7 @@ module.exports = function createSlider(gd, minStart, maxStart) {
     helpers.setAttributes(grabAreaMin, {
         'width': 10,
         'height': height,
-        'x': -3,
+        'x': -6,
         'fill': 'transparent',
         'cursor': 'col-resize'
     });
@@ -103,7 +103,7 @@ module.exports = function createSlider(gd, minStart, maxStart) {
     helpers.setAttributes(grabAreaMax, {
         'width': 10,
         'height': height,
-        'x': -4,
+        'x': -2,
         'fill': 'transparent',
         'cursor': 'col-resize'
     });
