@@ -98,8 +98,8 @@ module.exports = {
     surfacecolor: {
         valType: 'data_array',
         description: [
-            'Sets the surface intensity values,',
-            'used for setting a color scale independent of z'
+            'Sets the surface color values,',
+            'used for setting a color scale independent of `z`.'
         ].join(' ')
     },
     cauto: colorscaleAttrs.zauto,
@@ -171,8 +171,14 @@ module.exports = {
     },
 
     _deprecated: {
-        zauto: colorscaleAttrs.zauto,
-        zmin: colorscaleAttrs.zmin,
-        zmax: colorscaleAttrs.zmax
+        zauto: extendFlat({}, colorscaleAttrs.zauto, {
+            description: 'Obsolete. Use `cauto` instead.'
+        }),
+        zmin: extendFlat({}, colorscaleAttrs.zmin, {
+            description: 'Obsolete. Use `cmin` instead.'
+        }),
+        zmax: extendFlat({}, colorscaleAttrs.zmax, {
+            description: 'Obsolete. Use `cmax` instead.'
+        })
     }
 };
