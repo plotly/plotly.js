@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.6.3
+* plotly.js v1.7.0
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -15,6 +15,7 @@ var rules = {
     "X a": "text-decoration:none;",
     "X a:hover": "text-decoration:none;",
     "X .crisp": "shape-rendering:crispEdges;",
+    "X .user-select-none": "-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;-o-user-select:none;user-select:none;",
     "X svg": "overflow:hidden;",
     "X svg a": "fill:#447adb;",
     "X svg a:hover": "fill:#3c6dc5;",
@@ -67,7 +68,7 @@ for(var selector in rules) {
     Plotly.Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/plotly":366}],2:[function(require,module,exports){
+},{"../src/plotly":376}],2:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -198,7 +199,7 @@ module.exports = {
 
 module.exports = require('../src/traces/bar');
 
-},{"../src/traces/bar":429}],4:[function(require,module,exports){
+},{"../src/traces/bar":439}],4:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -209,7 +210,7 @@ module.exports = require('../src/traces/bar');
 
 module.exports = require('../src/traces/box');
 
-},{"../src/traces/box":440}],5:[function(require,module,exports){
+},{"../src/traces/box":450}],5:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -220,7 +221,7 @@ module.exports = require('../src/traces/box');
 
 module.exports = require('../src/traces/choropleth');
 
-},{"../src/traces/choropleth":448}],6:[function(require,module,exports){
+},{"../src/traces/choropleth":459}],6:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -231,7 +232,7 @@ module.exports = require('../src/traces/choropleth');
 
 module.exports = require('../src/traces/contour');
 
-},{"../src/traces/contour":455}],7:[function(require,module,exports){
+},{"../src/traces/contour":466}],7:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -242,7 +243,7 @@ module.exports = require('../src/traces/contour');
 
 module.exports = require('../src/core');
 
-},{"../src/core":339}],8:[function(require,module,exports){
+},{"../src/core":349}],8:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -253,7 +254,7 @@ module.exports = require('../src/core');
 
 module.exports = require('../src/traces/heatmap');
 
-},{"../src/traces/heatmap":466}],9:[function(require,module,exports){
+},{"../src/traces/heatmap":477}],9:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -264,7 +265,7 @@ module.exports = require('../src/traces/heatmap');
 
 module.exports = require('../src/traces/histogram');
 
-},{"../src/traces/histogram":477}],10:[function(require,module,exports){
+},{"../src/traces/histogram":488}],10:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -275,7 +276,7 @@ module.exports = require('../src/traces/histogram');
 
 module.exports = require('../src/traces/histogram2d');
 
-},{"../src/traces/histogram2d":482}],11:[function(require,module,exports){
+},{"../src/traces/histogram2d":493}],11:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -286,7 +287,7 @@ module.exports = require('../src/traces/histogram2d');
 
 module.exports = require('../src/traces/histogram2dcontour');
 
-},{"../src/traces/histogram2dcontour":486}],12:[function(require,module,exports){
+},{"../src/traces/histogram2dcontour":497}],12:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -334,7 +335,7 @@ module.exports = Core;
 
 module.exports = require('../src/traces/mesh3d');
 
-},{"../src/traces/mesh3d":490}],14:[function(require,module,exports){
+},{"../src/traces/mesh3d":501}],14:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -345,7 +346,7 @@ module.exports = require('../src/traces/mesh3d');
 
 module.exports = require('../src/traces/pie');
 
-},{"../src/traces/pie":495}],15:[function(require,module,exports){
+},{"../src/traces/pie":506}],15:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -356,7 +357,7 @@ module.exports = require('../src/traces/pie');
 
 module.exports = require('../src/traces/scatter3d');
 
-},{"../src/traces/scatter3d":528}],16:[function(require,module,exports){
+},{"../src/traces/scatter3d":539}],16:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -367,7 +368,7 @@ module.exports = require('../src/traces/scatter3d');
 
 module.exports = require('../src/traces/scattergeo');
 
-},{"../src/traces/scattergeo":532}],17:[function(require,module,exports){
+},{"../src/traces/scattergeo":543}],17:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -378,7 +379,7 @@ module.exports = require('../src/traces/scattergeo');
 
 module.exports = require('../src/traces/scattergl');
 
-},{"../src/traces/scattergl":537}],18:[function(require,module,exports){
+},{"../src/traces/scattergl":548}],18:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -389,7 +390,7 @@ module.exports = require('../src/traces/scattergl');
 
 module.exports = require('../src/traces/surface');
 
-},{"../src/traces/surface":542}],19:[function(require,module,exports){
+},{"../src/traces/surface":554}],19:[function(require,module,exports){
 'use strict'
 
 module.exports = createFilteredVector
@@ -2681,7 +2682,7 @@ function circumcenter(points) {
 
 circumcenter.barycenetric = barycentricCircumcenter
 module.exports = circumcenter
-},{"dup":72,"robust-linear-solve":211}],43:[function(require,module,exports){
+},{"dup":72,"robust-linear-solve":213}],43:[function(require,module,exports){
 'use strict'
 
 module.exports = boundary
@@ -3248,16 +3249,13 @@ function kMaxLength () {
 }
 
 /**
- * Class: Buffer
- * =============
+ * The Buffer constructor returns instances of `Uint8Array` that have their
+ * prototype changed to `Buffer.prototype`. Furthermore, `Buffer` is a subclass of
+ * `Uint8Array`, so the returned instances will have all the node `Buffer` methods
+ * and the `Uint8Array` methods. Square bracket notation works as expected -- it
+ * returns a single octet.
  *
- * The Buffer constructor returns instances of `Uint8Array` that are augmented
- * with function properties for all the node `Buffer` API functions. We use
- * `Uint8Array` so that square bracket notation works as expected -- it returns
- * a single octet.
- *
- * By augmenting the instances, we can avoid modifying the `Uint8Array`
- * prototype.
+ * The `Uint8Array` prototype remains unmodified.
  */
 function Buffer (arg) {
   if (!(this instanceof Buffer)) {
@@ -3283,6 +3281,12 @@ function Buffer (arg) {
 
   // Unusual.
   return fromObject(this, arg)
+}
+
+// TODO: Legacy, not needed anymore. Remove in next major version.
+Buffer._augment = function (arr) {
+  arr.__proto__ = Buffer.prototype
+  return arr
 }
 
 function fromNumber (that, length) {
@@ -3402,6 +3406,14 @@ function fromJsonObject (that, object) {
 if (Buffer.TYPED_ARRAY_SUPPORT) {
   Buffer.prototype.__proto__ = Uint8Array.prototype
   Buffer.__proto__ = Uint8Array
+  if (typeof Symbol !== 'undefined' && Symbol.species &&
+      Buffer[Symbol.species] === Buffer) {
+    // Fix subarray() in ES2016. See: https://github.com/feross/buffer/pull/97
+    Object.defineProperty(Buffer, Symbol.species, {
+      value: null,
+      configurable: true
+    })
+  }
 } else {
   // pre-set for values that may exist in the future
   Buffer.prototype.length = undefined
@@ -3598,8 +3610,8 @@ function slowToString (encoding, start, end) {
   }
 }
 
-// Even though this property is private, it shouldn't be removed because it is
-// used by `is-buffer` to detect buffer instances in Safari 5-7.
+// The property is used by `Buffer.isBuffer` and `is-buffer` (in Safari 5-7) to detect
+// Buffer instances.
 Buffer.prototype._isBuffer = true
 
 Buffer.prototype.toString = function toString () {
@@ -4372,7 +4384,6 @@ Buffer.prototype.writeInt32BE = function writeInt32BE (value, offset, noAssert) 
 }
 
 function checkIEEE754 (buf, value, offset, ext, max, min) {
-  if (value > max || value < min) throw new RangeError('value is out of bounds')
   if (offset + ext > buf.length) throw new RangeError('index out of range')
   if (offset < 0) throw new RangeError('index out of range')
 }
@@ -4635,124 +4646,120 @@ function blitBuffer (src, dst, offset, length) {
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
 },{"base64-js":51,"ieee754":52,"isarray":53}],51:[function(require,module,exports){
-;(function (exports) {
-  'use strict'
+'use strict'
 
-  var lookup = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+exports.toByteArray = toByteArray
+exports.fromByteArray = fromByteArray
 
-  var Arr = (typeof Uint8Array !== 'undefined')
-    ? Uint8Array
-    : Array
+var lookup = []
+var revLookup = []
+var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
-  var PLUS = '+'.charCodeAt(0)
-  var SLASH = '/'.charCodeAt(0)
-  var NUMBER = '0'.charCodeAt(0)
-  var LOWER = 'a'.charCodeAt(0)
-  var UPPER = 'A'.charCodeAt(0)
-  var PLUS_URL_SAFE = '-'.charCodeAt(0)
-  var SLASH_URL_SAFE = '_'.charCodeAt(0)
+function init () {
+  var i
+  var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
+  var len = code.length
 
-  function decode (elt) {
-    var code = elt.charCodeAt(0)
-    if (code === PLUS || code === PLUS_URL_SAFE) return 62 // '+'
-    if (code === SLASH || code === SLASH_URL_SAFE) return 63 // '/'
-    if (code < NUMBER) return -1 // no match
-    if (code < NUMBER + 10) return code - NUMBER + 26 + 26
-    if (code < UPPER + 26) return code - UPPER
-    if (code < LOWER + 26) return code - LOWER + 26
+  for (i = 0; i < len; i++) {
+    lookup[i] = code[i]
   }
 
-  function b64ToByteArray (b64) {
-    var i, j, l, tmp, placeHolders, arr
+  for (i = 0; i < len; ++i) {
+    revLookup[code.charCodeAt(i)] = i
+  }
+  revLookup['-'.charCodeAt(0)] = 62
+  revLookup['_'.charCodeAt(0)] = 63
+}
 
-    if (b64.length % 4 > 0) {
-      throw new Error('Invalid string. Length must be a multiple of 4')
-    }
+init()
 
-    // the number of equal signs (place holders)
-    // if there are two placeholders, than the two characters before it
-    // represent one byte
-    // if there is only one, then the three characters before it represent 2 bytes
-    // this is just a cheap hack to not do indexOf twice
-    var len = b64.length
-    placeHolders = b64.charAt(len - 2) === '=' ? 2 : b64.charAt(len - 1) === '=' ? 1 : 0
+function toByteArray (b64) {
+  var i, j, l, tmp, placeHolders, arr
+  var len = b64.length
 
-    // base64 is 4/3 + up to two characters of the original data
-    arr = new Arr(b64.length * 3 / 4 - placeHolders)
-
-    // if there are placeholders, only get up to the last complete 4 chars
-    l = placeHolders > 0 ? b64.length - 4 : b64.length
-
-    var L = 0
-
-    function push (v) {
-      arr[L++] = v
-    }
-
-    for (i = 0, j = 0; i < l; i += 4, j += 3) {
-      tmp = (decode(b64.charAt(i)) << 18) | (decode(b64.charAt(i + 1)) << 12) | (decode(b64.charAt(i + 2)) << 6) | decode(b64.charAt(i + 3))
-      push((tmp & 0xFF0000) >> 16)
-      push((tmp & 0xFF00) >> 8)
-      push(tmp & 0xFF)
-    }
-
-    if (placeHolders === 2) {
-      tmp = (decode(b64.charAt(i)) << 2) | (decode(b64.charAt(i + 1)) >> 4)
-      push(tmp & 0xFF)
-    } else if (placeHolders === 1) {
-      tmp = (decode(b64.charAt(i)) << 10) | (decode(b64.charAt(i + 1)) << 4) | (decode(b64.charAt(i + 2)) >> 2)
-      push((tmp >> 8) & 0xFF)
-      push(tmp & 0xFF)
-    }
-
-    return arr
+  if (len % 4 > 0) {
+    throw new Error('Invalid string. Length must be a multiple of 4')
   }
 
-  function uint8ToBase64 (uint8) {
-    var i
-    var extraBytes = uint8.length % 3 // if we have 1 byte left, pad 2 bytes
-    var output = ''
-    var temp, length
+  // the number of equal signs (place holders)
+  // if there are two placeholders, than the two characters before it
+  // represent one byte
+  // if there is only one, then the three characters before it represent 2 bytes
+  // this is just a cheap hack to not do indexOf twice
+  placeHolders = b64[len - 2] === '=' ? 2 : b64[len - 1] === '=' ? 1 : 0
 
-    function encode (num) {
-      return lookup.charAt(num)
-    }
+  // base64 is 4/3 + up to two characters of the original data
+  arr = new Arr(len * 3 / 4 - placeHolders)
 
-    function tripletToBase64 (num) {
-      return encode(num >> 18 & 0x3F) + encode(num >> 12 & 0x3F) + encode(num >> 6 & 0x3F) + encode(num & 0x3F)
-    }
+  // if there are placeholders, only get up to the last complete 4 chars
+  l = placeHolders > 0 ? len - 4 : len
 
-    // go through the array every three bytes, we'll deal with trailing stuff later
-    for (i = 0, length = uint8.length - extraBytes; i < length; i += 3) {
-      temp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
-      output += tripletToBase64(temp)
-    }
+  var L = 0
 
-    // pad the end with zeros, but make sure to not forget the extra bytes
-    switch (extraBytes) {
-      case 1:
-        temp = uint8[uint8.length - 1]
-        output += encode(temp >> 2)
-        output += encode((temp << 4) & 0x3F)
-        output += '=='
-        break
-      case 2:
-        temp = (uint8[uint8.length - 2] << 8) + (uint8[uint8.length - 1])
-        output += encode(temp >> 10)
-        output += encode((temp >> 4) & 0x3F)
-        output += encode((temp << 2) & 0x3F)
-        output += '='
-        break
-      default:
-        break
-    }
-
-    return output
+  for (i = 0, j = 0; i < l; i += 4, j += 3) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
+    arr[L++] = (tmp & 0xFF0000) >> 16
+    arr[L++] = (tmp & 0xFF00) >> 8
+    arr[L++] = tmp & 0xFF
   }
 
-  exports.toByteArray = b64ToByteArray
-  exports.fromByteArray = uint8ToBase64
-}(typeof exports === 'undefined' ? (this.base64js = {}) : exports))
+  if (placeHolders === 2) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 2) | (revLookup[b64.charCodeAt(i + 1)] >> 4)
+    arr[L++] = tmp & 0xFF
+  } else if (placeHolders === 1) {
+    tmp = (revLookup[b64.charCodeAt(i)] << 10) | (revLookup[b64.charCodeAt(i + 1)] << 4) | (revLookup[b64.charCodeAt(i + 2)] >> 2)
+    arr[L++] = (tmp >> 8) & 0xFF
+    arr[L++] = tmp & 0xFF
+  }
+
+  return arr
+}
+
+function tripletToBase64 (num) {
+  return lookup[num >> 18 & 0x3F] + lookup[num >> 12 & 0x3F] + lookup[num >> 6 & 0x3F] + lookup[num & 0x3F]
+}
+
+function encodeChunk (uint8, start, end) {
+  var tmp
+  var output = []
+  for (var i = start; i < end; i += 3) {
+    tmp = (uint8[i] << 16) + (uint8[i + 1] << 8) + (uint8[i + 2])
+    output.push(tripletToBase64(tmp))
+  }
+  return output.join('')
+}
+
+function fromByteArray (uint8) {
+  var tmp
+  var len = uint8.length
+  var extraBytes = len % 3 // if we have 1 byte left, pad 2 bytes
+  var output = ''
+  var parts = []
+  var maxChunkLength = 16383 // must be multiple of 3
+
+  // go through the array every three bytes, we'll deal with trailing stuff later
+  for (var i = 0, len2 = len - extraBytes; i < len2; i += maxChunkLength) {
+    parts.push(encodeChunk(uint8, i, (i + maxChunkLength) > len2 ? len2 : (i + maxChunkLength)))
+  }
+
+  // pad the end with zeros, but make sure to not forget the extra bytes
+  if (extraBytes === 1) {
+    tmp = uint8[len - 1]
+    output += lookup[tmp >> 2]
+    output += lookup[(tmp << 4) & 0x3F]
+    output += '=='
+  } else if (extraBytes === 2) {
+    tmp = (uint8[len - 2] << 8) + (uint8[len - 1])
+    output += lookup[tmp >> 10]
+    output += lookup[(tmp >> 4) & 0x3F]
+    output += lookup[(tmp << 2) & 0x3F]
+    output += '='
+  }
+
+  parts.push(output)
+
+  return parts.join('')
+}
 
 },{}],52:[function(require,module,exports){
 exports.read = function (buffer, offset, isLE, mLen, nBytes) {
@@ -5733,7 +5740,7 @@ function convexHullnD(points, d) {
     return invPermute(nhull, ah)
   }
 }
-},{"affine-hull":64,"incremental-convex-hull":191}],64:[function(require,module,exports){
+},{"affine-hull":64,"incremental-convex-hull":193}],64:[function(require,module,exports){
 'use strict'
 
 module.exports = affineHull
@@ -5785,7 +5792,7 @@ function affineHull(points) {
   }
   return index
 }
-},{"robust-orientation":214}],65:[function(require,module,exports){
+},{"robust-orientation":216}],65:[function(require,module,exports){
 'use strict'
 
 module.exports = monotoneConvexHull2D
@@ -5867,7 +5874,7 @@ function monotoneConvexHull2D(points) {
   //Return result
   return result
 }
-},{"robust-orientation":214}],66:[function(require,module,exports){
+},{"robust-orientation":216}],66:[function(require,module,exports){
 "use strict"
 
 var createThunk = require("./lib/thunk.js")
@@ -6334,7 +6341,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":234}],68:[function(require,module,exports){
+},{"uniq":236}],68:[function(require,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -6427,7 +6434,7 @@ module.exports = require("cwise-compiler")
 },{"cwise-compiler":66}],70:[function(require,module,exports){
 !function() {
   var d3 = {
-    version: "3.5.13"
+    version: "3.5.16"
   };
   var d3_arraySlice = [].slice, d3_array = function(list) {
     return d3_arraySlice.call(list);
@@ -6647,20 +6654,20 @@ module.exports = require("cwise-compiler")
     while (i < n) pairs[i] = [ p0 = p1, p1 = array[++i] ];
     return pairs;
   };
-  d3.zip = function() {
-    if (!(n = arguments.length)) return [];
-    for (var i = -1, m = d3.min(arguments, d3_zipLength), zips = new Array(m); ++i < m; ) {
-      for (var j = -1, n, zip = zips[i] = new Array(n); ++j < n; ) {
-        zip[j] = arguments[j][i];
+  d3.transpose = function(matrix) {
+    if (!(n = matrix.length)) return [];
+    for (var i = -1, m = d3.min(matrix, d3_transposeLength), transpose = new Array(m); ++i < m; ) {
+      for (var j = -1, n, row = transpose[i] = new Array(n); ++j < n; ) {
+        row[j] = matrix[j][i];
       }
     }
-    return zips;
+    return transpose;
   };
-  function d3_zipLength(d) {
+  function d3_transposeLength(d) {
     return d.length;
   }
-  d3.transpose = function(matrix) {
-    return d3.zip.apply(d3, matrix);
+  d3.zip = function() {
+    return d3.transpose(arguments);
   };
   d3.keys = function(map) {
     var keys = [];
@@ -7047,9 +7054,10 @@ module.exports = require("cwise-compiler")
       return d3_selectAll(selector, this);
     };
   }
+  var d3_nsXhtml = "http://www.w3.org/1999/xhtml";
   var d3_nsPrefix = {
     svg: "http://www.w3.org/2000/svg",
-    xhtml: "http://www.w3.org/1999/xhtml",
+    xhtml: d3_nsXhtml,
     xlink: "http://www.w3.org/1999/xlink",
     xml: "http://www.w3.org/XML/1998/namespace",
     xmlns: "http://www.w3.org/2000/xmlns/"
@@ -7232,7 +7240,7 @@ module.exports = require("cwise-compiler")
   function d3_selection_creator(name) {
     function create() {
       var document = this.ownerDocument, namespace = this.namespaceURI;
-      return namespace ? document.createElementNS(namespace, name) : document.createElement(name);
+      return namespace === d3_nsXhtml && document.documentElement.namespaceURI === d3_nsXhtml ? document.createElement(name) : document.createElementNS(namespace, name);
     }
     function createNS() {
       return this.ownerDocument.createElementNS(name.space, name.local);
@@ -7631,7 +7639,7 @@ module.exports = require("cwise-compiler")
     }
     function dragstart(id, position, subject, move, end) {
       return function() {
-        var that = this, target = d3.event.target, parent = that.parentNode, dispatch = event.of(that, arguments), dragged = 0, dragId = id(), dragName = ".drag" + (dragId == null ? "" : "-" + dragId), dragOffset, dragSubject = d3.select(subject(target)).on(move + dragName, moved).on(end + dragName, ended), dragRestore = d3_event_dragSuppress(target), position0 = position(parent, dragId);
+        var that = this, target = d3.event.target.correspondingElement || d3.event.target, parent = that.parentNode, dispatch = event.of(that, arguments), dragged = 0, dragId = id(), dragName = ".drag" + (dragId == null ? "" : "-" + dragId), dragOffset, dragSubject = d3.select(subject(target)).on(move + dragName, moved).on(end + dragName, ended), dragRestore = d3_event_dragSuppress(target), position0 = position(parent, dragId);
         if (origin) {
           dragOffset = origin.apply(that, arguments);
           dragOffset = [ dragOffset.x - position0[0], dragOffset.y - position0[1] ];
@@ -16138,7 +16146,7 @@ function triangulate(points, includePointAtInfinity) {
 
   return hull
 }
-},{"incremental-convex-hull":191,"uniq":234}],72:[function(require,module,exports){
+},{"incremental-convex-hull":193,"uniq":236}],72:[function(require,module,exports){
 "use strict"
 
 function dupe_array(count, value, i) {
@@ -16195,7 +16203,7 @@ module.exports = dupe
  * @copyright Copyright (c) 2014 Yehuda Katz, Tom Dale, Stefan Penner and contributors (Conversion to ES6 API by Jake Archibald)
  * @license   Licensed under MIT license
  *            See https://raw.githubusercontent.com/jakearchibald/es6-promise/master/LICENSE
- * @version   3.0.2
+ * @version   3.1.2
  */
 
 (function() {
@@ -16223,7 +16231,6 @@ module.exports = dupe
 
     var lib$es6$promise$utils$$isArray = lib$es6$promise$utils$$_isArray;
     var lib$es6$promise$asap$$len = 0;
-    var lib$es6$promise$asap$$toString = {}.toString;
     var lib$es6$promise$asap$$vertxNext;
     var lib$es6$promise$asap$$customSchedulerFn;
 
@@ -16342,6 +16349,42 @@ module.exports = dupe
     } else {
       lib$es6$promise$asap$$scheduleFlush = lib$es6$promise$asap$$useSetTimeout();
     }
+    function lib$es6$promise$then$$then(onFulfillment, onRejection) {
+      var parent = this;
+      var state = parent._state;
+
+      if (state === lib$es6$promise$$internal$$FULFILLED && !onFulfillment || state === lib$es6$promise$$internal$$REJECTED && !onRejection) {
+        return this;
+      }
+
+      var child = new this.constructor(lib$es6$promise$$internal$$noop);
+      var result = parent._result;
+
+      if (state) {
+        var callback = arguments[state - 1];
+        lib$es6$promise$asap$$asap(function(){
+          lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
+        });
+      } else {
+        lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
+      }
+
+      return child;
+    }
+    var lib$es6$promise$then$$default = lib$es6$promise$then$$then;
+    function lib$es6$promise$promise$resolve$$resolve(object) {
+      /*jshint validthis:true */
+      var Constructor = this;
+
+      if (object && typeof object === 'object' && object.constructor === Constructor) {
+        return object;
+      }
+
+      var promise = new Constructor(lib$es6$promise$$internal$$noop);
+      lib$es6$promise$$internal$$resolve(promise, object);
+      return promise;
+    }
+    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
 
     function lib$es6$promise$$internal$$noop() {}
 
@@ -16415,12 +16458,12 @@ module.exports = dupe
       }
     }
 
-    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable) {
-      if (maybeThenable.constructor === promise.constructor) {
+    function lib$es6$promise$$internal$$handleMaybeThenable(promise, maybeThenable, then) {
+      if (maybeThenable.constructor === promise.constructor &&
+          then === lib$es6$promise$then$$default &&
+          constructor.resolve === lib$es6$promise$promise$resolve$$default) {
         lib$es6$promise$$internal$$handleOwnThenable(promise, maybeThenable);
       } else {
-        var then = lib$es6$promise$$internal$$getThen(maybeThenable);
-
         if (then === lib$es6$promise$$internal$$GET_THEN_ERROR) {
           lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$GET_THEN_ERROR.error);
         } else if (then === undefined) {
@@ -16437,7 +16480,7 @@ module.exports = dupe
       if (promise === value) {
         lib$es6$promise$$internal$$reject(promise, lib$es6$promise$$internal$$selfFulfillment());
       } else if (lib$es6$promise$utils$$objectOrFunction(value)) {
-        lib$es6$promise$$internal$$handleMaybeThenable(promise, value);
+        lib$es6$promise$$internal$$handleMaybeThenable(promise, value, lib$es6$promise$$internal$$getThen(value));
       } else {
         lib$es6$promise$$internal$$fulfill(promise, value);
       }
@@ -16572,104 +16615,6 @@ module.exports = dupe
       }
     }
 
-    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
-      var enumerator = this;
-
-      enumerator._instanceConstructor = Constructor;
-      enumerator.promise = new Constructor(lib$es6$promise$$internal$$noop);
-
-      if (enumerator._validateInput(input)) {
-        enumerator._input     = input;
-        enumerator.length     = input.length;
-        enumerator._remaining = input.length;
-
-        enumerator._init();
-
-        if (enumerator.length === 0) {
-          lib$es6$promise$$internal$$fulfill(enumerator.promise, enumerator._result);
-        } else {
-          enumerator.length = enumerator.length || 0;
-          enumerator._enumerate();
-          if (enumerator._remaining === 0) {
-            lib$es6$promise$$internal$$fulfill(enumerator.promise, enumerator._result);
-          }
-        }
-      } else {
-        lib$es6$promise$$internal$$reject(enumerator.promise, enumerator._validationError());
-      }
-    }
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._validateInput = function(input) {
-      return lib$es6$promise$utils$$isArray(input);
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._validationError = function() {
-      return new Error('Array Methods must be provided an Array');
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._init = function() {
-      this._result = new Array(this.length);
-    };
-
-    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
-      var enumerator = this;
-
-      var length  = enumerator.length;
-      var promise = enumerator.promise;
-      var input   = enumerator._input;
-
-      for (var i = 0; promise._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
-        enumerator._eachEntry(input[i], i);
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
-      var enumerator = this;
-      var c = enumerator._instanceConstructor;
-
-      if (lib$es6$promise$utils$$isMaybeThenable(entry)) {
-        if (entry.constructor === c && entry._state !== lib$es6$promise$$internal$$PENDING) {
-          entry._onerror = null;
-          enumerator._settledAt(entry._state, i, entry._result);
-        } else {
-          enumerator._willSettleAt(c.resolve(entry), i);
-        }
-      } else {
-        enumerator._remaining--;
-        enumerator._result[i] = entry;
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
-      var enumerator = this;
-      var promise = enumerator.promise;
-
-      if (promise._state === lib$es6$promise$$internal$$PENDING) {
-        enumerator._remaining--;
-
-        if (state === lib$es6$promise$$internal$$REJECTED) {
-          lib$es6$promise$$internal$$reject(promise, value);
-        } else {
-          enumerator._result[i] = value;
-        }
-      }
-
-      if (enumerator._remaining === 0) {
-        lib$es6$promise$$internal$$fulfill(promise, enumerator._result);
-      }
-    };
-
-    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
-      var enumerator = this;
-
-      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
-        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
-      }, function(reason) {
-        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
-      });
-    };
     function lib$es6$promise$promise$all$$all(entries) {
       return new lib$es6$promise$enumerator$$default(this, entries).promise;
     }
@@ -16702,19 +16647,6 @@ module.exports = dupe
       return promise;
     }
     var lib$es6$promise$promise$race$$default = lib$es6$promise$promise$race$$race;
-    function lib$es6$promise$promise$resolve$$resolve(object) {
-      /*jshint validthis:true */
-      var Constructor = this;
-
-      if (object && typeof object === 'object' && object.constructor === Constructor) {
-        return object;
-      }
-
-      var promise = new Constructor(lib$es6$promise$$internal$$noop);
-      lib$es6$promise$$internal$$resolve(promise, object);
-      return promise;
-    }
-    var lib$es6$promise$promise$resolve$$default = lib$es6$promise$promise$resolve$$resolve;
     function lib$es6$promise$promise$reject$$reject(reason) {
       /*jshint validthis:true */
       var Constructor = this;
@@ -16845,15 +16777,8 @@ module.exports = dupe
       this._subscribers = [];
 
       if (lib$es6$promise$$internal$$noop !== resolver) {
-        if (!lib$es6$promise$utils$$isFunction(resolver)) {
-          lib$es6$promise$promise$$needsResolver();
-        }
-
-        if (!(this instanceof lib$es6$promise$promise$$Promise)) {
-          lib$es6$promise$promise$$needsNew();
-        }
-
-        lib$es6$promise$$internal$$initializePromise(this, resolver);
+        typeof resolver !== 'function' && lib$es6$promise$promise$$needsResolver();
+        this instanceof lib$es6$promise$promise$$Promise ? lib$es6$promise$$internal$$initializePromise(this, resolver) : lib$es6$promise$promise$$needsNew();
       }
     }
 
@@ -17061,28 +16986,7 @@ module.exports = dupe
       Useful for tooling.
       @return {Promise}
     */
-      then: function(onFulfillment, onRejection) {
-        var parent = this;
-        var state = parent._state;
-
-        if (state === lib$es6$promise$$internal$$FULFILLED && !onFulfillment || state === lib$es6$promise$$internal$$REJECTED && !onRejection) {
-          return this;
-        }
-
-        var child = new this.constructor(lib$es6$promise$$internal$$noop);
-        var result = parent._result;
-
-        if (state) {
-          var callback = arguments[state - 1];
-          lib$es6$promise$asap$$asap(function(){
-            lib$es6$promise$$internal$$invokeCallback(state, child, callback, result);
-          });
-        } else {
-          lib$es6$promise$$internal$$subscribe(parent, child, onFulfillment, onRejection);
-        }
-
-        return child;
-      },
+      then: lib$es6$promise$then$$default,
 
     /**
       `catch` is simply sugar for `then(undefined, onRejection)` which makes it the same
@@ -17114,6 +17018,97 @@ module.exports = dupe
       'catch': function(onRejection) {
         return this.then(null, onRejection);
       }
+    };
+    var lib$es6$promise$enumerator$$default = lib$es6$promise$enumerator$$Enumerator;
+    function lib$es6$promise$enumerator$$Enumerator(Constructor, input) {
+      this._instanceConstructor = Constructor;
+      this.promise = new Constructor(lib$es6$promise$$internal$$noop);
+
+      if (Array.isArray(input)) {
+        this._input     = input;
+        this.length     = input.length;
+        this._remaining = input.length;
+
+        this._result = new Array(this.length);
+
+        if (this.length === 0) {
+          lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+        } else {
+          this.length = this.length || 0;
+          this._enumerate();
+          if (this._remaining === 0) {
+            lib$es6$promise$$internal$$fulfill(this.promise, this._result);
+          }
+        }
+      } else {
+        lib$es6$promise$$internal$$reject(this.promise, this._validationError());
+      }
+    }
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._validationError = function() {
+      return new Error('Array Methods must be provided an Array');
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._enumerate = function() {
+      var length  = this.length;
+      var input   = this._input;
+
+      for (var i = 0; this._state === lib$es6$promise$$internal$$PENDING && i < length; i++) {
+        this._eachEntry(input[i], i);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._eachEntry = function(entry, i) {
+      var c = this._instanceConstructor;
+      var resolve = c.resolve;
+
+      if (resolve === lib$es6$promise$promise$resolve$$default) {
+        var then = lib$es6$promise$$internal$$getThen(entry);
+
+        if (then === lib$es6$promise$then$$default &&
+            entry._state !== lib$es6$promise$$internal$$PENDING) {
+          this._settledAt(entry._state, i, entry._result);
+        } else if (typeof then !== 'function') {
+          this._remaining--;
+          this._result[i] = entry;
+        } else if (c === lib$es6$promise$promise$$default) {
+          var promise = new c(lib$es6$promise$$internal$$noop);
+          lib$es6$promise$$internal$$handleMaybeThenable(promise, entry, then);
+          this._willSettleAt(promise, i);
+        } else {
+          this._willSettleAt(new c(function(resolve) { resolve(entry); }), i);
+        }
+      } else {
+        this._willSettleAt(resolve(entry), i);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._settledAt = function(state, i, value) {
+      var promise = this.promise;
+
+      if (promise._state === lib$es6$promise$$internal$$PENDING) {
+        this._remaining--;
+
+        if (state === lib$es6$promise$$internal$$REJECTED) {
+          lib$es6$promise$$internal$$reject(promise, value);
+        } else {
+          this._result[i] = value;
+        }
+      }
+
+      if (this._remaining === 0) {
+        lib$es6$promise$$internal$$fulfill(promise, this._result);
+      }
+    };
+
+    lib$es6$promise$enumerator$$Enumerator.prototype._willSettleAt = function(promise, i) {
+      var enumerator = this;
+
+      lib$es6$promise$$internal$$subscribe(promise, undefined, function(value) {
+        enumerator._settledAt(lib$es6$promise$$internal$$FULFILLED, i, value);
+      }, function(reason) {
+        enumerator._settledAt(lib$es6$promise$$internal$$REJECTED, i, reason);
+      });
     };
     function lib$es6$promise$polyfill$$polyfill() {
       var local;
@@ -17370,7 +17365,7 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":208,"ndarray-ops":207,"typedarray-pool":233}],76:[function(require,module,exports){
+},{"ndarray":209,"ndarray-ops":208,"typedarray-pool":235}],76:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -17616,12 +17611,12 @@ function createError2D(plot, options) {
   return errorbars
 }
 
-},{"./lib/shaders":77,"gl-buffer":75,"gl-shader":154,"typedarray-pool":233}],77:[function(require,module,exports){
+},{"./lib/shaders":77,"gl-buffer":75,"gl-shader":154,"typedarray-pool":235}],77:[function(require,module,exports){
 
 
 module.exports = {
-  vertex:   "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 position;\nattribute vec2 pixelOffset;\n\nuniform mat3 viewTransform;\nuniform vec2 pixelScale;\n\nvoid main() {\n  vec3 scrPosition = viewTransform * vec3(position, 1);\n  gl_Position = vec4(\n    scrPosition.xy + scrPosition.z * pixelScale * pixelOffset,\n    0,\n    scrPosition.z);\n}\n",
-  fragment: "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}\n"
+  vertex:   "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec2 pixelOffset;\n\nuniform mat3 viewTransform;\nuniform vec2 pixelScale;\n\nvoid main() {\n  vec3 scrPosition = viewTransform * vec3(position, 1);\n  gl_Position = vec4(\n    scrPosition.xy + scrPosition.z * pixelScale * pixelOffset,\n    0,\n    scrPosition.z);\n}\n",
+  fragment: "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}\n"
 }
 
 },{}],78:[function(require,module,exports){
@@ -17861,14 +17856,14 @@ function createErrorBars(options) {
   return result
 }
 
-},{"./shaders/index":79,"gl-buffer":75,"gl-vao":189}],79:[function(require,module,exports){
+},{"./shaders/index":79,"gl-buffer":75,"gl-vao":184}],79:[function(require,module,exports){
 'use strict'
 
 
 var createShader = require('gl-shader')
 
-var vertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * view * worldPosition;\n  fragColor           = color;\n  fragPosition        = position;\n}"
-var fragSrc = "#define GLSLIFY 1\nprecision mediump float;\nuniform vec3 clipBounds[2];\nuniform float opacity;\nvarying vec3 fragPosition;\nvarying vec4 fragColor;\n\nvoid main() {\n  if(any(lessThan(fragPosition, clipBounds[0])) || any(greaterThan(fragPosition, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = opacity * fragColor;\n}"
+var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, offset;\nattribute vec4 color;\nuniform mat4 model, view, projection;\nuniform float capSize;\nvarying vec4 fragColor;\nvarying vec3 fragPosition;\n\nvoid main() {\n  vec4 worldPosition  = model * vec4(position, 1.0);\n  worldPosition       = (worldPosition / worldPosition.w) + vec4(capSize * offset, 0.0);\n  gl_Position         = projection * view * worldPosition;\n  fragColor           = color;\n  fragPosition        = position;\n}"
+var fragSrc = "precision mediump float;\n#define GLSLIFY 1\nuniform vec3 clipBounds[2];\nuniform float opacity;\nvarying vec3 fragPosition;\nvarying vec4 fragColor;\n\nvoid main() {\n  if(any(lessThan(fragPosition, clipBounds[0])) || any(greaterThan(fragPosition, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = opacity * fragColor;\n}"
 
 module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [
@@ -18345,17 +18340,17 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":185}],81:[function(require,module,exports){
+},{"gl-texture2d":180}],81:[function(require,module,exports){
 
 
-exports.lineVertex    = "#define GLSLIFY 1\nprecision mediump float;\n\nfloat inverse_1_0(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse_1_0(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse_1_0(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse_1_0(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\n\n\nattribute vec2 a, d;\n\nuniform mat3 matrix;\nuniform vec2 screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\nvoid main() {\n  vec2 dir = (matrix * vec3(d, 0)).xy;\n  vec3 base = matrix * vec3(a, 1);\n  vec2 n = 0.5 * width *\n    normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(base.xy/base.z + n, 0, 1);\n}\n"
-exports.lineFragment  = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 color;\nuniform vec2 screenShape;\nuniform sampler2D dashPattern;\nuniform float dashLength;\n\nvarying vec2 direction;\n\nvoid main() {\n  float t = fract(dot(direction, gl_FragCoord.xy) / dashLength);\n  vec4 pcolor = color * texture2D(dashPattern, vec2(t, 0.0)).r;\n  gl_FragColor = vec4(pcolor.rgb * pcolor.a, pcolor.a);\n}\n"
-exports.mitreVertex   = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 p;\n\nuniform mat3  matrix;\nuniform vec2 screenShape;\nuniform float radius;\n\nvoid main() {\n  vec3 pp = matrix * vec3(p, 1);\n  gl_Position  = vec4(pp.xy, 0, pp.z);\n  gl_PointSize = radius;\n}\n"
-exports.mitreFragment = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 color;\n\nvoid main() {\n  if(length(gl_PointCoord.xy - 0.5) > 0.25) {\n    discard;\n  }\n  gl_FragColor = vec4(color.rgb, color.a);\n}\n"
-exports.pickVertex    = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 a, d;\nattribute vec4 pick0, pick1;\n\nuniform mat3 matrix;\nuniform vec2 screenShape;\nuniform float width;\n\nvarying vec4 pickA, pickB;\n\nfloat inverse_1_0(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse_1_0(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse_1_0(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse_1_0(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\n\n\nvoid main() {\n  vec3 base = matrix * vec3(a, 1);\n  vec2 n = width *\n    normalize(screenShape.yx * vec2(d.y, -d.x)) / screenShape.xy;\n  gl_Position = vec4(base.xy/base.z + n, 0, 1);\n  pickA = pick0;\n  pickB = pick1;\n}\n"
-exports.pickFragment  = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 pickOffset;\n\nvarying vec4 pickA, pickB;\n\nvoid main() {\n  vec4 fragId = vec4(pickA.xyz, 0.0);\n  if(pickB.w > pickA.w) {\n    fragId.xyz = pickB.xyz;\n  }\n\n  fragId += pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  gl_FragColor = fragId / 255.0;\n}\n"
-exports.fillVertex    = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 a, d;\n\nuniform mat3 matrix;\nuniform vec2 projectAxis;\nuniform float projectValue;\nuniform float depth;\n\nvoid main() {\n  vec3 base = matrix * vec3(a, 1);\n  vec2 p = base.xy / base.z;\n  if(d.y < 0.0 || (d.y == 0.0 && d.x < 0.0)) {\n    if(dot(p, projectAxis) < projectValue) {\n      p = p * (1.0 - abs(projectAxis)) + projectAxis * projectValue;\n    }\n  }\n  gl_Position = vec4(p, depth, 1);\n}\n"
-exports.fillFragment  = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}\n"
+exports.lineVertex    = "precision mediump float;\n#define GLSLIFY 1\n\nfloat inverse_1_0(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse_1_0(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse_1_0(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse_1_0(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\n\n\nattribute vec2 a, d;\n\nuniform mat3 matrix;\nuniform vec2 screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\nvoid main() {\n  vec2 dir = (matrix * vec3(d, 0)).xy;\n  vec3 base = matrix * vec3(a, 1);\n  vec2 n = 0.5 * width *\n    normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(base.xy/base.z + n, 0, 1);\n}\n"
+exports.lineFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\nuniform vec2 screenShape;\nuniform sampler2D dashPattern;\nuniform float dashLength;\n\nvarying vec2 direction;\n\nvoid main() {\n  float t = fract(dot(direction, gl_FragCoord.xy) / dashLength);\n  vec4 pcolor = color * texture2D(dashPattern, vec2(t, 0.0)).r;\n  gl_FragColor = vec4(pcolor.rgb * pcolor.a, pcolor.a);\n}\n"
+exports.mitreVertex   = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 p;\n\nuniform mat3  matrix;\nuniform vec2 screenShape;\nuniform float radius;\n\nvoid main() {\n  vec3 pp = matrix * vec3(p, 1);\n  gl_Position  = vec4(pp.xy, 0, pp.z);\n  gl_PointSize = radius;\n}\n"
+exports.mitreFragment = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  if(length(gl_PointCoord.xy - 0.5) > 0.25) {\n    discard;\n  }\n  gl_FragColor = vec4(color.rgb, color.a);\n}\n"
+exports.pickVertex    = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 a, d;\nattribute vec4 pick0, pick1;\n\nuniform mat3 matrix;\nuniform vec2 screenShape;\nuniform float width;\n\nvarying vec4 pickA, pickB;\n\nfloat inverse_1_0(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse_1_0(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse_1_0(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse_1_0(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\n\n\nvoid main() {\n  vec3 base = matrix * vec3(a, 1);\n  vec2 n = width *\n    normalize(screenShape.yx * vec2(d.y, -d.x)) / screenShape.xy;\n  gl_Position = vec4(base.xy/base.z + n, 0, 1);\n  pickA = pick0;\n  pickB = pick1;\n}\n"
+exports.pickFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 pickOffset;\n\nvarying vec4 pickA, pickB;\n\nvoid main() {\n  vec4 fragId = vec4(pickA.xyz, 0.0);\n  if(pickB.w > pickA.w) {\n    fragId.xyz = pickB.xyz;\n  }\n\n  fragId += pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  gl_FragColor = fragId / 255.0;\n}\n"
+exports.fillVertex    = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 a, d;\n\nuniform mat3 matrix;\nuniform vec2 projectAxis;\nuniform float projectValue;\nuniform float depth;\n\nvoid main() {\n  vec3 base = matrix * vec3(a, 1);\n  vec2 p = base.xy / base.z;\n  if(d.y < 0.0 || (d.y == 0.0 && d.x < 0.0)) {\n    if(dot(p, projectAxis) < projectValue) {\n      p = p * (1.0 - abs(projectAxis)) + projectAxis * projectValue;\n    }\n  }\n  gl_Position = vec4(p, depth, 1);\n}\n"
+exports.fillFragment  = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = vec4(color.rgb * color.a, color.a);\n}\n"
 
 },{}],82:[function(require,module,exports){
 'use strict'
@@ -18429,6 +18424,10 @@ return function() {
   var numPoints = this.numPoints
   var bounds    = this.bounds
   var count     = this.vertCount
+
+  if(!count) {
+    return
+  }
 
   var gl        = plot.gl
   var viewBox   = plot.viewBox
@@ -18567,6 +18566,10 @@ proto.drawPick = (function() {
     var screenY = viewBox[3] - viewBox[1]
 
     this.pickOffset = pickOffset
+
+    if(!count) {
+      return pickOffset + numPoints
+    }
 
     MATRIX[0] = 2.0 * boundX / dataX
     MATRIX[4] = 2.0 * boundY / dataY
@@ -18808,13 +18811,13 @@ function createLinePlot(plot, options) {
   return linePlot
 }
 
-},{"./lib/shaders":81,"gl-buffer":75,"gl-shader":154,"gl-texture2d":185,"ndarray":208,"typedarray-pool":233}],83:[function(require,module,exports){
+},{"./lib/shaders":81,"gl-buffer":75,"gl-shader":154,"gl-texture2d":180,"ndarray":209,"typedarray-pool":235}],83:[function(require,module,exports){
 
 var createShader  = require('gl-shader')
 
-var vertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvoid main() {\n  vec4 projected = projection * view * model * vec4(position, 1.0);\n  vec4 tangentClip = projection * view * model * vec4(nextPosition - position, 0.0);\n  vec2 tangent = normalize(screenShape * tangentClip.xy);\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(tangent.y, -tangent.x) / screenShape;\n\n  gl_Position = vec4(projected.xy + projected.w * offset, projected.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"
-var forwardFrag = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec3      clipBounds[2];\nuniform sampler2D dashTexture;\nuniform float     dashScale;\nuniform float     opacity;\n\nvarying vec3    worldPosition;\nvarying float   pixelArcLength;\nvarying vec4    fragColor;\n\nvoid main() {\n  if(any(lessThan(worldPosition, clipBounds[0])) || any(greaterThan(worldPosition, clipBounds[1]))) {\n    discard;\n  }\n  float dashWeight = texture2D(dashTexture, vec2(dashScale * pixelArcLength, 0)).r;\n  if(dashWeight < 0.5) {\n    discard;\n  }\n  gl_FragColor = fragColor * opacity;\n}\n"
-var pickFrag = "#define GLSLIFY 1\nprecision mediump float;\n\n#define FLOAT_MAX  1.70141184e38\n#define FLOAT_MIN  1.17549435e-38\n\nlowp vec4 encode_float_1_0(highp float v) {\n  highp float av = abs(v);\n\n  //Handle special cases\n  if(av < FLOAT_MIN) {\n    return vec4(0.0, 0.0, 0.0, 0.0);\n  } else if(v > FLOAT_MAX) {\n    return vec4(127.0, 128.0, 0.0, 0.0) / 255.0;\n  } else if(v < -FLOAT_MAX) {\n    return vec4(255.0, 128.0, 0.0, 0.0) / 255.0;\n  }\n\n  highp vec4 c = vec4(0,0,0,0);\n\n  //Compute exponent and mantissa\n  highp float e = floor(log2(av));\n  highp float m = av * pow(2.0, -e) - 1.0;\n  \n  //Unpack mantissa\n  c[1] = floor(128.0 * m);\n  m -= c[1] / 128.0;\n  c[2] = floor(32768.0 * m);\n  m -= c[2] / 32768.0;\n  c[3] = floor(8388608.0 * m);\n  \n  //Unpack exponent\n  highp float ebias = e + 127.0;\n  c[0] = floor(ebias / 2.0);\n  ebias -= c[0] * 2.0;\n  c[1] += floor(ebias) * 128.0; \n\n  //Unpack sign bit\n  c[0] += 128.0 * step(0.0, -v);\n\n  //Scale back to range\n  return c / 255.0;\n}\n\n\n\nuniform float pickId;\nuniform vec3 clipBounds[2];\n\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\nvarying vec4 fragColor;\n\nvoid main() {\n  if(any(lessThan(worldPosition, clipBounds[0])) || any(greaterThan(worldPosition, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = vec4(pickId/255.0, encode_float_1_0(pixelArcLength).xyz);\n}"
+var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, nextPosition;\nattribute float arcLength, lineWidth;\nattribute vec4 color;\n\nuniform vec2 screenShape;\nuniform float pixelRatio;\nuniform mat4 model, view, projection;\n\nvarying vec4 fragColor;\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\n\nvoid main() {\n  vec4 projected = projection * view * model * vec4(position, 1.0);\n  vec4 tangentClip = projection * view * model * vec4(nextPosition - position, 0.0);\n  vec2 tangent = normalize(screenShape * tangentClip.xy);\n  vec2 offset = 0.5 * pixelRatio * lineWidth * vec2(tangent.y, -tangent.x) / screenShape;\n\n  gl_Position = vec4(projected.xy + projected.w * offset, projected.zw);\n\n  worldPosition = position;\n  pixelArcLength = arcLength;\n  fragColor = color;\n}\n"
+var forwardFrag = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3      clipBounds[2];\nuniform sampler2D dashTexture;\nuniform float     dashScale;\nuniform float     opacity;\n\nvarying vec3    worldPosition;\nvarying float   pixelArcLength;\nvarying vec4    fragColor;\n\nvoid main() {\n  if(any(lessThan(worldPosition, clipBounds[0])) || any(greaterThan(worldPosition, clipBounds[1]))) {\n    discard;\n  }\n  float dashWeight = texture2D(dashTexture, vec2(dashScale * pixelArcLength, 0)).r;\n  if(dashWeight < 0.5) {\n    discard;\n  }\n  gl_FragColor = fragColor * opacity;\n}\n"
+var pickFrag = "precision mediump float;\n#define GLSLIFY 1\n\n#define FLOAT_MAX  1.70141184e38\n#define FLOAT_MIN  1.17549435e-38\n\nlowp vec4 encode_float_1_0(highp float v) {\n  highp float av = abs(v);\n\n  //Handle special cases\n  if(av < FLOAT_MIN) {\n    return vec4(0.0, 0.0, 0.0, 0.0);\n  } else if(v > FLOAT_MAX) {\n    return vec4(127.0, 128.0, 0.0, 0.0) / 255.0;\n  } else if(v < -FLOAT_MAX) {\n    return vec4(255.0, 128.0, 0.0, 0.0) / 255.0;\n  }\n\n  highp vec4 c = vec4(0,0,0,0);\n\n  //Compute exponent and mantissa\n  highp float e = floor(log2(av));\n  highp float m = av * pow(2.0, -e) - 1.0;\n  \n  //Unpack mantissa\n  c[1] = floor(128.0 * m);\n  m -= c[1] / 128.0;\n  c[2] = floor(32768.0 * m);\n  m -= c[2] / 32768.0;\n  c[3] = floor(8388608.0 * m);\n  \n  //Unpack exponent\n  highp float ebias = e + 127.0;\n  c[0] = floor(ebias / 2.0);\n  ebias -= c[0] * 2.0;\n  c[1] += floor(ebias) * 128.0; \n\n  //Unpack sign bit\n  c[0] += 128.0 * step(0.0, -v);\n\n  //Scale back to range\n  return c / 255.0;\n}\n\n\n\nuniform float pickId;\nuniform vec3 clipBounds[2];\n\nvarying vec3 worldPosition;\nvarying float pixelArcLength;\nvarying vec4 fragColor;\n\nvoid main() {\n  if(any(lessThan(worldPosition, clipBounds[0])) || any(greaterThan(worldPosition, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = vec4(pickId/255.0, encode_float_1_0(pixelArcLength).xyz);\n}"
 
 var ATTRIBUTES = [
   {name: 'position', type: 'vec3'},
@@ -19178,7 +19181,7 @@ function createLinePlot(options) {
   return linePlot
 }
 
-},{"./lib/shaders":83,"binary-search-bounds":85,"gl-buffer":75,"gl-texture2d":185,"gl-vao":189,"glsl-read-float":86,"ndarray":208}],85:[function(require,module,exports){
+},{"./lib/shaders":83,"binary-search-bounds":85,"gl-buffer":75,"gl-texture2d":180,"gl-vao":184,"glsl-read-float":86,"ndarray":209}],85:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
 },{"dup":20}],86:[function(require,module,exports){
 module.exports = decodeFloat
@@ -20097,17 +20100,17 @@ function closestPointToPickLocation(simplex, pixelCoord, model, view, projection
 },{"barycentric":108,"polytope-closest-point/lib/closest_point_2d.js":110}],106:[function(require,module,exports){
 
 
-var triVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec4 m_position  = model * vec4(position, 1.0);\n  vec4 t_position  = view * m_position;\n  gl_Position      = projection * t_position;\n  f_color          = color;\n  f_normal         = normal;\n  f_data           = position;\n  f_eyeDirection   = eyePosition   - position;\n  f_lightDirection = lightPosition - position;\n  f_uv             = uv;\n}"
-var triFragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat cookTorranceSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution_2_0(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(f_data, clipBounds[0])) || \n     any(greaterThan(f_data, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n  \n  if(!gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = cookTorranceSpecular_1_1(L, V, N, roughness, fresnel);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}"
-var edgeVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model, view, projection;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_color = color;\n  f_data  = position;\n  f_uv    = uv;\n}"
-var edgeFragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec3 clipBounds[2];\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(f_data, clipBounds[0])) || \n     any(greaterThan(f_data, clipBounds[1]))) {\n    discard;\n  }\n\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"
-var pointVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\nattribute float pointSize;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || \n     any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position = projection * view * model * vec4(position, 1.0);\n  }\n  gl_PointSize = pointSize;\n  f_color = color;\n  f_uv = uv;\n}"
-var pointFragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec2 pointR = gl_PointCoord.xy - vec2(0.5,0.5);\n  if(dot(pointR, pointR) > 0.25) {\n    discard;\n  }\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"
-var pickVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_id        = id;\n  f_position  = position;\n}"
-var pickFragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if(any(lessThan(f_position, clipBounds[0])) || \n     any(greaterThan(f_position, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"
-var pickPointVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3  position;\nattribute float pointSize;\nattribute vec4  id;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || \n     any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position  = projection * view * model * vec4(position, 1.0);\n    gl_PointSize = pointSize;\n  }\n  f_id         = id;\n  f_position   = position;\n}"
-var contourVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n}"
-var contourFragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec3 contourColor;\n\nvoid main() {\n  gl_FragColor = vec4(contourColor,1);\n}\n"
+var triVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position, normal;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model\n           , view\n           , projection;\nuniform vec3 eyePosition\n           , lightPosition;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec4 m_position  = model * vec4(position, 1.0);\n  vec4 t_position  = view * m_position;\n  gl_Position      = projection * t_position;\n  f_color          = color;\n  f_normal         = normal;\n  f_data           = position;\n  f_eyeDirection   = eyePosition   - position;\n  f_lightDirection = lightPosition - position;\n  f_uv             = uv;\n}"
+var triFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat cookTorranceSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness,\n  float fresnel) {\n\n  float VdotN = max(dot(viewDirection, surfaceNormal), 0.0);\n  float LdotN = max(dot(lightDirection, surfaceNormal), 0.0);\n\n  //Half angle vector\n  vec3 H = normalize(lightDirection + viewDirection);\n\n  //Geometric term\n  float NdotH = max(dot(surfaceNormal, H), 0.0);\n  float VdotH = max(dot(viewDirection, H), 0.000001);\n  float LdotH = max(dot(lightDirection, H), 0.000001);\n  float G1 = (2.0 * NdotH * VdotN) / VdotH;\n  float G2 = (2.0 * NdotH * LdotN) / LdotH;\n  float G = min(1.0, min(G1, G2));\n  \n  //Distribution term\n  float D = beckmannDistribution_2_0(NdotH, roughness);\n\n  //Fresnel term\n  float F = pow(1.0 - VdotN, fresnel);\n\n  //Multiply terms and done\n  return  G * F * D / max(3.14159265 * VdotN, 0.000001);\n}\n\n\n\nuniform vec3 clipBounds[2];\nuniform float roughness\n            , fresnel\n            , kambient\n            , kdiffuse\n            , kspecular\n            , opacity;\nuniform sampler2D texture;\n\nvarying vec3 f_normal\n           , f_lightDirection\n           , f_eyeDirection\n           , f_data;\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(f_data, clipBounds[0])) || \n     any(greaterThan(f_data, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(f_normal);\n  vec3 L = normalize(f_lightDirection);\n  vec3 V = normalize(f_eyeDirection);\n  \n  if(!gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = cookTorranceSpecular_1_1(L, V, N, roughness, fresnel);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = f_color * texture2D(texture, f_uv);\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = litColor * opacity;\n}"
+var edgeVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\n\nuniform mat4 model, view, projection;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_color = color;\n  f_data  = position;\n  f_uv    = uv;\n}"
+var edgeFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 clipBounds[2];\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec3 f_data;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(f_data, clipBounds[0])) || \n     any(greaterThan(f_data, clipBounds[1]))) {\n    discard;\n  }\n\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"
+var pointVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 uv;\nattribute float pointSize;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || \n     any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position = projection * view * model * vec4(position, 1.0);\n  }\n  gl_PointSize = pointSize;\n  f_color = color;\n  f_uv = uv;\n}"
+var pointFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform sampler2D texture;\nuniform float opacity;\n\nvarying vec4 f_color;\nvarying vec2 f_uv;\n\nvoid main() {\n  vec2 pointR = gl_PointCoord.xy - vec2(0.5,0.5);\n  if(dot(pointR, pointR) > 0.25) {\n    discard;\n  }\n  gl_FragColor = f_color * texture2D(texture, f_uv) * opacity;\n}"
+var pickVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n  f_id        = id;\n  f_position  = position;\n}"
+var pickFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3  clipBounds[2];\nuniform float pickId;\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if(any(lessThan(f_position, clipBounds[0])) || \n     any(greaterThan(f_position, clipBounds[1]))) {\n    discard;\n  }\n  gl_FragColor = vec4(pickId, f_id.xyz);\n}"
+var pickPointVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3  position;\nattribute float pointSize;\nattribute vec4  id;\n\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec3 f_position;\nvarying vec4 f_id;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || \n     any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    gl_Position  = projection * view * model * vec4(position, 1.0);\n    gl_PointSize = pointSize;\n  }\n  f_id         = id;\n  f_position   = position;\n}"
+var contourVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\n\nuniform mat4 model, view, projection;\n\nvoid main() {\n  gl_Position = projection * view * model * vec4(position, 1.0);\n}"
+var contourFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 contourColor;\n\nvoid main() {\n  gl_FragColor = vec4(contourColor,1);\n}\n"
 
 exports.meshShader = {
   vertex:   triVertSrc,
@@ -21155,7 +21158,7 @@ function createSimplicialMesh(params) {
 
 module.exports = createSimplicialMesh
 
-},{"./lib/closest-point":105,"./lib/shaders":106,"colormap":57,"gl-buffer":75,"gl-mat4/invert":94,"gl-mat4/multiply":96,"gl-shader":154,"gl-texture2d":185,"gl-vao":189,"ndarray":208,"normals":109,"simplicial-complex-contour":111,"typedarray-pool":233}],108:[function(require,module,exports){
+},{"./lib/closest-point":105,"./lib/shaders":106,"colormap":57,"gl-buffer":75,"gl-mat4/invert":94,"gl-mat4/multiply":96,"gl-shader":154,"gl-texture2d":180,"gl-vao":184,"ndarray":209,"normals":109,"simplicial-complex-contour":111,"typedarray-pool":235}],108:[function(require,module,exports){
 'use strict'
 
 module.exports = barycentric
@@ -21203,7 +21206,7 @@ function barycentric(simplex, point) {
   }
   return y
 }
-},{"robust-linear-solve":211}],109:[function(require,module,exports){
+},{"robust-linear-solve":213}],109:[function(require,module,exports){
 var EPSILON = 1e-6;
 
 //Estimate the vertex normals of a mesh
@@ -21685,7 +21688,7 @@ function extractContour(cells, values, level, d) {
     vertexWeights: uweights
   }
 }
-},{"./lib/codegen":112,"ndarray":208,"ndarray-sort":115,"typedarray-pool":233}],112:[function(require,module,exports){
+},{"./lib/codegen":112,"ndarray":209,"ndarray-sort":115,"typedarray-pool":235}],112:[function(require,module,exports){
 'use strict'
 
 module.exports = getPolygonizer
@@ -21782,7 +21785,7 @@ function getPolygonizer(d) {
   }
   return alg
 }
-},{"marching-simplex-table":113,"typedarray-pool":233}],113:[function(require,module,exports){
+},{"marching-simplex-table":113,"typedarray-pool":235}],113:[function(require,module,exports){
 'use strict'
 
 module.exports = createTable
@@ -22577,7 +22580,7 @@ function compileSort(order, dtype) {
 }
 
 module.exports = compileSort
-},{"typedarray-pool":233}],115:[function(require,module,exports){
+},{"typedarray-pool":235}],115:[function(require,module,exports){
 "use strict"
 
 var compile = require("./lib/compile_sort.js")
@@ -22729,7 +22732,7 @@ proto.draw = (function() {
       shader.uniforms.color     = gridColor[i]
 
       var size = ticks[i].length * 6
-      if(gridEnable[i]) {
+      if(gridEnable[i] && size) {
         gl.drawArrays(gl.TRIANGLES, offset, size)
       }
       offset += size
@@ -22809,44 +22812,52 @@ proto.drawTickMarks = (function() {
     TICK_SCALE[0]         = tickMarkLength[1] * pixelRatio / screenWidth
     TICK_SCALE[1]         = tickMarkWidth[1]  * pixelRatio / screenHeight
 
-    uniforms.color        = tickMarkColor[1]
-    uniforms.tickScale    = TICK_SCALE
-    uniforms.dataAxis     = Y_AXIS
-    uniforms.screenOffset = SCR_OFFSET
-    gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
+    if(yCount) {
+      uniforms.color        = tickMarkColor[1]
+      uniforms.tickScale    = TICK_SCALE
+      uniforms.dataAxis     = Y_AXIS
+      uniforms.screenOffset = SCR_OFFSET
+      gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
+    }
 
     SCR_OFFSET[0]         = (viewBox[2] + viewBox[0]) / screenWidth - 1.0
     SCR_OFFSET[1]         = 2.0 * (viewBox[1] - tickMarkLength[0]) / screenHeight - 1.0
     TICK_SCALE[0]         = tickMarkWidth[0]  * pixelRatio / screenWidth
     TICK_SCALE[1]         = tickMarkLength[0] * pixelRatio / screenHeight
 
-    uniforms.color        = tickMarkColor[0]
-    uniforms.tickScale    = TICK_SCALE
-    uniforms.dataAxis     = X_AXIS
-    uniforms.screenOffset = SCR_OFFSET
-    gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
+    if(xCount) {
+      uniforms.color        = tickMarkColor[0]
+      uniforms.tickScale    = TICK_SCALE
+      uniforms.dataAxis     = X_AXIS
+      uniforms.screenOffset = SCR_OFFSET
+      gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
+    }
 
     SCR_OFFSET[0]         = 2.0 * (viewBox[2] + tickMarkLength[3]) / screenWidth - 1.0
     SCR_OFFSET[1]         = (viewBox[3] + viewBox[1]) / screenHeight - 1.0
     TICK_SCALE[0]         = tickMarkLength[3] * pixelRatio / screenWidth
     TICK_SCALE[1]         = tickMarkWidth[3]  * pixelRatio / screenHeight
 
-    uniforms.color        = tickMarkColor[3]
-    uniforms.tickScale    = TICK_SCALE
-    uniforms.dataAxis     = Y_AXIS
-    uniforms.screenOffset = SCR_OFFSET
-    gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
+    if(yCount) {
+      uniforms.color        = tickMarkColor[3]
+      uniforms.tickScale    = TICK_SCALE
+      uniforms.dataAxis     = Y_AXIS
+      uniforms.screenOffset = SCR_OFFSET
+      gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
+    }
 
     SCR_OFFSET[0]         = (viewBox[2] + viewBox[0]) / screenWidth - 1.0
     SCR_OFFSET[1]         = 2.0 * (viewBox[3] + tickMarkLength[2]) / screenHeight - 1.0
     TICK_SCALE[0]         = tickMarkWidth[2]  * pixelRatio / screenWidth
     TICK_SCALE[1]         = tickMarkLength[2] * pixelRatio / screenHeight
 
-    uniforms.color        = tickMarkColor[2]
-    uniforms.tickScale    = TICK_SCALE
-    uniforms.dataAxis     = X_AXIS
-    uniforms.screenOffset = SCR_OFFSET
-    gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
+    if(xCount) {
+      uniforms.color        = tickMarkColor[2]
+      uniforms.tickScale    = TICK_SCALE
+      uniforms.dataAxis     = X_AXIS
+      uniforms.screenOffset = SCR_OFFSET
+      gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
+    }
   }
 })()
 
@@ -22969,17 +22980,17 @@ function createLines(plot) {
 
 
 
-var FRAGMENT = "#define GLSLIFY 1\nprecision lowp float;\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = vec4(color.xyz * color.w, color.w);\n}\n"
+var FRAGMENT = "precision lowp float;\n#define GLSLIFY 1\nuniform vec4 color;\nvoid main() {\n  gl_FragColor = vec4(color.xyz * color.w, color.w);\n}\n"
 
 module.exports = {
-  lineVert: "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 coord;\n\nuniform vec4 screenBox;\nuniform vec2 start, end;\nuniform float width;\n\nvec2 perp(vec2 v) {\n  return vec2(v.y, -v.x);\n}\n\nvec2 screen(vec2 v) {\n  return 2.0 * (v - screenBox.xy) / (screenBox.zw - screenBox.xy) - 1.0;\n}\n\nvoid main() {\n  vec2 delta = normalize(perp(start - end));\n  vec2 offset = mix(start, end, 0.5 * (coord.y+1.0));\n  gl_Position = vec4(screen(offset + 0.5 * width * delta * coord.x), 0, 1);\n}\n",
+  lineVert: "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 coord;\n\nuniform vec4 screenBox;\nuniform vec2 start, end;\nuniform float width;\n\nvec2 perp(vec2 v) {\n  return vec2(v.y, -v.x);\n}\n\nvec2 screen(vec2 v) {\n  return 2.0 * (v - screenBox.xy) / (screenBox.zw - screenBox.xy) - 1.0;\n}\n\nvoid main() {\n  vec2 delta = normalize(perp(start - end));\n  vec2 offset = mix(start, end, 0.5 * (coord.y+1.0));\n  gl_Position = vec4(screen(offset + 0.5 * width * delta * coord.x), 0, 1);\n}\n",
   lineFrag: FRAGMENT,
   textVert: "#define GLSLIFY 1\nattribute vec3 textCoordinate;\n\nuniform vec2 dataScale, dataShift, dataAxis, screenOffset, textScale;\nuniform float angle;\n\nvoid main() {\n  float dataOffset  = textCoordinate.z;\n  vec2 glyphOffset  = textCoordinate.xy;\n  mat2 glyphMatrix = mat2(cos(angle), sin(angle), -sin(angle), cos(angle));\n  vec2 screenCoordinate = dataAxis * (dataScale * dataOffset + dataShift) +\n    glyphMatrix * glyphOffset * textScale + screenOffset;\n  gl_Position = vec4(screenCoordinate, 0, 1);\n}\n",
   textFrag: FRAGMENT,
-  gridVert: "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale;\nuniform float lineWidth;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  pos += 10.0 * dataCoord.y * vec2(dataAxis.y, -dataAxis.x) + dataCoord.z * lineWidth;\n  gl_Position = vec4(pos, 0, 1);\n}\n",
+  gridVert: "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale;\nuniform float lineWidth;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  pos += 10.0 * dataCoord.y * vec2(dataAxis.y, -dataAxis.x) + dataCoord.z * lineWidth;\n  gl_Position = vec4(pos, 0, 1);\n}\n",
   gridFrag: FRAGMENT,
-  boxVert:  "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 coord;\n\nuniform vec4 screenBox;\nuniform vec2 lo, hi;\n\nvec2 screen(vec2 v) {\n  return 2.0 * (v - screenBox.xy) / (screenBox.zw - screenBox.xy) - 1.0;\n}\n\nvoid main() {\n  gl_Position = vec4(screen(mix(lo, hi, coord)), 0, 1);\n}\n",
-  tickVert: "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale, screenOffset, tickScale;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  gl_Position = vec4(pos + tickScale*dataCoord.yz + screenOffset, 0, 1);\n}\n"
+  boxVert:  "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 coord;\n\nuniform vec4 screenBox;\nuniform vec2 lo, hi;\n\nvec2 screen(vec2 v) {\n  return 2.0 * (v - screenBox.xy) / (screenBox.zw - screenBox.xy) - 1.0;\n}\n\nvoid main() {\n  gl_Position = vec4(screen(mix(lo, hi, coord)), 0, 1);\n}\n",
+  tickVert: "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 dataCoord;\n\nuniform vec2 dataAxis, dataShift, dataScale, screenOffset, tickScale;\n\nvoid main() {\n  vec2 pos = dataAxis * (dataScale * dataCoord.x + dataShift);\n  gl_Position = vec4(pos + tickScale*dataCoord.yz + screenOffset, 0, 1);\n}\n"
 }
 
 },{}],120:[function(require,module,exports){
@@ -23046,7 +23057,7 @@ proto.drawTicks = (function() {
     SCREEN_OFFSET[axis^1] = screenScale * viewBox[axis^1] - 1.0
     if(tickEnable[axis]) {
       SCREEN_OFFSET[axis^1] -= screenScale * pixelRatio * tickPad[axis]
-      if(start < end) {
+      if(start < end && tickOffset[end] > tickOffset[start]) {
         shader.uniforms.dataAxis     = DATA_AXIS
         shader.uniforms.screenOffset = SCREEN_OFFSET
         shader.uniforms.color        = textColor[axis]
@@ -23057,7 +23068,7 @@ proto.drawTicks = (function() {
           tickOffset[end] - tickOffset[start])
       }
     }
-    if(labelEnable[axis]) {
+    if(labelEnable[axis] && labelCount) {
       SCREEN_OFFSET[axis^1] -= screenScale * pixelRatio * labelPad[axis]
       shader.uniforms.dataAxis     = ZERO_2
       shader.uniforms.screenOffset = SCREEN_OFFSET
@@ -23072,7 +23083,7 @@ proto.drawTicks = (function() {
     SCREEN_OFFSET[axis^1] = screenScale * viewBox[2+(axis^1)] - 1.0
     if(tickEnable[axis+2]) {
       SCREEN_OFFSET[axis^1] += screenScale * pixelRatio * tickPad[axis+2]
-      if(start < end) {
+      if(start < end && tickOffset[end] > tickOffset[start]) {
         shader.uniforms.dataAxis     = DATA_AXIS
         shader.uniforms.screenOffset = SCREEN_OFFSET
         shader.uniforms.color        = textColor[axis+2]
@@ -23083,7 +23094,7 @@ proto.drawTicks = (function() {
           tickOffset[end] - tickOffset[start])
       }
     }
-    if(labelEnable[axis+2]) {
+    if(labelEnable[axis+2] && labelCount) {
       SCREEN_OFFSET[axis^1] += screenScale * pixelRatio * labelPad[axis+2]
       shader.uniforms.dataAxis     = ZERO_2
       shader.uniforms.screenOffset = SCREEN_OFFSET
@@ -23112,6 +23123,10 @@ proto.drawTitle = (function() {
     var titleColor  = plot.titleColor
     var titleCenter = plot.titleCenter
     var pixelRatio  = plot.pixelRatio
+
+    if(!this.titleCount) {
+      return
+    }
 
     for(var i=0; i<2; ++i) {
       SCREEN_OFFSET[i] = 2.0 * (titleCenter[i]*pixelRatio - screenBox[i]) /
@@ -23253,7 +23268,7 @@ function createTextElements(plot) {
   return text
 }
 
-},{"./shaders":119,"binary-search-bounds":121,"gl-buffer":75,"gl-shader":154,"text-cache":228}],121:[function(require,module,exports){
+},{"./shaders":119,"binary-search-bounds":121,"gl-buffer":75,"gl-shader":154,"text-cache":230}],121:[function(require,module,exports){
 "use strict"
 
 function compileSearch(funcName, predicate, reversed, extraArgs, earlyOut) {
@@ -24100,7 +24115,7 @@ function createCamera(element, options) {
 
   return camera
 }
-},{"3d-view":38,"mouse-change":196,"mouse-wheel":200,"right-now":210}],125:[function(require,module,exports){
+},{"3d-view":38,"mouse-change":197,"mouse-wheel":201,"right-now":212}],125:[function(require,module,exports){
 // Copyright (C) 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -24817,7 +24832,7 @@ function createABigTriangle(gl) {
 
 module.exports = createABigTriangle
 
-},{"gl-buffer":75,"gl-vao":189,"weak-map":125}],127:[function(require,module,exports){
+},{"gl-buffer":75,"gl-vao":184,"weak-map":125}],127:[function(require,module,exports){
 'use strict'
 
 module.exports = createAxes
@@ -25452,7 +25467,7 @@ function createBackgroundCube(gl) {
   return new BackgroundCube(gl, buffer, vao, shader)
 }
 
-},{"./shaders":131,"gl-buffer":75,"gl-vao":189}],129:[function(require,module,exports){
+},{"./shaders":131,"gl-buffer":75,"gl-vao":184}],129:[function(require,module,exports){
 "use strict"
 
 module.exports = getCubeEdges
@@ -25693,7 +25708,7 @@ function getCubeEdges(model, view, projection, bounds) {
   //Return result
   return CUBE_RESULT
 }
-},{"bit-twiddle":49,"gl-mat4/invert":94,"gl-mat4/multiply":96,"robust-orientation":214,"split-polygon":135}],130:[function(require,module,exports){
+},{"bit-twiddle":49,"gl-mat4/invert":94,"gl-mat4/multiply":96,"robust-orientation":216,"split-polygon":135}],130:[function(require,module,exports){
 'use strict'
 
 module.exports    = createLines
@@ -25773,6 +25788,10 @@ proto.drawAxisLine = function(j, bounds, offset, color, lineWidth) {
 }
 
 proto.drawAxisTicks = function(j, offset, minorAxis, color, lineWidth) {
+  if(!this.tickCount[j]) {
+    return
+  }
+
   var majorAxis = zeroVec(MAJOR_AXIS)
   majorAxis[j]  = 1
   this.shader.uniforms.majorAxis = majorAxis
@@ -25789,6 +25808,10 @@ proto.drawAxisTicks = function(j, offset, minorAxis, color, lineWidth) {
 
 
 proto.drawGrid = function(i, j, bounds, offset, color, lineWidth) {
+  if(!this.gridCount[i]) {
+    return
+  }
+
   var minorAxis = zeroVec(MINOR_AXIS)
   minorAxis[j]  = bounds[1][j] - bounds[0][j]
   this.shader.uniforms.minorAxis = minorAxis
@@ -25891,7 +25914,7 @@ function createLines(gl, bounds, ticks) {
   return new Lines(gl, vertBuf, vao, shader, tickCount, tickOffset, gridCount, gridOffset)
 }
 
-},{"./shaders":131,"gl-buffer":75,"gl-vao":189}],131:[function(require,module,exports){
+},{"./shaders":131,"gl-buffer":75,"gl-vao":184}],131:[function(require,module,exports){
 'use strict'
 
 
@@ -26046,6 +26069,10 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
 //Draws the tick marks for an axis
 var AXIS = [0,0,0]
 proto.drawTicks = function(d, scale, angle, offset, color) {
+  if(!this.tickCount[d]) {
+    return
+  }
+
   var v = AXIS
   v[0] = v[1] = v[2] = 0
   v[d] = 1
@@ -26060,6 +26087,9 @@ proto.drawTicks = function(d, scale, angle, offset, color) {
 //Draws the text label for an axis
 var ZERO = [0,0,0]
 proto.drawLabel = function(d, scale, angle, offset, color) {
+  if(!this.labelCount[d]) {
+    return
+  }
   this.shader.uniforms.axis = ZERO
   this.shader.uniforms.color = color
   this.shader.uniforms.angle = angle
@@ -26117,7 +26147,7 @@ function createTextSprites(
 }
 
 }).call(this,require('_process'))
-},{"./shaders":131,"_process":55,"gl-buffer":75,"gl-vao":189,"vectorize-text":235}],133:[function(require,module,exports){
+},{"./shaders":131,"_process":55,"gl-buffer":75,"gl-vao":184,"vectorize-text":237}],133:[function(require,module,exports){
 'use strict'
 
 exports.create   = defaultTicks
@@ -26299,7 +26329,7 @@ function negative(points, plane) {
   }
   return neg
 }
-},{"robust-dot-product":136,"robust-sum":217}],136:[function(require,module,exports){
+},{"robust-dot-product":136,"robust-sum":219}],136:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -26314,7 +26344,7 @@ function robustDotProduct(a, b) {
   }
   return r
 }
-},{"robust-sum":217,"two-product":231}],137:[function(require,module,exports){
+},{"robust-sum":219,"two-product":233}],137:[function(require,module,exports){
 "use strict"
 
 module.exports = axesProperties
@@ -26456,7 +26486,7 @@ i_loop:
   return ranges
 }
 
-},{"./lib/cube.js":129,"extract-frustum-planes":134,"gl-mat4/multiply":96,"gl-mat4/transpose":104,"gl-vec4/transformMat4":190,"split-polygon":135}],138:[function(require,module,exports){
+},{"./lib/cube.js":129,"extract-frustum-planes":134,"gl-mat4/multiply":96,"gl-mat4/transpose":104,"gl-vec4/transformMat4":185,"split-polygon":135}],138:[function(require,module,exports){
 'use strict'
 
 
@@ -26669,7 +26699,7 @@ function createSpikes(gl, options) {
   return spikes
 }
 
-},{"./shaders/index":138,"gl-buffer":75,"gl-vao":189}],140:[function(require,module,exports){
+},{"./shaders/index":138,"gl-buffer":75,"gl-vao":184}],140:[function(require,module,exports){
 'use strict'
 
 module.exports = createScene
@@ -27434,16 +27464,16 @@ function createScene(options) {
   return scene
 }
 
-},{"./lib/shader":123,"3d-view-controls":124,"a-big-triangle":126,"gl-axes3d":127,"gl-axes3d/properties":137,"gl-fbo":80,"gl-mat4/perspective":97,"gl-select-static":153,"gl-spikes3d":139,"mouse-change":196}],141:[function(require,module,exports){
+},{"./lib/shader":123,"3d-view-controls":124,"a-big-triangle":126,"gl-axes3d":127,"gl-axes3d/properties":137,"gl-fbo":80,"gl-mat4/perspective":97,"gl-select-static":153,"gl-spikes3d":139,"mouse-change":197}],141:[function(require,module,exports){
 'use strict'
 
 
 
 module.exports = {
-  vertex:       "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 position;\nattribute vec2 offset;\nattribute vec4 color;\n\nuniform mat3 viewTransform;\nuniform vec2 pixelScale;\n\nvarying vec4 fragColor;\n\nvec4 computePosition_1_0(vec2 position, vec2 offset, mat3 view, vec2 scale) {\n  vec3 xposition = view * vec3(position, 1.0);\n  return vec4(\n    xposition.xy + scale * offset * xposition.z,\n    0,\n    xposition.z);\n}\n\n\n\n\nvoid main() {\n  fragColor = color;\n\n  gl_Position = computePosition_1_0(\n    position,\n    offset,\n    viewTransform,\n    pixelScale);\n}\n",
-  fragment:     "#define GLSLIFY 1\nprecision lowp float;\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = vec4(fragColor.rgb * fragColor.a, fragColor.a);\n}\n",
-  pickVertex:   "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 position;\nattribute vec2 offset;\nattribute vec4 id;\n\nuniform mat3 viewTransform;\nuniform vec2 pixelScale;\nuniform vec4 pickOffset;\n\nvarying vec4 fragColor;\n\nvec4 computePosition_1_0(vec2 position, vec2 offset, mat3 view, vec2 scale) {\n  vec3 xposition = view * vec3(position, 1.0);\n  return vec4(\n    xposition.xy + scale * offset * xposition.z,\n    0,\n    xposition.z);\n}\n\n\n\n\nvoid main() {\n  vec4 fragId = id + pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  fragColor = fragId / 255.0;\n\n  gl_Position = computePosition_1_0(\n    position,\n    offset,\n    viewTransform,\n    pixelScale);\n}\n",
-  pickFragment: "#define GLSLIFY 1\nprecision lowp float;\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = fragColor;\n}\n"
+  vertex:       "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec2 offset;\nattribute vec4 color;\n\nuniform mat3 viewTransform;\nuniform vec2 pixelScale;\n\nvarying vec4 fragColor;\n\nvec4 computePosition_1_0(vec2 position, vec2 offset, mat3 view, vec2 scale) {\n  vec3 xposition = view * vec3(position, 1.0);\n  return vec4(\n    xposition.xy + scale * offset * xposition.z,\n    0,\n    xposition.z);\n}\n\n\n\n\nvoid main() {\n  fragColor = color;\n\n  gl_Position = computePosition_1_0(\n    position,\n    offset,\n    viewTransform,\n    pixelScale);\n}\n",
+  fragment:     "precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = vec4(fragColor.rgb * fragColor.a, fragColor.a);\n}\n",
+  pickVertex:   "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec2 offset;\nattribute vec4 id;\n\nuniform mat3 viewTransform;\nuniform vec2 pixelScale;\nuniform vec4 pickOffset;\n\nvarying vec4 fragColor;\n\nvec4 computePosition_1_0(vec2 position, vec2 offset, mat3 view, vec2 scale) {\n  vec3 xposition = view * vec3(position, 1.0);\n  return vec4(\n    xposition.xy + scale * offset * xposition.z,\n    0,\n    xposition.z);\n}\n\n\n\n\nvoid main() {\n  vec4 fragId = id + pickOffset;\n\n  fragId.y += floor(fragId.x / 256.0);\n  fragId.x -= floor(fragId.x / 256.0) * 256.0;\n\n  fragId.z += floor(fragId.y / 256.0);\n  fragId.y -= floor(fragId.y / 256.0) * 256.0;\n\n  fragId.w += floor(fragId.z / 256.0);\n  fragId.z -= floor(fragId.z / 256.0) * 256.0;\n\n  fragColor = fragId / 255.0;\n\n  gl_Position = computePosition_1_0(\n    position,\n    offset,\n    viewTransform,\n    pixelScale);\n}\n",
+  pickFragment: "precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = fragColor;\n}\n"
 }
 
 },{}],142:[function(require,module,exports){
@@ -27608,6 +27638,10 @@ var proto = GLScatterFancy.prototype
     var shader        = this.shader
     var numVertices   = this.numVertices
 
+    if(!numVertices) {
+      return
+    }
+
     var gl          = plot.gl
 
     calcScales.call(this)
@@ -27639,6 +27673,10 @@ var proto = GLScatterFancy.prototype
     var gl          = plot.gl
 
     this.pickOffset = offset
+
+    if(!numVertices) {
+      return offset
+    }
 
     for(var i=0; i<4; ++i) {
       PICK_OFFSET[i] = ((offset>>(i*8)) & 0xff)
@@ -27825,13 +27863,13 @@ function createFancyScatter2D(plot, options) {
   return scatter
 }
 
-},{"./lib/shaders":141,"gl-buffer":75,"gl-shader":154,"text-cache":228,"typedarray-pool":233,"vectorize-text":235}],143:[function(require,module,exports){
+},{"./lib/shaders":141,"gl-buffer":75,"gl-shader":154,"text-cache":230,"typedarray-pool":235,"vectorize-text":237}],143:[function(require,module,exports){
 
 
-exports.pointVertex       = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 position;\nattribute float weight;\n\nuniform mat3 matrix;\nuniform float pointSize, useWeight;\n\nvarying float fragWeight;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n  fragWeight = mix(1.0, weight, useWeight);\n}\n"
-exports.pointFragment     = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 color, borderColor;\nuniform float centerFraction;\n\nvarying float fragWeight;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  vec4 baseColor = mix(borderColor, color, smoothStep(radius, centerFraction));\n  float alpha = 1.0 - pow(1.0 - baseColor.a, fragWeight);\n  gl_FragColor = vec4(baseColor.rgb * alpha, alpha);\n}\n"
-exports.pickVertex        = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"
-exports.pickFragment      = "#define GLSLIFY 1\nprecision mediump float;\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"
+exports.pointVertex       = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute float weight;\n\nuniform mat3 matrix;\nuniform float pointSize, useWeight;\n\nvarying float fragWeight;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n  fragWeight = mix(1.0, weight, useWeight);\n}\n"
+exports.pointFragment     = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color, borderColor;\nuniform float centerFraction;\n\nvarying float fragWeight;\n\nfloat smoothStep(float x, float y) {\n  return 1.0 / (1.0 + exp(50.0*(x - y)));\n}\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  vec4 baseColor = mix(borderColor, color, smoothStep(radius, centerFraction));\n  float alpha = 1.0 - pow(1.0 - baseColor.a, fragWeight);\n  gl_FragColor = vec4(baseColor.rgb * alpha, alpha);\n}\n"
+exports.pickVertex        = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"
+exports.pickFragment      = "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"
 
 },{}],144:[function(require,module,exports){
 arguments[4][121][0].apply(exports,arguments)
@@ -28273,7 +28311,7 @@ function snapPoints(points, ids, weights, bounds) {
   return lod
 }
 
-},{"./lib/sort":145,"typedarray-pool":233}],147:[function(require,module,exports){
+},{"./lib/sort":145,"typedarray-pool":235}],147:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -28441,7 +28479,9 @@ return function(pickOffset) {
     var startOffset = bsearch.ge(xCoords, xStart, intervalStart, intervalEnd-1)
     var endOffset   = bsearch.lt(xCoords, xEnd, startOffset, intervalEnd-1)+1
 
-    gl.drawArrays(gl.POINTS, startOffset, endOffset - startOffset)
+    if(endOffset > startOffset) {
+      gl.drawArrays(gl.POINTS, startOffset, endOffset - startOffset)
+    }
   }
 
   return pickOffset + this.pointCount
@@ -28522,7 +28562,9 @@ proto.draw = (function() {
       var startOffset = bsearch.ge(xCoords, xStart, intervalStart, intervalEnd-1)
       var endOffset   = bsearch.lt(xCoords, xEnd, startOffset, intervalEnd-1)+1
 
-      gl.drawArrays(gl.POINTS, startOffset, endOffset - startOffset)
+      if(endOffset > startOffset) {
+        gl.drawArrays(gl.POINTS, startOffset, endOffset - startOffset)
+      }
 
       if(firstLevel) {
         firstLevel = false
@@ -28565,7 +28607,7 @@ function createScatter2D(plot, options) {
   return result
 }
 
-},{"./lib/shader":143,"binary-search-bounds":144,"gl-buffer":75,"gl-shader":154,"snap-points-2d":146,"typedarray-pool":233}],148:[function(require,module,exports){
+},{"./lib/shader":143,"binary-search-bounds":144,"gl-buffer":75,"gl-shader":154,"snap-points-2d":146,"typedarray-pool":235}],148:[function(require,module,exports){
 "use strict"
 
 var vectorizeText = require("vectorize-text")
@@ -28611,15 +28653,15 @@ function getGlyph(symbol, font) {
   //Save cached symbol
   return fontCache[symbol] = [triSymbol, lineSymbol, bounds]
 }
-},{"vectorize-text":235}],149:[function(require,module,exports){
+},{"vectorize-text":237}],149:[function(require,module,exports){
 var createShaderWrapper = require('gl-shader')
 
 
-var perspectiveVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0]))   || \n     any(greaterThan(position, clipBounds[1])) ) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n    \n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"
-var orthographicVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float highlightScale, pixelRatio;\nuniform vec4 highlightId;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = pixelRatio;\n    if(distance(highlightId.bgr, id.bgr) < 0.001) {\n      scale *= highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1.0);\n    vec4 viewPosition = view * worldPosition;\n    vec4 clipPosition = projection * viewPosition;\n    clipPosition /= clipPosition.w;\n    \n    gl_Position = clipPosition + vec4(screenSize * scale * vec2(glyph.x, -glyph.y), 0.0, 0.0);\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"
-var projectionVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform float highlightScale;\nuniform vec4 highlightId;\nuniform vec3 axes[2];\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float scale, pixelRatio;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0]))   ||\n     any(greaterThan(position, clipBounds[1])) ) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float lscale = pixelRatio * scale;\n    if(distance(highlightId, id) < 0.0001) {\n      lscale *= highlightScale;\n    }\n\n    vec4 clipCenter   = projection * view * model * vec4(position, 1);\n    vec3 dataPosition = position + 0.5*lscale*(axes[0] * glyph.x + axes[1] * glyph.y) * clipCenter.w * screenSize.y;\n    vec4 clipPosition = projection * view * model * vec4(dataPosition, 1);\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = dataPosition;\n  }\n}\n"
-var drawFragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec3 fragClipBounds[2];\nuniform float opacity;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(dataCoordinate, fragClipBounds[0]))   ||\n     any(greaterThan(dataCoordinate, fragClipBounds[1])) ) {\n    discard;\n  } else {\n    gl_FragColor = interpColor * opacity;\n  }\n}\n"
-var pickFragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec3 fragClipBounds[2];\nuniform float pickGroup;\n\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(dataCoordinate, fragClipBounds[0]))   || \n     any(greaterThan(dataCoordinate, fragClipBounds[1])) ) {\n    discard;\n  } else {\n    gl_FragColor = vec4(pickGroup, pickId.bgr);\n  }\n}"
+var perspectiveVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\n\nuniform vec4 highlightId;\nuniform float highlightScale;\nuniform mat4 model, view, projection;\nuniform vec3 clipBounds[2];\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0]))   || \n     any(greaterThan(position, clipBounds[1])) ) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = 1.0;\n    if(distance(highlightId, id) < 0.0001) {\n      scale = highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1);\n    vec4 viewPosition = view * worldPosition;\n    viewPosition = viewPosition / viewPosition.w;\n    vec4 clipPosition = projection * (viewPosition + scale * vec4(glyph.x, -glyph.y, 0, 0));\n    \n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"
+var orthographicVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float highlightScale, pixelRatio;\nuniform vec4 highlightId;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0])) || any(greaterThan(position, clipBounds[1]))) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float scale = pixelRatio;\n    if(distance(highlightId.bgr, id.bgr) < 0.001) {\n      scale *= highlightScale;\n    }\n\n    vec4 worldPosition = model * vec4(position, 1.0);\n    vec4 viewPosition = view * worldPosition;\n    vec4 clipPosition = projection * viewPosition;\n    clipPosition /= clipPosition.w;\n    \n    gl_Position = clipPosition + vec4(screenSize * scale * vec2(glyph.x, -glyph.y), 0.0, 0.0);\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = position;\n  }\n}"
+var projectionVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec3 position;\nattribute vec4 color;\nattribute vec2 glyph;\nattribute vec4 id;\n\nuniform float highlightScale;\nuniform vec4 highlightId;\nuniform vec3 axes[2];\nuniform mat4 model, view, projection;\nuniform vec2 screenSize;\nuniform vec3 clipBounds[2];\nuniform float scale, pixelRatio;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(position, clipBounds[0]))   ||\n     any(greaterThan(position, clipBounds[1])) ) {\n    gl_Position = vec4(0,0,0,0);\n  } else {\n    float lscale = pixelRatio * scale;\n    if(distance(highlightId, id) < 0.0001) {\n      lscale *= highlightScale;\n    }\n\n    vec4 clipCenter   = projection * view * model * vec4(position, 1);\n    vec3 dataPosition = position + 0.5*lscale*(axes[0] * glyph.x + axes[1] * glyph.y) * clipCenter.w * screenSize.y;\n    vec4 clipPosition = projection * view * model * vec4(dataPosition, 1);\n\n    gl_Position = clipPosition;\n    interpColor = color;\n    pickId = id;\n    dataCoordinate = dataPosition;\n  }\n}\n"
+var drawFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 fragClipBounds[2];\nuniform float opacity;\n\nvarying vec4 interpColor;\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(dataCoordinate, fragClipBounds[0]))   ||\n     any(greaterThan(dataCoordinate, fragClipBounds[1])) ) {\n    discard;\n  } else {\n    gl_FragColor = interpColor * opacity;\n  }\n}\n"
+var pickFragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec3 fragClipBounds[2];\nuniform float pickGroup;\n\nvarying vec4 pickId;\nvarying vec3 dataCoordinate;\n\nvoid main() {\n  if(any(lessThan(dataCoordinate, fragClipBounds[0]))   || \n     any(greaterThan(dataCoordinate, fragClipBounds[1])) ) {\n    discard;\n  } else {\n    gl_FragColor = vec4(pickGroup, pickId.bgr);\n  }\n}"
 
 var ATTRIBUTES = [
   {name: 'position', type: 'vec3'},
@@ -29448,13 +29490,13 @@ function createPointCloud(options) {
   return pointCloud
 }
 
-},{"./lib/glyphs":148,"./lib/shaders":149,"gl-buffer":75,"gl-mat4/multiply":96,"gl-vao":189,"typedarray-pool":233}],151:[function(require,module,exports){
+},{"./lib/glyphs":148,"./lib/shaders":149,"gl-buffer":75,"gl-mat4/multiply":96,"gl-vao":184,"typedarray-pool":235}],151:[function(require,module,exports){
 'use strict'
 
 
 
-exports.boxVertex = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"
-exports.boxFragment = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"
+exports.boxVertex = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"
+exports.boxFragment = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"
 
 },{}],152:[function(require,module,exports){
 'use strict'
@@ -29737,7 +29779,7 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":49,"cwise/lib/wrapper":69,"gl-fbo":80,"ndarray":208,"typedarray-pool":233}],154:[function(require,module,exports){
+},{"bit-twiddle":49,"cwise/lib/wrapper":69,"gl-fbo":80,"ndarray":209,"typedarray-pool":235}],154:[function(require,module,exports){
 'use strict'
 
 var createUniformWrapper   = require('./lib/create-uniforms')
@@ -30722,7 +30764,7 @@ function createProgram(gl, vref, fref, attribs, locations) {
   return getCache(gl).getProgram(vref, fref, attribs, locations)
 }
 
-},{"./GLError":155,"gl-format-compiler-error":161,"weakmap-shim":177}],161:[function(require,module,exports){
+},{"./GLError":155,"gl-format-compiler-error":161,"weakmap-shim":172}],161:[function(require,module,exports){
 
 var sprintf = require('sprintf-js').sprintf;
 var glConstants = require('gl-constants/lookup');
@@ -30777,7 +30819,7 @@ function formatCompilerError(errLog, src, type) {
 }
 
 
-},{"add-line-numbers":162,"gl-constants/lookup":166,"glsl-shader-name":167,"sprintf-js":174}],162:[function(require,module,exports){
+},{"add-line-numbers":162,"gl-constants/lookup":166,"glsl-shader-name":167,"sprintf-js":169}],162:[function(require,module,exports){
 var padLeft = require('pad-left')
 
 module.exports = addLineNumbers
@@ -30822,6 +30864,13 @@ module.exports = function padLeft(str, num, ch) {
 'use strict';
 
 /**
+ * Results cache
+ */
+
+var res = '';
+var cache;
+
+/**
  * Expose `repeat`
  */
 
@@ -30850,6 +30899,7 @@ function repeat(str, num) {
     throw new TypeError('repeat-string expects a string.');
   }
 
+  // cover common, quick use cases
   if (num === 1) return str;
   if (num === 2) return str + str;
 
@@ -30872,12 +30922,6 @@ function repeat(str, num) {
   return res.substr(0, max);
 }
 
-/**
- * Results cache
- */
-
-var res = '';
-var cache;
 
 },{}],165:[function(require,module,exports){
 module.exports = {
@@ -31211,666 +31255,12 @@ function getName(src) {
   }
 }
 
-},{"atob-lite":168,"glsl-tokenizer":173}],168:[function(require,module,exports){
+},{"atob-lite":168,"glsl-tokenizer":192}],168:[function(require,module,exports){
 module.exports = function _atob(str) {
   return atob(str)
 }
 
 },{}],169:[function(require,module,exports){
-module.exports = tokenize
-
-var literals = require('./lib/literals')
-  , operators = require('./lib/operators')
-  , builtins = require('./lib/builtins')
-
-var NORMAL = 999          // <-- never emitted
-  , TOKEN = 9999          // <-- never emitted
-  , BLOCK_COMMENT = 0
-  , LINE_COMMENT = 1
-  , PREPROCESSOR = 2
-  , OPERATOR = 3
-  , INTEGER = 4
-  , FLOAT = 5
-  , IDENT = 6
-  , BUILTIN = 7
-  , KEYWORD = 8
-  , WHITESPACE = 9
-  , EOF = 10
-  , HEX = 11
-
-var map = [
-    'block-comment'
-  , 'line-comment'
-  , 'preprocessor'
-  , 'operator'
-  , 'integer'
-  , 'float'
-  , 'ident'
-  , 'builtin'
-  , 'keyword'
-  , 'whitespace'
-  , 'eof'
-  , 'integer'
-]
-
-function tokenize() {
-  var i = 0
-    , total = 0
-    , mode = NORMAL
-    , c
-    , last
-    , content = []
-    , tokens = []
-    , token_idx = 0
-    , token_offs = 0
-    , line = 1
-    , col = 0
-    , start = 0
-    , isnum = false
-    , isoperator = false
-    , input = ''
-    , len
-
-  return function(data) {
-    tokens = []
-    if (data !== null) return write(data)
-    return end()
-  }
-
-  function token(data) {
-    if (data.length) {
-      tokens.push({
-        type: map[mode]
-      , data: data
-      , position: start
-      , line: line
-      , column: col
-      })
-    }
-  }
-
-  function write(chunk) {
-    i = 0
-    input += chunk
-    len = input.length
-
-    var last
-
-    while(c = input[i], i < len) {
-      last = i
-
-      switch(mode) {
-        case BLOCK_COMMENT: i = block_comment(); break
-        case LINE_COMMENT: i = line_comment(); break
-        case PREPROCESSOR: i = preprocessor(); break
-        case OPERATOR: i = operator(); break
-        case INTEGER: i = integer(); break
-        case HEX: i = hex(); break
-        case FLOAT: i = decimal(); break
-        case TOKEN: i = readtoken(); break
-        case WHITESPACE: i = whitespace(); break
-        case NORMAL: i = normal(); break
-      }
-
-      if(last !== i) {
-        switch(input[last]) {
-          case '\n': col = 0; ++line; break
-          default: ++col; break
-        }
-      }
-    }
-
-    total += i
-    input = input.slice(i)
-    return tokens
-  }
-
-  function end(chunk) {
-    if(content.length) {
-      token(content.join(''))
-    }
-
-    mode = EOF
-    token('(eof)')
-    return tokens
-  }
-
-  function normal() {
-    content = content.length ? [] : content
-
-    if(last === '/' && c === '*') {
-      start = total + i - 1
-      mode = BLOCK_COMMENT
-      last = c
-      return i + 1
-    }
-
-    if(last === '/' && c === '/') {
-      start = total + i - 1
-      mode = LINE_COMMENT
-      last = c
-      return i + 1
-    }
-
-    if(c === '#') {
-      mode = PREPROCESSOR
-      start = total + i
-      return i
-    }
-
-    if(/\s/.test(c)) {
-      mode = WHITESPACE
-      start = total + i
-      return i
-    }
-
-    isnum = /\d/.test(c)
-    isoperator = /[^\w_]/.test(c)
-
-    start = total + i
-    mode = isnum ? INTEGER : isoperator ? OPERATOR : TOKEN
-    return i
-  }
-
-  function whitespace() {
-    if(/[^\s]/g.test(c)) {
-      token(content.join(''))
-      mode = NORMAL
-      return i
-    }
-    content.push(c)
-    last = c
-    return i + 1
-  }
-
-  function preprocessor() {
-    if(c === '\n' && last !== '\\') {
-      token(content.join(''))
-      mode = NORMAL
-      return i
-    }
-    content.push(c)
-    last = c
-    return i + 1
-  }
-
-  function line_comment() {
-    return preprocessor()
-  }
-
-  function block_comment() {
-    if(c === '/' && last === '*') {
-      content.push(c)
-      token(content.join(''))
-      mode = NORMAL
-      return i + 1
-    }
-
-    content.push(c)
-    last = c
-    return i + 1
-  }
-
-  function operator() {
-    if(last === '.' && /\d/.test(c)) {
-      mode = FLOAT
-      return i
-    }
-
-    if(last === '/' && c === '*') {
-      mode = BLOCK_COMMENT
-      return i
-    }
-
-    if(last === '/' && c === '/') {
-      mode = LINE_COMMENT
-      return i
-    }
-
-    if(c === '.' && content.length) {
-      while(determine_operator(content));
-
-      mode = FLOAT
-      return i
-    }
-
-    if(c === ';' || c === ')' || c === '(') {
-      if(content.length) while(determine_operator(content));
-      token(c)
-      mode = NORMAL
-      return i + 1
-    }
-
-    var is_composite_operator = content.length === 2 && c !== '='
-    if(/[\w_\d\s]/.test(c) || is_composite_operator) {
-      while(determine_operator(content));
-      mode = NORMAL
-      return i
-    }
-
-    content.push(c)
-    last = c
-    return i + 1
-  }
-
-  function determine_operator(buf) {
-    var j = 0
-      , idx
-      , res
-
-    do {
-      idx = operators.indexOf(buf.slice(0, buf.length + j).join(''))
-      res = operators[idx]
-
-      if(idx === -1) {
-        if(j-- + buf.length > 0) continue
-        res = buf.slice(0, 1).join('')
-      }
-
-      token(res)
-
-      start += res.length
-      content = content.slice(res.length)
-      return content.length
-    } while(1)
-  }
-
-  function hex() {
-    if(/[^a-fA-F0-9]/.test(c)) {
-      token(content.join(''))
-      mode = NORMAL
-      return i
-    }
-
-    content.push(c)
-    last = c
-    return i + 1
-  }
-
-  function integer() {
-    if(c === '.') {
-      content.push(c)
-      mode = FLOAT
-      last = c
-      return i + 1
-    }
-
-    if(/[eE]/.test(c)) {
-      content.push(c)
-      mode = FLOAT
-      last = c
-      return i + 1
-    }
-
-    if(c === 'x' && content.length === 1 && content[0] === '0') {
-      mode = HEX
-      content.push(c)
-      last = c
-      return i + 1
-    }
-
-    if(/[^\d]/.test(c)) {
-      token(content.join(''))
-      mode = NORMAL
-      return i
-    }
-
-    content.push(c)
-    last = c
-    return i + 1
-  }
-
-  function decimal() {
-    if(c === 'f') {
-      content.push(c)
-      last = c
-      i += 1
-    }
-
-    if(/[eE]/.test(c)) {
-      content.push(c)
-      last = c
-      return i + 1
-    }
-
-    if(/[^\d]/.test(c)) {
-      token(content.join(''))
-      mode = NORMAL
-      return i
-    }
-    content.push(c)
-    last = c
-    return i + 1
-  }
-
-  function readtoken() {
-    if(/[^\d\w_]/.test(c)) {
-      var contentstr = content.join('')
-      if(literals.indexOf(contentstr) > -1) {
-        mode = KEYWORD
-      } else if(builtins.indexOf(contentstr) > -1) {
-        mode = BUILTIN
-      } else {
-        mode = IDENT
-      }
-      token(content.join(''))
-      mode = NORMAL
-      return i
-    }
-    content.push(c)
-    last = c
-    return i + 1
-  }
-}
-
-},{"./lib/builtins":170,"./lib/literals":171,"./lib/operators":172}],170:[function(require,module,exports){
-module.exports = [
-    'gl_Position'
-  , 'gl_PointSize'
-  , 'gl_ClipVertex'
-  , 'gl_FragCoord'
-  , 'gl_FrontFacing'
-  , 'gl_FragColor'
-  , 'gl_FragData'
-  , 'gl_FragDepth'
-  , 'gl_Color'
-  , 'gl_SecondaryColor'
-  , 'gl_Normal'
-  , 'gl_Vertex'
-  , 'gl_MultiTexCoord0'
-  , 'gl_MultiTexCoord1'
-  , 'gl_MultiTexCoord2'
-  , 'gl_MultiTexCoord3'
-  , 'gl_MultiTexCoord4'
-  , 'gl_MultiTexCoord5'
-  , 'gl_MultiTexCoord6'
-  , 'gl_MultiTexCoord7'
-  , 'gl_FogCoord'
-  , 'gl_MaxLights'
-  , 'gl_MaxClipPlanes'
-  , 'gl_MaxTextureUnits'
-  , 'gl_MaxTextureCoords'
-  , 'gl_MaxVertexAttribs'
-  , 'gl_MaxVertexUniformComponents'
-  , 'gl_MaxVaryingFloats'
-  , 'gl_MaxVertexTextureImageUnits'
-  , 'gl_MaxCombinedTextureImageUnits'
-  , 'gl_MaxTextureImageUnits'
-  , 'gl_MaxFragmentUniformComponents'
-  , 'gl_MaxDrawBuffers'
-  , 'gl_ModelViewMatrix'
-  , 'gl_ProjectionMatrix'
-  , 'gl_ModelViewProjectionMatrix'
-  , 'gl_TextureMatrix'
-  , 'gl_NormalMatrix'
-  , 'gl_ModelViewMatrixInverse'
-  , 'gl_ProjectionMatrixInverse'
-  , 'gl_ModelViewProjectionMatrixInverse'
-  , 'gl_TextureMatrixInverse'
-  , 'gl_ModelViewMatrixTranspose'
-  , 'gl_ProjectionMatrixTranspose'
-  , 'gl_ModelViewProjectionMatrixTranspose'
-  , 'gl_TextureMatrixTranspose'
-  , 'gl_ModelViewMatrixInverseTranspose'
-  , 'gl_ProjectionMatrixInverseTranspose'
-  , 'gl_ModelViewProjectionMatrixInverseTranspose'
-  , 'gl_TextureMatrixInverseTranspose'
-  , 'gl_NormalScale'
-  , 'gl_DepthRangeParameters'
-  , 'gl_DepthRange'
-  , 'gl_ClipPlane'
-  , 'gl_PointParameters'
-  , 'gl_Point'
-  , 'gl_MaterialParameters'
-  , 'gl_FrontMaterial'
-  , 'gl_BackMaterial'
-  , 'gl_LightSourceParameters'
-  , 'gl_LightSource'
-  , 'gl_LightModelParameters'
-  , 'gl_LightModel'
-  , 'gl_LightModelProducts'
-  , 'gl_FrontLightModelProduct'
-  , 'gl_BackLightModelProduct'
-  , 'gl_LightProducts'
-  , 'gl_FrontLightProduct'
-  , 'gl_BackLightProduct'
-  , 'gl_FogParameters'
-  , 'gl_Fog'
-  , 'gl_TextureEnvColor'
-  , 'gl_EyePlaneS'
-  , 'gl_EyePlaneT'
-  , 'gl_EyePlaneR'
-  , 'gl_EyePlaneQ'
-  , 'gl_ObjectPlaneS'
-  , 'gl_ObjectPlaneT'
-  , 'gl_ObjectPlaneR'
-  , 'gl_ObjectPlaneQ'
-  , 'gl_FrontColor'
-  , 'gl_BackColor'
-  , 'gl_FrontSecondaryColor'
-  , 'gl_BackSecondaryColor'
-  , 'gl_TexCoord'
-  , 'gl_FogFragCoord'
-  , 'gl_Color'
-  , 'gl_SecondaryColor'
-  , 'gl_TexCoord'
-  , 'gl_FogFragCoord'
-  , 'gl_PointCoord'
-  , 'radians'
-  , 'degrees'
-  , 'sin'
-  , 'cos'
-  , 'tan'
-  , 'asin'
-  , 'acos'
-  , 'atan'
-  , 'pow'
-  , 'exp'
-  , 'log'
-  , 'exp2'
-  , 'log2'
-  , 'sqrt'
-  , 'inversesqrt'
-  , 'abs'
-  , 'sign'
-  , 'floor'
-  , 'ceil'
-  , 'fract'
-  , 'mod'
-  , 'min'
-  , 'max'
-  , 'clamp'
-  , 'mix'
-  , 'step'
-  , 'smoothstep'
-  , 'length'
-  , 'distance'
-  , 'dot'
-  , 'cross'
-  , 'normalize'
-  , 'faceforward'
-  , 'reflect'
-  , 'refract'
-  , 'matrixCompMult'
-  , 'lessThan'
-  , 'lessThanEqual'
-  , 'greaterThan'
-  , 'greaterThanEqual'
-  , 'equal'
-  , 'notEqual'
-  , 'any'
-  , 'all'
-  , 'not'
-  , 'texture2D'
-  , 'texture2DProj'
-  , 'texture2DLod'
-  , 'texture2DProjLod'
-  , 'textureCube'
-  , 'textureCubeLod'
-  , 'dFdx'
-  , 'dFdy'
-]
-
-},{}],171:[function(require,module,exports){
-module.exports = [
-  // current
-    'precision'
-  , 'highp'
-  , 'mediump'
-  , 'lowp'
-  , 'attribute'
-  , 'const'
-  , 'uniform'
-  , 'varying'
-  , 'break'
-  , 'continue'
-  , 'do'
-  , 'for'
-  , 'while'
-  , 'if'
-  , 'else'
-  , 'in'
-  , 'out'
-  , 'inout'
-  , 'float'
-  , 'int'
-  , 'void'
-  , 'bool'
-  , 'true'
-  , 'false'
-  , 'discard'
-  , 'return'
-  , 'mat2'
-  , 'mat3'
-  , 'mat4'
-  , 'vec2'
-  , 'vec3'
-  , 'vec4'
-  , 'ivec2'
-  , 'ivec3'
-  , 'ivec4'
-  , 'bvec2'
-  , 'bvec3'
-  , 'bvec4'
-  , 'sampler1D'
-  , 'sampler2D'
-  , 'sampler3D'
-  , 'samplerCube'
-  , 'sampler1DShadow'
-  , 'sampler2DShadow'
-  , 'struct'
-
-  // future
-  , 'asm'
-  , 'class'
-  , 'union'
-  , 'enum'
-  , 'typedef'
-  , 'template'
-  , 'this'
-  , 'packed'
-  , 'goto'
-  , 'switch'
-  , 'default'
-  , 'inline'
-  , 'noinline'
-  , 'volatile'
-  , 'public'
-  , 'static'
-  , 'extern'
-  , 'external'
-  , 'interface'
-  , 'long'
-  , 'short'
-  , 'double'
-  , 'half'
-  , 'fixed'
-  , 'unsigned'
-  , 'input'
-  , 'output'
-  , 'hvec2'
-  , 'hvec3'
-  , 'hvec4'
-  , 'dvec2'
-  , 'dvec3'
-  , 'dvec4'
-  , 'fvec2'
-  , 'fvec3'
-  , 'fvec4'
-  , 'sampler2DRect'
-  , 'sampler3DRect'
-  , 'sampler2DRectShadow'
-  , 'sizeof'
-  , 'cast'
-  , 'namespace'
-  , 'using'
-]
-
-},{}],172:[function(require,module,exports){
-module.exports = [
-    '<<='
-  , '>>='
-  , '++'
-  , '--'
-  , '<<'
-  , '>>'
-  , '<='
-  , '>='
-  , '=='
-  , '!='
-  , '&&'
-  , '||'
-  , '+='
-  , '-='
-  , '*='
-  , '/='
-  , '%='
-  , '&='
-  , '^^'
-  , '^='
-  , '|='
-  , '('
-  , ')'
-  , '['
-  , ']'
-  , '.'
-  , '!'
-  , '~'
-  , '*'
-  , '/'
-  , '%'
-  , '+'
-  , '-'
-  , '<'
-  , '>'
-  , '&'
-  , '^'
-  , '|'
-  , '?'
-  , ':'
-  , '='
-  , ','
-  , ';'
-  , '{'
-  , '}'
-]
-
-},{}],173:[function(require,module,exports){
-var tokenize = require('./index')
-
-module.exports = tokenizeString
-
-function tokenizeString(str) {
-  var generator = tokenize()
-  var tokens = []
-
-  tokens = tokens.concat(generator(str))
-  tokens = tokens.concat(generator(null))
-
-  return tokens
-}
-
-},{"./index":169}],174:[function(require,module,exports){
 (function(window) {
     var re = {
         not_string: /[^s]/,
@@ -32080,7 +31470,7 @@ function tokenizeString(str) {
     }
 })(typeof window === "undefined" ? this : window);
 
-},{}],175:[function(require,module,exports){
+},{}],170:[function(require,module,exports){
 var hiddenStore = require('./hidden-store.js');
 
 module.exports = createStore;
@@ -32101,7 +31491,7 @@ function createStore() {
     };
 }
 
-},{"./hidden-store.js":176}],176:[function(require,module,exports){
+},{"./hidden-store.js":171}],171:[function(require,module,exports){
 module.exports = hiddenStore;
 
 function hiddenStore(obj, key) {
@@ -32119,7 +31509,7 @@ function hiddenStore(obj, key) {
     return store;
 }
 
-},{}],177:[function(require,module,exports){
+},{}],172:[function(require,module,exports){
 // Original - @Gozola. 
 // https://gist.github.com/Gozala/1269991
 // This is a reimplemented version (with a few bug fixes).
@@ -32149,7 +31539,7 @@ function weakMap() {
     }
 }
 
-},{"./create-store.js":175}],178:[function(require,module,exports){
+},{"./create-store.js":170}],173:[function(require,module,exports){
 'use strict'
 
 module.exports = createSpikes2D
@@ -32237,19 +31627,19 @@ function createSpikes2D(plot, options) {
   return spikes
 }
 
-},{}],179:[function(require,module,exports){
-var createShader  = require('gl-shader')
+},{}],174:[function(require,module,exports){
+var createShader = require('gl-shader')
 
 
-var vertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec4 uv;\nattribute vec2 f;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  worldCoordinate = vec3(uv.zw, f.x);\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  value = f.x;\n  kill = f.y;\n  planeCoordinate = uv.xy;\n  \n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}"
-var fragSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat beckmannSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution_2_0(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\n\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = beckmannSpecular_1_1(L, V, N, roughness);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  float interpValue = (value - lowerBound.z) / (upperBound.z - lowerBound.z);\n  vec4 surfaceColor = texture2D(colormap, vec2(interpValue, interpValue));\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"
-var contourVertSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nattribute vec4 uv;\n\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  vec4 worldPosition = model * vec4(dataCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z = clipPosition.z + zOffset;\n\n  gl_Position = clipPosition;\n  value = dataCoordinate.z;\n  kill = -1.0;\n  worldCoordinate = dataCoordinate;\n  planeCoordinate = uv.zw;\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"
-var pickSrc = "#define GLSLIFY 1\nprecision mediump float;\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if(kill > 0.0 || \n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}"
+var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  worldCoordinate = vec3(uv.zw, f.x);\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"
+var fragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat beckmannSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution_2_0(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\n\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = beckmannSpecular_1_1(L, V, N, roughness);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = texture2D(colormap, vec2(value, value));\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"
+var contourVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute float f;\n\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  vec4 worldPosition = model * vec4(dataCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z = clipPosition.z + zOffset;\n\n  gl_Position = clipPosition;\n  value = f;\n  kill = -1.0;\n  worldCoordinate = dataCoordinate;\n  planeCoordinate = uv.zw;\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"
+var pickSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}\n"
 
-exports.createShader = function(gl) {
+exports.createShader = function (gl) {
   var shader = createShader(gl, vertSrc, fragSrc, null, [
     {name: 'uv', type: 'vec4'},
-    {name: 'f', type: 'vec2'},
+    {name: 'f', type: 'vec3'},
     {name: 'normal', type: 'vec3'}
   ])
   shader.attributes.uv.location = 0
@@ -32257,10 +31647,10 @@ exports.createShader = function(gl) {
   shader.attributes.normal.location = 2
   return shader
 }
-exports.createPickShader = function(gl) {
+exports.createPickShader = function (gl) {
   var shader = createShader(gl, vertSrc, pickSrc, null, [
     {name: 'uv', type: 'vec4'},
-    {name: 'f', type: 'vec2'},
+    {name: 'f', type: 'vec3'},
     {name: 'normal', type: 'vec3'}
   ])
   shader.attributes.uv.location = 0
@@ -32268,24 +31658,28 @@ exports.createPickShader = function(gl) {
   shader.attributes.normal.location = 2
   return shader
 }
-exports.createContourShader = function(gl) {
+exports.createContourShader = function (gl) {
   var shader = createShader(gl, contourVertSrc, fragSrc, null, [
-    {name: 'uv', type: 'vec4'}
+    {name: 'uv', type: 'vec4'},
+    {name: 'f', type: 'float'}
   ])
   shader.attributes.uv.location = 0
+  shader.attributes.f.location = 1
   return shader
 }
-exports.createPickContourShader = function(gl) {
+exports.createPickContourShader = function (gl) {
   var shader = createShader(gl, contourVertSrc, pickSrc, null, [
-    {name: 'uv', type: 'vec4'}
+    {name: 'uv', type: 'vec4'},
+    {name: 'f', type: 'float'}
   ])
   shader.attributes.uv.location = 0
+  shader.attributes.f.location = 1
   return shader
 }
 
-},{"gl-shader":154}],180:[function(require,module,exports){
+},{"gl-shader":154}],175:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"dup":20}],181:[function(require,module,exports){
+},{"dup":20}],176:[function(require,module,exports){
 'use strict'
 
 module.exports      = gradient
@@ -32583,7 +31977,7 @@ function gradient(out, inp, bc) {
   var cached = generateGradient(bc)
   return cached(out, inp)
 }
-},{"cwise-compiler":66,"dup":72}],182:[function(require,module,exports){
+},{"cwise-compiler":66,"dup":72}],177:[function(require,module,exports){
 "use strict"
 
 var ndarray = require("ndarray")
@@ -32606,37 +32000,36 @@ module.exports = function convert(arr, result) {
   return result
 }
 
-},{"./doConvert.js":183,"ndarray":208}],183:[function(require,module,exports){
+},{"./doConvert.js":178,"ndarray":209}],178:[function(require,module,exports){
 module.exports=require('cwise-compiler')({"args":["array","scalar","index"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{\nvar _inline_1_v=_inline_1_arg1_,_inline_1_i\nfor(_inline_1_i=0;_inline_1_i<_inline_1_arg2_.length-1;++_inline_1_i) {\n_inline_1_v=_inline_1_v[_inline_1_arg2_[_inline_1_i]]\n}\n_inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]\n}","args":[{"name":"_inline_1_arg0_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":4}],"thisVars":[],"localVars":["_inline_1_i","_inline_1_v"]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"funcName":"convert","blockSize":64})
 
-},{"cwise-compiler":66}],184:[function(require,module,exports){
+},{"cwise-compiler":66}],179:[function(require,module,exports){
 'use strict'
 
 module.exports = createSurfacePlot
 
-var bits          = require('bit-twiddle')
-var createBuffer  = require('gl-buffer')
-var createVAO     = require('gl-vao')
+var bits = require('bit-twiddle')
+var createBuffer = require('gl-buffer')
+var createVAO = require('gl-vao')
 var createTexture = require('gl-texture2d')
-var pool          = require('typedarray-pool')
-var colormap      = require('colormap')
-var ops           = require('ndarray-ops')
-var pack          = require('ndarray-pack')
-var ndarray       = require('ndarray')
-var surfaceNets   = require('surface-nets')
-var multiply      = require('gl-mat4/multiply')
-var invert        = require('gl-mat4/invert')
-var bsearch       = require('binary-search-bounds')
-var gradient      = require('ndarray-gradient')
-var ndarray       = require('ndarray')
-var shaders       = require('./lib/shaders')
+var pool = require('typedarray-pool')
+var colormap = require('colormap')
+var ops = require('ndarray-ops')
+var pack = require('ndarray-pack')
+var ndarray = require('ndarray')
+var surfaceNets = require('surface-nets')
+var multiply = require('gl-mat4/multiply')
+var invert = require('gl-mat4/invert')
+var bsearch = require('binary-search-bounds')
+var gradient = require('ndarray-gradient')
+var shaders = require('./lib/shaders')
 
-var createShader            = shaders.createShader
-var createContourShader     = shaders.createContourShader
-var createPickShader        = shaders.createPickShader
+var createShader = shaders.createShader
+var createContourShader = shaders.createContourShader
+var createPickShader = shaders.createPickShader
 var createPickContourShader = shaders.createPickContourShader
 
-var SURFACE_VERTEX_SIZE = 4 * (4 + 2 + 3)
+var SURFACE_VERTEX_SIZE = 4 * (4 + 3 + 3)
 
 var IDENTITY = [
   1, 0, 0, 0,
@@ -32654,53 +32047,45 @@ var QUAD = [
 ]
 
 var PERMUTATIONS = [
-  [0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0]
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
 
-;(function() {
-  for(var i=0; i<3; ++i) {
+;(function () {
+  for (var i = 0; i < 3; ++i) {
     var p = PERMUTATIONS[i]
-    var u = (i+1) % 3
-    var v = (i+2) % 3
+    var u = (i + 1) % 3
+    var v = (i + 2) % 3
     p[u + 0] = 1
     p[v + 3] = 1
     p[i + 6] = 1
   }
 })()
 
-function SurfacePickResult(position, index, uv, level, dataCoordinate) {
-  this.position     = position
-  this.index        = index
-  this.uv           = uv
-  this.level        = level
+function SurfacePickResult (position, index, uv, level, dataCoordinate) {
+  this.position = position
+  this.index = index
+  this.uv = uv
+  this.level = level
   this.dataCoordinate = dataCoordinate
 }
 
 var N_COLORS = 265
 
-function genColormap(name) {
+function genColormap (name) {
   var x = pack([colormap({
     colormap: name,
     nshades: N_COLORS,
     format: 'rgba'
-  }).map(function(c) {
-    return [c[0], c[1], c[2], 255*c[3]]
+  }).map(function (c) {
+    return [c[0], c[1], c[2], 255 * c[3]]
   })])
   ops.divseq(x, 255.0)
   return x
 }
 
-function clampVec(v) {
-  var result = new Array(3)
-  for(var i=0; i<3; ++i) {
-    result[i] = Math.min(Math.max(v[i], -1e8), 1e8)
-  }
-  return result
-}
-
-function SurfacePlot(
+function SurfacePlot (
   gl,
   shape,
   bounds,
@@ -32715,95 +32100,95 @@ function SurfacePlot(
   contourVAO,
   dynamicBuffer,
   dynamicVAO) {
+  this.gl = gl
+  this.shape = shape
+  this.bounds = bounds
+  this.intensityBounds = [];
 
-  this.gl                 = gl
-  this.shape              = shape
-  this.bounds             = bounds
+  this._shader = shader
+  this._pickShader = pickShader
+  this._coordinateBuffer = coordinates
+  this._vao = vao
+  this._colorMap = colorMap
 
-  this._shader            = shader
-  this._pickShader        = pickShader
-  this._coordinateBuffer  = coordinates
-  this._vao               = vao
-  this._colorMap          = colorMap
-
-  this._contourShader     = contourShader
+  this._contourShader = contourShader
   this._contourPickShader = contourPickShader
-  this._contourBuffer     = contourBuffer
-  this._contourVAO        = contourVAO
-  this._contourOffsets    = [[], [], []]
-  this._contourCounts     = [[], [], []]
-  this._vertexCount       = 0
+  this._contourBuffer = contourBuffer
+  this._contourVAO = contourVAO
+  this._contourOffsets = [[], [], []]
+  this._contourCounts = [[], [], []]
+  this._vertexCount = 0
 
-  this._pickResult        = new SurfacePickResult([0,0,0], [0,0], [0,0], [0,0,0], [0,0,0])
+  this._pickResult = new SurfacePickResult([0, 0, 0], [0, 0], [0, 0], [0, 0, 0], [0, 0, 0])
 
-  this._dynamicBuffer     = dynamicBuffer
-  this._dynamicVAO        = dynamicVAO
-  this._dynamicOffsets    = [0,0,0]
-  this._dynamicCounts     = [0,0,0]
+  this._dynamicBuffer = dynamicBuffer
+  this._dynamicVAO = dynamicVAO
+  this._dynamicOffsets = [0, 0, 0]
+  this._dynamicCounts = [0, 0, 0]
 
-  this.contourWidth       = [ 1, 1, 1 ]
-  this.contourLevels      = [[1], [1], [1]]
-  this.contourTint        = [0, 0, 0]
-  this.contourColor       = [[0.5,0.5,0.5,1], [0.5,0.5,0.5,1], [0.5,0.5,0.5,1]]
+  this.contourWidth = [ 1, 1, 1 ]
+  this.contourLevels = [[1], [1], [1]]
+  this.contourTint = [0, 0, 0]
+  this.contourColor = [[0.5, 0.5, 0.5, 1], [0.5, 0.5, 0.5, 1], [0.5, 0.5, 0.5, 1]]
 
-  this.showContour        = true
-  this.showSurface        = true
+  this.showContour = true
+  this.showSurface = true
 
-  this.enableHighlight    = [true, true, true]
-  this.highlightColor     = [[0,0,0,1], [0,0,0,1], [0,0,0,1]]
-  this.highlightTint      = [ 1, 1, 1 ]
-  this.highlightLevel     = [-1, -1, -1]
+  this.enableHighlight = [true, true, true]
+  this.highlightColor = [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]]
+  this.highlightTint = [ 1, 1, 1 ]
+  this.highlightLevel = [-1, -1, -1]
 
-  //Dynamic contour options
-  this.enableDynamic      = [ true, true, true ]
-  this.dynamicLevel       = [ NaN, NaN, NaN ]
-  this.dynamicColor       = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ]
-  this.dynamicTint        = [ 1, 1, 1 ]
-  this.dynamicWidth       = [ 1, 1, 1 ]
+  // Dynamic contour options
+  this.enableDynamic = [ true, true, true ]
+  this.dynamicLevel = [ NaN, NaN, NaN ]
+  this.dynamicColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ]
+  this.dynamicTint = [ 1, 1, 1 ]
+  this.dynamicWidth = [ 1, 1, 1 ]
 
-  this.axesBounds         = [[Infinity,Infinity,Infinity],[-Infinity,-Infinity,-Infinity]]
-  this.surfaceProject     = [ false, false, false ]
-  this.contourProject     = [[ false, false, false ],
-                             [ false, false, false ],
-                             [ false, false, false ]]
+  this.axesBounds = [[Infinity, Infinity, Infinity], [-Infinity, -Infinity, -Infinity]]
+  this.surfaceProject = [ false, false, false ]
+  this.contourProject = [[ false, false, false ],
+    [ false, false, false ],
+    [ false, false, false ]]
 
-  this.colorBounds        = [ false, false ]
+  this.colorBounds = [ false, false ]
 
-  //Store xyz fields, need this for picking
-  this._field             = [
-      ndarray(pool.mallocFloat(1024), [0,0]),
-      ndarray(pool.mallocFloat(1024), [0,0]),
-      ndarray(pool.mallocFloat(1024), [0,0]) ]
+  // Store xyz fields, need this for picking
+  this._field = [
+    ndarray(pool.mallocFloat(1024), [0, 0]),
+    ndarray(pool.mallocFloat(1024), [0, 0]),
+    ndarray(pool.mallocFloat(1024), [0, 0]) ]
 
-  this.pickId             = 1
-  this.clipBounds         = [[-Infinity,-Infinity,-Infinity],[Infinity,Infinity,Infinity]]
+  this.pickId = 1
+  this.clipBounds = [[-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Infinity]]
 
-  this.snapToData         = false
+  this.snapToData = false
 
-  this.opacity            = 1.0
+  this.opacity = 1.0
 
-  this.lightPosition      = [10, 10000, 0]
-  this.ambientLight       = 0.8
-  this.diffuseLight       = 0.8
-  this.specularLight      = 2.0
-  this.roughness          = 0.5
-  this.fresnel            = 1.5
+  this.lightPosition = [10, 10000, 0]
+  this.ambientLight = 0.8
+  this.diffuseLight = 0.8
+  this.specularLight = 2.0
+  this.roughness = 0.5
+  this.fresnel = 1.5
 
-  this.dirty              = true
+  this.dirty = true
 }
 
 var proto = SurfacePlot.prototype
 
-proto.isTransparent = function() {
+proto.isTransparent = function () {
   return this.opacity < 1
 }
 
-proto.isOpaque = function() {
-  if(this.opacity >= 1) {
+proto.isOpaque = function () {
+  if (this.opacity >= 1) {
     return true
   }
-  for(var i=0; i<3; ++i) {
-    if(this._contourCounts[i].length > 0 || this._dynamicCounts[i] > 0) {
+  for (var i = 0; i < 3; ++i) {
+    if (this._contourCounts[i].length > 0 || this._dynamicCounts[i] > 0) {
       return true
     }
   }
@@ -32812,52 +32197,54 @@ proto.isOpaque = function() {
 
 proto.pickSlots = 1
 
-proto.setPickBase = function(id) {
+proto.setPickBase = function (id) {
   this.pickId = id
 }
 
-var ZERO_VEC = [0,0,0]
+var ZERO_VEC = [0, 0, 0]
 
 var PROJECT_DATA = {
   showSurface: false,
   showContour: false,
   projections: [IDENTITY.slice(), IDENTITY.slice(), IDENTITY.slice()],
-  clipBounds:   [
-    [[0,0,0], [0,0,0]],
-    [[0,0,0], [0,0,0]],
-    [[0,0,0], [0,0,0]]]
+  clipBounds: [
+    [[0, 0, 0], [0, 0, 0]],
+    [[0, 0, 0], [0, 0, 0]],
+    [[0, 0, 0], [0, 0, 0]]]
 }
 
-function computeProjectionData(camera, obj) {
-  //Compute cube properties
-  var cubeAxis  = (obj.axes && obj.axes.lastCubeProps.axis) || ZERO_VEC
+function computeProjectionData (camera, obj) {
+  var i, j, k
+
+  // Compute cube properties
+  var cubeAxis = (obj.axes && obj.axes.lastCubeProps.axis) || ZERO_VEC
 
   var showSurface = obj.showSurface
   var showContour = obj.showContour
 
-  for(var i=0; i<3; ++i) {
+  for (i = 0; i < 3; ++i) {
     showSurface = showSurface || obj.surfaceProject[i]
-    for(var j=0; j<3; ++j) {
+    for (j = 0; j < 3; ++j) {
       showContour = showContour || obj.contourProject[i][j]
     }
   }
 
-  for(var i=0; i<3; ++i) {
-    //Construct projection onto axis
+  for (i = 0; i < 3; ++i) {
+    // Construct projection onto axis
     var axisSquish = PROJECT_DATA.projections[i]
-    for(var j=0; j<16; ++j) {
+    for (j = 0; j < 16; ++j) {
       axisSquish[j] = 0
     }
-    for(var j=0; j<4; ++j) {
-      axisSquish[5*j] = 1
+    for (j = 0; j < 4; ++j) {
+      axisSquish[5 * j] = 1
     }
-    axisSquish[5*i] = 0
-    axisSquish[12+i] = obj.axesBounds[+(cubeAxis[i]>0)][i]
+    axisSquish[5 * i] = 0
+    axisSquish[12 + i] = obj.axesBounds[+(cubeAxis[i] > 0)][i]
     multiply(axisSquish, camera.model, axisSquish)
 
     var nclipBounds = PROJECT_DATA.clipBounds[i]
-    for(var k=0; k<2; ++k) {
-      for(var j=0; j<3; ++j) {
+    for (k = 0; k < 2; ++k) {
+      for (j = 0; j < 3; ++j) {
         nclipBounds[k][j] = camera.clipBounds[k][j]
       }
     }
@@ -32872,33 +32259,33 @@ function computeProjectionData(camera, obj) {
 }
 
 var UNIFORMS = {
-  model:      IDENTITY,
-  view:       IDENTITY,
+  model: IDENTITY,
+  view: IDENTITY,
   projection: IDENTITY,
   inverseModel: IDENTITY.slice(),
-  lowerBound: [0,0,0],
-  upperBound: [0,0,0],
-  colorMap:   0,
-  clipBounds: [[0,0,0], [0,0,0]],
-  height:     0.0,
+  lowerBound: [0, 0, 0],
+  upperBound: [0, 0, 0],
+  colorMap: 0,
+  clipBounds: [[0, 0, 0], [0, 0, 0]],
+  height: 0.0,
   contourTint: 0,
-  contourColor: [0,0,0,1],
-  permutation: [1,0,0,0,1,0,0,0,1],
+  contourColor: [0, 0, 0, 1],
+  permutation: [1, 0, 0, 0, 1, 0, 0, 0, 1],
   zOffset: -1e-4,
   kambient: 1,
   kdiffuse: 1,
   kspecular: 1,
-  lightPosition: [1000,1000,1000],
-  eyePosition: [0,0,0],
+  lightPosition: [1000, 1000, 1000],
+  eyePosition: [0, 0, 0],
   roughness: 1,
   fresnel: 1,
   opacity: 1
 }
 
 var MATRIX_INVERSE = IDENTITY.slice()
-var DEFAULT_PERM = [1,0,0,0,1,0,0,0,1]
+var DEFAULT_PERM = [1, 0, 0, 0, 1, 0, 0, 0, 1]
 
-function drawCore(params, transparent) {
+function drawCore (params, transparent) {
   params = params || {}
   var gl = this.gl
 
@@ -32907,74 +32294,72 @@ function drawCore(params, transparent) {
   this._colorMap.bind(0)
 
   var uniforms = UNIFORMS
-  uniforms.model        = params.model || IDENTITY
-  uniforms.view         = params.view || IDENTITY
-  uniforms.projection   = params.projection || IDENTITY
-  uniforms.lowerBound   = [this.bounds[0][0], this.bounds[0][1], this.colorBounds[0] || this.bounds[0][2]]
-  uniforms.upperBound   = [this.bounds[1][0], this.bounds[1][1], this.colorBounds[1] || this.bounds[1][2]]
+  uniforms.model = params.model || IDENTITY
+  uniforms.view = params.view || IDENTITY
+  uniforms.projection = params.projection || IDENTITY
+  uniforms.lowerBound = [this.bounds[0][0], this.bounds[0][1], this.colorBounds[0] || this.bounds[0][2]]
+  uniforms.upperBound = [this.bounds[1][0], this.bounds[1][1], this.colorBounds[1] || this.bounds[1][2]]
   uniforms.contourColor = this.contourColor[0]
 
   uniforms.inverseModel = invert(uniforms.inverseModel, uniforms.model)
 
-  for(var i=0; i<2; ++i) {
+  for (var i = 0; i < 2; ++i) {
     var clipClamped = uniforms.clipBounds[i]
-    for(var j=0; j<3; ++j) {
+    for (var j = 0; j < 3; ++j) {
       clipClamped[j] = Math.min(Math.max(this.clipBounds[i][j], -1e8), 1e8)
     }
   }
 
-  uniforms.kambient   = this.ambientLight
-  uniforms.kdiffuse   = this.diffuseLight
-  uniforms.kspecular  = this.specularLight
+  uniforms.kambient = this.ambientLight
+  uniforms.kdiffuse = this.diffuseLight
+  uniforms.kspecular = this.specularLight
 
-  uniforms.shape =
-
-  uniforms.roughness  = this.roughness
-  uniforms.fresnel    = this.fresnel
-  uniforms.opacity    = this.opacity
+  uniforms.roughness = this.roughness
+  uniforms.fresnel = this.fresnel
+  uniforms.opacity = this.opacity
 
   uniforms.height = 0.0
   uniforms.permutation = DEFAULT_PERM
 
-  //Compute camera matrix inverse
+  // Compute camera matrix inverse
   var invCameraMatrix = MATRIX_INVERSE
   multiply(invCameraMatrix, uniforms.view, uniforms.model)
   multiply(invCameraMatrix, uniforms.projection, invCameraMatrix)
   invert(invCameraMatrix, invCameraMatrix)
 
-  for(var i=0; i<3; ++i) {
-    uniforms.eyePosition[i] = invCameraMatrix[12+i] / invCameraMatrix[15]
+  for (i = 0; i < 3; ++i) {
+    uniforms.eyePosition[i] = invCameraMatrix[12 + i] / invCameraMatrix[15]
   }
 
   var w = invCameraMatrix[15]
-  for(var i=0; i<3; ++i) {
-    w += this.lightPosition[i] * invCameraMatrix[4*i+3]
+  for (i = 0; i < 3; ++i) {
+    w += this.lightPosition[i] * invCameraMatrix[4 * i + 3]
   }
-  for(var i=0; i<3; ++i) {
-    var s = invCameraMatrix[12+i]
-    for(var j=0; j<3; ++j) {
-      s += invCameraMatrix[4*j+i] * this.lightPosition[j]
+  for (i = 0; i < 3; ++i) {
+    var s = invCameraMatrix[12 + i]
+    for (j = 0; j < 3; ++j) {
+      s += invCameraMatrix[4 * j + i] * this.lightPosition[j]
     }
     uniforms.lightPosition[i] = s / w
   }
 
   var projectData = computeProjectionData(uniforms, this)
 
-  if(projectData.showSurface && (transparent === (this.opacity < 1))) {
-    //Set up uniforms
+  if (projectData.showSurface && (transparent === (this.opacity < 1))) {
+    // Set up uniforms
     this._shader.bind()
     this._shader.uniforms = uniforms
 
-    //Draw it
+    // Draw it
     this._vao.bind()
 
-    if(this.showSurface) {
+    if (this.showSurface && this._vertexCount) {
       this._vao.draw(gl.TRIANGLES, this._vertexCount)
     }
 
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      if(!this.surfaceProject[i]) {
+    // Draw projections of surface
+    for (i = 0; i < 3; ++i) {
+      if (!this.surfaceProject[i] || !this.vertexCount) {
         continue
       }
       this._shader.uniforms.model = projectData.projections[i]
@@ -32985,10 +32370,10 @@ function drawCore(params, transparent) {
     this._vao.unbind()
   }
 
-  if(projectData.showContour && !transparent) {
+  if (projectData.showContour && !transparent) {
     var shader = this._contourShader
 
-    //Don't apply lighting to contours
+    // Don't apply lighting to contours
     uniforms.kambient = 1.0
     uniforms.kdiffuse = 0.0
     uniforms.kspecular = 0.0
@@ -32997,46 +32382,48 @@ function drawCore(params, transparent) {
     shader.bind()
     shader.uniforms = uniforms
 
-    //Draw contour lines
+    // Draw contour lines
     var vao = this._contourVAO
     vao.bind()
 
-    //Draw contour levels
-    for(var i=0; i<3; ++i) {
+    // Draw contour levels
+    for (i = 0; i < 3; ++i) {
       shader.uniforms.permutation = PERMUTATIONS[i]
       gl.lineWidth(this.contourWidth[i])
 
-      for(var j=0; j<this.contourLevels[i].length; ++j) {
-        if(j === this.highlightLevel[i]) {
+      for (j = 0; j < this.contourLevels[i].length; ++j) {
+        if (!this._contourCounts[i][j]) {
+          continue
+        }
+        if (j === this.highlightLevel[i]) {
           shader.uniforms.contourColor = this.highlightColor[i]
-          shader.uniforms.contourTint  = this.highlightTint[i]
-
-        } else if(j === 0 || (j-1) === this.highlightLevel[i]) {
+          shader.uniforms.contourTint = this.highlightTint[i]
+        } else if (j === 0 || (j - 1) === this.highlightLevel[i]) {
           shader.uniforms.contourColor = this.contourColor[i]
-          shader.uniforms.contourTint  = this.contourTint[i]
+          shader.uniforms.contourTint = this.contourTint[i]
         }
         shader.uniforms.height = this.contourLevels[i][j]
         vao.draw(gl.LINES, this._contourCounts[i][j], this._contourOffsets[i][j])
       }
     }
 
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      shader.uniforms.model      = projectData.projections[i]
+    // Draw projections of surface
+    for (i = 0; i < 3; ++i) {
+      shader.uniforms.model = projectData.projections[i]
       shader.uniforms.clipBounds = projectData.clipBounds[i]
-      for(var j=0; j<3; ++j) {
-        if(!this.contourProject[i][j]) {
+      for (j = 0; j < 3; ++j) {
+        if (!this.contourProject[i][j]) {
           continue
         }
         shader.uniforms.permutation = PERMUTATIONS[j]
         gl.lineWidth(this.contourWidth[j])
-        for(var k=0; k<this.contourLevels[j].length; ++k) {
-          if(k === this.highlightLevel[j]) {
-            shader.uniforms.contourColor  = this.highlightColor[j]
-            shader.uniforms.contourTint   = this.highlightTint[j]
-          } else if(k === 0 || (k-1) === this.highlightLevel[j]) {
-            shader.uniforms.contourColor  = this.contourColor[j]
-            shader.uniforms.contourTint   = this.contourTint[j]
+        for (var k = 0; k < this.contourLevels[j].length; ++k) {
+          if (k === this.highlightLevel[j]) {
+            shader.uniforms.contourColor = this.highlightColor[j]
+            shader.uniforms.contourTint = this.highlightTint[j]
+          } else if (k === 0 || (k - 1) === this.highlightLevel[j]) {
+            shader.uniforms.contourColor = this.contourColor[j]
+            shader.uniforms.contourTint = this.contourTint[j]
           }
           shader.uniforms.height = this.contourLevels[j][k]
           vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
@@ -33044,32 +32431,32 @@ function drawCore(params, transparent) {
       }
     }
 
-    //Draw dynamic contours
+    // Draw dynamic contours
     vao = this._dynamicVAO
     vao.bind()
 
-    //Draw contour levels
-    for(var i=0; i<3; ++i) {
-      if(this._dynamicCounts[i] === 0) {
+    // Draw contour levels
+    for (i = 0; i < 3; ++i) {
+      if (this._dynamicCounts[i] === 0) {
         continue
       }
 
-      shader.uniforms.model       = uniforms.model
-      shader.uniforms.clipBounds  = uniforms.clipBounds
+      shader.uniforms.model = uniforms.model
+      shader.uniforms.clipBounds = uniforms.clipBounds
       shader.uniforms.permutation = PERMUTATIONS[i]
       gl.lineWidth(this.dynamicWidth[i])
 
       shader.uniforms.contourColor = this.dynamicColor[i]
-      shader.uniforms.contourTint  = this.dynamicTint[i]
-      shader.uniforms.height       = this.dynamicLevel[i]
+      shader.uniforms.contourTint = this.dynamicTint[i]
+      shader.uniforms.height = this.dynamicLevel[i]
       vao.draw(gl.LINES, this._dynamicCounts[i], this._dynamicOffsets[i])
 
-      for(var j=0; j<3; ++j) {
-        if(!this.contourProject[j][i]) {
+      for (j = 0; j < 3; ++j) {
+        if (!this.contourProject[j][i]) {
           continue
         }
 
-        shader.uniforms.model      = projectData.projections[j]
+        shader.uniforms.model = projectData.projections[j]
         shader.uniforms.clipBounds = projectData.clipBounds[j]
         vao.draw(gl.LINES, this._dynamicCounts[i], this._dynamicOffsets[i])
       }
@@ -33079,32 +32466,32 @@ function drawCore(params, transparent) {
   }
 }
 
-proto.draw = function(params) {
+proto.draw = function (params) {
   return drawCore.call(this, params, false)
 }
 
-proto.drawTransparent = function(params) {
+proto.drawTransparent = function (params) {
   return drawCore.call(this, params, true)
 }
 
 var PICK_UNIFORMS = {
-  model:          IDENTITY,
-  view:           IDENTITY,
-  projection:     IDENTITY,
-  inverseModel:   IDENTITY,
-  clipBounds:     [[0,0,0],[0,0,0]],
-  height:         0.0,
-  shape:          [0,0],
-  pickId:         0,
-  lowerBound:     [0,0,0],
-  upperBound:     [0,0,0],
-  zOffset:        0.0,
-  permutation:    [1,0,0,0,1,0,0,0,1],
-  lightPosition:  [0,0,0],
-  eyePosition:    [0,0,0]
+  model: IDENTITY,
+  view: IDENTITY,
+  projection: IDENTITY,
+  inverseModel: IDENTITY,
+  clipBounds: [[0, 0, 0], [0, 0, 0]],
+  height: 0.0,
+  shape: [0, 0],
+  pickId: 0,
+  lowerBound: [0, 0, 0],
+  upperBound: [0, 0, 0],
+  zOffset: 0.0,
+  permutation: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+  lightPosition: [0, 0, 0],
+  eyePosition: [0, 0, 0]
 }
 
-proto.drawPick = function(params) {
+proto.drawPick = function (params) {
   params = params || {}
   var gl = this.gl
   gl.disable(gl.CULL_FACE)
@@ -33119,27 +32506,27 @@ proto.drawPick = function(params) {
   uniforms.upperBound = this.bounds[1]
   uniforms.permutation = DEFAULT_PERM
 
-  for(var i=0; i<2; ++i) {
+  for (var i = 0; i < 2; ++i) {
     var clipClamped = uniforms.clipBounds[i]
-    for(var j=0; j<3; ++j) {
+    for (var j = 0; j < 3; ++j) {
       clipClamped[j] = Math.min(Math.max(this.clipBounds[i][j], -1e8), 1e8)
     }
   }
 
   var projectData = computeProjectionData(uniforms, this)
 
-  if(projectData.showSurface) {
-    //Set up uniforms
+  if (projectData.showSurface) {
+    // Set up uniforms
     this._pickShader.bind()
     this._pickShader.uniforms = uniforms
 
-    //Draw it
+    // Draw it
     this._vao.bind()
     this._vao.draw(gl.TRIANGLES, this._vertexCount)
 
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      if(!this.surfaceProject[i]) {
+    // Draw projections of surface
+    for (i = 0; i < 3; ++i) {
+      if (!this.surfaceProject[i]) {
         continue
       }
       this._pickShader.uniforms.model = projectData.projections[i]
@@ -33150,7 +32537,7 @@ proto.drawPick = function(params) {
     this._vao.unbind()
   }
 
-  if(projectData.showContour) {
+  if (projectData.showContour) {
     var shader = this._contourPickShader
 
     shader.bind()
@@ -33159,30 +32546,34 @@ proto.drawPick = function(params) {
     var vao = this._contourVAO
     vao.bind()
 
-    for(var j=0; j<3; ++j) {
+    for (j = 0; j < 3; ++j) {
       gl.lineWidth(this.contourWidth[j])
       shader.uniforms.permutation = PERMUTATIONS[j]
-      for(var i=0; i<this.contourLevels[j].length; ++i) {
-        shader.uniforms.height = this.contourLevels[j][i]
-        vao.draw(gl.LINES, this._contourCounts[j][i], this._contourOffsets[j][i])
+      for (i = 0; i < this.contourLevels[j].length; ++i) {
+        if (this._contourCounts[j][i]) {
+          shader.uniforms.height = this.contourLevels[j][i]
+          vao.draw(gl.LINES, this._contourCounts[j][i], this._contourOffsets[j][i])
+        }
       }
     }
 
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      shader.uniforms.model      = projectData.projections[i]
+    // Draw projections of surface
+    for (i = 0; i < 3; ++i) {
+      shader.uniforms.model = projectData.projections[i]
       shader.uniforms.clipBounds = projectData.clipBounds[i]
 
-      for(var j=0; j<3; ++j) {
-        if(!this.contourProject[i][j]) {
+      for (j = 0; j < 3; ++j) {
+        if (!this.contourProject[i][j]) {
           continue
         }
 
         shader.uniforms.permutation = PERMUTATIONS[j]
         gl.lineWidth(this.contourWidth[j])
-        for(var k=0; k<this.contourLevels[j].length; ++k) {
-          shader.uniforms.height = this.contourLevels[j][k]
-          vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
+        for (var k = 0; k < this.contourLevels[j].length; ++k) {
+          if (this._contourCounts[j][k]) {
+            shader.uniforms.height = this.contourLevels[j][k]
+            vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
+          }
         }
       }
     }
@@ -33191,13 +32582,12 @@ proto.drawPick = function(params) {
   }
 }
 
-
-proto.pick = function(selection) {
-  if(!selection) {
+proto.pick = function (selection) {
+  if (!selection) {
     return null
   }
 
-  if(selection.id !== this.pickId) {
+  if (selection.id !== this.pickId) {
     return null
   }
 
@@ -33205,113 +32595,113 @@ proto.pick = function(selection) {
 
   var result = this._pickResult
 
-  //Compute uv coordinate
-  var x = shape[0] * (selection.value[0] + (selection.value[2]>>4)/16.0)/255.0
+  // Compute uv coordinate
+  var x = shape[0] * (selection.value[0] + (selection.value[2] >> 4) / 16.0) / 255.0
   var ix = Math.floor(x)
   var fx = x - ix
 
-  var y = shape[1] * (selection.value[1] + (selection.value[2]&15)/16.0)/255.0
+  var y = shape[1] * (selection.value[1] + (selection.value[2] & 15) / 16.0) / 255.0
   var iy = Math.floor(y)
   var fy = y - iy
 
   ix += 1
   iy += 1
 
-  //Compute xyz coordinate
+  // Compute xyz coordinate
   var pos = result.position
   pos[0] = pos[1] = pos[2] = 0
-  for(var dx=0; dx<2; ++dx) {
+  for (var dx = 0; dx < 2; ++dx) {
     var s = dx ? fx : 1.0 - fx
-    for(var dy=0; dy<2; ++dy) {
+    for (var dy = 0; dy < 2; ++dy) {
       var t = dy ? fy : 1.0 - fy
 
       var r = ix + dx
       var c = iy + dy
       var w = s * t
 
-      for(var i=0; i<3; ++i) {
-        pos[i] += this._field[i].get(r,c) * w
+      for (var i = 0; i < 3; ++i) {
+        pos[i] += this._field[i].get(r, c) * w
       }
     }
   }
 
-  //Find closest level
+  // Find closest level
   var levelIndex = this._pickResult.level
-  for(var j=0; j<3; ++j) {
+  for (var j = 0; j < 3; ++j) {
     levelIndex[j] = bsearch.le(this.contourLevels[j], pos[j])
-    if(levelIndex[j] < 0) {
-      if(this.contourLevels[j].length > 0) {
+    if (levelIndex[j] < 0) {
+      if (this.contourLevels[j].length > 0) {
         levelIndex[j] = 0
       }
-    } else if(levelIndex[j] < this.contourLevels[j].length-1) {
+    } else if (levelIndex[j] < this.contourLevels[j].length - 1) {
       var a = this.contourLevels[j][levelIndex[j]]
-      var b = this.contourLevels[j][levelIndex[j]+1]
-      if(Math.abs(a-pos[j]) > Math.abs(b-pos[j])) {
+      var b = this.contourLevels[j][levelIndex[j] + 1]
+      if (Math.abs(a - pos[j]) > Math.abs(b - pos[j])) {
         levelIndex[j] += 1
       }
     }
   }
 
-  result.index[0] = fx<0.5 ? ix : (ix+1)
-  result.index[1] = fy<0.5 ? iy : (iy+1)
+  result.index[0] = fx < 0.5 ? ix : (ix + 1)
+  result.index[1] = fy < 0.5 ? iy : (iy + 1)
 
-  result.uv[0] = x/shape[0]
-  result.uv[1] = y/shape[1]
+  result.uv[0] = x / shape[0]
+  result.uv[1] = y / shape[1]
 
-  for(var i=0; i<3; ++i) {
+  for (i = 0; i < 3; ++i) {
     result.dataCoordinate[i] = this._field[i].get(result.index[0], result.index[1])
   }
 
   return result
 }
 
-function padField(nfield, field) {
-
+function padField (nfield, field) {
   var shape = field.shape.slice()
   var nshape = nfield.shape.slice()
 
-  //Center
-  ops.assign(nfield.lo(1,1).hi(shape[0], shape[1]), field)
+  // Center
+  ops.assign(nfield.lo(1, 1).hi(shape[0], shape[1]), field)
 
-  //Edges
+  // Edges
   ops.assign(nfield.lo(1).hi(shape[0], 1),
-              field.hi(shape[0], 1))
-  ops.assign(nfield.lo(1,nshape[1]-1).hi(shape[0],1),
-              field.lo(0,shape[1]-1).hi(shape[0],1))
-  ops.assign(nfield.lo(0,1).hi(1,shape[1]),
-              field.hi(1))
-  ops.assign(nfield.lo(nshape[0]-1,1).hi(1,shape[1]),
-              field.lo(shape[0]-1))
-  //Corners
-  nfield.set(0,0, field.get(0,0))
-  nfield.set(0,nshape[1]-1, field.get(0,shape[1]-1))
-  nfield.set(nshape[0]-1,0, field.get(shape[0]-1,0))
-  nfield.set(nshape[0]-1,nshape[1]-1, field.get(shape[0]-1,shape[1]-1))
+    field.hi(shape[0], 1))
+  ops.assign(nfield.lo(1, nshape[1] - 1).hi(shape[0], 1),
+    field.lo(0, shape[1] - 1).hi(shape[0], 1))
+  ops.assign(nfield.lo(0, 1).hi(1, shape[1]),
+    field.hi(1))
+  ops.assign(nfield.lo(nshape[0] - 1, 1).hi(1, shape[1]),
+    field.lo(shape[0] - 1))
+  // Corners
+  nfield.set(0, 0, field.get(0, 0))
+  nfield.set(0, nshape[1] - 1, field.get(0, shape[1] - 1))
+  nfield.set(nshape[0] - 1, 0, field.get(shape[0] - 1, 0))
+  nfield.set(nshape[0] - 1, nshape[1] - 1, field.get(shape[0] - 1, shape[1] - 1))
 }
 
-function handleArray(param, ctor) {
-  if(Array.isArray(param)) {
+function handleArray (param, ctor) {
+  if (Array.isArray(param)) {
     return [ ctor(param[0]), ctor(param[1]), ctor(param[2]) ]
   }
   return [ ctor(param), ctor(param), ctor(param) ]
 }
 
-function toColor(x) {
-  if(Array.isArray(x)) {
-    if(x.length === 3) {
+function toColor (x) {
+  if (Array.isArray(x)) {
+    if (x.length === 3) {
       return [x[0], x[1], x[2], 1]
     }
     return [x[0], x[1], x[2], x[3]]
   }
-  return [0,0,0,1]
+  return [0, 0, 0, 1]
 }
 
-function handleColor(param) {
-  if(Array.isArray(param)) {
-    if(Array.isArray(param)) {
-      return [  toColor(param[0]),
-                toColor(param[1]),
-                toColor(param[2]) ]
+function handleColor (param) {
+  if (Array.isArray(param)) {
+    if (Array.isArray(param)) {
+      return [
+        toColor(param[0]),
+        toColor(param[1]),
+        toColor(param[2]) ]
     } else {
       var c = toColor(param)
       return [
@@ -33322,153 +32712,153 @@ function handleColor(param) {
   }
 }
 
-proto.update = function(params) {
+proto.update = function (params) {
   params = params || {}
 
   this.dirty = true
 
-  if('contourWidth' in params) {
+  if ('contourWidth' in params) {
     this.contourWidth = handleArray(params.contourWidth, Number)
   }
-  if('showContour' in params) {
+  if ('showContour' in params) {
     this.showContour = handleArray(params.showContour, Boolean)
   }
-  if('showSurface' in params) {
+  if ('showSurface' in params) {
     this.showSurface = !!params.showSurface
   }
-  if('contourTint' in params) {
+  if ('contourTint' in params) {
     this.contourTint = handleArray(params.contourTint, Boolean)
   }
-  if('contourColor' in params) {
+  if ('contourColor' in params) {
     this.contourColor = handleColor(params.contourColor)
   }
-  if('contourProject' in params) {
-    this.contourProject = handleArray(params.contourProject, function(x) {
+  if ('contourProject' in params) {
+    this.contourProject = handleArray(params.contourProject, function (x) {
       return handleArray(x, Boolean)
     })
   }
-  if('surfaceProject' in params) {
+  if ('surfaceProject' in params) {
     this.surfaceProject = params.surfaceProject
   }
-  if('dynamicColor' in params) {
+  if ('dynamicColor' in params) {
     this.dynamicColor = handleColor(params.dynamicColor)
   }
-  if('dynamicTint' in params) {
+  if ('dynamicTint' in params) {
     this.dynamicTint = handleArray(params.dynamicTint, Number)
   }
-  if('dynamicWidth' in params) {
+  if ('dynamicWidth' in params) {
     this.dynamicWidth = handleArray(params.dynamicWidth, Number)
   }
-  if('opacity' in params) {
+  if ('opacity' in params) {
     this.opacity = params.opacity
   }
-  if('colorBounds' in params) {
+  if ('colorBounds' in params) {
     this.colorBounds = params.colorBounds
   }
 
   var field = params.field || (params.coords && params.coords[2]) || null
+  var levelsChanged = false
 
-  if(!field) {
-    if(this._field[2].shape[0] || this._field[2].shape[2]) {
-      field = this._field[2].lo(1,1).hi(this._field[2].shape[0]-2, this._field[2].shape[1]-2)
+  if (!field) {
+    if (this._field[2].shape[0] || this._field[2].shape[2]) {
+      field = this._field[2].lo(1, 1).hi(this._field[2].shape[0] - 2, this._field[2].shape[1] - 2)
     } else {
-      field = this._field[2].hi(0,0)
+      field = this._field[2].hi(0, 0)
     }
   }
 
-  //Update field
-  if('field' in params || 'coords' in params) {
-    var fsize = (field.shape[0]+2)*(field.shape[1]+2)
+  // Update field
+  if ('field' in params || 'coords' in params) {
+    var fsize = (field.shape[0] + 2) * (field.shape[1] + 2)
 
-    //Resize if necessary
-    if(fsize > this._field[2].data.length) {
+    // Resize if necessary
+    if (fsize > this._field[2].data.length) {
       pool.freeFloat(this._field[2].data)
       this._field[2].data = pool.mallocFloat(bits.nextPow2(fsize))
     }
 
-    //Pad field
-    this._field[2] = ndarray(this._field[2].data, [field.shape[0]+2, field.shape[1]+2])
+    // Pad field
+    this._field[2] = ndarray(this._field[2].data, [field.shape[0] + 2, field.shape[1] + 2])
     padField(this._field[2], field)
 
-    //Save shape of field
+    // Save shape of field
     this.shape = field.shape.slice()
     var shape = this.shape
 
-    //Resize coordinate fields if necessary
-    for(var i=0; i<2; ++i) {
-      if(this._field[2].size > this._field[i].data.length) {
+    // Resize coordinate fields if necessary
+    for (var i = 0; i < 2; ++i) {
+      if (this._field[2].size > this._field[i].data.length) {
         pool.freeFloat(this._field[i].data)
         this._field[i].data = pool.mallocFloat(this._field[2].size)
       }
-      this._field[i] = ndarray(this._field[i].data, [shape[0]+2, shape[1]+2])
+      this._field[i] = ndarray(this._field[i].data, [shape[0] + 2, shape[1] + 2])
     }
 
-    //Generate x/y coordinates
-    if(params.coords) {
+    // Generate x/y coordinates
+    if (params.coords) {
       var coords = params.coords
-      if(!Array.isArray(coords) || coords.length !== 3) {
+      if (!Array.isArray(coords) || coords.length !== 3) {
         throw new Error('gl-surface: invalid coordinates for x/y')
       }
-      for(var i=0; i<2; ++i) {
+      for (i = 0; i < 2; ++i) {
         var coord = coords[i]
-        for(var j=0; j<2; ++j) {
-          if(coord.shape[j] !== shape[j]) {
+        for (j = 0; j < 2; ++j) {
+          if (coord.shape[j] !== shape[j]) {
             throw new Error('gl-surface: coords have incorrect shape')
           }
         }
         padField(this._field[i], coord)
       }
-    } else if(params.ticks) {
+    } else if (params.ticks) {
       var ticks = params.ticks
-      if(!Array.isArray(ticks) || ticks.length !== 2) {
+      if (!Array.isArray(ticks) || ticks.length !== 2) {
         throw new Error('gl-surface: invalid ticks')
       }
-      for(var i=0; i<2; ++i) {
+      for (i = 0; i < 2; ++i) {
         var tick = ticks[i]
-        if(Array.isArray(tick) || tick.length) {
+        if (Array.isArray(tick) || tick.length) {
           tick = ndarray(tick)
         }
-        if(tick.shape[0] !== shape[i]) {
+        if (tick.shape[0] !== shape[i]) {
           throw new Error('gl-surface: invalid tick length')
         }
-        //Make a copy view of the tick array
+        // Make a copy view of the tick array
         var tick2 = ndarray(tick.data, shape)
         tick2.stride[i] = tick.stride[0]
-        tick2.stride[i^1] = 0
+        tick2.stride[i ^ 1] = 0
 
-        //Fill in field array
+        // Fill in field array
         padField(this._field[i], tick2)
       }
     } else {
-      for(var i=0; i<2; ++i) {
-        var offset = [0,0]
+      for (i = 0; i < 2; ++i) {
+        var offset = [0, 0]
         offset[i] = 1
-        this._field[i] = ndarray(this._field[i].data, [shape[0]+2, shape[1]+2], offset, 0)
+        this._field[i] = ndarray(this._field[i].data, [shape[0] + 2, shape[1] + 2], offset, 0)
       }
-      this._field[0].set(0,0,0)
-      for(var j=0; j<shape[0]; ++j) {
-        this._field[0].set(j+1,0,j)
+      this._field[0].set(0, 0, 0)
+      for (var j = 0; j < shape[0]; ++j) {
+        this._field[0].set(j + 1, 0, j)
       }
-      this._field[0].set(shape[0]+1,0,shape[0]-1)
-      this._field[1].set(0,0,0)
-      for(var j=0; j<shape[1]; ++j) {
-        this._field[1].set(0,j+1,j)
+      this._field[0].set(shape[0] + 1, 0, shape[0] - 1)
+      this._field[1].set(0, 0, 0)
+      for (j = 0; j < shape[1]; ++j) {
+        this._field[1].set(0, j + 1, j)
       }
-      this._field[1].set(0,shape[1]+1, shape[1]-1)
+      this._field[1].set(0, shape[1] + 1, shape[1] - 1)
     }
 
-    //Save shape
+    // Save shape
     var fields = this._field
 
-    //Compute surface normals
-    var fieldSize = fields[2].size
-    var dfields = ndarray(pool.mallocFloat(fields[2].size*3*2), [3, shape[0]+2, shape[1]+2, 2])
-    for(var i=0; i<3; ++i) {
+    // Compute surface normals
+    var dfields = ndarray(pool.mallocFloat(fields[2].size * 3 * 2), [3, shape[0] + 2, shape[1] + 2, 2])
+    for (i = 0; i < 3; ++i) {
       gradient(dfields.pick(i), fields[i], 'mirror')
     }
-    var normals = ndarray(pool.mallocFloat(fields[2].size*3), [shape[0]+2, shape[1]+2, 3])
-    for(var i=0; i<shape[0]+2; ++i) {
-      for(var j=0; j<shape[1]+2; ++j) {
+    var normals = ndarray(pool.mallocFloat(fields[2].size * 3), [shape[0] + 2, shape[1] + 2, 3])
+    for (i = 0; i < shape[0] + 2; ++i) {
+      for (j = 0; j < shape[1] + 2; ++j) {
         var dxdu = dfields.get(0, i, j, 0)
         var dxdv = dfields.get(0, i, j, 1)
         var dydu = dfields.get(1, i, j, 0)
@@ -33480,60 +32870,65 @@ proto.update = function(params) {
         var ny = dzdu * dxdv - dzdv * dxdu
         var nz = dxdu * dydv - dxdv * dydu
 
-        var nl = Math.sqrt(nx*nx + ny * ny + nz * nz)
-        if(nl < 1e-8) {
+        var nl = Math.sqrt(nx * nx + ny * ny + nz * nz)
+        if (nl < 1e-8) {
           nl = Math.max(Math.abs(nx), Math.abs(ny), Math.abs(nz))
-          if(nl < 1e-8) {
+          if (nl < 1e-8) {
             nz = 1.0
             ny = nx = 0.0
             nl = 1.0
           } else {
-            nl = 1.0/ nl
+            nl = 1.0 / nl
           }
         } else {
           nl = 1.0 / Math.sqrt(nl)
         }
 
-        normals.set(i,j,0, nx*nl)
-        normals.set(i,j,1, ny*nl)
-        normals.set(i,j,2, nz*nl)
+        normals.set(i, j, 0, nx * nl)
+        normals.set(i, j, 1, ny * nl)
+        normals.set(i, j, 2, nz * nl)
       }
     }
     pool.free(dfields.data)
 
-    //Initialize surface
-    var lo = [ Infinity, Infinity, Infinity]
-    var hi = [-Infinity,-Infinity,-Infinity]
-    var count   = (shape[0]-1) * (shape[1]-1) * 6
-    var tverts  = pool.mallocFloat(bits.nextPow2(9*count))
-    var tptr    = 0
-    var fptr    = 0
+    // Initialize surface
+    var lo = [ Infinity, Infinity, Infinity ]
+    var hi = [ -Infinity, -Infinity, -Infinity ]
+    var lo_intensity = Infinity
+    var hi_intensity = -Infinity
+    var count = (shape[0] - 1) * (shape[1] - 1) * 6
+    var tverts = pool.mallocFloat(bits.nextPow2(10 * count))
+    var tptr = 0
     var vertexCount = 0
-    for(var i=0; i<shape[0]-1; ++i) {
-  j_loop:
-      for(var j=0; j<shape[1]-1; ++j) {
-
-        //Test for NaNs
-        for(var dx=0; dx<2; ++dx) {
-          for(var dy=0; dy<2; ++dy) {
-            for(var k=0; k<3; ++k) {
-              var f = this._field[k].get(1+i+dx, 1+j+dy)
-              if(isNaN(f) || !isFinite(f)) {
+    for (i = 0; i < shape[0] - 1; ++i) {
+      j_loop:
+      for (j = 0; j < shape[1] - 1; ++j) {
+        // Test for NaNs
+        for (var dx = 0; dx < 2; ++dx) {
+          for (var dy = 0; dy < 2; ++dy) {
+            for (var k = 0; k < 3; ++k) {
+              var f = this._field[k].get(1 + i + dx, 1 + j + dy)
+              if (isNaN(f) || !isFinite(f)) {
                 continue j_loop
               }
             }
           }
         }
-        for(var k=0; k<6; ++k) {
+        for (k = 0; k < 6; ++k) {
           var r = i + QUAD[k][0]
           var c = j + QUAD[k][1]
 
-          var tx = this._field[0].get(r+1, c+1)
-          var ty = this._field[1].get(r+1, c+1)
-          var f  = this._field[2].get(r+1, c+1)
-          var nx = normals.get(r+1, c+1, 0)
-          var ny = normals.get(r+1, c+1, 1)
-          var nz = normals.get(r+1, c+1, 2)
+          var tx = this._field[0].get(r + 1, c + 1)
+          var ty = this._field[1].get(r + 1, c + 1)
+          f = this._field[2].get(r + 1, c + 1)
+          var vf = f
+          nx = normals.get(r + 1, c + 1, 0)
+          ny = normals.get(r + 1, c + 1, 1)
+          nz = normals.get(r + 1, c + 1, 2)
+
+          if (params.intensity) {
+            vf = params.intensity.get(r, c)
+          }
 
           tverts[tptr++] = r
           tverts[tptr++] = c
@@ -33541,6 +32936,7 @@ proto.update = function(params) {
           tverts[tptr++] = ty
           tverts[tptr++] = f
           tverts[tptr++] = 0
+          tverts[tptr++] = vf
           tverts[tptr++] = nx
           tverts[tptr++] = ny
           tverts[tptr++] = nz
@@ -33548,47 +32944,69 @@ proto.update = function(params) {
           lo[0] = Math.min(lo[0], tx)
           lo[1] = Math.min(lo[1], ty)
           lo[2] = Math.min(lo[2], f)
+          lo_intensity = Math.min(lo_intensity, vf)
 
           hi[0] = Math.max(hi[0], tx)
           hi[1] = Math.max(hi[1], ty)
           hi[2] = Math.max(hi[2], f)
+          hi_intensity = Math.max(hi_intensity, vf)
 
           vertexCount += 1
         }
       }
     }
+
+    if (params.intensityBounds) {
+      lo_intensity = +params.intensityBounds[0]
+      hi_intensity = +params.intensityBounds[1]
+    }
+
+    // Scale all vertex intensities
+    for (i = 6; i < tptr; i += 10) {
+      tverts[i] = (tverts[i] - lo_intensity) / (hi_intensity - lo_intensity)
+    }
+
     this._vertexCount = vertexCount
-    this._coordinateBuffer.update(tverts.subarray(0,tptr))
+    this._coordinateBuffer.update(tverts.subarray(0, tptr))
     pool.freeFloat(tverts)
     pool.free(normals.data)
 
-    //Update bounds
+    // Update bounds
     this.bounds = [lo, hi]
+
+    // Save intensity
+    this.intensity = params.intensity || this._field[2]
+
+    if(this.intensityBounds[0] !== lo_intensity || this.intensityBounds[1] !== hi_intensity) {
+        levelsChanged = true
+    }
+
+    // Save intensity bound
+    this.intensityBounds = [lo_intensity, hi_intensity]
   }
 
-  //Update level crossings
-  var levelsChanged = false
-  if('levels' in params) {
+  // Update level crossings
+  if ('levels' in params) {
     var levels = params.levels
-    if(!Array.isArray(levels[0])) {
+    if (!Array.isArray(levels[0])) {
       levels = [ [], [], levels ]
     } else {
       levels = levels.slice()
     }
-    for(var i=0; i<3; ++i) {
+    for (i = 0; i < 3; ++i) {
       levels[i] = levels[i].slice()
-      levels.sort(function(a,b) {
-        return a-b
+      levels.sort(function (a, b) {
+        return a - b
       })
     }
-change_test:
-    for(var i=0; i<3; ++i) {
-      if(levels[i].length !== this.contourLevels[i].length) {
+    change_test:
+    for (i = 0; i < 3; ++i) {
+      if (levels[i].length !== this.contourLevels[i].length) {
         levelsChanged = true
         break
       }
-      for(var j=0; j<levels[i].length; ++j) {
-        if(levels[i][j] !== this.contourLevels[i][j]) {
+      for (j = 0; j < levels[i].length; ++j) {
+        if (levels[i][j] !== this.contourLevels[i][j]) {
           levelsChanged = true
           break change_test
         }
@@ -33597,54 +33015,57 @@ change_test:
     this.contourLevels = levels
   }
 
-  if(levelsChanged) {
-    var fields = this._field
-    var shape  = this.shape
+  if (levelsChanged) {
+    fields = this._field
+    shape = this.shape
 
-    //Update contour lines
+    // Update contour lines
     var contourVerts = []
 
-    for(var dim=0; dim<3; ++dim) {
-      var levels = this.contourLevels[dim]
+    for (var dim = 0; dim < 3; ++dim) {
+      levels = this.contourLevels[dim]
       var levelOffsets = []
-      var levelCounts  = []
+      var levelCounts = []
 
-      var parts = [0,0]
-      var graphParts = [0,0]
+      var parts = [0, 0, 0]
 
-      for(var i=0; i<levels.length; ++i) {
+      for (i = 0; i < levels.length; ++i) {
         var graph = surfaceNets(this._field[dim], levels[i])
-        levelOffsets.push((contourVerts.length/4)|0)
-        var vertexCount = 0
+        levelOffsets.push((contourVerts.length / 5) | 0)
+        vertexCount = 0
 
-  edge_loop:
-        for(var j=0; j<graph.cells.length; ++j) {
+        edge_loop:
+        for (j = 0; j < graph.cells.length; ++j) {
           var e = graph.cells[j]
-          for(var k=0; k<2; ++k) {
+          for (k = 0; k < 2; ++k) {
             var p = graph.positions[e[k]]
 
             var x = p[0]
-            var ix = Math.floor(x)|0
+            var ix = Math.floor(x) | 0
             var fx = x - ix
 
             var y = p[1]
-            var iy = Math.floor(y)|0
+            var iy = Math.floor(y) | 0
             var fy = y - iy
 
             var hole = false
-  dd_loop:
-            for(var dd=0; dd<2; ++dd) {
+            dd_loop:
+            for (var dd = 0; dd < 3; ++dd) {
               parts[dd] = 0.0
               var iu = (dim + dd + 1) % 3
-              for(var dx=0; dx<2; ++dx) {
+              for (dx = 0; dx < 2; ++dx) {
                 var s = dx ? fx : 1.0 - fx
-                var r = Math.min(Math.max(ix+dx, 0), shape[0])|0
-                for(var dy=0; dy<2; ++dy) {
+                r = Math.min(Math.max(ix + dx, 0), shape[0]) | 0
+                for (dy = 0; dy < 2; ++dy) {
                   var t = dy ? fy : 1.0 - fy
-                  var c = Math.min(Math.max(iy+dy, 0), shape[1])|0
+                  c = Math.min(Math.max(iy + dy, 0), shape[1]) | 0
 
-                  var f = this._field[iu].get(r,c)
-                  if(!isFinite(f) || isNaN(f)) {
+                  if (dd < 2) {
+                    f = this._field[iu].get(r, c)
+                  } else {
+                    f = (this.intensity.get(r, c) - this.intensityBounds[0]) / (this.intensityBounds[1] - this.intensityBounds[0])
+                  }
+                  if (!isFinite(f) || isNaN(f)) {
                     hole = true
                     break dd_loop
                   }
@@ -33655,13 +33076,13 @@ change_test:
               }
             }
 
-            if(!hole) {
-              contourVerts.push(parts[0], parts[1], p[0], p[1])
+            if (!hole) {
+              contourVerts.push(parts[0], parts[1], p[0], p[1], parts[2])
               vertexCount += 1
             } else {
-              if(k > 0) {
-                //If we already added first edge, pop off verts
-                for(var l=0; l<4; ++l) {
+              if (k > 0) {
+                // If we already added first edge, pop off verts
+                for (var l = 0; l < 5; ++l) {
                   contourVerts.pop()
                 }
                 vertexCount -= 1
@@ -33673,25 +33094,25 @@ change_test:
         levelCounts.push(vertexCount)
       }
 
-      //Store results
-      this._contourOffsets[dim]  = levelOffsets
-      this._contourCounts[dim]   = levelCounts
+      // Store results
+      this._contourOffsets[dim] = levelOffsets
+      this._contourCounts[dim] = levelCounts
     }
 
     var floatBuffer = pool.mallocFloat(contourVerts.length)
-    for(var i=0; i<contourVerts.length; ++i) {
+    for (i = 0; i < contourVerts.length; ++i) {
       floatBuffer[i] = contourVerts[i]
     }
     this._contourBuffer.update(floatBuffer)
     pool.freeFloat(floatBuffer)
   }
 
-  if(params.colormap) {
+  if (params.colormap) {
     this._colorMap.setPixels(genColormap(params.colormap))
   }
 }
 
-proto.dispose = function() {
+proto.dispose = function () {
   this._shader.dispose()
   this._vao.dispose()
   this._coordinateBuffer.dispose()
@@ -33702,21 +33123,21 @@ proto.dispose = function() {
   this._contourPickShader.dispose()
   this._dynamicBuffer.dispose()
   this._dynamicVAO.dispose()
-  for(var i=0; i<3; ++i) {
+  for (var i = 0; i < 3; ++i) {
     pool.freeFloat(this._field[i].data)
   }
 }
 
-proto.highlight = function(selection) {
-  if(!selection) {
-    this._dynamicCounts = [0,0,0]
+proto.highlight = function (selection) {
+  if (!selection) {
+    this._dynamicCounts = [0, 0, 0]
     this.dyanamicLevel = [NaN, NaN, NaN]
-    this.highlightLevel = [-1,-1,-1]
+    this.highlightLevel = [-1, -1, -1]
     return
   }
 
-  for(var i=0; i<3; ++i) {
-    if(this.enableHighlight[i]) {
+  for (var i = 0; i < 3; ++i) {
+    if (this.enableHighlight[i]) {
       this.highlightLevel[i] = selection.level[i]
     } else {
       this.highlightLevel[i] = -1
@@ -33724,14 +33145,14 @@ proto.highlight = function(selection) {
   }
 
   var levels
-  if(this.snapToData) {
+  if (this.snapToData) {
     levels = selection.dataCoordinate
   } else {
     levels = selection.position
   }
-  if( (!this.enableDynamic[0] || levels[0] === this.dynamicLevel[0]) &&
-      (!this.enableDynamic[1] || levels[1] === this.dynamicLevel[1]) &&
-      (!this.enableDynamic[2] || levels[2] === this.dynamicLevel[2]) ) {
+  if ((!this.enableDynamic[0] || levels[0] === this.dynamicLevel[0]) &&
+    (!this.enableDynamic[1] || levels[1] === this.dynamicLevel[1]) &&
+    (!this.enableDynamic[2] || levels[2] === this.dynamicLevel[2])) {
     return
   }
 
@@ -33739,8 +33160,8 @@ proto.highlight = function(selection) {
   var shape = this.shape
   var scratchBuffer = pool.mallocFloat(12 * shape[0] * shape[1])
 
-  for(var d=0; d<3; ++d) {
-    if(!this.enableDynamic[d]) {
+  for (var d = 0; d < 3; ++d) {
+    if (!this.enableDynamic[d]) {
       this.dynamicLevel[d] = NaN
       this._dynamicCounts[d] = 0
       continue
@@ -33748,33 +33169,34 @@ proto.highlight = function(selection) {
 
     this.dynamicLevel[d] = levels[d]
 
-    var u = (d+1) % 3
-    var v = (d+2) % 3
+    var u = (d + 1) % 3
+    var v = (d + 2) % 3
 
     var f = this._field[d]
     var g = this._field[u]
     var h = this._field[v]
+    var intensity = this.intensity
 
-    var graph     = surfaceNets(f, levels[d])
-    var edges     = graph.cells
+    var graph = surfaceNets(f, levels[d])
+    var edges = graph.cells
     var positions = graph.positions
 
     this._dynamicOffsets[d] = vertexCount
 
-    for(var i=0; i<edges.length; ++i) {
+    for (i = 0; i < edges.length; ++i) {
       var e = edges[i]
-      for(var j=0; j<2; ++j) {
-        var p  = positions[e[j]]
+      for (var j = 0; j < 2; ++j) {
+        var p = positions[e[j]]
 
-        var x  = +p[0]
-        var ix = x|0
-        var jx = Math.min(ix+1, shape[0])|0
+        var x = +p[0]
+        var ix = x | 0
+        var jx = Math.min(ix + 1, shape[0]) | 0
         var fx = x - ix
         var hx = 1.0 - fx
 
-        var y  = +p[1]
-        var iy = y|0
-        var jy = Math.min(iy+1, shape[1])|0
+        var y = +p[1]
+        var iy = y | 0
+        var jy = Math.min(iy + 1, shape[1]) | 0
         var fy = y - iy
         var hy = 1.0 - fy
 
@@ -33783,25 +33205,25 @@ proto.highlight = function(selection) {
         var w10 = fx * hy
         var w11 = fx * fy
 
-        var cu =  w00 * g.get(ix,iy) +
-                  w01 * g.get(ix,jy) +
-                  w10 * g.get(jx,iy) +
-                  w11 * g.get(jx,jy)
+        var cu = w00 * g.get(ix, iy) +
+          w01 * g.get(ix, jy) +
+          w10 * g.get(jx, iy) +
+          w11 * g.get(jx, jy)
 
-        var cv =  w00 * h.get(ix,iy) +
-                  w01 * h.get(ix,jy) +
-                  w10 * h.get(jx,iy) +
-                  w11 * h.get(jx,jy)
+        var cv = w00 * h.get(ix, iy) +
+          w01 * h.get(ix, jy) +
+          w10 * h.get(jx, iy) +
+          w11 * h.get(jx, jy)
 
-        if(isNaN(cu) || isNaN(cv)) {
-          if(j) {
+        if (isNaN(cu) || isNaN(cv)) {
+          if (j) {
             vertexCount -= 1
           }
           break
         }
 
-        scratchBuffer[2*vertexCount+0] = cu
-        scratchBuffer[2*vertexCount+1] = cv
+        scratchBuffer[2 * vertexCount + 0] = cu
+        scratchBuffer[2 * vertexCount + 1] = cv
 
         vertexCount += 1
       }
@@ -33810,14 +33232,12 @@ proto.highlight = function(selection) {
     this._dynamicCounts[d] = vertexCount - this._dynamicOffsets[d]
   }
 
-  this._dynamicBuffer.update(scratchBuffer.subarray(0, 2*vertexCount))
+  this._dynamicBuffer.update(scratchBuffer.subarray(0, 2 * vertexCount))
   pool.freeFloat(scratchBuffer)
 }
 
-function createSurfacePlot(params) {
+function createSurfacePlot (params) {
   var gl = params.gl
-  var field = params.field || (params.coords && params.coords[2]) || ndarray([], [0,0])
-
   var shader = createShader(gl)
   var pickShader = createPickShader(gl)
   var contourShader = createContourShader(gl)
@@ -33825,30 +33245,39 @@ function createSurfacePlot(params) {
 
   var coordinateBuffer = createBuffer(gl)
   var vao = createVAO(gl, [
-      { buffer: coordinateBuffer,
-        size: 4,
-        stride: SURFACE_VERTEX_SIZE,
-        offset: 0
-      },
-      { buffer: coordinateBuffer,
-        size: 2,
-        stride: SURFACE_VERTEX_SIZE,
-        offset: 16
-      },
-      {
-        buffer: coordinateBuffer,
-        size: 3,
-        stride: SURFACE_VERTEX_SIZE,
-        offset: 24
-      }
-    ])
+    { buffer: coordinateBuffer,
+      size: 4,
+      stride: SURFACE_VERTEX_SIZE,
+      offset: 0
+    },
+    { buffer: coordinateBuffer,
+      size: 3,
+      stride: SURFACE_VERTEX_SIZE,
+      offset: 16
+    },
+    {
+      buffer: coordinateBuffer,
+      size: 3,
+      stride: SURFACE_VERTEX_SIZE,
+      offset: 28
+    }
+  ])
 
   var contourBuffer = createBuffer(gl)
   var contourVAO = createVAO(gl, [
     {
       buffer: contourBuffer,
-      size: 4
-    }])
+      size: 4,
+      stride: 20,
+      offset: 0
+    },
+    {
+      buffer: contourBuffer,
+      size: 1,
+      stride: 20,
+      offset: 16
+    }
+  ])
 
   var dynamicBuffer = createBuffer(gl)
   var dynamicVAO = createVAO(gl, [
@@ -33864,8 +33293,8 @@ function createSurfacePlot(params) {
 
   var surface = new SurfacePlot(
     gl,
-    [0,0],
-    [[0,0,0], [0,0,0]],
+    [0, 0],
+    [[0, 0, 0], [0, 0, 0]],
     shader,
     pickShader,
     coordinateBuffer,
@@ -33881,7 +33310,7 @@ function createSurfacePlot(params) {
   var nparams = {
     levels: [[], [], []]
   }
-  for(var id in params) {
+  for (var id in params) {
     nparams[id] = params[id]
   }
   nparams.colormap = nparams.colormap || 'jet'
@@ -33891,7 +33320,7 @@ function createSurfacePlot(params) {
   return surface
 }
 
-},{"./lib/shaders":179,"binary-search-bounds":180,"bit-twiddle":49,"colormap":57,"gl-buffer":75,"gl-mat4/invert":94,"gl-mat4/multiply":96,"gl-texture2d":185,"gl-vao":189,"ndarray":208,"ndarray-gradient":181,"ndarray-ops":207,"ndarray-pack":182,"surface-nets":227,"typedarray-pool":233}],185:[function(require,module,exports){
+},{"./lib/shaders":174,"binary-search-bounds":175,"bit-twiddle":49,"colormap":57,"gl-buffer":75,"gl-mat4/invert":94,"gl-mat4/multiply":96,"gl-texture2d":180,"gl-vao":184,"ndarray":209,"ndarray-gradient":176,"ndarray-ops":208,"ndarray-pack":177,"surface-nets":229,"typedarray-pool":235}],180:[function(require,module,exports){
 'use strict'
 
 var ndarray = require('ndarray')
@@ -34450,7 +33879,7 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":208,"ndarray-ops":207,"typedarray-pool":233}],186:[function(require,module,exports){
+},{"ndarray":209,"ndarray-ops":208,"typedarray-pool":235}],181:[function(require,module,exports){
 "use strict"
 
 function doBind(gl, elements, attributes) {
@@ -34505,7 +33934,7 @@ function doBind(gl, elements, attributes) {
 }
 
 module.exports = doBind
-},{}],187:[function(require,module,exports){
+},{}],182:[function(require,module,exports){
 "use strict"
 
 var bindAttribs = require("./do-bind.js")
@@ -34545,7 +33974,7 @@ function createVAOEmulated(gl) {
 }
 
 module.exports = createVAOEmulated
-},{"./do-bind.js":186}],188:[function(require,module,exports){
+},{"./do-bind.js":181}],183:[function(require,module,exports){
 "use strict"
 
 var bindAttribs = require("./do-bind.js")
@@ -34633,7 +34062,7 @@ function createVAONative(gl, ext) {
 }
 
 module.exports = createVAONative
-},{"./do-bind.js":186}],189:[function(require,module,exports){
+},{"./do-bind.js":181}],184:[function(require,module,exports){
 "use strict"
 
 var createVAONative = require("./lib/vao-native.js")
@@ -34653,7 +34082,7 @@ function createVAO(gl, attributes, elements, elementsType) {
 
 module.exports = createVAO
 
-},{"./lib/vao-emulated.js":187,"./lib/vao-native.js":188}],190:[function(require,module,exports){
+},{"./lib/vao-emulated.js":182,"./lib/vao-native.js":183}],185:[function(require,module,exports){
 module.exports = transformMat4
 
 /**
@@ -34673,7 +34102,843 @@ function transformMat4 (out, a, m) {
   return out
 }
 
+},{}],186:[function(require,module,exports){
+module.exports = tokenize
+
+var literals100 = require('./lib/literals')
+  , operators = require('./lib/operators')
+  , builtins100 = require('./lib/builtins')
+  , literals300es = require('./lib/literals-300es')
+  , builtins300es = require('./lib/builtins-300es')
+
+var NORMAL = 999          // <-- never emitted
+  , TOKEN = 9999          // <-- never emitted
+  , BLOCK_COMMENT = 0
+  , LINE_COMMENT = 1
+  , PREPROCESSOR = 2
+  , OPERATOR = 3
+  , INTEGER = 4
+  , FLOAT = 5
+  , IDENT = 6
+  , BUILTIN = 7
+  , KEYWORD = 8
+  , WHITESPACE = 9
+  , EOF = 10
+  , HEX = 11
+
+var map = [
+    'block-comment'
+  , 'line-comment'
+  , 'preprocessor'
+  , 'operator'
+  , 'integer'
+  , 'float'
+  , 'ident'
+  , 'builtin'
+  , 'keyword'
+  , 'whitespace'
+  , 'eof'
+  , 'integer'
+]
+
+function tokenize(opt) {
+  var i = 0
+    , total = 0
+    , mode = NORMAL
+    , c
+    , last
+    , content = []
+    , tokens = []
+    , token_idx = 0
+    , token_offs = 0
+    , line = 1
+    , col = 0
+    , start = 0
+    , isnum = false
+    , isoperator = false
+    , input = ''
+    , len
+
+  opt = opt || {}
+  var allBuiltins = builtins100
+  var allLiterals = literals100
+  if (opt.version === '300 es') {
+    allBuiltins = builtins300es
+    allLiterals = literals300es
+  }
+
+  return function(data) {
+    tokens = []
+    if (data !== null) return write(data)
+    return end()
+  }
+
+  function token(data) {
+    if (data.length) {
+      tokens.push({
+        type: map[mode]
+      , data: data
+      , position: start
+      , line: line
+      , column: col
+      })
+    }
+  }
+
+  function write(chunk) {
+    i = 0
+    input += chunk
+    len = input.length
+
+    var last
+
+    while(c = input[i], i < len) {
+      last = i
+
+      switch(mode) {
+        case BLOCK_COMMENT: i = block_comment(); break
+        case LINE_COMMENT: i = line_comment(); break
+        case PREPROCESSOR: i = preprocessor(); break
+        case OPERATOR: i = operator(); break
+        case INTEGER: i = integer(); break
+        case HEX: i = hex(); break
+        case FLOAT: i = decimal(); break
+        case TOKEN: i = readtoken(); break
+        case WHITESPACE: i = whitespace(); break
+        case NORMAL: i = normal(); break
+      }
+
+      if(last !== i) {
+        switch(input[last]) {
+          case '\n': col = 0; ++line; break
+          default: ++col; break
+        }
+      }
+    }
+
+    total += i
+    input = input.slice(i)
+    return tokens
+  }
+
+  function end(chunk) {
+    if(content.length) {
+      token(content.join(''))
+    }
+
+    mode = EOF
+    token('(eof)')
+    return tokens
+  }
+
+  function normal() {
+    content = content.length ? [] : content
+
+    if(last === '/' && c === '*') {
+      start = total + i - 1
+      mode = BLOCK_COMMENT
+      last = c
+      return i + 1
+    }
+
+    if(last === '/' && c === '/') {
+      start = total + i - 1
+      mode = LINE_COMMENT
+      last = c
+      return i + 1
+    }
+
+    if(c === '#') {
+      mode = PREPROCESSOR
+      start = total + i
+      return i
+    }
+
+    if(/\s/.test(c)) {
+      mode = WHITESPACE
+      start = total + i
+      return i
+    }
+
+    isnum = /\d/.test(c)
+    isoperator = /[^\w_]/.test(c)
+
+    start = total + i
+    mode = isnum ? INTEGER : isoperator ? OPERATOR : TOKEN
+    return i
+  }
+
+  function whitespace() {
+    if(/[^\s]/g.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function preprocessor() {
+    if(c === '\n' && last !== '\\') {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function line_comment() {
+    return preprocessor()
+  }
+
+  function block_comment() {
+    if(c === '/' && last === '*') {
+      content.push(c)
+      token(content.join(''))
+      mode = NORMAL
+      return i + 1
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function operator() {
+    if(last === '.' && /\d/.test(c)) {
+      mode = FLOAT
+      return i
+    }
+
+    if(last === '/' && c === '*') {
+      mode = BLOCK_COMMENT
+      return i
+    }
+
+    if(last === '/' && c === '/') {
+      mode = LINE_COMMENT
+      return i
+    }
+
+    if(c === '.' && content.length) {
+      while(determine_operator(content));
+
+      mode = FLOAT
+      return i
+    }
+
+    if(c === ';' || c === ')' || c === '(') {
+      if(content.length) while(determine_operator(content));
+      token(c)
+      mode = NORMAL
+      return i + 1
+    }
+
+    var is_composite_operator = content.length === 2 && c !== '='
+    if(/[\w_\d\s]/.test(c) || is_composite_operator) {
+      while(determine_operator(content));
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function determine_operator(buf) {
+    var j = 0
+      , idx
+      , res
+
+    do {
+      idx = operators.indexOf(buf.slice(0, buf.length + j).join(''))
+      res = operators[idx]
+
+      if(idx === -1) {
+        if(j-- + buf.length > 0) continue
+        res = buf.slice(0, 1).join('')
+      }
+
+      token(res)
+
+      start += res.length
+      content = content.slice(res.length)
+      return content.length
+    } while(1)
+  }
+
+  function hex() {
+    if(/[^a-fA-F0-9]/.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function integer() {
+    if(c === '.') {
+      content.push(c)
+      mode = FLOAT
+      last = c
+      return i + 1
+    }
+
+    if(/[eE]/.test(c)) {
+      content.push(c)
+      mode = FLOAT
+      last = c
+      return i + 1
+    }
+
+    if(c === 'x' && content.length === 1 && content[0] === '0') {
+      mode = HEX
+      content.push(c)
+      last = c
+      return i + 1
+    }
+
+    if(/[^\d]/.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function decimal() {
+    if(c === 'f') {
+      content.push(c)
+      last = c
+      i += 1
+    }
+
+    if(/[eE]/.test(c)) {
+      content.push(c)
+      last = c
+      return i + 1
+    }
+
+    if (c === '-' && /[eE]/.test(last)) {
+      content.push(c)
+      last = c
+      return i + 1
+    }
+
+    if(/[^\d]/.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function readtoken() {
+    if(/[^\d\w_]/.test(c)) {
+      var contentstr = content.join('')
+      if(allLiterals.indexOf(contentstr) > -1) {
+        mode = KEYWORD
+      } else if(allBuiltins.indexOf(contentstr) > -1) {
+        mode = BUILTIN
+      } else {
+        mode = IDENT
+      }
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+}
+
+},{"./lib/builtins":188,"./lib/builtins-300es":187,"./lib/literals":190,"./lib/literals-300es":189,"./lib/operators":191}],187:[function(require,module,exports){
+// 300es builtins/reserved words that were previously valid in v100
+var v100 = require('./builtins')
+
+// The texture2D|Cube functions have been removed
+// And the gl_ features are updated
+v100 = v100.slice().filter(function (b) {
+  return !/^(gl\_|texture)/.test(b)
+})
+
+module.exports = v100.concat([
+  // the updated gl_ constants
+    'gl_VertexID'
+  , 'gl_InstanceID'
+  , 'gl_Position'
+  , 'gl_PointSize'
+  , 'gl_FragCoord'
+  , 'gl_FrontFacing'
+  , 'gl_FragDepth'
+  , 'gl_PointCoord'
+  , 'gl_MaxVertexAttribs'
+  , 'gl_MaxVertexUniformVectors'
+  , 'gl_MaxVertexOutputVectors'
+  , 'gl_MaxFragmentInputVectors'
+  , 'gl_MaxVertexTextureImageUnits'
+  , 'gl_MaxCombinedTextureImageUnits'
+  , 'gl_MaxTextureImageUnits'
+  , 'gl_MaxFragmentUniformVectors'
+  , 'gl_MaxDrawBuffers'
+  , 'gl_MinProgramTexelOffset'
+  , 'gl_MaxProgramTexelOffset'
+  , 'gl_DepthRangeParameters'
+  , 'gl_DepthRange'
+
+  // other builtins
+  , 'trunc'
+  , 'round'
+  , 'roundEven'
+  , 'isnan'
+  , 'isinf'
+  , 'floatBitsToInt'
+  , 'floatBitsToUint'
+  , 'intBitsToFloat'
+  , 'uintBitsToFloat'
+  , 'packSnorm2x16'
+  , 'unpackSnorm2x16'
+  , 'packUnorm2x16'
+  , 'unpackUnorm2x16'
+  , 'packHalf2x16'
+  , 'unpackHalf2x16'
+  , 'outerProduct'
+  , 'transpose'
+  , 'determinant'
+  , 'inverse'
+  , 'texture'
+  , 'textureSize'
+  , 'textureProj'
+  , 'textureLod'
+  , 'textureOffset'
+  , 'texelFetch'
+  , 'texelFetchOffset'
+  , 'textureProjOffset'
+  , 'textureLodOffset'
+  , 'textureProjLod'
+  , 'textureProjLodOffset'
+  , 'textureGrad'
+  , 'textureGradOffset'
+  , 'textureProjGrad'
+  , 'textureProjGradOffset'
+])
+
+},{"./builtins":188}],188:[function(require,module,exports){
+module.exports = [
+  // Keep this list sorted
+  'abs'
+  , 'acos'
+  , 'all'
+  , 'any'
+  , 'asin'
+  , 'atan'
+  , 'ceil'
+  , 'clamp'
+  , 'cos'
+  , 'cross'
+  , 'dFdx'
+  , 'dFdy'
+  , 'degrees'
+  , 'distance'
+  , 'dot'
+  , 'equal'
+  , 'exp'
+  , 'exp2'
+  , 'faceforward'
+  , 'floor'
+  , 'fract'
+  , 'gl_BackColor'
+  , 'gl_BackLightModelProduct'
+  , 'gl_BackLightProduct'
+  , 'gl_BackMaterial'
+  , 'gl_BackSecondaryColor'
+  , 'gl_ClipPlane'
+  , 'gl_ClipVertex'
+  , 'gl_Color'
+  , 'gl_DepthRange'
+  , 'gl_DepthRangeParameters'
+  , 'gl_EyePlaneQ'
+  , 'gl_EyePlaneR'
+  , 'gl_EyePlaneS'
+  , 'gl_EyePlaneT'
+  , 'gl_Fog'
+  , 'gl_FogCoord'
+  , 'gl_FogFragCoord'
+  , 'gl_FogParameters'
+  , 'gl_FragColor'
+  , 'gl_FragCoord'
+  , 'gl_FragData'
+  , 'gl_FragDepth'
+  , 'gl_FragDepthEXT'
+  , 'gl_FrontColor'
+  , 'gl_FrontFacing'
+  , 'gl_FrontLightModelProduct'
+  , 'gl_FrontLightProduct'
+  , 'gl_FrontMaterial'
+  , 'gl_FrontSecondaryColor'
+  , 'gl_LightModel'
+  , 'gl_LightModelParameters'
+  , 'gl_LightModelProducts'
+  , 'gl_LightProducts'
+  , 'gl_LightSource'
+  , 'gl_LightSourceParameters'
+  , 'gl_MaterialParameters'
+  , 'gl_MaxClipPlanes'
+  , 'gl_MaxCombinedTextureImageUnits'
+  , 'gl_MaxDrawBuffers'
+  , 'gl_MaxFragmentUniformComponents'
+  , 'gl_MaxLights'
+  , 'gl_MaxTextureCoords'
+  , 'gl_MaxTextureImageUnits'
+  , 'gl_MaxTextureUnits'
+  , 'gl_MaxVaryingFloats'
+  , 'gl_MaxVertexAttribs'
+  , 'gl_MaxVertexTextureImageUnits'
+  , 'gl_MaxVertexUniformComponents'
+  , 'gl_ModelViewMatrix'
+  , 'gl_ModelViewMatrixInverse'
+  , 'gl_ModelViewMatrixInverseTranspose'
+  , 'gl_ModelViewMatrixTranspose'
+  , 'gl_ModelViewProjectionMatrix'
+  , 'gl_ModelViewProjectionMatrixInverse'
+  , 'gl_ModelViewProjectionMatrixInverseTranspose'
+  , 'gl_ModelViewProjectionMatrixTranspose'
+  , 'gl_MultiTexCoord0'
+  , 'gl_MultiTexCoord1'
+  , 'gl_MultiTexCoord2'
+  , 'gl_MultiTexCoord3'
+  , 'gl_MultiTexCoord4'
+  , 'gl_MultiTexCoord5'
+  , 'gl_MultiTexCoord6'
+  , 'gl_MultiTexCoord7'
+  , 'gl_Normal'
+  , 'gl_NormalMatrix'
+  , 'gl_NormalScale'
+  , 'gl_ObjectPlaneQ'
+  , 'gl_ObjectPlaneR'
+  , 'gl_ObjectPlaneS'
+  , 'gl_ObjectPlaneT'
+  , 'gl_Point'
+  , 'gl_PointCoord'
+  , 'gl_PointParameters'
+  , 'gl_PointSize'
+  , 'gl_Position'
+  , 'gl_ProjectionMatrix'
+  , 'gl_ProjectionMatrixInverse'
+  , 'gl_ProjectionMatrixInverseTranspose'
+  , 'gl_ProjectionMatrixTranspose'
+  , 'gl_SecondaryColor'
+  , 'gl_TexCoord'
+  , 'gl_TextureEnvColor'
+  , 'gl_TextureMatrix'
+  , 'gl_TextureMatrixInverse'
+  , 'gl_TextureMatrixInverseTranspose'
+  , 'gl_TextureMatrixTranspose'
+  , 'gl_Vertex'
+  , 'greaterThan'
+  , 'greaterThanEqual'
+  , 'inversesqrt'
+  , 'length'
+  , 'lessThan'
+  , 'lessThanEqual'
+  , 'log'
+  , 'log2'
+  , 'matrixCompMult'
+  , 'max'
+  , 'min'
+  , 'mix'
+  , 'mod'
+  , 'normalize'
+  , 'not'
+  , 'notEqual'
+  , 'pow'
+  , 'radians'
+  , 'reflect'
+  , 'refract'
+  , 'sign'
+  , 'sin'
+  , 'smoothstep'
+  , 'sqrt'
+  , 'step'
+  , 'tan'
+  , 'texture2D'
+  , 'texture2DLod'
+  , 'texture2DProj'
+  , 'texture2DProjLod'
+  , 'textureCube'
+  , 'textureCubeLod'
+  , 'texture2DLodEXT'
+  , 'texture2DProjLodEXT'
+  , 'textureCubeLodEXT'
+  , 'texture2DGradEXT'
+  , 'texture2DProjGradEXT'
+  , 'textureCubeGradEXT'
+]
+
+},{}],189:[function(require,module,exports){
+var v100 = require('./literals')
+
+module.exports = v100.slice().concat([
+   'layout'
+  , 'centroid'
+  , 'smooth'
+  , 'case'
+  , 'mat2x2'
+  , 'mat2x3'
+  , 'mat2x4'
+  , 'mat3x2'
+  , 'mat3x3'
+  , 'mat3x4'
+  , 'mat4x2'
+  , 'mat4x3'
+  , 'mat4x4'
+  , 'uint'
+  , 'uvec2'
+  , 'uvec3'
+  , 'uvec4'
+  , 'samplerCubeShadow'
+  , 'sampler2DArray'
+  , 'sampler2DArrayShadow'
+  , 'isampler2D'
+  , 'isampler3D'
+  , 'isamplerCube'
+  , 'isampler2DArray'
+  , 'usampler2D'
+  , 'usampler3D'
+  , 'usamplerCube'
+  , 'usampler2DArray'
+  , 'coherent'
+  , 'restrict'
+  , 'readonly'
+  , 'writeonly'
+  , 'resource'
+  , 'atomic_uint'
+  , 'noperspective'
+  , 'patch'
+  , 'sample'
+  , 'subroutine'
+  , 'common'
+  , 'partition'
+  , 'active'
+  , 'filter'
+  , 'image1D'
+  , 'image2D'
+  , 'image3D'
+  , 'imageCube'
+  , 'iimage1D'
+  , 'iimage2D'
+  , 'iimage3D'
+  , 'iimageCube'
+  , 'uimage1D'
+  , 'uimage2D'
+  , 'uimage3D'
+  , 'uimageCube'
+  , 'image1DArray'
+  , 'image2DArray'
+  , 'iimage1DArray'
+  , 'iimage2DArray'
+  , 'uimage1DArray'
+  , 'uimage2DArray'
+  , 'image1DShadow'
+  , 'image2DShadow'
+  , 'image1DArrayShadow'
+  , 'image2DArrayShadow'
+  , 'imageBuffer'
+  , 'iimageBuffer'
+  , 'uimageBuffer'
+  , 'sampler1DArray'
+  , 'sampler1DArrayShadow'
+  , 'isampler1D'
+  , 'isampler1DArray'
+  , 'usampler1D'
+  , 'usampler1DArray'
+  , 'isampler2DRect'
+  , 'usampler2DRect'
+  , 'samplerBuffer'
+  , 'isamplerBuffer'
+  , 'usamplerBuffer'
+  , 'sampler2DMS'
+  , 'isampler2DMS'
+  , 'usampler2DMS'
+  , 'sampler2DMSArray'
+  , 'isampler2DMSArray'
+  , 'usampler2DMSArray'
+])
+
+},{"./literals":190}],190:[function(require,module,exports){
+module.exports = [
+  // current
+    'precision'
+  , 'highp'
+  , 'mediump'
+  , 'lowp'
+  , 'attribute'
+  , 'const'
+  , 'uniform'
+  , 'varying'
+  , 'break'
+  , 'continue'
+  , 'do'
+  , 'for'
+  , 'while'
+  , 'if'
+  , 'else'
+  , 'in'
+  , 'out'
+  , 'inout'
+  , 'float'
+  , 'int'
+  , 'void'
+  , 'bool'
+  , 'true'
+  , 'false'
+  , 'discard'
+  , 'return'
+  , 'mat2'
+  , 'mat3'
+  , 'mat4'
+  , 'vec2'
+  , 'vec3'
+  , 'vec4'
+  , 'ivec2'
+  , 'ivec3'
+  , 'ivec4'
+  , 'bvec2'
+  , 'bvec3'
+  , 'bvec4'
+  , 'sampler1D'
+  , 'sampler2D'
+  , 'sampler3D'
+  , 'samplerCube'
+  , 'sampler1DShadow'
+  , 'sampler2DShadow'
+  , 'struct'
+
+  // future
+  , 'asm'
+  , 'class'
+  , 'union'
+  , 'enum'
+  , 'typedef'
+  , 'template'
+  , 'this'
+  , 'packed'
+  , 'goto'
+  , 'switch'
+  , 'default'
+  , 'inline'
+  , 'noinline'
+  , 'volatile'
+  , 'public'
+  , 'static'
+  , 'extern'
+  , 'external'
+  , 'interface'
+  , 'long'
+  , 'short'
+  , 'double'
+  , 'half'
+  , 'fixed'
+  , 'unsigned'
+  , 'input'
+  , 'output'
+  , 'hvec2'
+  , 'hvec3'
+  , 'hvec4'
+  , 'dvec2'
+  , 'dvec3'
+  , 'dvec4'
+  , 'fvec2'
+  , 'fvec3'
+  , 'fvec4'
+  , 'sampler2DRect'
+  , 'sampler3DRect'
+  , 'sampler2DRectShadow'
+  , 'sizeof'
+  , 'cast'
+  , 'namespace'
+  , 'using'
+]
+
 },{}],191:[function(require,module,exports){
+module.exports = [
+    '<<='
+  , '>>='
+  , '++'
+  , '--'
+  , '<<'
+  , '>>'
+  , '<='
+  , '>='
+  , '=='
+  , '!='
+  , '&&'
+  , '||'
+  , '+='
+  , '-='
+  , '*='
+  , '/='
+  , '%='
+  , '&='
+  , '^^'
+  , '^='
+  , '|='
+  , '('
+  , ')'
+  , '['
+  , ']'
+  , '.'
+  , '!'
+  , '~'
+  , '*'
+  , '/'
+  , '%'
+  , '+'
+  , '-'
+  , '<'
+  , '>'
+  , '&'
+  , '^'
+  , '|'
+  , '?'
+  , ':'
+  , '='
+  , ','
+  , ';'
+  , '{'
+  , '}'
+]
+
+},{}],192:[function(require,module,exports){
+var tokenize = require('./index')
+
+module.exports = tokenizeString
+
+function tokenizeString(str, opt) {
+  var generator = tokenize(opt)
+  var tokens = []
+
+  tokens = tokens.concat(generator(str))
+  tokens = tokens.concat(generator(null))
+
+  return tokens
+}
+
+},{"./index":186}],193:[function(require,module,exports){
 "use strict"
 
 //High level idea:
@@ -35120,9 +35385,9 @@ function incrementalConvexHull(points, randomSearch) {
   //Extract boundary cells
   return triangles.boundary()
 }
-},{"robust-orientation":214,"simplicial-complex":194}],192:[function(require,module,exports){
+},{"robust-orientation":216,"simplicial-complex":196}],194:[function(require,module,exports){
 arguments[4][49][0].apply(exports,arguments)
-},{"dup":49}],193:[function(require,module,exports){
+},{"dup":49}],195:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -35185,7 +35450,7 @@ proto.link = function(x, y) {
     ++ranks[xr];
   }
 }
-},{}],194:[function(require,module,exports){
+},{}],196:[function(require,module,exports){
 "use strict"; "use restrict";
 
 var bits      = require("bit-twiddle")
@@ -35529,19 +35794,7 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":192,"union-find":193}],195:[function(require,module,exports){
-"use strict"
-
-function iota(n) {
-  var result = new Array(n)
-  for(var i=0; i<n; ++i) {
-    result[i] = i
-  }
-  return result
-}
-
-module.exports = iota
-},{}],196:[function(require,module,exports){
+},{"bit-twiddle":194,"union-find":195}],197:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -35750,7 +36003,7 @@ function mouseListen(element, callback) {
   return result
 }
 
-},{"mouse-event":197}],197:[function(require,module,exports){
+},{"mouse-event":198}],198:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -35812,7 +36065,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],198:[function(require,module,exports){
+},{}],199:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -35823,7 +36076,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],199:[function(require,module,exports){
+},{}],200:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -35884,7 +36137,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":198}],200:[function(require,module,exports){
+},{"parse-unit":199}],201:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -35898,7 +36151,7 @@ function mouseWheelListen(element, callback, noScroll) {
     element = window
   }
   var lineHeight = toPX('ex', element)
-  element.addEventListener('wheel', function(ev) {
+  var listener = function(ev) {
     if(noScroll) {
       ev.preventDefault()
     }
@@ -35921,9 +36174,12 @@ function mouseWheelListen(element, callback, noScroll) {
     if(dx || dy || dz) {
       return callback(dx, dy, dz)
     }
-  })
+  }
+  element.addEventListener('wheel', listener)
+  return listener
 }
-},{"to-px":199}],201:[function(require,module,exports){
+
+},{"to-px":200}],202:[function(require,module,exports){
 "use strict"
 
 
@@ -35935,7 +36191,7 @@ module.exports = function(array, f) {
   return array
 }
 
-},{"cwise/lib/wrapper":69}],202:[function(require,module,exports){
+},{"cwise/lib/wrapper":69}],203:[function(require,module,exports){
 'use strict'
 
 module.exports = invert
@@ -35966,7 +36222,7 @@ function invert(out, M) {
   }
   return out
 }
-},{"gl-mat2/invert":203,"gl-mat3/invert":87,"gl-mat4/invert":94}],203:[function(require,module,exports){
+},{"gl-mat2/invert":204,"gl-mat3/invert":87,"gl-mat4/invert":94}],204:[function(require,module,exports){
 module.exports = invert
 
 /**
@@ -35995,7 +36251,7 @@ function invert(out, a) {
   return out
 }
 
-},{}],204:[function(require,module,exports){
+},{}],205:[function(require,module,exports){
 "use strict"
 
 function interp1d(arr, x) {
@@ -36106,13 +36362,13 @@ module.exports.d1 = interp1d
 module.exports.d2 = interp2d
 module.exports.d3 = interp3d
 
-},{}],205:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
 'use strict'
 
 var interp  = require('ndarray-linear-interpolate')
 
 
-var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_6_arg4_)}","args":[{"name":"_inline_6_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_7_arg2_(this_warped,_inline_7_arg0_),_inline_7_arg1_=_inline_7_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_7_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_7_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg3_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
+var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_6_arg4_)}","args":[{"name":"_inline_6_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_7_arg2_(this_warped,_inline_7_arg0_),_inline_7_arg1_=_inline_7_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_7_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_7_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
 
 var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_10_arg2_(this_warped,_inline_10_arg0_),_inline_10_arg1_=_inline_10_arg3_(_inline_10_arg4_,this_warped[0])}","args":[{"name":"_inline_10_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_10_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
 
@@ -36138,7 +36394,7 @@ module.exports = function warp(dest, src, func) {
   return dest
 }
 
-},{"cwise/lib/wrapper":69,"ndarray-linear-interpolate":204}],206:[function(require,module,exports){
+},{"cwise/lib/wrapper":69,"ndarray-linear-interpolate":205}],207:[function(require,module,exports){
 'use strict'
 
 var warp = require('ndarray-warp')
@@ -36168,7 +36424,7 @@ function applyHomography(dest, src, Xi) {
   })
   return dest
 }
-},{"gl-matrix-invert":202,"ndarray-warp":205}],207:[function(require,module,exports){
+},{"gl-matrix-invert":203,"ndarray-warp":206}],208:[function(require,module,exports){
 "use strict"
 
 var compile = require("cwise-compiler")
@@ -36631,7 +36887,7 @@ exports.equals = compile({
 
 
 
-},{"cwise-compiler":66}],208:[function(require,module,exports){
+},{"cwise-compiler":66}],209:[function(require,module,exports){
 var iota = require("iota-array")
 var isBuffer = require("is-buffer")
 
@@ -36976,7 +37232,19 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":195,"is-buffer":209}],209:[function(require,module,exports){
+},{"iota-array":210,"is-buffer":211}],210:[function(require,module,exports){
+"use strict"
+
+function iota(n) {
+  var result = new Array(n)
+  for(var i=0; i<n; ++i) {
+    result[i] = i
+  }
+  return result
+}
+
+module.exports = iota
+},{}],211:[function(require,module,exports){
 /**
  * Determine if an object is Buffer
  *
@@ -36995,7 +37263,7 @@ module.exports = function (obj) {
     ))
 }
 
-},{}],210:[function(require,module,exports){
+},{}],212:[function(require,module,exports){
 (function (global){
 module.exports =
   global.performance &&
@@ -37006,7 +37274,7 @@ module.exports =
   }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],211:[function(require,module,exports){
+},{}],213:[function(require,module,exports){
 "use strict"
 
 var determinant = require("robust-determinant")
@@ -37078,7 +37346,7 @@ function generateDispatch() {
 }
 
 generateDispatch()
-},{"robust-determinant":213}],212:[function(require,module,exports){
+},{"robust-determinant":215}],214:[function(require,module,exports){
 "use strict"
 
 module.exports = compressExpansion
@@ -37113,7 +37381,7 @@ function compressExpansion(e) {
   e.length = top
   return e
 }
-},{}],213:[function(require,module,exports){
+},{}],215:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -37217,7 +37485,7 @@ return robustDeterminant")
 }
 
 generateDispatch()
-},{"robust-compress":212,"robust-scale":215,"robust-sum":217,"two-product":231}],214:[function(require,module,exports){
+},{"robust-compress":214,"robust-scale":217,"robust-sum":219,"two-product":233}],216:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -37408,7 +37676,7 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":215,"robust-subtract":216,"robust-sum":217,"two-product":231}],215:[function(require,module,exports){
+},{"robust-scale":217,"robust-subtract":218,"robust-sum":219,"two-product":233}],217:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -37459,7 +37727,7 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":231,"two-sum":232}],216:[function(require,module,exports){
+},{"two-product":233,"two-sum":234}],218:[function(require,module,exports){
 "use strict"
 
 module.exports = robustSubtract
@@ -37616,7 +37884,7 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],217:[function(require,module,exports){
+},{}],219:[function(require,module,exports){
 "use strict"
 
 module.exports = linearExpansionSum
@@ -37773,7 +38041,7 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],218:[function(require,module,exports){
+},{}],220:[function(require,module,exports){
 'use strict'
 
 module.exports = toSuperScript
@@ -37828,7 +38096,7 @@ function toSuperScript(x) {
   }).join('')
 }
 
-},{}],219:[function(require,module,exports){
+},{}],221:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -38244,7 +38512,7 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":233}],220:[function(require,module,exports){
+},{"typedarray-pool":235}],222:[function(require,module,exports){
 // transliterated from the python snippet here:
 // http://en.wikipedia.org/wiki/Lanczos_approximation
 
@@ -38313,7 +38581,7 @@ module.exports = function gamma (z) {
 
 module.exports.log = lngamma;
 
-},{}],221:[function(require,module,exports){
+},{}],223:[function(require,module,exports){
 "use strict"
 
 module.exports = permutationSign
@@ -38365,7 +38633,7 @@ function permutationSign(p) {
     return sgn
   }
 }
-},{"typedarray-pool":233}],222:[function(require,module,exports){
+},{"typedarray-pool":235}],224:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -38452,7 +38720,7 @@ function unrank(n, r, p) {
 exports.rank = rank
 exports.unrank = unrank
 
-},{"invert-permutation":223,"typedarray-pool":233}],223:[function(require,module,exports){
+},{"invert-permutation":225,"typedarray-pool":235}],225:[function(require,module,exports){
 "use strict"
 
 function invertPermutation(pi, result) {
@@ -38464,7 +38732,7 @@ function invertPermutation(pi, result) {
 }
 
 module.exports = invertPermutation
-},{}],224:[function(require,module,exports){
+},{}],226:[function(require,module,exports){
 "use strict"
 
 module.exports = triangulateCube
@@ -38498,7 +38766,7 @@ function triangulateCube(dimension) {
   }
   return result
 }
-},{"gamma":220,"permutation-parity":221,"permutation-rank":222}],225:[function(require,module,exports){
+},{"gamma":222,"permutation-parity":223,"permutation-rank":224}],227:[function(require,module,exports){
 module.exports = require('cwise-compiler')({
     args: ['array', {
         offset: [1],
@@ -38550,7 +38818,7 @@ module.exports = require('cwise-compiler')({
     funcName: 'zeroCrossings'
 })
 
-},{"cwise-compiler":66}],226:[function(require,module,exports){
+},{"cwise-compiler":66}],228:[function(require,module,exports){
 "use strict"
 
 module.exports = findZeroCrossings
@@ -38563,7 +38831,7 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":225}],227:[function(require,module,exports){
+},{"./lib/zc-core":227}],229:[function(require,module,exports){
 "use strict"
 
 module.exports = surfaceNets
@@ -38771,7 +39039,7 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":219,"triangulate-hypercube":224,"zero-crossings":226}],228:[function(require,module,exports){
+},{"ndarray-extract-contour":221,"triangulate-hypercube":226,"zero-crossings":228}],230:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -38860,7 +39128,7 @@ function textGet(font, text) {
 }
 
 }).call(this,require('_process'))
-},{"_process":55,"vectorize-text":235}],229:[function(require,module,exports){
+},{"_process":55,"vectorize-text":237}],231:[function(require,module,exports){
 // TinyColor v1.3.0
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -40028,18 +40296,136 @@ else {
 
 })();
 
-},{}],230:[function(require,module,exports){
-!function() {
-  var topojson = {
-    version: "1.6.20",
-    mesh: function(topology) { return object(topology, meshArcs.apply(this, arguments)); },
-    meshArcs: meshArcs,
-    merge: function(topology) { return object(topology, mergeArcs.apply(this, arguments)); },
-    mergeArcs: mergeArcs,
-    feature: featureOrCollection,
-    neighbors: neighbors,
-    presimplify: presimplify
-  };
+},{}],232:[function(require,module,exports){
+(function (global, factory) {
+  typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
+  typeof define === 'function' && define.amd ? define(['exports'], factory) :
+  (factory((global.topojson = {})));
+}(this, function (exports) { 'use strict';
+
+  function noop() {}
+
+  function absolute(transform) {
+    if (!transform) return noop;
+    var x0,
+        y0,
+        kx = transform.scale[0],
+        ky = transform.scale[1],
+        dx = transform.translate[0],
+        dy = transform.translate[1];
+    return function(point, i) {
+      if (!i) x0 = y0 = 0;
+      point[0] = (x0 += point[0]) * kx + dx;
+      point[1] = (y0 += point[1]) * ky + dy;
+    };
+  }
+
+  function relative(transform) {
+    if (!transform) return noop;
+    var x0,
+        y0,
+        kx = transform.scale[0],
+        ky = transform.scale[1],
+        dx = transform.translate[0],
+        dy = transform.translate[1];
+    return function(point, i) {
+      if (!i) x0 = y0 = 0;
+      var x1 = (point[0] - dx) / kx | 0,
+          y1 = (point[1] - dy) / ky | 0;
+      point[0] = x1 - x0;
+      point[1] = y1 - y0;
+      x0 = x1;
+      y0 = y1;
+    };
+  }
+
+  function reverse(array, n) {
+    var t, j = array.length, i = j - n;
+    while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
+  }
+
+  function bisect(a, x) {
+    var lo = 0, hi = a.length;
+    while (lo < hi) {
+      var mid = lo + hi >>> 1;
+      if (a[mid] < x) lo = mid + 1;
+      else hi = mid;
+    }
+    return lo;
+  }
+
+  function feature(topology, o) {
+    return o.type === "GeometryCollection" ? {
+      type: "FeatureCollection",
+      features: o.geometries.map(function(o) { return feature$1(topology, o); })
+    } : feature$1(topology, o);
+  }
+
+  function feature$1(topology, o) {
+    var f = {
+      type: "Feature",
+      id: o.id,
+      properties: o.properties || {},
+      geometry: object(topology, o)
+    };
+    if (o.id == null) delete f.id;
+    return f;
+  }
+
+  function object(topology, o) {
+    var absolute$$ = absolute(topology.transform),
+        arcs = topology.arcs;
+
+    function arc(i, points) {
+      if (points.length) points.pop();
+      for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, p; k < n; ++k) {
+        points.push(p = a[k].slice());
+        absolute$$(p, k);
+      }
+      if (i < 0) reverse(points, n);
+    }
+
+    function point(p) {
+      p = p.slice();
+      absolute$$(p, 0);
+      return p;
+    }
+
+    function line(arcs) {
+      var points = [];
+      for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
+      if (points.length < 2) points.push(points[0].slice());
+      return points;
+    }
+
+    function ring(arcs) {
+      var points = line(arcs);
+      while (points.length < 4) points.push(points[0].slice());
+      return points;
+    }
+
+    function polygon(arcs) {
+      return arcs.map(ring);
+    }
+
+    function geometry(o) {
+      var t = o.type;
+      return t === "GeometryCollection" ? {type: t, geometries: o.geometries.map(geometry)}
+          : t in geometryType ? {type: t, coordinates: geometryType[t](o)}
+          : null;
+    }
+
+    var geometryType = {
+      Point: function(o) { return point(o.coordinates); },
+      MultiPoint: function(o) { return o.coordinates.map(point); },
+      LineString: function(o) { return line(o.arcs); },
+      MultiLineString: function(o) { return o.arcs.map(line); },
+      Polygon: function(o) { return polygon(o.arcs); },
+      MultiPolygon: function(o) { return o.arcs.map(polygon); }
+    };
+
+    return geometry(o);
+  }
 
   function stitchArcs(topology, arcs) {
     var stitchedArcs = {},
@@ -40115,30 +40501,34 @@ else {
     return fragments;
   }
 
+  function mesh(topology) {
+    return object(topology, meshArcs.apply(this, arguments));
+  }
+
   function meshArcs(topology, o, filter) {
     var arcs = [];
+
+    function arc(i) {
+      var j = i < 0 ? ~i : i;
+      (geomsByArc[j] || (geomsByArc[j] = [])).push({i: i, g: geom});
+    }
+
+    function line(arcs) {
+      arcs.forEach(arc);
+    }
+
+    function polygon(arcs) {
+      arcs.forEach(line);
+    }
+
+    function geometry(o) {
+      if (o.type === "GeometryCollection") o.geometries.forEach(geometry);
+      else if (o.type in geometryType) geom = o, geometryType[o.type](o.arcs);
+    }
 
     if (arguments.length > 1) {
       var geomsByArc = [],
           geom;
-
-      function arc(i) {
-        var j = i < 0 ? ~i : i;
-        (geomsByArc[j] || (geomsByArc[j] = [])).push({i: i, g: geom});
-      }
-
-      function line(arcs) {
-        arcs.forEach(arc);
-      }
-
-      function polygon(arcs) {
-        arcs.forEach(line);
-      }
-
-      function geometry(o) {
-        if (o.type === "GeometryCollection") o.geometries.forEach(geometry);
-        else if (o.type in geometryType) geom = o, geometryType[o.type](o.arcs);
-      }
 
       var geometryType = {
         LineString: line,
@@ -40159,6 +40549,31 @@ else {
     return {type: "MultiLineString", arcs: stitchArcs(topology, arcs)};
   }
 
+  function triangle(triangle) {
+    var a = triangle[0], b = triangle[1], c = triangle[2];
+    return Math.abs((a[0] - c[0]) * (b[1] - a[1]) - (a[0] - b[0]) * (c[1] - a[1]));
+  }
+
+  function ring(ring) {
+    var i = -1,
+        n = ring.length,
+        a,
+        b = ring[n - 1],
+        area = 0;
+
+    while (++i < n) {
+      a = b;
+      b = ring[i];
+      area += a[0] * b[1] - a[1] * b[0];
+    }
+
+    return area / 2;
+  }
+
+  function merge(topology) {
+    return object(topology, mergeArcs.apply(this, arguments));
+  }
+
   function mergeArcs(topology, objects) {
     var polygonsByArc = {},
         polygons = [],
@@ -40170,16 +40585,16 @@ else {
     });
 
     function register(polygon) {
-      polygon.forEach(function(ring) {
-        ring.forEach(function(arc) {
+      polygon.forEach(function(ring$$) {
+        ring$$.forEach(function(arc) {
           (polygonsByArc[arc = arc < 0 ? ~arc : arc] || (polygonsByArc[arc] = [])).push(polygon);
         });
       });
       polygons.push(polygon);
     }
 
-    function exterior(ring) {
-      return cartesianRingArea(object(topology, {type: "Polygon", arcs: [ring]}).coordinates[0]) > 0; // TODO allow spherical?
+    function exterior(ring$$) {
+      return ring(object(topology, {type: "Polygon", arcs: [ring$$]}).coordinates[0]) > 0; // TODO allow spherical?
     }
 
     polygons.forEach(function(polygon) {
@@ -40190,8 +40605,8 @@ else {
         components.push(component);
         while (polygon = neighbors.pop()) {
           component.push(polygon);
-          polygon.forEach(function(ring) {
-            ring.forEach(function(arc) {
+          polygon.forEach(function(ring$$) {
+            ring$$.forEach(function(arc) {
               polygonsByArc[arc < 0 ? ~arc : arc].forEach(function(polygon) {
                 if (!polygon._) {
                   polygon._ = 1;
@@ -40215,8 +40630,8 @@ else {
 
         // Extract the exterior (unique) arcs.
         polygons.forEach(function(polygon) {
-          polygon.forEach(function(ring) {
-            ring.forEach(function(arc) {
+          polygon.forEach(function(ring$$) {
+            ring$$.forEach(function(arc) {
               if (polygonsByArc[arc < 0 ? ~arc : arc].length < 2) {
                 arcs.push(arc);
               }
@@ -40244,93 +40659,6 @@ else {
         return arcs;
       })
     };
-  }
-
-  function featureOrCollection(topology, o) {
-    return o.type === "GeometryCollection" ? {
-      type: "FeatureCollection",
-      features: o.geometries.map(function(o) { return feature(topology, o); })
-    } : feature(topology, o);
-  }
-
-  function feature(topology, o) {
-    var f = {
-      type: "Feature",
-      id: o.id,
-      properties: o.properties || {},
-      geometry: object(topology, o)
-    };
-    if (o.id == null) delete f.id;
-    return f;
-  }
-
-  function object(topology, o) {
-    var absolute = transformAbsolute(topology.transform),
-        arcs = topology.arcs;
-
-    function arc(i, points) {
-      if (points.length) points.pop();
-      for (var a = arcs[i < 0 ? ~i : i], k = 0, n = a.length, p; k < n; ++k) {
-        points.push(p = a[k].slice());
-        absolute(p, k);
-      }
-      if (i < 0) reverse(points, n);
-    }
-
-    function point(p) {
-      p = p.slice();
-      absolute(p, 0);
-      return p;
-    }
-
-    function line(arcs) {
-      var points = [];
-      for (var i = 0, n = arcs.length; i < n; ++i) arc(arcs[i], points);
-      if (points.length < 2) points.push(points[0].slice());
-      return points;
-    }
-
-    function ring(arcs) {
-      var points = line(arcs);
-      while (points.length < 4) points.push(points[0].slice());
-      return points;
-    }
-
-    function polygon(arcs) {
-      return arcs.map(ring);
-    }
-
-    function geometry(o) {
-      var t = o.type;
-      return t === "GeometryCollection" ? {type: t, geometries: o.geometries.map(geometry)}
-          : t in geometryType ? {type: t, coordinates: geometryType[t](o)}
-          : null;
-    }
-
-    var geometryType = {
-      Point: function(o) { return point(o.coordinates); },
-      MultiPoint: function(o) { return o.coordinates.map(point); },
-      LineString: function(o) { return line(o.arcs); },
-      MultiLineString: function(o) { return o.arcs.map(line); },
-      Polygon: function(o) { return polygon(o.arcs); },
-      MultiPolygon: function(o) { return o.arcs.map(polygon); }
-    };
-
-    return geometry(o);
-  }
-
-  function reverse(array, n) {
-    var t, j = array.length, i = j - n; while (i < --j) t = array[i], array[i++] = array[j], array[j] = t;
-  }
-
-  function bisect(a, x) {
-    var lo = 0, hi = a.length;
-    while (lo < hi) {
-      var mid = lo + hi >>> 1;
-      if (a[mid] < x) lo = mid + 1;
-      else hi = mid;
-    }
-    return lo;
   }
 
   function neighbors(objects) {
@@ -40375,97 +40703,6 @@ else {
     }
 
     return neighbors;
-  }
-
-  function presimplify(topology, triangleArea) {
-    var absolute = transformAbsolute(topology.transform),
-        relative = transformRelative(topology.transform),
-        heap = minAreaHeap();
-
-    if (!triangleArea) triangleArea = cartesianTriangleArea;
-
-    topology.arcs.forEach(function(arc) {
-      var triangles = [],
-          maxArea = 0,
-          triangle;
-
-      // To store each point’s effective area, we create a new array rather than
-      // extending the passed-in point to workaround a Chrome/V8 bug (getting
-      // stuck in smi mode). For midpoints, the initial effective area of
-      // Infinity will be computed in the next step.
-      for (var i = 0, n = arc.length, p; i < n; ++i) {
-        p = arc[i];
-        absolute(arc[i] = [p[0], p[1], Infinity], i);
-      }
-
-      for (var i = 1, n = arc.length - 1; i < n; ++i) {
-        triangle = arc.slice(i - 1, i + 2);
-        triangle[1][2] = triangleArea(triangle);
-        triangles.push(triangle);
-        heap.push(triangle);
-      }
-
-      for (var i = 0, n = triangles.length; i < n; ++i) {
-        triangle = triangles[i];
-        triangle.previous = triangles[i - 1];
-        triangle.next = triangles[i + 1];
-      }
-
-      while (triangle = heap.pop()) {
-        var previous = triangle.previous,
-            next = triangle.next;
-
-        // If the area of the current point is less than that of the previous point
-        // to be eliminated, use the latter's area instead. This ensures that the
-        // current point cannot be eliminated without eliminating previously-
-        // eliminated points.
-        if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
-        else maxArea = triangle[1][2];
-
-        if (previous) {
-          previous.next = next;
-          previous[2] = triangle[2];
-          update(previous);
-        }
-
-        if (next) {
-          next.previous = previous;
-          next[0] = triangle[0];
-          update(next);
-        }
-      }
-
-      arc.forEach(relative);
-    });
-
-    function update(triangle) {
-      heap.remove(triangle);
-      triangle[1][2] = triangleArea(triangle);
-      heap.push(triangle);
-    }
-
-    return topology;
-  }
-
-  function cartesianRingArea(ring) {
-    var i = -1,
-        n = ring.length,
-        a,
-        b = ring[n - 1],
-        area = 0;
-
-    while (++i < n) {
-      a = b;
-      b = ring[i];
-      area += a[0] * b[1] - a[1] * b[0];
-    }
-
-    return area / 2;
-  }
-
-  function cartesianTriangleArea(triangle) {
-    var a = triangle[0], b = triangle[1], c = triangle[2];
-    return Math.abs((a[0] - c[0]) * (b[1] - a[1]) - (a[0] - b[0]) * (c[1] - a[1]));
   }
 
   function compareArea(a, b) {
@@ -40523,48 +40760,92 @@ else {
     return heap;
   }
 
-  function transformAbsolute(transform) {
-    if (!transform) return noop;
-    var x0,
-        y0,
-        kx = transform.scale[0],
-        ky = transform.scale[1],
-        dx = transform.translate[0],
-        dy = transform.translate[1];
-    return function(point, i) {
-      if (!i) x0 = y0 = 0;
-      point[0] = (x0 += point[0]) * kx + dx;
-      point[1] = (y0 += point[1]) * ky + dy;
-    };
+  function presimplify(topology, triangleArea) {
+    var absolute$$ = absolute(topology.transform),
+        relative$$ = relative(topology.transform),
+        heap = minAreaHeap();
+
+    if (!triangleArea) triangleArea = triangle;
+
+    topology.arcs.forEach(function(arc) {
+      var triangles = [],
+          maxArea = 0,
+          triangle,
+          i,
+          n,
+          p;
+
+      // To store each point’s effective area, we create a new array rather than
+      // extending the passed-in point to workaround a Chrome/V8 bug (getting
+      // stuck in smi mode). For midpoints, the initial effective area of
+      // Infinity will be computed in the next step.
+      for (i = 0, n = arc.length; i < n; ++i) {
+        p = arc[i];
+        absolute$$(arc[i] = [p[0], p[1], Infinity], i);
+      }
+
+      for (i = 1, n = arc.length - 1; i < n; ++i) {
+        triangle = arc.slice(i - 1, i + 2);
+        triangle[1][2] = triangleArea(triangle);
+        triangles.push(triangle);
+        heap.push(triangle);
+      }
+
+      for (i = 0, n = triangles.length; i < n; ++i) {
+        triangle = triangles[i];
+        triangle.previous = triangles[i - 1];
+        triangle.next = triangles[i + 1];
+      }
+
+      while (triangle = heap.pop()) {
+        var previous = triangle.previous,
+            next = triangle.next;
+
+        // If the area of the current point is less than that of the previous point
+        // to be eliminated, use the latter's area instead. This ensures that the
+        // current point cannot be eliminated without eliminating previously-
+        // eliminated points.
+        if (triangle[1][2] < maxArea) triangle[1][2] = maxArea;
+        else maxArea = triangle[1][2];
+
+        if (previous) {
+          previous.next = next;
+          previous[2] = triangle[2];
+          update(previous);
+        }
+
+        if (next) {
+          next.previous = previous;
+          next[0] = triangle[0];
+          update(next);
+        }
+      }
+
+      arc.forEach(relative$$);
+    });
+
+    function update(triangle) {
+      heap.remove(triangle);
+      triangle[1][2] = triangleArea(triangle);
+      heap.push(triangle);
+    }
+
+    return topology;
   }
 
-  function transformRelative(transform) {
-    if (!transform) return noop;
-    var x0,
-        y0,
-        kx = transform.scale[0],
-        ky = transform.scale[1],
-        dx = transform.translate[0],
-        dy = transform.translate[1];
-    return function(point, i) {
-      if (!i) x0 = y0 = 0;
-      var x1 = (point[0] - dx) / kx | 0,
-          y1 = (point[1] - dy) / ky | 0;
-      point[0] = x1 - x0;
-      point[1] = y1 - y0;
-      x0 = x1;
-      y0 = y1;
-    };
-  }
+  var version = "1.6.24";
 
-  function noop() {}
+  exports.version = version;
+  exports.mesh = mesh;
+  exports.meshArcs = meshArcs;
+  exports.merge = merge;
+  exports.mergeArcs = mergeArcs;
+  exports.feature = feature;
+  exports.neighbors = neighbors;
+  exports.presimplify = presimplify;
 
-  if (typeof define === "function" && define.amd) define(topojson);
-  else if (typeof module === "object" && module.exports) module.exports = topojson;
-  else this.topojson = topojson;
-}();
-
-},{}],231:[function(require,module,exports){
+}));
+},{}],233:[function(require,module,exports){
 "use strict"
 
 module.exports = twoProduct
@@ -40598,7 +40879,7 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],232:[function(require,module,exports){
+},{}],234:[function(require,module,exports){
 "use strict"
 
 module.exports = fastTwoSum
@@ -40616,7 +40897,7 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],233:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 (function (global,Buffer){
 'use strict'
 
@@ -40833,7 +41114,7 @@ exports.clearCache = function clearCache() {
   }
 }
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bit-twiddle":49,"buffer":50,"dup":72}],234:[function(require,module,exports){
+},{"bit-twiddle":49,"buffer":50,"dup":72}],236:[function(require,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -40892,7 +41173,7 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],235:[function(require,module,exports){
+},{}],237:[function(require,module,exports){
 "use strict"
 
 module.exports = createText
@@ -40919,7 +41200,7 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":236}],236:[function(require,module,exports){
+},{"./lib/vtext":238}],238:[function(require,module,exports){
 "use strict"
 
 module.exports = vectorizeText
@@ -41125,7 +41406,7 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":237,"clean-pslg":244,"ndarray":208,"planar-graph-to-polyline":290,"simplify-planar-graph":294,"surface-nets":227}],237:[function(require,module,exports){
+},{"cdt2d":239,"clean-pslg":246,"ndarray":209,"planar-graph-to-polyline":292,"simplify-planar-graph":296,"surface-nets":229}],239:[function(require,module,exports){
 'use strict'
 
 var monotoneTriangulate = require('./lib/monotone')
@@ -41209,7 +41490,7 @@ function cdt2d(points, edges, options) {
   }
 }
 
-},{"./lib/delaunay":238,"./lib/filter":239,"./lib/monotone":240,"./lib/triangulation":241}],238:[function(require,module,exports){
+},{"./lib/delaunay":240,"./lib/filter":241,"./lib/monotone":242,"./lib/triangulation":243}],240:[function(require,module,exports){
 'use strict'
 
 var inCircle = require('robust-in-sphere')[4]
@@ -41326,7 +41607,7 @@ function delaunayRefine(points, triangulation) {
   }
 }
 
-},{"binary-search-bounds":242,"robust-in-sphere":243}],239:[function(require,module,exports){
+},{"binary-search-bounds":244,"robust-in-sphere":245}],241:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -41508,7 +41789,7 @@ function classifyFaces(triangulation, target, infinity) {
   return result
 }
 
-},{"binary-search-bounds":242}],240:[function(require,module,exports){
+},{"binary-search-bounds":244}],242:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -41697,7 +41978,7 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":242,"robust-orientation":214}],241:[function(require,module,exports){
+},{"binary-search-bounds":244,"robust-orientation":216}],243:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -41803,9 +42084,9 @@ function createTriangulation(numVerts, edges) {
   return new Triangulation(stars, edges)
 }
 
-},{"binary-search-bounds":242}],242:[function(require,module,exports){
+},{"binary-search-bounds":244}],244:[function(require,module,exports){
 arguments[4][121][0].apply(exports,arguments)
-},{"dup":121}],243:[function(require,module,exports){
+},{"dup":121}],245:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -41973,7 +42254,7 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":215,"robust-subtract":216,"robust-sum":217,"two-product":231}],244:[function(require,module,exports){
+},{"robust-scale":217,"robust-subtract":218,"robust-sum":219,"two-product":233}],246:[function(require,module,exports){
 'use strict'
 
 module.exports = cleanPSLG
@@ -42335,7 +42616,7 @@ function cleanPSLG(points, edges, colors) {
   return modified
 }
 
-},{"./lib/rat-seg-intersect":245,"big-rat":249,"big-rat/cmp":247,"big-rat/to-float":262,"box-intersect":263,"compare-cell":59,"nextafter":271,"rat-vec":273,"robust-segment-intersect":276,"union-find":277}],245:[function(require,module,exports){
+},{"./lib/rat-seg-intersect":247,"big-rat":251,"big-rat/cmp":249,"big-rat/to-float":264,"box-intersect":265,"compare-cell":59,"nextafter":273,"rat-vec":275,"robust-segment-intersect":278,"union-find":279}],247:[function(require,module,exports){
 'use strict'
 
 //TODO: Move this to a separate module
@@ -42381,7 +42662,7 @@ function solveIntersection(a, b, c, d) {
   return rvAdd(a, rvMuls(ba, t))
 }
 
-},{"big-rat/div":248,"big-rat/mul":258,"big-rat/sign":260,"big-rat/sub":261,"big-rat/to-float":262,"rat-vec/add":272,"rat-vec/muls":274,"rat-vec/sub":275}],246:[function(require,module,exports){
+},{"big-rat/div":250,"big-rat/mul":260,"big-rat/sign":262,"big-rat/sub":263,"big-rat/to-float":264,"rat-vec/add":274,"rat-vec/muls":276,"rat-vec/sub":277}],248:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -42394,7 +42675,7 @@ function add(a, b) {
     a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":256}],247:[function(require,module,exports){
+},{"./lib/rationalize":258}],249:[function(require,module,exports){
 'use strict'
 
 module.exports = cmp
@@ -42403,7 +42684,7 @@ function cmp(a, b) {
     return a[0].mul(b[1]).cmp(b[0].mul(a[1]))
 }
 
-},{}],248:[function(require,module,exports){
+},{}],250:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -42414,7 +42695,7 @@ function div(a, b) {
   return rationalize(a[0].mul(b[1]), a[1].mul(b[0]))
 }
 
-},{"./lib/rationalize":256}],249:[function(require,module,exports){
+},{"./lib/rationalize":258}],251:[function(require,module,exports){
 'use strict'
 
 var isRat = require('./is-rat')
@@ -42476,7 +42757,7 @@ function makeRational(numer, denom) {
   return rationalize(a, b)
 }
 
-},{"./div":248,"./is-rat":250,"./lib/is-bn":254,"./lib/num-to-bn":255,"./lib/rationalize":256,"./lib/str-to-bn":257}],250:[function(require,module,exports){
+},{"./div":250,"./is-rat":252,"./lib/is-bn":256,"./lib/num-to-bn":257,"./lib/rationalize":258,"./lib/str-to-bn":259}],252:[function(require,module,exports){
 'use strict'
 
 var isBN = require('./lib/is-bn')
@@ -42487,7 +42768,7 @@ function isRat(x) {
   return Array.isArray(x) && x.length === 2 && isBN(x[0]) && isBN(x[1])
 }
 
-},{"./lib/is-bn":254}],251:[function(require,module,exports){
+},{"./lib/is-bn":256}],253:[function(require,module,exports){
 'use strict'
 
 var bn = require('bn.js')
@@ -42498,7 +42779,7 @@ function sign(x) {
   return x.cmp(new bn(0))
 }
 
-},{"bn.js":259}],252:[function(require,module,exports){
+},{"bn.js":261}],254:[function(require,module,exports){
 'use strict'
 
 module.exports = bn2num
@@ -42522,7 +42803,7 @@ function bn2num(b) {
   return b.sign ? -out : out
 }
 
-},{}],253:[function(require,module,exports){
+},{}],255:[function(require,module,exports){
 'use strict'
 
 var db = require('double-bits')
@@ -42543,7 +42824,7 @@ function ctzNumber(x) {
   return h + 32
 }
 
-},{"bit-twiddle":49,"double-bits":270}],254:[function(require,module,exports){
+},{"bit-twiddle":49,"double-bits":272}],256:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -42556,7 +42837,7 @@ function isBN(x) {
   return x && typeof x === 'object' && Boolean(x.words)
 }
 
-},{"bn.js":259}],255:[function(require,module,exports){
+},{"bn.js":261}],257:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -42573,7 +42854,7 @@ function num2bn(x) {
   }
 }
 
-},{"bn.js":259,"double-bits":270}],256:[function(require,module,exports){
+},{"bn.js":261,"double-bits":272}],258:[function(require,module,exports){
 'use strict'
 
 var num2bn = require('./num-to-bn')
@@ -42601,7 +42882,7 @@ function rationalize(numer, denom) {
   return [ numer, denom ]
 }
 
-},{"./bn-sign":251,"./num-to-bn":255}],257:[function(require,module,exports){
+},{"./bn-sign":253,"./num-to-bn":257}],259:[function(require,module,exports){
 'use strict'
 
 var BN = require('bn.js')
@@ -42612,7 +42893,7 @@ function str2BN(x) {
   return new BN(x)
 }
 
-},{"bn.js":259}],258:[function(require,module,exports){
+},{"bn.js":261}],260:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -42623,7 +42904,7 @@ function mul(a, b) {
   return rationalize(a[0].mul(b[0]), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":256}],259:[function(require,module,exports){
+},{"./lib/rationalize":258}],261:[function(require,module,exports){
 (function (module, exports) {
 
 'use strict';
@@ -44943,7 +45224,7 @@ Mont.prototype.invm = function invm(a) {
 
 })(typeof module === 'undefined' || module, this);
 
-},{}],260:[function(require,module,exports){
+},{}],262:[function(require,module,exports){
 'use strict'
 
 var bnsign = require('./lib/bn-sign')
@@ -44954,7 +45235,7 @@ function sign(x) {
   return bnsign(x[0]) * bnsign(x[1])
 }
 
-},{"./lib/bn-sign":251}],261:[function(require,module,exports){
+},{"./lib/bn-sign":253}],263:[function(require,module,exports){
 'use strict'
 
 var rationalize = require('./lib/rationalize')
@@ -44965,7 +45246,7 @@ function sub(a, b) {
   return rationalize(a[0].mul(b[1]).sub(a[1].mul(b[0])), a[1].mul(b[1]))
 }
 
-},{"./lib/rationalize":256}],262:[function(require,module,exports){
+},{"./lib/rationalize":258}],264:[function(require,module,exports){
 'use strict'
 
 var bn2num = require('./lib/bn-to-num')
@@ -45008,7 +45289,7 @@ function roundRat(f) {
   }
 }
 
-},{"./lib/bn-to-num":252,"./lib/ctz":253}],263:[function(require,module,exports){
+},{"./lib/bn-to-num":254,"./lib/ctz":255}],265:[function(require,module,exports){
 'use strict'
 
 module.exports = boxIntersectWrapper
@@ -45147,7 +45428,7 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":265,"./lib/sweep":269,"typedarray-pool":233}],264:[function(require,module,exports){
+},{"./lib/intersect":267,"./lib/sweep":271,"typedarray-pool":235}],266:[function(require,module,exports){
 'use strict'
 
 var DIMENSION   = 'd'
@@ -45292,7 +45573,7 @@ function bruteForcePlanner(full) {
 
 exports.partial = bruteForcePlanner(false)
 exports.full    = bruteForcePlanner(true)
-},{}],265:[function(require,module,exports){
+},{}],267:[function(require,module,exports){
 'use strict'
 
 module.exports = boxIntersectIter
@@ -45787,7 +46068,7 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":264,"./median":266,"./partition":267,"./sweep":269,"bit-twiddle":49,"typedarray-pool":233}],266:[function(require,module,exports){
+},{"./brute":266,"./median":268,"./partition":269,"./sweep":271,"bit-twiddle":49,"typedarray-pool":235}],268:[function(require,module,exports){
 'use strict'
 
 module.exports = findMedian
@@ -45930,7 +46211,7 @@ function findMedian(d, axis, start, end, boxes, ids) {
     start, mid, boxes, ids,
     boxes[elemSize*mid+axis])
 }
-},{"./partition":267}],267:[function(require,module,exports){
+},{"./partition":269}],269:[function(require,module,exports){
 'use strict'
 
 module.exports = genPartition
@@ -45951,7 +46232,7 @@ function genPartition(predicate, args) {
         .replace('$', predicate))
   return Function.apply(void 0, fargs)
 }
-},{}],268:[function(require,module,exports){
+},{}],270:[function(require,module,exports){
 'use strict';
 
 //This code is extracted from ndarray-sort
@@ -46188,7 +46469,7 @@ function quickSort(left, right, data) {
     quickSort(less, great, data);
   }
 }
-},{}],269:[function(require,module,exports){
+},{}],271:[function(require,module,exports){
 'use strict'
 
 module.exports = {
@@ -46623,7 +46904,7 @@ red_loop:
     }
   }
 }
-},{"./sort":268,"bit-twiddle":49,"typedarray-pool":233}],270:[function(require,module,exports){
+},{"./sort":270,"bit-twiddle":49,"typedarray-pool":235}],272:[function(require,module,exports){
 (function (Buffer){
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
@@ -46727,7 +47008,7 @@ module.exports.denormalized = function(n) {
   return !(hi & 0x7ff00000)
 }
 }).call(this,require("buffer").Buffer)
-},{"buffer":50}],271:[function(require,module,exports){
+},{"buffer":50}],273:[function(require,module,exports){
 "use strict"
 
 var doubleBits = require("double-bits")
@@ -46770,7 +47051,7 @@ function nextafter(x, y) {
   }
   return doubleBits.pack(lo, hi)
 }
-},{"double-bits":270}],272:[function(require,module,exports){
+},{"double-bits":272}],274:[function(require,module,exports){
 'use strict'
 
 var bnadd = require('big-rat/add')
@@ -46786,7 +47067,7 @@ function add(a, b) {
   return r
 }
 
-},{"big-rat/add":246}],273:[function(require,module,exports){
+},{"big-rat/add":248}],275:[function(require,module,exports){
 'use strict'
 
 module.exports = float2rat
@@ -46801,7 +47082,7 @@ function float2rat(v) {
   return result
 }
 
-},{"big-rat":249}],274:[function(require,module,exports){
+},{"big-rat":251}],276:[function(require,module,exports){
 'use strict'
 
 var rat = require('big-rat')
@@ -46819,7 +47100,7 @@ function muls(a, x) {
   return r
 }
 
-},{"big-rat":249,"big-rat/mul":258}],275:[function(require,module,exports){
+},{"big-rat":251,"big-rat/mul":260}],277:[function(require,module,exports){
 'use strict'
 
 var bnsub = require('big-rat/sub')
@@ -46835,7 +47116,7 @@ function sub(a, b) {
   return r
 }
 
-},{"big-rat/sub":261}],276:[function(require,module,exports){
+},{"big-rat/sub":263}],278:[function(require,module,exports){
 "use strict"
 
 module.exports = segmentsIntersect
@@ -46883,9 +47164,9 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":214}],277:[function(require,module,exports){
-arguments[4][193][0].apply(exports,arguments)
-},{"dup":193}],278:[function(require,module,exports){
+},{"robust-orientation":216}],279:[function(require,module,exports){
+arguments[4][195][0].apply(exports,arguments)
+},{"dup":195}],280:[function(require,module,exports){
 'use strict'
 
 module.exports = trimLeaves
@@ -46941,7 +47222,7 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":279}],279:[function(require,module,exports){
+},{"edges-to-adjacency-list":281}],281:[function(require,module,exports){
 "use strict"
 
 module.exports = edgeToAdjacency
@@ -46975,7 +47256,7 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":234}],280:[function(require,module,exports){
+},{"uniq":236}],282:[function(require,module,exports){
 "use strict"
 
 module.exports = planarDual
@@ -47106,7 +47387,7 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":281}],281:[function(require,module,exports){
+},{"compare-angle":283}],283:[function(require,module,exports){
 "use strict"
 
 module.exports = compareAngle
@@ -47192,7 +47473,7 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":214,"robust-product":282,"robust-sum":217,"signum":283,"two-sum":232}],282:[function(require,module,exports){
+},{"robust-orientation":216,"robust-product":284,"robust-sum":219,"signum":285,"two-sum":234}],284:[function(require,module,exports){
 "use strict"
 
 var robustSum = require("robust-sum")
@@ -47222,7 +47503,7 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":215,"robust-sum":217}],283:[function(require,module,exports){
+},{"robust-scale":217,"robust-sum":219}],285:[function(require,module,exports){
 "use strict"
 
 module.exports = function signum(x) {
@@ -47230,9 +47511,9 @@ module.exports = function signum(x) {
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],284:[function(require,module,exports){
+},{}],286:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
-},{"dup":20}],285:[function(require,module,exports){
+},{"dup":20}],287:[function(require,module,exports){
 "use strict"
 
 var bounds = require("binary-search-bounds")
@@ -47599,7 +47880,7 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":284}],286:[function(require,module,exports){
+},{"binary-search-bounds":286}],288:[function(require,module,exports){
 "use strict"
 
 module.exports = orderSegments
@@ -47695,7 +47976,7 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":214}],287:[function(require,module,exports){
+},{"robust-orientation":216}],289:[function(require,module,exports){
 "use strict"
 
 module.exports = createRBTree
@@ -48692,7 +48973,7 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],288:[function(require,module,exports){
+},{}],290:[function(require,module,exports){
 "use strict"
 
 module.exports = createSlabDecomposition
@@ -48923,7 +49204,7 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":286,"binary-search-bounds":284,"functional-red-black-tree":287,"robust-orientation":214}],289:[function(require,module,exports){
+},{"./lib/order-segments":288,"binary-search-bounds":286,"functional-red-black-tree":289,"robust-orientation":216}],291:[function(require,module,exports){
 module.exports = preprocessPolygon
 
 var orient = require('robust-orientation')[3]
@@ -49075,7 +49356,7 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":284,"interval-tree-1d":285,"robust-orientation":214,"slab-decomposition":288}],290:[function(require,module,exports){
+},{"binary-search-bounds":286,"interval-tree-1d":287,"robust-orientation":216,"slab-decomposition":290}],292:[function(require,module,exports){
 'use strict'
 
 module.exports = planarGraphToPolyline
@@ -49280,9 +49561,9 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":278,"edges-to-adjacency-list":279,"planar-dual":280,"point-in-big-polygon":289,"robust-sum":217,"two-product":231,"uniq":234}],291:[function(require,module,exports){
+},{"./lib/trim-leaves":280,"edges-to-adjacency-list":281,"planar-dual":282,"point-in-big-polygon":291,"robust-sum":219,"two-product":233,"uniq":236}],293:[function(require,module,exports){
 arguments[4][49][0].apply(exports,arguments)
-},{"dup":49}],292:[function(require,module,exports){
+},{"dup":49}],294:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -49339,9 +49620,9 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],293:[function(require,module,exports){
-arguments[4][194][0].apply(exports,arguments)
-},{"bit-twiddle":291,"dup":194,"union-find":292}],294:[function(require,module,exports){
+},{}],295:[function(require,module,exports){
+arguments[4][196][0].apply(exports,arguments)
+},{"bit-twiddle":293,"dup":196,"union-find":294}],296:[function(require,module,exports){
 "use strict"
 
 module.exports = simplifyPolygon
@@ -49613,7 +49894,7 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":214,"simplicial-complex":293}],295:[function(require,module,exports){
+},{"robust-orientation":216,"simplicial-complex":295}],297:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49675,7 +49956,7 @@ module.exports = [
     }
 ];
 
-},{}],296:[function(require,module,exports){
+},{}],298:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -49848,7 +50129,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":345,"../../plots/cartesian":375,"../../plots/font_attributes":383,"./arrow_paths":295}],297:[function(require,module,exports){
+},{"../../lib/extend":355,"../../plots/cartesian":385,"../../plots/font_attributes":393,"./arrow_paths":297}],299:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50770,7 +51051,7 @@ function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     return {x: x1 + a * t, y: y1 + d * t};
 }
 
-},{"../../plotly":366,"./arrow_paths":295,"./attributes":296,"d3":70,"fast-isnumeric":74}],298:[function(require,module,exports){
+},{"../../plotly":376,"./arrow_paths":297,"./attributes":298,"d3":70,"fast-isnumeric":74}],300:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50802,7 +51083,7 @@ exports.lightLine = '#eee';
 
 exports.background = '#fff';
 
-},{}],299:[function(require,module,exports){
+},{}],301:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -50946,7 +51227,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"./attributes":298,"fast-isnumeric":74,"tinycolor2":229}],300:[function(require,module,exports){
+},{"./attributes":300,"fast-isnumeric":74,"tinycolor2":231}],302:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51101,7 +51382,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":345,"../../plots/cartesian/layout_attributes":376,"../../plots/font_attributes":383}],301:[function(require,module,exports){
+},{"../../lib/extend":355,"../../plots/cartesian/layout_attributes":386,"../../plots/font_attributes":393}],303:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51164,7 +51445,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('titleside');
 };
 
-},{"../../lib":349,"../../plots/cartesian/tick_defaults":381,"../../plots/cartesian/tick_value_defaults":382,"./attributes":300}],302:[function(require,module,exports){
+},{"../../lib":359,"../../plots/cartesian/tick_defaults":391,"../../plots/cartesian/tick_value_defaults":392,"./attributes":302}],304:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51706,7 +51987,7 @@ module.exports = function draw(gd, id) {
     return component;
 };
 
-},{"../../lib":349,"../../plotly":366,"../../plots/cartesian/axes":369,"../../plots/cartesian/axis_defaults":370,"../../plots/cartesian/graph_interact":374,"../../plots/cartesian/layout_attributes":376,"../../plots/cartesian/position_defaults":378,"../../plots/plots":413,"../color":299,"../drawing":317,"../titles":332,"./attributes":300,"d3":70}],303:[function(require,module,exports){
+},{"../../lib":359,"../../plotly":376,"../../plots/cartesian/axes":379,"../../plots/cartesian/axis_defaults":380,"../../plots/cartesian/graph_interact":384,"../../plots/cartesian/layout_attributes":386,"../../plots/cartesian/position_defaults":388,"../../plots/plots":423,"../color":301,"../drawing":319,"../titles":342,"./attributes":302,"d3":70}],305:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51726,7 +52007,7 @@ module.exports = function hasColorbar(container) {
     );
 };
 
-},{}],304:[function(require,module,exports){
+},{}],306:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51747,7 +52028,7 @@ exports.draw = require('./draw');
 
 exports.hasColorbar = require('./has_colorbar');
 
-},{"./attributes":300,"./defaults":301,"./draw":302,"./has_colorbar":303}],305:[function(require,module,exports){
+},{"./attributes":302,"./defaults":303,"./draw":304,"./has_colorbar":305}],307:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51816,7 +52097,7 @@ module.exports = {
     }
 };
 
-},{}],306:[function(require,module,exports){
+},{}],308:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51881,7 +52162,7 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     }
 };
 
-},{"../../lib":349,"./flip_scale":309,"./scales":316}],307:[function(require,module,exports){
+},{"../../lib":359,"./flip_scale":311,"./scales":318}],309:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51897,7 +52178,7 @@ var scales = require('./scales');
 
 module.exports = scales.RdBu;
 
-},{"./scales":316}],308:[function(require,module,exports){
+},{"./scales":318}],310:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51961,7 +52242,7 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     if(showScale) colorbarDefaults(containerIn, containerOut, layout);
 };
 
-},{"../../lib":349,"../colorbar/defaults":301,"../colorbar/has_colorbar":303,"./flip_scale":309,"./is_valid_scale":313,"fast-isnumeric":74}],309:[function(require,module,exports){
+},{"../../lib":359,"../colorbar/defaults":303,"../colorbar/has_colorbar":305,"./flip_scale":311,"./is_valid_scale":315,"fast-isnumeric":74}],311:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -51986,7 +52267,7 @@ module.exports = function flipScale(scl) {
     return sclNew;
 };
 
-},{}],310:[function(require,module,exports){
+},{}],312:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52026,7 +52307,7 @@ module.exports = function getScale(scl, dflt) {
     return scl;
 };
 
-},{"./default_scale":307,"./is_valid_scale_array":314,"./scales":316}],311:[function(require,module,exports){
+},{"./default_scale":309,"./is_valid_scale_array":316,"./scales":318}],313:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52072,7 +52353,7 @@ module.exports = function hasColorscale(trace, containerStr) {
     );
 };
 
-},{"../../lib":349,"./is_valid_scale":313,"fast-isnumeric":74}],312:[function(require,module,exports){
+},{"../../lib":359,"./is_valid_scale":315,"fast-isnumeric":74}],314:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52104,7 +52385,7 @@ exports.flipScale = require('./flip_scale');
 
 exports.makeScaleFunction = require('./make_scale_function');
 
-},{"./attributes":305,"./calc":306,"./default_scale":307,"./defaults":308,"./flip_scale":309,"./get_scale":310,"./has_colorscale":311,"./is_valid_scale":313,"./make_scale_function":315,"./scales":316}],313:[function(require,module,exports){
+},{"./attributes":307,"./calc":308,"./default_scale":309,"./defaults":310,"./flip_scale":311,"./get_scale":312,"./has_colorscale":313,"./is_valid_scale":315,"./make_scale_function":317,"./scales":318}],315:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52125,7 +52406,7 @@ module.exports = function isValidScale(scl) {
     else return isValidScaleArray(scl);
 };
 
-},{"./is_valid_scale_array":314,"./scales":316}],314:[function(require,module,exports){
+},{"./is_valid_scale_array":316,"./scales":318}],316:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52160,7 +52441,7 @@ module.exports = function isValidScaleArray(scl) {
     }
 };
 
-},{"tinycolor2":229}],315:[function(require,module,exports){
+},{"tinycolor2":231}],317:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52203,7 +52484,7 @@ module.exports = function makeScaleFunction(scl, cmin, cmax) {
     };
 };
 
-},{"../color":299,"d3":70,"fast-isnumeric":74,"tinycolor2":229}],316:[function(require,module,exports){
+},{"../color":301,"d3":70,"fast-isnumeric":74,"tinycolor2":231}],318:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52334,7 +52615,7 @@ module.exports = {
     ]
 };
 
-},{}],317:[function(require,module,exports){
+},{}],319:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -52892,7 +53173,7 @@ drawing.setClipUrl = function(s, localId) {
     s.attr('clip-path', 'url(' + url + ')');
 };
 
-},{"../../constants/xmlns_namespaces":338,"../../plotly":366,"../../traces/scatter/make_bubble_size_func":514,"../../traces/scatter/subtypes":520,"./symbol_defs":318,"d3":70,"fast-isnumeric":74}],318:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":348,"../../plotly":376,"../../traces/scatter/make_bubble_size_func":525,"../../traces/scatter/subtypes":531,"./symbol_defs":320,"d3":70,"fast-isnumeric":74}],320:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53368,7 +53649,7 @@ module.exports = {
     }
 };
 
-},{"d3":70}],319:[function(require,module,exports){
+},{"d3":70}],321:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53467,7 +53748,7 @@ module.exports = {
     }
 };
 
-},{}],320:[function(require,module,exports){
+},{}],322:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53530,7 +53811,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     Axes.expand(axis, vals, {padded: true});
 }
 
-},{"../../plots/cartesian/axes":369,"../../plots/plots":413,"./compute_error":321,"fast-isnumeric":74}],321:[function(require,module,exports){
+},{"../../plots/cartesian/axes":379,"../../plots/plots":423,"./compute_error":323,"fast-isnumeric":74}],323:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53626,7 +53907,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],322:[function(require,module,exports){
+},{}],324:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53703,7 +53984,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":349,"../../plots/plots":413,"./attributes":319,"fast-isnumeric":74}],323:[function(require,module,exports){
+},{"../../lib":359,"../../plots/plots":423,"./attributes":321,"fast-isnumeric":74}],325:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53714,14 +53995,6 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
 
 
 'use strict';
-
-var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
-
-var Lib = require('../../lib');
-var Color = require('../color');
-var subTypes = require('../../traces/scatter/subtypes');
-
 
 var errorBars = module.exports = {};
 
@@ -53755,123 +54028,9 @@ errorBars.calcFromTrace = function(trace, layout) {
     return calcdataMock;
 };
 
-// the main drawing function for errorbars
-errorBars.plot = function(gd, plotinfo, cd) {
-    //  ___   <-- "errorhats"
-    //   |
-    //   |    <-- "errorbars"
-    //   |
-    //  ___   <-- "errorshoes"
+errorBars.plot = require('./plot');
 
-    var xa = plotinfo.x(),
-        ya = plotinfo.y();
-
-    // first remove all existing errorbars
-    // TODO: use enter/exit instead
-    plotinfo.plot.select('.errorlayer').selectAll('g.errorbars').remove();
-    var coords;
-
-    // draw the errorbars
-    plotinfo.plot.select('.errorlayer').selectAll('g.errorbars')
-        .data(cd)
-      .enter().append('g')
-        .attr('class','errorbars')
-        .each(function(d) {
-            var trace = d[0].trace,
-                xObj = trace.error_x,
-                yObj = trace.error_y,
-                sparse = subTypes.hasMarkers(trace) &&
-                    trace.marker.maxdisplayed>0;
-
-            if(!yObj.visible && !xObj.visible) return;
-
-            d3.select(this).selectAll('g')
-                .data(Lib.identity)
-              .enter().append('g')
-                .each(function(d) {
-                    coords = errorcoords(d, xa, ya);
-                    var eb = d3.select(this),
-                        path;
-                    if(sparse && !d.vis) return;
-
-                    if(yObj.visible && isNumeric(coords.x) &&
-                            isNumeric(coords.yh) &&
-                            isNumeric(coords.ys)) {
-                        var yw = yObj.width;
-                        path = 'M'+(coords.x-yw)+','+coords.yh+'h'+(2*yw) + // hat
-                            'm-'+yw+',0V'+coords.ys; // bar
-                        if(!coords.noYS) path += 'm-'+yw+',0h'+(2*yw); // shoe
-
-                        eb.append('path')
-                            .classed('yerror', true)
-                            .attr('d', path);
-                    }
-                    if(xObj.visible && isNumeric(coords.y) &&
-                            isNumeric(coords.xh) &&
-                            isNumeric(coords.xs)) {
-                        var xw = (xObj.copy_ystyle ? yObj : xObj).width;
-                        path = 'M'+coords.xh+','+(coords.y-xw)+'v'+(2*xw) + // hat
-                            'm0,-'+xw+'H'+coords.xs; // bar
-                        if(!coords.noXS) path += 'm0,-'+xw+'v'+(2*xw); // shoe
-
-                        eb.append('path')
-                            .classed('xerror', true)
-                            .attr('d', path);
-                    }
-                });
-        });
-};
-
-errorBars.style = function(gd) {
-    d3.select(gd).selectAll('g.errorbars').each(function(d) {
-        var eb = d3.select(this),
-            trace = d[0].trace,
-            yObj = trace.error_y||{},
-            xObj = trace.error_x||{};
-
-        eb.selectAll('g path.yerror')
-            .style('stroke-width', yObj.thickness+'px')
-            .call(Color.stroke, yObj.color);
-
-        if(xObj.copy_ystyle) xObj = yObj;
-
-        eb.selectAll('g path.xerror')
-            .style('stroke-width', xObj.thickness+'px')
-            .call(Color.stroke, xObj.color);
-    });
-};
-
-function errorcoords(d, xa, ya) {
-    // compute the coordinates of the error-bar objects
-    var out = {
-        x: xa.c2p(d.x),
-        y: ya.c2p(d.y)
-    };
-
-    // calculate the error bar size and hat and shoe locations
-    if(d.yh!==undefined) {
-        out.yh = ya.c2p(d.yh);
-        out.ys = ya.c2p(d.ys);
-
-        // if the shoes go off-scale (ie log scale, error bars past zero)
-        // clip the bar and hide the shoes
-        if(!isNumeric(out.ys)) {
-            out.noYS = true;
-            out.ys = ya.c2p(d.ys, true);
-        }
-    }
-    if(d.xh!==undefined) {
-        out.xh = xa.c2p(d.xh);
-        out.xs = xa.c2p(d.xs);
-
-        if(!isNumeric(out.xs)) {
-            out.noXS = true;
-            out.xs = xa.c2p(d.xs, true);
-        }
-    }
-
-    return out;
-}
+errorBars.style = require('./style');
 
 errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
     if(trace.error_y.visible) {
@@ -53884,7 +54043,210 @@ errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
     }
 };
 
-},{"../../lib":349,"../../traces/scatter/subtypes":520,"../color":299,"./attributes":319,"./calc":320,"./defaults":322,"d3":70,"fast-isnumeric":74}],324:[function(require,module,exports){
+},{"./attributes":321,"./calc":322,"./defaults":324,"./plot":326,"./style":327}],326:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
+
+var Lib = require('../../lib');
+var subTypes = require('../../traces/scatter/subtypes');
+
+
+module.exports = function plot(traces, plotinfo) {
+    var xa = plotinfo.x(),
+        ya = plotinfo.y();
+
+    traces.each(function(d) {
+        var trace = d[0].trace,
+            xObj = trace.error_x,
+            yObj = trace.error_y;
+
+        var sparse = (
+            subTypes.hasMarkers(trace) &&
+            trace.marker.maxdisplayed > 0
+        );
+
+        if(!yObj.visible && !xObj.visible) return;
+
+        var errorbars = d3.select(this).selectAll('g.errorbar')
+            .data(Lib.identity);
+
+        errorbars.enter().append('g')
+            .classed('errorbar', true);
+
+        errorbars.each(function(d) {
+            var errorbar = d3.select(this);
+            var coords = errorCoords(d, xa, ya);
+
+            if(sparse && !d.vis) return;
+
+            var path;
+
+            if(yObj.visible && isNumeric(coords.x) &&
+                    isNumeric(coords.yh) &&
+                    isNumeric(coords.ys)) {
+                var yw = yObj.width;
+
+                path = 'M' + (coords.x - yw) + ',' +
+                    coords.yh + 'h' + (2 * yw) + // hat
+                    'm-' + yw + ',0V' + coords.ys; // bar
+
+                if(!coords.noYS) path += 'm-' + yw +',0h' + (2 * yw); // shoe
+
+                errorbar.append('path')
+                    .classed('yerror', true)
+                    .attr('d', path);
+            }
+
+            if(xObj.visible && isNumeric(coords.y) &&
+                    isNumeric(coords.xh) &&
+                    isNumeric(coords.xs)) {
+                var xw = (xObj.copy_ystyle ? yObj : xObj).width;
+
+                path = 'M' + coords.xh + ',' +
+                    (coords.y - xw) + 'v' + (2 * xw) + // hat
+                    'm0,-' + xw + 'H' + coords.xs; // bar
+
+                if(!coords.noXS) path += 'm0,-' + xw + 'v' + (2 * xw); // shoe
+
+                errorbar.append('path')
+                    .classed('xerror', true)
+                    .attr('d', path);
+            }
+        });
+    });
+};
+
+// compute the coordinates of the error-bar objects
+function errorCoords(d, xa, ya) {
+    var out = {
+        x: xa.c2p(d.x),
+        y: ya.c2p(d.y)
+    };
+
+    // calculate the error bar size and hat and shoe locations
+    if(d.yh !== undefined) {
+        out.yh = ya.c2p(d.yh);
+        out.ys = ya.c2p(d.ys);
+
+        // if the shoes go off-scale (ie log scale, error bars past zero)
+        // clip the bar and hide the shoes
+        if(!isNumeric(out.ys)) {
+            out.noYS = true;
+            out.ys = ya.c2p(d.ys, true);
+        }
+    }
+
+    if(d.xh !== undefined) {
+        out.xh = xa.c2p(d.xh);
+        out.xs = xa.c2p(d.xs);
+
+        if(!isNumeric(out.xs)) {
+            out.noXS = true;
+            out.xs = xa.c2p(d.xs, true);
+        }
+    }
+
+    return out;
+}
+
+},{"../../lib":359,"../../traces/scatter/subtypes":531,"d3":70,"fast-isnumeric":74}],327:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+
+var Color = require('../color');
+
+
+module.exports = function style(traces) {
+    traces.each(function(d) {
+        var trace = d[0].trace,
+            yObj = trace.error_y || {},
+            xObj = trace.error_x || {};
+
+        var s = d3.select(this);
+
+        s.selectAll('path.yerror')
+            .style('stroke-width', yObj.thickness + 'px')
+            .call(Color.stroke, yObj.color);
+
+        if(xObj.copy_ystyle) xObj = yObj;
+
+        s.selectAll('path.xerror')
+            .style('stroke-width', xObj.thickness + 'px')
+            .call(Color.stroke, xObj.color);
+    });
+};
+
+},{"../color":301,"d3":70}],328:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+
+/**
+ * Determine the position anchor property of x/y xanchor/yanchor components.
+ *
+ * - values < 1/3 align the low side at that fraction,
+ * - values [1/3, 2/3] align the center at that fraction,
+ * - values > 2/3 align the right at that fraction.
+ */
+
+exports.isRightAnchor = function isRightAnchor(opts) {
+    return (
+        opts.xanchor === 'right' ||
+        (opts.xanchor === 'auto' && opts.x >= 2 / 3)
+    );
+};
+
+exports.isCenterAnchor = function isCenterAnchor(opts) {
+    return (
+        opts.xanchor === 'center' ||
+        (opts.xanchor === 'auto' && opts.x > 1 / 3 && opts.x < 2 / 3)
+    );
+};
+
+exports.isBottomAnchor = function isBottomAnchor(opts) {
+    return (
+        opts.yanchor === 'bottom' ||
+        (opts.yanchor === 'auto' && opts.y <= 1 / 3)
+    );
+};
+
+exports.isMiddleAnchor = function isMiddleAnchor(opts) {
+    return (
+        opts.yanchor === 'middle' ||
+        (opts.yanchor === 'auto' && opts.y > 1 / 3 && opts.y < 2 / 3)
+    );
+};
+
+},{}],329:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53968,7 +54330,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":345,"../../plots/font_attributes":383,"../color/attributes":298}],325:[function(require,module,exports){
+},{"../../lib/extend":355,"../../plots/font_attributes":393,"../color/attributes":300}],330:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53986,7 +54348,7 @@ module.exports = {
     scrollBarMargin: 4
 };
 
-},{}],326:[function(require,module,exports){
+},{}],331:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -53998,37 +54360,24 @@ module.exports = {
 
 'use strict';
 
-var Plotly = require('../../plotly');
-var d3 = require('d3');
-
 var Lib = require('../../lib');
-
 var Plots = require('../../plots/plots');
-var Fx = require('../../plots/cartesian/graph_interact');
 
-var Color = require('../color');
-var Drawing = require('../drawing');
+var attributes = require('./attributes');
+var helpers = require('./helpers');
 
-var subTypes = require('../../traces/scatter/subtypes');
-var styleOne = require('../../traces/pie/style_one');
 
-var legend = module.exports = {};
-
-var constants = require('./constants');
-legend.layoutAttributes = require('./attributes');
-
-legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
+module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     var containerIn = layoutIn.legend || {},
         containerOut = layoutOut.legend = {};
 
     var visibleTraces = 0,
-        defaultOrder = 'normal',
-        trace;
+        defaultOrder = 'normal';
 
     for(var i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
+        var trace = fullData[i];
 
-        if(legendGetsTrace(trace)) {
+        if(helpers.legendGetsTrace(trace)) {
             visibleTraces++;
             // always show the legend by default if there's a pie
             if(Plots.traceIs(trace, 'pie')) visibleTraces++;
@@ -54036,19 +54385,18 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
 
         if((Plots.traceIs(trace, 'bar') && layoutOut.barmode==='stack') ||
                 ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
-            defaultOrder = isGrouped({traceorder: defaultOrder}) ?
+            defaultOrder = helpers.isGrouped({traceorder: defaultOrder}) ?
                 'grouped+reversed' : 'reversed';
         }
 
         if(trace.legendgroup !== undefined && trace.legendgroup !== '') {
-            defaultOrder = isReversed({traceorder: defaultOrder}) ?
+            defaultOrder = helpers.isReversed({traceorder: defaultOrder}) ?
                 'reversed+grouped' : 'grouped';
         }
     }
 
     function coerce(attr, dflt) {
-        return Lib.coerce(containerIn, containerOut,
-            legend.layoutAttributes, attr, dflt);
+        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
     var showLegend = Lib.coerce(layoutIn, layoutOut,
@@ -54062,7 +54410,7 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     coerce('traceorder', defaultOrder);
-    if(isGrouped(layoutOut.legend)) coerce('tracegroupgap');
+    if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
 
     coerce('x');
     coerce('xanchor');
@@ -54071,32 +54419,717 @@ legend.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 };
 
-// -----------------------------------------------------
-// styling functions for traces in legends.
-// same functions for styling traces in the popovers
-// -----------------------------------------------------
+},{"../../lib":359,"../../plots/plots":423,"./attributes":329,"./helpers":334}],332:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
 
-legend.lines = function(d) {
+
+'use strict';
+
+var d3 = require('d3');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+var Plots = require('../../plots/plots');
+var Fx = require('../../plots/cartesian/graph_interact');
+var Drawing = require('../drawing');
+var Color = require('../color');
+
+var constants = require('./constants');
+var getLegendData = require('./get_legend_data');
+var style = require('./style');
+var helpers = require('./helpers');
+var anchorUtils = require('./anchor_utils');
+
+
+module.exports = function draw(gd) {
+    var fullLayout = gd._fullLayout;
+    var clipId = 'legend' + fullLayout._uid;
+
+    if(!fullLayout._infolayer || !gd.calcdata) return;
+
+    var opts = fullLayout.legend,
+        legendData = fullLayout.showlegend && getLegendData(gd.calcdata, opts),
+        hiddenSlices = fullLayout.hiddenlabels || [];
+
+    if(!fullLayout.showlegend || !legendData.length) {
+        fullLayout._infolayer.selectAll('.legend').remove();
+        fullLayout._topdefs.select('#' + clipId).remove();
+
+        Plots.autoMargin(gd, 'legend');
+        return;
+    }
+
+    if(typeof gd.firstRender === 'undefined') gd.firstRender = true;
+    else if(gd.firstRender) gd.firstRender = false;
+
+    var legend = fullLayout._infolayer.selectAll('g.legend')
+        .data([0]);
+
+    legend.enter().append('g')
+        .attr({
+            'class': 'legend',
+            'pointer-events': 'all'
+        });
+
+    var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
+        .data([0])
+      .enter().append('clipPath')
+        .attr('id', clipId)
+        .append('rect');
+
+    var bg = legend.selectAll('rect.bg')
+        .data([0]);
+
+    bg.enter().append('rect')
+        .attr({
+            'class': 'bg',
+            'shape-rendering': 'crispEdges'
+        })
+        .call(Color.stroke, opts.bordercolor)
+        .call(Color.fill, opts.bgcolor)
+        .style('stroke-width', opts.borderwidth + 'px');
+
+    var scrollBox = legend.selectAll('g.scrollbox')
+        .data([0]);
+
+    scrollBox.enter().append('g')
+        .attr('class', 'scrollbox');
+
+    var scrollBar = legend.selectAll('rect.scrollbar')
+        .data([0]);
+
+    scrollBar.enter().append('rect')
+        .attr({
+            'class': 'scrollbar',
+            'rx': 20,
+            'ry': 2,
+            'width': 0,
+            'height': 0
+        })
+        .call(Color.fill, '#808BA4');
+
+    var groups = scrollBox.selectAll('g.groups')
+        .data(legendData);
+
+    groups.enter().append('g')
+        .attr('class', 'groups');
+
+    groups.exit().remove();
+
+    if(helpers.isGrouped(opts)) {
+        groups.attr('transform', function(d, i) {
+            return 'translate(0,' + i * opts.tracegroupgap + ')';
+        });
+    }
+
+    var traces = groups.selectAll('g.traces')
+        .data(Lib.identity);
+
+    traces.enter().append('g').attr('class', 'traces');
+    traces.exit().remove();
+
+    traces.call(style)
+        .style('opacity', function(d) {
+            var trace = d[0].trace;
+            if(Plots.traceIs(trace, 'pie')) {
+                return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
+            } else {
+                return trace.visible === 'legendonly' ? 0.5 : 1;
+            }
+        })
+        .each(function(d, i) {
+            drawTexts(this, gd, d, i, traces);
+
+            var traceToggle = d3.select(this).selectAll('rect')
+                .data([0]);
+
+            traceToggle.enter().append('rect')
+                .classed('legendtoggle', true)
+                .style('cursor', 'pointer')
+                .attr('pointer-events', 'all')
+                .call(Color.fill, 'rgba(0,0,0,0)');
+
+            traceToggle.on('click', function() {
+                if(gd._dragged) return;
+
+                var fullData = gd._fullData,
+                    trace = d[0].trace,
+                    legendgroup = trace.legendgroup,
+                    traceIndicesInGroup = [],
+                    tracei,
+                    newVisible;
+
+                if(Plots.traceIs(trace, 'pie')) {
+                    var thisLabel = d[0].label,
+                        newHiddenSlices = hiddenSlices.slice(),
+                        thisLabelIndex = newHiddenSlices.indexOf(thisLabel);
+
+                    if(thisLabelIndex === -1) newHiddenSlices.push(thisLabel);
+                    else newHiddenSlices.splice(thisLabelIndex, 1);
+
+                    Plotly.relayout(gd, 'hiddenlabels', newHiddenSlices);
+                } else {
+                    if(legendgroup === '') {
+                        traceIndicesInGroup = [trace.index];
+                    } else {
+                        for(var i = 0; i < fullData.length; i++) {
+                            tracei = fullData[i];
+                            if(tracei.legendgroup === legendgroup) {
+                                traceIndicesInGroup.push(tracei.index);
+                            }
+                        }
+                    }
+
+                    newVisible = trace.visible === true ? 'legendonly' : true;
+                    Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
+                }
+            });
+        });
+
+    // Position and size the legend
+    repositionLegend(gd, traces);
+
+    // Scroll section must be executed after repositionLegend.
+    // It requires the legend width, height, x and y to position the scrollbox
+    // and these values are mutated in repositionLegend.
+    var gs = fullLayout._size,
+        lx = gs.l + gs.w * opts.x,
+        ly = gs.t + gs.h * (1-opts.y);
+
+    if(anchorUtils.isRightAnchor(opts)) {
+        lx -= opts.width;
+    }
+    if(anchorUtils.isCenterAnchor(opts)) {
+        lx -= opts.width / 2;
+    }
+
+    if(anchorUtils.isBottomAnchor(opts)) {
+        ly -= opts.height;
+    }
+    if(anchorUtils.isMiddleAnchor(opts)) {
+        ly -= opts.height / 2;
+    }
+
+    // Deal with scrolling
+    var plotHeight = fullLayout.height - fullLayout.margin.b,
+        scrollheight = Math.min(plotHeight - ly, opts.height),
+        scrollPosition = scrollBox.attr('data-scroll') ? scrollBox.attr('data-scroll') : 0;
+
+    scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
+
+    bg.attr({
+        width: opts.width - 2 * opts.borderwidth,
+        height: scrollheight - 2 * opts.borderwidth,
+        x: opts.borderwidth,
+        y: opts.borderwidth
+    });
+
+    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
+
+    clipPath.attr({
+        width: opts.width,
+        height: scrollheight,
+        x: 0,
+        y: 0
+    });
+
+    legend.call(Drawing.setClipUrl, clipId);
+
+    // If scrollbar should be shown.
+    if(gd.firstRender && opts.height - scrollheight > 0 && !gd._context.staticPlot) {
+        bg.attr({
+            width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth
+        });
+
+        clipPath.attr({
+            width: opts.width + constants.scrollBarWidth
+        });
+
+        legend.node().addEventListener('wheel', function(e) {
+            e.preventDefault();
+            scrollHandler(e.deltaY / 20);
+        });
+
+        scrollBar.node().addEventListener('mousedown', function(e) {
+            e.preventDefault();
+
+            function mMove(e) {
+                if(e.buttons === 1) {
+                    scrollHandler(e.movementY);
+                }
+            }
+
+            function mUp() {
+                scrollBar.node().removeEventListener('mousemove', mMove);
+                window.removeEventListener('mouseup', mUp);
+            }
+
+            window.addEventListener('mousemove', mMove);
+            window.addEventListener('mouseup', mUp);
+        });
+
+        // Move scrollbar to starting position on the first render
+        scrollBar.call(
+            Drawing.setRect,
+            opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
+            constants.scrollBarMargin,
+            constants.scrollBarWidth,
+            constants.scrollBarHeight
+        );
+    }
+
+    function scrollHandler(delta) {
+
+        var scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
+            translateY = scrollBox.attr('data-scroll'),
+            scrollBoxY = Lib.constrain(translateY - delta, Math.min(scrollheight - opts.height, 0), 0),
+            scrollBarY = -scrollBoxY / (opts.height - scrollheight) * scrollBarTrack + constants.scrollBarMargin;
+
+        scrollBox.attr('data-scroll', scrollBoxY);
+        scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
+        scrollBar.call(
+            Drawing.setRect,
+            opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
+            scrollBarY,
+            constants.scrollBarWidth,
+            constants.scrollBarHeight
+        );
+    }
+
+    if(gd._context.editable) {
+        var xf,
+            yf,
+            x0,
+            y0,
+            lw,
+            lh;
+
+        Fx.dragElement({
+            element: legend.node(),
+            prepFn: function() {
+                x0 = Number(legend.attr('x'));
+                y0 = Number(legend.attr('y'));
+                lw = Number(legend.attr('width'));
+                lh = Number(legend.attr('height'));
+                Fx.setCursor(legend);
+            },
+            moveFn: function(dx, dy) {
+                var gs = gd._fullLayout._size;
+
+                legend.call(Drawing.setPosition, x0+dx, y0+dy);
+
+                xf = Fx.dragAlign(x0+dx, lw, gs.l, gs.l+gs.w,
+                    opts.xanchor);
+                yf = Fx.dragAlign(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
+                    opts.yanchor);
+
+                var csr = Fx.dragCursors(xf, yf,
+                    opts.xanchor, opts.yanchor);
+                Fx.setCursor(legend, csr);
+            },
+            doneFn: function(dragged) {
+                Fx.setCursor(legend);
+                if(dragged && xf !== undefined && yf !== undefined) {
+                    Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
+                }
+            }
+        });
+    }
+};
+
+function drawTexts(context, gd, d, i, traces) {
+    var fullLayout = gd._fullLayout,
+        trace = d[0].trace,
+        isPie = Plots.traceIs(trace, 'pie'),
+        traceIndex = trace.index,
+        name = isPie ? d[0].label : trace.name;
+
+    var text = d3.select(context).selectAll('text.legendtext')
+        .data([0]);
+    text.enter().append('text').classed('legendtext', true);
+    text.attr({
+        x: 40,
+        y: 0,
+        'data-unformatted': name
+    })
+    .style('text-anchor', 'start')
+    .classed('user-select-none', true)
+    .call(Drawing.font, fullLayout.legend.font)
+    .text(name);
+
+    function textLayout(s) {
+        Plotly.util.convertToTspans(s, function() {
+            if(gd.firstRender) repositionLegend(gd, traces);
+        });
+        s.selectAll('tspan.line').attr({x: s.attr('x')});
+    }
+
+    if(gd._context.editable && !isPie) {
+        text.call(Plotly.util.makeEditable)
+            .call(textLayout)
+            .on('edit', function(text) {
+                this.attr({'data-unformatted': text});
+                this.text(text)
+                    .call(textLayout);
+                if(!this.text()) text = ' \u0020\u0020 ';
+                Plotly.restyle(gd, 'name', text, traceIndex);
+            });
+    }
+    else text.call(textLayout);
+}
+
+function repositionLegend(gd, traces) {
+    var fullLayout = gd._fullLayout,
+        gs = fullLayout._size,
+        opts = fullLayout.legend,
+        borderwidth = opts.borderwidth;
+
+    opts.width = 0;
+    opts.height = 0;
+
+    traces.each(function(d) {
+        var trace = d[0].trace,
+            g = d3.select(this),
+            bg = g.selectAll('.legendtoggle'),
+            text = g.selectAll('.legendtext'),
+            tspans = g.selectAll('.legendtext>tspan'),
+            tHeight = opts.font.size * 1.3,
+            tLines = tspans[0].length || 1,
+            tWidth = text.node() && Drawing.bBox(text.node()).width,
+            mathjaxGroup = g.select('g[class*=math-group]'),
+            textY,
+            tHeightFull;
+
+        if(!trace.showlegend) {
+            g.remove();
+            return;
+        }
+
+        if(mathjaxGroup.node()) {
+            var mathjaxBB = Drawing.bBox(mathjaxGroup.node());
+            tHeight = mathjaxBB.height;
+            tWidth = mathjaxBB.width;
+            mathjaxGroup.attr('transform','translate(0,' + (tHeight / 4) + ')');
+        }
+        else {
+            // approximation to height offset to center the font
+            // to avoid getBoundingClientRect
+            textY = tHeight * (0.3 + (1-tLines) / 2);
+            text.attr('y',textY);
+            tspans.attr('y',textY);
+        }
+
+        tHeightFull = Math.max(tHeight*tLines, 16) + 3;
+
+        g.attr('transform',
+            'translate(' + borderwidth + ',' +
+                (5 + borderwidth + opts.height + tHeightFull / 2) +
+            ')'
+        );
+        bg.attr({x: 0, y: -tHeightFull / 2, height: tHeightFull});
+
+        opts.height += tHeightFull;
+        opts.width = Math.max(opts.width, tWidth || 0);
+    });
+
+
+    opts.width += 45 + borderwidth * 2;
+    opts.height += 10 + borderwidth * 2;
+
+    if(helpers.isGrouped(opts)) {
+        opts.height += (opts._lgroupsLength-1) * opts.tracegroupgap;
+    }
+
+    traces.selectAll('.legendtoggle')
+        .attr('width', (gd._context.editable ? 0 : opts.width) + 40);
+
+    // now position the legend. for both x,y the positions are recorded as
+    // fractions of the plot area (left, bottom = 0,0). Outside the plot
+    // area is allowed but position will be clipped to the page.
+    // values <1/3 align the low side at that fraction, 1/3-2/3 align the
+    // center at that fraction, >2/3 align the right at that fraction
+
+    var lx = gs.l + gs.w * opts.x,
+        ly = gs.t + gs.h * (1-opts.y);
+
+    var xanchor = 'left';
+    if(anchorUtils.isRightAnchor(opts)) {
+        lx -= opts.width;
+        xanchor = 'right';
+    }
+    if(anchorUtils.isCenterAnchor(opts)) {
+        lx -= opts.width / 2;
+        xanchor = 'center';
+    }
+
+    var yanchor = 'top';
+    if(anchorUtils.isBottomAnchor(opts)) {
+        ly -= opts.height;
+        yanchor = 'bottom';
+    }
+    if(anchorUtils.isMiddleAnchor(opts)) {
+        ly -= opts.height / 2;
+        yanchor = 'middle';
+    }
+
+    // make sure we're only getting full pixels
+    opts.width = Math.ceil(opts.width);
+    opts.height = Math.ceil(opts.height);
+    lx = Math.round(lx);
+    ly = Math.round(ly);
+
+    // lastly check if the margin auto-expand has changed
+    Plots.autoMargin(gd, 'legend', {
+        x: opts.x,
+        y: opts.y,
+        l: opts.width * ({right: 1, center: 0.5}[xanchor] || 0),
+        r: opts.width * ({left: 1, center: 0.5}[xanchor] || 0),
+        b: opts.height * ({top: 1, middle: 0.5}[yanchor] || 0),
+        t: opts.height * ({bottom: 1, middle: 0.5}[yanchor] || 0)
+    });
+}
+
+},{"../../lib":359,"../../plotly":376,"../../plots/cartesian/graph_interact":384,"../../plots/plots":423,"../color":301,"../drawing":319,"./anchor_utils":328,"./constants":330,"./get_legend_data":333,"./helpers":334,"./style":336,"d3":70}],333:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plots = require('../../plots/plots');
+
+var helpers = require('./helpers');
+
+
+module.exports = function getLegendData(calcdata, opts) {
+    var lgroupToTraces = {},
+        lgroups = [],
+        hasOneNonBlankGroup = false,
+        slicesShown = {},
+        lgroupi = 0;
+
+    var i, j;
+
+    function addOneItem(legendGroup, legendItem) {
+        // each '' legend group is treated as a separate group
+        if(legendGroup === '' || !helpers.isGrouped(opts)) {
+            var uniqueGroup = '~~i' + lgroupi; // TODO: check this against fullData legendgroups?
+
+            lgroups.push(uniqueGroup);
+            lgroupToTraces[uniqueGroup] = [[legendItem]];
+            lgroupi++;
+        }
+        else if(lgroups.indexOf(legendGroup) === -1) {
+            lgroups.push(legendGroup);
+            hasOneNonBlankGroup = true;
+            lgroupToTraces[legendGroup] = [[legendItem]];
+        }
+        else lgroupToTraces[legendGroup].push([legendItem]);
+    }
+
+    // build an { legendgroup: [cd0, cd0], ... } object
+    for(i = 0; i < calcdata.length; i++) {
+        var cd = calcdata[i],
+            cd0 = cd[0],
+            trace = cd0.trace,
+            lgroup = trace.legendgroup;
+
+        if(!helpers.legendGetsTrace(trace) || !trace.showlegend) continue;
+
+        if(Plots.traceIs(trace, 'pie')) {
+            if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
+
+            for(j = 0; j < cd.length; j++) {
+                var labelj = cd[j].label;
+
+                if(!slicesShown[lgroup][labelj]) {
+                    addOneItem(lgroup, {
+                        label: labelj,
+                        color: cd[j].color,
+                        i: cd[j].i,
+                        trace: trace
+                    });
+
+                    slicesShown[lgroup][labelj] = true;
+                }
+            }
+        }
+
+        else addOneItem(lgroup, cd0);
+    }
+
+    // won't draw a legend in this case
+    if(!lgroups.length) return [];
+
+    // rearrange lgroupToTraces into a d3-friendly array of arrays
+    var lgroupsLength = lgroups.length,
+        ltraces,
+        legendData;
+
+    if(hasOneNonBlankGroup && helpers.isGrouped(opts)) {
+        legendData = new Array(lgroupsLength);
+
+        for(i = 0; i < lgroupsLength; i++) {
+            ltraces = lgroupToTraces[lgroups[i]];
+            legendData[i] = helpers.isReversed(opts) ? ltraces.reverse() : ltraces;
+        }
+    }
+    else {
+        // collapse all groups into one if all groups are blank
+        legendData = [new Array(lgroupsLength)];
+
+        for(i = 0; i < lgroupsLength; i++) {
+            ltraces = lgroupToTraces[lgroups[i]][0];
+            legendData[0][helpers.isReversed(opts) ? lgroupsLength-i-1 : i] = ltraces;
+        }
+        lgroupsLength = 1;
+    }
+
+    // needed in repositionLegend
+    opts._lgroupsLength = lgroupsLength;
+    return legendData;
+};
+
+},{"../../plots/plots":423,"./helpers":334}],334:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var Plots = require('../../plots/plots');
+
+
+exports.legendGetsTrace = function legendGetsTrace(trace) {
+    return trace.visible && Plots.traceIs(trace, 'showLegend');
+};
+
+exports.isGrouped = function isGrouped(legendLayout) {
+    return (legendLayout.traceorder || '').indexOf('grouped') !== -1;
+};
+
+exports.isReversed = function isReversed(legendLayout) {
+    return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
+};
+
+},{"../../plots/plots":423}],335:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+
+var legend = module.exports = {};
+
+legend.layoutAttributes = require('./attributes');
+
+legend.supplyLayoutDefaults = require('./defaults');
+
+legend.draw = require('./draw');
+
+legend.style = require('./style');
+
+},{"./attributes":329,"./defaults":331,"./draw":332,"./style":336}],336:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+
+var Lib = require('../../lib');
+var Plots = require('../../plots/plots');
+var Drawing = require('../drawing');
+var Color = require('../color');
+
+var subTypes = require('../../traces/scatter/subtypes');
+var stylePie = require('../../traces/pie/style_one');
+
+
+module.exports = function style(s) {
+    s.each(function(d) {
+        var traceGroup = d3.select(this);
+
+        var fill = traceGroup
+            .selectAll('g.legendfill')
+                .data([d]);
+        fill.enter().append('g')
+            .classed('legendfill', true);
+
+        var line = traceGroup
+            .selectAll('g.legendlines')
+                .data([d]);
+        line.enter().append('g')
+            .classed('legendlines', true);
+
+        var symbol = traceGroup
+            .selectAll('g.legendsymbols')
+                .data([d]);
+        symbol.enter().append('g')
+            .classed('legendsymbols', true);
+        symbol.style('opacity', d[0].trace.opacity);
+
+        symbol.selectAll('g.legendpoints')
+            .data([d])
+          .enter().append('g')
+            .classed('legendpoints', true);
+    })
+    .each(styleBars)
+    .each(styleBoxes)
+    .each(stylePies)
+    .each(styleLines)
+    .each(stylePoints);
+};
+
+function styleLines(d) {
     var trace = d[0].trace,
         showFill = trace.visible && trace.fill && trace.fill!=='none',
         showLine = subTypes.hasLines(trace);
 
     var fill = d3.select(this).select('.legendfill').selectAll('path')
         .data(showFill ? [d] : []);
-    fill.enter().append('path').classed('js-fill',true);
+    fill.enter().append('path').classed('js-fill', true);
     fill.exit().remove();
     fill.attr('d', 'M5,0h30v6h-30z')
         .call(Drawing.fillGroupStyle);
 
     var line = d3.select(this).select('.legendlines').selectAll('path')
         .data(showLine ? [d] : []);
-    line.enter().append('path').classed('js-line',true)
+    line.enter().append('path').classed('js-line', true)
         .attr('d', 'M5,0h30');
     line.exit().remove();
     line.call(Drawing.lineGroupStyle);
-};
+}
 
-legend.points = function(d) {
+function stylePoints(d) {
     var d0 = d[0],
         trace = d0.trace,
         showMarkers = subTypes.hasMarkers(trace),
@@ -54178,32 +55211,33 @@ legend.points = function(d) {
             .append('text').attr('transform', 'translate(20,0)');
     txt.exit().remove();
     txt.selectAll('text').call(Drawing.textPointStyle, tMod);
+}
 
-};
-
-legend.bars = function(d) {
+function styleBars(d) {
     var trace = d[0].trace,
-        marker = trace.marker||{},
-        markerLine = marker.line||{},
+        marker = trace.marker || {},
+        markerLine = marker.line || {},
         barpath = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendbar')
             .data(Plots.traceIs(trace, 'bar') ? [d] : []);
-    barpath.enter().append('path').classed('legendbar',true)
+    barpath.enter().append('path').classed('legendbar', true)
         .attr('d','M6,6H-6V-6H6Z')
-        .attr('transform','translate(20,0)');
+        .attr('transform', 'translate(20,0)');
     barpath.exit().remove();
     barpath.each(function(d) {
-        var w = (d.mlw+1 || markerLine.width+1) - 1,
+        var w = (d.mlw + 1 || markerLine.width + 1) - 1,
             p = d3.select(this);
+
         p.style('stroke-width',w+'px')
             .call(Color.fill, d.mc || marker.color);
+
         if(w) {
             p.call(Color.stroke, d.mlc || markerLine.color);
         }
     });
-};
+}
 
-legend.boxes = function(d) {
+function styleBoxes(d) {
     var trace = d[0].trace,
         pts = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendbox')
@@ -54214,17 +55248,19 @@ legend.boxes = function(d) {
         .attr('transform', 'translate(20,0)');
     pts.exit().remove();
     pts.each(function(d) {
-        var w = (d.lw+1 || trace.line.width+1) - 1,
+        var w = (d.lw + 1 || trace.line.width + 1) - 1,
             p = d3.select(this);
+
         p.style('stroke-width', w+'px')
             .call(Color.fill, d.fc || trace.fillcolor);
+
         if(w) {
             p.call(Color.stroke, d.lc || trace.line.color);
         }
     });
-};
+}
 
-legend.pie = function(d) {
+function stylePies(d) {
     var trace = d[0].trace,
         pts = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendpie')
@@ -54234,566 +55270,10 @@ legend.pie = function(d) {
         .attr('transform', 'translate(20,0)');
     pts.exit().remove();
 
-    if(pts.size()) pts.call(styleOne, d[0], trace);
-};
-
-legend.style = function(s) {
-    s.each(function(d) {
-        var traceGroup = d3.select(this);
-
-        var fill = traceGroup
-            .selectAll('g.legendfill')
-                .data([d]);
-        fill.enter().append('g')
-            .classed('legendfill',true);
-
-        var line = traceGroup
-            .selectAll('g.legendlines')
-                .data([d]);
-        line.enter().append('g')
-            .classed('legendlines',true);
-
-        var symbol = traceGroup
-            .selectAll('g.legendsymbols')
-                .data([d]);
-        symbol.enter().append('g')
-            .classed('legendsymbols',true);
-        symbol.style('opacity', d[0].trace.opacity);
-
-        symbol.selectAll('g.legendpoints')
-            .data([d])
-          .enter().append('g')
-            .classed('legendpoints',true);
-    })
-    .each(legend.bars)
-    .each(legend.boxes)
-    .each(legend.pie)
-    .each(legend.lines)
-    .each(legend.points);
-};
-
-legend.texts = function(context, td, d, i, traces) {
-    var fullLayout = td._fullLayout,
-        trace = d[0].trace,
-        isPie = Plots.traceIs(trace, 'pie'),
-        traceIndex = trace.index,
-        name = isPie ? d[0].label : trace.name;
-
-    var text = d3.select(context).selectAll('text.legendtext')
-        .data([0]);
-    text.enter().append('text').classed('legendtext', true);
-    text.attr({
-        x: 40,
-        y: 0,
-        'data-unformatted': name
-    })
-    .style({
-        'text-anchor': 'start',
-        '-webkit-user-select': 'none',
-        '-moz-user-select': 'none',
-        '-ms-user-select': 'none',
-        'user-select': 'none'
-    })
-    .call(Drawing.font, fullLayout.legend.font)
-    .text(name);
-
-    function textLayout(s) {
-        Plotly.util.convertToTspans(s, function() {
-            if(td.firstRender) legend.repositionLegend(td, traces);
-        });
-        s.selectAll('tspan.line').attr({x: s.attr('x')});
-    }
-
-    if(td._context.editable && !isPie) {
-        text.call(Plotly.util.makeEditable)
-            .call(textLayout)
-            .on('edit', function(text) {
-                this.attr({'data-unformatted': text});
-                this.text(text)
-                    .call(textLayout);
-                if(!this.text()) text = ' \u0020\u0020 ';
-                Plotly.restyle(td, 'name', text, traceIndex);
-            });
-    }
-    else text.call(textLayout);
-};
-
-// -----------------------------------------------------
-// legend drawing
-// -----------------------------------------------------
-
-function legendGetsTrace(trace) {
-    return trace.visible && Plots.traceIs(trace, 'showLegend');
+    if(pts.size()) pts.call(stylePie, d[0], trace);
 }
 
-function isGrouped(legendLayout) {
-    return (legendLayout.traceorder || '').indexOf('grouped') !== -1;
-}
-
-function isReversed(legendLayout) {
-    return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
-}
-
-legend.getLegendData = function(calcdata, opts) {
-
-    // build an { legendgroup: [cd0, cd0], ... } object
-    var lgroupToTraces = {},
-        lgroups = [],
-        hasOneNonBlankGroup = false,
-        slicesShown = {},
-        lgroupi = 0;
-
-    var cd, cd0, trace, lgroup, i, j, labelj;
-
-    function addOneItem(legendGroup, legendItem) {
-        // each '' legend group is treated as a separate group
-        if(legendGroup==='' || !isGrouped(opts)) {
-            var uniqueGroup = '~~i' + lgroupi; // TODO: check this against fullData legendgroups?
-            lgroups.push(uniqueGroup);
-            lgroupToTraces[uniqueGroup] = [[legendItem]];
-            lgroupi++;
-        }
-        else if(lgroups.indexOf(legendGroup) === -1) {
-            lgroups.push(legendGroup);
-            hasOneNonBlankGroup = true;
-            lgroupToTraces[legendGroup] = [[legendItem]];
-        }
-        else lgroupToTraces[legendGroup].push([legendItem]);
-    }
-
-    for(i = 0; i < calcdata.length; i++) {
-        cd = calcdata[i];
-        cd0 = cd[0];
-        trace = cd0.trace;
-        lgroup = trace.legendgroup;
-
-        if(!legendGetsTrace(trace) || !trace.showlegend) continue;
-
-        if(Plots.traceIs(trace, 'pie')) {
-            if(!slicesShown[lgroup]) slicesShown[lgroup] = {};
-            for(j = 0; j < cd.length; j++) {
-                labelj = cd[j].label;
-                if(!slicesShown[lgroup][labelj]) {
-                    addOneItem(lgroup, {
-                        label: labelj,
-                        color: cd[j].color,
-                        i: cd[j].i,
-                        trace: trace
-                    });
-
-                    slicesShown[lgroup][labelj] = true;
-                }
-            }
-        }
-
-        else addOneItem(lgroup, cd0);
-    }
-
-    // won't draw a legend in this case
-    if(!lgroups.length) return [];
-
-    // rearrange lgroupToTraces into a d3-friendly array of arrays
-    var lgroupsLength = lgroups.length,
-        ltraces,
-        legendData;
-
-    if(hasOneNonBlankGroup && isGrouped(opts)) {
-        legendData = new Array(lgroupsLength);
-        for(i = 0; i < lgroupsLength; i++) {
-            ltraces = lgroupToTraces[lgroups[i]];
-            legendData[i] = isReversed(opts) ? ltraces.reverse() : ltraces;
-        }
-    }
-    else {
-        // collapse all groups into one if all groups are blank
-        legendData = [new Array(lgroupsLength)];
-        for(i = 0; i < lgroupsLength; i++) {
-            ltraces = lgroupToTraces[lgroups[i]][0];
-            legendData[0][isReversed(opts) ? lgroupsLength-i-1 : i] = ltraces;
-        }
-        lgroupsLength = 1;
-    }
-
-    // needed in repositionLegend
-    opts._lgroupsLength = lgroupsLength;
-    return legendData;
-};
-
-legend.draw = function(td) {
-    var fullLayout = td._fullLayout;
-
-    if(!fullLayout._infolayer || !td.calcdata) return;
-
-    var opts = fullLayout.legend,
-        legendData = fullLayout.showlegend && legend.getLegendData(td.calcdata, opts),
-        hiddenSlices = fullLayout.hiddenlabels || [];
-
-    if(!fullLayout.showlegend || !legendData.length) {
-        fullLayout._infolayer.selectAll('.legend').remove();
-        Plots.autoMargin(td, 'legend');
-        return;
-    }
-
-    if(typeof td.firstRender === 'undefined') td.firstRender = true;
-    else if(td.firstRender) td.firstRender = false;
-
-    var legendsvg = fullLayout._infolayer.selectAll('svg.legend')
-        .data([0]);
-    legendsvg.enter().append('svg')
-        .attr({
-            'class': 'legend',
-            'pointer-events': 'all'
-        });
-
-    var bg = legendsvg.selectAll('rect.bg')
-        .data([0]);
-    bg.enter().append('rect')
-        .attr({
-            'class': 'bg',
-            'shape-rendering': 'crispEdges'
-        })
-        .call(Color.stroke, opts.bordercolor)
-        .call(Color.fill, opts.bgcolor)
-        .style('stroke-width', opts.borderwidth + 'px');
-
-    var scrollBox = legendsvg.selectAll('g.scrollbox')
-        .data([0]);
-    scrollBox.enter().append('g')
-        .attr('class', 'scrollbox');
-    scrollBox.exit().remove();
-
-    var scrollBar = legendsvg.selectAll('rect.scrollbar')
-        .data([0]);
-    scrollBar.enter().append('rect')
-        .attr({
-            'class': 'scrollbar',
-            'rx': 20,
-            'ry': 2,
-            'width': 0,
-            'height': 0
-        })
-        .call(Color.fill, '#808BA4');
-
-    var groups = scrollBox.selectAll('g.groups')
-        .data(legendData);
-    groups.enter().append('g')
-        .attr('class', 'groups');
-    groups.exit().remove();
-
-    if(isGrouped(opts)) {
-        groups.attr('transform', function(d, i) {
-            return 'translate(0,' + i * opts.tracegroupgap + ')';
-        });
-    }
-
-    var traces = groups.selectAll('g.traces')
-        .data(Lib.identity);
-
-    traces.enter().append('g').attr('class', 'traces');
-    traces.exit().remove();
-
-    traces.call(legend.style)
-        .style('opacity', function(d) {
-            var trace = d[0].trace;
-            if(Plots.traceIs(trace, 'pie')) {
-                return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
-            } else {
-                return trace.visible === 'legendonly' ? 0.5 : 1;
-            }
-        })
-        .each(function(d, i) {
-            legend.texts(this, td, d, i, traces);
-
-            var traceToggle = d3.select(this).selectAll('rect')
-                .data([0]);
-            traceToggle.enter().append('rect')
-                .classed('legendtoggle', true)
-                .style('cursor', 'pointer')
-                .attr('pointer-events', 'all')
-                .call(Color.fill, 'rgba(0,0,0,0)');
-            traceToggle.on('click', function() {
-                if(td._dragged) return;
-
-                var fullData = td._fullData,
-                    trace = d[0].trace,
-                    legendgroup = trace.legendgroup,
-                    traceIndicesInGroup = [],
-                    tracei,
-                    newVisible;
-
-                if(Plots.traceIs(trace, 'pie')) {
-                    var thisLabel = d[0].label,
-                        newHiddenSlices = hiddenSlices.slice(),
-                        thisLabelIndex = newHiddenSlices.indexOf(thisLabel);
-
-                    if(thisLabelIndex === -1) newHiddenSlices.push(thisLabel);
-                    else newHiddenSlices.splice(thisLabelIndex, 1);
-
-                    Plotly.relayout(td, 'hiddenlabels', newHiddenSlices);
-                } else {
-                    if(legendgroup === '') {
-                        traceIndicesInGroup = [trace.index];
-                    } else {
-                        for(var i = 0; i < fullData.length; i++) {
-                            tracei = fullData[i];
-                            if(tracei.legendgroup === legendgroup) {
-                                traceIndicesInGroup.push(tracei.index);
-                            }
-                        }
-                    }
-
-                    newVisible = trace.visible === true ? 'legendonly' : true;
-                    Plotly.restyle(td, 'visible', newVisible, traceIndicesInGroup);
-                }
-            });
-        });
-
-    // Position and size the legend
-    legend.repositionLegend(td, traces);
-
-    // Scroll section must be executed after repositionLegend.
-    // It requires the legend width, height, x and y to position the scrollbox
-    // and these values are mutated in repositionLegend.
-    var gs = fullLayout._size,
-        lx = gs.l + gs.w * opts.x,
-        ly = gs.t + gs.h * (1-opts.y);
-
-    if(opts.xanchor === 'right' || (opts.xanchor === 'auto' && opts.x >= 2 / 3)) {
-        lx -= opts.width;
-    }
-    else if(opts.xanchor === 'center' || (opts.xanchor === 'auto' && opts.x > 1 / 3)) {
-        lx -= opts.width / 2;
-    }
-
-    if(opts.yanchor === 'bottom' || (opts.yanchor === 'auto' && opts.y <= 1 / 3)) {
-        ly -= opts.height;
-    }
-    else if(opts.yanchor === 'middle' || (opts.yanchor === 'auto' && opts.y < 2 / 3)) {
-        ly -= opts.height / 2;
-    }
-
-    // Deal with scrolling
-    var plotHeight = fullLayout.height - fullLayout.margin.b,
-        scrollheight = Math.min(plotHeight - ly, opts.height),
-        scrollPosition = scrollBox.attr('data-scroll') ? scrollBox.attr('data-scroll') : 0;
-
-    scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
-    bg.attr({
-        width: opts.width - 2 * opts.borderwidth,
-        height: scrollheight - 2 * opts.borderwidth,
-        x: opts.borderwidth,
-        y: opts.borderwidth
-    });
-
-    legendsvg.call(Drawing.setRect, lx, ly, opts.width, scrollheight);
-
-    // If scrollbar should be shown.
-    if(td.firstRender && opts.height - scrollheight > 0 && !td._context.staticPlot) {
-
-        bg.attr({ width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth });
-
-        legendsvg.node().addEventListener('wheel', function(e) {
-            e.preventDefault();
-            scrollHandler(e.deltaY / 20);
-        });
-
-        scrollBar.node().addEventListener('mousedown', function(e) {
-            e.preventDefault();
-
-            function mMove(e) {
-                if(e.buttons === 1) {
-                    scrollHandler(e.movementY);
-                }
-            }
-
-            function mUp() {
-                scrollBar.node().removeEventListener('mousemove', mMove);
-                window.removeEventListener('mouseup', mUp);
-            }
-
-            window.addEventListener('mousemove', mMove);
-            window.addEventListener('mouseup', mUp);
-        });
-
-        // Move scrollbar to starting position on the first render
-        scrollBar.call(
-            Drawing.setRect,
-            opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
-            constants.scrollBarMargin,
-            constants.scrollBarWidth,
-            constants.scrollBarHeight
-        );
-    }
-
-    function scrollHandler(delta) {
-
-        var scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
-            translateY = scrollBox.attr('data-scroll'),
-            scrollBoxY = Lib.constrain(translateY - delta, Math.min(scrollheight - opts.height, 0), 0),
-            scrollBarY = -scrollBoxY / (opts.height - scrollheight) * scrollBarTrack + constants.scrollBarMargin;
-
-        scrollBox.attr('data-scroll', scrollBoxY);
-        scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
-        scrollBar.call(
-            Drawing.setRect,
-            opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
-            scrollBarY,
-            constants.scrollBarWidth,
-            constants.scrollBarHeight
-        );
-    }
-
-    if(td._context.editable) {
-        var xf,
-            yf,
-            x0,
-            y0,
-            lw,
-            lh;
-
-        Fx.dragElement({
-            element: legendsvg.node(),
-            prepFn: function() {
-                x0 = Number(legendsvg.attr('x'));
-                y0 = Number(legendsvg.attr('y'));
-                lw = Number(legendsvg.attr('width'));
-                lh = Number(legendsvg.attr('height'));
-                Fx.setCursor(legendsvg);
-            },
-            moveFn: function(dx, dy) {
-                var gs = td._fullLayout._size;
-
-                legendsvg.call(Drawing.setPosition, x0+dx, y0+dy);
-
-                xf = Fx.dragAlign(x0+dx, lw, gs.l, gs.l+gs.w,
-                    opts.xanchor);
-                yf = Fx.dragAlign(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
-                    opts.yanchor);
-
-                var csr = Fx.dragCursors(xf, yf,
-                    opts.xanchor, opts.yanchor);
-                Fx.setCursor(legendsvg, csr);
-            },
-            doneFn: function(dragged) {
-                Fx.setCursor(legendsvg);
-                if(dragged && xf !== undefined && yf !== undefined) {
-                    Plotly.relayout(td, {'legend.x': xf, 'legend.y': yf});
-                }
-            }
-        });
-    }
-};
-
-legend.repositionLegend = function(td, traces) {
-    var fullLayout = td._fullLayout,
-        gs = fullLayout._size,
-        opts = fullLayout.legend,
-        borderwidth = opts.borderwidth;
-
-    opts.width = 0,
-    opts.height = 0,
-
-    traces.each(function(d) {
-        var trace = d[0].trace,
-            g = d3.select(this),
-            bg = g.selectAll('.legendtoggle'),
-            text = g.selectAll('.legendtext'),
-            tspans = g.selectAll('.legendtext>tspan'),
-            tHeight = opts.font.size * 1.3,
-            tLines = tspans[0].length || 1,
-            tWidth = text.node() && Drawing.bBox(text.node()).width,
-            mathjaxGroup = g.select('g[class*=math-group]'),
-            textY,
-            tHeightFull;
-
-        if(!trace.showlegend) {
-            g.remove();
-            return;
-        }
-
-        if(mathjaxGroup.node()) {
-            var mathjaxBB = Drawing.bBox(mathjaxGroup.node());
-            tHeight = mathjaxBB.height;
-            tWidth = mathjaxBB.width;
-            mathjaxGroup.attr('transform','translate(0,' + (tHeight / 4) + ')');
-        }
-        else {
-            // approximation to height offset to center the font
-            // to avoid getBoundingClientRect
-            textY = tHeight * (0.3 + (1-tLines) / 2);
-            text.attr('y',textY);
-            tspans.attr('y',textY);
-        }
-
-        tHeightFull = Math.max(tHeight*tLines, 16) + 3;
-
-        g.attr('transform',
-            'translate(' + borderwidth + ',' +
-                (5 + borderwidth + opts.height + tHeightFull / 2) +
-            ')'
-        );
-        bg.attr({x: 0, y: -tHeightFull / 2, height: tHeightFull});
-
-        opts.height += tHeightFull;
-        opts.width = Math.max(opts.width, tWidth || 0);
-    });
-
-
-    opts.width += 45 + borderwidth * 2;
-    opts.height += 10 + borderwidth * 2;
-
-    if(isGrouped(opts)) opts.height += (opts._lgroupsLength-1) * opts.tracegroupgap;
-
-    traces.selectAll('.legendtoggle')
-        .attr('width', (td._context.editable ? 0 : opts.width) + 40);
-
-    // now position the legend. for both x,y the positions are recorded as
-    // fractions of the plot area (left, bottom = 0,0). Outside the plot
-    // area is allowed but position will be clipped to the page.
-    // values <1/3 align the low side at that fraction, 1/3-2/3 align the
-    // center at that fraction, >2/3 align the right at that fraction
-
-    var lx = gs.l + gs.w * opts.x,
-        ly = gs.t + gs.h * (1-opts.y);
-
-    var xanchor = 'left';
-    if(opts.xanchor === 'right' || (opts.xanchor === 'auto' && opts.x >= 2 / 3)) {
-        lx -= opts.width;
-        xanchor = 'right';
-    }
-    else if(opts.xanchor === 'center' || (opts.xanchor === 'auto' && opts.x > 1 / 3)) {
-        lx -= opts.width / 2;
-        xanchor = 'center';
-    }
-
-    var yanchor = 'top';
-    if(opts.yanchor === 'bottom' || (opts.yanchor === 'auto' && opts.y <= 1 / 3)) {
-        ly -= opts.height;
-        yanchor = 'bottom';
-    }
-    else if(opts.yanchor === 'middle' || (opts.yanchor === 'auto' && opts.y < 2 / 3)) {
-        ly -= opts.height / 2;
-        yanchor = 'middle';
-    }
-
-    // make sure we're only getting full pixels
-    opts.width = Math.ceil(opts.width);
-    opts.height = Math.ceil(opts.height);
-    lx = Math.round(lx);
-    ly = Math.round(ly);
-
-    // lastly check if the margin auto-expand has changed
-    Plots.autoMargin(td,'legend',{
-        x: opts.x,
-        y: opts.y,
-        l: opts.width * ({right: 1, center: 0.5}[xanchor] || 0),
-        r: opts.width * ({left: 1, center: 0.5}[xanchor] || 0),
-        b: opts.height * ({top: 1, middle: 0.5}[yanchor] || 0),
-        t: opts.height * ({bottom: 1, middle: 0.5}[yanchor] || 0)
-    });
-};
-
-},{"../../lib":349,"../../plotly":366,"../../plots/cartesian/graph_interact":374,"../../plots/plots":413,"../../traces/pie/style_one":500,"../../traces/scatter/subtypes":520,"../color":299,"../drawing":317,"./attributes":324,"./constants":325,"d3":70}],327:[function(require,module,exports){
+},{"../../lib":359,"../../plots/plots":423,"../../traces/pie/style_one":511,"../../traces/scatter/subtypes":531,"../color":301,"../drawing":319,"d3":70}],337:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55341,7 +55821,7 @@ modeBarButtons.resetViews = {
     }
 };
 
-},{"../../../build/ploticon":2,"../../lib":349,"../../plotly":366,"../../snapshot":420}],328:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":359,"../../plotly":376,"../../snapshot":430}],338:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55631,7 +56111,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../../build/ploticon":2,"../../lib":349,"d3":70}],329:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":359,"d3":70}],339:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55858,7 +56338,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plotly":366,"../../traces/scatter/subtypes":520,"./":328,"./buttons":327}],330:[function(require,module,exports){
+},{"../../plotly":376,"../../traces/scatter/subtypes":531,"./":338,"./buttons":337}],340:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -55941,7 +56421,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":345,"../../traces/scatter/attributes":502,"../annotations/attributes":296}],331:[function(require,module,exports){
+},{"../../lib/extend":355,"../../traces/scatter/attributes":513,"../annotations/attributes":298}],341:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -56416,7 +56896,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../plotly":366,"./attributes":330,"fast-isnumeric":74}],332:[function(require,module,exports){
+},{"../../plotly":376,"./attributes":340,"fast-isnumeric":74}],342:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -56735,7 +57215,7 @@ Titles.draw = function(gd, title) {
     el.classed('js-placeholder', isplaceholder);
 };
 
-},{"../../lib":349,"../../lib/svg_text_utils":360,"../../plotly":366,"../../plots/cartesian/axis_ids":371,"../../plots/plots":413,"../color":299,"../drawing":317,"d3":70,"fast-isnumeric":74}],333:[function(require,module,exports){
+},{"../../lib":359,"../../lib/svg_text_utils":370,"../../plotly":376,"../../plots/cartesian/axis_ids":381,"../../plots/plots":423,"../color":301,"../drawing":319,"d3":70,"fast-isnumeric":74}],343:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57005,7 +57485,7 @@ module.exports = {
     CUB: '\\bcuba'
 };
 
-},{}],334:[function(require,module,exports){
+},{}],344:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57162,7 +57642,7 @@ params.layerNameToAdjective = {
 // base layers drawn over choropleth
 params.baseLayersOverChoropleth = ['rivers', 'lakes'];
 
-},{}],335:[function(require,module,exports){
+},{}],345:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57183,7 +57663,7 @@ module.exports = {
     longdashdot: [8, 1, 1, 1]
 };
 
-},{}],336:[function(require,module,exports){
+},{}],346:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57204,7 +57684,7 @@ module.exports = {
     longdashdot: [[0.5, 0.7, 0.8, 1], 10]
 };
 
-},{}],337:[function(require,module,exports){
+},{}],347:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57227,7 +57707,7 @@ module.exports = {
     x: '❌'
 };
 
-},{}],338:[function(require,module,exports){
+},{}],348:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57251,7 +57731,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],339:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57269,7 +57749,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.6.3';
+exports.version = '1.7.0';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -57282,6 +57762,7 @@ exports.prependTraces = Plotly.prependTraces;
 exports.addTraces = Plotly.addTraces;
 exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
+exports.purge = Plotly.purge;
 exports.setPlotConfig = require('./plot_api/set_plot_config');
 exports.register = Plotly.register;
 
@@ -57298,7 +57779,7 @@ exports.Queue = Plotly.Queue;
 // export d3 used in the bundle
 exports.d3 = require('d3');
 
-},{"../build/ploticon":2,"./plot_api/set_plot_config":365,"./plotly":366,"d3":70}],340:[function(require,module,exports){
+},{"../build/ploticon":2,"./plot_api/set_plot_config":375,"./plotly":376,"d3":70}],350:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57331,7 +57812,7 @@ if(typeof MathJax !== 'undefined') {
     exports.MathJax = false;
 }
 
-},{}],341:[function(require,module,exports){
+},{}],351:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57348,7 +57829,7 @@ module.exports = function arrayToCalcItem(traceAttr, calcItem, calcAttr, i) {
     if(Array.isArray(traceAttr)) calcItem[calcAttr] = traceAttr[i];
 };
 
-},{}],342:[function(require,module,exports){
+},{}],352:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57642,7 +58123,7 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     return out;
 };
 
-},{"../components/colorscale/get_scale":310,"../components/colorscale/scales":316,"./nested_property":352,"fast-isnumeric":74,"tinycolor2":229}],343:[function(require,module,exports){
+},{"../components/colorscale/get_scale":312,"../components/colorscale/scales":318,"./nested_property":362,"fast-isnumeric":74,"tinycolor2":231}],353:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -57979,7 +58460,7 @@ exports.parseDate = function(v) {
     return out;
 };
 
-},{"d3":70,"fast-isnumeric":74}],344:[function(require,module,exports){
+},{"d3":70,"fast-isnumeric":74}],354:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58035,7 +58516,7 @@ var Events = {
          * events.
          */
         plotObj.emit = function(event, data) {
-            if(typeof $ !== 'undefined') {
+            if(typeof jQuery !== 'undefined') {
                 $(plotObj).trigger(event, data);
             }
 
@@ -58058,7 +58539,7 @@ var Events = {
          * If Jquery exists run all its handlers for this event and
          * collect the return value of the LAST handler function
          */
-        if(typeof $ !== 'undefined') {
+        if(typeof jQuery !== 'undefined') {
             jQueryHandlerValue = $(plotObj).triggerHandler(event, data);
         }
 
@@ -58096,12 +58577,24 @@ var Events = {
          */
         return jQueryHandlerValue !== undefined ? jQueryHandlerValue :
             nodeEventHandlerValue;
+    },
+
+    purge: function(plotObj) {
+        delete plotObj._ev;
+        delete plotObj.on;
+        delete plotObj.once;
+        delete plotObj.removeListener;
+        delete plotObj.removeAllListeners;
+        delete plotObj.emit;
+
+        return plotObj;
     }
+
 };
 
 module.exports = Events;
 
-},{"events":54}],345:[function(require,module,exports){
+},{"events":54}],355:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58181,7 +58674,7 @@ function _extend(inputs, isDeep, keepAllKeys) {
     return target;
 }
 
-},{"./is_plain_object.js":350}],346:[function(require,module,exports){
+},{"./is_plain_object.js":360}],356:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58243,7 +58736,7 @@ function countryNameToISO3(countryName) {
     console.warn('unrecognized country name: ' + countryName + '.');
 }
 
-},{"../constants/country-name_to_iso3":333,"../plotly":366}],347:[function(require,module,exports){
+},{"../constants/country-name_to_iso3":343,"../plotly":376}],357:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58320,7 +58813,7 @@ function formatColor(containerIn, opacityIn, len) {
 
 module.exports = formatColor;
 
-},{"../components/color/attributes":298,"../plotly":366,"./str2rgbarray":359,"fast-isnumeric":74,"tinycolor2":229}],348:[function(require,module,exports){
+},{"../components/color/attributes":300,"../plotly":376,"./str2rgbarray":369,"fast-isnumeric":74,"tinycolor2":231}],358:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58394,7 +58887,7 @@ function convertHTMLToUnicode(html) {
 
 module.exports = convertHTMLToUnicode;
 
-},{"superscript-text":218}],349:[function(require,module,exports){
+},{"superscript-text":220}],359:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58831,7 +59324,7 @@ lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
 
-},{"./coerce":342,"./dates":343,"./extend":345,"./is_plain_object":350,"./matrix":351,"./nested_property":352,"./notifier":353,"./search":356,"./stats":358,"d3":70}],350:[function(require,module,exports){
+},{"./coerce":352,"./dates":353,"./extend":355,"./is_plain_object":360,"./matrix":361,"./nested_property":362,"./notifier":363,"./search":366,"./stats":368,"d3":70}],360:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58851,7 +59344,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],351:[function(require,module,exports){
+},{}],361:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58961,7 +59454,7 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-},{}],352:[function(require,module,exports){
+},{}],362:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -59217,7 +59710,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"fast-isnumeric":74}],353:[function(require,module,exports){
+},{"fast-isnumeric":74}],363:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -59294,7 +59787,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"d3":70,"fast-isnumeric":74}],354:[function(require,module,exports){
+},{"d3":70,"fast-isnumeric":74}],364:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -59534,7 +60027,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"./matrix":351}],355:[function(require,module,exports){
+},{"./matrix":361}],365:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -59737,7 +60230,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../plotly":366}],356:[function(require,module,exports){
+},{"../plotly":376}],366:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -59847,7 +60340,7 @@ exports.roundUp = function(val, arrayIn, reverse) {
     return arrayIn[low];
 };
 
-},{"fast-isnumeric":74}],357:[function(require,module,exports){
+},{"fast-isnumeric":74}],367:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -59896,7 +60389,7 @@ module.exports = function showWebGlMsg(scene) {
     return false;
 };
 
-},{"../plotly":366}],358:[function(require,module,exports){
+},{"../plotly":376}],368:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -59992,7 +60485,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"fast-isnumeric":74}],359:[function(require,module,exports){
+},{"fast-isnumeric":74}],369:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -60014,7 +60507,7 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"arraytools":48,"tinycolor2":229}],360:[function(require,module,exports){
+},{"arraytools":48,"tinycolor2":231}],370:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -60497,7 +60990,7 @@ util.makeEditable = function(context, _delegate, options) {
     return d3.rebind(this, dispatch, 'on');
 };
 
-},{"../constants/xmlns_namespaces":338,"../plotly":366,"d3":70}],361:[function(require,module,exports){
+},{"../constants/xmlns_namespaces":348,"../plotly":376,"d3":70}],371:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -60533,7 +61026,7 @@ topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
     return topojsonFeature(topojson, obj).features;
 };
 
-},{"../constants/geo_constants":334,"topojson":230}],362:[function(require,module,exports){
+},{"../constants/geo_constants":344,"topojson":232}],372:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -62943,6 +63436,39 @@ Plotly.relayout = function relayout(gd, astr, val) {
 };
 
 /**
+ * Purge a graph container div back to its initial pre-Plotly.plot state
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ */
+Plotly.purge = function purge(gd) {
+    gd = getGraphDiv(gd);
+
+    var fullLayout = gd._fullLayout || {},
+        fullData = gd._fullData || [];
+
+    // remove gl contexts
+    Plots.cleanPlot([], {}, fullData, fullLayout);
+
+    // purge properties
+    Plots.purge(gd);
+
+    // purge event emitter methods
+    Events.purge(gd);
+
+    // remove plot container
+    if(fullLayout._container) fullLayout._container.remove();
+
+    delete gd._context;
+    delete gd._replotPending;
+    delete gd._mouseDownTime;
+    delete gd._hmpixcount;
+    delete gd._hmlumcount;
+
+    return gd;
+};
+
+/**
  * Reduce all reserved margin objects to a single required margin reservation.
  *
  * @param {Object} margins
@@ -63041,7 +63567,7 @@ function makePlotFramework(gd) {
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
     fullLayout._paperdiv.enter().append('div')
-        .classed('svg-container',true)
+        .classed('svg-container', true)
         .style('position','relative');
 
     // Initial autosize
@@ -63087,6 +63613,9 @@ function makePlotFramework(gd) {
 
     fullLayout._defs = fullLayout._paper.append('defs')
         .attr('id', 'defs-' + fullLayout._uid);
+
+    fullLayout._topdefs = fullLayout._toppaper.append('defs')
+        .attr('id', 'topdefs-' + fullLayout._uid);
 
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
@@ -63172,7 +63701,6 @@ function makeCartesianPlotFramwork(gd, subplots) {
         svg.append('g').classed('imagelayer', true);
         svg.append('g').classed('maplayer', true);
         svg.append('g').classed('barlayer', true);
-        svg.append('g').classed('errorlayer', true);
         svg.append('g').classed('boxlayer', true);
         svg.append('g').classed('scatterlayer', true);
     }
@@ -63453,7 +63981,7 @@ function lsInner(gd) {
     return gd._promises.length && Promise.all(gd._promises);
 }
 
-},{"../components/color":299,"../components/drawing":317,"../components/errorbars":323,"../components/legend":326,"../components/modebar/manage":329,"../components/shapes":331,"../components/titles":332,"../constants/xmlns_namespaces":338,"../lib":349,"../lib/events":344,"../lib/queue":355,"../plotly":366,"../plots/cartesian/graph_interact":374,"../plots/plots":413,"d3":70,"fast-isnumeric":74,"gl-mat4/fromQuat":91}],363:[function(require,module,exports){
+},{"../components/color":301,"../components/drawing":319,"../components/errorbars":325,"../components/legend":335,"../components/modebar/manage":339,"../components/shapes":341,"../components/titles":342,"../constants/xmlns_namespaces":348,"../lib":359,"../lib/events":354,"../lib/queue":365,"../plotly":376,"../plots/cartesian/graph_interact":384,"../plots/plots":423,"d3":70,"fast-isnumeric":74,"gl-mat4/fromQuat":91}],373:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -63552,7 +64080,7 @@ function defaultSetBackground(gd, bgColor) {
     catch(e) { console.log(e); }
 }
 
-},{}],364:[function(require,module,exports){
+},{}],374:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -63873,7 +64401,7 @@ function handleLinkedToArray(layoutAttributes) {
     return layoutAttributes;
 }
 
-},{"../lib":349,"../plotly":366,"../plots/plots":413,"../plots/polar/area_attributes":414,"../plots/polar/axis_attributes":415}],365:[function(require,module,exports){
+},{"../lib":359,"../plotly":376,"../plots/plots":423,"../plots/polar/area_attributes":424,"../plots/polar/axis_attributes":425}],375:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -63898,7 +64426,7 @@ module.exports = function setPlotConfig(configObj) {
     return Plotly.Lib.extendFlat(Plotly.defaultConfig, configObj);
 };
 
-},{"../plotly":366}],366:[function(require,module,exports){
+},{"../plotly":376}],376:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -63984,7 +64512,7 @@ exports.PlotSchema = require('./plot_api/plot_schema');
 // imaging routines
 exports.Snapshot = require('./snapshot');
 
-},{"../build/plotcss":1,"./components/annotations":297,"./components/color":299,"./components/colorbar":304,"./components/colorscale":312,"./components/drawing":317,"./components/errorbars":323,"./components/legend":326,"./components/modebar":328,"./components/shapes":331,"./fonts/mathjax_config":340,"./lib":349,"./lib/queue":355,"./lib/svg_text_utils":360,"./plot_api/plot_api":362,"./plot_api/plot_config":363,"./plot_api/plot_schema":364,"./plots/cartesian/axes":369,"./plots/cartesian/graph_interact":374,"./plots/plots":413,"./plots/polar/micropolar":416,"./snapshot":420,"./traces/scatter":511,"es6-promise":73}],367:[function(require,module,exports){
+},{"../build/plotcss":1,"./components/annotations":299,"./components/color":301,"./components/colorbar":306,"./components/colorscale":314,"./components/drawing":319,"./components/errorbars":325,"./components/legend":335,"./components/modebar":338,"./components/shapes":341,"./fonts/mathjax_config":350,"./lib":359,"./lib/queue":365,"./lib/svg_text_utils":370,"./plot_api/plot_api":372,"./plot_api/plot_config":373,"./plot_api/plot_schema":374,"./plots/cartesian/axes":379,"./plots/cartesian/graph_interact":384,"./plots/plots":423,"./plots/polar/micropolar":426,"./snapshot":430,"./traces/scatter":522,"es6-promise":73}],377:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -64065,7 +64593,7 @@ module.exports = {
     }
 };
 
-},{}],368:[function(require,module,exports){
+},{}],378:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -64092,7 +64620,7 @@ module.exports = {
     }
 };
 
-},{}],369:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -65970,7 +66498,7 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
 // rather than built-in % which gives a negative value for negative v
 function mod(v,d) { return ((v%d) + d) % d; }
 
-},{"../../components/titles":332,"../../plotly":366,"./axis_ids":371,"./layout_attributes":376,"./layout_defaults":377,"./set_convert":380,"d3":70,"fast-isnumeric":74}],370:[function(require,module,exports){
+},{"../../components/titles":342,"../../plotly":376,"./axis_ids":381,"./layout_attributes":386,"./layout_defaults":387,"./set_convert":390,"d3":70,"fast-isnumeric":74}],380:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -66231,7 +66759,7 @@ function category(a) {
     return curvecats > curvenums * 2;
 }
 
-},{"../../lib":349,"../plots":413,"./axis_ids":371,"./clean_datum":372,"./layout_attributes":376,"./set_convert":380,"./tick_defaults":381,"./tick_value_defaults":382,"fast-isnumeric":74}],371:[function(require,module,exports){
+},{"../../lib":359,"../plots":423,"./axis_ids":381,"./clean_datum":382,"./layout_attributes":386,"./set_convert":390,"./tick_defaults":391,"./tick_value_defaults":392,"fast-isnumeric":74}],381:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -66352,7 +66880,7 @@ exports.getFromTrace = function(gd, fullTrace, type) {
     return ax;
 };
 
-},{"../../lib":349,"../plots":413,"./constants":373}],372:[function(require,module,exports){
+},{"../../lib":359,"../plots":423,"./constants":383}],382:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -66391,7 +66919,7 @@ module.exports = function cleanDatum(c) {
     return c;
 };
 
-},{"../../lib":349,"fast-isnumeric":74}],373:[function(require,module,exports){
+},{"../../lib":359,"fast-isnumeric":74}],383:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -66455,7 +66983,7 @@ module.exports = {
     BENDPX: 1.5
 };
 
-},{}],374:[function(require,module,exports){
+},{}],384:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -66766,9 +67294,14 @@ function hover(gd, evt, subplot) {
 
     var fullLayout = gd._fullLayout,
         plotinfo = fullLayout._plots[subplot],
-        // list of all overlaid subplots to look at
-        subplots = [subplot].concat(plotinfo.overlays
-            .map(function(pi) { return pi.id; })),
+
+        //If the user passed in an array of subplots, use those instead of finding overlayed plots
+        subplots = Array.isArray(subplot) ?
+            subplot :
+            // list of all overlaid subplots to look at
+            [subplot].concat(plotinfo.overlays
+                .map(function(pi) { return pi.id; })),
+
         xaArray = subplots.map(function(spId) {
             return Plotly.Axes.getFromId(gd, spId, 'x');
         }),
@@ -66986,7 +67519,7 @@ function hover(gd, evt, subplot) {
     };
     var hoverLabels = createHoverText(hoverData, labelOpts);
 
-    hoverAvoidOverlaps(hoverData, rotateLabels ? xaArray[0] : yaArray[0]);
+    hoverAvoidOverlaps(hoverData, rotateLabels ? 'xa' : 'ya');
 
     alignHoverText(hoverLabels, rotateLabels);
 
@@ -67325,7 +67858,7 @@ function createHoverText(hoverData, opts) {
     // first create the objects
     var hoverLabels = container.selectAll('g.hovertext')
         .data(hoverData,function(d) {
-            return [d.trace.index,d.index,d.x0,d.y0,d.name,d.attr||''].join(',');
+            return [d.trace.index,d.index,d.x0,d.y0,d.name,d.attr,d.xa,d.ya ||''].join(',');
         });
     hoverLabels.enter().append('g')
         .classed('hovertext',true)
@@ -67431,8 +67964,8 @@ function createHoverText(hoverData, opts) {
                 stroke: contrastColor
             });
         var tbb = tx.node().getBoundingClientRect(),
-            htx = xa._offset+(d.x0+d.x1)/2,
-            hty = ya._offset+(d.y0+d.y1)/2,
+            htx = d.xa._offset+(d.x0+d.x1)/2,
+            hty = d.ya._offset+(d.y0+d.y1)/2,
             dx = Math.abs(d.x1-d.x0),
             dy = Math.abs(d.y1-d.y0),
             txTotalWidth = tbb.width+HOVERARROWSIZE+HOVERTEXTPAD+tx2width,
@@ -67495,18 +68028,19 @@ function createHoverText(hoverData, opts) {
 // information then.
 function hoverAvoidOverlaps(hoverData, ax) {
     var nummoves = 0,
-        pmin = ax._offset,
-        pmax = ax._offset+ax._length,
 
         // make groups of touching points
         pointgroups = hoverData
             .map(function(d,i) {
+                var axis = d[ax];
                 return [{
                     i: i,
                     dp: 0,
                     pos: d.pos,
                     posref: d.posref,
-                    size: d.by*(ax._id.charAt(0)==='x' ? YFACTOR : 1)/2
+                    size: d.by*(axis._id.charAt(0)==='x' ? YFACTOR : 1)/2,
+                    pmin: axis._offset,
+                    pmax: axis._offset+axis._length
                 }];
             })
             .sort(function(a,b) { return a[0].posref-b[0].posref; }),
@@ -67522,10 +68056,10 @@ function hoverAvoidOverlaps(hoverData, ax) {
             maxPt = grp[grp.length-1];
 
         // overlap with the top - positive vals are overlaps
-        topOverlap = pmin-minPt.pos-minPt.dp+minPt.size;
+        topOverlap = minPt.pmin-minPt.pos-minPt.dp+minPt.size;
 
         // overlap with the bottom - positive vals are overlaps
-        bottomOverlap = maxPt.pos+maxPt.dp+maxPt.size-pmax;
+        bottomOverlap = maxPt.pos+maxPt.dp+maxPt.size-minPt.pmax;
 
         // check for min overlap first, so that we always
         // see the largest labels
@@ -67549,7 +68083,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
         var deleteCount = 0;
         for(i=0; i<grp.length; i++) {
             pti = grp[i];
-            if(pti.pos+pti.dp+pti.size>pmax) deleteCount++;
+            if(pti.pos+pti.dp+pti.size>minPt.pmax) deleteCount++;
         }
 
         // start by deleting points whose data is off screen
@@ -67559,7 +68093,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
 
             // pos has already been constrained to [pmin,pmax]
             // so look for points close to that to delete
-            if(pti.pos>pmax-1) {
+            if(pti.pos>minPt.pmax-1) {
                 pti.del = true;
                 deleteCount--;
             }
@@ -67570,7 +68104,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
 
             // pos has already been constrained to [pmin,pmax]
             // so look for points close to that to delete
-            if(pti.pos<pmin+1) {
+            if(pti.pos<minPt.pmin+1) {
                 pti.del = true;
                 deleteCount--;
 
@@ -67583,7 +68117,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
         for(i=grp.length-1; i>=0; i--) {
             if(deleteCount<=0) break;
             pti = grp[i];
-            if(pti.pos+pti.dp+pti.size>pmax) {
+            if(pti.pos+pti.dp+pti.size>minPt.pmax) {
                 pti.del = true;
                 deleteCount--;
             }
@@ -67611,7 +68145,9 @@ function hoverAvoidOverlaps(hoverData, ax) {
                 p0 = g0[g0.length-1],
                 p1 = g1[0];
             topOverlap = p0.pos+p0.dp+p0.size-p1.pos-p1.dp+p1.size;
-            if(topOverlap>0.01) {
+
+            //Only group points that lie on the same axes
+            if(topOverlap>0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
                 // push the new point(s) added to this group out of the way
                 for(j=g1.length-1; j>=0; j--) g1[j].dp += topOverlap;
 
@@ -68608,7 +69144,7 @@ fx.inbox = function(v0,v1) {
     return Infinity;
 };
 
-},{"../../lib":349,"../../lib/events":344,"../../plotly":366,"./constants":373,"./select":379,"d3":70,"fast-isnumeric":74,"tinycolor2":229}],375:[function(require,module,exports){
+},{"../../lib":359,"../../lib/events":354,"../../plotly":376,"./constants":383,"./select":389,"d3":70,"fast-isnumeric":74,"tinycolor2":231}],385:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -68622,8 +69158,6 @@ fx.inbox = function(v0,v1) {
 
 var Lib = require('../../lib');
 var Plots = require('../plots');
-var ErrorBars = require('../../components/errorbars');
-
 
 exports.name = 'cartesian';
 
@@ -68682,8 +69216,7 @@ exports.plot = function(gd) {
     for(var i = 0; i < subplots.length; i++) {
         var subplot = subplots[i],
             subplotInfo = fullLayout._plots[subplot],
-            cdSubplot = getCdSubplot(calcdata, subplot),
-            cdError = [];
+            cdSubplot = getCdSubplot(calcdata, subplot);
 
         // remove old traces, then redraw everything
         // TODO: use enter/exit appropriately in the plot functions
@@ -68702,17 +69235,9 @@ exports.plot = function(gd) {
             // plot all traces of this type on this subplot at once
             var cdModule = getCdModule(cdSubplot, _module);
             _module.plot(gd, subplotInfo, cdModule);
+
             Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
-
-            // collect the traces that may have error bars
-            if(cdModule[0] && cdModule[0][0].trace && Plots.traceIs(cdModule[0][0].trace, 'errorBarsOK')) {
-                cdError = cdError.concat(cdModule);
-            }
         }
-
-        // finally do all error bars at once
-        ErrorBars.plot(gd, subplotInfo, cdError);
-        Lib.markTime('done ErrorBars');
     }
 
     // now draw stuff not on subplots (ie, only pies at the moment)
@@ -68730,7 +69255,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 };
 
-},{"../../components/errorbars":323,"../../lib":349,"../plots":413,"./attributes":368}],376:[function(require,module,exports){
+},{"../../lib":359,"../plots":423,"./attributes":378}],386:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -69044,7 +69569,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":298,"../../lib/extend":345,"../font_attributes":383,"./index":375}],377:[function(require,module,exports){
+},{"../../components/color/attributes":300,"../../lib/extend":355,"../font_attributes":393,"./index":385}],387:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -69193,7 +69718,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../lib":349,"../plots":413,"./axis_defaults":370,"./axis_ids":371,"./constants":373,"./layout_attributes":376,"./position_defaults":378}],378:[function(require,module,exports){
+},{"../../lib":359,"../plots":423,"./axis_defaults":380,"./axis_ids":381,"./constants":383,"./layout_attributes":386,"./position_defaults":388}],388:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -69258,7 +69783,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":349,"fast-isnumeric":74}],379:[function(require,module,exports){
+},{"../../lib":359,"fast-isnumeric":74}],389:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -69442,7 +69967,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 };
 
-},{"../../components/color":299,"../../lib/polygon":354,"./axes":369,"./constants":373}],380:[function(require,module,exports){
+},{"../../components/color":301,"../../lib/polygon":364,"./axes":379,"./constants":383}],390:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -69685,7 +70210,7 @@ module.exports = function setConvert(ax) {
     ax._forceTick0 = null;
 };
 
-},{"../../lib":349,"./axis_ids":371,"./clean_datum":372,"./constants":373,"d3":70,"fast-isnumeric":74}],381:[function(require,module,exports){
+},{"../../lib":359,"./axis_ids":381,"./clean_datum":382,"./constants":383,"d3":70,"fast-isnumeric":74}],391:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -69772,7 +70297,7 @@ function getShowAttrDflt(containerIn) {
     }
 }
 
-},{"../../lib":349,"./layout_attributes":376}],382:[function(require,module,exports){
+},{"../../lib":359,"./layout_attributes":386}],392:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -69813,7 +70338,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"fast-isnumeric":74}],383:[function(require,module,exports){
+},{"fast-isnumeric":74}],393:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -69844,7 +70369,7 @@ module.exports = {
     }
 };
 
-},{}],384:[function(require,module,exports){
+},{}],394:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -70354,7 +70879,7 @@ function createMockAxis(fullLayout) {
     return mockAxis;
 }
 
-},{"../../components/color":299,"../../components/drawing":317,"../../constants/geo_constants":334,"../../constants/xmlns_namespaces":338,"../../lib/topojson_utils":361,"../../plots/cartesian/axes":369,"./projections":391,"./set_scale":392,"./zoom":393,"./zoom_reset":394,"d3":70,"topojson":230}],385:[function(require,module,exports){
+},{"../../components/color":301,"../../components/drawing":319,"../../constants/geo_constants":344,"../../constants/xmlns_namespaces":348,"../../lib/topojson_utils":371,"../../plots/cartesian/axes":379,"./projections":401,"./set_scale":402,"./zoom":403,"./zoom_reset":404,"d3":70,"topojson":232}],395:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -70436,7 +70961,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 };
 
-},{"../../plots/plots":413,"./geo":384,"./layout/attributes":386,"./layout/defaults":389,"./layout/layout_attributes":390}],386:[function(require,module,exports){
+},{"../../plots/plots":423,"./geo":394,"./layout/attributes":396,"./layout/defaults":399,"./layout/layout_attributes":400}],396:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -70457,7 +70982,7 @@ module.exports = {
     }
 };
 
-},{}],387:[function(require,module,exports){
+},{}],397:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -70512,7 +71037,7 @@ module.exports = {
     }
 };
 
-},{"../../../components/color/attributes":298}],388:[function(require,module,exports){
+},{"../../../components/color/attributes":300}],398:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -70586,7 +71111,7 @@ module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut)
     }
 };
 
-},{"../../../constants/geo_constants":334,"../../../lib":349,"./axis_attributes":387}],389:[function(require,module,exports){
+},{"../../../constants/geo_constants":344,"../../../lib":359,"./axis_attributes":397}],399:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -70727,7 +71252,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     ];
 }
 
-},{"../../../constants/geo_constants":334,"../../../lib":349,"../../plots":413,"./axis_defaults":388,"./layout_attributes":390}],390:[function(require,module,exports){
+},{"../../../constants/geo_constants":344,"../../../lib":359,"../../plots":423,"./axis_defaults":398,"./layout_attributes":400}],400:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -70960,7 +71485,7 @@ module.exports = {
     lataxis: geoAxesAttrs
 };
 
-},{"../../../components/color/attributes":298,"../../../constants/geo_constants":334,"./axis_attributes":387}],391:[function(require,module,exports){
+},{"../../../components/color/attributes":300,"../../../constants/geo_constants":344,"./axis_attributes":397}],401:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -71372,7 +71897,7 @@ function addProjectionToD3() {
 
 module.exports = addProjectionToD3;
 
-},{"d3":70}],392:[function(require,module,exports){
+},{"d3":70}],402:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -71523,7 +72048,7 @@ function getBounds(projection, rangeBox) {
     return d3.geo.path().projection(projection).bounds(rangeBox);
 }
 
-},{"../../constants/geo_constants":334,"d3":70}],393:[function(require,module,exports){
+},{"../../constants/geo_constants":344,"d3":70}],403:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -71950,7 +72475,7 @@ function d3_eventDispatch(target) {
     return dispatch;
 }
 
-},{"d3":70}],394:[function(require,module,exports){
+},{"d3":70}],404:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -71985,7 +72510,7 @@ function createGeoZoomReset(geo, geoLayout) {
 
 module.exports = createGeoZoomReset;
 
-},{"../cartesian/graph_interact":374}],395:[function(require,module,exports){
+},{"../cartesian/graph_interact":384}],405:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -72140,7 +72665,7 @@ function createCamera(scene) {
     return result;
 }
 
-},{"mouse-change":196,"mouse-wheel":200}],396:[function(require,module,exports){
+},{"mouse-change":197,"mouse-wheel":201}],406:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -72383,7 +72908,7 @@ function createAxes2D(scene) {
 
 module.exports = createAxes2D;
 
-},{"../../lib/html2unicode":348,"../../lib/str2rgbarray":359,"../../plotly":366}],397:[function(require,module,exports){
+},{"../../lib/html2unicode":358,"../../lib/str2rgbarray":369,"../../plotly":376}],407:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -72452,7 +72977,21 @@ exports.plot = function plotGl2d(gd) {
     }
 };
 
-},{"../../plotly":366,"../cartesian/attributes":368,"./scene2d":398}],398:[function(require,module,exports){
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, 'gl2d');
+
+    for(var i = 0; i < oldSceneKeys.length; i++) {
+        var oldSubplot = oldFullLayout._plots[oldSceneKeys[i]],
+            xaName = oldSubplot.xaxis._name,
+            yaName = oldSubplot.yaxis._name;
+
+        if(!!oldSubplot._scene2d && (!newFullLayout[xaName] || !newFullLayout[yaName])) {
+            oldSubplot._scene2d.destroy();
+        }
+    }
+};
+
+},{"../../plotly":376,"../cartesian/attributes":378,"./scene2d":408}],408:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -72747,6 +73286,13 @@ proto.cameraChanged = function() {
 
 proto.destroy = function() {
     this.glplot.dispose();
+
+    this.container.removeChild(this.canvas);
+    this.container.removeChild(this.svgContainer);
+    this.container.removeChild(this.mouseContainer);
+
+    this.glplot = null;
+    this.stopped = true;
 };
 
 proto.plot = function(fullData, fullLayout) {
@@ -72860,6 +73406,7 @@ proto.plot = function(fullData, fullLayout) {
 
 proto.draw = function() {
     if(this.stopped) return;
+
     requestAnimationFrame(this.redraw);
 
     var glplot = this.glplot,
@@ -72960,7 +73507,7 @@ proto.hoverFormatter = function(axisName, val) {
     return Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };
 
-},{"../../lib/html2unicode":348,"../../lib/show_no_webgl_msg":357,"../../plots/cartesian/axes":369,"../../plots/cartesian/graph_interact":374,"../../plots/plots":413,"./camera":395,"./convert":396,"gl-plot2d":122,"gl-select-box":152,"gl-spikes2d":178}],399:[function(require,module,exports){
+},{"../../lib/html2unicode":358,"../../lib/show_no_webgl_msg":367,"../../plots/cartesian/axes":379,"../../plots/cartesian/graph_interact":384,"../../plots/plots":423,"./camera":405,"./convert":406,"gl-plot2d":122,"gl-select-box":152,"gl-spikes2d":173}],409:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -73203,7 +73750,7 @@ function createCamera(element, options) {
     return camera;
 }
 
-},{"3d-view":38,"mouse-change":196,"mouse-wheel":200,"right-now":210}],400:[function(require,module,exports){
+},{"3d-view":38,"mouse-change":197,"mouse-wheel":201,"right-now":212}],410:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -73313,7 +73860,7 @@ exports.initAxes = function(gd) {
     }
 };
 
-},{"../plots":413,"./layout/attributes":401,"./layout/defaults":405,"./layout/layout_attributes":406,"./scene":410,"./set_convert":411}],401:[function(require,module,exports){
+},{"../plots":423,"./layout/attributes":411,"./layout/defaults":415,"./layout/layout_attributes":416,"./scene":420,"./set_convert":421}],411:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -73334,7 +73881,7 @@ module.exports = {
     }
 };
 
-},{}],402:[function(require,module,exports){
+},{}],412:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -73437,7 +73984,7 @@ module.exports = {
     zerolinewidth: axesAttrs.zerolinewidth
 };
 
-},{"../../../lib/extend":345,"../../cartesian/layout_attributes":376}],403:[function(require,module,exports){
+},{"../../../lib/extend":355,"../../cartesian/layout_attributes":386}],413:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -73499,7 +74046,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     }
 };
 
-},{"../../../lib":349,"../../cartesian/axis_defaults":370,"./axis_attributes":402}],404:[function(require,module,exports){
+},{"../../../lib":359,"../../cartesian/axis_defaults":380,"./axis_attributes":412}],414:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -73655,7 +74202,7 @@ function createAxesOptions(plotlyOptions) {
 
 module.exports = createAxesOptions;
 
-},{"../../../lib/html2unicode":348,"../../../lib/str2rgbarray":359,"arraytools":48}],405:[function(require,module,exports){
+},{"../../../lib/html2unicode":358,"../../../lib/str2rgbarray":369,"arraytools":48}],415:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -73777,7 +74324,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 };
 
-},{"../../../lib":349,"../../plots":413,"./axis_defaults":403,"./layout_attributes":406}],406:[function(require,module,exports){
+},{"../../../lib":359,"../../plots":423,"./axis_defaults":413,"./layout_attributes":416}],416:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -73905,7 +74452,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":345,"./axis_attributes":402}],407:[function(require,module,exports){
+},{"../../../lib/extend":355,"./axis_attributes":412}],417:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -73951,7 +74498,7 @@ function createSpikeOptions(layout) {
 
 module.exports = createSpikeOptions;
 
-},{"../../../lib/str2rgbarray":359}],408:[function(require,module,exports){
+},{"../../../lib/str2rgbarray":369}],418:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -74046,7 +74593,7 @@ function computeTickMarks(scene) {
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
 
-},{"../../../lib/html2unicode":348,"../../../plotly":366}],409:[function(require,module,exports){
+},{"../../../lib/html2unicode":358,"../../../plotly":376}],419:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -74080,7 +74627,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],410:[function(require,module,exports){
+},{}],420:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -74785,7 +75332,7 @@ proto.toImage = function(format) {
 
 module.exports = Scene;
 
-},{"../../lib":349,"../../lib/show_no_webgl_msg":357,"../../lib/str2rgbarray":359,"../../plots/cartesian/axes":369,"../../plots/cartesian/graph_interact":374,"../../plots/plots":413,"./camera":399,"./layout/convert":404,"./layout/spikes":407,"./layout/tick_marks":408,"./project":409,"./set_convert":411,"gl-plot3d":140}],411:[function(require,module,exports){
+},{"../../lib":359,"../../lib/show_no_webgl_msg":367,"../../lib/str2rgbarray":369,"../../plots/cartesian/axes":379,"../../plots/cartesian/graph_interact":384,"../../plots/plots":423,"./camera":409,"./layout/convert":414,"./layout/spikes":417,"./layout/tick_marks":418,"./project":419,"./set_convert":421,"gl-plot3d":140}],421:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -74807,7 +75354,7 @@ module.exports = function setConvert(containerOut) {
     containerOut.setScale = noop;
 };
 
-},{"../cartesian/axes":369}],412:[function(require,module,exports){
+},{"../cartesian/axes":379}],422:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -74987,7 +75534,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":298,"../plotly":366,"./font_attributes":383}],413:[function(require,module,exports){
+},{"../components/color/attributes":300,"../plotly":376,"./font_attributes":393}],423:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -75482,7 +76029,7 @@ plots.supplyDefaults = function(gd) {
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
     // clean subplots and other artifacts from previous plot calls
-    cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     /*
      * Relink functions and underscore attributes to promote consistency between
@@ -75510,7 +76057,7 @@ plots.supplyDefaults = function(gd) {
     }
 };
 
-function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var i, j;
 
     var plotTypes = Object.keys(subplotsRegistry);
@@ -75550,7 +76097,7 @@ function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
             oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
         }
     }
-}
+};
 
 /**
  * Relink private _keys and keys with a function value from one layout
@@ -75745,16 +76292,13 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     }
 };
 
+// Remove all plotly attributes from a div so it can be replotted fresh
+// TODO: these really need to be encapsulated into a much smaller set...
 plots.purge = function(gd) {
-    // remove all plotly attributes from a div so it can be replotted fresh
-    // TODO: these really need to be encapsulated into a much smaller set...
 
     // note: we DO NOT remove _context because it doesn't change when we insert
     // a new plot, and may have been set outside of our scope.
 
-    // clean up the gl and geo containers
-    // TODO unify subplot creation/update with d3.selection.order
-    // and/or subplot ids
     var fullLayout = gd._fullLayout || {};
     if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
     if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
@@ -75798,10 +76342,11 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars);
+    var _modules = gd._modules;
 
-    for(var i = 0; i < modulesWithErrorBars.length; i++) {
-        var _module = modulesWithErrorBars[i];
+    for(var i = 0; i < _modules.length; i++) {
+        var _module = _modules[i];
+
         if(_module.style) _module.style(gd);
     }
 };
@@ -75833,6 +76378,7 @@ plots.sanitizeMargins = function(fullLayout) {
         margin.b = Math.floor(correction * margin.b);
     }
 };
+
 // called by legend and colorbar routines to see if we need to
 // expand the margins to show them
 // o is {x,l,r,y,t,b} where x and y are plot fractions,
@@ -75867,17 +76413,19 @@ plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     if(!fullLayout._size) fullLayout._size = {};
     if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
+
     var gs = fullLayout._size,
         oldmargins = JSON.stringify(gs);
 
     // adjust margins for outside legends and colorbars
     // fullLayout.margin is the requested margin,
     // fullLayout._size has margins and plotsize after adjustment
-    var ml = Math.max(fullLayout.margin.l||0,0),
-        mr = Math.max(fullLayout.margin.r||0,0),
-        mt = Math.max(fullLayout.margin.t||0,0),
-        mb = Math.max(fullLayout.margin.b||0,0),
+    var ml = Math.max(fullLayout.margin.l || 0, 0),
+        mr = Math.max(fullLayout.margin.r || 0, 0),
+        mt = Math.max(fullLayout.margin.t || 0, 0),
+        mb = Math.max(fullLayout.margin.b || 0, 0),
         pm = fullLayout._pushmargin;
+
     if(fullLayout.margin.autoexpand!==false) {
         // fill in the requested margins
         pm.base = {
@@ -76051,7 +76599,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     return (output==='object') ? obj : JSON.stringify(obj);
 };
 
-},{"../lib":349,"../plotly":366,"./attributes":367,"./font_attributes":383,"./layout_attributes":412,"d3":70,"fast-isnumeric":74}],414:[function(require,module,exports){
+},{"../lib":359,"../plotly":376,"./attributes":377,"./font_attributes":393,"./layout_attributes":422,"d3":70,"fast-isnumeric":74}],424:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -76076,7 +76624,7 @@ module.exports = {
     }
 };
 
-},{"../../traces/scatter/attributes":502}],415:[function(require,module,exports){
+},{"../../traces/scatter/attributes":513}],425:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -76191,7 +76739,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":345,"../cartesian/layout_attributes":376}],416:[function(require,module,exports){
+},{"../../lib/extend":355,"../cartesian/layout_attributes":386}],426:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -77614,7 +78162,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
     return exports;
 };
 
-},{"../../plotly":366,"./micropolar_manager":417,"d3":70}],417:[function(require,module,exports){
+},{"../../plotly":376,"./micropolar_manager":427,"d3":70}],427:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -77699,7 +78247,7 @@ manager.fillLayout = function(_gd) {
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };
 
-},{"../../plotly":366,"./undo_manager":418,"d3":70}],418:[function(require,module,exports){
+},{"../../plotly":376,"./undo_manager":428,"d3":70}],428:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -77765,7 +78313,7 @@ module.exports = function UndoManager() {
     };
 };
 
-},{}],419:[function(require,module,exports){
+},{}],429:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -77921,7 +78469,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../plotly":366}],420:[function(require,module,exports){
+},{"../plotly":376}],430:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -77963,7 +78511,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":419,"./svgtoimg":421,"./toimage":422,"./tosvg":423}],421:[function(require,module,exports){
+},{"./cloneplot":429,"./svgtoimg":431,"./toimage":432,"./tosvg":433}],431:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78035,7 +78583,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"events":54}],422:[function(require,module,exports){
+},{"events":54}],432:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78119,7 +78667,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../plotly":366,"events":54}],423:[function(require,module,exports){
+},{"../plotly":376,"events":54}],433:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78207,14 +78755,18 @@ module.exports = function toSVG(gd, format) {
             .appendChild(geoFramework.node());
     }
 
-    // now that we've got the 3d images in the right layer, add top items above them
-    // assumes everything in toppaper is a group, and if it's empty (like hoverlayer)
-    // we can ignore it
+    // now that we've got the 3d images in the right layer,
+    // add top items above them assumes everything in toppaper is either
+    // a group or a defs, and if it's empty (like hoverlayer) we can ignore it.
     if(fullLayout._toppaper) {
-        var topGroups = fullLayout._toppaper.node().childNodes,
-            topGroup;
+        var nodes = fullLayout._toppaper.node().childNodes;
+
+        // make copy of nodes as childNodes prop gets mutated in loop below
+        var topGroups = Array.prototype.slice.call(nodes);
+
         for(i = 0; i < topGroups.length; i++) {
-            topGroup = topGroups[i];
+            var topGroup = topGroups[i];
+
             if(topGroup.childNodes.length) svg.node().appendChild(topGroup);
         }
     }
@@ -78225,12 +78777,7 @@ module.exports = function toSVG(gd, format) {
     svg.node().style.background = '';
 
     svg.selectAll('text')
-        .attr({'data-unformatted': null})
-        .style({
-            '-webkit-user-select': null,
-            '-moz-user-select': null,
-            '-ms-user-select': null
-        })
+        .attr('data-unformatted', null)
         .each(function() {
             // hidden text is pre-formatting mathjax, the browser ignores it but it can still confuse batik
             var txt = d3.select(this);
@@ -78296,7 +78843,7 @@ function insertGlImage(fullLayout, scene, opts) {
     scene.destroy();
 }
 
-},{"../constants/xmlns_namespaces":338,"../plotly":366,"d3":70}],424:[function(require,module,exports){
+},{"../constants/xmlns_namespaces":348,"../plotly":376,"d3":70}],434:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78324,7 +78871,7 @@ module.exports = function arraysToCalcdata(cd) {
     mergeArray(markerLine.width, cd, 'mlw');
 };
 
-},{"../../lib":349}],425:[function(require,module,exports){
+},{"../../lib":359}],435:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78394,7 +78941,7 @@ module.exports = {
     }
 };
 
-},{"../scatter/attributes":502}],426:[function(require,module,exports){
+},{"../scatter/attributes":513}],436:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78453,7 +79000,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../components/colorscale/calc":306,"../../components/colorscale/has_colorscale":311,"../../plots/cartesian/axes":369,"fast-isnumeric":74}],427:[function(require,module,exports){
+},{"../../components/colorscale/calc":308,"../../components/colorscale/has_colorscale":313,"../../plots/cartesian/axes":379,"fast-isnumeric":74}],437:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78495,7 +79042,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":299,"../../components/errorbars/defaults":322,"../../lib":349,"../bar/style_defaults":435,"../scatter/xy_defaults":522,"./attributes":425}],428:[function(require,module,exports){
+},{"../../components/color":301,"../../components/errorbars/defaults":324,"../../lib":359,"../bar/style_defaults":445,"../scatter/xy_defaults":533,"./attributes":435}],438:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78586,7 +79133,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return [pointData];
 };
 
-},{"../../components/color":299,"../../components/errorbars":323,"../../plots/cartesian/graph_interact":374}],429:[function(require,module,exports){
+},{"../../components/color":301,"../../components/errorbars":325,"../../plots/cartesian/graph_interact":384}],439:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78622,7 +79169,7 @@ Bar.meta = {
 
 module.exports = Bar;
 
-},{"../../plots/cartesian":375,"../scatter/colorbar":505,"./arrays_to_calcdata":424,"./attributes":425,"./calc":426,"./defaults":427,"./hover":428,"./layout_attributes":430,"./layout_defaults":431,"./plot":432,"./set_positions":433,"./style":434}],430:[function(require,module,exports){
+},{"../../plots/cartesian":385,"../scatter/colorbar":516,"./arrays_to_calcdata":434,"./attributes":435,"./calc":436,"./defaults":437,"./hover":438,"./layout_attributes":440,"./layout_defaults":441,"./plot":442,"./set_positions":443,"./style":444}],440:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78666,7 +79213,7 @@ module.exports = {
     }
 };
 
-},{}],431:[function(require,module,exports){
+},{}],441:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78724,7 +79271,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
     coerce('bargroupgap');
 };
 
-},{"../../lib":349,"../../plots/cartesian/axes":369,"../../plots/plots":413,"./layout_attributes":430}],432:[function(require,module,exports){
+},{"../../lib":359,"../../plots/cartesian/axes":379,"../../plots/plots":423,"./layout_attributes":440}],442:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -78741,6 +79288,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var Color = require('../../components/color');
+var ErrorBars = require('../../components/errorbars');
 
 var arraysToCalcdata = require('./arrays_to_calcdata');
 
@@ -78829,9 +79377,13 @@ module.exports = function plot(gd, plotinfo, cdbar) {
                         'M'+x0+','+y0+'V'+y1+'H'+x1+'V'+y0+'Z');
                 });
         });
+
+    // error bars are on the top
+    bartraces.call(ErrorBars.plot, plotinfo);
+
 };
 
-},{"../../components/color":299,"../../lib":349,"./arrays_to_calcdata":424,"d3":70,"fast-isnumeric":74}],433:[function(require,module,exports){
+},{"../../components/color":301,"../../components/errorbars":325,"../../lib":359,"./arrays_to_calcdata":434,"d3":70,"fast-isnumeric":74}],443:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79037,7 +79589,7 @@ module.exports = function setPositions(gd, plotinfo) {
     });
 };
 
-},{"../../lib":349,"../../plots/cartesian/axes":369,"../../plots/plots":413,"fast-isnumeric":74}],434:[function(require,module,exports){
+},{"../../lib":359,"../../plots/cartesian/axes":379,"../../plots/plots":423,"fast-isnumeric":74}],444:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79053,6 +79605,7 @@ var d3 = require('d3');
 
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
+var ErrorBars = require('../../components/errorbars');
 
 
 module.exports = function style(gd) {
@@ -79111,9 +79664,11 @@ module.exports = function style(gd) {
         // d3.select(this).selectAll('text')
         //     .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
     });
+
+    s.call(ErrorBars.style);
 };
 
-},{"../../components/color":299,"../../components/drawing":317,"d3":70}],435:[function(require,module,exports){
+},{"../../components/color":301,"../../components/drawing":319,"../../components/errorbars":325,"d3":70}],445:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79150,7 +79705,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
     coerce('marker.line.width');
 };
 
-},{"../../components/color":299,"../../components/colorscale/defaults":308,"../../components/colorscale/has_colorscale":311}],436:[function(require,module,exports){
+},{"../../components/color":301,"../../components/colorscale/defaults":310,"../../components/colorscale/has_colorscale":313}],446:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79281,7 +79836,7 @@ module.exports = {
     fillcolor: scatterAttrs.fillcolor
 };
 
-},{"../../components/color/attributes":298,"../../lib/extend":345,"../scatter/attributes":502}],437:[function(require,module,exports){
+},{"../../components/color/attributes":300,"../../lib/extend":355,"../scatter/attributes":513}],447:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79430,7 +79985,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":349,"../../plots/cartesian/axes":369,"fast-isnumeric":74}],438:[function(require,module,exports){
+},{"../../lib":359,"../../plots/cartesian/axes":379,"fast-isnumeric":74}],448:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79499,7 +80054,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     }
 };
 
-},{"../../components/color":299,"../../lib":349,"./attributes":436}],439:[function(require,module,exports){
+},{"../../components/color":301,"../../lib":359,"./attributes":446}],449:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79608,7 +80163,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return closeData;
 };
 
-},{"../../components/color":299,"../../lib":349,"../../plots/cartesian/axes":369,"../../plots/cartesian/graph_interact":374}],440:[function(require,module,exports){
+},{"../../components/color":301,"../../lib":359,"../../plots/cartesian/axes":379,"../../plots/cartesian/graph_interact":384}],450:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79641,7 +80196,7 @@ Box.meta = {
 
 module.exports = Box;
 
-},{"../../plots/cartesian":375,"./attributes":436,"./calc":437,"./defaults":438,"./hover":439,"./layout_attributes":441,"./layout_defaults":442,"./plot":443,"./set_positions":444,"./style":445}],441:[function(require,module,exports){
+},{"../../plots/cartesian":385,"./attributes":446,"./calc":447,"./defaults":448,"./hover":449,"./layout_attributes":451,"./layout_defaults":452,"./plot":453,"./set_positions":454,"./style":455}],451:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79679,7 +80234,7 @@ module.exports = {
     }
 };
 
-},{}],442:[function(require,module,exports){
+},{}],452:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79713,7 +80268,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     coerce('boxgroupgap');
 };
 
-},{"../../lib":349,"../../plots/plots":413,"./layout_attributes":441}],443:[function(require,module,exports){
+},{"../../lib":359,"../../plots/plots":423,"./layout_attributes":451}],453:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -79940,7 +80495,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
     });
 };
 
-},{"../../components/drawing":317,"../../lib":349,"d3":70}],444:[function(require,module,exports){
+},{"../../components/drawing":319,"../../lib":359,"d3":70}],454:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80033,7 +80588,7 @@ module.exports = function setPositions(gd, plotinfo) {
     }
 };
 
-},{"../../lib":349,"../../plots/cartesian/axes":369,"../../plots/plots":413}],445:[function(require,module,exports){
+},{"../../lib":359,"../../plots/cartesian/axes":379,"../../plots/plots":423}],455:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80072,7 +80627,7 @@ module.exports = function style(gd) {
         });
 };
 
-},{"../../components/color":299,"../../components/drawing":317,"d3":70}],446:[function(require,module,exports){
+},{"../../components/color":301,"../../components/drawing":319,"d3":70}],456:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80125,7 +80680,26 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":305,"../../lib/extend":345,"../../plots/attributes":367,"../scattergeo/attributes":529}],447:[function(require,module,exports){
+},{"../../components/colorscale/attributes":307,"../../lib/extend":355,"../../plots/attributes":377,"../scattergeo/attributes":540}],457:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var colorscaleCalc = require('../../components/colorscale/calc');
+
+
+module.exports = function calc(gd, trace) {
+    colorscaleCalc(trace, trace.z, '', 'z');
+};
+
+},{"../../components/colorscale/calc":308}],458:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80180,7 +80754,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined);
 };
 
-},{"../../components/colorscale/defaults":308,"../../lib":349,"./attributes":446}],448:[function(require,module,exports){
+},{"../../components/colorscale/defaults":310,"../../lib":359,"./attributes":456}],459:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80197,7 +80771,7 @@ var Choropleth = {};
 Choropleth.attributes = require('./attributes');
 Choropleth.supplyDefaults = require('./defaults');
 Choropleth.colorbar = require('../heatmap/colorbar');
-Choropleth.calc = require('../surface/calc');
+Choropleth.calc = require('./calc');
 Choropleth.plot = require('./plot').plot;
 
 Choropleth.moduleType = 'trace';
@@ -80210,7 +80784,7 @@ Choropleth.meta = {
 
 module.exports = Choropleth;
 
-},{"../../plots/geo":385,"../heatmap/colorbar":461,"../surface/calc":539,"./attributes":446,"./defaults":447,"./plot":449}],449:[function(require,module,exports){
+},{"../../plots/geo":395,"../heatmap/colorbar":472,"./attributes":456,"./calc":457,"./defaults":458,"./plot":460}],460:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80288,50 +80862,51 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
 
     gChoroplethTraces.exit().remove();
 
-    gChoroplethTraces
-        .each(function(trace) {
-            var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
-                eventDataFunc = makeEventDataFunc(trace);
+    gChoroplethTraces.each(function(trace) {
+        var cdi = plotChoropleth.calcGeoJSON(trace, geo.topojson),
+            cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+            eventDataFunc = makeEventDataFunc(trace);
 
-            function handleMouseOver(pt, ptIndex) {
-                if(!geo.showHover) return;
+        function handleMouseOver(pt, ptIndex) {
+            if(!geo.showHover) return;
 
-                var xy = geo.projection(pt.properties.ct);
-                cleanHoverLabelsFunc(pt);
+            var xy = geo.projection(pt.properties.ct);
+            cleanHoverLabelsFunc(pt);
 
-                Fx.loneHover({
-                    x: xy[0],
-                    y: xy[1],
-                    name: pt.nameLabel,
-                    text: pt.textLabel
-                }, {
-                    container: geo.hoverContainer.node()
-                });
+            Fx.loneHover({
+                x: xy[0],
+                y: xy[1],
+                name: pt.nameLabel,
+                text: pt.textLabel
+            }, {
+                container: geo.hoverContainer.node()
+            });
 
-                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
-            }
+            geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+        }
 
-            function handleClick(pt, ptIndex) {
-                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
-            }
+        function handleClick(pt, ptIndex) {
+            geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
+        }
 
-            d3.select(this)
-                .selectAll('path.choroplethlocation')
-                    .data(cdi)
-                .enter().append('path')
-                    .attr('class', 'choroplethlocation')
-                    .on('mouseover', handleMouseOver)
-                    .on('click', handleClick)
-                    .on('mouseout', function() {
-                        Fx.loneUnhover(geo.hoverContainer);
-                    })
-                    .on('mousedown', function() {
-                        // to simulate the 'zoomon' event
-                        Fx.loneUnhover(geo.hoverContainer);
-                    })
-                    .on('mouseup', handleMouseOver);  // ~ 'zoomend'
-        });
+        var paths = d3.select(this).selectAll('path.choroplethlocation')
+                .data(cdi);
+
+        paths.enter().append('path')
+            .classed('choroplethlocation', true)
+            .on('mouseover', handleMouseOver)
+            .on('click', handleClick)
+            .on('mouseout', function() {
+                Fx.loneUnhover(geo.hoverContainer);
+            })
+            .on('mousedown', function() {
+                // to simulate the 'zoomon' event
+                Fx.loneUnhover(geo.hoverContainer);
+            })
+            .on('mouseup', handleMouseOver);  // ~ 'zoomend'
+
+        paths.exit().remove();
+    });
 
     // some baselayers are drawn over choropleth
     gBaseLayerOverChoropleth.selectAll('*').remove();
@@ -80423,7 +80998,7 @@ function makeEventDataFunc(trace) {
     };
 }
 
-},{"../../components/color":299,"../../components/colorscale/get_scale":310,"../../components/colorscale/make_scale_function":315,"../../components/drawing":317,"../../constants/geo_constants":334,"../../lib/array_to_calc_item":341,"../../lib/geo_location_utils":346,"../../lib/topojson_utils":361,"../../plots/cartesian/axes":369,"../../plots/cartesian/graph_interact":374,"./attributes":446,"d3":70}],450:[function(require,module,exports){
+},{"../../components/color":301,"../../components/colorscale/get_scale":312,"../../components/colorscale/make_scale_function":317,"../../components/drawing":319,"../../constants/geo_constants":344,"../../lib/array_to_calc_item":351,"../../lib/geo_location_utils":356,"../../lib/topojson_utils":371,"../../plots/cartesian/axes":379,"../../plots/cartesian/graph_interact":384,"./attributes":456,"d3":70}],461:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80526,7 +81101,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":345,"../heatmap/attributes":459,"../scatter/attributes":502}],451:[function(require,module,exports){
+},{"../../lib/extend":355,"../heatmap/attributes":470,"../scatter/attributes":513}],462:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80575,7 +81150,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../plots/cartesian/axes":369,"../heatmap/calc":460}],452:[function(require,module,exports){
+},{"../../plots/cartesian/axes":379,"../heatmap/calc":471}],463:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80669,7 +81244,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":302,"../../components/colorscale/get_scale":310,"../../plots/plots":413,"d3":70}],453:[function(require,module,exports){
+},{"../../components/colorbar/draw":304,"../../components/colorscale/get_scale":312,"../../plots/plots":423,"d3":70}],464:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80713,7 +81288,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":349,"../contour/style_defaults":458,"../heatmap/has_columns":464,"../heatmap/xyz_defaults":470,"./attributes":450}],454:[function(require,module,exports){
+},{"../../lib":359,"../contour/style_defaults":469,"../heatmap/has_columns":475,"../heatmap/xyz_defaults":481,"./attributes":461}],465:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80732,7 +81307,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return heatmapHoverPoints(pointData, xval, yval, hovermode, true);
 };
 
-},{"../heatmap/hover":465}],455:[function(require,module,exports){
+},{"../heatmap/hover":476}],466:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -80764,7 +81339,7 @@ Contour.meta = {
 
 module.exports = Contour;
 
-},{"../../plots/cartesian":375,"./attributes":450,"./calc":451,"./colorbar":452,"./defaults":453,"./hover":454,"./plot":456,"./style":457}],456:[function(require,module,exports){
+},{"../../plots/cartesian":385,"./attributes":461,"./calc":462,"./colorbar":463,"./defaults":464,"./hover":465,"./plot":467,"./style":468}],467:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -81477,7 +82052,7 @@ function makeClipMask(cd0) {
     return z;
 }
 
-},{"../../components/drawing":317,"../../lib":349,"../heatmap/plot":468,"d3":70}],457:[function(require,module,exports){
+},{"../../components/drawing":319,"../../lib":359,"../heatmap/plot":479,"d3":70}],468:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -81535,7 +82110,7 @@ module.exports = function style(gd) {
     heatmapStyle(gd);
 };
 
-},{"../../components/colorscale/get_scale":310,"../../components/drawing":317,"../heatmap/style":469,"d3":70}],458:[function(require,module,exports){
+},{"../../components/colorscale/get_scale":312,"../../components/drawing":319,"../heatmap/style":480,"d3":70}],469:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -81571,7 +82146,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout)
     }
 };
 
-},{"../../components/colorscale/defaults":308}],459:[function(require,module,exports){
+},{"../../components/colorscale/defaults":310}],470:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -81648,7 +82223,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":305,"../../lib/extend":345,"../scatter/attributes":502}],460:[function(require,module,exports){
+},{"../../components/colorscale/attributes":307,"../../lib/extend":355,"../scatter/attributes":513}],471:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82084,7 +82659,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../components/colorscale/calc":306,"../../lib":349,"../../plots/cartesian/axes":369,"../../plots/plots":413,"../histogram2d/calc":480,"./convert_column_xyz":462,"./has_columns":464,"./max_row_length":467,"fast-isnumeric":74}],461:[function(require,module,exports){
+},{"../../components/colorscale/calc":308,"../../lib":359,"../../plots/cartesian/axes":379,"../../plots/plots":423,"../histogram2d/calc":491,"./convert_column_xyz":473,"./has_columns":475,"./max_row_length":478,"fast-isnumeric":74}],472:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82132,7 +82707,7 @@ module.exports = function colorbar(gd, cd) {
     Lib.markTime('done colorbar');
 };
 
-},{"../../components/colorbar/draw":302,"../../components/colorscale/get_scale":310,"../../lib":349,"../../plots/plots":413,"d3":70,"fast-isnumeric":74}],462:[function(require,module,exports){
+},{"../../components/colorbar/draw":304,"../../components/colorscale/get_scale":312,"../../lib":359,"../../plots/plots":423,"d3":70,"fast-isnumeric":74}],473:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82189,7 +82764,7 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
     if(hasColumnText) trace.text = text;
 };
 
-},{"../../lib":349}],463:[function(require,module,exports){
+},{"../../lib":359}],474:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82227,7 +82802,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };
 
-},{"../../components/colorscale/defaults":308,"../../lib":349,"./attributes":459,"./has_columns":464,"./xyz_defaults":470}],464:[function(require,module,exports){
+},{"../../components/colorscale/defaults":310,"../../lib":359,"./attributes":470,"./has_columns":475,"./xyz_defaults":481}],475:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82243,7 +82818,7 @@ module.exports = function(trace) {
     return !Array.isArray(trace.z[0]);
 };
 
-},{}],465:[function(require,module,exports){
+},{}],476:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82357,7 +82932,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     })];
 };
 
-},{"../../lib":349,"../../plots/cartesian/graph_interact":374}],466:[function(require,module,exports){
+},{"../../lib":359,"../../plots/cartesian/graph_interact":384}],477:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82389,7 +82964,7 @@ Heatmap.meta = {
 
 module.exports = Heatmap;
 
-},{"../../plots/cartesian":375,"./attributes":459,"./calc":460,"./colorbar":461,"./defaults":463,"./hover":465,"./plot":468,"./style":469}],467:[function(require,module,exports){
+},{"../../plots/cartesian":385,"./attributes":470,"./calc":471,"./colorbar":472,"./defaults":474,"./hover":476,"./plot":479,"./style":480}],478:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82411,7 +82986,7 @@ module.exports = function maxRowLength(z) {
     return len;
 };
 
-},{}],468:[function(require,module,exports){
+},{}],479:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82809,7 +83384,7 @@ function plotOne(gd, plotinfo, cd) {
     Lib.markTime('done showing png');
 }
 
-},{"../../components/colorscale/get_scale":310,"../../constants/xmlns_namespaces":338,"../../lib":349,"../../plots/plots":413,"./max_row_length":467,"d3":70,"tinycolor2":229}],469:[function(require,module,exports){
+},{"../../components/colorscale/get_scale":312,"../../constants/xmlns_namespaces":348,"../../lib":359,"../../plots/plots":423,"./max_row_length":478,"d3":70,"tinycolor2":231}],480:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82830,7 +83405,7 @@ module.exports = function style(gd) {
         });
 };
 
-},{"d3":70}],470:[function(require,module,exports){
+},{"d3":70}],481:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82919,7 +83494,7 @@ function isValidZ(z) {
     return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
 }
 
-},{"./has_columns":464,"fast-isnumeric":74}],471:[function(require,module,exports){
+},{"./has_columns":475,"fast-isnumeric":74}],482:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83051,7 +83626,7 @@ function makeBinsAttr(axLetter) {
     };
 }
 
-},{"../../lib":349,"../bar/attributes":425}],472:[function(require,module,exports){
+},{"../../lib":359,"../bar/attributes":435}],483:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83077,7 +83652,7 @@ module.exports = function doAvg(size, counts) {
     return total;
 };
 
-},{}],473:[function(require,module,exports){
+},{}],484:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83107,7 +83682,7 @@ module.exports = function handleBinDefaults(traceIn, traceOut, coerce, binDirect
     return traceOut;
 };
 
-},{}],474:[function(require,module,exports){
+},{}],485:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83181,7 +83756,7 @@ module.exports = {
     }
 };
 
-},{"fast-isnumeric":74}],475:[function(require,module,exports){
+},{"fast-isnumeric":74}],486:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83311,7 +83886,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":349,"../../plots/cartesian/axes":369,"./average":472,"./bin_functions":474,"./norm_functions":478,"fast-isnumeric":74}],476:[function(require,module,exports){
+},{"../../lib":359,"../../plots/cartesian/axes":379,"./average":483,"./bin_functions":485,"./norm_functions":489,"fast-isnumeric":74}],487:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83363,7 +83938,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":299,"../../components/errorbars/defaults":322,"../../lib":349,"../bar/style_defaults":435,"./attributes":471,"./bin_defaults":473}],477:[function(require,module,exports){
+},{"../../components/color":301,"../../components/errorbars/defaults":324,"../../lib":359,"../bar/style_defaults":445,"./attributes":482,"./bin_defaults":484}],488:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83412,7 +83987,7 @@ Histogram.meta = {
 
 module.exports = Histogram;
 
-},{"../../plots/cartesian":375,"../bar/hover":428,"../bar/layout_attributes":430,"../bar/layout_defaults":431,"../bar/plot":432,"../bar/set_positions":433,"../bar/style":434,"../scatter/colorbar":505,"./attributes":471,"./calc":475,"./defaults":476}],478:[function(require,module,exports){
+},{"../../plots/cartesian":385,"../bar/hover":438,"../bar/layout_attributes":440,"../bar/layout_defaults":441,"../bar/plot":442,"../bar/set_positions":443,"../bar/style":444,"../scatter/colorbar":516,"./attributes":482,"./calc":486,"./defaults":487}],489:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83447,7 +84022,7 @@ module.exports = {
     }
 };
 
-},{}],479:[function(require,module,exports){
+},{}],490:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83500,7 +84075,7 @@ module.exports = {
     }
 };
 
-},{"../heatmap/attributes":459,"../histogram/attributes":471}],480:[function(require,module,exports){
+},{"../heatmap/attributes":470,"../histogram/attributes":482}],491:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83670,7 +84245,7 @@ module.exports = function calc(gd, trace) {
     };
 };
 
-},{"../../lib":349,"../../plots/cartesian/axes":369,"../histogram/average":472,"../histogram/bin_functions":474,"../histogram/norm_functions":478}],481:[function(require,module,exports){
+},{"../../lib":359,"../../plots/cartesian/axes":379,"../histogram/average":483,"../histogram/bin_functions":485,"../histogram/norm_functions":489}],492:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83703,7 +84278,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, layout) {
     );
 };
 
-},{"../../components/colorscale/defaults":308,"../../lib":349,"./attributes":479,"./sample_defaults":483}],482:[function(require,module,exports){
+},{"../../components/colorscale/defaults":310,"../../lib":359,"./attributes":490,"./sample_defaults":494}],493:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83736,7 +84311,7 @@ Histogram2D.meta = {
 
 module.exports = Histogram2D;
 
-},{"../../plots/cartesian":375,"../heatmap/calc":460,"../heatmap/colorbar":461,"../heatmap/hover":465,"../heatmap/plot":468,"../heatmap/style":469,"./attributes":479,"./defaults":481}],483:[function(require,module,exports){
+},{"../../plots/cartesian":385,"../heatmap/calc":471,"../heatmap/colorbar":472,"../heatmap/hover":476,"../heatmap/plot":479,"../heatmap/style":480,"./attributes":490,"./defaults":492}],494:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83772,7 +84347,7 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce) {
     handleBinDefaults(traceIn, traceOut, coerce, binDirections);
 };
 
-},{"../histogram/bin_defaults":473}],484:[function(require,module,exports){
+},{"../histogram/bin_defaults":484}],495:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83819,7 +84394,7 @@ module.exports = {
     }
 };
 
-},{"../contour/attributes":450,"../histogram2d/attributes":479}],485:[function(require,module,exports){
+},{"../contour/attributes":461,"../histogram2d/attributes":490}],496:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83855,7 +84430,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":349,"../contour/style_defaults":458,"../histogram2d/sample_defaults":483,"./attributes":484}],486:[function(require,module,exports){
+},{"../../lib":359,"../contour/style_defaults":469,"../histogram2d/sample_defaults":494,"./attributes":495}],497:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83888,7 +84463,7 @@ Histogram2dContour.meta = {
 
 module.exports = Histogram2dContour;
 
-},{"../../plots/cartesian":375,"../contour/calc":451,"../contour/colorbar":452,"../contour/hover":454,"../contour/plot":456,"../contour/style":457,"./attributes":484,"./defaults":485}],487:[function(require,module,exports){
+},{"../../plots/cartesian":385,"../contour/calc":462,"../contour/colorbar":463,"../contour/hover":465,"../contour/plot":467,"../contour/style":468,"./attributes":495,"./defaults":496}],498:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83998,7 +84573,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":305,"../../lib/extend":345,"../surface/attributes":538}],488:[function(require,module,exports){
+},{"../../components/colorscale/attributes":307,"../../lib/extend":355,"../surface/attributes":549}],499:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84157,7 +84732,7 @@ function createMesh3DTrace(scene, data) {
 
 module.exports = createMesh3DTrace;
 
-},{"../../lib/str2rgbarray":359,"alpha-shape":39,"convex-hull":60,"delaunay-triangulate":71,"gl-mesh3d":107,"tinycolor2":229}],489:[function(require,module,exports){
+},{"../../lib/str2rgbarray":369,"alpha-shape":39,"convex-hull":60,"delaunay-triangulate":71,"gl-mesh3d":107,"tinycolor2":231}],500:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84248,7 +84823,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/colorbar/defaults":301,"../../lib":349,"./attributes":487}],490:[function(require,module,exports){
+},{"../../components/colorbar/defaults":303,"../../lib":359,"./attributes":498}],501:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84277,7 +84852,7 @@ Mesh3D.meta = {
 
 module.exports = Mesh3D;
 
-},{"../../plots/gl3d":400,"../heatmap/colorbar":461,"./attributes":487,"./convert":488,"./defaults":489}],491:[function(require,module,exports){
+},{"../../plots/gl3d":410,"../heatmap/colorbar":472,"./attributes":498,"./convert":499,"./defaults":500}],502:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84497,7 +85072,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":298,"../../lib/extend":345,"../../plots/attributes":367,"../../plots/font_attributes":383}],492:[function(require,module,exports){
+},{"../../components/color/attributes":300,"../../lib/extend":355,"../../plots/attributes":377,"../../plots/font_attributes":393}],503:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84648,7 +85223,7 @@ function nextDefaultColor(index) {
     return pieDefaultColors[index % pieDefaultColors.length];
 }
 
-},{"../../components/color":299,"./helpers":494,"fast-isnumeric":74,"tinycolor2":229}],493:[function(require,module,exports){
+},{"../../components/color":301,"./helpers":505,"fast-isnumeric":74,"tinycolor2":231}],504:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84732,7 +85307,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('pull');
 };
 
-},{"../../lib":349,"./attributes":491}],494:[function(require,module,exports){
+},{"../../lib":359,"./attributes":502}],505:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84755,7 +85330,7 @@ exports.formatPieValue = function formatPieValue(v) {
     return vRounded;
 };
 
-},{}],495:[function(require,module,exports){
+},{}],506:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84787,7 +85362,7 @@ Pie.meta = {
 
 module.exports = Pie;
 
-},{"../../plots/cartesian":375,"./attributes":491,"./calc":492,"./defaults":493,"./layout_attributes":496,"./layout_defaults":497,"./plot":498,"./style":499,"./style_one":500}],496:[function(require,module,exports){
+},{"../../plots/cartesian":385,"./attributes":502,"./calc":503,"./defaults":504,"./layout_attributes":507,"./layout_defaults":508,"./plot":509,"./style":510,"./style_one":511}],507:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84807,7 +85382,7 @@ module.exports = {
     hiddenlabels: {valType: 'data_array'}
 };
 
-},{}],497:[function(require,module,exports){
+},{}],508:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84829,7 +85404,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('hiddenlabels');
 };
 
-},{"../../lib":349,"./layout_attributes":496}],498:[function(require,module,exports){
+},{"../../lib":359,"./layout_attributes":507}],509:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85518,7 +86093,7 @@ function maxExtent(tilt, tiltAxisFraction, depth) {
         2 * Math.sqrt(1 - sinTilt * sinTilt * tiltAxisFraction * tiltAxisFraction));
 }
 
-},{"../../components/color":299,"../../components/drawing":317,"../../lib/svg_text_utils":360,"../../plots/cartesian/graph_interact":374,"./helpers":494,"d3":70}],499:[function(require,module,exports){
+},{"../../components/color":301,"../../components/drawing":319,"../../lib/svg_text_utils":370,"../../plots/cartesian/graph_interact":384,"./helpers":505,"d3":70}],510:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85547,7 +86122,7 @@ module.exports = function style(gd) {
     });
 };
 
-},{"./style_one":500,"d3":70}],500:[function(require,module,exports){
+},{"./style_one":511,"d3":70}],511:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85574,7 +86149,7 @@ module.exports = function styleOne(s, pt, trace) {
     .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":299}],501:[function(require,module,exports){
+},{"../../components/color":301}],512:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85612,7 +86187,7 @@ module.exports = function arraysToCalcdata(cd) {
     }
 };
 
-},{"../../lib":349}],502:[function(require,module,exports){
+},{"../../lib":359}],513:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85931,7 +86506,7 @@ module.exports = {
     }
 };
 
-},{"../../components/drawing":317,"./constants":506}],503:[function(require,module,exports){
+},{"../../components/drawing":319,"./constants":517}],514:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86065,7 +86640,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":349,"../../plots/cartesian/axes":369,"./marker_colorscale_calc":515,"./subtypes":520,"fast-isnumeric":74}],504:[function(require,module,exports){
+},{"../../lib":359,"../../plots/cartesian/axes":379,"./marker_colorscale_calc":526,"./subtypes":531,"fast-isnumeric":74}],515:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86106,7 +86681,7 @@ module.exports = function cleanData(fullData) {
     }
 };
 
-},{}],505:[function(require,module,exports){
+},{}],516:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86161,7 +86736,7 @@ module.exports = function colorbar(gd, cd) {
     Lib.markTime('done colorbar');
 };
 
-},{"../../components/colorbar/draw":302,"../../components/colorscale/get_scale":310,"../../lib":349,"../../plots/plots":413,"d3":70,"fast-isnumeric":74}],506:[function(require,module,exports){
+},{"../../components/colorbar/draw":304,"../../components/colorscale/get_scale":312,"../../lib":359,"../../plots/plots":423,"d3":70,"fast-isnumeric":74}],517:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86177,7 +86752,7 @@ module.exports = {
     PTS_LINESONLY: 20
 };
 
-},{}],507:[function(require,module,exports){
+},{}],518:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86251,7 +86826,7 @@ function lineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 }
 
-},{"../../components/errorbars/defaults":322,"../../lib":349,"./attributes":502,"./constants":506,"./fillcolor_defaults":508,"./line_defaults":512,"./marker_defaults":516,"./subtypes":520,"./text_defaults":521,"./xy_defaults":522}],508:[function(require,module,exports){
+},{"../../components/errorbars/defaults":324,"../../lib":359,"./attributes":513,"./constants":517,"./fillcolor_defaults":519,"./line_defaults":523,"./marker_defaults":527,"./subtypes":531,"./text_defaults":532,"./xy_defaults":533}],519:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86290,7 +86865,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":299}],509:[function(require,module,exports){
+},{"../../components/color":301}],520:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86343,7 +86918,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":299,"./subtypes":520}],510:[function(require,module,exports){
+},{"../../components/color":301,"./subtypes":531}],521:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86414,7 +86989,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return [pointData];
 };
 
-},{"../../components/errorbars":323,"../../plots/cartesian/graph_interact":374,"./get_trace_color":509}],511:[function(require,module,exports){
+},{"../../components/errorbars":325,"../../plots/cartesian/graph_interact":384,"./get_trace_color":520}],522:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86457,7 +87032,7 @@ Scatter.meta = {
 
 module.exports = Scatter;
 
-},{"../../plots/cartesian":375,"./arrays_to_calcdata":501,"./attributes":502,"./calc":503,"./clean_data":504,"./colorbar":505,"./defaults":507,"./hover":510,"./plot":517,"./select":518,"./style":519,"./subtypes":520}],512:[function(require,module,exports){
+},{"../../plots/cartesian":385,"./arrays_to_calcdata":512,"./attributes":513,"./calc":514,"./clean_data":515,"./colorbar":516,"./defaults":518,"./hover":521,"./plot":528,"./select":529,"./style":530,"./subtypes":531}],523:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86481,7 +87056,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, coerce) 
     coerce('line.dash');
 };
 
-},{}],513:[function(require,module,exports){
+},{}],524:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86650,7 +87225,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../plots/cartesian/axes":369}],514:[function(require,module,exports){
+},{"../../plots/cartesian/axes":379}],525:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86692,7 +87267,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":74}],515:[function(require,module,exports){
+},{"fast-isnumeric":74}],526:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86726,7 +87301,7 @@ module.exports = function calcMarkerColorscale(trace) {
     }
 };
 
-},{"../../components/colorscale/calc":306,"../../components/colorscale/has_colorscale":311,"./subtypes":520}],516:[function(require,module,exports){
+},{"../../components/colorscale/calc":308,"../../components/colorscale/has_colorscale":313,"./subtypes":531}],527:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86789,7 +87364,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":299,"../../components/colorscale/defaults":308,"../../components/colorscale/has_colorscale":311,"./subtypes":520}],517:[function(require,module,exports){
+},{"../../components/color":301,"../../components/colorscale/defaults":310,"../../components/colorscale/has_colorscale":313,"./subtypes":531}],528:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86805,6 +87380,7 @@ var d3 = require('d3');
 
 var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
+var ErrorBars = require('../../components/errorbars');
 
 var subTypes = require('./subtypes');
 var arraysToCalcdata = require('./arrays_to_calcdata');
@@ -86822,9 +87398,13 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
     var scattertraces = plotinfo.plot.select('.scatterlayer')
         .selectAll('g.trace.scatter')
         .data(cdscatter);
+
     scattertraces.enter().append('g')
         .attr('class', 'trace scatter')
         .style('stroke-miterlimit', 2);
+
+    // error bars are at the bottom
+    scattertraces.call(ErrorBars.plot, plotinfo);
 
     // BUILD LINES AND FILLS
     var prevpath = '',
@@ -87015,7 +87595,7 @@ function selectMarkers(gd, plotinfo, cdscatter) {
     });
 }
 
-},{"../../components/drawing":317,"../../lib":349,"./arrays_to_calcdata":501,"./line_points":513,"./subtypes":520,"d3":70}],518:[function(require,module,exports){
+},{"../../components/drawing":319,"../../components/errorbars":325,"../../lib":359,"./arrays_to_calcdata":512,"./line_points":524,"./subtypes":531,"d3":70}],529:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87085,7 +87665,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     return selection;
 };
 
-},{"./subtypes":520}],519:[function(require,module,exports){
+},{"./subtypes":531}],530:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87100,6 +87680,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
 var d3 = require('d3');
 
 var Drawing = require('../../components/drawing');
+var ErrorBars = require('../../components/errorbars');
 
 
 module.exports = function style(gd) {
@@ -87122,9 +87703,11 @@ module.exports = function style(gd) {
 
     s.selectAll('g.trace path.js-fill')
         .call(Drawing.fillGroupStyle);
+
+    s.call(ErrorBars.style);
 };
 
-},{"../../components/drawing":317,"d3":70}],520:[function(require,module,exports){
+},{"../../components/drawing":319,"../../components/errorbars":325,"d3":70}],531:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87158,7 +87741,7 @@ module.exports = {
     }
 };
 
-},{}],521:[function(require,module,exports){
+},{}],532:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87179,7 +87762,7 @@ module.exports = function(traceIn, traceOut, layout, coerce) {
     Lib.coerceFont(coerce, 'textfont', layout.font);
 };
 
-},{"../../lib":349}],522:[function(require,module,exports){
+},{"../../lib":359}],533:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87224,7 +87807,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     return len;
 };
 
-},{}],523:[function(require,module,exports){
+},{}],534:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87357,7 +87940,7 @@ module.exports = {
     }
 };
 
-},{"../../constants/gl_markers":337,"../../lib/extend":345,"../scatter/attributes":502}],524:[function(require,module,exports){
+},{"../../constants/gl_markers":347,"../../lib/extend":355,"../scatter/attributes":513}],535:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87386,7 +87969,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":501,"../scatter/marker_colorscale_calc":515}],525:[function(require,module,exports){
+},{"../scatter/arrays_to_calcdata":512,"../scatter/marker_colorscale_calc":526}],536:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87457,7 +88040,7 @@ function calculateErrors(data, scaleFactor) {
 
 module.exports = calculateErrors;
 
-},{"../../components/errorbars/compute_error":321}],526:[function(require,module,exports){
+},{"../../components/errorbars/compute_error":323}],537:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87912,7 +88495,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../constants/gl3d_dashes":336,"../../constants/gl_markers":337,"../../lib":349,"../../lib/gl_format_color":347,"../../lib/str2rgbarray":359,"../scatter/make_bubble_size_func":514,"./calc_errors":525,"delaunay-triangulate":71,"gl-error3d":78,"gl-line3d":84,"gl-mesh3d":107,"gl-scatter3d":150}],527:[function(require,module,exports){
+},{"../../constants/gl3d_dashes":346,"../../constants/gl_markers":347,"../../lib":359,"../../lib/gl_format_color":357,"../../lib/str2rgbarray":369,"../scatter/make_bubble_size_func":525,"./calc_errors":536,"delaunay-triangulate":71,"gl-error3d":78,"gl-line3d":84,"gl-mesh3d":107,"gl-scatter3d":150}],538:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87996,7 +88579,7 @@ function handleXYZDefaults(traceIn, traceOut, coerce) {
     return len;
 }
 
-},{"../../components/errorbars/defaults":322,"../../lib":349,"../scatter/line_defaults":512,"../scatter/marker_defaults":516,"../scatter/subtypes":520,"../scatter/text_defaults":521,"./attributes":523}],528:[function(require,module,exports){
+},{"../../components/errorbars/defaults":324,"../../lib":359,"../scatter/line_defaults":523,"../scatter/marker_defaults":527,"../scatter/subtypes":531,"../scatter/text_defaults":532,"./attributes":534}],539:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88027,7 +88610,7 @@ Scatter3D.meta = {
 
 module.exports = Scatter3D;
 
-},{"../../constants/gl_markers":337,"../../plots/gl3d":400,"../scatter/colorbar":505,"./attributes":523,"./calc":524,"./convert":526,"./defaults":527}],529:[function(require,module,exports){
+},{"../../constants/gl_markers":347,"../../plots/gl3d":410,"../scatter/colorbar":516,"./attributes":534,"./calc":535,"./convert":537,"./defaults":538}],540:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88112,7 +88695,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":345,"../../plots/attributes":367,"../scatter/attributes":502}],530:[function(require,module,exports){
+},{"../../lib/extend":355,"../../plots/attributes":377,"../scatter/attributes":513}],541:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88135,7 +88718,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/marker_colorscale_calc":515}],531:[function(require,module,exports){
+},{"../scatter/marker_colorscale_calc":526}],542:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88208,7 +88791,7 @@ function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
     return len;
 }
 
-},{"../../lib":349,"../scatter/line_defaults":512,"../scatter/marker_defaults":516,"../scatter/subtypes":520,"../scatter/text_defaults":521,"./attributes":529}],532:[function(require,module,exports){
+},{"../../lib":359,"../scatter/line_defaults":523,"../scatter/marker_defaults":527,"../scatter/subtypes":531,"../scatter/text_defaults":532,"./attributes":540}],543:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88239,7 +88822,7 @@ ScatterGeo.meta = {
 
 module.exports = ScatterGeo;
 
-},{"../../plots/geo":385,"../scatter/colorbar":505,"./attributes":529,"./calc":530,"./defaults":531,"./plot":533}],533:[function(require,module,exports){
+},{"../../plots/geo":395,"../scatter/colorbar":516,"./attributes":540,"./calc":541,"./defaults":542,"./plot":544}],544:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88367,83 +88950,84 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
 
     gScatterGeoTraces.exit().remove();
 
-    // TODO add hover - how?
-    gScatterGeoTraces
-        .each(function(trace) {
-            if(!subTypes.hasLines(trace)) return;
+    // TODO find a way to order the inner nodes on update
+    gScatterGeoTraces.selectAll('*').remove();
 
-            d3.select(this)
-                .append('path')
-                .datum(makeLineGeoJSON(trace))
-                .attr('class', 'js-line');
-        });
+    gScatterGeoTraces.each(function(trace) {
+        var s = d3.select(this);
 
-    gScatterGeoTraces.append('g')
-        .attr('class', 'points')
-        .each(function(trace) {
-            var s = d3.select(this),
-                showMarkers = subTypes.hasMarkers(trace),
-                showText = subTypes.hasText(trace);
+        if(!subTypes.hasLines(trace)) return;
 
-            if((!showMarkers && !showText)) return;
+        s.selectAll('path.js-line')
+            .data([makeLineGeoJSON(trace)])
+          .enter().append('path')
+            .classed('js-line', true);
 
-            var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
-                cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
-                eventDataFunc = makeEventDataFunc(trace);
+        // TODO add hover - how?
+    });
 
-            var hoverinfo = trace.hoverinfo,
-                hasNameLabel = (
-                    hoverinfo === 'all' ||
-                    hoverinfo.indexOf('name') !== -1
-                );
+    gScatterGeoTraces.each(function(trace) {
+        var s = d3.select(this),
+            showMarkers = subTypes.hasMarkers(trace),
+            showText = subTypes.hasText(trace);
 
-            function handleMouseOver(pt, ptIndex) {
-                if(!geo.showHover) return;
+        if(!showMarkers && !showText) return;
 
-                var xy = geo.projection([pt.lon, pt.lat]);
-                cleanHoverLabelsFunc(pt);
+        var cdi = plotScatterGeo.calcGeoJSON(trace, geo.topojson),
+            cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
+            eventDataFunc = makeEventDataFunc(trace);
 
-                Fx.loneHover({
-                    x: xy[0],
-                    y: xy[1],
-                    name: hasNameLabel ? trace.name : undefined,
-                    text: pt.textLabel,
-                    color: pt.mc || (trace.marker || {}).color
-                }, {
-                    container: geo.hoverContainer.node()
-                });
+        var hoverinfo = trace.hoverinfo,
+            hasNameLabel = (
+                hoverinfo === 'all' ||
+                hoverinfo.indexOf('name') !== -1
+            );
 
-                geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
-            }
+        function handleMouseOver(pt, ptIndex) {
+            if(!geo.showHover) return;
 
-            function handleClick(pt, ptIndex) {
-                geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
-            }
+            var xy = geo.projection([pt.lon, pt.lat]);
+            cleanHoverLabelsFunc(pt);
 
-            if(showMarkers) {
-                s.selectAll('path.point')
-                    .data(cdi)
-                    .enter().append('path')
-                        .attr('class', 'point')
-                        .on('mouseover', handleMouseOver)
-                        .on('click', handleClick)
-                        .on('mouseout', function() {
-                            Fx.loneUnhover(geo.hoverContainer);
-                        })
-                        .on('mousedown', function() {
-                            // to simulate the 'zoomon' event
-                            Fx.loneUnhover(geo.hoverContainer);
-                        })
-                        .on('mouseup', handleMouseOver);  // ~ 'zoomend'
-            }
+            Fx.loneHover({
+                x: xy[0],
+                y: xy[1],
+                name: hasNameLabel ? trace.name : undefined,
+                text: pt.textLabel,
+                color: pt.mc || (trace.marker || {}).color
+            }, {
+                container: geo.hoverContainer.node()
+            });
 
-            if(showText) {
-                s.selectAll('g')
-                    .data(cdi)
-                    .enter().append('g')
-                        .append('text');
-            }
-        });
+            geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+        }
+
+        function handleClick(pt, ptIndex) {
+            geo.graphDiv.emit('plotly_click', eventDataFunc(pt, ptIndex));
+        }
+
+        if(showMarkers) {
+            s.selectAll('path.point').data(cdi)
+              .enter().append('path')
+                .classed('point', true)
+                .on('mouseover', handleMouseOver)
+                .on('click', handleClick)
+                .on('mouseout', function() {
+                    Fx.loneUnhover(geo.hoverContainer);
+                })
+                .on('mousedown', function() {
+                    // to simulate the 'zoomon' event
+                    Fx.loneUnhover(geo.hoverContainer);
+                })
+                .on('mouseup', handleMouseOver);  // ~ 'zoomend'
+        }
+
+        if(showText) {
+            s.selectAll('g').data(cdi)
+              .enter().append('g')
+              .append('text');
+        }
+    });
 
     plotScatterGeo.style(geo);
 };
@@ -88451,15 +89035,16 @@ plotScatterGeo.plot = function(geo, scattergeoData) {
 plotScatterGeo.style = function(geo) {
     var selection = geo.framework.selectAll('g.trace.scattergeo');
 
-    selection.style('opacity', function(trace) { return trace.opacity; });
+    selection.style('opacity', function(trace) {
+        return trace.opacity;
+    });
 
-    selection.selectAll('g.points')
-        .each(function(trace) {
-            d3.select(this).selectAll('path.point')
-                .call(Drawing.pointStyle, trace);
-            d3.select(this).selectAll('text')
-                .call(Drawing.textPointStyle, trace);
-        });
+    selection.each(function(trace) {
+        d3.select(this).selectAll('path.point')
+            .call(Drawing.pointStyle, trace);
+        d3.select(this).selectAll('text')
+            .call(Drawing.textPointStyle, trace);
+    });
 
     // GeoJSON calc data is incompatible with Drawing.lineGroupStyle
     selection.selectAll('path.js-line')
@@ -88530,7 +89115,7 @@ function makeEventDataFunc(trace) {
     };
 }
 
-},{"../../components/color":299,"../../components/drawing":317,"../../lib/array_to_calc_item":341,"../../lib/geo_location_utils":346,"../../lib/topojson_utils":361,"../../plots/cartesian/axes":369,"../../plots/cartesian/graph_interact":374,"../scatter/subtypes":520,"./attributes":529,"d3":70}],534:[function(require,module,exports){
+},{"../../components/color":301,"../../components/drawing":319,"../../lib/array_to_calc_item":351,"../../lib/geo_location_utils":356,"../../lib/topojson_utils":371,"../../plots/cartesian/axes":379,"../../plots/cartesian/graph_interact":384,"../scatter/subtypes":531,"./attributes":540,"d3":70}],545:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88622,7 +89207,7 @@ module.exports = {
     }
 };
 
-},{"../../constants/gl2d_dashes":335,"../../constants/gl_markers":337,"../../lib/extend":345,"../scatter/attributes":502}],535:[function(require,module,exports){
+},{"../../constants/gl2d_dashes":345,"../../constants/gl_markers":347,"../../lib/extend":355,"../scatter/attributes":513}],546:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89188,7 +89773,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../components/errorbars":323,"../../constants/gl2d_dashes":335,"../../constants/gl_markers":337,"../../lib":349,"../../lib/gl_format_color":347,"../../lib/str2rgbarray":359,"../../plots/cartesian/axes":369,"../scatter/get_trace_color":509,"../scatter/make_bubble_size_func":514,"../scatter/subtypes":520,"fast-isnumeric":74,"gl-error2d":76,"gl-line2d":82,"gl-scatter2d":147,"gl-scatter2d-fancy":142}],536:[function(require,module,exports){
+},{"../../components/errorbars":325,"../../constants/gl2d_dashes":345,"../../constants/gl_markers":347,"../../lib":359,"../../lib/gl_format_color":357,"../../lib/str2rgbarray":369,"../../plots/cartesian/axes":379,"../scatter/get_trace_color":520,"../scatter/make_bubble_size_func":525,"../scatter/subtypes":531,"fast-isnumeric":74,"gl-error2d":76,"gl-line2d":82,"gl-scatter2d":147,"gl-scatter2d-fancy":142}],547:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89244,7 +89829,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/errorbars/defaults":322,"../../lib":349,"../scatter/constants":506,"../scatter/fillcolor_defaults":508,"../scatter/line_defaults":512,"../scatter/marker_defaults":516,"../scatter/subtypes":520,"../scatter/xy_defaults":522,"./attributes":534}],537:[function(require,module,exports){
+},{"../../components/errorbars/defaults":324,"../../lib":359,"../scatter/constants":517,"../scatter/fillcolor_defaults":519,"../scatter/line_defaults":523,"../scatter/marker_defaults":527,"../scatter/subtypes":531,"../scatter/xy_defaults":533,"./attributes":545}],548:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89275,7 +89860,7 @@ ScatterGl.meta = {
 
 module.exports = ScatterGl;
 
-},{"../../plots/gl2d":397,"../scatter/colorbar":505,"../scatter3d/calc":524,"./attributes":534,"./convert":535,"./defaults":536}],538:[function(require,module,exports){
+},{"../../plots/gl2d":407,"../scatter/colorbar":516,"../scatter3d/calc":535,"./attributes":545,"./convert":546,"./defaults":547}],549:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89367,9 +89952,13 @@ module.exports = {
         valType: 'data_array',
         
     },
-    zauto: colorscaleAttrs.zauto,
-    zmin: colorscaleAttrs.zmin,
-    zmax: colorscaleAttrs.zmax,
+    surfacecolor: {
+        valType: 'data_array',
+        
+    },
+    cauto: colorscaleAttrs.zauto,
+    cmin: colorscaleAttrs.zmin,
+    cmax: colorscaleAttrs.zmax,
     colorscale: colorscaleAttrs.colorscale,
     autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale,
         {dflt: false}),
@@ -89433,10 +90022,22 @@ module.exports = {
 
     _nestedModules: {  // nested module coupling
         'colorbar': 'Colorbar'
+    },
+
+    _deprecated: {
+        zauto: extendFlat({}, colorscaleAttrs.zauto, {
+            
+        }),
+        zmin: extendFlat({}, colorscaleAttrs.zmin, {
+            
+        }),
+        zmax: extendFlat({}, colorscaleAttrs.zmax, {
+            
+        })
     }
 };
 
-},{"../../components/colorscale/attributes":305,"../../lib/extend":345}],539:[function(require,module,exports){
+},{"../../components/colorscale/attributes":307,"../../lib/extend":355}],550:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89453,10 +90054,63 @@ var colorscaleCalc = require('../../components/colorscale/calc');
 
 // Compute auto-z and autocolorscale if applicable
 module.exports = function calc(gd, trace) {
-    colorscaleCalc(trace, trace.z, '', 'z');
+    if(trace.surfacecolor) {
+        colorscaleCalc(trace, trace.surfacecolor, '', 'c');
+    } else {
+        colorscaleCalc(trace, trace.z, '', 'c');
+    }
 };
 
-},{"../../components/colorscale/calc":306}],540:[function(require,module,exports){
+},{"../../components/colorscale/calc":308}],551:[function(require,module,exports){
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
+
+'use strict';
+
+var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
+
+var Lib = require('../../lib');
+var Plots = require('../../plots/plots');
+var getColorscale = require('../../components/colorscale/get_scale');
+var drawColorbar = require('../../components/colorbar/draw');
+
+
+module.exports = function colorbar(gd, cd) {
+    var trace = cd[0].trace,
+        cbId = 'cb' + trace.uid,
+        scl = getColorscale(trace.colorscale),
+        zmin = trace.cmin,
+        zmax = trace.cmax,
+        vals = trace.surfacecolor || trace.z;
+
+    if(!isNumeric(zmin)) zmin = Lib.aggNums(Math.min, null, vals);
+    if(!isNumeric(zmax)) zmax = Lib.aggNums(Math.max, null, vals);
+
+    gd._fullLayout._infolayer.selectAll('.' + cbId).remove();
+
+    if(!trace.showscale) {
+        Plots.autoMargin(gd, cbId);
+        return;
+    }
+
+    var cb = cd[0].t.cb = drawColorbar(gd, cbId);
+    cb.fillcolor(d3.scale.linear()
+            .domain(scl.map(function(v) { return zmin + v[0]*(zmax-zmin); }))
+            .range(scl.map(function(v) { return v[1]; })))
+        .filllevels({start: zmin, end: zmax, size: (zmax-zmin)/254})
+        .options(trace.colorbar)();
+
+    Lib.markTime('done colorbar');
+};
+
+},{"../../components/colorbar/draw":304,"../../components/colorscale/get_scale":312,"../../lib":359,"../../plots/plots":423,"d3":70,"fast-isnumeric":74}],552:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89478,7 +90132,6 @@ var tinycolor = require('tinycolor2');
 var str2RgbaArray = require('../../lib/str2rgbarray');
 
 var MIN_RESOLUTION = 128;
-
 
 function SurfaceTrace(scene, surface, uid) {
     this.scene = scene;
@@ -89595,7 +90248,7 @@ function refine(coords) {
             Math.floor((coords[0].shape[1]) * scaleF+1)|0 ];
         var nsize = nshape[0] * nshape[1];
 
-        for(var i = 0; i < 3; ++i) {
+        for(var i = 0; i < coords.length; ++i) {
             var padImg = padField(coords[i]);
             var scaledImg = ndarray(new Float32Array(nsize), nshape);
             homography(scaledImg, padImg, [scaleF, 0, 0,
@@ -89689,9 +90342,6 @@ proto.update = function(data) {
         });
     }
 
-    //Refine if necessary
-    this.dataScale = refine(coords);
-
     var params = {
         colormap: colormap,
         levels: [[], [], []],
@@ -89708,10 +90358,33 @@ proto.update = function(data) {
         dynamicColor: [[1, 1, 1, 1], [1, 1, 1, 1], [1, 1, 1, 1]],
         dynamicWidth: [1, 1, 1],
         dynamicTint: [1, 1, 1],
-        opacity: 1,
-        colorBounds: [data.zmin * scaleFactor[2], data.zmax * scaleFactor[2]]
+        opacity: 1
     };
 
+    params.intensityBounds = [data.cmin, data.cmax];
+
+    //Refine if necessary
+    if(data.surfacecolor) {
+        var intensity = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]);
+
+        fill(intensity, function(row, col) {
+            return data.surfacecolor[col][row];
+        });
+
+        coords.push(intensity);
+    }
+    else {
+        // when 'z' is used as 'intensity',
+        // we must scale its value
+        params.intensityBounds[0] *= scaleFactor[2];
+        params.intensityBounds[1] *= scaleFactor[2];
+    }
+
+    this.dataScale = refine(coords);
+
+    if(data.surfacecolor) {
+        params.intensity = coords.pop();
+    }
 
     if('opacity' in data) {
         if(data.opacity < 1) {
@@ -89759,6 +90432,7 @@ proto.update = function(data) {
     }
 
     params.coords = coords;
+
     surface.update(params);
 
     surface.highlightEnable = highlightEnable;
@@ -89797,7 +90471,7 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../lib/str2rgbarray":359,"gl-surface3d":184,"ndarray":208,"ndarray-fill":201,"ndarray-homography":206,"ndarray-ops":207,"tinycolor2":229}],541:[function(require,module,exports){
+},{"../../lib/str2rgbarray":369,"gl-surface3d":179,"ndarray":209,"ndarray-fill":202,"ndarray-homography":207,"ndarray-ops":208,"tinycolor2":231}],553:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89858,6 +90532,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hidesurface');
     coerce('opacity');
 
+    var surfaceColor = coerce('surfacecolor');
+
     coerce('colorscale');
 
     var dims = ['x', 'y', 'z'];
@@ -89885,12 +90561,25 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
+    // backward compatibility block
+    if(!surfaceColor) {
+        mapLegacy(traceIn, 'zmin', 'cmin');
+        mapLegacy(traceIn, 'zmax', 'cmax');
+        mapLegacy(traceIn, 'zauto', 'cauto');
+    }
+
     colorscaleDefaults(
-        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'}
     );
 };
 
-},{"../../components/colorscale/defaults":308,"../../lib":349,"./attributes":538}],542:[function(require,module,exports){
+function mapLegacy(traceIn, oldAttr, newAttr) {
+    if(oldAttr in traceIn && !(newAttr in traceIn)) {
+        traceIn[newAttr] = traceIn[oldAttr];
+    }
+}
+
+},{"../../components/colorscale/defaults":310,"../../lib":359,"./attributes":549}],554:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89906,7 +90595,7 @@ var Surface = {};
 
 Surface.attributes = require('./attributes');
 Surface.supplyDefaults = require('./defaults');
-Surface.colorbar = require('../heatmap/colorbar');
+Surface.colorbar = require('./colorbar');
 Surface.calc = require('./calc');
 Surface.plot = require('./convert');
 
@@ -89920,5 +90609,5 @@ Surface.meta = {
 
 module.exports = Surface;
 
-},{"../../plots/gl3d":400,"../heatmap/colorbar":461,"./attributes":538,"./calc":539,"./convert":540,"./defaults":541}]},{},[12])(12)
+},{"../../plots/gl3d":410,"./attributes":549,"./calc":550,"./colorbar":551,"./convert":552,"./defaults":553}]},{},[12])(12)
 });
