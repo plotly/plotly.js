@@ -197,8 +197,13 @@ describe('Test click interactions:', function() {
         });
 
         it('when set to \'reset+autorange\' (the default) should follow updated auto ranges', function(done) {
-            var newAutoRangeX = [-3.004307330498139, 2.0373089852019897],
-                newAutoRangeY = [-0.8770465137596604, 1.275194639444453];
+            var updateData = {
+                x: [[1e-4, 0, 1e3]],
+                y: [[30, 0, 30]]
+            };
+
+            var newAutoRangeX = [-4.482371794871794, 3.4823717948717943],
+                newAutoRangeY = [-0.8892256657741471, 1.6689872212461876];
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
@@ -209,7 +214,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                return Plotly.restyle(gd, 'y', [[1, 2, 1]]);
+                return Plotly.restyle(gd, updateData);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
