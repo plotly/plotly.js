@@ -56,8 +56,9 @@ module.exports = function draw(gd) {
         });
 
     var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
-        .data([0])
-      .enter().append('clipPath')
+        .data([0]);
+    
+    clipPath.enter().append('clipPath')
         .attr('id', clipId)
         .append('rect');
 
@@ -210,7 +211,7 @@ module.exports = function draw(gd) {
 
     legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
 
-    clipPath.attr({
+    clipPath.select('rect').attr({
         width: opts.width,
         height: scrollheight,
         x: 0,
@@ -220,7 +221,8 @@ module.exports = function draw(gd) {
     legend.call(Drawing.setClipUrl, clipId);
 
     // If scrollbar should be shown.
-    if(gd.firstRender && opts.height - scrollheight > 0 && !gd._context.staticPlot) {
+    if(opts.height - scrollheight > 0 && !gd._context.staticPlot) {
+      
         bg.attr({
             width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth
         });
@@ -228,31 +230,9 @@ module.exports = function draw(gd) {
         clipPath.attr({
             width: opts.width + constants.scrollBarWidth
         });
-
-        legend.node().addEventListener('wheel', function(e) {
-            e.preventDefault();
-            scrollHandler(e.deltaY / 20);
-        });
-
-        scrollBar.node().addEventListener('mousedown', function(e) {
-            e.preventDefault();
-
-            function mMove(e) {
-                if(e.buttons === 1) {
-                    scrollHandler(e.movementY);
-                }
-            }
-
-            function mUp() {
-                scrollBar.node().removeEventListener('mousemove', mMove);
-                window.removeEventListener('mouseup', mUp);
-            }
-
-            window.addEventListener('mousemove', mMove);
-            window.addEventListener('mouseup', mUp);
-        });
-
-        // Move scrollbar to starting position on the first render
+        
+        
+        // Move scrollbar to starting position
         scrollBar.call(
             Drawing.setRect,
             opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
@@ -260,9 +240,38 @@ module.exports = function draw(gd) {
             constants.scrollBarWidth,
             constants.scrollBarHeight
         );
+        
+        legend.on('wheel',null);
+
+        legend.on('wheel', function(){
+            var e = d3.event;
+            e.preventDefault();
+            scrollHandler(e.deltaY / 20, scrollheight);          
+        })
+        
+        scrollBar.on('mousedown',null);
+
+        scrollBar.on('mousedown', function(){
+            var e = d3.event;
+            e.preventDefault();
+      
+            function mMove(e) {
+                if(e.buttons === 1) {
+                    scrollHandler(e.movementY, scrollheight);
+                }
+            }
+      
+            function mUp() {
+                scrollBar.node().removeEventListener('mousemove', mMove);
+                window.removeEventListener('mouseup', mUp);
+            }
+      
+            window.addEventListener('mousemove', mMove);
+            window.addEventListener('mouseup', mUp);
+        });
     }
 
-    function scrollHandler(delta) {
+    function scrollHandler(delta, scrollheight) {
 
         var scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
             translateY = scrollBox.attr('data-scroll'),
