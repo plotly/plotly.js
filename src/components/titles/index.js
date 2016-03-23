@@ -108,7 +108,7 @@ Titles.draw = function(gd, title) {
                 fontSize*(offsetBase + (xa.showticklabels ? 1.5 : 0.5)));
 
         if(xa.rangeslider && xa.rangeslider.visible && xa._boundingBox) {
-            y += (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * xa.rangeslider.height +
+            y += (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * xa.rangeslider.thickness +
                 xa._boundingBox.height;
         }
 
