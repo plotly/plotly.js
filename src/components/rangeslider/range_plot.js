@@ -47,7 +47,7 @@ module.exports = function rangePlot(gd, w, h) {
 
 
     // for now, only scatter traces are supported
-    var allowedTypes = ['scatter', 'scattergl'];
+    var allowedTypes = ['scatter'];
 
     for(var i = 0; i < traces.length; i++) {
 
