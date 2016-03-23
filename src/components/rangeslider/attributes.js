@@ -11,10 +11,11 @@
 var colorAttributes = require('../color/attributes');
 
 module.exports = {
-    visible: {
-        valType: 'boolean',
-        dflt: true,
-        description: 'Determines whether or not the range slider will be visible.'
+    bgcolor: {
+        valType: 'color',
+        dflt: colorAttributes.background,
+        role: 'style',
+        description: 'Sets the background color of the range slider.'
     },
     bordercolor: {
         valType: 'color',
@@ -28,12 +29,6 @@ module.exports = {
         role: 'style',
         description: 'Sets the border color of the range slider.'
     },
-    bgcolor: {
-        valType: 'color',
-        dflt: colorAttributes.background,
-        role: 'style',
-        description: 'Sets the background color of the range slider.'
-    },
     thickness: {
         valType: 'number',
         dflt: 0.15,
@@ -44,5 +39,10 @@ module.exports = {
             'The height of the range slider as a fraction of the',
             'total plot area height.'
         ].join(' ')
+    },
+    visible: {
+        valType: 'boolean',
+        dflt: true,
+        description: 'Determines whether or not the range slider will be visible.'
     }
 };
