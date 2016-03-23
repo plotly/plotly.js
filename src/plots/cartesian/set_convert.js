@@ -123,9 +123,9 @@ module.exports = function setConvert(ax) {
 
     ax.l2p = function(v) {
         if(!isNumeric(v)) return constants.BADNUM;
+
         // include 2 fractional digits on pixel, for PDF zooming etc
-        return d3.round(Lib.constrain(ax._b + ax._m*v,
-            -clipMult*ax._length, (1+clipMult)*ax._length), 2);
+        return d3.round(ax._b + ax._m * v, 2);
     };
 
     ax.p2l = function(px) { return (px-ax._b)/ax._m; };
