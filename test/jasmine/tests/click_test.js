@@ -116,9 +116,11 @@ describe('Test click interactions:', function() {
             'yaxis.range[1]': zoomRangeY[1]
         };
 
-        beforeEach(function() {
+        beforeAll(function() {
             jasmine.addMatchers(customMatchers);
+        });
 
+        beforeEach(function() {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
         });
