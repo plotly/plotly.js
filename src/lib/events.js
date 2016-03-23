@@ -9,7 +9,7 @@
 
 'use strict';
 
-/* global $:false */
+/* global jQuery:false */
 
 var EventEmitter = require('events').EventEmitter;
 
@@ -54,7 +54,7 @@ var Events = {
          */
         plotObj.emit = function(event, data) {
             if(typeof jQuery !== 'undefined') {
-                $(plotObj).trigger(event, data);
+                jQuery(plotObj).trigger(event, data);
             }
 
             ev.emit(event, data);
@@ -77,7 +77,7 @@ var Events = {
          * collect the return value of the LAST handler function
          */
         if(typeof jQuery !== 'undefined') {
-            jQueryHandlerValue = $(plotObj).triggerHandler(event, data);
+            jQueryHandlerValue = jQuery(plotObj).triggerHandler(event, data);
         }
 
         /*
