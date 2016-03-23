@@ -195,6 +195,36 @@ describe('Test click interactions:', function() {
                 done();
             });
         });
+
+        it('when set to \'reset+autorange\' (the default) should follow updated auto ranges', function(done) {
+            var newAutoRangeX = [-3.004307330498139, 2.0373089852019897],
+                newAutoRangeY = [-0.8770465137596604, 1.275194639444453];
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+
+                return Plotly.restyle(gd, 'y', [[1, 2, 1]]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
+
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
+
+                done();
             });
         });
 
