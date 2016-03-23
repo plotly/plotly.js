@@ -43,6 +43,7 @@ module.exports = {
     visible: {
         valType: 'boolean',
         dflt: true,
+        role: 'style',
         description: [
             'Determines whether or not the range slider will be visible.',
             'If visible, perpendicular axes will be set to `fixedrange`'
