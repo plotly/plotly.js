@@ -231,15 +231,19 @@ module.exports = function draw(gd) {
             width: opts.width + constants.scrollBarWidth
         });
         
+        if(gd.firstRender){
+            // Move scrollbar to starting position
+            scrollBar.call(
+                Drawing.setRect,
+                opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
+                constants.scrollBarMargin,
+                constants.scrollBarWidth,
+                constants.scrollBarHeight
+            );
+            scrollBox.attr('data-scroll',0)
+        }
         
-        // Move scrollbar to starting position
-        scrollBar.call(
-            Drawing.setRect,
-            opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
-            constants.scrollBarMargin,
-            constants.scrollBarWidth,
-            constants.scrollBarHeight
-        );
+        scrollHandler(0,scrollheight);
         
         legend.on('wheel',null);
 
@@ -249,33 +253,24 @@ module.exports = function draw(gd) {
             scrollHandler(e.deltaY / 20, scrollheight);          
         })
         
-        scrollBar.on('mousedown',null);
-
-        scrollBar.on('mousedown', function(){
-            var e = d3.event;
-            e.preventDefault();
-      
-            function mMove(e) {
-                if(e.buttons === 1) {
-                    scrollHandler(e.movementY, scrollheight);
-                }
-            }
-      
-            function mUp() {
-                scrollBar.node().removeEventListener('mousemove', mMove);
-                window.removeEventListener('mouseup', mUp);
-            }
-      
-            window.addEventListener('mousemove', mMove);
-            window.addEventListener('mouseup', mUp);
-        });
+        scrollBar.on(".drag",null);
+        scrollBox.on(".drag",null);
+        var drag = d3.behavior.drag()
+            .on('drag', function(d){
+              scrollHandler( d3.event.dy, scrollheight);
+            });
+            
+        scrollBar.call(drag);
+        scrollBox.call(drag);
+        
     }
+    
 
     function scrollHandler(delta, scrollheight) {
 
         var scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
             translateY = scrollBox.attr('data-scroll'),
-            scrollBoxY = Lib.constrain(translateY - delta, Math.min(scrollheight - opts.height, 0), 0),
+            scrollBoxY = Lib.constrain(translateY - delta, scrollheight-opts.height, 0),
             scrollBarY = -scrollBoxY / (opts.height - scrollheight) * scrollBarTrack + constants.scrollBarMargin;
 
         scrollBox.attr('data-scroll', scrollBoxY);
