@@ -11,16 +11,15 @@
 
 var Lib = require('../../lib');
 
+var constants = require('../scatter/constants');
+var subTypes = require('../scatter/subtypes');
+var handleMarkerDefaults = require('../scatter/marker_defaults');
+var handleLineDefaults = require('../scatter/line_defaults');
+var handleLineShapeDefaults = require('../scatter/line_shape_defaults');
+var handleTextDefaults = require('../scatter/text_defaults');
+var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
+
 var attributes = require('./attributes');
-var constants = require('./constants');
-var subTypes = require('./subtypes');
-var handleXYDefaults = require('./xy_defaults');
-var handleMarkerDefaults = require('./marker_defaults');
-var handleLineDefaults = require('./line_defaults');
-var handleLineShapeDefaults = require('./line_shape_defaults');
-var handleTextDefaults = require('./text_defaults');
-var handleFillColorDefaults = require('./fillcolor_defaults');
-var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
 
 
 module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout) {
@@ -28,15 +27,38 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var len = handleXYDefaults(traceIn, traceOut, coerce),
-        // TODO: default mode by orphan points...
-        defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
+    var a = coerce('a') || [],
+        b = coerce('b') || [],
+        c = coerce('c') || [],
+        len;
+
+    // allow any one array to be missing, len is the minimum
+    // of any that have data
+    if(a.length) {
+        len = a.length;
+        if(b.length) {
+            len = Math.min(len, b.length);
+            if(c.length) len = Math.min(len, c.length);
+        }
+        else len = Math.min(len, c.length);
+    }
+    else len = Math.min(b.length, c.length);
+
     if(!len) {
         traceOut.visible = false;
         return;
     }
 
+    // cut all data arrays down to same length
+    if(len < a.length) traceOut.a = a.slice(0, len);
+    if(len < b.length) traceOut.b = b.slice(0, len);
+    if(len < c.length) traceOut.c = c.slice(0, len);
+
+    coerce('sum');
+
     coerce('text');
+
+    var defaultMode = len < constants.PTS_LINESONLY ? 'lines+markers' : 'lines';
     coerce('mode', defaultMode);
 
     if(subTypes.hasLines(traceOut)) {
@@ -62,7 +84,4 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
     }
-
-    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
-    errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };

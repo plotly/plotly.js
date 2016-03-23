@@ -51,13 +51,14 @@ module.exports = {
     sum: {
         valType: 'number',
         role: 'info',
-        dflt: 1,
+        dflt: 0,
         min: 0,
         description: [
             'The number each triplet should sum to,',
             'if only two of `a`, `b`, and `c` are provided.',
             'This overrides `ternary<i>.sum` to normalize this specific',
-            'trace, but does not affect the values displayed on the axes.'
+            'trace, but does not affect the values displayed on the axes.',
+            '0 (or missing) means to use ternary<i>.sum'
         ].join(' ')
     },
     mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
@@ -87,6 +88,7 @@ module.exports = {
     marker: {
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
+        maxdisplayed: scatterMarkerAttrs.maxdisplayed,
         size: scatterMarkerAttrs.size,
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
