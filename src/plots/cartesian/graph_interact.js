@@ -1576,7 +1576,6 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function zoomDone(dragged, numClicks) {
         if(Math.min(box.h, box.w) < MINDRAG * 2) {
             if(numClicks === 2) doubleClick();
-            else pauseForDrag(gd);
 
             return removeZoombox(gd);
         }
@@ -1629,7 +1628,6 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     }
                 });
         }
-        else pauseForDrag(gd);
     }
 
     // scroll zoom, on all draggers except corners
@@ -1930,21 +1928,6 @@ function getEndText(ax, end) {
             Math.floor(Math.log(diff) / Math.LN10) + 4;
         return d3.format('.'+String(dig)+'g')(initialVal);
     }
-}
-
-function pauseForDrag(gd) {
-    // prevent more redraws until we know if a doubleclick
-    // has occurred
-    gd._dragging = true;
-    var deferredReplot = gd._replotPending;
-    gd._replotPending = false;
-
-    setTimeout(function() {
-        gd._replotPending = deferredReplot;
-        finishDrag(gd);
-    },
-        constants.DBLCLICKDELAY
-    );
 }
 
 function finishDrag(gd) {
