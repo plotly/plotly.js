@@ -2032,11 +2032,6 @@ fx.dragElement = function(options) {
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
     function onStart(e) {
-        // because we cancel event bubbling,
-        // explicitly trigger input blur event.
-        var inputBox = document.querySelector('.plugin-editable');
-        if(inputBox) d3.select(inputBox).on('blur').call(inputBox);
-
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
