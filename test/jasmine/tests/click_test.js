@@ -37,6 +37,19 @@ describe('Test click interactions:', function() {
         });
     }
 
+    function drag(fromX, fromY, toX, toY) {
+        return new Promise(function(resolve) {
+            mouseEvent('mousemove', fromX, fromY);
+            mouseEvent('mousedown', fromX, fromY);
+            mouseEvent('mousemove', toX, toY);
+
+            setTimeout(function() {
+                mouseEvent('mouseup', toX, toY);
+                resolve();
+            }, DBLCLICKDELAY / 2);
+        });
+    }
+
     describe('click events', function() {
         var futureData;
 
@@ -97,7 +110,7 @@ describe('Test click interactions:', function() {
         });
     });
 
-    describe('double click interactions', function() {
+    fdescribe('double click interactions', function() {
         var mockCopy;
 
         var autoRangeX = [-3.011967491973726, 2.1561305597186564],
@@ -191,6 +204,27 @@ describe('Test click interactions:', function() {
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+
+                done();
+            });
+        });
+
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st double click and zoom when immediately dragged', function(done) {
+            mockCopy = setRanges(mockCopy);
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                return drag(100, 100, 200, 200);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.70624901567643, -1.9783478816352495]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.5007032802920716, 1.2941670624404753]);
 
                 done();
             });
