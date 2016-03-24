@@ -57,7 +57,7 @@ module.exports = function draw(gd) {
 
     var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
         .data([0]);
-    
+
     clipPath.enter().append('clipPath')
         .attr('id', clipId)
         .append('rect');
@@ -222,7 +222,7 @@ module.exports = function draw(gd) {
 
     // If scrollbar should be shown.
     if(opts.height - scrollheight > 0 && !gd._context.staticPlot) {
-      
+
         bg.attr({
             width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth
         });
@@ -230,8 +230,8 @@ module.exports = function draw(gd) {
         clipPath.attr({
             width: opts.width + constants.scrollBarWidth
         });
-        
-        if(gd.firstRender){
+
+        if(gd.firstRender) {
             // Move scrollbar to starting position
             scrollBar.call(
                 Drawing.setRect,
@@ -240,31 +240,31 @@ module.exports = function draw(gd) {
                 constants.scrollBarWidth,
                 constants.scrollBarHeight
             );
-            scrollBox.attr('data-scroll',0)
+            scrollBox.attr('data-scroll',0);
         }
-        
+
         scrollHandler(0,scrollheight);
-        
+
         legend.on('wheel',null);
 
-        legend.on('wheel', function(){
+        legend.on('wheel', function() {
             var e = d3.event;
             e.preventDefault();
-            scrollHandler(e.deltaY / 20, scrollheight);          
-        })
-        
-        scrollBar.on(".drag",null);
-        scrollBox.on(".drag",null);
+            scrollHandler(e.deltaY / 20, scrollheight);
+        });
+
+        scrollBar.on('.drag',null);
+        scrollBox.on('.drag',null);
         var drag = d3.behavior.drag()
-            .on('drag', function(d){
-              scrollHandler( d3.event.dy, scrollheight);
+            .on('drag', function() {
+                scrollHandler(d3.event.dy, scrollheight);
             });
-            
+
         scrollBar.call(drag);
         scrollBox.call(drag);
-        
+
     }
-    
+
 
     function scrollHandler(delta, scrollheight) {
 
