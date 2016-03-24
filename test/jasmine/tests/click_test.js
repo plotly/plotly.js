@@ -110,7 +110,7 @@ describe('Test click interactions:', function() {
         });
     });
 
-    fdescribe('double click interactions', function() {
+    describe('double click interactions', function() {
         var mockCopy;
 
         var autoRangeX = [-3.011967491973726, 2.1561305597186564],
