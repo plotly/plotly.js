@@ -303,7 +303,8 @@ proto.update = function(data) {
         lineWidth: options.lineWidth || 1,
         dashes: dashPattern[0],
         dashScale: dashPattern[1],
-        opacity: data.opacity
+        opacity: data.opacity,
+        connectGaps: data.connectgaps
     };
 
     if(this.mode.indexOf('lines') !== -1) {

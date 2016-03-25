@@ -1,0 +1,13 @@
+{
+  "data": [{
+    "type": "scatter3d",
+    "mode": "lines",
+    "x": [0, 1, 2, 3, 4, 5],
+    "y": [0, 1, 2, 3, 4, 5],
+    "z": [2, 1, null, null, 0, 3],
+    "connectgaps": false
+  }],
+  "layout": {
+    "title": "connect gaps test",
+  }
+}

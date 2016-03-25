@@ -95,6 +95,12 @@ module.exports = {
         y: makeProjectionAttr('y'),
         z: makeProjectionAttr('z')
     },
+    connectgaps: {
+        valType: 'boolean',
+        role: 'style',
+        dfl: false,
+        description: 'Connects gaps in data'
+    },
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,

@@ -36,5 +36,6 @@ plots['scatter3d-colorscale'] = require('@mocks/gl3d_scatter3d-colorscale.json')
 plots['autocolorscale'] = require('@mocks/gl3d_autocolorscale.json');
 plots['nan-holes'] = require('@mocks/gl3d_nan-holes.json');
 plots['tetrahedra'] = require('@mocks/gl3d_tet.json');
+plots['connectgaps'] = require('@mocks/gl3d_scatter3d-connectgaps.json');
 
 plotButtons(plots, figDir);
