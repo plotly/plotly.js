@@ -1100,17 +1100,12 @@ var revLookup = []
 var Arr = typeof Uint8Array !== 'undefined' ? Uint8Array : Array
 
 function init () {
-  var i
   var code = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/'
-  var len = code.length
-
-  for (i = 0; i < len; i++) {
+  for (var i = 0, len = code.length; i < len; ++i) {
     lookup[i] = code[i]
-  }
-
-  for (i = 0; i < len; ++i) {
     revLookup[code.charCodeAt(i)] = i
   }
+
   revLookup['-'.charCodeAt(0)] = 62
   revLookup['_'.charCodeAt(0)] = 63
 }
@@ -1142,8 +1137,8 @@ function toByteArray (b64) {
 
   for (i = 0, j = 0; i < l; i += 4, j += 3) {
     tmp = (revLookup[b64.charCodeAt(i)] << 18) | (revLookup[b64.charCodeAt(i + 1)] << 12) | (revLookup[b64.charCodeAt(i + 2)] << 6) | revLookup[b64.charCodeAt(i + 3)]
-    arr[L++] = (tmp & 0xFF0000) >> 16
-    arr[L++] = (tmp & 0xFF00) >> 8
+    arr[L++] = (tmp >> 16) & 0xFF
+    arr[L++] = (tmp >> 8) & 0xFF
     arr[L++] = tmp & 0xFF
   }
 
@@ -6030,17 +6025,12 @@ Buffer.compare = function compare (a, b) {
   var x = a.length
   var y = b.length
 
-  var i = 0
-  var len = Math.min(x, y)
-  while (i < len) {
-    if (a[i] !== b[i]) break
-
-    ++i
-  }
-
-  if (i !== len) {
-    x = a[i]
-    y = b[i]
+  for (var i = 0, len = Math.min(x, y); i < len; ++i) {
+    if (a[i] !== b[i]) {
+      x = a[i]
+      y = b[i]
+      break
+    }
   }
 
   if (x < y) return -1
@@ -6201,7 +6191,6 @@ Buffer.prototype.inspect = function inspect () {
 
 Buffer.prototype.compare = function compare (b) {
   if (!Buffer.isBuffer(b)) throw new TypeError('Argument must be a Buffer')
-  if (this === b) return 0
   return Buffer.compare(this, b)
 }
 
@@ -23196,6 +23185,10 @@ proto.drawAxisLine = function(j, bounds, offset, color, lineWidth) {
 }
 
 proto.drawAxisTicks = function(j, offset, minorAxis, color, lineWidth) {
+  if(!this.tickCount[j]) {
+    return
+  }
+
   var majorAxis = zeroVec(MAJOR_AXIS)
   majorAxis[j]  = 1
   this.shader.uniforms.majorAxis = majorAxis
@@ -23212,6 +23205,10 @@ proto.drawAxisTicks = function(j, offset, minorAxis, color, lineWidth) {
 
 
 proto.drawGrid = function(i, j, bounds, offset, color, lineWidth) {
+  if(!this.gridCount[i]) {
+    return
+  }
+
   var minorAxis = zeroVec(MINOR_AXIS)
   minorAxis[j]  = bounds[1][j] - bounds[0][j]
   this.shader.uniforms.minorAxis = minorAxis
@@ -23469,6 +23466,10 @@ proto.update = function(bounds, labels, labelFont, ticks, tickFont) {
 //Draws the tick marks for an axis
 var AXIS = [0,0,0]
 proto.drawTicks = function(d, scale, angle, offset, color) {
+  if(!this.tickCount[d]) {
+    return
+  }
+
   var v = AXIS
   v[0] = v[1] = v[2] = 0
   v[d] = 1
@@ -23483,6 +23484,9 @@ proto.drawTicks = function(d, scale, angle, offset, color) {
 //Draws the text label for an axis
 var ZERO = [0,0,0]
 proto.drawLabel = function(d, scale, angle, offset, color) {
+  if(!this.labelCount[d]) {
+    return
+  }
   this.shader.uniforms.axis = ZERO
   this.shader.uniforms.color = color
   this.shader.uniforms.angle = angle
@@ -25331,6 +25335,10 @@ return function() {
   var bounds    = this.bounds
   var count     = this.vertCount
 
+  if(!count) {
+    return
+  }
+
   var gl        = plot.gl
   var viewBox   = plot.viewBox
   var dataBox   = plot.dataBox
@@ -25468,6 +25476,10 @@ proto.drawPick = (function() {
     var screenY = viewBox[3] - viewBox[1]
 
     this.pickOffset = pickOffset
+
+    if(!count) {
+      return pickOffset + numPoints
+    }
 
     MATRIX[0] = 2.0 * boundX / dataX
     MATRIX[4] = 2.0 * boundY / dataY
@@ -28232,7 +28244,7 @@ proto.draw = (function() {
       shader.uniforms.color     = gridColor[i]
 
       var size = ticks[i].length * 6
-      if(gridEnable[i]) {
+      if(gridEnable[i] && size) {
         gl.drawArrays(gl.TRIANGLES, offset, size)
       }
       offset += size
@@ -28312,44 +28324,52 @@ proto.drawTickMarks = (function() {
     TICK_SCALE[0]         = tickMarkLength[1] * pixelRatio / screenWidth
     TICK_SCALE[1]         = tickMarkWidth[1]  * pixelRatio / screenHeight
 
-    uniforms.color        = tickMarkColor[1]
-    uniforms.tickScale    = TICK_SCALE
-    uniforms.dataAxis     = Y_AXIS
-    uniforms.screenOffset = SCR_OFFSET
-    gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
+    if(yCount) {
+      uniforms.color        = tickMarkColor[1]
+      uniforms.tickScale    = TICK_SCALE
+      uniforms.dataAxis     = Y_AXIS
+      uniforms.screenOffset = SCR_OFFSET
+      gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
+    }
 
     SCR_OFFSET[0]         = (viewBox[2] + viewBox[0]) / screenWidth - 1.0
     SCR_OFFSET[1]         = 2.0 * (viewBox[1] - tickMarkLength[0]) / screenHeight - 1.0
     TICK_SCALE[0]         = tickMarkWidth[0]  * pixelRatio / screenWidth
     TICK_SCALE[1]         = tickMarkLength[0] * pixelRatio / screenHeight
 
-    uniforms.color        = tickMarkColor[0]
-    uniforms.tickScale    = TICK_SCALE
-    uniforms.dataAxis     = X_AXIS
-    uniforms.screenOffset = SCR_OFFSET
-    gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
+    if(xCount) {
+      uniforms.color        = tickMarkColor[0]
+      uniforms.tickScale    = TICK_SCALE
+      uniforms.dataAxis     = X_AXIS
+      uniforms.screenOffset = SCR_OFFSET
+      gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
+    }
 
     SCR_OFFSET[0]         = 2.0 * (viewBox[2] + tickMarkLength[3]) / screenWidth - 1.0
     SCR_OFFSET[1]         = (viewBox[3] + viewBox[1]) / screenHeight - 1.0
     TICK_SCALE[0]         = tickMarkLength[3] * pixelRatio / screenWidth
     TICK_SCALE[1]         = tickMarkWidth[3]  * pixelRatio / screenHeight
 
-    uniforms.color        = tickMarkColor[3]
-    uniforms.tickScale    = TICK_SCALE
-    uniforms.dataAxis     = Y_AXIS
-    uniforms.screenOffset = SCR_OFFSET
-    gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
+    if(yCount) {
+      uniforms.color        = tickMarkColor[3]
+      uniforms.tickScale    = TICK_SCALE
+      uniforms.dataAxis     = Y_AXIS
+      uniforms.screenOffset = SCR_OFFSET
+      gl.drawArrays(gl.TRIANGLES, yOffset, yCount)
+    }
 
     SCR_OFFSET[0]         = (viewBox[2] + viewBox[0]) / screenWidth - 1.0
     SCR_OFFSET[1]         = 2.0 * (viewBox[3] + tickMarkLength[2]) / screenHeight - 1.0
     TICK_SCALE[0]         = tickMarkWidth[2]  * pixelRatio / screenWidth
     TICK_SCALE[1]         = tickMarkLength[2] * pixelRatio / screenHeight
 
-    uniforms.color        = tickMarkColor[2]
-    uniforms.tickScale    = TICK_SCALE
-    uniforms.dataAxis     = X_AXIS
-    uniforms.screenOffset = SCR_OFFSET
-    gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
+    if(xCount) {
+      uniforms.color        = tickMarkColor[2]
+      uniforms.tickScale    = TICK_SCALE
+      uniforms.dataAxis     = X_AXIS
+      uniforms.screenOffset = SCR_OFFSET
+      gl.drawArrays(gl.TRIANGLES, xOffset, xCount)
+    }
   }
 })()
 
@@ -28549,7 +28569,7 @@ proto.drawTicks = (function() {
     SCREEN_OFFSET[axis^1] = screenScale * viewBox[axis^1] - 1.0
     if(tickEnable[axis]) {
       SCREEN_OFFSET[axis^1] -= screenScale * pixelRatio * tickPad[axis]
-      if(start < end) {
+      if(start < end && tickOffset[end] > tickOffset[start]) {
         shader.uniforms.dataAxis     = DATA_AXIS
         shader.uniforms.screenOffset = SCREEN_OFFSET
         shader.uniforms.color        = textColor[axis]
@@ -28560,7 +28580,7 @@ proto.drawTicks = (function() {
           tickOffset[end] - tickOffset[start])
       }
     }
-    if(labelEnable[axis]) {
+    if(labelEnable[axis] && labelCount) {
       SCREEN_OFFSET[axis^1] -= screenScale * pixelRatio * labelPad[axis]
       shader.uniforms.dataAxis     = ZERO_2
       shader.uniforms.screenOffset = SCREEN_OFFSET
@@ -28575,7 +28595,7 @@ proto.drawTicks = (function() {
     SCREEN_OFFSET[axis^1] = screenScale * viewBox[2+(axis^1)] - 1.0
     if(tickEnable[axis+2]) {
       SCREEN_OFFSET[axis^1] += screenScale * pixelRatio * tickPad[axis+2]
-      if(start < end) {
+      if(start < end && tickOffset[end] > tickOffset[start]) {
         shader.uniforms.dataAxis     = DATA_AXIS
         shader.uniforms.screenOffset = SCREEN_OFFSET
         shader.uniforms.color        = textColor[axis+2]
@@ -28586,7 +28606,7 @@ proto.drawTicks = (function() {
           tickOffset[end] - tickOffset[start])
       }
     }
-    if(labelEnable[axis+2]) {
+    if(labelEnable[axis+2] && labelCount) {
       SCREEN_OFFSET[axis^1] += screenScale * pixelRatio * labelPad[axis+2]
       shader.uniforms.dataAxis     = ZERO_2
       shader.uniforms.screenOffset = SCREEN_OFFSET
@@ -28615,6 +28635,10 @@ proto.drawTitle = (function() {
     var titleColor  = plot.titleColor
     var titleCenter = plot.titleCenter
     var pixelRatio  = plot.pixelRatio
+
+    if(!this.titleCount) {
+      return
+    }
 
     for(var i=0; i<2; ++i) {
       SCREEN_OFFSET[i] = 2.0 * (titleCenter[i]*pixelRatio - screenBox[i]) /
@@ -30334,6 +30358,10 @@ var proto = GLScatterFancy.prototype
     var shader        = this.shader
     var numVertices   = this.numVertices
 
+    if(!numVertices) {
+      return
+    }
+
     var gl          = plot.gl
 
     calcScales.call(this)
@@ -30365,6 +30393,10 @@ var proto = GLScatterFancy.prototype
     var gl          = plot.gl
 
     this.pickOffset = offset
+
+    if(!numVertices) {
+      return offset
+    }
 
     for(var i=0; i<4; ++i) {
       PICK_OFFSET[i] = ((offset>>(i*8)) & 0xff)
@@ -31167,7 +31199,9 @@ return function(pickOffset) {
     var startOffset = bsearch.ge(xCoords, xStart, intervalStart, intervalEnd-1)
     var endOffset   = bsearch.lt(xCoords, xEnd, startOffset, intervalEnd-1)+1
 
-    gl.drawArrays(gl.POINTS, startOffset, endOffset - startOffset)
+    if(endOffset > startOffset) {
+      gl.drawArrays(gl.POINTS, startOffset, endOffset - startOffset)
+    }
   }
 
   return pickOffset + this.pointCount
@@ -31248,7 +31282,9 @@ proto.draw = (function() {
       var startOffset = bsearch.ge(xCoords, xStart, intervalStart, intervalEnd-1)
       var endOffset   = bsearch.lt(xCoords, xEnd, startOffset, intervalEnd-1)+1
 
-      gl.drawArrays(gl.POINTS, startOffset, endOffset - startOffset)
+      if(endOffset > startOffset) {
+        gl.drawArrays(gl.POINTS, startOffset, endOffset - startOffset)
+      }
 
       if(firstLevel) {
         firstLevel = false
@@ -32319,7 +32355,7 @@ var ndarray   = require('ndarray')
 
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_34_arg0_||255>_inline_34_arg1_||255>_inline_34_arg2_||255>_inline_34_arg3_){var _inline_34_l=_inline_34_arg4_-_inline_34_arg6_[0],_inline_34_a=_inline_34_arg5_-_inline_34_arg6_[1],_inline_34_f=_inline_34_l*_inline_34_l+_inline_34_a*_inline_34_a;_inline_34_f<this_closestD2&&(this_closestD2=_inline_34_f,this_closestX=_inline_34_arg6_[0],this_closestY=_inline_34_arg6_[1])}}","args":[{"name":"_inline_34_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_34_a","_inline_34_f","_inline_34_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_31_arg0_||255>_inline_31_arg1_||255>_inline_31_arg2_||255>_inline_31_arg3_){var _inline_31_l=_inline_31_arg4_-_inline_31_arg6_[0],_inline_31_a=_inline_31_arg5_-_inline_31_arg6_[1],_inline_31_f=_inline_31_l*_inline_31_l+_inline_31_a*_inline_31_a;_inline_31_f<this_closestD2&&(this_closestD2=_inline_31_f,this_closestX=_inline_31_arg6_[0],this_closestY=_inline_31_arg6_[1])}}","args":[{"name":"_inline_31_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_31_a","_inline_31_f","_inline_31_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -33750,18 +33786,18 @@ function createSpikes(gl, options) {
 }
 
 },{"./shaders/index":172,"gl-buffer":105,"gl-vao":180}],174:[function(require,module,exports){
-var createShader  = require('gl-shader')
+var createShader = require('gl-shader')
 
 
-var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec2 f;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  worldCoordinate = vec3(uv.zw, f.x);\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  value = f.x;\n  kill = f.y;\n  planeCoordinate = uv.xy;\n  \n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}"
-var fragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat beckmannSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution_2_0(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\n\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = beckmannSpecular_1_1(L, V, N, roughness);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  float interpValue = (value - lowerBound.z) / (upperBound.z - lowerBound.z);\n  vec4 surfaceColor = texture2D(colormap, vec2(interpValue, interpValue));\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"
-var contourVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\n\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  vec4 worldPosition = model * vec4(dataCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z = clipPosition.z + zOffset;\n\n  gl_Position = clipPosition;\n  value = dataCoordinate.z;\n  kill = -1.0;\n  worldCoordinate = dataCoordinate;\n  planeCoordinate = uv.zw;\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"
-var pickSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if(kill > 0.0 || \n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}"
+var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  worldCoordinate = vec3(uv.zw, f.x);\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"
+var fragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat beckmannSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution_2_0(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\n\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = beckmannSpecular_1_1(L, V, N, roughness);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = texture2D(colormap, vec2(value, value));\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"
+var contourVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute float f;\n\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  vec4 worldPosition = model * vec4(dataCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z = clipPosition.z + zOffset;\n\n  gl_Position = clipPosition;\n  value = f;\n  kill = -1.0;\n  worldCoordinate = dataCoordinate;\n  planeCoordinate = uv.zw;\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"
+var pickSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}\n"
 
-exports.createShader = function(gl) {
+exports.createShader = function (gl) {
   var shader = createShader(gl, vertSrc, fragSrc, null, [
     {name: 'uv', type: 'vec4'},
-    {name: 'f', type: 'vec2'},
+    {name: 'f', type: 'vec3'},
     {name: 'normal', type: 'vec3'}
   ])
   shader.attributes.uv.location = 0
@@ -33769,10 +33805,10 @@ exports.createShader = function(gl) {
   shader.attributes.normal.location = 2
   return shader
 }
-exports.createPickShader = function(gl) {
+exports.createPickShader = function (gl) {
   var shader = createShader(gl, vertSrc, pickSrc, null, [
     {name: 'uv', type: 'vec4'},
-    {name: 'f', type: 'vec2'},
+    {name: 'f', type: 'vec3'},
     {name: 'normal', type: 'vec3'}
   ])
   shader.attributes.uv.location = 0
@@ -33780,18 +33816,22 @@ exports.createPickShader = function(gl) {
   shader.attributes.normal.location = 2
   return shader
 }
-exports.createContourShader = function(gl) {
+exports.createContourShader = function (gl) {
   var shader = createShader(gl, contourVertSrc, fragSrc, null, [
-    {name: 'uv', type: 'vec4'}
+    {name: 'uv', type: 'vec4'},
+    {name: 'f', type: 'float'}
   ])
   shader.attributes.uv.location = 0
+  shader.attributes.f.location = 1
   return shader
 }
-exports.createPickContourShader = function(gl) {
+exports.createPickContourShader = function (gl) {
   var shader = createShader(gl, contourVertSrc, pickSrc, null, [
-    {name: 'uv', type: 'vec4'}
+    {name: 'uv', type: 'vec4'},
+    {name: 'f', type: 'float'}
   ])
   shader.attributes.uv.location = 0
+  shader.attributes.f.location = 1
   return shader
 }
 
@@ -33800,29 +33840,28 @@ exports.createPickContourShader = function(gl) {
 
 module.exports = createSurfacePlot
 
-var bits          = require('bit-twiddle')
-var createBuffer  = require('gl-buffer')
-var createVAO     = require('gl-vao')
+var bits = require('bit-twiddle')
+var createBuffer = require('gl-buffer')
+var createVAO = require('gl-vao')
 var createTexture = require('gl-texture2d')
-var pool          = require('typedarray-pool')
-var colormap      = require('colormap')
-var ops           = require('ndarray-ops')
-var pack          = require('ndarray-pack')
-var ndarray       = require('ndarray')
-var surfaceNets   = require('surface-nets')
-var multiply      = require('gl-mat4/multiply')
-var invert        = require('gl-mat4/invert')
-var bsearch       = require('binary-search-bounds')
-var gradient      = require('ndarray-gradient')
-var ndarray       = require('ndarray')
-var shaders       = require('./lib/shaders')
+var pool = require('typedarray-pool')
+var colormap = require('colormap')
+var ops = require('ndarray-ops')
+var pack = require('ndarray-pack')
+var ndarray = require('ndarray')
+var surfaceNets = require('surface-nets')
+var multiply = require('gl-mat4/multiply')
+var invert = require('gl-mat4/invert')
+var bsearch = require('binary-search-bounds')
+var gradient = require('ndarray-gradient')
+var shaders = require('./lib/shaders')
 
-var createShader            = shaders.createShader
-var createContourShader     = shaders.createContourShader
-var createPickShader        = shaders.createPickShader
+var createShader = shaders.createShader
+var createContourShader = shaders.createContourShader
+var createPickShader = shaders.createPickShader
 var createPickContourShader = shaders.createPickContourShader
 
-var SURFACE_VERTEX_SIZE = 4 * (4 + 2 + 3)
+var SURFACE_VERTEX_SIZE = 4 * (4 + 3 + 3)
 
 var IDENTITY = [
   1, 0, 0, 0,
@@ -33840,53 +33879,45 @@ var QUAD = [
 ]
 
 var PERMUTATIONS = [
-  [0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0],
-  [0,0,0,0,0,0,0,0,0]
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0],
+  [0, 0, 0, 0, 0, 0, 0, 0, 0]
 ]
 
-;(function() {
-  for(var i=0; i<3; ++i) {
+;(function () {
+  for (var i = 0; i < 3; ++i) {
     var p = PERMUTATIONS[i]
-    var u = (i+1) % 3
-    var v = (i+2) % 3
+    var u = (i + 1) % 3
+    var v = (i + 2) % 3
     p[u + 0] = 1
     p[v + 3] = 1
     p[i + 6] = 1
   }
 })()
 
-function SurfacePickResult(position, index, uv, level, dataCoordinate) {
-  this.position     = position
-  this.index        = index
-  this.uv           = uv
-  this.level        = level
+function SurfacePickResult (position, index, uv, level, dataCoordinate) {
+  this.position = position
+  this.index = index
+  this.uv = uv
+  this.level = level
   this.dataCoordinate = dataCoordinate
 }
 
 var N_COLORS = 265
 
-function genColormap(name) {
+function genColormap (name) {
   var x = pack([colormap({
     colormap: name,
     nshades: N_COLORS,
     format: 'rgba'
-  }).map(function(c) {
-    return [c[0], c[1], c[2], 255*c[3]]
+  }).map(function (c) {
+    return [c[0], c[1], c[2], 255 * c[3]]
   })])
   ops.divseq(x, 255.0)
   return x
 }
 
-function clampVec(v) {
-  var result = new Array(3)
-  for(var i=0; i<3; ++i) {
-    result[i] = Math.min(Math.max(v[i], -1e8), 1e8)
-  }
-  return result
-}
-
-function SurfacePlot(
+function SurfacePlot (
   gl,
   shape,
   bounds,
@@ -33901,95 +33932,95 @@ function SurfacePlot(
   contourVAO,
   dynamicBuffer,
   dynamicVAO) {
+  this.gl = gl
+  this.shape = shape
+  this.bounds = bounds
+  this.intensityBounds = [];
 
-  this.gl                 = gl
-  this.shape              = shape
-  this.bounds             = bounds
+  this._shader = shader
+  this._pickShader = pickShader
+  this._coordinateBuffer = coordinates
+  this._vao = vao
+  this._colorMap = colorMap
 
-  this._shader            = shader
-  this._pickShader        = pickShader
-  this._coordinateBuffer  = coordinates
-  this._vao               = vao
-  this._colorMap          = colorMap
-
-  this._contourShader     = contourShader
+  this._contourShader = contourShader
   this._contourPickShader = contourPickShader
-  this._contourBuffer     = contourBuffer
-  this._contourVAO        = contourVAO
-  this._contourOffsets    = [[], [], []]
-  this._contourCounts     = [[], [], []]
-  this._vertexCount       = 0
+  this._contourBuffer = contourBuffer
+  this._contourVAO = contourVAO
+  this._contourOffsets = [[], [], []]
+  this._contourCounts = [[], [], []]
+  this._vertexCount = 0
 
-  this._pickResult        = new SurfacePickResult([0,0,0], [0,0], [0,0], [0,0,0], [0,0,0])
+  this._pickResult = new SurfacePickResult([0, 0, 0], [0, 0], [0, 0], [0, 0, 0], [0, 0, 0])
 
-  this._dynamicBuffer     = dynamicBuffer
-  this._dynamicVAO        = dynamicVAO
-  this._dynamicOffsets    = [0,0,0]
-  this._dynamicCounts     = [0,0,0]
+  this._dynamicBuffer = dynamicBuffer
+  this._dynamicVAO = dynamicVAO
+  this._dynamicOffsets = [0, 0, 0]
+  this._dynamicCounts = [0, 0, 0]
 
-  this.contourWidth       = [ 1, 1, 1 ]
-  this.contourLevels      = [[1], [1], [1]]
-  this.contourTint        = [0, 0, 0]
-  this.contourColor       = [[0.5,0.5,0.5,1], [0.5,0.5,0.5,1], [0.5,0.5,0.5,1]]
+  this.contourWidth = [ 1, 1, 1 ]
+  this.contourLevels = [[1], [1], [1]]
+  this.contourTint = [0, 0, 0]
+  this.contourColor = [[0.5, 0.5, 0.5, 1], [0.5, 0.5, 0.5, 1], [0.5, 0.5, 0.5, 1]]
 
-  this.showContour        = true
-  this.showSurface        = true
+  this.showContour = true
+  this.showSurface = true
 
-  this.enableHighlight    = [true, true, true]
-  this.highlightColor     = [[0,0,0,1], [0,0,0,1], [0,0,0,1]]
-  this.highlightTint      = [ 1, 1, 1 ]
-  this.highlightLevel     = [-1, -1, -1]
+  this.enableHighlight = [true, true, true]
+  this.highlightColor = [[0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1]]
+  this.highlightTint = [ 1, 1, 1 ]
+  this.highlightLevel = [-1, -1, -1]
 
-  //Dynamic contour options
-  this.enableDynamic      = [ true, true, true ]
-  this.dynamicLevel       = [ NaN, NaN, NaN ]
-  this.dynamicColor       = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ]
-  this.dynamicTint        = [ 1, 1, 1 ]
-  this.dynamicWidth       = [ 1, 1, 1 ]
+  // Dynamic contour options
+  this.enableDynamic = [ true, true, true ]
+  this.dynamicLevel = [ NaN, NaN, NaN ]
+  this.dynamicColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ]
+  this.dynamicTint = [ 1, 1, 1 ]
+  this.dynamicWidth = [ 1, 1, 1 ]
 
-  this.axesBounds         = [[Infinity,Infinity,Infinity],[-Infinity,-Infinity,-Infinity]]
-  this.surfaceProject     = [ false, false, false ]
-  this.contourProject     = [[ false, false, false ],
-                             [ false, false, false ],
-                             [ false, false, false ]]
+  this.axesBounds = [[Infinity, Infinity, Infinity], [-Infinity, -Infinity, -Infinity]]
+  this.surfaceProject = [ false, false, false ]
+  this.contourProject = [[ false, false, false ],
+    [ false, false, false ],
+    [ false, false, false ]]
 
-  this.colorBounds        = [ false, false ]
+  this.colorBounds = [ false, false ]
 
-  //Store xyz fields, need this for picking
-  this._field             = [
-      ndarray(pool.mallocFloat(1024), [0,0]),
-      ndarray(pool.mallocFloat(1024), [0,0]),
-      ndarray(pool.mallocFloat(1024), [0,0]) ]
+  // Store xyz fields, need this for picking
+  this._field = [
+    ndarray(pool.mallocFloat(1024), [0, 0]),
+    ndarray(pool.mallocFloat(1024), [0, 0]),
+    ndarray(pool.mallocFloat(1024), [0, 0]) ]
 
-  this.pickId             = 1
-  this.clipBounds         = [[-Infinity,-Infinity,-Infinity],[Infinity,Infinity,Infinity]]
+  this.pickId = 1
+  this.clipBounds = [[-Infinity, -Infinity, -Infinity], [Infinity, Infinity, Infinity]]
 
-  this.snapToData         = false
+  this.snapToData = false
 
-  this.opacity            = 1.0
+  this.opacity = 1.0
 
-  this.lightPosition      = [10, 10000, 0]
-  this.ambientLight       = 0.8
-  this.diffuseLight       = 0.8
-  this.specularLight      = 2.0
-  this.roughness          = 0.5
-  this.fresnel            = 1.5
+  this.lightPosition = [10, 10000, 0]
+  this.ambientLight = 0.8
+  this.diffuseLight = 0.8
+  this.specularLight = 2.0
+  this.roughness = 0.5
+  this.fresnel = 1.5
 
-  this.dirty              = true
+  this.dirty = true
 }
 
 var proto = SurfacePlot.prototype
 
-proto.isTransparent = function() {
+proto.isTransparent = function () {
   return this.opacity < 1
 }
 
-proto.isOpaque = function() {
-  if(this.opacity >= 1) {
+proto.isOpaque = function () {
+  if (this.opacity >= 1) {
     return true
   }
-  for(var i=0; i<3; ++i) {
-    if(this._contourCounts[i].length > 0 || this._dynamicCounts[i] > 0) {
+  for (var i = 0; i < 3; ++i) {
+    if (this._contourCounts[i].length > 0 || this._dynamicCounts[i] > 0) {
       return true
     }
   }
@@ -33998,52 +34029,54 @@ proto.isOpaque = function() {
 
 proto.pickSlots = 1
 
-proto.setPickBase = function(id) {
+proto.setPickBase = function (id) {
   this.pickId = id
 }
 
-var ZERO_VEC = [0,0,0]
+var ZERO_VEC = [0, 0, 0]
 
 var PROJECT_DATA = {
   showSurface: false,
   showContour: false,
   projections: [IDENTITY.slice(), IDENTITY.slice(), IDENTITY.slice()],
-  clipBounds:   [
-    [[0,0,0], [0,0,0]],
-    [[0,0,0], [0,0,0]],
-    [[0,0,0], [0,0,0]]]
+  clipBounds: [
+    [[0, 0, 0], [0, 0, 0]],
+    [[0, 0, 0], [0, 0, 0]],
+    [[0, 0, 0], [0, 0, 0]]]
 }
 
-function computeProjectionData(camera, obj) {
-  //Compute cube properties
-  var cubeAxis  = (obj.axes && obj.axes.lastCubeProps.axis) || ZERO_VEC
+function computeProjectionData (camera, obj) {
+  var i, j, k
+
+  // Compute cube properties
+  var cubeAxis = (obj.axes && obj.axes.lastCubeProps.axis) || ZERO_VEC
 
   var showSurface = obj.showSurface
   var showContour = obj.showContour
 
-  for(var i=0; i<3; ++i) {
+  for (i = 0; i < 3; ++i) {
     showSurface = showSurface || obj.surfaceProject[i]
-    for(var j=0; j<3; ++j) {
+    for (j = 0; j < 3; ++j) {
       showContour = showContour || obj.contourProject[i][j]
     }
   }
 
-  for(var i=0; i<3; ++i) {
-    //Construct projection onto axis
+  for (i = 0; i < 3; ++i) {
+    // Construct projection onto axis
     var axisSquish = PROJECT_DATA.projections[i]
-    for(var j=0; j<16; ++j) {
+    for (j = 0; j < 16; ++j) {
       axisSquish[j] = 0
     }
-    for(var j=0; j<4; ++j) {
-      axisSquish[5*j] = 1
+    for (j = 0; j < 4; ++j) {
+      axisSquish[5 * j] = 1
     }
-    axisSquish[5*i] = 0
-    axisSquish[12+i] = obj.axesBounds[+(cubeAxis[i]>0)][i]
+    axisSquish[5 * i] = 0
+    axisSquish[12 + i] = obj.axesBounds[+(cubeAxis[i] > 0)][i]
     multiply(axisSquish, camera.model, axisSquish)
 
     var nclipBounds = PROJECT_DATA.clipBounds[i]
-    for(var k=0; k<2; ++k) {
-      for(var j=0; j<3; ++j) {
+    for (k = 0; k < 2; ++k) {
+      for (j = 0; j < 3; ++j) {
         nclipBounds[k][j] = camera.clipBounds[k][j]
       }
     }
@@ -34058,33 +34091,33 @@ function computeProjectionData(camera, obj) {
 }
 
 var UNIFORMS = {
-  model:      IDENTITY,
-  view:       IDENTITY,
+  model: IDENTITY,
+  view: IDENTITY,
   projection: IDENTITY,
   inverseModel: IDENTITY.slice(),
-  lowerBound: [0,0,0],
-  upperBound: [0,0,0],
-  colorMap:   0,
-  clipBounds: [[0,0,0], [0,0,0]],
-  height:     0.0,
+  lowerBound: [0, 0, 0],
+  upperBound: [0, 0, 0],
+  colorMap: 0,
+  clipBounds: [[0, 0, 0], [0, 0, 0]],
+  height: 0.0,
   contourTint: 0,
-  contourColor: [0,0,0,1],
-  permutation: [1,0,0,0,1,0,0,0,1],
+  contourColor: [0, 0, 0, 1],
+  permutation: [1, 0, 0, 0, 1, 0, 0, 0, 1],
   zOffset: -1e-4,
   kambient: 1,
   kdiffuse: 1,
   kspecular: 1,
-  lightPosition: [1000,1000,1000],
-  eyePosition: [0,0,0],
+  lightPosition: [1000, 1000, 1000],
+  eyePosition: [0, 0, 0],
   roughness: 1,
   fresnel: 1,
   opacity: 1
 }
 
 var MATRIX_INVERSE = IDENTITY.slice()
-var DEFAULT_PERM = [1,0,0,0,1,0,0,0,1]
+var DEFAULT_PERM = [1, 0, 0, 0, 1, 0, 0, 0, 1]
 
-function drawCore(params, transparent) {
+function drawCore (params, transparent) {
   params = params || {}
   var gl = this.gl
 
@@ -34093,74 +34126,72 @@ function drawCore(params, transparent) {
   this._colorMap.bind(0)
 
   var uniforms = UNIFORMS
-  uniforms.model        = params.model || IDENTITY
-  uniforms.view         = params.view || IDENTITY
-  uniforms.projection   = params.projection || IDENTITY
-  uniforms.lowerBound   = [this.bounds[0][0], this.bounds[0][1], this.colorBounds[0] || this.bounds[0][2]]
-  uniforms.upperBound   = [this.bounds[1][0], this.bounds[1][1], this.colorBounds[1] || this.bounds[1][2]]
+  uniforms.model = params.model || IDENTITY
+  uniforms.view = params.view || IDENTITY
+  uniforms.projection = params.projection || IDENTITY
+  uniforms.lowerBound = [this.bounds[0][0], this.bounds[0][1], this.colorBounds[0] || this.bounds[0][2]]
+  uniforms.upperBound = [this.bounds[1][0], this.bounds[1][1], this.colorBounds[1] || this.bounds[1][2]]
   uniforms.contourColor = this.contourColor[0]
 
   uniforms.inverseModel = invert(uniforms.inverseModel, uniforms.model)
 
-  for(var i=0; i<2; ++i) {
+  for (var i = 0; i < 2; ++i) {
     var clipClamped = uniforms.clipBounds[i]
-    for(var j=0; j<3; ++j) {
+    for (var j = 0; j < 3; ++j) {
       clipClamped[j] = Math.min(Math.max(this.clipBounds[i][j], -1e8), 1e8)
     }
   }
 
-  uniforms.kambient   = this.ambientLight
-  uniforms.kdiffuse   = this.diffuseLight
-  uniforms.kspecular  = this.specularLight
+  uniforms.kambient = this.ambientLight
+  uniforms.kdiffuse = this.diffuseLight
+  uniforms.kspecular = this.specularLight
 
-  uniforms.shape =
-
-  uniforms.roughness  = this.roughness
-  uniforms.fresnel    = this.fresnel
-  uniforms.opacity    = this.opacity
+  uniforms.roughness = this.roughness
+  uniforms.fresnel = this.fresnel
+  uniforms.opacity = this.opacity
 
   uniforms.height = 0.0
   uniforms.permutation = DEFAULT_PERM
 
-  //Compute camera matrix inverse
+  // Compute camera matrix inverse
   var invCameraMatrix = MATRIX_INVERSE
   multiply(invCameraMatrix, uniforms.view, uniforms.model)
   multiply(invCameraMatrix, uniforms.projection, invCameraMatrix)
   invert(invCameraMatrix, invCameraMatrix)
 
-  for(var i=0; i<3; ++i) {
-    uniforms.eyePosition[i] = invCameraMatrix[12+i] / invCameraMatrix[15]
+  for (i = 0; i < 3; ++i) {
+    uniforms.eyePosition[i] = invCameraMatrix[12 + i] / invCameraMatrix[15]
   }
 
   var w = invCameraMatrix[15]
-  for(var i=0; i<3; ++i) {
-    w += this.lightPosition[i] * invCameraMatrix[4*i+3]
+  for (i = 0; i < 3; ++i) {
+    w += this.lightPosition[i] * invCameraMatrix[4 * i + 3]
   }
-  for(var i=0; i<3; ++i) {
-    var s = invCameraMatrix[12+i]
-    for(var j=0; j<3; ++j) {
-      s += invCameraMatrix[4*j+i] * this.lightPosition[j]
+  for (i = 0; i < 3; ++i) {
+    var s = invCameraMatrix[12 + i]
+    for (j = 0; j < 3; ++j) {
+      s += invCameraMatrix[4 * j + i] * this.lightPosition[j]
     }
     uniforms.lightPosition[i] = s / w
   }
 
   var projectData = computeProjectionData(uniforms, this)
 
-  if(projectData.showSurface && (transparent === (this.opacity < 1))) {
-    //Set up uniforms
+  if (projectData.showSurface && (transparent === (this.opacity < 1))) {
+    // Set up uniforms
     this._shader.bind()
     this._shader.uniforms = uniforms
 
-    //Draw it
+    // Draw it
     this._vao.bind()
 
-    if(this.showSurface) {
+    if (this.showSurface && this._vertexCount) {
       this._vao.draw(gl.TRIANGLES, this._vertexCount)
     }
 
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      if(!this.surfaceProject[i]) {
+    // Draw projections of surface
+    for (i = 0; i < 3; ++i) {
+      if (!this.surfaceProject[i] || !this.vertexCount) {
         continue
       }
       this._shader.uniforms.model = projectData.projections[i]
@@ -34171,10 +34202,10 @@ function drawCore(params, transparent) {
     this._vao.unbind()
   }
 
-  if(projectData.showContour && !transparent) {
+  if (projectData.showContour && !transparent) {
     var shader = this._contourShader
 
-    //Don't apply lighting to contours
+    // Don't apply lighting to contours
     uniforms.kambient = 1.0
     uniforms.kdiffuse = 0.0
     uniforms.kspecular = 0.0
@@ -34183,46 +34214,48 @@ function drawCore(params, transparent) {
     shader.bind()
     shader.uniforms = uniforms
 
-    //Draw contour lines
+    // Draw contour lines
     var vao = this._contourVAO
     vao.bind()
 
-    //Draw contour levels
-    for(var i=0; i<3; ++i) {
+    // Draw contour levels
+    for (i = 0; i < 3; ++i) {
       shader.uniforms.permutation = PERMUTATIONS[i]
       gl.lineWidth(this.contourWidth[i])
 
-      for(var j=0; j<this.contourLevels[i].length; ++j) {
-        if(j === this.highlightLevel[i]) {
+      for (j = 0; j < this.contourLevels[i].length; ++j) {
+        if (!this._contourCounts[i][j]) {
+          continue
+        }
+        if (j === this.highlightLevel[i]) {
           shader.uniforms.contourColor = this.highlightColor[i]
-          shader.uniforms.contourTint  = this.highlightTint[i]
-
-        } else if(j === 0 || (j-1) === this.highlightLevel[i]) {
+          shader.uniforms.contourTint = this.highlightTint[i]
+        } else if (j === 0 || (j - 1) === this.highlightLevel[i]) {
           shader.uniforms.contourColor = this.contourColor[i]
-          shader.uniforms.contourTint  = this.contourTint[i]
+          shader.uniforms.contourTint = this.contourTint[i]
         }
         shader.uniforms.height = this.contourLevels[i][j]
         vao.draw(gl.LINES, this._contourCounts[i][j], this._contourOffsets[i][j])
       }
     }
 
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      shader.uniforms.model      = projectData.projections[i]
+    // Draw projections of surface
+    for (i = 0; i < 3; ++i) {
+      shader.uniforms.model = projectData.projections[i]
       shader.uniforms.clipBounds = projectData.clipBounds[i]
-      for(var j=0; j<3; ++j) {
-        if(!this.contourProject[i][j]) {
+      for (j = 0; j < 3; ++j) {
+        if (!this.contourProject[i][j]) {
           continue
         }
         shader.uniforms.permutation = PERMUTATIONS[j]
         gl.lineWidth(this.contourWidth[j])
-        for(var k=0; k<this.contourLevels[j].length; ++k) {
-          if(k === this.highlightLevel[j]) {
-            shader.uniforms.contourColor  = this.highlightColor[j]
-            shader.uniforms.contourTint   = this.highlightTint[j]
-          } else if(k === 0 || (k-1) === this.highlightLevel[j]) {
-            shader.uniforms.contourColor  = this.contourColor[j]
-            shader.uniforms.contourTint   = this.contourTint[j]
+        for (var k = 0; k < this.contourLevels[j].length; ++k) {
+          if (k === this.highlightLevel[j]) {
+            shader.uniforms.contourColor = this.highlightColor[j]
+            shader.uniforms.contourTint = this.highlightTint[j]
+          } else if (k === 0 || (k - 1) === this.highlightLevel[j]) {
+            shader.uniforms.contourColor = this.contourColor[j]
+            shader.uniforms.contourTint = this.contourTint[j]
           }
           shader.uniforms.height = this.contourLevels[j][k]
           vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
@@ -34230,32 +34263,32 @@ function drawCore(params, transparent) {
       }
     }
 
-    //Draw dynamic contours
+    // Draw dynamic contours
     vao = this._dynamicVAO
     vao.bind()
 
-    //Draw contour levels
-    for(var i=0; i<3; ++i) {
-      if(this._dynamicCounts[i] === 0) {
+    // Draw contour levels
+    for (i = 0; i < 3; ++i) {
+      if (this._dynamicCounts[i] === 0) {
         continue
       }
 
-      shader.uniforms.model       = uniforms.model
-      shader.uniforms.clipBounds  = uniforms.clipBounds
+      shader.uniforms.model = uniforms.model
+      shader.uniforms.clipBounds = uniforms.clipBounds
       shader.uniforms.permutation = PERMUTATIONS[i]
       gl.lineWidth(this.dynamicWidth[i])
 
       shader.uniforms.contourColor = this.dynamicColor[i]
-      shader.uniforms.contourTint  = this.dynamicTint[i]
-      shader.uniforms.height       = this.dynamicLevel[i]
+      shader.uniforms.contourTint = this.dynamicTint[i]
+      shader.uniforms.height = this.dynamicLevel[i]
       vao.draw(gl.LINES, this._dynamicCounts[i], this._dynamicOffsets[i])
 
-      for(var j=0; j<3; ++j) {
-        if(!this.contourProject[j][i]) {
+      for (j = 0; j < 3; ++j) {
+        if (!this.contourProject[j][i]) {
           continue
         }
 
-        shader.uniforms.model      = projectData.projections[j]
+        shader.uniforms.model = projectData.projections[j]
         shader.uniforms.clipBounds = projectData.clipBounds[j]
         vao.draw(gl.LINES, this._dynamicCounts[i], this._dynamicOffsets[i])
       }
@@ -34265,32 +34298,32 @@ function drawCore(params, transparent) {
   }
 }
 
-proto.draw = function(params) {
+proto.draw = function (params) {
   return drawCore.call(this, params, false)
 }
 
-proto.drawTransparent = function(params) {
+proto.drawTransparent = function (params) {
   return drawCore.call(this, params, true)
 }
 
 var PICK_UNIFORMS = {
-  model:          IDENTITY,
-  view:           IDENTITY,
-  projection:     IDENTITY,
-  inverseModel:   IDENTITY,
-  clipBounds:     [[0,0,0],[0,0,0]],
-  height:         0.0,
-  shape:          [0,0],
-  pickId:         0,
-  lowerBound:     [0,0,0],
-  upperBound:     [0,0,0],
-  zOffset:        0.0,
-  permutation:    [1,0,0,0,1,0,0,0,1],
-  lightPosition:  [0,0,0],
-  eyePosition:    [0,0,0]
+  model: IDENTITY,
+  view: IDENTITY,
+  projection: IDENTITY,
+  inverseModel: IDENTITY,
+  clipBounds: [[0, 0, 0], [0, 0, 0]],
+  height: 0.0,
+  shape: [0, 0],
+  pickId: 0,
+  lowerBound: [0, 0, 0],
+  upperBound: [0, 0, 0],
+  zOffset: 0.0,
+  permutation: [1, 0, 0, 0, 1, 0, 0, 0, 1],
+  lightPosition: [0, 0, 0],
+  eyePosition: [0, 0, 0]
 }
 
-proto.drawPick = function(params) {
+proto.drawPick = function (params) {
   params = params || {}
   var gl = this.gl
   gl.disable(gl.CULL_FACE)
@@ -34305,27 +34338,27 @@ proto.drawPick = function(params) {
   uniforms.upperBound = this.bounds[1]
   uniforms.permutation = DEFAULT_PERM
 
-  for(var i=0; i<2; ++i) {
+  for (var i = 0; i < 2; ++i) {
     var clipClamped = uniforms.clipBounds[i]
-    for(var j=0; j<3; ++j) {
+    for (var j = 0; j < 3; ++j) {
       clipClamped[j] = Math.min(Math.max(this.clipBounds[i][j], -1e8), 1e8)
     }
   }
 
   var projectData = computeProjectionData(uniforms, this)
 
-  if(projectData.showSurface) {
-    //Set up uniforms
+  if (projectData.showSurface) {
+    // Set up uniforms
     this._pickShader.bind()
     this._pickShader.uniforms = uniforms
 
-    //Draw it
+    // Draw it
     this._vao.bind()
     this._vao.draw(gl.TRIANGLES, this._vertexCount)
 
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      if(!this.surfaceProject[i]) {
+    // Draw projections of surface
+    for (i = 0; i < 3; ++i) {
+      if (!this.surfaceProject[i]) {
         continue
       }
       this._pickShader.uniforms.model = projectData.projections[i]
@@ -34336,7 +34369,7 @@ proto.drawPick = function(params) {
     this._vao.unbind()
   }
 
-  if(projectData.showContour) {
+  if (projectData.showContour) {
     var shader = this._contourPickShader
 
     shader.bind()
@@ -34345,30 +34378,34 @@ proto.drawPick = function(params) {
     var vao = this._contourVAO
     vao.bind()
 
-    for(var j=0; j<3; ++j) {
+    for (j = 0; j < 3; ++j) {
       gl.lineWidth(this.contourWidth[j])
       shader.uniforms.permutation = PERMUTATIONS[j]
-      for(var i=0; i<this.contourLevels[j].length; ++i) {
-        shader.uniforms.height = this.contourLevels[j][i]
-        vao.draw(gl.LINES, this._contourCounts[j][i], this._contourOffsets[j][i])
+      for (i = 0; i < this.contourLevels[j].length; ++i) {
+        if (this._contourCounts[j][i]) {
+          shader.uniforms.height = this.contourLevels[j][i]
+          vao.draw(gl.LINES, this._contourCounts[j][i], this._contourOffsets[j][i])
+        }
       }
     }
 
-    //Draw projections of surface
-    for(var i=0; i<3; ++i) {
-      shader.uniforms.model      = projectData.projections[i]
+    // Draw projections of surface
+    for (i = 0; i < 3; ++i) {
+      shader.uniforms.model = projectData.projections[i]
       shader.uniforms.clipBounds = projectData.clipBounds[i]
 
-      for(var j=0; j<3; ++j) {
-        if(!this.contourProject[i][j]) {
+      for (j = 0; j < 3; ++j) {
+        if (!this.contourProject[i][j]) {
           continue
         }
 
         shader.uniforms.permutation = PERMUTATIONS[j]
         gl.lineWidth(this.contourWidth[j])
-        for(var k=0; k<this.contourLevels[j].length; ++k) {
-          shader.uniforms.height = this.contourLevels[j][k]
-          vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
+        for (var k = 0; k < this.contourLevels[j].length; ++k) {
+          if (this._contourCounts[j][k]) {
+            shader.uniforms.height = this.contourLevels[j][k]
+            vao.draw(gl.LINES, this._contourCounts[j][k], this._contourOffsets[j][k])
+          }
         }
       }
     }
@@ -34377,13 +34414,12 @@ proto.drawPick = function(params) {
   }
 }
 
-
-proto.pick = function(selection) {
-  if(!selection) {
+proto.pick = function (selection) {
+  if (!selection) {
     return null
   }
 
-  if(selection.id !== this.pickId) {
+  if (selection.id !== this.pickId) {
     return null
   }
 
@@ -34391,113 +34427,113 @@ proto.pick = function(selection) {
 
   var result = this._pickResult
 
-  //Compute uv coordinate
-  var x = shape[0] * (selection.value[0] + (selection.value[2]>>4)/16.0)/255.0
+  // Compute uv coordinate
+  var x = shape[0] * (selection.value[0] + (selection.value[2] >> 4) / 16.0) / 255.0
   var ix = Math.floor(x)
   var fx = x - ix
 
-  var y = shape[1] * (selection.value[1] + (selection.value[2]&15)/16.0)/255.0
+  var y = shape[1] * (selection.value[1] + (selection.value[2] & 15) / 16.0) / 255.0
   var iy = Math.floor(y)
   var fy = y - iy
 
   ix += 1
   iy += 1
 
-  //Compute xyz coordinate
+  // Compute xyz coordinate
   var pos = result.position
   pos[0] = pos[1] = pos[2] = 0
-  for(var dx=0; dx<2; ++dx) {
+  for (var dx = 0; dx < 2; ++dx) {
     var s = dx ? fx : 1.0 - fx
-    for(var dy=0; dy<2; ++dy) {
+    for (var dy = 0; dy < 2; ++dy) {
       var t = dy ? fy : 1.0 - fy
 
       var r = ix + dx
       var c = iy + dy
       var w = s * t
 
-      for(var i=0; i<3; ++i) {
-        pos[i] += this._field[i].get(r,c) * w
+      for (var i = 0; i < 3; ++i) {
+        pos[i] += this._field[i].get(r, c) * w
       }
     }
   }
 
-  //Find closest level
+  // Find closest level
   var levelIndex = this._pickResult.level
-  for(var j=0; j<3; ++j) {
+  for (var j = 0; j < 3; ++j) {
     levelIndex[j] = bsearch.le(this.contourLevels[j], pos[j])
-    if(levelIndex[j] < 0) {
-      if(this.contourLevels[j].length > 0) {
+    if (levelIndex[j] < 0) {
+      if (this.contourLevels[j].length > 0) {
         levelIndex[j] = 0
       }
-    } else if(levelIndex[j] < this.contourLevels[j].length-1) {
+    } else if (levelIndex[j] < this.contourLevels[j].length - 1) {
       var a = this.contourLevels[j][levelIndex[j]]
-      var b = this.contourLevels[j][levelIndex[j]+1]
-      if(Math.abs(a-pos[j]) > Math.abs(b-pos[j])) {
+      var b = this.contourLevels[j][levelIndex[j] + 1]
+      if (Math.abs(a - pos[j]) > Math.abs(b - pos[j])) {
         levelIndex[j] += 1
       }
     }
   }
 
-  result.index[0] = fx<0.5 ? ix : (ix+1)
-  result.index[1] = fy<0.5 ? iy : (iy+1)
+  result.index[0] = fx < 0.5 ? ix : (ix + 1)
+  result.index[1] = fy < 0.5 ? iy : (iy + 1)
 
-  result.uv[0] = x/shape[0]
-  result.uv[1] = y/shape[1]
+  result.uv[0] = x / shape[0]
+  result.uv[1] = y / shape[1]
 
-  for(var i=0; i<3; ++i) {
+  for (i = 0; i < 3; ++i) {
     result.dataCoordinate[i] = this._field[i].get(result.index[0], result.index[1])
   }
 
   return result
 }
 
-function padField(nfield, field) {
-
+function padField (nfield, field) {
   var shape = field.shape.slice()
   var nshape = nfield.shape.slice()
 
-  //Center
-  ops.assign(nfield.lo(1,1).hi(shape[0], shape[1]), field)
+  // Center
+  ops.assign(nfield.lo(1, 1).hi(shape[0], shape[1]), field)
 
-  //Edges
+  // Edges
   ops.assign(nfield.lo(1).hi(shape[0], 1),
-              field.hi(shape[0], 1))
-  ops.assign(nfield.lo(1,nshape[1]-1).hi(shape[0],1),
-              field.lo(0,shape[1]-1).hi(shape[0],1))
-  ops.assign(nfield.lo(0,1).hi(1,shape[1]),
-              field.hi(1))
-  ops.assign(nfield.lo(nshape[0]-1,1).hi(1,shape[1]),
-              field.lo(shape[0]-1))
-  //Corners
-  nfield.set(0,0, field.get(0,0))
-  nfield.set(0,nshape[1]-1, field.get(0,shape[1]-1))
-  nfield.set(nshape[0]-1,0, field.get(shape[0]-1,0))
-  nfield.set(nshape[0]-1,nshape[1]-1, field.get(shape[0]-1,shape[1]-1))
+    field.hi(shape[0], 1))
+  ops.assign(nfield.lo(1, nshape[1] - 1).hi(shape[0], 1),
+    field.lo(0, shape[1] - 1).hi(shape[0], 1))
+  ops.assign(nfield.lo(0, 1).hi(1, shape[1]),
+    field.hi(1))
+  ops.assign(nfield.lo(nshape[0] - 1, 1).hi(1, shape[1]),
+    field.lo(shape[0] - 1))
+  // Corners
+  nfield.set(0, 0, field.get(0, 0))
+  nfield.set(0, nshape[1] - 1, field.get(0, shape[1] - 1))
+  nfield.set(nshape[0] - 1, 0, field.get(shape[0] - 1, 0))
+  nfield.set(nshape[0] - 1, nshape[1] - 1, field.get(shape[0] - 1, shape[1] - 1))
 }
 
-function handleArray(param, ctor) {
-  if(Array.isArray(param)) {
+function handleArray (param, ctor) {
+  if (Array.isArray(param)) {
     return [ ctor(param[0]), ctor(param[1]), ctor(param[2]) ]
   }
   return [ ctor(param), ctor(param), ctor(param) ]
 }
 
-function toColor(x) {
-  if(Array.isArray(x)) {
-    if(x.length === 3) {
+function toColor (x) {
+  if (Array.isArray(x)) {
+    if (x.length === 3) {
       return [x[0], x[1], x[2], 1]
     }
     return [x[0], x[1], x[2], x[3]]
   }
-  return [0,0,0,1]
+  return [0, 0, 0, 1]
 }
 
-function handleColor(param) {
-  if(Array.isArray(param)) {
-    if(Array.isArray(param)) {
-      return [  toColor(param[0]),
-                toColor(param[1]),
-                toColor(param[2]) ]
+function handleColor (param) {
+  if (Array.isArray(param)) {
+    if (Array.isArray(param)) {
+      return [
+        toColor(param[0]),
+        toColor(param[1]),
+        toColor(param[2]) ]
     } else {
       var c = toColor(param)
       return [
@@ -34508,153 +34544,153 @@ function handleColor(param) {
   }
 }
 
-proto.update = function(params) {
+proto.update = function (params) {
   params = params || {}
 
   this.dirty = true
 
-  if('contourWidth' in params) {
+  if ('contourWidth' in params) {
     this.contourWidth = handleArray(params.contourWidth, Number)
   }
-  if('showContour' in params) {
+  if ('showContour' in params) {
     this.showContour = handleArray(params.showContour, Boolean)
   }
-  if('showSurface' in params) {
+  if ('showSurface' in params) {
     this.showSurface = !!params.showSurface
   }
-  if('contourTint' in params) {
+  if ('contourTint' in params) {
     this.contourTint = handleArray(params.contourTint, Boolean)
   }
-  if('contourColor' in params) {
+  if ('contourColor' in params) {
     this.contourColor = handleColor(params.contourColor)
   }
-  if('contourProject' in params) {
-    this.contourProject = handleArray(params.contourProject, function(x) {
+  if ('contourProject' in params) {
+    this.contourProject = handleArray(params.contourProject, function (x) {
       return handleArray(x, Boolean)
     })
   }
-  if('surfaceProject' in params) {
+  if ('surfaceProject' in params) {
     this.surfaceProject = params.surfaceProject
   }
-  if('dynamicColor' in params) {
+  if ('dynamicColor' in params) {
     this.dynamicColor = handleColor(params.dynamicColor)
   }
-  if('dynamicTint' in params) {
+  if ('dynamicTint' in params) {
     this.dynamicTint = handleArray(params.dynamicTint, Number)
   }
-  if('dynamicWidth' in params) {
+  if ('dynamicWidth' in params) {
     this.dynamicWidth = handleArray(params.dynamicWidth, Number)
   }
-  if('opacity' in params) {
+  if ('opacity' in params) {
     this.opacity = params.opacity
   }
-  if('colorBounds' in params) {
+  if ('colorBounds' in params) {
     this.colorBounds = params.colorBounds
   }
 
   var field = params.field || (params.coords && params.coords[2]) || null
+  var levelsChanged = false
 
-  if(!field) {
-    if(this._field[2].shape[0] || this._field[2].shape[2]) {
-      field = this._field[2].lo(1,1).hi(this._field[2].shape[0]-2, this._field[2].shape[1]-2)
+  if (!field) {
+    if (this._field[2].shape[0] || this._field[2].shape[2]) {
+      field = this._field[2].lo(1, 1).hi(this._field[2].shape[0] - 2, this._field[2].shape[1] - 2)
     } else {
-      field = this._field[2].hi(0,0)
+      field = this._field[2].hi(0, 0)
     }
   }
 
-  //Update field
-  if('field' in params || 'coords' in params) {
-    var fsize = (field.shape[0]+2)*(field.shape[1]+2)
+  // Update field
+  if ('field' in params || 'coords' in params) {
+    var fsize = (field.shape[0] + 2) * (field.shape[1] + 2)
 
-    //Resize if necessary
-    if(fsize > this._field[2].data.length) {
+    // Resize if necessary
+    if (fsize > this._field[2].data.length) {
       pool.freeFloat(this._field[2].data)
       this._field[2].data = pool.mallocFloat(bits.nextPow2(fsize))
     }
 
-    //Pad field
-    this._field[2] = ndarray(this._field[2].data, [field.shape[0]+2, field.shape[1]+2])
+    // Pad field
+    this._field[2] = ndarray(this._field[2].data, [field.shape[0] + 2, field.shape[1] + 2])
     padField(this._field[2], field)
 
-    //Save shape of field
+    // Save shape of field
     this.shape = field.shape.slice()
     var shape = this.shape
 
-    //Resize coordinate fields if necessary
-    for(var i=0; i<2; ++i) {
-      if(this._field[2].size > this._field[i].data.length) {
+    // Resize coordinate fields if necessary
+    for (var i = 0; i < 2; ++i) {
+      if (this._field[2].size > this._field[i].data.length) {
         pool.freeFloat(this._field[i].data)
         this._field[i].data = pool.mallocFloat(this._field[2].size)
       }
-      this._field[i] = ndarray(this._field[i].data, [shape[0]+2, shape[1]+2])
+      this._field[i] = ndarray(this._field[i].data, [shape[0] + 2, shape[1] + 2])
     }
 
-    //Generate x/y coordinates
-    if(params.coords) {
+    // Generate x/y coordinates
+    if (params.coords) {
       var coords = params.coords
-      if(!Array.isArray(coords) || coords.length !== 3) {
+      if (!Array.isArray(coords) || coords.length !== 3) {
         throw new Error('gl-surface: invalid coordinates for x/y')
       }
-      for(var i=0; i<2; ++i) {
+      for (i = 0; i < 2; ++i) {
         var coord = coords[i]
-        for(var j=0; j<2; ++j) {
-          if(coord.shape[j] !== shape[j]) {
+        for (j = 0; j < 2; ++j) {
+          if (coord.shape[j] !== shape[j]) {
             throw new Error('gl-surface: coords have incorrect shape')
           }
         }
         padField(this._field[i], coord)
       }
-    } else if(params.ticks) {
+    } else if (params.ticks) {
       var ticks = params.ticks
-      if(!Array.isArray(ticks) || ticks.length !== 2) {
+      if (!Array.isArray(ticks) || ticks.length !== 2) {
         throw new Error('gl-surface: invalid ticks')
       }
-      for(var i=0; i<2; ++i) {
+      for (i = 0; i < 2; ++i) {
         var tick = ticks[i]
-        if(Array.isArray(tick) || tick.length) {
+        if (Array.isArray(tick) || tick.length) {
           tick = ndarray(tick)
         }
-        if(tick.shape[0] !== shape[i]) {
+        if (tick.shape[0] !== shape[i]) {
           throw new Error('gl-surface: invalid tick length')
         }
-        //Make a copy view of the tick array
+        // Make a copy view of the tick array
         var tick2 = ndarray(tick.data, shape)
         tick2.stride[i] = tick.stride[0]
-        tick2.stride[i^1] = 0
+        tick2.stride[i ^ 1] = 0
 
-        //Fill in field array
+        // Fill in field array
         padField(this._field[i], tick2)
       }
     } else {
-      for(var i=0; i<2; ++i) {
-        var offset = [0,0]
+      for (i = 0; i < 2; ++i) {
+        var offset = [0, 0]
         offset[i] = 1
-        this._field[i] = ndarray(this._field[i].data, [shape[0]+2, shape[1]+2], offset, 0)
+        this._field[i] = ndarray(this._field[i].data, [shape[0] + 2, shape[1] + 2], offset, 0)
       }
-      this._field[0].set(0,0,0)
-      for(var j=0; j<shape[0]; ++j) {
-        this._field[0].set(j+1,0,j)
+      this._field[0].set(0, 0, 0)
+      for (var j = 0; j < shape[0]; ++j) {
+        this._field[0].set(j + 1, 0, j)
       }
-      this._field[0].set(shape[0]+1,0,shape[0]-1)
-      this._field[1].set(0,0,0)
-      for(var j=0; j<shape[1]; ++j) {
-        this._field[1].set(0,j+1,j)
+      this._field[0].set(shape[0] + 1, 0, shape[0] - 1)
+      this._field[1].set(0, 0, 0)
+      for (j = 0; j < shape[1]; ++j) {
+        this._field[1].set(0, j + 1, j)
       }
-      this._field[1].set(0,shape[1]+1, shape[1]-1)
+      this._field[1].set(0, shape[1] + 1, shape[1] - 1)
     }
 
-    //Save shape
+    // Save shape
     var fields = this._field
 
-    //Compute surface normals
-    var fieldSize = fields[2].size
-    var dfields = ndarray(pool.mallocFloat(fields[2].size*3*2), [3, shape[0]+2, shape[1]+2, 2])
-    for(var i=0; i<3; ++i) {
+    // Compute surface normals
+    var dfields = ndarray(pool.mallocFloat(fields[2].size * 3 * 2), [3, shape[0] + 2, shape[1] + 2, 2])
+    for (i = 0; i < 3; ++i) {
       gradient(dfields.pick(i), fields[i], 'mirror')
     }
-    var normals = ndarray(pool.mallocFloat(fields[2].size*3), [shape[0]+2, shape[1]+2, 3])
-    for(var i=0; i<shape[0]+2; ++i) {
-      for(var j=0; j<shape[1]+2; ++j) {
+    var normals = ndarray(pool.mallocFloat(fields[2].size * 3), [shape[0] + 2, shape[1] + 2, 3])
+    for (i = 0; i < shape[0] + 2; ++i) {
+      for (j = 0; j < shape[1] + 2; ++j) {
         var dxdu = dfields.get(0, i, j, 0)
         var dxdv = dfields.get(0, i, j, 1)
         var dydu = dfields.get(1, i, j, 0)
@@ -34666,60 +34702,65 @@ proto.update = function(params) {
         var ny = dzdu * dxdv - dzdv * dxdu
         var nz = dxdu * dydv - dxdv * dydu
 
-        var nl = Math.sqrt(nx*nx + ny * ny + nz * nz)
-        if(nl < 1e-8) {
+        var nl = Math.sqrt(nx * nx + ny * ny + nz * nz)
+        if (nl < 1e-8) {
           nl = Math.max(Math.abs(nx), Math.abs(ny), Math.abs(nz))
-          if(nl < 1e-8) {
+          if (nl < 1e-8) {
             nz = 1.0
             ny = nx = 0.0
             nl = 1.0
           } else {
-            nl = 1.0/ nl
+            nl = 1.0 / nl
           }
         } else {
           nl = 1.0 / Math.sqrt(nl)
         }
 
-        normals.set(i,j,0, nx*nl)
-        normals.set(i,j,1, ny*nl)
-        normals.set(i,j,2, nz*nl)
+        normals.set(i, j, 0, nx * nl)
+        normals.set(i, j, 1, ny * nl)
+        normals.set(i, j, 2, nz * nl)
       }
     }
     pool.free(dfields.data)
 
-    //Initialize surface
-    var lo = [ Infinity, Infinity, Infinity]
-    var hi = [-Infinity,-Infinity,-Infinity]
-    var count   = (shape[0]-1) * (shape[1]-1) * 6
-    var tverts  = pool.mallocFloat(bits.nextPow2(9*count))
-    var tptr    = 0
-    var fptr    = 0
+    // Initialize surface
+    var lo = [ Infinity, Infinity, Infinity ]
+    var hi = [ -Infinity, -Infinity, -Infinity ]
+    var lo_intensity = Infinity
+    var hi_intensity = -Infinity
+    var count = (shape[0] - 1) * (shape[1] - 1) * 6
+    var tverts = pool.mallocFloat(bits.nextPow2(10 * count))
+    var tptr = 0
     var vertexCount = 0
-    for(var i=0; i<shape[0]-1; ++i) {
-  j_loop:
-      for(var j=0; j<shape[1]-1; ++j) {
-
-        //Test for NaNs
-        for(var dx=0; dx<2; ++dx) {
-          for(var dy=0; dy<2; ++dy) {
-            for(var k=0; k<3; ++k) {
-              var f = this._field[k].get(1+i+dx, 1+j+dy)
-              if(isNaN(f) || !isFinite(f)) {
+    for (i = 0; i < shape[0] - 1; ++i) {
+      j_loop:
+      for (j = 0; j < shape[1] - 1; ++j) {
+        // Test for NaNs
+        for (var dx = 0; dx < 2; ++dx) {
+          for (var dy = 0; dy < 2; ++dy) {
+            for (var k = 0; k < 3; ++k) {
+              var f = this._field[k].get(1 + i + dx, 1 + j + dy)
+              if (isNaN(f) || !isFinite(f)) {
                 continue j_loop
               }
             }
           }
         }
-        for(var k=0; k<6; ++k) {
+        for (k = 0; k < 6; ++k) {
           var r = i + QUAD[k][0]
           var c = j + QUAD[k][1]
 
-          var tx = this._field[0].get(r+1, c+1)
-          var ty = this._field[1].get(r+1, c+1)
-          var f  = this._field[2].get(r+1, c+1)
-          var nx = normals.get(r+1, c+1, 0)
-          var ny = normals.get(r+1, c+1, 1)
-          var nz = normals.get(r+1, c+1, 2)
+          var tx = this._field[0].get(r + 1, c + 1)
+          var ty = this._field[1].get(r + 1, c + 1)
+          f = this._field[2].get(r + 1, c + 1)
+          var vf = f
+          nx = normals.get(r + 1, c + 1, 0)
+          ny = normals.get(r + 1, c + 1, 1)
+          nz = normals.get(r + 1, c + 1, 2)
+
+          if (params.intensity) {
+            vf = params.intensity.get(r, c)
+          }
 
           tverts[tptr++] = r
           tverts[tptr++] = c
@@ -34727,6 +34768,7 @@ proto.update = function(params) {
           tverts[tptr++] = ty
           tverts[tptr++] = f
           tverts[tptr++] = 0
+          tverts[tptr++] = vf
           tverts[tptr++] = nx
           tverts[tptr++] = ny
           tverts[tptr++] = nz
@@ -34734,47 +34776,69 @@ proto.update = function(params) {
           lo[0] = Math.min(lo[0], tx)
           lo[1] = Math.min(lo[1], ty)
           lo[2] = Math.min(lo[2], f)
+          lo_intensity = Math.min(lo_intensity, vf)
 
           hi[0] = Math.max(hi[0], tx)
           hi[1] = Math.max(hi[1], ty)
           hi[2] = Math.max(hi[2], f)
+          hi_intensity = Math.max(hi_intensity, vf)
 
           vertexCount += 1
         }
       }
     }
+
+    if (params.intensityBounds) {
+      lo_intensity = +params.intensityBounds[0]
+      hi_intensity = +params.intensityBounds[1]
+    }
+
+    // Scale all vertex intensities
+    for (i = 6; i < tptr; i += 10) {
+      tverts[i] = (tverts[i] - lo_intensity) / (hi_intensity - lo_intensity)
+    }
+
     this._vertexCount = vertexCount
-    this._coordinateBuffer.update(tverts.subarray(0,tptr))
+    this._coordinateBuffer.update(tverts.subarray(0, tptr))
     pool.freeFloat(tverts)
     pool.free(normals.data)
 
-    //Update bounds
+    // Update bounds
     this.bounds = [lo, hi]
+
+    // Save intensity
+    this.intensity = params.intensity || this._field[2]
+
+    if(this.intensityBounds[0] !== lo_intensity || this.intensityBounds[1] !== hi_intensity) {
+        levelsChanged = true
+    }
+
+    // Save intensity bound
+    this.intensityBounds = [lo_intensity, hi_intensity]
   }
 
-  //Update level crossings
-  var levelsChanged = false
-  if('levels' in params) {
+  // Update level crossings
+  if ('levels' in params) {
     var levels = params.levels
-    if(!Array.isArray(levels[0])) {
+    if (!Array.isArray(levels[0])) {
       levels = [ [], [], levels ]
     } else {
       levels = levels.slice()
     }
-    for(var i=0; i<3; ++i) {
+    for (i = 0; i < 3; ++i) {
       levels[i] = levels[i].slice()
-      levels.sort(function(a,b) {
-        return a-b
+      levels.sort(function (a, b) {
+        return a - b
       })
     }
-change_test:
-    for(var i=0; i<3; ++i) {
-      if(levels[i].length !== this.contourLevels[i].length) {
+    change_test:
+    for (i = 0; i < 3; ++i) {
+      if (levels[i].length !== this.contourLevels[i].length) {
         levelsChanged = true
         break
       }
-      for(var j=0; j<levels[i].length; ++j) {
-        if(levels[i][j] !== this.contourLevels[i][j]) {
+      for (j = 0; j < levels[i].length; ++j) {
+        if (levels[i][j] !== this.contourLevels[i][j]) {
           levelsChanged = true
           break change_test
         }
@@ -34783,54 +34847,57 @@ change_test:
     this.contourLevels = levels
   }
 
-  if(levelsChanged) {
-    var fields = this._field
-    var shape  = this.shape
+  if (levelsChanged) {
+    fields = this._field
+    shape = this.shape
 
-    //Update contour lines
+    // Update contour lines
     var contourVerts = []
 
-    for(var dim=0; dim<3; ++dim) {
-      var levels = this.contourLevels[dim]
+    for (var dim = 0; dim < 3; ++dim) {
+      levels = this.contourLevels[dim]
       var levelOffsets = []
-      var levelCounts  = []
+      var levelCounts = []
 
-      var parts = [0,0]
-      var graphParts = [0,0]
+      var parts = [0, 0, 0]
 
-      for(var i=0; i<levels.length; ++i) {
+      for (i = 0; i < levels.length; ++i) {
         var graph = surfaceNets(this._field[dim], levels[i])
-        levelOffsets.push((contourVerts.length/4)|0)
-        var vertexCount = 0
+        levelOffsets.push((contourVerts.length / 5) | 0)
+        vertexCount = 0
 
-  edge_loop:
-        for(var j=0; j<graph.cells.length; ++j) {
+        edge_loop:
+        for (j = 0; j < graph.cells.length; ++j) {
           var e = graph.cells[j]
-          for(var k=0; k<2; ++k) {
+          for (k = 0; k < 2; ++k) {
             var p = graph.positions[e[k]]
 
             var x = p[0]
-            var ix = Math.floor(x)|0
+            var ix = Math.floor(x) | 0
             var fx = x - ix
 
             var y = p[1]
-            var iy = Math.floor(y)|0
+            var iy = Math.floor(y) | 0
             var fy = y - iy
 
             var hole = false
-  dd_loop:
-            for(var dd=0; dd<2; ++dd) {
+            dd_loop:
+            for (var dd = 0; dd < 3; ++dd) {
               parts[dd] = 0.0
               var iu = (dim + dd + 1) % 3
-              for(var dx=0; dx<2; ++dx) {
+              for (dx = 0; dx < 2; ++dx) {
                 var s = dx ? fx : 1.0 - fx
-                var r = Math.min(Math.max(ix+dx, 0), shape[0])|0
-                for(var dy=0; dy<2; ++dy) {
+                r = Math.min(Math.max(ix + dx, 0), shape[0]) | 0
+                for (dy = 0; dy < 2; ++dy) {
                   var t = dy ? fy : 1.0 - fy
-                  var c = Math.min(Math.max(iy+dy, 0), shape[1])|0
+                  c = Math.min(Math.max(iy + dy, 0), shape[1]) | 0
 
-                  var f = this._field[iu].get(r,c)
-                  if(!isFinite(f) || isNaN(f)) {
+                  if (dd < 2) {
+                    f = this._field[iu].get(r, c)
+                  } else {
+                    f = (this.intensity.get(r, c) - this.intensityBounds[0]) / (this.intensityBounds[1] - this.intensityBounds[0])
+                  }
+                  if (!isFinite(f) || isNaN(f)) {
                     hole = true
                     break dd_loop
                   }
@@ -34841,13 +34908,13 @@ change_test:
               }
             }
 
-            if(!hole) {
-              contourVerts.push(parts[0], parts[1], p[0], p[1])
+            if (!hole) {
+              contourVerts.push(parts[0], parts[1], p[0], p[1], parts[2])
               vertexCount += 1
             } else {
-              if(k > 0) {
-                //If we already added first edge, pop off verts
-                for(var l=0; l<4; ++l) {
+              if (k > 0) {
+                // If we already added first edge, pop off verts
+                for (var l = 0; l < 5; ++l) {
                   contourVerts.pop()
                 }
                 vertexCount -= 1
@@ -34859,25 +34926,25 @@ change_test:
         levelCounts.push(vertexCount)
       }
 
-      //Store results
-      this._contourOffsets[dim]  = levelOffsets
-      this._contourCounts[dim]   = levelCounts
+      // Store results
+      this._contourOffsets[dim] = levelOffsets
+      this._contourCounts[dim] = levelCounts
     }
 
     var floatBuffer = pool.mallocFloat(contourVerts.length)
-    for(var i=0; i<contourVerts.length; ++i) {
+    for (i = 0; i < contourVerts.length; ++i) {
       floatBuffer[i] = contourVerts[i]
     }
     this._contourBuffer.update(floatBuffer)
     pool.freeFloat(floatBuffer)
   }
 
-  if(params.colormap) {
+  if (params.colormap) {
     this._colorMap.setPixels(genColormap(params.colormap))
   }
 }
 
-proto.dispose = function() {
+proto.dispose = function () {
   this._shader.dispose()
   this._vao.dispose()
   this._coordinateBuffer.dispose()
@@ -34888,21 +34955,21 @@ proto.dispose = function() {
   this._contourPickShader.dispose()
   this._dynamicBuffer.dispose()
   this._dynamicVAO.dispose()
-  for(var i=0; i<3; ++i) {
+  for (var i = 0; i < 3; ++i) {
     pool.freeFloat(this._field[i].data)
   }
 }
 
-proto.highlight = function(selection) {
-  if(!selection) {
-    this._dynamicCounts = [0,0,0]
+proto.highlight = function (selection) {
+  if (!selection) {
+    this._dynamicCounts = [0, 0, 0]
     this.dyanamicLevel = [NaN, NaN, NaN]
-    this.highlightLevel = [-1,-1,-1]
+    this.highlightLevel = [-1, -1, -1]
     return
   }
 
-  for(var i=0; i<3; ++i) {
-    if(this.enableHighlight[i]) {
+  for (var i = 0; i < 3; ++i) {
+    if (this.enableHighlight[i]) {
       this.highlightLevel[i] = selection.level[i]
     } else {
       this.highlightLevel[i] = -1
@@ -34910,14 +34977,14 @@ proto.highlight = function(selection) {
   }
 
   var levels
-  if(this.snapToData) {
+  if (this.snapToData) {
     levels = selection.dataCoordinate
   } else {
     levels = selection.position
   }
-  if( (!this.enableDynamic[0] || levels[0] === this.dynamicLevel[0]) &&
-      (!this.enableDynamic[1] || levels[1] === this.dynamicLevel[1]) &&
-      (!this.enableDynamic[2] || levels[2] === this.dynamicLevel[2]) ) {
+  if ((!this.enableDynamic[0] || levels[0] === this.dynamicLevel[0]) &&
+    (!this.enableDynamic[1] || levels[1] === this.dynamicLevel[1]) &&
+    (!this.enableDynamic[2] || levels[2] === this.dynamicLevel[2])) {
     return
   }
 
@@ -34925,8 +34992,8 @@ proto.highlight = function(selection) {
   var shape = this.shape
   var scratchBuffer = pool.mallocFloat(12 * shape[0] * shape[1])
 
-  for(var d=0; d<3; ++d) {
-    if(!this.enableDynamic[d]) {
+  for (var d = 0; d < 3; ++d) {
+    if (!this.enableDynamic[d]) {
       this.dynamicLevel[d] = NaN
       this._dynamicCounts[d] = 0
       continue
@@ -34934,33 +35001,34 @@ proto.highlight = function(selection) {
 
     this.dynamicLevel[d] = levels[d]
 
-    var u = (d+1) % 3
-    var v = (d+2) % 3
+    var u = (d + 1) % 3
+    var v = (d + 2) % 3
 
     var f = this._field[d]
     var g = this._field[u]
     var h = this._field[v]
+    var intensity = this.intensity
 
-    var graph     = surfaceNets(f, levels[d])
-    var edges     = graph.cells
+    var graph = surfaceNets(f, levels[d])
+    var edges = graph.cells
     var positions = graph.positions
 
     this._dynamicOffsets[d] = vertexCount
 
-    for(var i=0; i<edges.length; ++i) {
+    for (i = 0; i < edges.length; ++i) {
       var e = edges[i]
-      for(var j=0; j<2; ++j) {
-        var p  = positions[e[j]]
+      for (var j = 0; j < 2; ++j) {
+        var p = positions[e[j]]
 
-        var x  = +p[0]
-        var ix = x|0
-        var jx = Math.min(ix+1, shape[0])|0
+        var x = +p[0]
+        var ix = x | 0
+        var jx = Math.min(ix + 1, shape[0]) | 0
         var fx = x - ix
         var hx = 1.0 - fx
 
-        var y  = +p[1]
-        var iy = y|0
-        var jy = Math.min(iy+1, shape[1])|0
+        var y = +p[1]
+        var iy = y | 0
+        var jy = Math.min(iy + 1, shape[1]) | 0
         var fy = y - iy
         var hy = 1.0 - fy
 
@@ -34969,25 +35037,25 @@ proto.highlight = function(selection) {
         var w10 = fx * hy
         var w11 = fx * fy
 
-        var cu =  w00 * g.get(ix,iy) +
-                  w01 * g.get(ix,jy) +
-                  w10 * g.get(jx,iy) +
-                  w11 * g.get(jx,jy)
+        var cu = w00 * g.get(ix, iy) +
+          w01 * g.get(ix, jy) +
+          w10 * g.get(jx, iy) +
+          w11 * g.get(jx, jy)
 
-        var cv =  w00 * h.get(ix,iy) +
-                  w01 * h.get(ix,jy) +
-                  w10 * h.get(jx,iy) +
-                  w11 * h.get(jx,jy)
+        var cv = w00 * h.get(ix, iy) +
+          w01 * h.get(ix, jy) +
+          w10 * h.get(jx, iy) +
+          w11 * h.get(jx, jy)
 
-        if(isNaN(cu) || isNaN(cv)) {
-          if(j) {
+        if (isNaN(cu) || isNaN(cv)) {
+          if (j) {
             vertexCount -= 1
           }
           break
         }
 
-        scratchBuffer[2*vertexCount+0] = cu
-        scratchBuffer[2*vertexCount+1] = cv
+        scratchBuffer[2 * vertexCount + 0] = cu
+        scratchBuffer[2 * vertexCount + 1] = cv
 
         vertexCount += 1
       }
@@ -34996,14 +35064,12 @@ proto.highlight = function(selection) {
     this._dynamicCounts[d] = vertexCount - this._dynamicOffsets[d]
   }
 
-  this._dynamicBuffer.update(scratchBuffer.subarray(0, 2*vertexCount))
+  this._dynamicBuffer.update(scratchBuffer.subarray(0, 2 * vertexCount))
   pool.freeFloat(scratchBuffer)
 }
 
-function createSurfacePlot(params) {
+function createSurfacePlot (params) {
   var gl = params.gl
-  var field = params.field || (params.coords && params.coords[2]) || ndarray([], [0,0])
-
   var shader = createShader(gl)
   var pickShader = createPickShader(gl)
   var contourShader = createContourShader(gl)
@@ -35011,30 +35077,39 @@ function createSurfacePlot(params) {
 
   var coordinateBuffer = createBuffer(gl)
   var vao = createVAO(gl, [
-      { buffer: coordinateBuffer,
-        size: 4,
-        stride: SURFACE_VERTEX_SIZE,
-        offset: 0
-      },
-      { buffer: coordinateBuffer,
-        size: 2,
-        stride: SURFACE_VERTEX_SIZE,
-        offset: 16
-      },
-      {
-        buffer: coordinateBuffer,
-        size: 3,
-        stride: SURFACE_VERTEX_SIZE,
-        offset: 24
-      }
-    ])
+    { buffer: coordinateBuffer,
+      size: 4,
+      stride: SURFACE_VERTEX_SIZE,
+      offset: 0
+    },
+    { buffer: coordinateBuffer,
+      size: 3,
+      stride: SURFACE_VERTEX_SIZE,
+      offset: 16
+    },
+    {
+      buffer: coordinateBuffer,
+      size: 3,
+      stride: SURFACE_VERTEX_SIZE,
+      offset: 28
+    }
+  ])
 
   var contourBuffer = createBuffer(gl)
   var contourVAO = createVAO(gl, [
     {
       buffer: contourBuffer,
-      size: 4
-    }])
+      size: 4,
+      stride: 20,
+      offset: 0
+    },
+    {
+      buffer: contourBuffer,
+      size: 1,
+      stride: 20,
+      offset: 16
+    }
+  ])
 
   var dynamicBuffer = createBuffer(gl)
   var dynamicVAO = createVAO(gl, [
@@ -35050,8 +35125,8 @@ function createSurfacePlot(params) {
 
   var surface = new SurfacePlot(
     gl,
-    [0,0],
-    [[0,0,0], [0,0,0]],
+    [0, 0],
+    [[0, 0, 0], [0, 0, 0]],
     shader,
     pickShader,
     coordinateBuffer,
@@ -35067,7 +35142,7 @@ function createSurfacePlot(params) {
   var nparams = {
     levels: [[], [], []]
   }
-  for(var id in params) {
+  for (var id in params) {
     nparams[id] = params[id]
   }
   nparams.colormap = nparams.colormap || 'jet'
@@ -39156,7 +39231,7 @@ function createSurfaceExtractor(args) {
 
 
 
-var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_4_arg1_=_inline_4_arg2_.apply(void 0,_inline_4_arg0_)}","args":[{"name":"_inline_4_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_4_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_4_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_1_arg1_=_inline_1_arg2_.apply(void 0,_inline_1_arg0_)}","args":[{"name":"_inline_1_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 module.exports = function(array, f) {
   fill(array, f)
@@ -40846,13 +40921,13 @@ module.exports = sort
 var interp  = require('ndarray-linear-interpolate')
 
 
-var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_18_arg4_)}","args":[{"name":"_inline_18_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_18_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_18_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_18_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_18_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_19_arg2_(this_warped,_inline_19_arg0_),_inline_19_arg1_=_inline_19_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_19_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_19_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_19_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_19_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_19_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
+var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_6_arg4_)}","args":[{"name":"_inline_6_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_7_arg2_(this_warped,_inline_7_arg0_),_inline_7_arg1_=_inline_7_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_7_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_7_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
 
-var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_22_arg2_(this_warped,_inline_22_arg0_),_inline_22_arg1_=_inline_22_arg3_(_inline_22_arg4_,this_warped[0])}","args":[{"name":"_inline_22_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_22_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
+var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_10_arg2_(this_warped,_inline_10_arg0_),_inline_10_arg1_=_inline_10_arg3_(_inline_10_arg4_,this_warped[0])}","args":[{"name":"_inline_10_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_10_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
 
-var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_25_arg2_(this_warped,_inline_25_arg0_),_inline_25_arg1_=_inline_25_arg3_(_inline_25_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_25_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_25_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
+var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_13_arg2_(this_warped,_inline_13_arg0_),_inline_13_arg1_=_inline_13_arg3_(_inline_13_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_13_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_13_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_13_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_13_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_13_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
 
-var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_28_arg2_(this_warped,_inline_28_arg0_),_inline_28_arg1_=_inline_28_arg3_(_inline_28_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_28_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_28_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
+var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_16_arg2_(this_warped,_inline_16_arg0_),_inline_16_arg1_=_inline_16_arg3_(_inline_16_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_16_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_16_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_16_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_16_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_16_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
 
 module.exports = function warp(dest, src, func) {
   switch(src.shape.length) {
