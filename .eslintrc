@@ -9,6 +9,7 @@
   "rules": {
     "no-trailing-spaces": [2],
     "no-multiple-empty-lines": [2, {"max": 2, "maxEOF": 1}],
+    "eol-last": [2],
     "linebreak-style": [2, "unix"],
     "indent": [2, 4, {"SwitchCase": 1}],
     "max-len": [0, 80],
@@ -32,9 +33,12 @@
     "space-before-function-paren": [2, "never"],
     "space-before-blocks": [2],
     "no-multi-spaces": [2],
+    "no-whitespace-before-property": [2],
+    "no-unexpected-multiline": [2],
     "space-infix-ops": [0, {"int32Hint": false}],
     "quotes": [2, "single"],
     "dot-notation": [2, {"allowKeywords": false}],
+    "operator-linebreak": [2, "after"],
     "eqeqeq": [2],
     "new-cap": [0],
     "no-redeclare": [2, {"builtinGlobals": true}],
@@ -44,7 +48,6 @@
     "no-use-before-define": [2, "nofunc"],
     "no-loop-func": [2],
     "no-console": [0],
-    "no-unexpected-multiline": [2],
     "no-unused-labels": [2]
   },
 }

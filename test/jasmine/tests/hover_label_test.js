@@ -257,7 +257,7 @@ describe('hover info', function() {
             };
 
         beforeEach(function() {
-            this. gd = createGraphDiv();
+            this.gd = createGraphDiv();
         });
 
         it('should display the correct format when ticklabels true', function() {
@@ -279,6 +279,155 @@ describe('hover info', function() {
 
             expect(hovers.size()).toEqual(1);
             expect(hovers.select('text')[0][0].textContent).toEqual('0.23');
+        });
+    });
+
+    describe('textmode', function() {
+
+        var data = [{
+                x: [1,2,3,4],
+                y: [2,3,4,5],
+                mode: 'text',
+                hoverinfo: 'text',
+                text: ['test', null, 42, undefined]
+            }],
+            layout = {
+                width: 600,
+                height: 400
+            };
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), data, layout).then(done);
+        });
+
+        it('should show text labels', function() {
+            mouseEvent('mousemove', 115, 310);
+            var hovers = d3.selectAll('g.hovertext');
+            expect(hovers.size()).toEqual(1);
+            expect(hovers.select('text')[0][0].textContent).toEqual('test');
+        });
+
+        it('should show number labels', function() {
+            mouseEvent('mousemove', 370, 180);
+            var hovers = d3.selectAll('g.hovertext');
+            expect(hovers.size()).toEqual(1);
+            expect(hovers.select('text')[0][0].textContent).toEqual('42');
+        });
+
+        it('should not show null text labels', function() {
+            mouseEvent('mousemove', 236, 246);
+            var hovers = d3.selectAll('g.hovertext');
+            expect(hovers.size()).toEqual(0);
+        });
+
+        it('should not show undefined text labels', function() {
+            mouseEvent('mousemove', 500, 115);
+            var hovers = d3.selectAll('g.hovertext');
+            expect(hovers.size()).toEqual(0);
+        });
+    });
+});
+
+describe('hover info on stacked subplots', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    describe('hover info on stacked subplots with shared x-axis', function() {
+        var mock = require('@mocks/stacked_coupled_subplots.json');
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+        });
+
+        it('responds to hover', function() {
+            var gd = document.getElementById('graph');
+            Plotly.Fx.hover(gd, {xval: 3}, ['xy','xy2','xy3']);
+
+            expect(gd._hoverdata.length).toEqual(2);
+
+            expect(gd._hoverdata[0]).toEqual(jasmine.objectContaining(
+                {
+                    curveNumber: 1,
+                    pointNumber: 1,
+                    x: 3,
+                    y: 110
+                }));
+
+            expect(gd._hoverdata[1]).toEqual(jasmine.objectContaining(
+                {
+                    curveNumber: 2,
+                    pointNumber: 0,
+                    x: 3,
+                    y: 1000
+                }));
+
+            //There should be a single label on the x-axis with the shared x value, 3.
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('3');
+
+            //There should be two points being hovered over, in two different traces, one in each plot.
+            expect(d3.selectAll('g.hovertext').size()).toEqual(2);
+            var textNodes = d3.selectAll('g.hovertext').selectAll('text');
+
+            expect(textNodes[0][0].innerHTML).toEqual('trace 1');
+            expect(textNodes[0][1].innerHTML).toEqual('110');
+            expect(textNodes[1][0].innerHTML).toEqual('trace 2');
+            expect(textNodes[1][1].innerHTML).toEqual('1000');
+        });
+    });
+
+    describe('hover info on stacked subplots with shared y-axis', function() {
+        var mock = require('@mocks/stacked_subplots_shared_yaxis.json');
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
+        });
+
+        it('responds to hover', function() {
+            var gd = document.getElementById('graph');
+            Plotly.Fx.hover(gd, {yval: 0}, ['xy', 'x2y', 'x3y']);
+
+            expect(gd._hoverdata.length).toEqual(3);
+
+            expect(gd._hoverdata[0]).toEqual(jasmine.objectContaining(
+                {
+                    curveNumber: 0,
+                    pointNumber: 0,
+                    x: 1,
+                    y: 0
+                }));
+
+            expect(gd._hoverdata[1]).toEqual(jasmine.objectContaining(
+                {
+                    curveNumber: 1,
+                    pointNumber: 0,
+                    x: 2.1,
+                    y: 0
+                }));
+
+            expect(gd._hoverdata[2]).toEqual(jasmine.objectContaining(
+                {
+                    curveNumber: 2,
+                    pointNumber: 0,
+                    x: 3,
+                    y: 0
+                }));
+
+            //There should be a single label on the y-axis with the shared y value, 0.
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0');
+
+            //There should be three points being hovered over, in three different traces, one in each plot.
+            expect(d3.selectAll('g.hovertext').size()).toEqual(3);
+            var textNodes = d3.selectAll('g.hovertext').selectAll('text');
+
+            expect(textNodes[0][0].innerHTML).toEqual('trace 0');
+            expect(textNodes[0][1].innerHTML).toEqual('1');
+            expect(textNodes[1][0].innerHTML).toEqual('trace 1');
+            expect(textNodes[1][1].innerHTML).toEqual('2.1');
+            expect(textNodes[2][0].innerHTML).toEqual('trace 2');
+            expect(textNodes[2][1].innerHTML).toEqual('3');
         });
     });
 });

@@ -492,7 +492,7 @@ plots.supplyDefaults = function(gd) {
     plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
     // clean subplots and other artifacts from previous plot calls
-    cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
+    plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
     /*
      * Relink functions and underscore attributes to promote consistency between
@@ -520,7 +520,7 @@ plots.supplyDefaults = function(gd) {
     }
 };
 
-function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var i, j;
 
     var plotTypes = Object.keys(subplotsRegistry);
@@ -560,7 +560,7 @@ function cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout) {
             oldFullLayout._infolayer.selectAll('.cb' + oldUid).remove();
         }
     }
-}
+};
 
 /**
  * Relink private _keys and keys with a function value from one layout
@@ -755,16 +755,13 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     }
 };
 
+// Remove all plotly attributes from a div so it can be replotted fresh
+// TODO: these really need to be encapsulated into a much smaller set...
 plots.purge = function(gd) {
-    // remove all plotly attributes from a div so it can be replotted fresh
-    // TODO: these really need to be encapsulated into a much smaller set...
 
     // note: we DO NOT remove _context because it doesn't change when we insert
     // a new plot, and may have been set outside of our scope.
 
-    // clean up the gl and geo containers
-    // TODO unify subplot creation/update with d3.selection.order
-    // and/or subplot ids
     var fullLayout = gd._fullLayout || {};
     if(fullLayout._glcontainer !== undefined) fullLayout._glcontainer.remove();
     if(fullLayout._geocontainer !== undefined) fullLayout._geocontainer.remove();
@@ -808,10 +805,11 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars);
+    var _modules = gd._modules;
 
-    for(var i = 0; i < modulesWithErrorBars.length; i++) {
-        var _module = modulesWithErrorBars[i];
+    for(var i = 0; i < _modules.length; i++) {
+        var _module = _modules[i];
+
         if(_module.style) _module.style(gd);
     }
 };
@@ -843,6 +841,7 @@ plots.sanitizeMargins = function(fullLayout) {
         margin.b = Math.floor(correction * margin.b);
     }
 };
+
 // called by legend and colorbar routines to see if we need to
 // expand the margins to show them
 // o is {x,l,r,y,t,b} where x and y are plot fractions,
@@ -877,17 +876,19 @@ plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     if(!fullLayout._size) fullLayout._size = {};
     if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
+
     var gs = fullLayout._size,
         oldmargins = JSON.stringify(gs);
 
     // adjust margins for outside legends and colorbars
     // fullLayout.margin is the requested margin,
     // fullLayout._size has margins and plotsize after adjustment
-    var ml = Math.max(fullLayout.margin.l||0,0),
-        mr = Math.max(fullLayout.margin.r||0,0),
-        mt = Math.max(fullLayout.margin.t||0,0),
-        mb = Math.max(fullLayout.margin.b||0,0),
+    var ml = Math.max(fullLayout.margin.l || 0, 0),
+        mr = Math.max(fullLayout.margin.r || 0, 0),
+        mt = Math.max(fullLayout.margin.t || 0, 0),
+        mb = Math.max(fullLayout.margin.b || 0, 0),
         pm = fullLayout._pushmargin;
+
     if(fullLayout.margin.autoexpand!==false) {
         // fill in the requested margins
         pm.base = {

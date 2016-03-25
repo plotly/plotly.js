@@ -58,6 +58,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hidesurface');
     coerce('opacity');
 
+    var surfaceColor = coerce('surfacecolor');
+
     coerce('colorscale');
 
     var dims = ['x', 'y', 'z'];
@@ -85,7 +87,20 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
+    // backward compatibility block
+    if(!surfaceColor) {
+        mapLegacy(traceIn, 'zmin', 'cmin');
+        mapLegacy(traceIn, 'zmax', 'cmax');
+        mapLegacy(traceIn, 'zauto', 'cauto');
+    }
+
     colorscaleDefaults(
-        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}
+        traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'}
     );
 };
+
+function mapLegacy(traceIn, oldAttr, newAttr) {
+    if(oldAttr in traceIn && !(newAttr in traceIn)) {
+        traceIn[newAttr] = traceIn[oldAttr];
+    }
+}
