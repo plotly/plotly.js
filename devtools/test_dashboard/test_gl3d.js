@@ -38,5 +38,6 @@ plots['nan-holes'] = require('@mocks/gl3d_nan-holes.json');
 plots['connectgaps'] = require('@mocks/gl3d_scatter3d-connectgaps.json');
 plots['tet'] = require('@mocks/gl3d_tet.json');
 plots['surface_intensity'] = require('@mocks/gl3d_surface_intensity.json');
+plots['connectgaps'] = require('@mocks/gl3d_scatter3d-connectgaps.json');
 
 plotButtons(plots, figDir);
