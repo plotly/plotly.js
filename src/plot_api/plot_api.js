@@ -147,20 +147,17 @@ Plotly.plot = function(gd, data, layout, config) {
     }
     else if(graphWasEmpty) makePlotFramework(gd);
 
+    // save initial axis range once per graph
+    if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
+
     var fullLayout = gd._fullLayout;
 
     // prepare the data and find the autorange
 
     // generate calcdata, if we need to
     // to force redoing calcdata, just delete it before calling Plotly.plot
-    var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
-    if(recalc) {
-        doCalcdata(gd);
-
-        if(gd._context.doubleClick!==false || gd._context.displayModeBar!==false) {
-            Plotly.Axes.saveRangeInitial(gd);
-        }
-    }
+    var recalc = !gd.calcdata || gd.calcdata.length !== (gd.data || []).length;
+    if(recalc) doCalcdata(gd);
 
     // in case it has changed, attach fullData traces to calcdata
     for(var i = 0; i < gd.calcdata.length; i++) {
@@ -2585,6 +2582,9 @@ function makePlotFramework(gd) {
     fullLayout._defs = fullLayout._paper.append('defs')
         .attr('id', 'defs-' + fullLayout._uid);
 
+    fullLayout._topdefs = fullLayout._toppaper.append('defs')
+        .attr('id', 'topdefs-' + fullLayout._uid);
+
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
@@ -2669,7 +2669,6 @@ function makeCartesianPlotFramwork(gd, subplots) {
         svg.append('g').classed('imagelayer', true);
         svg.append('g').classed('maplayer', true);
         svg.append('g').classed('barlayer', true);
-        svg.append('g').classed('errorlayer', true);
         svg.append('g').classed('boxlayer', true);
         svg.append('g').classed('scatterlayer', true);
     }

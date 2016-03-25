@@ -12,6 +12,7 @@
 var d3 = require('d3');
 
 var Drawing = require('../../components/drawing');
+var ErrorBars = require('../../components/errorbars');
 
 
 module.exports = function style(gd) {
@@ -34,4 +35,6 @@ module.exports = function style(gd) {
 
     s.selectAll('g.trace path.js-fill')
         .call(Drawing.fillGroupStyle);
+
+    s.call(ErrorBars.style);
 };

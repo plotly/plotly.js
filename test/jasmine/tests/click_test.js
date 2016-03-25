@@ -8,7 +8,7 @@ var mouseEvent = require('../assets/mouse_event');
 var customMatchers = require('../assets/custom_matchers');
 
 
-describe('click interactions', function() {
+describe('Test click interactions:', function() {
     var mock = require('@mocks/14.json'),
         gd;
 
@@ -26,12 +26,15 @@ describe('click interactions', function() {
         mouseEvent('mouseup', x, y);
     }
 
-    function doubleClick(x, y, cb) {
-        click(x, y);
-        setTimeout(function() {
+    function doubleClick(x, y) {
+        return new Promise(function(resolve) {
             click(x, y);
-            cb();
-        }, DBLCLICKDELAY / 2);
+
+            setTimeout(function() {
+                click(x, y);
+                resolve();
+            }, DBLCLICKDELAY / 2);
+        });
     }
 
     describe('click events', function() {
@@ -87,7 +90,7 @@ describe('click interactions', function() {
         });
 
         it('should return null', function(done) {
-            doubleClick(pointPos[0], pointPos[1], function() {
+            doubleClick(pointPos[0], pointPos[1]).then(function() {
                 expect(futureData).toBe(null);
                 done();
             });
@@ -113,9 +116,11 @@ describe('click interactions', function() {
             'yaxis.range[1]': zoomRangeY[1]
         };
 
-        beforeEach(function() {
+        beforeAll(function() {
             jasmine.addMatchers(customMatchers);
+        });
 
+        beforeEach(function() {
             gd = createGraphDiv();
             mockCopy = Lib.extendDeep({}, mock);
         });
@@ -139,12 +144,12 @@ describe('click interactions', function() {
                     expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
                     expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                    return doubleClick(blankPos[0], blankPos[1]);
+                }).then(function() {
+                    expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                    expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                        done();
-                    });
+                    done();
                 });
             });
         });
@@ -156,17 +161,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -177,17 +182,54 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                doubleClick(blankPos[0], blankPos[1], function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                        done();
-                    });
-                });
+                done();
+            });
+        });
+
+        it('when set to \'reset+autorange\' (the default) should follow updated auto ranges', function(done) {
+            var updateData = {
+                x: [[1e-4, 0, 1e3]],
+                y: [[30, 0, 30]]
+            };
+
+            var newAutoRangeX = [-4.482371794871794, 3.4823717948717943],
+                newAutoRangeY = [-0.8892256657741471, 1.6689872212461876];
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+
+                return Plotly.restyle(gd, updateData);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
+
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
+
+                done();
             });
         });
 
@@ -196,17 +238,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -217,17 +259,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -238,12 +280,12 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                doubleClick(blankPos[0], blankPos[1], function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                    done();
-                });
+                done();
             });
         });
 
@@ -252,17 +294,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -273,17 +315,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -294,12 +336,12 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                doubleClick(blankPos[0], blankPos[1], function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                    done();
-                });
+                done();
             });
         });
 

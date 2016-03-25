@@ -1,0 +1,68 @@
+{
+    "data": [
+        {
+            "x": [
+                1,
+                1,
+                2,
+                2,
+                1
+            ],
+            "y": [
+                1,
+                2,
+                2,
+                1,
+                1
+            ],
+            "mode": "lines",
+            "fill": "tozerox",
+            "fillcolor": "black",
+            "uid": "116a4f"
+        },
+        {
+            "x": [
+                1.5,
+                2.5
+            ],
+            "y": [
+                1.5,
+                2.5
+            ],
+            "error_y": {
+                "array": [
+                    1,
+                    2
+                ],
+                "color": "green",
+                "thickness": 3
+            },
+            "marker": {
+                "size": 20,
+                "color": "red"
+            },
+            "uid": "0f7846"
+        }
+    ],
+    "layout": {
+        "xaxis": {
+            "type": "linear",
+            "range": [
+                1,
+                2.608493696084937
+            ],
+            "autorange": true
+        },
+        "yaxis": {
+            "type": "linear",
+            "range": [
+                0.2777777777777778,
+                4.722222222222222
+            ],
+            "autorange": true
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true
+    }
+}
