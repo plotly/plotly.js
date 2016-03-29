@@ -1576,7 +1576,6 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function zoomDone(dragged, numClicks) {
         if(Math.min(box.h, box.w) < MINDRAG * 2) {
             if(numClicks === 2) doubleClick();
-            else pauseForDrag(gd);
 
             return removeZoombox(gd);
         }
@@ -1629,7 +1628,6 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     }
                 });
         }
-        else pauseForDrag(gd);
     }
 
     // scroll zoom, on all draggers except corners
@@ -1932,21 +1930,6 @@ function getEndText(ax, end) {
     }
 }
 
-function pauseForDrag(gd) {
-    // prevent more redraws until we know if a doubleclick
-    // has occurred
-    gd._dragging = true;
-    var deferredReplot = gd._replotPending;
-    gd._replotPending = false;
-
-    setTimeout(function() {
-        gd._replotPending = deferredReplot;
-        finishDrag(gd);
-    },
-        constants.DBLCLICKDELAY
-    );
-}
-
 function finishDrag(gd) {
     gd._dragging = false;
     if(gd._replotPending) Plotly.plot(gd);
@@ -2032,11 +2015,6 @@ fx.dragElement = function(options) {
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
     function onStart(e) {
-        // because we cancel event bubbling,
-        // explicitly trigger input blur event.
-        var inputBox = document.querySelector('.plugin-editable');
-        if(inputBox) d3.select(inputBox).on('blur').call(inputBox);
-
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
