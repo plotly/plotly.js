@@ -619,4 +619,52 @@ describe('Test click interactions:', function() {
         });
 
     });
+
+    describe('zoom interactions', function() {
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('on main dragbox should update the axis ranges', function(done) {
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(100, 100, 400, 300).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.70624901, -0.52254561]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.29276050, 1.294167062]);
+
+                return drag(100, 100, 400, 300);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.57707219, -1.65438061]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.172738250, 1.230689959]);
+
+                done();
+            });
+        });
+    });
+
+    describe('pan interactions', function() {
+        beforeEach(function(done) {
+            mockCopy.layout.dragmode = 'pan';
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('on main dragbox should update the axis ranges', function(done) {
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(100, 100, 400, 300).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-5.19567089, -0.02757284]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.595918934, 2.976310280]);
+
+                return drag(100, 100, 400, 300);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-7.37937429, -2.21127624]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([2.182846498, 4.563237844]);
+
+                done();
+            });
+        });
+    });
 });
