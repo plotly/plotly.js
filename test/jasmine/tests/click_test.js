@@ -9,11 +9,24 @@ var customMatchers = require('../assets/custom_matchers');
 
 
 describe('Test click interactions:', function() {
-    var mock = require('@mocks/14.json'),
-        gd;
+    var mock = require('@mocks/14.json');
+
+    var mockCopy, gd;
 
     var pointPos = [351, 223],
         blankPos = [70, 363];
+
+    var autoRangeX = [-3.011967491973726, 2.1561305597186564],
+        autoRangeY = [-0.9910086301469277, 1.389382716298284];
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+        mockCopy = Lib.extendDeep({}, mock);
+    });
 
     afterEach(destroyGraphDiv);
 
@@ -54,11 +67,7 @@ describe('Test click interactions:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            gd = createGraphDiv();
-
-            var mockCopy = Lib.extendDeep({}, mock);
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
 
             gd.on('plotly_click', function(data) {
                 futureData = data;
@@ -90,11 +99,7 @@ describe('Test click interactions:', function() {
         var futureData;
 
         beforeEach(function(done) {
-            gd = createGraphDiv();
-
-            var mockCopy = Lib.extendDeep({}, mock);
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
 
             gd.on('plotly_doubleclick', function(data) {
                 futureData = data;
@@ -111,11 +116,6 @@ describe('Test click interactions:', function() {
     });
 
     describe('double click interactions', function() {
-        var mockCopy;
-
-        var autoRangeX = [-3.011967491973726, 2.1561305597186564],
-            autoRangeY = [-0.9910086301469277, 1.389382716298284];
-
         var setRangeX = [-3, 1],
             setRangeY = [-0.5, 1];
 
@@ -128,15 +128,6 @@ describe('Test click interactions:', function() {
             'yaxis.range[0]': zoomRangeY[0],
             'yaxis.range[1]': zoomRangeY[1]
         };
-
-        beforeAll(function() {
-            jasmine.addMatchers(customMatchers);
-        });
-
-        beforeEach(function() {
-            gd = createGraphDiv();
-            mockCopy = Lib.extendDeep({}, mock);
-        });
 
         function setRanges(mockCopy) {
             mockCopy.layout.xaxis.autorange = false;
@@ -153,17 +144,17 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    return doubleClick(blankPos[0], blankPos[1]);
-                }).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                    done();
-                });
+                done();
             });
         });
 
