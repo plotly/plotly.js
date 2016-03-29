@@ -116,7 +116,7 @@ describe('Test click interactions:', function() {
         });
     });
 
-    describe('drag interations', function() {
+    describe('drag interactions', function() {
         beforeEach(function(done) {
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
