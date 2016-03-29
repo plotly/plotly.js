@@ -212,10 +212,10 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                return drag(100, 100, 200, 200);
+                return drag(50, 50, 100, 100);
             }).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.70624901567643, -1.9783478816352495]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([0.5007032802920716, 1.2941670624404753]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.0119674, 2.156130559]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.9910086, 1.389382716]);
 
                 done();
             });
