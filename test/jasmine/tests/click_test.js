@@ -51,7 +51,7 @@ describe('Test click interactions:', function() {
         });
     }
 
-    function drag(fromX, fromY, toX, toY) {
+    function drag(fromX, fromY, toX, toY, delay) {
         return new Promise(function(resolve) {
             mouseEvent('mousemove', fromX, fromY);
             mouseEvent('mousedown', fromX, fromY);
@@ -60,7 +60,7 @@ describe('Test click interactions:', function() {
             setTimeout(function() {
                 mouseEvent('mouseup', toX, toY);
                 resolve();
-            }, DBLCLICKDELAY / 2);
+            }, delay || DBLCLICKDELAY / 4);
         });
     }
 
@@ -213,7 +213,7 @@ describe('Test click interactions:', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                return drag(100, 100, 200, 200);
+                return drag(100, 100, 200, 200, DBLCLICKDELAY / 2);
             }).then(function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray([-2.70624901567643, -1.9783478816352495]);
                 expect(gd.layout.yaxis.range).toBeCloseToArray([0.5007032802920716, 1.2941670624404753]);
