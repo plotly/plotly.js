@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.7.0
+* plotly.js v1.7.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -17365,7 +17365,7 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":209,"ndarray-ops":208,"typedarray-pool":235}],76:[function(require,module,exports){
+},{"ndarray":210,"ndarray-ops":209,"typedarray-pool":235}],76:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -18811,7 +18811,7 @@ function createLinePlot(plot, options) {
   return linePlot
 }
 
-},{"./lib/shaders":81,"gl-buffer":75,"gl-shader":154,"gl-texture2d":180,"ndarray":209,"typedarray-pool":235}],83:[function(require,module,exports){
+},{"./lib/shaders":81,"gl-buffer":75,"gl-shader":154,"gl-texture2d":180,"ndarray":210,"typedarray-pool":235}],83:[function(require,module,exports){
 
 var createShader  = require('gl-shader')
 
@@ -18840,162 +18840,178 @@ exports.createPickShader = function(gl) {
 
 module.exports = createLinePlot
 
-var createBuffer  = require('gl-buffer')
-var createVAO     = require('gl-vao')
+var createBuffer = require('gl-buffer')
+var createVAO = require('gl-vao')
 var createTexture = require('gl-texture2d')
-var unpackFloat   = require('glsl-read-float')
-var bsearch       = require('binary-search-bounds')
-var ndarray       = require('ndarray')
-var shaders       = require('./lib/shaders')
+var unpackFloat = require('glsl-read-float')
+var bsearch = require('binary-search-bounds')
+var ndarray = require('ndarray')
+var shaders = require('./lib/shaders')
 
-var createShader      = shaders.createShader
-var createPickShader  = shaders.createPickShader
+var createShader = shaders.createShader
+var createPickShader = shaders.createPickShader
 
-var identity = [1,0,0,0,
-                0,1,0,0,
-                0,0,1,0,
-                0,0,0,1]
+var identity = [1, 0, 0, 0,
+  0, 1, 0, 0,
+  0, 0, 1, 0,
+  0, 0, 0, 1]
 
-function distance(a, b) {
+function distance (a, b) {
   var s = 0.0
-  for(var i=0; i<3; ++i) {
+  for (var i = 0; i < 3; ++i) {
     var d = a[i] - b[i]
-    s += d*d
+    s += d * d
   }
   return Math.sqrt(s)
 }
 
-function filterClipBounds(bounds) {
-  var result = [[-1e6,-1e6,-1e6], [1e6,1e6,1e6]]
-  for(var i=0; i<3; ++i) {
+function filterClipBounds (bounds) {
+  var result = [[-1e6, -1e6, -1e6], [1e6, 1e6, 1e6]]
+  for (var i = 0; i < 3; ++i) {
     result[0][i] = Math.max(bounds[0][i], result[0][i])
     result[1][i] = Math.min(bounds[1][i], result[1][i])
   }
   return result
 }
 
-function PickResult(tau, position, index, dataCoordinate) {
+function PickResult (tau, position, index, dataCoordinate) {
   this.arcLength = tau
-  this.position  = position
-  this.index     = index
+  this.position = position
+  this.index = index
   this.dataCoordinate = dataCoordinate
 }
 
-function LinePlot(gl, shader, pickShader, buffer, vao, texture) {
-  this.gl           = gl
-  this.shader       = shader
-  this.pickShader   = pickShader
-  this.buffer       = buffer
-  this.vao          = vao
-  this.clipBounds   = [[-Infinity,-Infinity,-Infinity],
-                       [ Infinity, Infinity, Infinity]]
-  this.points       = []
-  this.arcLength    = []
-  this.vertexCount  = 0
-  this.bounds       = [[0,0,0],[0,0,0]]
-  this.pickId       = 0
-  this.lineWidth    = 1
-  this.texture      = texture
-  this.dashScale    = 1
-  this.opacity      = 1
-  this.dirty        = true
-  this.pixelRatio   = 1
+function LinePlot (gl, shader, pickShader, buffer, vao, texture) {
+  this.gl = gl
+  this.shader = shader
+  this.pickShader = pickShader
+  this.buffer = buffer
+  this.vao = vao
+  this.clipBounds = [
+    [ -Infinity, -Infinity, -Infinity ],
+    [ Infinity, Infinity, Infinity ]]
+  this.points = []
+  this.arcLength = []
+  this.vertexCount = 0
+  this.bounds = [[0, 0, 0], [0, 0, 0]]
+  this.pickId = 0
+  this.lineWidth = 1
+  this.texture = texture
+  this.dashScale = 1
+  this.opacity = 1
+  this.dirty = true
+  this.pixelRatio = 1
 }
 
 var proto = LinePlot.prototype
 
-proto.isTransparent = function() {
+proto.isTransparent = function () {
   return this.opacity < 1
 }
 
-proto.isOpaque = function() {
+proto.isOpaque = function () {
   return this.opacity >= 1
 }
 
 proto.pickSlots = 1
 
-proto.setPickBase = function(id) {
+proto.setPickBase = function (id) {
   this.pickId = id
 }
 
-proto.drawTransparent = proto.draw = function(camera) {
-  var gl      = this.gl
-  var shader  = this.shader
-  var vao     = this.vao
+proto.drawTransparent = proto.draw = function (camera) {
+  var gl = this.gl
+  var shader = this.shader
+  var vao = this.vao
   shader.bind()
   shader.uniforms = {
-    model:        camera.model      || identity,
-    view:         camera.view       || identity,
-    projection:   camera.projection || identity,
-    clipBounds:   filterClipBounds(this.clipBounds),
-    dashTexture:  this.texture.bind(),
-    dashScale:    this.dashScale / this.arcLength[this.arcLength.length-1],
-    opacity:      this.opacity,
-    screenShape:  [gl.drawingBufferWidth, gl.drawingBufferHeight],
-    pixelRatio:   this.pixelRatio
-  }
-  vao.bind()
-  vao.draw(gl.TRIANGLE_STRIP, this.vertexCount)
-}
-
-proto.drawPick = function(camera) {
-  var gl      = this.gl
-  var shader  = this.pickShader
-  var vao     = this.vao
-  shader.bind()
-  shader.uniforms = {
-    model:      camera.model      || identity,
-    view:       camera.view       || identity,
+    model: camera.model || identity,
+    view: camera.view || identity,
     projection: camera.projection || identity,
-    pickId:     this.pickId,
     clipBounds: filterClipBounds(this.clipBounds),
-    screenShape:  [gl.drawingBufferWidth, gl.drawingBufferHeight],
-    pixelRatio:   this.pixelRatio
+    dashTexture: this.texture.bind(),
+    dashScale: this.dashScale / this.arcLength[this.arcLength.length - 1],
+    opacity: this.opacity,
+    screenShape: [gl.drawingBufferWidth, gl.drawingBufferHeight],
+    pixelRatio: this.pixelRatio
   }
   vao.bind()
   vao.draw(gl.TRIANGLE_STRIP, this.vertexCount)
 }
 
-proto.update = function(options) {
+proto.drawPick = function (camera) {
+  var gl = this.gl
+  var shader = this.pickShader
+  var vao = this.vao
+  shader.bind()
+  shader.uniforms = {
+    model: camera.model || identity,
+    view: camera.view || identity,
+    projection: camera.projection || identity,
+    pickId: this.pickId,
+    clipBounds: filterClipBounds(this.clipBounds),
+    screenShape: [gl.drawingBufferWidth, gl.drawingBufferHeight],
+    pixelRatio: this.pixelRatio
+  }
+  vao.bind()
+  vao.draw(gl.TRIANGLE_STRIP, this.vertexCount)
+}
+
+proto.update = function (options) {
+  var i, j
+
   this.dirty = true
 
-  if('dashScale' in options) {
+  var connectGaps = !!options.connectGaps
+
+  if ('dashScale' in options) {
     this.dashScale = options.dashScale
   }
-  if('opacity' in options) {
+  if ('opacity' in options) {
     this.opacity = +options.opacity
   }
 
   var positions = options.position || options.positions
-  if(!positions) {
+  if (!positions) {
     return
   }
 
-  //Default color
-  var colors = options.color || options.colors || [0,0,0,1]
+  // Default color
+  var colors = options.color || options.colors || [0, 0, 0, 1]
 
   var lineWidth = options.lineWidth || 1
 
-  //Recalculate buffer data
-  var buffer          = []
-  var arcLengthArray  = []
-  var pointArray      = []
-  var arcLength       = 0.0
-  var vertexCount     = 0
-  var bounds = [[ Infinity, Infinity, Infinity],
-                [-Infinity,-Infinity,-Infinity]]
+  // Recalculate buffer data
+  var buffer = []
+  var arcLengthArray = []
+  var pointArray = []
+  var arcLength = 0.0
+  var vertexCount = 0
+  var bounds = [
+    [ Infinity, Infinity, Infinity ],
+    [ -Infinity, -Infinity, -Infinity ]]
+  var hadGap = false
 
-fill_loop:
-  for(var i=1; i<positions.length; ++i) {
-    var a = positions[i-1]
+  fill_loop:
+  for (i = 1; i < positions.length; ++i) {
+    var a = positions[i - 1]
     var b = positions[i]
 
     arcLengthArray.push(arcLength)
     pointArray.push(a.slice())
 
-    for(var j=0; j<3; ++j) {
-      if(isNaN(a[j]) || isNaN(b[j]) ||
+    for (j = 0; j < 3; ++j) {
+      if (isNaN(a[j]) || isNaN(b[j]) ||
         !isFinite(a[j]) || !isFinite(b[j])) {
+
+        if (!connectGaps && buffer.length > 0) {
+          for (var k = 0; k < 24; ++k) {
+            buffer.push(buffer[buffer.length - 12])
+          }
+          vertexCount += 2
+          hadGap = true
+        }
+
         continue fill_loop
       }
       bounds[0][j] = Math.min(bounds[0][j], a[j], b[j])
@@ -19003,34 +19019,42 @@ fill_loop:
     }
 
     var acolor, bcolor
-    if(Array.isArray(colors[0])) {
-      acolor = colors[i-1]
+    if (Array.isArray(colors[0])) {
+      acolor = colors[i - 1]
       bcolor = colors[i]
     } else {
       acolor = bcolor = colors
     }
-    if(acolor.length === 3) {
+    if (acolor.length === 3) {
       acolor = [acolor[0], acolor[1], acolor[2], 1]
     }
-    if(bcolor.length === 3) {
+    if (bcolor.length === 3) {
       bcolor = [bcolor[0], bcolor[1], bcolor[2], 1]
     }
 
-    var w0, w1
-    if(Array.isArray(lineWidth)) {
-      w0 = lineWidth[i-1]
-      w1 = lineWidht[i]
+    var w0
+    if (Array.isArray(lineWidth)) {
+      w0 = lineWidth[i - 1]
     } else {
-      w0 = w1 = lineWidth
+      w0 = lineWidth
     }
 
     var t0 = arcLength
     arcLength += distance(a, b)
 
+    if (hadGap) {
+      for (j = 0; j < 2; ++j) {
+        buffer.push(
+          a[0], a[1], a[2], b[0], b[1], b[2], t0, w0, acolor[0], acolor[1], acolor[2], acolor[3])
+      }
+      vertexCount += 2
+      hadGap = false
+    }
+
     buffer.push(
       a[0], a[1], a[2], b[0], b[1], b[2], t0, w0, acolor[0], acolor[1], acolor[2], acolor[3],
-      a[0], a[1], a[2], b[0], b[1], b[2], t0,-w0, acolor[0], acolor[1], acolor[2], acolor[3],
-      b[0], b[1], b[2], a[0], a[1], a[2], arcLength,-w0, bcolor[0], bcolor[1], bcolor[2], bcolor[3],
+      a[0], a[1], a[2], b[0], b[1], b[2], t0, -w0, acolor[0], acolor[1], acolor[2], acolor[3],
+      b[0], b[1], b[2], a[0], a[1], a[2], arcLength, -w0, bcolor[0], bcolor[1], bcolor[2], bcolor[3],
       b[0], b[1], b[2], a[0], a[1], a[2], arcLength, w0, bcolor[0], bcolor[1], bcolor[2], bcolor[3])
 
     vertexCount += 4
@@ -19038,7 +19062,7 @@ fill_loop:
   this.buffer.update(buffer)
 
   arcLengthArray.push(arcLength)
-  pointArray.push(positions[positions.length-1].slice())
+  pointArray.push(positions[positions.length - 1].slice())
 
   this.bounds = bounds
 
@@ -19047,25 +19071,25 @@ fill_loop:
   this.points = pointArray
   this.arcLength = arcLengthArray
 
-  if('dashes' in options) {
+  if ('dashes' in options) {
     var dashArray = options.dashes
 
-    //Calculate prefix sum
+    // Calculate prefix sum
     var prefixSum = dashArray.slice()
     prefixSum.unshift(0)
-    for(var i=1; i<prefixSum.length; ++i) {
-      prefixSum[i] = prefixSum[i-1] + prefixSum[i]
+    for (i = 1; i < prefixSum.length; ++i) {
+      prefixSum[i] = prefixSum[i - 1] + prefixSum[i]
     }
 
-    var dashTexture = ndarray(new Array(256*4), [256, 1, 4])
-    for(var i=0; i<256; ++i) {
-      for(var j=0; j<4; ++j) {
-        dashTexture.set(i,0,j, 0)
+    var dashTexture = ndarray(new Array(256 * 4), [256, 1, 4])
+    for (i = 0; i < 256; ++i) {
+      for (j = 0; j < 4; ++j) {
+        dashTexture.set(i, 0, j, 0)
       }
-      if(bsearch.le(prefixSum, prefixSum[prefixSum.length-1]*i/255.0) & 1) {
-        dashTexture.set(i,0,0, 0)
+      if (bsearch.le(prefixSum, prefixSum[prefixSum.length - 1] * i / 255.0) & 1) {
+        dashTexture.set(i, 0, 0, 0)
       } else {
-        dashTexture.set(i,0,0, 255)
+        dashTexture.set(i, 0, 0, 255)
       }
     }
 
@@ -19073,17 +19097,17 @@ fill_loop:
   }
 }
 
-proto.dispose = function() {
+proto.dispose = function () {
   this.shader.dispose()
   this.vao.dispose()
   this.buffer.dispose()
 }
 
-proto.pick = function(selection) {
-  if(!selection) {
+proto.pick = function (selection) {
+  if (!selection) {
     return null
   }
-  if(selection.id !== this.pickId) {
+  if (selection.id !== this.pickId) {
     return null
   }
   var tau = unpackFloat(
@@ -19092,24 +19116,24 @@ proto.pick = function(selection) {
     selection.value[2],
     0)
   var index = bsearch.le(this.arcLength, tau)
-  if(index < 0) {
+  if (index < 0) {
     return null
   }
-  if(index === this.arcLength.length-1) {
+  if (index === this.arcLength.length - 1) {
     return new PickResult(
-      this.arcLength[this.arcLength.length-1],
-      this.points[this.points.length-1].slice(),
+      this.arcLength[this.arcLength.length - 1],
+      this.points[this.points.length - 1].slice(),
       index)
   }
   var a = this.points[index]
-  var b = this.points[Math.min(index+1, this.points.length-1)]
-  var t = (tau - this.arcLength[index]) / (this.arcLength[index+1] - this.arcLength[index])
+  var b = this.points[Math.min(index + 1, this.points.length - 1)]
+  var t = (tau - this.arcLength[index]) / (this.arcLength[index + 1] - this.arcLength[index])
   var ti = 1.0 - t
-  var x = [0,0,0]
-  for(var i=0; i<3; ++i) {
+  var x = [0, 0, 0]
+  for (var i = 0; i < 3; ++i) {
     x[i] = ti * a[i] + t * b[i]
   }
-  var dataIndex = Math.min((t < 0.5) ? index : (index+1), this.points.length-1)
+  var dataIndex = Math.min((t < 0.5) ? index : (index + 1), this.points.length - 1)
   return new PickResult(
     tau,
     x,
@@ -19117,60 +19141,60 @@ proto.pick = function(selection) {
     this.points[dataIndex])
 }
 
-function createLinePlot(options) {
+function createLinePlot (options) {
   var gl = options.gl || (options.scene && options.scene.gl)
 
   var shader = createShader(gl)
-  shader.attributes.position.location     = 0
+  shader.attributes.position.location = 0
   shader.attributes.nextPosition.location = 1
-  shader.attributes.arcLength.location    = 2
-  shader.attributes.lineWidth.location    = 3
-  shader.attributes.color.location        = 4
+  shader.attributes.arcLength.location = 2
+  shader.attributes.lineWidth.location = 3
+  shader.attributes.color.location = 4
 
   var pickShader = createPickShader(gl)
-  pickShader.attributes.position.location     = 0
+  pickShader.attributes.position.location = 0
   pickShader.attributes.nextPosition.location = 1
-  pickShader.attributes.arcLength.location    = 2
-  pickShader.attributes.lineWidth.location    = 3
-  pickShader.attributes.color.location        = 4
+  pickShader.attributes.arcLength.location = 2
+  pickShader.attributes.lineWidth.location = 3
+  pickShader.attributes.color.location = 4
 
   var buffer = createBuffer(gl)
   var vao = createVAO(gl, [
-      {
-        'buffer': buffer,
-        'size': 3,
-        'offset': 0,
-        'stride': 48
-      },
-      {
-        'buffer': buffer,
-        'size': 3,
-        'offset': 12,
-        'stride': 48
-      },
-      {
-        'buffer': buffer,
-        'size': 1,
-        'offset': 24,
-        'stride': 48
-      },
-      {
-        'buffer': buffer,
-        'size': 1,
-        'offset': 28,
-        'stride': 48
-      },
-      {
-        'buffer': buffer,
-        'size': 4,
-        'offset': 32,
-        'stride': 48
-      }
-    ])
+    {
+      'buffer': buffer,
+      'size': 3,
+      'offset': 0,
+      'stride': 48
+    },
+    {
+      'buffer': buffer,
+      'size': 3,
+      'offset': 12,
+      'stride': 48
+    },
+    {
+      'buffer': buffer,
+      'size': 1,
+      'offset': 24,
+      'stride': 48
+    },
+    {
+      'buffer': buffer,
+      'size': 1,
+      'offset': 28,
+      'stride': 48
+    },
+    {
+      'buffer': buffer,
+      'size': 4,
+      'offset': 32,
+      'stride': 48
+    }
+  ])
 
-  //Create texture for dash pattern
-  var defaultTexture = ndarray(new Array(256*4), [256,1,4])
-  for(var i=0; i<256*4; ++i) {
+  // Create texture for dash pattern
+  var defaultTexture = ndarray(new Array(256 * 4), [256, 1, 4])
+  for (var i = 0; i < 256 * 4; ++i) {
     defaultTexture.data[i] = 255
   }
   var texture = createTexture(gl, defaultTexture)
@@ -19181,7 +19205,7 @@ function createLinePlot(options) {
   return linePlot
 }
 
-},{"./lib/shaders":83,"binary-search-bounds":85,"gl-buffer":75,"gl-texture2d":180,"gl-vao":184,"glsl-read-float":86,"ndarray":209}],85:[function(require,module,exports){
+},{"./lib/shaders":83,"binary-search-bounds":85,"gl-buffer":75,"gl-texture2d":180,"gl-vao":184,"glsl-read-float":86,"ndarray":210}],85:[function(require,module,exports){
 arguments[4][20][0].apply(exports,arguments)
 },{"dup":20}],86:[function(require,module,exports){
 module.exports = decodeFloat
@@ -21158,7 +21182,7 @@ function createSimplicialMesh(params) {
 
 module.exports = createSimplicialMesh
 
-},{"./lib/closest-point":105,"./lib/shaders":106,"colormap":57,"gl-buffer":75,"gl-mat4/invert":94,"gl-mat4/multiply":96,"gl-shader":154,"gl-texture2d":180,"gl-vao":184,"ndarray":209,"normals":109,"simplicial-complex-contour":111,"typedarray-pool":235}],108:[function(require,module,exports){
+},{"./lib/closest-point":105,"./lib/shaders":106,"colormap":57,"gl-buffer":75,"gl-mat4/invert":94,"gl-mat4/multiply":96,"gl-shader":154,"gl-texture2d":180,"gl-vao":184,"ndarray":210,"normals":109,"simplicial-complex-contour":111,"typedarray-pool":235}],108:[function(require,module,exports){
 'use strict'
 
 module.exports = barycentric
@@ -21688,7 +21712,7 @@ function extractContour(cells, values, level, d) {
     vertexWeights: uweights
   }
 }
-},{"./lib/codegen":112,"ndarray":209,"ndarray-sort":115,"typedarray-pool":235}],112:[function(require,module,exports){
+},{"./lib/codegen":112,"ndarray":210,"ndarray-sort":115,"typedarray-pool":235}],112:[function(require,module,exports){
 'use strict'
 
 module.exports = getPolygonizer
@@ -24115,7 +24139,7 @@ function createCamera(element, options) {
 
   return camera
 }
-},{"3d-view":38,"mouse-change":197,"mouse-wheel":201,"right-now":212}],125:[function(require,module,exports){
+},{"3d-view":38,"mouse-change":198,"mouse-wheel":202,"right-now":212}],125:[function(require,module,exports){
 // Copyright (C) 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -27464,7 +27488,7 @@ function createScene(options) {
   return scene
 }
 
-},{"./lib/shader":123,"3d-view-controls":124,"a-big-triangle":126,"gl-axes3d":127,"gl-axes3d/properties":137,"gl-fbo":80,"gl-mat4/perspective":97,"gl-select-static":153,"gl-spikes3d":139,"mouse-change":197}],141:[function(require,module,exports){
+},{"./lib/shader":123,"3d-view-controls":124,"a-big-triangle":126,"gl-axes3d":127,"gl-axes3d/properties":137,"gl-fbo":80,"gl-mat4/perspective":97,"gl-select-static":153,"gl-spikes3d":139,"mouse-change":198}],141:[function(require,module,exports){
 'use strict'
 
 
@@ -29779,7 +29803,7 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":49,"cwise/lib/wrapper":69,"gl-fbo":80,"ndarray":209,"typedarray-pool":235}],154:[function(require,module,exports){
+},{"bit-twiddle":49,"cwise/lib/wrapper":69,"gl-fbo":80,"ndarray":210,"typedarray-pool":235}],154:[function(require,module,exports){
 'use strict'
 
 var createUniformWrapper   = require('./lib/create-uniforms')
@@ -32000,7 +32024,7 @@ module.exports = function convert(arr, result) {
   return result
 }
 
-},{"./doConvert.js":178,"ndarray":209}],178:[function(require,module,exports){
+},{"./doConvert.js":178,"ndarray":210}],178:[function(require,module,exports){
 module.exports=require('cwise-compiler')({"args":["array","scalar","index"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{\nvar _inline_1_v=_inline_1_arg1_,_inline_1_i\nfor(_inline_1_i=0;_inline_1_i<_inline_1_arg2_.length-1;++_inline_1_i) {\n_inline_1_v=_inline_1_v[_inline_1_arg2_[_inline_1_i]]\n}\n_inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]\n}","args":[{"name":"_inline_1_arg0_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":4}],"thisVars":[],"localVars":["_inline_1_i","_inline_1_v"]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"funcName":"convert","blockSize":64})
 
 },{"cwise-compiler":66}],179:[function(require,module,exports){
@@ -33320,7 +33344,7 @@ function createSurfacePlot (params) {
   return surface
 }
 
-},{"./lib/shaders":174,"binary-search-bounds":175,"bit-twiddle":49,"colormap":57,"gl-buffer":75,"gl-mat4/invert":94,"gl-mat4/multiply":96,"gl-texture2d":180,"gl-vao":184,"ndarray":209,"ndarray-gradient":176,"ndarray-ops":208,"ndarray-pack":177,"surface-nets":229,"typedarray-pool":235}],180:[function(require,module,exports){
+},{"./lib/shaders":174,"binary-search-bounds":175,"bit-twiddle":49,"colormap":57,"gl-buffer":75,"gl-mat4/invert":94,"gl-mat4/multiply":96,"gl-texture2d":180,"gl-vao":184,"ndarray":210,"ndarray-gradient":176,"ndarray-ops":209,"ndarray-pack":177,"surface-nets":229,"typedarray-pool":235}],180:[function(require,module,exports){
 'use strict'
 
 var ndarray = require('ndarray')
@@ -33879,7 +33903,7 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":209,"ndarray-ops":208,"typedarray-pool":235}],181:[function(require,module,exports){
+},{"ndarray":210,"ndarray-ops":209,"typedarray-pool":235}],181:[function(require,module,exports){
 "use strict"
 
 function doBind(gl, elements, attributes) {
@@ -35795,6 +35819,18 @@ function connectedComponents(cells, vertex_count) {
 exports.connectedComponents = connectedComponents
 
 },{"bit-twiddle":194,"union-find":195}],197:[function(require,module,exports){
+"use strict"
+
+function iota(n) {
+  var result = new Array(n)
+  for(var i=0; i<n; ++i) {
+    result[i] = i
+  }
+  return result
+}
+
+module.exports = iota
+},{}],198:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -36003,7 +36039,7 @@ function mouseListen(element, callback) {
   return result
 }
 
-},{"mouse-event":198}],198:[function(require,module,exports){
+},{"mouse-event":199}],199:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -36065,7 +36101,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],199:[function(require,module,exports){
+},{}],200:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -36076,7 +36112,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],200:[function(require,module,exports){
+},{}],201:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -36137,7 +36173,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":199}],201:[function(require,module,exports){
+},{"parse-unit":200}],202:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -36179,7 +36215,7 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":200}],202:[function(require,module,exports){
+},{"to-px":201}],203:[function(require,module,exports){
 "use strict"
 
 
@@ -36191,7 +36227,7 @@ module.exports = function(array, f) {
   return array
 }
 
-},{"cwise/lib/wrapper":69}],203:[function(require,module,exports){
+},{"cwise/lib/wrapper":69}],204:[function(require,module,exports){
 'use strict'
 
 module.exports = invert
@@ -36222,7 +36258,7 @@ function invert(out, M) {
   }
   return out
 }
-},{"gl-mat2/invert":204,"gl-mat3/invert":87,"gl-mat4/invert":94}],204:[function(require,module,exports){
+},{"gl-mat2/invert":205,"gl-mat3/invert":87,"gl-mat4/invert":94}],205:[function(require,module,exports){
 module.exports = invert
 
 /**
@@ -36251,7 +36287,7 @@ function invert(out, a) {
   return out
 }
 
-},{}],205:[function(require,module,exports){
+},{}],206:[function(require,module,exports){
 "use strict"
 
 function interp1d(arr, x) {
@@ -36362,7 +36398,7 @@ module.exports.d1 = interp1d
 module.exports.d2 = interp2d
 module.exports.d3 = interp3d
 
-},{}],206:[function(require,module,exports){
+},{}],207:[function(require,module,exports){
 'use strict'
 
 var interp  = require('ndarray-linear-interpolate')
@@ -36394,7 +36430,7 @@ module.exports = function warp(dest, src, func) {
   return dest
 }
 
-},{"cwise/lib/wrapper":69,"ndarray-linear-interpolate":205}],207:[function(require,module,exports){
+},{"cwise/lib/wrapper":69,"ndarray-linear-interpolate":206}],208:[function(require,module,exports){
 'use strict'
 
 var warp = require('ndarray-warp')
@@ -36424,7 +36460,7 @@ function applyHomography(dest, src, Xi) {
   })
   return dest
 }
-},{"gl-matrix-invert":203,"ndarray-warp":206}],208:[function(require,module,exports){
+},{"gl-matrix-invert":204,"ndarray-warp":207}],209:[function(require,module,exports){
 "use strict"
 
 var compile = require("cwise-compiler")
@@ -36887,7 +36923,7 @@ exports.equals = compile({
 
 
 
-},{"cwise-compiler":66}],209:[function(require,module,exports){
+},{"cwise-compiler":66}],210:[function(require,module,exports){
 var iota = require("iota-array")
 var isBuffer = require("is-buffer")
 
@@ -37232,19 +37268,7 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":210,"is-buffer":211}],210:[function(require,module,exports){
-"use strict"
-
-function iota(n) {
-  var result = new Array(n)
-  for(var i=0; i<n; ++i) {
-    result[i] = i
-  }
-  return result
-}
-
-module.exports = iota
-},{}],211:[function(require,module,exports){
+},{"iota-array":197,"is-buffer":211}],211:[function(require,module,exports){
 /**
  * Determine if an object is Buffer
  *
@@ -41406,7 +41430,7 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":239,"clean-pslg":246,"ndarray":209,"planar-graph-to-polyline":292,"simplify-planar-graph":296,"surface-nets":229}],239:[function(require,module,exports){
+},{"cdt2d":239,"clean-pslg":246,"ndarray":210,"planar-graph-to-polyline":292,"simplify-planar-graph":296,"surface-nets":229}],239:[function(require,module,exports){
 'use strict'
 
 var monotoneTriangulate = require('./lib/monotone')
@@ -54683,8 +54707,9 @@ module.exports = function draw(gd) {
         });
 
     var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
-        .data([0])
-      .enter().append('clipPath')
+        .data([0]);
+
+    clipPath.enter().append('clipPath')
         .attr('id', clipId)
         .append('rect');
 
@@ -54837,7 +54862,7 @@ module.exports = function draw(gd) {
 
     legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
 
-    clipPath.attr({
+    clipPath.select('rect').attr({
         width: opts.width,
         height: scrollheight,
         x: 0,
@@ -54847,7 +54872,8 @@ module.exports = function draw(gd) {
     legend.call(Drawing.setClipUrl, clipId);
 
     // If scrollbar should be shown.
-    if(gd.firstRender && opts.height - scrollheight > 0 && !gd._context.staticPlot) {
+    if(opts.height - scrollheight > 0 && !gd._context.staticPlot) {
+
         bg.attr({
             width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth
         });
@@ -54856,44 +54882,46 @@ module.exports = function draw(gd) {
             width: opts.width + constants.scrollBarWidth
         });
 
-        legend.node().addEventListener('wheel', function(e) {
+        if(gd.firstRender) {
+            // Move scrollbar to starting position
+            scrollBar.call(
+                Drawing.setRect,
+                opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
+                constants.scrollBarMargin,
+                constants.scrollBarWidth,
+                constants.scrollBarHeight
+            );
+            scrollBox.attr('data-scroll',0);
+        }
+
+        scrollHandler(0,scrollheight);
+
+        legend.on('wheel',null);
+
+        legend.on('wheel', function() {
+            var e = d3.event;
             e.preventDefault();
-            scrollHandler(e.deltaY / 20);
+            scrollHandler(e.deltaY / 20, scrollheight);
         });
 
-        scrollBar.node().addEventListener('mousedown', function(e) {
-            e.preventDefault();
+        scrollBar.on('.drag',null);
+        scrollBox.on('.drag',null);
+        var drag = d3.behavior.drag()
+            .on('drag', function() {
+                scrollHandler(d3.event.dy, scrollheight);
+            });
 
-            function mMove(e) {
-                if(e.buttons === 1) {
-                    scrollHandler(e.movementY);
-                }
-            }
+        scrollBar.call(drag);
+        scrollBox.call(drag);
 
-            function mUp() {
-                scrollBar.node().removeEventListener('mousemove', mMove);
-                window.removeEventListener('mouseup', mUp);
-            }
-
-            window.addEventListener('mousemove', mMove);
-            window.addEventListener('mouseup', mUp);
-        });
-
-        // Move scrollbar to starting position on the first render
-        scrollBar.call(
-            Drawing.setRect,
-            opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
-            constants.scrollBarMargin,
-            constants.scrollBarWidth,
-            constants.scrollBarHeight
-        );
     }
 
-    function scrollHandler(delta) {
+
+    function scrollHandler(delta, scrollheight) {
 
         var scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
             translateY = scrollBox.attr('data-scroll'),
-            scrollBoxY = Lib.constrain(translateY - delta, Math.min(scrollheight - opts.height, 0), 0),
+            scrollBoxY = Lib.constrain(translateY - delta, scrollheight-opts.height, 0),
             scrollBarY = -scrollBoxY / (opts.height - scrollheight) * scrollBarTrack + constants.scrollBarMargin;
 
         scrollBox.attr('data-scroll', scrollBoxY);
@@ -58017,7 +58045,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.7.0';
+exports.version = '1.7.1';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -58791,7 +58819,7 @@ exports.parseDate = function(v) {
 
 'use strict';
 
-/* global $:false */
+/* global jQuery:false */
 
 var EventEmitter = require('events').EventEmitter;
 
@@ -58836,7 +58864,7 @@ var Events = {
          */
         plotObj.emit = function(event, data) {
             if(typeof jQuery !== 'undefined') {
-                $(plotObj).trigger(event, data);
+                jQuery(plotObj).trigger(event, data);
             }
 
             ev.emit(event, data);
@@ -58859,7 +58887,7 @@ var Events = {
          * collect the return value of the LAST handler function
          */
         if(typeof jQuery !== 'undefined') {
-            jQueryHandlerValue = $(plotObj).triggerHandler(event, data);
+            jQueryHandlerValue = jQuery(plotObj).triggerHandler(event, data);
         }
 
         /*
@@ -61495,20 +61523,17 @@ Plotly.plot = function(gd, data, layout, config) {
     }
     else if(graphWasEmpty) makePlotFramework(gd);
 
+    // save initial axis range once per graph
+    if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
+
     var fullLayout = gd._fullLayout;
 
     // prepare the data and find the autorange
 
     // generate calcdata, if we need to
     // to force redoing calcdata, just delete it before calling Plotly.plot
-    var recalc = !gd.calcdata || gd.calcdata.length!==(gd.data||[]).length;
-    if(recalc) {
-        doCalcdata(gd);
-
-        if(gd._context.doubleClick!==false || gd._context.displayModeBar!==false) {
-            Plotly.Axes.saveRangeInitial(gd);
-        }
-    }
+    var recalc = !gd.calcdata || gd.calcdata.length !== (gd.data || []).length;
+    if(recalc) doCalcdata(gd);
 
     // in case it has changed, attach fullData traces to calcdata
     for(var i = 0; i < gd.calcdata.length; i++) {
@@ -67307,7 +67332,7 @@ module.exports = {
 
     // ms between first mousedown and 2nd mouseup to constitute dblclick...
     // we don't seem to have access to the system setting
-    DBLCLICKDELAY: 600,
+    DBLCLICKDELAY: 300,
 
     // pixels to move mouse before you stop clamping to starting point
     MINDRAG: 8,
@@ -68919,7 +68944,6 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     function zoomDone(dragged, numClicks) {
         if(Math.min(box.h, box.w) < MINDRAG * 2) {
             if(numClicks === 2) doubleClick();
-            else pauseForDrag(gd);
 
             return removeZoombox(gd);
         }
@@ -68972,7 +68996,6 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     }
                 });
         }
-        else pauseForDrag(gd);
     }
 
     // scroll zoom, on all draggers except corners
@@ -69275,21 +69298,6 @@ function getEndText(ax, end) {
     }
 }
 
-function pauseForDrag(gd) {
-    // prevent more redraws until we know if a doubleclick
-    // has occurred
-    gd._dragging = true;
-    var deferredReplot = gd._replotPending;
-    gd._replotPending = false;
-
-    setTimeout(function() {
-        gd._replotPending = deferredReplot;
-        finishDrag(gd);
-    },
-        constants.DBLCLICKDELAY
-    );
-}
-
 function finishDrag(gd) {
     gd._dragging = false;
     if(gd._replotPending) Plotly.plot(gd);
@@ -69375,11 +69383,6 @@ fx.dragElement = function(options) {
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
     function onStart(e) {
-        // because we cancel event bubbling,
-        // explicitly trigger input blur event.
-        var inputBox = document.querySelector('.plugin-editable');
-        if(inputBox) d3.select(inputBox).on('blur').call(inputBox);
-
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -70604,9 +70607,9 @@ module.exports = function setConvert(ax) {
 
     ax.l2p = function(v) {
         if(!isNumeric(v)) return constants.BADNUM;
+
         // include 2 fractional digits on pixel, for PDF zooming etc
-        return d3.round(Lib.constrain(ax._b + ax._m*v,
-            -clipMult*ax._length, (1+clipMult)*ax._length), 2);
+        return d3.round(ax._b + ax._m * v, 2);
     };
 
     ax.p2l = function(px) { return (px-ax._b)/ax._m; };
@@ -73228,7 +73231,7 @@ function createCamera(scene) {
     return result;
 }
 
-},{"mouse-change":197,"mouse-wheel":201}],406:[function(require,module,exports){
+},{"mouse-change":198,"mouse-wheel":202}],406:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -74313,7 +74316,7 @@ function createCamera(element, options) {
     return camera;
 }
 
-},{"3d-view":38,"mouse-change":197,"mouse-wheel":201,"right-now":212}],410:[function(require,module,exports){
+},{"3d-view":38,"mouse-change":198,"mouse-wheel":202,"right-now":212}],410:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -91681,7 +91684,7 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../lib/str2rgbarray":369,"gl-surface3d":179,"ndarray":209,"ndarray-fill":202,"ndarray-homography":207,"ndarray-ops":208,"tinycolor2":231}],553:[function(require,module,exports){
+},{"../../lib/str2rgbarray":369,"gl-surface3d":179,"ndarray":210,"ndarray-fill":203,"ndarray-homography":208,"ndarray-ops":209,"tinycolor2":231}],553:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
