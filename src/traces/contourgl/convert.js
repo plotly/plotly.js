@@ -83,11 +83,11 @@ proto.update = function(fullTrace, calcTrace) {
     this.hoverinfo = fullTrace.hoverinfo;
 
     // convert z from 2D -> 1D
-    var z = calcPt.z;
-    this.contourOptions.z = this.heatmapOptions.z = new Float32Array([].concat.apply([], z));
-
-    var rowLen = z[0].length,
+    var z = calcPt.z,
+        rowLen = z[0].length,
         colLen = z.length;
+
+    this.contourOptions.z = this.heatmapOptions.z = flattenZ(z);
     this.contourOptions.shape = this.heatmapOptions.shape = [rowLen, colLen];
 
     this.contourOptions.x = this.heatmapOptions.x = calcPt.x;
@@ -108,6 +108,22 @@ proto.dispose = function() {
     this.contour.dispose();
     this.heatmap.dispose();
 };
+
+function flattenZ(zIn) {
+    var Nx = zIn.length,
+        Ny = zIn[0].length;
+
+    var zOut = new Float32Array(Nx * Ny);
+    var pt = 0;
+
+    for(var i = 0; i < Nx; i++) {
+        for(var j = 0; j < Ny; j++) {
+            zOut[pt++] = zIn[j][i];
+        }
+    }
+
+    return zOut;
+}
 
 function convertColorscale(fullTrace) {
     var contours = fullTrace.contours,
