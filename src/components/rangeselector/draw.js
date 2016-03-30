@@ -66,6 +66,9 @@ module.exports = function draw(gd) {
 
         reposition(buttons, selectorLayout, fullLayout._size);
     });
+
+    // FAKE HARDCODED POSITION - PLZ REMOVE BEFORE MERGE
+    selectors.attr('transform', 'translate(80, 60)');
 };
 
 function makeSelectorData(gd) {
@@ -105,7 +108,7 @@ function drawButtonText(button, selectorLayout, d) {
     function textLayout(s) {
         svgTextUtils.convertToTspans(s, function() {
             // TODO do we need this???
-//             if(gd.firstRender) repositionLegend(gd, traces);
+            // if(gd.firstRender) repositionLegend(gd, traces);
         });
     }
 
@@ -141,7 +144,7 @@ function reposition(buttons, opts, graphSize) {
             tHeight = opts.font.size * 1.3,
             tLines = tspans[0].length || 1;
 
-        var wEff = Math.min(tWidth + 10, 50),
+        var wEff = Math.max(tWidth + 10, 30),
             hEff = Math.max(tHeight * tLines, 16) + 3;
 
         // TODO add buttongap attribute
@@ -158,7 +161,7 @@ function reposition(buttons, opts, graphSize) {
 
         var textAttr = {
             x: wEff / 2,
-            y: tHeight * (1.5 - tLines / 2)  // could do better
+            y: tHeight * (1.5 - tLines / 2) - 2  // could do better
         };
 
         text.attr(textAttr);
@@ -171,7 +174,4 @@ function reposition(buttons, opts, graphSize) {
     });
 
     buttons.selectAll('rect').attr('height', opts.height);
-
-
-
 }
