@@ -281,7 +281,8 @@ module.exports = {
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
                 'Sets the upper bound of the color domain.',
-                'Value should be associated to the `marker.color` array index.'
+                'Value should be associated to the `marker.color` array index,',
+                'and if set, `marker.cmin` must be set as well.'
             ].join(' ')
         },
         cmin: {
@@ -291,7 +292,8 @@ module.exports = {
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
                 'Sets the lower bound of the color domain.',
-                'Value should be associated to the `marker.color` array index.'
+                'Value should be associated to the `marker.color` array index,',
+                'and if set, `marker.cmax` must be set as well.'
             ].join(' ')
         },
         autocolorscale: {
@@ -374,7 +376,8 @@ module.exports = {
                 description: [
                     'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Sets the upper bound of the color domain.',
-                    'Value should be associated to the `marker.line.color` array index.'
+                    'Value should be associated to the `marker.line.color` array index,',
+                    'and if set, `marker.line.cmin` must be set as well.'
                 ].join(' ')
             },
             cmin: {
@@ -384,7 +387,8 @@ module.exports = {
                 description: [
                     'Has only an effect if `marker.line.color` is set to a numerical array.',
                     'Sets the lower bound of the color domain.',
-                    'Value should be associated to the `marker.line.color` array index.'
+                    'Value should be associated to the `marker.line.color` array index,',
+                    'and if set, `marker.line.cmax` must be set as well.'
                 ].join(' ')
             },
             autocolorscale: {
