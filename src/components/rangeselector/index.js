@@ -8,8 +8,9 @@
 
 'use strict';
 
+
 exports.attributes = require('./attributes');
 
-exports.supplyDefaults = require('./defaults');
+exports.supplyLayoutDefaults = require('./defaults');
 
 exports.draw = require('./draw');
