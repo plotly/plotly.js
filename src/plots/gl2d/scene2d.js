@@ -293,7 +293,7 @@ proto.cameraChanged = function() {
 proto.destroy = function() {
     this.glplot.dispose();
 
-    this.container.removeChild(this.canvas);
+    if(!this.staticPlot) this.container.removeChild(this.canvas);
     this.container.removeChild(this.svgContainer);
     this.container.removeChild(this.mouseContainer);
 
