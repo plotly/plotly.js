@@ -144,6 +144,7 @@ function reposition(buttons, opts, graphSize) {
             tHeight = opts.font.size * 1.3,
             tLines = tspans[0].length || 1;
 
+
         var wEff = Math.max(tWidth + 10, 30),
             hEff = Math.max(tHeight * tLines, 16) + 3;
 
