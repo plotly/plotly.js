@@ -853,7 +853,7 @@ plots.autoMargin = function(gd,id,o) {
     if(fullLayout.margin.autoexpand!==false) {
         if(!o) delete fullLayout._pushmargin[id];
         else {
-            var pad = o.pad||12;
+            var pad = o.pad === undefined ? 12 : o.pad;
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back

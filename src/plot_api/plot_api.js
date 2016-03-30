@@ -25,6 +25,7 @@ var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
 var Legend = require('../components/legend');
+var RangeSlider = require('../components/rangeslider');
 var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
 var manageModeBar = require('../components/modebar/manage');
@@ -242,6 +243,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function drawAxes() {
         // draw ticks, titles, and calculate axis scaling (._b, ._m)
+        RangeSlider.draw(gd);
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
@@ -2393,12 +2395,32 @@ Plotly.relayout = function relayout(gd, astr, val) {
         }
     }
 
+    function setRange(changes) {
+        var newMin = changes['xaxis.range[0]'],
+            newMax = changes['xaxis.range[1]'];
+
+        var rangeSlider = fullLayout.xaxis && fullLayout.xaxis.rangeslider ?
+            fullLayout.xaxis.rangeslider : {};
+
+        if(rangeSlider.visible) {
+            if(newMin || newMax) {
+                fullLayout.xaxis.rangeslider.setRange(newMin, newMax);
+            } else if(changes['xaxis.autorange']) {
+                fullLayout.xaxis.rangeslider.setRange();
+            }
+        }
+    }
+
     var plotDone = Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
-        gd.emit('plotly_relayout', Lib.extendDeep({}, redoit));
+        var changes = Lib.extendDeep({}, redoit);
+
+        setRange(changes);
+        gd.emit('plotly_relayout', changes);
+
         return gd;
     });
 };
