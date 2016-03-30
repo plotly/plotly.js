@@ -1,18 +1,18 @@
-var RangeSelector = require('@src/components/range_selector');
-var getUpdateObject = require('@src/components/range_selector/get_update_object');
+var RangeSelector = require('@src/components/rangeselector');
+var getUpdateObject = require('@src/components/rangeselector/get_update_object');
 
 
 describe('range selector', function() {
     'use strict';
 
     describe('defaults', function() {
-        var supplyDefaults = RangeSelector.supplyDefaults;
+        var supplyLayoutDefaults = RangeSelector.supplyLayoutDefaults;
 
         it('should set \'visible\' to false when no buttons are present', function() {
             var containerIn = {};
             var containerOut = {};
 
-            supplyDefaults(containerIn, containerOut, {});
+            supplyLayoutDefaults(containerIn, containerOut, {});
 
             expect(containerOut.rangeselector)
                 .toEqual({
@@ -34,7 +34,7 @@ describe('range selector', function() {
             };
             var containerOut = {};
 
-            supplyDefaults(containerIn, containerOut, {});
+            supplyLayoutDefaults(containerIn, containerOut, {});
 
             expect(containerOut.rangeselector.visible).toBe(true);
             expect(containerOut.rangeselector.buttons).toEqual([

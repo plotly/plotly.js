@@ -13,7 +13,7 @@ var Lib = require('../../lib');
 var Plots = require('../plots');
 
 var RangeSlider = require('../../components/rangeslider');
-var rangeSelectorDefaults = require('../../components/range_selector/defaults');
+var RangeSelector = require('../../components/rangeselector');
 
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
@@ -135,8 +135,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
 
         if(axLetter === 'x' && axLayoutOut.type === 'date') {
-            // TODO add check on axis type 'date'
-            rangeSelectorDefaults(axLayoutIn, axLayoutOut, layoutOut);
+            RangeSelector.supplyLayoutDefaults(axLayoutIn, axLayoutOut, layoutOut);
         }
 
         layoutOut[axName] = axLayoutOut;
