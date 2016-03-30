@@ -90,7 +90,7 @@ describe('plot schema', function() {
 
     it('all subplot objects should contain _isSubplotObj', function() {
         var IS_SUBPLOT_OBJ = '_isSubplotObj',
-            astrs = ['xaxis', 'yaxis', 'scene', 'geo'],
+            astrs = ['xaxis', 'yaxis', 'scene', 'geo', 'ternary'],
             list = [];
 
         // check if the subplot objects have '_isSubplotObj'

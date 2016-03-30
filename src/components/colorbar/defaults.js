@@ -53,7 +53,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
 
     handleTickValueDefaults(colorbarIn, colorbarOut, coerce, 'linear');
 
-    handleTickLabelDefaults(colorbarIn, colorbarOut, coerce,
+    handleTickLabelDefaults(colorbarIn, colorbarOut, coerce, 'linear',
         {outerTicks: false, font: layout.font, noHover: true});
 
     handleTickMarkDefaults(colorbarIn, colorbarOut, coerce, 'linear',
