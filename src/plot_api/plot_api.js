@@ -2271,6 +2271,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // 3d or geo at this point just needs to redraw.
             if(p.parts[0].indexOf('scene') === 0) doplot = true;
             else if(p.parts[0].indexOf('geo') === 0) doplot = true;
+            else if(p.parts[0].indexOf('ternary') === 0) doplot = true;
             else if(fullLayout._hasGL2D &&
                 (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
             ) doplot = true;

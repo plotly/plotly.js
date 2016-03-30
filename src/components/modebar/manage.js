@@ -77,7 +77,8 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
         hasGL3D = fullLayout._hasGL3D,
         hasGeo = fullLayout._hasGeo,
         hasPie = fullLayout._hasPie,
-        hasGL2D = fullLayout._hasGL2D;
+        hasGL2D = fullLayout._hasGL2D,
+        hasTernary = fullLayout._hasTernary;
 
     var groups = [];
 
@@ -98,7 +99,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
 
     // graphs with more than one plot types get 'union buttons'
     // which reset the view or toggle hover labels across all subplots.
-    if((hasCartesian || hasGL2D || hasPie) + hasGeo + hasGL3D > 1) {
+    if((hasCartesian || hasGL2D || hasPie || hasTernary) + hasGeo + hasGL3D > 1) {
         addGroup(['resetViews', 'toggleHover']);
         return appendButtonsToGroups(groups, buttonsToAdd);
     }
@@ -117,16 +118,16 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var allAxesFixed = areAllAxesFixed(fullLayout),
         dragModeGroup = [];
 
-    if((hasCartesian || hasGL2D) && !allAxesFixed) {
+    if(((hasCartesian || hasGL2D) && !allAxesFixed) || hasTernary) {
         dragModeGroup = ['zoom2d', 'pan2d'];
     }
-    if(hasCartesian && isSelectable(fullData)) {
+    if((hasCartesian || hasTernary) && isSelectable(fullData)) {
         dragModeGroup.push('select2d');
         dragModeGroup.push('lasso2d');
     }
     if(dragModeGroup.length) addGroup(dragModeGroup);
 
-    if((hasCartesian || hasGL2D) && !allAxesFixed) {
+    if((hasCartesian || hasGL2D) && !allAxesFixed && !hasTernary) {
         addGroup(['zoomIn2d', 'zoomOut2d', 'autoScale2d', 'resetScale2d']);
     }
 

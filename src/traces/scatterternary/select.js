@@ -25,6 +25,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
         pt.a = cdi.a;
         pt.b = cdi.b;
         pt.c = cdi.c;
+        delete pt.x;
+        delete pt.y;
     }
 
     return selection;

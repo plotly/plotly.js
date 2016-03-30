@@ -10,6 +10,7 @@
 'use strict';
 
 var scatterHover = require('../scatter/hover');
+var Axes = require('../../plots/cartesian/axes');
 
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
@@ -27,7 +28,21 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     newPointData.yLabelVal = undefined;
     // TODO: nice formatting, and label by axis title, for a, b, and c?
 
-    newPointData.text = 'a: ' + cdi.a + '<br>b: ' + cdi.b + '<br>c: ' + cdi.c;
+    var trace = newPointData.trace,
+        ternary = trace._ternary,
+        hoverinfo = trace.hoverinfo.split('+'),
+        text = [];
+
+    function textPart(ax, val) {
+        text.push(ax._hovertitle + ': ' + Axes.tickText(ax, val, 'hover').text);
+    }
+
+    if(hoverinfo.indexOf('all') !== -1) hoverinfo = ['a', 'b', 'c'];
+    if(hoverinfo.indexOf('a') !== -1) textPart(ternary.aaxis, cdi.a);
+    if(hoverinfo.indexOf('b') !== -1) textPart(ternary.baxis, cdi.b);
+    if(hoverinfo.indexOf('c') !== -1) textPart(ternary.caxis, cdi.c);
+
+    newPointData.extraText = text.join('<br>');
 
     return scatterPointData;
 };

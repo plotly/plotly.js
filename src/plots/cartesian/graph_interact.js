@@ -927,6 +927,13 @@ function createHoverText(hoverData, opts) {
             if(name.length>15) name = name.substr(0,12)+'...';
         }
 
+        // used by other modules (initially just ternary) that
+        // manage their own hoverinfo independent of cleanPoint
+        // the rest of this will still apply, so such modules
+        // can still put things in (x|y|z)Label, text, and name
+        // and hoverinfo will still determine their visibility
+        if(d.extraText!==undefined) text += d.extraText;
+
         if(d.zLabel!==undefined) {
             if(d.xLabel!==undefined) text += 'x: ' + d.xLabel + '<br>';
             if(d.yLabel!==undefined) text += 'y: ' + d.yLabel + '<br>';

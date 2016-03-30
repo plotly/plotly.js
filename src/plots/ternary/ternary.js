@@ -29,11 +29,7 @@ var fx = require('../cartesian/graph_interact');
 function Ternary(options, fullLayout) {
     this.id = options.id;
     this.graphDiv = options.graphDiv;
-    this.container = fullLayout._ternarylayer;
-    this.defs = fullLayout._defs;
-    this.layoutId = fullLayout._uid;
-    this.traceHash = {};
-
+    this.init(fullLayout);
     this.makeFramework();
 }
 
@@ -41,11 +37,27 @@ module.exports = Ternary;
 
 var proto = Ternary.prototype;
 
+proto.init = function(fullLayout) {
+    this.container = fullLayout._ternarylayer;
+    this.defs = fullLayout._defs;
+    this.layoutId = fullLayout._uid;
+    this.traceHash = {};
+};
+
 proto.plot = function(ternaryData, fullLayout) {
     var _this = this,
         ternaryLayout = fullLayout[_this.id],
         graphSize = fullLayout._size,
         i;
+
+    if(Lib.getPlotDiv(_this.plotContainer.node()) !== _this.graphDiv) {
+        // someone deleted the framework - remake it
+        // TODO: this is getting deleted in (cartesian) makePlotFramework
+        // turn that into idiomatic d3 (enter/exit, the piece I didn't know
+        // before was ordering selections) so we don't need this.
+        _this.init(_this.graphDiv._fullLayout);
+        _this.makeFramework();
+    }
 
     _this.adjustLayout(ternaryLayout, graphSize);
 
@@ -120,6 +132,7 @@ proto.makeFramework = function() {
         'backplot',
         'grids',
         'frontplot',
+        'zoom',
         'aaxis', 'baxis', 'caxis','axlines'
     ];
     var toplevel = _this.plotContainer.selectAll('g.toplevel')
@@ -200,7 +213,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     // set up the x and y axis objects we'll use to lay out the points
     _this.xaxis = {
         type: 'linear',
-        range: [amin + bmin -sum, sum - amin - cmin],
+        range: [amin + 2 * cmin - sum, sum - amin - 2 * bmin],
         domain: [
             xDomainCenter - xDomainFinal / 2,
             xDomainCenter + xDomainFinal / 2
@@ -291,7 +304,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     _this.layers.plotbg.select('path').attr('d', triangleClip);
 
     var plotTransform = 'translate(' + x0 + ',' + y0 + ')';
-    _this.plotContainer.selectAll('.scatterlayer,.maplayer')
+    _this.plotContainer.selectAll('.scatterlayer,.maplayer,.zoom')
         .attr('transform', plotTransform);
 
     // TODO: shift axes to accommodate linewidth*sin(30) tick mark angle
@@ -399,22 +412,22 @@ proto.init_interactions = function() {
         var dragBBox = dragger.getBoundingClientRect();
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
-        mins0 = {a: _this.aaxis.range[0], b: _this.baxis.range[0], c: _this.caxis.range[0]};
+        mins0 = {a: _this.aaxis.range[0], b: _this.baxis.range[1], c: _this.caxis.range[1]};
         mins = mins0;
         span0 = _this.aaxis.range[1] - mins0.a;
-        lum = tinycolor(gd._fullLayout.plot_bgcolor).getLuminance();
-        path0 = 'M0,' + _this.h + 'H' + _this.w + 'L' + (_this.w / 2) +', 0L0,0';
+        lum = tinycolor(_this.graphDiv._fullLayout[_this.id].bgcolor).getLuminance();
+        path0 = 'M0,' + _this.h + 'L' + (_this.w / 2) +', 0L' + _this.w + ',' + _this.h + 'Z';
         dimmed = false;
 
-        zb = plot.append('path')
+        zb = _this.layers.zoom.append('path')
             .attr('class', 'zoombox')
             .style({
                 'fill': lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
-            .attr('d', path0 + 'Z');
+            .attr('d', path0);
 
-        corners = plot.append('path')
+        corners = _this.layers.zoom.append('path')
             .attr('class', 'zoombox-corners')
             .style({
                 fill: Plotly.Color.background,
@@ -442,7 +455,7 @@ proto.init_interactions = function() {
 
         if(xSpan < constants.MINZOOM) {
             mins = mins0;
-            zb.attr('d', path0 + 'Z');
+            zb.attr('d', path0);
             corners.attr('d', 'M0,0Z');
         }
         else {

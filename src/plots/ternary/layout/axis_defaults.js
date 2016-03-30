@@ -31,8 +31,11 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
 
     var dfltColor = coerce('color');
 
-    coerce('title', 'Click to enter component ' +
+    var title = coerce('title', 'Click to enter component ' +
         axName.charAt(0).toUpperCase() + ' title');
+    containerOut._hovertitle = title.indexOf('Click to enter') === -1 ?
+        title : axName.charAt(0);
+
     Lib.coerceFont(coerce, 'titlefont', {
         family: options.font.family,
         size: Math.round(options.font.size * 1.2),

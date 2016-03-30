@@ -26,6 +26,10 @@ module.exports = function plot(ternary, data) {
     for(i = 0; i < fullCalcdata.length; i++) {
         j = data.indexOf(fullCalcdata[i][0].trace);
         if(j !== -1) calcdata[j] = fullCalcdata[i];
+
+        // while we're here and have references to both the Ternary object
+        // and fullData, connect the two (for use by hover)
+        data[j]._ternary = ternary;
     }
     scatterPlot(ternary.graphDiv, plotinfo, calcdata);
 };
