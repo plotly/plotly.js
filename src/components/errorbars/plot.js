@@ -22,8 +22,8 @@ module.exports = function plot(traces, plotinfo) {
 
     traces.each(function(d) {
         var trace = d[0].trace,
-            xObj = trace.error_x,
-            yObj = trace.error_y;
+            xObj = trace.error_x || {},
+            yObj = trace.error_y || {};
 
         var sparse = (
             subTypes.hasMarkers(trace) &&
