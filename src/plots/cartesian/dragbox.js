@@ -155,7 +155,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         lum = gd._hmpixcount ?
             (gd._hmlumcount / gd._hmpixcount) :
             tinycolor(gd._fullLayout.plot_bgcolor).getLuminance();
-        path0 = path0 = 'M0,0H'+pw+'V'+ph+'H0V0';
+        path0 = 'M0,0H'+pw+'V'+ph+'H0V0';
         dimmed = false;
         zoomMode = 'xy';
 

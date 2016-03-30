@@ -313,9 +313,15 @@ function hover(gd, evt, subplot) {
                 .map(function(pi) { return pi.id; })),
 
         xaArray = subplots.map(function(spId) {
+            if(spId.substr(0,7) === 'ternary') {
+                return gd._fullLayout[spId]._ternary.xaxis;
+            }
             return Plotly.Axes.getFromId(gd, spId, 'x');
         }),
         yaArray = subplots.map(function(spId) {
+            if(spId.substr(0,7) === 'ternary') {
+                return gd._fullLayout[spId]._ternary.yaxis;
+            }
             return Plotly.Axes.getFromId(gd, spId, 'y');
         }),
         hovermode = evt.hovermode || fullLayout.hovermode;
@@ -366,7 +372,7 @@ function hover(gd, evt, subplot) {
         for(curvenum = 0; curvenum<gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(trace.hoverinfo!=='none' && subplots.indexOf(trace.xaxis + trace.yaxis)!==-1) {
+            if(trace.hoverinfo!=='none' && subplots.indexOf(getSubplot(trace))!==-1) {
                 searchData.push(cd);
             }
         }
@@ -431,7 +437,7 @@ function hover(gd, evt, subplot) {
         if(!cd || !cd[0] || !cd[0].trace || cd[0].trace.visible !== true) continue;
 
         trace = cd[0].trace;
-        subploti = subplots.indexOf(trace.xaxis + trace.yaxis);
+        subploti = subplots.indexOf(getSubplot(trace));
 
         // within one trace mode can sometimes be overridden
         mode = hovermode;
@@ -573,6 +579,12 @@ function hover(gd, evt, subplot) {
         xvals: xvalArray,
         yvals: yvalArray
     });
+}
+
+// look for either .subplot (currently just ternary)
+// or xaxis and yaxis attributes
+function getSubplot(trace) {
+    return trace.subplot || (trace.xaxis + trace.yaxis);
 }
 
 fx.getDistanceFunction = function(mode, dx, dy, dxy) {

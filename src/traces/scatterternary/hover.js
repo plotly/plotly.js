@@ -23,5 +23,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     newPointData.b = cdi.b;
     newPointData.c = cdi.c;
 
-    // TODO: how to actually display a, b, and c?
+    newPointData.xLabelVal = undefined;
+    newPointData.yLabelVal = undefined;
+    // TODO: nice formatting, and label by axis title, for a, b, and c?
+
+    newPointData.text = 'a: ' + cdi.a + '<br>b: ' + cdi.b + '<br>c: ' + cdi.c;
+
+    return scatterPointData;
 };

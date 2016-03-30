@@ -10,12 +10,20 @@
 'use strict';
 
 var d3 = require('d3');
+var tinycolor = require('tinycolor2');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var setConvert = require('../cartesian/set_convert');
 var extendFlat = require('../../lib/extend').extendFlat;
 var Axes = require('../cartesian/axes');
 var filterVisible = require('../../lib/filter_visible');
+var dragElement = require('../../components/dragElement');
+var prepSelect = require('../cartesian/select');
+var constants = require('../cartesian/constants');
+var fx = require('../cartesian/graph_interact');
 
 
 function Ternary(options, fullLayout) {
@@ -146,6 +154,8 @@ proto.makeFramework = function() {
 
     _this.plotContainer.selectAll('.backplot,.frontplot,.grids')
         .call(Drawing.setClipUrl, clipId);
+
+    _this.init_interactions();
 };
 
 var w_over_h = Math.sqrt(4/3);
@@ -159,7 +169,10 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         yDomain = domain.y[1] - domain.y[0],
         wmax = xDomain * graphSize.w,
         hmax = yDomain * graphSize.h,
-        sum = ternaryLayout.sum;
+        sum = ternaryLayout.sum,
+        amin = ternaryLayout.aaxis.min,
+        bmin = ternaryLayout.baxis.min,
+        cmin = ternaryLayout.caxis.min;
 
     var x0, y0, w, h, xDomainFinal, yDomainFinal;
 
@@ -182,11 +195,12 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     _this.y0 = y0;
     _this.w = w;
     _this.h = h;
+    _this.sum = sum;
 
     // set up the x and y axis objects we'll use to lay out the points
     _this.xaxis = {
         type: 'linear',
-        range: [-sum, sum],
+        range: [amin + bmin -sum, sum - amin - cmin],
         domain: [
             xDomainCenter - xDomainFinal / 2,
             xDomainCenter + xDomainFinal / 2
@@ -199,7 +213,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
 
     _this.yaxis = {
         type: 'linear',
-        range: [0, sum],
+        range: [amin, sum - bmin - cmin],
         domain: [
             yDomainCenter - yDomainFinal / 2,
             yDomainCenter + yDomainFinal / 2
@@ -211,10 +225,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     _this.yaxis.setScale();
 
     // set up the modified axes for tick drawing
-    var amin = ternaryLayout.aaxis.min,
-        bmin = ternaryLayout.baxis.min,
-        cmin = ternaryLayout.caxis.min,
-        yDomain0 = _this.yaxis.domain[0];
+    var yDomain0 = _this.yaxis.domain[0];
 
     // aaxis goes up the left side. Set it up as a y axis, but with
     // fictitious angles and domain, but then rotate and translate
@@ -324,3 +335,277 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         .call(Color.stroke, caxis.linecolor || '#000')
         .style('stroke-width', (caxis.linewidth || 0) + 'px');
 };
+
+// hard coded paths for zoom corners
+// uses the same sizing as cartesian, length is MINZOOM/2, width is 3px
+var CLEN = constants.MINZOOM / 2 + 0.87;
+var BLPATH = 'm-0.87,.5h' + CLEN + 'v3h-' + (CLEN + 5.2) +
+    'l' + (CLEN / 2 + 2.6) + ',-' + (CLEN * 0.87 + 4.5) +
+    'l2.6,1.5l-' + (CLEN / 2) + ',' + (CLEN * 0.87) + 'Z';
+var BRPATH = 'm0.87,.5h-' + CLEN + 'v3h' + (CLEN + 5.2) +
+    'l-' + (CLEN / 2 + 2.6) + ',-' + (CLEN * 0.87 + 4.5) +
+    'l-2.6,1.5l' + (CLEN / 2) + ',' + (CLEN * 0.87) + 'Z';
+var TOPPATH = 'm0,1l' + (CLEN / 2) + ',' + (CLEN * 0.87) +
+    'l2.6,-1.5l-' + (CLEN / 2 + 2.6) + ',-' + (CLEN * 0.87 + 4.5) +
+    'l-' + (CLEN / 2 + 2.6) + ',' + (CLEN * 0.87 + 4.5) +
+    'l2.6,1.5l' + (CLEN / 2) + ',-' + (CLEN * 0.87) + 'Z';
+
+// I guess this could be shared with cartesian... but for now it's separate.
+var SHOWZOOMOUTTIP = true;
+
+proto.init_interactions = function() {
+    var _this = this,
+        dragger = _this.layers.plotbg.select('path').node(),
+        gd = _this.graphDiv,
+        plot = _this.layers.frontplot;
+
+    // use plotbg for the main interactions
+    var dragOptions = {
+        element: dragger,
+        gd: gd,
+        plotinfo: {plot: plot},
+        xaxes: _this.xaxis,
+        yaxes: _this.yaxis,
+        doubleclick: doubleClick,
+        prepFn: function(e, startX, startY) {
+            var dragModeNow = gd._fullLayout.dragmode;
+            if(e.shiftKey) {
+                if(dragModeNow === 'pan') dragModeNow = 'zoom';
+                else dragModeNow = 'pan';
+            }
+
+            if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
+            else dragOptions.minDrag = undefined;
+
+            if(dragModeNow === 'zoom') {
+                dragOptions.moveFn = zoomMove;
+                dragOptions.doneFn = zoomDone;
+                zoomPrep(e, startX, startY);
+            }
+            else if(dragModeNow === 'pan') {
+                dragOptions.moveFn = plotDrag;
+                dragOptions.doneFn = dragDone;
+                clearSelect();
+            }
+            else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
+                prepSelect(e, startX, startY, dragOptions, dragModeNow);
+            }
+        }
+    };
+
+    var x0, y0, mins0, span0, mins, lum, path0, dimmed, zb, corners;
+
+    function zoomPrep(e, startX, startY) {
+        var dragBBox = dragger.getBoundingClientRect();
+        x0 = startX - dragBBox.left;
+        y0 = startY - dragBBox.top;
+        mins0 = {a: _this.aaxis.range[0], b: _this.baxis.range[0], c: _this.caxis.range[0]};
+        mins = mins0;
+        span0 = _this.aaxis.range[1] - mins0.a;
+        lum = tinycolor(gd._fullLayout.plot_bgcolor).getLuminance();
+        path0 = 'M0,' + _this.h + 'H' + _this.w + 'L' + (_this.w / 2) +', 0L0,0';
+        dimmed = false;
+
+        zb = plot.append('path')
+            .attr('class', 'zoombox')
+            .style({
+                'fill': lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+                'stroke-width': 0
+            })
+            .attr('d', path0 + 'Z');
+
+        corners = plot.append('path')
+            .attr('class', 'zoombox-corners')
+            .style({
+                fill: Plotly.Color.background,
+                stroke: Plotly.Color.defaultLine,
+                'stroke-width': 1,
+                opacity: 0
+            })
+            .attr('d','M0,0Z');
+
+        clearSelect();
+    }
+
+    function zoomMove(dx0, dy0) {
+        var x1 = x0 + dx0,
+            y1 = y0 + dy0,
+            afrac = Math.max(0, 1 - Math.max(y0, y1) / _this.h),
+            bfrac = Math.max(0, 1 - Math.max(x0 + y0 / Math.sqrt(3), x1 + y1 / Math.sqrt(3)) / _this.w),
+            cfrac = Math.max(0, Math.min(x0 - y0 / Math.sqrt(3), x1 - y1 / Math.sqrt(3)) / _this.w),
+            xLeft = ((afrac / 2) + cfrac) * _this.w,
+            xRight = (1 - (afrac / 2) - bfrac) * _this.w,
+            xCenter = (xLeft + xRight) / 2,
+            xSpan = xRight - xLeft,
+            yBottom = (1 - afrac) * _this.h,
+            yTop = yBottom - xSpan / w_over_h;
+
+        if(xSpan < constants.MINZOOM) {
+            mins = mins0;
+            zb.attr('d', path0 + 'Z');
+            corners.attr('d', 'M0,0Z');
+        }
+        else {
+            mins = {
+                a: mins0.a + afrac * span0,
+                b: mins0.b + bfrac * span0,
+                c: mins0.c + cfrac * span0
+            };
+            zb.attr('d', path0 + 'M' + xLeft + ',' + yBottom +
+                'H' + xRight + 'L' + xCenter + ',' + yTop +
+                'L' + xLeft + ',' + yBottom + 'Z');
+            corners.attr('d', 'M' + xLeft + ',' + yBottom + BLPATH +
+                'M' + xRight + ',' + yBottom + BRPATH +
+                'M' + xCenter + ',' + yTop + TOPPATH);
+        }
+
+        if(!dimmed) {
+            zb.transition()
+                .style('fill', lum>0.2 ? 'rgba(0,0,0,0.4)' :
+                    'rgba(255,255,255,0.3)')
+                .duration(200);
+            corners.transition()
+                .style('opacity',1)
+                .duration(200);
+            dimmed = true;
+        }
+    }
+
+    function zoomDone(dragged, numClicks) {
+        if(mins === mins0) {
+            if(numClicks === 2) doubleClick();
+
+            return removeZoombox(gd);
+        }
+
+        removeZoombox(gd);
+
+        var attrs = {};
+        attrs[_this.id + '.aaxis.min'] = mins.a;
+        attrs[_this.id + '.baxis.min'] = mins.b;
+        attrs[_this.id + '.caxis.min'] = mins.c;
+
+        Plotly.relayout(gd, attrs);
+
+        if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
+            Lib.notifier('Double-click to<br>zoom back out','long');
+            SHOWZOOMOUTTIP = false;
+        }
+    }
+
+    function plotDrag(dx, dy) {
+        var dxScaled = dx / _this.xaxis._m,
+            dyScaled = dy / _this.yaxis._m;
+        mins = {
+            a: mins0.a - dyScaled,
+            b: mins0.b + dxScaled + dyScaled / 2,
+            c: mins0.c - dxScaled + dyScaled / 2
+        };
+        var minsorted = [mins.a, mins.b, mins.c].sort(),
+            minindices = {
+                a: minsorted.indexOf(mins.a),
+                b: minsorted.indexOf(mins.b),
+                c: minsorted.indexOf(mins.c)
+            };
+        if(minsorted[0] < 0) {
+            if(minsorted[1] + minsorted[0] / 2 < 0) {
+                minsorted[2] -= minsorted[0] + minsorted[1];
+                minsorted[0] = minsorted[1] = 0;
+            }
+            else {
+                minsorted[2] -= minsorted[0] / 2;
+                minsorted[1] -= minsorted[0] / 2;
+                minsorted[0] = 0;
+            }
+            mins = {
+                a: minsorted[minindices.a],
+                b: minsorted[minindices.b],
+                c: minsorted[minindices.c]
+            };
+            dy = (mins0.a - mins.a) * _this.yaxis._m;
+            dx = (mins0.c - mins.c - mins0.b + mins.b) * _this.xaxis._m;
+        }
+
+        // move the data (translate, don't redraw)
+        var plotTransform = 'translate(' + (_this.x0 + dx) + ',' + (_this.y0 + dy) + ')';
+        _this.plotContainer.selectAll('.scatterlayer,.maplayer')
+            .attr('transform', plotTransform);
+
+        // move the ticks
+        _this.aaxis.range = [mins.a, _this.sum - mins.b - mins.c];
+        _this.baxis.range = [mins.b, _this.sum - mins.a - mins.c];
+        _this.caxis.range = [mins.c, _this.sum - mins.b - mins.b];
+
+        Axes.doTicks(_this.graphDiv, _this.aaxis, true);
+        Axes.doTicks(_this.graphDiv, _this.baxis, true);
+        Axes.doTicks(_this.graphDiv, _this.caxis, true);
+        _this.plotContainer.selectAll('.crisp').classed('crisp', false);
+    }
+
+    function dragDone(dragged, numClicks) {
+        if(dragged) {
+            var attrs = {};
+            attrs[_this.id + '.aaxis.min'] = mins.a;
+            attrs[_this.id + '.baxis.min'] = mins.b;
+            attrs[_this.id + '.caxis.min'] = mins.c;
+
+            Plotly.relayout(gd, attrs);
+        }
+        else if(numClicks === 2) doubleClick();
+    }
+
+    function clearSelect() {
+        // until we get around to persistent selections, remove the outline
+        // here. The selection itself will be removed when the plot redraws
+        // at the end.
+        _this.plotContainer.selectAll('.select-outline').remove();
+    }
+
+    function doubleClick() {
+        var attrs = {};
+        attrs[_this.id + '.aaxis.min'] = 0;
+        attrs[_this.id + '.baxis.min'] = 0;
+        attrs[_this.id + '.caxis.min'] = 0;
+        gd.emit('plotly_doubleclick', null);
+        Plotly.relayout(gd, attrs);
+    }
+
+    dragElement.init(dragOptions);
+
+    // finally, set up hover and click
+    dragger.onmousemove = function(evt) {
+        fx.hover(gd, evt, _this.id);
+        gd._fullLayout._lasthover = dragger;
+        gd._fullLayout._hoversubplot = _this.id;
+    };
+
+    dragger.onmouseout = function(evt) {
+        if(gd._dragging) return;
+
+        dragElement.unhover(gd, evt);
+    };
+
+    dragger.onclick = function(evt) {
+        fx.click(gd, evt);
+    };
+
+    // make a fake plotinfo for fx.hover
+    // it hardly uses it, could probably be refactored out...
+    // but specifying subplot by name does seem nice for js applications
+    // that want to hook into this.
+    if(!gd._fullLayout._plots) gd._fullLayout._plots = {};
+    gd._fullLayout._plots[_this.id] = {
+        overlays: [],
+        xaxis: _this.xaxis,
+        yaxis: _this.yaxis,
+        x: function() { return _this.xaxis; },
+        y: function() { return _this.yaxis; }
+    };
+};
+
+function removeZoombox(gd) {
+    d3.select(gd)
+        .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
+        .remove();
+}
+
