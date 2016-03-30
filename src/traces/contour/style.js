@@ -12,45 +12,44 @@
 var d3 = require('d3');
 
 var Drawing = require('../../components/drawing');
-var getColorscale = require('../../components/colorscale/get_scale');
 var heatmapStyle = require('../heatmap/style');
+
+var makeColorMap = require('./make_color_map');
 
 
 module.exports = function style(gd) {
-    d3.select(gd).selectAll('g.contour')
-        .style('opacity', function(d) { return d.trace.opacity; })
-        .each(function(d) {
-            var c = d3.select(this),
-                trace = d.trace,
-                contours = trace.contours,
-                line = trace.line,
-                colorLines = contours.coloring==='lines',
-                cs = contours.size||1,
-                nc = Math.floor((contours.end + cs/10 - contours.start)/cs) + 1,
-                scl = getColorscale(trace.colorscale),
-                extraLevel = colorLines ? 0 : 1,
-                colormap = d3.scale.linear()
-                    .domain(scl.map(function(si) {
-                        return (si[0]*(nc+extraLevel-1)-(extraLevel/2)) * cs +
-                            contours.start;
-                    }))
-                    .interpolate(d3.interpolateRgb)
-                    .range(scl.map(function(si) { return si[1]; }));
+    var contours = d3.select(gd).selectAll('g.contour');
 
-            c.selectAll('g.contourlevel').each(function(d, i) {
-                d3.select(this).selectAll('path')
-                    .call(Drawing.lineGroupStyle,
-                        line.width,
-                        colorLines ? colormap(contours.start+i*cs) : line.color,
-                        line.dash);
-            });
-            c.selectAll('g.contourbg path')
-                .style('fill', colormap(contours.start - cs/2));
-            c.selectAll('g.contourfill path')
-                .style('fill',function(d, i) {
-                    return colormap(contours.start + (i+0.5)*cs);
-                });
+    contours.style('opacity', function(d) {
+        return d.trace.opacity;
+    });
+
+    contours.each(function(d) {
+        var c = d3.select(this),
+            trace = d.trace,
+            contours = trace.contours,
+            line = trace.line,
+            cs = contours.size || 1,
+            start = contours.start;
+
+        var colorMap = makeColorMap(trace);
+
+        c.selectAll('g.contourlevel').each(function(d, i) {
+            d3.select(this).selectAll('path')
+                .call(Drawing.lineGroupStyle,
+                    line.width,
+                    contours.coloring === 'lines' ? colorMap(start + i * cs) : line.color,
+                    line.dash);
         });
+
+        c.selectAll('g.contourbg path')
+            .style('fill', colorMap(start - cs / 2));
+
+        c.selectAll('g.contourfill path')
+            .style('fill', function(d, i) {
+                return colorMap(start + (i + 0.5) * cs);
+            });
+    });
 
     heatmapStyle(gd);
 };
