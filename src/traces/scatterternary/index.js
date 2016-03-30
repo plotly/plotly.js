@@ -14,7 +14,7 @@ ScatterTernary.attributes = require('./attributes');
 ScatterTernary.supplyDefaults = require('./defaults');
 ScatterTernary.colorbar = require('../scatter/colorbar');
 ScatterTernary.calc = require('./calc');
-ScatterTernary.plot = require('./plot').plot;
+ScatterTernary.plot = require('./plot');
 ScatterTernary.style = require('./style');
 ScatterTernary.hoverPoints = require('./hover');
 ScatterTernary.selectPoints = require('./select');
@@ -26,7 +26,7 @@ ScatterTernary.categories = ['ternary', 'symbols', 'markerColorscale', 'showLege
 ScatterTernary.meta = {
     hrName: 'scatter_ternary',
     description: [
-        'Provides similar functionality to the *scatter* type but on a ternary plot.',
+        'Provides similar functionality to the *scatter* type but on a ternary phase diagram.',
         'The data is provided by at least two arrays out of `a`, `b`, `c` triplets.'
     ].join(' ')
 };

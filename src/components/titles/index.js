@@ -97,9 +97,9 @@ Titles.draw = function(gd, title) {
     }
     else if(axletter === 'x') {
         xa = cont;
-        ya = (xa.anchor === 'free') ?
+        ya = xa._counteraxis || ((xa.anchor === 'free') ?
             {_offset: gs.t + (1 - (xa.position || 0)) * gs.h, _length: 0} :
-            axisIds.getFromId(gd, xa.anchor);
+            axisIds.getFromId(gd, xa.anchor));
 
         x = xa._offset + xa._length / 2;
         y = ya._offset + ((xa.side === 'top') ?
@@ -112,9 +112,9 @@ Titles.draw = function(gd, title) {
     }
     else if(axletter === 'y') {
         ya = cont;
-        xa = (ya.anchor === 'free') ?
+        xa = ya._counteraxis || ((ya.anchor === 'free') ?
             {_offset: gs.l + (ya.position || 0) * gs.w, _length: 0} :
-            axisIds.getFromId(gd, ya.anchor);
+            axisIds.getFromId(gd, ya.anchor));
 
         y = ya._offset + ya._length / 2;
         x = xa._offset + ((ya.side === 'right') ?

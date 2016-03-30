@@ -14,7 +14,7 @@ var isNumeric = require('fast-isnumeric');
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
-var subTypes = require('./subtypes');
+var subTypes = require('../scatter/subtypes');
 var calcMarkerColorscale = require('../scatter/marker_colorscale_calc');
 
 var dataArrays = ['a', 'b', 'c'];
@@ -31,10 +31,10 @@ module.exports = function calc(gd, trace) {
     // fill in one missing component
     for(i = 0; i < dataArrays.length; i++) {
         dataArray = dataArrays[i];
-        if(trace[dataArray] && trace[dataArray.length]) continue;
+        if(trace[dataArray] && trace[dataArray].length) continue;
 
-        fillArray1 = arraysToFill[dataArray][0];
-        fillArray2 = arraysToFill[dataArray][1];
+        fillArray1 = trace[arraysToFill[dataArray][0]];
+        fillArray2 = trace[arraysToFill[dataArray][1]];
         newArray = new Array(fillArray1.length);
         for(j = 0; j < fillArray1.length; j++) {
             newArray[j] = normSum - fillArray1[j] - fillArray2[j];

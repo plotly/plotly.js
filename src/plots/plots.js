@@ -635,6 +635,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // differently for 3D cases.
     coerceSubplotAttr('gl3d', 'scene');
     coerceSubplotAttr('geo', 'geo');
+    coerceSubplotAttr('ternary', 'subplot');
 
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.

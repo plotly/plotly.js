@@ -10,7 +10,7 @@
 'use strict';
 
 var Lib = require('../../../lib');
-var lightColor = require('../../components/color').lightColor;
+var lightColor = require('../../../components/color').lightColor;
 
 var layoutAttributes = require('./axis_attributes');
 var handleTickMarkDefaults = require('../../cartesian/tick_mark_defaults');
@@ -71,7 +71,9 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
         delete containerOut.linewidth;
     }
 
-    var gridColor = coerce2('gridcolor', lightColor(dfltColor, options.bgColor)),
+    // default grid color is darker here (backFraction 0.6, vs default 0.909)
+    // because the grid is not square so the eye needs heavier cues to follow
+    var gridColor = coerce2('gridcolor', lightColor(dfltColor, options.bgColor, 0.6)),
         gridWidth = coerce2('gridwidth'),
         showGridLines = coerce('showgrid', !!gridColor || !!gridWidth);
 

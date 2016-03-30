@@ -16,7 +16,7 @@ var Plots = require('../../plots/plots');
 
 exports.name = 'ternary';
 
-exports.attr = 'ternary';
+exports.attr = 'subplot';
 
 exports.idRoot = 'ternary';
 
@@ -45,7 +45,7 @@ exports.plot = function plotTernary(gd) {
             ternary = new Ternary({
                 id: ternaryId,
                 graphDiv: gd,
-                container: fullLayout._ternarycontainer.node()
+                container: fullLayout._ternarylayer.node()
             },
                 fullLayout
             );
@@ -65,7 +65,8 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         var oldTernary = oldFullLayout[oldTernaryKey]._ternary;
 
         if(!newFullLayout[oldTernaryKey] && !!oldTernary) {
-            oldTernary.ternaryDiv.remove();
+            oldTernary.plotContainer.remove();
+            oldFullLayout.clipDef.remove();
         }
     }
 };

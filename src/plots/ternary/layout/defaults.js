@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Color = require('../../components/color');
+var Color = require('../../../components/color');
 
 var handleSubplotDefaults = require('../../subplot_defaults');
 var layoutAttributes = require('./layout_attributes');
@@ -31,15 +31,33 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
 function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, options) {
     var bgColor = coerce('bgcolor');
-    coerce('sum');
+    var sum = coerce('sum');
     options.bgColor = Color.combine(bgColor, options.paper_bgcolor);
     var axName, containerIn, containerOut;
+
+    // TODO: allow most (if not all) axis attributes to be set
+    // in the outer container and used as defaults in the individual axes?
 
     for(var j = 0; j < axesNames.length; j++) {
         axName = axesNames[j];
         containerIn = ternaryLayoutIn[axName] || {};
-        containerOut = {_name: axName};
+        containerOut = ternaryLayoutOut[axName] = {_name: axName};
 
         handleAxisDefaults(containerIn, containerOut, options);
+    }
+
+    // if the min values contradict each other, set them all to default (0)
+    // and delete *all* the inputs so the user doesn't get confused later by
+    // changing one and having them all change.
+    var aaxis = ternaryLayoutOut.aaxis,
+        baxis = ternaryLayoutOut.baxis,
+        caxis = ternaryLayoutOut.caxis;
+    if(aaxis.min + baxis.min + caxis.min >= sum) {
+        aaxis.min = 0;
+        baxis.min = 0;
+        caxis.min = 0;
+        if(ternaryLayoutIn.aaxis) delete ternaryLayoutIn.aaxis.min;
+        if(ternaryLayoutIn.baxis) delete ternaryLayoutIn.baxis.min;
+        if(ternaryLayoutIn.caxis) delete ternaryLayoutIn.caxis.min;
     }
 }

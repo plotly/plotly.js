@@ -18,7 +18,7 @@ module.exports = {
     titlefont: axesAttrs.titlefont,
     color: axesAttrs.color,
     // ticks
-    nticks: axesAttrs.nticks,
+    nticks: extendFlat({}, axesAttrs.nticks, {dflt: 6, min: 1}),
     ticks: axesAttrs.ticks,
     ticklen: axesAttrs.ticklen,
     tickwidth: axesAttrs.tickwidth,

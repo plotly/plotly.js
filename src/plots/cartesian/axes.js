@@ -1373,11 +1373,18 @@ axes.doTicks = function(td, axid, skipTitle) {
         pad = (ax.linewidth||1) / 2,
         labelStandoff =
             (ax.ticks==='outside' ? ax.ticklen : 1) + (ax.linewidth||0),
+        labelShift = 0,
         gridWidth = Plotly.Drawing.crispRound(td, ax.gridwidth, 1),
         zeroLineWidth = Plotly.Drawing.crispRound(td, ax.zerolinewidth, gridWidth),
         tickWidth = Plotly.Drawing.crispRound(td, ax.tickwidth, 1),
-        sides, transfn, tickprefix, tickmid,
+        sides, transfn, tickpathfn,
         i;
+
+    if(ax._counterangle && ax.ticks==='outside') {
+        var caRad = ax._counterangle * Math.PI / 180;
+        labelStandoff = ax.ticklen * Math.cos(caRad) + (ax.linewidth || 0);
+        labelShift = ax.ticklen * Math.sin(caRad);
+    }
 
     // positioning arguments for x vs y axes
     if(axletter==='x') {
@@ -1387,16 +1394,26 @@ axes.doTicks = function(td, axid, skipTitle) {
         };
         // dumb templating with string concat
         // would be better to use an actual template
-        tickprefix = 'M0,';
-        tickmid = 'v';
+        tickpathfn = function(shift, len) {
+            if(ax._counterangle) {
+                var caRad = ax._counterangle * Math.PI / 180;
+                return 'M0,' + shift + 'l' + (Math.sin(caRad) * len) + ',' + (Math.cos(caRad) * len);
+            }
+            else return 'M0,' + shift + 'v' + len;
+        };
     }
     else if(axletter==='y') {
         sides = ['left', 'right'];
         transfn = function(d) {
             return 'translate(0,'+ax.l2p(d.x)+')';
         };
-        tickprefix = 'M';
-        tickmid = ',0h';
+        tickpathfn = function(shift, len) {
+            if(ax._counterangle) {
+                var caRad = ax._counterangle * Math.PI / 180;
+                return 'M' + shift + ',0l' + (Math.cos(caRad) * len) + ',' + (-Math.sin(caRad) * len);
+            }
+            else return 'M' + shift + ',0h' + len;
+        };
     }
     else {
         console.log('unrecognized doTicks axis', axid);
@@ -1444,10 +1461,10 @@ axes.doTicks = function(td, axid, skipTitle) {
             return;
         }
 
-        var labelx, labely, labelanchor, labelpos0;
+        var labelx, labely, labelanchor, labelpos0, flipit;
         if(axletter==='x') {
-            var flipit = axside==='bottom' ? 1 : -1;
-            labelx = function(d) { return d.dx; };
+            flipit = axside==='bottom' ? 1 : -1;
+            labelx = function(d) { return d.dx + labelShift * flipit; };
             labelpos0 = position + (labelStandoff+pad)*flipit;
             labely = function(d) {
                 return d.dy+labelpos0+d.fontSize *
@@ -1461,11 +1478,11 @@ axes.doTicks = function(td, axid, skipTitle) {
             };
         }
         else {
-            labely = function(d) { return d.dy+d.fontSize/2; };
+            flipit = axside==='right' ? 1 : -1;
+            labely = function(d) { return d.dy+d.fontSize/2 - labelShift * flipit; };
             labelx = function(d) {
                 return d.dx + position + (labelStandoff + pad +
-                    (Math.abs(ax.tickangle)===90 ? d.fontSize/2 : 0)) *
-                    (axside==='right' ? 1 : -1);
+                    (Math.abs(ax.tickangle)===90 ? d.fontSize/2 : 0)) * flipit;
             };
             labelanchor = function(angle) {
                 if(isNumeric(angle) && Math.abs(angle)===90) {
@@ -1630,8 +1647,8 @@ axes.doTicks = function(td, axid, skipTitle) {
         var gridcontainer = plotinfo.gridlayer,
             zlcontainer = plotinfo.zerolinelayer,
             gridvals = plotinfo['hidegrid'+axletter]?[]:valsClipped,
-            gridpath = 'M0,0'+((axletter==='x') ? 'v' : 'h') +
-                counteraxis._length,
+            gridpath = ax._gridpath ||
+                'M0,0'+((axletter==='x') ? 'v' : 'h') + counteraxis._length,
             grid = gridcontainer.selectAll('path.'+gcls)
                 .data(ax.showgrid===false ? [] : gridvals, datafn);
         grid.enter().append('path').classed(gcls, 1)
@@ -1649,31 +1666,38 @@ axes.doTicks = function(td, axid, skipTitle) {
         grid.exit().remove();
 
         // zero line
-        var hasBarsOrFill = false;
-        for(var i = 0; i < td._fullData.length; i++) {
-            if(traceHasBarsOrFill(td._fullData[i], subplot)) {
-                hasBarsOrFill = true;
-                break;
+        if(zlcontainer) {
+            var hasBarsOrFill = false;
+            for(var i = 0; i < td._fullData.length; i++) {
+                if(traceHasBarsOrFill(td._fullData[i], subplot)) {
+                    hasBarsOrFill = true;
+                    break;
+                }
             }
+            var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
+                (ax.type==='linear' || ax.type==='-') && gridvals.length &&
+                (hasBarsOrFill || clipEnds({x: 0}) || !ax.showline);
+            var zl = zlcontainer.selectAll('path.'+zcls)
+                .data(showZl ? [{x: 0}] : []);
+            zl.enter().append('path').classed(zcls,1).classed('zl',1)
+                .classed('crisp',1)
+                .attr('d',gridpath);
+            zl.attr('transform',transfn)
+                .call(Plotly.Color.stroke, ax.zerolinecolor || Plotly.Color.defaultLine)
+                .style('stroke-width', zeroLineWidth+'px');
+            zl.exit().remove();
         }
-        var showZl = (ax.range[0]*ax.range[1]<=0) && ax.zeroline &&
-            (ax.type==='linear' || ax.type==='-') && gridvals.length &&
-            (hasBarsOrFill || clipEnds({x: 0}) || !ax.showline);
-
-        var zl = zlcontainer.selectAll('path.'+zcls)
-            .data(showZl ? [{x: 0}] : []);
-        zl.enter().append('path').classed(zcls,1).classed('zl',1)
-            .classed('crisp',1)
-            .attr('d',gridpath);
-        zl.attr('transform',transfn)
-            .call(Plotly.Color.stroke, ax.zerolinecolor || Plotly.Color.defaultLine)
-            .style('stroke-width', zeroLineWidth+'px');
-        zl.exit().remove();
     }
 
     if(independent) {
-        drawTicks(ax._axislayer, tickprefix + (ax._pos+pad*ticksign[2]) +
-            tickmid + (ticksign[2]*ax.ticklen));
+        drawTicks(ax._axislayer, tickpathfn(ax._pos+pad*ticksign[2], ticksign[2]*ax.ticklen));
+        if(ax._counteraxis) {
+            var fictionalPlotinfo = {
+                gridlayer: ax._gridlayer,
+                zerolinelayer: ax._zerolinelayer
+            };
+            drawGrid(fictionalPlotinfo, ax._counteraxis);
+        }
         return drawLabels(ax._axislayer,ax._pos);
     }
     else {
@@ -1713,8 +1737,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                 var pos = linepositions[sidei],
                     tsign = ticksign[sidei];
                 if(showside && isNumeric(pos)) {
-                    tickpath += tickprefix + (pos+pad*tsign) +
-                        tickmid + (tsign*ax.ticklen);
+                    tickpath += tickpathfn(pos+pad*tsign, tsign*ax.ticklen);
                 }
             });
 
