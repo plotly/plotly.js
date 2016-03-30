@@ -12,8 +12,8 @@
 var createContour2D = require('gl-contour2d');
 var createHeatmap2D = require('gl-heatmap2d');
 
+var makeColorMap = require('../contour/make_color_map');
 var str2RGBArray = require('../../lib/str2rgbarray');
-var makeScaleFunc = require('../../components/colorscale/make_scale_function');
 
 
 function Contour(scene, uid) {
@@ -113,20 +113,17 @@ function convertColorscale(fullTrace) {
     var contours = fullTrace.contours,
         start = contours.start,
         end = contours.end,
-        size = contours.size;
+        cs = contours.size || 1;
 
-    var sclFunc = makeScaleFunc(
-        fullTrace.colorscale,
-        fullTrace.zmin, fullTrace.zmax
-    );
+    var colorMap = makeColorMap(fullTrace);
 
-    var N = Math.floor((end - start) / size),
+    var N = Math.floor((end - start) / cs),
         levels = new Array(N),
         levelColors = new Array(4 * N);
 
     for(var i = 0; i < N; i++) {
-        var level = levels[i] = start + size * i;
-        var color = str2RGBArray(sclFunc(level));
+        var level = levels[i] = start + cs * i;
+        var color = str2RGBArray(colorMap(level));
 
         for(var j = 0; j < 4; j++) {
             levelColors[(4 * i) + j] = color[j];
