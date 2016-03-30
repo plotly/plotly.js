@@ -14,8 +14,9 @@ var d3 = require('d3');
 var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../plots/cartesian/graph_interact');
+var dragElement = require('../dragelement');
 var Lib = require('../../lib');
+var setCursor = require('../../lib/setcursor');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var Titles = require('../titles');
@@ -462,11 +463,11 @@ module.exports = function draw(gd, id) {
                 xf,
                 yf;
 
-            Fx.dragElement({
+            dragElement.init({
                 element: container.node(),
                 prepFn: function() {
                     t0 = container.attr('transform');
-                    Fx.setCursor(container);
+                    setCursor(container);
                 },
                 moveFn: function(dx, dy) {
                     var gs = gd._fullLayout._size;
@@ -474,17 +475,17 @@ module.exports = function draw(gd, id) {
                     container.attr('transform',
                         t0+' ' + 'translate('+dx+','+dy+')');
 
-                    xf = Fx.dragAlign(xLeftFrac + (dx/gs.w), thickFrac,
+                    xf = dragElement.align(xLeftFrac + (dx/gs.w), thickFrac,
                         0, 1, opts.xanchor);
-                    yf = Fx.dragAlign(yBottomFrac - (dy/gs.h), lenFrac,
+                    yf = dragElement.align(yBottomFrac - (dy/gs.h), lenFrac,
                         0, 1, opts.yanchor);
 
-                    var csr = Fx.dragCursors(xf, yf,
+                    var csr = dragElement.cursor(xf, yf,
                         opts.xanchor, opts.yanchor);
-                    Fx.setCursor(container, csr);
+                    setCursor(container, csr);
                 },
                 doneFn: function(dragged) {
-                    Fx.setCursor(container);
+                    setCursor(container);
 
                     if(dragged && xf!==undefined && yf!==undefined) {
                         var idNum = id.substr(2),

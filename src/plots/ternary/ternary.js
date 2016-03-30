@@ -107,6 +107,7 @@ proto.makeFramework = function() {
     // inside that container, we have one container for the data, and
     // one each for the three axes around it.
     var plotLayers = [
+        'draglayer',
         'plotbg',
         'backplot',
         'grids',

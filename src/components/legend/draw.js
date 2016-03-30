@@ -13,8 +13,9 @@ var d3 = require('d3');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
+var setCursor = require('../../lib/setcursor');
 var Plots = require('../../plots/plots');
-var Fx = require('../../plots/cartesian/graph_interact');
+var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
 var Color = require('../color');
 
@@ -288,31 +289,31 @@ module.exports = function draw(gd) {
             lw,
             lh;
 
-        Fx.dragElement({
+        dragElement.init({
             element: legend.node(),
             prepFn: function() {
                 x0 = Number(legend.attr('x'));
                 y0 = Number(legend.attr('y'));
                 lw = Number(legend.attr('width'));
                 lh = Number(legend.attr('height'));
-                Fx.setCursor(legend);
+                setCursor(legend);
             },
             moveFn: function(dx, dy) {
                 var gs = gd._fullLayout._size;
 
                 legend.call(Drawing.setPosition, x0+dx, y0+dy);
 
-                xf = Fx.dragAlign(x0+dx, lw, gs.l, gs.l+gs.w,
+                xf = dragElement.align(x0+dx, lw, gs.l, gs.l+gs.w,
                     opts.xanchor);
-                yf = Fx.dragAlign(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
+                yf = dragElement.align(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
                     opts.yanchor);
 
-                var csr = Fx.dragCursors(xf, yf,
+                var csr = dragElement.cursor(xf, yf,
                     opts.xanchor, opts.yanchor);
-                Fx.setCursor(legend, csr);
+                setCursor(legend, csr);
             },
             doneFn: function(dragged) {
-                Fx.setCursor(legend);
+                setCursor(legend);
                 if(dragged && xf !== undefined && yf !== undefined) {
                     Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
                 }
