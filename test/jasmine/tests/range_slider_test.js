@@ -5,7 +5,7 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mock = require('../../image/mocks/range_slider.json');
 var mouseEvent = require('../assets/mouse_event');
 
-describe('the range slider', function() {
+fdescribe('the range slider', function() {
 
     var gd,
         rangeSlider,
@@ -48,89 +48,91 @@ describe('the range slider', function() {
             expect(bg.getAttribute('stroke-width')).toBe('2');
         });
 
-        it('should react to resizing the minimum handle', function() {
+        it('should react to resizing the minimum handle', function(done) {
             var start = 85,
                 end = 140,
                 dataMinStart = rangeSlider.getAttribute('data-min'),
                 diff = end - start;
 
-            slide(start, 400, end, 400);
+            slide(start, 400, end, 400).then(function() {
+                var maskMin = children[2],
+                    handleMin = children[5];
 
-            var maskMin = children[2],
-                handleMin = children[5];
-
-            expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
-            expect(maskMin.getAttribute('width')).toEqual(String(diff));
-            expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 3) + ')');
+                expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
+                expect(maskMin.getAttribute('width')).toEqual(String(diff));
+                expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 3) + ')');
+            }).then(done);
         });
 
-        it('should react to resizing the maximum handle', function() {
+        it('should react to resizing the maximum handle', function(done) {
             var start = 705,
                 end = 500,
                 dataMaxStart = rangeSlider.getAttribute('data-max'),
                 diff = end - start;
 
-            slide(start, 400, end, 400);
+            slide(start, 400, end, 400).then(function() {
+                var maskMax = children[3],
+                    handleMax = children[6];
 
-            var maskMax = children[3],
-                handleMax = children[6];
-
-            expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
-            expect(maskMax.getAttribute('width')).toEqual(String(-diff));
-            expect(handleMax.getAttribute('transform')).toBe('translate(' + (+dataMaxStart + diff) + ')');
+                expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
+                expect(maskMax.getAttribute('width')).toEqual(String(-diff));
+                expect(handleMax.getAttribute('transform')).toBe('translate(' + (+dataMaxStart + diff) + ')');
+            }).then(done);
         });
 
-        it('should react to moving the slidebox left to right', function() {
+        it('should react to moving the slidebox left to right', function(done) {
             var start = 250,
                 end = 300,
                 dataMinStart = rangeSlider.getAttribute('data-min'),
                 diff = end - start;
 
-            slide(start, 400, end, 400);
+            slide(start, 400, end, 400).then(function() {
+                var maskMin = children[2],
+                    handleMin = children[5];
 
-            var maskMin = children[2],
-                handleMin = children[5];
-
-            expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
-            expect(maskMin.getAttribute('width')).toEqual(String(diff));
-            expect(handleMin.getAttribute('transform')).toEqual('translate(' + (+dataMinStart + diff - 3) + ')');
+                expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
+                expect(maskMin.getAttribute('width')).toEqual(String(diff));
+                expect(handleMin.getAttribute('transform')).toEqual('translate(' + (+dataMinStart + diff - 3) + ')');
+            }).then(done);
         });
 
-        it('should react to moving the slidebox right to left', function() {
+        it('should react to moving the slidebox right to left', function(done) {
             var start = 300,
                 end = 250,
                 dataMaxStart = rangeSlider.getAttribute('data-max'),
                 diff = end - start;
 
-            slide(start, 400, end, 400);
+            slide(start, 400, end, 400).then(function() {
+                var maskMax = children[3],
+                    handleMax = children[6];
 
-            var maskMax = children[3],
-                handleMax = children[6];
+                expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
+                expect(maskMax.getAttribute('width')).toEqual(String(-diff));
+                expect(handleMax.getAttribute('transform')).toEqual('translate(' + (+dataMaxStart + diff) + ')');
+            }).then(done);
 
-            expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
-            expect(maskMax.getAttribute('width')).toEqual(String(-diff));
-            expect(handleMax.getAttribute('transform')).toEqual('translate(' + (+dataMaxStart + diff) + ')');
+
         });
 
-        it('should resize the main plot when rangeslider has moved', function() {
+        it('should resize the main plot when rangeslider has moved', function(done) {
             var start = 300,
                 end = 400,
-                rangeDiff1 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
+                rangeDiff1 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0],
+                rangeDiff2,
+                rangeDiff3;
 
-            slide(start, 400, end, 400);
+            slide(start, 400, end, 400).then(function() {
+                rangeDiff2 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
+                expect(rangeDiff2).toBeLessThan(rangeDiff1);
+            }).then(function() {
+                start = 400;
+                end = 200;
 
-            var rangeDiff2 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
-
-            expect(rangeDiff2).toBeLessThan(rangeDiff1);
-
-            start = 400;
-            end = 200;
-
-            slide(start, 400, end, 400);
-
-            var rangeDiff3 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
-
-            expect(rangeDiff3).toBeLessThan(rangeDiff2);
+                return slide(start, 400, end, 400);
+            }).then(function() {
+                rangeDiff3 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
+                expect(rangeDiff3).toBeLessThan(rangeDiff2);
+            }).then(done);
         });
     });
 
@@ -310,8 +312,14 @@ describe('the range slider', function() {
 
 
 function slide(fromX, fromY, toX, toY) {
-    mouseEvent('mousemove', fromX, fromY);
-    mouseEvent('mousedown', fromX, fromY);
-    mouseEvent('mousemove', toX, toY);
-    mouseEvent('mouseup', toX, toY);
+    return new Promise(function(resolve) {
+        mouseEvent('mousemove', fromX, fromY);
+        mouseEvent('mousedown', fromX, fromY);
+        mouseEvent('mousemove', toX, toY);
+        mouseEvent('mouseup', toX, toY);
+
+        setTimeout(function() {
+            return resolve();
+        }, 20);
+    });
 }
