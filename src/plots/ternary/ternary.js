@@ -399,6 +399,7 @@ proto.init_interactions = function() {
             else if(dragModeNow === 'pan') {
                 dragOptions.moveFn = plotDrag;
                 dragOptions.doneFn = dragDone;
+                panPrep();
                 clearSelect();
             }
             else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
@@ -413,7 +414,11 @@ proto.init_interactions = function() {
         var dragBBox = dragger.getBoundingClientRect();
         x0 = startX - dragBBox.left;
         y0 = startY - dragBBox.top;
-        mins0 = {a: _this.aaxis.range[0], b: _this.baxis.range[1], c: _this.caxis.range[1]};
+        mins0 = {
+            a: _this.aaxis.range[0],
+            b: _this.baxis.range[1],
+            c: _this.caxis.range[1]
+        };
         mins = mins0;
         span0 = _this.aaxis.range[1] - mins0.a;
         lum = tinycolor(_this.graphDiv._fullLayout[_this.id].bgcolor).getLuminance();
@@ -512,13 +517,22 @@ proto.init_interactions = function() {
         }
     }
 
+    function panPrep() {
+        mins0 = {
+            a: _this.aaxis.range[0],
+            b: _this.baxis.range[1],
+            c: _this.caxis.range[1]
+        };
+        mins = mins0;
+    }
+
     function plotDrag(dx, dy) {
         var dxScaled = dx / _this.xaxis._m,
             dyScaled = dy / _this.yaxis._m;
         mins = {
             a: mins0.a - dyScaled,
-            b: mins0.b + dxScaled + dyScaled / 2,
-            c: mins0.c - dxScaled + dyScaled / 2
+            b: mins0.b + (dxScaled + dyScaled) / 2,
+            c: mins0.c - (dxScaled - dyScaled) / 2
         };
         var minsorted = [mins.a, mins.b, mins.c].sort(),
             minindices = {
@@ -528,12 +542,12 @@ proto.init_interactions = function() {
             };
         if(minsorted[0] < 0) {
             if(minsorted[1] + minsorted[0] / 2 < 0) {
-                minsorted[2] -= minsorted[0] + minsorted[1];
+                minsorted[2] += minsorted[0] + minsorted[1];
                 minsorted[0] = minsorted[1] = 0;
             }
             else {
-                minsorted[2] -= minsorted[0] / 2;
-                minsorted[1] -= minsorted[0] / 2;
+                minsorted[2] += minsorted[0] / 2;
+                minsorted[1] += minsorted[0] / 2;
                 minsorted[0] = 0;
             }
             mins = {
@@ -552,8 +566,8 @@ proto.init_interactions = function() {
 
         // move the ticks
         _this.aaxis.range = [mins.a, _this.sum - mins.b - mins.c];
-        _this.baxis.range = [mins.b, _this.sum - mins.a - mins.c];
-        _this.caxis.range = [mins.c, _this.sum - mins.b - mins.b];
+        _this.baxis.range = [_this.sum - mins.a - mins.c, mins.b];
+        _this.caxis.range = [_this.sum - mins.a - mins.b, mins.c];
 
         Axes.doTicks(_this.graphDiv, _this.aaxis, true);
         Axes.doTicks(_this.graphDiv, _this.baxis, true);
