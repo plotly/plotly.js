@@ -224,7 +224,15 @@ module.exports = function createSlider(gd, minStart, maxStart) {
             dataMin = min / width * range + rangeMin,
             dataMax = max / width * range + rangeMin;
 
-        Plotly.relayout(gd, 'xaxis.range', [dataMin, dataMax]);
+        if(window.requestAnimationFrame) {
+            window.requestAnimationFrame(function() {
+                Plotly.relayout(gd, 'xaxis.range', [dataMin, dataMax]);
+            });
+        } else {
+            setTimeout(function() {
+                Plotly.relayout(gd, 'xaxis.range', [dataMin, dataMax]);
+            }, 16);
+        }
     }
 
 
