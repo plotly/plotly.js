@@ -5,15 +5,29 @@ var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var getRectCenter = require('../assets/get_rect_center');
 var customMatchers = require('../assets/custom_matchers');
 
 
-describe('click interactions', function() {
-    var mock = require('@mocks/14.json'),
-        gd;
+describe('Test click interactions:', function() {
+    var mock = require('@mocks/14.json');
+
+    var mockCopy, gd;
 
     var pointPos = [351, 223],
         blankPos = [70, 363];
+
+    var autoRangeX = [-3.011967491973726, 2.1561305597186564],
+        autoRangeY = [-0.9910086301469277, 1.389382716298284];
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+        mockCopy = Lib.extendDeep({}, mock);
+    });
 
     afterEach(destroyGraphDiv);
 
@@ -26,23 +40,35 @@ describe('click interactions', function() {
         mouseEvent('mouseup', x, y);
     }
 
-    function doubleClick(x, y, cb) {
-        click(x, y);
-        setTimeout(function() {
+    function doubleClick(x, y) {
+        return new Promise(function(resolve) {
             click(x, y);
-            cb();
-        }, DBLCLICKDELAY / 2);
+
+            setTimeout(function() {
+                click(x, y);
+                resolve();
+            }, DBLCLICKDELAY / 2);
+        });
+    }
+
+    function drag(fromX, fromY, toX, toY, delay) {
+        return new Promise(function(resolve) {
+            mouseEvent('mousemove', fromX, fromY);
+            mouseEvent('mousedown', fromX, fromY);
+            mouseEvent('mousemove', toX, toY);
+
+            setTimeout(function() {
+                mouseEvent('mouseup', toX, toY);
+                resolve();
+            }, delay || DBLCLICKDELAY / 4);
+        });
     }
 
     describe('click events', function() {
         var futureData;
 
         beforeEach(function(done) {
-            gd = createGraphDiv();
-
-            var mockCopy = Lib.extendDeep({}, mock);
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
 
             gd.on('plotly_click', function(data) {
                 futureData = data;
@@ -74,11 +100,7 @@ describe('click interactions', function() {
         var futureData;
 
         beforeEach(function(done) {
-            gd = createGraphDiv();
-
-            var mockCopy = Lib.extendDeep({}, mock);
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
-                .then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
 
             gd.on('plotly_doubleclick', function(data) {
                 futureData = data;
@@ -87,19 +109,261 @@ describe('click interactions', function() {
         });
 
         it('should return null', function(done) {
-            doubleClick(pointPos[0], pointPos[1], function() {
+            doubleClick(pointPos[0], pointPos[1]).then(function() {
                 expect(futureData).toBe(null);
                 done();
             });
         });
     });
 
+    describe('drag interactions', function() {
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('on nw dragbox should update the axis ranges', function(done) {
+            var node = document.querySelector('rect.nwdrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('nwdrag');
+            expect(node.classList[2]).toBe('cursor-nw-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 10, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.08579746, 2.156130559]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.99100863, 1.86546098]);
+
+                return drag(pos[0], pos[1], pos[0] - 10, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.99100863, 1.10938115]);
+
+                done();
+            });
+        });
+
+        it('on ne dragbox should update the axis ranges', function(done) {
+            var node = document.querySelector('rect.nedrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('nedrag');
+            expect(node.classList[2]).toBe('cursor-ne-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 50, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 1.72466470]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.99100863, 1.86546098]);
+
+                return drag(pos[0], pos[1], pos[0] - 50, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 2.08350047]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.99100863, 1.10938115]);
+
+                done();
+            });
+        });
+
+        it('on sw dragbox should update the axis ranges', function(done) {
+            var node = document.querySelector('rect.swdrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('swdrag');
+            expect(node.classList[2]).toBe('cursor-sw-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 10, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.08579746, 2.15613055]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.36094210, 1.38938271]);
+
+                return drag(pos[0], pos[1], pos[0] - 10, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.00958227, 2.15613055]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.71100706, 1.38938271]);
+
+                done();
+            });
+        });
+
+        it('on se dragbox should update the axis ranges', function(done) {
+            var node = document.querySelector('rect.sedrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('sedrag');
+            expect(node.classList[2]).toBe('cursor-se-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 50, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 1.72466470]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.36094210, 1.38938271]);
+
+                return drag(pos[0], pos[1], pos[0] - 50, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 2.08350047]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.71100706, 1.38938271]);
+
+                done();
+            });
+        });
+
+        it('on ew dragbox should update the xaxis range', function(done) {
+            var node = document.querySelector('rect.ewdrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('ewdrag');
+            expect(node.classList[2]).toBe('cursor-ew-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 50, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.375918058, 1.792179992]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                return drag(pos[0], pos[1], pos[0] - 50, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 2.15613055]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                done();
+            });
+        });
+
+        it('on w dragbox should update the xaxis range', function(done) {
+            var node = document.querySelector('rect.wdrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('wdrag');
+            expect(node.classList[2]).toBe('cursor-w-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 50, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.40349007, 2.15613055]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                return drag(pos[0], pos[1], pos[0] - 50, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.93933740, 2.15613055]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                done();
+            });
+        });
+
+        it('on e dragbox should update the xaxis range', function(done) {
+            var node = document.querySelector('rect.edrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('edrag');
+            expect(node.classList[2]).toBe('cursor-e-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 50, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 1.7246647]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                return drag(pos[0], pos[1], pos[0] - 50, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-3.01196749, 2.0835004]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                done();
+            });
+        });
+
+        it('on ns dragbox should update the yaxis range', function(done) {
+            var node = document.querySelector('rect.nsdrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('nsdrag');
+            expect(node.classList[2]).toBe('cursor-ns-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 10, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.59427673, 1.78611460]);
+
+                return drag(pos[0], pos[1], pos[0] - 10, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                done();
+            });
+        });
+
+        it('on s dragbox should update the yaxis range', function(done) {
+            var node = document.querySelector('rect.sdrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('sdrag');
+            expect(node.classList[2]).toBe('cursor-s-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 10, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.3609421011, 1.3893827]);
+
+                return drag(pos[0], pos[1], pos[0] - 10, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.7110070646, 1.3893827]);
+
+                done();
+            });
+        });
+
+        it('on n dragbox should update the yaxis range', function(done) {
+            var node = document.querySelector('rect.ndrag');
+            var pos = getRectCenter(node);
+
+            expect(node.classList[0]).toBe('drag');
+            expect(node.classList[1]).toBe('ndrag');
+            expect(node.classList[2]).toBe('cursor-n-resize');
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(pos[0], pos[1], pos[0] + 10, pos[1] + 50).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.991008630, 1.86546098]);
+
+                return drag(pos[0], pos[1], pos[0] - 10, pos[1] - 50);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.991008630, 1.10938115]);
+
+                done();
+            });
+        });
+
+    });
+
     describe('double click interactions', function() {
-        var mockCopy;
-
-        var autoRangeX = [-3.011967491973726, 2.1561305597186564],
-            autoRangeY = [-0.9910086301469277, 1.389382716298284];
-
         var setRangeX = [-3, 1],
             setRangeY = [-0.5, 1];
 
@@ -112,13 +376,6 @@ describe('click interactions', function() {
             'yaxis.range[0]': zoomRangeY[0],
             'yaxis.range[1]': zoomRangeY[1]
         };
-
-        beforeEach(function() {
-            jasmine.addMatchers(customMatchers);
-
-            gd = createGraphDiv();
-            mockCopy = Lib.extendDeep({}, mock);
-        });
 
         function setRanges(mockCopy) {
             mockCopy.layout.xaxis.autorange = false;
@@ -135,17 +392,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -156,17 +413,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -177,17 +434,75 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                doubleClick(blankPos[0], blankPos[1], function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                        done();
-                    });
-                });
+                done();
+            });
+        });
+
+        it('when set to \'reset+autorange\' (the default) should autosize on 1st double click and zoom when immediately dragged', function(done) {
+            mockCopy = setRanges(mockCopy);
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                return drag(100, 100, 200, 200, DBLCLICKDELAY / 2);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.70624901567643, -1.9783478816352495]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.5007032802920716, 1.2941670624404753]);
+
+                done();
+            });
+        });
+
+        it('when set to \'reset+autorange\' (the default) should follow updated auto ranges', function(done) {
+            var updateData = {
+                x: [[1e-4, 0, 1e3]],
+                y: [[30, 0, 30]]
+            };
+
+            var newAutoRangeX = [-4.482371794871794, 3.4823717948717943],
+                newAutoRangeY = [-0.8892256657741471, 1.6689872212461876];
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+
+                return Plotly.restyle(gd, updateData);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
+
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(newAutoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(newAutoRangeY);
+
+                done();
             });
         });
 
@@ -196,17 +511,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -217,17 +532,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -238,12 +553,12 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                doubleClick(blankPos[0], blankPos[1], function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                    done();
-                });
+                done();
             });
         });
 
@@ -252,17 +567,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -273,17 +588,17 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                Plotly.relayout(gd, update).then(function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
+                return Plotly.relayout(gd, update);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(zoomRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(zoomRangeY);
 
-                    doubleClick(blankPos[0], blankPos[1], function() {
-                        expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                        expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                        done();
-                    });
-                });
+                done();
             });
         });
 
@@ -294,14 +609,62 @@ describe('click interactions', function() {
                 expect(gd.layout.xaxis.range).toBeCloseToArray(setRangeX);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(setRangeY);
 
-                doubleClick(blankPos[0], blankPos[1], function() {
-                    expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+                return doubleClick(blankPos[0], blankPos[1]);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
-                    done();
-                });
+                done();
             });
         });
 
+    });
+
+    describe('zoom interactions', function() {
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('on main dragbox should update the axis ranges', function(done) {
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(100, 100, 400, 300).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.70624901, -0.52254561]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.29276050, 1.294167062]);
+
+                return drag(100, 100, 400, 300);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.57707219, -1.65438061]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.172738250, 1.230689959]);
+
+                done();
+            });
+        });
+    });
+
+    describe('pan interactions', function() {
+        beforeEach(function(done) {
+            mockCopy.layout.dragmode = 'pan';
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('on main dragbox should update the axis ranges', function(done) {
+            expect(gd.layout.xaxis.range).toBeCloseToArray(autoRangeX);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
+
+            drag(100, 100, 400, 300).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-5.19567089, -0.02757284]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.595918934, 2.976310280]);
+
+                return drag(100, 100, 400, 300);
+            }).then(function() {
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-7.37937429, -2.21127624]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([2.182846498, 4.563237844]);
+
+                done();
+            });
+        });
     });
 });

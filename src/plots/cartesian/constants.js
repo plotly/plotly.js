@@ -28,7 +28,7 @@ module.exports = {
 
     // ms between first mousedown and 2nd mouseup to constitute dblclick...
     // we don't seem to have access to the system setting
-    DBLCLICKDELAY: 600,
+    DBLCLICKDELAY: 300,
 
     // pixels to move mouse before you stop clamping to starting point
     MINDRAG: 8,

@@ -9,6 +9,22 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.7.0] -- 2016-03-22
+
+### Added
+
+- Custom surface color functionality (for 4D plotting) is added to surface traces [#347]
+- Top-level `Plotly.purge` method (which returns the graph div in its
+  pre-Plotly.plot state) is added [#300]
+- Support for custom hover labels on multiple subplots in `Plotly.Fx.hover` is
+  added [#301]
+
+### Fixed
+- Error bars node ordering now respect the trace ordering [#343]
+- Geo traces nodes now update properly on streaming plot calls [#324]
+- jQuery check in event module is made more robust [#328]
+
+
 ## [1.6.3] -- 2016-03-07
 
 ### Fixed

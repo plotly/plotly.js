@@ -22,6 +22,10 @@ a {
 
 .crisp { shape-rendering: crispEdges; }
 
+.user-select-none {
+    @include vendor('user-select', none);
+}
+
 //Required for IE11. Other browsers set this by default.
 svg { overflow: hidden; }
 

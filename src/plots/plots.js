@@ -808,10 +808,11 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var modulesWithErrorBars = gd._modules.concat(Plotly.ErrorBars);
+    var _modules = gd._modules;
 
-    for(var i = 0; i < modulesWithErrorBars.length; i++) {
-        var _module = modulesWithErrorBars[i];
+    for(var i = 0; i < _modules.length; i++) {
+        var _module = _modules[i];
+
         if(_module.style) _module.style(gd);
     }
 };
@@ -843,6 +844,7 @@ plots.sanitizeMargins = function(fullLayout) {
         margin.b = Math.floor(correction * margin.b);
     }
 };
+
 // called by legend and colorbar routines to see if we need to
 // expand the margins to show them
 // o is {x,l,r,y,t,b} where x and y are plot fractions,
@@ -877,17 +879,19 @@ plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     if(!fullLayout._size) fullLayout._size = {};
     if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
+
     var gs = fullLayout._size,
         oldmargins = JSON.stringify(gs);
 
     // adjust margins for outside legends and colorbars
     // fullLayout.margin is the requested margin,
     // fullLayout._size has margins and plotsize after adjustment
-    var ml = Math.max(fullLayout.margin.l||0,0),
-        mr = Math.max(fullLayout.margin.r||0,0),
-        mt = Math.max(fullLayout.margin.t||0,0),
-        mb = Math.max(fullLayout.margin.b||0,0),
+    var ml = Math.max(fullLayout.margin.l || 0, 0),
+        mr = Math.max(fullLayout.margin.r || 0, 0),
+        mt = Math.max(fullLayout.margin.t || 0, 0),
+        mb = Math.max(fullLayout.margin.b || 0, 0),
         pm = fullLayout._pushmargin;
+
     if(fullLayout.margin.autoexpand!==false) {
         // fill in the requested margins
         pm.base = {
