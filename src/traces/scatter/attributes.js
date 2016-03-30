@@ -200,7 +200,12 @@ module.exports = {
             valType: 'color',
             arrayOk: true,
             role: 'style',
-            description: 'Sets the marker color.'
+            description: [
+                'Sets the marker color. It accepts either a specific color',
+                'or an array of values that are mapped to the colorscale',
+                'relative to the max and min values of the array or relative to',
+                '`cmin` and `cmax` if set.'
+            ].join(' ')
         },
         maxdisplayed: {
             valType: 'number',
@@ -247,7 +252,8 @@ module.exports = {
             valType: 'colorscale',
             role: 'style',
             description: [
-                'Sets the colorscale.',
+                'Sets the colorscale and only has an effect',
+                'if `marker.color` is set to a numerical array.',
                 'The colorscale must be an array containing',
                 'arrays mapping a normalized value to an',
                 'rgb, rgba, hex, hsl, hsv, or named color string.',
@@ -255,7 +261,7 @@ module.exports = {
                 'values are required. For example,',
                 '`[[0, \'rgb(0,0,255)\', [1, \'rgb(255,0,0)\']]`.',
                 'To control the bounds of the colorscale in color space,',
-                'use cmin and cmax'
+                'use `marker.cmin` and `marker.cmax`.'
             ].join(' ')
         },
         cauto: {
@@ -274,7 +280,8 @@ module.exports = {
             role: 'info',
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
-                'Sets the upper bound of the color domain.'
+                'Sets the upper bound of the color domain.',
+                'Value should be associated to the `marker.color` array index.'
             ].join(' ')
         },
         cmin: {
@@ -283,7 +290,8 @@ module.exports = {
             role: 'info',
             description: [
                 'Has only an effect if `marker.color` is set to a numerical array.',
-                'Sets the lower bound of the color domain.'
+                'Sets the lower bound of the color domain.',
+                'Value should be associated to the `marker.color` array index.'
             ].join(' ')
         },
         autocolorscale: {
@@ -319,7 +327,12 @@ module.exports = {
                 valType: 'color',
                 arrayOk: true,
                 role: 'style',
-                description: 'Sets the color of the lines bounding the marker points.'
+                description: [
+                    'Sets the marker outline color. It accepts either a specific color',
+                    'or an array of values that are mapped to the colorscale',
+                    'relative to the max and min values of the array or relative to',
+                    '`cmin` and `cmax` if set.'
+                ].join(' ')
             },
             width: {
                 valType: 'number',
@@ -332,8 +345,16 @@ module.exports = {
                 valType: 'colorscale',
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Sets the colorscale.'
+                    'Sets the colorscale and only has an effect',
+                    'if `marker.line.color` is set to a numerical array.',
+                    'The colorscale must be an array containing',
+                    'arrays mapping a normalized value to an',
+                    'rgb, rgba, hex, hsl, hsv, or named color string.',
+                    'At minimum, a mapping for the lowest (0) and highest (1)',
+                    'values are required. For example,',
+                    '`[[0, \'rgb(0,0,255)\', [1, \'rgb(255,0,0)\']]`.',
+                    'To control the bounds of the colorscale in color space,',
+                    'use `marker.line.cmin` and `marker.line.cmax`.'
                 ].join(' ')
             },
             cauto: {
@@ -352,7 +373,8 @@ module.exports = {
                 role: 'info',
                 description: [
                     'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Sets the upper bound of the color domain.'
+                    'Sets the upper bound of the color domain.',
+                    'Value should be associated to the `marker.line.color` array index.'
                 ].join(' ')
             },
             cmin: {
@@ -361,7 +383,8 @@ module.exports = {
                 role: 'info',
                 description: [
                     'Has only an effect if `marker.line.color` is set to a numerical array.',
-                    'Sets the lower bound of the color domain.'
+                    'Sets the lower bound of the color domain.',
+                    'Value should be associated to the `marker.line.color` array index.'
                 ].join(' ')
             },
             autocolorscale: {
