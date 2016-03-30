@@ -362,6 +362,7 @@ var TOPPATH = 'm0,1l' + (CLEN / 2) + ',' + (CLEN * 0.87) +
     'l2.6,-1.5l-' + (CLEN / 2 + 2.6) + ',-' + (CLEN * 0.87 + 4.5) +
     'l-' + (CLEN / 2 + 2.6) + ',' + (CLEN * 0.87 + 4.5) +
     'l2.6,1.5l' + (CLEN / 2) + ',-' + (CLEN * 0.87) + 'Z';
+var STARTMARKER = 'm0.5,0.5h5v-2h-5v-5h-2v5h-5v2h5v5h2Z';
 
 // I guess this could be shared with cartesian... but for now it's separate.
 var SHOWZOOMOUTTIP = true;
@@ -440,12 +441,16 @@ proto.init_interactions = function() {
         clearSelect();
     }
 
+    function getAFrac(x, y) { return 1 - (y / _this.h); }
+    function getBFrac(x, y) { return 1 - ((x + (_this.h - y) / Math.sqrt(3)) / _this.w); }
+    function getCFrac(x, y) { return ((x - (_this.h - y) / Math.sqrt(3)) / _this.w); }
+
     function zoomMove(dx0, dy0) {
         var x1 = x0 + dx0,
             y1 = y0 + dy0,
-            afrac = Math.max(0, 1 - Math.max(y0, y1) / _this.h),
-            bfrac = Math.max(0, 1 - Math.max(x0 + y0 / Math.sqrt(3), x1 + y1 / Math.sqrt(3)) / _this.w),
-            cfrac = Math.max(0, Math.min(x0 - y0 / Math.sqrt(3), x1 - y1 / Math.sqrt(3)) / _this.w),
+            afrac = Math.max(0, Math.min(1, getAFrac(x0, y0), getAFrac(x1, y1))),
+            bfrac = Math.max(0, Math.min(1, getBFrac(x0, y0), getBFrac(x1, y1))),
+            cfrac = Math.max(0, Math.min(1, getCFrac(x0, y0), getCFrac(x1, y1))),
             xLeft = ((afrac / 2) + cfrac) * _this.w,
             xRight = (1 - (afrac / 2) - bfrac) * _this.w,
             xCenter = (xLeft + xRight) / 2,
@@ -467,7 +472,8 @@ proto.init_interactions = function() {
             zb.attr('d', path0 + 'M' + xLeft + ',' + yBottom +
                 'H' + xRight + 'L' + xCenter + ',' + yTop +
                 'L' + xLeft + ',' + yBottom + 'Z');
-            corners.attr('d', 'M' + xLeft + ',' + yBottom + BLPATH +
+            corners.attr('d', 'M' + x0 + ',' + y0 + STARTMARKER +
+                'M' + xLeft + ',' + yBottom + BLPATH +
                 'M' + xRight + ',' + yBottom + BRPATH +
                 'M' + xCenter + ',' + yTop + TOPPATH);
         }
