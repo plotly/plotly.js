@@ -25,12 +25,12 @@ describe('Test contour', function() {
                 type: 'contour',
                 z: [[10, 10.625, 12.5, 15.625],
                     [5.625, 6.25, 8.125, 11.25],
-                    [2.5, 3.125, 5., 8.125],
+                    [2.5, 3.125, 5.0, 8.125],
                     [0.625, 1.25, 3.125, 6.25]],
                 contours: {
                     start: 4,
                     end: 14,
-                    size: .5
+                    size: 0.5
                 }
             };
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -40,7 +40,7 @@ describe('Test contour', function() {
                 type: 'contour',
                 z: [[10, 10.625, 12.5, 15.625],
                     [5.625, 6.25, 8.125, 11.25],
-                    [2.5, 3.125, 5., 8.125],
+                    [2.5, 3.125, 5.0, 8.125],
                     [0.625, 1.25, 3.125, 6.25]]
             };
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
