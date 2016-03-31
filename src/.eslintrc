@@ -5,6 +5,7 @@
   },
   "globals": {
     "Promise": true,
+    "Float32Array": true,
     "Uint8Array": true
   },
   "rules": {
