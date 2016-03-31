@@ -16,7 +16,7 @@ module.exports = {
         values: ['month', 'year', 'day', 'hour', 'minute', 'second', 'all'],
         dflt: 'month',
         description: [
-            ''
+            'The unit of measurement that the `count` value will set the range by.'
         ].join(' ')
     },
     stepmode: {

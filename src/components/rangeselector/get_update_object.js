@@ -17,8 +17,7 @@ module.exports = function getUpdateObject(axisLayout, buttonLayout) {
 
     if(buttonLayout.step === 'all') {
         update = {
-            'xaxis.autorange': true,
-            'xaxis.range': null
+            'xaxis.autorange': true
         };
     }
     else {
