@@ -345,10 +345,11 @@ plots.addLinks = function(gd) {
         };
 
     // If text's width is bigger than the layout
-    // IE doesn't like getComputedTextLength if an element
-    // isn't visible, which it (sometimes?) isn't
-    // apparently offsetParent is null for invisibles.
-    if(text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
+    // Check that text is a child node or document.body
+    // because otherwise IE/Edge might throw an exception
+    // when calling getComputedTextLength().
+    // Apparently offsetParent is null for invisibles.
+    if(document.body.contains(text) && text.getComputedTextLength() >= (fullLayout.width - 20)) {
         // Align the text at the left
         attrs['text-anchor'] = 'start';
         attrs.x = 5;
