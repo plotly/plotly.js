@@ -83,7 +83,7 @@ describe('[range selector suite]', function() {
 
     });
 
-    describe('getUpdateObject', function() {
+    describe('getUpdateObject:', function() {
         var axisLayout = {
             range: [
                 (new Date(1948, 0, 1)).getTime(),
@@ -132,7 +132,19 @@ describe('[range selector suite]', function() {
             assertRanges(update, new Date(2015, 4, 30), new Date(2015, 10, 30));
         });
 
-        it('should return update object (year-to-date case)', function() {
+        it('should return update object (5 months to-date case)', function() {
+            var buttonLayout = {
+                step: 'month',
+                stepmode: 'to date',
+                count: 5
+            };
+
+            var update = getUpdateObject(axisLayout, buttonLayout);
+
+            assertRanges(update, new Date(2015, 6, 1), new Date(2015, 10, 30));
+        });
+
+        it('should return update object (1 year to-date case)', function() {
             var buttonLayout = {
                 step: 'year',
                 stepmode: 'to date',
@@ -142,6 +154,18 @@ describe('[range selector suite]', function() {
             var update = getUpdateObject(axisLayout, buttonLayout);
 
             assertRanges(update, new Date(2015, 0, 1), new Date(2015, 10, 30));
+        });
+
+        it('should return update object (10 year to-date case)', function() {
+            var buttonLayout = {
+                step: 'year',
+                stepmode: 'to date',
+                count: 10
+            };
+
+            var update = getUpdateObject(axisLayout, buttonLayout);
+
+            assertRanges(update, new Date(2006, 0, 1), new Date(2015, 10, 30));
         });
 
         it('should return update object (1 year backward case)', function() {
@@ -216,6 +240,50 @@ describe('[range selector suite]', function() {
 
             assertRanges(update, new Date(2015, 10, 29, 23, 59, 50), new Date(2015, 10, 30));
         });
+
+        it('should return update object (12 hour to-date case)', function() {
+            var buttonLayout = {
+                step: 'hour',
+                stepmode: 'to date',
+                count: 12
+            };
+
+            axisLayout.range[1] = new Date(2015, 10, 30, 12).getTime();
+
+            var update = getUpdateObject(axisLayout, buttonLayout);
+
+            assertRanges(update, new Date(2015, 10, 30, 1), new Date(2015, 10, 30, 12));
+        });
+
+        it('should return update object (15 minute backward case)', function() {
+            var buttonLayout = {
+                step: 'minute',
+                stepmode: 'to date',
+                count: 20
+            };
+
+            axisLayout.range[1] = new Date(2015, 10, 30, 12, 20).getTime();
+
+            var update = getUpdateObject(axisLayout, buttonLayout);
+
+            assertRanges(update, new Date(2015, 10, 30, 12, 1), new Date(2015, 10, 30, 12, 20));
+        });
+
+        it('should return update object (2 second to-date case)', function() {
+
+            var buttonLayout = {
+                step: 'second',
+                stepmode: 'to date',
+                count: 2
+            };
+
+            axisLayout.range[1] = new Date(2015, 10, 30, 12, 20, 2).getTime();
+
+            var update = getUpdateObject(axisLayout, buttonLayout);
+
+            assertRanges(update, new Date(2015, 10, 30, 12, 20, 1), new Date(2015, 10, 30, 12, 20, 2));
+        });
+
     });
 
 

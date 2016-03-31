@@ -31,6 +31,7 @@ module.exports = {
     count: {
         valType: 'number',
         role: 'info',
+        min: 0,
         dflt: 1,
         description: [
             ''

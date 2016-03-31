@@ -36,21 +36,24 @@ function getXRange(axisLayout, buttonLayout) {
     var currentRange = axisLayout.range;
     var base = new Date(currentRange[1]);
 
-    var range0, range1;
+    var step = buttonLayout.step,
+        count = buttonLayout.count;
+
+    var range0;
 
     switch(buttonLayout.stepmode) {
         case 'backward':
-            range1 = currentRange[1];
-            range0 = d3.time[buttonLayout.step]
-                .offset(base, -buttonLayout.count).getTime();
+            range0 = d3.time[step].offset(base, -count).getTime();
             break;
 
         case 'to date':
-            range1 = currentRange[1];
-            range0 = d3.time[buttonLayout.step]
-                .floor(base).getTime();
+            var base2 = d3.time[step].offset(base, -(count - 1));
+
+            range0 = d3.time[step].floor(base2).getTime();
             break;
     }
+
+    var range1 = currentRange[1];
 
     return [range0, range1];
 }
