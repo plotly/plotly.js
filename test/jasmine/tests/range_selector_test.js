@@ -301,9 +301,9 @@ describe('[range selector suite]', function() {
                 step: 'month',
                 stepmode: 'backward',
                 count: 1
-            }
+            };
 
-            var update = getUpdateObject(axisLayout, buttonLayout)
+            var update = getUpdateObject(axisLayout, buttonLayout);
 
             expect(update).toEqual({
                 'xaxis5.range[0]': new Date(2015, 9, 30).getTime(),
