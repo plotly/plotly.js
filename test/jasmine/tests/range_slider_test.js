@@ -308,33 +308,6 @@ describe('the range slider', function() {
             expect(layoutOut).toEqual(expected);
         });
     });
-
-    describe('when used with gl traces', function() {
-
-        beforeEach(function() {
-            gd = createGraphDiv();
-        });
-
-        afterEach(destroyGraphDiv);
-
-        it('should not be drawn with GL2d', function(done) {
-            var data = [{
-                x: [1,2,3],
-                y: [2,3,4],
-                type: 'scattergl'
-            }, {
-                x: [1,2,3],
-                y: [2,3,4],
-                type: 'scattergl'
-            }];
-
-            Plotly.plot(gd, data, mock.layout).then(function() {
-                rangeSlider = document.getElementsByClassName('range-slider')[0];
-                expect(rangeSlider).not.toBeDefined();
-                done();
-            });
-        });
-    });
 });
 
 
