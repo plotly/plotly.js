@@ -48,14 +48,14 @@ describe('range selector', function() {
     describe('getUpdateObject', function() {
         var axisLayout = {
             range: [
-                -694292400000,  // Thu Jan 01 1948 00:00:00
-                1448859600000   // Mon Nov 30 2015 00:00:00
+                (new Date(1948, 0, 1)).getTime(),
+                (new Date(2015, 10, 30)).getTime()
             ]
         };
 
         function assertRanges(update, range0, range1) {
-            expect(update['xaxis.range[0]']).toEqual(range0);
-            expect(update['xaxis.range[1]']).toEqual(range1);
+            expect(update['xaxis.range[0]']).toEqual(range0.getTime());
+            expect(update['xaxis.range[1]']).toEqual(range1.getTime());
         }
 
         it('should return update object (1 month backward case)', function() {
@@ -67,7 +67,7 @@ describe('range selector', function() {
 
             var update = getUpdateObject(axisLayout, buttonLayout);
 
-            assertRanges(update, 1446177600000, 1448859600000);
+            assertRanges(update, new Date(2015, 9, 30), new Date(2015, 10, 30));
         });
 
         it('should return update object (3 months backward case)', function() {
@@ -79,7 +79,7 @@ describe('range selector', function() {
 
             var update = getUpdateObject(axisLayout, buttonLayout);
 
-            assertRanges(update, 1440907200000, 1448859600000);
+            assertRanges(update, new Date(2015, 7, 30), new Date(2015, 10, 30));
         });
 
         it('should return update object (6 months backward case)', function() {
@@ -91,19 +91,7 @@ describe('range selector', function() {
 
             var update = getUpdateObject(axisLayout, buttonLayout);
 
-            assertRanges(update, 1432958400000, 1448859600000);
-        });
-
-        it('should return update object (3 months backward case)', function() {
-            var buttonLayout = {
-                step: 'month',
-                stepmode: 'backward',
-                count: 3
-            };
-
-            var update = getUpdateObject(axisLayout, buttonLayout);
-
-            assertRanges(update, 1440907200000, 1448859600000);
+            assertRanges(update, new Date(2015, 4, 30), new Date(2015, 10, 30));
         });
 
         it('should return update object (year-to-date case)', function() {
@@ -115,7 +103,7 @@ describe('range selector', function() {
 
             var update = getUpdateObject(axisLayout, buttonLayout);
 
-            assertRanges(update, 1420088400000, 1448859600000);
+            assertRanges(update, new Date(2015, 0, 1), new Date(2015, 10, 30));
         });
 
         it('should return update object (1 year backward case)', function() {
@@ -127,7 +115,7 @@ describe('range selector', function() {
 
             var update = getUpdateObject(axisLayout, buttonLayout);
 
-            assertRanges(update, 1417323600000, 1448859600000);
+            assertRanges(update, new Date(2014, 10, 30), new Date(2015, 10, 30));
         });
 
         it('should return update object (reset case)', function() {
