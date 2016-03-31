@@ -1,6 +1,13 @@
 var RangeSelector = require('@src/components/rangeselector');
 var getUpdateObject = require('@src/components/rangeselector/get_update_object');
 
+var Plotly = require('@lib');
+var Lib = require('@src/lib');
+var d3 = require('d3');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var getRectCenter = require('../assets/get_rect_center');
+var mouseEvent = require('../assets/mouse_event');
 
 
 describe('[range selector suite]', function() {
@@ -286,5 +293,53 @@ describe('[range selector suite]', function() {
 
     });
 
+    describe('interactions:', function() {
+        var mock = require('@mocks/range_selector.json');
+
+        var gd, mockCopy;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function assertNodeCount(query, cnt) {
+            expect(d3.selectAll(query).size()).toEqual(cnt);
+        }
+
+        it('should display ', function() {
+            assertNodeCount('.rangeselector', 1);
+            assertNodeCount('.button', mockCopy.layout.xaxis.rangeselector.buttons.length);
+        });
+
+        it('should be able to be removed by `relayout`', function(done) {
+
+            Plotly.relayout(gd, 'xaxis.rangeselector.visible', false).then(function() {
+                assertNodeCount('.rangeselector', 0);
+                assertNodeCount('.button', 0);
+                done();
+            });
+
+        });
+
+        it('should update range when clicked', function() {
+            var range0 = gd.layout.xaxis.range[0];
+            var buttons = d3.selectAll('.button').select('rect');
+
+            var pos0 = getRectCenter(buttons[0][0]);
+            var posReset = getRectCenter(buttons[0][buttons.size()-1]);
+
+            mouseEvent('click', pos0[0], pos0[1]);
+            expect(gd.layout.xaxis.range[0]).toBeGreaterThan(range0);
+
+            mouseEvent('click', posReset[0], posReset[1]);
+            expect(gd.layout.xaxis.range[0]).toEqual(range0);
+        });
+
+    });
 
 });
