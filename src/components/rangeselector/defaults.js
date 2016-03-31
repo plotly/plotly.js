@@ -12,9 +12,10 @@ var Lib = require('../../lib');
 
 var attributes = require('./attributes');
 var buttonAttrs = require('./button_attributes');
+var constants = require('./constants');
 
 
-module.exports = function rangeSelectorDefaults(containerIn, containerOut, layout) {
+module.exports = function rangeSelectorDefaults(containerIn, containerOut, layout, counterAxes) {
     var selectorIn = containerIn.rangeselector || {},
         selectorOut = containerOut.rangeselector = {};
 
@@ -27,8 +28,9 @@ module.exports = function rangeSelectorDefaults(containerIn, containerOut, layou
     var visible = coerce('visible', buttons.length > 0);
     if(!visible) return;
 
-    coerce('x');
-    coerce('y');
+    var posDflt = getPosDflt(containerOut, layout, counterAxes);
+    coerce('x', posDflt[0]);
+    coerce('y', posDflt[1]);
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 
     coerce('xanchor');
@@ -67,4 +69,17 @@ function buttonsDefaults(containerIn, containerOut) {
     }
 
     return buttonsOut;
+}
+
+function getPosDflt(containerOut, layout, counterAxes) {
+    var anchoredList = counterAxes.filter(function(ax) {
+        return layout[ax].anchor === containerOut._id;
+    });
+
+    var posY = 0;
+    for(var i = 0; i < anchoredList.length; i++) {
+        posY = Math.max(layout[anchoredList[i]].domain[1], posY);
+    }
+
+    return [containerOut.domain[0], posY + constants.yPad];
 }

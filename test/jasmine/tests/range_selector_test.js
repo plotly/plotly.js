@@ -16,11 +16,23 @@ describe('[range selector suite]', function() {
     describe('defaults:', function() {
         var supplyLayoutDefaults = RangeSelector.supplyLayoutDefaults;
 
+        function supply(containerIn, containerOut) {
+            containerOut.domain = [0, 1];
+
+            var layout = {
+                yaxis: { domain: [0, 1] }
+            };
+
+            var counterAxes = ['yaxis'];
+
+            supplyLayoutDefaults(containerIn, containerOut, layout, counterAxes);
+        }
+
         it('should set \'visible\' to false when no buttons are present', function() {
             var containerIn = {};
             var containerOut = {};
 
-            supplyLayoutDefaults(containerIn, containerOut, {});
+            supply(containerIn, containerOut);
 
             expect(containerOut.rangeselector)
                 .toEqual({
@@ -37,7 +49,7 @@ describe('[range selector suite]', function() {
             };
             var containerOut = {};
 
-            supplyLayoutDefaults(containerIn, containerOut, {});
+            supply(containerIn, containerOut);
 
             expect(containerIn.rangeselector.buttons).toEqual([{}]);
             expect(containerOut.rangeselector.buttons).toEqual([{
@@ -60,7 +72,7 @@ describe('[range selector suite]', function() {
             };
             var containerOut = {};
 
-            supplyLayoutDefaults(containerIn, containerOut, {});
+            supply(containerIn, containerOut, {}, []);
 
             expect(containerOut.rangeselector.visible).toBe(true);
             expect(containerOut.rangeselector.buttons).toEqual([
@@ -80,7 +92,7 @@ describe('[range selector suite]', function() {
             };
             var containerOut = {};
 
-            supplyLayoutDefaults(containerIn, containerOut, {});
+            supply(containerIn, containerOut, {}, []);
 
             expect(containerOut.rangeselector.buttons).toEqual([{
                 step: 'all',
@@ -88,6 +100,59 @@ describe('[range selector suite]', function() {
             }]);
         });
 
+        it('should use axis and counter axis to determine \'x\' and \'y\' defaults (case 1 y)', function() {
+            var containerIn = {
+                rangeselector: { buttons: [{}] }
+            };
+            var containerOut = {
+                _id: 'x',
+                domain: [0, 0.5]
+            };
+            var layout = {
+                xaxis: containerIn,
+                yaxis: {
+                    anchor: 'x',
+                    domain: [0, 0.45]
+                }
+            };
+            var counterAxes = ['yaxis'];
+
+            supplyLayoutDefaults(containerIn, containerOut, layout, counterAxes);
+
+            expect(containerOut.rangeselector.x).toEqual(0);
+            expect(containerOut.rangeselector.y).toBeCloseTo(0.47);
+        });
+
+        it('should use axis and counter axis to determine \'x\' and \'y\' defaults (case multi y)', function() {
+            var containerIn = {
+                rangeselector: { buttons: [{}] }
+            };
+            var containerOut = {
+                _id: 'x',
+                domain: [0.5, 1]
+            };
+            var layout = {
+                xaxis: containerIn,
+                yaxis: {
+                    anchor: 'x',
+                    domain: [0, 0.25]
+                },
+                yaxis2: {
+                    anchor: 'x',
+                    domain: [0.3, 0.55]
+                },
+                yaxis3: {
+                    anchor: 'x',
+                    domain: [0.6, 0.85]
+                }
+            };
+            var counterAxes = ['yaxis', 'yaxis2', 'yaxis3'];
+
+            supplyLayoutDefaults(containerIn, containerOut, layout, counterAxes);
+
+            expect(containerOut.rangeselector.x).toEqual(0.5);
+            expect(containerOut.rangeselector.y).toBeCloseTo(0.87);
+        });
     });
 
     describe('getUpdateObject:', function() {
@@ -331,13 +396,12 @@ describe('[range selector suite]', function() {
             expect(d3.selectAll(query).size()).toEqual(cnt);
         }
 
-        it('should display ', function() {
+        it('should display the correct nodes', function() {
             assertNodeCount('.rangeselector', 1);
             assertNodeCount('.button', mockCopy.layout.xaxis.rangeselector.buttons.length);
         });
 
         it('should be able to be removed by `relayout`', function(done) {
-
             Plotly.relayout(gd, 'xaxis.rangeselector.visible', false).then(function() {
                 assertNodeCount('.rangeselector', 0);
                 assertNodeCount('.button', 0);

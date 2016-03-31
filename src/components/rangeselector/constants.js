@@ -10,5 +10,10 @@
 
 
 module.exports = {
+
+    // 'y' position pad above counter axis domain
+    yPad: 0.02,
+
+    // minimum button width (regardless of text size)
     minButtonWidth: 30
 };

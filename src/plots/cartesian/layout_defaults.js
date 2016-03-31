@@ -134,10 +134,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
 
-        if(axLetter === 'x' && axLayoutOut.type === 'date') {
-            RangeSelector.supplyLayoutDefaults(axLayoutIn, axLayoutOut, layoutOut);
-        }
-
         layoutOut[axName] = axLayoutOut;
 
         // so we don't have to repeat autotype unnecessarily,
@@ -148,12 +144,18 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     });
 
-    // quick second pass for rangeslider defaults
+    // quick second pass for range slider and selector defaults
     axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0),
+            axLayoutIn = layoutIn[axName],
+            axLayoutOut = layoutOut[axName],
             counterAxes = {x: yaList, y: xaList}[axLetter];
 
         RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+
+        if(axLetter === 'x' && axLayoutOut.type === 'date') {
+            RangeSelector.supplyLayoutDefaults(axLayoutIn, axLayoutOut, layoutOut, counterAxes);
+        }
     });
 
     // plot_bgcolor only makes sense if there's a (2D) plot!

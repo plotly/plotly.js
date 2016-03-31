@@ -34,7 +34,6 @@ module.exports = {
         valType: 'number',
         min: -2,
         max: 3,
-        dflt: 0,
         role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the range selector.'
     },
@@ -53,7 +52,6 @@ module.exports = {
         valType: 'number',
         min: -2,
         max: 3,
-        dflt: 1.02,
         role: 'style',
         description: 'Sets the y position (in normalized coordinates) of the range selector.'
     },
