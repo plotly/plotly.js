@@ -94,7 +94,7 @@ describe('range selector', function() {
             assertRanges(update, 1432958400000, 1448859600000);
         });
 
-        it('should return update object (6 months backward case)', function() {
+        it('should return update object (3 months backward case)', function() {
             var buttonLayout = {
                 step: 'month',
                 stepmode: 'backward',
