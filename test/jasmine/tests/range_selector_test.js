@@ -130,6 +130,54 @@ describe('range selector', function() {
                 'xaxis.range': null
             });
         });
+
+        it('should return update object (10 day backward case)', function() {
+            var buttonLayout = {
+                step: 'day',
+                stepmode: 'backward',
+                count: 10
+            };
+
+            var update = getUpdateObject(axisLayout, buttonLayout);
+
+            assertRanges(update, new Date(2015, 10, 20), new Date(2015, 10, 30));
+        });
+
+        it('should return update object (5 hour backward case)', function() {
+            var buttonLayout = {
+                step: 'hour',
+                stepmode: 'backward',
+                count: 5
+            };
+
+            var update = getUpdateObject(axisLayout, buttonLayout);
+
+            assertRanges(update, new Date(2015, 10, 29, 19), new Date(2015, 10, 30));
+        });
+
+        it('should return update object (15 minute backward case)', function() {
+            var buttonLayout = {
+                step: 'minute',
+                stepmode: 'backward',
+                count: 15
+            };
+
+            var update = getUpdateObject(axisLayout, buttonLayout);
+
+            assertRanges(update, new Date(2015, 10, 29, 23, 45), new Date(2015, 10, 30));
+        });
+
+        it('should return update object (10 second backward case)', function() {
+            var buttonLayout = {
+                step: 'second',
+                stepmode: 'backward',
+                count: 10
+            };
+
+            var update = getUpdateObject(axisLayout, buttonLayout);
+
+            assertRanges(update, new Date(2015, 10, 29, 23, 59, 50), new Date(2015, 10, 30));
+        });
     });
 
 

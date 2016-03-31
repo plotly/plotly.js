@@ -13,7 +13,7 @@ module.exports = {
     step: {
         valType: 'enumerated',
         role: 'info',
-        values: ['month', 'year', 'day', 'all'],
+        values: ['month', 'year', 'day', 'hour', 'minute', 'second', 'all'],
         dflt: 'month',
         description: [
             ''
