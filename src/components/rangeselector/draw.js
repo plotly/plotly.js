@@ -125,12 +125,17 @@ function drawButtonText(button, selectorLayout, d) {
         .classed('selector-text', true)
         .classed('user-select-none', true);
 
-    // TODO is this correct?
     text.attr('text-anchor', 'middle');
 
     text.call(Drawing.font, selectorLayout.font)
-        .text(d.label || d.count + ' ' + d.step.charAt(0))
+        .text(getLabel(d))
         .call(textLayout);
+}
+
+function getLabel(opts) {
+    if(opts.step === 'all') return 'reset';
+
+    return opts.label || opts.count + ' ' + opts.step.charAt(0);
 }
 
 function reposition(gd, buttons, opts) {
