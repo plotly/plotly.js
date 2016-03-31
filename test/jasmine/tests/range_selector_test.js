@@ -92,6 +92,7 @@ describe('[range selector suite]', function() {
 
     describe('getUpdateObject:', function() {
         var axisLayout = {
+            _name: 'xaxis',
             range: [
                 (new Date(1948, 0, 1)).getTime(),
                 (new Date(2015, 10, 30)).getTime()
@@ -194,10 +195,7 @@ describe('[range selector suite]', function() {
 
             var update = getUpdateObject(axisLayout, buttonLayout);
 
-            expect(update).toEqual({
-                'xaxis.autorange': true,
-                'xaxis.range': null
-            });
+            expect(update).toEqual({ 'xaxis.autorange': true });
         });
 
         it('should return update object (10 day backward case)', function() {
@@ -277,7 +275,6 @@ describe('[range selector suite]', function() {
         });
 
         it('should return update object (2 second to-date case)', function() {
-
             var buttonLayout = {
                 step: 'second',
                 stepmode: 'to date',
@@ -291,6 +288,29 @@ describe('[range selector suite]', function() {
             assertRanges(update, new Date(2015, 10, 30, 12, 20, 1), new Date(2015, 10, 30, 12, 20, 2));
         });
 
+        it('should return update object with correct axis names', function() {
+            var axisLayout = {
+                _name: 'xaxis5',
+                range: [
+                    (new Date(1948, 0, 1)).getTime(),
+                    (new Date(2015, 10, 30)).getTime()
+                ]
+            };
+
+            var buttonLayout = {
+                step: 'month',
+                stepmode: 'backward',
+                count: 1
+            }
+
+            var update = getUpdateObject(axisLayout, buttonLayout)
+
+            expect(update).toEqual({
+                'xaxis5.range[0]': new Date(2015, 9, 30).getTime(),
+                'xaxis5.range[1]': new Date(2015, 10, 30).getTime()
+            });
+
+        });
     });
 
     describe('interactions:', function() {

@@ -13,20 +13,17 @@ var d3 = require('d3');
 
 
 module.exports = function getUpdateObject(axisLayout, buttonLayout) {
-    var update;
+    var axName = axisLayout._name;
+    var update = {};
 
     if(buttonLayout.step === 'all') {
-        update = {
-            'xaxis.autorange': true
-        };
+        update[axName + '.autorange'] = true;
     }
     else {
         var xrange = getXRange(axisLayout, buttonLayout);
 
-        update = {
-            'xaxis.range[0]': xrange[0],
-            'xaxis.range[1]': xrange[1]
-        };
+        update[axName + '.range[0]'] = xrange[0];
+        update[axName + '.range[1]'] = xrange[1];
     }
 
     return update;
