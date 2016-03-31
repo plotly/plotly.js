@@ -41,11 +41,15 @@ function draw(gd, minStart, maxStart) {
     var height = (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * options.thickness,
         offsetShift = Math.floor(options.borderwidth / 2);
 
-    if(sliderContainer[0].length === 0) createSlider(gd, minStart, maxStart);
+    if(sliderContainer[0].length === 0 && !fullLayout._hasGL2D) createSlider(gd, minStart, maxStart);
+
+    // Need to default to 0 for when making gl plots
+    var bb = fullLayout.xaxis._boundingBox ?
+        fullLayout.xaxis._boundingBox.height : 0;
 
     Plots.autoMargin(gd, 'range-slider', {
         x: 0, y: 0, l: 0, r: 0, t: 0,
-        b: height + fullLayout.margin.b + fullLayout.xaxis._boundingBox.height,
+        b: height + fullLayout.margin.b + bb,
         pad: 15 + offsetShift * 2
     });
 }

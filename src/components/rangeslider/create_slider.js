@@ -249,8 +249,8 @@ module.exports = function createSlider(gd, minStart, maxStart) {
     ]);
 
     sliderContainer.data([0])
-    .enter().append(function() {
-        options.setRange = setRange;
-        return slider;
-    });
+        .enter().append(function() {
+            options.setRange = setRange;
+            return slider;
+        });
 };
