@@ -2,10 +2,11 @@ var RangeSelector = require('@src/components/rangeselector');
 var getUpdateObject = require('@src/components/rangeselector/get_update_object');
 
 
-describe('range selector', function() {
+
+describe('[range selector suite]', function() {
     'use strict';
 
-    describe('defaults', function() {
+    describe('defaults:', function() {
         var supplyLayoutDefaults = RangeSelector.supplyLayoutDefaults;
 
         it('should set \'visible\' to false when no buttons are present', function() {
@@ -19,6 +20,24 @@ describe('range selector', function() {
                     visible: false,
                     buttons: []
                 });
+        });
+
+        it('should coerce an empty button object', function() {
+            var containerIn = {
+                rangeselector: {
+                    buttons: [{}]
+                }
+            };
+            var containerOut = {};
+
+            supplyLayoutDefaults(containerIn, containerOut, {});
+
+            expect(containerIn.rangeselector.buttons).toEqual([{}]);
+            expect(containerOut.rangeselector.buttons).toEqual([{
+                step: 'month',
+                stepmode: 'backward',
+                count: 1
+            }]);
         });
 
         it('should coerce all buttons present', function() {
@@ -41,6 +60,25 @@ describe('range selector', function() {
                 { step: 'year', stepmode: 'backward', count: 10 },
                 { step: 'month', stepmode: 'backward', count: 6 }
             ]);
+        });
+
+        it('should not coerce \'stepmode\' and \'count\', for \'step\' all buttons', function() {
+            var containerIn = {
+                rangeselector: {
+                    buttons: [{
+                        step: 'all',
+                        label: 'full range'
+                    }]
+                }
+            };
+            var containerOut = {};
+
+            supplyLayoutDefaults(containerIn, containerOut, {});
+
+            expect(containerOut.rangeselector.buttons).toEqual([{
+                step: 'all',
+                label: 'full range'
+            }]);
         });
 
     });

@@ -55,9 +55,12 @@ function buttonsDefaults(containerIn, containerOut) {
         buttonIn = buttonsIn[i];
         buttonOut = {};
 
-        coerce('step');
-        coerce('stepmode');
-        coerce('count');
+        var step = coerce('step');
+        if(step !== 'all') {
+            coerce('stepmode');
+            coerce('count');
+        }
+
         coerce('label');
 
         buttonsOut.push(buttonOut);
