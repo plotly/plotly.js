@@ -309,7 +309,7 @@ describe('the range slider', function() {
         });
     });
 
-    fdescribe('when used with gl traces', function() {
+    describe('when used with gl traces', function() {
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -319,6 +319,10 @@ describe('the range slider', function() {
 
         it('should not be drawn with GL2d', function(done) {
             var data = [{
+                x: [1,2,3],
+                y: [2,3,4],
+                type: 'scattergl'
+            }, {
                 x: [1,2,3],
                 y: [2,3,4],
                 type: 'scattergl'
