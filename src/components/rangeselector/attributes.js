@@ -60,7 +60,7 @@ module.exports = {
     yanchor: {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
-        dflt: 'auto',
+        dflt: 'bottom',
         role: 'info',
         description: [
             'Sets the range selector\'s vertical position anchor',
