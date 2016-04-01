@@ -130,6 +130,7 @@ describe('plot schema', function() {
             var itemsObj = np.get().items,
                 itemObj = itemsObj[itemName];
 
+            // N.B. the specs below must be satisfied for plotly.py
             expect(isPlainObject(itemsObj)).toBe(true);
             expect(itemsObj.role).toBeUndefined();
             expect(Object.keys(itemsObj).length).toEqual(1);

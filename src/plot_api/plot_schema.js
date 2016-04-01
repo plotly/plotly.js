@@ -134,8 +134,6 @@ function getLayoutAttributes() {
     handleLinkedToArray(layoutAttributes);
 
     plotSchema.layout = { layoutAttributes: layoutAttributes };
-
-
 }
 
 function getDefs() {
