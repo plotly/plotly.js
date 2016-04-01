@@ -105,6 +105,11 @@ function drawButtonRect(button, selectorLayout) {
 
     rect.attr('shape-rendering', 'crispEdges');
 
+    rect.attr({
+        'rx': constants.rx,
+        'ry': constants.ry
+    });
+
     rect.call(Color.stroke, selectorLayout.bordercolor)
         .call(Color.fill, selectorLayout.bgcolor)
         .style('stroke-width', selectorLayout.borderwidth + 'px');

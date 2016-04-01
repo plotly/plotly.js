@@ -15,5 +15,9 @@ module.exports = {
     yPad: 0.02,
 
     // minimum button width (regardless of text size)
-    minButtonWidth: 30
+    minButtonWidth: 30,
+
+    // buttons rect radii
+    rx: 3,
+    ry: 3
 };
