@@ -449,6 +449,32 @@ describe('[range selector suite]', function() {
             expect(button.style('fill')).toEqual('rgb(255, 255, 255)');
         });
 
+        it('should update is active relayout calls', function(done) {
+            var buttons = d3.selectAll('.button').select('rect');
+
+            // 'all' should be active at first
+            checkActiveButton(buttons.size() - 1);
+
+            var update = {
+                'xaxis.range[0]': (new Date(2015, 9, 30)).getTime(),
+                'xaxis.range[1]': (new Date(2015, 10, 30)).getTime()
+            };
+
+            Plotly.relayout(gd, update).then(function() {
+
+                // '1m' should be active after the relayout
+                checkActiveButton(0);
+
+                return Plotly.relayout(gd, 'xaxis.autorange', true);
+            }).then(function() {
+
+                // 'all' should be after an autoscale
+                checkActiveButton(buttons.size() - 1);
+
+                done();
+            });
+        });
+
     });
 
 });
