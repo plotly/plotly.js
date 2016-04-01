@@ -54,6 +54,9 @@ module.exports = function draw(gd) {
 
         buttons.each(function(d) {
             var button = d3.select(this);
+            var update = getUpdateObject(axisLayout, d);
+
+            d.isActive = isActive(axisLayout, d, update);
 
             button.call(drawButtonRect, selectorLayout, d);
             button.call(drawButtonText, selectorLayout, d);
@@ -61,9 +64,17 @@ module.exports = function draw(gd) {
             button.on('click', function() {
                 if(gd._dragged) return;
 
-                var update = getUpdateObject(axisLayout, d);
-
                 Plotly.relayout(gd, update);
+            });
+
+            button.on('mouseover', function() {
+                d.isHovered = true;
+                button.call(drawButtonRect, selectorLayout, d);
+            });
+
+            button.on('mouseout', function() {
+                d.isHovered = false;
+                button.call(drawButtonRect, selectorLayout, d);
             });
         });
 
@@ -96,7 +107,21 @@ function selectorKeyFunc(d) {
     return d._id;
 }
 
-function drawButtonRect(button, selectorLayout) {
+function isActive(axisLayout, opts, update) {
+    if(opts.step === 'all') {
+        return axisLayout.autorange === true;
+    }
+    else {
+        var keys = Object.keys(update);
+
+        return (
+            axisLayout.range[0] === update[keys[0]] &&
+            axisLayout.range[1] === update[keys[1]]
+        );
+    }
+}
+
+function drawButtonRect(button, selectorLayout, d) {
     var rect = button.selectAll('rect')
         .data([0]);
 
@@ -111,8 +136,14 @@ function drawButtonRect(button, selectorLayout) {
     });
 
     rect.call(Color.stroke, selectorLayout.bordercolor)
-        .call(Color.fill, selectorLayout.bgcolor)
+        .call(Color.fill, getFillColor(selectorLayout, d))
         .style('stroke-width', selectorLayout.borderwidth + 'px');
+}
+
+function getFillColor(selectorLayout, d) {
+    return (d.isActive || d.isHovered) ?
+        Color.lightLine :
+        selectorLayout.bgcolor;
 }
 
 function drawButtonText(button, selectorLayout, d) {

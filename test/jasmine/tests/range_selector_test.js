@@ -1,9 +1,9 @@
 var RangeSelector = require('@src/components/rangeselector');
 var getUpdateObject = require('@src/components/rangeselector/get_update_object');
 
+var d3 = require('d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
-var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var getRectCenter = require('../assets/get_rect_center');
@@ -396,6 +396,12 @@ describe('[range selector suite]', function() {
             expect(d3.selectAll(query).size()).toEqual(cnt);
         }
 
+        function checkActiveButton(activeIndex) {
+            d3.selectAll('.button').each(function(d, i) {
+                expect(d.isActive).toBe(activeIndex === i);
+            });
+        }
+
         it('should display the correct nodes', function() {
             assertNodeCount('.rangeselector', 1);
             assertNodeCount('.button', mockCopy.layout.xaxis.rangeselector.buttons.length);
@@ -410,9 +416,11 @@ describe('[range selector suite]', function() {
 
         });
 
-        it('should update range when clicked', function() {
+        it('should update range and active button when clicked', function() {
             var range0 = gd.layout.xaxis.range[0];
             var buttons = d3.selectAll('.button').select('rect');
+
+            checkActiveButton(buttons.size() - 1);
 
             var pos0 = getRectCenter(buttons[0][0]);
             var posReset = getRectCenter(buttons[0][buttons.size()-1]);
@@ -420,8 +428,25 @@ describe('[range selector suite]', function() {
             mouseEvent('click', pos0[0], pos0[1]);
             expect(gd.layout.xaxis.range[0]).toBeGreaterThan(range0);
 
+            checkActiveButton(0);
+
             mouseEvent('click', posReset[0], posReset[1]);
             expect(gd.layout.xaxis.range[0]).toEqual(range0);
+
+            checkActiveButton(buttons.size() - 1);
+        });
+
+        it('should change color on mouse over', function() {
+            var button = d3.select('.button').select('rect');
+            var pos = getRectCenter(button.node());
+
+            expect(button.style('fill')).toEqual('rgb(255, 255, 255)');
+
+            mouseEvent('mouseover', pos[0], pos[1]);
+            expect(button.style('fill')).toEqual('rgb(238, 238, 238)');
+
+            mouseEvent('mouseout', pos[0], pos[1]);
+            expect(button.style('fill')).toEqual('rgb(255, 255, 255)');
         });
 
     });
