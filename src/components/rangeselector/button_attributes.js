@@ -25,7 +25,15 @@ module.exports = {
         values: ['backward', 'to date'],
         dflt: 'backward',
         description: [
-            ''
+            'Sets the range update mode.',
+            'If *backward*, the range update shifts the start of range',
+            'back *count* times *step* milliseconds.',
+            'If *to date*, the range update shifts the start of range',
+            'back to the first timestamp from *count* times',
+            '*step* milliseconds back.',
+            'For example, with `step` set to *year* and `count` set to *1*',
+            'the range update shifts the start of the range back to',
+            'January 01 of the current year.'
         ].join(' ')
     },
     count: {
@@ -34,12 +42,13 @@ module.exports = {
         min: 0,
         dflt: 1,
         description: [
-            ''
+            'Sets the number of steps to take to update the range.',
+            'Use with `step` to specify the update interval.'
         ].join(' ')
     },
     label: {
         valType: 'string',
         role: 'info',
-        description: ''
+        description: 'Sets the text label to appear on the button.'
     }
 };

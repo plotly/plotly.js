@@ -131,9 +131,11 @@ function getLayoutAttributes() {
     mergeValTypeAndRole(layoutAttributes);
 
     // generate IS_LINKED_TO_ARRAY structure
-    layoutAttributes = handleLinkedToArray(layoutAttributes);
+    handleLinkedToArray(layoutAttributes);
 
     plotSchema.layout = { layoutAttributes: layoutAttributes };
+
+
 }
 
 function getDefs() {
@@ -304,19 +306,19 @@ function handleSubplotObjs(layoutAttributes) {
 }
 
 function handleLinkedToArray(layoutAttributes) {
-    Object.keys(layoutAttributes).forEach(function(k) {
-        var attr = extendDeep({}, layoutAttributes[k]);
 
+    function callback(attr, attrName, attrs) {
         if(attr[IS_LINKED_TO_ARRAY] !== true) return;
 
-        var itemName = k.substr(0, k.length-1);  // TODO more robust logic
+        // TODO more robust logic
+        var itemName = attrName.substr(0, attrName.length - 1);
 
         delete attr[IS_LINKED_TO_ARRAY];
 
-        layoutAttributes[k] = { items: {} };
-        layoutAttributes[k].items[itemName] = attr;
-        layoutAttributes[k].role = 'object';
-    });
+        attrs[attrName] = { items: {} };
+        attrs[attrName].items[itemName] = attr;
+        attrs[attrName].role = 'object';
+    }
 
-    return layoutAttributes;
+    PlotSchema.crawl(layoutAttributes, callback);
 }

@@ -13,22 +13,26 @@ var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var buttonAttrs = require('./button_attributes');
 
+buttonAttrs = extendFlat(buttonAttrs, {
+    _isLinkedToArray: true,
+    description: [
+        'Sets the specifications for each buttons.',
+        'By default, a range selector comes with no buttons.'
+    ].join(' ')
+});
 
 module.exports = {
     visible: {
         valType: 'boolean',
+        role: 'info',
         description: [
-            'Determines whether or not this range selector is visible.'
+            'Determines whether or not this range selector is visible.',
+            'Note that range selectors are only available for x axes of',
+            '`type` set to *date*.'
         ].join(' ')
     },
 
-    buttons: {
-        role: 'object',
-        items: buttonAttrs,
-        description: [
-            'buttons!!!'
-        ].join(' ')
-    },
+    buttons: buttonAttrs,
 
     x: {
         valType: 'number',

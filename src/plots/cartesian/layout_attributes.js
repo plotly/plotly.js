@@ -13,6 +13,8 @@ var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var rangeSliderAttrs = require('../../components/rangeslider/attributes');
+var rangeSelectorAttrs = require('../../components/rangeselector/attributes');
+
 
 module.exports = {
     title: {
@@ -82,7 +84,10 @@ module.exports = {
             'January 1st 1970 to November 4th, 2013, set the range from 0 to 1380844800000.0'
         ].join(' ')
     },
+
     rangeslider: rangeSliderAttrs,
+    rangeselector: rangeSelectorAttrs,
+
     fixedrange: {
         valType: 'boolean',
         dflt: false,
