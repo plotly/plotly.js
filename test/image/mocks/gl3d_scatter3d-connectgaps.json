@@ -1,0 +1,30 @@
+{
+  "data": [{
+    "type": "scatter3d",
+    "mode": "lines",
+    "x": [0, 0, null, null, 0, 0],
+    "y": [0, 1, 2, 3, 4, 5],
+    "z": [2, 1, null, null, 0, 3],
+    "connectgaps": false,
+    "name": "gap in z"
+  }, {
+    "type": "scatter3d",
+    "mode": "lines",
+    "x": [1, 1, 1, 1, 1, 1],
+    "y": [0, 1, null, null, 4, 5],
+    "z": [2, 1, 2, 0, 0, 3],
+    "connectgaps": false,
+    "name": "gap in y"
+  },{
+    "type": "scatter3d",
+    "mode": "lines",
+    "x": [2, 2, null, null, 2, 2],
+    "y": [0, 1, 2, 3, 4, 5],
+    "z": [2, 1, 2, 0, 0, 3],
+    "connectgaps": false,
+    "name": "gap in x"
+  }],
+  "layout": {
+    "title": "connect gaps test"
+  }
+}

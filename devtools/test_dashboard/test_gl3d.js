@@ -35,6 +35,7 @@ plots['marker-arrays'] = require('@mocks/gl3d_marker-arrays.json');
 plots['scatter3d-colorscale'] = require('@mocks/gl3d_scatter3d-colorscale.json');
 plots['autocolorscale'] = require('@mocks/gl3d_autocolorscale.json');
 plots['nan-holes'] = require('@mocks/gl3d_nan-holes.json');
+plots['scatter3d-connectgaps'] = require('@mocks/gl3d_scatter3d-connectgaps.json');
 plots['tet'] = require('@mocks/gl3d_tet.json');
 plots['surface_intensity'] = require('@mocks/gl3d_surface_intensity.json');
 
