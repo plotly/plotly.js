@@ -371,17 +371,20 @@ proto.init_interactions = function() {
     var _this = this,
         dragger = _this.layers.plotbg.select('path').node(),
         gd = _this.graphDiv,
-        plot = _this.layers.frontplot;
+        zoomContainer = _this.layers.zoom;
 
     // use plotbg for the main interactions
     var dragOptions = {
         element: dragger,
         gd: gd,
-        plotinfo: {plot: plot},
-        xaxes: _this.xaxis,
-        yaxes: _this.yaxis,
+        plotinfo: {plot: zoomContainer},
         doubleclick: doubleClick,
+        subplot: _this.id,
         prepFn: function(e, startX, startY) {
+            // these aren't available yet when init_interactions
+            // is called
+            dragOptions.xaxes = [_this.xaxis];
+            dragOptions.yaxes = [_this.yaxis];
             var dragModeNow = gd._fullLayout.dragmode;
             if(e.shiftKey) {
                 if(dragModeNow === 'pan') dragModeNow = 'zoom';
@@ -425,7 +428,7 @@ proto.init_interactions = function() {
         path0 = 'M0,' + _this.h + 'L' + (_this.w / 2) +', 0L' + _this.w + ',' + _this.h + 'Z';
         dimmed = false;
 
-        zb = _this.layers.zoom.append('path')
+        zb = zoomContainer.append('path')
             .attr('class', 'zoombox')
             .style({
                 'fill': lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
@@ -433,7 +436,7 @@ proto.init_interactions = function() {
             })
             .attr('d', path0);
 
-        corners = _this.layers.zoom.append('path')
+        corners = zoomContainer.append('path')
             .attr('class', 'zoombox-corners')
             .style({
                 fill: Plotly.Color.background,

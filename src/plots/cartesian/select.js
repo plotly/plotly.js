@@ -71,15 +71,27 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         trace = cd[0].trace;
         if(!trace._module || !trace._module.selectPoints) continue;
 
-        if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
-        if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
+        if(dragOptions.subplot) {
+            if(trace.subplot !== dragOptions.subplot) continue;
 
-        searchTraces.push({
-            selectPoints: trace._module.selectPoints,
-            cd: cd,
-            xaxis: axes.getFromId(gd, trace.xaxis),
-            yaxis: axes.getFromId(gd, trace.yaxis)
-        });
+            searchTraces.push({
+                selectPoints: trace._module.selectPoints,
+                cd: cd,
+                xaxis: dragOptions.xaxes[0],
+                yaxis: dragOptions.yaxes[0]
+            });
+        }
+        else {
+            if(xAxisIds.indexOf(trace.xaxis) === -1) continue;
+            if(yAxisIds.indexOf(trace.yaxis) === -1) continue;
+
+            searchTraces.push({
+                selectPoints: trace._module.selectPoints,
+                cd: cd,
+                xaxis: axes.getFromId(gd, trace.xaxis),
+                yaxis: axes.getFromId(gd, trace.yaxis)
+            });
+        }
     }
 
     function axValue(ax) {
