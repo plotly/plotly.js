@@ -138,9 +138,11 @@ function drawButtonText(button, selectorLayout, d) {
 }
 
 function getLabel(opts) {
-    if(opts.step === 'all') return 'reset';
+    if(opts.label) return opts.label;
 
-    return opts.label || opts.count + ' ' + opts.step.charAt(0);
+    if(opts.step === 'all') return 'all';
+
+    return opts.count + opts.step.charAt(0);
 }
 
 function reposition(gd, buttons, opts, axName) {
