@@ -68,7 +68,7 @@ module.exports = function draw(gd) {
         });
 
         // N.B. this mutates selectorLayout
-        reposition(gd, buttons, selectorLayout);
+        reposition(gd, buttons, selectorLayout, axisLayout._name);
 
         selector.attr('transform', 'translate(' +
             selectorLayout.lx + ',' + selectorLayout.ly +
@@ -143,7 +143,7 @@ function getLabel(opts) {
     return opts.label || opts.count + ' ' + opts.step.charAt(0);
 }
 
-function reposition(gd, buttons, opts) {
+function reposition(gd, buttons, opts, axName) {
     opts.width = 0;
     opts.height = 0;
 
@@ -230,7 +230,7 @@ function reposition(gd, buttons, opts) {
     opts.lx = Math.round(opts.lx);
     opts.ly = Math.round(opts.ly);
 
-    Plots.autoMargin(gd, 'range-selector', {
+    Plots.autoMargin(gd, axName + '-range-selector', {
         x: opts.x,
         y: opts.y,
         l: opts.width * ({right: 1, center: 0.5}[xanchor] || 0),
