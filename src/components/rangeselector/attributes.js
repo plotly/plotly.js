@@ -28,7 +28,7 @@ module.exports = {
         description: [
             'Determines whether or not this range selector is visible.',
             'Note that range selectors are only available for x axes of',
-            '`type` set to *date*.'
+            '`type` set to or auto-typed to *date*.'
         ].join(' ')
     },
 
@@ -47,7 +47,7 @@ module.exports = {
         dflt: 'left',
         role: 'info',
         description: [
-            'Sets the range selector \'s horizontal position anchor.',
+            'Sets the range selector\'s horizontal position anchor.',
             'This anchor binds the `x` position to the *left*, *center*',
             'or *right* of the range selector.'
         ].join(' ')
@@ -72,7 +72,7 @@ module.exports = {
     },
 
     font: extendFlat({}, fontAttrs, {
-        description: 'Sets the font used to text the range selector buttons.'
+        description: 'Sets the font of the range selector button text.'
     }),
 
     bgcolor: {

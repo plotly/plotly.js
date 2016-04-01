@@ -206,7 +206,7 @@ function reposition(gd, buttons, opts, axName) {
 
         var wEff = Math.max(tWidth + 10, constants.minButtonWidth);
 
-        // mathJaxGroup = button.select('g[class*=math-group]');
+        // TODO add MathJax support
 
         // TODO add buttongap attribute
 
