@@ -115,86 +115,114 @@ shapes.add = function(gd) {
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this one
 shapes.draw = function(gd, index, opt, value) {
-    var layout = gd.layout,
-        fullLayout = gd._fullLayout,
-        i;
-
-    // TODO: abstract out these drawAll, add, and remove blocks for shapes and annotations
     if(!isNumeric(index) || index===-1) {
         // no index provided - we're operating on ALL shapes
         if(!index && Array.isArray(value)) {
-            // a whole annotation array is passed in
-            // (as in, redo of delete all)
-            layout.shapes = value;
-            shapes.supplyLayoutDefaults(layout, fullLayout);
-            shapes.drawAll(gd);
+            replaceAllShapes(gd, value);
             return;
         }
         else if(value==='remove') {
-            // delete all
-            delete layout.shapes;
-            fullLayout.shapes = [];
-            shapes.drawAll(gd);
+            deleteAllShapes(gd);
             return;
         }
         else if(opt && value!=='add') {
-            // make the same change to all shapes
-            for(i = 0; i < fullLayout.shapes.length; i++) {
-                shapes.draw(gd, i, opt, value);
-            }
+            updateAllShapes(gd, opt, value);
             return;
         }
         else {
             // add a new empty annotation
-            index = fullLayout.shapes.length;
-            fullLayout.shapes.push({});
+            index = gd._fullLayout.shapes.length;
+            gd._fullLayout.shapes.push({});
         }
     }
 
     if(!opt && value) {
         if(value==='remove') {
-            fullLayout._shapelayer.selectAll('[data-index="'+index+'"]')
-                .remove();
-            fullLayout.shapes.splice(index,1);
-            layout.shapes.splice(index,1);
-            for(i=index; i<fullLayout.shapes.length; i++) {
-                fullLayout._shapelayer
-                    .selectAll('[data-index="'+(i+1)+'"]')
-                    .attr('data-index',String(i));
-
-                // redraw all shapes past the removed one,
-                // so they bind to the right events
-                shapes.draw(gd,i);
-            }
+            deleteShape(gd, index);
             return;
         }
         else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
-            fullLayout.shapes.splice(index,0,{});
-
-            var rule = Plotly.Lib.isPlainObject(value) ?
-                    Plotly.Lib.extendFlat({}, value) :
-                    {text: 'New text'};
-
-            if(layout.shapes) {
-                layout.shapes.splice(index, 0, rule);
-            } else {
-                layout.shapes = [rule];
-            }
-
-            for(i=fullLayout.shapes.length-1; i>index; i--) {
-                fullLayout._shapelayer
-                    .selectAll('[data-index="'+(i-1)+'"]')
-                    .attr('data-index',String(i));
-                shapes.draw(gd,i);
-            }
+            insertShape(gd, index, value);
         }
     }
 
+    updateShape(gd, index, opt, value);
+    return;
+};
+
+function replaceAllShapes(gd, newShapes) {
+    gd.layout.shapes = newShapes;
+    shapes.supplyLayoutDefaults(gd.layout, gd._fullLayout);
+    shapes.drawAll(gd);
+    return;
+}
+
+function deleteAllShapes(gd) {
+    delete gd.layout.shapes;
+    gd._fullLayout.shapes = [];
+    shapes.drawAll(gd);
+    return;
+}
+
+function updateAllShapes(gd, opt, value) {
+    for(var i = 0; i < gd._fullLayout.shapes.length; i++) {
+        shapes.draw(gd, i, opt, value);
+    }
+    return;
+}
+
+function deleteShape(gd, index) {
+    gd._fullLayout._shapelayer.selectAll('[data-index="' + index + '"]')
+        .remove();
+
+    gd._fullLayout.shapes.splice(index, 1);
+
+    gd.layout.shapes.splice(index, 1);
+
+    for(var i = index; i < gd._fullLayout.shapes.length; i++) {
+        // redraw all shapes past the removed one,
+        // so they bind to the right events
+        gd._fullLayout._shapelayer
+            .selectAll('[data-index="' + (i+1) + '"]')
+            .attr('data-index', String(i));
+        shapes.draw(gd, i);
+    }
+
+    return;
+}
+
+function insertShape(gd, index, newShape) {
+    gd._fullLayout.shapes.splice(index, 0, {});
+
+    var rule = Plotly.Lib.isPlainObject(newShape) ?
+        Plotly.Lib.extendFlat({}, newShape) :
+        {text: 'New text'};
+
+    if(gd.layout.shapes) {
+        gd.layout.shapes.splice(index, 0, rule);
+    } else {
+        gd.layout.shapes = [rule];
+    }
+
+    for(var i = gd._fullLayout.shapes.length - 1; i > index; i--) {
+        gd._fullLayout._shapelayer
+            .selectAll('[data-index="' + (i - 1) + '"]')
+            .attr('data-index', String(i));
+        shapes.draw(gd, i);
+    }
+
+    return;
+}
+
+function updateShape(gd, index, opt, value) {
+    var i;
+
     // remove the existing shape if there is one
-    fullLayout._shapelayer.selectAll('[data-index="'+index+'"]').remove();
+    gd._fullLayout._shapelayer.selectAll('[data-index="' + index + '"]')
+        .remove();
 
     // remember a few things about what was already there,
-    var optionsIn = layout.shapes[index];
+    var optionsIn = gd.layout.shapes[index];
 
     // (from annos...) not sure how we're getting here... but C12 is seeing a bug
     // where we fail here when they add/remove annotations
@@ -261,8 +289,8 @@ shapes.draw = function(gd, index, opt, value) {
         optionsIn[posAttr] = position;
     }
 
-    var options = handleShapeDefaults(optionsIn, fullLayout);
-    fullLayout.shapes[index] = options;
+    var options = handleShapeDefaults(optionsIn, gd._fullLayout);
+    gd._fullLayout.shapes[index] = options;
 
     var attrs = {
             'data-index': String(index),
@@ -273,15 +301,20 @@ shapes.draw = function(gd, index, opt, value) {
 
     var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
 
-    var path = fullLayout._shapelayer.append('path')
+    var path = gd._fullLayout._shapelayer.append('path')
         .attr(attrs)
         .style('opacity', options.opacity)
         .call(Plotly.Color.stroke, lineColor)
         .call(Plotly.Color.fill, options.fillcolor)
         .call(Plotly.Drawing.dashLine, options.line.dash, options.line.width);
 
-    if(clipAxes) path.call(Plotly.Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
-};
+    if(clipAxes) {
+        path.call(Plotly.Drawing.setClipUrl,
+            'clip' + gd._fullLayout._uid + clipAxes);
+    }
+
+    return;
+}
 
 function decodeDate(convertToPx) {
     return function(v) { return convertToPx(v.replace('_', ' ')); };
