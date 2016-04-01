@@ -90,7 +90,7 @@ module.exports = {
     borderwidth: {
         valType: 'number',
         min: 0,
-        dflt: 1,
+        dflt: 0,
         role: 'style',
         description: 'Sets the width (in px) of the border enclosing the range selector.'
     }

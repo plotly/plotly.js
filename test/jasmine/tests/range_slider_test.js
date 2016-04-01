@@ -221,7 +221,7 @@ describe('the range slider', function() {
                             visible: true,
                             thickness: 0.15,
                             bgcolor: '#fff',
-                            borderwidth: 1,
+                            borderwidth: 0,
                             bordercolor: '#444'
                         }
                     },
@@ -246,7 +246,7 @@ describe('the range slider', function() {
                             visible: true,
                             thickness: 0.15,
                             bgcolor: '#fff',
-                            borderwidth: 1,
+                            borderwidth: 0,
                             bordercolor: '#444'
                         }
                     },
@@ -275,7 +275,7 @@ describe('the range slider', function() {
                     visible: true,
                     thickness: 0.15,
                     bgcolor: '#fff',
-                    borderwidth: 1,
+                    borderwidth: 0,
                     bordercolor: '#444'
                 }}, yaxis: {
                     fixedrange: true
@@ -296,7 +296,7 @@ describe('the range slider', function() {
                         visible: true,
                         thickness: 0.15,
                         bgcolor: '#fff',
-                        borderwidth: 1,
+                        borderwidth: 0,
                         bordercolor: '#444'
                     }},
                     yaxis: { fixedrange: true},

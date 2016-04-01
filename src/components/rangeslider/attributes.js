@@ -25,7 +25,7 @@ module.exports = {
     },
     borderwidth: {
         valType: 'integer',
-        dflt: 1,
+        dflt: 0,
         min: 0,
         role: 'style',
         description: 'Sets the border color of the range slider.'
