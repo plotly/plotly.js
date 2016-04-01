@@ -368,14 +368,14 @@ function hover(gd, evt, subplot) {
         hovermode = 'array';
         for(itemnum = 0; itemnum<evt.length; itemnum++) {
             cd = gd.calcdata[evt[itemnum].curveNumber||0];
-            if(cd[0].trace.hoverinfo!=='none') searchData.push(cd);
+            searchData.push(cd);
         }
     }
     else {
         for(curvenum = 0; curvenum<gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(trace.hoverinfo!=='none' && subplots.indexOf(trace.xaxis + trace.yaxis)!==-1) {
+            if(subplots.indexOf(trace.xaxis + trace.yaxis)!==-1) {
                 searchData.push(cd);
             }
         }
