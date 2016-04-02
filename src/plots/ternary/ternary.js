@@ -21,6 +21,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var Axes = require('../cartesian/axes');
 var filterVisible = require('../../lib/filter_visible');
 var dragElement = require('../../components/dragElement');
+var Titles = require('../../components/titles');
 var prepSelect = require('../cartesian/select');
 var constants = require('../cartesian/constants');
 var fx = require('../cartesian/graph_interact');
@@ -133,7 +134,7 @@ proto.makeFramework = function() {
         'grids',
         'frontplot',
         'zoom',
-        'aaxis', 'baxis', 'caxis','axlines'
+        'aaxis', 'baxis', 'caxis', 'axlines'
     ];
     var toplevel = _this.plotContainer.selectAll('g.toplevel')
         .data(plotLayers);
@@ -322,10 +323,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     _this.layers.caxis.attr('transform', cTransform);
     _this.layers.cgrid.attr('transform', cTransform);
 
-    // TODO: titles (3rd arg true below ignores them)
-    Axes.doTicks(_this.graphDiv, aaxis, true);
-    Axes.doTicks(_this.graphDiv, baxis, true);
-    Axes.doTicks(_this.graphDiv, caxis, true);
+    _this.drawAxes(true);
 
     // remove crispEdges - all the off-square angles in ternary plots
     // make these counterproductive.
@@ -347,6 +345,62 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
             'M' + (x0 + w / 2) + ',' + y0 + 'l' + (w / 2) + ',' + h : 'M0,0')
         .call(Color.stroke, caxis.linecolor || '#000')
         .style('stroke-width', (caxis.linewidth || 0) + 'px');
+};
+
+proto.drawAxes = function(doTitles) {
+    var _this = this,
+        gd = _this.graphDiv,
+        titlesuffix = _this.id.substr(7) + 'title',
+        aaxis = _this.aaxis,
+        baxis = _this.baxis,
+        caxis = _this.caxis;
+    // 3rd arg true below skips titles, so we can configure them
+    // correctly later on.
+    Axes.doTicks(gd, aaxis, true);
+    Axes.doTicks(gd, baxis, true);
+    Axes.doTicks(gd, caxis, true);
+
+    if(doTitles) {
+        var apad = Math.max(aaxis.showticklabels ? aaxis.tickfont.size / 2 : 0,
+            (caxis.showticklabels ? caxis.tickfont.size * 0.75 : 0) +
+            (caxis.ticks === 'outside' ? caxis.ticklen * 0.87 : 0));
+        Titles.draw(gd, 'a' + titlesuffix, {
+            propContainer: aaxis,
+            propName: _this.id + '.aaxis.title',
+            dfltName: 'Component A',
+            attributes: {
+                x: _this.x0 + _this.w / 2,
+                y: _this.y0 - aaxis.titlefont.size / 3 - apad,
+                'text-anchor': 'middle'
+            }
+        });
+
+        var btitleSize = baxis.titlefont.size,
+            bpad = (baxis.showticklabels ? baxis.tickfont.size : 0) +
+                (baxis.ticks === 'outside' ? baxis.ticklen : 0) + 3;
+        Titles.draw(gd, 'b' + titlesuffix, {
+            propContainer: baxis,
+            propName: _this.id + '.baxis.title',
+            dfltName: 'Component B',
+            attributes: {
+                x: _this.x0 - bpad,
+                y: _this.y0 + _this.h + btitleSize * 0.83 + bpad,
+                'text-anchor': 'middle'
+            }
+        });
+
+        var ctitleSize = caxis.titlefont.size;
+        Titles.draw(gd, 'c' + titlesuffix, {
+            propContainer: caxis,
+            propName: _this.id + '.caxis.title',
+            dfltName: 'Component C',
+            attributes: {
+                x: _this.x0 + _this.w + bpad,
+                y: _this.y0 + _this.h + ctitleSize * 0.83 + bpad,
+                'text-anchor': 'middle'
+            }
+        });
+    }
 };
 
 // hard coded paths for zoom corners
@@ -572,9 +626,7 @@ proto.init_interactions = function() {
         _this.baxis.range = [_this.sum - mins.a - mins.c, mins.b];
         _this.caxis.range = [_this.sum - mins.a - mins.b, mins.c];
 
-        Axes.doTicks(_this.graphDiv, _this.aaxis, true);
-        Axes.doTicks(_this.graphDiv, _this.baxis, true);
-        Axes.doTicks(_this.graphDiv, _this.caxis, true);
+        _this.drawAxes(false);
         _this.plotContainer.selectAll('.crisp').classed('crisp', false);
     }
 

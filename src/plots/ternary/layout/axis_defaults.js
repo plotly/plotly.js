@@ -27,14 +27,14 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
 
     containerOut.type = 'linear'; // no other types allowed for ternary
 
-    var axName = containerOut._name;
-
     var dfltColor = coerce('color');
 
-    var title = coerce('title', 'Click to enter component ' +
-        axName.charAt(0).toUpperCase() + ' title');
-    containerOut._hovertitle = title.indexOf('Click to enter') === -1 ?
-        title : axName.charAt(0);
+    var axName = containerOut._name,
+        letterUpper = axName.charAt(0).toUpperCase(),
+        dfltTitle = 'Component ' + letterUpper;
+
+    var title = coerce('title', dfltTitle);
+    containerOut._hovertitle = title === dfltTitle ? title : letterUpper;
 
     Lib.coerceFont(coerce, 'titlefont', {
         family: options.font.family,
