@@ -73,12 +73,12 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData;
 
-    var hasCartesian = fullLayout._hasCartesian,
-        hasGL3D = fullLayout._hasGL3D,
-        hasGeo = fullLayout._hasGeo,
-        hasPie = fullLayout._hasPie,
-        hasGL2D = fullLayout._hasGL2D,
-        hasTernary = fullLayout._hasTernary;
+    var hasCartesian = !!fullLayout._hasCartesian,
+        hasGL3D = !!fullLayout._hasGL3D,
+        hasGeo = !!fullLayout._hasGeo,
+        hasPie = !!fullLayout._hasPie,
+        hasGL2D = !!fullLayout._hasGL2D,
+        hasTernary = !!fullLayout._hasTernary;
 
     var groups = [];
 

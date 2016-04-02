@@ -309,9 +309,6 @@ describe('ModeBar', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
             gd._fullLayout._hasGL3D = true;
-            gd._fullLayout._hasGeo = false;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = false;
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -327,10 +324,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
-            gd._fullLayout._hasGL3D = false;
             gd._fullLayout._hasGeo = true;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = false;
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -355,9 +349,6 @@ describe('ModeBar', function() {
                 _module: {selectPoints: true}
             }];
             gd._fullLayout.xaxis = {fixedrange: false};
-            gd._fullLayout._hasGL3D = false;
-            gd._fullLayout._hasGeo = false;
-            gd._fullLayout._hasGL2D = false;
             gd._fullLayout._hasPie = true;
 
             manageModeBar(gd);
@@ -373,11 +364,8 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = false;
             gd._fullLayout._hasGL3D = true;
             gd._fullLayout._hasGeo = true;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = false;
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
