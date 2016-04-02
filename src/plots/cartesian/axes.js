@@ -1457,7 +1457,7 @@ axes.doTicks = function(td, axid, skipTitle) {
         var tickLabels=container.selectAll('g.'+tcls).data(vals, datafn);
         if(!ax.showticklabels || !isNumeric(position)) {
             tickLabels.remove();
-            Titles.draw(td, axid + 'title');
+            drawAxTitle(axid);
             return;
         }
 
@@ -1624,8 +1624,8 @@ axes.doTicks = function(td, axid, skipTitle) {
             // update the axis title
             // (so it can move out of the way if needed)
             // TODO: separate out scoot so we don't need to do
-            // a full redraw of the title (modtly relevant for MathJax)
-            if(!skipTitle) Titles.draw(td, axid + 'title');
+            // a full redraw of the title (mostly relevant for MathJax)
+            if(!skipTitle) drawAxTitle(axid);
             return axid+' done';
         }
 
@@ -1635,6 +1635,10 @@ axes.doTicks = function(td, axid, skipTitle) {
         ]);
         if(done && done.then) td._promises.push(done);
         return done;
+    }
+
+    function drawAxTitle(axid) {
+        Titles.draw(td, axid + 'title');
     }
 
     function traceHasBarsOrFill(trace, subplot) {
