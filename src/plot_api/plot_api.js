@@ -2953,5 +2953,16 @@ function lsInner(gd) {
 }
 
 function drawMainTitle(gd) {
-    Titles.draw(gd, 'gtitle');
+    var fullLayout = gd._fullLayout;
+
+    Titles.draw(gd, 'gtitle', {
+        propContainer: fullLayout,
+        propName: 'title',
+        dfltName: 'Plot',
+        attributes: {
+            x: fullLayout.width / 2,
+            y: fullLayout._size.t / 2,
+            'text-anchor': 'middle'
+        }
+    });
 }

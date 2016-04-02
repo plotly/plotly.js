@@ -1625,7 +1625,7 @@ axes.doTicks = function(td, axid, skipTitle) {
             // (so it can move out of the way if needed)
             // TODO: separate out scoot so we don't need to do
             // a full redraw of the title (mostly relevant for MathJax)
-            if(!skipTitle) drawAxTitle(axid);
+            drawAxTitle(axid);
             return axid+' done';
         }
 
@@ -1638,7 +1638,71 @@ axes.doTicks = function(td, axid, skipTitle) {
     }
 
     function drawAxTitle(axid) {
-        Titles.draw(td, axid + 'title');
+        if(skipTitle) return;
+
+        // now this only applies to regular cartesian axes; colorbars and
+        // others ALWAYS call doTicks with skipTitle=true so they can
+        // configure their own titles.
+        var ax = axisIds.getFromId(td, axid),
+            avoidSelection = d3.select(td).selectAll('g.' + axid + 'tick'),
+            avoid = {
+                selection: avoidSelection,
+                side: ax.side
+            },
+            axLetter = axid.charAt(0),
+            gs = td._fullLayout._size,
+            offsetBase = 1.5,
+            fontSize = ax.titlefont.size,
+            transform,
+            counterAxis,
+            x,
+            y;
+        if(avoidSelection.size()) {
+            var avoidTransform = d3.select(avoidSelection.node().parentNode)
+                .attr('transform')
+                .match(/translate\(([-\.\d]+),([-\.\d]+)\)/);
+            if(avoidTransform) {
+                avoid.offsetLeft = +avoidTransform[1];
+                avoid.offsetTop = +avoidTransform[2];
+            }
+        }
+
+        if(axLetter === 'x') {
+            counterAxis = (ax.anchor === 'free') ?
+                {_offset: gs.t + (1 - (ax.position || 0)) * gs.h, _length: 0} :
+                axisIds.getFromId(td, ax.anchor);
+
+            x = ax._offset + ax._length / 2;
+            y = counterAxis._offset + ((ax.side === 'top') ?
+                -10 - fontSize*(offsetBase + (ax.showticklabels ? 1 : 0)) :
+                counterAxis._length + 10 +
+                    fontSize*(offsetBase + (ax.showticklabels ? 1.5 : 0.5)));
+
+            if(!avoid.side) avoid.side = 'bottom';
+        }
+        else {
+            counterAxis = (ax.anchor === 'free') ?
+                {_offset: gs.l + (ax.position || 0) * gs.w, _length: 0} :
+                axisIds.getFromId(td, ax.anchor);
+
+            y = ax._offset + ax._length / 2;
+            x = counterAxis._offset + ((ax.side === 'right') ?
+                counterAxis._length + 10 +
+                    fontSize*(offsetBase + (ax.showticklabels ? 1 : 0.5)) :
+                -10 - fontSize*(offsetBase + (ax.showticklabels ? 0.5 : 0)));
+
+            transform = {rotate: '-90', offset: 0};
+            if(!avoid.side) avoid.side = 'left';
+        }
+
+        Titles.draw(td, axid + 'title', {
+            propContainer: ax,
+            propName: ax._name + '.title',
+            dfltName: axLetter.toUpperCase() + ' axis',
+            avoid: avoid,
+            transform: transform,
+            attributes: {x: x, y: y, 'text-anchor': 'middle'}
+        });
     }
 
     function traceHasBarsOrFill(trace, subplot) {
