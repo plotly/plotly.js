@@ -35,6 +35,7 @@
     "no-multi-spaces": [2],
     "no-whitespace-before-property": [2],
     "no-unexpected-multiline": [2],
+    "no-floating-decimal": [2],
     "space-infix-ops": [0, {"int32Hint": false}],
     "quotes": [2, "single"],
     "dot-notation": [2, {"allowKeywords": false}],

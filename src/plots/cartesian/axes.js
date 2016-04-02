@@ -33,8 +33,8 @@ axes.getFromTrace = axisIds.getFromTrace;
 
 // find the list of possible axes to reference with an xref or yref attribute
 // and coerce it to that list
-axes.coerceRef = function(containerIn, containerOut, td, axLetter) {
-    var axlist = td._fullLayout._hasGL2D ? [] : axes.listIds(td, axLetter),
+axes.coerceRef = function(containerIn, containerOut, gd, axLetter) {
+    var axlist = gd._fullLayout._hasGL2D ? [] : axes.listIds(gd, axLetter),
         refAttr = axLetter + 'ref',
         attrDef = {};
 
@@ -832,7 +832,7 @@ function modDateFormat(fmt,x) {
 }
 
 // draw the text for one tick.
-// px,py are the location on td.paper
+// px,py are the location on gd.paper
 // prefix is there so the x axis ticks can be dropped a line
 // ax is the axis layout, x is the tick value
 // hover is a (truthy) flag for whether to show numbers with a bit
@@ -1251,13 +1251,13 @@ axes.findSubplotsWithAxis = function(subplots, ax) {
 };
 
 // makeClipPaths: prepare clipPaths for all single axes and all possible xy pairings
-axes.makeClipPaths = function(td) {
-    var layout = td._fullLayout,
+axes.makeClipPaths = function(gd) {
+    var layout = gd._fullLayout,
         defs = layout._defs,
         fullWidth = {_offset: 0, _length: layout.width, _id: ''},
         fullHeight = {_offset: 0, _length: layout.height, _id: ''},
-        xaList = axes.list(td, 'x', true),
-        yaList = axes.list(td, 'y', true),
+        xaList = axes.list(gd, 'x', true),
+        yaList = axes.list(gd, 'y', true),
         clipList = [],
         i,
         j;
@@ -1302,8 +1302,8 @@ axes.makeClipPaths = function(td) {
 //     'redraw' to force full redraw, and reset ax._r
 //          (stored range for use by zoom/pan)
 //     or can pass in an axis object directly
-axes.doTicks = function(td, axid, skipTitle) {
-    var fullLayout = td._fullLayout,
+axes.doTicks = function(gd, axid, skipTitle) {
+    var fullLayout = gd._fullLayout,
         ax,
         independent = false;
 
@@ -1314,9 +1314,9 @@ axes.doTicks = function(td, axid, skipTitle) {
         independent = true;
     }
     else {
-        ax = axes.getFromId(td,axid);
+        ax = axes.getFromId(gd, axid);
 
-        if(axid==='redraw') {
+        if(axid === 'redraw') {
             fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
                 var plotinfo = fullLayout._plots[subplot],
                     xa = plotinfo.x(),
@@ -1334,12 +1334,12 @@ axes.doTicks = function(td, axid, skipTitle) {
             });
         }
 
-        if(!axid || axid==='redraw') {
-            return Plotly.Lib.syncOrAsync(axes.list(td, '', true).map(function(ax) {
+        if(!axid || axid === 'redraw') {
+            return Plotly.Lib.syncOrAsync(axes.list(gd, '', true).map(function(ax) {
                 return function() {
                     if(!ax._id) return;
-                    var axDone = axes.doTicks(td,ax._id);
-                    if(axid==='redraw') ax._r = ax.range.slice();
+                    var axDone = axes.doTicks(gd,ax._id);
+                    if(axid === 'redraw') ax._r = ax.range.slice();
                     return axDone;
                 };
             }));
@@ -1373,11 +1373,10 @@ axes.doTicks = function(td, axid, skipTitle) {
         pad = (ax.linewidth||1) / 2,
         labelStandoff =
             (ax.ticks==='outside' ? ax.ticklen : 1) + (ax.linewidth||0),
-        labelShift = 0,
-        gridWidth = Plotly.Drawing.crispRound(td, ax.gridwidth, 1),
-        zeroLineWidth = Plotly.Drawing.crispRound(td, ax.zerolinewidth, gridWidth),
-        tickWidth = Plotly.Drawing.crispRound(td, ax.tickwidth, 1),
-        sides, transfn, tickpathfn,
+        gridWidth = Plotly.Drawing.crispRound(gd, ax.gridwidth, 1),
+        zeroLineWidth = Plotly.Drawing.crispRound(gd, ax.zerolinewidth, gridWidth),
+        tickWidth = Plotly.Drawing.crispRound(gd, ax.tickwidth, 1),
+        sides, transfn, tickprefix, tickmid,
         i;
 
     if(ax._counterangle && ax.ticks==='outside') {
@@ -1387,10 +1386,10 @@ axes.doTicks = function(td, axid, skipTitle) {
     }
 
     // positioning arguments for x vs y axes
-    if(axletter==='x') {
+    if(axletter === 'x') {
         sides = ['bottom', 'top'];
         transfn = function(d) {
-            return 'translate('+ax.l2p(d.x)+',0)';
+            return 'translate(' + ax.l2p(d.x) + ',0)';
         };
         // dumb templating with string concat
         // would be better to use an actual template
@@ -1402,10 +1401,10 @@ axes.doTicks = function(td, axid, skipTitle) {
             else return 'M0,' + shift + 'v' + len;
         };
     }
-    else if(axletter==='y') {
+    else if(axletter === 'y') {
         sides = ['left', 'right'];
         transfn = function(d) {
-            return 'translate(0,'+ax.l2p(d.x)+')';
+            return 'translate(0,' + ax.l2p(d.x) + ')';
         };
         tickpathfn = function(shift, len) {
             if(ax._counterangle) {
@@ -1419,11 +1418,11 @@ axes.doTicks = function(td, axid, skipTitle) {
         console.log('unrecognized doTicks axis', axid);
         return;
     }
-    var axside = ax.side||sides[0],
+    var axside = ax.side || sides[0],
     // which direction do the side[0], side[1], and free ticks go?
     // then we flip if outside XOR y axis
-        ticksign = [-1, 1, axside===sides[1] ? 1 : -1];
-    if((ax.ticks!=='inside') === (axletter==='x')) {
+        ticksign = [-1, 1, axside === sides[1] ? 1 : -1];
+    if((ax.ticks !== 'inside') === (axletter === 'x')) {
         ticksign = ticksign.map(function(v) { return -v; });
     }
 
@@ -1454,7 +1453,7 @@ axes.doTicks = function(td, axid, skipTitle) {
     function drawLabels(container, position) {
         // tick labels - for now just the main labels.
         // TODO: mirror labels, esp for subplots
-        var tickLabels=container.selectAll('g.'+tcls).data(vals, datafn);
+        var tickLabels = container.selectAll('g.' + tcls).data(vals, datafn);
         if(!ax.showticklabels || !isNumeric(position)) {
             tickLabels.remove();
             drawAxTitle(axid);
@@ -1501,7 +1500,7 @@ axes.doTicks = function(td, axid, skipTitle) {
                 .attr('text-anchor', 'middle')
                 .each(function(d) {
                     var thisLabel = d3.select(this),
-                        newPromise = td._promises.length;
+                        newPromise = gd._promises.length;
                     thisLabel
                         .call(Plotly.Drawing.setPosition,
                             labelx(d), labely(d))
@@ -1509,13 +1508,13 @@ axes.doTicks = function(td, axid, skipTitle) {
                             d.font, d.fontSize, d.fontColor)
                         .text(d.text)
                         .call(Plotly.util.convertToTspans);
-                    newPromise = td._promises[newPromise];
+                    newPromise = gd._promises[newPromise];
                     if(newPromise) {
                         // if we have an async label, we'll deal with that
-                        // all here so take it out of td._promises and
+                        // all here so take it out of gd._promises and
                         // instead position the label and promise this in
                         // labelsReady
-                        labelsReady.push(td._promises.pop().then(function() {
+                        labelsReady.push(gd._promises.pop().then(function() {
                             positionLabels(thisLabel, ax.tickangle);
                         }));
                     }
@@ -1629,11 +1628,16 @@ axes.doTicks = function(td, axid, skipTitle) {
             return axid+' done';
         }
 
+        function calcBoundingBox() {
+            ax._boundingBox = container.node().getBoundingClientRect();
+        }
+
         var done = Plotly.Lib.syncOrAsync([
             allLabelsReady,
-            fixLabelOverlaps
+            fixLabelOverlaps,
+            calcBoundingBox
         ]);
-        if(done && done.then) td._promises.push(done);
+        if(done && done.then) gd._promises.push(done);
         return done;
     }
 
@@ -1643,14 +1647,14 @@ axes.doTicks = function(td, axid, skipTitle) {
         // now this only applies to regular cartesian axes; colorbars and
         // others ALWAYS call doTicks with skipTitle=true so they can
         // configure their own titles.
-        var ax = axisIds.getFromId(td, axid),
-            avoidSelection = d3.select(td).selectAll('g.' + axid + 'tick'),
+        var ax = axisIds.getFromId(gd, axid),
+            avoidSelection = d3.select(gd).selectAll('g.' + axid + 'tick'),
             avoid = {
                 selection: avoidSelection,
                 side: ax.side
             },
             axLetter = axid.charAt(0),
-            gs = td._fullLayout._size,
+            gs = gd._fullLayout._size,
             offsetBase = 1.5,
             fontSize = ax.titlefont.size,
             transform,
@@ -1670,7 +1674,7 @@ axes.doTicks = function(td, axid, skipTitle) {
         if(axLetter === 'x') {
             counterAxis = (ax.anchor === 'free') ?
                 {_offset: gs.t + (1 - (ax.position || 0)) * gs.h, _length: 0} :
-                axisIds.getFromId(td, ax.anchor);
+                axisIds.getFromId(gd, ax.anchor);
 
             x = ax._offset + ax._length / 2;
             y = counterAxis._offset + ((ax.side === 'top') ?
@@ -1678,12 +1682,16 @@ axes.doTicks = function(td, axid, skipTitle) {
                 counterAxis._length + 10 +
                     fontSize*(offsetBase + (ax.showticklabels ? 1.5 : 0.5)));
 
+            if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox) {
+                y += gs.h * ax.rangeslider.thickness + ax._boundingBox.height;
+            }
+
             if(!avoid.side) avoid.side = 'bottom';
         }
         else {
             counterAxis = (ax.anchor === 'free') ?
                 {_offset: gs.l + (ax.position || 0) * gs.w, _length: 0} :
-                axisIds.getFromId(td, ax.anchor);
+                axisIds.getFromId(gd, ax.anchor);
 
             y = ax._offset + ax._length / 2;
             x = counterAxis._offset + ((ax.side === 'right') ?
@@ -1695,7 +1703,7 @@ axes.doTicks = function(td, axid, skipTitle) {
             if(!avoid.side) avoid.side = 'left';
         }
 
-        Titles.draw(td, axid + 'title', {
+        Titles.draw(gd, axid + 'title', {
             propContainer: ax,
             propName: ax._name + '.title',
             dfltName: axLetter.toUpperCase() + ' axis',
@@ -1736,8 +1744,8 @@ axes.doTicks = function(td, axid, skipTitle) {
         // zero line
         if(zlcontainer) {
             var hasBarsOrFill = false;
-            for(var i = 0; i < td._fullData.length; i++) {
-                if(traceHasBarsOrFill(td._fullData[i], subplot)) {
+            for(var i = 0; i < gd._fullData.length; i++) {
+                if(traceHasBarsOrFill(gd._fullData[i], subplot)) {
                     hasBarsOrFill = true;
                     break;
                 }
@@ -1769,7 +1777,7 @@ axes.doTicks = function(td, axid, skipTitle) {
         return drawLabels(ax._axislayer,ax._pos);
     }
     else {
-        var alldone = axes.getSubplots(td,ax).map(function(subplot) {
+        var alldone = axes.getSubplots(gd,ax).map(function(subplot) {
             var plotinfo = fullLayout._plots[subplot];
 
             if(!fullLayout._hasCartesian) return;

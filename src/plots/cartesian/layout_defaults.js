@@ -13,6 +13,8 @@ var Lib = require('../../lib');
 var Plots = require('../plots');
 var Color = require('../../components/color');
 
+var RangeSlider = require('../../components/rangeslider');
+
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var handleAxisDefaults = require('./axis_defaults');
@@ -102,7 +104,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     var xaList = xaListCartesian.concat(xaListGl2d).sort(axSort),
-        yaList = yaListCartesian.concat(yaListGl2d).sort(axSort);
+        yaList = yaListCartesian.concat(yaListGl2d).sort(axSort),
+        axesList = xaList.concat(yaList);
 
     // plot_bgcolor only makes sense if there's a (2D) plot!
     // TODO: bgcolor for each subplot, to inherit from the main one
@@ -113,7 +116,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);
 
-    xaList.concat(yaList).forEach(function(axName) {
+    axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0),
             axLayoutIn = layoutIn[axName] || {},
             axLayoutOut = {},
@@ -148,5 +151,13 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             layoutIn[axName] = {type: axLayoutIn.type};
         }
 
+    });
+
+    // quick second pass for rangeslider defaults
+    axesList.forEach(function(axName) {
+        var axLetter = axName.charAt(0),
+            counterAxes = {x: yaList, y: xaList}[axLetter];
+
+        RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
     });
 };

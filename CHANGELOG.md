@@ -9,10 +9,19 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.7.1] -- 2016-03-30
+
+### Fixed
+- Legend dimensions are correctly updated (bug introduced in 1.7.0) [#365]
+- Friction between cartesian double-click and drag interactions is reduced [#355]
+- Ultra-zoomed svg line paths are correctly computed [#353]
+- Initial axis ranges are no longer reset on data-updating restyle calls [#351]
+- Events now work in jQuery no-conflict scopes (bug introduced in 1.7.0) [#352]
+
+
 ## [1.7.0] -- 2016-03-22
 
 ### Added
-
 - Custom surface color functionality (for 4D plotting) is added to surface traces [#347]
 - Top-level `Plotly.purge` method (which returns the graph div in its
   pre-Plotly.plot state) is added [#300]

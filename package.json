@@ -1,6 +1,6 @@
 {
   "name": "plotly.js",
-  "version": "1.7.0",
+  "version": "1.7.1",
   "description": "The open source javascript graphing library that powers plotly",
   "license": "MIT",
   "main": "./lib/index.js",
@@ -54,7 +54,7 @@
     "gl-error2d": "^1.0.0",
     "gl-error3d": "^1.0.0",
     "gl-line2d": "^1.2.1",
-    "gl-line3d": "^1.0.1",
+    "gl-line3d": "^1.1.0",
     "gl-mat4": "^1.1.2",
     "gl-mesh3d": "^1.0.7",
     "gl-plot2d": "^1.1.6",

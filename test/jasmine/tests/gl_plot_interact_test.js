@@ -414,3 +414,38 @@ describe('Test gl plot interactions', function() {
         });
     });
 });
+
+describe('Test gl plot side effects', function() {
+    describe('when present with rangeslider', function() {
+
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should not draw the rangeslider', function(done) {
+            var data = [{
+                x: [1,2,3],
+                y: [2,3,4],
+                type: 'scattergl'
+            }, {
+                x: [1,2,3],
+                y: [2,3,4],
+                type: 'scatter'
+            }];
+
+            var layout = {
+                xaxis: { rangeslider: { visible: true } }
+            };
+
+            Plotly.plot(gd, data, layout).then(function() {
+                var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                expect(rangeSlider).not.toBeDefined();
+                done();
+            });
+        });
+    });
+});
