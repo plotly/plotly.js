@@ -65,7 +65,7 @@ module.exports = function setConvert(ax) {
 
     // set scaling to pixels
     ax.setScale = function() {
-        var gs = ax._td._fullLayout._size,
+        var gs = ax._gd._fullLayout._size,
             i;
 
         // TODO cleaner way to handle this case
@@ -74,7 +74,7 @@ module.exports = function setConvert(ax) {
         // make sure we have a domain (pull it in from the axis
         // this one is overlaying if necessary)
         if(ax.overlaying) {
-            var ax2 = axisIds.getFromId(ax._td, ax.overlaying);
+            var ax2 = axisIds.getFromId(ax._gd, ax.overlaying);
             ax.domain = ax2.domain;
         }
 
@@ -116,7 +116,7 @@ module.exports = function setConvert(ax) {
             Lib.notifier(
                 'Something went wrong with axis scaling',
                 'long');
-            ax._td._replotting = false;
+            ax._gd._replotting = false;
             throw new Error('axis scaling');
         }
     };

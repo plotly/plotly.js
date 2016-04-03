@@ -220,7 +220,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
             xDomainCenter + xDomainFinal / 2
         ],
         _id: 'x',
-        _td: _this.graphDiv
+        _gd: _this.graphDiv
     };
     setConvert(_this.xaxis);
     _this.xaxis.setScale();
@@ -233,7 +233,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
             yDomainCenter + yDomainFinal / 2
         ],
         _id: 'y',
-        _td: _this.graphDiv
+        _gd: _this.graphDiv
     };
     setConvert(_this.yaxis);
     _this.yaxis.setScale();
@@ -255,7 +255,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.aaxis,
         _gridlayer: _this.layers.agrid,
         _pos: 0, //_this.xaxis.domain[0] * graphSize.w,
-        _td: _this.graphDiv,
+        _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
         _gridpath: 'M0,0l' + h + ',-' + (w / 2)
@@ -273,7 +273,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _gridlayer: _this.layers.bgrid,
         _counteraxis: _this.aaxis,
         _pos: 0, //(1 - yDomain0) * graphSize.h,
-        _td: _this.graphDiv,
+        _gd: _this.graphDiv,
         _id: 'x',
         _length: w,
         _gridpath: 'M0,0l-' + (w / 2) + ',-' + h
@@ -293,7 +293,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _gridlayer: _this.layers.cgrid,
         _counteraxis: _this.baxis,
         _pos: 0, //_this.xaxis.domain[1] * graphSize.w,
-        _td: _this.graphDiv,
+        _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
         _gridpath: 'M0,0l-' + h + ',' + (w / 2)

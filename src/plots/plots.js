@@ -509,7 +509,7 @@ plots.supplyDefaults = function(gd) {
     axList = Plotly.Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
         ax = axList[i];
-        ax._td = gd;
+        ax._gd = gd;
         ax.setScale();
     }
 
