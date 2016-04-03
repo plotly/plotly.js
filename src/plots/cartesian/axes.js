@@ -1373,10 +1373,11 @@ axes.doTicks = function(gd, axid, skipTitle) {
         pad = (ax.linewidth||1) / 2,
         labelStandoff =
             (ax.ticks==='outside' ? ax.ticklen : 1) + (ax.linewidth||0),
+        labelShift = 0,
         gridWidth = Plotly.Drawing.crispRound(gd, ax.gridwidth, 1),
         zeroLineWidth = Plotly.Drawing.crispRound(gd, ax.zerolinewidth, gridWidth),
         tickWidth = Plotly.Drawing.crispRound(gd, ax.tickwidth, 1),
-        sides, transfn, tickprefix, tickmid,
+        sides, transfn, tickpathfn,
         i;
 
     if(ax._counterangle && ax.ticks==='outside') {
