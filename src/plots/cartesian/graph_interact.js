@@ -19,7 +19,7 @@ var Events = require('../../lib/events');
 
 var constants = require('./constants');
 var dragBox = require('./dragbox');
-var dragElement = require('../../components/dragElement');
+var dragElement = require('../../components/dragelement');
 
 var fx = module.exports = {};
 
