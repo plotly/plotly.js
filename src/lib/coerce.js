@@ -16,7 +16,7 @@ var nestedProperty = require('./nested_property');
 var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 
-var idRegex = /^([2-9]|[1-9][0-9]+)$/
+var idRegex = /^([2-9]|[1-9][0-9]+)$/;
 
 exports.valObjects = {
     data_array: {
