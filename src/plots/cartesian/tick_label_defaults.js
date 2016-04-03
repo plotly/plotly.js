@@ -27,10 +27,14 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
         var font = options.font || {};
+        // as with titlefont.color, inherit axis.color only if one was
+        // explicitly provided
+        var dfltFontColor = (containerOut.color === containerIn.color) ?
+            containerOut.color : font.color;
         Lib.coerceFont(coerce, 'tickfont', {
             family: font.family,
             size: font.size,
-            color: containerOut.color || font.color
+            color: dfltFontColor
         });
         coerce('tickangle');
 

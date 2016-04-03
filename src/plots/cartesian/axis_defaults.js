@@ -74,12 +74,15 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     setConvert(containerOut);
 
     var dfltColor = coerce('color');
+    // if axis.color was provided, use it for fonts too; otherwise,
+    // inherit from global font color in case that was provided.
+    var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
 
     coerce('title', defaultTitle);
     Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
-        color: dfltColor
+        color: dfltFontColor
     });
 
     var validRange = (

@@ -28,6 +28,9 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
     containerOut.type = 'linear'; // no other types allowed for ternary
 
     var dfltColor = coerce('color');
+    // if axis.color was provided, use it for fonts too; otherwise,
+    // inherit from global font color in case that was provided.
+    var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : options.font.color;
 
     var axName = containerOut._name,
         letterUpper = axName.charAt(0).toUpperCase(),
@@ -39,7 +42,7 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
     Lib.coerceFont(coerce, 'titlefont', {
         family: options.font.family,
         size: Math.round(options.font.size * 1.2),
-        color: dfltColor
+        color: dfltFontColor
     });
 
     // range is just set by 'min' - max is determined by the other axes mins
@@ -57,7 +60,7 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
         Lib.coerceFont(coerce, 'tickfont', {
             family: options.font.family,
             size: options.font.size,
-            color: containerOut.color
+            color: dfltFontColor
         });
         coerce('tickangle');
         coerce('tickformat');
