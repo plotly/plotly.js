@@ -26,6 +26,7 @@ var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
 var Legend = require('../components/legend');
 var RangeSlider = require('../components/rangeslider');
+var RangeSelector = require('../components/rangeselector');
 var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
 var manageModeBar = require('../components/modebar/manage');
@@ -178,6 +179,7 @@ Plotly.plot = function(gd, data, layout, config) {
         var i, cd, trace;
 
         Legend.draw(gd);
+        RangeSelector.draw(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -307,6 +309,7 @@ Plotly.plot = function(gd, data, layout, config) {
         Shapes.drawAll(gd);
         Plotly.Annotations.drawAll(gd);
         Legend.draw(gd);
+        RangeSelector.draw(gd);
     }
 
     function cleanUp() {
