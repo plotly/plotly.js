@@ -43,7 +43,7 @@ function getXRange(axisLayout, buttonLayout) {
             range0 = d3.time[step].offset(base, -count).getTime();
             break;
 
-        case 'to date':
+        case 'todate':
             var base2 = d3.time[step].offset(base, -(count - 1));
 
             range0 = d3.time[step].floor(base2).getTime();

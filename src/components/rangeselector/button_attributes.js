@@ -22,13 +22,13 @@ module.exports = {
     stepmode: {
         valType: 'enumerated',
         role: 'info',
-        values: ['backward', 'to date'],
+        values: ['backward', 'todate'],
         dflt: 'backward',
         description: [
             'Sets the range update mode.',
             'If *backward*, the range update shifts the start of range',
             'back *count* times *step* milliseconds.',
-            'If *to date*, the range update shifts the start of range',
+            'If *todate*, the range update shifts the start of range',
             'back to the first timestamp from *count* times',
             '*step* milliseconds back.',
             'For example, with `step` set to *year* and `count` set to *1*',

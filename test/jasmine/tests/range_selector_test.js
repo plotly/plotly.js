@@ -208,7 +208,7 @@ describe('[range selector suite]', function() {
         it('should return update object (5 months to-date case)', function() {
             var buttonLayout = {
                 step: 'month',
-                stepmode: 'to date',
+                stepmode: 'todate',
                 count: 5
             };
 
@@ -220,7 +220,7 @@ describe('[range selector suite]', function() {
         it('should return update object (1 year to-date case)', function() {
             var buttonLayout = {
                 step: 'year',
-                stepmode: 'to date',
+                stepmode: 'todate',
                 count: 1
             };
 
@@ -232,7 +232,7 @@ describe('[range selector suite]', function() {
         it('should return update object (10 year to-date case)', function() {
             var buttonLayout = {
                 step: 'year',
-                stepmode: 'to date',
+                stepmode: 'todate',
                 count: 10
             };
 
@@ -314,7 +314,7 @@ describe('[range selector suite]', function() {
         it('should return update object (12 hour to-date case)', function() {
             var buttonLayout = {
                 step: 'hour',
-                stepmode: 'to date',
+                stepmode: 'todate',
                 count: 12
             };
 
@@ -328,7 +328,7 @@ describe('[range selector suite]', function() {
         it('should return update object (15 minute backward case)', function() {
             var buttonLayout = {
                 step: 'minute',
-                stepmode: 'to date',
+                stepmode: 'todate',
                 count: 20
             };
 
@@ -342,7 +342,7 @@ describe('[range selector suite]', function() {
         it('should return update object (2 second to-date case)', function() {
             var buttonLayout = {
                 step: 'second',
-                stepmode: 'to date',
+                stepmode: 'todate',
                 count: 2
             };
 
