@@ -24,7 +24,31 @@ var Titles = module.exports = {};
 
 /**
  * Titles - (re)draw titles on the axes and plot:
- *  title can be 'xtitle', 'ytitle', 'gtitle'
+ * @param {DOM element} gd - the graphDiv
+ * @param {string} titleClass - the css class of this title
+ * @param {object} options - how and what to draw
+ *      propContainer - the layout object containing `title` and `titlefont`
+ *          attributes that apply to this title
+ *      propName - the full name of the title property (for Plotly.relayout)
+ *      [traceIndex] - include only if this property applies to one trace
+ *          (such as a colorbar title) - then editing pipes to Plotly.restyle
+ *          instead of Plotly.relayout
+ *      dfltName - the name of the title in placeholder text
+ *      [avoid] {object} - include if this title should move to avoid other elements
+ *          selection - d3 selection of elements to avoid
+ *          side - which direction to move if there is a conflict
+ *          [offsetLeft] - if these elements are subject to a translation
+ *              wrt the title element
+ *          [offsetTop]
+ *      attributes {object} - position and alignment attributes
+ *          x - pixels
+ *          y - pixels
+ *          text-anchor - start|middle|end
+ *      transform {object} - how to transform the title after positioning
+ *          rotate - degrees
+ *          offset - shift up/down in the rotated frame (unused?)
+ *      containerGroup - if an svg <g> element already exists to hold this
+ *          title, include here. Otherwise it will go in fullLayout._infolayer
  */
 Titles.draw = function(gd, titleClass, options) {
     var cont = options.propContainer,
