@@ -2,12 +2,12 @@
 var Tabs = {
 
     getGraph: function(id) {
-        id = id || 'default-plot';
+        id = id || 'graph';
         return document.getElementById(id);
     },
 
     fresh: function(id) {
-        id = id || 'default-plot';
+        id = id || 'graph';
 
         var graphDiv = Tabs.getGraph(id);
 
