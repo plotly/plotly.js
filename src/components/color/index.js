@@ -19,7 +19,6 @@ color.defaults = colorAttrs.defaults;
 color.defaultLine = colorAttrs.defaultLine;
 color.lightLine = colorAttrs.lightLine;
 color.background = colorAttrs.background;
-var lightFraction = colorAttrs.lightFraction;
 
 color.tinyRGB = function(tc) {
     var c = tc.toRgb();
@@ -56,23 +55,6 @@ color.combine = function(front, back) {
             b: bcflat.b*(1-fc.a) + fc.b*fc.a
         };
     return tinycolor(fcflat).toRgbString();
-};
-
-// find a color interpolating between two endpoints,
-// in rgba space.
-color.lightColor = function(front, back, backFraction) {
-    if(backFraction===undefined) backFraction = lightFraction;
-
-    var c1 = tinycolor(front).toRgb(),
-        c2 = tinycolor(back || color.background).toRgb(),
-        frontfraction = 1 - backFraction,
-        cInterp = {
-            r: frontfraction * c1.r + backFraction * c2.r,
-            g: frontfraction * c1.g + backFraction * c2.g,
-            b: frontfraction * c1.b + backFraction * c2.b,
-            a: frontfraction * c1.a + backFraction * c2.a
-        };
-    return tinycolor(cInterp).toRgbString();
 };
 
 color.stroke = function(s, c) {

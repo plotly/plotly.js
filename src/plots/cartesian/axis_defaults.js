@@ -10,10 +10,11 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var colorMix = require('tinycolor2').mix;
 
 var Lib = require('../../lib');
 var Plots = require('../plots');
-var lightColor = require('../../components/color').lightColor;
+var lightFraction = require('../../components/color/attributes').lightFraction;
 
 var layoutAttributes = require('./layout_attributes');
 var handleTickValueDefaults = require('./tick_value_defaults');
@@ -116,7 +117,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     if(showLine || containerOut.ticks) coerce('mirror');
 
-    var gridColor = coerce2('gridcolor', lightColor(dfltColor, options.bgColor)),
+    var gridColor = coerce2('gridcolor', colorMix(dfltColor, options.bgColor, lightFraction).toRgbString()),
         gridWidth = coerce2('gridwidth'),
         showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
 

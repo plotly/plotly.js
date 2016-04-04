@@ -8,9 +8,9 @@
 
 
 'use strict';
+var colorMix = require('tinycolor2').mix;
 
 var Lib = require('../../../lib');
-var Color = require('../../../components/color');
 
 var layoutAttributes = require('./axis_attributes');
 var handleAxisDefaults = require('../../cartesian/axis_defaults');
@@ -20,7 +20,7 @@ var noop = function() {};
 
 // TODO: hard-coded lightness fraction based on gridline default colors
 // that differ from other subplot types.
-var gridLightness = (204 - 0x44) / (255 - 0x44);
+var gridLightness = 100 * (204 - 0x44) / (255 - 0x44);
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     var containerIn, containerOut;
@@ -49,7 +49,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 bgColor: options.bgColorCombined
             });
 
-        coerce('gridcolor', Color.lightColor(containerOut.color, options.bgColorCombined, gridLightness));
+        coerce('gridcolor', colorMix(containerOut.color, options.bgColorCombined, gridLightness).toRgbString());
         coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
 
         containerOut.setScale = noop;
