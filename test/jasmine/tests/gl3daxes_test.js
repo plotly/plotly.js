@@ -65,16 +65,13 @@ describe('Test Gl3dAxes', function() {
                 for(var i = 0; i < keys.length; i++) {
                     var k = keys[i];
                     expect(validObject[k]).toBe(testObject[k]);
-                    // if(validObject[k] !== testObject[k]) return false;
                 }
                 return true;
             }
 
             supplyLayoutDefaults(layoutIn, layoutOut, options);
             ['xaxis', 'yaxis', 'zaxis'].forEach(function(axis) {
-                // expect(
                 checkKeys(expected[axis], layoutOut[axis]);
-                // ).toBe(true);
             });
         });
     });
