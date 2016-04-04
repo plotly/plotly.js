@@ -21,6 +21,7 @@ module.exports = {
         description: [
             'Sets default for all colors associated with this axis',
             'all at once: line, font, tick, and grid colors.',
+            'Grid color is lightened by blending this with the plot background',
             'Individual pieces can override this.'
         ].join(' ')
     },
