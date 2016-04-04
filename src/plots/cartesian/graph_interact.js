@@ -313,12 +313,12 @@ function hover(gd, evt, subplot) {
                 .map(function(pi) { return pi.id; })),
 
         xaArray = subplots.map(function(spId) {
-            var ternary = gd._fullLayout[spId]._ternary;
+            var ternary = (gd._fullLayout[spId] || {})._ternary;
             if(ternary) return ternary.xaxis;
             return Plotly.Axes.getFromId(gd, spId, 'x');
         }),
         yaArray = subplots.map(function(spId) {
-            var ternary = gd._fullLayout[spId]._ternary;
+            var ternary = (gd._fullLayout[spId] || {})._ternary;
             if(ternary) return ternary.xaxis;
             return Plotly.Axes.getFromId(gd, spId, 'y');
         }),
