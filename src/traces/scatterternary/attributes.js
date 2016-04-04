@@ -68,7 +68,7 @@ module.exports = {
             'If a single string, the same string appears over',
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
-            'this trace\'s (a,b,c) coordinates.'
+            'the data points in (a,b,c).'
         ].join(' ')
     }),
     line: {
