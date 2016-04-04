@@ -38,7 +38,7 @@ module.exports = function rangeSelectorDefaults(containerIn, containerOut, layou
 
     Lib.coerceFont(coerce, 'font', layout.font);
 
-    coerce('bgcolor', layout.paper_bgcolor);
+    coerce('bgcolor');
     coerce('bordercolor');
     coerce('borderwidth');
 };

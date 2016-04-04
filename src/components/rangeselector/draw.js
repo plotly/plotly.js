@@ -142,16 +142,15 @@ function drawButtonRect(button, selectorLayout, d) {
 
 function getFillColor(selectorLayout, d) {
     return (d.isActive || d.isHovered) ?
-        Color.lightLine :
+        constants.activeColor :
         selectorLayout.bgcolor;
 }
 
 function drawButtonText(button, selectorLayout, d) {
     function textLayout(s) {
-        svgTextUtils.convertToTspans(s, function() {
-            // TODO do we need this???
-            // if(gd.firstRender) repositionLegend(gd, traces);
-        });
+        svgTextUtils.convertToTspans(s);
+
+        // TODO do we need anything else here?
     }
 
     var text = button.selectAll('text')

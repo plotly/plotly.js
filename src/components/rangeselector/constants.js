@@ -19,5 +19,8 @@ module.exports = {
 
     // buttons rect radii
     rx: 3,
-    ry: 3
+    ry: 3,
+
+    // color given to active and hovered buttons
+    activeColor: '#d3d3d3'
 };

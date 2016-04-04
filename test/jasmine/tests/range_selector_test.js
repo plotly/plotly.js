@@ -1,9 +1,11 @@
 var RangeSelector = require('@src/components/rangeselector');
 var getUpdateObject = require('@src/components/rangeselector/get_update_object');
+var constants = require('@src/components/rangeselector/constants');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
+var Color = require('@src/components/color');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var getRectCenter = require('../assets/get_rect_center');
@@ -440,13 +442,16 @@ describe('[range selector suite]', function() {
             var button = d3.select('.button').select('rect');
             var pos = getRectCenter(button.node());
 
-            expect(button.style('fill')).toEqual('rgb(255, 255, 255)');
+            var fillColor = Color.rgb(gd._fullLayout.xaxis.rangeselector.bgcolor);
+            var activeColor = Color.rgb(constants.activeColor);
+
+            expect(button.style('fill')).toEqual(fillColor);
 
             mouseEvent('mouseover', pos[0], pos[1]);
-            expect(button.style('fill')).toEqual('rgb(238, 238, 238)');
+            expect(button.style('fill')).toEqual(activeColor);
 
             mouseEvent('mouseout', pos[0], pos[1]);
-            expect(button.style('fill')).toEqual('rgb(255, 255, 255)');
+            expect(button.style('fill')).toEqual(fillColor);
         });
 
         it('should update is active relayout calls', function(done) {

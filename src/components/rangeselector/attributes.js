@@ -77,7 +77,7 @@ module.exports = {
 
     bgcolor: {
         valType: 'color',
-        dflt: colorAttrs.background,
+        dflt: colorAttrs.lightLine,
         role: 'style',
         description: 'Sets the background color of the range selector buttons.'
     },
