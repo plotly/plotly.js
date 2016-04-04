@@ -1684,7 +1684,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
                     fontSize*(offsetBase + (ax.showticklabels ? 1.5 : 0.5)));
 
             if(ax.rangeslider && ax.rangeslider.visible && ax._boundingBox) {
-                y += gs.h * ax.rangeslider.thickness + ax._boundingBox.height;
+                y += (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) *
+                    ax.rangeslider.thickness + ax._boundingBox.height;
             }
 
             if(!avoid.side) avoid.side = 'bottom';
