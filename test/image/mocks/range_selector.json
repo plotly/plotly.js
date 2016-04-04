@@ -516,7 +516,7 @@
                     },
                     {
                         "step": "year",
-                        "stepmode": "to date",
+                        "stepmode": "todate",
                         "count": 1,
                         "label": "year<br>to date"
                     },
