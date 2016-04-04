@@ -9,9 +9,14 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+
+var Plots = require('../../plots/plots');
+var Color = require('../color');
+var Colorscale = require('../colorscale');
+var Lib = require('../../lib');
+var svgTextUtils = require('../../lib/svg_text_utils');
 
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var subTypes = require('../../traces/scatter/subtypes');
@@ -32,7 +37,7 @@ drawing.font = function(s, family, size, color) {
     }
     if(family) s.style('font-family', family);
     if(size+1) s.style('font-size', size + 'px');
-    if(color) s.call(Plotly.Color.fill, color);
+    if(color) s.call(Color.fill, color);
 };
 
 drawing.setPosition = function(s, x, y) { s.attr('x',x).attr('y',y); };
@@ -83,7 +88,7 @@ drawing.lineGroupStyle = function(s, lw, lc, ld) {
             dash = ld||line.dash||'';
 
         d3.select(this)
-            .call(Plotly.Color.stroke,lc||line.color)
+            .call(Color.stroke,lc||line.color)
             .call(drawing.dashLine, dash, lw1);
     });
 };
@@ -114,7 +119,7 @@ drawing.fillGroupStyle = function(s) {
     .each(function(d) {
         var shape = d3.select(this);
         try {
-            shape.call(Plotly.Color.fill, d[0].trace.fillcolor);
+            shape.call(Color.fill, d[0].trace.fillcolor);
         }
         catch(e) {
             console.log(e,s);
@@ -178,7 +183,7 @@ drawing.pointStyle = function(s, trace) {
 
     // only scatter & box plots get marker path and opacity
     // bars, histograms don't
-    if(Plotly.Plots.traceIs(trace, 'symbols')) {
+    if(Plots.traceIs(trace, 'symbols')) {
         var sizeFn = makeBubbleSizeFn(trace);
 
         s.attr('d', function(d) {
@@ -230,11 +235,11 @@ drawing.pointStyle = function(s, trace) {
 
             if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
             // weird case: array wasn't long enough to apply to every point
-            else if(Array.isArray(markerLine.color)) lineColor = Plotly.Color.defaultLine;
+            else if(Array.isArray(markerLine.color)) lineColor = Color.defaultLine;
             else lineColor = markerLine.color;
 
             if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-            else if(Array.isArray(marker.color)) fillColor = Plotly.Color.defaultLine;
+            else if(Array.isArray(marker.color)) fillColor = Color.defaultLine;
             else fillColor = marker.color || 'rgba(0,0,0,0)';
         }
 
@@ -242,7 +247,7 @@ drawing.pointStyle = function(s, trace) {
         if(d.om) {
             // open markers can't have zero linewidth, default to 1px,
             // and use fill color as stroke color
-            p.call(Plotly.Color.stroke, fillColor)
+            p.call(Color.stroke, fillColor)
                 .style({
                     'stroke-width': (lineWidth||1) + 'px',
                     fill: 'none'
@@ -250,9 +255,9 @@ drawing.pointStyle = function(s, trace) {
         }
         else {
             p.style('stroke-width', lineWidth + 'px')
-                .call(Plotly.Color.fill, fillColor);
+                .call(Color.fill, fillColor);
             if(lineWidth) {
-                p.call(Plotly.Color.stroke, lineColor);
+                p.call(Color.stroke, lineColor);
             }
         }
     });
@@ -262,11 +267,11 @@ drawing.pointStyle = function(s, trace) {
 // have a colorscale for it (ie mscl, mcmin, mcmax) - if we do, translate
 // all numeric color values according to that scale
 drawing.tryColorscale = function(cont, contIn, prefix) {
-    var colorArray = Plotly.Lib.nestedProperty(cont, prefix + 'color').get(),
-        scl = Plotly.Lib.nestedProperty(cont, prefix + 'colorscale').get(),
-        auto = Plotly.Lib.nestedProperty(cont, prefix + 'cauto').get(),
-        minProp = Plotly.Lib.nestedProperty(cont, prefix + 'cmin'),
-        maxProp = Plotly.Lib.nestedProperty(cont, prefix + 'cmax'),
+    var colorArray = Lib.nestedProperty(cont, prefix + 'color').get(),
+        scl = Lib.nestedProperty(cont, prefix + 'colorscale').get(),
+        auto = Lib.nestedProperty(cont, prefix + 'cauto').get(),
+        minProp = Lib.nestedProperty(cont, prefix + 'cmin'),
+        maxProp = Lib.nestedProperty(cont, prefix + 'cmax'),
         min = minProp.get(),
         max = maxProp.get();
 
@@ -287,12 +292,12 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
             }
             minProp.set(min);
             maxProp.set(max);
-            Plotly.Lib.nestedProperty(contIn, prefix + 'cmin').set(min);
-            Plotly.Lib.nestedProperty(contIn, prefix + 'cmax').set(max);
+            Lib.nestedProperty(contIn, prefix + 'cmin').set(min);
+            Lib.nestedProperty(contIn, prefix + 'cmax').set(max);
         }
-        return Plotly.Colorscale.makeScaleFunction(scl, min, max);
+        return Colorscale.makeScaleFunction(scl, min, max);
     }
-    else return Plotly.Lib.identity;
+    else return Lib.identity;
 };
 
 // draw text at points
@@ -328,7 +333,7 @@ drawing.textPointStyle = function(s, trace) {
                 d.tc || trace.textfont.color)
             .attr('text-anchor',h)
             .text(text)
-            .call(Plotly.util.convertToTspans);
+            .call(svgTextUtils.convertToTspans);
         var pgroup = d3.select(this.parentNode),
             tspans = p.selectAll('tspan.line'),
             numLines = ((tspans[0].length||1)-1)*LINEEXPAND+1,
@@ -491,7 +496,7 @@ drawing.bBox = function(node) {
     // remeasure the same thing many times
     var saveNum = node.attributes['data-bb'];
     if(saveNum && saveNum.value) {
-        return Plotly.Lib.extendFlat({}, savedBBoxes[saveNum.value]);
+        return Lib.extendFlat({}, savedBBoxes[saveNum.value]);
     }
 
     var test3 = d3.select('#js-plotly-tester'),
@@ -534,7 +539,7 @@ drawing.bBox = function(node) {
     node.setAttribute('data-bb',savedBBoxes.length);
     savedBBoxes.push(bb);
 
-    return Plotly.Lib.extendFlat({}, bb);
+    return Lib.extendFlat({}, bb);
 };
 
 /*
