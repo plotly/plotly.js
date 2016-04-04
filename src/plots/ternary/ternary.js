@@ -375,28 +375,27 @@ proto.drawAxes = function(doTitles) {
             }
         });
 
-        var btitleSize = baxis.titlefont.size,
-            bpad = (baxis.showticklabels ? baxis.tickfont.size : 0) +
-                (baxis.ticks === 'outside' ? baxis.ticklen : 0) + 3;
+        var bpad = (baxis.showticklabels ? baxis.tickfont.size : 0) +
+            (baxis.ticks === 'outside' ? baxis.ticklen : 0) + 3;
+
         Titles.draw(gd, 'b' + titlesuffix, {
             propContainer: baxis,
             propName: _this.id + '.baxis.title',
             dfltName: 'Component B',
             attributes: {
                 x: _this.x0 - bpad,
-                y: _this.y0 + _this.h + btitleSize * 0.83 + bpad,
+                y: _this.y0 + _this.h + baxis.titlefont.size * 0.83 + bpad,
                 'text-anchor': 'middle'
             }
         });
 
-        var ctitleSize = caxis.titlefont.size;
         Titles.draw(gd, 'c' + titlesuffix, {
             propContainer: caxis,
             propName: _this.id + '.caxis.title',
             dfltName: 'Component C',
             attributes: {
                 x: _this.x0 + _this.w + bpad,
-                y: _this.y0 + _this.h + ctitleSize * 0.83 + bpad,
+                y: _this.y0 + _this.h + caxis.titlefont.size * 0.83 + bpad,
                 'text-anchor': 'middle'
             }
         });
