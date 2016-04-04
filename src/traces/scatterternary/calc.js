@@ -31,7 +31,7 @@ module.exports = function calc(gd, trace) {
     // fill in one missing component
     for(i = 0; i < dataArrays.length; i++) {
         dataArray = dataArrays[i];
-        if(trace[dataArray] && trace[dataArray].length) continue;
+        if(trace[dataArray]) continue;
 
         fillArray1 = trace[arraysToFill[dataArray][0]];
         fillArray2 = trace[arraysToFill[dataArray][1]];

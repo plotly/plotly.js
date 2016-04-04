@@ -27,22 +27,27 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    var a = coerce('a') || [],
-        b = coerce('b') || [],
-        c = coerce('c') || [],
+    var a = coerce('a'),
+        b = coerce('b'),
+        c = coerce('c'),
         len;
 
-    // allow any one array to be missing, len is the minimum
-    // of any that have data
-    if(a.length) {
+    // allow any one array to be missing, len is the minimum length of those
+    // present. Note that after coerce data_array's are either Arrays (which
+    // are truthy even if empty) or undefined. As in scatter, an empty array
+    // is different from undefined, because it can signify that this data is
+    // not known yet but expected in the future
+    if(a) {
         len = a.length;
-        if(b.length) {
+        if(b) {
             len = Math.min(len, b.length);
-            if(c.length) len = Math.min(len, c.length);
+            if(c) len = Math.min(len, c.length);
         }
-        else len = Math.min(len, c.length);
+        else if(c) len = Math.min(len, c.length);
     }
-    else len = Math.min(b.length, c.length);
+    else if(b && c) {
+        len = Math.min(b.length, c.length);
+    }
 
     if(!len) {
         traceOut.visible = false;
