@@ -312,7 +312,7 @@ module.exports = function draw(gd) {
                 yf = dragElement.align(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
                     opts.yanchor);
 
-                var csr = dragElement.cursor(xf, yf,
+                var csr = dragElement.getCursor(xf, yf,
                     opts.xanchor, opts.yanchor);
                 setCursor(legend, csr);
             },
