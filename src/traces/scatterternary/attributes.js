@@ -35,7 +35,7 @@ module.exports = {
             'If `a`, `b`, and `c` are all provided, they need not be',
             'normalized, only the relative values matter. If only two',
             'arrays are provided they must be normalized to match',
-            '`ternary(i).sum`.'
+            '`ternary<i>.sum`.'
         ].join(' ')
     },
     c: {

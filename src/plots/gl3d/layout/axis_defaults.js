@@ -57,13 +57,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
         if(coerce('showspikes')) {
             coerce('spikesides');
             coerce('spikethickness');
-            // TODO: this makes the default spikes #444 rather than
-            // #000, is that OK?
             coerce('spikecolor', containerOut.color);
         }
 
         coerce('showaxeslabels');
-        // TODO: relate backgroundcolor to common containerOut.color?
         if(coerce('showbackground')) coerce('backgroundcolor');
     }
 };

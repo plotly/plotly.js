@@ -42,7 +42,7 @@ dragElement.getCursor = require('./cursor');
 
 var unhover = require('./unhover');
 dragElement.unhover = unhover.wrapped;
-dragElement.unhover_raw = unhover.raw;
+dragElement.unhoverRaw = unhover.raw;
 
 dragElement.init = function init(options) {
     var gd = Lib.getPlotDiv(options.element) || {},

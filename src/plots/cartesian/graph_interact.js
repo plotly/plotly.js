@@ -313,22 +313,20 @@ function hover(gd, evt, subplot) {
                 .map(function(pi) { return pi.id; })),
 
         xaArray = subplots.map(function(spId) {
-            if(spId.substr(0,7) === 'ternary') {
-                return gd._fullLayout[spId]._ternary.xaxis;
-            }
+            var ternary = gd._fullLayout[spId]._ternary;
+            if(ternary) return ternary.xaxis;
             return Plotly.Axes.getFromId(gd, spId, 'x');
         }),
         yaArray = subplots.map(function(spId) {
-            if(spId.substr(0,7) === 'ternary') {
-                return gd._fullLayout[spId]._ternary.yaxis;
-            }
+            var ternary = gd._fullLayout[spId]._ternary;
+            if(ternary) return ternary.xaxis;
             return Plotly.Axes.getFromId(gd, spId, 'y');
         }),
         hovermode = evt.hovermode || fullLayout.hovermode;
 
     if(['x','y','closest'].indexOf(hovermode)===-1 || !gd.calcdata ||
             gd.querySelector('.zoombox') || gd._dragging) {
-        return dragElement.unhover_raw(gd, evt);
+        return dragElement.unhoverRaw(gd, evt);
     }
 
         // hoverData: the set of candidate points we've found to highlight
@@ -400,7 +398,7 @@ function hover(gd, evt, subplot) {
             // in case hover was called from mouseout into hovertext,
             // it's possible you're not actually over the plot anymore
             if(xpx<0 || xpx>dbb.width || ypx<0 || ypx>dbb.height) {
-                return dragElement.unhover_raw(gd,evt);
+                return dragElement.unhoverRaw(gd,evt);
             }
         }
         else {
@@ -419,7 +417,7 @@ function hover(gd, evt, subplot) {
 
         if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
             console.log('Plotly.Fx.hover failed', evt, gd);
-            return dragElement.unhover_raw(gd, evt);
+            return dragElement.unhoverRaw(gd, evt);
         }
     }
 
@@ -518,7 +516,7 @@ function hover(gd, evt, subplot) {
     }
 
     // nothing left: remove all labels and quit
-    if(hoverData.length===0) return dragElement.unhover_raw(gd,evt);
+    if(hoverData.length===0) return dragElement.unhoverRaw(gd,evt);
 
     // if there's more than one horz bar trace,
     // rotate the labels so they don't overlap

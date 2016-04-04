@@ -22,6 +22,10 @@ module.exports = function plot(traces, plotinfo) {
 
     traces.each(function(d) {
         var trace = d[0].trace,
+            // || {} is in case the trace (specifically scatterternary)
+            // doesn't support error bars at all, but does go through
+            // the scatter.plot mechanics, which calls ErrorBars.plot
+            // internally
             xObj = trace.error_x || {},
             yObj = trace.error_y || {};
 
