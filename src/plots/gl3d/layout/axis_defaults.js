@@ -46,10 +46,10 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 letter: axName[0],
                 data: options.data,
                 showGrid: true,
-                bgColor: options.bgColorCombined
+                bgColor: options.bgColor
             });
 
-        coerce('gridcolor', colorMix(containerOut.color, options.bgColorCombined, gridLightness).toRgbString());
+        coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());
         coerce('title', axName[0]);  // shouldn't this be on-par with 2D?
 
         containerOut.setScale = noop;
