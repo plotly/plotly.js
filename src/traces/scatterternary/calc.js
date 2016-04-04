@@ -51,9 +51,9 @@ module.exports = function calc(gd, trace) {
         b = trace.b[i];
         c = trace.c[i];
         if(isNumeric(a) && isNumeric(b) && isNumeric(c)) {
-            a = Number(a);
-            b = Number(b);
-            c = Number(c);
+            a = +a;
+            b = +b;
+            c = +c;
             norm = displaySum / (a + b + c);
             if(norm !== 1) {
                 a *= norm;
