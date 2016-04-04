@@ -9,6 +9,20 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+
+## [1.8.0] -- 2016-04-04
+
+### Added
+- Range slider functionality for scatter traces [#336, #368, #377]
+- Range selector functionality for cartesian and gl2d plot types [#373]
+- Support for connectgaps in scatter3d traces [#361]
+
+### Fixed
+- gl2d toImage mode bar button is now again functional (bug introduced in 1.7.0) [#369]
+- IE / Edge handling of getComputedTextLength is now functional [#376]
+- improved marker color attribute description [#366]
+
+
 ## [1.7.1] -- 2016-03-30
 
 ### Fixed
