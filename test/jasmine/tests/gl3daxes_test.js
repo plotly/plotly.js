@@ -11,7 +11,8 @@ describe('Test Gl3dAxes', function() {
         var options = {
             font: 'Open Sans',
             scene: {id: 'scene'},
-            data: [{x: [], y: []}]
+            data: [{x: [], y: []}],
+            bgColor: '#fff'
         };
 
         beforeEach(function() {
