@@ -1,11 +1,17 @@
+var Fuse = require('fuse.js');
+var mocks = require('./mocks.json');
+
+
 // Our gracious testing object
 var Tabs = {
 
+    // Return the specified plot container (or default one)
     getGraph: function(id) {
         id = id || 'graph';
         return document.getElementById(id);
     },
 
+    // Create a new plot container
     fresh: function(id) {
         id = id || 'graph';
 
@@ -25,14 +31,18 @@ var Tabs = {
         return graphDiv;
     },
 
+    // Plot a mock by name (without .json) to the default or specified container
     plotMock: function(mockName, id) {
         var mockURL = '/test/image/mocks/' + mockName + '.json';
 
         window.Plotly.d3.json(mockURL, function(err, fig) {
             window.Plotly.plot(Tabs.fresh(id), fig.data, fig.layout);
+
+            console.warn('Plotting:', mockURL);
         });
     },
 
+    // Save a png snapshot and display it below the plot
     snapshot: function(id) {
         var gd = Tabs.getGraph(id);
 
@@ -52,9 +62,10 @@ var Tabs = {
         });
     },
 
+    // Remove all plots and snapshots from the page
     purge: function() {
         var plots = document.getElementsByClassName('dashboard-plot');
-        var images = document.getElementsById('snapshot');
+        var images = document.getElementById('snapshot');
 
         while(images.firstChild) {
             images.removeChild(images.firstChild);
@@ -65,10 +76,12 @@ var Tabs = {
         }
     },
 
+    // Specify what to do after each plotly.js script reload
     onReload: function() {
         return;
     },
 
+    // Refreshes the plotly.js source without needing to refresh the page
     reload: function() {
         var source = document.getElementById('source');
         var reloaded = document.getElementById('reload-time');
@@ -92,6 +105,8 @@ var Tabs = {
 };
 
 
+// Bind things to the window
+window.Tabs = Tabs;
 setInterval(function() {
     window.gd = Tabs.getGraph() || Tabs.fresh();
     window.fullLayout = window.gd._fullLayout;
@@ -100,10 +115,19 @@ setInterval(function() {
 
 
 // Mocks search and plotting
-var f = new window.Fuse(window.MOCKS, { keys: ['name'] });
+var f = new Fuse(mocks, {
+    keys: [{
+        name: 'name',
+        weight: 0.7
+    }, {
+        name: 'keywords',
+        weight: 0.3
+    }]
+});
 
 var searchBar = document.getElementById('mocks-search');
 var mocksList = document.getElementById('mocks-list');
+
 searchBar.addEventListener('keyup', function(e) {
 
     // Clear results.
@@ -120,10 +144,10 @@ searchBar.addEventListener('keyup', function(e) {
         result.innerText = r.name;
 
         result.addEventListener('click', function() {
+
             // Clear plots and plot selected.
             Tabs.purge();
             Tabs.plotMock(r.file.slice(0, -5));
-            console.warn('Plotting:', r.file);
 
             // Clear results.
             while(mocksList.firstChild) {

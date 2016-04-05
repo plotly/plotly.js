@@ -1,0 +1,54 @@
+html, body{
+  margin: 0;
+  padding: 0;
+  font-family: helvetica, arial, sans-serif;
+}
+header{
+  height: 40px;
+  border-bottom: 1px solid #4983EC;
+}
+header img{
+  height: 100%;
+  display: inline-block;
+  vertical-align: top;
+}
+header input{
+  float: right;
+  background-color: none;
+  border: none;
+  border-bottom: 1px solid #ddd;
+  padding: 5px;
+  outline: none;
+  margin-top: 6px;
+  margin-right: 10px;
+}
+header span{
+  color: #bbb;
+  font-size: 10px;
+  line-height: 40px;
+}
+#mocks-list{
+  position: absolute;
+  right: 0px;
+  top: 40px;
+  z-index: 100000;
+  background-color: #fff;
+  border-left: 1px solid #4983EC;
+  border-bottom: 1px solid #4983EC;
+  border-top: 1px solid #4983EC;
+}
+.search-result{
+  display: block;
+  margin-bottom: 2px;
+  padding: 5px 10px;
+  text-align: right;
+  font-size: 12px;
+}
+.search-result:hover{
+  color: #fff;
+  background-color: #4983EC;
+}
+.dashboard-plot{
+  margin-bottom: 30px;
+  max-width: 940px;
+}
