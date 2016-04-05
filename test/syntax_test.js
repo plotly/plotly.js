@@ -82,7 +82,11 @@ function assertFileNames() {
             var base = path.basename(file);
 
             if(base !== base.toLowerCase()) {
-                logs.push(file + ' : has some non-lower-case characters.');
+                logs.push([
+                    file, ' :',
+                    'has a file name containing some',
+                    'non-lower-case characters'
+                ]);
             }
         });
 
