@@ -183,7 +183,7 @@ function deleteShape(gd, index) {
         // so they bind to the right events
         gd._fullLayout._shapelayer
             .selectAll('[data-index="' + (i+1) + '"]')
-            .attr('data-index', String(i));
+            .attr('data-index', i);
         shapes.draw(gd, i);
     }
 
@@ -206,7 +206,7 @@ function insertShape(gd, index, newShape) {
     for(var i = gd._fullLayout.shapes.length - 1; i > index; i--) {
         gd._fullLayout._shapelayer
             .selectAll('[data-index="' + (i - 1) + '"]')
-            .attr('data-index', String(i));
+            .attr('data-index', i);
         shapes.draw(gd, i);
     }
 
@@ -292,7 +292,7 @@ function updateShape(gd, index, opt, value) {
     gd._fullLayout.shapes[index] = options;
 
     var attrs = {
-            'data-index': String(index),
+            'data-index': index,
             'fill-rule': 'evenodd',
             d: shapePath(gd, options)
         },
