@@ -14,6 +14,8 @@ var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
 // main
 assertJasmineSuites();
 assertHeaders();
+assertFileNames();
+
 
 // check for for focus and exclude jasmine blocks
 function assertJasmineSuites() {
@@ -69,6 +71,24 @@ function assertHeaders() {
 
         log(logs);
     });
+}
+
+// check that all file names are in lower case
+function assertFileNames() {
+    var logs = [];
+
+    glob(combineGlobs([srcGlob, libGlob, testGlob, bundleTestGlob]), function(err, files) {
+        files.forEach(function(file) {
+            var base = path.basename(file);
+
+            if(base !== base.toLowerCase()) {
+                logs.push(file + ' : has some non-lower-case characters.');
+            }
+        });
+
+        log(logs);
+    });
+
 }
 
 function combineGlobs(arr) {
