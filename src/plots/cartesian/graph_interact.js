@@ -1431,11 +1431,11 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     fx.dragElement(dragOptions);
 
-    var x0,
-        y0,
+    var zoomlayer = gd._fullLayout._shapelayer,
         xs = plotinfo.x()._offset,
         ys = plotinfo.y()._offset,
-        zoomlayer = gd._fullLayout._shapelayer,
+        x0,
+        y0,
         box,
         lum,
         path0,
