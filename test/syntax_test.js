@@ -6,6 +6,10 @@ var glob = require('glob');
 
 var constants = require('../tasks/util/constants');
 
+var srcGlob = path.join(constants.pathToSrc, '**/*.js');
+var libGlob = path.join(constants.pathToLib, '**/*.js');
+var testGlob = path.join(constants.pathToJasmineTests, '**/*.js');
+var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
 
 // main
 assertJasmineSuites();
@@ -14,11 +18,9 @@ assertHeaders();
 // check for for focus and exclude jasmine blocks
 function assertJasmineSuites() {
     var BLACK_LIST = ['fdescribe', 'fit', 'xdescribe', 'xit'];
-    var testGlob = path.join(constants.pathToJasmineTests, '**/*.js');
-    var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
     var logs = [];
 
-    glob('{' + testGlob + ',' + bundleTestGlob + '}', function(err, files) {
+    glob(combineGlobs([testGlob, bundleTestGlob]), function(err, files) {
         files.forEach(function(file) {
             var code = fs.readFileSync(file, 'utf-8');
 
@@ -35,9 +37,7 @@ function assertJasmineSuites() {
 
         });
 
-        if(logs.length) {
-            throw new Error('\n' + logs.join('\n') + '\n');
-        }
+        log(logs);
     });
 }
 
@@ -45,11 +45,9 @@ function assertJasmineSuites() {
 function assertHeaders() {
     var licenseSrc = constants.licenseSrc;
     var licenseStr = licenseSrc.substring(2, licenseSrc.length - 2);
-    var srcGlob = path.join(constants.pathToSrc, '**/*.js');
-    var libGlob = path.join(constants.pathToLib, '**/*.js');
     var logs = [];
 
-    glob('{' + srcGlob + ',' + libGlob + '}', function(err, files) {
+    glob(combineGlobs([srcGlob, libGlob]), function(err, files) {
         files.forEach(function(file) {
             var code = fs.readFileSync(file, 'utf-8');
 
@@ -69,8 +67,16 @@ function assertHeaders() {
             }
         });
 
-        if(logs.length) {
-            throw new Error('\n' + logs.join('\n') + '\n');
-        }
+        log(logs);
     });
+}
+
+function combineGlobs(arr) {
+    return '{' + arr.join(',') + '}';
+}
+
+function log(logs) {
+    if(logs.length) {
+        throw new Error('\n' + logs.join('\n') + '\n');
+    }
 }
