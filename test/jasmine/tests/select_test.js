@@ -1,3 +1,5 @@
+var d3 = require('d3');
+
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
@@ -53,6 +55,80 @@ describe('select box and lasso', function() {
         expect(actual.x).toBeCloseToArray(expected.x, PRECISION);
         expect(actual.y).toBeCloseToArray(expected.y, PRECISION);
     }
+
+    describe('select elements', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.dragmode = 'select';
+
+        var gd;
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                .then(done);
+        });
+
+        it('should be appended to the zoom layer', function() {
+            var x0 = 100;
+            var y0 = 200;
+            var x1 = 150;
+            var y1 = 200;
+
+            mouseEvent('mousemove', x0, y0);
+            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                .toEqual(0);
+
+            mouseEvent('mousedown', x0, y0);
+            mouseEvent('mousemove', x1, y1);
+            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                .toEqual(1);
+            expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                .toEqual(2);
+
+            mouseEvent('mouseup', x1, y1);
+            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                .toEqual(0);
+            expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                .toEqual(2);
+        });
+    });
+
+    describe('lasso elements', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.dragmode = 'lasso';
+
+        var gd;
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                .then(done);
+        });
+
+        it('should be appended to the the shape layer', function() {
+            var x0 = 100;
+            var y0 = 200;
+            var x1 = 150;
+            var y1 = 200;
+
+            mouseEvent('mousemove', x0, y0);
+            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                .toEqual(0);
+
+            mouseEvent('mousedown', x0, y0);
+            mouseEvent('mousemove', x1, y1);
+            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                .toEqual(1);
+            expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                .toEqual(2);
+
+            mouseEvent('mouseup', x1, y1);
+            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                .toEqual(0);
+            expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                .toEqual(2);
+        });
+    });
 
     describe('select events', function() {
         var mockCopy = Lib.extendDeep({}, mock);
