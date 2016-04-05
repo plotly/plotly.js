@@ -1,11 +1,17 @@
 html, body{
   margin: 0;
-  padding: 0;
+  padding: 40px 0 0 0;
   font-family: helvetica, arial, sans-serif;
+  background-color: #fafafa;
 }
 header{
+  position: fixed;
+  top: 0;
   height: 40px;
+  width: 100%;
   border-bottom: 1px solid #4983EC;
+  background-color: #ffffff;
+  z-index: 100000;
 }
 header img{
   height: 100%;
@@ -28,14 +34,16 @@ header span{
   line-height: 40px;
 }
 #mocks-list{
-  position: absolute;
+  position: fixed;
   right: 0px;
   top: 40px;
+  bottom: 0px;
   z-index: 100000;
   background-color: #fff;
   border-left: 1px solid #4983EC;
   border-bottom: 1px solid #4983EC;
   border-top: 1px solid #4983EC;
+  overflow: scroll;
 }
 .search-result{
   display: block;
@@ -47,6 +55,9 @@ header span{
 .search-result:hover{
   color: #fff;
   background-color: #4983EC;
+}
+#plots{
+  width: 100%;
 }
 .dashboard-plot{
   margin-bottom: 30px;

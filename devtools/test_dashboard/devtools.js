@@ -1,5 +1,5 @@
 var Fuse = require('fuse.js');
-var mocks = require('./mocks.json');
+var mocks = require('../../build/test_dashboard_mocks.json');
 
 
 // Our gracious testing object
@@ -127,6 +127,7 @@ var f = new Fuse(mocks, {
 
 var searchBar = document.getElementById('mocks-search');
 var mocksList = document.getElementById('mocks-list');
+var plotArea = document.getElementById('plots');
 
 searchBar.addEventListener('keyup', function(e) {
 
@@ -148,15 +149,11 @@ searchBar.addEventListener('keyup', function(e) {
             // Clear plots and plot selected.
             Tabs.purge();
             Tabs.plotMock(r.file.slice(0, -5));
-
-            // Clear results.
-            while(mocksList.firstChild) {
-                mocksList.removeChild(mocksList.firstChild);
-            }
-
-            e.target.value = '';
         });
 
         mocksList.appendChild(result);
+
+        var listWidth = mocksList.getBoundingClientRect.width;
+        plotArea.setAttribute('width', window.innerWidth - listWidth);
     });
 });
