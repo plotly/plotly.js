@@ -28,13 +28,11 @@ var b = browserify(constants.pathToPlotlyIndex, {
     packageCache: {},
     plugin: [watchify]
 });
-b.on('update', bundleDevtools);
+b.on('update', bundlePlotly);
 
 // Bundle devtools code
 var devtoolsPath = path.join(constants.pathToRoot, 'devtools/test_dashboard');
-var devtools = browserify(path.join(devtoolsPath, 'devtools.js'), {
-    transform: [compress]
-});
+var devtools = browserify(path.join(devtoolsPath, 'devtools.js'), {});
 
 var firstBundle = true;
 
@@ -100,7 +98,7 @@ function createMocksList(files) {
 }
 
 function saveToFile(mocksList) {
-    var filePath = path.join(constants.pathToRoot, 'devtools/test_dashboard/mocks.json');
+    var filePath = path.join(constants.pathToBuild, 'test_dashboard_mocks.json');
     var content = JSON.stringify(mocksList, null, 4);
 
     return writeFilePromise(filePath, content);

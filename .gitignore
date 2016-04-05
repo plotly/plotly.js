@@ -6,6 +6,4 @@ build/*
 !build/ploticon.js
 !build/README.md
 
-devtools/test_dashboard/mocks.json
-
 npm-debug.log*
