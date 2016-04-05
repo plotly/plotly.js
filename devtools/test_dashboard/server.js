@@ -74,7 +74,7 @@ function readFiles(files) {
 }
 
 function createMocksList(files) {
-    var mocksList = files.map(function(file, i) {
+    var mocksList = files.map(function(file) {
         var contents = JSON.parse(file.contents);
 
         // get plot type keywords from mocks
