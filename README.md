@@ -55,15 +55,15 @@ If you would like to reduce the bundle size of plotly.js, you can create a *cust
 
 ```javascript
 // in custom-plotly.js
-var plotlyCore = require('plotly.js/lib/core');
+var Plotly = require('plotly.js/lib/core');
 
 // Load in the trace types for pie, and choropleth
-plotlyCore.register([
+Plotly.register([
     require('plotly.js/lib/pie'),
     require('plotly.js/lib/choropleth')
 ]);
 
-module.exports = plotlyCore;
+module.exports = Plotly;
 ```
 
 Then elsewhere in your code:
