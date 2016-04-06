@@ -1,0 +1,24 @@
+{
+  "data": [{
+    "x": [1,2,3,4,5],
+    "y": [1,2,3,4],
+    "marker": {
+      "color": [1,2,3,4],
+      "cmin": 2,
+      "cmax": 3,
+      "showscale": true
+    }
+  }, {
+    "x": [1,2,3,4,5],
+    "y": [4,3,2,1],
+    "marker": {
+      "color": [1,2,3,4],
+      "cmin": 1,
+      "cmax": 4,
+      "showscale": false
+    }
+  }],
+  "layout": {
+    "showlegend": false
+  }
+}
