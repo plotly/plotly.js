@@ -86,6 +86,7 @@
     "ecstatic": "^1.4.0",
     "eslint": "^2.1.0",
     "falafel": "^1.2.0",
+    "fuse.js": "^2.2.0",
     "glob": "^7.0.0",
     "jasmine-core": "^2.3.4",
     "karma": "^0.13.15",

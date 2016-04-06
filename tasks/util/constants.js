@@ -19,6 +19,7 @@ module.exports = {
     pathToRoot: pathToRoot,
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
+    pathToBuild: pathToBuild,
 
     pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
