@@ -153,7 +153,8 @@ searchBar.addEventListener('keyup', function(e) {
 
         mocksList.appendChild(result);
 
-        var listWidth = mocksList.getBoundingClientRect.width;
-        plotArea.setAttribute('width', window.innerWidth - listWidth);
+        var listWidth = mocksList.getBoundingClientRect().width;
+        var plotAreaWidth = Math.floor(window.innerWidth - listWidth);
+        plotArea.setAttribute('style', 'width: ' + plotAreaWidth + 'px;');
     });
 });

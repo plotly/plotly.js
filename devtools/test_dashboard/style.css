@@ -57,9 +57,8 @@ header span{
   background-color: #4983EC;
 }
 #plots{
-  width: 100%;
+  overflow: scroll;
 }
 .dashboard-plot{
   margin-bottom: 30px;
-  max-width: 940px;
 }
