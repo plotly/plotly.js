@@ -13,6 +13,7 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../../lib');
 var Color = require('../color');
 
 
@@ -34,7 +35,10 @@ module.exports = function makeScaleFunction(scl, cmin, cmax) {
         .range(range);
 
     return function(v) {
-        if(isNumeric(v)) return sclFunc(v);
+        if(isNumeric(v)) {
+            var sclVal = Lib.constrain(v, cmin, cmax);
+            return sclFunc(sclVal);
+        }
         else if(tinycolor(v).isValid()) return v;
         else return Color.defaultLine;
     };
