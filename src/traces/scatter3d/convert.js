@@ -432,7 +432,7 @@ proto.dispose = function() {
         this.scatterPlot.dispose();
     }
     if(this.errorBars) {
-        this.scene.remove(this.errorBars);
+        this.scene.glplot.remove(this.errorBars);
         this.errorBars.dispose();
     }
     if(this.textMarkers) {
