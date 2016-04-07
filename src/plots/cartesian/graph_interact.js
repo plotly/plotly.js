@@ -1431,7 +1431,10 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     fx.dragElement(dragOptions);
 
-    var x0,
+    var zoomlayer = gd._fullLayout._shapelayer,
+        xs = plotinfo.x()._offset,
+        ys = plotinfo.y()._offset,
+        x0,
         y0,
         box,
         lum,
@@ -1453,15 +1456,16 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dimmed = false;
         zoomMode = 'xy';
 
-        zb = plotinfo.plot.append('path')
+        zb = zoomlayer.append('path')
             .attr('class', 'zoombox')
             .style({
                 'fill': lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
+            .attr('transform','translate(' + xs + ' ' + ys + ')')
             .attr('d', path0 + 'Z');
 
-        corners = plotinfo.plot.append('path')
+        corners = zoomlayer.append('path')
             .attr('class', 'zoombox-corners')
             .style({
                 fill: Plotly.Color.background,
@@ -1469,6 +1473,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 'stroke-width': 1,
                 opacity: 0
             })
+            .attr('transform','translate(' + xs + ' ' + ys + ')')
             .attr('d','M0,0Z');
 
         clearSelect();
@@ -1479,7 +1484,7 @@ function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // until we get around to persistent selections, remove the outline
         // here. The selection itself will be removed when the plot redraws
         // at the end.
-        plotinfo.plot.selectAll('.select-outline').remove();
+        zoomlayer.selectAll('.select-outline').remove();
     }
 
     function zoomMove(dx0, dy0) {
