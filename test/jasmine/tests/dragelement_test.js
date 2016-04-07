@@ -1,5 +1,151 @@
 var dragElement = require('@src/components/dragelement');
 
+var d3 = require('d3');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var mouseEvent = require('../assets/mouse_event');
+
+
+describe('dragElement', function() {
+    'use strict';
+
+    beforeEach(function() {
+        this.gd = createGraphDiv();
+        this.hoverlayer = document.createElement('div');
+        this.element = document.createElement('div');
+
+        this.gd.className = 'js-plotly-plot';
+        this.gd._fullLayout = {
+            _hoverlayer: d3.select(this.hoverlayer)
+        };
+        this.element.innerHTML = 'drag element';
+
+        this.gd.appendChild(this.element);
+        this.element.appendChild(this.hoverlayer);
+
+        var clientRect = this.element.getBoundingClientRect();
+        this.x = clientRect.left + clientRect.width / 2;
+        this.y = clientRect.top + clientRect.height / 2;
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should init drag element', function() {
+        var options = { element: this.element };
+        dragElement.init(options);
+
+        expect(this.element.style.pointerEvents).toEqual('all', 'with pointer event style');
+        expect(this.element.onmousedown).not.toBe(null, 'with on mousedown handler');
+    });
+
+    it('should pass event, startX and startY to prepFn on mousedown', function() {
+        var args = [];
+        var options = {
+            element: this.element,
+            prepFn: function(event, startX, startY) {
+                args = [event, startX, startY];
+            }
+        };
+        dragElement.init(options);
+
+        mouseEvent('mousedown', this.x, this.y);
+        mouseEvent('mouseup', this.x, this.y);
+
+        expect(args[0]).not.toBe(null);
+        expect(args[1]).toEqual(Math.floor(this.x));
+        expect(args[2]).toEqual(Math.floor(this.y));
+    });
+
+    it('should pass dragged, dx and dy to moveFn on mousemove', function() {
+        var args = [];
+        var options = {
+            element: this.element,
+            moveFn: function(dx, dy, dragged) {
+                args = [dx, dy, dragged];
+            }
+        };
+        dragElement.init(options);
+
+        mouseEvent('mousedown', this.x, this.y);
+        mouseEvent('mousemove', this.x + 10, this.y + 10);
+        mouseEvent('mouseup', this.x, this.y);
+
+        expect(args[0]).toEqual(10);
+        expect(args[1]).toEqual(10);
+        expect(args[2]).toBe(true);
+    });
+
+    it('should pass dragged and numClicks to doneFn on mouseup & mouseout', function() {
+        var args = [];
+        var options = {
+            element: this.element,
+            doneFn: function(dragged, numClicks) {
+                args = [dragged, numClicks];
+            }
+        };
+        dragElement.init(options);
+
+        mouseEvent('mousedown', this.x, this.y);
+        mouseEvent('mouseup', this.x, this.y);
+
+        expect(args[0]).toBe(false);
+        expect(args[1]).toEqual(1);
+
+        mouseEvent('mousedown', this.x, this.y);
+        mouseEvent('mousemove', this.x + 10, this.y + 10);
+        mouseEvent('mouseout', this.x, this.y);
+
+        expect(args[0]).toBe(true);
+        expect(args[1]).toEqual(2);
+    });
+
+    it('should add a cover slip div to the DOM', function() {
+        function countCoverSlip() {
+            return d3.selectAll('.dragcover').size();
+        }
+
+        var options = { element: this.element };
+        dragElement.init(options);
+
+        expect(countCoverSlip()).toEqual(0);
+
+        mouseEvent('mousedown', this.x, this.y);
+        expect(countCoverSlip()).toEqual(1);
+
+        mouseEvent('mousemove', this.x + 10, this.y + 10);
+        expect(countCoverSlip()).toEqual(1);
+
+        mouseEvent('mouseout', this.x, this.y);
+        expect(countCoverSlip()).toEqual(0);
+    });
+
+    it('should fire off click event when down/up without dragging', function() {
+        var options = { element: this.element };
+        dragElement.init(options);
+
+        var mockObj = {
+            handleClick: function() {},
+            dummy: function() {}
+        };
+        spyOn(mockObj, 'handleClick');
+        spyOn(mockObj, 'dummy');
+
+        this.element.onclick = mockObj.handleClick;
+
+        mouseEvent('mousedown', this.x, this.y);
+        mouseEvent('mouseup', this.x, this.y);
+
+        expect(mockObj.handleClick).toHaveBeenCalled();
+
+        this.element.onclick = mockObj.dummy;
+
+        mouseEvent('mousedown', this.x, this.y);
+        mouseEvent('mousemove', this.x + 10, this.y + 10);
+        mouseEvent('mouseup', this.x, this.y);
+
+        expect(mockObj.dummy).not.toHaveBeenCalled();
+    });
+});
 
 describe('dragElement.getCursor', function() {
     'use strict';
