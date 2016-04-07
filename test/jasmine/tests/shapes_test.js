@@ -79,6 +79,7 @@ describe('Test shapes:', function() {
             var shape = getRandomShape();
 
             Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
+                expect(countShapeLayers()).toEqual(1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
             }).then(done);
@@ -89,11 +90,13 @@ describe('Test shapes:', function() {
             var shape = getRandomShape();
 
             Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
+                expect(countShapeLayers()).toEqual(1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
             }).then(function() {
                 Plotly.relayout(gd, 'shapes[' + index + ']', 'remove');
             }).then(function() {
+                expect(countShapeLayers()).toEqual(1);
                 expect(countShapes(gd)).toEqual(index);
             }).then(done);
         });
