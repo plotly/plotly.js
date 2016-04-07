@@ -120,7 +120,7 @@ module.exports = {
             dflt: 1,
             role: 'style',
             description: [
-                'Has only an effect if `shape` is set to *spline*',
+                'Has an effect only if `shape` is set to *spline*',
                 'Sets the amount of smoothing.',
                 '*0* corresponds to no smoothing (equivalent to a *linear* shape).'
             ].join(' ')
@@ -222,7 +222,7 @@ module.exports = {
             dflt: 1,
             role: 'style',
             description: [
-                'Has only an effect if `marker.size` is set to a numerical array.',
+                'Has an effect only if `marker.size` is set to a numerical array.',
                 'Sets the scale factor used to determine the rendered size of',
                 'marker points. Use with `sizemin` and `sizemode`.'
             ].join(' ')
@@ -233,7 +233,7 @@ module.exports = {
             dflt: 0,
             role: 'style',
             description: [
-                'Has only an effect if `marker.size` is set to a numerical array.',
+                'Has an effect only if `marker.size` is set to a numerical array.',
                 'Sets the minimum size (in px) of the rendered marker points.'
             ].join(' ')
         },
@@ -243,7 +243,7 @@ module.exports = {
             dflt: 'diameter',
             role: 'info',
             description: [
-                'Has only an effect if `marker.size` is set to a numerical array.',
+                'Has an effect only if `marker.size` is set to a numerical array.',
                 'Sets the rule for which the data in `size` is converted',
                 'to pixels.'
             ].join(' ')
@@ -269,7 +269,7 @@ module.exports = {
             dflt: true,
             role: 'style',
             description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Has an effect only if `marker.color` is set to a numerical array.',
                 'Determines the whether or not the color domain is computed',
                 'automatically.'
             ].join(' ')
@@ -279,7 +279,7 @@ module.exports = {
             dflt: null,
             role: 'info',
             description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Has an effect only if `marker.color` is set to a numerical array.',
                 'Sets the upper bound of the color domain.',
                 'Value should be associated to the `marker.color` array index,',
                 'and if set, `marker.cmin` must be set as well.'
@@ -290,7 +290,7 @@ module.exports = {
             dflt: null,
             role: 'info',
             description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Has an effect only if `marker.color` is set to a numerical array.',
                 'Sets the lower bound of the color domain.',
                 'Value should be associated to the `marker.color` array index,',
                 'and if set, `marker.cmax` must be set as well.'
@@ -301,7 +301,7 @@ module.exports = {
             dflt: true,
             role: 'style',
             description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Has an effect only if `marker.color` is set to a numerical array.',
                 'Determines whether or not the colorscale is picked using',
                 'values inside `marker.color`.'
             ].join(' ')
@@ -311,7 +311,7 @@ module.exports = {
             role: 'style',
             dflt: false,
             description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Has an effect only if `marker.color` is set to a numerical array.',
                 'Reverses the colorscale.'
             ].join(' ')
         },
@@ -320,7 +320,7 @@ module.exports = {
             role: 'info',
             dflt: false,
             description: [
-                'Has only an effect if `marker.color` is set to a numerical array.',
+                'Has an effect only if `marker.color` is set to a numerical array.',
                 'Determines whether or not a colorbar is displayed.'
             ].join(' ')
         },
@@ -364,7 +364,7 @@ module.exports = {
                 dflt: true,
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
+                    'Has an effect only if `marker.line.color` is set to a numerical array.',
                     'Determines the whether or not the color domain is computed',
                     'with respect to the input data.'
                 ].join(' ')
@@ -374,7 +374,7 @@ module.exports = {
                 dflt: null,
                 role: 'info',
                 description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
+                    'Has an effect only if `marker.line.color` is set to a numerical array.',
                     'Sets the upper bound of the color domain.',
                     'Value should be associated to the `marker.line.color` array index,',
                     'and if set, `marker.line.cmin` must be set as well.'
@@ -385,7 +385,7 @@ module.exports = {
                 dflt: null,
                 role: 'info',
                 description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
+                    'Has an effect only if `marker.line.color` is set to a numerical array.',
                     'Sets the lower bound of the color domain.',
                     'Value should be associated to the `marker.line.color` array index,',
                     'and if set, `marker.line.cmax` must be set as well.'
@@ -396,7 +396,7 @@ module.exports = {
                 dflt: true,
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
+                    'Has an effect only if `marker.line.color` is set to a numerical array.',
                     'Determines whether or not the colorscale is picked using',
                     'the sign of values inside `marker.line.color`.'
                 ].join(' ')
@@ -406,7 +406,7 @@ module.exports = {
                 dflt: false,
                 role: 'style',
                 description: [
-                    'Has only an effect if `marker.line.color` is set to a numerical array.',
+                    'Has an effect only if `marker.line.color` is set to a numerical array.',
                     'Reverses the colorscale.'
                 ].join(' ')
             }
