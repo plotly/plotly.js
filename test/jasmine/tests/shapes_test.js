@@ -75,28 +75,33 @@ describe('Test shapes:', function() {
 
     describe('Plotly.relayout', function() {
         it('should be able to add a shape', function(done) {
+            var pathCount = countShapePaths();
             var index = countShapes(gd);
             var shape = getRandomShape();
 
             Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
                 expect(countShapeLayers()).toEqual(1);
+                expect(countShapePaths()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
             }).then(done);
         });
 
         it('should be able to remove a shape', function(done) {
+            var pathCount = countShapePaths();
             var index = countShapes(gd);
             var shape = getRandomShape();
 
             Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
                 expect(countShapeLayers()).toEqual(1);
+                expect(countShapePaths()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
             }).then(function() {
                 Plotly.relayout(gd, 'shapes[' + index + ']', 'remove');
             }).then(function() {
                 expect(countShapeLayers()).toEqual(1);
+                expect(countShapePaths()).toEqual(pathCount);
                 expect(countShapes(gd)).toEqual(index);
             }).then(done);
         });
