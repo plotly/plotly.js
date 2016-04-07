@@ -440,7 +440,7 @@ proto.dispose = function() {
         this.textMarkers.dispose();
     }
     if(this.delaunayMesh) {
-        this.scene.glplot.remove(this.textMarkers);
+        this.scene.glplot.remove(this.delaunayMesh);
         this.delaunayMesh.dispose();
     }
 };
