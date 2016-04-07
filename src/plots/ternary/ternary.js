@@ -695,4 +695,3 @@ function removeZoombox(gd) {
         .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
         .remove();
 }
-
