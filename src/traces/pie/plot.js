@@ -129,7 +129,8 @@ module.exports = function plot(gd, cdpie) {
                     hasHoverData = true;
                 }
 
-                function handleMouseOut() {
+                function handleMouseOut(evt) {
+                    Fx.unhover(gd, evt, 'pie');
                     if(hasHoverData) {
                         Fx.loneUnhover(fullLayout._hoverlayer.node());
                         hasHoverData = false;
