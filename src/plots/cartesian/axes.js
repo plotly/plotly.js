@@ -1321,8 +1321,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 var plotinfo = fullLayout._plots[subplot],
                     xa = plotinfo.x(),
                     ya = plotinfo.y();
-                plotinfo.plot.attr('viewBox',
-                    '0 0 '+xa._length+' '+ya._length);
+
                 plotinfo.xaxislayer
                     .selectAll('.'+xa._id+'tick').remove();
                 plotinfo.yaxislayer
