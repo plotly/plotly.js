@@ -1,0 +1,231 @@
+{
+    "data": [
+        {
+            "type": "scatter3d",
+            "mode": "lines",
+            "x": [
+                0,
+                1,
+                1,
+                0,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            "z": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "surfaceaxis": 2,
+            "name": "face 1",
+            "line": {
+                "width": 5
+            },
+            "uid": "6a4a7a",
+            "opacity": 0.3
+        },
+        {
+            "type": "scatter3d",
+            "mode": "lines",
+            "x": [
+                0,
+                1,
+                1,
+                0,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            "z": [
+                1,
+                1,
+                1,
+                1,
+                1
+            ],
+            "surfaceaxis": 2,
+            "name": "face 2",
+            "line": {
+                "width": 5
+            },
+            "uid": "4b1345",
+            "opacity": 0.3
+        },
+        {
+            "type": "scatter3d",
+            "mode": "lines",
+            "x": [
+                0,
+                1,
+                1,
+                0,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "z": [
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            "surfaceaxis": 1,
+            "name": "face 3",
+            "line": {
+                "width": 5
+            },
+            "uid": "1fb492",
+            "opacity": 0.3
+        },
+        {
+            "type": "scatter3d",
+            "mode": "lines",
+            "x": [
+                0,
+                1,
+                1,
+                0,
+                0
+            ],
+            "y": [
+                1,
+                1,
+                1,
+                1,
+                1
+            ],
+            "z": [
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            "surfaceaxis": 1,
+            "name": "face 4",
+            "line": {
+                "width": 5
+            },
+            "uid": "c96af2",
+            "opacity": 0.3
+        },
+        {
+            "type": "scatter3d",
+            "mode": "lines",
+            "x": [
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            "z": [
+                0,
+                1,
+                1,
+                0,
+                0
+            ],
+            "surfaceaxis": 0,
+            "name": "face 5",
+            "line": {
+                "width": 5
+            },
+            "uid": "9501a8",
+            "opacity": 0.3
+        },
+        {
+            "type": "scatter3d",
+            "mode": "lines",
+            "x": [
+                1,
+                1,
+                1,
+                1
+            ],
+            "y": [
+                0,
+                0,
+                1,
+                1,
+                0
+            ],
+            "z": [
+                0,
+                1,
+                1,
+                0,
+                0
+            ],
+            "surfaceaxis": 0,
+            "name": "face 6",
+            "line": {
+                "width": 5
+            },
+            "uid": "44e541",
+            "opacity": 0.3
+        }
+    ],
+    "layout": {
+        "scene": {
+            "xaxis": {
+                "showgrid": false,
+                "showline": false,
+                "zeroline": false,
+                "showticklabels": false,
+                "title": "",
+                "type": "linear"
+            },
+            "yaxis": {
+                "showgrid": false,
+                "showline": false,
+                "zeroline": false,
+                "showticklabels": false,
+                "title": "",
+                "type": "linear"
+            },
+            "zaxis": {
+                "showgrid": false,
+                "showline": false,
+                "zeroline": false,
+                "showticklabels": false,
+                "title": "",
+                "type": "linear"
+            },
+            "aspectratio": {
+                "x": 1,
+                "y": 1,
+                "z": 1
+            }
+        },
+        "height": 450,
+        "width": 1731.82,
+        "autosize": true
+    }
+}
