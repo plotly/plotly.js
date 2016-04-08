@@ -51,8 +51,6 @@ describe('pie unhovering', function() {
             gd.on('plotly_unhover', function(data) {
                 count++;
             });
-            // // mouseEvent('mouseout', 180, 140);
-            // expect(count).toEqual(3);
 
             setTimeout(function() {
                 mouseEvent('mouseover', 180, 140);
