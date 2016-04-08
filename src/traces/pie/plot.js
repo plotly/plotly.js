@@ -14,6 +14,7 @@ var Fx = require('../../plots/cartesian/graph_interact');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var svgTextUtils = require('../../lib/svg_text_utils');
+var Plotly = require('../../plotly');
 
 var helpers = require('./helpers');
 
@@ -129,7 +130,8 @@ module.exports = function plot(gd, cdpie) {
                     hasHoverData = true;
                 }
 
-                function handleMouseOut() {
+                function handleMouseOut(evt) {
+                    Plotly.Fx.unhover(gd, evt, 'pie');
                     if(hasHoverData) {
                         Fx.loneUnhover(fullLayout._hoverlayer.node());
                         hasHoverData = false;

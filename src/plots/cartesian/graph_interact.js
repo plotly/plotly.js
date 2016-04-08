@@ -1277,7 +1277,14 @@ function hoverChanged(gd, evt, oldhoverdata) {
 }
 
 // remove hover effects on mouse out, and emit unhover event
-function unhover(gd, evt) {
+function unhover(gd, evt, subplot) {
+    if (subplot === 'pie') {
+        gd.emit('plotly_unhover', {
+            points: [evt]
+        });
+        return;
+    }
+
     var fullLayout = gd._fullLayout;
     if(!evt) evt = {};
     if(evt.target &&
