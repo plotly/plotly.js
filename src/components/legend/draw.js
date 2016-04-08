@@ -368,7 +368,6 @@ function drawTexts(context, gd, d, i, traces) {
 
 function repositionLegend(gd, traces) {
     var fullLayout = gd._fullLayout,
-        gs = fullLayout._size,
         opts = fullLayout.legend,
         borderwidth = opts.borderwidth;
 
@@ -432,39 +431,27 @@ function repositionLegend(gd, traces) {
         .attr('width', (gd._context.editable ? 0 : opts.width) + 40);
 
     // now position the legend. for both x,y the positions are recorded as
-    // fractions of the plot area (left, bottom = 0,0). Outside the plot
-    // area is allowed but position will be clipped to the page.
-    // values <1/3 align the low side at that fraction, 1/3-2/3 align the
-    // center at that fraction, >2/3 align the right at that fraction
-
-    var lx = gs.l + gs.w * opts.x,
-        ly = gs.t + gs.h * (1-opts.y);
+    // fractions of the plot area (left, bottom = 0,0).
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(opts)) {
-        lx -= opts.width;
         xanchor = 'right';
     }
     if(anchorUtils.isCenterAnchor(opts)) {
-        lx -= opts.width / 2;
         xanchor = 'center';
     }
 
     var yanchor = 'top';
     if(anchorUtils.isBottomAnchor(opts)) {
-        ly -= opts.height;
         yanchor = 'bottom';
     }
     if(anchorUtils.isMiddleAnchor(opts)) {
-        ly -= opts.height / 2;
         yanchor = 'middle';
     }
 
     // make sure we're only getting full pixels
     opts.width = Math.ceil(opts.width);
     opts.height = Math.ceil(opts.height);
-    lx = Math.round(lx);
-    ly = Math.round(ly);
 
     // lastly check if the margin auto-expand has changed
     Plots.autoMargin(gd, 'legend', {
