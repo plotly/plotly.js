@@ -345,8 +345,8 @@ annotations.draw = function(gd, index, opt, value) {
         .classed('annotation-text-g', true)
         .attr('data-index', String(index));
 
-    var ann = anng.append('svg')
-        .call(Plotly.Drawing.setPosition, 0, 0);
+    var ann = anng.append('g')
+        .attr('transform', 'translate(0,0)');
 
     var borderwidth = options.borderwidth,
         borderpad = options.borderpad,
@@ -491,10 +491,10 @@ annotations.draw = function(gd, index, opt, value) {
 
         annbg.call(Plotly.Drawing.setRect, borderwidth / 2, borderwidth / 2,
             outerwidth-borderwidth, outerheight - borderwidth);
-        ann.call(Plotly.Drawing.setRect,
-            Math.round(annPosPx.x - outerwidth / 2),
-            Math.round(annPosPx.y - outerheight / 2),
-            outerwidth, outerheight);
+
+        var annX = Math.round(annPosPx.x - outerwidth / 2),
+            annY = Math.round(annPosPx.y - outerheight / 2);
+        ann.attr('transform', 'translate(' + annX + ', ' + annY + ')');
 
         var annbase = 'annotations['+index+']';
 
