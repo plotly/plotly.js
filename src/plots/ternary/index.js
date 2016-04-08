@@ -66,7 +66,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
         if(!newFullLayout[oldTernaryKey] && !!oldTernary) {
             oldTernary.plotContainer.remove();
-            oldFullLayout.clipDef.remove();
+            oldTernary.clipDef.remove();
         }
     }
 };
