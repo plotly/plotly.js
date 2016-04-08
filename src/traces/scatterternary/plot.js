@@ -21,15 +21,19 @@ module.exports = function plot(ternary, data) {
     };
 
     var calcdata = new Array(data.length),
-        fullCalcdata = ternary.graphDiv.calcdata,
-        i, j;
-    for(i = 0; i < fullCalcdata.length; i++) {
-        j = data.indexOf(fullCalcdata[i][0].trace);
-        if(j !== -1) calcdata[j] = fullCalcdata[i];
+        fullCalcdata = ternary.graphDiv.calcdata;
+
+    for(var i = 0; i < fullCalcdata.length; i++) {
+        var j = data.indexOf(fullCalcdata[i][0].trace);
+
+        if(j === -1) continue;
+
+        calcdata[j] = fullCalcdata[i];
 
         // while we're here and have references to both the Ternary object
         // and fullData, connect the two (for use by hover)
         data[j]._ternary = ternary;
     }
+
     scatterPlot(ternary.graphDiv, plotinfo, calcdata);
 };
