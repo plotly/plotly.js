@@ -373,6 +373,75 @@ describe('ModeBar', function() {
             checkButtons(modeBar, buttons, 1);
         });
 
+        it('creates mode bar (un-selectable ternary version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasTernary = true;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (selectable ternary version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasTernary = true;
+            gd._fullData = [{
+                type: 'scatterternary',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (ternary + cartesian version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d'],
+                ['hoverClosestCartesian', 'hoverCompareCartesian']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasTernary = true;
+            gd._fullLayout._hasCartesian = true;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (ternary + gl3d version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasTernary = true;
+            gd._fullLayout._hasGL3D = true;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
         it('throws an error if modeBarButtonsToRemove isn\'t an array', function() {
             var gd = getMockGraphInfo();
             gd._context.modeBarButtonsToRemove = 'not gonna work';
