@@ -407,7 +407,10 @@ proto.update = function(data) {
         var delaunayOptions = constructDelaunay(
             options.position,
             options.delaunayColor,
-            options.delaunayAxis);
+            options.delaunayAxis
+        );
+        delaunayOptions.opacity = data.opacity;
+
         if(this.delaunayMesh) {
             this.delaunayMesh.update(delaunayOptions);
         } else {
