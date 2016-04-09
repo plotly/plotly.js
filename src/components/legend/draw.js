@@ -184,27 +184,51 @@ module.exports = function draw(gd) {
     if(anchorUtils.isRightAnchor(opts)) {
         lx -= opts.width;
     }
-    if(anchorUtils.isCenterAnchor(opts)) {
+    else if(anchorUtils.isCenterAnchor(opts)) {
         lx -= opts.width / 2;
     }
 
     if(anchorUtils.isBottomAnchor(opts)) {
         ly -= opts.height;
     }
-    if(anchorUtils.isMiddleAnchor(opts)) {
+    else if(anchorUtils.isMiddleAnchor(opts)) {
         ly -= opts.height / 2;
     }
 
+    lx = Math.round(lx);
+    ly = Math.round(ly);
+
+    // Make sure the legend top and bottom are visible
+    // (legends with a scroll bar are not allowed to stretch beyond the extended
+    // margins)
+    var lyMin = 0;
+    var lyMax = fullLayout.margin.t + fullLayout.height + fullLayout.margin.b;
+    var legendHeight = opts.height;
+    var legendHeightMax = gs.h;
+
+
+    if(legendHeight > legendHeightMax) {
+        ly = gs.t;
+        legendHeight = legendHeightMax;
+    }
+    else {
+        if(ly > lyMax) ly = lyMax - legendHeight;
+
+        if(ly < lyMin) ly = lyMin;
+
+        legendHeight = Math.min(lyMax - ly, opts.height);
+    }
+
     // Deal with scrolling
-    var plotHeight = fullLayout.height - fullLayout.margin.b,
-        scrollheight = Math.min(plotHeight - ly, opts.height),
-        scrollPosition = scrollBox.attr('data-scroll') ? scrollBox.attr('data-scroll') : 0;
+    var scrollPosition = scrollBox.attr('data-scroll') ?
+        scrollBox.attr('data-scroll') :
+        0;
 
     scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
 
     bg.attr({
         width: opts.width - 2 * opts.borderwidth,
-        height: scrollheight - 2 * opts.borderwidth,
+        height: legendHeight - 2 * opts.borderwidth,
         x: opts.borderwidth,
         y: opts.borderwidth
     });
@@ -213,7 +237,7 @@ module.exports = function draw(gd) {
 
     clipPath.select('rect').attr({
         width: opts.width,
-        height: scrollheight,
+        height: legendHeight,
         x: 0,
         y: 0
     });
@@ -221,7 +245,7 @@ module.exports = function draw(gd) {
     legend.call(Drawing.setClipUrl, clipId);
 
     // If scrollbar should be shown.
-    if(opts.height - scrollheight > 0 && !gd._context.staticPlot) {
+    if(opts.height - legendHeight > 0 && !gd._context.staticPlot) {
 
         bg.attr({
             width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth
@@ -243,21 +267,21 @@ module.exports = function draw(gd) {
             scrollBox.attr('data-scroll',0);
         }
 
-        scrollHandler(0,scrollheight);
+        scrollHandler(0,legendHeight);
 
         legend.on('wheel',null);
 
         legend.on('wheel', function() {
             var e = d3.event;
             e.preventDefault();
-            scrollHandler(e.deltaY / 20, scrollheight);
+            scrollHandler(e.deltaY / 20, legendHeight);
         });
 
         scrollBar.on('.drag',null);
         scrollBox.on('.drag',null);
         var drag = d3.behavior.drag()
             .on('drag', function() {
-                scrollHandler(d3.event.dy, scrollheight);
+                scrollHandler(d3.event.dy, legendHeight);
             });
 
         scrollBar.call(drag);
@@ -266,12 +290,12 @@ module.exports = function draw(gd) {
     }
 
 
-    function scrollHandler(delta, scrollheight) {
+    function scrollHandler(delta, legendHeight) {
 
-        var scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
+        var scrollBarTrack = legendHeight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
             translateY = scrollBox.attr('data-scroll'),
-            scrollBoxY = Lib.constrain(translateY - delta, scrollheight-opts.height, 0),
-            scrollBarY = -scrollBoxY / (opts.height - scrollheight) * scrollBarTrack + constants.scrollBarMargin;
+            scrollBoxY = Lib.constrain(translateY - delta, legendHeight-opts.height, 0),
+            scrollBarY = -scrollBoxY / (opts.height - legendHeight) * scrollBarTrack + constants.scrollBarMargin;
 
         scrollBox.attr('data-scroll', scrollBoxY);
         scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
