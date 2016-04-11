@@ -323,9 +323,9 @@ Plotly.plot = function(gd, data, layout, config) {
     var donePlotting = Lib.syncOrAsync([
         Plots.previousPromises,
         marginPushers,
-        layoutStyles,
         marginPushersAgain,
         positionAndAutorange,
+        layoutStyles,
         drawAxes,
         drawData,
         finalDraw
