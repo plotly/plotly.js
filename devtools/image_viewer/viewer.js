@@ -44,9 +44,9 @@ function createButton(imageName) {
 
         d3.json(dirMocks + imageName + '.json', function(err, mock) {
             $images.innerHTML = '';
-            $images.appendChild(imgBaseline);
-            $images.appendChild(imgTest);
             $images.appendChild(imgDiff);
+            $images.appendChild(imgTest);
+            $images.appendChild(imgBaseline);
 
             $mock.innerHTML = '';
             $mock.appendChild(createJSONview(mock));
