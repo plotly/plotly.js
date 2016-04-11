@@ -227,7 +227,7 @@ module.exports = function draw(gd) {
             width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth
         });
 
-        clipPath.attr({
+        clipPath.select('rect').attr({
             width: opts.width + constants.scrollBarWidth
         });
 
