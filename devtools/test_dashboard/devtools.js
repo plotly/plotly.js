@@ -134,7 +134,24 @@ var searchBar = document.getElementById('mocks-search');
 var mocksList = document.getElementById('mocks-list');
 var plotArea = document.getElementById('plots');
 
-searchBar.addEventListener('keyup', function(e) {
+searchBar.addEventListener('keyup', debounce(searchMocks, 250));
+
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+        var context = this, args = arguments;
+        var later = function() {
+            timeout = null;
+            if(!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if(callNow) func.apply(context, args);
+    };
+}
+
+function searchMocks(e) {
 
     // Clear results.
     while(mocksList.firstChild) {
@@ -162,4 +179,4 @@ searchBar.addEventListener('keyup', function(e) {
         var plotAreaWidth = Math.floor(window.innerWidth - listWidth);
         plotArea.setAttribute('style', 'width: ' + plotAreaWidth + 'px;');
     });
-});
+}
