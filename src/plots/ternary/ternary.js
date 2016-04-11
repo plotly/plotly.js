@@ -203,7 +203,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     yDomainFinal = yDomain * h / hmax;
 
     x0 = graphSize.l + graphSize.w * xDomainCenter - w / 2;
-    y0 = graphSize.t + graphSize.h * yDomainCenter - h / 2;
+    y0 = graphSize.t + graphSize.h * (1 - yDomainCenter) - h / 2;
 
     _this.x0 = x0;
     _this.y0 = y0;
