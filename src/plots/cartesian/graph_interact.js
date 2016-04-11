@@ -319,7 +319,7 @@ function hover(gd, evt, subplot) {
         }),
         yaArray = subplots.map(function(spId) {
             var ternary = (gd._fullLayout[spId] || {})._ternary;
-            if(ternary) return ternary.xaxis;
+            if(ternary) return ternary.yaxis;
             return Plotly.Axes.getFromId(gd, spId, 'y');
         }),
         hovermode = evt.hovermode || fullLayout.hovermode;
