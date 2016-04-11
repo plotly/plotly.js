@@ -26,6 +26,7 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | `type: maintenace` | source code cleanup resulting in no enhancement for users | 
 | `type: duplicate` | *self-explanatory* |
 | `type: wontfix` | *self-explanatory* |
+| `status: discussion needed` | Issue or PR that required discussion among maintaners before moving forward |
 | `status: in progress` | PRs that required some intial feedback but not ready to merge |
 | `status: reviewable` | PRs that are completed from the author's perspective |
 | `status: on hold` | PRs that are put on hold | 

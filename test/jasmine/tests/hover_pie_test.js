@@ -42,37 +42,71 @@ describe('pie hovering', function() {
              *         cyFinal: 160
              *     }];
              */
-            var futureData;
+            var hoverData,
+                unhoverData;
 
 
             gd.on('plotly_hover', function(data) {
-                futureData = data;
+                hoverData = data;
+            });
+
+            gd.on('plotly_unhover', function(data) {
+                unhoverData = data;
             });
 
             mouseEvent('mouseover', width / 2, height / 2);
-            expect(futureData.points.length).toEqual(1);
-            expect(Object.keys(futureData.points[0])).toEqual([
+            mouseEvent('mouseout', width / 2, height / 2);
+
+            expect(hoverData.points.length).toEqual(1);
+            expect(unhoverData.points.length).toEqual(1);
+
+            var fields = [
                 'v', 'label', 'color', 'i', 'hidden',
                 'text', 'px1', 'pxmid', 'midangle',
                 'px0', 'largeArc', 'cxFinal', 'cyFinal'
-            ]);
-            expect(futureData.points[0].i).toEqual(3);
+            ];
+
+            expect(Object.keys(hoverData.points[0])).toEqual(fields);
+            expect(hoverData.points[0].i).toEqual(3);
+
+            expect(Object.keys(unhoverData.points[0])).toEqual(fields);
+            expect(unhoverData.points[0].i).toEqual(3);
         });
 
-        it('should fire when moving from one slice to another', function(done) {
+        it('should fire hover event when moving from one slice to another', function(done) {
             var count = 0,
-                futureData = [];
+                hoverData = [];
 
             gd.on('plotly_hover', function(data) {
                 count++;
-                futureData.push(data);
+                hoverData.push(data);
             });
 
             mouseEvent('mouseover', 180, 140);
             setTimeout(function() {
                 mouseEvent('mouseover', 240, 200);
                 expect(count).toEqual(2);
-                expect(futureData[0]).not.toEqual(futureData[1]);
+                expect(hoverData[0]).not.toEqual(hoverData[1]);
+                done();
+            }, 100);
+        });
+
+        it('should fire unhover event when the mouse moves off the graph', function(done) {
+            var count = 0,
+                unhoverData = [];
+
+            gd.on('plotly_unhover', function(data) {
+                count++;
+                unhoverData.push(data);
+            });
+
+            mouseEvent('mouseover', 180, 140);
+            mouseEvent('mouseout', 180, 140);
+            setTimeout(function() {
+                mouseEvent('mouseover', 240, 200);
+                mouseEvent('mouseout', 240, 200);
+                expect(count).toEqual(2);
+                expect(unhoverData[0]).not.toEqual(unhoverData[1]);
                 done();
             }, 100);
         });

@@ -129,7 +129,11 @@ module.exports = function plot(gd, cdpie) {
                     hasHoverData = true;
                 }
 
-                function handleMouseOut() {
+                function handleMouseOut(evt) {
+                    gd.emit('plotly_unhover', {
+                        points: [evt]
+                    });
+
                     if(hasHoverData) {
                         Fx.loneUnhover(fullLayout._hoverlayer.node());
                         hasHoverData = false;

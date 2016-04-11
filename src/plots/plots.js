@@ -851,10 +851,12 @@ plots.sanitizeMargins = function(fullLayout) {
 // o is {x,l,r,y,t,b} where x and y are plot fractions,
 // the rest are pixels in each direction
 // or leave o out to delete this entry (like if it's hidden)
-plots.autoMargin = function(gd,id,o) {
+plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
+
     if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
-    if(fullLayout.margin.autoexpand!==false) {
+
+    if(fullLayout.margin.autoexpand !== false) {
         if(!o) delete fullLayout._pushmargin[id];
         else {
             var pad = o.pad === undefined ? 12 : o.pad;

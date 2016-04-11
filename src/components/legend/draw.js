@@ -403,12 +403,12 @@ function repositionLegend(gd, traces) {
         else {
             // approximation to height offset to center the font
             // to avoid getBoundingClientRect
-            textY = tHeight * (0.3 + (1-tLines) / 2);
-            text.attr('y',textY);
-            tspans.attr('y',textY);
+            textY = tHeight * (0.3 + (1 - tLines) / 2);
+            text.attr('y', textY);
+            tspans.attr('y', textY);
         }
 
-        tHeightFull = Math.max(tHeight*tLines, 16) + 3;
+        tHeightFull = Math.max(tHeight * tLines, 16) + 3;
 
         g.attr('transform',
             'translate(' + borderwidth + ',' +

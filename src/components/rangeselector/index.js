@@ -8,10 +8,9 @@
 
 'use strict';
 
-var saneTopojson = require('sane-topojson');
 
+exports.attributes = require('./attributes');
 
-// package version injected by `npm run preprocess`
-exports.version = '1.8.0';
+exports.supplyLayoutDefaults = require('./defaults');
 
-exports.topojson = saneTopojson;
+exports.draw = require('./draw');
