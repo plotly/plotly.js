@@ -195,8 +195,8 @@ module.exports = function draw(gd) {
         ly -= opts.height / 2;
     }
 
-    lx = Math.round(lx);
-    ly = Math.round(ly);
+    //lx = Math.round(lx);
+    //ly = Math.round(ly);
 
     // Make sure the legend top is below the top margin
     if(ly < fullLayout.margin.t) ly = fullLayout.margin.t;
