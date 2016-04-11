@@ -15,6 +15,15 @@ var Lib = require('../../lib');
 var constants = require('../../plots/cartesian/constants');
 
 
+var dragElement = module.exports = {};
+
+dragElement.align = require('./align');
+dragElement.getCursor = require('./cursor');
+
+var unhover = require('./unhover');
+dragElement.unhover = unhover.wrapped;
+dragElement.unhoverRaw = unhover.raw;
+
 /**
  * Abstracts click & drag interactions
  * @param {object} options with keys:
@@ -35,15 +44,6 @@ var constants = require('../../plots/cartesian/constants');
  *          numClicks is how many clicks we've registered within
  *          a doubleclick time
  */
-var dragElement = module.exports = {};
-
-dragElement.align = require('./align');
-dragElement.getCursor = require('./cursor');
-
-var unhover = require('./unhover');
-dragElement.unhover = unhover.wrapped;
-dragElement.unhoverRaw = unhover.raw;
-
 dragElement.init = function init(options) {
     var gd = Lib.getPlotDiv(options.element) || {},
         numClicks = 1,

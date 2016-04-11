@@ -14,7 +14,8 @@
 // omit cursor to revert to the default.
 module.exports = function setCursor(el3, csr) {
     (el3.attr('class') || '').split(' ').forEach(function(cls) {
-        if(cls.indexOf('cursor-')===0) el3.classed(cls,false);
+        if(cls.indexOf('cursor-') === 0) el3.classed(cls, false);
     });
-    if(csr) el3.classed('cursor-'+csr, true);
+
+    if(csr) el3.classed('cursor-' + csr, true);
 };
