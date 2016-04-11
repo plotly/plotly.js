@@ -100,7 +100,12 @@ var Tabs = {
         console.warn('plotly.js reloaded at ' + reloadTime);
         reloaded.textContent = 'last reload at ' + reloadTime;
 
-        Tabs.onReload();
+        var interval = setInterval(function() {
+            if(window.Plotly) {
+                clearInterval(interval);
+                Tabs.onReload();
+            }
+        }, 100);
     }
 };
 
