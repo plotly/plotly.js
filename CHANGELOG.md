@@ -9,6 +9,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.9.0] -- 2016-04-12
+
+### Added
+- Ternary plots with support for scatter traces (trace type `scatterternary`) [#390]
+
+### Fixed
+- Toggling the visibility of `scatter3d` traces with `surfaceaxis` now works [#405]
+- `scatter3d` traces with `surfaceaxis` turned now feature real 3D opacity [#408]
+- `plotly_unhover` is now properly triggered over `pie` traces [#407]
+- Better grammar in `scatter` attribute descriptions [#406]
+
 
 ## [1.8.0] -- 2016-04-04
 
