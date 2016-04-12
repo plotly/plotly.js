@@ -13,7 +13,10 @@ var colorMix = require('tinycolor2').mix;
 var Lib = require('../../../lib');
 
 var layoutAttributes = require('./axis_attributes');
+var handleTickLabelDefaults = require('../../cartesian/tick_label_defaults');
 var handleTickMarkDefaults = require('../../cartesian/tick_mark_defaults');
+var handleTickValueDefaults = require('../../cartesian/tick_value_defaults');
+
 
 module.exports = function supplyLayoutDefaults(containerIn, containerOut, options) {
 
@@ -48,10 +51,11 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
     // range is just set by 'min' - max is determined by the other axes mins
     coerce('min');
 
-    coerce('nticks');
-
+    handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
+    handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear',
+        { noHover: false });
     handleTickMarkDefaults(containerIn, containerOut, coerce, 'linear',
-        {outerticks: false});
+        { outerticks: false });
 
     // TODO - below is a bit repetitious from cartesian still...
 
