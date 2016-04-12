@@ -1,6 +1,8 @@
 var Fuse = require('fuse.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 
+// put d3 in window scope
+var d3 = window.d3 = Plotly.d3;
 
 // Our gracious testing object
 var Tabs = {
