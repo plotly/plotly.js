@@ -23,6 +23,10 @@ var dragElement = require('../../components/dragelement');
 
 var fx = module.exports = {};
 
+// TODO remove this in version 2.0
+// copy on Fx for backward compatible
+fx.unhover = dragElement.unhover;
+
 fx.layoutAttributes = {
     dragmode: {
         valType: 'enumerated',
