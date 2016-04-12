@@ -80,11 +80,6 @@ module.exports = {
         smoothing: scatterLineAttrs.smoothing
     },
     connectgaps: scatterAttrs.connectgaps,
-    fill: extendFlat({}, scatterAttrs.fill, {
-        values: ['none', 'tozeroa', 'tozerob', 'tozeroc',
-            'tonexta', 'tonextb', 'tonextc']
-    }),
-    fillcolor: scatterAttrs.fillcolor,
     marker: {
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
