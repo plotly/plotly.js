@@ -263,7 +263,7 @@ describe('scatterternary plot and hover', function() {
     });
 });
 
-fdescribe('scatterternary hover', function() {
+describe('scatterternary hover', function() {
     'use strict';
 
     var hoverPoints = ScatterTernary.hoverPoints;
