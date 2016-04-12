@@ -134,14 +134,15 @@ function writeFilePromise(path, contents) {
 function bundlePlotly() {
     b.bundle(function(err) {
         if(err) {
-            console.error('Error while bundling!', err);
+            console.error('Error while bundling!', JSON.stringify(String(err)));
+        } else {
+            console.log('Bundle updated at ' + new Date().toLocaleTimeString());
         }
 
         if(firstBundle) {
             open('http://localhost:' + PORT + '/devtools/test_dashboard');
             firstBundle = false;
         }
-        console.log('Bundle updated at ' + new Date().toLocaleTimeString());
     }).pipe(fs.createWriteStream(constants.pathToPlotlyBuild));
 }
 
@@ -149,7 +150,7 @@ function bundleDevtools() {
     return new Promise(function(resolve, reject) {
         devtools.bundle(function(err) {
             if(err) {
-                console.error('Error while bundling!', err);
+                console.error('Error while bundling!', JSON.stringify(String(err)));
                 return reject(err);
             } else {
                 return resolve();
