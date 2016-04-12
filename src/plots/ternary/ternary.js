@@ -169,7 +169,7 @@ proto.makeFramework = function() {
     _this.plotContainer.selectAll('.backplot,.frontplot,.grids')
         .call(Drawing.setClipUrl, clipId);
 
-    _this.init_interactions();
+    _this.initInteractions();
 };
 
 var w_over_h = Math.sqrt(4/3);
@@ -420,7 +420,7 @@ var STARTMARKER = 'm0.5,0.5h5v-2h-5v-5h-2v5h-5v2h5v5h2Z';
 // I guess this could be shared with cartesian... but for now it's separate.
 var SHOWZOOMOUTTIP = true;
 
-proto.init_interactions = function() {
+proto.initInteractions = function() {
     var _this = this,
         dragger = _this.layers.plotbg.select('path').node(),
         gd = _this.graphDiv,
@@ -434,7 +434,7 @@ proto.init_interactions = function() {
         doubleclick: doubleClick,
         subplot: _this.id,
         prepFn: function(e, startX, startY) {
-            // these aren't available yet when init_interactions
+            // these aren't available yet when initInteractions
             // is called
             dragOptions.xaxes = [_this.xaxis];
             dragOptions.yaxes = [_this.yaxis];
