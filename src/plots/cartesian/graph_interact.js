@@ -524,10 +524,15 @@ function hover(gd, evt, subplot) {
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
+    var bgColor = Plotly.Color.combine(
+        fullLayout.plot_bgcolor || Plotly.Color.background,
+        fullLayout.paper_bgcolor
+    );
+
     var labelOpts = {
         hovermode: hovermode,
         rotateLabels: rotateLabels,
-        bgColor: Plotly.Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor),
+        bgColor: bgColor,
         container: fullLayout._hoverlayer,
         outerContainer: fullLayout._paperdiv
     };
