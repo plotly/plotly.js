@@ -44,6 +44,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
             if(c) len = Math.min(len, c.length);
         }
         else if(c) len = Math.min(len, c.length);
+        else len = 0;
     }
     else if(b && c) {
         len = Math.min(b.length, c.length);
@@ -55,9 +56,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     // cut all data arrays down to same length
-    if(len < a.length) traceOut.a = a.slice(0, len);
-    if(len < b.length) traceOut.b = b.slice(0, len);
-    if(len < c.length) traceOut.c = c.slice(0, len);
+    if(a && len < a.length) traceOut.a = a.slice(0, len);
+    if(b && len < b.length) traceOut.b = b.slice(0, len);
+    if(c && len < c.length) traceOut.c = c.slice(0, len);
 
     coerce('sum');
 
