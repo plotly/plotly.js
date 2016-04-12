@@ -1,6 +1,12 @@
+'use strict';
+
+/* global Plotly:false */
+
 var Fuse = require('fuse.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 
+// put d3 in window scope
+var d3 = window.d3 = Plotly.d3;
 
 // Our gracious testing object
 var Tabs = {
@@ -35,8 +41,8 @@ var Tabs = {
     plotMock: function(mockName, id) {
         var mockURL = '/test/image/mocks/' + mockName + '.json';
 
-        window.Plotly.d3.json(mockURL, function(err, fig) {
-            window.Plotly.plot(Tabs.fresh(id), fig.data, fig.layout);
+        d3.json(mockURL, function(err, fig) {
+            Plotly.plot(Tabs.fresh(id), fig.data, fig.layout);
 
             console.warn('Plotting:', mockURL);
         });
@@ -47,12 +53,13 @@ var Tabs = {
         var gd = Tabs.getGraph(id);
 
         if(!gd._fullLayout || !gd._fullData) {
+            console.error('no graph with id ' + id + ' found.');
             return;
         }
 
         var image = new Image();
 
-        window.Plotly.Snapshot.toImage(gd, { format: 'png' }).on('success', function(img) {
+        Plotly.Snapshot.toImage(gd, { format: 'png' }).on('success', function(img) {
             image.src = img;
 
             var imageDiv = document.getElementById('snapshot');
@@ -72,7 +79,7 @@ var Tabs = {
         }
 
         for(var i = 0; i < plots.length; i++) {
-            window.Plotly.purge(plots[i]);
+            Plotly.purge(plots[i]);
         }
     },
 
