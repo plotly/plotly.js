@@ -201,10 +201,10 @@ module.exports = function draw(gd) {
     // Make sure the legend top and bottom are visible
     // (legends with a scroll bar are not allowed to stretch beyond the extended
     // margins)
-    var lyMin = 0;
-    var lyMax = fullLayout.margin.t + fullLayout.height + fullLayout.margin.b;
-    var legendHeight = opts.height;
-    var legendHeightMax = gs.h;
+    var lyMin = 0,
+        lyMax = fullLayout.height,
+        legendHeight = opts.height,
+        legendHeightMax = gs.h;
 
 
     if(legendHeight > legendHeightMax) {
@@ -220,9 +220,7 @@ module.exports = function draw(gd) {
     }
 
     // Deal with scrolling
-    var scrollPosition = scrollBox.attr('data-scroll') ?
-        scrollBox.attr('data-scroll') :
-        0;
+    var scrollPosition = scrollBox.attr('data-scroll') || 0;
 
     scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
 
