@@ -67,7 +67,7 @@ module.exports = {
             'Sets text elements associated with each (a,b,c) point.',
             'If a single string, the same string appears over',
             'all the data points.',
-            'If an array of string, the items are mapped in order to the',
+            'If an array of strings, the items are mapped in order to the',
             'the data points in (a,b,c).'
         ].join(' ')
     }),

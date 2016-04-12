@@ -645,7 +645,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
         traceOut._module = _module;
     }
 
-    // gets overwritten in pie and geo
+    // gets overwritten in pie, geo and ternary modules
     if(visible) coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
 
     if(_module && visible) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
