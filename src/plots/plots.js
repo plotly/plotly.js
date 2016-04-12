@@ -471,6 +471,7 @@ plots.supplyDefaults = function(gd) {
         else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
         else if(plots.traceIs(fullTrace, 'pie')) newFullLayout._hasPie = true;
         else if(plots.traceIs(fullTrace, 'gl2d')) newFullLayout._hasGL2D = true;
+        else if(plots.traceIs(fullTrace, 'ternary')) newFullLayout._hasTernary = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         _module = fullTrace._module;
@@ -508,7 +509,7 @@ plots.supplyDefaults = function(gd) {
     axList = Plotly.Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
         ax = axList[i];
-        ax._td = gd;
+        ax._gd = gd;
         ax.setScale();
     }
 
@@ -635,6 +636,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // differently for 3D cases.
     coerceSubplotAttr('gl3d', 'scene');
     coerceSubplotAttr('geo', 'geo');
+    coerceSubplotAttr('ternary', 'subplot');
 
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
@@ -643,7 +645,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
         traceOut._module = _module;
     }
 
-    // gets overwritten in pie and geo
+    // gets overwritten in pie, geo and ternary modules
     if(visible) coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
 
     if(_module && visible) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -715,6 +717,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('_hasGeo');
     coerce('_hasPie');
     coerce('_hasGL2D');
+    coerce('_hasTernary');
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {

@@ -14,8 +14,10 @@ var d3 = require('d3');
 var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
 var Axes = require('../../plots/cartesian/axes');
-var Fx = require('../../plots/cartesian/graph_interact');
+var dragElement = require('../dragelement');
 var Lib = require('../../lib');
+var extendFlat = require('../../lib/extend').extendFlat;
+var setCursor = require('../../lib/setcursor');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var Titles = require('../titles');
@@ -51,7 +53,8 @@ module.exports = function draw(gd, id) {
     opts.filllevels = null;
 
     function component() {
-        var fullLayout = gd._fullLayout;
+        var fullLayout = gd._fullLayout,
+            gs = fullLayout._size;
         if((typeof opts.fillcolor !== 'function') &&
                 (typeof opts.line.color !== 'function')) {
             fullLayout._infolayer.selectAll('g.'+id).remove();
@@ -115,17 +118,17 @@ module.exports = function draw(gd, id) {
             originalPlotWidth = fullLayout.width - fullLayout.margin.l - fullLayout.margin.r,
             thickPx = Math.round(opts.thickness *
                 (opts.thicknessmode==='fraction' ? originalPlotWidth : 1)),
-            thickFrac = thickPx / fullLayout._size.w,
+            thickFrac = thickPx / gs.w,
             lenPx = Math.round(opts.len *
                 (opts.lenmode==='fraction' ? originalPlotHeight : 1)),
-            lenFrac = lenPx / fullLayout._size.h,
-            xpadFrac = opts.xpad/fullLayout._size.w,
+            lenFrac = lenPx / gs.h,
+            xpadFrac = opts.xpad/gs.w,
             yExtraPx = (opts.borderwidth + opts.outlinewidth)/2,
-            ypadFrac = opts.ypad / fullLayout._size.h,
+            ypadFrac = opts.ypad / gs.h,
 
             // x positioning: do it initially just for left anchor,
             // then fix at the end (since we don't know the width yet)
-            xLeft = Math.round(opts.x*fullLayout._size.w + opts.xpad),
+            xLeft = Math.round(opts.x*gs.w + opts.xpad),
             // for dragging... this is getting a little muddled...
             xLeftFrac = opts.x - thickFrac *
                 ({middle: 0.5, right: 1}[opts.xanchor]||0),
@@ -133,7 +136,7 @@ module.exports = function draw(gd, id) {
             // y positioning we can do correctly from the start
             yBottomFrac = opts.y + lenFrac *
                 (({top: -0.5, bottom: 0.5}[opts.yanchor] || 0) - 0.5),
-            yBottomPx = Math.round(fullLayout._size.h * (1-yBottomFrac)),
+            yBottomPx = Math.round(gs.h * (1-yBottomFrac)),
             yTopPx = yBottomPx-lenPx,
             titleEl,
             cbAxisIn = {
@@ -182,7 +185,7 @@ module.exports = function draw(gd, id) {
         handleAxisPositionDefaults(cbAxisIn, cbAxisOut, coerce, axisOptions);
 
         cbAxisOut._id = 'y' + id;
-        cbAxisOut._td = gd;
+        cbAxisOut._gd = gd;
 
         // position can't go in through supplyDefaults
         // because that restricts it to [0,1]
@@ -242,22 +245,38 @@ module.exports = function draw(gd, id) {
                 s.append('g').classed('cbtitleunshift',true)
                     .append('g').classed('cbtitle',true);
                 s.append('rect').classed('cboutline',true);
+                s.select('.cbtitle').datum(0);
             });
-        container.attr('transform','translate('+Math.round(fullLayout._size.l)+
-            ','+Math.round(fullLayout._size.t)+')');
+        container.attr('transform','translate('+Math.round(gs.l)+
+            ','+Math.round(gs.t)+')');
         // TODO: this opposite transform is a hack until we make it
         // more rational which items get this offset
         var titleCont = container.select('.cbtitleunshift')
             .attr('transform', 'translate(-'+
-                Math.round(fullLayout._size.l) + ',-' +
-                Math.round(fullLayout._size.t) + ')');
+                Math.round(gs.l) + ',-' +
+                Math.round(gs.t) + ')');
 
         cbAxisOut._axislayer = container.select('.cbaxis');
         var titleHeight = 0;
         if(['top', 'bottom'].indexOf(opts.titleside) !== -1) {
             // draw the title so we know how much room it needs
-            // when we squish the axis
-            Titles.draw(gd, cbAxisOut._id + 'title');
+            // when we squish the axis. This one only applies to
+            // top or bottom titles, not right side.
+            var x = gs.l + (opts.x + xpadFrac) * gs.w,
+                fontSize = cbAxisOut.titlefont.size,
+                y;
+
+            if(opts.titleside === 'top') {
+                y = (1 - (yBottomFrac + lenFrac - ypadFrac)) * gs.h +
+                    gs.t + 3 + fontSize * 0.75;
+            }
+            else {
+                y = (1 - (yBottomFrac + ypadFrac)) * gs.h +
+                    gs.t - 3 - fontSize * 0.25;
+            }
+            drawTitle(cbAxisOut._id + 'title', {
+                attributes: {x: x, y: y, 'text-anchor': 'start'}
+            });
         }
 
         function drawAxis() {
@@ -294,11 +313,11 @@ module.exports = function draw(gd, id) {
                     titleHeight += 5;
 
                     if(opts.titleside==='top') {
-                        cbAxisOut.domain[1] -= titleHeight/fullLayout._size.h;
+                        cbAxisOut.domain[1] -= titleHeight/gs.h;
                         titleTrans[1] *= -1;
                     }
                     else {
-                        cbAxisOut.domain[0] += titleHeight/fullLayout._size.h;
+                        cbAxisOut.domain[0] += titleHeight/gs.h;
                         var nlines = Math.max(1,
                             titleText.selectAll('tspan.line').size());
                         titleTrans[1] += (1-nlines)*lineSize;
@@ -313,7 +332,7 @@ module.exports = function draw(gd, id) {
 
             container.selectAll('.cbfills,.cblines,.cbaxis')
                 .attr('transform','translate(0,'+
-                    Math.round(fullLayout._size.h*(1-cbAxisOut.domain[1]))+')');
+                    Math.round(gs.h*(1-cbAxisOut.domain[1]))+')');
 
             var fills = container.select('.cbfills')
                 .selectAll('rect.cbfill')
@@ -370,7 +389,67 @@ module.exports = function draw(gd, id) {
                 (opts.outlinewidth||0)/2 - (opts.ticks==='outside' ? 1 : 0);
             cbAxisOut.side = 'right';
 
-            return Axes.doTicks(gd, cbAxisOut);
+            // separate out axis and title drawing,
+            // so we don't need such complicated logic in Titles.draw
+            // if title is on the top or bottom, we've already drawn it
+            // this title call only handles side=right
+            return Lib.syncOrAsync([
+                function() {
+                    return Axes.doTicks(gd, cbAxisOut, true);
+                },
+                function() {
+                    if(['top','bottom'].indexOf(opts.titleside)===-1) {
+                        var fontSize = cbAxisOut.titlefont.size,
+                            y = cbAxisOut._offset + cbAxisOut._length / 2,
+                            x = gs.l + (cbAxisOut.position || 0) * gs.w + ((cbAxisOut.side === 'right') ?
+                                10 + fontSize*((cbAxisOut.showticklabels ? 1 : 0.5)) :
+                                -10 - fontSize*((cbAxisOut.showticklabels ? 0.5 : 0)));
+
+                        // the 'h' + is a hack to get around the fact that
+                        // convertToTspans rotates any 'y...' class by 90 degrees.
+                        // TODO: find a better way to control this.
+                        drawTitle('h' + cbAxisOut._id + 'title', {
+                            avoid: {
+                                selection: d3.select(gd).selectAll('g.' + cbAxisOut._id + 'tick'),
+                                side: opts.titleside,
+                                offsetLeft: gs.l,
+                                offsetTop: gs.t,
+                                maxShift: fullLayout.width
+                            },
+                            attributes: {x: x, y: y, 'text-anchor': 'middle'},
+                            transform: {rotate: '-90', offset: 0}
+                        });
+                    }
+                }]);
+        }
+
+        function drawTitle(titleClass, titleOpts) {
+            var trace = getTrace(),
+                propName;
+            if(Plots.traceIs(trace, 'markerColorscale')) {
+                propName = 'marker.colorbar.title';
+            }
+            else propName = 'colorbar.title';
+
+            var dfltTitleOpts = {
+                propContainer: cbAxisOut,
+                propName: propName,
+                traceIndex: trace.index,
+                dfltName: 'colorscale',
+                containerGroup: container.select('.cbtitle')
+            };
+
+            // this class-to-rotate thing with convertToTspans is
+            // getting hackier and hackier... delete groups with the
+            // wrong class (in case earlier the colorbar was drawn on
+            // a different side, I think?)
+            var otherClass = titleClass.charAt(0) === 'h' ?
+                titleClass.substr(1) : ('h' + titleClass);
+            container.selectAll('.' + otherClass + ',.' + otherClass + '-math-group')
+                .remove();
+
+            Titles.draw(gd, titleClass,
+                extendFlat(dfltTitleOpts, titleOpts || {}));
         }
 
         function positionCB() {
@@ -393,11 +472,11 @@ module.exports = function draw(gd, id) {
                 else {
                     // note: the formula below works for all titlesides,
                     // (except for top/bottom mathjax, above)
-                    // but the weird fullLayout._size.l is because the titleunshift
+                    // but the weird gs.l is because the titleunshift
                     // transform gets removed by Drawing.bBox
                     titleWidth =
                         Drawing.bBox(titleCont.node()).right -
-                        xLeft - fullLayout._size.l;
+                        xLeft - gs.l;
                 }
                 innerWidth = Math.max(innerWidth,titleWidth);
             }
@@ -434,7 +513,7 @@ module.exports = function draw(gd, id) {
             var xoffset = ({center: 0.5, right: 1}[opts.xanchor] || 0) *
                 outerwidth;
             container.attr('transform',
-                'translate('+(fullLayout._size.l-xoffset)+','+fullLayout._size.t+')');
+                'translate('+(gs.l-xoffset)+','+gs.t+')');
 
             //auto margin adjustment
             Plots.autoMargin(gd, id,{
@@ -462,48 +541,47 @@ module.exports = function draw(gd, id) {
                 xf,
                 yf;
 
-            Fx.dragElement({
+            dragElement.init({
                 element: container.node(),
                 prepFn: function() {
                     t0 = container.attr('transform');
-                    Fx.setCursor(container);
+                    setCursor(container);
                 },
                 moveFn: function(dx, dy) {
-                    var gs = gd._fullLayout._size;
-
                     container.attr('transform',
                         t0+' ' + 'translate('+dx+','+dy+')');
 
-                    xf = Fx.dragAlign(xLeftFrac + (dx/gs.w), thickFrac,
+                    xf = dragElement.align(xLeftFrac + (dx/gs.w), thickFrac,
                         0, 1, opts.xanchor);
-                    yf = Fx.dragAlign(yBottomFrac - (dy/gs.h), lenFrac,
+                    yf = dragElement.align(yBottomFrac - (dy/gs.h), lenFrac,
                         0, 1, opts.yanchor);
 
-                    var csr = Fx.dragCursors(xf, yf,
+                    var csr = dragElement.getCursor(xf, yf,
                         opts.xanchor, opts.yanchor);
-                    Fx.setCursor(container, csr);
+                    setCursor(container, csr);
                 },
                 doneFn: function(dragged) {
-                    Fx.setCursor(container);
+                    setCursor(container);
 
                     if(dragged && xf!==undefined && yf!==undefined) {
-                        var idNum = id.substr(2),
-                            traceNum;
-                        gd._fullData.some(function(trace) {
-                            if(trace.uid===idNum) {
-                                traceNum = trace.index;
-                                return true;
-                            }
-                        });
-
                         Plotly.restyle(gd,
                             {'colorbar.x': xf, 'colorbar.y': yf},
-                            traceNum);
+                            getTrace().index);
                     }
                 }
             });
         }
         return cbDone;
+    }
+
+    function getTrace() {
+        var idNum = id.substr(2),
+            i,
+            trace;
+        for(i = 0; i < gd._fullData.length; i++) {
+            trace = gd._fullData[i];
+            if(trace.uid === idNum) return trace;
+        }
     }
 
     // setter/getters for every item defined in opts

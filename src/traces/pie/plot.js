@@ -130,7 +130,10 @@ module.exports = function plot(gd, cdpie) {
                 }
 
                 function handleMouseOut(evt) {
-                    Fx.unhover(gd, evt, 'pie');
+                    gd.emit('plotly_unhover', {
+                        points: [evt]
+                    });
+
                     if(hasHoverData) {
                         Fx.loneUnhover(fullLayout._hoverlayer.node());
                         hasHoverData = false;

@@ -17,6 +17,17 @@ var rangeSelectorAttrs = require('../../components/rangeselector/attributes');
 
 
 module.exports = {
+    color: {
+        valType: 'color',
+        dflt: colorAttrs.defaultLine,
+        role: 'style',
+        description: [
+            'Sets default for all colors associated with this axis',
+            'all at once: line, font, tick, and grid colors.',
+            'Grid color is lightened by blending this with the plot background',
+            'Individual pieces can override this.'
+        ].join(' ')
+    },
     title: {
         valType: 'string',
         role: 'info',

@@ -17,10 +17,15 @@ var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Events = require('../../lib/events');
 
-var prepSelect = require('./select');
 var constants = require('./constants');
+var dragBox = require('./dragbox');
+var dragElement = require('../../components/dragelement');
 
 var fx = module.exports = {};
+
+// TODO remove this in version 2.0
+// copy on Fx for backward compatible
+fx.unhover = dragElement.unhover;
 
 fx.layoutAttributes = {
     dragmode: {
@@ -137,7 +142,7 @@ fx.init = function(gd) {
             maindrag.onmouseout = function(evt) {
                 if(gd._dragging) return;
 
-                fx.unhover(gd, evt);
+                dragElement.unhover(gd, evt);
             };
 
             maindrag.onclick = function(evt) {
@@ -289,16 +294,6 @@ fx.hover = function(gd, evt, subplot) {
     }, constants.HOVERMINTIME);
 };
 
-fx.unhover = function(gd, evt, subplot) {
-    if(typeof gd === 'string') gd = document.getElementById(gd);
-    // Important, clear any queued hovers
-    if(gd._hoverTimer) {
-        clearTimeout(gd._hoverTimer);
-        gd._hoverTimer = undefined;
-    }
-    unhover(gd,evt,subplot);
-};
-
 // The actual implementation is here:
 
 function hover(gd, evt, subplot) {
@@ -322,16 +317,20 @@ function hover(gd, evt, subplot) {
                 .map(function(pi) { return pi.id; })),
 
         xaArray = subplots.map(function(spId) {
+            var ternary = (gd._fullLayout[spId] || {})._ternary;
+            if(ternary) return ternary.xaxis;
             return Plotly.Axes.getFromId(gd, spId, 'x');
         }),
         yaArray = subplots.map(function(spId) {
+            var ternary = (gd._fullLayout[spId] || {})._ternary;
+            if(ternary) return ternary.yaxis;
             return Plotly.Axes.getFromId(gd, spId, 'y');
         }),
         hovermode = evt.hovermode || fullLayout.hovermode;
 
     if(['x','y','closest'].indexOf(hovermode)===-1 || !gd.calcdata ||
             gd.querySelector('.zoombox') || gd._dragging) {
-        return unhover(gd, evt);
+        return dragElement.unhoverRaw(gd, evt);
     }
 
         // hoverData: the set of candidate points we've found to highlight
@@ -375,7 +374,7 @@ function hover(gd, evt, subplot) {
         for(curvenum = 0; curvenum<gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(trace.hoverinfo!=='none' && subplots.indexOf(trace.xaxis + trace.yaxis)!==-1) {
+            if(trace.hoverinfo!=='none' && subplots.indexOf(getSubplot(trace))!==-1) {
                 searchData.push(cd);
             }
         }
@@ -403,7 +402,7 @@ function hover(gd, evt, subplot) {
             // in case hover was called from mouseout into hovertext,
             // it's possible you're not actually over the plot anymore
             if(xpx<0 || xpx>dbb.width || ypx<0 || ypx>dbb.height) {
-                return unhover(gd,evt);
+                return dragElement.unhoverRaw(gd,evt);
             }
         }
         else {
@@ -422,7 +421,7 @@ function hover(gd, evt, subplot) {
 
         if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
             console.log('Plotly.Fx.hover failed', evt, gd);
-            return unhover(gd, evt);
+            return dragElement.unhoverRaw(gd, evt);
         }
     }
 
@@ -440,7 +439,7 @@ function hover(gd, evt, subplot) {
         if(!cd || !cd[0] || !cd[0].trace || cd[0].trace.visible !== true) continue;
 
         trace = cd[0].trace;
-        subploti = subplots.indexOf(trace.xaxis + trace.yaxis);
+        subploti = subplots.indexOf(getSubplot(trace));
 
         // within one trace mode can sometimes be overridden
         mode = hovermode;
@@ -521,7 +520,7 @@ function hover(gd, evt, subplot) {
     }
 
     // nothing left: remove all labels and quit
-    if(hoverData.length===0) return unhover(gd,evt);
+    if(hoverData.length===0) return dragElement.unhoverRaw(gd,evt);
 
     // if there's more than one horz bar trace,
     // rotate the labels so they don't overlap
@@ -529,10 +528,15 @@ function hover(gd, evt, subplot) {
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
+    var bgColor = Plotly.Color.combine(
+        fullLayout.plot_bgcolor || Plotly.Color.background,
+        fullLayout.paper_bgcolor
+    );
+
     var labelOpts = {
         hovermode: hovermode,
         rotateLabels: rotateLabels,
-        bgColor: Plotly.Color.combine(fullLayout.plot_bgcolor, fullLayout.paper_bgcolor),
+        bgColor: bgColor,
         container: fullLayout._hoverlayer,
         outerContainer: fullLayout._paperdiv
     };
@@ -582,6 +586,12 @@ function hover(gd, evt, subplot) {
         xvals: xvalArray,
         yvals: yvalArray
     });
+}
+
+// look for either .subplot (currently just ternary)
+// or xaxis and yaxis attributes
+function getSubplot(trace) {
+    return trace.subplot || (trace.xaxis + trace.yaxis);
 }
 
 fx.getDistanceFunction = function(mode, dx, dy, dxy) {
@@ -923,6 +933,13 @@ function createHoverText(hoverData, opts) {
 
             if(name.length>15) name = name.substr(0,12)+'...';
         }
+
+        // used by other modules (initially just ternary) that
+        // manage their own hoverinfo independent of cleanPoint
+        // the rest of this will still apply, so such modules
+        // can still put things in (x|y|z)Label, text, and name
+        // and hoverinfo will still determine their visibility
+        if(d.extraText!==undefined) text += d.extraText;
 
         if(d.zLabel!==undefined) {
             if(d.xLabel!==undefined) text += 'x: ' + d.xLabel + '<br>';
@@ -1276,28 +1293,6 @@ function hoverChanged(gd, evt, oldhoverdata) {
     return false;
 }
 
-// remove hover effects on mouse out, and emit unhover event
-function unhover(gd, evt, subplot) {
-    if(subplot === 'pie') {
-        gd.emit('plotly_unhover', {
-            points: [evt]
-        });
-        return;
-    }
-
-    var fullLayout = gd._fullLayout;
-    if(!evt) evt = {};
-    if(evt.target &&
-       Events.triggerHandler(gd, 'plotly_beforehover', evt) === false) {
-        return;
-    }
-    fullLayout._hoverlayer.selectAll('g').remove();
-    if(evt.target && gd._hoverdata) {
-        gd.emit('plotly_unhover', {points: gd._hoverdata});
-    }
-    gd._hoverdata = undefined;
-}
-
 // on click
 fx.click = function(gd,evt) {
     if(gd._hoverdata && evt && evt.target) {
@@ -1307,831 +1302,6 @@ fx.click = function(gd,evt) {
     }
 };
 
-
-// ----------------------------------------------------
-// Axis dragging functions
-// ----------------------------------------------------
-
-function getDragCursor(nsew, dragmode) {
-    if(!nsew) return 'pointer';
-    if(nsew === 'nsew') {
-        if(dragmode === 'pan') return 'move';
-        return 'crosshair';
-    }
-    return nsew.toLowerCase() + '-resize';
-}
-
-// flag for showing "doubleclick to zoom out" only at the beginning
-var SHOWZOOMOUTTIP = true;
-
-// dragBox: create an element to drag one or more axis ends
-// inputs:
-//      plotinfo - which subplot are we making dragboxes on?
-//      x,y,w,h - left, top, width, height of the box
-//      ns - how does this drag the vertical axis?
-//          'n' - top only
-//          's' - bottom only
-//          'ns' - top and bottom together, difference unchanged
-//      ew - same for horizontal axis
-function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
-    // mouseDown stores ms of first mousedown event in the last
-    // DBLCLICKDELAY ms on the drag bars
-    // numClicks stores how many mousedowns have been seen
-    // within DBLCLICKDELAY so we can check for click or doubleclick events
-    // dragged stores whether a drag has occurred, so we don't have to
-    // redraw unnecessarily, ie if no move bigger than MINDRAG or MINZOOM px
-    var fullLayout = gd._fullLayout,
-        // if we're dragging two axes at once, also drag overlays
-        subplots = [plotinfo].concat((ns && ew) ? plotinfo.overlays : []),
-        xa = [plotinfo.x()],
-        ya = [plotinfo.y()],
-        pw = xa[0]._length,
-        ph = ya[0]._length,
-        MINDRAG = constants.MINDRAG,
-        MINZOOM = constants.MINZOOM,
-        i,
-        subplotXa,
-        subplotYa;
-
-    for(i = 1; i < subplots.length; i++) {
-        subplotXa = subplots[i].x();
-        subplotYa = subplots[i].y();
-        if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
-        if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
-    }
-
-    function isDirectionActive(axList, activeVal) {
-        for(i = 0; i < axList.length; i++) {
-            if(!axList[i].fixedrange) return activeVal;
-        }
-        return '';
-    }
-
-    var allaxes = xa.concat(ya),
-        xActive = isDirectionActive(xa, ew),
-        yActive = isDirectionActive(ya, ns),
-        cursor = getDragCursor(yActive + xActive, fullLayout.dragmode),
-        dragClass = ns + ew + 'drag';
-
-    var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
-    dragger3.enter().append('rect')
-        .classed('drag', true)
-        .classed(dragClass, true)
-        .style({fill: 'transparent', 'stroke-width': 0})
-        .attr('data-subplot', plotinfo.id);
-    dragger3.call(Plotly.Drawing.setRect, x, y, w, h)
-        .call(fx.setCursor,cursor);
-    var dragger = dragger3.node();
-
-    // still need to make the element if the axes are disabled
-    // but nuke its events (except for maindrag which needs them for hover)
-    // and stop there
-    if(!yActive && !xActive) {
-        dragger.onmousedown = null;
-        dragger.style.pointerEvents = (ns + ew === 'nsew') ? 'all' : 'none';
-        return dragger;
-    }
-
-    function forceNumbers(axRange) {
-        axRange[0] = Number(axRange[0]);
-        axRange[1] = Number(axRange[1]);
-    }
-
-    var dragOptions = {
-        element: dragger,
-        gd: gd,
-        plotinfo: plotinfo,
-        xaxes: xa,
-        yaxes: ya,
-        doubleclick: doubleClick,
-        prepFn: function(e, startX, startY) {
-            var dragModeNow = gd._fullLayout.dragmode;
-            if(ns + ew === 'nsew') {
-                // main dragger handles all drag modes, and changes
-                // to pan (or to zoom if it already is pan) on shift
-                if(e.shiftKey) {
-                    if(dragModeNow === 'pan') dragModeNow = 'zoom';
-                    else dragModeNow = 'pan';
-                }
-            }
-            // all other draggers just pan
-            else dragModeNow = 'pan';
-
-            if(dragModeNow === 'lasso') dragOptions.minDrag = 1;
-            else dragOptions.minDrag = undefined;
-
-            if(dragModeNow === 'zoom') {
-                dragOptions.moveFn = zoomMove;
-                dragOptions.doneFn = zoomDone;
-                zoomPrep(e, startX, startY);
-            }
-            else if(dragModeNow === 'pan') {
-                dragOptions.moveFn = plotDrag;
-                dragOptions.doneFn = dragDone;
-                clearSelect();
-            }
-            else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
-                prepSelect(e, startX, startY, dragOptions, dragModeNow);
-            }
-        }
-    };
-
-    fx.dragElement(dragOptions);
-
-    var x0,
-        y0,
-        box,
-        lum,
-        path0,
-        dimmed,
-        zoomMode,
-        zb,
-        corners;
-
-    function zoomPrep(e, startX, startY) {
-        var dragBBox = dragger.getBoundingClientRect();
-        x0 = startX - dragBBox.left;
-        y0 = startY - dragBBox.top;
-        box = {l: x0, r: x0, w: 0, t: y0, b: y0, h: 0};
-        lum = gd._hmpixcount ?
-            (gd._hmlumcount / gd._hmpixcount) :
-            tinycolor(gd._fullLayout.plot_bgcolor).getLuminance();
-        path0 = path0 = 'M0,0H'+pw+'V'+ph+'H0V0';
-        dimmed = false;
-        zoomMode = 'xy';
-
-        zb = plotinfo.plot.append('path')
-            .attr('class', 'zoombox')
-            .style({
-                'fill': lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
-                'stroke-width': 0
-            })
-            .attr('d', path0 + 'Z');
-
-        corners = plotinfo.plot.append('path')
-            .attr('class', 'zoombox-corners')
-            .style({
-                fill: Plotly.Color.background,
-                stroke: Plotly.Color.defaultLine,
-                'stroke-width': 1,
-                opacity: 0
-            })
-            .attr('d','M0,0Z');
-
-        clearSelect();
-        for(i = 0; i < allaxes.length; i++) forceNumbers(allaxes[i].range);
-    }
-
-    function clearSelect() {
-        // until we get around to persistent selections, remove the outline
-        // here. The selection itself will be removed when the plot redraws
-        // at the end.
-        plotinfo.plot.selectAll('.select-outline').remove();
-    }
-
-    function zoomMove(dx0, dy0) {
-        var x1 = Math.max(0, Math.min(pw, dx0 + x0)),
-            y1 = Math.max(0, Math.min(ph, dy0 + y0)),
-            dx = Math.abs(x1 - x0),
-            dy = Math.abs(y1 - y0),
-            clen = Math.floor(Math.min(dy, dx, MINZOOM) / 2);
-
-        box.l = Math.min(x0, x1);
-        box.r = Math.max(x0, x1);
-        box.t = Math.min(y0, y1);
-        box.b = Math.max(y0, y1);
-
-        // look for small drags in one direction or the other,
-        // and only drag the other axis
-        if(!yActive || dy < Math.min(Math.max(dx * 0.6, MINDRAG), MINZOOM)) {
-            if(dx < MINDRAG) {
-                zoomMode = '';
-                box.r = box.l;
-                box.t = box.b;
-                corners.attr('d', 'M0,0Z');
-            }
-            else {
-                box.t = 0;
-                box.b = ph;
-                zoomMode = 'x';
-                corners.attr('d',
-                    'M' + (box.l - 0.5) + ',' + (y0 - MINZOOM - 0.5) +
-                    'h-3v' + (2 * MINZOOM + 1) + 'h3ZM' +
-                    (box.r + 0.5) + ',' + (y0 - MINZOOM - 0.5) +
-                    'h3v' + (2 * MINZOOM + 1) + 'h-3Z');
-            }
-        }
-        else if(!xActive || dx < Math.min(dy * 0.6, MINZOOM)) {
-            box.l = 0;
-            box.r = pw;
-            zoomMode = 'y';
-            corners.attr('d',
-                'M' + (x0 - MINZOOM - 0.5) + ',' + (box.t - 0.5) +
-                'v-3h' + (2 * MINZOOM + 1) + 'v3ZM' +
-                (x0 - MINZOOM - 0.5) + ',' + (box.b + 0.5) +
-                'v3h' + (2 * MINZOOM + 1) + 'v-3Z');
-        }
-        else {
-            zoomMode = 'xy';
-            corners.attr('d',
-                'M'+(box.l-3.5)+','+(box.t-0.5+clen)+'h3v'+(-clen)+
-                        'h'+clen+'v-3h-'+(clen+3)+'ZM'+
-                    (box.r+3.5)+','+(box.t-0.5+clen)+'h-3v'+(-clen)+
-                        'h'+(-clen)+'v-3h'+(clen+3)+'ZM'+
-                    (box.r+3.5)+','+(box.b+0.5-clen)+'h-3v'+clen+
-                        'h'+(-clen)+'v3h'+(clen+3)+'ZM'+
-                    (box.l-3.5)+','+(box.b+0.5-clen)+'h3v'+clen+
-                        'h'+clen+'v3h-'+(clen+3)+'Z');
-        }
-        box.w = box.r - box.l;
-        box.h = box.b - box.t;
-
-        // Not sure about the addition of window.scrollX/Y...
-        // seems to work but doesn't seem robust.
-        zb.attr('d',
-            path0+'M'+(box.l)+','+(box.t)+'v'+(box.h)+
-            'h'+(box.w)+'v-'+(box.h)+'h-'+(box.w)+'Z');
-        if(!dimmed) {
-            zb.transition()
-                .style('fill', lum>0.2 ? 'rgba(0,0,0,0.4)' :
-                    'rgba(255,255,255,0.3)')
-                .duration(200);
-            corners.transition()
-                .style('opacity',1)
-                .duration(200);
-            dimmed = true;
-        }
-    }
-
-    function zoomAxRanges(axList, r0Fraction, r1Fraction) {
-        var i,
-            axi,
-            axRange;
-
-        for(i = 0; i < axList.length; i++) {
-            axi = axList[i];
-            if(axi.fixedrange) continue;
-
-            axRange = axi.range;
-            axi.range = [
-                axRange[0] + (axRange[1] - axRange[0]) * r0Fraction,
-                axRange[0] + (axRange[1] - axRange[0]) * r1Fraction
-            ];
-        }
-    }
-
-    function zoomDone(dragged, numClicks) {
-        if(Math.min(box.h, box.w) < MINDRAG * 2) {
-            if(numClicks === 2) doubleClick();
-
-            return removeZoombox(gd);
-        }
-
-        if(zoomMode === 'xy' || zoomMode === 'x') zoomAxRanges(xa, box.l / pw, box.r / pw);
-        if(zoomMode === 'xy' || zoomMode === 'y') zoomAxRanges(ya, (ph - box.b) / ph, (ph - box.t) / ph);
-
-        removeZoombox(gd);
-        dragTail(zoomMode);
-
-        if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Plotly.Lib.notifier('Double-click to<br>zoom back out','long');
-            SHOWZOOMOUTTIP = false;
-        }
-    }
-
-    function dragDone(dragged, numClicks) {
-        var singleEnd = (ns + ew).length === 1;
-        if(dragged) dragTail();
-        else if(numClicks === 2 && !singleEnd) doubleClick();
-        else if(numClicks === 1 && singleEnd) {
-            var ax = ns ? ya[0] : xa[0],
-                end = (ns==='s' || ew==='w') ? 0 : 1,
-                attrStr = ax._name + '.range[' + end + ']',
-                initialText = getEndText(ax, end),
-                hAlign = 'left',
-                vAlign = 'middle';
-
-            if(ax.fixedrange) return;
-
-            if(ns) {
-                vAlign = (ns === 'n') ? 'top' : 'bottom';
-                if(ax.side === 'right') hAlign = 'right';
-            }
-            else if(ew === 'e') hAlign = 'right';
-
-            dragger3
-                .call(Plotly.util.makeEditable, null, {
-                    immediate: true,
-                    background: fullLayout.paper_bgcolor,
-                    text: String(initialText),
-                    fill: ax.tickfont ? ax.tickfont.color : '#444',
-                    horizontalAlign: hAlign,
-                    verticalAlign: vAlign
-                })
-                .on('edit', function(text) {
-                    var v = ax.type==='category' ? ax.c2l(text) : ax.d2l(text);
-                    if(v !== undefined) {
-                        Plotly.relayout(gd, attrStr, v);
-                    }
-                });
-        }
-    }
-
-    // scroll zoom, on all draggers except corners
-    var scrollViewBox = [0,0,pw,ph],
-        // wait a little after scrolling before redrawing
-        redrawTimer = null,
-        REDRAWDELAY = 300,
-        mainplot = plotinfo.mainplot ?
-            fullLayout._plots[plotinfo.mainplot] : plotinfo;
-
-    function zoomWheel(e) {
-        // deactivate mousewheel scrolling on embedded graphs
-        // devs can override this with layout._enablescrollzoom,
-        // but _ ensures this setting won't leave their page
-        if(!gd._context.scrollZoom && !fullLayout._enablescrollzoom) {
-            return;
-        }
-        var pc = gd.querySelector('.plotly');
-
-        // if the plot has scrollbars (more than a tiny excess)
-        // disable scrollzoom too.
-        if(pc.scrollHeight-pc.clientHeight>10 ||
-                pc.scrollWidth-pc.clientWidth>10) {
-            return;
-        }
-
-        clearTimeout(redrawTimer);
-
-        var wheelDelta = -e.deltaY;
-        if(!isFinite(wheelDelta)) wheelDelta = e.wheelDelta / 10;
-        if(!isFinite(wheelDelta)) {
-            console.log('did not find wheel motion attributes', e);
-            return;
-        }
-
-        var zoom = Math.exp(-Math.min(Math.max(wheelDelta, -20), 20) / 100),
-            gbb = mainplot.draglayer.select('.nsewdrag')
-                .node().getBoundingClientRect(),
-            xfrac = (e.clientX - gbb.left) / gbb.width,
-            vbx0 = scrollViewBox[0] + scrollViewBox[2]*xfrac,
-            yfrac = (gbb.bottom - e.clientY)/gbb.height,
-            vby0 = scrollViewBox[1]+scrollViewBox[3]*(1-yfrac),
-            i;
-
-        function zoomWheelOneAxis(ax, centerFraction, zoom) {
-            if(ax.fixedrange) return;
-            forceNumbers(ax.range);
-            var axRange = ax.range,
-                v0 = axRange[0] + (axRange[1] - axRange[0]) * centerFraction;
-            ax.range = [v0 + (axRange[0] - v0) * zoom, v0 + (axRange[1] - v0) * zoom];
-        }
-
-        if(ew) {
-            for(i = 0; i < xa.length; i++) zoomWheelOneAxis(xa[i], xfrac, zoom);
-            scrollViewBox[2] *= zoom;
-            scrollViewBox[0] = vbx0 - scrollViewBox[2] * xfrac;
-        }
-        if(ns) {
-            for(i = 0; i < ya.length; i++) zoomWheelOneAxis(ya[i], yfrac, zoom);
-            scrollViewBox[3] *= zoom;
-            scrollViewBox[1] = vby0 - scrollViewBox[3] * (1 - yfrac);
-        }
-
-        // viewbox redraw at first
-        updateViewBoxes(scrollViewBox);
-        ticksAndAnnotations(ns,ew);
-
-        // then replot after a delay to make sure
-        // no more scrolling is coming
-        redrawTimer = setTimeout(function() {
-            scrollViewBox = [0,0,pw,ph];
-            dragTail();
-        }, REDRAWDELAY);
-
-        return Plotly.Lib.pauseEvent(e);
-    }
-
-    // everything but the corners gets wheel zoom
-    if(ns.length*ew.length!==1) {
-        // still seems to be some confusion about onwheel vs onmousewheel...
-        if(dragger.onwheel!==undefined) dragger.onwheel = zoomWheel;
-        else if(dragger.onmousewheel!==undefined) dragger.onmousewheel = zoomWheel;
-    }
-
-    // plotDrag: move the plot in response to a drag
-    function plotDrag(dx,dy) {
-        function dragAxList(axList, pix) {
-            for(var i = 0; i < axList.length; i++) {
-                var axi = axList[i];
-                if(!axi.fixedrange) {
-                    axi.range = [axi._r[0] - pix / axi._m, axi._r[1] - pix / axi._m];
-                }
-            }
-        }
-
-        if(xActive === 'ew' || yActive === 'ns') {
-            if(xActive) dragAxList(xa, dx);
-            if(yActive) dragAxList(ya, dy);
-            updateViewBoxes([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
-            ticksAndAnnotations(yActive, xActive);
-            return;
-        }
-
-        // common transform for dragging one end of an axis
-        // d>0 is compressing scale (cursor is over the plot,
-        //  the axis end should move with the cursor)
-        // d<0 is expanding (cursor is off the plot, axis end moves
-        //  nonlinearly so you can expand far)
-        function dZoom(d) {
-            return 1-((d>=0) ? Math.min(d,0.9) :
-                1/(1/Math.max(d,-0.3)+3.222));
-        }
-
-        // dz: set a new value for one end (0 or 1) of an axis array ax,
-        // and return a pixel shift for that end for the viewbox
-        // based on pixel drag distance d
-        // TODO: this makes (generally non-fatal) errors when you get
-        // near floating point limits
-        function dz(ax, end, d) {
-            var otherEnd = 1 - end,
-                movedi = 0;
-            for(var i = 0; i < ax.length; i++) {
-                var axi = ax[i];
-                if(axi.fixedrange) continue;
-                movedi = i;
-                axi.range[end] = axi._r[otherEnd] +
-                    (axi._r[end] - axi._r[otherEnd]) / dZoom(d / axi._length);
-            }
-            return ax[movedi]._length * (ax[movedi]._r[end] - ax[movedi].range[end]) /
-                (ax[movedi]._r[end] - ax[movedi]._r[otherEnd]);
-        }
-
-        if(xActive === 'w') dx = dz(xa, 0, dx);
-        else if(xActive === 'e') dx = dz(xa, 1, -dx);
-        else if(!xActive) dx = 0;
-
-        if(yActive === 'n') dy = dz(ya, 1, dy);
-        else if(yActive === 's') dy = dz(ya, 0, -dy);
-        else if(!yActive) dy = 0;
-
-        updateViewBoxes([
-            (xActive === 'w') ? dx : 0,
-            (yActive === 'n') ? dy : 0,
-            pw - dx,
-            ph - dy
-        ]);
-        ticksAndAnnotations(yActive, xActive);
-    }
-
-    function ticksAndAnnotations(ns, ew) {
-        var activeAxIds = [],
-            i;
-
-        function pushActiveAxIds(axList) {
-            for(i = 0; i < axList.length; i++) {
-                if(!axList[i].fixedrange) activeAxIds.push(axList[i]._id);
-            }
-        }
-
-        if(ew) pushActiveAxIds(xa);
-        if(ns) pushActiveAxIds(ya);
-
-        for(i = 0; i < activeAxIds.length; i++) {
-            Plotly.Axes.doTicks(gd, activeAxIds[i], true);
-        }
-
-        function redrawObjs(objArray, module) {
-            var obji;
-            for(i = 0; i < objArray.length; i++) {
-                obji = objArray[i];
-                if((ew && activeAxIds.indexOf(obji.xref) !== -1) ||
-                    (ns && activeAxIds.indexOf(obji.yref) !== -1)) {
-                    module.draw(gd, i);
-                }
-            }
-        }
-
-        redrawObjs(fullLayout.annotations || [], Plotly.Annotations);
-        redrawObjs(fullLayout.shapes || [], Plotly.Shapes);
-    }
-
-    function doubleClick() {
-        var doubleClickConfig = gd._context.doubleClick,
-            axList = (xActive ? xa : []).concat(yActive ? ya : []),
-            attrs = {};
-
-        var ax, i;
-
-        if(doubleClickConfig === 'autosize') {
-            for(i = 0; i < axList.length; i++) {
-                ax = axList[i];
-                if(!ax.fixedrange) attrs[ax._name + '.autorange'] = true;
-            }
-        }
-        else if(doubleClickConfig === 'reset') {
-            for(i = 0; i < axList.length; i++) {
-                ax = axList[i];
-
-                if(!ax._rangeInitial) {
-                    attrs[ax._name + '.autorange'] = true;
-                }
-                else {
-                    attrs[ax._name + '.range'] = ax._rangeInitial.slice();
-                }
-            }
-        }
-        else if(doubleClickConfig === 'reset+autosize') {
-            for(i = 0; i < axList.length; i++) {
-                ax = axList[i];
-
-                if(ax.fixedrange) continue;
-                if(ax._rangeInitial === undefined ||
-                    ax.range[0] === ax._rangeInitial[0] &&
-                    ax.range[1] === ax._rangeInitial[1]
-                ) {
-                    attrs[ax._name + '.autorange'] = true;
-                }
-                else attrs[ax._name + '.range'] = ax._rangeInitial.slice();
-            }
-        }
-
-        gd.emit('plotly_doubleclick', null);
-        Plotly.relayout(gd, attrs);
-    }
-
-    // dragTail - finish a drag event with a redraw
-    function dragTail(zoommode) {
-        var attrs = {};
-        // revert to the previous axis settings, then apply the new ones
-        // through relayout - this lets relayout manage undo/redo
-        for(var i = 0; i < allaxes.length; i++) {
-            var axi = allaxes[i];
-            if(zoommode && zoommode.indexOf(axi._id.charAt(0))===-1) {
-                continue;
-            }
-            if(axi._r[0] !== axi.range[0]) attrs[axi._name+'.range[0]'] = axi.range[0];
-            if(axi._r[1] !== axi.range[1]) attrs[axi._name+'.range[1]'] = axi.range[1];
-
-            axi.range=axi._r.slice();
-        }
-
-        updateViewBoxes([0,0,pw,ph]);
-        Plotly.relayout(gd,attrs);
-    }
-
-    // updateViewBoxes - find all plot viewboxes that should be
-    // affected by this drag, and update them. look for all plots
-    // sharing an affected axis (including the one being dragged)
-    function updateViewBoxes(viewBox) {
-        var plotinfos = fullLayout._plots,
-            subplots = Object.keys(plotinfos),
-            i,
-            plotinfo2,
-            xa2,
-            ya2,
-            editX,
-            editY;
-
-        for(i = 0; i < subplots.length; i++) {
-            plotinfo2 = plotinfos[subplots[i]];
-            xa2 = plotinfo2.x();
-            ya2 = plotinfo2.y();
-            editX = ew && xa.indexOf(xa2)!==-1 && !xa2.fixedrange;
-            editY = ns && ya.indexOf(ya2)!==-1 && !ya2.fixedrange;
-
-            if(editX || editY) {
-                var newVB = [0,0,xa2._length,ya2._length];
-                if(editX) {
-                    newVB[0] = viewBox[0];
-                    newVB[2] = viewBox[2];
-                }
-                if(editY) {
-                    newVB[1] = viewBox[1];
-                    newVB[3] = viewBox[3];
-                }
-                plotinfo2.plot.attr('viewBox',newVB.join(' '));
-            }
-        }
-    }
-
-    return dragger;
-}
-
-function getEndText(ax, end) {
-    var initialVal = ax.range[end],
-        diff = Math.abs(initialVal - ax.range[1 - end]),
-        dig;
-
-    if(ax.type === 'date') {
-        return Plotly.Lib.ms2DateTime(initialVal, diff);
-    }
-    else if(ax.type==='log') {
-        dig = Math.ceil(Math.max(0, -Math.log(diff) / Math.LN10)) + 3;
-        return d3.format('.' + dig + 'g')(Math.pow(10, initialVal));
-    }
-    else { // linear numeric (or category... but just show numbers here)
-        dig = Math.floor(Math.log(Math.abs(initialVal)) / Math.LN10) -
-            Math.floor(Math.log(diff) / Math.LN10) + 4;
-        return d3.format('.'+String(dig)+'g')(initialVal);
-    }
-}
-
-function finishDrag(gd) {
-    gd._dragging = false;
-    if(gd._replotPending) Plotly.plot(gd);
-}
-
-function removeZoombox(gd) {
-    d3.select(gd)
-        .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
-        .remove();
-}
-
-// for automatic alignment on dragging, <1/3 means left align,
-// >2/3 means right, and between is center. Pick the right fraction
-// based on where you are, and return the fraction corresponding to
-// that position on the object
-fx.dragAlign = function(v, dv, v0, v1, anchor) {
-    var vmin = (v-v0)/(v1-v0),
-        vmax = vmin+dv/(v1-v0),
-        vc = (vmin+vmax)/2;
-
-    // explicitly specified anchor
-    if(anchor==='left' || anchor==='bottom') return vmin;
-    if(anchor==='center' || anchor==='middle') return vc;
-    if(anchor==='right' || anchor==='top') return vmax;
-
-    // automatic based on position
-    if(vmin<(2/3)-vc) return vmin;
-    if(vmax>(4/3)-vc) return vmax;
-    return vc;
-};
-
-
-// set cursors pointing toward the closest corner/side,
-// to indicate alignment
-// x and y are 0-1, fractions of the plot area
-var cursorset = [['sw-resize','s-resize','se-resize'],
-            ['w-resize','move','e-resize'],
-            ['nw-resize','n-resize','ne-resize']];
-fx.dragCursors = function(x,y,xanchor,yanchor) {
-    if(xanchor==='left') x=0;
-    else if(xanchor==='center') x=1;
-    else if(xanchor==='right') x=2;
-    else x = Plotly.Lib.constrain(Math.floor(x*3),0,2);
-
-    if(yanchor==='bottom') y=0;
-    else if(yanchor==='middle') y=1;
-    else if(yanchor==='top') y=2;
-    else y = Plotly.Lib.constrain(Math.floor(y*3),0,2);
-
-    return cursorset[y][x];
-};
-
-/**
- * Abstracts click & drag interactions
- * @param {object} options with keys:
- *      element (required) the DOM element to drag
- *      prepFn (optional) function(event, startX, startY)
- *          executed on mousedown
- *          startX and startY are the clientX and clientY pixel position
- *          of the mousedown event
- *      moveFn (optional) function(dx, dy, dragged)
- *          executed on move
- *          dx and dy are the net pixel offset of the drag,
- *          dragged is true/false, has the mouse moved enough to
- *          constitute a drag
- *      doneFn (optional) function(dragged, numClicks)
- *          executed on mouseup, or mouseout of window since
- *          we don't get events after that
- *          dragged is as in moveFn
- *          numClicks is how many clicks we've registered within
- *          a doubleclick time
- */
-fx.dragElement = function(options) {
-    var gd = Plotly.Lib.getPlotDiv(options.element) || {},
-        numClicks = 1,
-        DBLCLICKDELAY = constants.DBLCLICKDELAY,
-        startX,
-        startY,
-        newMouseDownTime,
-        dragCover,
-        initialTarget;
-
-    if(!gd._mouseDownTime) gd._mouseDownTime = 0;
-
-    function onStart(e) {
-        // make dragging and dragged into properties of gd
-        // so that others can look at and modify them
-        gd._dragged = false;
-        gd._dragging = true;
-        startX = e.clientX;
-        startY = e.clientY;
-        initialTarget = e.target;
-
-        newMouseDownTime = (new Date()).getTime();
-        if(newMouseDownTime - gd._mouseDownTime < DBLCLICKDELAY) {
-            // in a click train
-            numClicks += 1;
-        }
-        else {
-            // new click train
-            numClicks = 1;
-            gd._mouseDownTime = newMouseDownTime;
-        }
-
-        if(options.prepFn) options.prepFn(e, startX, startY);
-
-        dragCover = coverSlip();
-
-        dragCover.onmousemove = onMove;
-        dragCover.onmouseup = onDone;
-        dragCover.onmouseout = onDone;
-
-        dragCover.style.cursor = window.getComputedStyle(options.element).cursor;
-
-        return Plotly.Lib.pauseEvent(e);
-    }
-
-    function onMove(e) {
-        var dx = e.clientX - startX,
-            dy = e.clientY - startY,
-            minDrag = options.minDrag || constants.MINDRAG;
-
-        if(Math.abs(dx) < minDrag) dx = 0;
-        if(Math.abs(dy) < minDrag) dy = 0;
-        if(dx||dy) {
-            gd._dragged = true;
-            fx.unhover(gd);
-        }
-
-        if(options.moveFn) options.moveFn(dx, dy, gd._dragged);
-
-        return Plotly.Lib.pauseEvent(e);
-    }
-
-    function onDone(e) {
-        dragCover.onmousemove = null;
-        dragCover.onmouseup = null;
-        dragCover.onmouseout = null;
-        Plotly.Lib.removeElement(dragCover);
-
-        if(!gd._dragging) {
-            gd._dragged = false;
-            return;
-        }
-        gd._dragging = false;
-
-        // don't count as a dblClick unless the mouseUp is also within
-        // the dblclick delay
-        if((new Date()).getTime() - gd._mouseDownTime > DBLCLICKDELAY) {
-            numClicks = Math.max(numClicks - 1, 1);
-        }
-
-        if(options.doneFn) options.doneFn(gd._dragged, numClicks);
-
-        if(!gd._dragged) {
-            var e2 = document.createEvent('MouseEvents');
-            e2.initEvent('click', true, true);
-            initialTarget.dispatchEvent(e2);
-        }
-
-        finishDrag(gd);
-
-        gd._dragged = false;
-
-        return Plotly.Lib.pauseEvent(e);
-    }
-
-    options.element.onmousedown = onStart;
-    options.element.style.pointerEvents = 'all';
-};
-
-function coverSlip() {
-    var cover = document.createElement('div');
-
-    cover.className = 'dragcover';
-    var cStyle = cover.style;
-    cStyle.position = 'fixed';
-    cStyle.left = 0;
-    cStyle.right = 0;
-    cStyle.top = 0;
-    cStyle.bottom = 0;
-    cStyle.zIndex = 999999999;
-    cStyle.background = 'none';
-
-    document.body.appendChild(cover);
-
-    return cover;
-}
-
-fx.setCursor = function(el3,csr) {
-    (el3.attr('class')||'').split(' ').forEach(function(cls) {
-        if(cls.indexOf('cursor-')===0) { el3.classed(cls,false); }
-    });
-    if(csr) { el3.classed('cursor-'+csr, true); }
-};
 
 // for bar charts and others with finite-size objects: you must be inside
 // it to see its hover info, so distance is infinite outside.

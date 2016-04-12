@@ -12,6 +12,8 @@
 var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+var setCursor = require('../../lib/setcursor');
+var dragElement = require('../dragelement');
 
 var annotations = module.exports = {};
 
@@ -583,7 +585,7 @@ annotations.draw = function(gd, index, opt, value) {
                     annx0,
                     anny0;
 
-                Plotly.Fx.dragElement({
+                dragElement.init({
                     element: arrowdrag.node(),
                     prepFn: function() {
                         annx0 = Number(ann.attr('x'));
@@ -641,7 +643,7 @@ annotations.draw = function(gd, index, opt, value) {
                 y0,
                 update;
 
-            Plotly.Fx.dragElement({
+            dragElement.init({
                 element: ann.node(),
                 prepFn: function() {
                     x0 = Number(ann.attr('x'));
@@ -662,7 +664,7 @@ annotations.draw = function(gd, index, opt, value) {
                             var widthFraction = options._xsize / gs.w,
                                 xLeft = options.x + options._xshift / gs.w - widthFraction / 2;
 
-                            update[annbase + '.x'] = Plotly.Fx.dragAlign(xLeft + dx / gs.w,
+                            update[annbase + '.x'] = dragElement.align(xLeft + dx / gs.w,
                                 widthFraction, 0, 1, options.xanchor);
                         }
 
@@ -671,11 +673,11 @@ annotations.draw = function(gd, index, opt, value) {
                             var heightFraction = options._ysize / gs.h,
                                 yBottom = options.y - options._yshift / gs.h - heightFraction / 2;
 
-                            update[annbase + '.y'] = Plotly.Fx.dragAlign(yBottom - dy / gs.h,
+                            update[annbase + '.y'] = dragElement.align(yBottom - dy / gs.h,
                                 heightFraction, 0, 1, options.yanchor);
                         }
                         if(!xa || !ya) {
-                            csr = Plotly.Fx.dragCursors(
+                            csr = dragElement.cursor(
                                 xa ? 0.5 : update[annbase + '.x'],
                                 ya ? 0.5 : update[annbase + '.y'],
                                 options.xanchor, options.yanchor
@@ -694,10 +696,10 @@ annotations.draw = function(gd, index, opt, value) {
                                x1 + ',' + y1 + ')'
                     });
 
-                    Plotly.Fx.setCursor(ann, csr);
+                    setCursor(ann, csr);
                 },
                 doneFn: function(dragged) {
-                    Plotly.Fx.setCursor(ann);
+                    setCursor(ann);
                     if(dragged) {
                         Plotly.relayout(gd, update);
                         var notesBox = document.querySelector('.js-notes-box-panel');

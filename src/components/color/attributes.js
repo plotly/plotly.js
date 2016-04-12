@@ -28,3 +28,9 @@ exports.defaultLine = '#444';
 exports.lightLine = '#eee';
 
 exports.background = '#fff';
+
+// with axis.color and Color.interp we aren't using lightLine
+// itself anymore, instead interpolating between axis.color
+// and the background color using tinycolor.mix. lightFraction
+// gives back exactly lightLine if the other colors are defaults.
+exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);

@@ -281,6 +281,7 @@ Plotly.plot = function(gd, data, layout, config) {
         if(fullLayout._hasCartesian || fullLayout._hasPie) {
             plotRegistry.cartesian.plot(gd);
         }
+        if(fullLayout._hasTernary) plotRegistry.ternary.plot(gd);
 
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
@@ -2275,6 +2276,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // 3d or geo at this point just needs to redraw.
             if(p.parts[0].indexOf('scene') === 0) doplot = true;
             else if(p.parts[0].indexOf('geo') === 0) doplot = true;
+            else if(p.parts[0].indexOf('ternary') === 0) doplot = true;
             else if(fullLayout._hasGL2D &&
                 (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
             ) doplot = true;
@@ -2368,7 +2370,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(doticks) {
             seq.push(function() {
                 Plotly.Axes.doTicks(gd,'redraw');
-                Titles.draw(gd, 'gtitle');
+                drawMainTitle(gd);
                 return Plots.previousPromises(gd);
             });
         }
@@ -2620,7 +2622,8 @@ function makePlotFramework(gd) {
 
     if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
 
-    // single shape and pie layers for the whole plot
+    // single ternary, shape and pie layers for the whole plot
+    fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
     fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
@@ -2967,9 +2970,24 @@ function lsInner(gd) {
 
     Plotly.Axes.makeClipPaths(gd);
 
-    Titles.draw(gd, 'gtitle');
+    drawMainTitle(gd);
 
     manageModeBar(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
+}
+
+function drawMainTitle(gd) {
+    var fullLayout = gd._fullLayout;
+
+    Titles.draw(gd, 'gtitle', {
+        propContainer: fullLayout,
+        propName: 'title',
+        dfltName: 'Plot',
+        attributes: {
+            x: fullLayout.width / 2,
+            y: fullLayout._size.t / 2,
+            'text-anchor': 'middle'
+        }
+    });
 }

@@ -1,5 +1,8 @@
 var Gl3d = require('@src/plots/gl3d');
 
+var tinycolor = require('tinycolor2');
+var Color = require('@src/components/color');
+
 
 describe('Test Gl3d layout defaults', function() {
     'use strict';
@@ -225,6 +228,28 @@ describe('Test Gl3d layout defaults', function() {
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutIn.scene).toBe(undefined);
+        });
+
+        it('should use combo of \'axis.color\', bgcolor and lightFraction as default for \'axis.gridcolor\'', function() {
+            layoutIn = {
+                paper_bgcolor: 'green',
+                scene: {
+                    bgcolor: 'yellow',
+                    xaxis: { showgrid: true, color: 'red' },
+                    yaxis: { gridcolor: 'blue' },
+                    zaxis: { showgrid: true }
+                }
+            };
+
+            var bgColor = Color.combine('yellow', 'green'),
+                frac = 100 * (204 - 0x44) / (255 - 0x44);
+
+            supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+            expect(layoutOut.scene.xaxis.gridcolor)
+                .toEqual(tinycolor.mix('red', bgColor, frac).toRgbString());
+            expect(layoutOut.scene.yaxis.gridcolor).toEqual('blue');
+            expect(layoutOut.scene.zaxis.gridcolor)
+                .toEqual(tinycolor.mix('#444', bgColor, frac).toRgbString());
         });
     });
 });

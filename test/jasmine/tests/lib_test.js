@@ -1,5 +1,11 @@
 var Lib = require('@src/lib');
-var Plots = require('@src/plots/plots');
+var setCursor = require('@src/lib/setcursor');
+
+var d3 = require('d3');
+var PlotlyInternal = require('@src/plotly');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var Plots = PlotlyInternal.Plots;
 
 
 describe('Test lib.js:', function() {
@@ -588,6 +594,46 @@ describe('Test lib.js:', function() {
 
 
         });
+
+        describe('subplotid valtype', function() {
+            var dflt = 'slice';
+            var idAttrs = {
+                pizza: {
+                    valType: 'subplotid',
+                    dflt: dflt
+                }
+            };
+
+            var goodVals = ['slice', 'slice2', 'slice1492'];
+
+            goodVals.forEach(function(goodVal) {
+                it('should allow "' + goodVal + '"', function() {
+                    expect(coerce({pizza: goodVal}, {}, idAttrs, 'pizza'))
+                        .toEqual(goodVal);
+                });
+            });
+
+            var badVals = [
+                'slice0',
+                'slice1',
+                'Slice2',
+                '2slice',
+                '2',
+                2,
+                'slice2 ',
+                'slice2.0',
+                ' slice2',
+                'slice 2',
+                'slice01'
+            ];
+
+            badVals.forEach(function(badVal) {
+                it('should not allow "' + badVal + '"', function() {
+                    expect(coerce({pizza: badVal}, {}, idAttrs, 'pizza'))
+                        .toEqual(dflt);
+                });
+            });
+        });
     });
 
     describe('coerceFont', function() {
@@ -672,6 +718,55 @@ describe('Test lib.js:', function() {
             expect(array.length).toEqual(4);
             expect(array[0].length).toEqual(5);
             expect(array[3].length).toEqual(5);
+        });
+    });
+
+    describe('setCursor', function() {
+
+        beforeEach(function() {
+            this.el3 = d3.select(createGraphDiv());
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should assign cursor- class', function() {
+            setCursor(this.el3, 'one');
+
+            expect(this.el3.attr('class')).toEqual('cursor-one');
+        });
+
+        it('should assign cursor- class while present non-cursor- classes', function() {
+            this.el3.classed('one', true);
+            this.el3.classed('two', true);
+            this.el3.classed('three', true);
+            setCursor(this.el3, 'one');
+
+            expect(this.el3.attr('class')).toEqual('one two three cursor-one');
+        });
+
+        it('should update class from one cursor- class to another', function() {
+            this.el3.classed('cursor-one', true);
+            setCursor(this.el3, 'two');
+
+            expect(this.el3.attr('class')).toEqual('cursor-two');
+        });
+
+        it('should update multiple cursor- classes', function() {
+            this.el3.classed('cursor-one', true);
+            this.el3.classed('cursor-two', true);
+            this.el3.classed('cursor-three', true);
+            setCursor(this.el3, 'four');
+
+            expect(this.el3.attr('class')).toEqual('cursor-four');
+        });
+
+        it('should remove cursor- if no new class is given', function() {
+            this.el3.classed('cursor-one', true);
+            this.el3.classed('cursor-two', true);
+            this.el3.classed('cursor-three', true);
+            setCursor(this.el3);
+
+            expect(this.el3.attr('class')).toEqual('');
         });
     });
 

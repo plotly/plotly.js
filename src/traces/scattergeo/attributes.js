@@ -47,7 +47,7 @@ module.exports = {
     mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
     text: extendFlat({}, scatterAttrs.text, {
         description: [
-            'Sets text elements associated with each (lon,lat) pair.',
+            'Sets text elements associated with each (lon,lat) pair',
             'or item in `locations`.',
             'If a single string, the same string appears over',
             'all the data points.',
