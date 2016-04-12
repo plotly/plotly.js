@@ -1,0 +1,95 @@
+{
+    "data": [
+        {
+            "type": "scatterternary",
+            "mode": "markers",
+            "a": [
+                0.1,
+                0.2,
+                0.3
+            ],
+            "b": [
+                0.3,
+                0.2,
+                0.1
+            ],
+            "name": "c missing",
+            "uid": "757d30"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "markers",
+            "a": [
+                0.1,
+                0.2,
+                0.3
+            ],
+            "c": [
+                0.3,
+                0.2,
+                0.1
+            ],
+            "subplot": "ternary2",
+            "name": "b missing",
+            "uid": "6c0753"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "markers",
+            "b": [
+                0.1,
+                0.2,
+                0.3
+            ],
+            "c": [
+                0.3,
+                0.2,
+                0.1
+            ],
+            "subplot": "ternary3",
+            "name": "a missing",
+            "uid": "12520d"
+        }
+    ],
+    "layout": {
+        "ternary": {
+            "domain": {
+                "x": [
+                    0,
+                    0.5
+                ],
+                "y": [
+                    0,
+                    0.4
+                ]
+            }
+        },
+        "ternary2": {
+            "domain": {
+                "x": [
+                    0,
+                    0.5
+                ],
+                "y": [
+                    0.6,
+                    1
+                ]
+            }
+        },
+        "ternary3": {
+            "domain": {
+                "x": [
+                    0.5,
+                    1
+                ],
+                "y": [
+                    0.25,
+                    0.75
+                ]
+            }
+        },
+        "height": 450,
+        "width": 700,
+        "autosize": false
+    }
+}
