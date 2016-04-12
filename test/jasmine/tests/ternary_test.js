@@ -2,6 +2,8 @@ var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
 
+var supplyLayoutDefaults = require('@src/plots/ternary/layout/defaults');
+
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -220,4 +222,77 @@ describe('ternary plots', function() {
 
         expect(actual).toBeCloseToArray(expected);
     }
+});
+
+describe('ternary defaults', function() {
+    'use strict';
+
+    var layoutIn, layoutOut, fullData;
+
+    beforeEach(function() {
+        // if hasTernary is not at this stage, the default step is skipped
+        layoutOut = {
+            _hasTernary: true,
+            font: { color: 'red' }
+        };
+
+        // needs a ternary-ref in a trace in order to be detected
+        fullData = [{ type: 'scatterternary', subplot: 'ternary' }];
+    });
+
+    it('should fill empty containers', function() {
+        layoutIn = {};
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutIn).toEqual({ ternary: {} });
+        expect(layoutOut.ternary.aaxis.type).toEqual('linear');
+        expect(layoutOut.ternary.baxis.type).toEqual('linear');
+        expect(layoutOut.ternary.caxis.type).toEqual('linear');
+    });
+
+    it('should coerce \'min\' values to 0 and delete them for user data if they contradict', function() {
+        layoutIn = {
+            ternary: {
+                aaxis: { min: 1 },
+                baxis: { min: 1 },
+                caxis: { min: 1 },
+                sum: 2
+            }
+        };
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.ternary.aaxis.min).toEqual(0);
+        expect(layoutOut.ternary.baxis.min).toEqual(0);
+        expect(layoutOut.ternary.caxis.min).toEqual(0);
+        expect(layoutOut.ternary.sum).toEqual(2);
+        expect(layoutIn.ternary.aaxis.min).toBeUndefined();
+        expect(layoutIn.ternary.baxis.min).toBeUndefined();
+        expect(layoutIn.ternary.caxis.min).toBeUndefined();
+    });
+
+    it('should default \'title\' to Component + _name', function() {
+        layoutIn = {};
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.ternary.aaxis.title).toEqual('Component A');
+        expect(layoutOut.ternary.baxis.title).toEqual('Component B');
+        expect(layoutOut.ternary.caxis.title).toEqual('Component C');
+    });
+
+    it('should default \'gricolor\' to 60% dark', function() {
+        layoutIn = {
+            ternary: {
+                aaxis: { showgrid: true, color: 'red' },
+                baxis: { showgrid: true },
+                caxis: { gridcolor: 'black' },
+                bgcolor: 'blue'
+            },
+            paper_bgcolor: 'green'
+        };
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.ternary.aaxis.gridcolor).toEqual('rgb(102, 0, 153)');
+        expect(layoutOut.ternary.baxis.gridcolor).toEqual('rgb(27, 27, 180)');
+        expect(layoutOut.ternary.caxis.gridcolor).toEqual('black');
+    });
 });
