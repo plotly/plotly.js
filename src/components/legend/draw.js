@@ -257,7 +257,7 @@ module.exports = function draw(gd) {
             // Move scrollbar to starting position
             scrollBar.call(
                 Drawing.setRect,
-                opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
+                opts.width - constants.scrollBarMargin,
                 constants.scrollBarMargin,
                 constants.scrollBarWidth,
                 constants.scrollBarHeight
@@ -299,7 +299,7 @@ module.exports = function draw(gd) {
         scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
         scrollBar.call(
             Drawing.setRect,
-            opts.width - (constants.scrollBarWidth + constants.scrollBarMargin),
+            opts.width - constants.scrollBarMargin,
             scrollBarY,
             constants.scrollBarWidth,
             constants.scrollBarHeight
