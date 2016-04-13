@@ -16,8 +16,6 @@ var customMatchers = require('../assets/custom_matchers');
  *
  */
 
-var PLOT_DELAY = 200;
-var MOUSE_DELAY = 20;
 var MODEBAR_DELAY = 500;
 
 
@@ -54,10 +52,9 @@ describe('Test gl plot interactions', function() {
         destroyGraphDiv();
     });
 
+    // ...
     function delay(done) {
-        setTimeout(function() {
-            done();
-        }, PLOT_DELAY);
+        setTimeout(done, 0);
     }
 
     describe('gl3d plots', function() {
@@ -99,9 +96,7 @@ describe('Test gl plot interactions', function() {
 
                 mouseEventScatter3d('mouseover');
 
-                setTimeout(function() {
-                    done();
-                }, MOUSE_DELAY);
+                delay(done);
             });
 
             it('should have', function() {
@@ -139,9 +134,7 @@ describe('Test gl plot interactions', function() {
                 // with button 1 pressed
                 mouseEventScatter3d('mouseover', {buttons: 1});
 
-                setTimeout(function() {
-                    done();
-                }, MOUSE_DELAY);
+                delay(done);
             });
 
             it('should have', function() {
