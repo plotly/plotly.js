@@ -271,22 +271,38 @@ module.exports = function draw(gd) {
             scrollBox.attr('data-scroll',0);
         }
 
-        scrollHandler(0,legendHeight);
+        var scrollBarYMax = legendHeight -
+                constants.scrollBarHeight -
+                2 * constants.scrollBarMargin,
+            scrollBoxYMax = opts.height - legendHeight,
+            scrollBarY = constants.scrollBarMargin,
+            scrollBoxY = 0;
+
+        scrollHandler(scrollBarY, scrollBoxY);
 
         legend.on('wheel',null);
-
         legend.on('wheel', function() {
-            var e = d3.event;
-            e.preventDefault();
-            scrollHandler(e.deltaY / 20, legendHeight);
+            scrollBoxY = Lib.constrain(
+                scrollBox.attr('data-scroll') -
+                    d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
+                -scrollBoxYMax, 0);
+            scrollBarY = constants.scrollBarMargin -
+                scrollBoxY / scrollBoxYMax * scrollBarYMax;
+            scrollHandler(scrollBarY, scrollBoxY);
+            d3.event.preventDefault();
         });
 
         scrollBar.on('.drag',null);
         scrollBox.on('.drag',null);
-        var drag = d3.behavior.drag()
-            .on('drag', function() {
-                scrollHandler(d3.event.dy, legendHeight);
-            });
+        var drag = d3.behavior.drag().on('drag', function() {
+            scrollBarY = Lib.constrain(
+                d3.event.y - constants.scrollBarHeight / 2,
+                constants.scrollBarMargin,
+                constants.scrollBarMargin + scrollBarYMax);
+            scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
+                scrollBarYMax * scrollBoxYMax;
+            scrollHandler(scrollBarY, scrollBoxY);
+        });
 
         scrollBar.call(drag);
         scrollBox.call(drag);
@@ -294,13 +310,7 @@ module.exports = function draw(gd) {
     }
 
 
-    function scrollHandler(delta, legendHeight) {
-
-        var scrollBarTrack = legendHeight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
-            translateY = scrollBox.attr('data-scroll'),
-            scrollBoxY = Lib.constrain(translateY - delta, legendHeight-opts.height, 0),
-            scrollBarY = -scrollBoxY / (opts.height - legendHeight) * scrollBarTrack + constants.scrollBarMargin;
-
+    function scrollHandler(scrollBarY, scrollBoxY) {
         scrollBox.attr('data-scroll', scrollBoxY);
         scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
         scrollBar.call(
