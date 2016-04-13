@@ -185,27 +185,42 @@ module.exports = function draw(gd) {
     if(anchorUtils.isRightAnchor(opts)) {
         lx -= opts.width;
     }
-    if(anchorUtils.isCenterAnchor(opts)) {
+    else if(anchorUtils.isCenterAnchor(opts)) {
         lx -= opts.width / 2;
     }
 
     if(anchorUtils.isBottomAnchor(opts)) {
         ly -= opts.height;
     }
-    if(anchorUtils.isMiddleAnchor(opts)) {
+    else if(anchorUtils.isMiddleAnchor(opts)) {
         ly -= opts.height / 2;
     }
 
+    //lx = Math.round(lx);
+    //ly = Math.round(ly);
+
+    // Make sure the legend top is below the top margin
+    if(ly < fullLayout.margin.t) ly = fullLayout.margin.t;
+
+    var scrollHeightMax = fullLayout.height - fullLayout.margin.b - ly;
+    var scrollHeight = Math.min(scrollHeightMax, opts.height);
+
+    if(scrollHeight <= 2 * opts.borderwidth) {
+        console.error('Legend.draw: insufficient space to draw legend');
+        legend.remove();
+        return;
+    }
+
     // Deal with scrolling
-    var plotHeight = fullLayout.height - fullLayout.margin.b,
-        scrollheight = Math.min(plotHeight - ly, opts.height),
-        scrollPosition = scrollBox.attr('data-scroll') ? scrollBox.attr('data-scroll') : 0;
+    var scrollPosition = scrollBox.attr('data-scroll') ?
+        scrollBox.attr('data-scroll') :
+        0;
 
     scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
 
     bg.attr({
         width: opts.width - 2 * opts.borderwidth,
-        height: scrollheight - 2 * opts.borderwidth,
+        height: scrollHeight - 2 * opts.borderwidth,
         x: opts.borderwidth,
         y: opts.borderwidth
     });
@@ -214,7 +229,7 @@ module.exports = function draw(gd) {
 
     clipPath.select('rect').attr({
         width: opts.width,
-        height: scrollheight,
+        height: scrollHeight,
         x: 0,
         y: 0
     });
@@ -222,13 +237,13 @@ module.exports = function draw(gd) {
     legend.call(Drawing.setClipUrl, clipId);
 
     // If scrollbar should be shown.
-    if(opts.height - scrollheight > 0 && !gd._context.staticPlot) {
+    if(opts.height - scrollHeight > 0 && !gd._context.staticPlot) {
 
         bg.attr({
             width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth
         });
 
-        clipPath.attr({
+        clipPath.select('rect').attr({
             width: opts.width + constants.scrollBarWidth
         });
 
@@ -244,21 +259,21 @@ module.exports = function draw(gd) {
             scrollBox.attr('data-scroll',0);
         }
 
-        scrollHandler(0,scrollheight);
+        scrollHandler(0,scrollHeight);
 
         legend.on('wheel',null);
 
         legend.on('wheel', function() {
             var e = d3.event;
             e.preventDefault();
-            scrollHandler(e.deltaY / 20, scrollheight);
+            scrollHandler(e.deltaY / 20, scrollHeight);
         });
 
         scrollBar.on('.drag',null);
         scrollBox.on('.drag',null);
         var drag = d3.behavior.drag()
             .on('drag', function() {
-                scrollHandler(d3.event.dy, scrollheight);
+                scrollHandler(d3.event.dy, scrollHeight);
             });
 
         scrollBar.call(drag);
@@ -267,12 +282,12 @@ module.exports = function draw(gd) {
     }
 
 
-    function scrollHandler(delta, scrollheight) {
+    function scrollHandler(delta, scrollHeight) {
 
-        var scrollBarTrack = scrollheight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
+        var scrollBarTrack = scrollHeight - constants.scrollBarHeight - 2 * constants.scrollBarMargin,
             translateY = scrollBox.attr('data-scroll'),
-            scrollBoxY = Lib.constrain(translateY - delta, scrollheight-opts.height, 0),
-            scrollBarY = -scrollBoxY / (opts.height - scrollheight) * scrollBarTrack + constants.scrollBarMargin;
+            scrollBoxY = Lib.constrain(translateY - delta, scrollHeight-opts.height, 0),
+            scrollBarY = -scrollBoxY / (opts.height - scrollHeight) * scrollBarTrack + constants.scrollBarMargin;
 
         scrollBox.attr('data-scroll', scrollBoxY);
         scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
@@ -369,7 +384,6 @@ function drawTexts(context, gd, d, i, traces) {
 
 function repositionLegend(gd, traces) {
     var fullLayout = gd._fullLayout,
-        gs = fullLayout._size,
         opts = fullLayout.legend,
         borderwidth = opts.borderwidth;
 
@@ -433,42 +447,33 @@ function repositionLegend(gd, traces) {
         .attr('width', (gd._context.editable ? 0 : opts.width) + 40);
 
     // now position the legend. for both x,y the positions are recorded as
-    // fractions of the plot area (left, bottom = 0,0). Outside the plot
-    // area is allowed but position will be clipped to the page.
-    // values <1/3 align the low side at that fraction, 1/3-2/3 align the
-    // center at that fraction, >2/3 align the right at that fraction
-
-    var lx = gs.l + gs.w * opts.x,
-        ly = gs.t + gs.h * (1-opts.y);
+    // fractions of the plot area (left, bottom = 0,0).
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(opts)) {
-        lx -= opts.width;
         xanchor = 'right';
     }
     if(anchorUtils.isCenterAnchor(opts)) {
-        lx -= opts.width / 2;
         xanchor = 'center';
     }
 
     var yanchor = 'top';
     if(anchorUtils.isBottomAnchor(opts)) {
-        ly -= opts.height;
         yanchor = 'bottom';
     }
     if(anchorUtils.isMiddleAnchor(opts)) {
-        ly -= opts.height / 2;
         yanchor = 'middle';
     }
 
     // make sure we're only getting full pixels
     opts.width = Math.ceil(opts.width);
     opts.height = Math.ceil(opts.height);
-    lx = Math.round(lx);
-    ly = Math.round(ly);
 
     // lastly check if the margin auto-expand has changed
-    Plots.autoMargin(gd, 'legend', {
+    // (using Plots.autoMarginVertical to ensure the requested margins are
+    // padded with the layout vertical margins to ensure the legend doesn't
+    // exceed the plot area)
+    Plots.autoMarginVertical(gd, 'legend', {
         x: opts.x,
         y: opts.y,
         l: opts.width * ({right: 1, center: 0.5}[xanchor] || 0),

@@ -878,6 +878,36 @@ plots.autoMargin = function(gd, id, o) {
     }
 };
 
+// Similar to plots.autoMargin, except that it pads the request with the layout
+// margins, so that an object can be drawn without reaching the layout vertical
+// margins.
+plots.autoMarginVertical = function(gd, id, o) {
+    var fullLayout = gd._fullLayout;
+
+    if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
+
+    if(fullLayout.margin.autoexpand !== false) {
+        if(!o) delete fullLayout._pushmargin[id];
+        else {
+            var pad = o.pad === undefined ? 12 : o.pad;
+
+            // if the item is too big, just give it enough automargin to
+            // make sure you can still grab it and bring it back
+            if(o.l+o.r > fullLayout.width*0.5) o.l = o.r = 0;
+            if(o.b+o.t > fullLayout.height*0.5) o.b = o.t = 0;
+
+            fullLayout._pushmargin[id] = {
+                l: {val: o.x, size: o.l + pad},
+                r: {val: o.x, size: o.r + pad},
+                b: {val: o.y, size: o.b + fullLayout.margin.b},
+                t: {val: o.y, size: o.t + fullLayout.margin.t}
+            };
+        }
+
+        if(!gd._replotting) plots.doAutoMargin(gd);
+    }
+};
+
 plots.doAutoMargin = function(gd) {
     var fullLayout = gd._fullLayout;
     if(!fullLayout._size) fullLayout._size = {};
