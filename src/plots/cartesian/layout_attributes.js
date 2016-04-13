@@ -8,12 +8,13 @@
 
 'use strict';
 
-var Cartesian = require('./index');
 var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var rangeSliderAttrs = require('../../components/rangeslider/attributes');
 var rangeSelectorAttrs = require('../../components/rangeselector/attributes');
+
+var constants = require('./constants');
 
 
 module.exports = {
@@ -402,8 +403,8 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'free',
-            Cartesian.idRegex.x.toString(),
-            Cartesian.idRegex.y.toString()
+            constants.idRegex.x.toString(),
+            constants.idRegex.y.toString()
         ],
         role: 'info',
         description: [
@@ -431,8 +432,8 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'free',
-            Cartesian.idRegex.x.toString(),
-            Cartesian.idRegex.y.toString()
+            constants.idRegex.x.toString(),
+            constants.idRegex.y.toString()
         ],
         role: 'info',
         description: [
