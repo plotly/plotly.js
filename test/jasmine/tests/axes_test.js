@@ -8,8 +8,8 @@ var tinycolor = require('tinycolor2');
 var handleTickValueDefaults = require('@src/plots/cartesian/tick_value_defaults');
 var Axes = PlotlyInternal.Axes;
 
-var createGraph = require('../assets/create_graph_div');
-var destroyGraph = require('../assets/destroy_graph_div');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
 describe('Test axes', function() {
@@ -384,15 +384,137 @@ describe('Test axes', function() {
         });
     });
 
+    describe('categorymode', function() {
+
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        describe('setting, or not setting categorymode if it is not explicitly declared', function() {
+
+            it('should set categorymode to default if categorymode and categorylist are not supplied', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {xaxis: {type: 'category'}});
+                expect(gd._fullLayout.xaxis.categorymode).toBe('trace');
+            });
+
+            it('should set categorymode to default even if type is not set to category explicitly', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}]);
+                expect(gd._fullLayout.xaxis.categorymode).toBe('trace');
+            });
+
+            it('should NOT set categorymode to default if type is not category', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}]);
+                expect(gd._fullLayout.yaxis.categorymode).toBe(undefined);
+            });
+
+            it('should set categorymode to default if type is overridden to be category', function() {
+                PlotlyInternal.plot(gd, [{x: [1,2,3,4,5], y: [15,11,12,13,14]}], {yaxis: {type: 'category'}});
+                expect(gd._fullLayout.xaxis.categorymode).toBe(undefined);
+                expect(gd._fullLayout.yaxis.categorymode).toBe('trace');
+            });
+
+        });
+
+        describe('setting categorymode to "array"', function() {
+
+            it('should leave categorymode on "array" if it is supplied', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorymode: 'array', categorylist: ['b','a','d','e','c']}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('array');
+            });
+
+            it('should switch categorymode on "array" if it is not supplied but categorylist is supplied', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorylist: ['b','a','d','e','c']}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('array');
+            });
+
+            it('should revert categorymode to "trace" if "array" is supplied but there is no list', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorymode: 'array'}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('trace');
+            });
+
+        });
+
+        describe('do not set categorymode to "array" if list exists but empty', function() {
+
+            it('should switch categorymode to default if list is not supplied', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorymode: 'array', categorylist: []}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('trace');
+            });
+
+            it('should not switch categorymode on "array" if categorylist is supplied but empty', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorylist: []}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('trace');
+            });
+        });
+
+        describe('do NOT set categorymode to "array" if it has some other proper value', function() {
+
+            it('should use specified categorymode if it is supplied even if categorylist exists', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorymode: 'trace', categorylist: ['b','a','d','e','c']}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('trace');
+            });
+
+            it('should use specified categorymode if it is supplied even if categorylist exists', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorymode: 'category ascending', categorylist: ['b','a','d','e','c']}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('category ascending');
+            });
+
+            it('should use specified categorymode if it is supplied even if categorylist exists', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorymode: 'category descending', categorylist: ['b','a','d','e','c']}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('category descending');
+            });
+
+        });
+
+        describe('setting categorymode to the default if the value is unexpected', function() {
+
+            it('should switch categorymode to "trace" if mode is supplied but invalid', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorymode: 'invalid value'}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('trace');
+            });
+
+            it('should switch categorymode to "array" if mode is supplied but invalid and list is supplied', function() {
+                PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {
+                    xaxis: {type: 'category', categorymode: 'invalid value', categorylist: ['b','a','d','e','c']}
+                });
+                expect(gd._fullLayout.xaxis.categorymode).toBe('array');
+            });
+
+        });
+
+    });
+
     describe('handleTickDefaults', function() {
         var data = [{ x: [1,2,3], y: [3,4,5] }],
             gd;
 
         beforeEach(function() {
-            gd = createGraph();
+            gd = createGraphDiv();
         });
 
-        afterEach(destroyGraph);
+        afterEach(destroyGraphDiv);
 
         it('should set defaults on bad inputs', function() {
             var layout = {
