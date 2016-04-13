@@ -172,7 +172,18 @@ module.exports = function draw(gd) {
         });
 
     // Position and size the legend
-    repositionLegend(gd, traces);
+    var lyMin = 0,
+        lyMax = fullLayout.height;
+
+    computeLegendDimensions(gd, traces);
+
+    if(opts.height > lyMax) {
+        // If the legend doesn't fit in the plot area,
+        // do not expand the vertical margins.
+        expandHorizontalMargin(gd);
+    } else {
+        expandMargin(gd);
+    }
 
     // Scroll section must be executed after repositionLegend.
     // It requires the legend width, height, x and y to position the scrollbox
@@ -201,11 +212,8 @@ module.exports = function draw(gd) {
     // Make sure the legend top and bottom are visible
     // (legends with a scroll bar are not allowed to stretch beyond the extended
     // margins)
-    var lyMin = 0,
-        lyMax = fullLayout.height,
-        legendHeight = opts.height,
+    var legendHeight = opts.height,
         legendHeightMax = gs.h;
-
 
     if(legendHeight > legendHeightMax) {
         ly = gs.t;
@@ -213,9 +221,7 @@ module.exports = function draw(gd) {
     }
     else {
         if(ly > lyMax) ly = lyMax - legendHeight;
-
         if(ly < lyMin) ly = lyMin;
-
         legendHeight = Math.min(lyMax - ly, opts.height);
     }
 
@@ -369,7 +375,10 @@ function drawTexts(context, gd, d, i, traces) {
 
     function textLayout(s) {
         Plotly.util.convertToTspans(s, function() {
-            if(gd.firstRender) repositionLegend(gd, traces);
+            if(gd.firstRender) {
+                computeLegendDimensions(gd, traces);
+                expandMargin(gd);
+            }
         });
         s.selectAll('tspan.line').attr({x: s.attr('x')});
     }
@@ -388,7 +397,7 @@ function drawTexts(context, gd, d, i, traces) {
     else text.call(textLayout);
 }
 
-function repositionLegend(gd, traces) {
+function computeLegendDimensions(gd, traces) {
     var fullLayout = gd._fullLayout,
         opts = fullLayout.legend,
         borderwidth = opts.borderwidth;
@@ -441,7 +450,6 @@ function repositionLegend(gd, traces) {
         opts.width = Math.max(opts.width, tWidth || 0);
     });
 
-
     opts.width += 45 + borderwidth * 2;
     opts.height += 10 + borderwidth * 2;
 
@@ -452,14 +460,20 @@ function repositionLegend(gd, traces) {
     traces.selectAll('.legendtoggle')
         .attr('width', (gd._context.editable ? 0 : opts.width) + 40);
 
-    // now position the legend. for both x,y the positions are recorded as
-    // fractions of the plot area (left, bottom = 0,0).
+    // make sure we're only getting full pixels
+    opts.width = Math.ceil(opts.width);
+    opts.height = Math.ceil(opts.height);
+}
+
+function expandMargin(gd) {
+    var fullLayout = gd._fullLayout,
+        opts = fullLayout.legend;
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(opts)) {
         xanchor = 'right';
     }
-    if(anchorUtils.isCenterAnchor(opts)) {
+    else if(anchorUtils.isCenterAnchor(opts)) {
         xanchor = 'center';
     }
 
@@ -467,13 +481,9 @@ function repositionLegend(gd, traces) {
     if(anchorUtils.isBottomAnchor(opts)) {
         yanchor = 'bottom';
     }
-    if(anchorUtils.isMiddleAnchor(opts)) {
+    else if(anchorUtils.isMiddleAnchor(opts)) {
         yanchor = 'middle';
     }
-
-    // make sure we're only getting full pixels
-    opts.width = Math.ceil(opts.width);
-    opts.height = Math.ceil(opts.height);
 
     // lastly check if the margin auto-expand has changed
     Plots.autoMargin(gd, 'legend', {
@@ -483,5 +493,28 @@ function repositionLegend(gd, traces) {
         r: opts.width * ({left: 1, center: 0.5}[xanchor] || 0),
         b: opts.height * ({top: 1, middle: 0.5}[yanchor] || 0),
         t: opts.height * ({bottom: 1, middle: 0.5}[yanchor] || 0)
+    });
+}
+
+function expandHorizontalMargin(gd) {
+    var fullLayout = gd._fullLayout,
+        opts = fullLayout.legend;
+
+    var xanchor = 'left';
+    if(anchorUtils.isRightAnchor(opts)) {
+        xanchor = 'right';
+    }
+    else if(anchorUtils.isCenterAnchor(opts)) {
+        xanchor = 'center';
+    }
+
+    // lastly check if the margin auto-expand has changed
+    Plots.autoMargin(gd, 'legend', {
+        x: opts.x,
+        y: 0.5,
+        l: opts.width * ({right: 1, center: 0.5}[xanchor] || 0),
+        r: opts.width * ({left: 1, center: 0.5}[xanchor] || 0),
+        b: 0,
+        t: 0
     });
 }
