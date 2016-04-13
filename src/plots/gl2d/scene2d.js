@@ -166,7 +166,7 @@ proto.toImage = function(format) {
     if(this.staticPlot) this.container.appendChild(STATIC_CANVAS);
 
     // force redraw
-    this.glplot.setDirty(true);
+    this.glplot.setDirty();
     this.glplot.draw();
 
     // grab context and yank out pixels
@@ -408,6 +408,9 @@ proto.plot = function(fullData, fullLayout) {
 
     options.merge(fullLayout);
     glplot.update(options);
+
+    // force redraw so that promise is returned when rendering is completed
+    this.glplot.draw();
 };
 
 proto.draw = function() {
