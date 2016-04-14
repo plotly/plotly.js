@@ -251,24 +251,24 @@ module.exports = function draw(gd) {
     // If scrollbar should be shown.
     if(opts.height - legendHeight > 0 && !gd._context.staticPlot) {
 
+        // increase the background and clip-path width
+        // by the scrollbar width and margin
         bg.attr({
-            width: opts.width - 2 * opts.borderwidth + constants.scrollBarWidth
+            width: opts.width -
+                2 * opts.borderwidth +
+                constants.scrollBarWidth +
+                constants.scrollBarMargin
         });
 
         clipPath.select('rect').attr({
-            width: opts.width + constants.scrollBarWidth
+            width: opts.width +
+                constants.scrollBarWidth +
+                constants.scrollBarMargin
         });
 
         if(gd.firstRender) {
             // Move scrollbar to starting position
-            scrollBar.call(
-                Drawing.setRect,
-                opts.width - constants.scrollBarMargin,
-                constants.scrollBarMargin,
-                constants.scrollBarWidth,
-                constants.scrollBarHeight
-            );
-            scrollBox.attr('data-scroll',0);
+            scrollHandler(constants.scrollBarMargin, 0);
         }
 
         var scrollBarYMax = legendHeight -
@@ -315,7 +315,7 @@ module.exports = function draw(gd) {
         scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
         scrollBar.call(
             Drawing.setRect,
-            opts.width - constants.scrollBarMargin,
+            opts.width,
             scrollBarY,
             constants.scrollBarWidth,
             constants.scrollBarHeight
