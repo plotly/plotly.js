@@ -206,9 +206,6 @@ module.exports = function draw(gd) {
         ly -= opts.height / 2;
     }
 
-    //lx = Math.round(lx);
-    //ly = Math.round(ly);
-
     // Make sure the legend top and bottom are visible
     // (legends with a scroll bar are not allowed to stretch beyond the extended
     // margins)
