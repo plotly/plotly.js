@@ -139,53 +139,6 @@ describe('calculated data and points', function() {
             });
         });
 
-/*
-        describe('codomain numerical category ordering', function() {
-
-            it('should output categories in ascending codomain numerical order', function() {
-
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
-                    type: 'category',
-                    categorymode: 'value ascending'
-                }});
-
-                expect(gd.calcdata[0][0].y).toEqual(11);
-                expect(gd.calcdata[0][1].y).toEqual(12);
-                expect(gd.calcdata[0][2].y).toEqual(13);
-                expect(gd.calcdata[0][3].y).toEqual(14);
-                expect(gd.calcdata[0][4].y).toEqual(15);
-            });
-
-            it('should output categories in descending codomain numerical order', function() {
-
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
-                    type: 'category',
-                    categorymode: 'value descending'
-                }});
-
-                expect(gd.calcdata[0][0].y).toEqual(15);
-                expect(gd.calcdata[0][1].y).toEqual(14);
-                expect(gd.calcdata[0][2].y).toEqual(13);
-                expect(gd.calcdata[0][3].y).toEqual(12);
-                expect(gd.calcdata[0][4].y).toEqual(11);
-            });
-
-            it('should output categories in descending codomain numerical order, excluding nulls', function() {
-
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,null,13,14]}], { xaxis: {
-                    type: 'category',
-                    categorymode: 'value descending'
-                }});
-
-                expect(gd.calcdata[0][0].y).toEqual(15);
-                expect(gd.calcdata[0][1].y).toEqual(14);
-                expect(gd.calcdata[0][2].y).toEqual(12);
-                expect(gd.calcdata[0][3].y).toEqual(11);
-
-            });
-        });
-*/
-
         describe('explicit category ordering', function() {
 
             it('should output categories in explicitly supplied order, independent of trace order', function() {

@@ -68,35 +68,8 @@ module.exports = {
         description: 'Sets whether or not this axis is labeled'
     },
     color: axesAttrs.color,
-    categorymode: {
-        valType: 'enumerated',
-        values: [
-            'trace', 'category ascending', 'category descending', 'array'
-            /*, 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
-        ],
-        dflt: 'trace',
-        role: 'info',
-        description: [
-            'Specifies the ordering logic for the case of categorical variables.',
-            'By default, plotly uses *trace*, which specifies the order that is present in the data supplied.',
-            'Set `categorymode` to *category ascending* or *category descending* if order should be determined by',
-            'the alphanumerical order of the category names.',
-            /*'Set `categorymode` to *value ascending* or *value descending* if order should be determined by the',
-             'numerical order of the values.',*/ // // value ascending / descending to be implemented later
-            'Set `categorymode` to *array* to derive the ordering from the attribute `categorylist`. If a category',
-            'is not found in the `categorylist` array, the sorting behavior for that attribute will be identical to',
-            'the *trace* mode. The unspecified categories will follow the categories in `categorylist`.'
-        ].join(' ')
-    },
-    categorylist: {
-        valType: 'data_array',
-        role: 'info',
-        description: [
-            'Sets the order in which categories on this axis appear.',
-            'Only has an effect if `categorymode` is set to *array*.',
-            'Used with `categorymode`.'
-        ].join(' ')
-    },
+    categorymode: axesAttrs.categorymode,
+    categorylist: axesAttrs.categorylist,
     title: axesAttrs.title,
     titlefont: axesAttrs.titlefont,
     type: axesAttrs.type,
