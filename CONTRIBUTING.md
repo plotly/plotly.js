@@ -79,6 +79,8 @@ comes bundled with some useful tools while developing - all bundled under the
 | `Tabs.onReload()` | By default, set to `noop` but you may set `Tabs.onReload` to any function you wish. This is useful for replotting a mock or test every time you reload the plotly.js script. |
 | `Tabs.purge()` | Destroys all plots. |
 
+View [the source](https://github.com/plotly/plotly.js/blob/master/devtools/test_dashboard/devtools.js) for more info.
+
 Three additional helpers exist that are refreshed every second:
 
 * `gd` - this is the default plot div
