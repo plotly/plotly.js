@@ -10,7 +10,7 @@
 'use strict';
 
 var d3 = require('d3');
-var tc = require('tinycolor2');
+var tinycolor = require('tinycolor2');
 
 var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
@@ -362,7 +362,7 @@ module.exports = function draw(gd, id) {
                 // Tinycolor can't handle exponents and
                 // at this scale, removing it makes no difference.
                 var colorString = fillcolormap(d).replace('e-', ''),
-                    opaqueColor = tc(colorString).toHexString();
+                    opaqueColor = tinycolor(colorString).toHexString();
 
                 // Colorbar cannot currently support opacities so we
                 // use an opaque fill even when alpha channels present
