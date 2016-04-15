@@ -9,8 +9,14 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
+var Color = require('../color');
+var Drawing = require('../drawing');
+
 
 var shapes = module.exports = {};
 
@@ -29,9 +35,7 @@ function handleShapeDefaults(shapeIn, fullLayout) {
     var shapeOut = {};
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(shapeIn, shapeOut,
-                                 shapes.layoutAttributes,
-                                 attr, dflt);
+        return Lib.coerce(shapeIn, shapeOut, shapes.layoutAttributes, attr, dflt);
     }
 
     coerce('opacity');
@@ -49,13 +53,13 @@ function handleShapeDefaults(shapeIn, fullLayout) {
             tdMock = {_fullLayout: fullLayout};
 
         // xref, yref
-        var axRef = Plotly.Axes.coerceRef(shapeIn, shapeOut, tdMock, axLetter);
+        var axRef = Axes.coerceRef(shapeIn, shapeOut, tdMock, axLetter);
 
         if(shapeType !== 'path') {
             var dflt0 = 0.25,
                 dflt1 = 0.75;
             if(axRef !== 'paper') {
-                var ax = Plotly.Axes.getFromId(tdMock, axRef),
+                var ax = Axes.getFromId(tdMock, axRef),
                     convertFn = linearToData(ax);
                 dflt0 = convertFn(ax.range[0] + dflt0 * (ax.range[1] - ax.range[0]));
                 dflt1 = convertFn(ax.range[0] + dflt1 * (ax.range[1] - ax.range[0]));
@@ -69,7 +73,7 @@ function handleShapeDefaults(shapeIn, fullLayout) {
     if(shapeType === 'path') {
         coerce('path');
     } else {
-        Plotly.Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
+        Lib.noneOrAll(shapeIn, shapeOut, ['x0', 'x1', 'y0', 'y1']);
     }
 
     return shapeOut;
@@ -140,7 +144,7 @@ shapes.draw = function(gd, index, opt, value) {
             deleteShape(gd, index);
             return;
         }
-        else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
+        else if(value==='add' || Lib.isPlainObject(value)) {
             insertShape(gd, index, value);
         }
     }
@@ -187,8 +191,8 @@ function deleteShape(gd, index) {
 function insertShape(gd, index, newShape) {
     gd._fullLayout.shapes.splice(index, 0, {});
 
-    var rule = Plotly.Lib.isPlainObject(newShape) ?
-        Plotly.Lib.extendFlat({}, newShape) :
+    var rule = Lib.isPlainObject(newShape) ?
+        Lib.extendFlat({}, newShape) :
         {text: 'New text'};
 
     if(gd.layout.shapes) {
@@ -225,12 +229,12 @@ function updateShape(gd, index, opt, value) {
     // alter the input shape as requested
     var optionsEdit = {};
     if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
-    else if(Plotly.Lib.isPlainObject(opt)) optionsEdit = opt;
+    else if(Lib.isPlainObject(opt)) optionsEdit = opt;
 
     var optionKeys = Object.keys(optionsEdit);
     for(i = 0; i < optionsEdit.length; i++) {
         var k = optionKeys[i];
-        Plotly.Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
+        Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
     }
 
     var posAttrs = ['x0', 'x1', 'y0', 'y1'];
@@ -247,10 +251,10 @@ function updateShape(gd, index, opt, value) {
         }
 
         var axLetter = posAttr.charAt(0),
-            axOld = Plotly.Axes.getFromId(gd,
-                Plotly.Axes.coerceRef(oldRef, {}, gd, axLetter)),
-            axNew = Plotly.Axes.getFromId(gd,
-                Plotly.Axes.coerceRef(optionsIn, {}, gd, axLetter)),
+            axOld = Axes.getFromId(gd,
+                Axes.coerceRef(oldRef, {}, gd, axLetter)),
+            axNew = Axes.getFromId(gd,
+                Axes.coerceRef(optionsIn, {}, gd, axLetter)),
             position = optionsIn[posAttr],
             linearizedPosition;
 
@@ -295,13 +299,12 @@ function updateShape(gd, index, opt, value) {
     var path = gd._fullLayout._shapelayer.append('path')
         .attr(attrs)
         .style('opacity', options.opacity)
-        .call(Plotly.Color.stroke, lineColor)
-        .call(Plotly.Color.fill, options.fillcolor)
-        .call(Plotly.Drawing.dashLine, options.line.dash, options.line.width);
+        .call(Color.stroke, lineColor)
+        .call(Color.fill, options.fillcolor)
+        .call(Drawing.dashLine, options.line.dash, options.line.width);
 
     if(clipAxes) {
-        path.call(Plotly.Drawing.setClipUrl,
-            'clip' + gd._fullLayout._uid + clipAxes);
+        path.call(Drawing.setClipUrl, 'clip' + gd._fullLayout._uid + clipAxes);
     }
 }
 
@@ -311,8 +314,8 @@ function decodeDate(convertToPx) {
 
 function shapePath(gd, options) {
     var type = options.type,
-        xa = Plotly.Axes.getFromId(gd, options.xref),
-        ya = Plotly.Axes.getFromId(gd, options.yref),
+        xa = Axes.getFromId(gd, options.xref),
+        ya = Axes.getFromId(gd, options.yref),
         gs = gd._fullLayout._size,
         x2l,
         x2p,
@@ -450,14 +453,14 @@ shapes.calcAutorange = function(gd) {
         shape = shapeList[i];
         ppad = shape.line.width / 2;
         if(shape.xref !== 'paper') {
-            ax = Plotly.Axes.getFromId(gd, shape.xref);
+            ax = Axes.getFromId(gd, shape.xref);
             bounds = shapeBounds(ax, shape.x0, shape.x1, shape.path, paramIsX);
-            if(bounds) Plotly.Axes.expand(ax, bounds, {ppad: ppad});
+            if(bounds) Axes.expand(ax, bounds, {ppad: ppad});
         }
         if(shape.yref !== 'paper') {
-            ax = Plotly.Axes.getFromId(gd, shape.yref);
+            ax = Axes.getFromId(gd, shape.yref);
             bounds = shapeBounds(ax, shape.y0, shape.y1, shape.path, paramIsY);
-            if(bounds) Plotly.Axes.expand(ax, bounds, {ppad: ppad});
+            if(bounds) Axes.expand(ax, bounds, {ppad: ppad});
         }
     }
 };

@@ -9,11 +9,12 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Plotly = require('../plotly');
 var Lib = require('../lib');
+var Color = require('../components/color');
 
 var plots = module.exports = {};
 
@@ -328,7 +329,7 @@ plots.addLinks = function(gd) {
         .style({
             'font-family': '"Open Sans", Arial, sans-serif',
             'font-size': '12px',
-            'fill': Plotly.Color.defaultLine,
+            'fill': Color.defaultLine,
             'pointer-events': 'all'
         })
         .each(function() {
@@ -610,7 +611,7 @@ function relinkPrivateKeys(toLayout, fromLayout) {
 
 plots.supplyDataDefaults = function(traceIn, i, layout) {
     var traceOut = {},
-        defaultColor = Plotly.Color.defaults[i % Plotly.Color.defaults.length];
+        defaultColor = Color.defaults[i % Color.defaults.length];
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);

@@ -13,9 +13,14 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+var svgTextUtils = require('../../lib/svg_text_utils');
+var Color = require('../../components/color');
+var Drawing = require('../../components/drawing');
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
 
+var Axes = require('./axes');
 var prepSelect = require('./select');
 var constants = require('./constants');
 
@@ -78,7 +83,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         .classed(dragClass, true)
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
-    dragger3.call(Plotly.Drawing.setRect, x, y, w, h)
+    dragger3.call(Drawing.setRect, x, y, w, h)
         .call(setCursor,cursor);
     var dragger = dragger3.node();
 
@@ -170,8 +175,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         corners = plotinfo.plot.append('path')
             .attr('class', 'zoombox-corners')
             .style({
-                fill: Plotly.Color.background,
-                stroke: Plotly.Color.defaultLine,
+                fill: Color.background,
+                stroke: Color.defaultLine,
                 'stroke-width': 1,
                 opacity: 0
             })
@@ -293,7 +298,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dragTail(zoomMode);
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Plotly.Lib.notifier('Double-click to<br>zoom back out','long');
+            Lib.notifier('Double-click to<br>zoom back out','long');
             SHOWZOOMOUTTIP = false;
         }
     }
@@ -319,7 +324,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             else if(ew === 'e') hAlign = 'right';
 
             dragger3
-                .call(Plotly.util.makeEditable, null, {
+                .call(svgTextUtils.makeEditable, null, {
                     immediate: true,
                     background: fullLayout.paper_bgcolor,
                     text: String(initialText),
@@ -408,7 +413,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             dragTail();
         }, REDRAWDELAY);
 
-        return Plotly.Lib.pauseEvent(e);
+        return Lib.pauseEvent(e);
     }
 
     // everything but the corners gets wheel zoom
@@ -497,7 +502,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(ns) pushActiveAxIds(ya);
 
         for(i = 0; i < activeAxIds.length; i++) {
-            Plotly.Axes.doTicks(gd, activeAxIds[i], true);
+            Axes.doTicks(gd, activeAxIds[i], true);
         }
 
         function redrawObjs(objArray, module) {
@@ -623,7 +628,7 @@ function getEndText(ax, end) {
         dig;
 
     if(ax.type === 'date') {
-        return Plotly.Lib.ms2DateTime(initialVal, diff);
+        return Lib.ms2DateTime(initialVal, diff);
     }
     else if(ax.type==='log') {
         dig = Math.ceil(Math.max(0, -Math.log(diff) / Math.LN10)) + 3;
