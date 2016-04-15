@@ -9,6 +9,9 @@ var request = require('request');
 var test = require('tape');
 var gm = require('gm');
 
+var TOLERANCE = 1e-6;    // pixel comparison tolerance
+var BASE_TIMEOUT = 500;  // base timeout time
+var BATCH_SIZE = 5;      // size of each test 'batch'
 var touch = function(fileName) {
     fs.closeSync(fs.openSync(fileName, 'w'));
 };
@@ -55,9 +58,7 @@ function runAll() {
             );
         });
 
-        var BASE_TIMEOUT = 500,  // base timeout time
-            BATCH_SIZE = 5,      // size of each test 'batch'
-            cnt = 0;
+        var cnt = 0;
 
         function testFunction() {
             testMock(mocks[cnt++], t);
@@ -98,7 +99,7 @@ function testMock(fileName, t) {
         var options = {
             file: diffPath,
             highlightColor: 'purple',
-            tolerance: 1e-6
+            tolerance: TOLERANCE
         };
 
         /*
