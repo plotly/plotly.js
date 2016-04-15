@@ -10,6 +10,7 @@
 'use strict';
 
 var d3 = require('d3');
+var tinycolor = require('tinycolor2');
 
 var Plotly = require('../../plotly');
 var Plots = require('../../plots/plots');
@@ -356,13 +357,22 @@ module.exports = function draw(gd, id) {
                 if(i!==filllevels.length-1) {
                     z[1] += (z[1]>z[0]) ? 1 : -1;
                 }
+
+
+                // Tinycolor can't handle exponents and
+                // at this scale, removing it makes no difference.
+                var colorString = fillcolormap(d).replace('e-', ''),
+                    opaqueColor = tinycolor(colorString).toHexString();
+
+                // Colorbar cannot currently support opacities so we
+                // use an opaque fill even when alpha channels present
                 d3.select(this).attr({
                     x: xLeft,
                     width: Math.max(thickPx,2),
                     y: d3.min(z),
-                    height: Math.max(d3.max(z)-d3.min(z),2)
-                })
-                .style('fill',fillcolormap(d));
+                    height: Math.max(d3.max(z)-d3.min(z),2),
+                    fill: opaqueColor
+                });
             });
 
             var lines = container.select('.cblines')

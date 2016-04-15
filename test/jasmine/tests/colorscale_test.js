@@ -389,9 +389,9 @@ describe('Test colorscale:', function() {
                 color4 = scaleFunction(4);
 
             expect(color1).toEqual(color2);
-            expect(color1).toEqual('#050aac');
+            expect(color1).toEqual('rgb(5, 10, 172)');
             expect(color3).toEqual(color4);
-            expect(color4).toEqual('#b20a1c');
+            expect(color4).toEqual('rgb(178, 10, 28)');
         });
     });
 });
