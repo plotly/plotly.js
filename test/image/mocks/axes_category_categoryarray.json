@@ -20,7 +20,7 @@
         }
     ],
     "layout": {
-        "title": "categorylist",
+        "title": "categoryarray",
         "xaxis": {
             "type": "category",
             "range": [
