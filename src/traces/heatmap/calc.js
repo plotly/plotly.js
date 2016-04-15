@@ -172,9 +172,11 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [],
         isContour = Plots.traceIs(trace, 'contour'),
         isHist = Plots.traceIs(trace, 'histogram'),
+        isGL2D = Plots.traceIs(trace, 'gl2d'),
         v0,
         dv,
         i;
+
     if(Array.isArray(arrayIn) && !isHist && (ax.type!=='category')) {
         arrayIn = arrayIn.map(ax.d2c);
         var len = arrayIn.length;
@@ -184,7 +186,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
-            if(isContour) arrayOut = arrayIn.slice(0, numbricks);
+            if(isContour || isGL2D) arrayOut = arrayIn.slice(0, numbricks);
             else if(numbricks === 1) arrayOut = [arrayIn[0]-0.5,arrayIn[0]+0.5];
             else {
                 arrayOut = [1.5*arrayIn[0]-0.5*arrayIn[1]];
@@ -217,7 +219,9 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
         else if(isHist || ax.type==='category') v0 = v0In;
         else v0 = ax.d2c(v0In);
 
-        for(i = isContour ? 0 : -0.5; i < numbricks; i++) arrayOut.push(v0 + dv * i);
+        for(i = (isContour || isGL2D) ? 0 : -0.5; i < numbricks; i++) {
+            arrayOut.push(v0 + dv * i);
+        }
     }
     return arrayOut;
 }

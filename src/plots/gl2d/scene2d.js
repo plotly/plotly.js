@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../plots/cartesian/graph_interact');
 
@@ -19,7 +18,6 @@ var createSelectBox = require('gl-select-box');
 
 var createOptions = require('./convert');
 var createCamera = require('./camera');
-
 var htmlToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
@@ -301,11 +299,11 @@ proto.destroy = function() {
     this.stopped = true;
 };
 
-proto.plot = function(fullData, fullLayout) {
+proto.plot = function(fullData, calcData, fullLayout) {
     var glplot = this.glplot,
         pixelRatio = this.pixelRatio;
 
-    var i, j;
+    var i, j, trace;
 
     this.fullLayout = fullLayout;
     this.updateAxes(fullLayout);
@@ -322,21 +320,18 @@ proto.plot = function(fullData, fullLayout) {
         canvas.height = pixelHeight;
     }
 
-    if(!fullData) fullData = [];
-    else if(!Array.isArray(fullData)) fullData = [fullData];
-
     // update traces
-    var traceData, trace;
     for(i = 0; i < fullData.length; ++i) {
-        traceData = fullData[i];
-        trace = this.traces[traceData.uid];
+        var fullTrace = fullData[i],
+            calcTrace = calcData[i];
+        trace = this.traces[fullTrace.uid];
 
-        if(trace) trace.update(traceData);
+        if(trace) trace.update(fullTrace, calcTrace);
         else {
-            var traceModule = Plots.getModule(traceData.type);
-            trace = traceModule.plot(this, traceData);
+            trace = fullTrace._module.plot(this, fullTrace, calcTrace);
         }
-        this.traces[traceData.uid] = trace;
+
+        this.traces[fullTrace.uid] = trace;
     }
 
     // remove empty traces
@@ -344,8 +339,8 @@ proto.plot = function(fullData, fullLayout) {
 
     trace_id_loop:
     for(i = 0; i < traceIds.length; ++i) {
-        for(j = 0; j < fullData.length; ++j) {
-            if(fullData[j].uid === traceIds[i]) continue trace_id_loop;
+        for(j = 0; j < calcData.length; ++j) {
+            if(calcData[j][0].trace.uid === traceIds[i]) continue trace_id_loop;
         }
 
         trace = this.traces[traceIds[i]];
@@ -480,6 +475,7 @@ proto.draw = function() {
                     var parts = hoverinfo.split('+');
                     if(parts.indexOf('x') === -1) selection.traceCoord[0] = undefined;
                     if(parts.indexOf('y') === -1) selection.traceCoord[1] = undefined;
+                    if(parts.indexOf('z') === -1) selection.traceCoord[2] = undefined;
                     if(parts.indexOf('text') === -1) selection.textLabel = undefined;
                     if(parts.indexOf('name') === -1) selection.name = undefined;
                 }
@@ -489,6 +485,7 @@ proto.draw = function() {
                     y: selection.screenCoord[1],
                     xLabel: this.hoverFormatter('xaxis', selection.traceCoord[0]),
                     yLabel: this.hoverFormatter('yaxis', selection.traceCoord[1]),
+                    zLabel: selection.traceCoord[2],
                     text: selection.textLabel,
                     name: selection.name,
                     color: selection.color
