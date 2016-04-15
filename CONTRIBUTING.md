@@ -30,7 +30,7 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | `status: discussion needed` | Issue or PR that required discussion among maintaners before moving forward |
 | `status: in progress` | PRs that required some intial feedback but not ready to merge |
 | `status: reviewable` | PRs that are completed from the author's perspective |
-| `status: on hold` | PRs that are put on hold | 
+| `status: on hold` | PRs that are put on hold |
 
 ### Development
 
@@ -52,7 +52,7 @@ npm install
 **Step 2** Start the test dashboard
 
 ```
-npm run start-test_dashboard
+npm start
 ```
 
 This command bundles up the source files with source maps using
@@ -63,15 +63,30 @@ tab in your browser.
 
 **Step 3** Open up the console and start developing
 
-Make some modifications to the source, refresh the page and check the results
-by for example pasting in the console:
+A typical workflow is to make some modifications to the source, update the
+test dashboard, inspect and debug the changes, then repeat. The test dashboard
+comes bundled with some useful tools while developing - all bundled under the
+`Tabs` object:
 
-```js
-Plotly.plot(Tabs.fresh(), [{x:[1,2,3], y:[2,1,2]}]);
-```
 
-- `Tabs.fresh()` creates a fresh graph div and return it and
-- `Tabs.getGraph()` returns the current graph div.
+| Method/Property | Description |
+|-|-|
+| `Tabs.fresh([id])` | Creates a fresh graph div and returns it (default id of `graph`). |
+| `Tabs.getGraph([id])` | Returns the default or specified graph div. |
+| `Tabs.plotMock(mock, [id]) | Plots the specified mock (`.json` extension is not required). |
+| `Tabs.snapshot([id]) | Creates a png snapshot of the plot and places it below. |
+| `Tabs.reload()` | Reloads the plotly.js script and will execute `Tabs.onReload` once completed. |
+| `Tabs.onReload()` | By default, set to `noop` but you may set `Tabs.onReload` to any function you wish. This is useful for replotting a mock or test every time you reload the plotly.js script. |
+| `Tabs.purge()` | Destroys all plots. |
+
+Three additional helpers exist that are refreshed every second:
+
+* `gd` - this is the default plot div
+* `fullData` - shortcut to `gd._fullData`
+* `fullLayout` - shortcut to `gd._fullLayout`
+
+There is also a search bar in the top right of the dashboard. This fuzzy-searches
+image mocks based on their file name and trace type.
 
 **Other npm scripts**:
 
