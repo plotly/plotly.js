@@ -7,7 +7,7 @@
         "xaxis": {
             "title": "category ascending",
             "type": "category",
-            "categorymode": "category ascending",
-            "categorylist": ["y","b","x","a","d","z","e","c", "q", "k"]
+            "categoryorder": "category ascending",
+            "categoryarray": ["y","b","x","a","d","z","e","c", "q", "k"]
         }}
 }

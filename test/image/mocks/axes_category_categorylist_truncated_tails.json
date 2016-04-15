@@ -7,7 +7,7 @@
         "title": "categorylist with truncated tails (y, q, k not plotted)",
         "xaxis": {
             "type": "category",
-            "categorymode": "array",
-            "categorylist": ["y","b","x","a","d","z","e","c", "q", "k"]
+            "categoryorder": "array",
+            "categoryarray": ["y","b","x","a","d","z","e","c", "q", "k"]
         }}
 }

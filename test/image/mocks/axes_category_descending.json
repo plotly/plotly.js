@@ -23,8 +23,8 @@
         "title": "category descending",
         "xaxis": {
             "type": "category",
-            "categorymode": "category descending",
-            "categorylist": [2,4,5,1]
+            "categoryorder": "category descending",
+            "categoryarray": [2,4,5,1]
         },
         "yaxis": {
             "type": "linear",

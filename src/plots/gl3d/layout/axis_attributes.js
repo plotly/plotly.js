@@ -68,8 +68,8 @@ module.exports = {
         description: 'Sets whether or not this axis is labeled'
     },
     color: axesAttrs.color,
-    categorymode: axesAttrs.categorymode,
-    categorylist: axesAttrs.categorylist,
+    categoryorder: axesAttrs.categoryorder,
+    categoryarray: axesAttrs.categoryarray,
     title: axesAttrs.title,
     titlefont: axesAttrs.titlefont,
     type: axesAttrs.type,

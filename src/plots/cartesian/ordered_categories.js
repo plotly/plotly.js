@@ -53,22 +53,22 @@ function flattenUniqueSort(axisLetter, sortFunction, data) {
 
 
 /**
- * This pure function returns the ordered categories for specified axisLetter, categorymode, categorylist and data.
+ * This pure function returns the ordered categories for specified axisLetter, categoryorder, categoryarray and data.
  *
- * If categorymode is 'array', the result is a fresh copy of categorylist, or if unspecified, an empty array.
+ * If categoryorder is 'array', the result is a fresh copy of categoryarray, or if unspecified, an empty array.
  *
- * If categorymode is 'category ascending' or 'category descending', the result is an array of ascending or descending
+ * If categoryorder is 'category ascending' or 'category descending', the result is an array of ascending or descending
  * order of the unique categories encountered in the data for specified axisLetter.
  *
- * See cartesian/layout_attributes.js for the definition of categorymode and categorylist
+ * See cartesian/layout_attributes.js for the definition of categoryorder and categoryarray
  *
  */
 
 // orderedCategories :: String -> String -> [String] -> [[String]] -> [String]
-module.exports = function orderedCategories(axisLetter, categorymode, categorylist, data) {
+module.exports = function orderedCategories(axisLetter, categoryorder, categoryarray, data) {
 
-    switch(categorymode) {
-        case 'array': return Array.isArray(categorylist) ? categorylist.slice() : [];
+    switch(categoryorder) {
+        case 'array': return Array.isArray(categoryarray) ? categoryarray.slice() : [];
         case 'category ascending': return flattenUniqueSort(axisLetter, d3.ascending, data);
         case 'category descending': return flattenUniqueSort(axisLetter, d3.descending, data);
         case 'trace': return [];

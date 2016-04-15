@@ -28,8 +28,8 @@
                 3.1833667334669338
             ],
             "autorange": true,
-            "categorymode": "array",
-            "categorylist": [2,4,5,1]
+            "categoryorder": "array",
+            "categoryarray": [2,4,5,1]
         },
         "yaxis": {
             "type": "linear",
