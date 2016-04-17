@@ -52,7 +52,6 @@ describe('Test gl plot interactions', function() {
         destroyGraphDiv();
     });
 
-    // ...
     function delay(done) {
         setTimeout(done, 0);
     }
