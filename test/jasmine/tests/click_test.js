@@ -96,15 +96,14 @@ describe('Test click interactions:', function() {
         });
     });
 
-    describe('click events with hoverinfo set to none', function() {
+    describe('click event with hoverinfo set to none - plotly_click', function() {
         var futureData;
 
         beforeEach(function(done) {
-            gd = createGraphDiv();
 
-            var mockCopy = Lib.extendDeep({}, mock);
-            mockCopy.data[0].hoverinfo = 'none';
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
+            modifiedMockCopy.data[0].hoverinfo = 'none';
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
                 .then(done);
 
             gd.on('plotly_click', function(data) {
@@ -128,15 +127,14 @@ describe('Test click interactions:', function() {
         });
     });
 
-    describe('click events with hoverinfo set to none', function() {
+    describe('click events with hoverinfo set to none - plotly_hover', function() {
         var futureData;
 
         beforeEach(function(done) {
-            gd = createGraphDiv();
 
-            var mockCopy = Lib.extendDeep({}, mock);
-            mockCopy.data[0].hoverinfo = 'none';
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+            var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
+            modifiedMockCopy.data[0].hoverinfo = 'none';
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
                 .then(done);
 
             gd.on('plotly_hover', function(data) {
