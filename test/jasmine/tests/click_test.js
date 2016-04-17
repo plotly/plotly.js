@@ -96,6 +96,70 @@ describe('Test click interactions:', function() {
         });
     });
 
+    describe('click events with hoverinfo set to none', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].hoverinfo = 'none';
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                .then(done);
+
+            gd.on('plotly_click', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should contain the correct fields despite hoverinfo: "none"', function() {
+            click(pointPos[0], pointPos[1]);
+            expect(futureData.points.length).toEqual(1);
+
+            var pt = futureData.points[0];
+            expect(Object.keys(pt)).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber',
+                'x', 'y', 'xaxis', 'yaxis'
+            ]);
+            expect(pt.curveNumber).toEqual(0);
+            expect(pt.pointNumber).toEqual(11);
+            expect(pt.x).toEqual(0.125);
+            expect(pt.y).toEqual(2.125);
+        });
+    });
+
+    describe('click events with hoverinfo set to none', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].hoverinfo = 'none';
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout)
+                .then(done);
+
+            gd.on('plotly_hover', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should contain the correct fields despite hoverinfo: "none"', function() {
+            click(pointPos[0], pointPos[1]);
+            expect(futureData.points.length).toEqual(1);
+
+            var pt = futureData.points[0];
+            expect(Object.keys(pt)).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber',
+                'x', 'y', 'xaxis', 'yaxis'
+            ]);
+            expect(pt.curveNumber).toEqual(0);
+            expect(pt.pointNumber).toEqual(11);
+            expect(pt.x).toEqual(0.125);
+            expect(pt.y).toEqual(2.125);
+        });
+    });
+
     describe('double click events', function() {
         var futureData;
 
