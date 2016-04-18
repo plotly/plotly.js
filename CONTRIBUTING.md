@@ -34,14 +34,14 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 
 ## Development
 
-##### Perequisites
+#### Perequisites
 
 - git
 - [node.js](https://nodejs.org/en/). We recommend using node.js 4.2.x (LTS).
   Upgrading and managing node versions can be easily done using
   [`nvm`](https://github.com/creationix/nvm) or its Windows alternatives.
 
-##### Step 1: Clone the plotly.js repo and install its dependencies
+#### Step 1: Clone the plotly.js repo and install its dependencies
 
 ```
 git clone https://github.com/plotly/plotly.js.git
@@ -49,7 +49,7 @@ cd plotly.js
 npm install
 ```
 
-##### Step 2: Start the test dashboard
+#### Step 2: Start the test dashboard
 
 ```
 npm start
@@ -61,7 +61,7 @@ This command bundles up the source files with source maps using
 dev plotly.js bundle update every time a source file is saved) and opens up a
 tab in your browser.
 
-**Step 3** Open up the console and start developing
+#### Step 3: Open up the console and start developing
 
 A typical workflow is to make some modifications to the source, update the
 test dashboard, inspect and debug the changes, then repeat. The test dashboard
@@ -90,7 +90,7 @@ Three additional helpers exist that are refreshed every second:
 There is also a search bar in the top right of the dashboard. This fuzzy-searches
 image mocks based on their file name and trace type.
 
-##### Other npm scripts
+#### Other npm scripts
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
   script must be run manually when updating the css and svg source files.
