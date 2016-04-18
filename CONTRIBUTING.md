@@ -1,6 +1,6 @@
 # Contributing to plotly.js
 
-### Opening issues
+## Opening issues
 
 Search for existing and closed issues. If your problem or idea is not addressed
 yet, [please open a new issue](https://github.com/plotly/plotly.js/issues/new).
@@ -14,7 +14,7 @@ Implementation questions should be asked on Stack Overflow (tagged
 [`plotly`](https://stackoverflow.com/questions/tagged/plotly)) or on
 community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)).
 
-### Issue labels
+## Issue labels
 
 We use the following [labels](https://github.com/plotly/plotly.js/labels) to track issues:
 
@@ -32,16 +32,16 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | `status: reviewable` | PRs that are completed from the author's perspective |
 | `status: on hold` | PRs that are put on hold |
 
-### Development
+## Development
 
-**Prerequisites**:
+##### Perequisites
 
 - git
 - [node.js](https://nodejs.org/en/). We recommend using node.js 4.2.x (LTS).
   Upgrading and managing node versions can be easily done using
   [`nvm`](https://github.com/creationix/nvm) or its Windows alternatives.
 
-**Step 1** Clone the plotly.js repo and install its dependencies
+##### Step 1: Clone the plotly.js repo and install its dependencies
 
 ```
 git clone https://github.com/plotly/plotly.js.git
@@ -49,7 +49,7 @@ cd plotly.js
 npm install
 ```
 
-**Step 2** Start the test dashboard
+##### Step 2: Start the test dashboard
 
 ```
 npm start
@@ -90,14 +90,14 @@ Three additional helpers exist that are refreshed every second:
 There is also a search bar in the top right of the dashboard. This fuzzy-searches
 image mocks based on their file name and trace type.
 
-**Other npm scripts**:
+##### Other npm scripts
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
   script must be run manually when updating the css and svg source files.
 - `npm run watch`: starts a watchify file watcher just like the test dashboard but
   without booting up a server.
 
-### Testing
+## Testing
 
 Both jasmine and image tests are run on
 [CircleCI](https://circleci.com/gh/plotly/plotly.js) on every push to this
@@ -126,7 +126,7 @@ which shows the baseline image, the generated image, the diff and the json mocks
 To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
 
 
-### Repo organization
+## Repo organization
 
 - Distributed files are in `dist/`
 - CommonJS require-able modules are in `lib/`
@@ -138,7 +138,7 @@ To view the results of a run on CircleCI, download the `build/test_images/` and 
 - Non-distributed, built files are in `build/` (most files in here are git-ignored, the css and font built files are exceptions)
 
 
-### Coding style
+## Coding style
 
 Check if ok, with `npm run lint`
 
