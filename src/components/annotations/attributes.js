@@ -9,8 +9,8 @@
 'use strict';
 
 var ARROWPATHS = require('./arrow_paths');
-var Cartesian = require('../../plots/cartesian');
 var fontAttrs = require('../../plots/font_attributes');
+var cartesianConstants = require('../../plots/cartesian/constants');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 
@@ -156,7 +156,7 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'paper',
-            Cartesian.idRegex.x.toString()
+            cartesianConstants.idRegex.x.toString()
         ],
         role: 'info',
         description: [
@@ -199,7 +199,7 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'paper',
-            Cartesian.idRegex.y.toString()
+            cartesianConstants.idRegex.y.toString()
         ],
         role: 'info',
         description: [
