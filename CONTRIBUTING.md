@@ -69,12 +69,12 @@ comes bundled with some useful tools while developing - all bundled under the
 `Tabs` object:
 
 
-| Method/Property | Description |
-|-|-|
+| Method/Property        | Description |
+|------------------------|-------------|
 | `Tabs.fresh([id])` | Creates a fresh graph div and returns it (default id of `graph`). |
 | `Tabs.getGraph([id])` | Returns the default or specified graph div. |
-| `Tabs.plotMock(mock, [id]) | Plots the specified mock (`.json` extension is not required). |
-| `Tabs.snapshot([id]) | Creates a png snapshot of the plot and places it below. |
+| `Tabs.plotMock(mock, [id])` | Plots the specified mock (`.json` extension is not required). |
+| `Tabs.snapshot([id])` | Creates a png snapshot of the plot and places it below. |
 | `Tabs.reload()` | Reloads the plotly.js script and will execute `Tabs.onReload` once completed. |
 | `Tabs.onReload()` | By default, set to `noop` but you may set `Tabs.onReload` to any function you wish. This is useful for replotting a mock or test every time you reload the plotly.js script. |
 | `Tabs.purge()` | Destroys all plots. |
