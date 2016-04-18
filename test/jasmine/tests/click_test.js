@@ -728,5 +728,20 @@ describe('Test click interactions:', function() {
                 done();
             });
         });
+
+
+        it('should move the plot when panning', function() {
+            var start = 100,
+                end = 300,
+                plot = gd._fullLayout._plots.xy.plot;
+
+            mouseEvent('mousemove', start, start);
+            mouseEvent('mousedown', start, start);
+            mouseEvent('mousemove', end, end);
+
+            expect(plot.attr('transform')).toBe('translate(250, 280)');
+
+            mouseEvent('mouseup', end, end);
+        });
     });
 });
