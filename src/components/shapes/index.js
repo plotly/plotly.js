@@ -38,6 +38,7 @@ function handleShapeDefaults(shapeIn, fullLayout) {
         return Lib.coerce(shapeIn, shapeOut, shapes.layoutAttributes, attr, dflt);
     }
 
+    coerce('layer');
     coerce('opacity');
     coerce('fillcolor');
     coerce('line.color');
@@ -171,7 +172,8 @@ function updateAllShapes(gd, opt, value) {
 }
 
 function deleteShape(gd, index) {
-    gd._fullLayout._shapelayer.selectAll('[data-index="' + index + '"]')
+    getShapeLayer(gd, index)
+        .selectAll('[data-index="' + index + '"]')
         .remove();
 
     gd._fullLayout.shapes.splice(index, 1);
@@ -181,9 +183,9 @@ function deleteShape(gd, index) {
     for(var i = index; i < gd._fullLayout.shapes.length; i++) {
         // redraw all shapes past the removed one,
         // so they bind to the right events
-        gd._fullLayout._shapelayer
-            .selectAll('[data-index="' + (i+1) + '"]')
-            .attr('data-index', String(i));
+        getShapeLayer(gd, i)
+            .selectAll('[data-index="' + (i + 1) + '"]')
+            .attr('data-index', i);
         shapes.draw(gd, i);
     }
 }
@@ -201,10 +203,13 @@ function insertShape(gd, index, newShape) {
         gd.layout.shapes = [rule];
     }
 
+    // there is no need to call shapes.draw(gd, index),
+    // because updateShape() is called from within shapes.draw()
+
     for(var i = gd._fullLayout.shapes.length - 1; i > index; i--) {
-        gd._fullLayout._shapelayer
+        getShapeLayer(gd, i)
             .selectAll('[data-index="' + (i - 1) + '"]')
-            .attr('data-index', String(i));
+            .attr('data-index', i);
         shapes.draw(gd, i);
     }
 }
@@ -213,7 +218,8 @@ function updateShape(gd, index, opt, value) {
     var i;
 
     // remove the existing shape if there is one
-    gd._fullLayout._shapelayer.selectAll('[data-index="' + index + '"]')
+    getShapeLayer(gd, index)
+        .selectAll('[data-index="' + index + '"]')
         .remove();
 
     // remember a few things about what was already there,
@@ -288,7 +294,7 @@ function updateShape(gd, index, opt, value) {
     gd._fullLayout.shapes[index] = options;
 
     var attrs = {
-            'data-index': String(index),
+            'data-index': index,
             'fill-rule': 'evenodd',
             d: shapePath(gd, options)
         },
@@ -296,15 +302,64 @@ function updateShape(gd, index, opt, value) {
 
     var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
 
-    var path = gd._fullLayout._shapelayer.append('path')
-        .attr(attrs)
-        .style('opacity', options.opacity)
-        .call(Color.stroke, lineColor)
-        .call(Color.fill, options.fillcolor)
-        .call(Drawing.dashLine, options.line.dash, options.line.width);
+    if(options.layer !== 'below') {
+        drawShape(gd._fullLayout._shapeUpperLayer);
+    }
+    else if(options.xref === 'paper' && options.yref === 'paper') {
+        drawShape(gd._fullLayout._shapeLowerLayer);
+    } else {
+        forEachSubplot(gd, function(plotinfo) {
+            if(isShapeInSubplot(gd, options, plotinfo.id)) {
+                drawShape(plotinfo.shapelayer);
+            }
+        });
+    }
 
-    if(clipAxes) {
-        path.call(Drawing.setClipUrl, 'clip' + gd._fullLayout._uid + clipAxes);
+    return;
+
+    function drawShape(shapeLayer) {
+        var path = shapeLayer.append('path')
+            .attr(attrs)
+            .style('opacity', options.opacity)
+            .call(Color.stroke, lineColor)
+            .call(Color.fill, options.fillcolor)
+            .call(Drawing.dashLine, options.line.dash, options.line.width);
+
+        if(clipAxes) {
+            path.call(Drawing.setClipUrl,
+                'clip' + gd._fullLayout._uid + clipAxes);
+        }
+    }
+}
+
+function getShapeLayer(gd, index) {
+    var shape = gd._fullLayout.shapes[index],
+        shapeLayer = gd._fullLayout._shapeUpperLayer;
+
+    if(!shape) {
+        console.log('getShapeLayer: undefined shape: index', index);
+    }
+    else if(shape.layer === 'below') {
+        shapeLayer = (shape.xref === 'paper' && shape.yref === 'paper') ?
+            gd._fullLayout._shapeLowerLayer :
+            gd._fullLayout._subplotShapeLayer;
+    }
+
+    return shapeLayer;
+}
+
+function isShapeInSubplot(gd, shape, subplot) {
+    var xa = Plotly.Axes.getFromId(gd, subplot, 'x')._id,
+        ya = Plotly.Axes.getFromId(gd, subplot, 'y')._id;
+    return shape.layer === 'below' && (xa === shape.xref || ya === shape.yref);
+}
+
+function forEachSubplot(gd, fn) {
+    var plots = gd._fullLayout._plots || {},
+        subplots = Object.getOwnPropertyNames(plots);
+
+    for(var i = 0, n = subplots.length; i < n; i++) {
+        fn(plots[subplots[i]]);
     }
 }
 
