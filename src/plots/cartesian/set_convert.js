@@ -182,8 +182,9 @@ module.exports = function setConvert(ax) {
             // encounters them, ie all the categories from the
             // first data set, then all the ones from the second
             // that aren't in the first etc.
-            // TODO: sorting options - do the sorting
-            // progressively here as we insert?
+            // it is assumed that this function is being invoked in the
+            // already sorted category order; otherwise there would be
+            // a disconnect between the array and the index returned
 
             if(v !== null && v !== undefined && ax._categories.indexOf(v) === -1) {
                 ax._categories.push(v);
