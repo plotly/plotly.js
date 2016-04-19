@@ -51,7 +51,7 @@
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.1",
     "fs-extra": "^0.26.2",
-    "gl-error2d": "^1.0.0",
+    "gl-error2d": "^1.1.2",
     "gl-error3d": "^1.0.0",
     "gl-line2d": "^1.2.1",
     "gl-line3d": "^1.1.0",
