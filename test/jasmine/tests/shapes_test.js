@@ -24,30 +24,114 @@ describe('Test shapes:', function() {
 
     afterEach(destroyGraphDiv);
 
-    function countShapeLayers() {
-        return d3.selectAll('.shapelayer').size();
+    function countShapesInLowerLayer() {
+        return gd._fullLayout.shapes.filter(isShapeInLowerLayer).length;
     }
 
-    function countShapePaths() {
-        return d3.selectAll('.shapelayer > path').size();
+    function countShapesInUpperLayer() {
+        return gd._fullLayout.shapes.filter(isShapeInUpperLayer).length;
     }
 
-    describe('DOM', function() {
-        it('has one *shapelayer* node', function() {
-            expect(countShapeLayers()).toEqual(1);
+    function countShapesInSubplots() {
+        return gd._fullLayout.shapes.filter(isShapeInSubplot).length;
+    }
+
+    function isShapeInUpperLayer(shape) {
+        return shape.layer !== 'below';
+    }
+
+    function isShapeInLowerLayer(shape) {
+        return (shape.xref === 'paper' && shape.yref === 'paper') &&
+            !isShapeInUpperLayer(shape);
+    }
+
+    function isShapeInSubplot(shape) {
+        return !isShapeInUpperLayer(shape) && !isShapeInLowerLayer(shape);
+    }
+
+    function countShapeLowerLayerNodes() {
+        return d3.selectAll('.shapelayer-below').size();
+    }
+
+    function countShapeUpperLayerNodes() {
+        return d3.selectAll('.shapelayer-above').size();
+    }
+
+    function countShapeLayerNodesInSubplots() {
+        return d3.selectAll('.shapelayer-subplot').size();
+    }
+
+    function countSubplots(gd) {
+        return Object.keys(gd._fullLayout._plots || {}).length;
+    }
+
+    function countShapePathsInLowerLayer() {
+        return d3.selectAll('.shapelayer-below > path').size();
+    }
+
+    function countShapePathsInUpperLayer() {
+        return d3.selectAll('.shapelayer-above > path').size();
+    }
+
+    function countShapePathsInSubplots() {
+        return d3.selectAll('.shapelayer-subplot > path').size();
+    }
+
+    describe('*shapeLowerLayer*', function() {
+        it('has one node', function() {
+            expect(countShapeLowerLayerNodes()).toEqual(1);
         });
 
-        it('has as many *path* nodes as there are shapes', function() {
-            expect(countShapePaths()).toEqual(mock.layout.shapes.length);
+        it('has as many *path* nodes as shapes in the lower layer', function() {
+            expect(countShapePathsInLowerLayer())
+                .toEqual(countShapesInLowerLayer());
         });
 
         it('should be able to get relayout', function(done) {
-            expect(countShapeLayers()).toEqual(1);
-            expect(countShapePaths()).toEqual(mock.layout.shapes.length);
-
             Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
-                expect(countShapeLayers()).toEqual(1);
-                expect(countShapePaths()).toEqual(mock.layout.shapes.length);
+                expect(countShapeLowerLayerNodes()).toEqual(1);
+                expect(countShapePathsInLowerLayer())
+                    .toEqual(countShapesInLowerLayer());
+            }).then(done);
+        });
+    });
+
+    describe('*shapeUpperLayer*', function() {
+        it('has one node', function() {
+            expect(countShapeUpperLayerNodes()).toEqual(1);
+        });
+
+        it('has as many *path* nodes as shapes in the upper layer', function() {
+            expect(countShapePathsInUpperLayer())
+                .toEqual(countShapesInUpperLayer());
+        });
+
+        it('should be able to get relayout', function(done) {
+            Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
+                expect(countShapeUpperLayerNodes()).toEqual(1);
+                expect(countShapePathsInUpperLayer())
+                    .toEqual(countShapesInUpperLayer());
+            }).then(done);
+        });
+    });
+
+    describe('each *subplot*', function() {
+        it('has one *shapelayer*', function() {
+            expect(countShapeLayerNodesInSubplots())
+                .toEqual(countSubplots(gd));
+        });
+
+        it('has as many *path* nodes as shapes in the subplot', function() {
+            expect(countShapePathsInSubplots())
+                .toEqual(countShapesInSubplots());
+        });
+
+        it('should be able to get relayout', function(done) {
+            Plotly.relayout(gd, {height: 200, width: 400}).then(function() {
+                expect(countShapeLayerNodesInSubplots())
+                    .toEqual(countSubplots(gd));
+                expect(countShapePathsInSubplots())
+                    .toEqual(countShapesInSubplots());
             }).then(done);
         });
     });
@@ -75,34 +159,71 @@ describe('Test shapes:', function() {
 
     describe('Plotly.relayout', function() {
         it('should be able to add a shape', function(done) {
-            var pathCount = countShapePaths();
+            var pathCount = countShapePathsInUpperLayer();
             var index = countShapes(gd);
             var shape = getRandomShape();
 
             Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
-                expect(countShapeLayers()).toEqual(1);
-                expect(countShapePaths()).toEqual(pathCount + 1);
+                expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
             }).then(done);
         });
 
         it('should be able to remove a shape', function(done) {
-            var pathCount = countShapePaths();
+            var pathCount = countShapePathsInUpperLayer();
             var index = countShapes(gd);
             var shape = getRandomShape();
 
             Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
-                expect(countShapeLayers()).toEqual(1);
-                expect(countShapePaths()).toEqual(pathCount + 1);
+                expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
             }).then(function() {
                 Plotly.relayout(gd, 'shapes[' + index + ']', 'remove');
             }).then(function() {
-                expect(countShapeLayers()).toEqual(1);
-                expect(countShapePaths()).toEqual(pathCount);
+                expect(countShapePathsInUpperLayer()).toEqual(pathCount);
                 expect(countShapes(gd)).toEqual(index);
+            }).then(done);
+        });
+
+        it('should be able to update a shape layer', function(done) {
+            var index = countShapes(gd),
+                astr = 'shapes[' + index + ']',
+                shape = getRandomShape(),
+                shapesInLowerLayer = countShapePathsInLowerLayer(),
+                shapesInUpperLayer = countShapePathsInUpperLayer();
+
+            shape.xref = 'paper';
+            shape.yref = 'paper';
+
+            Plotly.relayout(gd, astr, shape).then(function() {
+                expect(countShapePathsInLowerLayer())
+                    .toEqual(shapesInLowerLayer);
+                expect(countShapePathsInUpperLayer())
+                    .toEqual(shapesInUpperLayer + 1);
+                expect(getLastShape(gd)).toEqual(shape);
+                expect(countShapes(gd)).toEqual(index + 1);
+            }).then(function() {
+                shape.layer = 'below';
+                Plotly.relayout(gd, astr + '.layer', shape.layer);
+            }).then(function() {
+                expect(countShapePathsInLowerLayer())
+                    .toEqual(shapesInLowerLayer + 1);
+                expect(countShapePathsInUpperLayer())
+                    .toEqual(shapesInUpperLayer);
+                expect(getLastShape(gd)).toEqual(shape);
+                expect(countShapes(gd)).toEqual(index + 1);
+            }).then(function() {
+                shape.layer = 'above';
+                Plotly.relayout(gd, astr + '.layer', shape.layer);
+            }).then(function() {
+                expect(countShapePathsInLowerLayer())
+                    .toEqual(shapesInLowerLayer);
+                expect(countShapePathsInUpperLayer())
+                    .toEqual(shapesInUpperLayer + 1);
+                expect(getLastShape(gd)).toEqual(shape);
+                expect(countShapes(gd)).toEqual(index + 1);
             }).then(done);
         });
     });

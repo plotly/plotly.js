@@ -38,6 +38,14 @@ module.exports = {
         ].join(' ')
     },
 
+    layer: {
+        valType: 'enumerated',
+        values: ['below', 'above'],
+        dflt: 'above',
+        role: 'info',
+        description: 'Specifies whether shapes are drawn below or above traces.'
+    },
+
     xref: extendFlat({}, annAttrs.xref, {
         description: [
             'Sets the shape\'s x coordinate axis.',

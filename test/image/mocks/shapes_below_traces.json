@@ -1,0 +1,156 @@
+{
+    "data": [
+        {
+            "line": {
+                "shape": "spline"
+            },
+            "y": [
+                1,
+                2,
+                1,
+                0,
+                -1,
+                2,
+                3,
+                5
+            ]
+        },
+        {
+            "line": {
+                "shape": "spline"
+            },
+            "xaxis": "x2",
+            "y": [
+                7.071067811865475,
+                10,
+                7.071067811865475,
+                0,
+                -7.071067811865475,
+                10,
+                7.0710678118654755,
+                -7.071067811865475
+            ]
+        },
+        {
+            "line": {
+                "shape": "spline"
+            },
+            "y": [
+                7.0710678118654755,
+                6.123233995736766e-16,
+                7.0710678118654755,
+                10,
+                7.0710678118654755,
+                6.123233995736766e-16,
+                -7.071067811865475,
+                -7.071067811865477
+            ],
+            "yaxis": "y2"
+        },
+        {
+            "line": {
+                "shape": "spline"
+            },
+            "xaxis": "x2",
+            "y": [
+                2,
+                1.6666666666666667,
+                2,
+                2.5,
+                3.3333333333333335,
+                1.6666666666666667,
+                1.4285714285714286,
+                1.1111111111111112
+            ],
+            "yaxis": "y2"
+        }
+    ],
+    "layout": {
+        "dragmode": "pan",
+        "shapes": [
+            {
+                "fillcolor": "#c7eae5",
+                "layer": "below",
+                "type": "rect",
+                "x0": 3.5,
+                "x1": 4.5,
+                "xref": "x",
+                "y0": 0,
+                "y1": 1,
+                "yref": "paper"
+            },
+            {
+                "fillcolor": "#c7eae5",
+                "layer": "above",
+                "opacity": 0.5,
+                "type": "rect",
+                "x0": 5.5,
+                "x1": 6.5,
+                "xref": "x2",
+                "y0": 0,
+                "y1": 1,
+                "yref": "paper"
+            },
+            {
+                "fillcolor": "#f6e8c3",
+                "layer": "below",
+                "type": "rect",
+                "x0": 0,
+                "x1": 1,
+                "xref": "paper",
+                "y0": 0,
+                "y1": 3,
+                "yref": "y"
+            },
+            {
+                "fillcolor": "#f6e8c3",
+                "layer": "above",
+                "opacity": 0.5,
+                "type": "rect",
+                "x0": 0,
+                "x1": 1,
+                "xref": "paper",
+                "y0": 1,
+                "y1": 4,
+                "yref": "y2"
+            },
+            {
+                "fillcolor": "#d3d3d3",
+                "layer": "below",
+                "type": "rect",
+                "x0": 0.3,
+                "x1": 0.7,
+                "xref": "paper",
+                "y0": 0.3,
+                "y1": 0.7,
+                "yref": "paper"
+            }
+        ],
+        "showlegend": false,
+        "title": "shape shading a region",
+        "xaxis": {
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "xaxis2": {
+            "domain": [
+                0.55,
+                1
+            ]
+        },
+        "yaxis": {
+            "domain": [
+                0,
+                0.45
+            ]
+        },
+        "yaxis2": {
+            "domain": [
+                0.55,
+                1
+            ]
+        }
+    }
+}
