@@ -52,7 +52,7 @@
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.1",
-    "gl-error2d": "^1.0.0",
+    "gl-error2d": "^1.1.2",
     "gl-error3d": "^1.0.0",
     "gl-heatmap2d": "^1.0.2",
     "gl-line2d": "^1.2.1",
