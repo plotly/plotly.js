@@ -65,7 +65,7 @@ module.exports = function setConvert(ax) {
 
     // set scaling to pixels
     ax.setScale = function() {
-        var gs = ax._td._fullLayout._size,
+        var gs = ax._gd._fullLayout._size,
             i;
 
         // TODO cleaner way to handle this case
@@ -74,7 +74,7 @@ module.exports = function setConvert(ax) {
         // make sure we have a domain (pull it in from the axis
         // this one is overlaying if necessary)
         if(ax.overlaying) {
-            var ax2 = axisIds.getFromId(ax._td, ax.overlaying);
+            var ax2 = axisIds.getFromId(ax._gd, ax.overlaying);
             ax.domain = ax2.domain;
         }
 
@@ -116,16 +116,16 @@ module.exports = function setConvert(ax) {
             Lib.notifier(
                 'Something went wrong with axis scaling',
                 'long');
-            ax._td._replotting = false;
+            ax._gd._replotting = false;
             throw new Error('axis scaling');
         }
     };
 
     ax.l2p = function(v) {
         if(!isNumeric(v)) return constants.BADNUM;
+
         // include 2 fractional digits on pixel, for PDF zooming etc
-        return d3.round(Lib.constrain(ax._b + ax._m*v,
-            -clipMult*ax._length, (1+clipMult)*ax._length), 2);
+        return d3.round(ax._b + ax._m * v, 2);
     };
 
     ax.p2l = function(px) { return (px-ax._b)/ax._m; };
@@ -182,8 +182,9 @@ module.exports = function setConvert(ax) {
             // encounters them, ie all the categories from the
             // first data set, then all the ones from the second
             // that aren't in the first etc.
-            // TODO: sorting options - do the sorting
-            // progressively here as we insert?
+            // it is assumed that this function is being invoked in the
+            // already sorted category order; otherwise there would be
+            // a disconnect between the array and the index returned
 
             if(v !== null && v !== undefined && ax._categories.indexOf(v) === -1) {
                 ax._categories.push(v);

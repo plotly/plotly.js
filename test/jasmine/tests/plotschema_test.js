@@ -1,6 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
+
 describe('plot schema', function() {
     'use strict';
 
@@ -90,7 +91,7 @@ describe('plot schema', function() {
 
     it('all subplot objects should contain _isSubplotObj', function() {
         var IS_SUBPLOT_OBJ = '_isSubplotObj',
-            astrs = ['xaxis', 'yaxis', 'scene', 'geo'],
+            astrs = ['xaxis', 'yaxis', 'scene', 'geo', 'ternary'],
             list = [];
 
         // check if the subplot objects have '_isSubplotObj'
@@ -112,17 +113,32 @@ describe('plot schema', function() {
         expect(list).toEqual(astrs);
     });
 
-    it('layout.annotations and layout.shapes should contain `items`', function() {
-        var astrs = ['annotations', 'shapes'];
+    it('should convert _isLinkedToArray attributes to items object', function() {
+        var astrs = [
+            'annotations', 'shapes',
+            'xaxis.rangeselector.buttons', 'yaxis.rangeselector.buttons'
+        ];
 
         astrs.forEach(function(astr) {
-            expect(
-                isPlainObject(
-                    Lib.nestedProperty(
-                        plotSchema.layout.layoutAttributes, astr
-                    ).get().items
-                )
-            ).toBe(true);
+            var np = Lib.nestedProperty(
+                plotSchema.layout.layoutAttributes, astr
+            );
+
+            var name = np.parts[np.parts.length - 1],
+                itemName = name.substr(0, name.length - 1);
+
+            var itemsObj = np.get().items,
+                itemObj = itemsObj[itemName];
+
+            // N.B. the specs below must be satisfied for plotly.py
+            expect(isPlainObject(itemsObj)).toBe(true);
+            expect(itemsObj.role).toBeUndefined();
+            expect(Object.keys(itemsObj).length).toEqual(1);
+            expect(isPlainObject(itemObj)).toBe(true);
+            expect(itemObj.role).toBe('object');
+
+            var role = np.get().role;
+            expect(role).toEqual('object');
         });
     });
 
@@ -158,4 +174,5 @@ describe('plot schema', function() {
             }
         );
     });
+
 });

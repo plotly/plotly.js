@@ -16,8 +16,6 @@ var customMatchers = require('../assets/custom_matchers');
  *
  */
 
-var PLOT_DELAY = 200;
-var MOUSE_DELAY = 20;
 var MODEBAR_DELAY = 500;
 
 
@@ -54,10 +52,9 @@ describe('Test gl plot interactions', function() {
         destroyGraphDiv();
     });
 
+    // put callback in the event queue
     function delay(done) {
-        setTimeout(function() {
-            done();
-        }, PLOT_DELAY);
+        setTimeout(done, 0);
     }
 
     describe('gl3d plots', function() {
@@ -73,7 +70,17 @@ describe('Test gl plot interactions', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            // lines, markers, text, error bars and surfaces each
+            // correspond to one glplot object
+            mockCopy.data[0].mode = 'lines+markers+text';
+            mockCopy.data[0].error_z = { value: 10 };
+            mockCopy.data[0].surfaceaxis = 2;
+            mockCopy.layout.showlegend = true;
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 delay(done);
             });
         });
@@ -89,9 +96,7 @@ describe('Test gl plot interactions', function() {
 
                 mouseEventScatter3d('mouseover');
 
-                setTimeout(function() {
-                    done();
-                }, MOUSE_DELAY);
+                delay(done);
             });
 
             it('should have', function() {
@@ -129,9 +134,7 @@ describe('Test gl plot interactions', function() {
                 // with button 1 pressed
                 mouseEventScatter3d('mouseover', {buttons: 1});
 
-                setTimeout(function() {
-                    done();
-                }, MOUSE_DELAY);
+                delay(done);
             });
 
             it('should have', function() {
@@ -185,6 +188,22 @@ describe('Test gl plot interactions', function() {
                 expect(countCanvases()).toEqual(0);
                 expect(gd._fullLayout._hasGL3D).toBe(false);
                 expect(gd._fullLayout.scene).toBeUndefined();
+
+                done();
+            });
+        });
+
+        it('should be able to toggle visibility', function(done) {
+            var objects = gd._fullLayout.scene._scene.glplot.objects;
+
+            expect(objects.length).toEqual(5);
+
+            Plotly.restyle(gd, 'visible', 'legendonly').then(function() {
+                expect(objects.length).toEqual(0);
+
+                return Plotly.restyle(gd, 'visible', true);
+            }).then(function() {
+                expect(objects.length).toEqual(5);
 
                 done();
             });
@@ -409,6 +428,41 @@ describe('Test gl plot interactions', function() {
                 Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
                 expect(gd._fullLayout._plots.xy._scene2d.glplot).toBe(null);
 
+                done();
+            });
+        });
+    });
+});
+
+describe('Test gl plot side effects', function() {
+    describe('when present with rangeslider', function() {
+
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should not draw the rangeslider', function(done) {
+            var data = [{
+                x: [1,2,3],
+                y: [2,3,4],
+                type: 'scattergl'
+            }, {
+                x: [1,2,3],
+                y: [2,3,4],
+                type: 'scatter'
+            }];
+
+            var layout = {
+                xaxis: { rangeslider: { visible: true } }
+            };
+
+            Plotly.plot(gd, data, layout).then(function() {
+                var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                expect(rangeSlider).not.toBeDefined();
                 done();
             });
         });

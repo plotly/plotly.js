@@ -25,6 +25,8 @@ var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
 var Legend = require('../components/legend');
+var RangeSlider = require('../components/rangeslider');
+var RangeSelector = require('../components/rangeselector');
 var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
 var manageModeBar = require('../components/modebar/manage');
@@ -177,6 +179,7 @@ Plotly.plot = function(gd, data, layout, config) {
         var i, cd, trace;
 
         Legend.draw(gd);
+        RangeSelector.draw(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -242,6 +245,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function drawAxes() {
         // draw ticks, titles, and calculate axis scaling (._b, ._m)
+        RangeSlider.draw(gd);
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
@@ -277,6 +281,7 @@ Plotly.plot = function(gd, data, layout, config) {
         if(fullLayout._hasCartesian || fullLayout._hasPie) {
             plotRegistry.cartesian.plot(gd);
         }
+        if(fullLayout._hasTernary) plotRegistry.ternary.plot(gd);
 
         // clean up old scenes that no longer have associated data
         // will this be a performance hit?
@@ -305,6 +310,7 @@ Plotly.plot = function(gd, data, layout, config) {
         Shapes.drawAll(gd);
         Plotly.Annotations.drawAll(gd);
         Legend.draw(gd);
+        RangeSelector.draw(gd);
     }
 
     function cleanUp() {
@@ -317,9 +323,9 @@ Plotly.plot = function(gd, data, layout, config) {
     var donePlotting = Lib.syncOrAsync([
         Plots.previousPromises,
         marginPushers,
-        layoutStyles,
         marginPushersAgain,
         positionAndAutorange,
+        layoutStyles,
         drawAxes,
         drawData,
         finalDraw
@@ -848,10 +854,10 @@ function doCalcdata(gd) {
     fullLayout._piecolormap = {};
     fullLayout._piedefaultcolorcount = 0;
 
-    // delete category list, if there is one, so we start over
+    // initialize the category list, if there is one, so we start over
     // to be filled in later by ax.d2c
     for(i = 0; i < axList.length; i++) {
-        axList[i]._categories = [];
+        axList[i]._categories = axList[i]._initialCategories.slice();
     }
 
     for(i = 0; i < fullData.length; i++) {
@@ -2270,6 +2276,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // 3d or geo at this point just needs to redraw.
             if(p.parts[0].indexOf('scene') === 0) doplot = true;
             else if(p.parts[0].indexOf('geo') === 0) doplot = true;
+            else if(p.parts[0].indexOf('ternary') === 0) doplot = true;
             else if(fullLayout._hasGL2D &&
                 (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
             ) doplot = true;
@@ -2363,7 +2370,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(doticks) {
             seq.push(function() {
                 Plotly.Axes.doTicks(gd,'redraw');
-                Titles.draw(gd, 'gtitle');
+                drawMainTitle(gd);
                 return Plots.previousPromises(gd);
             });
         }
@@ -2393,12 +2400,32 @@ Plotly.relayout = function relayout(gd, astr, val) {
         }
     }
 
+    function setRange(changes) {
+        var newMin = changes['xaxis.range[0]'],
+            newMax = changes['xaxis.range[1]'];
+
+        var rangeSlider = fullLayout.xaxis && fullLayout.xaxis.rangeslider ?
+            fullLayout.xaxis.rangeslider : {};
+
+        if(rangeSlider.visible) {
+            if(newMin || newMax) {
+                fullLayout.xaxis.rangeslider.setRange(newMin, newMax);
+            } else if(changes['xaxis.autorange']) {
+                fullLayout.xaxis.rangeslider.setRange();
+            }
+        }
+    }
+
     var plotDone = Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
-        gd.emit('plotly_relayout', Lib.extendDeep({}, redoit));
+        var changes = Lib.extendDeep({}, redoit);
+
+        setRange(changes);
+        gd.emit('plotly_relayout', changes);
+
         return gd;
     });
 };
@@ -2588,6 +2615,11 @@ function makePlotFramework(gd) {
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
+    // lower shape layer
+    // (only for shapes to be drawn below the whole plot)
+    fullLayout._shapeLowerLayer = fullLayout._paper.append('g')
+        .classed('shapelayer shapelayer-below', true);
+
     var subplots = Plotly.Axes.getSubplots(gd);
     if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
         makeSubplots(gd, subplots);
@@ -2595,8 +2627,15 @@ function makePlotFramework(gd) {
 
     if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
 
-    // single shape and pie layers for the whole plot
-    fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
+    // single ternary layer for the whole plot
+    fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
+
+    // upper shape layer
+    // (only for shapes to be drawn above the whole plot, including subplots)
+    fullLayout._shapeUpperLayer = fullLayout._paper.append('g')
+        .classed('shapelayer shapelayer-above', true);
+
+    // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
     // fill in image server scrape-svg
@@ -2724,11 +2763,15 @@ function makeCartesianPlotFramwork(gd, subplots) {
                 // the plot and containers for overlays
                 plotinfo.bg = plotgroup.append('rect')
                     .style('stroke-width', 0);
+                // shape layer
+                // (only for shapes to be drawn below a subplot)
+                plotinfo.shapelayer = plotgroup.append('g')
+                    .classed('shapelayer shapelayer-subplot', true);
                 plotinfo.gridlayer = plotgroup.append('g');
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');
                 plotinfo.overzero = plotgroup.append('g');
-                plotinfo.plot = plotgroup.append('svg').call(plotLayers);
+                plotinfo.plot = plotgroup.append('g').call(plotLayers);
                 plotinfo.overplot = plotgroup.append('g');
                 plotinfo.xlines = plotgroup.append('path');
                 plotinfo.ylines = plotgroup.append('path');
@@ -2754,7 +2797,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
 
         plotinfo.gridlayer = mainplot.overgrid.append('g');
         plotinfo.zerolinelayer = mainplot.overzero.append('g');
-        plotinfo.plot = mainplot.overplot.append('svg').call(plotLayers);
+        plotinfo.plot = mainplot.overplot.append('g').call(plotLayers);
         plotinfo.xlines = mainplot.overlines.append('path');
         plotinfo.ylines = mainplot.overlines.append('path');
         plotinfo.xaxislayer = mainplot.overaxes.append('g');
@@ -2765,9 +2808,6 @@ function makeCartesianPlotFramwork(gd, subplots) {
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
 
-        plotinfo.plot
-            .attr('preserveAspectRatio', 'none')
-            .style('fill', 'none');
         plotinfo.xlines
             .style('fill', 'none')
             .classed('crisp', true);
@@ -2775,6 +2815,10 @@ function makeCartesianPlotFramwork(gd, subplots) {
             .style('fill', 'none')
             .classed('crisp', true);
     });
+
+    // shape layers in subplots
+    fullLayout._subplotShapeLayer = fullLayout._paper
+        .selectAll('.shapelayer-subplot');
 }
 
 // layoutStyles: styling for plot layout elements
@@ -2816,9 +2860,28 @@ function lsInner(gd) {
                     xa._length+2*gs.p, ya._length+2*gs.p)
                 .call(Color.fill, fullLayout.plot_bgcolor);
         }
-        plotinfo.plot
-            .call(Drawing.setRect,
-                xa._offset, ya._offset, xa._length, ya._length);
+
+        // Clip so that data only shows up on the plot area.
+        var clips = fullLayout._defs.selectAll('g.clips'),
+            clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+
+        clips.selectAll('#' + clipId)
+            .data([0])
+        .enter().append('clipPath')
+            .attr({
+                'class': 'plotclip',
+                'id': clipId
+            })
+            .append('rect')
+            .attr({
+                'width': xa._length,
+                'height': ya._length
+            });
+
+        plotinfo.plot.attr({
+            'transform': 'translate(' + xa._offset + ', ' + ya._offset + ')',
+            'clip-path': 'url(#' + clipId + ')'
+        });
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),
@@ -2942,9 +3005,24 @@ function lsInner(gd) {
 
     Plotly.Axes.makeClipPaths(gd);
 
-    Titles.draw(gd, 'gtitle');
+    drawMainTitle(gd);
 
     manageModeBar(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
+}
+
+function drawMainTitle(gd) {
+    var fullLayout = gd._fullLayout;
+
+    Titles.draw(gd, 'gtitle', {
+        propContainer: fullLayout,
+        propName: 'title',
+        dfltName: 'Plot',
+        attributes: {
+            x: fullLayout.width / 2,
+            y: fullLayout._size.t / 2,
+            'text-anchor': 'middle'
+        }
+    });
 }

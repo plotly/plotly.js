@@ -11,6 +11,10 @@
 
 var Lib = require('../../lib');
 var Plots = require('../plots');
+var Color = require('../../components/color');
+
+var RangeSlider = require('../../components/rangeslider');
+var RangeSelector = require('../../components/rangeselector');
 
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
@@ -101,9 +105,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     }
 
     var xaList = xaListCartesian.concat(xaListGl2d).sort(axSort),
-        yaList = yaListCartesian.concat(yaListGl2d).sort(axSort);
+        yaList = yaListCartesian.concat(yaListGl2d).sort(axSort),
+        axesList = xaList.concat(yaList);
 
-    xaList.concat(yaList).forEach(function(axName) {
+    // plot_bgcolor only makes sense if there's a (2D) plot!
+    // TODO: bgcolor for each subplot, to inherit from the main one
+    var plot_bgcolor = Color.background;
+    if(xaList.length && yaList.length) {
+        plot_bgcolor = Lib.coerce(layoutIn, layoutOut, Plots.layoutAttributes, 'plot_bgcolor');
+    }
+
+    var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);
+
+    axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0),
             axLayoutIn = layoutIn[axName] || {},
             axLayoutOut = {},
@@ -113,7 +127,8 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                 outerTicks: outerTicks[axName],
                 showGrid: !noGrids[axName],
                 name: axName,
-                data: fullData
+                data: fullData,
+                bgColor: bgColor
             },
             positioningOptions = {
                 letter: axLetter,
@@ -129,6 +144,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
         handleAxisDefaults(axLayoutIn, axLayoutOut, coerce, defaultOptions);
         handlePositionDefaults(axLayoutIn, axLayoutOut, coerce, positioningOptions);
+
         layoutOut[axName] = axLayoutOut;
 
         // so we don't have to repeat autotype unnecessarily,
@@ -139,9 +155,17 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     });
 
-    // plot_bgcolor only makes sense if there's a (2D) plot!
-    // TODO: bgcolor for each subplot, to inherit from the main one
-    if(xaList.length && yaList.length) {
-        Lib.coerce(layoutIn, layoutOut, Plots.layoutAttributes, 'plot_bgcolor');
-    }
+    // quick second pass for range slider and selector defaults
+    axesList.forEach(function(axName) {
+        var axLetter = axName.charAt(0),
+            axLayoutIn = layoutIn[axName],
+            axLayoutOut = layoutOut[axName],
+            counterAxes = {x: yaList, y: xaList}[axLetter];
+
+        RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+
+        if(axLetter === 'x' && axLayoutOut.type === 'date') {
+            RangeSelector.supplyLayoutDefaults(axLayoutIn, axLayoutOut, layoutOut, counterAxes);
+        }
+    });
 };

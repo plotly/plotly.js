@@ -1,0 +1,116 @@
+{
+    "data": [
+        {
+            "type": "scatterternary",
+            "a": [
+                0.2,
+                0.3,
+                null,
+                0.1
+            ],
+            "b": [
+                0.1,
+                0.2,
+                null,
+                0.4
+            ],
+            "c": [
+                0.1,
+                0.2,
+                null,
+                0.1
+            ],
+            "marker": {
+                "symbol": [
+                    "square",
+                    "cross",
+                    null,
+                    "diamond"
+                ],
+                "size": [
+                    10,
+                    20,
+                    null,
+                    30
+                ],
+                "color": [
+                    20,
+                    30,
+                    null,
+                    10
+                ],
+                "showscale": true,
+                "line": {
+                    "width": [
+                        3,
+                        5,
+                        null,
+                        2
+                    ],
+                    "color": [
+                        10,
+                        null,
+                        30,
+                        20
+                    ],
+                    "colorscale": "Greens",
+                    "cmin": 10,
+                    "cmax": 30
+                },
+                "cmin": 10,
+                "cmax": 30,
+                "colorscale": [
+                    [
+                        0,
+                        "rgb(220,220,220)"
+                    ],
+                    [
+                        0.2,
+                        "rgb(245,195,157)"
+                    ],
+                    [
+                        0.4,
+                        "rgb(245,160,105)"
+                    ],
+                    [
+                        1,
+                        "rgb(178,10,28)"
+                    ]
+                ]
+            },
+            "line": {
+                "dash": "dash",
+                "shape": "spline",
+                "width": 3
+            },
+            "connectgaps": true,
+            "uid": "35ff50"
+        }
+    ],
+    "layout": {
+        "ternary": {
+            "aaxis": {
+                "showline": true,
+                "ticks": "inside",
+                "showgrid": true,
+                "color": "#ccc"
+            },
+            "baxis": {
+                "showline": true,
+                "ticks": "inside",
+                "showgrid": true,
+                "color": "#0f0",
+                "title": "chocolate",
+                "min": 0.2
+            },
+            "caxis": {
+                "showline": true,
+                "ticks": "inside",
+                "showgrid": true
+            }
+        },
+        "height": 450,
+        "width": 700,
+        "autosize": false
+    }
+}

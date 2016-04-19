@@ -188,6 +188,10 @@ module.exports = {
         valType: 'boolean',
         dflt: false
     },
+    _hasTernary: {
+        valType: 'boolean',
+        dflt: false
+    },
     _composedModules: {
         '*': 'Fx'
     },
@@ -200,6 +204,7 @@ module.exports = {
         'geo': 'geo',
         'legend': 'Legend',
         'annotations': 'Annotations',
-        'shapes': 'Shapes'
+        'shapes': 'Shapes',
+        'ternary': 'ternary'
     }
 };

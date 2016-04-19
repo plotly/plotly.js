@@ -1,6 +1,6 @@
 # Contributing to plotly.js
 
-### Opening issues
+## Opening issues
 
 Search for existing and closed issues. If your problem or idea is not addressed
 yet, [please open a new issue](https://github.com/plotly/plotly.js/issues/new).
@@ -14,32 +14,34 @@ Implementation questions should be asked on Stack Overflow (tagged
 [`plotly`](https://stackoverflow.com/questions/tagged/plotly)) or on
 community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)).
 
-### Issue labels
+## Issue labels
 
 We use the following [labels](https://github.com/plotly/plotly.js/labels) to track issues:
 
 | Label | Purpose |
 |--------|---------|
 | `type: bug` | bug report confirmed by a plotly team member |
-| `type: enhancement` | planned feature or task |
+| `type: feature` | planned feature additions |
+| `type: performance` | performance related tasks |
+| `type: maintenace` | source code cleanup resulting in no enhancement for users |
 | `type: community` | issue left open for community input and pull requests |
-| `type: maintenace` | source code cleanup resulting in no enhancement for users | 
 | `type: duplicate` | *self-explanatory* |
 | `type: wontfix` | *self-explanatory* |
+| `status: discussion needed` | Issue or PR that required discussion among maintaners before moving forward |
 | `status: in progress` | PRs that required some intial feedback but not ready to merge |
 | `status: reviewable` | PRs that are completed from the author's perspective |
-| `status: on hold` | PRs that are put on hold | 
+| `status: on hold` | PRs that are put on hold |
 
-### Development
+## Development
 
-**Prerequisites**:
+#### Perequisites
 
 - git
 - [node.js](https://nodejs.org/en/). We recommend using node.js 4.2.x (LTS).
   Upgrading and managing node versions can be easily done using
   [`nvm`](https://github.com/creationix/nvm) or its Windows alternatives.
 
-**Step 1** Clone the plotly.js repo and install its dependencies
+#### Step 1: Clone the plotly.js repo and install its dependencies
 
 ```
 git clone https://github.com/plotly/plotly.js.git
@@ -47,10 +49,10 @@ cd plotly.js
 npm install
 ```
 
-**Step 2** Start the test dashboard
+#### Step 2: Start the test dashboard
 
 ```
-npm run start-test_dashboard
+npm start
 ```
 
 This command bundles up the source files with source maps using
@@ -59,26 +61,43 @@ This command bundles up the source files with source maps using
 dev plotly.js bundle update every time a source file is saved) and opens up a
 tab in your browser.
 
-**Step 3** Open up the console and start developing
+#### Step 3: Open up the console and start developing
 
-Make some modifications to the source, refresh the page and check the results
-by for example pasting in the console:
+A typical workflow is to make some modifications to the source, update the
+test dashboard, inspect and debug the changes, then repeat. The test dashboard
+comes bundled with some useful tools while developing - all bundled under the
+`Tabs` object:
 
-```js
-Plotly.plot(Tabs.fresh(), [{x:[1,2,3], y:[2,1,2]}]);
-```
 
-- `Tabs.fresh()` creates a fresh graph div and return it and
-- `Tabs.getGraph()` returns the current graph div.
+| Method/Property        | Description |
+|------------------------|-------------|
+| `Tabs.fresh([id])` | Creates a fresh graph div and returns it (default id of `graph`). |
+| `Tabs.getGraph([id])` | Returns the default or specified graph div. |
+| `Tabs.plotMock(mock, [id])` | Plots the specified mock (`.json` extension is not required). |
+| `Tabs.snapshot([id])` | Creates a png snapshot of the plot and places it below. |
+| `Tabs.reload()` | Reloads the plotly.js script and will execute `Tabs.onReload` once completed. |
+| `Tabs.onReload()` | By default, set to `noop` but you may set `Tabs.onReload` to any function you wish. This is useful for replotting a mock or test every time you reload the plotly.js script. |
+| `Tabs.purge()` | Destroys all plots. |
 
-**Other npm scripts**:
+View [the source](https://github.com/plotly/plotly.js/blob/master/devtools/test_dashboard/devtools.js) for more info.
+
+Three additional helpers exist that are refreshed every second:
+
+* `gd` - this is the default plot div
+* `fullData` - shortcut to `gd._fullData`
+* `fullLayout` - shortcut to `gd._fullLayout`
+
+There is also a search bar in the top right of the dashboard. This fuzzy-searches
+image mocks based on their file name and trace type.
+
+#### Other npm scripts
 
 - `npm run preprocess`: pre-processes the css and svg source file in js. This
   script must be run manually when updating the css and svg source files.
 - `npm run watch`: starts a watchify file watcher just like the test dashboard but
   without booting up a server.
 
-### Testing
+## Testing
 
 Both jasmine and image tests are run on
 [CircleCI](https://circleci.com/gh/plotly/plotly.js) on every push to this
@@ -107,7 +126,7 @@ which shows the baseline image, the generated image, the diff and the json mocks
 To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
 
 
-### Repo organization
+## Repo organization
 
 - Distributed files are in `dist/`
 - CommonJS require-able modules are in `lib/`
@@ -119,7 +138,7 @@ To view the results of a run on CircleCI, download the `build/test_images/` and 
 - Non-distributed, built files are in `build/` (most files in here are git-ignored, the css and font built files are exceptions)
 
 
-### Coding style
+## Coding style
 
 Check if ok, with `npm run lint`
 

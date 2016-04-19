@@ -18,125 +18,54 @@ var Lib = require('../../lib');
 var Drawing = require('../drawing');
 var Color = require('../color');
 var svgTextUtils = require('../../lib/svg_text_utils');
-var axisIds = require('../../plots/cartesian/axis_ids');
 
 
 var Titles = module.exports = {};
 
 /**
  * Titles - (re)draw titles on the axes and plot:
- *  title can be 'xtitle', 'ytitle', 'gtitle'
+ * @param {DOM element} gd - the graphDiv
+ * @param {string} titleClass - the css class of this title
+ * @param {object} options - how and what to draw
+ *      propContainer - the layout object containing `title` and `titlefont`
+ *          attributes that apply to this title
+ *      propName - the full name of the title property (for Plotly.relayout)
+ *      [traceIndex] - include only if this property applies to one trace
+ *          (such as a colorbar title) - then editing pipes to Plotly.restyle
+ *          instead of Plotly.relayout
+ *      dfltName - the name of the title in placeholder text
+ *      [avoid] {object} - include if this title should move to avoid other elements
+ *          selection - d3 selection of elements to avoid
+ *          side - which direction to move if there is a conflict
+ *          [offsetLeft] - if these elements are subject to a translation
+ *              wrt the title element
+ *          [offsetTop]
+ *      attributes {object} - position and alignment attributes
+ *          x - pixels
+ *          y - pixels
+ *          text-anchor - start|middle|end
+ *      transform {object} - how to transform the title after positioning
+ *          rotate - degrees
+ *          offset - shift up/down in the rotated frame (unused?)
+ *      containerGroup - if an svg <g> element already exists to hold this
+ *          title, include here. Otherwise it will go in fullLayout._infolayer
  */
-Titles.draw = function(gd, title) {
-    var fullLayout = gd._fullLayout,
-        gs = fullLayout._size,
-        axletter = title.charAt(0),
-        colorbar = (title.substr(1, 2) === 'cb');
+Titles.draw = function(gd, titleClass, options) {
+    var cont = options.propContainer,
+        prop = options.propName,
+        traceIndex = options.traceIndex,
+        name = options.dfltName,
+        avoid = options.avoid || {},
+        attributes = options.attributes,
+        transform = options.transform,
+        group = options.containerGroup,
 
-    var cbnum, cont, options;
-
-    if(colorbar) {
-        var uid = title.substr(3).replace('title', '');
-        gd._fullData.some(function(trace, i) {
-            if(trace.uid === uid) {
-                cbnum = i;
-                cont = gd.calcdata[i][0].t.cb.axis;
-                return true;
-            }
-        });
-    }
-    else cont = fullLayout[axisIds.id2name(title.replace('title', ''))] || fullLayout;
-
-    var prop = (cont === fullLayout) ? 'title' : cont._name+'.title',
-        name = colorbar ? 'colorscale' :
-            ((cont._id || axletter).toUpperCase()+' axis'),
+        fullLayout = gd._fullLayout,
         font = cont.titlefont.family,
         fontSize = cont.titlefont.size,
         fontColor = cont.titlefont.color,
-        x,
-        y,
-        transform = '',
-        xa,
-        ya,
-        avoid = {
-            selection: d3.select(gd).selectAll('g.'+cont._id+'tick'),
-            side: cont.side
-        },
-        // multiples of fontsize to offset label from axis
-        offsetBase = colorbar ? 0 : 1.5,
-        avoidTransform;
 
-    // find the transform applied to the parents of the avoid selection
-    // which doesn't get picked up by Drawing.bBox
-    if(colorbar) {
-        avoid.offsetLeft = gs.l;
-        avoid.offsetTop = gs.t;
-    }
-    else if(avoid.selection.size()) {
-        avoidTransform = d3.select(avoid.selection.node().parentNode)
-            .attr('transform')
-            .match(/translate\(([-\.\d]+),([-\.\d]+)\)/);
-        if(avoidTransform) {
-            avoid.offsetLeft = +avoidTransform[1];
-            avoid.offsetTop = +avoidTransform[2];
-        }
-    }
-
-    if(colorbar && cont.titleside) {
-        // argh, we only make it here if the title is on top or bottom,
-        // not right
-        x = gs.l + cont.titlex * gs.w;
-        y = gs.t + (1 - cont.titley) * gs.h + ((cont.titleside === 'top') ?
-                3 + fontSize * 0.75 : - 3 - fontSize * 0.25);
-        options = {x: x, y: y, 'text-anchor': 'start'};
-        avoid = {};
-
-        // convertToTspans rotates any 'y...' by 90 degrees...
-        // TODO: need a better solution than this hack
-        title = 'h' + title;
-    }
-    else if(axletter === 'x') {
-        xa = cont;
-        ya = (xa.anchor === 'free') ?
-            {_offset: gs.t + (1 - (xa.position || 0)) * gs.h, _length: 0} :
-            axisIds.getFromId(gd, xa.anchor);
-
-        x = xa._offset + xa._length / 2;
-        y = ya._offset + ((xa.side === 'top') ?
-            -10 - fontSize*(offsetBase + (xa.showticklabels ? 1 : 0)) :
-            ya._length + 10 +
-                fontSize*(offsetBase + (xa.showticklabels ? 1.5 : 0.5)));
-
-        options = {x: x, y: y, 'text-anchor': 'middle'};
-        if(!avoid.side) avoid.side = 'bottom';
-    }
-    else if(axletter === 'y') {
-        ya = cont;
-        xa = (ya.anchor === 'free') ?
-            {_offset: gs.l + (ya.position || 0) * gs.w, _length: 0} :
-            axisIds.getFromId(gd, ya.anchor);
-
-        y = ya._offset + ya._length / 2;
-        x = xa._offset + ((ya.side === 'right') ?
-            xa._length + 10 +
-                fontSize*(offsetBase + (ya.showticklabels ? 1 : 0.5)) :
-            -10 - fontSize*(offsetBase + (ya.showticklabels ? 0.5 : 0)));
-
-        options = {x: x, y: y, 'text-anchor': 'middle'};
-        transform = {rotate: '-90', offset: 0};
-        if(!avoid.side) avoid.side = 'left';
-    }
-    else {
-        // plot title
-        name = 'Plot';
-        fontSize = fullLayout.titlefont.size;
-        x = fullLayout.width / 2;
-        y = fullLayout._size.t / 2;
-        options = {x: x, y: y, 'text-anchor': 'middle'};
-        avoid = {};
-    }
-
-    var opacity = 1,
+        opacity = 1,
         isplaceholder = false,
         txt = cont.title.trim();
     if(txt === '') opacity = 0;
@@ -145,23 +74,11 @@ Titles.draw = function(gd, title) {
         isplaceholder = true;
     }
 
-    var group;
-    if(colorbar) {
-        group = d3.select(gd)
-            .selectAll('.' + cont._id.substr(1) + ' .cbtitle');
-        // this class-to-rotate thing with convertToTspans is
-        // getting hackier and hackier... delete groups with the
-        // wrong class
-        var otherClass = title.charAt(0) === 'h' ?
-            title.substr(1) : ('h' + title);
-        group.selectAll('.' + otherClass + ',.' + otherClass + '-math-group')
-            .remove();
-    }
-    else {
-        group = fullLayout._infolayer.selectAll('.g-' + title)
+    if(!group) {
+        group = fullLayout._infolayer.selectAll('.g-' + titleClass)
             .data([0]);
         group.enter().append('g')
-            .classed('g-' + title, true);
+            .classed('g-' + titleClass, true);
     }
 
     var el = group.selectAll('text')
@@ -173,7 +90,7 @@ Titles.draw = function(gd, title) {
         // so we need to clear out any old class and put the
         // correct one (only relevant for colorbars, at least
         // for now) - ie don't use .classed
-        .attr('class', title);
+        .attr('class', titleClass);
 
     function titleLayout(titleEl) {
         Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
@@ -181,7 +98,7 @@ Titles.draw = function(gd, title) {
 
     function drawTitle(titleEl) {
         titleEl.attr('transform', transform ?
-            'rotate(' + [transform.rotate, options.x, options.y] +
+            'rotate(' + [transform.rotate, attributes.x, attributes.y] +
                 ') translate(0, ' + transform.offset + ')' :
             null);
 
@@ -192,12 +109,12 @@ Titles.draw = function(gd, title) {
             opacity: opacity * Color.opacity(fontColor),
             'font-weight': Plots.fontWeight
         })
-        .attr(options)
+        .attr(attributes)
         .call(svgTextUtils.convertToTspans)
-        .attr(options);
+        .attr(attributes);
 
         titleEl.selectAll('tspan.line')
-            .attr(options);
+            .attr(attributes);
         return Plots.previousPromises(gd);
     }
 
@@ -226,9 +143,9 @@ Titles.draw = function(gd, title) {
                     right: fullLayout.width,
                     bottom: fullLayout.height
                 },
-                maxshift = colorbar ? fullLayout.width:
+                maxshift = avoid.maxShift || (
                     (paperbb[avoid.side]-titlebb[avoid.side]) *
-                    ((avoid.side === 'left' || avoid.side === 'top') ? -1 : 1);
+                    ((avoid.side === 'left' || avoid.side === 'top') ? -1 : 1));
             // Prevent the title going off the paper
             if(maxshift < 0) shift = maxshift;
             else {
@@ -267,13 +184,13 @@ Titles.draw = function(gd, title) {
     el.attr({'data-unformatted': txt})
         .call(titleLayout);
 
-    var placeholderText = 'Click to enter ' + name.replace(/\d+/, '') + ' title';
+    var placeholderText = 'Click to enter ' + name + ' title';
 
     function setPlaceholder() {
         opacity = 0;
         isplaceholder = true;
         txt = placeholderText;
-        fullLayout._infolayer.select('.' + title)
+        fullLayout._infolayer.select('.' + titleClass)
             .attr({'data-unformatted': txt})
             .text(txt)
             .on('mouseover.opacity', function() {
@@ -291,23 +208,17 @@ Titles.draw = function(gd, title) {
 
         el.call(svgTextUtils.makeEditable)
             .on('edit', function(text) {
-                if(colorbar) {
-                    var trace = gd._fullData[cbnum];
-                    if(Plots.traceIs(trace, 'markerColorscale')) {
-                        Plotly.restyle(gd, 'marker.colorbar.title', text, cbnum);
-                    }
-                    else Plotly.restyle(gd, 'colorbar.title', text, cbnum);
-                }
-                else Plotly.relayout(gd,prop,text);
+                if(traceIndex !== undefined) Plotly.restyle(gd, prop, text, traceIndex);
+                else Plotly.relayout(gd, prop, text);
             })
             .on('cancel', function() {
                 this.text(this.attr('data-unformatted'))
                     .call(titleLayout);
             })
             .on('input', function(d) {
-                this.text(d || ' ').attr(options)
+                this.text(d || ' ').attr(attributes)
                     .selectAll('tspan.line')
-                        .attr(options);
+                        .attr(attributes);
             });
     }
     else if(!txt || txt.match(/Click to enter .+ title/)) {

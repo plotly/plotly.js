@@ -11,7 +11,7 @@
 
 module.exports = {
     scene: {
-        valType: 'sceneid',
+        valType: 'subplotid',
         role: 'info',
         dflt: 'scene',
         description: [

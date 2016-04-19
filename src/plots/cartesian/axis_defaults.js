@@ -10,14 +10,19 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var colorMix = require('tinycolor2').mix;
 
 var Lib = require('../../lib');
 var Plots = require('../plots');
+var lightFraction = require('../../components/color/attributes').lightFraction;
 
 var layoutAttributes = require('./layout_attributes');
 var handleTickValueDefaults = require('./tick_value_defaults');
-var handleTickDefaults = require('./tick_defaults');
+var handleTickMarkDefaults = require('./tick_mark_defaults');
+var handleTickLabelDefaults = require('./tick_label_defaults');
+var handleCategoryOrderDefaults = require('./category_order_defaults');
 var setConvert = require('./set_convert');
+var orderedCategories = require('./ordered_categories');
 var cleanDatum = require('./clean_datum');
 var axisIds = require('./axis_ids');
 
@@ -33,6 +38,7 @@ var axisIds = require('./axis_ids');
  *  showGrid: boolean, should gridlines be shown by default?
  *  noHover: boolean, this axis doesn't support hover effects?
  *  data: the plot data to use in choosing auto type
+ *  bgColor: the plot background color, to calculate default gridline colors
  */
 module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, options) {
     var letter = options.letter,
@@ -40,6 +46,10 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         defaultTitle = 'Click to enter ' +
             (options.title || (letter.toUpperCase() + ' axis')) +
             ' title';
+
+    function coerce2(attr, dflt) {
+        return Lib.coerce2(containerIn, containerOut, layoutAttributes, attr, dflt);
+    }
 
     // set up some private properties
     if(options.name) {
@@ -64,13 +74,22 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
+    containerOut._initialCategories = axType === 'category' ?
+        orderedCategories(letter, containerIn.categoryorder, containerIn.categoryarray, options.data) :
+        [];
+
     setConvert(containerOut);
+
+    var dfltColor = coerce('color');
+    // if axis.color was provided, use it for fonts too; otherwise,
+    // inherit from global font color in case that was provided.
+    var dfltFontColor = (dfltColor === containerIn.color) ? dfltColor : font.color;
 
     coerce('title', defaultTitle);
     Lib.coerceFont(coerce, 'titlefont', {
         family: font.family,
         size: Math.round(font.size * 1.2),
-        color: font.color
+        color: dfltFontColor
     });
 
     var validRange = (
@@ -90,10 +109,12 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
     coerce('fixedrange');
 
     handleTickValueDefaults(containerIn, containerOut, coerce, axType);
-    handleTickDefaults(containerIn, containerOut, coerce, axType, options);
+    handleTickLabelDefaults(containerIn, containerOut, coerce, axType, options);
+    handleTickMarkDefaults(containerIn, containerOut, coerce, options);
+    handleCategoryOrderDefaults(containerIn, containerOut, coerce);
 
-    var lineColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'linecolor'),
-        lineWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'linewidth'),
+    var lineColor = coerce2('linecolor', dfltColor),
+        lineWidth = coerce2('linewidth'),
         showLine = coerce('showline', !!lineColor || !!lineWidth);
 
     if(!showLine) {
@@ -103,8 +124,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 
     if(showLine || containerOut.ticks) coerce('mirror');
 
-    var gridColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'gridcolor'),
-        gridWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'gridwidth'),
+    var gridColor = coerce2('gridcolor', colorMix(dfltColor, options.bgColor, lightFraction).toRgbString()),
+        gridWidth = coerce2('gridwidth'),
         showGridLines = coerce('showgrid', options.showGrid || !!gridColor || !!gridWidth);
 
     if(!showGridLines) {
@@ -112,8 +133,8 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         delete containerOut.gridwidth;
     }
 
-    var zeroLineColor = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'zerolinecolor'),
-        zeroLineWidth = Lib.coerce2(containerIn, containerOut, layoutAttributes, 'zerolinewidth'),
+    var zeroLineColor = coerce2('zerolinecolor', dfltColor),
+        zeroLineWidth = coerce2('zerolinewidth'),
         showZeroLine = coerce('zeroline', options.showGrid || !!zeroLineColor || !!zeroLineWidth);
 
     if(!showZeroLine) {

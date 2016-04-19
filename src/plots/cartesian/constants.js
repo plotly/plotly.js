@@ -10,6 +10,17 @@
 
 
 module.exports = {
+
+    idRegex: {
+        x: /^x([2-9]|[1-9][0-9]+)?$/,
+        y: /^y([2-9]|[1-9][0-9]+)?$/
+    },
+
+    attrRegex: {
+        x: /^xaxis([2-9]|[1-9][0-9]+)?$/,
+        y: /^yaxis([2-9]|[1-9][0-9]+)?$/
+    },
+
     /**
      * standardize all missing data in calcdata to use undefined
      * never null or NaN.
@@ -28,7 +39,7 @@ module.exports = {
 
     // ms between first mousedown and 2nd mouseup to constitute dblclick...
     // we don't seem to have access to the system setting
-    DBLCLICKDELAY: 600,
+    DBLCLICKDELAY: 300,
 
     // pixels to move mouse before you stop clamping to starting point
     MINDRAG: 8,

@@ -542,6 +542,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
         containerStyle.width = (size.w * (domain.x[1] - domain.x[0])) + 'px';
         containerStyle.height = (size.h * (domain.y[1] - domain.y[0])) + 'px';
     }
+
+    // force redraw so that promise is returned when rendering is completed
+    this.glplot.redraw();
 };
 
 proto.destroy = function() {

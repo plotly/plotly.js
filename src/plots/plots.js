@@ -9,11 +9,12 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Plotly = require('../plotly');
 var Lib = require('../lib');
+var Color = require('../components/color');
 
 var plots = module.exports = {};
 
@@ -328,7 +329,7 @@ plots.addLinks = function(gd) {
         .style({
             'font-family': '"Open Sans", Arial, sans-serif',
             'font-size': '12px',
-            'fill': Plotly.Color.defaultLine,
+            'fill': Color.defaultLine,
             'pointer-events': 'all'
         })
         .each(function() {
@@ -345,10 +346,11 @@ plots.addLinks = function(gd) {
         };
 
     // If text's width is bigger than the layout
-    // IE doesn't like getComputedTextLength if an element
-    // isn't visible, which it (sometimes?) isn't
-    // apparently offsetParent is null for invisibles.
-    if(text && text.getComputedTextLength() >= (fullLayout.width - 20)) {
+    // Check that text is a child node or document.body
+    // because otherwise IE/Edge might throw an exception
+    // when calling getComputedTextLength().
+    // Apparently offsetParent is null for invisibles.
+    if(document.body.contains(text) && text.getComputedTextLength() >= (fullLayout.width - 20)) {
         // Align the text at the left
         attrs['text-anchor'] = 'start';
         attrs.x = 5;
@@ -470,6 +472,7 @@ plots.supplyDefaults = function(gd) {
         else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
         else if(plots.traceIs(fullTrace, 'pie')) newFullLayout._hasPie = true;
         else if(plots.traceIs(fullTrace, 'gl2d')) newFullLayout._hasGL2D = true;
+        else if(plots.traceIs(fullTrace, 'ternary')) newFullLayout._hasTernary = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         _module = fullTrace._module;
@@ -507,7 +510,7 @@ plots.supplyDefaults = function(gd) {
     axList = Plotly.Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
         ax = axList[i];
-        ax._td = gd;
+        ax._gd = gd;
         ax.setScale();
     }
 
@@ -608,7 +611,7 @@ function relinkPrivateKeys(toLayout, fromLayout) {
 
 plots.supplyDataDefaults = function(traceIn, i, layout) {
     var traceOut = {},
-        defaultColor = Plotly.Color.defaults[i % Plotly.Color.defaults.length];
+        defaultColor = Color.defaults[i % Color.defaults.length];
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
@@ -634,6 +637,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     // differently for 3D cases.
     coerceSubplotAttr('gl3d', 'scene');
     coerceSubplotAttr('geo', 'geo');
+    coerceSubplotAttr('ternary', 'subplot');
 
     // module-specific attributes --- note: we need to send a trace into
     // the 3D modules to have it removed from the webgl context.
@@ -642,7 +646,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
         traceOut._module = _module;
     }
 
-    // gets overwritten in pie and geo
+    // gets overwritten in pie, geo and ternary modules
     if(visible) coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
 
     if(_module && visible) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -714,6 +718,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('_hasGeo');
     coerce('_hasPie');
     coerce('_hasGL2D');
+    coerce('_hasTernary');
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
@@ -847,13 +852,15 @@ plots.sanitizeMargins = function(fullLayout) {
 // o is {x,l,r,y,t,b} where x and y are plot fractions,
 // the rest are pixels in each direction
 // or leave o out to delete this entry (like if it's hidden)
-plots.autoMargin = function(gd,id,o) {
+plots.autoMargin = function(gd, id, o) {
     var fullLayout = gd._fullLayout;
+
     if(!fullLayout._pushmargin) fullLayout._pushmargin = {};
-    if(fullLayout.margin.autoexpand!==false) {
+
+    if(fullLayout.margin.autoexpand !== false) {
         if(!o) delete fullLayout._pushmargin[id];
         else {
-            var pad = o.pad||12;
+            var pad = o.pad === undefined ? 12 : o.pad;
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back

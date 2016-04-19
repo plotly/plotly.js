@@ -9,6 +9,10 @@ var request = require('request');
 var test = require('tape');
 var gm = require('gm');
 
+var TOLERANCE = 1e-6;    // pixel comparison tolerance
+var BASE_TIMEOUT = 500;  // base timeout time
+var BATCH_SIZE = 5;      // size of each test 'batch'
+
 var touch = function(fileName) {
     fs.closeSync(fs.openSync(fileName, 'w'));
 };
@@ -33,31 +37,23 @@ function runAll() {
 
         var allMocks = fs.readdirSync(constants.pathToTestImageMocks);
 
-        /*
-         * Some test cases exhibit run-to-run randomness;
-         * skip over these few test cases for now.
+        /* Test cases:
          *
-         * More info:
-         * https://github.com/plotly/plotly.js/issues/62
+         * - font-wishlist
+         * - all gl2d
          *
-         * 41 test cases are removed:
-         * - font-wishlist (1 test case)
-         * - all gl2d (38)
-         * - gl3d_bunny-hull (1)
-         * - polar_scatter (1)
+         * don't behave consistently from run-to-run and/or
+         * machine-to-machine; skip over them.
+         *
          */
         var mocks = allMocks.filter(function(mock) {
             return !(
                 mock === 'font-wishlist.json' ||
-                mock.indexOf('gl2d') !== -1 ||
-                mock === 'gl3d_bunny-hull.json' ||
-                mock === 'polar_scatter.json'
+                mock.indexOf('gl2d') !== -1
             );
         });
 
-        var BASE_TIMEOUT = 500,  // base timeout time
-            BATCH_SIZE = 5,      // size of each test 'batch'
-            cnt = 0;
+        var cnt = 0;
 
         function testFunction() {
             testMock(mocks[cnt++], t);
@@ -98,7 +94,7 @@ function testMock(fileName, t) {
         var options = {
             file: diffPath,
             highlightColor: 'purple',
-            tolerance: 1e-6
+            tolerance: TOLERANCE
         };
 
         /*

@@ -9,9 +9,17 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+var Axes = require('../../plots/cartesian/axes');
+var Color = require('../color');
+var Drawing = require('../drawing');
+var svgTextUtils = require('../../lib/svg_text_utils');
+var setCursor = require('../../lib/setcursor');
+var dragElement = require('../dragelement');
 
 var annotations = module.exports = {};
 
@@ -32,20 +40,20 @@ function handleAnnotationDefaults(annIn, fullLayout) {
     var annOut = {};
 
     function coerce(attr, dflt) {
-        return Plotly.Lib.coerce(annIn, annOut, annotations.layoutAttributes, attr, dflt);
+        return Lib.coerce(annIn, annOut, annotations.layoutAttributes, attr, dflt);
     }
 
     coerce('opacity');
     coerce('align');
     coerce('bgcolor');
     var borderColor = coerce('bordercolor'),
-        borderOpacity = Plotly.Color.opacity(borderColor);
+        borderOpacity = Color.opacity(borderColor);
     coerce('borderpad');
     var borderWidth = coerce('borderwidth');
     var showArrow = coerce('showarrow');
     if(showArrow) {
         coerce('arrowcolor',
-            borderOpacity ? annOut.bordercolor : Plotly.Color.defaultLine);
+            borderOpacity ? annOut.bordercolor : Color.defaultLine);
         coerce('arrowhead');
         coerce('arrowsize');
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
@@ -53,11 +61,11 @@ function handleAnnotationDefaults(annIn, fullLayout) {
         coerce('ay');
 
         // if you have one part of arrow length you should have both
-        Plotly.Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
+        Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
     }
     coerce('text', showArrow ? '&nbsp;' : 'new text');
     coerce('textangle');
-    Plotly.Lib.coerceFont(coerce, 'font', fullLayout.font);
+    Lib.coerceFont(coerce, 'font', fullLayout.font);
 
     // positioning
     var axLetters = ['x','y'];
@@ -66,12 +74,12 @@ function handleAnnotationDefaults(annIn, fullLayout) {
             tdMock = {_fullLayout: fullLayout};
 
         // xref, yref
-        var axRef = Plotly.Axes.coerceRef(annIn, annOut, tdMock, axLetter);
+        var axRef = Axes.coerceRef(annIn, annOut, tdMock, axLetter);
 
         // x, y
         var defaultPosition = 0.5;
         if(axRef!=='paper') {
-            var ax = Plotly.Axes.getFromId(tdMock, axRef);
+            var ax = Axes.getFromId(tdMock, axRef);
             defaultPosition = ax.range[0] + defaultPosition * (ax.range[1] - ax.range[0]);
 
             // convert date or category strings to numbers
@@ -79,7 +87,7 @@ function handleAnnotationDefaults(annIn, fullLayout) {
                     typeof annIn[axLetter]==='string') {
                 var newval;
                 if(ax.type==='date') {
-                    newval = Plotly.Lib.dateTime2ms(annIn[axLetter]);
+                    newval = Lib.dateTime2ms(annIn[axLetter]);
                     if(newval!==false) annIn[axLetter] = newval;
                 }
                 else if((ax._categories||[]).length) {
@@ -95,7 +103,7 @@ function handleAnnotationDefaults(annIn, fullLayout) {
     }
 
     // if you have one coordinate you should have both
-    Plotly.Lib.noneOrAll(annIn, annOut, ['x', 'y']);
+    Lib.noneOrAll(annIn, annOut, ['x', 'y']);
 
     return annOut;
 }
@@ -179,11 +187,11 @@ annotations.draw = function(gd, index, opt, value) {
             }
             return;
         }
-        else if(value==='add' || Plotly.Lib.isPlainObject(value)) {
+        else if(value==='add' || Lib.isPlainObject(value)) {
             fullLayout.annotations.splice(index,0,{});
 
-            var rule = Plotly.Lib.isPlainObject(value) ?
-                    Plotly.Lib.extendFlat({}, value) :
+            var rule = Lib.isPlainObject(value) ?
+                    Lib.extendFlat({}, value) :
                     {text: 'New text'};
 
             if(layout.annotations) {
@@ -217,12 +225,12 @@ annotations.draw = function(gd, index, opt, value) {
     // alter the input annotation as requested
     var optionsEdit = {};
     if(typeof opt === 'string' && opt) optionsEdit[opt] = value;
-    else if(Plotly.Lib.isPlainObject(opt)) optionsEdit = opt;
+    else if(Lib.isPlainObject(opt)) optionsEdit = opt;
 
     var optionKeys = Object.keys(optionsEdit);
     for(i = 0; i < optionKeys.length; i++) {
         var k = optionKeys[i];
-        Plotly.Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
+        Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
     }
 
     var gs = fullLayout._size;
@@ -240,10 +248,8 @@ annotations.draw = function(gd, index, opt, value) {
             continue;
         }
 
-        var axOld = Plotly.Axes.getFromId(gd,
-                Plotly.Axes.coerceRef(oldRef, {}, gd, axLetter)),
-            axNew = Plotly.Axes.getFromId(gd,
-                Plotly.Axes.coerceRef(optionsIn, {}, gd, axLetter)),
+        var axOld = Axes.getFromId(gd, Axes.coerceRef(oldRef, {}, gd, axLetter)),
+            axNew = Axes.getFromId(gd, Axes.coerceRef(optionsIn, {}, gd, axLetter)),
             position = optionsIn[axLetter],
             axTypeOld = oldPrivate['_' + axLetter + 'type'];
 
@@ -316,8 +322,8 @@ annotations.draw = function(gd, index, opt, value) {
     var options = handleAnnotationDefaults(optionsIn, fullLayout);
     fullLayout.annotations[index] = options;
 
-    var xa = Plotly.Axes.getFromId(gd, options.xref),
-        ya = Plotly.Axes.getFromId(gd, options.yref),
+    var xa = Axes.getFromId(gd, options.xref),
+        ya = Axes.getFromId(gd, options.yref),
         annPosPx = {x: 0, y: 0},
         textangle = +options.textangle || 0;
 
@@ -343,8 +349,7 @@ annotations.draw = function(gd, index, opt, value) {
         .classed('annotation-text-g', true)
         .attr('data-index', String(index));
 
-    var ann = anng.append('svg')
-        .call(Plotly.Drawing.setPosition, 0, 0);
+    var ann = anng.append('g');
 
     var borderwidth = options.borderwidth,
         borderpad = options.borderpad,
@@ -353,8 +358,8 @@ annotations.draw = function(gd, index, opt, value) {
     var annbg = ann.append('rect')
         .attr('class','bg')
         .style('stroke-width', borderwidth+'px')
-        .call(Plotly.Color.stroke, options.bordercolor)
-        .call(Plotly.Color.fill, options.bgcolor);
+        .call(Color.stroke, options.bordercolor)
+        .call(Color.fill, options.bgcolor);
 
     var font = options.font;
 
@@ -364,14 +369,15 @@ annotations.draw = function(gd, index, opt, value) {
         .text(options.text);
 
     function textLayout(s) {
-        s.call(Plotly.Drawing.font, font)
+        s.call(Drawing.font, font)
         .attr({
             'text-anchor': {
                 left: 'start',
                 right: 'end'
             }[options.align] || 'middle'
         });
-        Plotly.util.convertToTspans(s, drawGraphicalElements);
+
+        svgTextUtils.convertToTspans(s, drawGraphicalElements);
         return s;
     }
 
@@ -383,7 +389,7 @@ annotations.draw = function(gd, index, opt, value) {
 
         var mathjaxGroup = ann.select('.annotation-math-group'),
             hasMathjax = !mathjaxGroup.empty(),
-            anntextBB = Plotly.Drawing.bBox(
+            anntextBB = Drawing.bBox(
                 (hasMathjax ? mathjaxGroup : anntext).node()),
             annwidth = anntextBB.width,
             annheight = anntextBB.height,
@@ -413,7 +419,7 @@ annotations.draw = function(gd, index, opt, value) {
 
         var annotationIsOffscreen = false;
         ['x', 'y'].forEach(function(axLetter) {
-            var ax = Plotly.Axes.getFromId(gd,
+            var ax = Axes.getFromId(gd,
                     options[axLetter+'ref']||axLetter),
                 dimAngle = (textangle + (axLetter==='x' ? 0 : 90)) * Math.PI/180,
                 annSize = outerwidth * Math.abs(Math.cos(dimAngle)) +
@@ -470,11 +476,11 @@ annotations.draw = function(gd, index, opt, value) {
         // make sure the arrowhead (if there is one)
         // and the annotation center are visible
         if(options.showarrow) {
-            arrowX = Plotly.Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
-            arrowY = Plotly.Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
+            arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
+            arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
         }
-        annPosPx.x = Plotly.Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
-        annPosPx.y = Plotly.Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
+        annPosPx.x = Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
+        annPosPx.y = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
 
         var texty = borderfull - anntextBB.top,
             textx = borderfull - anntextBB.left;
@@ -487,12 +493,12 @@ annotations.draw = function(gd, index, opt, value) {
             anntext.selectAll('tspan.line').attr({y: texty, x: textx});
         }
 
-        annbg.call(Plotly.Drawing.setRect, borderwidth / 2, borderwidth / 2,
+        annbg.call(Drawing.setRect, borderwidth / 2, borderwidth / 2,
             outerwidth-borderwidth, outerheight - borderwidth);
-        ann.call(Plotly.Drawing.setRect,
-            Math.round(annPosPx.x - outerwidth / 2),
-            Math.round(annPosPx.y - outerheight / 2),
-            outerwidth, outerheight);
+
+        var annX = Math.round(annPosPx.x - outerwidth / 2),
+            annY = Math.round(annPosPx.y - outerheight / 2);
+        ann.attr('transform', 'translate(' + annX + ', ' + annY + ')');
 
         var annbase = 'annotations['+index+']';
 
@@ -514,9 +520,9 @@ annotations.draw = function(gd, index, opt, value) {
 
                 // create transform matrix and related functions
                 transform =
-                    Plotly.Lib.rotationXYMatrix(textangle, arrowX0, arrowY0),
-                applyTransform = Plotly.Lib.apply2DTransform(transform),
-                applyTransform2 = Plotly.Lib.apply2DTransform2(transform),
+                    Lib.rotationXYMatrix(textangle, arrowX0, arrowY0),
+                applyTransform = Lib.apply2DTransform(transform),
+                applyTransform2 = Lib.apply2DTransform2(transform),
 
                 // calculate and transform bounding box
                 xHalf = annbg.attr('width')/2,
@@ -554,15 +560,14 @@ annotations.draw = function(gd, index, opt, value) {
                 arrowColor = options.arrowcolor;
 
             var arrowgroup = anngroup.append('g')
-                .style({opacity: Plotly.Color.opacity(arrowColor)})
+                .style({opacity: Color.opacity(arrowColor)})
                 .classed('annotation-arrow-g', true)
                 .attr('data-index', String(index));
 
             var arrow = arrowgroup.append('path')
                 .attr('d', 'M'+arrowX0+','+arrowY0+'L'+arrowX+','+arrowY)
                 .style('stroke-width', strokewidth+'px')
-                .call(Plotly.Color.stroke,
-                    Plotly.Color.rgb(arrowColor));
+                .call(Color.stroke, Color.rgb(arrowColor));
 
             annotations.arrowhead(arrow, options.arrowhead, 'end', options.arrowsize);
 
@@ -575,15 +580,15 @@ annotations.draw = function(gd, index, opt, value) {
                     transform: 'translate('+arrowX+','+arrowY+')'
                 })
                 .style('stroke-width', (strokewidth+6)+'px')
-                .call(Plotly.Color.stroke, 'rgba(0,0,0,0)')
-                .call(Plotly.Color.fill, 'rgba(0,0,0,0)');
+                .call(Color.stroke, 'rgba(0,0,0,0)')
+                .call(Color.fill, 'rgba(0,0,0,0)');
 
             if(gd._context.editable) {
                 var update,
                     annx0,
                     anny0;
 
-                Plotly.Fx.dragElement({
+                dragElement.init({
                     element: arrowdrag.node(),
                     prepFn: function() {
                         annx0 = Number(ann.attr('x'));
@@ -602,8 +607,7 @@ annotations.draw = function(gd, index, opt, value) {
                         var annxy0 = applyTransform(annx0, anny0),
                             xcenter = annxy0[0] + dx,
                             ycenter = annxy0[1] + dy;
-                        ann.call(Plotly.Drawing.setPosition,
-                            xcenter, ycenter);
+                        ann.call(Drawing.setPosition, xcenter, ycenter);
 
                         update[annbase+'.x'] = xa ?
                             (options.x + dx / xa._m) :
@@ -631,9 +635,9 @@ annotations.draw = function(gd, index, opt, value) {
         if(options.showarrow) drawArrow(0, 0);
 
         // create transform matrix and related functions
-        var transform = Plotly.Lib.rotationXYMatrix(textangle,
+        var transform = Lib.rotationXYMatrix(textangle,
                 annPosPx.x, annPosPx.y),
-            applyTransform = Plotly.Lib.apply2DTransform(transform);
+            applyTransform = Lib.apply2DTransform(transform);
 
         // user dragging the annotation (text, not arrow)
         if(gd._context.editable) {
@@ -641,7 +645,7 @@ annotations.draw = function(gd, index, opt, value) {
                 y0,
                 update;
 
-            Plotly.Fx.dragElement({
+            dragElement.init({
                 element: ann.node(),
                 prepFn: function() {
                     x0 = Number(ann.attr('x'));
@@ -649,7 +653,7 @@ annotations.draw = function(gd, index, opt, value) {
                     update = {};
                 },
                 moveFn: function(dx, dy) {
-                    ann.call(Plotly.Drawing.setPosition, x0 + dx, y0 + dy);
+                    ann.call(Drawing.setPosition, x0 + dx, y0 + dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
                         update[annbase+'.ax'] = options.ax + dx;
@@ -662,7 +666,7 @@ annotations.draw = function(gd, index, opt, value) {
                             var widthFraction = options._xsize / gs.w,
                                 xLeft = options.x + options._xshift / gs.w - widthFraction / 2;
 
-                            update[annbase + '.x'] = Plotly.Fx.dragAlign(xLeft + dx / gs.w,
+                            update[annbase + '.x'] = dragElement.align(xLeft + dx / gs.w,
                                 widthFraction, 0, 1, options.xanchor);
                         }
 
@@ -671,11 +675,11 @@ annotations.draw = function(gd, index, opt, value) {
                             var heightFraction = options._ysize / gs.h,
                                 yBottom = options.y - options._yshift / gs.h - heightFraction / 2;
 
-                            update[annbase + '.y'] = Plotly.Fx.dragAlign(yBottom - dy / gs.h,
+                            update[annbase + '.y'] = dragElement.align(yBottom - dy / gs.h,
                                 heightFraction, 0, 1, options.yanchor);
                         }
                         if(!xa || !ya) {
-                            csr = Plotly.Fx.dragCursors(
+                            csr = dragElement.cursor(
                                 xa ? 0.5 : update[annbase + '.x'],
                                 ya ? 0.5 : update[annbase + '.y'],
                                 options.xanchor, options.yanchor
@@ -687,17 +691,17 @@ annotations.draw = function(gd, index, opt, value) {
                         x1 = xy1[0] + dx,
                         y1 = xy1[1] + dy;
 
-                    ann.call(Plotly.Drawing.setPosition, x1, y1);
+                    ann.call(Drawing.setPosition, x1, y1);
 
                     anng.attr({
                         transform: 'rotate(' + textangle + ',' +
                                x1 + ',' + y1 + ')'
                     });
 
-                    Plotly.Fx.setCursor(ann, csr);
+                    setCursor(ann, csr);
                 },
                 doneFn: function(dragged) {
-                    Plotly.Fx.setCursor(ann);
+                    setCursor(ann);
                     if(dragged) {
                         Plotly.relayout(gd, update);
                         var notesBox = document.querySelector('.js-notes-box-panel');
@@ -709,7 +713,7 @@ annotations.draw = function(gd, index, opt, value) {
     }
 
     if(gd._context.editable) {
-        anntext.call(Plotly.util.makeEditable, ann)
+        anntext.call(svgTextUtils.makeEditable, ann)
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;
@@ -731,7 +735,7 @@ annotations.draw = function(gd, index, opt, value) {
     // rotate and position text and background
     anng.attr({transform: 'rotate(' + textangle + ',' +
                         annPosPx.x + ',' + annPosPx.y + ')'})
-        .call(Plotly.Drawing.setPosition, annPosPx.x, annPosPx.y);
+        .call(Drawing.setPosition, annPosPx.x, annPosPx.y);
 };
 
 // add arrowhead(s) to a path or line d3 element el3
@@ -746,8 +750,8 @@ annotations.arrowhead = function(el3, style, ends, mag) {
 
     if(typeof ends !== 'string' || !ends) ends = 'end';
 
-    var scale = (Plotly.Drawing.getPx(el3,'stroke-width') || 1) * mag,
-        stroke = el3.style('stroke') || Plotly.Color.defaultLine,
+    var scale = (Drawing.getPx(el3,'stroke-width') || 1) * mag,
+        stroke = el3.style('stroke') || Color.defaultLine,
         opacity = el3.style('stroke-opacity') || 1,
         doStart = ends.indexOf('start') >= 0,
         doEnd = ends.indexOf('end') >= 0,
@@ -844,13 +848,12 @@ annotations.calcAutorange = function(gd) {
         annotationAxes[ann.yref] = true;
     });
 
-    var autorangedAnnos = Plotly.Axes.list(gd)
-        .filter(function(ax) {
-            return ax.autorange && annotationAxes[ax._id];
-        });
+    var autorangedAnnos = Axes.list(gd).filter(function(ax) {
+        return ax.autorange && annotationAxes[ax._id];
+    });
     if(!autorangedAnnos.length) return;
 
-    return Plotly.Lib.syncOrAsync([
+    return Lib.syncOrAsync([
         annotations.drawAll,
         annAutorange
     ], gd);
@@ -864,8 +867,8 @@ function annAutorange(gd) {
     // use the arrow and the text bg rectangle,
     // as the whole anno may include hidden text in its bbox
     fullLayout.annotations.forEach(function(ann) {
-        var xa = Plotly.Axes.getFromId(gd, ann.xref),
-            ya = Plotly.Axes.getFromId(gd, ann.yref);
+        var xa = Axes.getFromId(gd, ann.xref),
+            ya = Axes.getFromId(gd, ann.yref);
         if(!(xa || ya)) return;
 
         var halfWidth = (ann._xsize || 0)/2,
@@ -884,13 +887,13 @@ function annAutorange(gd) {
             bottomSize = Math.max(bottomSize, headSize);
         }
         if(xa && xa.autorange) {
-            Plotly.Axes.expand(xa, [xa.l2c(ann.x)],{
+            Axes.expand(xa, [xa.l2c(ann.x)],{
                 ppadplus: rightSize,
                 ppadminus: leftSize
             });
         }
         if(ya && ya.autorange) {
-            Plotly.Axes.expand(ya, [ya.l2c(ann.y)], {
+            Axes.expand(ya, [ya.l2c(ann.y)], {
                 ppadplus: bottomSize,
                 ppadminus: topSize
             });

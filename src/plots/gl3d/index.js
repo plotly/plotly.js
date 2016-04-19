@@ -102,7 +102,7 @@ exports.initAxes = function(gd) {
         for(var j = 0; j < 3; ++j) {
             var axisName = axesNames[j];
             var ax = sceneLayout[axisName];
-            ax._td = gd;
+            ax._gd = gd;
         }
     }
 };

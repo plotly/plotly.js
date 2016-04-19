@@ -9,10 +9,44 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+## [1.9.0] -- 2016-04-12
+
+### Added
+- Ternary plots with support for scatter traces (trace type `scatterternary`) [#390]
+
+### Fixed
+- Toggling the visibility of `scatter3d` traces with `surfaceaxis` now works [#405]
+- `scatter3d` traces with `surfaceaxis` turned now feature real 3D opacity [#408]
+- `plotly_unhover` is now properly triggered over `pie` traces [#407]
+- Better grammar in `scatter` attribute descriptions [#406]
+
+
+## [1.8.0] -- 2016-04-04
+
+### Added
+- Range slider functionality for scatter traces [#336, #368, #377]
+- Range selector functionality for cartesian and gl2d plot types [#373]
+- Support for connectgaps in scatter3d traces [#361]
+
+### Fixed
+- gl2d toImage mode bar button is now again functional (bug introduced in 1.7.0) [#369]
+- IE / Edge handling of getComputedTextLength is now functional [#376]
+- improved marker color attribute description [#366]
+
+
+## [1.7.1] -- 2016-03-30
+
+### Fixed
+- Legend dimensions are correctly updated (bug introduced in 1.7.0) [#365]
+- Friction between cartesian double-click and drag interactions is reduced [#355]
+- Ultra-zoomed svg line paths are correctly computed [#353]
+- Initial axis ranges are no longer reset on data-updating restyle calls [#351]
+- Events now work in jQuery no-conflict scopes (bug introduced in 1.7.0) [#352]
+
+
 ## [1.7.0] -- 2016-03-22
 
 ### Added
-
 - Custom surface color functionality (for 4D plotting) is added to surface traces [#347]
 - Top-level `Plotly.purge` method (which returns the graph div in its
   pre-Plotly.plot state) is added [#300]

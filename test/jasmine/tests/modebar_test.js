@@ -309,9 +309,6 @@ describe('ModeBar', function() {
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
             gd._fullLayout._hasGL3D = true;
-            gd._fullLayout._hasGeo = false;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = false;
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -327,10 +324,7 @@ describe('ModeBar', function() {
 
             var gd = getMockGraphInfo();
             gd._fullLayout._hasCartesian = true;
-            gd._fullLayout._hasGL3D = false;
             gd._fullLayout._hasGeo = true;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = false;
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -355,9 +349,6 @@ describe('ModeBar', function() {
                 _module: {selectPoints: true}
             }];
             gd._fullLayout.xaxis = {fixedrange: false};
-            gd._fullLayout._hasGL3D = false;
-            gd._fullLayout._hasGeo = false;
-            gd._fullLayout._hasGL2D = false;
             gd._fullLayout._hasPie = true;
 
             manageModeBar(gd);
@@ -373,11 +364,77 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = false;
             gd._fullLayout._hasGL3D = true;
             gd._fullLayout._hasGeo = true;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = false;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (un-selectable ternary version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasTernary = true;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (selectable ternary version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasTernary = true;
+            gd._fullData = [{
+                type: 'scatterternary',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (ternary + cartesian version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d'],
+                ['hoverClosestCartesian', 'hoverCompareCartesian']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasTernary = true;
+            gd._fullLayout._hasCartesian = true;
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (ternary + gl3d version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._hasTernary = true;
+            gd._fullLayout._hasGL3D = true;
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;

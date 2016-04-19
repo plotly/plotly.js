@@ -46,11 +46,11 @@ errorBars.plot = require('./plot');
 errorBars.style = require('./style');
 
 errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
-    if(trace.error_y.visible) {
+    if((trace.error_y || {}).visible) {
         hoverPoint.yerr = calcPoint.yh - calcPoint.y;
         if(!trace.error_y.symmetric) hoverPoint.yerrneg = calcPoint.y - calcPoint.ys;
     }
-    if(trace.error_x.visible) {
+    if((trace.error_x || {}).visible) {
         hoverPoint.xerr = calcPoint.xh - calcPoint.x;
         if(!trace.error_x.symmetric) hoverPoint.xerrneg = calcPoint.x - calcPoint.xs;
     }

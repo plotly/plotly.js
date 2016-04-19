@@ -48,7 +48,9 @@ npm run test-image
 
 if some tests fail, compare their outputs using `npm run start-image_viewer`.
 
-### Step 2b: Make a new baseline image
+**IMPORTANT:** `npm run test-image` does **not** bundle the source files before running the image tests. We recommend runnnig `npm run watch` or `npm run start-test_dashboard` in a separate tab to ensure that the most up-to-date code is tested. 
+
+### Step 2b: Make a new or update an existing baseline image
 
 Inside your `plotly.js` directory, run
 
