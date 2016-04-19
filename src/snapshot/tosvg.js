@@ -105,6 +105,11 @@ module.exports = function toSVG(gd, format) {
         }
     }
 
+    // remove draglayer (it's invisible anyways!)
+    if(fullLayout._draggers) {
+        fullLayout._draggers.node().remove();
+    }
+
     // in case the svg element had an explicit background color, remove this
     // we want the rect to get the color so it's the right size; svg bg will
     // fill whatever container it's displayed in regardless of plot size.
