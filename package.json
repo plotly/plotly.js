@@ -55,7 +55,7 @@
     "gl-error2d": "^1.0.0",
     "gl-error3d": "^1.0.0",
     "gl-heatmap2d": "^1.0.2",
-    "gl-line2d": "^1.2.1",
+    "gl-line2d": "^1.3.0",
     "gl-line3d": "^1.1.0",
     "gl-mat4": "^1.1.2",
     "gl-mesh3d": "^1.0.7",

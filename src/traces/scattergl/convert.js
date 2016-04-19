@@ -39,6 +39,7 @@ function LineWithMarkers(scene, uid) {
     this.color = 'rgb(0, 0, 0)';
     this.name = '';
     this.hoverinfo = 'all';
+    this.connectgaps = true;
 
     this.idToIndex = [];
     this.bounds = [0, 0, 0, 0];
@@ -103,7 +104,10 @@ function LineWithMarkers(scene, uid) {
 var proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(pickResult) {
-    var index = this.idToIndex[pickResult.pointId];
+    var index = pickResult.pointId
+    if (pickResult.object !== this.line || this.connectgaps) {
+      index = this.idToIndex[pickResult.pointId];
+    }
 
     return {
         trace: this,
@@ -248,6 +252,7 @@ proto.update = function(options) {
     this.name = options.name;
     this.hoverinfo = options.hoverinfo;
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
+    this.connectgaps = !!options.connectgaps
 
     if(this.isFancy(options)) {
         this.updateFancy(options);
@@ -461,7 +466,19 @@ proto.updateFancy = function(options) {
 
 proto.updateLines = function(options, positions) {
     if(this.hasLines) {
-        this.lineOptions.positions = positions;
+        var linePositions = positions
+        if (!options.connectgaps) {
+          var p = 0;
+          var x = this.xData;
+          var y = this.yData;
+          linePositions = new Float32Array(2 * x.length)
+
+          for(var i=0; i<x.length; ++i) {
+            linePositions[p++] = x[i]
+            linePositions[p++] = y[i]
+          }
+        }
+        this.lineOptions.positions = linePositions
 
         var lineColor = str2RGBArray(options.line.color);
         if(this.hasMarkers) lineColor[3] *= options.marker.opacity;
