@@ -62,7 +62,7 @@ describe('Test shapes:', function() {
     }
 
     function countSubplots(gd) {
-        return Object.getOwnPropertyNames(gd._fullLayout._plots || {}).length;
+        return Object.keys(gd._fullLayout._plots || {}).length;
     }
 
     function countShapePathsInLowerLayer() {
@@ -163,8 +163,7 @@ describe('Test shapes:', function() {
             var index = countShapes(gd);
             var shape = getRandomShape();
 
-            Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function()
-            {
+            Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);
@@ -176,8 +175,7 @@ describe('Test shapes:', function() {
             var index = countShapes(gd);
             var shape = getRandomShape();
 
-            Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function()
-            {
+            Plotly.relayout(gd, 'shapes[' + index + ']', shape).then(function() {
                 expect(countShapePathsInUpperLayer()).toEqual(pathCount + 1);
                 expect(getLastShape(gd)).toEqual(shape);
                 expect(countShapes(gd)).toEqual(index + 1);

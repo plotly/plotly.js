@@ -215,7 +215,7 @@ function insertShape(gd, index, newShape) {
 }
 
 function updateShape(gd, index, opt, value) {
-    var i;
+    var i, n;
 
     // remove the existing shape if there is one
     getShapeLayer(gd, index)
@@ -298,24 +298,32 @@ function updateShape(gd, index, opt, value) {
             'fill-rule': 'evenodd',
             d: shapePath(gd, options)
         },
-        clipAxes = (options.xref + options.yref).replace(/paper/g, '');
+        clipAxes;
 
     var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
 
     if(options.layer !== 'below') {
+        clipAxes = (options.xref + options.yref).replace(/paper/g, '');
         drawShape(gd._fullLayout._shapeUpperLayer);
     }
     else if(options.xref === 'paper' && options.yref === 'paper') {
+        clipAxes = '';
         drawShape(gd._fullLayout._shapeLowerLayer);
-    } else {
-        forEachSubplot(gd, function(plotinfo) {
+    }
+    else {
+        var plots = gd._fullLayout._plots || {},
+            subplots = Object.keys(plots),
+            plotinfo;
+
+        for(i = 0, n = subplots.length; i < n; i++) {
+            plotinfo = plots[subplots[i]];
+            clipAxes = subplots[i];
+
             if(isShapeInSubplot(gd, options, plotinfo.id)) {
                 drawShape(plotinfo.shapelayer);
             }
-        });
+        }
     }
-
-    return;
 
     function drawShape(shapeLayer) {
         var path = shapeLayer.append('path')
@@ -352,15 +360,6 @@ function isShapeInSubplot(gd, shape, subplot) {
     var xa = Plotly.Axes.getFromId(gd, subplot, 'x')._id,
         ya = Plotly.Axes.getFromId(gd, subplot, 'y')._id;
     return shape.layer === 'below' && (xa === shape.xref || ya === shape.yref);
-}
-
-function forEachSubplot(gd, fn) {
-    var plots = gd._fullLayout._plots || {},
-        subplots = Object.getOwnPropertyNames(plots);
-
-    for(var i = 0, n = subplots.length; i < n; i++) {
-        fn(plots[subplots[i]]);
-    }
 }
 
 function decodeDate(convertToPx) {
