@@ -186,5 +186,45 @@ describe('Test shapes:', function() {
                 expect(countShapes(gd)).toEqual(index);
             }).then(done);
         });
+
+        it('should be able to update a shape layer', function(done) {
+            var index = countShapes(gd),
+                astr = 'shapes[' + index + ']',
+                shape = getRandomShape(),
+                shapesInLowerLayer = countShapePathsInLowerLayer(),
+                shapesInUpperLayer = countShapePathsInUpperLayer();
+
+            shape.xref = 'paper';
+            shape.yref = 'paper';
+
+            Plotly.relayout(gd, astr, shape).then(function() {
+                expect(countShapePathsInLowerLayer())
+                    .toEqual(shapesInLowerLayer);
+                expect(countShapePathsInUpperLayer())
+                    .toEqual(shapesInUpperLayer + 1);
+                expect(getLastShape(gd)).toEqual(shape);
+                expect(countShapes(gd)).toEqual(index + 1);
+            }).then(function() {
+                shape.layer = 'below';
+                Plotly.relayout(gd, astr + '.layer', shape.layer);
+            }).then(function() {
+                expect(countShapePathsInLowerLayer())
+                    .toEqual(shapesInLowerLayer + 1);
+                expect(countShapePathsInUpperLayer())
+                    .toEqual(shapesInUpperLayer);
+                expect(getLastShape(gd)).toEqual(shape);
+                expect(countShapes(gd)).toEqual(index + 1);
+            }).then(function() {
+                shape.layer = 'above';
+                Plotly.relayout(gd, astr + '.layer', shape.layer);
+            }).then(function() {
+                expect(countShapePathsInLowerLayer())
+                    .toEqual(shapesInLowerLayer);
+                expect(countShapePathsInUpperLayer())
+                    .toEqual(shapesInUpperLayer + 1);
+                expect(getLastShape(gd)).toEqual(shape);
+                expect(countShapes(gd)).toEqual(index + 1);
+            }).then(done);
+        });
     });
 });

@@ -238,7 +238,7 @@ function updateShape(gd, index, opt, value) {
     else if(Lib.isPlainObject(opt)) optionsEdit = opt;
 
     var optionKeys = Object.keys(optionsEdit);
-    for(i = 0; i < optionsEdit.length; i++) {
+    for(i = 0; i < optionKeys.length; i++) {
         var k = optionKeys[i];
         Lib.nestedProperty(optionsIn, k).set(optionsEdit[k]);
     }
