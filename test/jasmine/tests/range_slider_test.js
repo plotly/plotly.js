@@ -308,6 +308,35 @@ describe('the range slider', function() {
             expect(layoutOut).toEqual(expected);
         });
     });
+
+    describe('in general', function() {
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should plot when only x data is provided', function(done) {
+            Plotly.plot(gd, [{ x: [1,2,3] }], { xaxis: { rangeslider: {} }})
+                .then(function() {
+                    var rangeslider = document.getElementsByClassName('range-slider');
+
+                    expect(rangeslider.length).toBe(1);
+                })
+                .then(done);
+        });
+
+        it('should plot when only y data is provided', function(done) {
+            Plotly.plot(gd, [{ y: [1,2,3] }], { xaxis: { rangeslider: {} }})
+                .then(function() {
+                    var rangeslider = document.getElementsByClassName('range-slider');
+
+                    expect(rangeslider.length).toBe(1);
+                })
+                .then(done);
+        });
+    });
 });
 
 
