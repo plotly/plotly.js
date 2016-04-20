@@ -132,12 +132,12 @@ function convertColorscale(fullTrace) {
 
     var colorMap = makeColorMap(fullTrace);
 
-    var N = Math.floor((end - start) / cs),
+    var N = Math.floor((end - start) / cs) + 1,
         levels = new Array(N),
         levelColors = new Array(4 * N);
 
     for(var i = 0; i < N; i++) {
-        var level = levels[i] = start + cs * i;
+        var level = levels[i] = start + cs * (i);
         var color = str2RGBArray(colorMap(level));
 
         for(var j = 0; j < 4; j++) {
