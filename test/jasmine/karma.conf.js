@@ -69,7 +69,15 @@ func.defaultConfig = {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: ['Chrome_WindowSized'],
+
+    // custom browser options
+    customLaunchers: {
+        Chrome_WindowSized: {
+            base: 'Chrome',
+            flags: ['--window-size=1035,617'] // values came from observing default size; all test cases pass with it
+        }
+    },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
