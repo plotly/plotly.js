@@ -68,28 +68,40 @@ describe('select box and lasso', function() {
                 .then(done);
         });
 
-        it('should be appended to the zoom layer', function() {
-            var x0 = 100;
-            var y0 = 200;
-            var x1 = 150;
-            var y1 = 200;
+        it('should be appended to the zoom layer', function(done) {
+            var x0 = 100,
+                y0 = 200,
+                x1 = 150,
+                y1 = 250,
+                x2 = 50,
+                y2 = 50;
+
+            gd.once('plotly_selecting', function() {
+                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                    .toEqual(1);
+                expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                    .toEqual(2);
+            });
+
+            gd.once('plotly_selected', function() {
+                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                    .toEqual(0);
+                expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                    .toEqual(2);
+            });
+
+            gd.once('plotly_deselect', function() {
+                expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                    .toEqual(0);
+            });
 
             mouseEvent('mousemove', x0, y0);
             expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
                 .toEqual(0);
 
-            mouseEvent('mousedown', x0, y0);
-            mouseEvent('mousemove', x1, y1);
-            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                .toEqual(1);
-            expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                .toEqual(2);
+            drag([[x0, y0], [x1, y1]]);
 
-            mouseEvent('mouseup', x1, y1);
-            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                .toEqual(0);
-            expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                .toEqual(2);
+            doubleClick(x2, y2, done);
         });
     });
 
@@ -105,28 +117,40 @@ describe('select box and lasso', function() {
                 .then(done);
         });
 
-        it('should be appended to the zoom layer', function() {
-            var x0 = 100;
-            var y0 = 200;
-            var x1 = 150;
-            var y1 = 200;
+        it('should be appended to the zoom layer', function(done) {
+            var x0 = 100,
+                y0 = 200,
+                x1 = 150,
+                y1 = 250,
+                x2 = 50,
+                y2 = 50;
+
+            gd.once('plotly_selecting', function() {
+                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                    .toEqual(1);
+                expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                    .toEqual(2);
+            });
+
+            gd.once('plotly_selected', function() {
+                expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
+                    .toEqual(0);
+                expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                    .toEqual(2);
+            });
+
+            gd.once('plotly_deselect', function() {
+                expect(d3.selectAll('.zoomlayer > .select-outline').size())
+                    .toEqual(0);
+            });
 
             mouseEvent('mousemove', x0, y0);
             expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
                 .toEqual(0);
 
-            mouseEvent('mousedown', x0, y0);
-            mouseEvent('mousemove', x1, y1);
-            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                .toEqual(1);
-            expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                .toEqual(2);
+            drag([[x0, y0], [x1, y1]]);
 
-            mouseEvent('mouseup', x1, y1);
-            expect(d3.selectAll('.zoomlayer > .zoombox-corners').size())
-                .toEqual(0);
-            expect(d3.selectAll('.zoomlayer > .select-outline').size())
-                .toEqual(2);
+            doubleClick(x2, y2, done);
         });
     });
 
