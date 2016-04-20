@@ -180,6 +180,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 
     dragOptions.doneFn = function(dragged, numclicks) {
+        corners.remove();
         if(!dragged && numclicks === 2) {
             // clear selection on doubleclick
             outlines.remove();
@@ -193,6 +194,5 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         else {
             dragOptions.gd.emit('plotly_selected', eventData);
         }
-        corners.remove();
     };
 };
