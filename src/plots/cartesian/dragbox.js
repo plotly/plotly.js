@@ -170,7 +170,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 'fill': lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
-            .attr('transform','translate(' + xs + ' ' + ys + ')')
+            .attr('transform','translate(' + xs + ', ' + ys + ')')
             .attr('d', path0 + 'Z');
 
         corners = zoomlayer.append('path')
@@ -181,7 +181,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 'stroke-width': 1,
                 opacity: 0
             })
-            .attr('transform','translate(' + xs + ' ' + ys + ')')
+            .attr('transform','translate(' + xs + ', ' + ys + ')')
             .attr('d','M0,0Z');
 
         clearSelect();
