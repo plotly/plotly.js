@@ -105,7 +105,7 @@ module.exports = function toSVG(gd, format) {
         }
     }
 
-    // remove draglayer (it's invisible anyways!)
+    // remove draglayer for Adobe Illustrator compatibility
     if(fullLayout._draggers) {
         fullLayout._draggers.node().remove();
     }
