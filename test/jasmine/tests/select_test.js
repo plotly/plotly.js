@@ -105,7 +105,7 @@ describe('select box and lasso', function() {
                 .then(done);
         });
 
-        it('should be appended to the the shape layer', function() {
+        it('should be appended to the zoom layer', function() {
             var x0 = 100;
             var y0 = 200;
             var x1 = 150;
