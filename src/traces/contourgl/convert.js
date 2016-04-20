@@ -59,7 +59,7 @@ var proto = Contour.prototype;
 
 proto.handlePick = function(pickResult) {
     var index = pickResult.pointId,
-        options = this.contourOptions,
+        options = this.heatmapOptions,
         shape = options.shape;
 
     return {
@@ -87,7 +87,9 @@ proto.update = function(fullTrace, calcTrace) {
         rowLen = z[0].length,
         colLen = z.length;
 
-    this.contourOptions.z = this.heatmapOptions.z = flattenZ(z);
+    this.contourOptions.z = flattenZ(z, rowLen, colLen);
+    this.heatmapOptions.z = [].concat.apply([], z);
+
     this.contourOptions.shape = this.heatmapOptions.shape = [rowLen, colLen];
 
     this.contourOptions.x = this.heatmapOptions.x = calcPt.x;
@@ -109,15 +111,12 @@ proto.dispose = function() {
     this.heatmap.dispose();
 };
 
-function flattenZ(zIn) {
-    var Nx = zIn.length,
-        Ny = zIn[0].length;
-
-    var zOut = new Float32Array(Nx * Ny);
+function flattenZ(zIn, rowLen, colLen) {
+    var zOut = new Float32Array(rowLen * colLen);
     var pt = 0;
 
-    for(var i = 0; i < Nx; i++) {
-        for(var j = 0; j < Ny; j++) {
+    for(var i = 0; i < rowLen; i++) {
+        for(var j = 0; j < colLen; j++) {
             zOut[pt++] = zIn[j][i];
         }
     }
