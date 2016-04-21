@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -44,7 +45,7 @@ function makeContourAttr(axLetter) {
         color: {
             valType: 'color',
             role: 'style',
-            dflt: '#000'
+            dflt: Color.defaultLine,
         },
         usecolormap: {
             valType: 'boolean',
@@ -66,7 +67,7 @@ function makeContourAttr(axLetter) {
         highlightcolor: {
             valType: 'color',
             role: 'style',
-            dflt: '#000'
+            dflt: Color.defaultLine,
         },
         highlightwidth: {
             valType: 'number',

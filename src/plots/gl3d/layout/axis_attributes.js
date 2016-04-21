@@ -8,7 +8,7 @@
 
 'use strict';
 
-
+var Color = require('../../../components/color');
 var axesAttrs = require('../../cartesian/layout_attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 
@@ -43,7 +43,7 @@ module.exports = {
     spikecolor: {
         valType: 'color',
         role: 'style',
-        dflt: 'rgb(0,0,0)',
+        dflt: Color.defaultLine,
         description: 'Sets the color of the spikes.'
     },
     showbackground: {
