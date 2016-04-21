@@ -10,20 +10,19 @@
 'use strict';
 
 var countryRegex = require('country-regex');
-var locationUtils = module.exports = {};
+var Lib = require('./');
 
-var Plotly = require('../plotly');
 
 // make list of all country iso3 ids from at runtime
 var countryIds = Object.keys(countryRegex);
 
 var locationmodeToIdFinder = {
-    'ISO-3': Plotly.Lib.identity,
-    'USA-states': Plotly.Lib.identity,
+    'ISO-3': Lib.identity,
+    'USA-states': Lib.identity,
     'country names': countryNameToISO3
 };
 
-locationUtils.locationToFeature = function(locationmode, location, features) {
+exports.locationToFeature = function(locationmode, location, features) {
     var locationId = getLocationId(locationmode, location);
     var feature;
 
