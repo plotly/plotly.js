@@ -13,6 +13,7 @@ var Lib = require('../../lib');
 var handleTickValueDefaults = require('../../plots/cartesian/tick_value_defaults');
 var handleTickMarkDefaults = require('../../plots/cartesian/tick_mark_defaults');
 var handleTickLabelDefaults = require('../../plots/cartesian/tick_label_defaults');
+var cartesianAxesAttrs = require('../../plots/cartesian/layout_attributes');
 
 var attributes = require('./attributes');
 
@@ -21,8 +22,11 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     var colorbarOut = containerOut.colorbar = {},
         colorbarIn = containerIn.colorbar || {};
 
+    //colorbar doesn't currently implement tickpadding property, but it is a required attribute of a cartesian axis
+    var cartesianAttributes = Lib.extendFlat({}, attributes, { tickpadding: cartesianAxesAttrs.tickpadding });
+
     function coerce(attr, dflt) {
-        return Lib.coerce(colorbarIn, colorbarOut, attributes, attr, dflt);
+        return Lib.coerce(colorbarIn, colorbarOut, cartesianAttributes, attr, dflt);
     }
 
     var thicknessmode = coerce('thicknessmode');

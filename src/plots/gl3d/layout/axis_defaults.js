@@ -14,6 +14,7 @@ var Lib = require('../../../lib');
 
 var layoutAttributes = require('./axis_attributes');
 var handleAxisDefaults = require('../../cartesian/axis_defaults');
+var cartesianAxesAttrs = require('../../cartesian/layout_attributes');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
 var noop = function() {};
@@ -25,8 +26,11 @@ var gridLightness = 100 * (204 - 0x44) / (255 - 0x44);
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     var containerIn, containerOut;
 
+    //gl3d doesn't currently implement tickpadding property, but it is a required attribute of a cartesian axis
+    var cartesianLayoutAttributes = Lib.extendFlat({}, layoutAttributes, { tickpadding: cartesianAxesAttrs.tickpadding });
+
     function coerce(attr, dflt) {
-        return Lib.coerce(containerIn, containerOut, layoutAttributes, attr, dflt);
+        return Lib.coerce(containerIn, containerOut, cartesianLayoutAttributes, attr, dflt);
     }
 
     for(var j = 0; j < axesNames.length; j++) {
@@ -48,8 +52,6 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
                 showGrid: true,
                 bgColor: options.bgColor
             });
-
-        delete containerOut.tickpadding;  //gl3d doesn't currently implement tickpadding property
 
         coerce('gridcolor', colorMix(containerOut.color, options.bgColor, gridLightness).toRgbString());
         coerce('title', axName[0]);  // shouldn't this be on-par with 2D?

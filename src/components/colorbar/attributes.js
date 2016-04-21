@@ -162,7 +162,6 @@ module.exports = {
     showticklabels: axesAttrs.showticklabels,
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
-    tickpadding: axesAttrs.tickpadding,
     tickformat: axesAttrs.tickformat,
     tickprefix: axesAttrs.tickprefix,
     showtickprefix: axesAttrs.showtickprefix,
