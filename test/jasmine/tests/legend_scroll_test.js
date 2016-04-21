@@ -1,5 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+var constants = require('@src/components/legend/constants');
 
 var createGraph = require('../assets/create_graph_div');
 var destroyGraph = require('../assets/destroy_graph_div');
@@ -55,14 +56,23 @@ describe('The legend', function() {
         });
 
         it('should scroll when there\'s a wheel event', function() {
-            var scrollBox = legend.getElementsByClassName('scrollbox')[0];
+            var scrollBox = legend.getElementsByClassName('scrollbox')[0],
+                legendHeight = getBBox(legend).height,
+                scrollBoxYMax = gd._fullLayout.legend.height - legendHeight,
+                scrollBarYMax = legendHeight -
+                    constants.scrollBarHeight -
+                    2 * constants.scrollBarMargin,
+                initialDataScroll = scrollBox.getAttribute('data-scroll'),
+                wheelDeltaY = 100,
+                finalDataScroll = '' + Lib.constrain(initialDataScroll -
+                    wheelDeltaY / scrollBarYMax * scrollBoxYMax,
+                    -scrollBoxYMax, 0);
 
-            legend.dispatchEvent(scrollTo(100));
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
 
-            // Compare against -5 because of a scroll factor of 20
-            // ( 100 / 20 === 5 )
-            expect(scrollBox.getAttribute('transform')).toBe('translate(0, -5)');
-            expect(scrollBox.getAttribute('data-scroll')).toBe('-5');
+            expect(scrollBox.getAttribute('data-scroll')).toBe(finalDataScroll);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + finalDataScroll + ')');
         });
 
         it('should constrain scrolling to the contents', function() {

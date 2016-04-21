@@ -492,8 +492,8 @@ proto.initInteractions = function() {
         corners = zoomContainer.append('path')
             .attr('class', 'zoombox-corners')
             .style({
-                fill: Plotly.Color.background,
-                stroke: Plotly.Color.defaultLine,
+                fill: Color.background,
+                stroke: Color.defaultLine,
                 'stroke-width': 1,
                 opacity: 0
             })

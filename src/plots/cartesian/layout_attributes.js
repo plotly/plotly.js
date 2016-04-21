@@ -8,12 +8,13 @@
 
 'use strict';
 
-var Cartesian = require('./index');
 var fontAttrs = require('../font_attributes');
 var colorAttrs = require('../../components/color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var rangeSliderAttrs = require('../../components/rangeslider/attributes');
 var rangeSelectorAttrs = require('../../components/rangeselector/attributes');
+
+var constants = require('./constants');
 
 
 module.exports = {
@@ -411,8 +412,8 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'free',
-            Cartesian.idRegex.x.toString(),
-            Cartesian.idRegex.y.toString()
+            constants.idRegex.x.toString(),
+            constants.idRegex.y.toString()
         ],
         role: 'info',
         description: [
@@ -440,8 +441,8 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'free',
-            Cartesian.idRegex.x.toString(),
-            Cartesian.idRegex.y.toString()
+            constants.idRegex.x.toString(),
+            constants.idRegex.y.toString()
         ],
         role: 'info',
         description: [
@@ -474,6 +475,36 @@ module.exports = {
             'Only has an effect if `anchor` is set to *free*.'
         ].join(' ')
     },
+    categoryorder: {
+        valType: 'enumerated',
+        values: [
+            'trace', 'category ascending', 'category descending', 'array'
+            /*, 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
+        ],
+        dflt: 'trace',
+        role: 'info',
+        description: [
+            'Specifies the ordering logic for the case of categorical variables.',
+            'By default, plotly uses *trace*, which specifies the order that is present in the data supplied.',
+            'Set `categoryorder` to *category ascending* or *category descending* if order should be determined by',
+            'the alphanumerical order of the category names.',
+            /*'Set `categoryorder` to *value ascending* or *value descending* if order should be determined by the',
+            'numerical order of the values.',*/ // // value ascending / descending to be implemented later
+            'Set `categoryorder` to *array* to derive the ordering from the attribute `categoryarray`. If a category',
+            'is not found in the `categoryarray` array, the sorting behavior for that attribute will be identical to',
+            'the *trace* mode. The unspecified categories will follow the categories in `categoryarray`.'
+        ].join(' ')
+    },
+    categoryarray: {
+        valType: 'data_array',
+        role: 'info',
+        description: [
+            'Sets the order in which categories on this axis appear.',
+            'Only has an effect if `categoryorder` is set to *array*.',
+            'Used with `categoryorder`.'
+        ].join(' ')
+    },
+
 
     _deprecated: {
         autotick: {

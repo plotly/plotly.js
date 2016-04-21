@@ -308,10 +308,7 @@ proto.adjustLayout = function(geoLayout, graphSize) {
             width: geoLayout._width,
             height: geoLayout._height
         })
-        .style({
-            'fill': geoLayout.bgcolor,
-            'stroke-width': 0
-        });
+        .call(Color.fill, geoLayout.bgcolor);
 };
 
 proto.drawTopo = function(selection, layerName, geoLayout) {

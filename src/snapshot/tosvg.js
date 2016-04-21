@@ -9,8 +9,12 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
 var d3 = require('d3');
+
+var Plots = require('../plots/plots');
+var svgTextUtils = require('../lib/svg_text_utils');
+var Drawing = require('../components/drawing');
+var Color = require('../components/color');
 
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 
@@ -29,12 +33,12 @@ module.exports = function toSVG(gd, format) {
         i;
 
     svg.insert('rect', ':first-child')
-        .call(Plotly.Drawing.setRect, 0, 0, fullLayout.width, fullLayout.height)
-        .call(Plotly.Color.fill, fullLayout.paper_bgcolor);
+        .call(Drawing.setRect, 0, 0, fullLayout.width, fullLayout.height)
+        .call(Color.fill, fullLayout.paper_bgcolor);
 
     /* Grab the 3d scenes and rasterize em. Calculate their positions,
      * then insert them into the SVG element as images */
-    var sceneIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl3d'),
+    var sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
         scene;
 
     for(i = 0; i < sceneIds.length; i++) {
@@ -49,7 +53,7 @@ module.exports = function toSVG(gd, format) {
     }
 
     // similarly for 2d scenes
-    var subplotIds = Plotly.Plots.getSubplotIds(fullLayout, 'gl2d'),
+    var subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d'),
         subplot;
 
     for(i = 0; i < subplotIds.length; i++) {
@@ -63,7 +67,7 @@ module.exports = function toSVG(gd, format) {
     }
 
     // Grab the geos off the geo-container and place them in geoimages
-    var geoIds = Plotly.Plots.getSubplotIds(fullLayout, 'geo'),
+    var geoIds = Plots.getSubplotIds(fullLayout, 'geo'),
         geoLayout,
         geoFramework;
 
@@ -99,6 +103,11 @@ module.exports = function toSVG(gd, format) {
 
             if(topGroup.childNodes.length) svg.node().appendChild(topGroup);
         }
+    }
+
+    // remove draglayer for Adobe Illustrator compatibility
+    if(fullLayout._draggers) {
+        fullLayout._draggers.node().remove();
     }
 
     // in case the svg element had an explicit background color, remove this
@@ -150,8 +159,8 @@ module.exports = function toSVG(gd, format) {
     svg.node().setAttributeNS(xmlnsNamespaces.xmlns, 'xmlns:xlink', xmlnsNamespaces.xlink);
 
     var s = new window.XMLSerializer().serializeToString(svg.node());
-    s = Plotly.util.html_entity_decode(s);
-    s = Plotly.util.xml_entity_encode(s);
+    s = svgTextUtils.html_entity_decode(s);
+    s = svgTextUtils.xml_entity_encode(s);
 
     return s;
 };

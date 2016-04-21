@@ -1,0 +1,41 @@
+{
+    "data": [
+        {
+            "x": [
+                5,
+                1,
+                3,
+                2,
+                4
+            ],
+            "y": [
+                1,
+                2,
+                3,
+                4,
+                5
+            ],
+            "connectgaps": false,
+            "uid": "8ac13a"
+        }
+    ],
+    "layout": {
+        "title": "category descending",
+        "xaxis": {
+            "type": "category",
+            "categoryorder": "category descending",
+            "categoryarray": [2,4,5,1]
+        },
+        "yaxis": {
+            "type": "linear",
+            "range": [
+                0.7070063694267517,
+                5.292993630573249
+            ],
+            "autorange": true
+        },
+        "height": 450,
+        "width": 1000,
+        "autosize": true
+    }
+}

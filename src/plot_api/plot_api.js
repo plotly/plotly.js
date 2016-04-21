@@ -854,10 +854,10 @@ function doCalcdata(gd) {
     fullLayout._piecolormap = {};
     fullLayout._piedefaultcolorcount = 0;
 
-    // delete category list, if there is one, so we start over
+    // initialize the category list, if there is one, so we start over
     // to be filled in later by ax.d2c
     for(i = 0; i < axList.length; i++) {
-        axList[i]._categories = [];
+        axList[i]._categories = axList[i]._initialCategories.slice();
     }
 
     for(i = 0; i < fullData.length; i++) {
@@ -2615,6 +2615,11 @@ function makePlotFramework(gd) {
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
+    // lower shape layer
+    // (only for shapes to be drawn below the whole plot)
+    fullLayout._shapeLowerLayer = fullLayout._paper.append('g')
+        .classed('shapelayer shapelayer-below', true);
+
     var subplots = Plotly.Axes.getSubplots(gd);
     if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
         makeSubplots(gd, subplots);
@@ -2622,9 +2627,15 @@ function makePlotFramework(gd) {
 
     if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
 
-    // single ternary, shape and pie layers for the whole plot
+    // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
-    fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
+
+    // upper shape layer
+    // (only for shapes to be drawn above the whole plot, including subplots)
+    fullLayout._shapeUpperLayer = fullLayout._paper.append('g')
+        .classed('shapelayer shapelayer-above', true);
+
+    // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
     // fill in image server scrape-svg
@@ -2752,6 +2763,10 @@ function makeCartesianPlotFramwork(gd, subplots) {
                 // the plot and containers for overlays
                 plotinfo.bg = plotgroup.append('rect')
                     .style('stroke-width', 0);
+                // shape layer
+                // (only for shapes to be drawn below a subplot)
+                plotinfo.shapelayer = plotgroup.append('g')
+                    .classed('shapelayer shapelayer-subplot', true);
                 plotinfo.gridlayer = plotgroup.append('g');
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');
@@ -2800,6 +2815,10 @@ function makeCartesianPlotFramwork(gd, subplots) {
             .style('fill', 'none')
             .classed('crisp', true);
     });
+
+    // shape layers in subplots
+    fullLayout._subplotShapeLayer = fullLayout._paper
+        .selectAll('.shapelayer-subplot');
 }
 
 // layoutStyles: styling for plot layout elements

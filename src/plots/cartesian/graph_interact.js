@@ -13,13 +13,17 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Events = require('../../lib/events');
+var svgTextUtils = require('../../lib/svg_text_utils');
+var Color = require('../../components/color');
+var Drawing = require('../../components/drawing');
+var dragElement = require('../../components/dragelement');
 
+var Axes = require('./axes');
 var constants = require('./constants');
 var dragBox = require('./dragbox');
-var dragElement = require('../../components/dragelement');
+
 
 var fx = module.exports = {};
 
@@ -319,12 +323,12 @@ function hover(gd, evt, subplot) {
         xaArray = subplots.map(function(spId) {
             var ternary = (gd._fullLayout[spId] || {})._ternary;
             if(ternary) return ternary.xaxis;
-            return Plotly.Axes.getFromId(gd, spId, 'x');
+            return Axes.getFromId(gd, spId, 'x');
         }),
         yaArray = subplots.map(function(spId) {
             var ternary = (gd._fullLayout[spId] || {})._ternary;
             if(ternary) return ternary.yaxis;
-            return Plotly.Axes.getFromId(gd, spId, 'y');
+            return Axes.getFromId(gd, spId, 'y');
         }),
         hovermode = evt.hovermode || fullLayout.hovermode;
 
@@ -367,14 +371,14 @@ function hover(gd, evt, subplot) {
         hovermode = 'array';
         for(itemnum = 0; itemnum<evt.length; itemnum++) {
             cd = gd.calcdata[evt[itemnum].curveNumber||0];
-            if(cd[0].trace.hoverinfo!=='none') searchData.push(cd);
+            searchData.push(cd);
         }
     }
     else {
         for(curvenum = 0; curvenum<gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(trace.hoverinfo!=='none' && subplots.indexOf(getSubplot(trace))!==-1) {
+            if(subplots.indexOf(getSubplot(trace))!==-1) {
                 searchData.push(cd);
             }
         }
@@ -455,7 +459,7 @@ function hover(gd, evt, subplot) {
             // point properties - override all of these
             index: false, // point index in trace - only used by plotly.js hoverdata consumers
             distance: Math.min(distance, constants.MAXDIST), // pixel distance or pseudo-distance
-            color: Plotly.Color.defaultLine, // trace color
+            color: Color.defaultLine, // trace color
             x0: undefined,
             x1: undefined,
             y0: undefined,
@@ -528,8 +532,8 @@ function hover(gd, evt, subplot) {
 
     hoverData.sort(function(d1, d2) { return d1.distance - d2.distance; });
 
-    var bgColor = Plotly.Color.combine(
-        fullLayout.plot_bgcolor || Plotly.Color.background,
+    var bgColor = Color.combine(
+        fullLayout.plot_bgcolor || Color.background,
         fullLayout.paper_bgcolor
     );
 
@@ -627,17 +631,17 @@ function cleanPoint(d, hovermode) {
     d.posref = hovermode==='y' ? (d.x0+d.x1)/2 : (d.y0+d.y1)/2;
 
     // then constrain all the positions to be on the plot
-    d.x0 = Plotly.Lib.constrain(d.x0, 0, d.xa._length);
-    d.x1 = Plotly.Lib.constrain(d.x1, 0, d.xa._length);
-    d.y0 = Plotly.Lib.constrain(d.y0, 0, d.ya._length);
-    d.y1 = Plotly.Lib.constrain(d.y1, 0, d.ya._length);
+    d.x0 = Lib.constrain(d.x0, 0, d.xa._length);
+    d.x1 = Lib.constrain(d.x1, 0, d.xa._length);
+    d.y0 = Lib.constrain(d.y0, 0, d.ya._length);
+    d.y1 = Lib.constrain(d.y1, 0, d.ya._length);
 
     // and convert the x and y label values into objects
     // formatted as text, with font info
     var logOffScale;
     if(d.xLabelVal!==undefined) {
         logOffScale = (d.xa.type==='log' && d.xLabelVal<=0);
-        var xLabelObj = Plotly.Axes.tickText(d.xa,
+        var xLabelObj = Axes.tickText(d.xa,
                 d.xa.c2l(logOffScale ? -d.xLabelVal : d.xLabelVal), 'hover');
         if(logOffScale) {
             if(d.xLabelVal===0) d.xLabel = '0';
@@ -649,7 +653,7 @@ function cleanPoint(d, hovermode) {
 
     if(d.yLabelVal!==undefined) {
         logOffScale = (d.ya.type==='log' && d.yLabelVal<=0);
-        var yLabelObj = Plotly.Axes.tickText(d.ya,
+        var yLabelObj = Axes.tickText(d.ya,
                 d.ya.c2l(logOffScale ? -d.yLabelVal : d.yLabelVal), 'hover');
         if(logOffScale) {
             if(d.yLabelVal===0) d.yLabel = '0';
@@ -663,10 +667,10 @@ function cleanPoint(d, hovermode) {
 
     // for box means and error bars, add the range to the label
     if(d.xerr!==undefined) {
-        var xeText = Plotly.Axes.tickText(d.xa, d.xa.c2l(d.xerr), 'hover').text;
+        var xeText = Axes.tickText(d.xa, d.xa.c2l(d.xerr), 'hover').text;
         if(d.xerrneg!==undefined) {
             d.xLabel += ' +' + xeText + ' / -' +
-                Plotly.Axes.tickText(d.xa, d.xa.c2l(d.xerrneg), 'hover').text;
+                Axes.tickText(d.xa, d.xa.c2l(d.xerrneg), 'hover').text;
         }
         else d.xLabel += ' &plusmn; ' + xeText;
 
@@ -676,10 +680,10 @@ function cleanPoint(d, hovermode) {
         if(hovermode==='x') d.distance += 1;
     }
     if(d.yerr!==undefined) {
-        var yeText = Plotly.Axes.tickText(d.ya, d.ya.c2l(d.yerr), 'hover').text;
+        var yeText = Axes.tickText(d.ya, d.ya.c2l(d.yerr), 'hover').text;
         if(d.yerrneg!==undefined) {
             d.yLabel += ' +' + yeText + ' / -' +
-                Plotly.Axes.tickText(d.ya, d.ya.c2l(d.yerrneg), 'hover').text;
+                Axes.tickText(d.ya, d.ya.c2l(d.yerrneg), 'hover').text;
         }
         else d.yLabel += ' &plusmn; ' + yeText;
 
@@ -716,7 +720,7 @@ fx.loneHover = function(hoverItem, opts) {
     //      a dom <svg> element - must be big enough to contain the whole
     //      hover label
     var pointData = {
-        color: hoverItem.color || Plotly.Color.defaultLine,
+        color: hoverItem.color || Color.defaultLine,
         x0: hoverItem.x0 || hoverItem.x || 0,
         x1: hoverItem.x1 || hoverItem.x || 0,
         y0: hoverItem.y0 || hoverItem.y || 0,
@@ -745,7 +749,7 @@ fx.loneHover = function(hoverItem, opts) {
     var fullOpts = {
         hovermode: 'closest',
         rotateLabels: false,
-        bgColor: opts.bgColor || Plotly.Color.background,
+        bgColor: opts.bgColor || Color.background,
         container: container3,
         outerContainer: outerContainer3
     };
@@ -813,24 +817,24 @@ function createHoverText(hoverData, opts) {
             ltext = label.selectAll('text').data([0]);
 
         lpath.enter().append('path')
-            .style({fill: Plotly.Color.defaultLine, 'stroke-width': '1px', stroke: Plotly.Color.background});
+            .style({fill: Color.defaultLine, 'stroke-width': '1px', stroke: Color.background});
         ltext.enter().append('text')
-            .call(Plotly.Drawing.font, HOVERFONT, HOVERFONTSIZE, Plotly.Color.background)
+            .call(Drawing.font, HOVERFONT, HOVERFONTSIZE, Color.background)
             // prohibit tex interpretation until we can handle
             // tex and regular text together
             .attr('data-notex',1);
 
         ltext.text(t0)
-            .call(Plotly.util.convertToTspans)
-            .call(Plotly.Drawing.setPosition, 0, 0)
+            .call(svgTextUtils.convertToTspans)
+            .call(Drawing.setPosition, 0, 0)
           .selectAll('tspan.line')
-            .call(Plotly.Drawing.setPosition, 0, 0);
+            .call(Drawing.setPosition, 0, 0);
         label.attr('transform','');
 
         var tbb = ltext.node().getBoundingClientRect();
         if(hovermode==='x') {
             ltext.attr('text-anchor','middle')
-                .call(Plotly.Drawing.setPosition,0,(xa.side==='top' ?
+                .call(Drawing.setPosition,0,(xa.side==='top' ?
                     (outerTop-tbb.bottom-HOVERARROWSIZE-HOVERTEXTPAD) :
                     (outerTop-tbb.top+HOVERARROWSIZE+HOVERTEXTPAD)))
                 .selectAll('tspan.line')
@@ -853,7 +857,7 @@ function createHoverText(hoverData, opts) {
         }
         else {
             ltext.attr('text-anchor',ya.side==='right' ? 'start' : 'end')
-                .call(Plotly.Drawing.setPosition,
+                .call(Drawing.setPosition,
                     (ya.side==='right' ? 1 : -1)*(HOVERTEXTPAD+HOVERARROWSIZE),
                     outerTop-tbb.top-tbb.height/2)
                 .selectAll('tspan.line')
@@ -895,15 +899,14 @@ function createHoverText(hoverData, opts) {
             var g = d3.select(this);
             // trace name label (rect and text.name)
             g.append('rect')
-                .call(Plotly.Color.fill,
-                    Plotly.Color.addOpacity(bgColor, 0.8));
-            g.append('text').classed('name',true)
-                .call(Plotly.Drawing.font,HOVERFONT,HOVERFONTSIZE);
+                .call(Color.fill, Color.addOpacity(bgColor, 0.8));
+            g.append('text').classed('name', true)
+                .call(Drawing.font, HOVERFONT, HOVERFONTSIZE);
             // trace data label (path and text.nums)
             g.append('path')
-                .style('stroke-width','1px');
-            g.append('text').classed('nums',true)
-                .call(Plotly.Drawing.font,HOVERFONT,HOVERFONTSIZE);
+                .style('stroke-width', '1px');
+            g.append('text').classed('nums', true)
+                .call(Drawing.font, HOVERFONT, HOVERFONTSIZE);
         });
     hoverLabels.exit().remove();
 
@@ -914,13 +917,13 @@ function createHoverText(hoverData, opts) {
             name = '',
             text = '',
             // combine possible non-opaque trace color with bgColor
-            baseColor = Plotly.Color.opacity(d.color) ?
-                d.color : Plotly.Color.defaultLine,
-            traceColor = Plotly.Color.combine(baseColor, bgColor),
+            baseColor = Color.opacity(d.color) ?
+                d.color : Color.defaultLine,
+            traceColor = Color.combine(baseColor, bgColor),
 
             // find a contrasting color for border and text
             contrastColor = tinycolor(traceColor).getBrightness()>128 ?
-                '#000' : Plotly.Color.background;
+                '#000' : Color.background;
 
 
         if(d.name && d.zLabelVal===undefined) {
@@ -968,12 +971,12 @@ function createHoverText(hoverData, opts) {
         // main label
         var tx = g.select('text.nums')
             .style('fill',contrastColor)
-            .call(Plotly.Drawing.setPosition,0,0)
+            .call(Drawing.setPosition,0,0)
             .text(text)
             .attr('data-notex',1)
-            .call(Plotly.util.convertToTspans);
+            .call(svgTextUtils.convertToTspans);
         tx.selectAll('tspan.line')
-            .call(Plotly.Drawing.setPosition,0,0);
+            .call(Drawing.setPosition,0,0);
 
         var tx2 = g.select('text.name'),
             tx2width = 0;
@@ -982,11 +985,11 @@ function createHoverText(hoverData, opts) {
         if(name && name!==text) {
             tx2.style('fill',traceColor)
                 .text(name)
-                .call(Plotly.Drawing.setPosition,0,0)
+                .call(Drawing.setPosition,0,0)
                 .attr('data-notex',1)
-                .call(Plotly.util.convertToTspans);
+                .call(svgTextUtils.convertToTspans);
             tx2.selectAll('tspan.line')
-                .call(Plotly.Drawing.setPosition,0,0);
+                .call(Drawing.setPosition,0,0);
             tx2width = tx2.node().getBoundingClientRect().width+2*HOVERTEXTPAD;
         }
         else {
@@ -1254,7 +1257,7 @@ function alignHoverText(hoverLabels, rotateLabels) {
                 'V'+(offsetY-HOVERARROWSIZE)+
                 'Z'));
 
-        tx.call(Plotly.Drawing.setPosition,
+        tx.call(Drawing.setPosition,
                 txx+offsetX, offsetY+d.ty0-d.by/2+HOVERTEXTPAD)
             .selectAll('tspan.line')
                 .attr({
@@ -1264,11 +1267,11 @@ function alignHoverText(hoverLabels, rotateLabels) {
 
         if(d.tx2width) {
             g.select('text.name, text.name tspan.line')
-                .call(Plotly.Drawing.setPosition,
+                .call(Drawing.setPosition,
                     tx2x+alignShift*HOVERTEXTPAD+offsetX,
                     offsetY+d.ty0-d.by/2+HOVERTEXTPAD);
             g.select('rect')
-                .call(Plotly.Drawing.setRect,
+                .call(Drawing.setRect,
                     tx2x+(alignShift-1)*d.tx2width/2+offsetX,
                     offsetY-d.by/2-1,
                     d.tx2width, d.by+2);

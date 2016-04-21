@@ -52,7 +52,7 @@ describe('Test gl plot interactions', function() {
         destroyGraphDiv();
     });
 
-    // ...
+    // put callback in the event queue
     function delay(done) {
         setTimeout(done, 0);
     }

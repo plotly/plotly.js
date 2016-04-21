@@ -145,4 +145,34 @@ describe('Test color:', function() {
             expect(container2).toEqual(expectedContainer2);
         });
     });
+
+    describe('fill', function() {
+
+        it('should call style with both fill and fill-opacity', function() {
+            var mockElement = {
+                style: function(object) {
+                    expect(object.fill).toBe('rgb(255, 255, 0)');
+                    expect(object['fill-opacity']).toBe(0.5);
+                }
+            };
+
+            Color.fill(mockElement, 'rgba(255,255,0,0.5');
+        });
+
+    });
+
+    describe('stroke', function() {
+
+        it('should call style with both fill and fill-opacity', function() {
+            var mockElement = {
+                style: function(object) {
+                    expect(object.stroke).toBe('rgb(255, 255, 0)');
+                    expect(object['stroke-opacity']).toBe(0.5);
+                }
+            };
+
+            Color.stroke(mockElement, 'rgba(255,255,0,0.5');
+        });
+
+    });
 });

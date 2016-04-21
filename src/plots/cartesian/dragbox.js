@@ -13,9 +13,14 @@ var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
 var Plotly = require('../../plotly');
+var Lib = require('../../lib');
+var svgTextUtils = require('../../lib/svg_text_utils');
+var Color = require('../../components/color');
+var Drawing = require('../../components/drawing');
 var setCursor = require('../../lib/setcursor');
 var dragElement = require('../../components/dragelement');
 
+var Axes = require('./axes');
 var prepSelect = require('./select');
 var constants = require('./constants');
 
@@ -47,20 +52,17 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         pw = xa[0]._length,
         ph = ya[0]._length,
         MINDRAG = constants.MINDRAG,
-        MINZOOM = constants.MINZOOM,
-        i,
-        subplotXa,
-        subplotYa;
+        MINZOOM = constants.MINZOOM;
 
-    for(i = 1; i < subplots.length; i++) {
-        subplotXa = subplots[i].x();
-        subplotYa = subplots[i].y();
+    for(var i = 1; i < subplots.length; i++) {
+        var subplotXa = subplots[i].x(),
+            subplotYa = subplots[i].y();
         if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
         if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
     }
 
     function isDirectionActive(axList, activeVal) {
-        for(i = 0; i < axList.length; i++) {
+        for(var i = 0; i < axList.length; i++) {
             if(!axList[i].fixedrange) return activeVal;
         }
         return '';
@@ -78,7 +80,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         .classed(dragClass, true)
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
-    dragger3.call(Plotly.Drawing.setRect, x, y, w, h)
+    dragger3.call(Drawing.setRect, x, y, w, h)
         .call(setCursor,cursor);
     var dragger = dragger3.node();
 
@@ -170,15 +172,15 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         corners = plotinfo.plot.append('path')
             .attr('class', 'zoombox-corners')
             .style({
-                fill: Plotly.Color.background,
-                stroke: Plotly.Color.defaultLine,
+                fill: Color.background,
+                stroke: Color.defaultLine,
                 'stroke-width': 1,
                 opacity: 0
             })
             .attr('d','M0,0Z');
 
         clearSelect();
-        for(i = 0; i < allaxes.length; i++) forceNumbers(allaxes[i].range);
+        for(var i = 0; i < allaxes.length; i++) forceNumbers(allaxes[i].range);
     }
 
     function clearSelect() {
@@ -293,7 +295,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dragTail(zoomMode);
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Plotly.Lib.notifier('Double-click to<br>zoom back out','long');
+            Lib.notifier('Double-click to<br>zoom back out','long');
             SHOWZOOMOUTTIP = false;
         }
     }
@@ -319,7 +321,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             else if(ew === 'e') hAlign = 'right';
 
             dragger3
-                .call(Plotly.util.makeEditable, null, {
+                .call(svgTextUtils.makeEditable, null, {
                     immediate: true,
                     background: fullLayout.paper_bgcolor,
                     text: String(initialText),
@@ -398,7 +400,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         }
 
         // viewbox redraw at first
-        updateViewBoxes(scrollViewBox);
+        updateSubplots(scrollViewBox);
         ticksAndAnnotations(ns,ew);
 
         // then replot after a delay to make sure
@@ -408,7 +410,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             dragTail();
         }, REDRAWDELAY);
 
-        return Plotly.Lib.pauseEvent(e);
+        return Lib.pauseEvent(e);
     }
 
     // everything but the corners gets wheel zoom
@@ -432,7 +434,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(xActive === 'ew' || yActive === 'ns') {
             if(xActive) dragAxList(xa, dx);
             if(yActive) dragAxList(ya, dy);
-            updateViewBoxes([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
+            updateSubplots([xActive ? -dx : 0, yActive ? -dy : 0, pw, ph]);
             ticksAndAnnotations(yActive, xActive);
             return;
         }
@@ -474,7 +476,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         else if(yActive === 's') dy = dz(ya, 0, -dy);
         else if(!yActive) dy = 0;
 
-        updateViewBoxes([
+        updateSubplots([
             (xActive === 'w') ? dx : 0,
             (yActive === 'n') ? dy : 0,
             pw - dx,
@@ -497,7 +499,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         if(ns) pushActiveAxIds(ya);
 
         for(i = 0; i < activeAxIds.length; i++) {
-            Plotly.Axes.doTicks(gd, activeAxIds[i], true);
+            Axes.doTicks(gd, activeAxIds[i], true);
         }
 
         function redrawObjs(objArray, module) {
@@ -575,41 +577,38 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             axi.range=axi._r.slice();
         }
 
-        updateViewBoxes([0,0,pw,ph]);
+        updateSubplots([0,0,pw,ph]);
         Plotly.relayout(gd,attrs);
     }
 
-    // updateViewBoxes - find all plot viewboxes that should be
+    // updateSubplots - find all plot viewboxes that should be
     // affected by this drag, and update them. look for all plots
     // sharing an affected axis (including the one being dragged)
-    function updateViewBoxes(viewBox) {
+    function updateSubplots(viewBox) {
         var plotinfos = fullLayout._plots,
-            subplots = Object.keys(plotinfos),
-            i,
-            plotinfo2,
-            xa2,
-            ya2,
-            editX,
-            editY;
+            subplots = Object.keys(plotinfos);
 
-        for(i = 0; i < subplots.length; i++) {
-            plotinfo2 = plotinfos[subplots[i]];
-            xa2 = plotinfo2.x();
-            ya2 = plotinfo2.y();
-            editX = ew && xa.indexOf(xa2)!==-1 && !xa2.fixedrange;
-            editY = ns && ya.indexOf(ya2)!==-1 && !ya2.fixedrange;
+        for(var i = 0; i < subplots.length; i++) {
+            var subplot = plotinfos[subplots[i]],
+                xa2 = subplot.x(),
+                ya2 = subplot.y(),
+                editX = ew && xa.indexOf(xa2)!==-1 && !xa2.fixedrange,
+                editY = ns && ya.indexOf(ya2)!==-1 && !ya2.fixedrange;
 
             if(editX || editY) {
-                var newVB = [0,0,xa2._length,ya2._length];
-                if(editX) {
-                    newVB[0] = viewBox[0];
-                    newVB[2] = viewBox[2];
-                }
-                if(editY) {
-                    newVB[1] = viewBox[1];
-                    newVB[3] = viewBox[3];
-                }
-                plotinfo2.plot.attr('viewBox',newVB.join(' '));
+                // plot requires offset position and
+                // clip moves with opposite sign
+                var clipDx = editX ? viewBox[0] : 0,
+                    clipDy = editY ? viewBox[1] : 0,
+                    plotDx = xa2._offset - clipDx,
+                    plotDy = ya2._offset - clipDy;
+
+                var clipId = 'clip' + fullLayout._uid + subplots[i] + 'plot';
+
+                fullLayout._defs.selectAll('#' + clipId)
+                    .attr('transform', 'translate(' + clipDx + ', ' + clipDy + ')');
+                subplot.plot
+                    .attr('transform', 'translate(' + plotDx + ', ' + plotDy + ')');
             }
         }
     }
@@ -623,7 +622,7 @@ function getEndText(ax, end) {
         dig;
 
     if(ax.type === 'date') {
-        return Plotly.Lib.ms2DateTime(initialVal, diff);
+        return Lib.ms2DateTime(initialVal, diff);
     }
     else if(ax.type==='log') {
         dig = Math.ceil(Math.max(0, -Math.log(diff) / Math.LN10)) + 3;

@@ -244,6 +244,31 @@ describe('hover info', function() {
         });
     });
 
+    describe('hover info none', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].hoverinfo = 'none';
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('does not render if hover is set to none', function() {
+            var gd = document.getElementById('graph');
+            Fx.hover('graph', evt, 'xy');
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.curveNumber).toEqual(0);
+            expect(hoverTrace.pointNumber).toEqual(17);
+            expect(hoverTrace.x).toEqual(0.388);
+            expect(hoverTrace.y).toEqual(1);
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(0);
+            expect(d3.selectAll('g.hovertext').size()).toEqual(0);
+        });
+    });
+
     describe('hoverformat', function() {
 
         var data = [{
