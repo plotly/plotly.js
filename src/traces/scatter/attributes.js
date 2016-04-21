@@ -152,7 +152,7 @@ module.exports = {
     },
     fill: {
         valType: 'enumerated',
-        values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx'],
+        values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'],
         dflt: 'none',
         role: 'style',
         description: [
