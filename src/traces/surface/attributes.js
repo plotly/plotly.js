@@ -63,12 +63,12 @@ function makeContourAttr(axLetter) {
             role: 'info',
             dflt: false
         },
-        highlightColor: {
+        highlightcolor: {
             valType: 'color',
             role: 'style',
             dflt: '#000'
         },
-        highlightWidth: {
+        highlightwidth: {
             valType: 'number',
             role: 'style',
             min: 1,

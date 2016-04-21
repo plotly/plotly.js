@@ -313,8 +313,8 @@ proto.update = function(data) {
         }
 
         if(contourParams.highlight) {
-            params.dynamicColor[i] = str2RgbaArray(contourParams.highlightColor);
-            params.dynamicWidth[i] = contourParams.highlightWidth;
+            params.dynamicColor[i] = str2RgbaArray(contourParams.highlightcolor);
+            params.dynamicWidth[i] = contourParams.highlightwidth;
         }
     }
 
