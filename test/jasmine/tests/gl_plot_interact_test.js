@@ -229,7 +229,7 @@ describe('Test gl plot interactions', function() {
     });
 
     describe('gl3d modebar click handlers', function() {
-        var modeBar;
+        var modeBar, relayoutCallback;
 
         beforeEach(function(done) {
             var mockData = [{
@@ -245,7 +245,12 @@ describe('Test gl plot interactions', function() {
 
             gd = createGraphDiv();
             Plotly.plot(gd, mockData, mockLayout).then(function() {
+
                 modeBar = gd._fullLayout._modeBar;
+
+                relayoutCallback = jasmine.createSpy('relayoutCallback');
+
+                gd.on('plotly_relayout', relayoutCallback);
 
                 delay(done);
             });
@@ -342,7 +347,16 @@ describe('Test gl plot interactions', function() {
                     .toEqual({x: 2.5, y: 2.5, z: 2.5});
 
                 selectButton(modeBar, 'resetCameraDefault3d').click();
+
                 setTimeout(function() {
+
+                    expect(relayoutCallback).toHaveBeenCalled(); // initiator: resetCameraDefault3d
+                    expect(relayoutCallback).toHaveBeenCalledWith([
+                        [1.25, 1.25, 1.25],
+                        [0, 0, 0],
+                        [0, 0, 1]
+                    ]);
+
                     expect(sceneLayout.camera.eye)
                         .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
                     expect(scene.camera.eye)
@@ -353,7 +367,16 @@ describe('Test gl plot interactions', function() {
                         .toBeCloseToArray([1.25, 1.25, 1.25], 4);
 
                     selectButton(modeBar, 'resetCameraLastSave3d').click();
+
                     setTimeout(function() {
+
+                        expect(relayoutCallback).toHaveBeenCalled(); // initiator: resetCameraLastSave3d
+                        expect(relayoutCallback).toHaveBeenCalledWith([
+                            [1.25, 1.25, 1.25],
+                            [0, 0, 0],
+                            [0, 0, 1]
+                        ]); // looks like there's no real saved data so it reverts to default
+
                         expect(sceneLayout.camera.eye)
                             .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
                         expect(scene.camera.eye)
@@ -364,7 +387,9 @@ describe('Test gl plot interactions', function() {
                             .toBeCloseToArray([2.5, 2.5, 2.5], 4);
 
                         done();
+
                     }, MODEBAR_DELAY);
+
                 }, MODEBAR_DELAY);
             });
         });
