@@ -320,8 +320,8 @@ proto.update = function(data) {
 
     surface.update(params);
 
-    surface.highlightEnable = highlightEnable;
     surface.visible = data.visible;
+    surface.enableDynamic = highlightEnable;
 
     surface.snapToData = true;
 
