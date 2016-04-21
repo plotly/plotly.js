@@ -711,7 +711,11 @@ describe('Test plot api', function() {
                 }
             }];
 
+            spyOn(Plots.subplotsRegistry.gl3d, 'plot');
+
             Plotly.plot(gd, data);
+
+            expect(Plots.subplotsRegistry.gl3d.plot).toHaveBeenCalled();
 
             var contours = gd.data[0].contours;
 
@@ -736,7 +740,11 @@ describe('Test plot api', function() {
                 type: 'surface'
             }];
 
+            spyOn(Plots.subplotsRegistry.gl3d, 'plot');
+
             Plotly.plot(gd, data);
+
+            expect(Plots.subplotsRegistry.gl3d.plot).toHaveBeenCalled();
 
             var contours = gd.data[0].contours;
 
