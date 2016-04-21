@@ -351,11 +351,13 @@ describe('Test gl plot interactions', function() {
                 setTimeout(function() {
 
                     expect(relayoutCallback).toHaveBeenCalled(); // initiator: resetCameraDefault3d
-                    expect(relayoutCallback).toHaveBeenCalledWith([
-                        [1.25, 1.25, 1.25],
-                        [0, 0, 0],
-                        [0, 0, 1]
-                    ]);
+                    expect(relayoutCallback).toHaveBeenCalledWith({
+                        scene: {
+                            eye: { x: 1.25, y: 1.25, z: 1.25 },
+                            center: { x: 0, y: 0, z: 0 },
+                            up: { x: 0, y: 0, z: 1 }
+                        }
+                    });
 
                     expect(sceneLayout.camera.eye)
                         .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
@@ -371,11 +373,13 @@ describe('Test gl plot interactions', function() {
                     setTimeout(function() {
 
                         expect(relayoutCallback).toHaveBeenCalled(); // initiator: resetCameraLastSave3d
-                        expect(relayoutCallback).toHaveBeenCalledWith([
-                            [1.25, 1.25, 1.25],
-                            [0, 0, 0],
-                            [0, 0, 1]
-                        ]); // looks like there's no real saved data so it reverts to default
+                        expect(relayoutCallback).toHaveBeenCalledWith({
+                            scene: {
+                                eye: { x: 1.25, y: 1.25, z: 1.25 },
+                                center: { x: 0, y: 0, z: 0 },
+                                up: { x: 0, y: 0, z: 1 }
+                            }
+                        }); // looks like there's no real saved data so it reverts to default
 
                         expect(sceneLayout.camera.eye)
                             .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
