@@ -248,6 +248,9 @@ module.exports = function createSlider(gd, minStart, maxStart) {
         grabberMax
     ]);
 
+    // Set initial selected range
+    setRange(options.range[0], options.range[1]);
+
     sliderContainer.data([0])
         .enter().append(function() {
             options.setRange = setRange;
