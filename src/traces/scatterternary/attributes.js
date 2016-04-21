@@ -81,8 +81,7 @@ module.exports = {
     },
     connectgaps: scatterAttrs.connectgaps,
     fill: extendFlat({}, scatterAttrs.fill, {
-        values: ['none', 'tozeroa', 'tozerob', 'tozeroc',
-            'tonexta', 'tonextb', 'tonextc']
+        values: ['none', 'toself', 'tonext']
     }),
     fillcolor: scatterAttrs.fillcolor,
     marker: {
