@@ -280,13 +280,11 @@ proto.update = function(data) {
     }
 
     var highlightEnable = [true, true, true];
-    var contourEnable = [true, true, true];
     var axis = ['x', 'y', 'z'];
 
     for(i = 0; i < 3; ++i) {
         var contourParams = data.contours[axis[i]];
         highlightEnable[i] = contourParams.highlight;
-        contourEnable[i] = contourParams.show;
 
         params.showContour[i] = contourParams.show || contourParams.highlight;
         if(!params.showContour[i]) continue;
@@ -323,7 +321,6 @@ proto.update = function(data) {
     surface.update(params);
 
     surface.highlightEnable = highlightEnable;
-    surface.contourEnable = contourEnable;
     surface.visible = data.visible;
 
     surface.snapToData = true;
