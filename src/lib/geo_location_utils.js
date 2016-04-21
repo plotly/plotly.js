@@ -9,15 +9,13 @@
 
 'use strict';
 
+var countryRegex = require('country-regex');
 var locationUtils = module.exports = {};
 
 var Plotly = require('../plotly');
 
-// an hash object iso3 to regex string
-var countryNameData = require('../constants/country-name_to_iso3');
-
 // make list of all country iso3 ids from at runtime
-var countryIds = Object.keys(countryNameData);
+var countryIds = Object.keys(countryRegex);
 
 var locationmodeToIdFinder = {
     'ISO-3': Plotly.Lib.identity,
@@ -51,7 +49,7 @@ function countryNameToISO3(countryName) {
 
     for(var i = 0; i < countryIds.length; i++) {
         iso3 = countryIds[i];
-        regex = new RegExp(countryNameData[iso3]);
+        regex = new RegExp(countryRegex[iso3]);
 
         if(regex.test(countryName.toLowerCase())) return iso3;
     }

@@ -48,6 +48,7 @@
     "alpha-shape": "^1.0.0",
     "arraytools": "^1.0.0",
     "convex-hull": "^1.0.3",
+    "country-regex": "^1.0.0",
     "d3": "^3.5.12",
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
