@@ -671,11 +671,13 @@ function cleanData(data, existingData) {
 
     for(var tracei = 0; tracei < data.length; tracei++) {
         var trace = data[tracei];
+        var i;
 
         // assign uids to each trace and detect collisions.
         if(!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
-            var newUid, i;
-            for(i=0; i<100; i++) {
+            var newUid;
+
+            for(i = 0; i < 100; i++) {
                 newUid = Lib.randstr(uids);
                 if(suids.indexOf(newUid)===-1) break;
             }
@@ -767,7 +769,7 @@ function cleanData(data, existingData) {
         if(trace.type === 'surface' && Lib.isPlainObject(trace.contours)) {
             var dims = ['x', 'y', 'z'];
 
-            for(var i = 0; i < dims.length; i++) {
+            for(i = 0; i < dims.length; i++) {
                 var opts = trace.contours[dims[i]];
 
                 if(!Lib.isPlainObject(opts)) continue;

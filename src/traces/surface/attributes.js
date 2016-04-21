@@ -143,7 +143,7 @@ module.exports = {
             'Determines whether or not a surface is drawn.',
             'For example, set `hidesurface` to *false*',
             '`contours.x.show` to *true* and',
-            '`contours.y.show` to *true* to draw a wire frame plot.',
+            '`contours.y.show` to *true* to draw a wire frame plot.'
         ].join(' ')
     },
 
