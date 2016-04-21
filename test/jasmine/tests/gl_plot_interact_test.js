@@ -229,7 +229,7 @@ describe('Test gl plot interactions', function() {
     });
 
     describe('gl3d modebar click handlers', function() {
-        var modeBar;
+        var modeBar, relayoutCallback;
 
         beforeEach(function(done) {
             var mockData = [{
@@ -245,7 +245,12 @@ describe('Test gl plot interactions', function() {
 
             gd = createGraphDiv();
             Plotly.plot(gd, mockData, mockLayout).then(function() {
+
                 modeBar = gd._fullLayout._modeBar;
+
+                relayoutCallback = jasmine.createSpy('relayoutCallback');
+
+                gd.on('plotly_relayout', relayoutCallback);
 
                 delay(done);
             });
@@ -342,7 +347,26 @@ describe('Test gl plot interactions', function() {
                     .toEqual({x: 2.5, y: 2.5, z: 2.5});
 
                 selectButton(modeBar, 'resetCameraDefault3d').click();
+
                 setTimeout(function() {
+
+                    expect(relayoutCallback).toHaveBeenCalledTimes(2); // initiator: resetCameraDefault3d; 2 scenes
+                    expect(relayoutCallback).toHaveBeenCalledWith({
+                        scene: {
+                            eye: { x: 1.25, y: 1.25, z: 1.25 },
+                            center: { x: 0, y: 0, z: 0 },
+                            up: { x: 0, y: 0, z: 1 }
+                        }
+                    });
+                    expect(relayoutCallback).toHaveBeenCalledWith({
+                        scene2: {
+                            center: { x: 0, y: 0, z: 0 },
+                            eye: { x: 1.25, y: 1.25, z: 1.25 },
+                            up: { x: 0, y: 0, z: 1 }
+                        }
+                    });
+                    relayoutCallback.calls.reset();
+
                     expect(sceneLayout.camera.eye)
                         .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
                     expect(scene.camera.eye)
@@ -353,7 +377,25 @@ describe('Test gl plot interactions', function() {
                         .toBeCloseToArray([1.25, 1.25, 1.25], 4);
 
                     selectButton(modeBar, 'resetCameraLastSave3d').click();
+
                     setTimeout(function() {
+
+                        expect(relayoutCallback).toHaveBeenCalledTimes(2); // initiator: resetCameraLastSave3d; 2 scenes
+                        expect(relayoutCallback).toHaveBeenCalledWith({
+                            scene: {
+                                center: { x: 0, y: 0, z: 0 },
+                                eye: { x: 0.1, y: 0.1, z: 1 },
+                                up: { x: 0, y: 0, z: 1 }
+                            }
+                        });
+                        expect(relayoutCallback).toHaveBeenCalledWith({
+                            scene2: {
+                                center: { x: 0, y: 0, z: 0 },
+                                eye: { x: 2.5, y: 2.5, z: 2.5 },
+                                up: { x: 0, y: 0, z: 1 }
+                            }
+                        });
+
                         expect(sceneLayout.camera.eye)
                             .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
                         expect(scene.camera.eye)
@@ -364,7 +406,9 @@ describe('Test gl plot interactions', function() {
                             .toBeCloseToArray([2.5, 2.5, 2.5], 4);
 
                         done();
+
                     }, MODEBAR_DELAY);
+
                 }, MODEBAR_DELAY);
             });
         });

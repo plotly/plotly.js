@@ -559,11 +559,12 @@ proto.destroy = function() {
 // for reset camera button in mode bar
 proto.setCameraToDefault = function setCameraToDefault() {
     // as in Gl3d.layoutAttributes
-    this.glplot.camera.lookAt(
-        [1.25, 1.25, 1.25],
-        [0, 0, 0],
-        [0, 0, 1]
-    );
+
+    this.setCamera({
+        eye: { x: 1.25, y: 1.25, z: 1.25 },
+        center: { x: 0, y: 0, z: 0 },
+        up: { x: 0, y: 0, z: 1 }
+    });
 };
 
 // get camera position in plotly coords from 'orbit-camera' coords
@@ -583,14 +584,22 @@ proto.getCamera = function getCamera() {
 
 // set camera position with a set of plotly coords
 proto.setCamera = function setCamera(cameraData) {
-    var up = cameraData.up;
-    var center = cameraData.center;
-    var eye = cameraData.eye;
-    this.glplot.camera.lookAt(
-        [eye.x, eye.y, eye.z],
-        [center.x, center.y, center.z],
-        [up.x, up.y, up.z]
-    );
+
+    // getOrbitCamera :: plotly_coords -> orbit_camera_coords
+    function getOrbitCamera(camera) {
+        return [
+            [camera.eye.x, camera.eye.y, camera.eye.z],
+            [camera.center.x, camera.center.y, camera.center.z],
+            [camera.up.x, camera.up.y, camera.up.z]
+        ];
+    }
+
+    var update = {};
+
+    update[this.id] = cameraData;
+
+    this.glplot.camera.lookAt.apply(this, getOrbitCamera(cameraData));
+    this.graphDiv.emit('plotly_relayout', update);
 };
 
 // save camera to user layout (i.e. gd.layout)
