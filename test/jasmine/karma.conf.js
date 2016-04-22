@@ -75,7 +75,8 @@ func.defaultConfig = {
     customLaunchers: {
         Chrome_WindowSized: {
             base: 'Chrome',
-            flags: ['--window-size=1035,617'] // values came from observing default size; all test cases pass with it
+            // window-size values came from observing default size
+            flags: ['--window-size=1035,617', '--ignore-gpu-blacklist']
         }
     },
 
