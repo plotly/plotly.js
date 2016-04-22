@@ -313,6 +313,17 @@ describe('the range slider', function() {
 
             expect(layoutOut.xaxis.rangeslider.range).toEqual([7, 42]);
         });
+
+        it('should use the rangeslider range if it is set', function() {
+            var layoutIn = { xaxis: { rangeslider: { range: [15, 16] }, range: [7, 42] }, yaxis: {}, yaxis2: {}},
+                layoutOut = { xaxis: {}, yaxis: {}, yaxis2: {}},
+                axName = 'xaxis',
+                counterAxes = ['yaxis'];
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+
+            expect(layoutOut.xaxis.rangeslider.range).toEqual([15, 16]);
+        });
     });
 
     describe('in general', function() {
