@@ -50,7 +50,7 @@ function render(scene) {
     var lastPicked = null;
     var selection = scene.glplot.selection;
     for(var i = 0; i < keys.length; ++i) {
-        var trace = scene.traces[keys[i]];
+        trace = scene.traces[keys[i]];
         if(trace.handlePick(selection)) {
             lastPicked = trace;
         }
@@ -172,6 +172,15 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         showNoWebGlMsg(scene);
     }
 
+    var relayoutCallback = function(scene, domEvent) {
+        var update = {};
+        update[scene.id] = getLayoutCamera(scene.camera);
+        scene.graphDiv.emit('plotly_relayout', update);
+    };
+
+    scene.glplot.canvas.addEventListener('mouseup', relayoutCallback.bind(null, scene));
+    scene.glplot.canvas.addEventListener('wheel', relayoutCallback.bind(null, scene));
+
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
             console.log('lost context');
@@ -255,7 +264,7 @@ function Scene(options, fullLayout) {
 
     this.contourLevels = [ [], [], [] ];
 
-    if(!initializeGLPlot(this, fullLayout)) return;
+    if(!initializeGLPlot(this, fullLayout)) return; // todo check the necessity for this line
 }
 
 var proto = Scene.prototype;
@@ -286,7 +295,7 @@ function coordinateBound(axis, coord, d, bounds) {
     for(var i=0; i<coord.length; ++i) {
         if(Array.isArray(coord[i])) {
             for(var j=0; j<coord[i].length; ++j) {
-                var x = axis.d2l(coord[i][j]);
+                x = axis.d2l(coord[i][j]);
                 if(!isNaN(x) && isFinite(x)) {
                     bounds[0][d] = Math.min(bounds[0][d], x);
                     bounds[1][d] = Math.max(bounds[1][d], x);
@@ -354,14 +363,14 @@ proto.plot = function(sceneData, fullLayout, layout) {
         [Infinity, Infinity, Infinity],
         [-Infinity, -Infinity, -Infinity]
     ];
-    for(var i=0; i<sceneData.length; ++i) {
-        var data = sceneData[i];
+    for(i=0; i<sceneData.length; ++i) {
+        data = sceneData[i];
         if(data.visible !== true) continue;
 
         computeTraceBounds(this, data, dataBounds);
     }
     var dataScale = [1,1,1];
-    for(var j=0; j<3; ++j) {
+    for(j=0; j<3; ++j) {
         if(dataBounds[0][j] > dataBounds[1][j]) {
             dataScale[j] = 1.0;
         }
@@ -379,7 +388,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.dataScale = dataScale;
 
     //Update traces
-    for(var i = 0; i < sceneData.length; ++i) {
+    for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
         if(data.visible!==true) {
             continue;
@@ -416,7 +425,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
         axisTypeRatios = {};
 
     for(i = 0; i < 3; ++i) {
-        var axis = fullSceneLayout[axisProperties[i]];
+        axis = fullSceneLayout[axisProperties[i]];
         var axisType = axis.type;
 
         if(axisType in axisTypeRatios) {
@@ -471,9 +480,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var axesScaleRatio = [1, 1, 1];
 
     //Compute axis scale per category
-    for(var i=0; i<3; ++i) {
-        var axis = fullSceneLayout[axisProperties[i]];
-        var axisType = axis.type;
+    for(i=0; i<3; ++i) {
+        axis = fullSceneLayout[axisProperties[i]];
+        axisType = axis.type;
         var axisRatio = axisTypeRatios[axisType];
         axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0/axisRatio.count) / dataScale[i];
     }
@@ -567,32 +576,34 @@ proto.setCameraToDefault = function setCameraToDefault() {
     });
 };
 
+// getOrbitCamera :: plotly_coords -> orbit_camera_coords
+// inverse of getLayoutCamera
+function getOrbitCamera(camera) {
+    return [
+        [camera.eye.x, camera.eye.y, camera.eye.z],
+        [camera.center.x, camera.center.y, camera.center.z],
+        [camera.up.x, camera.up.y, camera.up.z]
+    ];
+}
+
+// getLayoutCamera :: orbit_camera_coords -> plotly_coords
+// inverse of getOrbitCamera
+function getLayoutCamera(camera) {
+    return {
+        up: {x: camera.up[0], y: camera.up[1], z: camera.up[2]},
+        center: {x: camera.center[0], y: camera.center[1], z: camera.center[2]},
+        eye: {x: camera.eye[0], y: camera.eye[1], z: camera.eye[2]}
+    };
+}
+
 // get camera position in plotly coords from 'orbit-camera' coords
 proto.getCamera = function getCamera() {
     this.glplot.camera.view.recalcMatrix(this.camera.view.lastT());
-
-    var up = this.glplot.camera.up;
-    var center = this.glplot.camera.center;
-    var eye = this.glplot.camera.eye;
-
-    return {
-        up: {x: up[0], y: up[1], z: up[2]},
-        center: {x: center[0], y: center[1], z: center[2]},
-        eye: {x: eye[0], y: eye[1], z: eye[2]}
-    };
+    return getLayoutCamera(this.glplot.camera);
 };
 
 // set camera position with a set of plotly coords
 proto.setCamera = function setCamera(cameraData) {
-
-    // getOrbitCamera :: plotly_coords -> orbit_camera_coords
-    function getOrbitCamera(camera) {
-        return [
-            [camera.eye.x, camera.eye.y, camera.eye.z],
-            [camera.center.x, camera.center.y, camera.center.z],
-            [camera.up.x, camera.up.y, camera.up.z]
-        ];
-    }
 
     var update = {};
 
