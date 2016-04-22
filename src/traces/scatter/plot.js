@@ -95,7 +95,15 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         }
         else if(line.shape === 'spline') {
             pathfn = revpathbase = function(pts) {
-                return Drawing.smoothopen(pts, line.smoothing);
+                var pLast = pts[pts.length - 1];
+                if(pts[0][0] === pLast[0] && pts[0][1] === pLast[1]) {
+                    // identical start and end points: treat it as a
+                    // closed curve so we don't get a kink
+                    return Drawing.smoothclosed(pts.slice(1), line.smoothing);
+                }
+                else {
+                    return Drawing.smoothopen(pts, line.smoothing);
+                }
             };
         }
         else {
