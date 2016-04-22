@@ -17,6 +17,7 @@ var handleMarkerDefaults = require('../scatter/marker_defaults');
 var handleLineDefaults = require('../scatter/line_defaults');
 var handleLineShapeDefaults = require('../scatter/line_shape_defaults');
 var handleTextDefaults = require('../scatter/text_defaults');
+var handleFillColorDefaults = require('../scatter/fillcolor_defaults');
 
 var attributes = require('./attributes');
 
@@ -84,8 +85,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         coerce('marker.maxdisplayed');
     }
 
-    coerce('hoverinfo', (layout._dataLength === 1) ? 'a+b+c+text' : undefined);
+    coerce('fill');
+    if(traceOut.fill !== 'none') {
+        handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
+        if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
+    }
 
-    // until 'fill' and 'fillcolor' are supported
-    traceOut.fill = 'none';
+    coerce('hoverinfo', (layout._dataLength === 1) ? 'a+b+c+text' : undefined);
 };

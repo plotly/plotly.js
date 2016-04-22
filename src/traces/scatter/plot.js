@@ -41,13 +41,16 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
 
     // BUILD LINES AND FILLS
     var prevpath = '',
-        tozero, tonext, nexttonext;
+        ownFillEl3, ownFillDir, tonext, nexttonext;
 
     scattertraces.each(function(d) {
         var trace = d[0].trace,
             line = trace.line,
             tr = d3.select(this);
         if(trace.visible !== true) return;
+
+        ownFillDir = trace.fill.charAt(trace.fill.length - 1);
+        if(ownFillDir !== 'x' && ownFillDir !== 'y') ownFillDir = '';
 
         d[0].node3 = tr; // store node for tweaking by selectPoints
 
@@ -56,6 +59,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         if(!subTypes.hasLines(trace) && trace.fill === 'none') return;
 
         var thispath,
+            thisrevpath,
             // fullpath is all paths for this curve, joined together straight
             // across gaps, for filling
             fullpath = '',
@@ -67,12 +71,12 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         // make the fill-to-zero path now, so it shows behind the line
         // fill to next puts the fill associated with one trace
         // grouped with the previous
-        if(trace.fill.substr(0, 6) === 'tozero' ||
+        if(trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
                 (trace.fill.substr(0, 2) === 'to' && !prevpath)) {
-            tozero = tr.append('path')
+            ownFillEl3 = tr.append('path')
                 .classed('js-fill', true);
         }
-        else tozero = null;
+        else ownFillEl3 = null;
 
         // make the fill-to-next path now for the NEXT trace, so it shows
         // behind both lines.
@@ -91,7 +95,15 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         }
         else if(line.shape === 'spline') {
             pathfn = revpathbase = function(pts) {
-                return Drawing.smoothopen(pts, line.smoothing);
+                var pLast = pts[pts.length - 1];
+                if(pts[0][0] === pLast[0] && pts[0][1] === pLast[1]) {
+                    // identical start and end points: treat it as a
+                    // closed curve so we don't get a kink
+                    return Drawing.smoothclosed(pts.slice(1), line.smoothing);
+                }
+                else {
+                    return Drawing.smoothopen(pts, line.smoothing);
+                }
             };
         }
         else {
@@ -102,7 +114,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
 
         revpathfn = function(pts) {
             // note: this is destructive (reverses pts in place) so can't use pts after this
-            return 'L' + revpathbase(pts.reverse()).substr(1);
+            return revpathbase(pts.reverse());
         };
 
         var segments = linePoints(d, {
@@ -121,27 +133,58 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
             for(var i = 0; i < segments.length; i++) {
                 var pts = segments[i];
                 thispath = pathfn(pts);
-                fullpath += fullpath ? ('L' + thispath.substr(1)) : thispath;
-                revpath = revpathfn(pts) + revpath;
+                thisrevpath = revpathfn(pts);
+                if(!fullpath) {
+                    fullpath = thispath;
+                    revpath = thisrevpath;
+                }
+                else if(ownFillDir) {
+                    fullpath += 'L' + thispath.substr(1);
+                    revpath = thisrevpath + ('L' + revpath.substr(1));
+                }
+                else {
+                    fullpath += 'Z' + thispath;
+                    revpath = thisrevpath + 'Z' + revpath;
+                }
                 if(subTypes.hasLines(trace) && pts.length > 1) {
                     tr.append('path').classed('js-line', true).attr('d', thispath);
                 }
             }
-            if(tozero) {
+            if(ownFillEl3) {
                 if(pt0 && pt1) {
-                    if(trace.fill.charAt(trace.fill.length - 1) === 'y') {
-                        pt0[1] = pt1[1] = ya.c2p(0, true);
-                    }
-                    else pt0[0] = pt1[0] = xa.c2p(0, true);
+                    if(ownFillDir) {
+                        if(ownFillDir === 'y') {
+                            pt0[1] = pt1[1] = ya.c2p(0, true);
+                        }
+                        else if(ownFillDir === 'x') {
+                            pt0[0] = pt1[0] = xa.c2p(0, true);
+                        }
 
-                    // fill to zero: full trace path, plus extension of
-                    // the endpoints to the appropriate axis
-                    tozero.attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
+                        // fill to zero: full trace path, plus extension of
+                        // the endpoints to the appropriate axis
+                        ownFillEl3.attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
+                    }
+                    // fill to self: just join the path to itself
+                    else ownFillEl3.attr('d', fullpath + 'Z');
                 }
             }
             else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevpath) {
                 // fill to next: full trace path, plus the previous path reversed
-                tonext.attr('d', fullpath + prevpath + 'Z');
+                if(trace.fill === 'tonext') {
+                    // tonext: for use by concentric shapes, like manually constructed
+                    // contours, we just add the two paths closed on themselves.
+                    // This makes strange results if one path is *not* entirely
+                    // inside the other, but then that is a strange usage.
+                    tonext.attr('d', fullpath + 'Z' + prevpath + 'Z');
+                }
+                else {
+                    // tonextx/y: for now just connect endpoints with lines. This is
+                    // the correct behavior if the endpoints are at the same value of
+                    // y/x, but if they *aren't*, we should ideally do more complicated
+                    // things depending on whether the new endpoint projects onto the
+                    // existing curve or off the end of it
+                    tonext.attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
+                }
             }
             prevpath = revpath;
         }

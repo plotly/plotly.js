@@ -1,0 +1,25 @@
+{
+    "data":[
+        {
+            "x": [1, 2, 3, 1, null, 4, 5, 6],
+            "y": [2, 3, 2, 2, null, 3, 4, 3],
+            "fill": "tonext",
+            "line":{"shape": "spline"}
+        },
+        {
+            "x": [-1, 4, 9, null, 0, 1, 2],
+            "y": [1, 6, 1, null, 5, 6, 5],
+            "fill": "tonext"
+        },
+        {
+            "x": [6, 7, 8],
+            "y": [5, 6, 5],
+            "fill": "toself"
+        }
+    ],
+    "layout":{
+        "title": "Fill toself and tonext",
+        "width": 400,
+        "height": 400
+    }
+}
