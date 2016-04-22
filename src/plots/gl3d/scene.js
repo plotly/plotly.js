@@ -7,9 +7,6 @@
 */
 
 
-/*eslint block-scoped-var: 0*/
-/*eslint no-redeclare: 0*/
-
 'use strict';
 
 var createPlot = require('gl-plot3d');
@@ -33,6 +30,8 @@ var computeTickMarks = require('./layout/tick_marks');
 var STATIC_CANVAS, STATIC_CONTEXT;
 
 function render(scene) {
+
+    var trace;
 
     // update size of svg container
     var svgContainer = scene.svgContainer;
@@ -69,8 +68,9 @@ function render(scene) {
 
     if(lastPicked !== null) {
         var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate),
-            trace = lastPicked.data,
             hoverinfo = trace.hoverinfo;
+
+        trace = lastPicked.data;
 
         var xVal = formatter('xaxis', selection.traceCoordinate[0]),
             yVal = formatter('yaxis', selection.traceCoordinate[1]),
@@ -172,7 +172,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
         showNoWebGlMsg(scene);
     }
 
-    var relayoutCallback = function(scene, domEvent) {
+    var relayoutCallback = function(scene) {
         var update = {};
         update[scene.id] = getLayoutCamera(scene.camera);
         scene.graphDiv.emit('plotly_relayout', update);
@@ -292,6 +292,7 @@ proto.recoverContext = function() {
 var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
 function coordinateBound(axis, coord, d, bounds) {
+    var x;
     for(var i=0; i<coord.length; ++i) {
         if(Array.isArray(coord[i])) {
             for(var j=0; j<coord[i].length; ++j) {
@@ -303,7 +304,7 @@ function coordinateBound(axis, coord, d, bounds) {
             }
         }
         else {
-            var x = axis.d2l(coord[i]);
+            x = axis.d2l(coord[i]);
             if(!isNaN(x) && isFinite(x)) {
                 bounds[0][d] = Math.min(bounds[0][d], x);
                 bounds[1][d] = Math.max(bounds[1][d], x);
@@ -326,7 +327,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     if(this.glplot.contextLost) return;
 
     var data, trace;
-    var i, j;
+    var i, j, axis, axisType;
     var fullSceneLayout = fullLayout[this.id];
     var sceneLayout = layout[this.id];
 
@@ -350,7 +351,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
     // Update axes functions BEFORE updating traces
     for(i = 0; i < 3; ++i) {
-        var axis = fullSceneLayout[axisProperties[i]];
+        axis = fullSceneLayout[axisProperties[i]];
         setConvert(axis);
     }
 
@@ -426,7 +427,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
     for(i = 0; i < 3; ++i) {
         axis = fullSceneLayout[axisProperties[i]];
-        var axisType = axis.type;
+        axisType = axis.type;
 
         if(axisType in axisTypeRatios) {
             axisTypeRatios[axisType].acc *= dataScale[i];
