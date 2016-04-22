@@ -94,6 +94,12 @@ function linearToData(ax) { return ax.type === 'category' ? ax.l2c : ax.l2d; }
 
 shapes.drawAll = function(gd) {
     var fullLayout = gd._fullLayout;
+
+    // Remove previous shapes before drawing new in shapes in fullLayout.shapes
+    fullLayout._shapeUpperLayer.selectAll('path').remove();
+    fullLayout._shapeLowerLayer.selectAll('path').remove();
+    fullLayout._subplotShapeLayer.selectAll('path').remove();
+
     for(var i = 0; i < fullLayout.shapes.length; i++) {
         shapes.draw(gd, i);
     }
