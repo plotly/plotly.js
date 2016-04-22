@@ -24,10 +24,6 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
         return Lib.coerce(containerIn, containerOut, layoutAttributes, attr, dflt);
     }
 
-    function coerce2(attr, dflt) {
-        return Lib.coerce2(containerIn, containerOut, layoutAttributes, attr, dflt);
-    }
-
     containerOut.type = 'linear'; // no other types allowed for ternary
 
     var dfltColor = coerce('color');
@@ -57,8 +53,6 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
     handleTickMarkDefaults(containerIn, containerOut, coerce, 'linear',
         { outerticks: false });
 
-    // TODO - below is a bit repetitious from cartesian still...
-
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
         Lib.coerceFont(coerce, 'tickfont', {
@@ -72,23 +66,17 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
 
     coerce('hoverformat');
 
-    var lineColor = coerce2('linecolor', dfltColor),
-        lineWidth = coerce2('linewidth'),
-        showLine = coerce('showline', !!lineColor || !!lineWidth);
-
-    if(!showLine) {
-        delete containerOut.linecolor;
-        delete containerOut.linewidth;
+    var showLine = coerce('showline');
+    if(showLine) {
+        coerce('linecolor', dfltColor);
+        coerce('linewidth');
     }
 
-    // default grid color is darker here (60%, vs cartesian default ~91%)
-    // because the grid is not square so the eye needs heavier cues to follow
-    var gridColor = coerce2('gridcolor', colorMix(dfltColor, options.bgColor, 60).toRgbString()),
-        gridWidth = coerce2('gridwidth'),
-        showGridLines = coerce('showgrid', !!gridColor || !!gridWidth);
-
-    if(!showGridLines) {
-        delete containerOut.gridcolor;
-        delete containerOut.gridwidth;
+    var showGridLines = coerce('showgrid');
+    if(showGridLines) {
+        // default grid color is darker here (60%, vs cartesian default ~91%)
+        // because the grid is not square so the eye needs heavier cues to follow
+        coerce('gridcolor', colorMix(dfltColor, options.bgColor, 60).toRgbString());
+        coerce('gridwidth');
     }
 };
