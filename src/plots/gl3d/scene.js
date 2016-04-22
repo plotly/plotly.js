@@ -67,10 +67,9 @@ function render(scene) {
     var oldEventData;
 
     if(lastPicked !== null) {
-        var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate),
-            hoverinfo = trace.hoverinfo;
-
+        var pdata = project(scene.glplot.cameraParams, selection.dataCoordinate);
         trace = lastPicked.data;
+        var hoverinfo = trace.hoverinfo;
 
         var xVal = formatter('xaxis', selection.traceCoordinate[0]),
             yVal = formatter('yaxis', selection.traceCoordinate[1]),
