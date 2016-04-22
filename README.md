@@ -33,10 +33,14 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 git clone https://github.com/plotly/plotly.js.git
 ```
 
+and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
+
 #### Install with `npm`
 ```bash
 npm install plotly.js
 ```
+
+and use the plotly.js `dist` or CommonJS files `var Plotly = require('plotly.js');` in your source file.
 
 #### Use the plotly.js CDN hosted by Fastly:
 ```html
@@ -46,6 +50,8 @@ npm install plotly.js
 <!-- OR use a specific plotly.js release (e.g. version 1.5.0)-->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
 ```
+
+and use the `Plotly` object in the window scope.
 
 Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
 
