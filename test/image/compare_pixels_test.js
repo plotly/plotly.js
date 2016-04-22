@@ -12,6 +12,7 @@ var gm = require('gm');
 var TOLERANCE = 1e-6;    // pixel comparison tolerance
 var BASE_TIMEOUT = 500;  // base timeout time
 var BATCH_SIZE = 5;      // size of each test 'batch'
+var running = 0;         // number of tests currently running
 
 var touch = function(fileName) {
     fs.closeSync(fs.openSync(fileName, 'w'));
@@ -53,17 +54,10 @@ function runAll() {
             );
         });
 
-        var cnt = 0;
-
-        function testFunction() {
-            testMock(mocks[cnt++], t);
-        }
-
         t.plan(mocks.length);
 
         for(var i = 0; i < mocks.length; i++) {
-            setTimeout(testFunction,
-                BASE_TIMEOUT * Math.floor(i / BATCH_SIZE) * BATCH_SIZE);
+            testMock(mocks[i], t);
         }
 
     });
@@ -77,6 +71,13 @@ function runSingle(userFileName) {
 }
 
 function testMock(fileName, t) {
+    // throttle the number of tests running concurrently
+    if(running >= BATCH_SIZE) {
+        setTimeout(function() { testMock(fileName, t); }, BASE_TIMEOUT);
+        return;
+    }
+    running++;
+
     var figure = require(path.join(constants.pathToTestImageMocks, fileName));
     var bodyMock = {
         figure: figure,
@@ -91,6 +92,8 @@ function testMock(fileName, t) {
     var options = getOptions(bodyMock, 'http://localhost:9010/');
 
     function checkImage() {
+        running--;
+
         var options = {
             file: diffPath,
             highlightColor: 'purple',
