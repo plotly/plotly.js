@@ -2630,6 +2630,10 @@ function makePlotFramework(gd) {
     // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
 
+    // shape layers in subplots
+    fullLayout._subplotShapeLayer = fullLayout._paper
+        .selectAll('.shapelayer-subplot');
+
     // upper shape layer
     // (only for shapes to be drawn above the whole plot, including subplots)
     fullLayout._shapeUpperLayer = fullLayout._paper.append('g')
@@ -2815,10 +2819,6 @@ function makeCartesianPlotFramwork(gd, subplots) {
             .style('fill', 'none')
             .classed('crisp', true);
     });
-
-    // shape layers in subplots
-    fullLayout._subplotShapeLayer = fullLayout._paper
-        .selectAll('.shapelayer-subplot');
 }
 
 // layoutStyles: styling for plot layout elements

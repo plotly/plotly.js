@@ -187,6 +187,14 @@ describe('Test shapes:', function() {
             }).then(done);
         });
 
+        it('should be able to remove all shapes', function(done) {
+            Plotly.relayout(gd, { shapes: [] }).then(function() {
+                expect(countShapePathsInUpperLayer()).toEqual(0);
+                expect(countShapePathsInLowerLayer()).toEqual(0);
+                expect(countShapePathsInSubplots()).toEqual(0);
+            }).then(done);
+        });
+
         it('should be able to update a shape layer', function(done) {
             var index = countShapes(gd),
                 astr = 'shapes[' + index + ']',
