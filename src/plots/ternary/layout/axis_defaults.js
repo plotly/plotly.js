@@ -50,8 +50,8 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
     handleTickValueDefaults(containerIn, containerOut, coerce, 'linear');
     handleTickLabelDefaults(containerIn, containerOut, coerce, 'linear',
         { noHover: false });
-    handleTickMarkDefaults(containerIn, containerOut, coerce, 'linear',
-        { outerticks: false });
+    handleTickMarkDefaults(containerIn, containerOut, coerce,
+        { outerTicks: true });
 
     var showTickLabels = coerce('showticklabels');
     if(showTickLabels) {
