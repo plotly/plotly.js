@@ -110,28 +110,29 @@ describe('the range slider', function() {
                 expect(maskMax.getAttribute('width')).toEqual(String(-diff));
                 expect(handleMax.getAttribute('transform')).toEqual('translate(' + (+dataMaxStart + diff) + ')');
             }).then(done);
-
-
         });
 
-        it('should resize the main plot when rangeslider has moved', function(done) {
+        it('should resize the main plot when rangeslider has moved left', function(done) {
             var start = 300,
-                end = 400,
+                end = 350,
                 rangeDiff1 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0],
-                rangeDiff2,
-                rangeDiff3;
+                rangeDiff2;
 
             slide(start, 400, end, 400).then(function() {
                 rangeDiff2 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
                 expect(rangeDiff2).toBeLessThan(rangeDiff1);
-            }).then(function() {
-                start = 400;
-                end = 200;
+            }).then(done);
+        });
 
-                return slide(start, 400, end, 400);
-            }).then(function() {
-                rangeDiff3 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
-                expect(rangeDiff3).toBeLessThan(rangeDiff2);
+        it('should resize the main plot when rangeslider has moved right', function(done) {
+            var start = 300,
+                end = 100,
+                rangeDiff1 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0],
+                rangeDiff2;
+
+            slide(start, 400, end, 400).then(function() {
+                rangeDiff2 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
+                expect(rangeDiff2).toBeLessThan(rangeDiff1);
             }).then(done);
         });
     });
@@ -222,7 +223,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            range: [-Infinity, Infinity]
                         }
                     },
                     yaxis: {
@@ -247,7 +249,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            range: [-Infinity, Infinity]
                         }
                     },
                     yaxis: {
@@ -266,7 +269,8 @@ describe('the range slider', function() {
                     thickness: 'invalid',
                     bgcolor: 42,
                     bordercolor: 42,
-                    borderwidth: 'superfat'
+                    borderwidth: 'superfat',
+                    range: 'power-rangers-GO!'
                 }}, yaxis: {}},
                 layoutOut = { xaxis: {}, yaxis: {}},
                 axName = 'xaxis',
@@ -276,7 +280,8 @@ describe('the range slider', function() {
                     thickness: 0.15,
                     bgcolor: '#fff',
                     borderwidth: 0,
-                    bordercolor: '#444'
+                    bordercolor: '#444',
+                    range: [-Infinity, Infinity]
                 }}, yaxis: {
                     fixedrange: true
                 }};
@@ -290,22 +295,34 @@ describe('the range slider', function() {
             var layoutIn = { xaxis: { rangeslider: true}, yaxis: {}, yaxis2: {}},
                 layoutOut = { xaxis: {}, yaxis: {}, yaxis2: {}},
                 axName = 'xaxis',
-                counterAxes = ['yaxis', 'yaxis2'],
-                expected = {
-                    xaxis: { rangeslider: {
-                        visible: true,
-                        thickness: 0.15,
-                        bgcolor: '#fff',
-                        borderwidth: 0,
-                        bordercolor: '#444'
-                    }},
-                    yaxis: { fixedrange: true},
-                    yaxis2: { fixedrange: true }
-                };
+                counterAxes = ['yaxis', 'yaxis2'];
 
             RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
 
-            expect(layoutOut).toEqual(expected);
+            expect(layoutOut.yaxis.fixedrange).toEqual(true);
+            expect(layoutOut.yaxis2.fixedrange).toEqual(true);
+        });
+
+        it('should use the axis range if it is set', function() {
+            var layoutIn = { xaxis: { rangeslider: true, range: [7, 42] }, yaxis: {}, yaxis2: {}},
+                layoutOut = { xaxis: {}, yaxis: {}, yaxis2: {}},
+                axName = 'xaxis',
+                counterAxes = ['yaxis'];
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+
+            expect(layoutOut.xaxis.rangeslider.range).toEqual([7, 42]);
+        });
+
+        it('should use the rangeslider range if it is set', function() {
+            var layoutIn = { xaxis: { rangeslider: { range: [15, 16] }, range: [7, 42] }, yaxis: {}, yaxis2: {}},
+                layoutOut = { xaxis: {}, yaxis: {}, yaxis2: {}},
+                axName = 'xaxis',
+                counterAxes = ['yaxis'];
+
+            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+
+            expect(layoutOut.xaxis.rangeslider.range).toEqual([15, 16]);
         });
     });
 

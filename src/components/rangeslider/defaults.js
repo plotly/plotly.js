@@ -25,11 +25,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, axName, coun
             attributes, attr, dflt);
     }
 
-    coerce('visible');
-    coerce('thickness');
     coerce('bgcolor');
     coerce('bordercolor');
     coerce('borderwidth');
+    coerce('thickness');
+    coerce('visible');
+
+    // If axis range not set, show all the data
+    coerce('range', layoutIn[axName].range || [-Infinity, Infinity]);
 
     if(containerOut.visible) {
         counterAxes.forEach(function(ax) {
