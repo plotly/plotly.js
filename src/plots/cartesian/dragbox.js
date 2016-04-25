@@ -522,7 +522,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             axList = (xActive ? xa : []).concat(yActive ? ya : []),
             attrs = {};
 
-        var ax, i;
+        var ax, i, rangeInitial;
 
         if(doubleClickConfig === 'autosize') {
             for(i = 0; i < axList.length; i++) {
@@ -538,7 +538,9 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     attrs[ax._name + '.autorange'] = true;
                 }
                 else {
-                    attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+                    rangeInitial = ax._rangeInitial.slice();
+                    attrs[ax._name + '.range[0]'] = rangeInitial[0];
+                    attrs[ax._name + '.range[1]'] = rangeInitial[1];
                 }
             }
         }
@@ -553,7 +555,11 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 ) {
                     attrs[ax._name + '.autorange'] = true;
                 }
-                else attrs[ax._name + '.range'] = ax._rangeInitial.slice();
+                else {
+                    rangeInitial = ax._rangeInitial.slice();
+                    attrs[ax._name + '.range[0]'] = rangeInitial[0];
+                    attrs[ax._name + '.range[1]'] = rangeInitial[1];
+                }
             }
         }
 
