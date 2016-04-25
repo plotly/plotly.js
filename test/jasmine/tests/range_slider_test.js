@@ -1,4 +1,5 @@
 var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
 var RangeSlider = require('@src/components/rangeslider');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -16,7 +17,9 @@ describe('the range slider', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            var mockCopy = Lib.extendDeep({}, mock);
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 rangeSlider = document.getElementsByClassName('range-slider')[0];
                 children = rangeSlider.children;
                 done();
