@@ -2191,6 +2191,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
             docalc = true;
         }
 
+        if(pleafPlus.indexOf('rangeslider') !== -1) {
+            docalc = true;
+        }
+
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {

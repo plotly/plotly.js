@@ -63,7 +63,9 @@ module.exports = function rangePlot(gd, w, h) {
             var posX = w * (x[k] - minX) / (maxX - minX),
                 posY = h * (1 - (y[k] - minY) / (maxY - minY));
 
-            pointPairs.push([posX, posY]);
+            if(!isNaN(posX) && !isNaN(posY)) {
+                pointPairs.push([posX, posY]);
+            }
         }
 
         // more trace type range plots can be added here
