@@ -16,11 +16,12 @@ var svgNS = require('../../constants/xmlns_namespaces').svg;
 
 module.exports = function rangePlot(gd, w, h) {
 
-    var traces = gd._fullData,
-        xaxis = gd._fullLayout.xaxis,
-        yaxis = gd._fullLayout.yaxis,
-        minX = xaxis.range[0],
-        maxX = xaxis.range[1],
+    var fullLayout = gd._fullLayout,
+        traces = gd._fullData,
+        xaxis = fullLayout.xaxis,
+        yaxis = fullLayout.yaxis,
+        minX = xaxis.rangeslider.range[0],
+        maxX = xaxis.rangeslider.range[1],
         minY = yaxis.range[0],
         maxY = yaxis.range[1];
 

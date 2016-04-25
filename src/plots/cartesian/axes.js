@@ -200,8 +200,6 @@ axes.doAutoRange = function(ax) {
     // TODO do we really need this?
     var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
 
-    console.log('in do autorange')
-
     if(ax.autorange && hasDeps) {
         ax.range = axes.getAutoRange(ax);
 
@@ -258,13 +256,12 @@ axes.saveRangeInitial = function(gd, overwrite) {
 //          and make it a tight bound if possible
 var FP_SAFE = Number.MAX_VALUE/2;
 axes.expand = function(ax, data, options) {
-    if(!(ax.autorange || (ax.rangeslider || {}).visible) || !data) return;
+    // if(!(ax.autorange || (ax.rangeslider || {}).visible) || !data) return;
+    if(!(ax.autorange || ax._needsExpand) || !data) return;
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
     if(!options) options = {};
     if(!ax._m) ax.setScale();
-
-    console.log('in exapnd', ax._name)
 
     var len = data.length,
         extrappad = options.padded ? ax._length*0.05 : 0,
