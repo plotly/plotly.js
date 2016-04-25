@@ -10,6 +10,7 @@
 
 
 var Plotly = require('../../plotly');
+var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
 var svgNS = require('../../constants/xmlns_namespaces').svg;
@@ -128,6 +129,10 @@ module.exports = function createSlider(gd, minStart, maxStart) {
         'fill': 'transparent'
     });
 
+
+    console.log('in create slider')
+    console.log(Axes.getAutoRange(fullLayout.xaxis))
+    console.log(fullLayout.xaxis.range)
 
     slider.addEventListener('mousedown', function(event) {
         var target = event.target,
