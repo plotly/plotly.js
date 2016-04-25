@@ -254,8 +254,6 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    console.log(aobj);
-
     Plotly.relayout(gd, aobj).then(function() {
         if(astr === 'dragmode') {
             if(fullLayout._hasCartesian) {
