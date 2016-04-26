@@ -9,6 +9,44 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 
 where X.Y.Z is the semver of most recent plotly.js release.
 
+
+## [1.10.0] -- 2016-04-12
+
+### Added
+- Beta version of two new 2D WebGL trace types: `heatmapgl` and `contourgl`
+  [#427, #434]
+- Two new `scatter` line `fill` modes: `'toself'` and `'tonext'` [#462]
+- Fills for `scatterternary` traces are now supported [#462]
+- Configurable axis category ordering with `categoryorder` and an optional
+  `categoryarray` axis attributes [#419]
+- Configurable shapes layer position with shape attribute `layer` [#439]
+- Configurable range slider range (so that the initial xaxis range can differ
+  from the range slider range) [#473]
+
+### Changed
+- Nested SVG elements in SVG image exports are removed, making the to-image mode
+  bar button work in RStudio and SVG export compatible with Adobe Illustrator
+  [#415, #454, #442]
+- Use `country-regex` npm package instead of hard-coded file of ISO-3 code to
+  country regular expressions [#461]
+
+### Fixed
+- Legend positioning does not break on negative `x` and `y` settings (bug
+  introduced in 1.6.0) [#417]
+- Shapes are properly deleted when clearing all of them at once (bug introduced
+  in 1.9.0) [#465]
+- Promise are return after first render in gl3d and gl2d plots [#421]
+- Click and hover events are properly triggered when trace `hoverinfo` is set to
+  `'none'` [#438]
+- `plotly_unhover` events is now properly triggered on geo trace types [#429]
+- `plotly_relayout` event is now properly triggered on gl3d set camera [#458]
+- RGBA colors are now supported in `scatter` and `bar` custom color scales
+  [#422]
+- Range slider is now functional with `x0`/`dx` data [#441]
+- Range slider is now compatible with mode bar axis range buttons and double
+  click [#471]
+
+
 ## [1.9.0] -- 2016-04-12
 
 ### Added
