@@ -30,6 +30,22 @@ module.exports = {
         role: 'style',
         description: 'Sets the border color of the range slider.'
     },
+    range: {
+        valType: 'info_array',
+        role: 'info',
+        items: [
+            {valType: 'number'},
+            {valType: 'number'}
+        ],
+        description: [
+            'Sets the range of the range slider.',
+            'If not set, defaults to the full xaxis range.',
+            'If the axis `type` is *log*, then you must take the',
+            'log of your desired range.',
+            'If the axis `type` is *date*, then you must convert',
+            'the date to unix time in milliseconds.'
+        ].join(' ')
+    },
     thickness: {
         valType: 'number',
         dflt: 0.15,

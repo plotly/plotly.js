@@ -245,7 +245,6 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function drawAxes() {
         // draw ticks, titles, and calculate axis scaling (._b, ._m)
-        RangeSlider.draw(gd);
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
@@ -310,6 +309,7 @@ Plotly.plot = function(gd, data, layout, config) {
         Shapes.drawAll(gd);
         Plotly.Annotations.drawAll(gd);
         Legend.draw(gd);
+        RangeSlider.draw(gd);
         RangeSelector.draw(gd);
     }
 
@@ -2188,6 +2188,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
             doextra([ptrunk + '.tick0', ptrunk + '.dtick'], undefined);
         }
         else if(/[xy]axis[0-9]*?$/.test(pleaf) && !Object.keys(vi || {}).length) {
+            docalc = true;
+        }
+
+        if(pleafPlus.indexOf('rangeslider') !== -1) {
             docalc = true;
         }
 

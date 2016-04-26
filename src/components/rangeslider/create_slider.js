@@ -10,6 +10,7 @@
 
 
 var Plotly = require('../../plotly');
+var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
 var svgNS = require('../../constants/xmlns_namespaces').svg;
@@ -18,7 +19,7 @@ var helpers = require('./helpers');
 var rangePlot = require('./range_plot');
 
 
-module.exports = function createSlider(gd, minStart, maxStart) {
+module.exports = function createSlider(gd) {
     var fullLayout = gd._fullLayout,
         sliderContainer = fullLayout._infolayer.selectAll('g.range-slider'),
         options = fullLayout.xaxis.rangeslider,
@@ -29,8 +30,8 @@ module.exports = function createSlider(gd, minStart, maxStart) {
         x = fullLayout.margin.l,
         y = fullLayout.height - height - fullLayout.margin.b;
 
-    minStart = minStart || 0;
-    maxStart = maxStart || width;
+    var minStart = 0,
+        maxStart = width;
 
     var slider = document.createElementNS(svgNS, 'g');
     helpers.setAttributes(slider, {
@@ -177,8 +178,8 @@ module.exports = function createSlider(gd, minStart, maxStart) {
         min = min || -Infinity;
         max = max || Infinity;
 
-        var rangeMin = fullLayout.xaxis.range[0],
-            rangeMax = fullLayout.xaxis.range[1],
+        var rangeMin = options.range[0],
+            rangeMax = options.range[1],
             range = rangeMax - rangeMin,
             pixelMin = (min - rangeMin) / range * width,
             pixelMax = (max - rangeMin) / range * width;
@@ -217,9 +218,8 @@ module.exports = function createSlider(gd, minStart, maxStart) {
         helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (min - handleWidth - 1) + ')' });
         helpers.setAttributes(grabberMax, { 'transform': 'translate(' + max + ')' });
 
-        // call to set range on plot here
-        var rangeMin = fullLayout.xaxis.range[0],
-            rangeMax = fullLayout.xaxis.range[1],
+        var rangeMin = options.range[0],
+            rangeMax = options.range[1],
             range = rangeMax - rangeMin,
             dataMin = min / width * range + rangeMin,
             dataMax = max / width * range + rangeMin;
@@ -236,6 +236,11 @@ module.exports = function createSlider(gd, minStart, maxStart) {
     }
 
 
+    // Set slider range using axis autorange if necessary.
+    if(!options.range) {
+        options.range = Axes.getAutoRange(fullLayout.xaxis);
+    }
+
     var rangePlots = rangePlot(gd, width, height);
 
     helpers.appendChildren(slider, [
@@ -247,6 +252,9 @@ module.exports = function createSlider(gd, minStart, maxStart) {
         grabberMin,
         grabberMax
     ]);
+
+    // Set initially selected range
+    setRange(fullLayout.xaxis.range[0], fullLayout.xaxis.range[1]);
 
     sliderContainer.data([0])
         .enter().append(function() {
