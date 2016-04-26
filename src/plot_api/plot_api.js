@@ -659,13 +659,11 @@ function cleanAxRef(container, attr) {
     }
 }
 
+// Make a few changes to the data right away
+// before it gets used for anything
 function cleanData(data, existingData) {
-    // make a few changes to the data right away
-    // before it gets used for anything
 
-    /*
-     * Enforce unique IDs
-     */
+    // Enforce unique IDs
     var suids = [], // seen uids --- so we can weed out incoming repeats
         uids = data.concat(Array.isArray(existingData) ? existingData : [])
                .filter(function(trace) { return 'uid' in trace; })
@@ -673,11 +671,13 @@ function cleanData(data, existingData) {
 
     for(var tracei = 0; tracei < data.length; tracei++) {
         var trace = data[tracei];
+        var i;
 
         // assign uids to each trace and detect collisions.
         if(!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
-            var newUid, i;
-            for(i=0; i<100; i++) {
+            var newUid;
+
+            for(i = 0; i < 100; i++) {
                 newUid = Lib.randstr(uids);
                 if(suids.indexOf(newUid)===-1) break;
             }
@@ -763,6 +763,27 @@ function cleanData(data, existingData) {
             var cont = trace.marker;
             if(cont.colorscale === 'YIGnBu') cont.colorscale = 'YlGnBu';
             if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
+        }
+
+        // fix typo in surface 'highlight*' definitions
+        if(trace.type === 'surface' && Lib.isPlainObject(trace.contours)) {
+            var dims = ['x', 'y', 'z'];
+
+            for(i = 0; i < dims.length; i++) {
+                var opts = trace.contours[dims[i]];
+
+                if(!Lib.isPlainObject(opts)) continue;
+
+                if(opts.highlightColor) {
+                    opts.highlightcolor = opts.highlightColor;
+                    delete opts.highlightColor;
+                }
+
+                if(opts.highlightWidth) {
+                    opts.highlightwidth = opts.highlightWidth;
+                    delete opts.highlightWidth;
+                }
+            }
         }
 
         // prune empty containers made before the new nestedProperty
