@@ -10,7 +10,7 @@ Bug reports must be accompanied with a reproducible example. We recommend using
 [jsbin](https://jsbin.com) to share your example.
 
 Note that GitHub issues are reserved for bug reports and feature requests only.
-Implementation questions should be asked on)
+Implementation questions should be asked on
 community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)) or on Stack Overflow (tagged
 [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
 
