@@ -15,7 +15,10 @@ community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)) o
 [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
 
 Comments on GitHub issues or pull requests should add content to the discussions. 
-Approbation comments such as *+1* or *I would like this feature to be implemented as well* will be deleted by the maintainers. Please use [GitHub reactions](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) instead.
+Approbation comments such as *+1* or *I would like this feature to be implemented as well* 
+will be deleted by the maintainers. Please use 
+[GitHub reactions](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) 
+instead.
 
 ## Making pull requests
 
