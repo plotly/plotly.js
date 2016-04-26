@@ -40,14 +40,14 @@ and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly
 npm install plotly.js
 ```
 
-and use the plotly.js `dist` or CommonJS files `var Plotly = require('plotly.js');` in your source file.
+and use the plotly.js `dist` file(s) or require plotly.js using CommonJS as `var Plotly = require('plotly.js');`.
 
 #### Use the plotly.js CDN hosted by Fastly:
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<!-- OR use a specific plotly.js release (e.g. version 1.5.0)-->
+<!-- OR use a specific plotly.js release (e.g. version 1.5.0) -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
 ```
 
