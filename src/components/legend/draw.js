@@ -277,8 +277,9 @@ module.exports = function draw(gd) {
         // legend, background and border, scroll box and scroll bar
         legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
 
-        // increase the background and clip-path width
-        // by the scrollbar width and margin
+        // This attribute is only needed to help the jasmine tests
+        legend.attr('data-height', legendHeight);
+
         bg.attr({
             width: opts.width - 2 * opts.borderwidth,
             height: legendHeight - 2 * opts.borderwidth,
@@ -286,17 +287,17 @@ module.exports = function draw(gd) {
             y: opts.borderwidth
         });
 
-        clipPath.select('rect').attr({
-            width: opts.width,
-            height: legendHeight,
-            x: 0,
-            y: 0
-        });
-
-        legend.call(Drawing.setClipUrl, clipId);
-
         var dataScroll = scrollBox.attr('data-scroll') || 0;
         scrollBox.attr('transform', 'translate(0, ' + dataScroll + ')');
+
+        clipPath.select('rect').attr({
+            width: opts.width - 2 * opts.borderwidth,
+            height: legendHeight - 2 * opts.borderwidth,
+            x: opts.borderwidth,
+            y: opts.borderwidth - dataScroll
+        });
+
+        scrollBox.call(Drawing.setClipUrl, clipId);
 
         if(opts.height - legendHeight > 0 && !gd._context.staticPlot) {
             // Show the scrollbar only if needed and requested
@@ -314,7 +315,8 @@ module.exports = function draw(gd) {
             });
 
             clipPath.select('rect').attr({
-                width: opts.width +
+                width: opts.width -
+                    2 * opts.borderwidth +
                     constants.scrollBarWidth +
                     constants.scrollBarMargin
             });
@@ -366,11 +368,14 @@ module.exports = function draw(gd) {
                 scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
                 scrollBar.call(
                     Drawing.setRect,
-                    opts.width - 2 * opts.borderwidth,
+                    opts.width,
                     scrollBarY,
                     constants.scrollBarWidth,
                     constants.scrollBarHeight
                 );
+                clipPath.select('rect').attr({
+                    y: opts.borderwidth - scrollBoxY
+                });
             }
         }
 
