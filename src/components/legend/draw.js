@@ -47,365 +47,420 @@ module.exports = function draw(gd) {
     if(typeof gd.firstRender === 'undefined') gd.firstRender = true;
     else if(gd.firstRender) gd.firstRender = false;
 
-    var legend = fullLayout._infolayer.selectAll('g.legend')
-        .data([0]);
+    var legend = createRootNode(),     // root element (sets legend position)
+        clipPath = createClipPath(),   // legend clip path
+        bg = createBackground(),       // legend background and border
+        scrollBox = createScrollBox(), // contains all the legend traces
+        scrollBar = createScrollBar(), // scroll bar (visible only if needed)
+        groups = createGroups(),       // legend groups
+        traces = createLegendTraces(); // legend traces
 
-    legend.enter().append('g')
-        .attr({
-            'class': 'legend',
-            'pointer-events': 'all'
-        });
+    positionLegend();
 
-    var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
-        .data([0]);
+    function createRootNode() {
+        var legend = fullLayout._infolayer.selectAll('g.legend')
+            .data([0]);
 
-    clipPath.enter().append('clipPath')
-        .attr('id', clipId)
-        .append('rect');
-
-    var bg = legend.selectAll('rect.bg')
-        .data([0]);
-
-    bg.enter().append('rect')
-        .attr({
-            'class': 'bg',
-            'shape-rendering': 'crispEdges'
-        })
-        .call(Color.stroke, opts.bordercolor)
-        .call(Color.fill, opts.bgcolor)
-        .style('stroke-width', opts.borderwidth + 'px');
-
-    var scrollBox = legend.selectAll('g.scrollbox')
-        .data([0]);
-
-    scrollBox.enter().append('g')
-        .attr('class', 'scrollbox');
-
-    var scrollBar = legend.selectAll('rect.scrollbar')
-        .data([0]);
-
-    scrollBar.enter().append('rect')
-        .attr({
-            'class': 'scrollbar',
-            'rx': 20,
-            'ry': 2,
-            'width': 0,
-            'height': 0
-        })
-        .call(Color.fill, '#808BA4');
-
-    var groups = scrollBox.selectAll('g.groups')
-        .data(legendData);
-
-    groups.enter().append('g')
-        .attr('class', 'groups');
-
-    groups.exit().remove();
-
-    if(helpers.isGrouped(opts)) {
-        groups.attr('transform', function(d, i) {
-            return 'translate(0,' + i * opts.tracegroupgap + ')';
-        });
-    }
-
-    var traces = groups.selectAll('g.traces')
-        .data(Lib.identity);
-
-    traces.enter().append('g').attr('class', 'traces');
-    traces.exit().remove();
-
-    traces.call(style)
-        .style('opacity', function(d) {
-            var trace = d[0].trace;
-            if(Plots.traceIs(trace, 'pie')) {
-                return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
-            } else {
-                return trace.visible === 'legendonly' ? 0.5 : 1;
-            }
-        })
-        .each(function(d, i) {
-            drawTexts(this, gd, d, i, traces);
-
-            var traceToggle = d3.select(this).selectAll('rect')
-                .data([0]);
-
-            traceToggle.enter().append('rect')
-                .classed('legendtoggle', true)
-                .style('cursor', 'pointer')
-                .attr('pointer-events', 'all')
-                .call(Color.fill, 'rgba(0,0,0,0)');
-
-            traceToggle.on('click', function() {
-                if(gd._dragged) return;
-
-                var fullData = gd._fullData,
-                    trace = d[0].trace,
-                    legendgroup = trace.legendgroup,
-                    traceIndicesInGroup = [],
-                    tracei,
-                    newVisible;
-
-                if(Plots.traceIs(trace, 'pie')) {
-                    var thisLabel = d[0].label,
-                        newHiddenSlices = hiddenSlices.slice(),
-                        thisLabelIndex = newHiddenSlices.indexOf(thisLabel);
-
-                    if(thisLabelIndex === -1) newHiddenSlices.push(thisLabel);
-                    else newHiddenSlices.splice(thisLabelIndex, 1);
-
-                    Plotly.relayout(gd, 'hiddenlabels', newHiddenSlices);
-                } else {
-                    if(legendgroup === '') {
-                        traceIndicesInGroup = [trace.index];
-                    } else {
-                        for(var i = 0; i < fullData.length; i++) {
-                            tracei = fullData[i];
-                            if(tracei.legendgroup === legendgroup) {
-                                traceIndicesInGroup.push(tracei.index);
-                            }
-                        }
-                    }
-
-                    newVisible = trace.visible === true ? 'legendonly' : true;
-                    Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
-                }
+        legend.enter().append('g')
+            .attr({
+                'class': 'legend',
+                'pointer-events': 'all'
             });
-        });
 
-    // Position and size the legend
-    var lyMin = 0,
-        lyMax = fullLayout.height;
-
-    computeLegendDimensions(gd, traces);
-
-    if(opts.height > lyMax) {
-        // If the legend doesn't fit in the plot area,
-        // do not expand the vertical margins.
-        expandHorizontalMargin(gd);
-    } else {
-        expandMargin(gd);
+        return legend;
     }
 
-    // Scroll section must be executed after repositionLegend.
-    // It requires the legend width, height, x and y to position the scrollbox
-    // and these values are mutated in repositionLegend.
-    var gs = fullLayout._size,
-        lx = gs.l + gs.w * opts.x,
-        ly = gs.t + gs.h * (1-opts.y);
+    function createClipPath() {
+        var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
+            .data([0]);
 
-    if(anchorUtils.isRightAnchor(opts)) {
-        lx -= opts.width;
-    }
-    else if(anchorUtils.isCenterAnchor(opts)) {
-        lx -= opts.width / 2;
+        clipPath.enter().append('clipPath')
+            .attr('id', clipId)
+            .append('rect');
+
+        return clipPath;
     }
 
-    if(anchorUtils.isBottomAnchor(opts)) {
-        ly -= opts.height;
-    }
-    else if(anchorUtils.isMiddleAnchor(opts)) {
-        ly -= opts.height / 2;
-    }
+    function createBackground() {
+        var bg = legend.selectAll('rect.bg')
+            .data([0]);
 
-    // Make sure the legend top and bottom are visible
-    // (legends with a scroll bar are not allowed to stretch beyond the extended
-    // margins)
-    var legendHeight = opts.height,
-        legendHeightMax = gs.h;
+        bg.enter().append('rect')
+            .attr({
+                'class': 'bg',
+                'shape-rendering': 'crispEdges'
+            })
+            .call(Color.stroke, opts.bordercolor)
+            .call(Color.fill, opts.bgcolor)
+            .style('stroke-width', opts.borderwidth + 'px');
 
-    if(legendHeight > legendHeightMax) {
-        ly = gs.t;
-        legendHeight = legendHeightMax;
-    }
-    else {
-        if(ly > lyMax) ly = lyMax - legendHeight;
-        if(ly < lyMin) ly = lyMin;
-        legendHeight = Math.min(lyMax - ly, opts.height);
+        return bg;
     }
 
-    // Deal with scrolling
-    var scrollPosition = scrollBox.attr('data-scroll') || 0;
+    function createScrollBox() {
+        var scrollBox = legend.selectAll('g.scrollbox')
+            .data([0]);
 
-    scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
+        scrollBox.enter().append('g')
+            .attr('class', 'scrollbox');
 
-    bg.attr({
-        width: opts.width - 2 * opts.borderwidth,
-        height: legendHeight - 2 * opts.borderwidth,
-        x: opts.borderwidth,
-        y: opts.borderwidth
-    });
+        return scrollBox;
+    }
 
-    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
+    function createScrollBar() {
+        var scrollBar = legend.selectAll('rect.scrollbar')
+            .data([0]);
 
-    clipPath.select('rect').attr({
-        width: opts.width,
-        height: legendHeight,
-        x: 0,
-        y: 0
-    });
+        scrollBar.enter().append('rect')
+            .attr({
+                'class': 'scrollbar',
+                'rx': 20,
+                'ry': 2,
+                'width': 0,
+                'height': 0
+            })
+            .call(Color.fill, '#808BA4');
 
-    legend.call(Drawing.setClipUrl, clipId);
+        return scrollBar;
+    }
 
-    // If scrollbar should be shown.
-    if(opts.height - legendHeight > 0 && !gd._context.staticPlot) {
+    function createGroups() {
+        var groups = scrollBox.selectAll('g.groups')
+            .data(legendData);
 
-        // increase the background and clip-path width
-        // by the scrollbar width and margin
-        bg.attr({
-            width: opts.width -
-                2 * opts.borderwidth +
-                constants.scrollBarWidth +
-                constants.scrollBarMargin
-        });
+        groups.enter().append('g')
+            .attr('class', 'groups');
 
-        clipPath.select('rect').attr({
-            width: opts.width +
-                constants.scrollBarWidth +
-                constants.scrollBarMargin
-        });
+        groups.exit().remove();
 
-        if(gd.firstRender) {
-            // Move scrollbar to starting position
-            scrollHandler(constants.scrollBarMargin, 0);
+        if(helpers.isGrouped(opts)) {
+            groups.attr('transform', function(d, i) {
+                return 'translate(0,' + i * opts.tracegroupgap + ')';
+            });
         }
 
-        var scrollBarYMax = legendHeight -
-                constants.scrollBarHeight -
-                2 * constants.scrollBarMargin,
-            scrollBoxYMax = opts.height - legendHeight,
-            scrollBarY = constants.scrollBarMargin,
-            scrollBoxY = 0;
-
-        scrollHandler(scrollBarY, scrollBoxY);
-
-        legend.on('wheel',null);
-        legend.on('wheel', function() {
-            scrollBoxY = Lib.constrain(
-                scrollBox.attr('data-scroll') -
-                    d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
-                -scrollBoxYMax, 0);
-            scrollBarY = constants.scrollBarMargin -
-                scrollBoxY / scrollBoxYMax * scrollBarYMax;
-            scrollHandler(scrollBarY, scrollBoxY);
-            d3.event.preventDefault();
-        });
-
-        scrollBar.on('.drag',null);
-        scrollBox.on('.drag',null);
-        var drag = d3.behavior.drag().on('drag', function() {
-            scrollBarY = Lib.constrain(
-                d3.event.y - constants.scrollBarHeight / 2,
-                constants.scrollBarMargin,
-                constants.scrollBarMargin + scrollBarYMax);
-            scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
-                scrollBarYMax * scrollBoxYMax;
-            scrollHandler(scrollBarY, scrollBoxY);
-        });
-
-        scrollBar.call(drag);
-        scrollBox.call(drag);
-
+        return groups;
     }
 
+    function createLegendTraces() {
+        var traces = groups.selectAll('g.traces')
+            .data(Lib.identity);
 
-    function scrollHandler(scrollBarY, scrollBoxY) {
-        scrollBox.attr('data-scroll', scrollBoxY);
-        scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
-        scrollBar.call(
-            Drawing.setRect,
-            opts.width,
-            scrollBarY,
-            constants.scrollBarWidth,
-            constants.scrollBarHeight
-        );
-    }
+        traces.enter().append('g').attr('class', 'traces');
+        traces.exit().remove();
 
-    if(gd._context.editable) {
-        var xf,
-            yf,
-            x0,
-            y0,
-            lw,
-            lh;
-
-        dragElement.init({
-            element: legend.node(),
-            prepFn: function() {
-                x0 = Number(legend.attr('x'));
-                y0 = Number(legend.attr('y'));
-                lw = Number(legend.attr('width'));
-                lh = Number(legend.attr('height'));
-                setCursor(legend);
-            },
-            moveFn: function(dx, dy) {
-                var gs = gd._fullLayout._size;
-
-                legend.call(Drawing.setPosition, x0+dx, y0+dy);
-
-                xf = dragElement.align(x0+dx, lw, gs.l, gs.l+gs.w,
-                    opts.xanchor);
-                yf = dragElement.align(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
-                    opts.yanchor);
-
-                var csr = dragElement.getCursor(xf, yf,
-                    opts.xanchor, opts.yanchor);
-                setCursor(legend, csr);
-            },
-            doneFn: function(dragged) {
-                setCursor(legend);
-                if(dragged && xf !== undefined && yf !== undefined) {
-                    Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
+        traces.call(style)
+            .style('opacity', function(d) {
+                var trace = d[0].trace;
+                if(Plots.traceIs(trace, 'pie')) {
+                    return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
+                } else {
+                    return trace.visible === 'legendonly' ? 0.5 : 1;
                 }
+            })
+            .each(function(d, i) {
+                drawLegendTraces(this, gd, d, i, traces);
+                setupTraceToggle(this, gd, d);
+            });
+
+        return traces;
+    }
+
+    function drawLegendTraces(context, gd, d, i, traces) {
+        var fullLayout = gd._fullLayout,
+            trace = d[0].trace,
+            isPie = Plots.traceIs(trace, 'pie'),
+            traceIndex = trace.index,
+            name = isPie ? d[0].label : trace.name;
+
+        var text = d3.select(context).selectAll('text.legendtext')
+            .data([0]);
+        text.enter().append('text').classed('legendtext', true);
+        text.attr({
+            x: 40,
+            y: 0,
+            'data-unformatted': name
+        })
+        .style('text-anchor', 'start')
+        .classed('user-select-none', true)
+        .call(Drawing.font, fullLayout.legend.font)
+        .text(name);
+
+        function textLayout(s) {
+            Plotly.util.convertToTspans(s, function() {
+                if(gd.firstRender) {
+                    computeLegendSize(gd, traces);
+                    expandMargin(gd);
+                }
+            });
+            s.selectAll('tspan.line').attr({x: s.attr('x')});
+        }
+
+        if(gd._context.editable && !isPie) {
+            text.call(Plotly.util.makeEditable)
+                .call(textLayout)
+                .on('edit', function(text) {
+                    this.attr({'data-unformatted': text});
+                    this.text(text)
+                        .call(textLayout);
+                    if(!this.text()) text = ' \u0020\u0020 ';
+                    Plotly.restyle(gd, 'name', text, traceIndex);
+                });
+        }
+        else text.call(textLayout);
+    }
+
+    function setupTraceToggle(context, gd, d) {
+        var traceToggle = d3.select(context).selectAll('rect')
+            .data([0]);
+
+        traceToggle.enter().append('rect')
+            .classed('legendtoggle', true)
+            .style('cursor', 'pointer')
+            .attr('pointer-events', 'all')
+            .call(Color.fill, 'rgba(0,0,0,0)');
+
+        traceToggle.on('click', function() {
+            if(gd._dragged) return;
+
+            var fullData = gd._fullData,
+                trace = d[0].trace,
+                legendgroup = trace.legendgroup,
+                traceIndicesInGroup = [],
+                tracei,
+                newVisible;
+
+            if(Plots.traceIs(trace, 'pie')) {
+                var thisLabel = d[0].label,
+                    newHiddenSlices = hiddenSlices.slice(),
+                    thisLabelIndex = newHiddenSlices.indexOf(thisLabel);
+
+                if(thisLabelIndex === -1) newHiddenSlices.push(thisLabel);
+                else newHiddenSlices.splice(thisLabelIndex, 1);
+
+                Plotly.relayout(gd, 'hiddenlabels', newHiddenSlices);
+            } else {
+                if(legendgroup === '') {
+                    traceIndicesInGroup = [trace.index];
+                } else {
+                    for(var i = 0; i < fullData.length; i++) {
+                        tracei = fullData[i];
+                        if(tracei.legendgroup === legendgroup) {
+                            traceIndicesInGroup.push(tracei.index);
+                        }
+                    }
+                }
+
+                newVisible = trace.visible === true ? 'legendonly' : true;
+                Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
             }
         });
+    }
+
+    function positionLegend() {
+        computeLegendSize(gd, traces);  // updates opts
+
+        // If the legend height doesn't fit in the plot area,
+        // expand only the horizontal margin.
+        if(opts.height > fullLayout.height) {
+            expandHorizontalMargin(gd);
+        } else {
+            expandMargin(gd);
+        }
+
+        var lx,            // legend x coordinate
+            ly,            // legend y coordinate
+            legendHeight;  // legend visible height
+        computeLegendPosition();  // updates lx, ly and legendHeight
+
+        // Set size and position of all the elements that make up a legend:
+        // legend, background and border, scroll box and scroll bar
+        legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
+
+        // This attribute is only needed to help the jasmine tests
+        legend.attr('data-height', legendHeight);
+
+        bg.attr({
+            width: opts.width - 2 * opts.borderwidth,
+            height: legendHeight - 2 * opts.borderwidth,
+            x: opts.borderwidth,
+            y: opts.borderwidth
+        });
+
+        var dataScroll = scrollBox.attr('data-scroll') || 0;
+        scrollBox.attr('transform', 'translate(0, ' + dataScroll + ')');
+
+        clipPath.select('rect').attr({
+            width: opts.width - 2 * opts.borderwidth,
+            height: legendHeight - 2 * opts.borderwidth,
+            x: opts.borderwidth,
+            y: opts.borderwidth - dataScroll
+        });
+
+        scrollBox.call(Drawing.setClipUrl, clipId);
+
+        if(opts.height - legendHeight > 0 && !gd._context.staticPlot) {
+            // Show the scrollbar only if needed and requested
+            positionScrollBar(legendHeight);
+        }
+
+        if(gd._context.editable) setupDragElement();
+
+        function positionScrollBar(legendHeight) {
+            bg.attr({
+                width: opts.width -
+                    2 * opts.borderwidth +
+                    constants.scrollBarWidth +
+                    constants.scrollBarMargin
+            });
+
+            clipPath.select('rect').attr({
+                width: opts.width -
+                    2 * opts.borderwidth +
+                    constants.scrollBarWidth +
+                    constants.scrollBarMargin
+            });
+
+            if(gd.firstRender) {
+                // Move scrollbar to starting position
+                scrollHandler(constants.scrollBarMargin, 0);
+            }
+
+            // Handle wheel and drag events
+            var scrollBarYMax = legendHeight -
+                    constants.scrollBarHeight -
+                    2 * constants.scrollBarMargin,
+                scrollBoxYMax = opts.height - legendHeight,
+                scrollBarY = constants.scrollBarMargin,
+                scrollBoxY = 0;
+
+            scrollHandler(scrollBarY, scrollBoxY);
+
+            legend.on('wheel',null);
+            legend.on('wheel', function() {
+                scrollBoxY = Lib.constrain(
+                    scrollBox.attr('data-scroll') -
+                        d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
+                    -scrollBoxYMax, 0);
+                scrollBarY = constants.scrollBarMargin -
+                    scrollBoxY / scrollBoxYMax * scrollBarYMax;
+                scrollHandler(scrollBarY, scrollBoxY);
+                d3.event.preventDefault();
+            });
+
+            scrollBar.on('.drag',null);
+            scrollBox.on('.drag',null);
+            var drag = d3.behavior.drag().on('drag', function() {
+                scrollBarY = Lib.constrain(
+                    d3.event.y - constants.scrollBarHeight / 2,
+                    constants.scrollBarMargin,
+                    constants.scrollBarMargin + scrollBarYMax);
+                scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
+                    scrollBarYMax * scrollBoxYMax;
+                scrollHandler(scrollBarY, scrollBoxY);
+            });
+
+            scrollBar.call(drag);
+            scrollBox.call(drag);
+
+            function scrollHandler(scrollBarY, scrollBoxY) {
+                scrollBox.attr('data-scroll', scrollBoxY);
+                scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
+                scrollBar.call(
+                    Drawing.setRect,
+                    opts.width,
+                    scrollBarY,
+                    constants.scrollBarWidth,
+                    constants.scrollBarHeight
+                );
+                clipPath.select('rect').attr({
+                    y: opts.borderwidth - scrollBoxY
+                });
+            }
+        }
+
+        function setupDragElement() {
+            var xf,
+                yf,
+                x0,
+                y0,
+                lw,
+                lh;
+
+            dragElement({
+                element: legend.node(),
+                prepFn: function() {
+                    x0 = Number(legend.attr('x'));
+                    y0 = Number(legend.attr('y'));
+                    lw = Number(legend.attr('width'));
+                    lh = Number(legend.attr('height'));
+                    setCursor(legend);
+                },
+                moveFn: function(dx, dy) {
+                    var gs = gd._fullLayout._size;
+
+                    legend.call(Drawing.setPosition, x0+dx, y0+dy);
+
+                    xf = dragElement.align(x0+dx, lw, gs.l, gs.l+gs.w,
+                        opts.xanchor);
+                    yf = dragElement.align(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
+                        opts.yanchor);
+
+                    var csr = dragElement.getCursor(xf, yf,
+                        opts.xanchor, opts.yanchor);
+                    setCursor(legend, csr);
+                },
+                doneFn: function(dragged) {
+                    setCursor(legend);
+                    if(dragged && xf !== undefined && yf !== undefined) {
+                        Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
+                    }
+                }
+            });
+        }
+
+        function computeLegendPosition() {
+            var gs = fullLayout._size;
+
+            lx = gs.l + gs.w * opts.x,
+            ly = gs.t + gs.h * (1-opts.y);
+
+            if(anchorUtils.isRightAnchor(opts)) {
+                lx -= opts.width;
+            }
+            else if(anchorUtils.isCenterAnchor(opts)) {
+                lx -= opts.width / 2;
+            }
+
+            if(anchorUtils.isBottomAnchor(opts)) {
+                ly -= opts.height;
+            }
+            else if(anchorUtils.isMiddleAnchor(opts)) {
+                ly -= opts.height / 2;
+            }
+
+            // Make sure the legend top and bottom are visible
+            // (legends with a scroll bar are not allowed to stretch beyond the
+            // extended margins)
+            legendHeight = opts.height;
+
+            if(legendHeight > gs.h) {
+                ly = gs.t;
+                legendHeight = gs.h;
+            }
+            else {
+                if(ly > fullLayout.height) {
+                    ly = fullLayout.height - legendHeight;
+                }
+                if(ly < 0) ly = 0;
+                legendHeight = Math.min(fullLayout.height - ly, opts.height);
+            }
+        }
+
     }
 };
 
-function drawTexts(context, gd, d, i, traces) {
-    var fullLayout = gd._fullLayout,
-        trace = d[0].trace,
-        isPie = Plots.traceIs(trace, 'pie'),
-        traceIndex = trace.index,
-        name = isPie ? d[0].label : trace.name;
-
-    var text = d3.select(context).selectAll('text.legendtext')
-        .data([0]);
-    text.enter().append('text').classed('legendtext', true);
-    text.attr({
-        x: 40,
-        y: 0,
-        'data-unformatted': name
-    })
-    .style('text-anchor', 'start')
-    .classed('user-select-none', true)
-    .call(Drawing.font, fullLayout.legend.font)
-    .text(name);
-
-    function textLayout(s) {
-        Plotly.util.convertToTspans(s, function() {
-            if(gd.firstRender) {
-                computeLegendDimensions(gd, traces);
-                expandMargin(gd);
-            }
-        });
-        s.selectAll('tspan.line').attr({x: s.attr('x')});
-    }
-
-    if(gd._context.editable && !isPie) {
-        text.call(Plotly.util.makeEditable)
-            .call(textLayout)
-            .on('edit', function(text) {
-                this.attr({'data-unformatted': text});
-                this.text(text)
-                    .call(textLayout);
-                if(!this.text()) text = ' \u0020\u0020 ';
-                Plotly.restyle(gd, 'name', text, traceIndex);
-            });
-    }
-    else text.call(textLayout);
-}
-
-function computeLegendDimensions(gd, traces) {
+function computeLegendSize(gd, traces) {
     var fullLayout = gd._fullLayout,
         opts = fullLayout.legend,
         borderwidth = opts.borderwidth;
@@ -435,7 +490,8 @@ function computeLegendDimensions(gd, traces) {
             var mathjaxBB = Drawing.bBox(mathjaxGroup.node());
             tHeight = mathjaxBB.height;
             tWidth = mathjaxBB.width;
-            mathjaxGroup.attr('transform','translate(0,' + (tHeight / 4) + ')');
+            mathjaxGroup.attr('transform',
+                'translate(0,' + (tHeight / 4) + ')');
         }
         else {
             // approximation to height offset to center the font
