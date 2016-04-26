@@ -256,7 +256,6 @@ axes.saveRangeInitial = function(gd, overwrite) {
 //          and make it a tight bound if possible
 var FP_SAFE = Number.MAX_VALUE/2;
 axes.expand = function(ax, data, options) {
-    // if(!(ax.autorange || (ax.rangeslider || {}).visible) || !data) return;
     if(!(ax.autorange || ax._needsExpand) || !data) return;
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
