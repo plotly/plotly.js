@@ -18,7 +18,7 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 * [Documentation](#documentation)
 * [Contributing](#contributing)
 * [Community](#community)
-* [Clients for R, Python, and MATLAB](#clients-for-r-python-node-and-matlab)
+* [Clients for R, Python, Node, and MATLAB](#clients-for-r-python-node-and-matlab)
 * [Creators](#creators)
 * [Copyright and license](#copyright-and-license)
 
