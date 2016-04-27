@@ -14,6 +14,7 @@ dependencies:
     - docker pull plotly/testbed:candidate
     - npm run cibuild
     - docker run -d --name mytestbed -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/testbed:candidate
+    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' mytestbed)" -- bash -c "cd /var/www/streambed/image_server/plotly.js && cp -f test/image/index.html ../server_app/index.html && /nw_restart.sh"
     - wget --server-response --spider --tries=8 --retry-connrefused http://localhost:9010/ping
 
 test:
