@@ -12,10 +12,10 @@ machine:
 
 dependencies:
   pre:
-    - docker pull plotly/testbed:latest
+    - docker pull plotly/testbed:candidate
   post:
     - npm run cibuild
-    - docker run -d --name mytestbed -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/testbed:latest
+    - docker run -d --name mytestbed -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/testbed:candidate
     - wget --server-response --spider --tries=8 --retry-connrefused http://localhost:9010/ping
 test:
   override:
