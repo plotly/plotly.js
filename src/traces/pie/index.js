@@ -23,6 +23,7 @@ Pie.moduleType = 'trace';
 Pie.name = 'pie';
 Pie.basePlotModule = require('../../plots/cartesian');
 Pie.categories = ['pie', 'showLegend'];
+Pie.layoutCategories = ['pie'];
 Pie.meta = {
     description: [
         'A data visualized by the sectors of the pie is set in `values`.',
