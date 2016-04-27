@@ -738,12 +738,6 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('separators');
     coerce('hidesources');
     coerce('smith');
-    coerce('_hasCartesian');
-    coerce('_hasGL3D');
-    coerce('_hasGeo');
-    coerce('_hasPie');
-    coerce('_hasGL2D');
-    coerce('_hasTernary');
 };
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
