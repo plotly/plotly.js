@@ -30,7 +30,7 @@ exports.plot = function(gd) {
     var fullLayout = gd._fullLayout,
         subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
         calcdata = gd.calcdata,
-        modules = gd._modules;
+        modules = fullLayout._modules;
 
     function getCdSubplot(calcdata, subplot) {
         var cdSubplot = [];

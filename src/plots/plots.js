@@ -447,8 +447,9 @@ plots.supplyDefaults = function(gd) {
         oldFullData = gd._fullData || [],
         newFullData = gd._fullData = [],
         newData = gd.data || [],
-        modules = gd._modules = [];
+        newData = gd.data || [];
 
+    var modules = newFullLayout._modules = [];
     var i, trace, fullTrace, _module, axList, ax;
 
 
@@ -792,7 +793,6 @@ plots.purge = function(gd) {
 
     // these get recreated on Plotly.plot anyway, but just to be safe
     // (and to have a record of them...)
-    delete gd._modules;
     delete gd._tester;
     delete gd._testref;
     delete gd._promises;
@@ -810,7 +810,7 @@ plots.purge = function(gd) {
 };
 
 plots.style = function(gd) {
-    var _modules = gd._modules;
+    var _modules = gd._fullLayout._modules;
 
     for(var i = 0; i < _modules.length; i++) {
         var _module = _modules[i];

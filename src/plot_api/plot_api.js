@@ -205,7 +205,7 @@ Plotly.plot = function(gd, data, layout, config) {
         if(!recalc) return;
 
         var subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
-            modules = gd._modules;
+            modules = fullLayout._modules;
 
         // position and range calculations for traces that
         // depend on each other ie bars (stacked or grouped)
