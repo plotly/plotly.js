@@ -22,8 +22,10 @@ var MINSELECT = constants.MINSELECT;
 function getAxId(ax) { return ax._id; }
 
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
-    var plot = dragOptions.plotinfo.plot,
+    var plot = dragOptions.gd._fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
+        xs = dragOptions.plotinfo.x()._offset,
+        ys = dragOptions.plotinfo.y()._offset,
         x0 = startX - dragBBox.left,
         y0 = startY - dragBBox.top,
         x1 = x0,
@@ -45,6 +47,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     outlines.enter()
         .append('path')
         .attr('class', function(d) { return 'select-outline select-outline-' + d; })
+        .attr('transform','translate(' + xs + ', ' + ys + ')')
         .attr('d', path0 + 'Z');
 
     var corners = plot.append('path')
@@ -54,6 +57,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             stroke: color.defaultLine,
             'stroke-width': 1
         })
+        .attr('transform','translate(' + xs + ', ' + ys + ')')
         .attr('d','M0,0Z');
 
 
@@ -176,6 +180,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 
     dragOptions.doneFn = function(dragged, numclicks) {
+        corners.remove();
         if(!dragged && numclicks === 2) {
             // clear selection on doubleclick
             outlines.remove();
@@ -189,6 +194,5 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         else {
             dragOptions.gd.emit('plotly_selected', eventData);
         }
-        corners.remove();
     };
 };

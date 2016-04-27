@@ -25,11 +25,23 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, axName, coun
             attributes, attr, dflt);
     }
 
-    coerce('visible');
-    coerce('thickness');
     coerce('bgcolor');
     coerce('bordercolor');
     coerce('borderwidth');
+    coerce('thickness');
+    coerce('visible');
+    coerce('range');
+
+    // Expand slider range to the axis range
+    if(containerOut.range && !layoutOut[axName].autorange) {
+        var outRange = containerOut.range,
+            axRange = layoutOut[axName].range;
+
+        outRange[0] = Math.min(outRange[0], axRange[0]);
+        outRange[1] = Math.max(outRange[1], axRange[1]);
+    } else {
+        layoutOut[axName]._needsExpand = true;
+    }
 
     if(containerOut.visible) {
         counterAxes.forEach(function(ax) {

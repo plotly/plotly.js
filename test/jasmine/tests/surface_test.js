@@ -1,5 +1,7 @@
 var Surface = require('@src/traces/surface');
 
+var Lib = require('@src/lib');
+
 
 describe('Test surface', function() {
     'use strict';
@@ -37,13 +39,28 @@ describe('Test surface', function() {
             traceIn = {
                 z: [[1,2,3], [2,1,2]],
                 contours: {
-                    x: { show: true }
+                    x: {},
+                    y: { show: true },
+                    z: { show: false, highlight: false }
                 }
             };
 
+            var fullOpts = {
+                show: false,
+                highlight: true,
+                project: { x: false, y: false, z: false },
+                highlightcolor: '#444',
+                highlightwidth: 2
+            };
+
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.contours.x.project).toEqual({ x: false, y: false, z: false });
-            expect(traceOut.contours.y).toEqual({ show: false, highlight: false });
+            expect(traceOut.contours.x).toEqual(fullOpts);
+            expect(traceOut.contours.y).toEqual(Lib.extendDeep({}, fullOpts, {
+                show: true,
+                color: '#444',
+                width: 2,
+                usecolormap: false
+            }));
             expect(traceOut.contours.z).toEqual({ show: false, highlight: false });
         });
 
@@ -56,7 +73,7 @@ describe('Test surface', function() {
             };
 
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.contours.x.color).toEqual('#000');
+            expect(traceOut.contours.x.color).toEqual('#444');
             expect(traceOut.contours.x.width).toEqual(2);
             expect(traceOut.contours.x.usecolormap).toEqual(false);
 

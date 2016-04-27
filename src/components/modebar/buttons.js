@@ -218,10 +218,11 @@ function handleCartesian(gd, ev) {
             r1 = (1 - mag) / 2,
             axList = Plotly.Axes.list(gd, null, true);
 
-        var ax, axName, initialRange;
+        var ax, axName;
 
         for(var i = 0; i < axList.length; i++) {
             ax = axList[i];
+
             if(!ax.fixedrange) {
                 axName = ax._name;
                 if(val === 'auto') aobj[axName + '.autorange'] = true;
@@ -229,14 +230,16 @@ function handleCartesian(gd, ev) {
                     if(ax._rangeInitial === undefined) {
                         aobj[axName + '.autorange'] = true;
                     }
-                    else aobj[axName + '.range'] = ax._rangeInitial.slice();
+                    else {
+                        var rangeInitial = ax._rangeInitial.slice();
+                        aobj[axName + '.range[0]'] = rangeInitial[0];
+                        aobj[axName + '.range[1]'] = rangeInitial[1];
+                    }
                 }
                 else {
-                    initialRange = ax.range;
-                    aobj[axName + '.range'] = [
-                        r0 * initialRange[0] + r1 * initialRange[1],
-                        r0 * initialRange[1] + r1 * initialRange[0]
-                    ];
+                    var rangeNow = ax.range;
+                    aobj[axName + '.range[0]'] = r0 * rangeNow[0] + r1 * rangeNow[1];
+                    aobj[axName + '.range[1]'] = r0 * rangeNow[1] + r1 * rangeNow[0];
                 }
             }
         }

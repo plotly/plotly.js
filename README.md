@@ -18,7 +18,7 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 * [Documentation](#documentation)
 * [Contributing](#contributing)
 * [Community](#community)
-* [Clients for R, Python, and MATLAB](#clients-for-r-python-and-matlab)
+* [Clients for R, Python, Node, and MATLAB](#clients-for-r-python-node-and-matlab)
 * [Creators](#creators)
 * [Copyright and license](#copyright-and-license)
 
@@ -33,19 +33,25 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 git clone https://github.com/plotly/plotly.js.git
 ```
 
+and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
+
 #### Install with `npm`
 ```bash
 npm install plotly.js
 ```
+
+and use the plotly.js `dist` file(s) or require plotly.js using CommonJS as `var Plotly = require('plotly.js');`.
 
 #### Use the plotly.js CDN hosted by Fastly:
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
 
-<!-- OR use a specific plotly.js release (e.g. version 1.5.0)-->
+<!-- OR use a specific plotly.js release (e.g. version 1.5.0) -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
 ```
+
+and use the `Plotly` object in the window scope.
 
 Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
 

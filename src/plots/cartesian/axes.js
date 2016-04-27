@@ -110,91 +110,106 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
     }
 };
 
+axes.getAutoRange = function(ax) {
+    var newRange = [];
+
+    var minmin = ax._min[0].val,
+        maxmax = ax._max[0].val,
+        i;
+
+    for(i = 1; i < ax._min.length; i++) {
+        if(minmin !== maxmax) break;
+        minmin = Math.min(minmin, ax._min[i].val);
+    }
+    for(i = 1; i < ax._max.length; i++) {
+        if(minmin !== maxmax) break;
+        maxmax = Math.max(maxmax, ax._max[i].val);
+    }
+
+    var j,minpt,maxpt,minbest,maxbest,dp,dv,
+        mbest = 0,
+        axReverse = (ax.range && ax.range[1]<ax.range[0]);
+
+    // one-time setting to easily reverse the axis
+    // when plotting from code
+    if(ax.autorange === 'reversed') {
+        axReverse = true;
+        ax.autorange = true;
+    }
+
+    for(i=0; i<ax._min.length; i++) {
+        minpt = ax._min[i];
+        for(j=0; j<ax._max.length; j++) {
+            maxpt = ax._max[j];
+            dv = maxpt.val-minpt.val;
+            dp = ax._length-minpt.pad-maxpt.pad;
+            if(dv>0 && dp>0 && dv/dp > mbest) {
+                minbest = minpt;
+                maxbest = maxpt;
+                mbest = dv/dp;
+            }
+        }
+    }
+
+    if(minmin === maxmax) {
+        newRange = axReverse ?
+            [minmin+1, ax.rangemode!=='normal' ? 0 : minmin-1] :
+            [ax.rangemode!=='normal' ? 0 : minmin-1, minmin+1];
+    }
+    else if(mbest) {
+        if(ax.type==='linear' || ax.type==='-') {
+            if(ax.rangemode==='tozero' && minbest.val>=0) {
+                minbest = {val: 0, pad: 0};
+            }
+            else if(ax.rangemode==='nonnegative') {
+                if(minbest.val - mbest*minbest.pad<0) {
+                    minbest = {val: 0, pad: 0};
+                }
+                if(maxbest.val<0) {
+                    maxbest = {val: 1, pad: 0};
+                }
+            }
+
+            // in case it changed again...
+            mbest = (maxbest.val-minbest.val) /
+                (ax._length-minbest.pad-maxbest.pad);
+        }
+
+        newRange = [
+            minbest.val - mbest*minbest.pad,
+            maxbest.val + mbest*maxbest.pad
+        ];
+
+        // don't let axis have zero size
+        if(newRange[0] === newRange[1]) {
+            newRange = [newRange[0]-1, newRange[0]+1];
+        }
+
+        // maintain reversal
+        if(axReverse) {
+            newRange.reverse();
+        }
+    }
+
+    return newRange;
+};
+
 axes.doAutoRange = function(ax) {
     if(!ax._length) ax.setScale();
 
-    if(ax.autorange && ax._min && ax._max &&
-            ax._min.length && ax._max.length) {
-        var minmin = ax._min[0].val,
-            maxmax = ax._max[0].val,
-            i;
+    // TODO do we really need this?
+    var hasDeps = (ax._min && ax._max && ax._min.length && ax._max.length);
 
-        for(i = 1; i < ax._min.length; i++) {
-            if(minmin !== maxmax) break;
-            minmin = Math.min(minmin, ax._min[i].val);
-        }
-        for(i = 1; i < ax._max.length; i++) {
-            if(minmin !== maxmax) break;
-            maxmax = Math.max(maxmax, ax._max[i].val);
-        }
-
-        var j,minpt,maxpt,minbest,maxbest,dp,dv,
-            mbest = 0,
-            axReverse = (ax.range && ax.range[1]<ax.range[0]);
-        // one-time setting to easily reverse the axis
-        // when plotting from code
-        if(ax.autorange==='reversed') {
-            axReverse = true;
-            ax.autorange = true;
-        }
-        for(i=0; i<ax._min.length; i++) {
-            minpt = ax._min[i];
-            for(j=0; j<ax._max.length; j++) {
-                maxpt = ax._max[j];
-                dv = maxpt.val-minpt.val;
-                dp = ax._length-minpt.pad-maxpt.pad;
-                if(dv>0 && dp>0 && dv/dp > mbest) {
-                    minbest = minpt;
-                    maxbest = maxpt;
-                    mbest = dv/dp;
-                }
-            }
-        }
-        if(minmin===maxmax) {
-            ax.range = axReverse ?
-                [minmin+1, ax.rangemode!=='normal' ? 0 : minmin-1] :
-                [ax.rangemode!=='normal' ? 0 : minmin-1, minmin+1];
-        }
-        else if(mbest) {
-            if(ax.type==='linear' || ax.type==='-') {
-                if(ax.rangemode==='tozero' && minbest.val>=0) {
-                    minbest = {val: 0, pad: 0};
-                }
-                else if(ax.rangemode==='nonnegative') {
-                    if(minbest.val - mbest*minbest.pad<0) {
-                        minbest = {val: 0, pad: 0};
-                    }
-                    if(maxbest.val<0) {
-                        maxbest = {val: 1, pad: 0};
-                    }
-                }
-
-                // in case it changed again...
-                mbest = (maxbest.val-minbest.val) /
-                    (ax._length-minbest.pad-maxbest.pad);
-            }
-
-            ax.range = [
-                minbest.val - mbest*minbest.pad,
-                maxbest.val + mbest*maxbest.pad
-            ];
-
-            // don't let axis have zero size
-            if(ax.range[0]===ax.range[1]) {
-                ax.range = [ax.range[0]-1, ax.range[0]+1];
-            }
-
-            // maintain reversal
-            if(axReverse) {
-                ax.range.reverse();
-            }
-        }
+    if(ax.autorange && hasDeps) {
+        ax.range = axes.getAutoRange(ax);
 
         // doAutoRange will get called on fullLayout,
         // but we want to report its results back to layout
         var axIn = ax._gd.layout[ax._name];
+
         if(!axIn) ax._gd.layout[ax._name] = axIn = {};
-        if(axIn!==ax) {
+
+        if(axIn !== ax) {
             axIn.range = ax.range.slice();
             axIn.autorange = ax.autorange;
         }
@@ -241,7 +256,7 @@ axes.saveRangeInitial = function(gd, overwrite) {
 //          and make it a tight bound if possible
 var FP_SAFE = Number.MAX_VALUE/2;
 axes.expand = function(ax, data, options) {
-    if(!ax.autorange || !data) return;
+    if(!(ax.autorange || ax._needsExpand) || !data) return;
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
     if(!options) options = {};

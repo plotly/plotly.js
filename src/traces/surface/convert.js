@@ -280,13 +280,11 @@ proto.update = function(data) {
     }
 
     var highlightEnable = [true, true, true];
-    var contourEnable = [true, true, true];
     var axis = ['x', 'y', 'z'];
 
     for(i = 0; i < 3; ++i) {
         var contourParams = data.contours[axis[i]];
         highlightEnable[i] = contourParams.highlight;
-        contourEnable[i] = contourParams.show;
 
         params.showContour[i] = contourParams.show || contourParams.highlight;
         if(!params.showContour[i]) continue;
@@ -301,6 +299,7 @@ proto.update = function(data) {
             this.showContour[i] = true;
             params.levels[i] = contourLevels[i];
             surface.highlightColor[i] = params.contourColor[i] = str2RgbaArray(contourParams.color);
+
             if(contourParams.usecolormap) {
                 surface.highlightTint[i] = params.contourTint[i] = 0;
             }
@@ -313,8 +312,8 @@ proto.update = function(data) {
         }
 
         if(contourParams.highlight) {
-            params.dynamicColor[i] = str2RgbaArray(contourParams.highlightColor);
-            params.dynamicWidth[i] = contourParams.highlightWidth;
+            params.dynamicColor[i] = str2RgbaArray(contourParams.highlightcolor);
+            params.dynamicWidth[i] = contourParams.highlightwidth;
         }
     }
 
@@ -322,9 +321,8 @@ proto.update = function(data) {
 
     surface.update(params);
 
-    surface.highlightEnable = highlightEnable;
-    surface.contourEnable = contourEnable;
     surface.visible = data.visible;
+    surface.enableDynamic = highlightEnable;
 
     surface.snapToData = true;
 

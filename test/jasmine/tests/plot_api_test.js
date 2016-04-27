@@ -689,5 +689,71 @@ describe('Test plot api', function() {
             Plotly.plot(gd, data);
             expect(gd.data[0].marker.colorscale).toBe('YlOrRd');
         });
+
+        it('should rename \'highlightColor\' to \'highlightcolor\')', function() {
+            var data = [{
+                type: 'surface',
+                contours: {
+                    x: { highlightColor: 'red' },
+                    y: { highlightcolor: 'blue' }
+                }
+            }, {
+                type: 'surface'
+            }, {
+                type: 'surface',
+                contours: false
+            }, {
+                type: 'surface',
+                contours: {
+                    stuff: {},
+                    x: false,
+                    y: []
+                }
+            }];
+
+            spyOn(Plots.subplotsRegistry.gl3d, 'plot');
+
+            Plotly.plot(gd, data);
+
+            expect(Plots.subplotsRegistry.gl3d.plot).toHaveBeenCalled();
+
+            var contours = gd.data[0].contours;
+
+            expect(contours.x.highlightColor).toBeUndefined();
+            expect(contours.x.highlightcolor).toEqual('red');
+            expect(contours.y.highlightcolor).toEqual('blue');
+            expect(contours.z).toBeUndefined();
+
+            expect(gd.data[1].contours).toBeUndefined();
+            expect(gd.data[2].contours).toBe(false);
+            expect(gd.data[3].contours).toEqual({ stuff: {}, x: false, y: [] });
+        });
+
+        it('should rename \'highlightWidth\' to \'highlightwidth\')', function() {
+            var data = [{
+                type: 'surface',
+                contours: {
+                    z: { highlightwidth: 'red' },
+                    y: { highlightWidth: 'blue' }
+                }
+            }, {
+                type: 'surface'
+            }];
+
+            spyOn(Plots.subplotsRegistry.gl3d, 'plot');
+
+            Plotly.plot(gd, data);
+
+            expect(Plots.subplotsRegistry.gl3d.plot).toHaveBeenCalled();
+
+            var contours = gd.data[0].contours;
+
+            expect(contours.x).toBeUndefined();
+            expect(contours.y.highlightwidth).toEqual('blue');
+            expect(contours.z.highlightWidth).toBeUndefined();
+            expect(contours.z.highlightwidth).toEqual('red');
+
+            expect(gd.data[1].contours).toBeUndefined();
+        });
     });
 });

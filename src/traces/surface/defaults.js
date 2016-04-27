@@ -82,8 +82,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
 
         if(highlight) {
-            coerce(contourDim + '.highlightColor');
-            coerce(contourDim + '.highlightWidth');
+            coerce(contourDim + '.highlightcolor');
+            coerce(contourDim + '.highlightwidth');
         }
     }
 
@@ -93,6 +93,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         mapLegacy(traceIn, 'zmax', 'cmax');
         mapLegacy(traceIn, 'zauto', 'cauto');
     }
+
+    // TODO if contours.?.usecolormap are false and hidesurface is true
+    // the colorbar shouldn't be shown by default
 
     colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'}

@@ -20,7 +20,7 @@ module.exports = {
     supplyLayoutDefaults: supplyLayoutDefaults
 };
 
-function draw(gd, minStart, maxStart) {
+function draw(gd) {
     if(!gd._fullLayout.xaxis) return;
 
     var fullLayout = gd._fullLayout,
@@ -41,7 +41,7 @@ function draw(gd, minStart, maxStart) {
     var height = (fullLayout.height - fullLayout.margin.b - fullLayout.margin.t) * options.thickness,
         offsetShift = Math.floor(options.borderwidth / 2);
 
-    if(sliderContainer[0].length === 0 && !fullLayout._hasGL2D) createSlider(gd, minStart, maxStart);
+    if(sliderContainer[0].length === 0 && !fullLayout._hasGL2D) createSlider(gd);
 
     // Need to default to 0 for when making gl plots
     var bb = fullLayout.xaxis._boundingBox ?
