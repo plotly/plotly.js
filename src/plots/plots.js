@@ -435,23 +435,29 @@ plots.sendDataToCloud = function(gd) {
     return false;
 };
 
+// Fill in default values:
+//
+// gd.data, gd.layout:
+//   are precisely what the user specified
+//
+// gd._fullData, gd._fullLayout:
+//   are complete descriptions of how to draw the plot
+//
+// gd._fullLayout._modules
+//   is a list of all the trace modules required to draw the plot
+//
 plots.supplyDefaults = function(gd) {
-    // fill in default values:
-    // gd.data, gd.layout:
-    //   are precisely what the user specified
-    // gd._fullData, gd._fullLayout:
-    //   are complete descriptions of how to draw the plot
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
-        newLayout = gd.layout || {},
-        oldFullData = gd._fullData || [],
+        newLayout = gd.layout || {};
+
+    var oldFullData = gd._fullData || [],
         newFullData = gd._fullData = [],
-        newData = gd.data || [],
         newData = gd.data || [];
 
     var modules = newFullLayout._modules = [];
-    var i, trace, fullTrace, _module, axList, ax;
 
+    var i, _module;
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
@@ -462,9 +468,7 @@ plots.supplyDefaults = function(gd) {
 
     // then do the data
     for(i = 0; i < newData.length; i++) {
-        trace = newData[i];
-
-        fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout);
+        var fullTrace = plots.supplyDataDefaults(newData[i], i, newFullLayout);
         newFullData.push(fullTrace);
 
         // detect plot type
@@ -476,8 +480,9 @@ plots.supplyDefaults = function(gd) {
         else if(plots.traceIs(fullTrace, 'ternary')) newFullLayout._hasTernary = true;
         else if('r' in fullTrace) newFullLayout._hasPolar = true;
 
+        // fill in modules list
         _module = fullTrace._module;
-        if(_module && modules.indexOf(_module)===-1) modules.push(_module);
+        if(_module && modules.indexOf(_module) === -1) modules.push(_module);
     }
 
     // special cases that introduce interactions between traces
@@ -498,19 +503,16 @@ plots.supplyDefaults = function(gd) {
     // clean subplots and other artifacts from previous plot calls
     plots.cleanPlot(newFullData, newFullLayout, oldFullData, oldFullLayout);
 
-    /*
-     * Relink functions and underscore attributes to promote consistency between
-     * plots.
-     */
+    // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
     plots.doAutoMargin(gd);
 
     // can't quite figure out how to get rid of this... each axis needs
     // a reference back to the DOM object for just a few purposes
-    axList = Plotly.Axes.list(gd);
+    var axList = Plotly.Axes.list(gd);
     for(i = 0; i < axList.length; i++) {
-        ax = axList[i];
+        var ax = axList[i];
         ax._gd = gd;
         ax.setScale();
     }
@@ -518,7 +520,7 @@ plots.supplyDefaults = function(gd) {
     // update object references in calcdata
     if((gd.calcdata || []).length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
-            trace = newFullData[i];
+            var trace = newFullData[i];
             (gd.calcdata[i][0] || {}).trace = trace;
         }
     }
@@ -725,7 +727,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var i, _module;
 
-    // TODO incorporate into subplotRegistry
+    // TODO incorporate into subplotsRegistry
     Plotly.Axes.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
     // plot module layout defaults
