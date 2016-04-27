@@ -180,9 +180,7 @@ describe('Test click interactions:', function() {
 
     describe('drag interactions', function() {
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                setTimeout(done, 200);
-            });
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
         });
 
         it('on nw dragbox should update the axis ranges', function(done) {
