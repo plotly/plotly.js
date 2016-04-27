@@ -481,6 +481,15 @@ plots.supplyDefaults = function(gd) {
 
     // attach helper method
     newFullLayout._has = hasPlotType.bind(newFullLayout);
+
+    // temporary block (before replace all _has??? with _hasPlotType() ?
+    newFullLayout._hasCartesian = newFullLayout._has('cartesian');
+    newFullLayout._hasGeo = newFullLayout._has('geo');
+    newFullLayout._hasGL3D = newFullLayout._has('gl3d');
+    newFullLayout._hasGL2D = newFullLayout._has('gl2d');
+    newFullLayout._hasTernary = newFullLayout._has('ternary');
+    newFullLayout._hasPie = newFullLayout._has('pie');
+
     // special cases that introduce interactions between traces
     for(i = 0; i < modules.length; i++) {
         _module = modules[i];
