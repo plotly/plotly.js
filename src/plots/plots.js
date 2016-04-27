@@ -471,20 +471,16 @@ plots.supplyDefaults = function(gd) {
         var fullTrace = plots.supplyDataDefaults(newData[i], i, newFullLayout);
         newFullData.push(fullTrace);
 
-        // detect plot type
-        if(plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
-        else if(plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
-        else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
-        else if(plots.traceIs(fullTrace, 'pie')) newFullLayout._hasPie = true;
-        else if(plots.traceIs(fullTrace, 'gl2d')) newFullLayout._hasGL2D = true;
-        else if(plots.traceIs(fullTrace, 'ternary')) newFullLayout._hasTernary = true;
-        else if('r' in fullTrace) newFullLayout._hasPolar = true;
+        // detect polar
+        if('r' in fullTrace) newFullLayout._hasPolar = true;
 
         // fill in modules list
         _module = fullTrace._module;
         if(_module && modules.indexOf(_module) === -1) modules.push(_module);
     }
 
+    // attach helper method
+    newFullLayout._has = hasPlotType.bind(newFullLayout);
     // special cases that introduce interactions between traces
     for(i = 0; i < modules.length; i++) {
         _module = modules[i];
@@ -525,6 +521,23 @@ plots.supplyDefaults = function(gd) {
         }
     }
 };
+
+// helper function to be bound to fullLayout to check
+// whether a certain plot type or layout categories is present on plot
+function hasPlotType(category) {
+    var modules = this._modules || [];
+
+    for(var i = 0; i < modules.length; i++) {
+        var _module = modules[i];
+
+        if(_module.basePlotModule.name === category) return true;
+
+        var layoutCategories = _module.layoutCategories || [];
+        if(layoutCategories.indexOf(category) !== -1) return true;
+    }
+
+    return false;
+}
 
 plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var i, j;
