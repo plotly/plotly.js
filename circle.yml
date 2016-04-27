@@ -5,13 +5,14 @@ general:
 
 machine:
   node:
-    version: 4.2.1
+    version: 4.4.3
   services:
     - docker
 
 dependencies:
-  override:
+  pre:
     - docker pull plotly/testbed:candidate
+  post:
     - npm run cibuild
     - docker run -d --name mytestbed -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/testbed:candidate
     - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' mytestbed)" -- bash -c "cd /var/www/streambed/image_server/plotly.js && cp -f test/image/index.html ../server_app/index.html && /nw_restart.sh"
