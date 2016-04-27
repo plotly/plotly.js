@@ -133,6 +133,15 @@ Jasmine tests are run in a browser using
 npm run test-jasmine
 ```
 
+To run a specific suite, use:
+
+```
+npm run test-jasmine -- tests/<suite>.js
+```
+
+where the `<suite>` corresponds to the suite's file name as found in [`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests).
+
+
 Image pixel comparison tests are run in a docker container. For more
 information on how to run them locally, please refer to [image test
 README](https://github.com/plotly/plotly.js/blob/master/test/image/README.md).
