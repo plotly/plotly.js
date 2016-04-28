@@ -500,7 +500,7 @@ function toggleHover(gd) {
     var fullLayout = gd._fullLayout;
 
     var onHoverVal;
-    if(fullLayout._hasCartesian) {
+    if(fullLayout._hasCartesian && !fullLayout._hasPie) {
         onHoverVal = fullLayout._isHoriz ? 'y' : 'x';
     }
     else onHoverVal = 'closest';

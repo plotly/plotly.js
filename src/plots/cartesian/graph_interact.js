@@ -60,7 +60,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     coerce('dragmode');
 
     var hovermodeDflt;
-    if(layoutOut._hasCartesian) {
+    if(layoutOut._hasCartesian && !layoutOut._hasPie) {
         // flag for 'horizontal' plots:
         // determines the state of the mode bar 'compare' hovermode button
         var isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
