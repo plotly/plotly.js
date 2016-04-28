@@ -268,6 +268,16 @@ proto.updateFx = function(options) {
     fullLayout.hovermode = options.hovermode;
 };
 
+var relayoutCallback = function(scene) {
+    var update = {};
+    update[scene.id] = { // scene.camera has no many useful projection or scale information
+        lastInputTime: scene.camera.lastInputTime, // helps determine which one is the latest input (if async)
+        xrange: scene.xaxis.range.slice(0),
+        yrange: scene.yaxis.range.slice(0)
+    };
+    scene.container.parentElement.parentElement.parentElement.emit('plotly_relayout', update);
+};
+
 proto.cameraChanged = function() {
     var camera = this.camera,
         xrange = this.xaxis.range,
@@ -285,6 +295,7 @@ proto.cameraChanged = function() {
         this.glplotOptions.ticks = nextTicks;
         this.glplotOptions.dataBox = camera.dataBox;
         this.glplot.update(this.glplotOptions);
+        relayoutCallback(this);
     }
 };
 
