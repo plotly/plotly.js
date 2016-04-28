@@ -128,13 +128,12 @@ describe('Test gl plot interactions', function() {
             beforeEach(function(done) {
                 gd.on('plotly_click', function(eventData) {
                     ptData = eventData.points[0];
+                    delay(done);
                 });
 
                 // N.B. gl3d click events are 'mouseover' events
                 // with button 1 pressed
                 mouseEventScatter3d('mouseover', {buttons: 1});
-
-                delay(done);
             });
 
             it('should have', function() {
