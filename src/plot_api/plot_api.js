@@ -2887,22 +2887,27 @@ function lsInner(gd) {
                 .call(Color.fill, fullLayout.plot_bgcolor);
         }
 
+
         // Clip so that data only shows up on the plot area.
         var clips = fullLayout._defs.selectAll('g.clips'),
             clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        clips.selectAll('#' + clipId)
-            .data([0])
-        .enter().append('clipPath')
+        var plotClip = clips.selectAll('#' + clipId)
+            .data([0]);
+
+        plotClip.enter().append('clipPath')
             .attr({
                 'class': 'plotclip',
                 'id': clipId
             })
-            .append('rect')
+            .append('rect');
+
+        plotClip.selectAll('rect')
             .attr({
                 'width': xa._length,
                 'height': ya._length
             });
+
 
         plotinfo.plot.attr({
             'transform': 'translate(' + xa._offset + ', ' + ya._offset + ')',

@@ -320,6 +320,50 @@ describe('Test Plots', function() {
 
     });
 
+    describe('Plots.resize', function() {
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
+                .then(function() {
+                    gd.style.width = '400px';
+                    gd.style.height = '400px';
+
+                    return Plotly.Plots.resize(gd);
+                })
+                .then(done);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should resize the plot clip', function() {
+            var uid = gd._fullLayout._uid;
+
+            var plotClip = document.getElementById('clip' + uid + 'xyplot'),
+                clipRect = plotClip.children[0],
+                clipWidth = +clipRect.getAttribute('width'),
+                clipHeight = +clipRect.getAttribute('height');
+
+            expect(clipWidth).toBe(240);
+            expect(clipHeight).toBe(220);
+        });
+
+        it('should resize the main svgs', function() {
+            var mainSvgs = document.getElementsByClassName('main-svg');
+
+            for(var i = 0; i < mainSvgs.length; i++) {
+                var svg = mainSvgs[i],
+                    svgWidth = +svg.getAttribute('width'),
+                    svgHeight = +svg.getAttribute('height');
+
+                expect(svgWidth).toBe(400);
+                expect(svgHeight).toBe(400);
+            }
+        });
+    });
+
     describe('Plots.purge', function() {
         var gd;
 
