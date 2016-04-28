@@ -223,28 +223,29 @@ module.exports = function draw(gd) {
         legendHeight = Math.min(lyMax - ly, opts.height);
     }
 
-    // Deal with scrolling
+    // Set size and position of all the elements that make up a legend:
+    // legend, background and border, scroll box and scroll bar
+    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
+
+    bg.attr({
+        width: opts.width - opts.borderwidth,
+        height: legendHeight - opts.borderwidth,
+        x: opts.borderwidth / 2,
+        y: opts.borderwidth / 2
+    });
+
     var scrollPosition = scrollBox.attr('data-scroll') || 0;
 
     scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
 
-    bg.attr({
+    clipPath.select('rect').attr({
         width: opts.width - 2 * opts.borderwidth,
         height: legendHeight - 2 * opts.borderwidth,
-        x: opts.borderwidth,
+        x: opts.borderwidth - scrollPosition,
         y: opts.borderwidth
     });
 
-    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
-
-    clipPath.select('rect').attr({
-        width: opts.width,
-        height: legendHeight,
-        x: 0,
-        y: 0
-    });
-
-    legend.call(Drawing.setClipUrl, clipId);
+    scrollBox.call(Drawing.setClipUrl, clipId);
 
     // If scrollbar should be shown.
     if(opts.height - legendHeight > 0 && !gd._context.staticPlot) {
@@ -259,7 +260,8 @@ module.exports = function draw(gd) {
         });
 
         clipPath.select('rect').attr({
-            width: opts.width +
+            width: opts.width -
+                2 * opts.borderwidth +
                 constants.scrollBarWidth +
                 constants.scrollBarMargin
         });
@@ -318,6 +320,9 @@ module.exports = function draw(gd) {
             constants.scrollBarWidth,
             constants.scrollBarHeight
         );
+        clipPath.select('rect').attr({
+            y: opts.borderwidth - scrollBoxY
+        });
     }
 
     if(gd._context.editable) {
