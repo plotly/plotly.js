@@ -122,8 +122,8 @@ module.exports = function draw(gd) {
                 return trace.visible === 'legendonly' ? 0.5 : 1;
             }
         })
-        .each(function(d, i) {
-            drawTexts(this, gd, d, i, traces);
+        .each(function(d) {
+            drawTexts(gd, this, d[0], traces);
             setupTraceToggle(gd, this, d[0]);
         });
 
@@ -312,12 +312,12 @@ module.exports = function draw(gd) {
     }
 };
 
-function drawTexts(context, gd, d, i, traces) {
+function drawTexts(gd, context, legendItem, traces) {
     var fullLayout = gd._fullLayout,
-        trace = d[0].trace,
+        trace = legendItem.trace,
         isPie = Plots.traceIs(trace, 'pie'),
         traceIndex = trace.index,
-        name = isPie ? d[0].label : trace.name;
+        name = isPie ? legendItem.label : trace.name;
 
     var text = d3.select(context).selectAll('text.legendtext')
         .data([0]);
