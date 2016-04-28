@@ -770,7 +770,7 @@ describe('Test lib.js:', function() {
         });
     });
 
-    fdescribe('getTranslate', function() {
+    describe('getTranslate', function() {
 
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');
@@ -814,7 +814,7 @@ describe('Test lib.js:', function() {
 
     });
 
-    fdescribe('setTranslate', function() {
+    describe('setTranslate', function() {
 
         it('should work with regular DOM elements', function() {
             var el = document.createElement('div');

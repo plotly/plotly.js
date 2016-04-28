@@ -332,16 +332,10 @@ module.exports = function draw(gd) {
         dragElement.init({
             element: legend.node(),
             prepFn: function() {
-                // regex pattern for 'translate(123.45px, 543.21px)'
-                var re = /(.*\()(\d*\.?\d*)([^\d]*)(\d*\.?\d*)([^\d]*)/,
-                    transform = legend.attr('transform')
-                    .replace(re, function(match, p1, p2, p3, p4) {
-                        return [p2, p4].join(' ');
-                    })
-                    .split(' ');
+                var transform = Lib.getTranslate(legend);
 
-                x0 = +transform[0] || 0;
-                y0 = +transform[1] || 0;
+                x0 = transform.x;
+                y0 = transform.y;
             },
             moveFn: function(dx, dy) {
                 var newX = x0 + dx,
