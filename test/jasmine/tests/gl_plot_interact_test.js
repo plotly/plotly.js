@@ -212,12 +212,18 @@ describe('Test gl plot interactions', function() {
     });
 
     describe('gl2d plots', function() {
-        var mock = require('@mocks/gl2d_10.json');
+        var mock = require('@mocks/gl2d_10.json'),
+            relayoutCallback;
 
         beforeEach(function(done) {
             gd = createGraphDiv();
 
             Plotly.plot(gd, mock.data, mock.layout).then(function() {
+
+                relayoutCallback = jasmine.createSpy('relayoutCallback');
+
+                gd.on('plotly_relayout', relayoutCallback);
+
                 delay(done);
             });
         });
@@ -225,6 +231,24 @@ describe('Test gl plot interactions', function() {
         it('has one *canvas* node', function() {
             var nodes = d3.selectAll('canvas');
             expect(nodes[0].length).toEqual(1);
+        });
+
+        it('should respond to drag interactions', function(done) {
+
+            var sceneTarget = gd.querySelector('.plot-container .gl-container canvas');
+
+            // Drag scene
+            sceneTarget.dispatchEvent(new MouseEvent('mousedown', {x: 0, y: 0}));
+            sceneTarget.dispatchEvent(new MouseEvent('mousemove', { x: 100, y: 100}));
+            sceneTarget.dispatchEvent(new MouseEvent('mouseup', { x: 100, y: 100}));
+
+            setTimeout(function() {
+
+                expect(relayoutCallback).toHaveBeenCalledTimes(1);
+
+                done();
+
+            }, MODEBAR_DELAY);
         });
     });
 
