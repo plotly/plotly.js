@@ -413,6 +413,53 @@ describe('Test gl plot interactions', function() {
             });
         });
 
+        describe('drag and wheel interactions', function() {
+            it('should update the scene camera', function(done) {
+                var sceneLayout = gd._fullLayout.scene,
+                    sceneLayout2 = gd._fullLayout.scene2,
+                    sceneTarget = gd.querySelector('.svg-container .gl-container #scene  canvas'),
+                    sceneTarget2 = gd.querySelector('.svg-container .gl-container #scene2 canvas');
+
+
+                expect(sceneLayout.camera.eye)
+                    .toEqual({x: 0.1, y: 0.1, z: 1});
+                expect(sceneLayout2.camera.eye)
+                    .toEqual({x: 2.5, y: 2.5, z: 2.5});
+
+                // Wheel scene 1
+                sceneTarget.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
+
+                // Wheel scene 2
+                sceneTarget2.dispatchEvent(new WheelEvent('wheel', {deltaY: 1}));
+
+                setTimeout(function() {
+
+                    expect(relayoutCallback).toHaveBeenCalledTimes(2);
+
+                    relayoutCallback.calls.reset();
+
+                    // Drag scene 1
+                    sceneTarget.dispatchEvent(new MouseEvent('mousedown', {x: 0, y: 0}));
+                    sceneTarget.dispatchEvent(new MouseEvent('mousemove', { x: 100, y: 100}));
+                    sceneTarget.dispatchEvent(new MouseEvent('mouseup', { x: 100, y: 100}));
+
+                    // Drag scene 2
+                    sceneTarget2.dispatchEvent(new MouseEvent('mousedown', {x: 0, y: 0 }));
+                    sceneTarget2.dispatchEvent(new MouseEvent('mousemove', {x: 100, y: 100}));
+                    sceneTarget2.dispatchEvent(new MouseEvent('mouseup', {x: 100, y: 100}));
+
+                    setTimeout(function() {
+
+                        expect(relayoutCallback).toHaveBeenCalledTimes(2);
+
+                        done();
+
+                    }, MODEBAR_DELAY);
+
+                }, MODEBAR_DELAY);
+            });
+        });
+
         describe('button hoverClosest3d', function() {
             it('should update the scene hovermode and spikes', function() {
                 var buttonHover = selectButton(modeBar, 'hoverClosest3d');
