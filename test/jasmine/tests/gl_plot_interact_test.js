@@ -228,7 +228,7 @@ describe('Test gl plot interactions', function() {
         });
     });
 
-    describe('gl3d modebar click handlers', function() {
+    describe('gl3d event handlers', function() {
         var modeBar, relayoutCallback;
 
         beforeEach(function(done) {
@@ -265,151 +265,98 @@ describe('Test gl plot interactions', function() {
             });
         }
 
-        describe('button zoom3d', function() {
-            it('should updates the scene dragmode and dragmode button', function() {
-                var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-                    buttonZoom3d = selectButton(modeBar, 'zoom3d');
+        describe('modebar click handlers', function() {
 
-                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                expect(buttonTurntable.isActive()).toBe(true);
-                expect(buttonZoom3d.isActive()).toBe(false);
+            describe('button zoom3d', function() {
+                it('should updates the scene dragmode and dragmode button', function() {
+                    var buttonTurntable = selectButton(modeBar, 'tableRotation'),
+                        buttonZoom3d = selectButton(modeBar, 'zoom3d');
 
-                buttonZoom3d.click();
-                assertScenes(gd.layout, 'dragmode', 'zoom');
-                expect(gd.layout.dragmode).toBe(undefined);
-                expect(gd._fullLayout.dragmode).toBe('zoom');
-                expect(buttonTurntable.isActive()).toBe(false);
-                expect(buttonZoom3d.isActive()).toBe(true);
+                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                    expect(buttonTurntable.isActive()).toBe(true);
+                    expect(buttonZoom3d.isActive()).toBe(false);
 
-                buttonTurntable.click();
-                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                expect(buttonTurntable.isActive()).toBe(true);
-                expect(buttonZoom3d.isActive()).toBe(false);
+                    buttonZoom3d.click();
+                    assertScenes(gd.layout, 'dragmode', 'zoom');
+                    expect(gd.layout.dragmode).toBe(undefined);
+                    expect(gd._fullLayout.dragmode).toBe('zoom');
+                    expect(buttonTurntable.isActive()).toBe(false);
+                    expect(buttonZoom3d.isActive()).toBe(true);
+
+                    buttonTurntable.click();
+                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                    expect(buttonTurntable.isActive()).toBe(true);
+                    expect(buttonZoom3d.isActive()).toBe(false);
+                });
             });
-        });
 
-        describe('button pan3d', function() {
-            it('should updates the scene dragmode and dragmode button', function() {
-                var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-                    buttonPan3d = selectButton(modeBar, 'pan3d');
+            describe('button pan3d', function() {
+                it('should updates the scene dragmode and dragmode button', function() {
+                    var buttonTurntable = selectButton(modeBar, 'tableRotation'),
+                        buttonPan3d = selectButton(modeBar, 'pan3d');
 
-                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                expect(buttonTurntable.isActive()).toBe(true);
-                expect(buttonPan3d.isActive()).toBe(false);
+                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                    expect(buttonTurntable.isActive()).toBe(true);
+                    expect(buttonPan3d.isActive()).toBe(false);
 
-                buttonPan3d.click();
-                assertScenes(gd.layout, 'dragmode', 'pan');
-                expect(gd.layout.dragmode).toBe(undefined);
-                expect(gd._fullLayout.dragmode).toBe('zoom');
-                expect(buttonTurntable.isActive()).toBe(false);
-                expect(buttonPan3d.isActive()).toBe(true);
+                    buttonPan3d.click();
+                    assertScenes(gd.layout, 'dragmode', 'pan');
+                    expect(gd.layout.dragmode).toBe(undefined);
+                    expect(gd._fullLayout.dragmode).toBe('zoom');
+                    expect(buttonTurntable.isActive()).toBe(false);
+                    expect(buttonPan3d.isActive()).toBe(true);
 
-                buttonTurntable.click();
-                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                expect(buttonTurntable.isActive()).toBe(true);
-                expect(buttonPan3d.isActive()).toBe(false);
+                    buttonTurntable.click();
+                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                    expect(buttonTurntable.isActive()).toBe(true);
+                    expect(buttonPan3d.isActive()).toBe(false);
+                });
             });
-        });
 
-        describe('button orbitRotation', function() {
-            it('should updates the scene dragmode and dragmode button', function() {
-                var buttonTurntable = selectButton(modeBar, 'tableRotation'),
-                    buttonOrbit = selectButton(modeBar, 'orbitRotation');
+            describe('button orbitRotation', function() {
+                it('should updates the scene dragmode and dragmode button', function() {
+                    var buttonTurntable = selectButton(modeBar, 'tableRotation'),
+                        buttonOrbit = selectButton(modeBar, 'orbitRotation');
 
-                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                expect(buttonTurntable.isActive()).toBe(true);
-                expect(buttonOrbit.isActive()).toBe(false);
+                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                    expect(buttonTurntable.isActive()).toBe(true);
+                    expect(buttonOrbit.isActive()).toBe(false);
 
-                buttonOrbit.click();
-                assertScenes(gd.layout, 'dragmode', 'orbit');
-                expect(gd.layout.dragmode).toBe(undefined);
-                expect(gd._fullLayout.dragmode).toBe('zoom');
-                expect(buttonTurntable.isActive()).toBe(false);
-                expect(buttonOrbit.isActive()).toBe(true);
+                    buttonOrbit.click();
+                    assertScenes(gd.layout, 'dragmode', 'orbit');
+                    expect(gd.layout.dragmode).toBe(undefined);
+                    expect(gd._fullLayout.dragmode).toBe('zoom');
+                    expect(buttonTurntable.isActive()).toBe(false);
+                    expect(buttonOrbit.isActive()).toBe(true);
 
-                buttonTurntable.click();
-                assertScenes(gd._fullLayout, 'dragmode', 'turntable');
-                expect(buttonTurntable.isActive()).toBe(true);
-                expect(buttonOrbit.isActive()).toBe(false);
+                    buttonTurntable.click();
+                    assertScenes(gd._fullLayout, 'dragmode', 'turntable');
+                    expect(buttonTurntable.isActive()).toBe(true);
+                    expect(buttonOrbit.isActive()).toBe(false);
+                });
             });
-        });
 
-        describe('buttons resetCameraDefault3d and resetCameraLastSave3d', function() {
-            it('should update the scene camera', function(done) {
-                var sceneLayout = gd._fullLayout.scene,
-                    sceneLayout2 = gd._fullLayout.scene2,
-                    scene = sceneLayout._scene,
-                    scene2 = sceneLayout2._scene;
+            describe('button hoverClosest3d', function() {
+                it('should update the scene hovermode and spikes', function() {
+                    var buttonHover = selectButton(modeBar, 'hoverClosest3d');
 
-                expect(sceneLayout.camera.eye)
-                    .toEqual({x: 0.1, y: 0.1, z: 1});
-                expect(sceneLayout2.camera.eye)
-                    .toEqual({x: 2.5, y: 2.5, z: 2.5});
+                    assertScenes(gd._fullLayout, 'hovermode', 'closest');
+                    expect(buttonHover.isActive()).toBe(true);
 
-                selectButton(modeBar, 'resetCameraDefault3d').click();
+                    buttonHover.click();
+                    assertScenes(gd._fullLayout, 'hovermode', false);
+                    assertScenes(gd._fullLayout, 'xaxis.showspikes', false);
+                    assertScenes(gd._fullLayout, 'yaxis.showspikes', false);
+                    assertScenes(gd._fullLayout, 'zaxis.showspikes', false);
+                    expect(buttonHover.isActive()).toBe(false);
 
-                setTimeout(function() {
-
-                    expect(relayoutCallback).toHaveBeenCalledTimes(2); // initiator: resetCameraDefault3d; 2 scenes
-                    expect(relayoutCallback).toHaveBeenCalledWith({
-                        scene: {
-                            eye: { x: 1.25, y: 1.25, z: 1.25 },
-                            center: { x: 0, y: 0, z: 0 },
-                            up: { x: 0, y: 0, z: 1 }
-                        }
-                    });
-                    expect(relayoutCallback).toHaveBeenCalledWith({
-                        scene2: {
-                            center: { x: 0, y: 0, z: 0 },
-                            eye: { x: 1.25, y: 1.25, z: 1.25 },
-                            up: { x: 0, y: 0, z: 1 }
-                        }
-                    });
-                    relayoutCallback.calls.reset();
-
-                    expect(sceneLayout.camera.eye)
-                        .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
-                    expect(scene.camera.eye)
-                        .toBeCloseToArray([1.25, 1.25, 1.25], 4);
-                    expect(sceneLayout2.camera.eye)
-                        .toEqual({x: 2.5, y: 2.5, z: 2.5}, 'does not change the layout objects');
-                    expect(scene2.camera.eye)
-                        .toBeCloseToArray([1.25, 1.25, 1.25], 4);
-
-                    selectButton(modeBar, 'resetCameraLastSave3d').click();
-
-                    setTimeout(function() {
-
-                        expect(relayoutCallback).toHaveBeenCalledTimes(2); // initiator: resetCameraLastSave3d; 2 scenes
-                        expect(relayoutCallback).toHaveBeenCalledWith({
-                            scene: {
-                                center: { x: 0, y: 0, z: 0 },
-                                eye: { x: 0.1, y: 0.1, z: 1 },
-                                up: { x: 0, y: 0, z: 1 }
-                            }
-                        });
-                        expect(relayoutCallback).toHaveBeenCalledWith({
-                            scene2: {
-                                center: { x: 0, y: 0, z: 0 },
-                                eye: { x: 2.5, y: 2.5, z: 2.5 },
-                                up: { x: 0, y: 0, z: 1 }
-                            }
-                        });
-
-                        expect(sceneLayout.camera.eye)
-                            .toEqual({x: 0.1, y: 0.1, z: 1}, 'does not change the layout objects');
-                        expect(scene.camera.eye)
-                            .toBeCloseToArray([ 0.1, 0.1, 1], 4);
-                        expect(sceneLayout2.camera.eye)
-                            .toEqual({x: 2.5, y: 2.5, z: 2.5}, 'does not change the layout objects');
-                        expect(scene2.camera.eye)
-                            .toBeCloseToArray([2.5, 2.5, 2.5], 4);
-
-                        done();
-
-                    }, MODEBAR_DELAY);
-
-                }, MODEBAR_DELAY);
+                    buttonHover.click();
+                    assertScenes(gd._fullLayout, 'hovermode', 'closest');
+                    assertScenes(gd._fullLayout, 'xaxis.showspikes', true);
+                    assertScenes(gd._fullLayout, 'yaxis.showspikes', true);
+                    assertScenes(gd._fullLayout, 'zaxis.showspikes', true);
+                    expect(buttonHover.isActive()).toBe(true);
+                });
             });
         });
 
@@ -459,30 +406,6 @@ describe('Test gl plot interactions', function() {
                 }, MODEBAR_DELAY);
             });
         });
-
-        describe('button hoverClosest3d', function() {
-            it('should update the scene hovermode and spikes', function() {
-                var buttonHover = selectButton(modeBar, 'hoverClosest3d');
-
-                assertScenes(gd._fullLayout, 'hovermode', 'closest');
-                expect(buttonHover.isActive()).toBe(true);
-
-                buttonHover.click();
-                assertScenes(gd._fullLayout, 'hovermode', false);
-                assertScenes(gd._fullLayout, 'xaxis.showspikes', false);
-                assertScenes(gd._fullLayout, 'yaxis.showspikes', false);
-                assertScenes(gd._fullLayout, 'zaxis.showspikes', false);
-                expect(buttonHover.isActive()).toBe(false);
-
-                buttonHover.click();
-                assertScenes(gd._fullLayout, 'hovermode', 'closest');
-                assertScenes(gd._fullLayout, 'xaxis.showspikes', true);
-                assertScenes(gd._fullLayout, 'yaxis.showspikes', true);
-                assertScenes(gd._fullLayout, 'zaxis.showspikes', true);
-                expect(buttonHover.isActive()).toBe(true);
-            });
-        });
-
     });
 
     describe('Plots.cleanPlot', function() {
