@@ -13,7 +13,6 @@ var d3 = require('d3');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
-var setCursor = require('../../lib/setcursor');
 var Plots = require('../../plots/plots');
 var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
@@ -326,38 +325,29 @@ module.exports = function draw(gd) {
     }
 
     if(gd._context.editable) {
-        var xf,
-            yf,
-            x0,
-            y0,
-            lw,
-            lh;
+        var xf, yf, x0, y0;
+
+        legend.classed('cursor-move', true);
 
         dragElement.init({
             element: legend.node(),
             prepFn: function() {
-                x0 = Number(legend.attr('x'));
-                y0 = Number(legend.attr('y'));
-                lw = Number(legend.attr('width'));
-                lh = Number(legend.attr('height'));
-                setCursor(legend);
+                var transform = Lib.getTranslate(legend);
+
+                x0 = transform.x;
+                y0 = transform.y;
             },
             moveFn: function(dx, dy) {
-                var gs = gd._fullLayout._size;
+                var newX = x0 + dx,
+                    newY = y0 + dy;
 
-                legend.call(Drawing.setPosition, x0+dx, y0+dy);
+                var transform = 'translate(' + newX + ', ' + newY + ')';
+                legend.attr('transform', transform);
 
-                xf = dragElement.align(x0+dx, lw, gs.l, gs.l+gs.w,
-                    opts.xanchor);
-                yf = dragElement.align(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
-                    opts.yanchor);
-
-                var csr = dragElement.getCursor(xf, yf,
-                    opts.xanchor, opts.yanchor);
-                setCursor(legend, csr);
+                xf = dragElement.align(newX, 0, gs.l, gs.l+gs.w, opts.xanchor);
+                yf = dragElement.align(newY, 0, gs.t+gs.h, gs.t, opts.yanchor);
             },
             doneFn: function(dragged) {
-                setCursor(legend);
                 if(dragged && xf !== undefined && yf !== undefined) {
                     Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
                 }

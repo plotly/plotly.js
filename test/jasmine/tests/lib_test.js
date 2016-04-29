@@ -770,4 +770,91 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('getTranslate', function() {
+
+        it('should work with regular DOM elements', function() {
+            var el = document.createElement('div');
+
+            expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
+
+            el.setAttribute('transform', 'translate(123.45px, 67)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 67 });
+
+            el.setAttribute('transform', 'translate(123.45)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 0 });
+
+            el.setAttribute('transform', 'translate(1 2)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
+            el.setAttribute('transform', 'translate(1 2); rotate(20deg)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
+            el.setAttribute('transform', 'rotate(20deg)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
+        });
+
+        it('should work with d3 elements', function() {
+            var el = d3.select(document.createElement('div'));
+
+            el.attr('transform', 'translate(123.45px, 67)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 67 });
+
+            el.attr('transform', 'translate(123.45)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 0 });
+
+            el.attr('transform', 'translate(1 2)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
+            el.attr('transform', 'translate(1 2); rotate(20)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
+            el.attr('transform', 'rotate(20)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
+        });
+
+    });
+
+    describe('setTranslate', function() {
+
+        it('should work with regular DOM elements', function() {
+            var el = document.createElement('div');
+
+            Lib.setTranslate(el, 5);
+            expect(el.getAttribute('transform')).toBe('translate(5, 0)');
+
+            Lib.setTranslate(el, 10, 20);
+            expect(el.getAttribute('transform')).toBe('translate(10, 20)');
+
+            Lib.setTranslate(el, 30, 40);
+            expect(el.getAttribute('transform')).toBe('translate(30, 40)');
+
+            Lib.setTranslate(el);
+            expect(el.getAttribute('transform')).toBe('translate(0, 0)');
+
+            el.setAttribute('transform', 'translate(0, 0); rotate(30)');
+            Lib.setTranslate(el, 30, 40);
+            expect(el.getAttribute('transform')).toBe('rotate(30) translate(30, 40)');
+        });
+
+        it('should work with d3 elements', function() {
+            var el = d3.select(document.createElement('div'));
+
+            Lib.setTranslate(el, 5);
+            expect(el.attr('transform')).toBe('translate(5, 0)');
+
+            Lib.setTranslate(el, 10, 20);
+            expect(el.attr('transform')).toBe('translate(10, 20)');
+
+            Lib.setTranslate(el, 30, 40);
+            expect(el.attr('transform')).toBe('translate(30, 40)');
+
+            Lib.setTranslate(el);
+            expect(el.attr('transform')).toBe('translate(0, 0)');
+
+            el.attr('transform', 'translate(0, 0); rotate(30)');
+            Lib.setTranslate(el, 30, 40);
+            expect(el.attr('transform')).toBe('rotate(30) translate(30, 40)');
+        });
+    });
+
 });
