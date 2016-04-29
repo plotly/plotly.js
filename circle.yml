@@ -5,7 +5,7 @@ general:
 
 machine:
   node:
-    version: 4.2.1
+    version: 5.6.0
   services:
     - docker
 
