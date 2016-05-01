@@ -349,8 +349,11 @@ proto.updateFancy = function(options) {
         bounds = this.bounds;
 
     // makeCalcdata runs d2c (data-to-coordinate) on every point
-    var x = this.xData = xaxis.makeCalcdata(options, 'x');
-    var y = this.yData = yaxis.makeCalcdata(options, 'y');
+    var x = xaxis.makeCalcdata(options, 'x').slice();
+    var y = yaxis.makeCalcdata(options, 'y').slice();
+
+    this.xData = x.slice();
+    this.yData = y.slice();
 
     // get error values
     var errorVals = ErrorBars.calcFromTrace(options, scene.fullLayout);
@@ -375,8 +378,8 @@ proto.updateFancy = function(options) {
     var i, j, xx, yy, ex0, ex1, ey0, ey1;
 
     for(i = 0; i < len; ++i) {
-        xx = getX(x[i]);
-        yy = getY(y[i]);
+        this.xData[i] = xx = getX(x[i]);
+        this.yData[i] = yy = getY(y[i]);
 
         if(isNaN(xx) || isNaN(yy)) continue;
 
