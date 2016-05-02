@@ -2642,8 +2642,10 @@ function makePlotFramework(gd) {
 
     // lower shape layer
     // (only for shapes to be drawn below the whole plot)
-    fullLayout._shapeLowerLayer = fullLayout._paper.append('g')
-        .classed('shapelayer shapelayer-below', true);
+    var layerBelow = fullLayout._paper.append('g')
+        .classed('layer-below', true);
+    fullLayout._shapeLowerLayer = layerBelow.append('g')
+        .classed('shapelayer', true);
 
     var subplots = Plotly.Axes.getSubplots(gd);
     if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
@@ -2661,8 +2663,10 @@ function makePlotFramework(gd) {
 
     // upper shape layer
     // (only for shapes to be drawn above the whole plot, including subplots)
-    fullLayout._shapeUpperLayer = fullLayout._paper.append('g')
-        .classed('shapelayer shapelayer-above', true);
+    var layerAbove = fullLayout._paper.append('g')
+        .classed('layer-above', true);
+    fullLayout._shapeUpperLayer = layerAbove.append('g')
+        .classed('shapelayer', true);
 
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
