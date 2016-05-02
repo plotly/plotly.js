@@ -10,6 +10,23 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.10.1] -- 2016-05-02
+
+### Fixed
+- Resizing a graph (e.g. via `Plotly.relayout` or Plotly.Plots.resize)
+  properly updates the plot area clip paths (bug introduced in 1.10.0) [#490]
+- `Plotly.Snapshot.toSVG` is now functional again in IE11 and old version of
+  Chrome and FF (bug introduced in 1.10.0) [#489]
+- Hover labels of superimposed traces when 'hovermode' is set to 'closest' are
+  properly displayed (bug introduced in 1.10.0) [#495]
+- Surface contour highlights are toggleable [#459]
+- Surface contour highlights style attributes are lower cased [#459]
+- Zoom overlay are drawn over shapes [#448]
+- Legend are draggable in `editable: true` contexts (bug introduced in 1.6.0)
+  [#487]
+- Legend scroll box are drawn outside the legend [#478]
+
+
 ## [1.10.0] -- 2016-04-12
 
 ### Added
