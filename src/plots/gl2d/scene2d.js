@@ -27,6 +27,7 @@ var STATIC_CANVAS, STATIC_CONTEXT;
 
 function Scene2D(options, fullLayout) {
     this.container = options.container;
+    this.graphDiv = options.graphDiv;
     this.pixelRatio = options.plotGlPixelRatio || window.devicePixelRatio;
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
@@ -275,7 +276,7 @@ var relayoutCallback = function(scene) {
         xrange: scene.xaxis.range.slice(0),
         yrange: scene.yaxis.range.slice(0)
     };
-    scene.container.parentElement.parentElement.parentElement.emit('plotly_relayout', update);
+    scene.graphDiv.emit('plotly_relayout', update);
 };
 
 proto.cameraChanged = function() {
