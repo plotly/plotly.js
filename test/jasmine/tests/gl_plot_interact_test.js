@@ -211,6 +211,58 @@ describe('Test gl plot interactions', function() {
 
     });
 
+    describe('gl3d plots', function() {
+
+        var mock = require('@mocks/gl3d_scatter3d-connectgaps.json'),
+            modeBar, relayoutCallback;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+
+                modeBar = gd._fullLayout._modeBar;
+                relayoutCallback = jasmine.createSpy('relayoutCallback');
+
+                gd.on('plotly_relayout', relayoutCallback);
+
+                delay(done);
+            });
+        });
+
+        it('should respond to drag interactions', function(done) {
+
+            // Expected shape of projection-related data
+            var cameraStructure = {
+                up: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
+                center: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
+                eye: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)}
+            };
+
+            setTimeout(function() {
+
+                // One 'drag': simulating fairly thoroughly as the mouseup event is also needed here
+                mouseEvent('mousemove', 400, 200);
+                mouseEvent('mousedown', 400, 200);
+                mouseEvent('mousemove', 320, 320, {buttons: 1});
+                mouseEvent('mouseup', 320, 320);
+
+                // Check event emission count
+                expect(relayoutCallback).toHaveBeenCalledTimes(1);
+
+                // Check structure of event callback value contents
+                expect(relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({scene: cameraStructure}));
+
+                // Check camera contents on the DIV layout
+                var divCamera = gd.layout.scene.camera;
+                expect(divCamera).toEqual(cameraStructure);
+
+                delay(done);
+
+            }, MODEBAR_DELAY);
+        });
+    });
+
     describe('gl2d plots', function() {
         var mock = require('@mocks/gl2d_10.json'),
             modeBar, relayoutCallback;
