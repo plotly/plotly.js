@@ -4,6 +4,7 @@
 
 var Fuse = require('fuse.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
+var Lib = require('@src/lib');
 
 // put d3 in window scope
 var d3 = window.d3 = Plotly.d3;
@@ -119,6 +120,7 @@ var Tabs = {
 
 // Bind things to the window
 window.Tabs = Tabs;
+window.Lib = Lib;
 setInterval(function() {
     window.gd = Tabs.getGraph() || Tabs.fresh();
     window.fullLayout = window.gd._fullLayout;

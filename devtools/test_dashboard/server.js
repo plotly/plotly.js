@@ -8,6 +8,7 @@ var watchify = require('watchify');
 
 var constants = require('../../tasks/util/constants');
 var compress = require('../../tasks/util/compress_attributes');
+var shortcutPaths = require('../../tasks/util/shortcut_paths');
 
 var PORT = process.argv[2] || 3000;
 
@@ -32,7 +33,9 @@ b.on('update', bundlePlotly);
 
 // Bundle devtools code
 var devtoolsPath = path.join(constants.pathToRoot, 'devtools/test_dashboard');
-var devtools = browserify(path.join(devtoolsPath, 'devtools.js'), {});
+var devtools = browserify(path.join(devtoolsPath, 'devtools.js'), {
+    transform: [shortcutPaths]
+});
 
 var firstBundle = true;
 
