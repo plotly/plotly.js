@@ -21,7 +21,8 @@ var plots = module.exports = {};
 var modules = plots.modules = {},
     allTypes = plots.allTypes = [],
     allCategories = plots.allCategories = {},
-    subplotsRegistry = plots.subplotsRegistry = {};
+    subplotsRegistry = plots.subplotsRegistry = {},
+    transformsRegistry = plots.transformsRegistry = {};
 
 plots.attributes = require('./attributes');
 plots.attributes.type.values = allTypes;
@@ -449,8 +450,7 @@ plots.supplyDefaults = function(gd) {
         newData = gd.data || [],
         modules = gd._modules = [];
 
-    var i, trace, fullTrace, _module, axList, ax;
-
+    var i, trace, _module, axList, ax;
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
@@ -460,24 +460,7 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._dataLength = newData.length;
 
     // then do the data
-    for(i = 0; i < newData.length; i++) {
-        trace = newData[i];
-
-        fullTrace = plots.supplyDataDefaults(trace, i, newFullLayout);
-        newFullData.push(fullTrace);
-
-        // detect plot type
-        if(plots.traceIs(fullTrace, 'cartesian')) newFullLayout._hasCartesian = true;
-        else if(plots.traceIs(fullTrace, 'gl3d')) newFullLayout._hasGL3D = true;
-        else if(plots.traceIs(fullTrace, 'geo')) newFullLayout._hasGeo = true;
-        else if(plots.traceIs(fullTrace, 'pie')) newFullLayout._hasPie = true;
-        else if(plots.traceIs(fullTrace, 'gl2d')) newFullLayout._hasGL2D = true;
-        else if(plots.traceIs(fullTrace, 'ternary')) newFullLayout._hasTernary = true;
-        else if('r' in fullTrace) newFullLayout._hasPolar = true;
-
-        _module = fullTrace._module;
-        if(_module && modules.indexOf(_module)===-1) modules.push(_module);
-    }
+    plots.supplyDataDefaults(newData, newFullData, newFullLayout, modules);
 
     // special cases that introduce interactions between traces
     for(i = 0; i < modules.length; i++) {
@@ -609,7 +592,61 @@ function relinkPrivateKeys(toLayout, fromLayout) {
     }
 }
 
-plots.supplyDataDefaults = function(traceIn, i, layout) {
+plots.supplyDataDefaults = function(dataIn, dataOut, layout, modules) {
+    var cnt = 0;
+
+    // push to array if item isn't already in array
+    function fill(arr, item) {
+        if(item && arr.indexOf(item) === -1) return arr.push(item);
+    }
+
+    // detect plot type
+    function detect(trace) {
+        if(plots.traceIs(trace, 'cartesian')) layout._hasCartesian = true;
+        else if(plots.traceIs(trace, 'gl3d')) layout._hasGL3D = true;
+        else if(plots.traceIs(trace, 'geo')) layout._hasGeo = true;
+        else if(plots.traceIs(trace, 'pie')) layout._hasPie = true;
+        else if(plots.traceIs(trace, 'gl2d')) layout._hasGL2D = true;
+        else if(plots.traceIs(trace, 'ternary')) layout._hasTernary = true;
+        else if('r' in trace) layout._hasPolar = true;
+    }
+
+    for(var i = 0; i < dataIn.length; i++) {
+        var trace = dataIn[i];
+
+        var fullTrace = plots.supplyTraceDefaults(trace, cnt, layout);
+
+        // keep track of pre-transform _input
+        var traceIn = fullTrace._input;
+
+        if(fullTrace.transforms && fullTrace.transforms.length) {
+            var expandedTraces = applyTransforms(fullTrace, dataOut, layout);
+
+            for(var j = 0; j < expandedTraces.length; j++) {
+                var expandedTrace = expandedTraces[j];
+                var fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, layout);
+
+                // copy refs
+                fullExpandedTrace._input = traceIn;
+                fullExpandedTrace._fullTransforms = fullTrace.transforms;
+                fullExpandedTrace._index = i;
+
+                dataOut.push(fullExpandedTrace);
+                fill(modules, fullExpandedTrace._module);
+                detect(fullExpandedTrace);
+                cnt++;
+            }
+        }
+        else {
+            dataOut.push(fullTrace);
+            fill(modules, fullTrace._module);
+            detect(trace);
+            cnt++;
+        }
+    }
+};
+
+plots.supplyTraceDefaults = function(traceIn, i, layout) {
     var traceOut = {},
         defaultColor = Color.defaults[i % Color.defaults.length];
 
@@ -666,6 +703,8 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
             coerce('showlegend');
             coerce('legendgroup');
         }
+
+        supplyTransformDefaults(traceIn, traceOut, layout);
     }
 
     // NOTE: I didn't include fit info at all... for now I think it can stay
@@ -677,6 +716,42 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
     return traceOut;
 };
+
+function supplyTransformDefaults(traceIn, traceOut, layout) {
+    var containerIn = traceIn.transforms || [],
+        containerOut = traceOut.transforms = [];
+
+    for(var i = 0; i < containerIn.length; i++) {
+        var transformIn = containerIn[i],
+            type = transformIn.type,
+            _module = transformsRegistry[type];
+
+        var transformOut = _module.supplyDefaults(transformIn, traceOut, layout);
+        transformOut.type = type;
+
+        containerOut.push(transformOut);
+    }
+}
+
+function applyTransforms(fullTrace, fullData, layout) {
+    var container = fullTrace.transforms,
+        dataOut = [fullTrace];
+
+    for(var i = 0; i < container.length; i++) {
+        var transform = container[i],
+            type = transform.type,
+            _module = transformsRegistry[type];
+
+        dataOut = _module.transform(dataOut, {
+            transform: transform,
+            fullTrace: fullTrace,
+            fullData: fullData,
+            layout: layout
+        });
+    }
+
+    return dataOut;
+}
 
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     function coerce(attr, dflt) {
