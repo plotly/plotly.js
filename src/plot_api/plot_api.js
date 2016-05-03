@@ -1565,7 +1565,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     if(isNumeric(traces)) traces = [traces];
     else if(!Array.isArray(traces) || !traces.length) {
-        traces=gd._fullData.map(function(v,i) { return i; });
+        traces = gd.data.map(function(v, i) { return i; });
     }
 
     // recalcAttrs attributes need a full regeneration of calcdata
@@ -1732,6 +1732,9 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             docalc = true;
             continue;
         }
+
+        // take no chances on transforms
+        if(ai.substr(0, 10) === 'transforms') docalc = true;
 
         // set attribute in gd.data
         undoit[ai] = a0();
