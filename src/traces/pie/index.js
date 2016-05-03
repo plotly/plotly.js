@@ -23,7 +23,6 @@ Pie.moduleType = 'trace';
 Pie.name = 'pie';
 Pie.basePlotModule = require('./base_plot');
 Pie.categories = ['pie', 'showLegend'];
-Pie.layoutCategories = ['pie'];
 Pie.meta = {
     description: [
         'A data visualized by the sectors of the pie is set in `values`.',

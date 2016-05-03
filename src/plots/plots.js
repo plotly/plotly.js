@@ -540,9 +540,6 @@ function hasPlotType(category) {
         var _module = modules[i];
 
         if(_module.basePlotModule.name === category) return true;
-
-        var layoutCategories = _module.layoutCategories || [];
-        if(layoutCategories.indexOf(category) !== -1) return true;
     }
 
     return false;
