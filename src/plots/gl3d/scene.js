@@ -174,6 +174,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
     var relayoutCallback = function(scene) {
         var update = {};
         update[scene.id] = getLayoutCamera(scene.camera);
+        scene.saveCamera(scene.graphDiv.layout);
         scene.graphDiv.emit('plotly_relayout', update);
     };
 
