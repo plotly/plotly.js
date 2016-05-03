@@ -11,11 +11,6 @@ var selectButton = require('../assets/modebar_button');
 
 var MODEBAR_DELAY = 500;
 
-// put callback in the event queue
-function delay(done) {
-    setTimeout(done, 0);
-}
-
 describe('Test plot structure', function() {
     'use strict';
 
@@ -165,7 +160,7 @@ describe('Test plot structure', function() {
 
                     gd.on('plotly_relayout', relayoutCallback);
 
-                    delay(done);
+                    done();
                 });
             });
 
