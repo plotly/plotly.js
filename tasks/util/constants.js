@@ -50,6 +50,7 @@ module.exports = {
 
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
+    pathToJasmineTestAssets: path.join(pathToRoot, 'test/jasmine/assets'),
 
     uglifyOptions: {
         fromString: true,
