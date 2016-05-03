@@ -2,5 +2,6 @@
 
 module.exports = function destroyGraphDiv() {
     var gd = document.getElementById('graph');
-    document.body.removeChild(gd);
+
+    if(gd) document.body.removeChild(gd);
 };
