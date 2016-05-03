@@ -271,8 +271,7 @@ proto.updateFx = function(options) {
 
 var relayoutCallback = function(scene) {
 
-    var update = {},
-        xrange = scene.xaxis.range,
+    var xrange = scene.xaxis.range,
         yrange = scene.yaxis.range;
 
     // Update the layout on the DIV
@@ -280,11 +279,11 @@ var relayoutCallback = function(scene) {
     scene.graphDiv.layout.yaxis.range = yrange.slice(0);
 
     // Make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
-    update[scene.id] = { // scene.camera has no many useful projection or scale information
-        lastInputTime: scene.camera.lastInputTime, // helps determine which one is the latest input (if async)
-        xrange: xrange.slice(0),
-        yrange: yrange.slice(0)
+    var update = { // scene.camera has no many useful projection or scale information
+        lastInputTime: scene.camera.lastInputTime // helps determine which one is the latest input (if async)
     };
+    update[scene.xaxis._name] = xrange.slice();
+    update[scene.yaxis._name] = yrange.slice();
 
     scene.graphDiv.emit('plotly_relayout', update);
 };

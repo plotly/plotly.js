@@ -310,7 +310,15 @@ describe('Test gl plot interactions', function() {
 
                 setTimeout(function() {
 
-                    expect(relayoutCallback).toHaveBeenCalledTimes(6); // X and back; Y and back; XY and back
+                    // callback count expectation: X and back; Y and back; XY and back
+                    expect(relayoutCallback).toHaveBeenCalledTimes(6);
+
+                    // a callback value structure and contents check
+                    expect(relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({
+                        lastInputTime: jasmine.any(Number),
+                        xaxis: [jasmine.any(Number), jasmine.any(Number)],
+                        yaxis: [jasmine.any(Number), jasmine.any(Number)]
+                    }));
 
                     done();
 
