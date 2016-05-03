@@ -61,14 +61,27 @@ exports.register = function register(_modules) {
     for(var i = 0; i < _modules.length; i++) {
         var newModule = _modules[i];
 
-        if(newModule && newModule.moduleType !== 'trace') {
+        if(!newModule) {
             throw new Error('Invalid module was attempted to be registered!');
-        } else {
-            Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
+        }
 
-            if(!Plots.subplotsRegistry[newModule.basePlotModule.name]) {
-                Plots.registerSubplot(newModule.basePlotModule);
-            }
+        switch(newModule.moduleType) {
+            case 'trace':
+                Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
+
+                if(!Plots.subplotsRegistry[newModule.basePlotModule.name]) {
+                    Plots.registerSubplot(newModule.basePlotModule);
+                }
+
+                break;
+
+            case 'transform':
+                Plots.transformsRegistry[newModule.name] = newModule;
+
+                break;
+
+            default:
+                throw new Error('Invalid module was attempted to be registered!');
         }
     }
 };
