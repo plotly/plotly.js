@@ -78,28 +78,11 @@ exports.plot = function(gd) {
             // skip over non-cartesian trace modules
             if(_module.basePlotModule.name !== 'cartesian') continue;
 
-            // skip over pies, there are drawn below
-            if(_module.name === 'pie') continue;
-
             // plot all traces of this type on this subplot at once
             var cdModule = getCdModule(cdSubplot, _module);
             _module.plot(gd, subplotInfo, cdModule);
 
             Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
         }
-    }
-
-    // now draw stuff not on subplots (ie, only pies at the moment)
-    if(fullLayout._hasPie) {
-        var Pie = Plots.getModule('pie');
-        var cdPie = getCdModule(calcdata, Pie);
-
-        if(cdPie.length) Pie.plot(gd, cdPie);
-    }
-};
-
-exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    if(oldFullLayout._hasPie && !newFullLayout._hasPie) {
-        oldFullLayout._pielayer.selectAll('g.trace').remove();
     }
 };

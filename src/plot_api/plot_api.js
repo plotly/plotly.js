@@ -277,9 +277,8 @@ Plotly.plot = function(gd, data, layout, config) {
         if(fullLayout._hasGL3D) plotRegistry.gl3d.plot(gd);
         if(fullLayout._hasGeo) plotRegistry.geo.plot(gd);
         if(fullLayout._hasGL2D) plotRegistry.gl2d.plot(gd);
-        if(fullLayout._hasCartesian || fullLayout._hasPie) {
-            plotRegistry.cartesian.plot(gd);
-        }
+        if(fullLayout._hasCartesian) plotRegistry.cartesian.plot(gd);
+        if(fullLayout._hasPie) plotRegistry.pie.plot(gd);
         if(fullLayout._hasTernary) plotRegistry.ternary.plot(gd);
 
         // clean up old scenes that no longer have associated data
