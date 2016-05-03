@@ -854,9 +854,8 @@ Plotly.newPlot = function(gd, data, layout, config) {
 function doCalcdata(gd) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
-        fullLayout = gd._fullLayout;
-
-    var i, trace, module, cd;
+        fullLayout = gd._fullLayout,
+        i;
 
     var calcdata = gd.calcdata = new Array(fullData.length);
 
@@ -882,12 +881,12 @@ function doCalcdata(gd) {
     }
 
     for(i = 0; i < fullData.length; i++) {
-        trace = fullData[i];
-        module = trace._module;
-        cd = [];
+        var trace = fullData[i],
+            _module = trace._module,
+            cd = [];
 
-        if(module && trace.visible === true) {
-            if(module.calc) cd = module.calc(gd, trace);
+        if(_module && trace.visible === true) {
+            if(_module.calc) cd = _module.calc(gd, trace);
         }
 
         // make sure there is a first point
@@ -901,7 +900,7 @@ function doCalcdata(gd) {
         if(!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
-        Lib.markTime('done with calcdata for '+i);
+        Lib.markTime('done with calcdata for ' + i);
         calcdata[i] = cd;
     }
 }
@@ -1564,7 +1563,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    if(isNumeric(traces)) traces=[traces];
+    if(isNumeric(traces)) traces = [traces];
     else if(!Array.isArray(traces) || !traces.length) {
         traces=gd._fullData.map(function(v,i) { return i; });
     }
