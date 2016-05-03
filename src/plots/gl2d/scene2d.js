@@ -270,12 +270,22 @@ proto.updateFx = function(options) {
 };
 
 var relayoutCallback = function(scene) {
-    var update = {};
+
+    var update = {},
+        xrange = scene.xaxis.range,
+        yrange = scene.yaxis.range;
+
+    // Update the layout on the DIV
+    scene.graphDiv.layout.xaxis.range = xrange.slice(0);
+    scene.graphDiv.layout.yaxis.range = yrange.slice(0);
+
+    // Make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
     update[scene.id] = { // scene.camera has no many useful projection or scale information
         lastInputTime: scene.camera.lastInputTime, // helps determine which one is the latest input (if async)
-        xrange: scene.xaxis.range.slice(0),
-        yrange: scene.yaxis.range.slice(0)
+        xrange: xrange.slice(0),
+        yrange: yrange.slice(0)
     };
+
     scene.graphDiv.emit('plotly_relayout', update);
 };
 

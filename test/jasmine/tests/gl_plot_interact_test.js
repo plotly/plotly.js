@@ -213,13 +213,14 @@ describe('Test gl plot interactions', function() {
 
     describe('gl2d plots', function() {
         var mock = require('@mocks/gl2d_10.json'),
-            relayoutCallback;
+            modeBar, relayoutCallback;
 
         beforeEach(function(done) {
             gd = createGraphDiv();
 
             Plotly.plot(gd, mock.data, mock.layout).then(function() {
 
+                modeBar = gd._fullLayout._modeBar;
                 relayoutCallback = jasmine.createSpy('relayoutCallback');
 
                 gd.on('plotly_relayout', relayoutCallback);
@@ -235,18 +236,85 @@ describe('Test gl plot interactions', function() {
 
         it('should respond to drag interactions', function(done) {
 
-            var sceneTarget = gd.querySelector('.plot-container .gl-container canvas');
+            jasmine.addMatchers(customMatchers);
 
-            // Drag scene
-            sceneTarget.dispatchEvent(new MouseEvent('mousedown', {x: 0, y: 0}));
-            sceneTarget.dispatchEvent(new MouseEvent('mousemove', { x: 100, y: 100}));
-            sceneTarget.dispatchEvent(new MouseEvent('mouseup', { x: 100, y: 100}));
+            var precision = 5;
+
+            var buttonPan = selectButton(modeBar, 'pan2d');
+
+            var originalX = [-0.022068095838587643, 5.022068095838588];
+            var originalY = [-0.21331533513634046, 5.851205650049042];
+
+            var newX = [-0.23224043715846995,4.811895754518705];
+            var newY = [-1.2962655110623016,4.768255474123081];
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+            // Switch to pan mode
+            expect(buttonPan.isActive()).toBe(false); // initially, zoom is active
+            buttonPan.click();
+            expect(buttonPan.isActive()).toBe(true); // switched on dragmode
+
+            // Switching mode must not change visible range
+            expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+            expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
             setTimeout(function() {
 
-                expect(relayoutCallback).toHaveBeenCalledTimes(1);
+                mouseEvent('mousemove', 200, 200);
 
-                done();
+                relayoutCallback.calls.reset();
+
+                // Drag scene along the X axis
+
+                mouseEvent('mousemove', 220, 200, {buttons: 1});
+
+                expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+                // Drag scene back along the X axis
+
+                mouseEvent('mousemove', 200, 200, {buttons: 1});
+
+                expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+                // Drag scene along the Y axis
+
+                mouseEvent('mousemove', 200, 150, {buttons: 1});
+
+                expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
+
+                // Drag scene back along the Y axis
+
+                mouseEvent('mousemove', 200, 200, {buttons: 1});
+
+                expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+                // Drag scene along both the X and Y axis
+
+                mouseEvent('mousemove', 220, 150, {buttons: 1});
+
+                expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
+
+                // Drag scene back along the X and Y axis
+
+                mouseEvent('mousemove', 200, 200, {buttons: 1});
+
+                expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
+                expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
+
+                setTimeout(function() {
+
+                    expect(relayoutCallback).toHaveBeenCalledTimes(6); // X and back; Y and back; XY and back
+
+                    done();
+
+                }, MODEBAR_DELAY);
 
             }, MODEBAR_DELAY);
         });
@@ -390,7 +458,6 @@ describe('Test gl plot interactions', function() {
                     sceneLayout2 = gd._fullLayout.scene2,
                     sceneTarget = gd.querySelector('.svg-container .gl-container #scene  canvas'),
                     sceneTarget2 = gd.querySelector('.svg-container .gl-container #scene2 canvas');
-
 
                 expect(sceneLayout.camera.eye)
                     .toEqual({x: 0.1, y: 0.1, z: 1});

@@ -180,6 +180,9 @@ describe('Test plot structure', function() {
                 var originalX = [-0.6225,5.5];
                 var originalY = [-1.6340975059013805,7.166241526218911];
 
+                var newX = [-2.0255729166666665,4.096927083333333];
+                var newY = [-0.3769062155984817,8.42343281652181];
+
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
@@ -203,7 +206,7 @@ describe('Test plot structure', function() {
                     mouseEvent('mousemove', 220, 150);
                     mouseEvent('mouseup', 220, 150);
 
-                    expect(gd.layout.xaxis.range).toBeCloseToArray([-2.0255729166666665,4.096927083333333], precision);
+                    expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
                     expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
                     // Drag scene back along the X axis (not from the same starting point but same X delta)
@@ -222,7 +225,7 @@ describe('Test plot structure', function() {
                     mouseEvent('mouseup', 110, 190);
 
                     expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray([-0.3769062155984817,8.42343281652181], precision);
+                    expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
 
                     // Drag scene back along the Y axis (not from the same starting point but same Y delta)
 
@@ -239,8 +242,8 @@ describe('Test plot structure', function() {
                     mouseEvent('mousemove', 220, 190);
                     mouseEvent('mouseup', 220, 190);
 
-                    expect(gd.layout.xaxis.range).toBeCloseToArray([-2.0255729166666665,4.096927083333333], precision);
-                    expect(gd.layout.yaxis.range).toBeCloseToArray([-0.3769062155984817,8.42343281652181], precision);
+                    expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
+                    expect(gd.layout.yaxis.range).toBeCloseToArray(newY, precision);
 
                     // Drag scene back along the X and Y axis (not from the same starting point but same delta vector)
 
