@@ -679,7 +679,7 @@ annotations.draw = function(gd, index, opt, value) {
                                 heightFraction, 0, 1, options.yanchor);
                         }
                         if(!xa || !ya) {
-                            csr = dragElement.cursor(
+                            csr = dragElement.getCursor(
                                 xa ? 0.5 : update[annbase + '.x'],
                                 ya ? 0.5 : update[annbase + '.y'],
                                 options.xanchor, options.yanchor
