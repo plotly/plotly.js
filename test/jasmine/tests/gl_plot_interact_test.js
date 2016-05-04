@@ -214,14 +214,13 @@ describe('Test gl plot interactions', function() {
     describe('gl3d plots', function() {
 
         var mock = require('@mocks/gl3d_scatter3d-connectgaps.json'),
-            modeBar, relayoutCallback;
+            relayoutCallback;
 
         beforeEach(function(done) {
             gd = createGraphDiv();
 
             Plotly.plot(gd, mock.data, mock.layout).then(function() {
 
-                modeBar = gd._fullLayout._modeBar;
                 relayoutCallback = jasmine.createSpy('relayoutCallback');
 
                 gd.on('plotly_relayout', relayoutCallback);
