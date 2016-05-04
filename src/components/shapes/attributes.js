@@ -34,7 +34,7 @@ module.exports = {
             'If *rect*, a rectangle is drawn linking',
             '(`x0`,`y0`), (`x1`,`y0`), (`x1`,`y1`), (`x0`,`y1`), (`x0`,`y0`)',
 
-            'If *path*, draw a custom SVG path using `path`.',
+            'If *path*, draw a custom SVG path using `path`.'
         ].join(' ')
     },
 
