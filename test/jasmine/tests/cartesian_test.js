@@ -98,7 +98,7 @@ describe('plot svg clip paths', function() {
         // https://github.com/angular/angular.js/issues/8934
 
         // append <base> with href
-        d3.select('body')
+        var base = d3.select('body')
             .append('base')
             .attr('href', 'https://plot.ly');
 
@@ -116,6 +116,8 @@ describe('plot svg clip paths', function() {
 
             done();
         });
+
+        base.remove();
 
     });
 });

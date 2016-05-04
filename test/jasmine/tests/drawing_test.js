@@ -11,6 +11,11 @@ describe('Drawing.setClipUrl', function() {
         this.g = this.svg.append('g');
     });
 
+    afterEach(function() {
+        this.svg.remove();
+        this.g.remove();
+    });
+
     it('should set the clip-path attribute', function() {
         expect(this.g.attr('clip-path')).toBe(null);
 
@@ -30,7 +35,7 @@ describe('Drawing.setClipUrl', function() {
     it('should append window URL to clip-path if <base> is present', function() {
 
         // append <base> with href
-        d3.select('body')
+        var base = d3.select('body')
             .append('base')
             .attr('href', 'https://plot.ly');
 
@@ -41,5 +46,7 @@ describe('Drawing.setClipUrl', function() {
 
         expect(this.g.attr('clip-path'))
             .toEqual('url(' + href + '#id3)');
+
+        base.remove();
     });
 });
