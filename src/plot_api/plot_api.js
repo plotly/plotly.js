@@ -2913,10 +2913,8 @@ function lsInner(gd) {
             });
 
 
-        plotinfo.plot.attr({
-            'transform': 'translate(' + xa._offset + ', ' + ya._offset + ')',
-            'clip-path': 'url(#' + clipId + ')'
-        });
+        plotinfo.plot.call(Lib.setTranslate, xa._offset, ya._offset);
+        plotinfo.plot.call(Drawing.setClipUrl, clipId);
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),
