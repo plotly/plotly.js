@@ -54,7 +54,10 @@ describe('config argument', function() {
                 { x: [1,2,3], y: [3,2,1] }
             ], {
                 width: 600,
-                height: 400
+                height: 400,
+                annotations: [
+                    { text: 'testing', x: 1, y: 1, showarrow: true }
+                ]
             }, { editable: true })
             .then(done);
         });
@@ -78,6 +81,24 @@ describe('config argument', function() {
             expect(editBox.getAttribute('contenteditable')).toBe('true');
         }
 
+        function checkIfDraggable(elClass) {
+            var el = document.getElementsByClassName(elClass)[0];
+
+            var elBox = el.getBoundingClientRect(),
+                elX = elBox.left + elBox.width / 2,
+                elY = elBox.top + elBox.height / 2;
+
+            mouseEvent('mousedown', elX, elY);
+            mouseEvent('mousemove', elX - 20, elY + 20);
+
+            var movedBox = el.getBoundingClientRect();
+
+            expect(movedBox.left).toBe(elBox.left - 20);
+            expect(movedBox.top).toBe(elBox.top + 20);
+
+            mouseEvent('mouseup', elX - 20, elY + 20);
+        }
+
         it('should make titles editable', function() {
             checkIfEditable('gtitle', 'Click to enter Plot title');
         });
@@ -94,22 +115,21 @@ describe('config argument', function() {
             checkIfEditable('legendtext', 'trace 0');
         });
 
-        it('should make legends draggable', function() {
-
-            var legend = document.getElementsByClassName('legend')[0],
-                legendBox = legend.getBoundingClientRect(),
-                legendX = legendBox.left + legendBox.width / 2,
-                legendY = legendBox.top + legendBox.height / 2;
-
-            mouseEvent('mousedown', legendX, legendY);
-            mouseEvent('mousemove', legendX - 20, legendY + 20);
-            mouseEvent('mouseup', legendX - 20, legendY + 20);
-
-            var movedlegendBox = legend.getBoundingClientRect();
-
-            expect(movedlegendBox.left).not.toBe(legendBox.left);
-            expect(movedlegendBox.top).not.toBe(legendBox.top);
-
+        it('should make annotation labels editable', function() {
+            checkIfEditable('annotation-text-g', 'testing');
         });
+
+        it('should make annotation labels draggable', function() {
+            checkIfDraggable('annotation-text-g');
+        });
+
+        it('should make annotation arrows draggable', function() {
+            checkIfDraggable('annotation-arrow-g');
+        });
+
+        it('should make legends draggable', function() {
+            checkIfDraggable('legend');
+        });
+
     });
 });
