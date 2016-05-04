@@ -34,7 +34,7 @@ module.exports = {
             'If *rect*, a rectangle is drawn linking',
             '(`x0`,`y0`), (`x1`,`y0`), (`x1`,`y1`), (`x0`,`y1`), (`x0`,`y0`)',
 
-            'If *path*, draw a custom SVG path using `path`.'
+            'If *path*, draw a custom SVG path using `path`.',
         ].join(' ')
     },
 
@@ -53,7 +53,11 @@ module.exports = {
             'refers to an x coordinate',
             'If set to *paper*, the `x` position refers to the distance from',
             'the left side of the plotting area in normalized coordinates',
-            'where *0* (*1*) corresponds to the left (right) side.'
+            'where *0* (*1*) corresponds to the left (right) side.',
+            'If the axis `type` is *log*, then you must take the',
+            'log of your desired range.',
+            'If the axis `type` is *date*, then you must convert',
+            'the date to unix time in milliseconds.'
         ].join(' ')
     }),
     x0: {
