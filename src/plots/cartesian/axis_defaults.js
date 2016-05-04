@@ -148,7 +148,7 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
 function setAutoType(ax, data) {
     // new logic: let people specify any type they want,
     // only autotype if type is '-'
-    if(ax.type!=='-') return;
+    if(ax.type !== '-') return;
 
     var id = ax._id,
         axLetter = id.charAt(0);
@@ -163,7 +163,7 @@ function setAutoType(ax, data) {
     // should always default to a linear axis
     if(d0.type==='histogram' &&
             axLetter === {v: 'y', h: 'x'}[d0.orientation || 'v']) {
-        ax.type='linear';
+        ax.type = 'linear';
         return;
     }
 
