@@ -74,10 +74,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
-    containerOut._initialCategories = axType === 'category' ?
-        orderedCategories(letter, containerIn.categoryorder, containerIn.categoryarray, options.data) :
-        [];
-
     setConvert(containerOut);
 
     var dfltColor = coerce('color');
@@ -141,6 +137,11 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         delete containerOut.zerolinecolor;
         delete containerOut.zerolinewidth;
     }
+
+    // fill in categories
+    containerOut._initialCategories = axType === 'category' ?
+        orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
+        [];
 
     return containerOut;
 };
