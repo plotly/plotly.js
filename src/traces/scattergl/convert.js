@@ -33,6 +33,8 @@ function LineWithMarkers(scene, uid) {
     this.scene = scene;
     this.uid = uid;
 
+    this.pickXData = [];
+    this.pickYData = [];
     this.xData = [];
     this.yData = [];
     this.textLabels = [];
@@ -113,8 +115,8 @@ proto.handlePick = function(pickResult) {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            this.xData[index],
-            this.yData[index]
+            this.pickXData[index],
+            this.pickYData[index]
         ],
         textLabel: Array.isArray(this.textLabels) ?
             this.textLabels[index] :
@@ -267,8 +269,8 @@ proto.update = function(options) {
 };
 
 proto.updateFast = function(options) {
-    var x = this.xData = options.x;
-    var y = this.yData = options.y;
+    var x = this.xData = this.pickXData = options.x;
+    var y = this.yData = this.pickYData = options.y;
 
     var len = x.length,
         idToIndex = new Array(len),
@@ -349,8 +351,8 @@ proto.updateFancy = function(options) {
         bounds = this.bounds;
 
     // makeCalcdata runs d2c (data-to-coordinate) on every point
-    var x = xaxis.makeCalcdata(options, 'x').slice();
-    var y = yaxis.makeCalcdata(options, 'y').slice();
+    var x = this.pickXData = xaxis.makeCalcdata(options, 'x').slice();
+    var y = this.pickYData = yaxis.makeCalcdata(options, 'y').slice();
 
     this.xData = x.slice();
     this.yData = y.slice();
