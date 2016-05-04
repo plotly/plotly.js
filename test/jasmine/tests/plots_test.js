@@ -66,8 +66,8 @@ describe('Test Plots', function() {
 
     });
 
-    describe('Plots.supplyDataDefaults', function() {
-        var supplyDataDefaults = Plots.supplyDataDefaults,
+    describe('Plots.supplyTraceDefaults', function() {
+        var supplyTraceDefaults = Plots.supplyTraceDefaults,
             layout = {};
 
         var traceIn, traceOut;
@@ -77,11 +77,11 @@ describe('Test Plots', function() {
                 layout._dataLength = 1;
 
                 traceIn = {};
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('x+y+z+text');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
 
@@ -89,11 +89,11 @@ describe('Test Plots', function() {
                 layout._dataLength = 2;
 
                 traceIn = {};
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('all');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
         });
