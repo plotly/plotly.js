@@ -8,32 +8,25 @@
 
 'use strict';
 
-var layoutAttributes = require('./layout_attributes');
 
 module.exports = function handleCategoryOrderDefaults(containerIn, containerOut, coerce) {
+    if(containerOut.type !== 'category') return;
 
-    if(containerIn.type !== 'category') return;
+    var arrayIn = containerIn.categoryarray,
+        orderDefault;
 
-    var validCategories = layoutAttributes.categoryorder.values;
+    var isValidArray = (Array.isArray(arrayIn) && arrayIn.length);
 
-    var propercategoryarray = Array.isArray(containerIn.categoryarray) && containerIn.categoryarray.length > 0;
+    // override default 'categoryorder' value when non-empty array is supplied
+    if(isValidArray) orderDefault = 'array';
 
-    if(validCategories.indexOf(containerIn.categoryorder) === -1 && propercategoryarray) {
+    var order = coerce('categoryorder', orderDefault);
 
-        // when unspecified or invalid, use the default, unless categoryarray implies 'array'
-        coerce('categoryorder', 'array'); // promote to 'array'
+    // coerce 'categoryarray' only in array order case
+    if(order === 'array') coerce('categoryarray');
 
-    } else if(containerIn.categoryorder === 'array' && !propercategoryarray) {
-
-        // when mode is 'array' but no list is given, revert to default
-
-        containerIn.categoryorder = 'trace'; // revert to default
-        coerce('categoryorder');
-
-    } else {
-
-        // otherwise use the supplied mode, or the default one if unsupplied or invalid
-        coerce('categoryorder');
-
+    // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
+    if(!isValidArray && order === 'array') {
+        containerOut.categoryorder = 'trace';
     }
 };
