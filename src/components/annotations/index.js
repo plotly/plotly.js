@@ -498,7 +498,7 @@ annotations.draw = function(gd, index, opt, value) {
 
         var annX = Math.round(annPosPx.x - outerwidth / 2),
             annY = Math.round(annPosPx.y - outerheight / 2);
-        ann.attr('transform', 'translate(' + annX + ', ' + annY + ')');
+        ann.call(Lib.setTranslate, annX, annY);
 
         var annbase = 'annotations['+index+']';
 
@@ -591,8 +591,10 @@ annotations.draw = function(gd, index, opt, value) {
                 dragElement.init({
                     element: arrowdrag.node(),
                     prepFn: function() {
-                        annx0 = Number(ann.attr('x'));
-                        anny0 = Number(ann.attr('y'));
+                        var pos = Lib.getTranslate(ann);
+
+                        annx0 = pos.x;
+                        anny0 = pos.y;
                         update = {};
                         if(xa && xa.autorange) {
                             update[xa._name+'.autorange'] = true;
@@ -607,7 +609,7 @@ annotations.draw = function(gd, index, opt, value) {
                         var annxy0 = applyTransform(annx0, anny0),
                             xcenter = annxy0[0] + dx,
                             ycenter = annxy0[1] + dy;
-                        ann.call(Drawing.setPosition, xcenter, ycenter);
+                        ann.call(Lib.setTranslate, xcenter, ycenter);
 
                         update[annbase+'.x'] = xa ?
                             (options.x + dx / xa._m) :
@@ -648,12 +650,14 @@ annotations.draw = function(gd, index, opt, value) {
             dragElement.init({
                 element: ann.node(),
                 prepFn: function() {
-                    x0 = Number(ann.attr('x'));
-                    y0 = Number(ann.attr('y'));
+                    var pos = Lib.getTranslate(ann);
+
+                    x0 = pos.x;
+                    y0 = pos.y;
                     update = {};
                 },
                 moveFn: function(dx, dy) {
-                    ann.call(Drawing.setPosition, x0 + dx, y0 + dy);
+                    ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
                         update[annbase+'.ax'] = options.ax + dx;
@@ -679,7 +683,7 @@ annotations.draw = function(gd, index, opt, value) {
                                 heightFraction, 0, 1, options.yanchor);
                         }
                         if(!xa || !ya) {
-                            csr = dragElement.cursor(
+                            csr = dragElement.getCursor(
                                 xa ? 0.5 : update[annbase + '.x'],
                                 ya ? 0.5 : update[annbase + '.y'],
                                 options.xanchor, options.yanchor
@@ -691,7 +695,7 @@ annotations.draw = function(gd, index, opt, value) {
                         x1 = xy1[0] + dx,
                         y1 = xy1[1] + dy;
 
-                    ann.call(Drawing.setPosition, x1, y1);
+                    ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
 
                     anng.attr({
                         transform: 'rotate(' + textangle + ',' +
