@@ -49,3 +49,73 @@ describe('zoom box element', function() {
             .toEqual(0);
     });
 });
+
+describe('plot svg clip paths', function() {
+
+    // plot with all features that rely on clip paths
+    function plot() {
+        return Plotly.plot(createGraphDiv(), [{
+            type: 'contour',
+            z: [[1,2,3], [2,3,1]]
+        }, {
+            type: 'scatter',
+            y: [2, 1, 2]
+        }], {
+            showlegend: true,
+            xaxis: {
+                rangeslider: {}
+            },
+            shapes: [{
+                xref: 'x',
+                yref: 'y',
+                x0: 0,
+                y0: 0,
+                x1: 3,
+                y1: 3
+            }]
+        });
+    }
+
+    afterEach(destroyGraphDiv);
+
+    it('should set clip path url to ids (base case)', function(done) {
+        plot().then(function() {
+
+            d3.selectAll('[clip-path]').each(function() {
+                var cp = d3.select(this).attr('clip-path');
+
+                expect(cp.substring(0, 5)).toEqual('url(#');
+                expect(cp.substring(cp.length-1)).toEqual(')');
+            });
+
+            done();
+        });
+    });
+
+    it('should set clip path url to ids appended to window url', function(done) {
+
+        // this case occurs in some past versions of AngularJS
+        // https://github.com/angular/angular.js/issues/8934
+
+        // append <base> with href
+        d3.select('body')
+            .append('base')
+            .attr('href', 'https://plot.ly');
+
+        // grab window URL
+        var href = window.location.href;
+
+        plot().then(function() {
+
+            d3.selectAll('[clip-path]').each(function() {
+                var cp = d3.select(this).attr('clip-path');
+
+                expect(cp.substring(0, 5 + href.length)).toEqual('url(' + href + '#');
+                expect(cp.substring(cp.length-1)).toEqual(')');
+            });
+
+            done();
+        });
+
+    });
+});
