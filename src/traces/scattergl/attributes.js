@@ -86,6 +86,7 @@ module.exports = {
             reversescale: scatterMarkerLineAttrs.reversescale
         }
     },
+    connectgaps: scatterAttrs.connectgaps,
     fill: extendFlat({}, scatterAttrs.fill, {
         values: ['none', 'tozeroy', 'tozerox']
     }),
