@@ -85,7 +85,7 @@ describe('plot svg clip paths', function() {
                 var cp = d3.select(this).attr('clip-path');
 
                 expect(cp.substring(0, 5)).toEqual('url(#');
-                expect(cp.substring(cp.length-1)).toEqual(')');
+                expect(cp.substring(cp.length - 1)).toEqual(')');
             });
 
             done();
@@ -111,13 +111,11 @@ describe('plot svg clip paths', function() {
                 var cp = d3.select(this).attr('clip-path');
 
                 expect(cp.substring(0, 5 + href.length)).toEqual('url(' + href + '#');
-                expect(cp.substring(cp.length-1)).toEqual(')');
+                expect(cp.substring(cp.length - 1)).toEqual(')');
             });
 
+            base.remove();
             done();
         });
-
-        base.remove();
-
     });
 });
