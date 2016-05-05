@@ -10,6 +10,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.10.2] -- 2016-05-05
+
+### Fixed
+- Subplot and range slider clip paths are now functional in AngularJS [#509]
+- `relayout` call involving axis `categoryorder` and `categoryarray` are now
+  working [#510]
+- Annotation drag interactions in `editable: true` mode are now functional (bug
+  introduced in 1.10.0)[#505]
+- Improved attribute description for shape `xref` and `yref` [#506]
+
+
 ## [1.10.1] -- 2016-05-02
 
 ### Fixed
