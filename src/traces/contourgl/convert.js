@@ -99,6 +99,14 @@ proto.update = function(fullTrace, calcTrace) {
     this.contourOptions.levels = colorOptions.levels;
     this.contourOptions.levelColors = colorOptions.levelColors;
 
+    // pass on fill information
+    if(fullTrace.contours.coloring === 'fill') {
+        // though gl-contour2d automatically defaults to a transparent layer for the last
+        // band color, it's set manually here in case the gl-contour2 API changes
+        this.contourOptions.fillColors = colorOptions.levelColors.concat([0,0,0,0])
+            .map(function(d, i) {return i % 4 === 3 ? d / 2 : d}); // halve the fill alphas
+    }
+
     // convert text from 2D -> 1D
     this.textLabels = [].concat.apply([], fullTrace.text);
 
