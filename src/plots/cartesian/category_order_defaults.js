@@ -15,7 +15,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     var arrayIn = containerIn.categoryarray,
         orderDefault;
 
-    var isValidArray = (Array.isArray(arrayIn) && arrayIn.length);
+    var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
 
     // override default 'categoryorder' value when non-empty array is supplied
     if(isValidArray) orderDefault = 'array';
