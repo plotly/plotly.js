@@ -31,7 +31,7 @@ var Tabs = {
         var graphDiv = Tabs.getGraph(id);
 
         if(graphDiv) {
-            graphDiv.remove();
+            graphDiv.parentNode.removeChild(graphDiv);
         }
 
         graphDiv = document.createElement('div');
