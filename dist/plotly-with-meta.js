@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.10.1
+* plotly.js v1.10.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -51023,7 +51023,7 @@ annotations.draw = function(gd, index, opt, value) {
 
         var annX = Math.round(annPosPx.x - outerwidth / 2),
             annY = Math.round(annPosPx.y - outerheight / 2);
-        ann.attr('transform', 'translate(' + annX + ', ' + annY + ')');
+        ann.call(Lib.setTranslate, annX, annY);
 
         var annbase = 'annotations['+index+']';
 
@@ -51116,8 +51116,10 @@ annotations.draw = function(gd, index, opt, value) {
                 dragElement.init({
                     element: arrowdrag.node(),
                     prepFn: function() {
-                        annx0 = Number(ann.attr('x'));
-                        anny0 = Number(ann.attr('y'));
+                        var pos = Lib.getTranslate(ann);
+
+                        annx0 = pos.x;
+                        anny0 = pos.y;
                         update = {};
                         if(xa && xa.autorange) {
                             update[xa._name+'.autorange'] = true;
@@ -51132,7 +51134,7 @@ annotations.draw = function(gd, index, opt, value) {
                         var annxy0 = applyTransform(annx0, anny0),
                             xcenter = annxy0[0] + dx,
                             ycenter = annxy0[1] + dy;
-                        ann.call(Drawing.setPosition, xcenter, ycenter);
+                        ann.call(Lib.setTranslate, xcenter, ycenter);
 
                         update[annbase+'.x'] = xa ?
                             (options.x + dx / xa._m) :
@@ -51173,12 +51175,14 @@ annotations.draw = function(gd, index, opt, value) {
             dragElement.init({
                 element: ann.node(),
                 prepFn: function() {
-                    x0 = Number(ann.attr('x'));
-                    y0 = Number(ann.attr('y'));
+                    var pos = Lib.getTranslate(ann);
+
+                    x0 = pos.x;
+                    y0 = pos.y;
                     update = {};
                 },
                 moveFn: function(dx, dy) {
-                    ann.call(Drawing.setPosition, x0 + dx, y0 + dy);
+                    ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
                         update[annbase+'.ax'] = options.ax + dx;
@@ -51204,7 +51208,7 @@ annotations.draw = function(gd, index, opt, value) {
                                 heightFraction, 0, 1, options.yanchor);
                         }
                         if(!xa || !ya) {
-                            csr = dragElement.cursor(
+                            csr = dragElement.getCursor(
                                 xa ? 0.5 : update[annbase + '.x'],
                                 ya ? 0.5 : update[annbase + '.y'],
                                 options.xanchor, options.yanchor
@@ -51216,7 +51220,7 @@ annotations.draw = function(gd, index, opt, value) {
                         x1 = xy1[0] + dx,
                         y1 = xy1[1] + dy;
 
-                    ann.call(Drawing.setPosition, x1, y1);
+                    ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
 
                     anng.attr({
                         transform: 'rotate(' + textangle + ',' +
@@ -58424,6 +58428,8 @@ function draw(gd) {
 
 'use strict';
 
+var d3 = require('d3');
+
 var Symbols = require('../drawing/symbol_defs');
 var Drawing = require('../drawing');
 
@@ -58454,7 +58460,7 @@ module.exports = function rangePlot(gd, w, h) {
     clipDefs.appendChild(clip);
 
     var rangePlot = document.createElementNS(svgNS, 'g');
-    rangePlot.setAttribute('clip-path', 'url(#range-clip-path)');
+    d3.select(rangePlot).call(Drawing.setClipUrl, 'range-clip-path');
     rangePlot.appendChild(clipDefs);
 
 
@@ -58591,7 +58597,7 @@ function makeScatter(trace, pointPairs, w, h) {
     return [line, markers, fill];
 }
 
-},{"../../constants/xmlns_namespaces":366,"../drawing":325,"../drawing/symbol_defs":326,"./helpers":356}],359:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":366,"../drawing":325,"../drawing/symbol_defs":326,"./helpers":356,"d3":72}],359:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58647,7 +58653,11 @@ module.exports = {
             'refers to an x coordinate',
             'If set to *paper*, the `x` position refers to the distance from',
             'the left side of the plotting area in normalized coordinates',
-            'where *0* (*1*) corresponds to the left (right) side.'
+            'where *0* (*1*) corresponds to the left (right) side.',
+            'If the axis `type` is *log*, then you must take the',
+            'log of your desired range.',
+            'If the axis `type` is *date*, then you must convert',
+            'the date to unix time in milliseconds.'
         ].join(' ')
     }),
     x0: {
@@ -58873,17 +58883,17 @@ shapes.add = function(gd) {
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this one
 shapes.draw = function(gd, index, opt, value) {
-    if(!isNumeric(index) || index===-1) {
+    if(!isNumeric(index) || index === -1) {
         // no index provided - we're operating on ALL shapes
         if(!index && Array.isArray(value)) {
             replaceAllShapes(gd, value);
             return;
         }
-        else if(value==='remove') {
+        else if(value === 'remove') {
             deleteAllShapes(gd);
             return;
         }
-        else if(opt && value!=='add') {
+        else if(opt && value !== 'add') {
             updateAllShapes(gd, opt, value);
             return;
         }
@@ -58895,11 +58905,11 @@ shapes.draw = function(gd, index, opt, value) {
     }
 
     if(!opt && value) {
-        if(value==='remove') {
+        if(value === 'remove') {
             deleteShape(gd, index);
             return;
         }
-        else if(value==='add' || Lib.isPlainObject(value)) {
+        else if(value === 'add' || Lib.isPlainObject(value)) {
             insertShape(gd, index, value);
         }
     }
@@ -59799,7 +59809,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.10.1';
+exports.version = '1.10.2';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -65391,6 +65401,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
         else if(/[xy]axis[0-9]*?$/.test(pleaf) && !Object.keys(vi || {}).length) {
             docalc = true;
         }
+        else if(/[xy]axis[0-9]*\.categoryorder$/.test(pleafPlus)) {
+            docalc = true;
+        }
+        else if(/[xy]axis[0-9]*\.categoryarray/.test(pleafPlus)) {
+            docalc = true;
+        }
 
         if(pleafPlus.indexOf('rangeslider') !== -1) {
             docalc = true;
@@ -65822,8 +65838,10 @@ function makePlotFramework(gd) {
 
     // lower shape layer
     // (only for shapes to be drawn below the whole plot)
-    fullLayout._shapeLowerLayer = fullLayout._paper.append('g')
-        .classed('shapelayer shapelayer-below', true);
+    var layerBelow = fullLayout._paper.append('g')
+        .classed('layer-below', true);
+    fullLayout._shapeLowerLayer = layerBelow.append('g')
+        .classed('shapelayer', true);
 
     var subplots = Plotly.Axes.getSubplots(gd);
     if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
@@ -65841,8 +65859,10 @@ function makePlotFramework(gd) {
 
     // upper shape layer
     // (only for shapes to be drawn above the whole plot, including subplots)
-    fullLayout._shapeUpperLayer = fullLayout._paper.append('g')
-        .classed('shapelayer shapelayer-above', true);
+    var layerAbove = fullLayout._paper.append('g')
+        .classed('layer-above', true);
+    fullLayout._shapeUpperLayer = layerAbove.append('g')
+        .classed('shapelayer', true);
 
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
@@ -66089,10 +66109,8 @@ function lsInner(gd) {
             });
 
 
-        plotinfo.plot.attr({
-            'transform': 'translate(' + xa._offset + ', ' + ya._offset + ')',
-            'clip-path': 'url(#' + clipId + ')'
-        });
+        plotinfo.plot.call(Lib.setTranslate, xa._offset, ya._offset);
+        plotinfo.plot.call(Drawing.setClipUrl, clipId);
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),
@@ -68987,10 +69005,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
-    containerOut._initialCategories = axType === 'category' ?
-        orderedCategories(letter, containerIn.categoryorder, containerIn.categoryarray, options.data) :
-        [];
-
     setConvert(containerOut);
 
     var dfltColor = coerce('color');
@@ -69055,13 +69069,18 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         delete containerOut.zerolinewidth;
     }
 
+    // fill in categories
+    containerOut._initialCategories = axType === 'category' ?
+        orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
+        [];
+
     return containerOut;
 };
 
 function setAutoType(ax, data) {
     // new logic: let people specify any type they want,
     // only autotype if type is '-'
-    if(ax.type!=='-') return;
+    if(ax.type !== '-') return;
 
     var id = ax._id,
         axLetter = id.charAt(0);
@@ -69076,7 +69095,7 @@ function setAutoType(ax, data) {
     // should always default to a linear axis
     if(d0.type==='histogram' &&
             axLetter === {v: 'y', h: 'x'}[d0.orientation || 'v']) {
-        ax.type='linear';
+        ax.type = 'linear';
         return;
     }
 
@@ -69324,37 +69343,30 @@ exports.getFromTrace = function(gd, fullTrace, type) {
 
 'use strict';
 
-var layoutAttributes = require('./layout_attributes');
 
 module.exports = function handleCategoryOrderDefaults(containerIn, containerOut, coerce) {
+    if(containerOut.type !== 'category') return;
 
-    if(containerIn.type !== 'category') return;
+    var arrayIn = containerIn.categoryarray,
+        orderDefault;
 
-    var validCategories = layoutAttributes.categoryorder.values;
+    var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
 
-    var propercategoryarray = Array.isArray(containerIn.categoryarray) && containerIn.categoryarray.length > 0;
+    // override default 'categoryorder' value when non-empty array is supplied
+    if(isValidArray) orderDefault = 'array';
 
-    if(validCategories.indexOf(containerIn.categoryorder) === -1 && propercategoryarray) {
+    var order = coerce('categoryorder', orderDefault);
 
-        // when unspecified or invalid, use the default, unless categoryarray implies 'array'
-        coerce('categoryorder', 'array'); // promote to 'array'
+    // coerce 'categoryarray' only in array order case
+    if(order === 'array') coerce('categoryarray');
 
-    } else if(containerIn.categoryorder === 'array' && !propercategoryarray) {
-
-        // when mode is 'array' but no list is given, revert to default
-
-        containerIn.categoryorder = 'trace'; // revert to default
-        coerce('categoryorder');
-
-    } else {
-
-        // otherwise use the supplied mode, or the default one if unsupplied or invalid
-        coerce('categoryorder');
-
+    // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
+    if(!isValidArray && order === 'array') {
+        containerOut.categoryorder = 'trace';
     }
 };
 
-},{"./layout_attributes":408}],403:[function(require,module,exports){
+},{}],403:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
