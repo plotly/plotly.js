@@ -66,7 +66,7 @@ module.exports = {
     HOVERFONT: 'Arial, sans-serif',
 
     // minimum time (msec) between hover calls
-    HOVERMINTIME: 100,
+    HOVERMINTIME: 50,
 
     // max pixels off straight before a lasso select line counts as bent
     BENDPX: 1.5
