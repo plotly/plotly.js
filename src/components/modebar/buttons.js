@@ -256,7 +256,7 @@ function handleCartesian(gd, ev) {
 
     Plotly.relayout(gd, aobj).then(function() {
         if(astr === 'dragmode') {
-            if(fullLayout._hasCartesian) {
+            if(fullLayout._has('cartesian')) {
                 setCursor(
                     fullLayout._paper.select('.nsewdrag'),
                     DRAGCURSORS[val]
@@ -500,7 +500,7 @@ function toggleHover(gd) {
     var fullLayout = gd._fullLayout;
 
     var onHoverVal;
-    if(fullLayout._hasCartesian) {
+    if(fullLayout._has('cartesian')) {
         onHoverVal = fullLayout._isHoriz ? 'y' : 'x';
     }
     else onHoverVal = 'closest';

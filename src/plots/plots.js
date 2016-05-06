@@ -190,8 +190,8 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
     if(_module === undefined) return [];
 
     // layout must be 'fullLayout' here
-    if(type === 'cartesian' && !layout._hasCartesian) return [];
-    if(type === 'gl2d' && !layout._hasGL2D) return [];
+    if(type === 'cartesian' && (!layout._has || !layout._has('cartesian'))) return [];
+    if(type === 'gl2d' && (!layout._has || !layout._has('gl2d'))) return [];
     if(type === 'cartesian' || type === 'gl2d') {
         return Object.keys(layout._plots || {});
     }

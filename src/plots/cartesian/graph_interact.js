@@ -60,7 +60,7 @@ fx.supplyLayoutDefaults = function(layoutIn, layoutOut, fullData) {
     coerce('dragmode');
 
     var hovermodeDflt;
-    if(layoutOut._hasCartesian) {
+    if(layoutOut._has('cartesian')) {
         // flag for 'horizontal' plots:
         // determines the state of the mode bar 'compare' hovermode button
         var isHoriz = layoutOut._isHoriz = fx.isHoriz(fullData);
@@ -89,7 +89,7 @@ fx.isHoriz = function(fullData) {
 fx.init = function(gd) {
     var fullLayout = gd._fullLayout;
 
-    if(!fullLayout._hasCartesian || gd._context.staticPlot) return;
+    if(!fullLayout._has('cartesian') || gd._context.staticPlot) return;
 
     var subplots = Object.keys(fullLayout._plots || {}).sort(function(a,b) {
         // sort overlays last, then by x axis number, then y axis number
@@ -107,7 +107,7 @@ fx.init = function(gd) {
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
 
-        if(!fullLayout._hasCartesian) return;
+        if(!fullLayout._has('cartesian')) return;
 
         var xa = plotinfo.x(),
             ya = plotinfo.y(),

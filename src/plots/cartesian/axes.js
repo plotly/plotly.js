@@ -39,7 +39,7 @@ axes.getFromTrace = axisIds.getFromTrace;
 // find the list of possible axes to reference with an xref or yref attribute
 // and coerce it to that list
 axes.coerceRef = function(containerIn, containerOut, gd, axLetter) {
-    var axlist = gd._fullLayout._hasGL2D ? [] : axes.listIds(gd, axLetter),
+    var axlist = gd._fullLayout._has('gl2d') ? [] : axes.listIds(gd, axLetter),
         refAttr = axLetter + 'ref',
         attrDef = {};
 
@@ -1797,7 +1797,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         var alldone = axes.getSubplots(gd, ax).map(function(subplot) {
             var plotinfo = fullLayout._plots[subplot];
 
-            if(!fullLayout._hasCartesian) return;
+            if(!fullLayout._has('cartesian')) return;
 
             var container = plotinfo[axletter + 'axislayer'],
 

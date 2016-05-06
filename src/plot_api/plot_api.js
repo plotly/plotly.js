@@ -2298,7 +2298,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             if(p.parts[0].indexOf('scene') === 0) doplot = true;
             else if(p.parts[0].indexOf('geo') === 0) doplot = true;
             else if(p.parts[0].indexOf('ternary') === 0) doplot = true;
-            else if(fullLayout._hasGL2D &&
+            else if(fullLayout._has('gl2d') &&
                 (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
             ) doplot = true;
             else if(ai === 'hiddenlabels') docalc = true;
@@ -2643,7 +2643,7 @@ function makePlotFramework(gd) {
         makeSubplots(gd, subplots);
     }
 
-    if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
+    if(fullLayout._has('cartesian')) makeCartesianPlotFramwork(gd, subplots);
 
     // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
