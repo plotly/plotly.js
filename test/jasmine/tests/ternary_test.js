@@ -230,9 +230,7 @@ describe('ternary defaults', function() {
     var layoutIn, layoutOut, fullData;
 
     beforeEach(function() {
-        // if hasTernary is not at this stage, the default step is skipped
         layoutOut = {
-            _hasTernary: true,
             font: { color: 'red' }
         };
 

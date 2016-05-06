@@ -1,4 +1,5 @@
 var Gl3d = require('@src/plots/gl3d');
+var Plots = require('@src/plots/plots');
 
 var tinycolor = require('tinycolor2');
 var Color = require('@src/components/color');
@@ -13,8 +14,9 @@ describe('Test Gl3d layout defaults', function() {
         var supplyLayoutDefaults = Gl3d.supplyLayoutDefaults;
 
         beforeEach(function() {
-            // if hasGL3D is not at this stage, the default step is skipped
-            layoutOut = { _hasGL3D: true };
+            layoutOut = {
+                _has: Plots._hasPlotType
+            };
 
             // needs a scene-ref in a trace in order to be detected
             fullData = [ { type: 'scatter3d', scene: 'scene' }];
@@ -173,7 +175,7 @@ describe('Test Gl3d layout defaults', function() {
                 .toBe('orbit', 'to user layout val if valid and 3d only');
 
             layoutIn = { scene: {}, dragmode: 'orbit' };
-            layoutOut._hasCartesian = true;
+            layoutOut._basePlotModules = [{ name: 'cartesian' }];
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.dragmode)
                 .toBe('turntable', 'to default if not 3d only');
@@ -201,7 +203,7 @@ describe('Test Gl3d layout defaults', function() {
                 .toBe(false, 'to user layout val if valid and 3d only');
 
             layoutIn = { scene: {}, hovermode: false };
-            layoutOut._hasCartesian = true;
+            layoutOut._basePlotModules = [{ name: 'cartesian' }];
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.scene.hovermode)
                 .toBe('closest', 'to default if not 3d only');

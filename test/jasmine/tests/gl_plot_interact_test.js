@@ -159,7 +159,7 @@ describe('Test gl plot interactions', function() {
             expect(gd.layout.scene).toEqual(sceneLayout);
             expect(gd.layout.xaxis).toBeUndefined();
             expect(gd.layout.yaxis).toBeUndefined();
-            expect(gd._fullLayout._hasGL3D).toBe(true);
+            expect(gd._fullLayout._has('gl3d')).toBe(true);
             expect(gd._fullLayout.scene._scene).toBeDefined();
 
             Plotly.restyle(gd, 'type', 'scatter').then(function() {
@@ -167,7 +167,7 @@ describe('Test gl plot interactions', function() {
                 expect(gd.layout.scene).toEqual(sceneLayout);
                 expect(gd.layout.xaxis).toBeDefined();
                 expect(gd.layout.yaxis).toBeDefined();
-                expect(gd._fullLayout._hasGL3D).toBe(false);
+                expect(gd._fullLayout._has('gl3d')).toBe(false);
                 expect(gd._fullLayout.scene).toBeUndefined();
 
                 return Plotly.restyle(gd, 'type', 'scatter3d');
@@ -176,7 +176,7 @@ describe('Test gl plot interactions', function() {
                 expect(gd.layout.scene).toEqual(sceneLayout);
                 expect(gd.layout.xaxis).toBeDefined();
                 expect(gd.layout.yaxis).toBeDefined();
-                expect(gd._fullLayout._hasGL3D).toBe(true);
+                expect(gd._fullLayout._has('gl3d')).toBe(true);
                 expect(gd._fullLayout.scene._scene).toBeDefined();
 
                 done();
@@ -186,7 +186,7 @@ describe('Test gl plot interactions', function() {
         it('should be able to delete the last trace', function(done) {
             Plotly.deleteTraces(gd, [0]).then(function() {
                 expect(countCanvases()).toEqual(0);
-                expect(gd._fullLayout._hasGL3D).toBe(false);
+                expect(gd._fullLayout._has('gl3d')).toBe(false);
                 expect(gd._fullLayout.scene).toBeUndefined();
 
                 done();

@@ -140,20 +140,20 @@ describe('Test Plots', function() {
 
         it('returns cartesian ids', function() {
             var layout = {
+                _has: Plots._hasPlotType,
                 _plots: { xy: {}, x2y2: {} }
             };
 
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual([]);
 
-            layout._hasCartesian = true;
+            layout._basePlotModules = [{ name: 'cartesian' }];
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual(['xy', 'x2y2']);
             expect(getSubplotIds(layout, 'gl2d'))
                 .toEqual([]);
 
-            delete layout._hasCartesian;
-            layout._hasGL2D = true;
+            layout._basePlotModules = [{ name: 'gl2d' }];
             expect(getSubplotIds(layout, 'gl2d'))
                 .toEqual(['xy', 'x2y2']);
             expect(getSubplotIds(layout, 'cartesian'))

@@ -1,4 +1,5 @@
 var Fx = require('@src/plots/cartesian/graph_interact');
+var Plots = require('@src/plots/plots');
 
 
 describe('Test FX', function() {
@@ -6,22 +7,24 @@ describe('Test FX', function() {
 
     describe('defaults', function() {
 
-        it('should default (blank version)', function() {
-            var layoutIn = {};
-            var layoutOut = {};
-            var fullData = [{}];
+        var layoutIn, layoutOut, fullData;
 
+        beforeEach(function() {
+            layoutIn = {};
+            layoutOut = {
+                _has: Plots._hasPlotType
+            };
+            fullData = [{}];
+        });
+
+        it('should default (blank version)', function() {
             Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
             expect(layoutOut.dragmode).toBe('zoom', 'dragmode to zoom');
         });
 
         it('should default (cartesian version)', function() {
-            var layoutIn = {};
-            var layoutOut = {
-                _hasCartesian: true
-            };
-            var fullData = [{}];
+            layoutOut._basePlotModules = [{ name: 'cartesian' }];
 
             Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.hovermode).toBe('x', 'hovermode to x');
@@ -30,13 +33,8 @@ describe('Test FX', function() {
         });
 
         it('should default (cartesian horizontal version)', function() {
-            var layoutIn = {};
-            var layoutOut = {
-                _hasCartesian: true
-            };
-            var fullData = [{
-                orientation: 'h'
-            }];
+            layoutOut._basePlotModules = [{ name: 'cartesian' }];
+            fullData[0] = { orientation: 'h' };
 
             Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.hovermode).toBe('y', 'hovermode to y');
@@ -45,11 +43,7 @@ describe('Test FX', function() {
         });
 
         it('should default (gl3d version)', function() {
-            var layoutIn = {};
-            var layoutOut = {
-                _hasGL3D: true
-            };
-            var fullData = [{}];
+            layoutOut._basePlotModules = [{ name: 'gl3d' }];
 
             Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
@@ -57,11 +51,7 @@ describe('Test FX', function() {
         });
 
         it('should default (geo version)', function() {
-            var layoutIn = {};
-            var layoutOut = {
-                _hasGeo: true
-            };
-            var fullData = [{}];
+            layoutOut._basePlotModules = [{ name: 'geo' }];
 
             Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.hovermode).toBe('closest', 'hovermode to closest');
@@ -69,12 +59,7 @@ describe('Test FX', function() {
         });
 
         it('should default (multi plot type version)', function() {
-            var layoutIn = {};
-            var layoutOut = {
-                _hasCartesian: true,
-                _hasGL3D: true
-            };
-            var fullData = [{}];
+            layoutOut._basePlotModules = [{ name: 'cartesian' }, { name: 'gl3d' }];
 
             Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
             expect(layoutOut.hovermode).toBe('x', 'hovermode to x');
