@@ -438,16 +438,19 @@ plots.sendDataToCloud = function(gd) {
 // Fill in default values:
 //
 // gd.data, gd.layout:
-//   are precisely what the user specified
+//   are precisely what the user specified,
+//   these fields shouldn't be modified nor used directly
+//   after the supply defaults step.
 //
 // gd._fullData, gd._fullLayout:
-//   are complete descriptions of how to draw the plot
+//   are complete descriptions of how to draw the plot,
+//   use these fields in all required computations.
 //
 // gd._fullLayout._modules
-//   is a list of all the trace modules required to draw the plot
+//   is a list of all the trace modules required to draw the plot.
 //
 // gd._fullLayout._basePlotModules
-//   is a list of all the plot modules required to draw the plot
+//   is a list of all the plot modules required to draw the plot.
 //
 plots.supplyDefaults = function(gd) {
     var oldFullLayout = gd._fullLayout || {},
