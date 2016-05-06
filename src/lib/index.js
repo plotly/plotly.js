@@ -335,6 +335,23 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
     }
 };
 
+/**
+ * Fill with unique items
+ *
+ * @param {array} array
+ *  array to be filled
+ * @param {any} item
+ *  item to be or not to be inserted
+ * @return {array}
+ *  ref to array (now possibly containing one more item)
+ *
+ */
+lib.fillUnique = function(array, item) {
+    if(item && array.indexOf(item) === -1) array.push(item);
+
+    return array;
+};
+
 lib.mergeArray = function(traceAttr, cd, cdAttr) {
     if(Array.isArray(traceAttr)) {
         var imax = Math.min(traceAttr.length, cd.length);

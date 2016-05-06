@@ -770,4 +770,44 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('fillUnique', function() {
+
+        beforeEach(function() {
+            this.obj = { a: 'A' };
+            this.array = ['a', 'b', 'c', this.obj];
+        });
+
+        it('should fill new items in array', function() {
+            var out = Lib.fillUnique(this.array, 'd');
+
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, 'd']);
+            expect(this.array).toBe(out);
+        });
+
+        it('should ignore falsy items', function() {
+            Lib.fillUnique(this.array, false);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.fillUnique(this.array, undefined);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.fillUnique(this.array, 0);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.fillUnique(this.array, null);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.fillUnique(this.array, '');
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+        });
+
+        it('should ignore item already in array', function() {
+            Lib.fillUnique(this.array, 'a');
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.fillUnique(this.array, this.obj);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+        });
+    });
+
 });
