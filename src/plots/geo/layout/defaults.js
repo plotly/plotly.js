@@ -10,7 +10,7 @@
 'use strict';
 
 var handleSubplotDefaults = require('../../subplot_defaults');
-var constants = require('../../../constants/geo_constants');
+var constants = require('../constants');
 var layoutAttributes = require('./layout_attributes');
 var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 

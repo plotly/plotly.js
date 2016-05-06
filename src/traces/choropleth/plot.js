@@ -22,7 +22,7 @@ var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeature
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var arrayToCalcItem = require('../../lib/array_to_calc_item');
 
-var constants = require('../../constants/geo_constants');
+var constants = require('../../plots/geo/constants');
 var attributes = require('./attributes');
 
 var plotChoropleth = module.exports = {};

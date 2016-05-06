@@ -23,9 +23,9 @@ var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');
 var createGeoZoom = require('./zoom');
 var createGeoZoomReset = require('./zoom_reset');
+var constants = require('./constants');
 
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var constants = require('../../constants/geo_constants');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson').feature;
 
