@@ -1,0 +1,60 @@
+{
+  "data": [
+    {
+      "x": [1,2,3],
+      "y": [1,2,3]
+    }
+  ],
+  "layout": {
+    "images": [
+      {
+        "source": "http://www.placekitten.com/100",
+        "xref": "paper",
+        "yref": "paper",
+        "x": 0,
+        "y": 0,
+        "width": 0.2,
+        "height": 0.2,
+        "xanchor": "right",
+      "yanchor": "bottom"
+      },
+      {
+        "source": "http://www.placekitten.com/300",
+        "xref": "x",
+        "yref": "y",
+        "x": 2.5,
+        "y": 2,
+        "width": 1,
+        "height": 1,
+        "xanchor": "center",
+        "yanchor": "middle",
+        "layer": "below"
+      },
+      {
+        "source": "http://www.placekitten.com/400",
+        "xref": "x",
+        "yref": "y",
+        "x": 1,
+        "y": 3,
+        "width": 2,
+        "height": 2,
+        "sizing": "stretch",
+        "opacity": 0.4
+      },
+      {
+        "source": "http://www.placekitten.com/300",
+        "xref": "x",
+        "yref": "paper",
+        "x": 2.75,
+        "y": 0,
+        "width": 0.5,
+        "height": 1,
+        "opacity": 1,
+        "xanchor": "left",
+        "yanchor": "top"
+      }
+    ],
+    "width": 800,
+    "height": 500
+  }
+}
