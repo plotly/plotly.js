@@ -16,6 +16,8 @@
 
 'use strict';
 
+/* eslint-disable */
+
 function addProjectionsToD3(d3) {
   d3.geo.project = function(object, projection) {
     var stream = projection.stream;
