@@ -10,18 +10,20 @@
 'use strict';
 
 function getDelay(fullLayout) {
-    return (fullLayout._hasGL3D || fullLayout._hasGL2D) ? 500 : 0;
+
+    // polar clears fullLayout._has for some reason
+    if(!fullLayout._has) return 0;
+
+    // maybe we should add a 'gl' (and 'svg') layoutCategory ??
+    return (fullLayout._has('gl3d')|| fullLayout._has('gl2d')) ? 500 : 0;
 }
 
 function getRedrawFunc(gd) {
+
+    // do not work if polar is present
+    if((gd.data && gd.data[0] && gd.data[0].r)) return;
+
     return function() {
-        var fullLayout = gd._fullLayout;
-
-        // doesn't work presently (and not needed) for polar or gl
-        if(fullLayout._hasGL3D || fullLayout._hasGL2D ||
-            (gd.data && gd.data[0] && gd.data[0].r)
-        ) return;
-
         (gd.calcdata || []).forEach(function(d) {
             if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
         });

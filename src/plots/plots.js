@@ -259,18 +259,18 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
 // then wait a little, then draw it again
 plots.redrawText = function(gd) {
 
-    // doesn't work presently (and not needed) for polar or 3d
-    if(gd._fullLayout._hasGL3D || (gd.data && gd.data[0] && gd.data[0].r)) {
-        return;
-    }
+    // do not work if polar is present
+    if((gd.data && gd.data[0] && gd.data[0].r)) return;
 
     return new Promise(function(resolve) {
         setTimeout(function() {
             Plotly.Annotations.drawAll(gd);
             Plotly.Legend.draw(gd);
-            (gd.calcdata||[]).forEach(function(d) {
-                if(d[0]&&d[0].t&&d[0].t.cb) d[0].t.cb();
+
+            (gd.calcdata || []).forEach(function(d) {
+                if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
             });
+
             resolve(plots.previousPromises(gd));
         },300);
     });
@@ -476,7 +476,7 @@ plots.supplyDefaults = function(gd) {
         newFullData.push(fullTrace);
 
         // detect polar
-        if('r' in fullTrace) newFullLayout._hasPolar = true;
+        if('r' in newData[i]) continue;
 
         _module = fullTrace._module;
         if(!_module) continue;
