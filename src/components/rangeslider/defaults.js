@@ -21,8 +21,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, axName, coun
         containerOut = layoutOut[axName].rangeslider = {};
 
     function coerce(attr, dflt) {
-        return Lib.coerce(containerIn, containerOut,
-            attributes, attr, dflt);
+        return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
     coerce('bgcolor');
