@@ -9,9 +9,11 @@
 'use strict';
 
 
+var draw = require('./draw');
 var supplyLayoutDefaults = require('./defaults');
 
 
 module.exports = {
+    draw: draw,
     supplyLayoutDefaults: supplyLayoutDefaults
 };
