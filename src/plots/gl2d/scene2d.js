@@ -27,6 +27,7 @@ var STATIC_CANVAS, STATIC_CONTEXT;
 
 function Scene2D(options, fullLayout) {
     this.container = options.container;
+    this.graphDiv = options.graphDiv;
     this.pixelRatio = options.plotGlPixelRatio || window.devicePixelRatio;
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
@@ -268,6 +269,25 @@ proto.updateFx = function(options) {
     fullLayout.hovermode = options.hovermode;
 };
 
+var relayoutCallback = function(scene) {
+
+    var xrange = scene.xaxis.range,
+        yrange = scene.yaxis.range;
+
+    // Update the layout on the DIV
+    scene.graphDiv.layout.xaxis.range = xrange.slice(0);
+    scene.graphDiv.layout.yaxis.range = yrange.slice(0);
+
+    // Make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
+    var update = { // scene.camera has no many useful projection or scale information
+        lastInputTime: scene.camera.lastInputTime // helps determine which one is the latest input (if async)
+    };
+    update[scene.xaxis._name] = xrange.slice();
+    update[scene.yaxis._name] = yrange.slice();
+
+    scene.graphDiv.emit('plotly_relayout', update);
+};
+
 proto.cameraChanged = function() {
     var camera = this.camera,
         xrange = this.xaxis.range,
@@ -285,6 +305,7 @@ proto.cameraChanged = function() {
         this.glplotOptions.ticks = nextTicks;
         this.glplotOptions.dataBox = camera.dataBox;
         this.glplot.update(this.glplotOptions);
+        relayoutCallback(this);
     }
 };
 

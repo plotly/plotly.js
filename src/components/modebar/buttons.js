@@ -350,6 +350,8 @@ function handleCamera3d(gd, ev) {
 
         if(attr === 'resetDefault') scene.setCameraToDefault();
         else if(attr === 'resetLastSave') {
+            // This handler looks in the un-updated fullLayout.scene.camera object to reset the camera
+            // to the last saved position.
             scene.setCamera(fullSceneLayout.camera);
         }
     }
