@@ -2646,6 +2646,8 @@ function makePlotFramework(gd) {
         .classed('layer-below', true);
     fullLayout._shapeLowerLayer = layerBelow.append('g')
         .classed('shapelayer', true);
+    fullLayout._imageLowerLayer = layerBelow.append('g')
+        .classed('imagelayer', true);
 
     var subplots = Plotly.Axes.getSubplots(gd);
     if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
@@ -2658,8 +2660,9 @@ function makePlotFramework(gd) {
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
 
     // shape layers in subplots
-    fullLayout._subplotShapeLayer = fullLayout._paper
-        .selectAll('.shapelayer-subplot');
+    var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
+    fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
+    fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
 
     // upper shape layer
     // (only for shapes to be drawn above the whole plot, including subplots)
@@ -2667,6 +2670,8 @@ function makePlotFramework(gd) {
         .classed('layer-above', true);
     fullLayout._shapeUpperLayer = layerAbove.append('g')
         .classed('shapelayer', true);
+    fullLayout._imageUpperLayer = layerAbove.append('g')
+        .classed('imagelayer', true);
 
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
@@ -2797,10 +2802,16 @@ function makeCartesianPlotFramwork(gd, subplots) {
                 // the plot and containers for overlays
                 plotinfo.bg = plotgroup.append('rect')
                     .style('stroke-width', 0);
-                // shape layer
-                // (only for shapes to be drawn below a subplot)
-                plotinfo.shapelayer = plotgroup.append('g')
-                    .classed('shapelayer shapelayer-subplot', true);
+
+                // back layer for shapes and images to
+                // be drawn below a subplot
+                var backlayer = plotgroup.append('g')
+                    .classed('layer-subplot', true);
+
+                plotinfo.shapelayer = backlayer.append('g')
+                    .classed('shapelayer', true);
+                plotinfo.imagelayer = backlayer.append('g')
+                    .classed('imagelayer', true);
                 plotinfo.gridlayer = plotgroup.append('g');
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');
