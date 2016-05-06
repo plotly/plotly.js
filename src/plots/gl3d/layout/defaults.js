@@ -17,8 +17,6 @@ var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    if(!layoutOut._hasGL3D) return;
-
     var hasNon3D = (
         layoutOut._hasCartesian ||
         layoutOut._hasGeo ||
