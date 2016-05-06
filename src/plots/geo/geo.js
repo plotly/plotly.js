@@ -37,9 +37,8 @@ function Geo(options, fullLayout) {
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
 
-    // add a few projection types to d3.geo,
-    // a subset of https://github.com/d3/d3-geo-projection
-    addProjectionsToD3();
+    // add a few projection types to d3.geo
+    addProjectionsToD3(d3);
 
     this.hoverContainer = null;
 
