@@ -764,9 +764,9 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     }
 
     // trace module layout defaults
-    var traceTypes = Object.keys(modules);
-    for(i = 0; i < traceTypes.length; i++) {
-        _module = modules[allTypes[i]]._module;
+    var modules = layoutOut._modules;
+    for(i = 0; i < modules.length; i++) {
+        _module = modules[i];
 
         if(_module.supplyLayoutDefaults) {
             _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
