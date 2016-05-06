@@ -193,7 +193,7 @@ plots.getSubplotIds = function getSubplotIds(layout, type) {
     if(type === 'cartesian' && (!layout._has || !layout._has('cartesian'))) return [];
     if(type === 'gl2d' && (!layout._has || !layout._has('gl2d'))) return [];
     if(type === 'cartesian' || type === 'gl2d') {
-        return Object.keys(layout._plots || {});
+        return Object.keys(layout._plots);
     }
 
     var idRegex = _module.idRegex,
