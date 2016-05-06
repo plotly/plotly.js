@@ -213,52 +213,65 @@ describe('Test gl plot interactions', function() {
 
     describe('gl3d plots', function() {
 
-        var mock = require('@mocks/gl3d_scatter3d-connectgaps.json'),
-            relayoutCallback;
+        // Expected shape of projection-related data
+        var cameraStructure = {
+            up: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
+            center: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
+            eye: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)}
+        };
 
-        beforeEach(function(done) {
-            gd = createGraphDiv();
+        function makePlot(mock) {
+            return Plotly.plot(createGraphDiv(), mock.data, mock.layout);
+        }
 
-            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+        function addEventCallback(graphDiv) {
+            var relayoutCallback = jasmine.createSpy('relayoutCallback');
+            graphDiv.on('plotly_relayout', relayoutCallback);
+            return {graphDiv: graphDiv, relayoutCallback: relayoutCallback};
+        }
 
-                relayoutCallback = jasmine.createSpy('relayoutCallback');
+        function verifyInteractionEffects(tuple) {
 
-                gd.on('plotly_relayout', relayoutCallback);
+            // One 'drag': simulating fairly thoroughly as the mouseup event is also needed here
+            mouseEvent('mousemove', 400, 200);
+            mouseEvent('mousedown', 400, 200);
+            mouseEvent('mousemove', 320, 320, {buttons: 1});
+            mouseEvent('mouseup', 320, 320);
 
-                delay(done);
+            // Check event emission count
+            expect(tuple.relayoutCallback).toHaveBeenCalledTimes(1);
+
+            // Check structure of event callback value contents
+            expect(tuple.relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({scene: cameraStructure}));
+
+            // Check camera contents on the DIV layout
+            var divCamera = tuple.graphDiv.layout.scene.camera;
+
+            expect(divCamera).toEqual(cameraStructure);
+
+            return tuple.graphDiv;
+        }
+
+        function markForTeardown(graphDiv) {
+            // TODO consider changing this test file such that the teardown needs no communication via a global variable
+            gd = graphDiv;
+        }
+
+        function testEvents(plot, done) {
+            plot.then(function(graphDiv) {
+                var tuple = addEventCallback(graphDiv);
+                verifyInteractionEffects(tuple);
+                markForTeardown(graphDiv);
+                done();
             });
+        }
+
+        it('should respond to drag interactions with mock of unset camera', function(done) {
+            testEvents(makePlot(require('@mocks/gl3d_scatter3d-connectgaps.json')), done);
         });
 
-        it('should respond to drag interactions', function(done) {
-
-            // Expected shape of projection-related data
-            var cameraStructure = {
-                up: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
-                center: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
-                eye: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)}
-            };
-
-            setTimeout(function() {
-
-                // One 'drag': simulating fairly thoroughly as the mouseup event is also needed here
-                mouseEvent('mousemove', 400, 200);
-                mouseEvent('mousedown', 400, 200);
-                mouseEvent('mousemove', 320, 320, {buttons: 1});
-                mouseEvent('mouseup', 320, 320);
-
-                // Check event emission count
-                expect(relayoutCallback).toHaveBeenCalledTimes(1);
-
-                // Check structure of event callback value contents
-                expect(relayoutCallback).toHaveBeenCalledWith(jasmine.objectContaining({scene: cameraStructure}));
-
-                // Check camera contents on the DIV layout
-                var divCamera = gd.layout.scene.camera;
-                expect(divCamera).toEqual(cameraStructure);
-
-                delay(done);
-
-            }, MODEBAR_DELAY);
+        it('should respond to drag interactions with mock of partially set camera', function(done) {
+            testEvents(makePlot(require('@mocks/gl3d_errorbars_zx.json')), done);
         });
     });
 

@@ -624,7 +624,7 @@ proto.saveCamera = function saveCamera(layout) {
     function same(x, y, i, j) {
         var vectors = ['up', 'center', 'eye'],
             components = ['x', 'y', 'z'];
-        return x[vectors[i]][components[j]] === y[vectors[i]][components[j]];
+        return y[vectors[i]] && (x[vectors[i]][components[j]] === y[vectors[i]][components[j]]);
     }
 
     if(cameraDataLastSave === undefined) hasChanged = true;
