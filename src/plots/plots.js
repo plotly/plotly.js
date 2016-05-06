@@ -485,9 +485,9 @@ plots.supplyDefaults = function(gd) {
         Lib.fillUnique(modules, _module);
         Lib.fillUnique(basePlotModules, fullTrace._module.basePlotModule);
     }
-    // attach helper method
-    newFullLayout._has = hasPlotType.bind(newFullLayout);
 
+    // attach helper method to check whether a plot type is present on graph
+    newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
     // temporary block (before replace all _has??? with _hasPlotType() ?
     newFullLayout._hasCartesian = newFullLayout._has('cartesian');
     newFullLayout._hasGeo = newFullLayout._has('geo');
@@ -539,7 +539,7 @@ plots.supplyDefaults = function(gd) {
 
 // helper function to be bound to fullLayout to check
 // whether a certain plot type is present on plot
-function hasPlotType(category) {
+plots._hasPlotType = function(category) {
     var basePlotModules = this._basePlotModules || [];
 
     for(var i = 0; i < basePlotModules.length; i++) {
@@ -549,6 +549,7 @@ function hasPlotType(category) {
     }
 
     return false;
+};
 
 plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var i, j;
