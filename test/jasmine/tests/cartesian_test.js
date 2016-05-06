@@ -49,3 +49,57 @@ describe('zoom box element', function() {
             .toEqual(0);
     });
 });
+
+describe('relayout', function() {
+
+    describe('axis category attributes', function() {
+        var mock = require('@mocks/basic_bar.json');
+
+        var gd, mockCopy;
+
+        beforeEach(function() {
+            mockCopy = Lib.extendDeep({}, mock);
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should response to \'categoryarray\' and \'categoryorder\' updates', function(done) {
+            function assertCategories(list) {
+                d3.selectAll('g.xtick').each(function(_, i) {
+                    var tick = d3.select(this).select('text');
+                    expect(tick.html()).toEqual(list[i]);
+                });
+            }
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                assertCategories(['giraffes', 'orangutans', 'monkeys']);
+
+                return Plotly.relayout(gd, 'xaxis.categoryorder', 'category descending');
+            }).then(function() {
+                var list = ['orangutans', 'monkeys', 'giraffes'];
+
+                expect(gd._fullLayout.xaxis._initialCategories).toEqual(list);
+                assertCategories(list);
+
+                return Plotly.relayout(gd, 'xaxis.categoryorder', null);
+            }).then(function() {
+                assertCategories(['giraffes', 'orangutans', 'monkeys']);
+
+                return Plotly.relayout(gd, {
+                    'xaxis.categoryarray': ['monkeys', 'giraffes', 'orangutans']
+                });
+            }).then(function() {
+                var list = ['monkeys', 'giraffes', 'orangutans'];
+
+                expect(gd.layout.xaxis.categoryarray).toEqual(list);
+                expect(gd._fullLayout.xaxis.categoryarray).toEqual(list);
+                expect(gd._fullLayout.xaxis._initialCategories).toEqual(list);
+                assertCategories(list);
+
+                done();
+            });
+        });
+    });
+
+});

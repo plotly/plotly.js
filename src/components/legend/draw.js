@@ -13,7 +13,6 @@ var d3 = require('d3');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
-var setCursor = require('../../lib/setcursor');
 var Plots = require('../../plots/plots');
 var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
@@ -223,28 +222,29 @@ module.exports = function draw(gd) {
         legendHeight = Math.min(lyMax - ly, opts.height);
     }
 
-    // Deal with scrolling
+    // Set size and position of all the elements that make up a legend:
+    // legend, background and border, scroll box and scroll bar
+    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
+
+    bg.attr({
+        width: opts.width - opts.borderwidth,
+        height: legendHeight - opts.borderwidth,
+        x: opts.borderwidth / 2,
+        y: opts.borderwidth / 2
+    });
+
     var scrollPosition = scrollBox.attr('data-scroll') || 0;
 
     scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
 
-    bg.attr({
+    clipPath.select('rect').attr({
         width: opts.width - 2 * opts.borderwidth,
         height: legendHeight - 2 * opts.borderwidth,
-        x: opts.borderwidth,
+        x: opts.borderwidth - scrollPosition,
         y: opts.borderwidth
     });
 
-    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
-
-    clipPath.select('rect').attr({
-        width: opts.width,
-        height: legendHeight,
-        x: 0,
-        y: 0
-    });
-
-    legend.call(Drawing.setClipUrl, clipId);
+    scrollBox.call(Drawing.setClipUrl, clipId);
 
     // If scrollbar should be shown.
     if(opts.height - legendHeight > 0 && !gd._context.staticPlot) {
@@ -259,7 +259,8 @@ module.exports = function draw(gd) {
         });
 
         clipPath.select('rect').attr({
-            width: opts.width +
+            width: opts.width -
+                2 * opts.borderwidth +
                 constants.scrollBarWidth +
                 constants.scrollBarMargin
         });
@@ -318,41 +319,35 @@ module.exports = function draw(gd) {
             constants.scrollBarWidth,
             constants.scrollBarHeight
         );
+        clipPath.select('rect').attr({
+            y: opts.borderwidth - scrollBoxY
+        });
     }
 
     if(gd._context.editable) {
-        var xf,
-            yf,
-            x0,
-            y0,
-            lw,
-            lh;
+        var xf, yf, x0, y0;
+
+        legend.classed('cursor-move', true);
 
         dragElement.init({
             element: legend.node(),
             prepFn: function() {
-                x0 = Number(legend.attr('x'));
-                y0 = Number(legend.attr('y'));
-                lw = Number(legend.attr('width'));
-                lh = Number(legend.attr('height'));
-                setCursor(legend);
+                var transform = Lib.getTranslate(legend);
+
+                x0 = transform.x;
+                y0 = transform.y;
             },
             moveFn: function(dx, dy) {
-                var gs = gd._fullLayout._size;
+                var newX = x0 + dx,
+                    newY = y0 + dy;
 
-                legend.call(Drawing.setPosition, x0+dx, y0+dy);
+                var transform = 'translate(' + newX + ', ' + newY + ')';
+                legend.attr('transform', transform);
 
-                xf = dragElement.align(x0+dx, lw, gs.l, gs.l+gs.w,
-                    opts.xanchor);
-                yf = dragElement.align(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
-                    opts.yanchor);
-
-                var csr = dragElement.getCursor(xf, yf,
-                    opts.xanchor, opts.yanchor);
-                setCursor(legend, csr);
+                xf = dragElement.align(newX, 0, gs.l, gs.l+gs.w, opts.xanchor);
+                yf = dragElement.align(newY, 0, gs.t+gs.h, gs.t, opts.yanchor);
             },
             doneFn: function(dragged) {
-                setCursor(legend);
                 if(dragged && xf !== undefined && yf !== undefined) {
                     Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
                 }

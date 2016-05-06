@@ -618,7 +618,7 @@ fx.getClosest = function(cd, distfn, pointData) {
         // do this for 'closest'
         for(var i=0; i<cd.length; i++) {
             var newDistance = distfn(cd[i]);
-            if(newDistance < pointData.distance) {
+            if(newDistance <= pointData.distance) {
                 pointData.index = i;
                 pointData.distance = newDistance;
             }

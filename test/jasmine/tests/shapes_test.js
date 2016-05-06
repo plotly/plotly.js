@@ -50,11 +50,11 @@ describe('Test shapes:', function() {
     }
 
     function countShapeLowerLayerNodes() {
-        return d3.selectAll('.shapelayer-below').size();
+        return d3.selectAll('.layer-below > .shapelayer').size();
     }
 
     function countShapeUpperLayerNodes() {
-        return d3.selectAll('.shapelayer-above').size();
+        return d3.selectAll('.layer-above > .shapelayer').size();
     }
 
     function countShapeLayerNodesInSubplots() {
@@ -66,11 +66,11 @@ describe('Test shapes:', function() {
     }
 
     function countShapePathsInLowerLayer() {
-        return d3.selectAll('.shapelayer-below > path').size();
+        return d3.selectAll('.layer-below > .shapelayer > path').size();
     }
 
     function countShapePathsInUpperLayer() {
-        return d3.selectAll('.shapelayer-above > path').size();
+        return d3.selectAll('.layer-above > .shapelayer > path').size();
     }
 
     function countShapePathsInSubplots() {

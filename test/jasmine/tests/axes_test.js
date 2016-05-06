@@ -402,22 +402,27 @@ describe('Test axes', function() {
             it('should set categoryorder to default if categoryorder and categoryarray are not supplied', function() {
                 PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], {xaxis: {type: 'category'}});
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
             });
 
             it('should set categoryorder to default even if type is not set to category explicitly', function() {
                 PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}]);
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
             });
 
             it('should NOT set categoryorder to default if type is not category', function() {
                 PlotlyInternal.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}]);
                 expect(gd._fullLayout.yaxis.categoryorder).toBe(undefined);
+                expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
             });
 
             it('should set categoryorder to default if type is overridden to be category', function() {
                 PlotlyInternal.plot(gd, [{x: [1,2,3,4,5], y: [15,11,12,13,14]}], {yaxis: {type: 'category'}});
                 expect(gd._fullLayout.xaxis.categoryorder).toBe(undefined);
+                expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
                 expect(gd._fullLayout.yaxis.categoryorder).toBe('trace');
+                expect(gd._fullLayout.yaxis.categorarray).toBe(undefined);
             });
 
         });
@@ -429,6 +434,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryorder: 'array', categoryarray: ['b','a','d','e','c']}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
+                expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b','a','d','e','c']);
             });
 
             it('should switch categoryorder on "array" if it is not supplied but categoryarray is supplied', function() {
@@ -436,6 +442,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryarray: ['b','a','d','e','c']}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
+                expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b','a','d','e','c']);
             });
 
             it('should revert categoryorder to "trace" if "array" is supplied but there is no list', function() {
@@ -443,6 +450,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryorder: 'array'}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                expect(gd._fullLayout.xaxis.categorarray).toBe(undefined);
             });
 
         });
@@ -454,6 +462,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryorder: 'array', categoryarray: []}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                expect(gd._fullLayout.xaxis.categoryarray).toEqual([]);
             });
 
             it('should not switch categoryorder on "array" if categoryarray is supplied but empty', function() {
@@ -461,6 +470,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryarray: []}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                expect(gd._fullLayout.xaxis.categoryarray).toEqual(undefined);
             });
         });
 
@@ -471,6 +481,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryorder: 'trace', categoryarray: ['b','a','d','e','c']}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
             });
 
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function() {
@@ -478,6 +489,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryorder: 'category ascending', categoryarray: ['b','a','d','e','c']}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('category ascending');
+                expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
             });
 
             it('should use specified categoryorder if it is supplied even if categoryarray exists', function() {
@@ -485,6 +497,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryorder: 'category descending', categoryarray: ['b','a','d','e','c']}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('category descending');
+                expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
             });
 
         });
@@ -496,6 +509,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryorder: 'invalid value'}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('trace');
+                expect(gd._fullLayout.xaxis.categoryarray).toBe(undefined);
             });
 
             it('should switch categoryorder to "array" if mode is supplied but invalid and list is supplied', function() {
@@ -503,6 +517,7 @@ describe('Test axes', function() {
                     xaxis: {type: 'category', categoryorder: 'invalid value', categoryarray: ['b','a','d','e','c']}
                 });
                 expect(gd._fullLayout.xaxis.categoryorder).toBe('array');
+                expect(gd._fullLayout.xaxis.categoryarray).toEqual(['b','a','d','e','c']);
             });
 
         });

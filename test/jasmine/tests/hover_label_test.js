@@ -269,6 +269,70 @@ describe('hover info', function() {
         });
     });
 
+    describe('\'closest\' hover info (superimposed case)', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        // superimposed traces
+        mockCopy.data.push(Lib.extendDeep({}, mockCopy.data[0]));
+        mockCopy.layout.hovermode = 'closest';
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('render hover labels of the above trace', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata.length).toEqual(1);
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.fullData.index).toEqual(1);
+            expect(hoverTrace.curveNumber).toEqual(1);
+            expect(hoverTrace.pointNumber).toEqual(16);
+            expect(hoverTrace.x).toEqual(0.33);
+            expect(hoverTrace.y).toEqual(1.25);
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(0);
+            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
+
+            var expectations = ['PV learning ...', '(0.33, 1.25)'];
+            d3.selectAll('g.hovertext').selectAll('text').each(function(_, i) {
+                expect(d3.select(this).html()).toEqual(expectations[i]);
+            });
+        });
+
+        it('render only non-hoverinfo \'none\' hover labels', function(done) {
+
+            Plotly.restyle(gd, 'hoverinfo', ['none', 'name']).then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                expect(gd._hoverdata.length).toEqual(1);
+
+                var hoverTrace = gd._hoverdata[0];
+
+                expect(hoverTrace.fullData.index).toEqual(1);
+                expect(hoverTrace.curveNumber).toEqual(1);
+                expect(hoverTrace.pointNumber).toEqual(16);
+                expect(hoverTrace.x).toEqual(0.33);
+                expect(hoverTrace.y).toEqual(1.25);
+
+                expect(d3.selectAll('g.axistext').size()).toEqual(0);
+                expect(d3.selectAll('g.hovertext').size()).toEqual(1);
+
+                var text = d3.selectAll('g.hovertext').select('text');
+                expect(text.size()).toEqual(1);
+                expect(text.html()).toEqual('PV learning ...');
+
+                done();
+            });
+
+        });
+    });
+
     describe('hoverformat', function() {
 
         var data = [{

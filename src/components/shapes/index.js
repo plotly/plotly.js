@@ -125,17 +125,17 @@ shapes.add = function(gd) {
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this one
 shapes.draw = function(gd, index, opt, value) {
-    if(!isNumeric(index) || index===-1) {
+    if(!isNumeric(index) || index === -1) {
         // no index provided - we're operating on ALL shapes
         if(!index && Array.isArray(value)) {
             replaceAllShapes(gd, value);
             return;
         }
-        else if(value==='remove') {
+        else if(value === 'remove') {
             deleteAllShapes(gd);
             return;
         }
-        else if(opt && value!=='add') {
+        else if(opt && value !== 'add') {
             updateAllShapes(gd, opt, value);
             return;
         }
@@ -147,11 +147,11 @@ shapes.draw = function(gd, index, opt, value) {
     }
 
     if(!opt && value) {
-        if(value==='remove') {
+        if(value === 'remove') {
             deleteShape(gd, index);
             return;
         }
-        else if(value==='add' || Lib.isPlainObject(value)) {
+        else if(value === 'add' || Lib.isPlainObject(value)) {
             insertShape(gd, index, value);
         }
     }

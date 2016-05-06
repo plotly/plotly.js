@@ -20,6 +20,36 @@ describe('Test plot api', function() {
         });
     });
 
+    describe('Plotly.relayout', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should update the plot clipPath if the plot is resized', function(done) {
+
+            Plotly.plot(gd, [{ x: [1,2,3], y: [1,2,3] }], { width: 500, height: 500 })
+                .then(function() {
+                    return Plotly.relayout(gd, { width: 400, height: 400 });
+                })
+                .then(function() {
+                    var uid = gd._fullLayout._uid;
+
+                    var plotClip = document.getElementById('clip' + uid + 'xyplot'),
+                        clipRect = plotClip.children[0],
+                        clipWidth = +clipRect.getAttribute('width'),
+                        clipHeight = +clipRect.getAttribute('height');
+
+                    expect(clipWidth).toBe(240);
+                    expect(clipHeight).toBe(220);
+                })
+                .then(done);
+        });
+    });
+
     describe('Plotly.restyle', function() {
         beforeEach(function() {
             spyOn(Plotly, 'plot');

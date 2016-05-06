@@ -2207,6 +2207,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
         else if(/[xy]axis[0-9]*?$/.test(pleaf) && !Object.keys(vi || {}).length) {
             docalc = true;
         }
+        else if(/[xy]axis[0-9]*\.categoryorder$/.test(pleafPlus)) {
+            docalc = true;
+        }
+        else if(/[xy]axis[0-9]*\.categoryarray/.test(pleafPlus)) {
+            docalc = true;
+        }
 
         if(pleafPlus.indexOf('rangeslider') !== -1) {
             docalc = true;
@@ -2635,8 +2641,10 @@ function makePlotFramework(gd) {
 
     // lower shape layer
     // (only for shapes to be drawn below the whole plot)
-    fullLayout._shapeLowerLayer = fullLayout._paper.append('g')
-        .classed('shapelayer shapelayer-below', true);
+    var layerBelow = fullLayout._paper.append('g')
+        .classed('layer-below', true);
+    fullLayout._shapeLowerLayer = layerBelow.append('g')
+        .classed('shapelayer', true);
 
     var subplots = Plotly.Axes.getSubplots(gd);
     if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
@@ -2654,8 +2662,10 @@ function makePlotFramework(gd) {
 
     // upper shape layer
     // (only for shapes to be drawn above the whole plot, including subplots)
-    fullLayout._shapeUpperLayer = fullLayout._paper.append('g')
-        .classed('shapelayer shapelayer-above', true);
+    var layerAbove = fullLayout._paper.append('g')
+        .classed('layer-above', true);
+    fullLayout._shapeUpperLayer = layerAbove.append('g')
+        .classed('shapelayer', true);
 
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
@@ -2880,27 +2890,30 @@ function lsInner(gd) {
                 .call(Color.fill, fullLayout.plot_bgcolor);
         }
 
+
         // Clip so that data only shows up on the plot area.
         var clips = fullLayout._defs.selectAll('g.clips'),
             clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        clips.selectAll('#' + clipId)
-            .data([0])
-        .enter().append('clipPath')
+        var plotClip = clips.selectAll('#' + clipId)
+            .data([0]);
+
+        plotClip.enter().append('clipPath')
             .attr({
                 'class': 'plotclip',
                 'id': clipId
             })
-            .append('rect')
+            .append('rect');
+
+        plotClip.selectAll('rect')
             .attr({
                 'width': xa._length,
                 'height': ya._length
             });
 
-        plotinfo.plot.attr({
-            'transform': 'translate(' + xa._offset + ', ' + ya._offset + ')',
-            'clip-path': 'url(#' + clipId + ')'
-        });
+
+        plotinfo.plot.call(Lib.setTranslate, xa._offset, ya._offset);
+        plotinfo.plot.call(Drawing.setClipUrl, clipId);
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),

@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.10.0
+* plotly.js v1.10.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -51023,7 +51023,7 @@ annotations.draw = function(gd, index, opt, value) {
 
         var annX = Math.round(annPosPx.x - outerwidth / 2),
             annY = Math.round(annPosPx.y - outerheight / 2);
-        ann.attr('transform', 'translate(' + annX + ', ' + annY + ')');
+        ann.call(Lib.setTranslate, annX, annY);
 
         var annbase = 'annotations['+index+']';
 
@@ -51116,8 +51116,10 @@ annotations.draw = function(gd, index, opt, value) {
                 dragElement.init({
                     element: arrowdrag.node(),
                     prepFn: function() {
-                        annx0 = Number(ann.attr('x'));
-                        anny0 = Number(ann.attr('y'));
+                        var pos = Lib.getTranslate(ann);
+
+                        annx0 = pos.x;
+                        anny0 = pos.y;
                         update = {};
                         if(xa && xa.autorange) {
                             update[xa._name+'.autorange'] = true;
@@ -51132,7 +51134,7 @@ annotations.draw = function(gd, index, opt, value) {
                         var annxy0 = applyTransform(annx0, anny0),
                             xcenter = annxy0[0] + dx,
                             ycenter = annxy0[1] + dy;
-                        ann.call(Drawing.setPosition, xcenter, ycenter);
+                        ann.call(Lib.setTranslate, xcenter, ycenter);
 
                         update[annbase+'.x'] = xa ?
                             (options.x + dx / xa._m) :
@@ -51173,12 +51175,14 @@ annotations.draw = function(gd, index, opt, value) {
             dragElement.init({
                 element: ann.node(),
                 prepFn: function() {
-                    x0 = Number(ann.attr('x'));
-                    y0 = Number(ann.attr('y'));
+                    var pos = Lib.getTranslate(ann);
+
+                    x0 = pos.x;
+                    y0 = pos.y;
                     update = {};
                 },
                 moveFn: function(dx, dy) {
-                    ann.call(Drawing.setPosition, x0 + dx, y0 + dy);
+                    ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
                         update[annbase+'.ax'] = options.ax + dx;
@@ -51204,7 +51208,7 @@ annotations.draw = function(gd, index, opt, value) {
                                 heightFraction, 0, 1, options.yanchor);
                         }
                         if(!xa || !ya) {
-                            csr = dragElement.cursor(
+                            csr = dragElement.getCursor(
                                 xa ? 0.5 : update[annbase + '.x'],
                                 ya ? 0.5 : update[annbase + '.y'],
                                 options.xanchor, options.yanchor
@@ -51216,7 +51220,7 @@ annotations.draw = function(gd, index, opt, value) {
                         x1 = xy1[0] + dx,
                         y1 = xy1[1] + dy;
 
-                    ann.call(Drawing.setPosition, x1, y1);
+                    ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
 
                     anng.attr({
                         transform: 'rotate(' + textangle + ',' +
@@ -55360,7 +55364,6 @@ var d3 = require('d3');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
-var setCursor = require('../../lib/setcursor');
 var Plots = require('../../plots/plots');
 var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
@@ -55570,28 +55573,29 @@ module.exports = function draw(gd) {
         legendHeight = Math.min(lyMax - ly, opts.height);
     }
 
-    // Deal with scrolling
+    // Set size and position of all the elements that make up a legend:
+    // legend, background and border, scroll box and scroll bar
+    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
+
+    bg.attr({
+        width: opts.width - opts.borderwidth,
+        height: legendHeight - opts.borderwidth,
+        x: opts.borderwidth / 2,
+        y: opts.borderwidth / 2
+    });
+
     var scrollPosition = scrollBox.attr('data-scroll') || 0;
 
     scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
 
-    bg.attr({
+    clipPath.select('rect').attr({
         width: opts.width - 2 * opts.borderwidth,
         height: legendHeight - 2 * opts.borderwidth,
-        x: opts.borderwidth,
+        x: opts.borderwidth - scrollPosition,
         y: opts.borderwidth
     });
 
-    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
-
-    clipPath.select('rect').attr({
-        width: opts.width,
-        height: legendHeight,
-        x: 0,
-        y: 0
-    });
-
-    legend.call(Drawing.setClipUrl, clipId);
+    scrollBox.call(Drawing.setClipUrl, clipId);
 
     // If scrollbar should be shown.
     if(opts.height - legendHeight > 0 && !gd._context.staticPlot) {
@@ -55606,7 +55610,8 @@ module.exports = function draw(gd) {
         });
 
         clipPath.select('rect').attr({
-            width: opts.width +
+            width: opts.width -
+                2 * opts.borderwidth +
                 constants.scrollBarWidth +
                 constants.scrollBarMargin
         });
@@ -55665,41 +55670,35 @@ module.exports = function draw(gd) {
             constants.scrollBarWidth,
             constants.scrollBarHeight
         );
+        clipPath.select('rect').attr({
+            y: opts.borderwidth - scrollBoxY
+        });
     }
 
     if(gd._context.editable) {
-        var xf,
-            yf,
-            x0,
-            y0,
-            lw,
-            lh;
+        var xf, yf, x0, y0;
+
+        legend.classed('cursor-move', true);
 
         dragElement.init({
             element: legend.node(),
             prepFn: function() {
-                x0 = Number(legend.attr('x'));
-                y0 = Number(legend.attr('y'));
-                lw = Number(legend.attr('width'));
-                lh = Number(legend.attr('height'));
-                setCursor(legend);
+                var transform = Lib.getTranslate(legend);
+
+                x0 = transform.x;
+                y0 = transform.y;
             },
             moveFn: function(dx, dy) {
-                var gs = gd._fullLayout._size;
+                var newX = x0 + dx,
+                    newY = y0 + dy;
 
-                legend.call(Drawing.setPosition, x0+dx, y0+dy);
+                var transform = 'translate(' + newX + ', ' + newY + ')';
+                legend.attr('transform', transform);
 
-                xf = dragElement.align(x0+dx, lw, gs.l, gs.l+gs.w,
-                    opts.xanchor);
-                yf = dragElement.align(y0+dy+lh, -lh, gs.t+gs.h, gs.t,
-                    opts.yanchor);
-
-                var csr = dragElement.getCursor(xf, yf,
-                    opts.xanchor, opts.yanchor);
-                setCursor(legend, csr);
+                xf = dragElement.align(newX, 0, gs.l, gs.l+gs.w, opts.xanchor);
+                yf = dragElement.align(newY, 0, gs.t+gs.h, gs.t, opts.yanchor);
             },
             doneFn: function(dragged) {
-                setCursor(legend);
                 if(dragged && xf !== undefined && yf !== undefined) {
                     Plotly.relayout(gd, {'legend.x': xf, 'legend.y': yf});
                 }
@@ -55874,7 +55873,7 @@ function expandHorizontalMargin(gd) {
     });
 }
 
-},{"../../lib":378,"../../lib/setcursor":386,"../../plotly":396,"../../plots/plots":447,"../color":303,"../dragelement":323,"../drawing":325,"./anchor_utils":334,"./constants":336,"./get_legend_data":339,"./helpers":340,"./style":342,"d3":72}],339:[function(require,module,exports){
+},{"../../lib":378,"../../plotly":396,"../../plots/plots":447,"../color":303,"../dragelement":323,"../drawing":325,"./anchor_utils":334,"./constants":336,"./get_legend_data":339,"./helpers":340,"./style":342,"d3":72}],339:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58429,6 +58428,8 @@ function draw(gd) {
 
 'use strict';
 
+var d3 = require('d3');
+
 var Symbols = require('../drawing/symbol_defs');
 var Drawing = require('../drawing');
 
@@ -58459,7 +58460,7 @@ module.exports = function rangePlot(gd, w, h) {
     clipDefs.appendChild(clip);
 
     var rangePlot = document.createElementNS(svgNS, 'g');
-    rangePlot.setAttribute('clip-path', 'url(#range-clip-path)');
+    d3.select(rangePlot).call(Drawing.setClipUrl, 'range-clip-path');
     rangePlot.appendChild(clipDefs);
 
 
@@ -58596,7 +58597,7 @@ function makeScatter(trace, pointPairs, w, h) {
     return [line, markers, fill];
 }
 
-},{"../../constants/xmlns_namespaces":366,"../drawing":325,"../drawing/symbol_defs":326,"./helpers":356}],359:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":366,"../drawing":325,"../drawing/symbol_defs":326,"./helpers":356,"d3":72}],359:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -58652,7 +58653,11 @@ module.exports = {
             'refers to an x coordinate',
             'If set to *paper*, the `x` position refers to the distance from',
             'the left side of the plotting area in normalized coordinates',
-            'where *0* (*1*) corresponds to the left (right) side.'
+            'where *0* (*1*) corresponds to the left (right) side.',
+            'If the axis `type` is *log*, then you must take the',
+            'log of your desired range.',
+            'If the axis `type` is *date*, then you must convert',
+            'the date to unix time in milliseconds.'
         ].join(' ')
     }),
     x0: {
@@ -58878,17 +58883,17 @@ shapes.add = function(gd) {
 // if opt is blank, val can be 'add' or a full options object to add a new
 //  annotation at that point in the array, or 'remove' to delete this one
 shapes.draw = function(gd, index, opt, value) {
-    if(!isNumeric(index) || index===-1) {
+    if(!isNumeric(index) || index === -1) {
         // no index provided - we're operating on ALL shapes
         if(!index && Array.isArray(value)) {
             replaceAllShapes(gd, value);
             return;
         }
-        else if(value==='remove') {
+        else if(value === 'remove') {
             deleteAllShapes(gd);
             return;
         }
-        else if(opt && value!=='add') {
+        else if(opt && value !== 'add') {
             updateAllShapes(gd, opt, value);
             return;
         }
@@ -58900,11 +58905,11 @@ shapes.draw = function(gd, index, opt, value) {
     }
 
     if(!opt && value) {
-        if(value==='remove') {
+        if(value === 'remove') {
             deleteShape(gd, index);
             return;
         }
-        else if(value==='add' || Lib.isPlainObject(value)) {
+        else if(value === 'add' || Lib.isPlainObject(value)) {
             insertShape(gd, index, value);
         }
     }
@@ -59804,7 +59809,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.10.0';
+exports.version = '1.10.2';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -61415,6 +61420,42 @@ lib.addStyleRule = function(selector, styleString) {
         styleSheet.addRule(selector,styleString,0);
     }
     else console.warn('addStyleRule failed');
+};
+
+lib.getTranslate = function(element) {
+
+    var re = /(\btranslate\()(\d*\.?\d*)([^\d]*)(\d*\.?\d*)([^\d]*)(.*)/,
+        getter = element.attr ? 'attr' : 'getAttribute',
+        transform = element[getter]('transform') || '';
+
+    var translate = transform.replace(re, function(match, p1, p2, p3, p4) {
+        return [p2, p4].join(' ');
+    })
+    .split(' ');
+
+    return {
+        x: +translate[0] || 0,
+        y: +translate[1] || 0
+    };
+};
+
+lib.setTranslate = function(element, x, y) {
+
+    var re = /(\btranslate\(.*?\);?)/,
+        getter = element.attr ? 'attr' : 'getAttribute',
+        setter = element.attr ? 'attr' : 'setAttribute',
+        transform = element[getter]('transform') || '';
+
+    x = x || 0;
+    y = y || 0;
+
+    transform = transform.replace(re, '').trim();
+    transform += ' translate(' + x + ', ' + y + ')';
+    transform = transform.trim();
+
+    element[setter]('transform', transform);
+
+    return transform;
 };
 
 lib.isIE = function() {
@@ -63808,13 +63849,11 @@ function cleanAxRef(container, attr) {
     }
 }
 
+// Make a few changes to the data right away
+// before it gets used for anything
 function cleanData(data, existingData) {
-    // make a few changes to the data right away
-    // before it gets used for anything
 
-    /*
-     * Enforce unique IDs
-     */
+    // Enforce unique IDs
     var suids = [], // seen uids --- so we can weed out incoming repeats
         uids = data.concat(Array.isArray(existingData) ? existingData : [])
                .filter(function(trace) { return 'uid' in trace; })
@@ -63822,11 +63861,13 @@ function cleanData(data, existingData) {
 
     for(var tracei = 0; tracei < data.length; tracei++) {
         var trace = data[tracei];
+        var i;
 
         // assign uids to each trace and detect collisions.
         if(!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
-            var newUid, i;
-            for(i=0; i<100; i++) {
+            var newUid;
+
+            for(i = 0; i < 100; i++) {
                 newUid = Lib.randstr(uids);
                 if(suids.indexOf(newUid)===-1) break;
             }
@@ -63912,6 +63953,27 @@ function cleanData(data, existingData) {
             var cont = trace.marker;
             if(cont.colorscale === 'YIGnBu') cont.colorscale = 'YlGnBu';
             if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
+        }
+
+        // fix typo in surface 'highlight*' definitions
+        if(trace.type === 'surface' && Lib.isPlainObject(trace.contours)) {
+            var dims = ['x', 'y', 'z'];
+
+            for(i = 0; i < dims.length; i++) {
+                var opts = trace.contours[dims[i]];
+
+                if(!Lib.isPlainObject(opts)) continue;
+
+                if(opts.highlightColor) {
+                    opts.highlightcolor = opts.highlightColor;
+                    delete opts.highlightColor;
+                }
+
+                if(opts.highlightWidth) {
+                    opts.highlightwidth = opts.highlightWidth;
+                    delete opts.highlightWidth;
+                }
+            }
         }
 
         // prune empty containers made before the new nestedProperty
@@ -65339,6 +65401,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
         else if(/[xy]axis[0-9]*?$/.test(pleaf) && !Object.keys(vi || {}).length) {
             docalc = true;
         }
+        else if(/[xy]axis[0-9]*\.categoryorder$/.test(pleafPlus)) {
+            docalc = true;
+        }
+        else if(/[xy]axis[0-9]*\.categoryarray/.test(pleafPlus)) {
+            docalc = true;
+        }
 
         if(pleafPlus.indexOf('rangeslider') !== -1) {
             docalc = true;
@@ -65770,8 +65838,10 @@ function makePlotFramework(gd) {
 
     // lower shape layer
     // (only for shapes to be drawn below the whole plot)
-    fullLayout._shapeLowerLayer = fullLayout._paper.append('g')
-        .classed('shapelayer shapelayer-below', true);
+    var layerBelow = fullLayout._paper.append('g')
+        .classed('layer-below', true);
+    fullLayout._shapeLowerLayer = layerBelow.append('g')
+        .classed('shapelayer', true);
 
     var subplots = Plotly.Axes.getSubplots(gd);
     if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
@@ -65789,8 +65859,10 @@ function makePlotFramework(gd) {
 
     // upper shape layer
     // (only for shapes to be drawn above the whole plot, including subplots)
-    fullLayout._shapeUpperLayer = fullLayout._paper.append('g')
-        .classed('shapelayer shapelayer-above', true);
+    var layerAbove = fullLayout._paper.append('g')
+        .classed('layer-above', true);
+    fullLayout._shapeUpperLayer = layerAbove.append('g')
+        .classed('shapelayer', true);
 
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
@@ -65803,6 +65875,7 @@ function makePlotFramework(gd) {
     // these are in a different svg element normally, but get collapsed into a single
     // svg when exporting (after inserting 3D)
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
+    fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 
     gd.emit('plotly_framework');
@@ -66014,27 +66087,30 @@ function lsInner(gd) {
                 .call(Color.fill, fullLayout.plot_bgcolor);
         }
 
+
         // Clip so that data only shows up on the plot area.
         var clips = fullLayout._defs.selectAll('g.clips'),
             clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        clips.selectAll('#' + clipId)
-            .data([0])
-        .enter().append('clipPath')
+        var plotClip = clips.selectAll('#' + clipId)
+            .data([0]);
+
+        plotClip.enter().append('clipPath')
             .attr({
                 'class': 'plotclip',
                 'id': clipId
             })
-            .append('rect')
+            .append('rect');
+
+        plotClip.selectAll('rect')
             .attr({
                 'width': xa._length,
                 'height': ya._length
             });
 
-        plotinfo.plot.attr({
-            'transform': 'translate(' + xa._offset + ', ' + ya._offset + ')',
-            'clip-path': 'url(#' + clipId + ')'
-        });
+
+        plotinfo.plot.call(Lib.setTranslate, xa._offset, ya._offset);
+        plotinfo.plot.call(Drawing.setClipUrl, clipId);
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),
@@ -67117,7 +67193,6 @@ axes.saveRangeInitial = function(gd, overwrite) {
 //          and make it a tight bound if possible
 var FP_SAFE = Number.MAX_VALUE/2;
 axes.expand = function(ax, data, options) {
-    // if(!(ax.autorange || (ax.rangeslider || {}).visible) || !data) return;
     if(!(ax.autorange || ax._needsExpand) || !data) return;
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
@@ -68930,10 +69005,6 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         }
     }
 
-    containerOut._initialCategories = axType === 'category' ?
-        orderedCategories(letter, containerIn.categoryorder, containerIn.categoryarray, options.data) :
-        [];
-
     setConvert(containerOut);
 
     var dfltColor = coerce('color');
@@ -68998,13 +69069,18 @@ module.exports = function handleAxisDefaults(containerIn, containerOut, coerce, 
         delete containerOut.zerolinewidth;
     }
 
+    // fill in categories
+    containerOut._initialCategories = axType === 'category' ?
+        orderedCategories(letter, containerOut.categoryorder, containerOut.categoryarray, options.data) :
+        [];
+
     return containerOut;
 };
 
 function setAutoType(ax, data) {
     // new logic: let people specify any type they want,
     // only autotype if type is '-'
-    if(ax.type!=='-') return;
+    if(ax.type !== '-') return;
 
     var id = ax._id,
         axLetter = id.charAt(0);
@@ -69019,7 +69095,7 @@ function setAutoType(ax, data) {
     // should always default to a linear axis
     if(d0.type==='histogram' &&
             axLetter === {v: 'y', h: 'x'}[d0.orientation || 'v']) {
-        ax.type='linear';
+        ax.type = 'linear';
         return;
     }
 
@@ -69267,37 +69343,30 @@ exports.getFromTrace = function(gd, fullTrace, type) {
 
 'use strict';
 
-var layoutAttributes = require('./layout_attributes');
 
 module.exports = function handleCategoryOrderDefaults(containerIn, containerOut, coerce) {
+    if(containerOut.type !== 'category') return;
 
-    if(containerIn.type !== 'category') return;
+    var arrayIn = containerIn.categoryarray,
+        orderDefault;
 
-    var validCategories = layoutAttributes.categoryorder.values;
+    var isValidArray = (Array.isArray(arrayIn) && arrayIn.length > 0);
 
-    var propercategoryarray = Array.isArray(containerIn.categoryarray) && containerIn.categoryarray.length > 0;
+    // override default 'categoryorder' value when non-empty array is supplied
+    if(isValidArray) orderDefault = 'array';
 
-    if(validCategories.indexOf(containerIn.categoryorder) === -1 && propercategoryarray) {
+    var order = coerce('categoryorder', orderDefault);
 
-        // when unspecified or invalid, use the default, unless categoryarray implies 'array'
-        coerce('categoryorder', 'array'); // promote to 'array'
+    // coerce 'categoryarray' only in array order case
+    if(order === 'array') coerce('categoryarray');
 
-    } else if(containerIn.categoryorder === 'array' && !propercategoryarray) {
-
-        // when mode is 'array' but no list is given, revert to default
-
-        containerIn.categoryorder = 'trace'; // revert to default
-        coerce('categoryorder');
-
-    } else {
-
-        // otherwise use the supplied mode, or the default one if unsupplied or invalid
-        coerce('categoryorder');
-
+    // cannot set 'categoryorder' to 'array' with an invalid 'categoryarray'
+    if(!isValidArray && order === 'array') {
+        containerOut.categoryorder = 'trace';
     }
 };
 
-},{"./layout_attributes":408}],403:[function(require,module,exports){
+},{}],403:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -69553,7 +69622,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     dragElement.init(dragOptions);
 
-    var x0,
+    var zoomlayer = gd._fullLayout._zoomlayer,
+        xs = plotinfo.x()._offset,
+        ys = plotinfo.y()._offset,
+        x0,
         y0,
         box,
         lum,
@@ -69575,15 +69647,16 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dimmed = false;
         zoomMode = 'xy';
 
-        zb = plotinfo.plot.append('path')
+        zb = zoomlayer.append('path')
             .attr('class', 'zoombox')
             .style({
                 'fill': lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
+            .attr('transform','translate(' + xs + ', ' + ys + ')')
             .attr('d', path0 + 'Z');
 
-        corners = plotinfo.plot.append('path')
+        corners = zoomlayer.append('path')
             .attr('class', 'zoombox-corners')
             .style({
                 fill: Color.background,
@@ -69591,6 +69664,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 'stroke-width': 1,
                 opacity: 0
             })
+            .attr('transform','translate(' + xs + ', ' + ys + ')')
             .attr('d','M0,0Z');
 
         clearSelect();
@@ -69601,7 +69675,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // until we get around to persistent selections, remove the outline
         // here. The selection itself will be removed when the plot redraws
         // at the end.
-        plotinfo.plot.selectAll('.select-outline').remove();
+        zoomlayer.selectAll('.select-outline').remove();
     }
 
     function zoomMove(dx0, dy0) {
@@ -70691,7 +70765,7 @@ fx.getClosest = function(cd, distfn, pointData) {
         // do this for 'closest'
         for(var i=0; i<cd.length; i++) {
             var newDistance = distfn(cd[i]);
-            if(newDistance < pointData.distance) {
+            if(newDistance <= pointData.distance) {
                 pointData.index = i;
                 pointData.distance = newDistance;
             }
@@ -72356,8 +72430,10 @@ var MINSELECT = constants.MINSELECT;
 function getAxId(ax) { return ax._id; }
 
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
-    var plot = dragOptions.plotinfo.plot,
+    var plot = dragOptions.gd._fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
+        xs = dragOptions.plotinfo.x()._offset,
+        ys = dragOptions.plotinfo.y()._offset,
         x0 = startX - dragBBox.left,
         y0 = startY - dragBBox.top,
         x1 = x0,
@@ -72379,6 +72455,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     outlines.enter()
         .append('path')
         .attr('class', function(d) { return 'select-outline select-outline-' + d; })
+        .attr('transform','translate(' + xs + ', ' + ys + ')')
         .attr('d', path0 + 'Z');
 
     var corners = plot.append('path')
@@ -72388,6 +72465,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             stroke: color.defaultLine,
             'stroke-width': 1
         })
+        .attr('transform','translate(' + xs + ', ' + ys + ')')
         .attr('d','M0,0Z');
 
 
@@ -72510,6 +72588,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 
     dragOptions.doneFn = function(dragged, numclicks) {
+        corners.remove();
         if(!dragged && numclicks === 2) {
             // clear selection on doubleclick
             outlines.remove();
@@ -72523,7 +72602,6 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         else {
             dragOptions.gd.emit('plotly_selected', eventData);
         }
-        corners.remove();
     };
 };
 
@@ -76506,7 +76584,7 @@ module.exports = {
 
 'use strict';
 
-
+var Color = require('../../../components/color');
 var axesAttrs = require('../../cartesian/layout_attributes');
 var extendFlat = require('../../../lib/extend').extendFlat;
 
@@ -76541,7 +76619,7 @@ module.exports = {
     spikecolor: {
         valType: 'color',
         role: 'style',
-        dflt: 'rgb(0,0,0)',
+        dflt: Color.defaultLine,
         description: 'Sets the color of the spikes.'
     },
     showbackground: {
@@ -76611,7 +76689,7 @@ module.exports = {
     zerolinewidth: axesAttrs.zerolinewidth
 };
 
-},{"../../../lib/extend":373,"../../cartesian/layout_attributes":408}],437:[function(require,module,exports){
+},{"../../../components/color":303,"../../../lib/extend":373,"../../cartesian/layout_attributes":408}],437:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -76622,6 +76700,7 @@ module.exports = {
 
 
 'use strict';
+
 var colorMix = require('tinycolor2').mix;
 
 var Lib = require('../../../lib');
@@ -82677,7 +82756,7 @@ module.exports = function toSVG(gd, format) {
 
     // remove draglayer for Adobe Illustrator compatibility
     if(fullLayout._draggers) {
-        fullLayout._draggers.node().remove();
+        fullLayout._draggers.remove();
     }
 
     // in case the svg element had an explicit background color, remove this
@@ -94996,6 +95075,7 @@ module.exports = function style(graphDiv) {
 
 'use strict';
 
+var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -95006,8 +95086,12 @@ function makeContourProjAttr(axLetter) {
         role: 'info',
         dflt: false,
         description: [
-            'Sets whether or not the dynamic contours are projected',
-            'along the', axLetter, 'axis.'
+            'Determines whether or not these contour lines are projected',
+            'on the', axLetter, 'axis walls.',
+            'If `highlight` is set to *true* (the default), the projected',
+            'lines are shown on hover.',
+            'If `show` is set to *true*, the projected lines are shown',
+            'in permanence.'
         ].join(' ')
     };
 }
@@ -95019,8 +95103,8 @@ function makeContourAttr(axLetter) {
             role: 'info',
             dflt: false,
             description: [
-                'Sets whether or not dynamic contours are shown along the',
-                axLetter, 'axis'
+                'Determines whether or not contour lines about the', axLetter,
+                'dimension are drawn.'
             ].join(' ')
         },
         project: {
@@ -95031,36 +95115,49 @@ function makeContourAttr(axLetter) {
         color: {
             valType: 'color',
             role: 'style',
-            dflt: '#000'
+            dflt: Color.defaultLine,
+            description: 'Sets the color of the contour lines.'
         },
         usecolormap: {
             valType: 'boolean',
             role: 'info',
-            dflt: false
+            dflt: false,
+            description: [
+                'An alternate to *color*.',
+                'Determines whether or not the contour lines are colored using',
+                'the trace *colorscale*.'
+            ].join(' ')
         },
         width: {
             valType: 'number',
             role: 'style',
             min: 1,
             max: 16,
-            dflt: 2
+            dflt: 2,
+            description: 'Sets the width of the contour lines.'
         },
         highlight: {
             valType: 'boolean',
             role: 'info',
-            dflt: false
+            dflt: true,
+            description: [
+                'Determines whether or not contour lines about the', axLetter,
+                'dimension are highlighted on hover.'
+            ].join(' ')
         },
-        highlightColor: {
+        highlightcolor: {
             valType: 'color',
             role: 'style',
-            dflt: '#000'
+            dflt: Color.defaultLine,
+            description: 'Sets the color of the highlighted contour lines.'
         },
-        highlightWidth: {
+        highlightwidth: {
             valType: 'number',
             role: 'style',
             min: 1,
             max: 16,
-            dflt: 2
+            dflt: 2,
+            description: 'Sets the width of the highlighted contour lines.'
         }
     };
 }
@@ -95089,6 +95186,7 @@ module.exports = {
             'used for setting a color scale independent of `z`.'
         ].join(' ')
     },
+
     cauto: colorscaleAttrs.zauto,
     cmin: colorscaleAttrs.zmin,
     cmax: colorscaleAttrs.zmax,
@@ -95097,6 +95195,7 @@ module.exports = {
         {dflt: false}),
     reversescale: colorscaleAttrs.reversescale,
     showscale: colorscaleAttrs.showscale,
+
     contours: {
         x: makeContourAttr('x'),
         y: makeContourAttr('y'),
@@ -95105,8 +95204,15 @@ module.exports = {
     hidesurface: {
         valType: 'boolean',
         role: 'info',
-        dflt: false
+        dflt: false,
+        description: [
+            'Determines whether or not a surface is drawn.',
+            'For example, set `hidesurface` to *false*',
+            '`contours.x.show` to *true* and',
+            '`contours.y.show` to *true* to draw a wire frame plot.'
+        ].join(' ')
     },
+
     lighting: {
         ambient: {
             valType: 'number',
@@ -95150,7 +95256,8 @@ module.exports = {
         role: 'style',
         min: 0,
         max: 1,
-        dflt: 1
+        dflt: 1,
+        description: 'Sets the opacity of the surface.'
     },
 
     _nestedModules: {  // nested module coupling
@@ -95170,7 +95277,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":309,"../../lib/extend":373}],592:[function(require,module,exports){
+},{"../../components/color":303,"../../components/colorscale/attributes":309,"../../lib/extend":373}],592:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -95526,13 +95633,11 @@ proto.update = function(data) {
     }
 
     var highlightEnable = [true, true, true];
-    var contourEnable = [true, true, true];
     var axis = ['x', 'y', 'z'];
 
     for(i = 0; i < 3; ++i) {
         var contourParams = data.contours[axis[i]];
         highlightEnable[i] = contourParams.highlight;
-        contourEnable[i] = contourParams.show;
 
         params.showContour[i] = contourParams.show || contourParams.highlight;
         if(!params.showContour[i]) continue;
@@ -95547,6 +95652,7 @@ proto.update = function(data) {
             this.showContour[i] = true;
             params.levels[i] = contourLevels[i];
             surface.highlightColor[i] = params.contourColor[i] = str2RgbaArray(contourParams.color);
+
             if(contourParams.usecolormap) {
                 surface.highlightTint[i] = params.contourTint[i] = 0;
             }
@@ -95559,8 +95665,8 @@ proto.update = function(data) {
         }
 
         if(contourParams.highlight) {
-            params.dynamicColor[i] = str2RgbaArray(contourParams.highlightColor);
-            params.dynamicWidth[i] = contourParams.highlightWidth;
+            params.dynamicColor[i] = str2RgbaArray(contourParams.highlightcolor);
+            params.dynamicWidth[i] = contourParams.highlightwidth;
         }
     }
 
@@ -95568,9 +95674,8 @@ proto.update = function(data) {
 
     surface.update(params);
 
-    surface.highlightEnable = highlightEnable;
-    surface.contourEnable = contourEnable;
     surface.visible = data.visible;
+    surface.enableDynamic = highlightEnable;
 
     surface.snapToData = true;
 
@@ -95689,8 +95794,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
 
         if(highlight) {
-            coerce(contourDim + '.highlightColor');
-            coerce(contourDim + '.highlightWidth');
+            coerce(contourDim + '.highlightcolor');
+            coerce(contourDim + '.highlightwidth');
         }
     }
 
@@ -95700,6 +95805,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         mapLegacy(traceIn, 'zmax', 'cmax');
         mapLegacy(traceIn, 'zauto', 'cauto');
     }
+
+    // TODO if contours.?.usecolormap are false and hidesurface is true
+    // the colorbar shouldn't be shown by default
 
     colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'}

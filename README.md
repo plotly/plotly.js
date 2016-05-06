@@ -28,12 +28,14 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 #### Download the latest release
 [Latest Release on Github](https://github.com/plotly/plotly.js/releases/)
 
+and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
+
 #### Clone the repo
 ```bash
 git clone https://github.com/plotly/plotly.js.git
 ```
 
-and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
+and use the plotly.js `dist` file(s).
 
 #### Install with `npm`
 ```bash
@@ -53,7 +55,7 @@ and use the plotly.js `dist` file(s) or require plotly.js using CommonJS as `var
 
 and use the `Plotly` object in the window scope.
 
-Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
+##### Read the [Getting started page](https://plot.ly/javascript/getting-started/) for more examples.
 
 ## Modules
 
@@ -82,7 +84,7 @@ To learn more about the plotly.js module architecture, refer to our [modularizin
 
 #### Non-ascii characters
 
-Important: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `chartset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
+Important: the plotly.js code base contains some non-ascii characters. Therefore, please make sure to set the `charset` attribute to `"utf-8"` in the script tag that imports your plotly.js bundle. For example:
 
 ```html
 <script type="text/javascript" src="my-plotly-bundle.js" charset="utf-8"></script>

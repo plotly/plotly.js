@@ -8,6 +8,8 @@
 
 'use strict';
 
+var d3 = require('d3');
+
 var Symbols = require('../drawing/symbol_defs');
 var Drawing = require('../drawing');
 
@@ -38,7 +40,7 @@ module.exports = function rangePlot(gd, w, h) {
     clipDefs.appendChild(clip);
 
     var rangePlot = document.createElementNS(svgNS, 'g');
-    rangePlot.setAttribute('clip-path', 'url(#range-clip-path)');
+    d3.select(rangePlot).call(Drawing.setClipUrl, 'range-clip-path');
     rangePlot.appendChild(clipDefs);
 
 
