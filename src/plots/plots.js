@@ -446,6 +446,9 @@ plots.sendDataToCloud = function(gd) {
 // gd._fullLayout._modules
 //   is a list of all the trace modules required to draw the plot
 //
+// gd._fullLayout._basePlotModules
+//   is a list of all the plot modules required to draw the plot
+//
 plots.supplyDefaults = function(gd) {
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
@@ -455,7 +458,8 @@ plots.supplyDefaults = function(gd) {
         newFullData = gd._fullData = [],
         newData = gd.data || [];
 
-    var modules = newFullLayout._modules = [];
+    var modules = newFullLayout._modules = [],
+        basePlotModules = newFullLayout._basePlotModules = [];
 
     var i, _module;
 
@@ -474,11 +478,13 @@ plots.supplyDefaults = function(gd) {
         // detect polar
         if('r' in fullTrace) newFullLayout._hasPolar = true;
 
-        // fill in modules list
         _module = fullTrace._module;
-        if(_module && modules.indexOf(_module) === -1) modules.push(_module);
-    }
+        if(!_module) continue;
 
+        // fill in module lists
+        Lib.fillUnique(modules, _module);
+        Lib.fillUnique(basePlotModules, fullTrace._module.basePlotModule);
+    }
     // attach helper method
     newFullLayout._has = hasPlotType.bind(newFullLayout);
 
@@ -532,18 +538,17 @@ plots.supplyDefaults = function(gd) {
 };
 
 // helper function to be bound to fullLayout to check
-// whether a certain plot type or layout categories is present on plot
+// whether a certain plot type is present on plot
 function hasPlotType(category) {
-    var modules = this._modules || [];
+    var basePlotModules = this._basePlotModules || [];
 
-    for(var i = 0; i < modules.length; i++) {
-        var _module = modules[i];
+    for(var i = 0; i < basePlotModules.length; i++) {
+        var _module = basePlotModules[i];
 
-        if(_module.basePlotModule.name === category) return true;
+        if(_module.name === category) return true;
     }
 
     return false;
-}
 
 plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var i, j;
