@@ -5,17 +5,19 @@ general:
 
 machine:
   node:
-    version: 5.6.0
+    version: 4.2.1
   services:
     - docker
 
 dependencies:
   pre:
-    - docker pull plotly/testbed:candidate
+    - curl -L https://github.com/docker/compose/releases/download/1.5.0/docker-compose-`uname -s`-`uname -m` > ../bin/docker-compose && chmod +x ../bin/docker-compose
+    - docker-compose pull
   post:
     - npm run cibuild
-    - docker run -d --name mytestbed -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/testbed:candidate
-    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' mytestbed)" -- bash -c "cd /var/www/streambed/image_server/plotly.js && cp -f test/image/index.html ../server_app/index.html && /nw_restart.sh"
+    - docker-compose up:
+        background: true
+    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' mytestbed)" -- bash -c "cd /var/www/streambed/image_server/plotly.js && cp -f test/image/index.html ../server_app/index.html && . /var/www/streambed/image_server/nw_restart.sh"
     - wget --server-response --spider --tries=8 --retry-connrefused http://localhost:9010/ping
 
 test:
@@ -26,3 +28,6 @@ test:
     - npm run test-bundle
     - npm run test-syntax
     - eslint .
+    - docker-compose stop
+    - docker-compose rm -f
+
