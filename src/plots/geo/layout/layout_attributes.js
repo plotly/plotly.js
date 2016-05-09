@@ -9,7 +9,7 @@
 'use strict';
 
 var colorAttrs = require('../../../components/color/attributes');
-var constants = require('../../../constants/geo_constants');
+var constants = require('../constants');
 var geoAxesAttrs = require('./axis_attributes');
 
 

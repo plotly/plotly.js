@@ -23,9 +23,9 @@ var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');
 var createGeoZoom = require('./zoom');
 var createGeoZoomReset = require('./zoom_reset');
+var constants = require('./constants');
 
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var constants = require('../../constants/geo_constants');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson').feature;
 
@@ -37,9 +37,8 @@ function Geo(options, fullLayout) {
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
 
-    // add a few projection types to d3.geo,
-    // a subset of https://github.com/d3/d3-geo-projection
-    addProjectionsToD3();
+    // add a few projection types to d3.geo
+    addProjectionsToD3(d3);
 
     this.hoverContainer = null;
 

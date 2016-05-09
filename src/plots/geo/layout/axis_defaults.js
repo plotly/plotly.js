@@ -10,7 +10,7 @@
 'use strict';
 
 var Lib = require('../../../lib');
-var constants = require('../../../constants/geo_constants');
+var constants = require('../constants');
 var axisAttributes = require('./axis_attributes');
 
 
