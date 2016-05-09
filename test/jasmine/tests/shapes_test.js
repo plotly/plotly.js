@@ -58,7 +58,7 @@ describe('Test shapes:', function() {
     }
 
     function countShapeLayerNodesInSubplots() {
-        return d3.selectAll('.shapelayer-subplot').size();
+        return d3.selectAll('.layer-subplot').size();
     }
 
     function countSubplots(gd) {
@@ -74,7 +74,7 @@ describe('Test shapes:', function() {
     }
 
     function countShapePathsInSubplots() {
-        return d3.selectAll('.shapelayer-subplot > path').size();
+        return d3.selectAll('.layer-subplot > .shapelayer > path').size();
     }
 
     describe('*shapeLowerLayer*', function() {
