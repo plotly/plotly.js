@@ -116,10 +116,11 @@ module.exports = function setPositions(gd, plotinfo) {
         else barposition(bl);
 
         var stack = (fullLayout.barmode === 'stack'),
+            relative = (fullLayout.barmode ==='relative'),
             norm = fullLayout.barnorm;
 
         // bar size range and stacking calculation
-        if(stack || norm) {
+        if(stack || relative || norm) {
             // for stacked bars, we need to evaluate every step in every
             // stack, because negative bars mean the extremes could be
             // anywhere
@@ -142,13 +143,15 @@ module.exports = function setPositions(gd, plotinfo) {
                 ti = gd.calcdata[bl[i]];
                 for(j = 0; j < ti.length; j++) {
                     sv = Math.round(ti[j].p / sumround);
+                    // store the negative sum value for p at the same key, with sign flipped
+                    if(relative && ti[j].s < 0) sv = -sv;
                     var previousSum = sums[sv] || 0;
-                    if(stack) ti[j].b = previousSum;
+                    if(stack || relative) ti[j].b = previousSum;
                     barEnd = ti[j].b + ti[j].s;
                     sums[sv] = previousSum + ti[j].s;
 
                     // store the bar top in each calcdata item
-                    if(stack) {
+                    if(stack || relative) {
                         ti[j][sLetter] = barEnd;
                         if(!norm && isNumeric(sa.c2l(barEnd))) {
                             sMax = Math.max(sMax,barEnd);
@@ -161,13 +164,18 @@ module.exports = function setPositions(gd, plotinfo) {
             if(norm) {
                 padded = false;
                 var top = norm==='fraction' ? 1 : 100,
+                    relAndNegative = false,
                     tiny = top/1e9; // in case of rounding error in sum
                 sMin = 0;
                 sMax = stack ? top : 0;
                 for(i = 0; i < bl.length; i++) { // trace index
                     ti = gd.calcdata[bl[i]];
                     for(j = 0; j < ti.length; j++) {
-                        scale = top / sums[Math.round(ti[j].p/sumround)];
+                        relAndNegative = relative && ti[j].s < 0;
+                        sv = Math.round(ti[j].p / sumround);
+                        if(relAndNegative) sv = -sv;  // locate negative sum amount for this p val
+                        scale = top / sums[sv];
+                        if(relAndNegative) scale *= -1; // preserve sign if negative
                         ti[j].b *= scale;
                         ti[j].s *= scale;
                         barEnd = ti[j].b + ti[j].s;
