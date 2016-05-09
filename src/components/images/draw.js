@@ -85,7 +85,6 @@ module.exports = function draw(gd) {
         }
 
         thisImage.attr({
-            href: d.source,
             x: xPos,
             y: yPos,
             width: width,
@@ -93,6 +92,22 @@ module.exports = function draw(gd) {
             preserveAspectRatio: sizing,
             opacity: d.opacity
         });
+
+
+        // Images load async so we must add the promise to the list
+        var imagePromise = new Promise(function(resolve) {
+
+            thisImage.on('load', resolve);
+            thisImage.on('error', function() {
+                thisImage.remove();
+                console.log('Image with source ' + d.source + ' could not be loaded.');
+                resolve();
+            });
+
+            thisImage.attr('href', d.source);
+        });
+
+        gd._promises.push(imagePromise);
 
 
         // Set proper clipping on images
