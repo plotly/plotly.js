@@ -336,7 +336,7 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
 };
 
 /**
- * Fill with unique items
+ * Push array with unique items
  *
  * @param {array} array
  *  array to be filled
@@ -346,7 +346,7 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
  *  ref to array (now possibly containing one more item)
  *
  */
-lib.fillUnique = function(array, item) {
+lib.pushUnique = function(array, item) {
     if(item && array.indexOf(item) === -1) array.push(item);
 
     return array;

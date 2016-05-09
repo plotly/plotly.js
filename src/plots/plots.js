@@ -485,8 +485,8 @@ plots.supplyDefaults = function(gd) {
         if(!_module) continue;
 
         // fill in module lists
-        Lib.fillUnique(modules, _module);
-        Lib.fillUnique(basePlotModules, fullTrace._module.basePlotModule);
+        Lib.pushUnique(modules, _module);
+        Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
     }
 
     // attach helper method to check whether a plot type is present on graph

@@ -95,7 +95,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // make sure that plots with orphan cartesian axes
     // are considered 'cartesian'
     if(xaListCartesian.length && yaListCartesian.length) {
-        Lib.fillUnique(layoutOut._basePlotModules, Plots.subplotsRegistry.cartesian);
+        Lib.pushUnique(layoutOut._basePlotModules, Plots.subplotsRegistry.cartesian);
     }
 
     function axSort(a, b) {
