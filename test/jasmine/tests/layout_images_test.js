@@ -24,6 +24,19 @@ describe('Layout images', function() {
             expect(layoutOut.images.length).toEqual(0);
         });
 
+        it('should reject when not an array', function() {
+            layoutIn.images = {
+                source: 'http://www.someimagesource.com',
+                opacity: 0.5,
+                width: 0.2,
+                height: 0.2
+            };
+
+            Images.supplyLayoutDefaults(layoutIn, layoutOut);
+
+            expect(layoutOut.images).not.toBeDefined();
+        });
+
         it('should coerce the correct defaults', function() {
             layoutIn.images[0] = { source: 'http://www.someimagesource.com' };
 

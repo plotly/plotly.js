@@ -15,11 +15,10 @@ var attributes = require('./attributes');
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
 
-    if(!layoutIn.images) return;
+    if(!layoutIn.images || !Array.isArray(layoutIn.images)) return;
 
 
-    var containerIn = Array.isArray(layoutIn.images) ?
-            layoutIn.images : [layoutIn.images],
+    var containerIn = layoutIn.images,
         containerOut = layoutOut.images = [];
 
 
