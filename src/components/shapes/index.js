@@ -98,7 +98,7 @@ shapes.drawAll = function(gd) {
     // Remove previous shapes before drawing new in shapes in fullLayout.shapes
     fullLayout._shapeUpperLayer.selectAll('path').remove();
     fullLayout._shapeLowerLayer.selectAll('path').remove();
-    fullLayout._subplotShapeLayer.selectAll('path').remove();
+    fullLayout._shapeSubplotLayer.selectAll('path').remove();
 
     for(var i = 0; i < fullLayout.shapes.length; i++) {
         shapes.draw(gd, i);
@@ -356,7 +356,7 @@ function getShapeLayer(gd, index) {
     else if(shape.layer === 'below') {
         shapeLayer = (shape.xref === 'paper' && shape.yref === 'paper') ?
             gd._fullLayout._shapeLowerLayer :
-            gd._fullLayout._subplotShapeLayer;
+            gd._fullLayout._shapeSubplotLayer;
     }
 
     return shapeLayer;

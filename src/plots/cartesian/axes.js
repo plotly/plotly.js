@@ -38,7 +38,7 @@ axes.getFromTrace = axisIds.getFromTrace;
 
 // find the list of possible axes to reference with an xref or yref attribute
 // and coerce it to that list
-axes.coerceRef = function(containerIn, containerOut, gd, axLetter) {
+axes.coerceRef = function(containerIn, containerOut, gd, axLetter, dflt) {
     var axlist = gd._fullLayout._hasGL2D ? [] : axes.listIds(gd, axLetter),
         refAttr = axLetter + 'ref',
         attrDef = {};
@@ -48,7 +48,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, axLetter) {
     attrDef[refAttr] = {
         valType: 'enumerated',
         values: axlist.concat(['paper']),
-        dflt: axlist[0] || 'paper'
+        dflt: dflt || axlist[0] || 'paper'
     };
 
     // xref, yref
