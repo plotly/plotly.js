@@ -320,7 +320,7 @@ Plotly.plot = function(gd, data, layout, config) {
         gd.emit('plotly_afterplot');
     }
 
-    var donePlotting = Lib.syncOrAsync([
+    Lib.syncOrAsync([
         Plots.previousPromises,
         marginPushers,
         marginPushersAgain,
@@ -333,8 +333,9 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
-    return (donePlotting && donePlotting.then) ?
-        donePlotting : Promise.resolve(gd);
+    return Promise.all(gd._promises).then(function() {
+        return gd;
+    });
 };
 
 // Get the container div: we store all variables for this plot as
