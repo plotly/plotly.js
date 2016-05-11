@@ -2299,6 +2299,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // as it is we get separate calls for x and y (or ax and ay) on move
             objModule.draw(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
             delete aobj[ai];
+        } else if(p.parts[0] === 'images') {
+            var update = Lib.toObject(astr, vi);
+            Lib.extendDeepAll(gd.layout, update);
+
+            Images.supplyLayoutDefaults(gd.layout, gd._fullLayout);
+            Images.draw(gd);
         }
         // alter gd.layout
         else {
