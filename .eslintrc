@@ -38,7 +38,7 @@
     "no-floating-decimal": [2],
     "space-infix-ops": [0, {"int32Hint": false}],
     "quotes": [2, "single"],
-    "dot-notation": [2, {"allowKeywords": false}],
+    "dot-notation": [2],
     "operator-linebreak": [2, "after"],
     "eqeqeq": [2],
     "new-cap": [0],
