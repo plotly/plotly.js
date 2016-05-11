@@ -37,6 +37,8 @@ function toImage(gd, opts) {
             if(isNumeric(size) && size > 1) {
                 return true;
             }
+
+            return false;
         };
 
         if(!isSizeGood(opts.width) || !isSizeGood(opts.height)) {
@@ -80,7 +82,7 @@ function toImage(gd, opts) {
                         //  compatibility
                         promise: true
                     }).then(function(url) {
-                        if(clonedGd) clonedGd.remove();
+                        if(clonedGd) document.body.removeChild(clonedGd);
                         resolve(url);
                     }).catch(function(err) {
                         reject(err);

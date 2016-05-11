@@ -53,17 +53,17 @@ modeBarButtons.toImage = {
 
         Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
 
-        if(Lib.isIE()){
+        if(Lib.isIE()) {
             Lib.notifier('IE only supports svg.  Changing format to svg.', 'long');
             format = 'svg';
         }
 
-        downloadImage(gd, {'format':format})
+        downloadImage(gd, {'format': format})
           .then(function(filename) {
               Lib.notifier('Snapshot succeeded - ' + filename, 'long');
           })
           .catch(function() {
-              Lib.notifier('Sorry there was a problem downloading your snapshot', 'long');
+              Lib.notifier('Sorry there was a problem downloading your snapshot!', 'long');
           });
     }
 };

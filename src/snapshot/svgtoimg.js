@@ -56,7 +56,11 @@ function svgToImg(opts) {
         img.onload = function() {
             var imgData;
 
-            ctx.drawImage(img, 0, 0);
+            // don't need to draw to canvas if svg
+            //  save some time and also avoid failure on IE
+            if(format !== 'svg') {
+                ctx.drawImage(img, 0, 0);
+            }
 
             switch(format) {
                 case 'jpeg':

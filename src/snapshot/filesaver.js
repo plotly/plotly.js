@@ -52,8 +52,8 @@ var fileSaver = function(url, name) {
         }
 
         // IE 10+ (native saveAs)
-        if(typeof navigator !== 'undefined' && navigator.msSaveOrOpenBlob) {
-            navigator.msSaveOrOpenBlob(url, name);
+        if(typeof navigator !== 'undefined' && navigator.msSaveBlob) {
+            navigator.msSaveBlob(new Blob([url]), name);
             resolve(name);
         }
 
