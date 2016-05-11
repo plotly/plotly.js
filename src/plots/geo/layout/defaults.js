@@ -16,8 +16,6 @@ var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    if(!layoutOut._hasGeo) return;
-
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
         type: 'geo',
         attributes: layoutAttributes,

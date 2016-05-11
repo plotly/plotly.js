@@ -171,7 +171,10 @@ describe('Test axes', function() {
         var layoutIn, layoutOut, fullData;
 
         beforeEach(function() {
-            layoutOut = {};
+            layoutOut = {
+                _has: Plots._hasPlotType,
+                _basePlotModules: []
+            };
             fullData = [];
         });
 
@@ -267,7 +270,7 @@ describe('Test axes', function() {
             fullData = [];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._hasCartesian).toBe(true);
+            expect(layoutOut._basePlotModules[0].name).toEqual('cartesian');
         });
 
         it('should detect orphan axes (gl2d trace conflict case)', function() {
@@ -282,7 +285,7 @@ describe('Test axes', function() {
             }];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._hasCartesian).toBe(undefined);
+            expect(layoutOut._basePlotModules).toEqual([]);
         });
 
         it('should detect orphan axes (gl2d + cartesian case)', function() {
@@ -297,7 +300,7 @@ describe('Test axes', function() {
             }];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._hasCartesian).toBe(true);
+            expect(layoutOut._basePlotModules[0].name).toEqual('cartesian');
         });
 
         it('should detect orphan axes (gl3d present case)', function() {
@@ -305,21 +308,21 @@ describe('Test axes', function() {
                 xaxis: {},
                 yaxis: {}
             };
-            layoutOut._hasGL3D = true;
+            layoutOut._basePlotModules = [ { name: 'gl3d' }];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._hasCartesian).toBe(undefined);
+            expect(layoutOut._basePlotModules).toEqual([ { name: 'gl3d' }]);
         });
 
-        it('should detect orphan axes (gl3d present case)', function() {
+        it('should detect orphan axes (geo present case)', function() {
             layoutIn = {
                 xaxis: {},
                 yaxis: {}
             };
-            layoutOut._hasGeo = true;
+            layoutOut._basePlotModules = [ { name: 'geo' }];
 
             supplyLayoutDefaults(layoutIn, layoutOut, fullData);
-            expect(layoutOut._hasCartesian).toBe(undefined);
+            expect(layoutOut._basePlotModules).toEqual([ { name: 'geo' }]);
         });
 
         it('should use \'axis.color\' as default for \'axis.titlefont.color\'', function() {

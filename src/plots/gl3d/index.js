@@ -46,10 +46,13 @@ exports.plot = function plotGl3d(gd) {
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
             fullSceneData = Plots.getSubplotData(fullData, 'gl3d', sceneId),
-            scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
+            sceneLayout = fullLayout[sceneId],
+            scene = sceneLayout._scene;
 
         // If Scene is not instantiated, create one!
         if(scene === undefined) {
+            initAxes(gd, sceneLayout);
+
             scene = new Scene({
                 id: sceneId,
                 graphDiv: gd,
@@ -60,10 +63,11 @@ exports.plot = function plotGl3d(gd) {
                 fullLayout
             );
 
-            fullLayout[sceneId]._scene = scene;  // set ref to Scene instance
+            // set ref to Scene instance
+            sceneLayout._scene = scene;
         }
 
-        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
+        scene.plot(fullSceneData, fullLayout, gd.layout);
     }
 };
 
@@ -91,18 +95,10 @@ exports.cleanId = function cleanId(id) {
 
 exports.setConvert = require('./set_convert');
 
-exports.initAxes = function(gd) {
-    var fullLayout = gd._fullLayout;
-    var sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
+function initAxes(gd, sceneLayout) {
+    for(var j = 0; j < 3; ++j) {
+        var axisName = axesNames[j];
 
-    for(var i = 0; i < sceneIds.length; ++i) {
-        var sceneId = sceneIds[i];
-        var sceneLayout = fullLayout[sceneId];
-
-        for(var j = 0; j < 3; ++j) {
-            var axisName = axesNames[j];
-            var ax = sceneLayout[axisName];
-            ax._gd = gd;
-        }
+        sceneLayout[axisName]._gd = gd;
     }
-};
+}
