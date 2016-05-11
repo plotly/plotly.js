@@ -152,7 +152,6 @@ function convertColorscale(fullTrace, fill) {
 
     for(var i = 0; i < N; i++) {
         var level = levels[i] = start + cs * (i) - (fill ? cs / 2 : 0); // in case of fill, use band midpoint
-        console.log(level)
         var color = str2RGBArray(colorMap(level));
 
         for(var j = 0; j < 4; j++) {
