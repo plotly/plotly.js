@@ -50,6 +50,48 @@ module.exports = function draw(gd) {
     };
 
 
+    // Images must be converted to dataURL's for exporting.
+    function setImage(d) {
+
+        var thisImage = d3.select(this);
+
+        var imagePromise = new Promise(function(resolve) {
+
+            var img = new Image();
+
+            // If not set, a `tainted canvas` error is thrown
+            img.setAttribute('crossOrigin', 'anonymous');
+            img.onerror = errorHandler;
+            img.onload = function() {
+
+                var canvas = document.createElement('canvas');
+                canvas.width = this.width;
+                canvas.height = this.height;
+
+                var ctx = canvas.getContext('2d');
+                ctx.drawImage(this, 0, 0);
+
+                var dataURL = canvas.toDataURL('image/png');
+
+                thisImage.attr('xlink:href', dataURL);
+            };
+
+
+            thisImage.on('error', errorHandler);
+            thisImage.on('load', resolve);
+
+            img.src = d.source;
+
+            function errorHandler() {
+                thisImage.remove();
+                resolve();
+            }
+        });
+
+        gd._promises.push(imagePromise);
+    }
+
+
     function applyAttributes(d) {
 
         var thisImage = d3.select(this);
@@ -59,8 +101,6 @@ module.exports = function draw(gd) {
             yref = Axes.getFromId(gd, d.yref);
 
         var size = fullLayout._size,
-            width = xref ? Math.abs(xref.l2p(d.width) - xref.l2p(0)) : d.width * size.w,
-            height = yref ? Math.abs(yref.l2p(d.height) - yref.l2p(0)) : d.width * size.h;
             width = xref ? Math.abs(xref.l2p(d.sizex) - xref.l2p(0)) : d.sizex * size.w,
             height = yref ? Math.abs(yref.l2p(d.sizey) - yref.l2p(0)) : d.sizey * size.h;
 
@@ -96,22 +136,6 @@ module.exports = function draw(gd) {
         });
 
 
-        // Images load async so we must add the promise to the list
-        var imagePromise = new Promise(function(resolve) {
-
-            thisImage.on('load', resolve);
-            thisImage.on('error', function() {
-                thisImage.remove();
-                console.log('Image with source ' + d.source + ' could not be loaded.');
-                resolve();
-            });
-
-            thisImage.attr('href', d.source);
-        });
-
-        gd._promises.push(imagePromise);
-
-
         // Set proper clipping on images
         var xId = xref ? xref._id : '',
             yId = yref ? yref._id : '',
@@ -121,16 +145,22 @@ module.exports = function draw(gd) {
     }
 
 
-    var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
-            .data(imageDataBelow),
-        imagesSubplot = fullLayout._imageSubplotLayer.selectAll('image')
-            .data(imageDataSubplot),
-        imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
-            .data(imageDataAbove);
+    // Required for updating images
+    function keyFunction(d) {
+        return d.source;
+    }
 
-    imagesBelow.enter().append('image');
-    imagesSubplot.enter().append('image');
-    imagesAbove.enter().append('image');
+
+    var imagesBelow = fullLayout._imageLowerLayer.selectAll('image')
+            .data(imageDataBelow, keyFunction),
+        imagesSubplot = fullLayout._imageSubplotLayer.selectAll('image')
+            .data(imageDataSubplot, keyFunction),
+        imagesAbove = fullLayout._imageUpperLayer.selectAll('image')
+            .data(imageDataAbove, keyFunction);
+
+    imagesBelow.enter().append('image').each(setImage);
+    imagesSubplot.enter().append('image').each(setImage);
+    imagesAbove.enter().append('image').each(setImage);
 
     imagesBelow.exit().remove();
     imagesSubplot.exit().remove();
