@@ -47,8 +47,8 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     coerce('y');
     coerce('xanchor');
     coerce('yanchor');
-    coerce('width');
-    coerce('height');
+    coerce('sizex');
+    coerce('sizey');
     coerce('sizing');
     coerce('opacity');
 

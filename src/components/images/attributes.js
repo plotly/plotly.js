@@ -37,24 +37,24 @@ module.exports = {
         ].join(' ')
     },
 
-    width: {
+    sizey: {
         valType: 'number',
         role: 'info',
         dflt: 0,
         description: [
-            'Sets the image container width.',
+            'Sets the image container size horizontally.',
             'The image will be sized based on the `position` value.',
             'When `xref` is set to `paper`, units are sized relative',
             'to the plot width.'
         ].join(' ')
     },
 
-    height: {
+    sizex: {
         valType: 'number',
         role: 'info',
         dflt: 0,
         description: [
-            'Sets the image container height.',
+            'Sets the image container size vertically.',
             'The image will be sized based on the `position` value.',
             'When `yref` is set to `paper`, units are sized relative',
             'to the plot height.'

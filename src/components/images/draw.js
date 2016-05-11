@@ -61,6 +61,8 @@ module.exports = function draw(gd) {
         var size = fullLayout._size,
             width = xref ? Math.abs(xref.l2p(d.width) - xref.l2p(0)) : d.width * size.w,
             height = yref ? Math.abs(yref.l2p(d.height) - yref.l2p(0)) : d.width * size.h;
+            width = xref ? Math.abs(xref.l2p(d.sizex) - xref.l2p(0)) : d.sizex * size.w,
+            height = yref ? Math.abs(yref.l2p(d.sizey) - yref.l2p(0)) : d.sizey * size.h;
 
         // Offsets for anchor positioning
         var xOffset = width * anchors.x[d.xanchor].offset + size.l,
