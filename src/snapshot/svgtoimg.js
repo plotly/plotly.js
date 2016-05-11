@@ -35,7 +35,7 @@ function svgToImg(opts) {
         // Leave here just in case the CORS/tainted IE issue gets resolved
         if(Lib.isIE()) {
             // replace double quote with single quote
-            svg = svg.replace(/"/gi,"'");
+            svg = svg.replace(/"/gi,'\'');
             // url in svg are single quoted
             //   since we changed double to single
             //   we'll need to change these to double-quoted

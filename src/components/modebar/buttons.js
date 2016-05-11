@@ -49,9 +49,16 @@ modeBarButtons.toImage = {
     title: 'Download plot as a png',
     icon: Icons.camera,
     click: function(gd) {
+        var format = 'png';
+
         Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
 
-        downloadImage(gd)
+        if(Lib.isIE()){
+            Lib.notifier('IE only supports svg.  Changing format to svg.', 'long');
+            format = 'svg';
+        }
+
+        downloadImage(gd, {'format':format})
           .then(function(filename) {
               Lib.notifier('Snapshot succeeded - ' + filename, 'long');
           })

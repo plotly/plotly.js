@@ -40,7 +40,7 @@ function downloadImage(gd, opts) {
         //   does not allow toDataURL
         //   svg format will work though
         if(Lib.isIE() && opts.format !== 'svg') {
-            reject(new Error('Sorry IE does not support downloading from canvas.'));
+            reject(new Error('Sorry IE does not support downloading from canvas. Try {format:"svg"} instead.'));
         }
 
         gd._snapshotInProgress = true;
