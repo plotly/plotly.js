@@ -1,8 +1,12 @@
 var Plotly = require('@lib/index');
+var Plots = require('@src/plots/plots');
 var Images = require('@src/components/images');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+
+var jsLogo = 'https://images.plot.ly/language-icons/api-home/js-logo.png';
+var pythonLogo = 'https://images.plot.ly/language-icons/api-home/python-logo.png';
 
 describe('Layout images', function() {
 
@@ -13,11 +17,11 @@ describe('Layout images', function() {
 
         beforeEach(function() {
             layoutIn = { images: [] };
-            layoutOut = {};
+            layoutOut = { _has: Plots._hasPlotType };
         });
 
         it('should reject when there is no `source`', function() {
-            layoutIn.images[0] = { opacity: 0.5, width: 0.2, height: 0.2 };
+            layoutIn.images[0] = { opacity: 0.5, sizex: 0.2, sizey: 0.2 };
 
             Images.supplyLayoutDefaults(layoutIn, layoutOut);
 
@@ -26,10 +30,10 @@ describe('Layout images', function() {
 
         it('should reject when not an array', function() {
             layoutIn.images = {
-                source: 'http://www.someimagesource.com',
+                source: jsLogo,
                 opacity: 0.5,
-                width: 0.2,
-                height: 0.2
+                sizex: 0.2,
+                sizey: 0.2
             };
 
             Images.supplyLayoutDefaults(layoutIn, layoutOut);
@@ -38,17 +42,17 @@ describe('Layout images', function() {
         });
 
         it('should coerce the correct defaults', function() {
-            layoutIn.images[0] = { source: 'http://www.someimagesource.com' };
+            layoutIn.images[0] = { source: jsLogo };
 
             var expected = {
-                source: 'http://www.someimagesource.com',
+                source: jsLogo,
                 layer: 'above',
                 x: 0,
                 y: 0,
                 xanchor: 'left',
                 yanchor: 'top',
-                width: 0,
-                height: 0,
+                sizex: 0,
+                sizey: 0,
                 sizing: 'contain',
                 opacity: 1,
                 xref: 'paper',
@@ -119,7 +123,7 @@ describe('Layout images', function() {
                     sizing: sizing
                 }]});
 
-                var image = Plotly.d3.select('[href="' + anchorName + '"]'),
+                var image = Plotly.d3.select('image'),
                     parValue = image.attr('preserveAspectRatio');
 
                 expect(parValue).toBe(expected);
@@ -160,16 +164,15 @@ describe('Layout images', function() {
         afterEach(destroyGraphDiv);
 
         it('should not move when referencing the paper', function(done) {
-            var source = 'http://www.placekitten.com/200',
-                image = {
-                    source: source,
-                    xref: 'paper',
-                    yref: 'paper',
-                    x: 0,
-                    y: 0,
-                    width: 0.1,
-                    height: 0.1
-                };
+            var image = {
+                source: jsLogo,
+                xref: 'paper',
+                yref: 'paper',
+                x: 0,
+                y: 0,
+                sizex: 0.1,
+                sizey: 0.1
+            };
 
             Plotly.plot(gd, data, {
                 images: [image],
@@ -177,7 +180,7 @@ describe('Layout images', function() {
                 width: 600,
                 height: 400
             }).then(function() {
-                var img = Plotly.d3.select('[href="' + source + '"]').node(),
+                var img = Plotly.d3.select('image').node(),
                     oldPos = img.getBoundingClientRect();
 
                 mouseEvent('mousedown', 250, 200);
@@ -193,16 +196,15 @@ describe('Layout images', function() {
         });
 
         it('should move when referencing axes', function(done) {
-            var source = 'http://www.placekitten.com/200',
-                image = {
-                    source: source,
-                    xref: 'x',
-                    yref: 'y',
-                    x: 2,
-                    y: 2,
-                    width: 1,
-                    height: 1
-                };
+            var image = {
+                source: jsLogo,
+                xref: 'x',
+                yref: 'y',
+                x: 2,
+                y: 2,
+                sizex: 1,
+                sizey: 1
+            };
 
             Plotly.plot(gd, data, {
                 images: [image],
@@ -210,7 +212,7 @@ describe('Layout images', function() {
                 width: 600,
                 height: 400
             }).then(function() {
-                var img = Plotly.d3.select('[href="' + source + '"]').node(),
+                var img = Plotly.d3.select('image').node(),
                     oldPos = img.getBoundingClientRect();
 
                 mouseEvent('mousedown', 250, 200);
@@ -225,6 +227,49 @@ describe('Layout images', function() {
             }).then(done);
         });
 
+    });
+
+    describe('when relayout', function() {
+
+        var gd,
+            data = [{ x: [1,2,3], y: [1,2,3] }];
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, data, {
+                images: [{
+                    source: jsLogo,
+                    x: 2,
+                    y: 2,
+                    sizex: 1,
+                    sizey: 1
+                }]
+            }).then(done);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should update the image if changed', function(done) {
+            var img = Plotly.d3.select('image'),
+                url = img.attr('xlink:href');
+
+            Plotly.relayout(gd, 'images[0].source', pythonLogo).then(function() {
+                var newImg = Plotly.d3.select('image'),
+                    newUrl = newImg.attr('xlink:href');
+                expect(url).not.toBe(newUrl);
+            }).then(done);
+        });
+
+        it('should remove the image tag if an invalid source', function(done) {
+
+            var selection = Plotly.d3.select('image');
+            expect(selection.size()).toBe(1);
+
+            Plotly.relayout(gd, 'images[0].source', 'invalidUrl').then(function() {
+                var newSelection = Plotly.d3.select('image');
+                expect(newSelection.size()).toBe(0);
+            }).then(done);
+        });
     });
 
 });
