@@ -11,9 +11,11 @@
 
 var draw = require('./draw');
 var supplyLayoutDefaults = require('./defaults');
+var attributes = require('./attributes');
 
 
 module.exports = {
     draw: draw,
+    layoutAttributes: attributes,
     supplyLayoutDefaults: supplyLayoutDefaults
 };

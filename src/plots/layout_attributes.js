@@ -182,6 +182,7 @@ module.exports = {
         'legend': 'Legend',
         'annotations': 'Annotations',
         'shapes': 'Shapes',
+        'images': 'Images',
         'ternary': 'ternary'
     }
 };
