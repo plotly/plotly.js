@@ -495,7 +495,7 @@ lib.isIE = function() {
  * filled array of the given size.
  *
  * @example
- * lib.toObject('nested.test[2].path', 'value');
+ * lib.objectFromPath('nested.test[2].path', 'value');
  * // returns { nested: { test: [null, null, { path: 'value' }]}
  *
  * @param   {string}    path to nested value
@@ -503,7 +503,7 @@ lib.isIE = function() {
  *
  * @return {Object} the constructed object with a full nested path
  */
-lib.toObject = function(path, value) {
+lib.objectFromPath = function(path, value) {
     var keys = path.split('.'),
         tmpObj,
         obj = tmpObj = {};

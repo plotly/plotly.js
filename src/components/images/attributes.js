@@ -37,7 +37,7 @@ module.exports = {
         ].join(' ')
     },
 
-    sizey: {
+    sizex: {
         valType: 'number',
         role: 'info',
         dflt: 0,
@@ -49,7 +49,7 @@ module.exports = {
         ].join(' ')
     },
 
-    sizex: {
+    sizey: {
         valType: 'number',
         role: 'info',
         dflt: 0,

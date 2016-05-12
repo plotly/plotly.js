@@ -91,7 +91,6 @@ module.exports = function draw(gd) {
         gd._promises.push(imagePromise);
     }
 
-
     function applyAttributes(d) {
 
         var thisImage = d3.select(this);
@@ -111,8 +110,8 @@ module.exports = function draw(gd) {
         var sizing = anchors.x[d.xanchor].sizing + anchors.y[d.yanchor].sizing;
 
         // Final positions
-        var xPos = (xref ? xref.l2p(d.x) : d.x * width) + xOffset,
-            yPos = (yref ? yref.l2p(d.y) : -d.y * width) + yOffset;
+        var xPos = (xref ? xref.l2p(d.x) : d.x * size.w) + xOffset,
+            yPos = (yref ? yref.l2p(d.y) : size.h - d.y * size.h) + yOffset;
 
 
         // Construct the proper aspectRatio attribute

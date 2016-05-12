@@ -2300,7 +2300,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             objModule.draw(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
             delete aobj[ai];
         } else if(p.parts[0] === 'images') {
-            var update = Lib.toObject(astr, vi);
+            var update = Lib.objectFromPath(astr, vi);
             Lib.extendDeepAll(gd.layout, update);
 
             Images.supplyLayoutDefaults(gd.layout, gd._fullLayout);
@@ -2652,10 +2652,10 @@ function makePlotFramework(gd) {
     // (only for shapes to be drawn below the whole plot)
     var layerBelow = fullLayout._paper.append('g')
         .classed('layer-below', true);
-    fullLayout._shapeLowerLayer = layerBelow.append('g')
-        .classed('shapelayer', true);
     fullLayout._imageLowerLayer = layerBelow.append('g')
         .classed('imagelayer', true);
+    fullLayout._shapeLowerLayer = layerBelow.append('g')
+        .classed('shapelayer', true);
 
     var subplots = Plotly.Axes.getSubplots(gd);
     if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
@@ -2669,17 +2669,17 @@ function makePlotFramework(gd) {
 
     // shape layers in subplots
     var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
-    fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
     fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
+    fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
 
     // upper shape layer
     // (only for shapes to be drawn above the whole plot, including subplots)
     var layerAbove = fullLayout._paper.append('g')
         .classed('layer-above', true);
-    fullLayout._shapeUpperLayer = layerAbove.append('g')
-        .classed('shapelayer', true);
     fullLayout._imageUpperLayer = layerAbove.append('g')
         .classed('imagelayer', true);
+    fullLayout._shapeUpperLayer = layerAbove.append('g')
+        .classed('shapelayer', true);
 
     // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
