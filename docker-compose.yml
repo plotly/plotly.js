@@ -13,9 +13,8 @@
 
 dev:
   container_name: imagetest
-  image: plotly/testbed:latest
+  image: plotly/testbed:candidate
   volumes: 
     - .:/var/www/streambed/image_server/plotly.js
   ports:
     - "9010:9010"
-    - "2022:22"
