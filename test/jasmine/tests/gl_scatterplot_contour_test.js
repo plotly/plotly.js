@@ -100,8 +100,8 @@ function rotate(rad, point) {
 }
 
 function generate(maxJitter) {
-    var x = d3.range(-12, 13, 1); // left closed, right open interval
-    var y = d3.range(-12, 13, 1); // left closed, right open interval
+    var x = d3.range(-12, 13, 4); // left closed, right open interval
+    var y = d3.range(-12, 13, 4); // left closed, right open interval
     var i, j, p, z = new Array(x.length);
     for(i = 0; i < x.length; i++) {
         z[i] = new Array(y.length);
@@ -119,7 +119,7 @@ var plotDataElliptical = function(maxJitter) {
     return {
         "data": [
             {
-                "type": "contour",
+                "type": "contourgl",
                 "x": model.x,
                 "y": model.y,
                 "z": transpose(model.z), // gl-vis is column-major order while ploly is row-major order
@@ -172,6 +172,15 @@ fdescribe('contourgl plots', function() {
         });
     });
 
+    it('render without raising an error', function(done) {
+        var mock = require('@mocks/simple_contour_fill_gl.json');
+        //mock.data[0].type = "contour"; // induce gl rendering
+        //mock.data[0].contours = {coloring: "fill"}; // "fill" is the default
+        withSetupTeardown(done, function(gd) {
+            return makePlot(gd, mock);
+        });
+    });
+
     it('render without raising an error (coloring: "lines")', function(done) {
         var mock = Lib.extendDeep({}, plotDataElliptical(0));
         mock.data[0].contours.coloring = "lines"; // "fill" is the default
@@ -188,7 +197,10 @@ fdescribe('contourgl plots', function() {
     });
 
     fit('render ellipses with added noise without raising an error (coloring: "fill")', function(done) {
-        var mock = plotDataElliptical(0.5);
+        var mock = plotDataElliptical(0);
+        mock.data[0].contours.coloring = "lines"; // "fill" is the default
+        mock.data[0].type = "contourgl";
+        mock.data[0].line = {smoothing: 0};
         withSetupTeardown(done, function(gd) {
             return makePlot(gd, mock);
         });
