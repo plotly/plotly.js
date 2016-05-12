@@ -406,6 +406,51 @@ function setupTraceToggle(gd, container, legendItem) {
     });
 }
 
+function computeTextDimensions(gd, container, legendItem) {
+    var opts = gd._fullLayout.legend,
+        g = d3.select(container),
+        bg = g.selectAll('.legendtoggle'),
+        mathjaxGroup = g.select('g[class*=math-group]'),
+        lineHeight = opts.font.size * 1.3,
+        height,
+        width;
+
+    if(!legendItem.trace.showlegend) {
+        g.remove();
+        return;
+    }
+
+    if(mathjaxGroup.node()) {
+        var mathjaxBB = Drawing.bBox(mathjaxGroup.node());
+
+        height = mathjaxBB.height;
+        width = mathjaxBB.width;
+
+        mathjaxGroup.attr('transform','translate(0,' + (height / 4) + ')');
+    }
+    else {
+        var text = g.selectAll('.legendtext'),
+            textSpans = g.selectAll('.legendtext>tspan'),
+            textLines = textSpans[0].length || 1;
+
+        height = lineHeight * textLines;
+        width = text.node() && Drawing.bBox(text.node()).width;
+
+        // approximation to height offset to center the font
+        // to avoid getBoundingClientRect
+        var textY = lineHeight * (0.3 + (1 - textLines) / 2);
+        text.attr('y', textY);
+        textSpans.attr('y', textY);
+    }
+
+    height = Math.max(height, 16) + 3;
+
+    bg.attr({x: 0, y: -height / 2, height: height});
+
+    legendItem.height = height;
+    legendItem.width = width;
+}
+
 function computeLegendDimensions(gd, traces) {
     var fullLayout = gd._fullLayout,
         opts = fullLayout.legend,
@@ -415,48 +460,21 @@ function computeLegendDimensions(gd, traces) {
     opts.height = 0;
 
     traces.each(function(d) {
-        var trace = d[0].trace,
-            g = d3.select(this),
-            bg = g.selectAll('.legendtoggle'),
-            text = g.selectAll('.legendtext'),
-            tspans = g.selectAll('.legendtext>tspan'),
-            tHeight = opts.font.size * 1.3,
-            tLines = tspans[0].length || 1,
-            tWidth = text.node() && Drawing.bBox(text.node()).width,
-            mathjaxGroup = g.select('g[class*=math-group]'),
-            textY,
-            tHeightFull;
+        var legendItem = d[0];
 
-        if(!trace.showlegend) {
-            g.remove();
-            return;
-        }
+        computeTextDimensions(gd, this, legendItem);
 
-        if(mathjaxGroup.node()) {
-            var mathjaxBB = Drawing.bBox(mathjaxGroup.node());
-            tHeight = mathjaxBB.height;
-            tWidth = mathjaxBB.width;
-            mathjaxGroup.attr('transform','translate(0,' + (tHeight / 4) + ')');
-        }
-        else {
-            // approximation to height offset to center the font
-            // to avoid getBoundingClientRect
-            textY = tHeight * (0.3 + (1 - tLines) / 2);
-            text.attr('y', textY);
-            tspans.attr('y', textY);
-        }
+        var textHeight = legendItem.height,
+            textWidth = legendItem.width;
 
-        tHeightFull = Math.max(tHeight * tLines, 16) + 3;
-
-        g.attr('transform',
+        d3.select(this).attr('transform',
             'translate(' + borderwidth + ',' +
-                (5 + borderwidth + opts.height + tHeightFull / 2) +
+                (5 + borderwidth + opts.height + textHeight / 2) +
             ')'
         );
-        bg.attr({x: 0, y: -tHeightFull / 2, height: tHeightFull});
 
-        opts.height += tHeightFull;
-        opts.width = Math.max(opts.width, tWidth || 0);
+        opts.height += textHeight;
+        opts.width = Math.max(opts.width, textWidth);
     });
 
     opts.width += 45 + borderwidth * 2;
