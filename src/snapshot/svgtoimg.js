@@ -21,10 +21,6 @@ function svgToImg(opts) {
 
         var svg = opts.svg;
         var format = opts.format || 'png';
-        var canvas = opts.canvas;
-
-        var ctx = canvas.getContext('2d');
-        var img = new Image();
 
         // IE is very strict, so we will need to clean
         //  svg with the following regex
@@ -43,7 +39,24 @@ function svgToImg(opts) {
             // font names with spaces will be escaped single-quoted
             //   we'll need to change these to double-quoted
             svg = svg.replace(/(\\')/gi,'\"');
+            // IE only support svg
+            if(format!=='svg') {
+                var ieSvgError = new Error('Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.');
+                reject(ieSvgError);
+                // eventually remove the ev
+                //  in favor of promises
+                if(!opts.promise) {
+                    return ev.emit('error', ieSvgError);
+                } else {
+                    return promise;
+                }
+            }
         }
+
+        var canvas = opts.canvas;
+
+        var ctx = canvas.getContext('2d');
+        var img = new Image();
 
         // for Safari support, eliminate createObjectURL
         //  this decision could cause problems if content
