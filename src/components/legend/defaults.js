@@ -57,6 +57,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     coerce('bordercolor');
     coerce('borderwidth');
     Lib.coerceFont(coerce, 'font', layoutOut.font);
+    coerce('orientation');
 
     coerce('traceorder', defaultOrder);
     if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
