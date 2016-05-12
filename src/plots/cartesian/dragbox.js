@@ -520,6 +520,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         redrawObjs(fullLayout.annotations || [], Plotly.Annotations);
         redrawObjs(fullLayout.shapes || [], Plotly.Shapes);
+        redrawObjs(fullLayout.images || [], Plotly.Images);
     }
 
     function doubleClick() {

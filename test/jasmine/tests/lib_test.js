@@ -441,6 +441,40 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('objectFromPath', function() {
+
+        it('should return an object', function() {
+            var obj = Lib.objectFromPath('test', 'object');
+
+            expect(obj).toEqual({ test: 'object' });
+        });
+
+        it('should work for deep objects', function() {
+            var obj = Lib.objectFromPath('deep.nested.test', 'object');
+
+            expect(obj).toEqual({ deep: { nested: { test: 'object' }}});
+        });
+
+        it('should work for arrays', function() {
+            var obj = Lib.objectFromPath('nested[2].array', 'object');
+
+            expect(Object.keys(obj)).toEqual(['nested']);
+            expect(Array.isArray(obj.nested)).toBe(true);
+            expect(obj.nested[0]).toBe(undefined);
+            expect(obj.nested[2]).toEqual({ array: 'object' });
+        });
+
+        it('should work for any given value', function() {
+            var obj = Lib.objectFromPath('test.type', { an: 'object' });
+
+            expect(obj).toEqual({ test: { type: { an: 'object' }}});
+
+            obj = Lib.objectFromPath('test.type', [42]);
+
+            expect(obj).toEqual({ test: { type: [42] }});
+        });
+    });
+
     describe('coerce', function() {
         var coerce = Lib.coerce,
             out;
@@ -811,7 +845,6 @@ describe('Test lib.js:', function() {
             el.attr('transform', 'rotate(20)');
             expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
         });
-
     });
 
     describe('setTranslate', function() {

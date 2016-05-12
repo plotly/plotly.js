@@ -486,3 +486,58 @@ lib.setTranslate = function(element, x, y) {
 lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
+
+
+/**
+ * Converts a string path to an object.
+ *
+ * When given a string containing an array element, it will create a `null`
+ * filled array of the given size.
+ *
+ * @example
+ * lib.objectFromPath('nested.test[2].path', 'value');
+ * // returns { nested: { test: [null, null, { path: 'value' }]}
+ *
+ * @param   {string}    path to nested value
+ * @param   {*}         any value to be set
+ *
+ * @return {Object} the constructed object with a full nested path
+ */
+lib.objectFromPath = function(path, value) {
+    var keys = path.split('.'),
+        tmpObj,
+        obj = tmpObj = {};
+
+    for(var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var el = null;
+
+        var parts = keys[i].match(/(.*)\[([0-9]+)\]/);
+
+        if(parts) {
+            key = parts[1];
+            el = parts[2];
+
+            tmpObj = tmpObj[key] = [];
+
+            if(i === keys.length - 1) {
+                tmpObj[el] = value;
+            } else {
+                tmpObj[el] = {};
+            }
+
+            tmpObj = tmpObj[el];
+        } else {
+
+            if(i === keys.length - 1) {
+                tmpObj[key] = value;
+            } else {
+                tmpObj[key] = {};
+            }
+
+            tmpObj = tmpObj[key];
+        }
+    }
+
+    return obj;
+};

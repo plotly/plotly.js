@@ -24,6 +24,7 @@ var Fx = require('../plots/cartesian/graph_interact');
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
+var Images = require('../components/images');
 var Legend = require('../components/legend');
 var RangeSlider = require('../components/rangeslider');
 var RangeSelector = require('../components/rangeselector');
@@ -301,6 +302,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // be set to false before these will work properly.
     function finalDraw() {
         Shapes.drawAll(gd);
+        Images.draw(gd);
         Plotly.Annotations.drawAll(gd);
         Legend.draw(gd);
         RangeSlider.draw(gd);
@@ -2297,6 +2299,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // as it is we get separate calls for x and y (or ax and ay) on move
             objModule.draw(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
             delete aobj[ai];
+        } else if(p.parts[0] === 'images') {
+            var update = Lib.objectFromPath(astr, vi);
+            Lib.extendDeepAll(gd.layout, update);
+
+            Images.supplyLayoutDefaults(gd.layout, gd._fullLayout);
+            Images.draw(gd);
         }
         // alter gd.layout
         else {
@@ -2644,6 +2652,8 @@ function makePlotFramework(gd) {
     // (only for shapes to be drawn below the whole plot)
     var layerBelow = fullLayout._paper.append('g')
         .classed('layer-below', true);
+    fullLayout._imageLowerLayer = layerBelow.append('g')
+        .classed('imagelayer', true);
     fullLayout._shapeLowerLayer = layerBelow.append('g')
         .classed('shapelayer', true);
 
@@ -2658,13 +2668,16 @@ function makePlotFramework(gd) {
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
 
     // shape layers in subplots
-    fullLayout._subplotShapeLayer = fullLayout._paper
-        .selectAll('.shapelayer-subplot');
+    var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
+    fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
+    fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
 
     // upper shape layer
     // (only for shapes to be drawn above the whole plot, including subplots)
     var layerAbove = fullLayout._paper.append('g')
         .classed('layer-above', true);
+    fullLayout._imageUpperLayer = layerAbove.append('g')
+        .classed('imagelayer', true);
     fullLayout._shapeUpperLayer = layerAbove.append('g')
         .classed('shapelayer', true);
 
@@ -2797,10 +2810,16 @@ function makeCartesianPlotFramwork(gd, subplots) {
                 // the plot and containers for overlays
                 plotinfo.bg = plotgroup.append('rect')
                     .style('stroke-width', 0);
-                // shape layer
-                // (only for shapes to be drawn below a subplot)
-                plotinfo.shapelayer = plotgroup.append('g')
-                    .classed('shapelayer shapelayer-subplot', true);
+
+                // back layer for shapes and images to
+                // be drawn below a subplot
+                var backlayer = plotgroup.append('g')
+                    .classed('layer-subplot', true);
+
+                plotinfo.shapelayer = backlayer.append('g')
+                    .classed('shapelayer', true);
+                plotinfo.imagelayer = backlayer.append('g')
+                    .classed('imagelayer', true);
                 plotinfo.gridlayer = plotgroup.append('g');
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');

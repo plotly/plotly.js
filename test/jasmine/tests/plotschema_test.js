@@ -115,7 +115,7 @@ describe('plot schema', function() {
 
     it('should convert _isLinkedToArray attributes to items object', function() {
         var astrs = [
-            'annotations', 'shapes',
+            'annotations', 'shapes', 'images',
             'xaxis.rangeselector.buttons', 'yaxis.rangeselector.buttons'
         ];
 
