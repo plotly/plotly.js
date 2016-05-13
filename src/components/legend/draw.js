@@ -123,9 +123,14 @@ module.exports = function draw(gd) {
             }
         })
         .each(function(d) {
-            drawTexts(gd, this, d[0], traces);
+            drawTexts(gd, this, d[0]);
             setupTraceToggle(gd, this, d[0]);
         });
+
+    if(gd.firstRender) {
+        computeLegendDimensions(gd, traces);
+        expandMargin(gd);
+    }
 
     // Position and size the legend
     var lyMin = 0,
@@ -312,7 +317,7 @@ module.exports = function draw(gd) {
     }
 };
 
-function drawTexts(gd, context, legendItem, traces) {
+function drawTexts(gd, context, legendItem) {
     var fullLayout = gd._fullLayout,
         trace = legendItem.trace,
         isPie = Plots.traceIs(trace, 'pie'),
@@ -335,11 +340,7 @@ function drawTexts(gd, context, legendItem, traces) {
     function textLayout(s) {
         Plotly.util.convertToTspans(s, function() {
             s.selectAll('tspan.line').attr({x: s.attr('x')});
-
-            if(gd.firstRender) {
-                computeLegendDimensions(gd, traces);
-                expandMargin(gd);
-            }
+            computeTextDimensions(gd, context, legendItem);
         });
     }
 
@@ -461,11 +462,8 @@ function computeLegendDimensions(gd, traces) {
     opts.height = 0;
 
     traces.each(function(d) {
-        var legendItem = d[0];
-
-        computeTextDimensions(gd, this, legendItem);
-
-        var textHeight = legendItem.height,
+        var legendItem = d[0],
+            textHeight = legendItem.height,
             textWidth = legendItem.width;
 
         d3.select(this).attr('transform',
