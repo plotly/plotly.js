@@ -55,6 +55,18 @@ var Tabs = {
         });
     },
 
+    getMock: function(mockName, callback) {
+        var mockURL = '/test/image/mocks/' + mockName + '.json';
+
+        d3.json(mockURL, function(err, fig) {
+            if(typeof callback !== 'function') {
+                window.mock = fig;
+            } else {
+                callback(err, fig);
+            }
+        });
+    },
+
     // Save a png snapshot and display it below the plot
     snapshot: function(id) {
         var gd = Tabs.getGraph(id);
