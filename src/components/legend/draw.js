@@ -334,11 +334,12 @@ function drawTexts(gd, context, legendItem, traces) {
 
     function textLayout(s) {
         Plotly.util.convertToTspans(s, function() {
+            s.selectAll('tspan.line').attr({x: s.attr('x')});
+
             if(gd.firstRender) {
                 computeLegendDimensions(gd, traces);
                 expandMargin(gd);
             }
-            s.selectAll('tspan.line').attr({x: s.attr('x')});
         });
     }
 
