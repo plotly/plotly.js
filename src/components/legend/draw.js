@@ -101,12 +101,6 @@ module.exports = function draw(gd) {
 
     groups.exit().remove();
 
-    if(helpers.isGrouped(opts)) {
-        groups.attr('transform', function(d, i) {
-            return 'translate(0,' + i * opts.tracegroupgap + ')';
-        });
-    }
-
     var traces = groups.selectAll('g.traces')
         .data(Lib.identity);
 
@@ -128,7 +122,7 @@ module.exports = function draw(gd) {
         });
 
     if(gd.firstRender) {
-        computeLegendDimensions(gd, traces);
+        computeLegendDimensions(gd, groups, traces);
         expandMargin(gd);
     }
 
@@ -136,7 +130,7 @@ module.exports = function draw(gd) {
     var lyMin = 0,
         lyMax = fullLayout.height;
 
-    computeLegendDimensions(gd, traces);
+    computeLegendDimensions(gd, groups, traces);
 
     if(opts.height > lyMax) {
         // If the legend doesn't fit in the plot area,
@@ -453,10 +447,16 @@ function computeTextDimensions(gd, container, legendItem) {
     legendItem.width = width;
 }
 
-function computeLegendDimensions(gd, traces) {
+function computeLegendDimensions(gd, groups, traces) {
     var fullLayout = gd._fullLayout,
         opts = fullLayout.legend,
         borderwidth = opts.borderwidth;
+
+    if(helpers.isGrouped(opts)) {
+        groups.attr('transform', function(d, i) {
+            return 'translate(0,' + i * opts.tracegroupgap + ')';
+        });
+    }
 
     opts.width = 0;
     opts.height = 0;
