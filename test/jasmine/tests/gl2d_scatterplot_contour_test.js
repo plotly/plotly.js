@@ -12,10 +12,10 @@ Plotly.register(
 var withSetupTeardown = require('../assets/with_setup_teardown');
 
 var plotData = {
-    "data": [
+    'data': [
         {
-            "type": "contourgl",
-            "z": [
+            'type': 'contourgl',
+            'z': [
                 [
                     10,
                     10.625,
@@ -52,35 +52,35 @@ var plotData = {
                     10
                 ]
             ],
-            "colorscale": "Jet",
-            "contours": {
-                "start": 2,
-                "end": 10,
-                "size": 1
+            'colorscale': 'Jet',
+            'contours': {
+                'start': 2,
+                'end': 10,
+                'size': 1
             },
-            "uid": "ad5624",
-            "zmin": 0,
-            "zmax": 20
+            'uid': 'ad5624',
+            'zmin': 0,
+            'zmax': 20
         }
     ],
-    "layout": {
-        "xaxis": {
-            "range": [
+    'layout': {
+        'xaxis': {
+            'range': [
                 0,
                 4
             ],
-            "autorange": true
+            'autorange': true
         },
-        "yaxis": {
-            "range": [
+        'yaxis': {
+            'range': [
                 0,
                 4
             ],
-            "autorange": true
+            'autorange': true
         },
-        "height": 450,
-        "width": 1000,
-        "autosize": true
+        'height': 450,
+        'width': 1000,
+        'autosize': true
     }
 };
 
@@ -96,63 +96,63 @@ function rotate(rad, point) {
     return {
         x: point.x * Math.cos(rad) - point.y * Math.sin(rad),
         y: point.x * Math.sin(rad) + point.y * Math.cos(rad)
-    }
+    };
 }
 
 function generate(maxJitter) {
-    var x = d3.range(-12, 13, 4); // left closed, right open interval
-    var y = d3.range(-12, 13, 4); // left closed, right open interval
+    var x = d3.range(-1, 1.5, 0.5); // left closed, right open interval
+    var y = d3.range(-1, 1.5, 0.5); // left closed, right open interval
     var i, j, p, z = new Array(x.length);
     for(i = 0; i < x.length; i++) {
         z[i] = new Array(y.length);
         for(j = 0; j < y.length; j++) {
-            p = rotate(Math.PI / 4, {x: x[i], y: -y[j]})
-            z[i][j]  = jitter(maxJitter, Math.pow(p.x, 2) / (10 * 10) + Math.pow(p.y, 2) / (4 * 4))
+            p = rotate(Math.PI / 4, {x: x[i], y: -y[j]});
+            z[i][j] = jitter(maxJitter, Math.pow(p.x, 2) + Math.pow(p.y, 2));
         }
     }
-    return {x: x, y: y, z: z} // looking forward to the ES2015 return {x, y, z}
+    return {x: x, y: y, z: z}; // looking forward to the ES2015 return {x, y, z}
 }
 
 // equivalent to the new example case in gl-contour2d
 var plotDataElliptical = function(maxJitter) {
     var model = generate(maxJitter);
     return {
-        "data": [
+        'data': [
             {
-                "type": "contourgl",
-                "x": model.x,
-                "y": model.y,
-                "z": transpose(model.z), // gl-vis is column-major order while ploly is row-major order
-                "colorscale": "Jet",
-                "contours": {
-                    "start": 0,
-                    "end": 2,
-                    "size": 0.1,
-                    "coloring": "fill"
+                'type': 'contourgl',
+                'x': model.x,
+                'y': model.y,
+                'z': transpose(model.z), // gl-vis is column-major order while ploly is row-major order
+                'colorscale': 'Jet',
+                'contours': {
+                    'start': 0,
+                    'end': 2,
+                    'size': 0.1,
+                    'coloring': 'fill'
                 },
-                "uid": "ad5624",
-                "zmin": 0,
-                "zmax": 2
+                'uid': 'ad5624',
+                'zmin': 0,
+                'zmax': 2
             }
         ],
-        "layout": {
-            "xaxis": {
-                "range": [
+        'layout': {
+            'xaxis': {
+                'range': [
                     -10,
                     10
                 ],
-                "autorange": true
+                'autorange': true
             },
-            "yaxis": {
-                "range": [
+            'yaxis': {
+                'range': [
                     -10,
                     10
                 ],
-                "autorange": true
+                'autorange': true
             },
-            "height": 600,
-            "width": 600,
-            "autosize": true
+            'height': 600,
+            'width': 600,
+            'autosize': true
         }
     };
 };
@@ -162,9 +162,9 @@ function makePlot(gd, mock) {
     return Plotly.plot(gd, mock.data, mock.layout);
 }
 
-fdescribe('contourgl plots', function() {
+describe('contourgl plots', function() {
 
-    // this dataset is a special case, very forgiving to the contour renderer, as it's convex,
+    // this first dataset is a special case, very forgiving to the contour renderer, as it's convex,
     // contains no inflexion points etc.
     it('render without raising an error', function(done) {
         withSetupTeardown(done, function(gd) {
@@ -173,9 +173,7 @@ fdescribe('contourgl plots', function() {
     });
 
     it('render without raising an error', function(done) {
-        var mock = require('@mocks/simple_contour_fill_gl.json');
-        //mock.data[0].type = "contour"; // induce gl rendering
-        //mock.data[0].contours = {coloring: "fill"}; // "fill" is the default
+        var mock = require('@mocks/gl2d_simple_contour_fill.json');
         withSetupTeardown(done, function(gd) {
             return makePlot(gd, mock);
         });
@@ -183,9 +181,9 @@ fdescribe('contourgl plots', function() {
 
     it('render without raising an error (coloring: "lines")', function(done) {
         var mock = Lib.extendDeep({}, plotDataElliptical(0));
-        mock.data[0].contours.coloring = "lines"; // "fill" is the default
+        mock.data[0].contours.coloring = 'lines'; // 'fill' is the default
         withSetupTeardown(done, function(gd) {
-            return makePlot(gd, plotDataElliptical);
+            return makePlot(gd, mock);
         });
     });
 
@@ -196,18 +194,12 @@ fdescribe('contourgl plots', function() {
         });
     });
 
-    fit('render ellipses with added noise without raising an error (coloring: "fill")', function(done) {
-        var mock = plotDataElliptical(0);
-        mock.data[0].contours.coloring = "lines"; // "fill" is the default
-        mock.data[0].type = "contourgl";
+    it('render ellipses with added noise without raising an error (coloring: "fill")', function(done) {
+        var mock = plotDataElliptical(0.5);
+        mock.data[0].contours.coloring = 'fill'; // 'fill' is the default
         mock.data[0].line = {smoothing: 0};
         withSetupTeardown(done, function(gd) {
             return makePlot(gd, mock);
         });
     });
-
-
-
-
-
 });

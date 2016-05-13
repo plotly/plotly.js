@@ -105,7 +105,7 @@ proto.update = function(fullTrace, calcTrace) {
         // band color, it's set manually here in case the gl-contour2 API changes
         this.contourOptions.fillColors = colorOptions.levelColors;
         this.contourOptions.levelColors = [].concat.apply([], this.contourOptions.levels.map(function() {
-            return [.25,.25,.25,1];
+            return [0.25, 0.25, 0.25, 1.0];
         }));
     } else {
         colorOptions = convertColorscale(fullTrace, false);
