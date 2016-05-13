@@ -338,8 +338,8 @@ function drawTexts(gd, context, legendItem, traces) {
                 computeLegendDimensions(gd, traces);
                 expandMargin(gd);
             }
+            s.selectAll('tspan.line').attr({x: s.attr('x')});
         });
-        s.selectAll('tspan.line').attr({x: s.attr('x')});
     }
 
     if(gd._context.editable && !isPie) {
