@@ -214,6 +214,60 @@ describe('hover info', function() {
         });
     });
 
+    describe('hover error x text (log axis positive)', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].error_x = { array: [] };
+        mockCopy.data[0].error_x.array[17] = 1;
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('responds to hover x+text', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388 ± 1');
+        });
+    });
+
+    describe('hover error text (log axis 0)', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].error_x = { array: [] };
+        mockCopy.data[0].error_x.array[17] = 0;
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('responds to hover x+text', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+        });
+    });
+
+    describe('hover error text (log axis negative)', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].error_x = { array: [] };
+        mockCopy.data[0].error_x.array[17] = -1;
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('responds to hover x+text', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+        });
+    });
+
     describe('hover info text with html', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
