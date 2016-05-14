@@ -23,7 +23,7 @@ describe('Plotly.toImage', function() {
 
     it('should return a promise', function(done) {
         function isPromise(x) {
-            return !!x.then || typeof x.then === 'function';
+            return !!x.then && typeof x.then === 'function';
         }
 
         var returnValue = Plotly.plot(gd, subplotMock.data, subplotMock.layout)
