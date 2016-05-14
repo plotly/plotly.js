@@ -40,7 +40,7 @@ module.exports = function calc(gd, trace) {
     var serieslen = Math.min(pos.length, size.length),
         cd = [];
     for(i=0; i<serieslen; i++) {
-        if((isNumeric(pos[i]) && isNumeric(size[i]))) {
+        if(isNumeric(pos[i])) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }
     }
