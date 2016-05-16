@@ -88,6 +88,22 @@ describe('ternary plots', function() {
             });
         });
 
+        it('should be able to restyle', function(done) {
+            Plotly.restyle(gd, { a: [[1,2,3]]}, 0).then(function() {
+                var transforms = [];
+                d3.selectAll('.ternary .point').each(function() {
+                    var point = d3.select(this);
+                    transforms.push(point.attr('transform'));
+                });
+
+                expect(transforms).toEqual([
+                    'translate(186.45,209.8)',
+                    'translate(118.53,170.59)',
+                    'translate(248.76,117.69)'
+                ]);
+            }).then(done);
+        });
+
         it('should display to hover labels', function() {
             var hoverLabels;
 
@@ -180,7 +196,6 @@ describe('ternary plots', function() {
                 done();
             });
         });
-
     });
 
     function countTernarySubplot() {
