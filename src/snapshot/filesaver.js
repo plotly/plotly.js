@@ -34,7 +34,7 @@ var fileSaver = function(url, name) {
         // First try a.download, then web filesystem, then object URLs
         if(isSafari) {
             // Safari doesn't allow downloading of blob urls
-            document.location.href = 'data:attachment/file' + url.slice(url.search(/[,;]/));
+            document.location.href = 'data:application/octet-stream' + url.slice(url.search(/[,;]/));
             resolve(name);
         }
 
