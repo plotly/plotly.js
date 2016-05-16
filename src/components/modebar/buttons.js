@@ -12,7 +12,7 @@
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var setCursor = require('../../lib/setcursor');
-var Snapshot = require('../../snapshot');
+var downloadImage = require('../../snapshot/download');
 var Icons = require('../../../build/ploticon');
 
 
@@ -51,47 +51,20 @@ modeBarButtons.toImage = {
     click: function(gd) {
         var format = 'png';
 
-        if(Lib.isIE()) {
-            Lib.notifier('Snapshotting is unavailable in Internet Explorer. ' +
-                         'Consider exporting your images using the Plotly Cloud', 'long');
-            return;
-        }
-
-        if(gd._snapshotInProgress) {
-            Lib.notifier('Snapshotting is still in progress - please hold', 'long');
-            return;
-        }
-
-        gd._snapshotInProgress = true;
         Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
 
-        var ev = Snapshot.toImage(gd, {format: format});
+        if(Lib.isIE()) {
+            Lib.notifier('IE only supports svg.  Changing format to svg.', 'long');
+            format = 'svg';
+        }
 
-        var filename = gd.fn || 'newplot';
-        filename += '.' + format;
-
-        ev.once('success', function(result) {
-            gd._snapshotInProgress = false;
-
-            var downloadLink = document.createElement('a');
-            downloadLink.href = result;
-            downloadLink.download = filename; // only supported by FF and Chrome
-
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-
-            ev.clean();
-        });
-
-        ev.once('error', function(err) {
-            gd._snapshotInProgress = false;
-
-            Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');
-            console.error(err);
-
-            ev.clean();
-        });
+        downloadImage(gd, {'format': format})
+          .then(function(filename) {
+              Lib.notifier('Snapshot succeeded - ' + filename, 'long');
+          })
+          .catch(function() {
+              Lib.notifier('Sorry there was a problem downloading your snapshot!', 'long');
+          });
     }
 };
 
