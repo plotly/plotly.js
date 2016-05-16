@@ -64,7 +64,6 @@ function toImage(gd, opts) {
                     var canvasContainer = window.document.createElement('div');
                     var canvas = window.document.createElement('canvas');
 
-                    // window.document.body.appendChild(canvasContainer);
                     canvasContainer.appendChild(canvas);
 
                     canvasContainer.id = Plotly.Lib.randstr();
