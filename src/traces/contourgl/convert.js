@@ -99,7 +99,7 @@ proto.update = function(fullTrace, calcTrace) {
 
     // pass on fill information
     if(fullTrace.contours.coloring === 'fill') {
-        colorOptions = convertColorscale(fullTrace, true);
+        colorOptions = convertColorScale(fullTrace, {fill: true});
         this.contourOptions.levels = colorOptions.levels.slice(1);
         // though gl-contour2d automatically defaults to a transparent layer for the last
         // band color, it's set manually here in case the gl-contour2 API changes
@@ -108,7 +108,7 @@ proto.update = function(fullTrace, calcTrace) {
             return [0.25, 0.25, 0.25, 1.0];
         }));
     } else {
-        colorOptions = convertColorscale(fullTrace, false);
+        colorOptions = convertColorScale(fullTrace, {fill: false});
         this.contourOptions.levels = colorOptions.levels;
         this.contourOptions.levelColors = colorOptions.levelColors;
     }
@@ -138,11 +138,12 @@ function flattenZ(zIn, rowLen, colLen) {
     return zOut;
 }
 
-function convertColorscale(fullTrace, fill) {
+function convertColorScale(fullTrace, options) {
     var contours = fullTrace.contours,
         start = contours.start,
         end = contours.end,
-        cs = contours.size || 1;
+        cs = contours.size || 1,
+        fill = options.fill;
 
     var colorMap = makeColorMap(fullTrace);
 
