@@ -453,10 +453,11 @@ function computeTextDimensions(g, gd, legendItem) {
 function computeLegendDimensions(gd, groups, traces) {
     var fullLayout = gd._fullLayout,
         opts = fullLayout.legend,
-        borderwidth = opts.borderwidth;
+        borderwidth = opts.borderwidth,
+        isGrouped = helpers.isGrouped(opts);
 
     if(helpers.isVertical(opts)) {
-        if(helpers.isGrouped(opts)) {
+        if(isGrouped) {
             groups.each(function(d, i) {
                 Lib.setTranslate(this, 0, i * opts.tracegroupgap);
             });
@@ -481,7 +482,7 @@ function computeLegendDimensions(gd, groups, traces) {
         opts.width += 45 + borderwidth * 2;
         opts.height += 10 + borderwidth * 2;
 
-        if(helpers.isGrouped(opts)) {
+        if(isGrouped) {
             opts.height += (opts._lgroupsLength-1) * opts.tracegroupgap;
         }
 
@@ -492,21 +493,24 @@ function computeLegendDimensions(gd, groups, traces) {
         opts.width = Math.ceil(opts.width);
         opts.height = Math.ceil(opts.height);
     }
-    else if(helpers.isGrouped(opts)) {
+    else if(isGrouped) {
         opts.width = 0;
         opts.height = 0;
 
-        var groupXOffsets = [opts.width];
-        groups.each(function(d) {
-            var textWidths = d.map(function(legendItemArray) {
+        var groupXOffsets = [opts.width],
+            groupData = groups.data();
+
+        for(var i = 0, n = groupData.length; i < n; i++) {
+            var textWidths = groupData[i].map(function(legendItemArray) {
                 return legendItemArray[0].width;
             });
 
             var groupWidth = 40 + Math.max.apply(null, textWidths);
+
             opts.width += opts.tracegroupgap + groupWidth;
 
             groupXOffsets.push(opts.width);
-        });
+        }
 
         groups.each(function(d, i) {
             Lib.setTranslate(this, groupXOffsets[i], 0);
