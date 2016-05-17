@@ -175,10 +175,6 @@
         }, 
         "legend": {
             "orientation": "h",
-            "x": 0, 
-            "xanchor": "left", 
-            "y": -0.1, 
-            "yanchor": "top",
             "traceorder": "normal", 
             "font": {
                 "family": "", 
@@ -187,7 +183,7 @@
             }, 
             "bgcolor": "#fff", 
             "bordercolor": "#444", 
-            "borderwidth": 0 
+            "borderwidth": 1
         }, 
         "margin": {
             "l": 80, 
