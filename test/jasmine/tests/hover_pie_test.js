@@ -111,4 +111,57 @@ describe('pie hovering', function() {
             }, 100);
         });
     });
+
+    describe('labels', function() {
+
+        var gd,
+            mockCopy;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+            mockCopy = Lib.extendDeep({}, mock);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should show the default selected values', function(done) {
+
+            var expected = ['4', '5', '33.3%'];
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+                mouseEvent('mouseover', 230, 150);
+
+                var labels = Plotly.d3.selectAll('.hovertext .nums .line');
+
+                expect(labels[0].length).toBe(3);
+
+                labels.each(function(_, i) {
+                    expect(Plotly.d3.select(this).text()).toBe(expected[i]);
+                });
+            }).then(done);
+        });
+
+        it('should show the correct separators for values', function(done) {
+
+            var expected = ['0', '12|345|678@91', '99@9%'];
+
+            mockCopy.layout.separators = '@|';
+            mockCopy.data[0].values[0] = 12345678.912;
+            mockCopy.data[0].values[1] = 10000;
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+                mouseEvent('mouseover', 230, 150);
+
+                var labels = Plotly.d3.selectAll('.hovertext .nums .line');
+
+                expect(labels[0].length).toBe(3);
+
+                labels.each(function(_, i) {
+                    expect(Plotly.d3.select(this).text()).toBe(expected[i]);
+                });
+            }).then(done);
+        });
+    });
 });

@@ -107,14 +107,15 @@ module.exports = function calc(gd, trace) {
             hasText = trace.textinfo.indexOf('text') !== -1,
             hasValue = trace.textinfo.indexOf('value') !== -1,
             hasPercent = trace.textinfo.indexOf('percent') !== -1,
+            separators = fullLayout.separators,
             thisText;
 
         for(i = 0; i < cd.length; i++) {
             pt = cd[i];
             thisText = hasLabel ? [pt.label] : [];
             if(hasText && trace.text[pt.i]) thisText.push(trace.text[pt.i]);
-            if(hasValue) thisText.push(helpers.formatPieValue(pt.v));
-            if(hasPercent) thisText.push(helpers.formatPiePercent(pt.v / vTotal));
+            if(hasValue) thisText.push(helpers.formatPieValue(pt.v, separators));
+            if(hasPercent) thisText.push(helpers.formatPiePercent(pt.v / vTotal, separators));
             pt.text = thisText.join('<br>');
         }
     }

@@ -930,4 +930,35 @@ describe('Test lib.js:', function() {
 
         });
     });
+
+    describe('numSeparate', function() {
+
+        it('should work on numbers and strings', function() {
+            expect(Lib.numSeparate(12345.67, '.,')).toBe('12,345.67');
+            expect(Lib.numSeparate('12345.67', '.,')).toBe('12,345.67');
+        });
+
+        it('should ignore years', function() {
+            expect(Lib.numSeparate(2016, '.,')).toBe('2016');
+        });
+
+        it('should work for multiple thousands', function() {
+            expect(Lib.numSeparate(1000000000, '.,')).toBe('1,000,000,000');
+        });
+
+        it('should work when there\'s only one separator', function() {
+            expect(Lib.numSeparate(12.34, '|')).toBe('12|34');
+            expect(Lib.numSeparate(1234.56, '|')).toBe('1234|56');
+        });
+
+        it('should throw an error when no separator is provided', function() {
+            expect(function() {
+                Lib.numSeparate(1234);
+            }).toThrowError('Separator string required for formatting!');
+
+            expect(function() {
+                Lib.numSeparate(1234, '');
+            }).toThrowError('Separator string required for formatting!');
+        });
+    });
 });

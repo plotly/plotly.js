@@ -1105,7 +1105,7 @@ function numFormat(v, ax, fmtoverride, hover) {
             if(dp) v = v.substr(0, dp + tickRound).replace(/\.?0+$/, '');
         }
         // insert appropriate decimal point and thousands separator
-        v = numSeparate(v, ax._gd._fullLayout.separators);
+        v = Lib.numSeparate(v, ax._gd._fullLayout.separators);
     }
 
     // add exponent
@@ -1139,27 +1139,6 @@ function numFormat(v, ax, fmtoverride, hover) {
     // with a true minus sign
     if(isNeg) return '\u2212' + v;
     return v;
-}
-
-// add arbitrary decimal point and thousands separator
-var findThousands = /(\d+)(\d{3})/;
-function numSeparate(nStr, separators) {
-    // separators - first char is decimal point,
-    // next char is thousands separator if there is one
-
-    var dp = separators.charAt(0),
-        thou = separators.charAt(1),
-        x = nStr.split('.'),
-        x1 = x[0],
-        x2 = x.length > 1 ? dp + x[1] : '';
-    // even if there is a thousands separator, don't use it on
-    // 4-digit integers (like years)
-    if(thou && (x.length > 1 || x1.length>4)) {
-        while(findThousands.test(x1)) {
-            x1 = x1.replace(findThousands, '$1' + thou + '$2');
-        }
-    }
-    return x1 + x2;
 }
 
 
