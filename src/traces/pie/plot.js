@@ -103,13 +103,15 @@ module.exports = function plot(gd, cdpie) {
                     var rInscribed = getInscribedRadiusFraction(pt, cd0),
                         hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed),
                         hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed),
+                        separators = fullLayout.separators,
                         thisText = [];
+
                     if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
                     if(trace2.text && trace2.text[pt.i] && hoverinfo.indexOf('text') !== -1) {
                         thisText.push(trace2.text[pt.i]);
                     }
-                    if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v));
-                    if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal));
+                    if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
+                    if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
 
                     Fx.loneHover({
                         x0: hoverCenterX - rInscribed * cd0.r,
