@@ -116,12 +116,10 @@ module.exports = function draw(gd) {
                 return trace.visible === 'legendonly' ? 0.5 : 1;
             }
         })
-        .each(function(d) {
-            var legendItem = d[0];
-
+        .each(function() {
             d3.select(this)
-                .call(drawTexts, gd, legendItem)
-                .call(setupTraceToggle, gd, legendItem);
+                .call(drawTexts, gd)
+                .call(setupTraceToggle, gd);
         });
 
     if(gd.firstRender) {
@@ -315,8 +313,9 @@ module.exports = function draw(gd) {
     }
 };
 
-function drawTexts(g, gd, legendItem) {
-    var fullLayout = gd._fullLayout,
+function drawTexts(g, gd) {
+    var legendItem = g.data()[0][0],
+        fullLayout = gd._fullLayout,
         trace = legendItem.trace,
         isPie = Plots.traceIs(trace, 'pie'),
         traceIndex = trace.index,
@@ -338,7 +337,7 @@ function drawTexts(g, gd, legendItem) {
     function textLayout(s) {
         Plotly.util.convertToTspans(s, function() {
             s.selectAll('tspan.line').attr({x: s.attr('x')});
-            g.call(computeTextDimensions, gd, legendItem);
+            g.call(computeTextDimensions, gd);
         });
     }
 
@@ -356,7 +355,7 @@ function drawTexts(g, gd, legendItem) {
     else text.call(textLayout);
 }
 
-function setupTraceToggle(g, gd, legendItem) {
+function setupTraceToggle(g, gd) {
     var hiddenSlices = gd._fullLayout.hiddenlabels ?
         gd._fullLayout.hiddenlabels.slice() :
         [];
@@ -373,7 +372,8 @@ function setupTraceToggle(g, gd, legendItem) {
     traceToggle.on('click', function() {
         if(gd._dragged) return;
 
-        var fullData = gd._fullData,
+        var legendItem = g.data()[0][0],
+            fullData = gd._fullData,
             trace = legendItem.trace,
             legendgroup = trace.legendgroup,
             traceIndicesInGroup = [],
@@ -406,8 +406,9 @@ function setupTraceToggle(g, gd, legendItem) {
     });
 }
 
-function computeTextDimensions(g, gd, legendItem) {
-    var bg = g.selectAll('.legendtoggle'),
+function computeTextDimensions(g, gd) {
+    var legendItem = g.data()[0][0],
+        bg = g.selectAll('.legendtoggle'),
         mathjaxGroup = g.select('g[class*=math-group]'),
         opts = gd._fullLayout.legend,
         lineHeight = opts.font.size * 1.3,
