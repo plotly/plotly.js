@@ -541,3 +541,47 @@ lib.objectFromPath = function(path, value) {
 
     return obj;
 };
+
+/**
+ * Converts value to string separated by the provided separators.
+ *
+ * @example
+ * lib.numSeparate(2016, '.,');
+ * // returns '2016'
+ *
+ * @example
+ * lib.numSeparate(1234.56, '|,')
+ * // returns '1,234|56'
+ *
+ * @param   {string|number} value       the value to be converted
+ * @param   {string}    separators  string of decimal, then thousands separators
+ *
+ * @return  {string}    the value that has been separated
+ */
+lib.numSeparate = function(value, separators) {
+
+    if(typeof separators !== 'string' || separators.length === 0) {
+        throw new Error('Separator string required for formatting!');
+    }
+
+    if(typeof value === 'number') {
+        value = String(value);
+    }
+
+    var thousandsRe = /(\d+)(\d{3})/,
+        decimalSep = separators.charAt(0),
+        thouSep = separators.charAt(1);
+
+    var x = value.split('.'),
+        x1 = x[0],
+        x2 = x.length > 1 ? decimalSep + x[1] : '';
+
+    // Years are ignored for thousands separators
+    if(thouSep && (x.length > 1 || x1.length>4)) {
+        while(thousandsRe.test(x1)) {
+            x1 = x1.replace(thousandsRe, '$1' + thouSep + '$2');
+        }
+    }
+
+    return x1 + x2;
+};
