@@ -61,7 +61,7 @@ describe('gl3d plots', function() {
     var gd;
 
     beforeEach(function() {
-        gd =createGraphDiv();
+        gd = createGraphDiv();
     });
 
     afterEach(function() {
