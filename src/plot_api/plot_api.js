@@ -1575,6 +1575,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'mode','visible','type','orientation','fill',
         'histfunc','histnorm','text',
         'x', 'y', 'z',
+        'a', 'b', 'c',
         'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
         'line.width',
         'connectgaps', 'transpose', 'zsmooth',
