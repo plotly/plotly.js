@@ -323,7 +323,7 @@ function plotOne(gd, plotinfo, cd) {
             for(j = 0; j < m; j++) {
                 row = z[j];
                 yb = ypx(j);
-                for(i = 0; i < n; i++) {
+                for(i = 0; i < imageWidth; i++) {
                     c = setColor(row[i], 1);
                     pxIndex = (yb * imageWidth + xpx(i)) * 4;
                     putColor(pixels, pxIndex, c);
