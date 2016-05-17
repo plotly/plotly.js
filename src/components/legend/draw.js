@@ -128,7 +128,9 @@ module.exports = function draw(gd) {
     }
 
     // Position and size the legend
-    var lyMin = 0,
+    var lxMin = 0,
+        lxMax = fullLayout.width,
+        lyMin = 0,
         lyMax = fullLayout.height;
 
     computeLegendDimensions(gd, groups, traces);
@@ -162,6 +164,20 @@ module.exports = function draw(gd) {
         ly -= opts.height / 2;
     }
 
+    // Make sure the legend left and right sides are visible
+    var legendWidth = opts.width,
+        legendWidthMax = gs.w;
+
+    if(legendWidth > legendWidthMax) {
+        lx = gs.l;
+        legendWidth = legendWidthMax;
+    }
+    else {
+        if(lx + legendWidth > lxMax) lx = lxMax - legendWidth;
+        if(lx < lxMin) lx = lxMin;
+        legendWidth = Math.min(lxMax - lx, opts.width);
+    }
+
     // Make sure the legend top and bottom are visible
     // (legends with a scroll bar are not allowed to stretch beyond the extended
     // margins)
@@ -173,7 +189,7 @@ module.exports = function draw(gd) {
         legendHeight = legendHeightMax;
     }
     else {
-        if(ly > lyMax) ly = lyMax - legendHeight;
+        if(ly + legendHeight > lyMax) ly = lyMax - legendHeight;
         if(ly < lyMin) ly = lyMin;
         legendHeight = Math.min(lyMax - ly, opts.height);
     }
@@ -183,7 +199,7 @@ module.exports = function draw(gd) {
     Lib.setTranslate(legend, lx, ly);
 
     bg.attr({
-        width: opts.width - opts.borderwidth,
+        width: legendWidth - opts.borderwidth,
         height: legendHeight - opts.borderwidth,
         x: opts.borderwidth / 2,
         y: opts.borderwidth / 2
@@ -194,7 +210,7 @@ module.exports = function draw(gd) {
     Lib.setTranslate(scrollBox, 0, scrollPosition);
 
     clipPath.select('rect').attr({
-        width: opts.width - 2 * opts.borderwidth,
+        width: legendWidth - 2 * opts.borderwidth,
         height: legendHeight - 2 * opts.borderwidth,
         x: opts.borderwidth - scrollPosition,
         y: opts.borderwidth
@@ -208,14 +224,14 @@ module.exports = function draw(gd) {
         // increase the background and clip-path width
         // by the scrollbar width and margin
         bg.attr({
-            width: opts.width -
+            width: legendWidth -
                 2 * opts.borderwidth +
                 constants.scrollBarWidth +
                 constants.scrollBarMargin
         });
 
         clipPath.select('rect').attr({
-            width: opts.width -
+            width: legendWidth -
                 2 * opts.borderwidth +
                 constants.scrollBarWidth +
                 constants.scrollBarMargin
@@ -272,7 +288,7 @@ module.exports = function draw(gd) {
 
         scrollBar.call(
             Drawing.setRect,
-            opts.width,
+            legendWidth,
             scrollBarY,
             constants.scrollBarWidth,
             constants.scrollBarHeight
