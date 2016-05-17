@@ -10,6 +10,40 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.11.0] -- 2016-05-17
+
+### Added
+- Add top-level methods `Plotly.toImage` to convert a plotly graph to an image
+  data URL (svg, png, jpg, and webp are supported) and `Plotly.downloadImage` to
+  download a plotly graph as an image [#446]
+- Add the ability to add arbitrary images loaded from a url to a plot's layout
+  [#525]
+- Add the option of making legend span horizontally [#535]
+- Add `connectgaps` attribute to `scattergl` traces [#449]
+- Add new 'relative' bar mode which stacks on top of one another with negative
+  values below the axis, positive values above [#517]
+- Add support for the 'winkel tripel' projection in geo subplots [#492]
+- Event `plotly_relayout` is now emitted on gl2d subplot drag/pan/zoom
+  interactions [#466]
+- Add support for fill coloring in `contourgl` traces [#522, #543]
+
+### Changed
+- Cartesian on-hover routine is now uses a 50ms interval between search calls
+  instead of 100ms for smoother displaying hover labels [#514]
+- [Internal change] fullLayout `_has` fields are replaced by a `_has` method
+  which checks if a particular plot type is present on a graph [#491]
+
+### Fixed
+- Bar widths of traces with null coordinates are now correctly computed [#542]
+- Error bar spans on bar traces with null coordinates are now correctly computed
+  [#542]
+- All promises spawn in `Plotly.plot` are now guaranteed to be resolved before
+  the final resolve [#521]
+- Restyling `scatterternary` data attributes is now working [#540]
+- Error bar of 0 length in log axes are not included in hover labels (instead of
+  showing `NaN`s) [#533]
+
+
 ## [1.10.2] -- 2016-05-05
 
 ### Fixed
