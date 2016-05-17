@@ -21,7 +21,11 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         containerOut = layoutOut.legend = {};
 
     var visibleTraces = 0,
-        defaultOrder = 'normal';
+        defaultOrder = 'normal',
+        defaultX,
+        defaultY,
+        defaultXAnchor,
+        defaultYAnchor;
 
     for(var i = 0; i < fullData.length; i++) {
         var trace = fullData[i];
@@ -58,12 +62,29 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     coerce('borderwidth');
     Lib.coerceFont(coerce, 'font', layoutOut.font);
 
+    coerce('orientation');
+    if(containerOut.orientation === 'h') {
+        var xaxis = layoutIn.xaxis;
+        if(xaxis && xaxis.rangeslider && xaxis.rangeslider.visible) {
+            defaultX = 0;
+            defaultXAnchor = 'left';
+            defaultY = 1.1;
+            defaultYAnchor = 'bottom';
+        }
+        else {
+            defaultX = 0;
+            defaultXAnchor = 'left';
+            defaultY = -0.1;
+            defaultYAnchor = 'top';
+        }
+    }
+
     coerce('traceorder', defaultOrder);
     if(helpers.isGrouped(layoutOut.legend)) coerce('tracegroupgap');
 
-    coerce('x');
-    coerce('xanchor');
-    coerce('y');
-    coerce('yanchor');
+    coerce('x', defaultX);
+    coerce('xanchor', defaultXAnchor);
+    coerce('y', defaultY);
+    coerce('yanchor', defaultYAnchor);
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 };

@@ -35,6 +35,13 @@ module.exports = {
     font: extendFlat({}, fontAttrs, {
         description: 'Sets the font used to text the legend items.'
     }),
+    orientation: {
+        valType: 'enumerated',
+        values: ['v', 'h'],
+        dflt: 'v',
+        role: 'info',
+        description: 'Sets the orientation of the legend.'
+    },
     traceorder: {
         valType: 'flaglist',
         flags: ['reversed', 'grouped'],

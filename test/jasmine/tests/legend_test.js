@@ -1,4 +1,5 @@
 var Plots = require('@src/plots/plots');
+var Lib = require('@src/lib');
 
 var Legend = require('@src/components/legend');
 var getLegendData = require('@src/components/legend/get_legend_data');
@@ -65,6 +66,46 @@ describe('Test legend:', function() {
             expect(layoutOut.legend.traceorder).toEqual('grouped+reversed');
         });
 
+        it('should default orientation to vertical', function() {
+            supplyLayoutDefaults(layoutIn, layoutOut, []);
+            expect(layoutOut.legend.orientation).toEqual('v');
+        });
+
+        describe('for horizontal legends', function() {
+            var layoutInForHorizontalLegends;
+
+            beforeEach(function() {
+                layoutInForHorizontalLegends = Lib.extendDeep({
+                    legend: {
+                        orientation: 'h'
+                    },
+                    xaxis: {
+                        rangeslider: {
+                            visible: false
+                        }
+                    }
+                }, layoutIn);
+            });
+
+            it('should default position to bottom left', function() {
+                supplyLayoutDefaults(layoutInForHorizontalLegends, layoutOut, []);
+                expect(layoutOut.legend.x).toEqual(0);
+                expect(layoutOut.legend.xanchor).toEqual('left');
+                expect(layoutOut.legend.y).toEqual(-0.1);
+                expect(layoutOut.legend.yanchor).toEqual('top');
+            });
+
+            it('should default position to top left if a range slider present', function() {
+                var mockLayoutIn = Lib.extendDeep({}, layoutInForHorizontalLegends);
+                mockLayoutIn.xaxis.rangeslider.visible = true;
+
+                supplyLayoutDefaults(mockLayoutIn, layoutOut, []);
+                expect(layoutOut.legend.x).toEqual(0);
+                expect(layoutOut.legend.xanchor).toEqual('left');
+                expect(layoutOut.legend.y).toEqual(1.1);
+                expect(layoutOut.legend.yanchor).toEqual('bottom');
+            });
+        });
     });
 
     describe('getLegendData', function() {
