@@ -1,9 +1,13 @@
 'use strict';
 
 var Plotly = require('@lib/index');
-
-var withSetupTeardown = require('../assets/with_setup_teardown');
 var mouseEvent = require('../assets/mouse_event');
+
+// Test utilities
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
+
 
 // Expected shape of projection-related data
 var cameraStructure = {
@@ -54,15 +58,26 @@ function testEvents(plot) {
 
 describe('gl3d plots', function() {
 
+    var gd;
+
+    beforeEach(function() {
+        gd =createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
     it('should respond to drag interactions with mock of unset camera', function(done) {
-        withSetupTeardown(done, function(gd) {
-            return testEvents(makePlot(gd, require('@mocks/gl3d_scatter3d-connectgaps.json')));
-        });
+        testEvents(makePlot(gd, require('@mocks/gl3d_scatter3d-connectgaps.json')))
+            .then(null, failTest) // current linter balks on .catch with 'dot-notation'; fixme a linter
+            .then(done);
     });
 
     it('should respond to drag interactions with mock of partially set camera', function(done) {
-        withSetupTeardown(done, function(gd) {
-            return testEvents(makePlot(gd, require('@mocks/gl3d_errorbars_zx.json')));
-        });
+        testEvents(makePlot(gd, require('@mocks/gl3d_errorbars_zx.json')))
+            .then(null, failTest)
+            .then(done);
     });
 });

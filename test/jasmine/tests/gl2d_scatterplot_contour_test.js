@@ -9,7 +9,10 @@ Plotly.register(
     require('@lib/contourgl')
 );
 
-var withSetupTeardown = require('../assets/with_setup_teardown');
+// Test utilities
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var failTest = require('../assets/fail_test');
 
 var plotData = {
     'data': [
@@ -158,48 +161,51 @@ var plotDataElliptical = function(maxJitter) {
 };
 
 
-function makePlot(gd, mock) {
-    return Plotly.plot(gd, mock.data, mock.layout);
+function makePlot(gd, mock, done) {
+    return Plotly.plot(gd, mock.data, mock.layout)
+        .then(null, failTest)
+        .then(done);
 }
 
 describe('contourgl plots', function() {
 
+    var gd;
+
+    beforeEach(function() {
+        gd =createGraphDiv();
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
     // this first dataset is a special case, very forgiving to the contour renderer, as it's convex,
     // contains no inflexion points etc.
     it('render without raising an error', function(done) {
-        withSetupTeardown(done, function(gd) {
-            return makePlot(gd, plotData);
-        });
+        makePlot(gd, plotData, done);
     });
 
     it('render without raising an error', function(done) {
         var mock = require('@mocks/gl2d_simple_contour_fill.json');
-        withSetupTeardown(done, function(gd) {
-            return makePlot(gd, mock);
-        });
+        makePlot(gd, mock, done);
     });
 
     it('render without raising an error (coloring: "lines")', function(done) {
         var mock = Lib.extendDeep({}, plotDataElliptical(0));
         mock.data[0].contours.coloring = 'lines'; // 'fill' is the default
-        withSetupTeardown(done, function(gd) {
-            return makePlot(gd, mock);
-        });
+        makePlot(gd, mock, done);
     });
 
     it('render smooth, regular ellipses without raising an error (coloring: "fill")', function(done) {
         var mock = plotDataElliptical(0);
-        withSetupTeardown(done, function(gd) {
-            return makePlot(gd, mock);
-        });
+        makePlot(gd, mock, done);
     });
 
     it('render ellipses with added noise without raising an error (coloring: "fill")', function(done) {
         var mock = plotDataElliptical(0.5);
         mock.data[0].contours.coloring = 'fill'; // 'fill' is the default
         mock.data[0].line = {smoothing: 0};
-        withSetupTeardown(done, function(gd) {
-            return makePlot(gd, mock);
-        });
+        makePlot(gd, mock, done);
     });
 });
