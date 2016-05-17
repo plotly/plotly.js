@@ -577,7 +577,7 @@ lib.numSeparate = function(value, separators) {
         x2 = x.length > 1 ? decimalSep + x[1] : '';
 
     // Years are ignored for thousands separators
-    if(thouSep && (x.length > 1 || x1.length>4)) {
+    if(thouSep && (x.length > 1 || x1.length > 4)) {
         while(thousandsRe.test(x1)) {
             x1 = x1.replace(thousandsRe, '$1' + thouSep + '$2');
         }

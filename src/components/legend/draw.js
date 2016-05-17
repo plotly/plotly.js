@@ -148,7 +148,7 @@ module.exports = function draw(gd) {
     // and these values are mutated in repositionLegend.
     var gs = fullLayout._size,
         lx = gs.l + gs.w * opts.x,
-        ly = gs.t + gs.h * (1-opts.y);
+        ly = gs.t + gs.h * (1 - opts.y);
 
     if(anchorUtils.isRightAnchor(opts)) {
         lx -= opts.width;
@@ -251,7 +251,7 @@ module.exports = function draw(gd) {
 
         scrollHandler(scrollBarY, scrollBoxY);
 
-        legend.on('wheel',null);
+        legend.on('wheel', null);
         legend.on('wheel', function() {
             scrollBoxY = Lib.constrain(
                 scrollBox.attr('data-scroll') -
@@ -263,8 +263,8 @@ module.exports = function draw(gd) {
             d3.event.preventDefault();
         });
 
-        scrollBar.on('.drag',null);
-        scrollBox.on('.drag',null);
+        scrollBar.on('.drag', null);
+        scrollBox.on('.drag', null);
         var drag = d3.behavior.drag().on('drag', function() {
             scrollBarY = Lib.constrain(
                 d3.event.y - constants.scrollBarHeight / 2,
@@ -317,8 +317,8 @@ module.exports = function draw(gd) {
 
                 Lib.setTranslate(legend, newX, newY);
 
-                xf = dragElement.align(newX, 0, gs.l, gs.l+gs.w, opts.xanchor);
-                yf = dragElement.align(newY, 0, gs.t+gs.h, gs.t, opts.yanchor);
+                xf = dragElement.align(newX, 0, gs.l, gs.l + gs.w, opts.xanchor);
+                yf = dragElement.align(newY, 0, gs.t + gs.h, gs.t, opts.yanchor);
             },
             doneFn: function(dragged) {
                 if(dragged && xf !== undefined && yf !== undefined) {
@@ -500,7 +500,7 @@ function computeLegendDimensions(gd, groups, traces) {
         opts.height += 10 + borderwidth * 2;
 
         if(isGrouped) {
-            opts.height += (opts._lgroupsLength-1) * opts.tracegroupgap;
+            opts.height += (opts._lgroupsLength - 1) * opts.tracegroupgap;
         }
 
         traces.selectAll('.legendtoggle')
