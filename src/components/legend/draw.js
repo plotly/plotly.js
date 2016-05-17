@@ -182,7 +182,7 @@ module.exports = function draw(gd) {
 
     // Set size and position of all the elements that make up a legend:
     // legend, background and border, scroll box and scroll bar
-    legend.attr('transform', 'translate(' + lx + ',' + ly + ')');
+    Lib.setTranslate(legend, lx, ly);
 
     bg.attr({
         width: opts.width - opts.borderwidth,
@@ -193,7 +193,7 @@ module.exports = function draw(gd) {
 
     var scrollPosition = scrollBox.attr('data-scroll') || 0;
 
-    scrollBox.attr('transform', 'translate(0, ' + scrollPosition + ')');
+    Lib.setTranslate(scrollBox, 0, scrollPosition);
 
     clipPath.select('rect').attr({
         width: opts.width - 2 * opts.borderwidth,
@@ -268,8 +268,10 @@ module.exports = function draw(gd) {
 
 
     function scrollHandler(scrollBarY, scrollBoxY) {
-        scrollBox.attr('data-scroll', scrollBoxY);
-        scrollBox.attr('transform', 'translate(0, ' + scrollBoxY + ')');
+        scrollBox
+            .attr('data-scroll', scrollBoxY)
+            .call(Lib.setTranslate, 0, scrollBoxY);
+
         scrollBar.call(
             Drawing.setRect,
             opts.width,
@@ -299,8 +301,7 @@ module.exports = function draw(gd) {
                 var newX = x0 + dx,
                     newY = y0 + dy;
 
-                var transform = 'translate(' + newX + ', ' + newY + ')';
-                legend.attr('transform', transform);
+                Lib.setTranslate(legend, newX, newY);
 
                 xf = dragElement.align(newX, 0, gs.l, gs.l+gs.w, opts.xanchor);
                 yf = dragElement.align(newY, 0, gs.t+gs.h, gs.t, opts.yanchor);
@@ -424,7 +425,7 @@ function computeTextDimensions(g, gd, legendItem) {
         height = mathjaxBB.height;
         width = mathjaxBB.width;
 
-        mathjaxGroup.attr('transform','translate(0,' + (height / 4) + ')');
+        Lib.setTranslate(mathjaxGroup, 0, (height / 4));
     }
     else {
         var text = g.selectAll('.legendtext'),
@@ -456,8 +457,8 @@ function computeLegendDimensions(gd, groups, traces) {
 
     if(helpers.isVertical(opts)) {
         if(helpers.isGrouped(opts)) {
-            groups.attr('transform', function(d, i) {
-                return 'translate(0,' + i * opts.tracegroupgap + ')';
+            groups.each(function(d, i) {
+                Lib.setTranslate(this, 0, i * opts.tracegroupgap);
             });
         }
 
@@ -469,11 +470,9 @@ function computeLegendDimensions(gd, groups, traces) {
                 textHeight = legendItem.height,
                 textWidth = legendItem.width;
 
-            d3.select(this).attr('transform',
-                'translate(' + borderwidth + ',' +
-                    (5 + borderwidth + opts.height + textHeight / 2) +
-                ')'
-            );
+            Lib.setTranslate(this,
+                borderwidth,
+                (5 + borderwidth + opts.height + textHeight / 2));
 
             opts.height += textHeight;
             opts.width = Math.max(opts.width, textWidth);
@@ -509,8 +508,8 @@ function computeLegendDimensions(gd, groups, traces) {
             groupXOffsets.push(opts.width);
         });
 
-        groups.attr('transform', function(d, i) {
-            return 'translate(' + groupXOffsets[i] + ',0)';
+        groups.each(function(d, i) {
+            Lib.setTranslate(this, groupXOffsets[i], 0);
         });
 
         groups.each(function() {
@@ -522,11 +521,9 @@ function computeLegendDimensions(gd, groups, traces) {
                 var legendItem = d[0],
                     textHeight = legendItem.height;
 
-                d3.select(this).attr('transform',
-                    'translate(0,' +
-                        (5 + borderwidth + groupHeight + textHeight / 2) +
-                    ')'
-                );
+                Lib.setTranslate(this,
+                    0,
+                    (5 + borderwidth + groupHeight + textHeight / 2));
 
                 groupHeight += textHeight;
             });
@@ -553,13 +550,9 @@ function computeLegendDimensions(gd, groups, traces) {
                 traceWidth = 40 + legendItem.width,
                 traceGap = opts.tracegroupgap || 5;
 
-            d3.select(this).attr('transform',
-                'translate(' +
-                    (borderwidth + opts.width) +
-                    ',' +
-                    (5 + borderwidth + legendItem.height / 2) +
-                ')'
-            );
+            Lib.setTranslate(this,
+                (borderwidth + opts.width),
+                (5 + borderwidth + legendItem.height / 2));
 
             opts.width += traceGap + traceWidth;
             opts.height = Math.max(opts.height, legendItem.height);
