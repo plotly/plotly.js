@@ -42,12 +42,12 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
         pts = filteredPolygon([[x0, y0]], constants.BENDPX);
     }
 
-    var outlines = plot.selectAll('path.select-outline').data([1,2]);
+    var outlines = plot.selectAll('path.select-outline').data([1, 2]);
 
     outlines.enter()
         .append('path')
         .attr('class', function(d) { return 'select-outline select-outline-' + d; })
-        .attr('transform','translate(' + xs + ', ' + ys + ')')
+        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
         .attr('d', path0 + 'Z');
 
     var corners = plot.append('path')
@@ -57,8 +57,8 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             stroke: color.defaultLine,
             'stroke-width': 1
         })
-        .attr('transform','translate(' + xs + ', ' + ys + ')')
-        .attr('d','M0,0Z');
+        .attr('transform', 'translate(' + xs + ', ' + ys + ')')
+        .attr('d', 'M0,0Z');
 
 
     // find the traces to search for selection points
@@ -136,7 +136,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
             else {
                 // diagonal motion
                 poly = polygonTester([[x0, y0], [x0, y1], [x1, y1], [x1, y0]]);
-                corners.attr('d','M0,0Z');
+                corners.attr('d', 'M0,0Z');
             }
             outlines.attr('d', 'M' + poly.xmin + ',' + poly.ymin +
                 'H' + (poly.xmax - 1) + 'V' + (poly.ymax - 1) +

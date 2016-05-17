@@ -326,7 +326,7 @@ describe('Test Plots', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() {
                     gd.style.width = '400px';
                     gd.style.height = '400px';
@@ -369,7 +369,7 @@ describe('Test Plots', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {}).then(done);
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
         });
 
         afterEach(destroyGraphDiv);

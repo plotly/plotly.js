@@ -260,7 +260,7 @@ function Scene(options, fullLayout) {
     this.pixelRatio = options.plotGlPixelRatio || 2;
 
     //Coordinate rescaling
-    this.dataScale = [1,1,1];
+    this.dataScale = [1, 1, 1];
 
     this.contourLevels = [ [], [], [] ];
 
@@ -293,9 +293,9 @@ var axisProperties = [ 'xaxis', 'yaxis', 'zaxis' ];
 
 function coordinateBound(axis, coord, d, bounds) {
     var x;
-    for(var i=0; i<coord.length; ++i) {
+    for(var i = 0; i < coord.length; ++i) {
         if(Array.isArray(coord[i])) {
-            for(var j=0; j<coord[i].length; ++j) {
+            for(var j = 0; j < coord[i].length; ++j) {
                 x = axis.d2l(coord[i][j]);
                 if(!isNaN(x) && isFinite(x)) {
                     bounds[0][d] = Math.min(bounds[0][d], x);
@@ -364,14 +364,14 @@ proto.plot = function(sceneData, fullLayout, layout) {
         [Infinity, Infinity, Infinity],
         [-Infinity, -Infinity, -Infinity]
     ];
-    for(i=0; i<sceneData.length; ++i) {
+    for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
         if(data.visible !== true) continue;
 
         computeTraceBounds(this, data, dataBounds);
     }
-    var dataScale = [1,1,1];
-    for(j=0; j<3; ++j) {
+    var dataScale = [1, 1, 1];
+    for(j = 0; j < 3; ++j) {
         if(dataBounds[0][j] > dataBounds[1][j]) {
             dataScale[j] = 1.0;
         }
@@ -380,7 +380,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 dataScale[j] = 1.0;
             }
             else {
-                dataScale[j] = 1.0/(dataBounds[1][j] - dataBounds[0][j]);
+                dataScale[j] = 1.0 / (dataBounds[1][j] - dataBounds[0][j]);
             }
         }
     }
@@ -391,7 +391,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     //Update traces
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
-        if(data.visible!==true) {
+        if(data.visible !== true) {
             continue;
         }
         trace = this.traces[data.uid];
@@ -409,9 +409,9 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var traceIds = Object.keys(this.traces);
 
     trace_id_loop:
-    for(i = 0; i<traceIds.length; ++i) {
-        for(j = 0; j<sceneData.length; ++j) {
-            if(sceneData[j].uid === traceIds[i] && sceneData[j].visible===true) {
+    for(i = 0; i < traceIds.length; ++i) {
+        for(j = 0; j < sceneData.length; ++j) {
+            if(sceneData[j].uid === traceIds[i] && sceneData[j].visible === true) {
                 continue trace_id_loop;
             }
         }
@@ -421,7 +421,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
 
     //Update ranges (needs to be called *after* objects are added due to updates)
-    var sceneBounds = [[0,0,0], [0,0,0]],
+    var sceneBounds = [[0, 0, 0], [0, 0, 0]],
         axisDataRange = [],
         axisTypeRatios = {};
 
@@ -459,8 +459,8 @@ proto.plot = function(sceneData, fullLayout, layout) {
                 sceneBounds[1][i] = 1;
             } else {
                 var d = sceneBounds[1][i] - sceneBounds[0][i];
-                sceneBounds[0][i] -= d/32.0;
-                sceneBounds[1][i] += d/32.0;
+                sceneBounds[0][i] -= d / 32.0;
+                sceneBounds[1][i] += d / 32.0;
             }
         } else {
             var range = fullSceneLayout[axisProperties[i]].range;
@@ -481,11 +481,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
     var axesScaleRatio = [1, 1, 1];
 
     //Compute axis scale per category
-    for(i=0; i<3; ++i) {
+    for(i = 0; i < 3; ++i) {
         axis = fullSceneLayout[axisProperties[i]];
         axisType = axis.type;
         var axisRatio = axisTypeRatios[axisType];
-        axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0/axisRatio.count) / dataScale[i];
+        axesScaleRatio[i] = Math.pow(axisRatio.acc, 1.0 / axisRatio.count) / dataScale[i];
     }
 
     /*
@@ -496,7 +496,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
     if(fullSceneLayout.aspectmode === 'auto') {
 
-        if(Math.max.apply(null, axesScaleRatio)/Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
+        if(Math.max.apply(null, axesScaleRatio) / Math.min.apply(null, axesScaleRatio) <= axisAutoScaleFactor) {
 
             /*
              * USE DATA MODE WHEN AXIS RANGE DIMENSIONS ARE RELATIVELY EQUAL
@@ -688,12 +688,12 @@ proto.toImage = function(format) {
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
     //Flip pixels
-    for(var j=0,k=h-1; j<k; ++j, --k) {
-        for(var i=0; i<w; ++i) {
-            for(var l=0; l<4; ++l) {
-                var tmp = pixels[4*(w*j+i)+l];
-                pixels[4*(w*j+i)+l] = pixels[4*(w*k+i)+l];
-                pixels[4*(w*k+i)+l] = tmp;
+    for(var j = 0, k = h - 1; j < k; ++j, --k) {
+        for(var i = 0; i < w; ++i) {
+            for(var l = 0; l < 4; ++l) {
+                var tmp = pixels[4 * (w * j + i) + l];
+                pixels[4 * (w * j + i) + l] = pixels[4 * (w * k + i) + l];
+                pixels[4 * (w * k + i) + l] = tmp;
             }
         }
     }

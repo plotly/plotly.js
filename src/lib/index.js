@@ -206,7 +206,7 @@ lib.OptionControl = function(opt, optname) {
         self.optionList.push(optObj);
     };
 
-    self['_'+optname] = opt;
+    self['_' + optname] = opt;
     return self;
 };
 
@@ -355,7 +355,7 @@ lib.pushUnique = function(array, item) {
 lib.mergeArray = function(traceAttr, cd, cdAttr) {
     if(Array.isArray(traceAttr)) {
         var imax = Math.min(traceAttr.length, cd.length);
-        for(var i=0; i<imax; i++) cd[i][cdAttr] = traceAttr[i];
+        for(var i = 0; i < imax; i++) cd[i][cdAttr] = traceAttr[i];
     }
 };
 
@@ -376,9 +376,9 @@ lib.minExtend = function(obj1, obj2) {
     for(i = 0; i < keys.length; i++) {
         k = keys[i];
         v = obj1[k];
-        if(k.charAt(0)==='_' || typeof v === 'function') continue;
-        else if(k==='module') objOut[k] = v;
-        else if(Array.isArray(v)) objOut[k] = v.slice(0,arrayLen);
+        if(k.charAt(0) === '_' || typeof v === 'function') continue;
+        else if(k === 'module') objOut[k] = v;
+        else if(Array.isArray(v)) objOut[k] = v.slice(0, arrayLen);
         else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
         else objOut[k] = v;
     }
@@ -401,7 +401,7 @@ lib.titleCase = function(s) {
 
 lib.containsAny = function(s, fragments) {
     for(var i = 0; i < fragments.length; i++) {
-        if(s.indexOf(fragments[i])!== -1) return true;
+        if(s.indexOf(fragments[i]) !== -1) return true;
     }
     return false;
 };
@@ -439,10 +439,10 @@ lib.addStyleRule = function(selector, styleString) {
     var styleSheet = lib.styleSheet;
 
     if(styleSheet.insertRule) {
-        styleSheet.insertRule(selector+'{'+styleString+'}',0);
+        styleSheet.insertRule(selector + '{' + styleString + '}', 0);
     }
     else if(styleSheet.addRule) {
-        styleSheet.addRule(selector,styleString,0);
+        styleSheet.addRule(selector, styleString, 0);
     }
     else console.warn('addStyleRule failed');
 };

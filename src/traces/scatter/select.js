@@ -57,7 +57,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // d.dim in pointStyle in case something goes wrong with selection.
     cd[0].node3.selectAll('path.point')
         .style('opacity', function(d) {
-            return ((d.mo+1 || opacity+1) - 1) * (d.dim ? DESELECTDIM : 1);
+            return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
         });
     cd[0].node3.selectAll('text')
         .style('opacity', function(d) {

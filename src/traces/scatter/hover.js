@@ -25,17 +25,17 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             // always will show up regardless of point size, but
             // prioritize smaller points
             var rad = Math.max(3, di.mrc || 0);
-            return Math.max(Math.abs(xa.c2p(di.x)-xa.c2p(xval))-rad, 1-3/rad);
+            return Math.max(Math.abs(xa.c2p(di.x) - xa.c2p(xval)) - rad, 1 - 3 / rad);
         },
         dy = function(di) {
             var rad = Math.max(3, di.mrc || 0);
-            return Math.max(Math.abs(ya.c2p(di.y)-ya.c2p(yval))-rad, 1-3/rad);
+            return Math.max(Math.abs(ya.c2p(di.y) - ya.c2p(yval)) - rad, 1 - 3 / rad);
         },
         dxy = function(di) {
             var rad = Math.max(3, di.mrc || 0),
-                dx = Math.abs(xa.c2p(di.x)-xa.c2p(xval)),
-                dy = Math.abs(ya.c2p(di.y)-ya.c2p(yval));
-            return Math.max(Math.sqrt(dx*dx + dy*dy)-rad, 1-3/rad);
+                dx = Math.abs(xa.c2p(di.x) - xa.c2p(xval)),
+                dy = Math.abs(ya.c2p(di.y) - ya.c2p(yval));
+            return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
         },
         distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
 

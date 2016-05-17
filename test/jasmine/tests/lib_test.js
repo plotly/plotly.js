@@ -124,8 +124,8 @@ describe('Test lib.js:', function() {
         function summation(a, b) { return a + b; }
 
         it('should work with 1D and 2D inputs and ignore non-numerics', function() {
-            var in1D = [1,2,3,4,'goose!',5,6],
-                in2D = [[1,2,3],['',4],[5,'hi!',6]];
+            var in1D = [1, 2, 3, 4, 'goose!', 5, 6],
+                in2D = [[1, 2, 3], ['', 4], [5, 'hi!', 6]];
 
             expect(aggNums(Math.min, null, in1D)).toEqual(1);
             expect(aggNums(Math.min, null, in2D)).toEqual(1);
@@ -165,7 +165,7 @@ describe('Test lib.js:', function() {
         it('return 2/3 on input [-1, 0, 1]:', function() {
             var input = [-1, 0, 1],
                 res = Lib.variance(input);
-            expect(res).toEqual(2/3);
+            expect(res).toEqual(2 / 3);
         });
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
@@ -188,7 +188,7 @@ describe('Test lib.js:', function() {
         it('return sqrt(2/3) on input [-1, 0, 1]:', function() {
             var input = [-1, 0, 1],
                 res = Lib.stdev(input);
-            expect(res).toEqual(Math.sqrt(2/3));
+            expect(res).toEqual(Math.sqrt(2 / 3));
         });
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
@@ -361,10 +361,10 @@ describe('Test lib.js:', function() {
 
         it('should remove containers but not data arrays', function() {
             var obj = {
-                    annotations: [{a: [1,2,3]}],
-                    c: [1,2,3],
-                    domain: [1,2],
-                    range: [2,3],
+                    annotations: [{a: [1, 2, 3]}],
+                    c: [1, 2, 3],
+                    domain: [1, 2],
+                    range: [2, 3],
                     shapes: ['elephant']
                 },
                 propA = np(obj, 'annotations[-1].a'),
@@ -418,7 +418,7 @@ describe('Test lib.js:', function() {
                 };
             }
 
-            for(var i=0; i<badProps.length; i++) {
+            for(var i = 0; i < badProps.length; i++) {
                 expect(badProps[i].get()).toBe(undefined);
                 expect(badSetter(i)).toThrow('bad container');
             }
@@ -435,7 +435,7 @@ describe('Test lib.js:', function() {
                 };
             }
 
-            for(var i=0; i<badStr.length; i++) {
+            for(var i = 0; i < badStr.length; i++) {
                 expect(badProp(i)).toThrow('bad property string');
             }
         });

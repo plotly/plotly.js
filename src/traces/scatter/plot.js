@@ -244,14 +244,14 @@ function selectMarkers(gd, plotinfo, cdscatter) {
         if(mnum === 0) return;
 
         var cd = d.filter(function(v) {
-                return v.x>=xr[0] && v.x<=xr[1] && v.y>=yr[0] && v.y<=yr[1];
+                return v.x >= xr[0] && v.x <= xr[1] && v.y >= yr[0] && v.y <= yr[1];
             }),
             inc = Math.ceil(cd.length / mnum),
             tnum = 0;
         cdscatter.forEach(function(cdj, j) {
             var tracei = cdj[0].trace;
             if(subTypes.hasMarkers(tracei) &&
-                    tracei.marker.maxdisplayed>0 && j<i) {
+                    tracei.marker.maxdisplayed > 0 && j < i) {
                 tnum++;
             }
         });
@@ -260,7 +260,7 @@ function selectMarkers(gd, plotinfo, cdscatter) {
         // display this formula offsets successive traces by 1/3 of the
         // increment, adding an extra small amount after each triplet so
         // it's not quite periodic
-        var i0 = Math.round(tnum*inc/3 + Math.floor(tnum/3) * inc/7.1);
+        var i0 = Math.round(tnum * inc / 3 + Math.floor(tnum / 3) * inc / 7.1);
 
         // for error bars: save in cd which markers to show
         // so we don't have to repeat this

@@ -22,12 +22,12 @@ module.exports = function calc(gd, trace) {
     // note: this logic for choosing orientation is
     // duplicated in graph_obj->setstyles
 
-    var xa = Axes.getFromId(gd, trace.xaxis||'x'),
-        ya = Axes.getFromId(gd, trace.yaxis||'y'),
+    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
+        ya = Axes.getFromId(gd, trace.yaxis || 'y'),
         orientation = trace.orientation || ((trace.x && !trace.y) ? 'h' : 'v'),
         pos, size, i;
 
-    if(orientation==='h') {
+    if(orientation === 'h') {
         size = xa.makeCalcdata(trace, 'x');
         pos = ya.makeCalcdata(trace, 'y');
     }
@@ -39,7 +39,7 @@ module.exports = function calc(gd, trace) {
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length, size.length),
         cd = [];
-    for(i=0; i<serieslen; i++) {
+    for(i = 0; i < serieslen; i++) {
         if(isNumeric(pos[i])) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }

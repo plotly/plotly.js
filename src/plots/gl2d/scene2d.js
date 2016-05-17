@@ -179,12 +179,12 @@ proto.toImage = function(format) {
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
     // flip pixels
-    for(var j=0,k=h-1; j<k; ++j, --k) {
-        for(var i=0; i<w; ++i) {
-            for(var l=0; l<4; ++l) {
-                var tmp = pixels[4*(w*j+i)+l];
-                pixels[4*(w*j+i)+l] = pixels[4*(w*k+i)+l];
-                pixels[4*(w*k+i)+l] = tmp;
+    for(var j = 0, k = h - 1; j < k; ++j, --k) {
+        for(var i = 0; i < w; ++i) {
+            for(var l = 0; l < 4; ++l) {
+                var tmp = pixels[4 * (w * j + i) + l];
+                pixels[4 * (w * j + i) + l] = pixels[4 * (w * k + i) + l];
+                pixels[4 * (w * k + i) + l] = tmp;
             }
         }
     }
@@ -388,7 +388,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
     this.mouseContainer.style.height = size.h * (domainY[1] - domainY[0]) + 'px';
     this.mouseContainer.height = size.h * (domainY[1] - domainY[0]);
     this.mouseContainer.style.left = size.l + domainX[0] * size.w + 'px';
-    this.mouseContainer.style.top = size.t + (1-domainY[1]) * size.h + 'px';
+    this.mouseContainer.style.top = size.t + (1 - domainY[1]) * size.h + 'px';
 
     var bounds = this.bounds;
     bounds[0] = bounds[1] = Infinity;
@@ -399,19 +399,19 @@ proto.plot = function(fullData, calcData, fullLayout) {
         trace = this.traces[traceIds[i]];
         for(var k = 0; k < 2; ++k) {
             bounds[k] = Math.min(bounds[k], trace.bounds[k]);
-            bounds[k+2] = Math.max(bounds[k+2], trace.bounds[k+2]);
+            bounds[k + 2] = Math.max(bounds[k + 2], trace.bounds[k + 2]);
         }
     }
 
     var ax;
     for(i = 0; i < 2; ++i) {
-        if(bounds[i] > bounds[i+2]) {
+        if(bounds[i] > bounds[i + 2]) {
             bounds[i] = -1;
-            bounds[i+2] = 1;
+            bounds[i + 2] = 1;
         }
 
         ax = this[AXES[i]];
-        ax._length = options.viewBox[i+2] - options.viewBox[i];
+        ax._length = options.viewBox[i + 2] - options.viewBox[i];
 
         Axes.doAutoRange(ax);
     }
@@ -465,7 +465,7 @@ proto.draw = function() {
 
         var result = glplot.pick(
             (x / glplot.pixelRatio) + size.l + domainX[0] * size.w,
-            (y / glplot.pixelRatio) - (size.t + (1-domainY[1]) * size.h)
+            (y / glplot.pixelRatio) - (size.t + (1 - domainY[1]) * size.h)
         );
 
         if(result && fullLayout.hovermode) {

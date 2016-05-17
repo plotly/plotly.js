@@ -219,7 +219,7 @@ function handleCartesian(gd, ev) {
     }
     else {
         // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
-        if(astr==='hovermode' && (val==='x' || val==='y')) {
+        if(astr === 'hovermode' && (val === 'x' || val === 'y')) {
             val = fullLayout._isHoriz ? 'y' : 'x';
             button.setAttribute('data-val', val);
         }

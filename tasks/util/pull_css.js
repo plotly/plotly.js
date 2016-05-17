@@ -25,7 +25,7 @@ module.exports = function pullCSS(data, pathOut) {
             .replace(/[\.]plotly-notifier/g, 'Y');
 
         // take out newlines in rule, and make sure it ends in a semicolon
-        rule = rule.replace(/;\s*/g,';').replace(/;?\s*$/,';');
+        rule = rule.replace(/;\s*/g, ';').replace(/;?\s*$/, ';');
 
         // omit blank rules (why do we get these occasionally?)
         if(rule.match(/^[\s;]*$/)) return;

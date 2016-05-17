@@ -208,9 +208,9 @@ function _convertColor(colors, opacities, count) {
     var result = new Array(4 * count);
 
     for(var i = 0; i < count; ++i) {
-        for(var j = 0; j < 3; ++j) result[4*i+j] = colors[i][j];
+        for(var j = 0; j < 3; ++j) result[4 * i + j] = colors[i][j];
 
-        result[4*i+3] = colors[i][3] * opacities[i];
+        result[4 * i + 3] = colors[i][3] * opacities[i];
     }
 
     return result;
@@ -447,8 +447,8 @@ proto.updateFancy = function(options) {
             this.scatterOptions.borderWidths[i] = 0.5 * borderWidths[index];
 
             for(j = 0; j < 4; ++j) {
-                this.scatterOptions.colors[4*i+j] = colors[4*index+j];
-                this.scatterOptions.borderColors[4*i+j] = borderColors[4*index+j];
+                this.scatterOptions.colors[4 * i + j] = colors[4 * index + j];
+                this.scatterOptions.borderColors[4 * i + j] = borderColors[4 * index + j];
             }
         }
 
@@ -479,7 +479,7 @@ proto.updateLines = function(options, positions) {
             var y = this.yData;
             linePositions = new Float32Array(2 * x.length);
 
-            for(i=0; i<x.length; ++i) {
+            for(i = 0; i < x.length; ++i) {
                 linePositions[p++] = x[i];
                 linePositions[p++] = y[i];
             }
@@ -556,7 +556,7 @@ proto.expandAxesFast = function(bounds, markerSize) {
 
         max = ax._max;
         if(!max) max = [];
-        max.push({ val: bounds[i+2], pad: pad });
+        max.push({ val: bounds[i + 2], pad: pad });
     }
 };
 

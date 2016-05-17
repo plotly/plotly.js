@@ -54,7 +54,7 @@ describe('polygon.tester', function() {
         notInDonut = [[1.5, -0.5], [1.5, 1.5], [1.5, 3.5], [-0.5, 1.5], [3.5, 1.5]];
 
     it('should exclude points outside the bounding box', function() {
-        var poly = polygonTester([[1,2], [3,4]]);
+        var poly = polygonTester([[1, 2], [3, 4]]);
         var pts = [[0, 3], [4, 3], [2, 1], [2, 5]];
         pts.forEach(function(pt) {
             expect(poly.contains(pt)).toBe(false);

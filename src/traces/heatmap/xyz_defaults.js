@@ -18,7 +18,7 @@ module.exports = function handleXYZDefaults(traceIn, traceOut, coerce) {
     var z = coerce('z');
     var x, y;
 
-    if(z===undefined || !z.length) return 0;
+    if(z === undefined || !z.length) return 0;
 
     if(hasColumns(traceIn)) {
         x = coerce('x');

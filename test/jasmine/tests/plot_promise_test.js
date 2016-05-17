@@ -14,7 +14,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }];
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
 
             promise = Plotly.plot(createGraphDiv(), data, {});
 
@@ -38,7 +38,7 @@ describe('Plotly.___ methods', function() {
             promiseRejected = false;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }];
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
 
             gd = createGraphDiv();
 
@@ -68,7 +68,7 @@ describe('Plotly.___ methods', function() {
             promiseRejected = false;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }];
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
 
             gd = createGraphDiv();
 
@@ -93,7 +93,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
@@ -119,7 +119,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }];
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
 
             promise = Plotly.newPlot(createGraphDiv(), data, {});
 
@@ -142,7 +142,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
@@ -168,7 +168,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
@@ -194,12 +194,12 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
 
-            promise = Plotly.addTraces(initialDiv, [{ x: [1,2,3], y: [1,2,3] }], [1]);
+            promise = Plotly.addTraces(initialDiv, [{ x: [1, 2, 3], y: [1, 2, 3] }], [1]);
 
             promise.then(function(gd) {
                 promiseGd = gd;
@@ -220,7 +220,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
@@ -246,7 +246,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
@@ -273,8 +273,8 @@ describe('Plotly.___ methods', function() {
 
         beforeEach(function(done) {
             var data = [
-                    { x: [1,2,3], y: [4,5,6] },
-                    { x: [1,2,3], y: [6,5,4] }
+                    { x: [1, 2, 3], y: [4, 5, 6] },
+                    { x: [1, 2, 3], y: [6, 5, 4] }
                 ],
                 initialDiv = createGraphDiv();
 
@@ -301,7 +301,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
@@ -327,7 +327,7 @@ describe('Plotly.___ methods', function() {
             promiseRejected = false;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 initialDiv = createGraphDiv();
 
             Plotly.plot(initialDiv, data, {});
@@ -350,7 +350,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
@@ -377,7 +377,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
@@ -404,7 +404,7 @@ describe('Plotly.___ methods', function() {
             promiseGd;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
@@ -431,7 +431,7 @@ describe('Plotly.___ methods', function() {
             promiseRejected = false;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }],
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }],
                 layout = {hovermode: 'closest'},
                 initialDiv = createGraphDiv();
 
@@ -454,7 +454,7 @@ describe('Plotly.___ methods', function() {
         var initialDiv;
 
         beforeEach(function(done) {
-            var data = [{ x: [1,2,3], y: [4,5,6] }];
+            var data = [{ x: [1, 2, 3], y: [4, 5, 6] }];
 
             initialDiv = createGraphDiv();
 

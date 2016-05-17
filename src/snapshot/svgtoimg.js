@@ -31,16 +31,16 @@ function svgToImg(opts) {
         // Leave here just in case the CORS/tainted IE issue gets resolved
         if(Lib.isIE()) {
             // replace double quote with single quote
-            svg = svg.replace(/"/gi,'\'');
+            svg = svg.replace(/"/gi, '\'');
             // url in svg are single quoted
             //   since we changed double to single
             //   we'll need to change these to double-quoted
-            svg = svg.replace(/(\('#)(.*)('\))/gi,'(\"$2\")');
+            svg = svg.replace(/(\('#)(.*)('\))/gi, '(\"$2\")');
             // font names with spaces will be escaped single-quoted
             //   we'll need to change these to double-quoted
-            svg = svg.replace(/(\\')/gi,'\"');
+            svg = svg.replace(/(\\')/gi, '\"');
             // IE only support svg
-            if(format!=='svg') {
+            if(format !== 'svg') {
                 var ieSvgError = new Error('Sorry IE does not support downloading from canvas. Try {format:\'svg\'} instead.');
                 reject(ieSvgError);
                 // eventually remove the ev

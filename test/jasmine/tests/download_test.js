@@ -72,8 +72,8 @@ describe('Plotly.downloadImage', function() {
             // stop observing
             observer.disconnect();
             // look for an added and removed link
-            var linkadded = domchanges[domchanges.length-2].addedNodes[0].outerHTML;
-            var linkdeleted = domchanges[domchanges.length-1].removedNodes[0].outerHTML;
+            var linkadded = domchanges[domchanges.length - 2].addedNodes[0].outerHTML;
+            var linkdeleted = domchanges[domchanges.length - 1].removedNodes[0].outerHTML;
 
             // check for a <a element and proper file type
             expect(linkadded.split('href="')[1].split('jpeg;')[0]).toEqual('data:image/');

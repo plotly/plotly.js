@@ -57,7 +57,7 @@ module.exports = function style(s) {
 
 function styleLines(d) {
     var trace = d[0].trace,
-        showFill = trace.visible && trace.fill && trace.fill!=='none',
+        showFill = trace.visible && trace.fill && trace.fill !== 'none',
         showLine = subTypes.hasLines(trace);
 
     var fill = d3.select(this).select('.legendfill').selectAll('path')
@@ -153,7 +153,7 @@ function stylePoints(d) {
     var txt = ptgroup.selectAll('g.pointtext')
         .data(showText ? dMod : []);
     txt.enter()
-        .append('g').classed('pointtext',true)
+        .append('g').classed('pointtext', true)
             .append('text').attr('transform', 'translate(20,0)');
     txt.exit().remove();
     txt.selectAll('text').call(Drawing.textPointStyle, tMod);
@@ -167,14 +167,14 @@ function styleBars(d) {
             .selectAll('path.legendbar')
             .data(Plots.traceIs(trace, 'bar') ? [d] : []);
     barpath.enter().append('path').classed('legendbar', true)
-        .attr('d','M6,6H-6V-6H6Z')
+        .attr('d', 'M6,6H-6V-6H6Z')
         .attr('transform', 'translate(20,0)');
     barpath.exit().remove();
     barpath.each(function(d) {
         var w = (d.mlw + 1 || markerLine.width + 1) - 1,
             p = d3.select(this);
 
-        p.style('stroke-width',w+'px')
+        p.style('stroke-width', w + 'px')
             .call(Color.fill, d.mc || marker.color);
 
         if(w) {
@@ -197,7 +197,7 @@ function styleBoxes(d) {
         var w = (d.lw + 1 || trace.line.width + 1) - 1,
             p = d3.select(this);
 
-        p.style('stroke-width', w+'px')
+        p.style('stroke-width', w + 'px')
             .call(Color.fill, d.fc || trace.fillcolor);
 
         if(w) {

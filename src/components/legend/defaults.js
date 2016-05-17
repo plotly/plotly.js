@@ -36,8 +36,8 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
             if(Plots.traceIs(trace, 'pie')) visibleTraces++;
         }
 
-        if((Plots.traceIs(trace, 'bar') && layoutOut.barmode==='stack') ||
-                ['tonextx','tonexty'].indexOf(trace.fill)!==-1) {
+        if((Plots.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
+                ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
             defaultOrder = helpers.isGrouped({traceorder: defaultOrder}) ?
                 'grouped+reversed' : 'reversed';
         }

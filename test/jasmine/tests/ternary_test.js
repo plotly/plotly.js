@@ -89,7 +89,7 @@ describe('ternary plots', function() {
         });
 
         it('should be able to restyle', function(done) {
-            Plotly.restyle(gd, { a: [[1,2,3]]}, 0).then(function() {
+            Plotly.restyle(gd, { a: [[1, 2, 3]]}, 0).then(function() {
                 var transforms = [];
                 d3.selectAll('.ternary .point').each(function() {
                     var point = d3.select(this);

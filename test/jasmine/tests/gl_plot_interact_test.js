@@ -245,8 +245,8 @@ describe('Test gl plot interactions', function() {
             var originalX = [-0.022068095838587643, 5.022068095838588];
             var originalY = [-0.21331533513634046, 5.851205650049042];
 
-            var newX = [-0.23224043715846995,4.811895754518705];
-            var newY = [-1.2962655110623016,4.768255474123081];
+            var newX = [-0.23224043715846995, 4.811895754518705];
+            var newY = [-1.2962655110623016, 4.768255474123081];
 
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
@@ -531,8 +531,8 @@ describe('Test gl plot interactions', function() {
 
             var mockData = [{
                 type: 'scattergl',
-                x: [1,2,3],
-                y: [1,2,3]
+                x: [1, 2, 3],
+                y: [1, 2, 3]
             }];
 
             Plotly.plot(gd, mockData).then(function() {
@@ -560,12 +560,12 @@ describe('Test gl plot side effects', function() {
 
         it('should not draw the rangeslider', function(done) {
             var data = [{
-                x: [1,2,3],
-                y: [2,3,4],
+                x: [1, 2, 3],
+                y: [2, 3, 4],
                 type: 'scattergl'
             }, {
-                x: [1,2,3],
-                y: [2,3,4],
+                x: [1, 2, 3],
+                y: [2, 3, 4],
                 type: 'scatter'
             }];
 

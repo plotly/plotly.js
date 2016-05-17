@@ -50,8 +50,8 @@ describe('config argument', function() {
             gd = createGraphDiv();
 
             Plotly.plot(gd, [
-                { x: [1,2,3], y: [1,2,3] },
-                { x: [1,2,3], y: [3,2,1] }
+                { x: [1, 2, 3], y: [1, 2, 3] },
+                { x: [1, 2, 3], y: [3, 2, 1] }
             ], {
                 width: 600,
                 height: 400,

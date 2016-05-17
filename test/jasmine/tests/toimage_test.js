@@ -34,12 +34,12 @@ describe('Plotly.toImage', function() {
         returnValue.then(done);
     });
 
-    it('should throw error with unsupported file type',function(done) {
+    it('should throw error with unsupported file type', function(done) {
         // error should actually come in the svgToImg step
 
         Plotly.plot(gd, subplotMock.data, subplotMock.layout)
             .then(function(gd) {
-                Plotly.toImage(gd,{format: 'x'}).catch(function(err) {
+                Plotly.toImage(gd, {format: 'x'}).catch(function(err) {
                     expect(err.message).toEqual('Image format is not jpeg, png or svg');
                     done();
                 });
@@ -105,7 +105,7 @@ describe('Plotly.toImage', function() {
             // now do svg
             return Plotly.toImage(gd, {format: 'svg'});
         }).then(function(url) {
-            expect(url.substr(1,3)).toBe('svg');
+            expect(url.substr(1, 3)).toBe('svg');
             done();
         });
     });

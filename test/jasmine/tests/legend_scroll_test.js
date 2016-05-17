@@ -140,7 +140,7 @@ describe('The legend', function() {
         beforeEach(function() {
             gd = createGraph();
 
-            var data = [{ x: [1,2,3], y: [2,3,4], name: 'Test' }];
+            var data = [{ x: [1, 2, 3], y: [2, 3, 4], name: 'Test' }];
             var layout = { showlegend: true };
 
             Plotly.plot(gd, data, layout);
@@ -172,7 +172,7 @@ describe('The legend', function() {
             bg = document.getElementsByClassName('bg')[0];
             var origLegendHeight = getLegendHeight();
 
-            Plotly.addTraces(gd, { x: [1,2,3], y: [4,3,2], name: 'Test2' }).then(function() {
+            Plotly.addTraces(gd, { x: [1, 2, 3], y: [4, 3, 2], name: 'Test2' }).then(function() {
                 legend = document.getElementsByClassName('legend')[0];
                 bg = document.getElementsByClassName('bg')[0];
                 var legendHeight = getLegendHeight();

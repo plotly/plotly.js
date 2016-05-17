@@ -25,7 +25,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     if(anchor === 'right' || anchor === 'top') return vmax;
 
     // automatic based on position
-    if(vmin < (2/3) - vc) return vmin;
-    if(vmax > (4/3) - vc) return vmax;
+    if(vmin < (2 / 3) - vc) return vmin;
+    if(vmax > (4 / 3) - vc) return vmax;
     return vc;
 };

@@ -28,34 +28,34 @@ function AxesOptions() {
     this.tickFont = [ 'sans-serif', 'sans-serif', 'sans-serif' ];
     this.tickSize = [ 12, 12, 12 ];
     this.tickAngle = [ 0, 0, 0 ];
-    this.tickColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.tickColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
     this.tickPad = [ 18, 18, 18 ];
 
     this.labels = [ 'x', 'y', 'z' ];
     this.labelEnable = [ true, true, true ];
-    this.labelFont = ['Open Sans','Open Sans','Open Sans'];
+    this.labelFont = ['Open Sans', 'Open Sans', 'Open Sans'];
     this.labelSize = [ 20, 20, 20 ];
     this.labelAngle = [ 0, 0, 0 ];
-    this.labelColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.labelColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
     this.labelPad = [ 30, 30, 30 ];
 
     this.lineEnable = [ true, true, true ];
     this.lineMirror = [ false, false, false ];
     this.lineWidth = [ 1, 1, 1 ];
-    this.lineColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.lineColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
 
     this.lineTickEnable = [ true, true, true ];
     this.lineTickMirror = [ false, false, false ];
     this.lineTickLength = [ 10, 10, 10 ];
     this.lineTickWidth = [ 1, 1, 1 ];
-    this.lineTickColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.lineTickColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
 
     this.gridEnable = [ true, true, true ];
     this.gridWidth = [ 1, 1, 1 ];
-    this.gridColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.gridColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
 
     this.zeroEnable = [ true, true, true ];
-    this.zeroLineColor = [ [0,0,0,1], [0,0,0,1], [0,0,0,1] ];
+    this.zeroLineColor = [ [0, 0, 0, 1], [0, 0, 0, 1], [0, 0, 0, 1] ];
     this.zeroLineWidth = [ 2, 2, 2 ];
 
     this.backgroundEnable = [ true, true, true ];
@@ -124,7 +124,7 @@ proto.merge = function(sceneLayout) {
         }
 
         if('mirror' in axes) {
-            if(['ticks','all','allticks'].indexOf(axes.mirror) !== -1) {
+            if(['ticks', 'all', 'allticks'].indexOf(axes.mirror) !== -1) {
                 opts.lineTickMirror[i] = true;
                 opts.lineMirror[i] = true;
             } else if(axes.mirror === true) {

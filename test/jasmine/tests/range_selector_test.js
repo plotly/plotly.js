@@ -67,7 +67,7 @@ describe('[range selector suite]', function() {
                     buttons: [{
                         step: 'year',
                         count: 10
-                    },{
+                    }, {
                         count: 6
                     }]
                 }
@@ -425,7 +425,7 @@ describe('[range selector suite]', function() {
             checkActiveButton(buttons.size() - 1);
 
             var pos0 = getRectCenter(buttons[0][0]);
-            var posReset = getRectCenter(buttons[0][buttons.size()-1]);
+            var posReset = getRectCenter(buttons[0][buttons.size() - 1]);
 
             mouseEvent('click', pos0[0], pos0[1]);
             expect(gd.layout.xaxis.range[0]).toBeGreaterThan(range0);

@@ -69,7 +69,7 @@ describe('Layout images', function() {
     describe('drawing', function() {
 
         var gd,
-            data = [{ x: [1,2,3], y: [1,2,3] }];
+            data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -155,7 +155,7 @@ describe('Layout images', function() {
 
     describe('when the plot is dragged', function() {
         var gd,
-            data = [{ x: [1,2,3], y: [1,2,3] }];
+            data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
         beforeEach(function() {
             gd = createGraphDiv();
@@ -232,7 +232,7 @@ describe('Layout images', function() {
     describe('when relayout', function() {
 
         var gd,
-            data = [{ x: [1,2,3], y: [1,2,3] }];
+            data = [{ x: [1, 2, 3], y: [1, 2, 3] }];
 
         beforeEach(function(done) {
             gd = createGraphDiv();

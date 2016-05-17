@@ -162,7 +162,7 @@ function setAutoType(ax, data) {
 
     // first check for histograms, as the count direction
     // should always default to a linear axis
-    if(d0.type==='histogram' &&
+    if(d0.type === 'histogram' &&
             axLetter === {v: 'y', h: 'x'}[d0.orientation || 'v']) {
         ax.type = 'linear';
         return;
@@ -188,7 +188,7 @@ function setAutoType(ax, data) {
         ax.type = autoType(boxPositions);
     }
     else {
-        ax.type = autoType(d0[axLetter] || [d0[axLetter+'0']]);
+        ax.type = autoType(d0[axLetter] || [d0[axLetter + '0']]);
     }
 }
 

@@ -62,7 +62,7 @@ function parseColorArray(colors) {
 
 function zip3(x, y, z) {
     var result = new Array(x.length);
-    for(var i=0; i<x.length; ++i) {
+    for(var i = 0; i < x.length; ++i) {
         result[i] = [x[i], y[i], z[i]];
     }
     return result;
@@ -99,7 +99,7 @@ proto.update = function(data) {
     else {
         var d = ['x', 'y', 'z'].indexOf(data.delaunayaxis);
         cells = triangulate(positions.map(function(c) {
-            return [c[(d+1)%3], c[(d+2)%3]];
+            return [c[(d + 1) % 3], c[(d + 2) % 3]];
         }));
     }
 
@@ -113,7 +113,7 @@ proto.update = function(data) {
         fresnel: data.lighting.fresnel,
         opacity: data.opacity,
         contourEnable: data.contour.show,
-        contourColor: str2RgbaArray(data.contour.color).slice(0,3),
+        contourColor: str2RgbaArray(data.contour.color).slice(0, 3),
         contourWidth: data.contour.width,
         useFacetNormals: data.flatshading
     };

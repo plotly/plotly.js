@@ -68,7 +68,7 @@ function handleAnnotationDefaults(annIn, fullLayout) {
     Lib.coerceFont(coerce, 'font', fullLayout.font);
 
     // positioning
-    var axLetters = ['x','y'];
+    var axLetters = ['x', 'y'];
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i],
             tdMock = {_fullLayout: fullLayout};
@@ -78,21 +78,21 @@ function handleAnnotationDefaults(annIn, fullLayout) {
 
         // x, y
         var defaultPosition = 0.5;
-        if(axRef!=='paper') {
+        if(axRef !== 'paper') {
             var ax = Axes.getFromId(tdMock, axRef);
             defaultPosition = ax.range[0] + defaultPosition * (ax.range[1] - ax.range[0]);
 
             // convert date or category strings to numbers
-            if(['date','category'].indexOf(ax.type)!==-1 &&
-                    typeof annIn[axLetter]==='string') {
+            if(['date', 'category'].indexOf(ax.type) !== -1 &&
+                    typeof annIn[axLetter] === 'string') {
                 var newval;
-                if(ax.type==='date') {
+                if(ax.type === 'date') {
                     newval = Lib.dateTime2ms(annIn[axLetter]);
-                    if(newval!==false) annIn[axLetter] = newval;
+                    if(newval !== false) annIn[axLetter] = newval;
                 }
-                else if((ax._categories||[]).length) {
+                else if((ax._categories || []).length) {
                     newval = ax._categories.indexOf(annIn[axLetter]);
-                    if(newval!==-1) annIn[axLetter] = newval;
+                    if(newval !== -1) annIn[axLetter] = newval;
                 }
             }
         }
@@ -119,7 +119,7 @@ annotations.drawAll = function(gd) {
 
 annotations.add = function(gd) {
     var nextAnn = gd._fullLayout.annotations.length;
-    Plotly.relayout(gd, 'annotations['+nextAnn+']', 'add');
+    Plotly.relayout(gd, 'annotations[' + nextAnn + ']', 'add');
 };
 
 // -----------------------------------------------------
@@ -139,7 +139,7 @@ annotations.draw = function(gd, index, opt, value) {
         fullLayout = gd._fullLayout,
         i;
 
-    if(!isNumeric(index) || index===-1) {
+    if(!isNumeric(index) || index === -1) {
         // no index provided - we're operating on ALL annotations
         if(!index && Array.isArray(value)) {
             // a whole annotation array is passed in
@@ -149,14 +149,14 @@ annotations.draw = function(gd, index, opt, value) {
             annotations.drawAll(gd);
             return;
         }
-        else if(value==='remove') {
+        else if(value === 'remove') {
             // delete all
             delete layout.annotations;
             fullLayout.annotations = [];
             annotations.drawAll(gd);
             return;
         }
-        else if(opt && value!=='add') {
+        else if(opt && value !== 'add') {
             // make the same change to all annotations
             for(i = 0; i < fullLayout.annotations.length; i++) {
                 annotations.draw(gd, i, opt, value);
@@ -171,24 +171,24 @@ annotations.draw = function(gd, index, opt, value) {
     }
 
     if(!opt && value) {
-        if(value==='remove') {
-            fullLayout._infolayer.selectAll('.annotation[data-index="'+index+'"]')
+        if(value === 'remove') {
+            fullLayout._infolayer.selectAll('.annotation[data-index="' + index + '"]')
                 .remove();
-            fullLayout.annotations.splice(index,1);
-            layout.annotations.splice(index,1);
-            for(i=index; i<fullLayout.annotations.length; i++) {
+            fullLayout.annotations.splice(index, 1);
+            layout.annotations.splice(index, 1);
+            for(i = index; i < fullLayout.annotations.length; i++) {
                 fullLayout._infolayer
-                    .selectAll('.annotation[data-index="'+(i+1)+'"]')
-                    .attr('data-index',String(i));
+                    .selectAll('.annotation[data-index="' + (i + 1) + '"]')
+                    .attr('data-index', String(i));
 
                 // redraw all annotations past the removed one,
                 // so they bind to the right events
-                annotations.draw(gd,i);
+                annotations.draw(gd, i);
             }
             return;
         }
-        else if(value==='add' || Lib.isPlainObject(value)) {
-            fullLayout.annotations.splice(index,0,{});
+        else if(value === 'add' || Lib.isPlainObject(value)) {
+            fullLayout.annotations.splice(index, 0, {});
 
             var rule = Lib.isPlainObject(value) ?
                     Lib.extendFlat({}, value) :
@@ -200,17 +200,17 @@ annotations.draw = function(gd, index, opt, value) {
                 layout.annotations = [rule];
             }
 
-            for(i=fullLayout.annotations.length-1; i>index; i--) {
+            for(i = fullLayout.annotations.length - 1; i > index; i--) {
                 fullLayout._infolayer
-                    .selectAll('.annotation[data-index="'+(i-1)+'"]')
-                    .attr('data-index',String(i));
-                annotations.draw(gd,i);
+                    .selectAll('.annotation[data-index="' + (i - 1) + '"]')
+                    .attr('data-index', String(i));
+                annotations.draw(gd, i);
             }
         }
     }
 
     // remove the existing annotation if there is one
-    fullLayout._infolayer.selectAll('.annotation[data-index="'+index+'"]').remove();
+    fullLayout._infolayer.selectAll('.annotation[data-index="' + index + '"]').remove();
 
     // remember a few things about what was already there,
     var optionsIn = layout.annotations[index],
@@ -243,8 +243,8 @@ annotations.draw = function(gd, index, opt, value) {
         // or axis type.
         // the defaults will be consistent most of the time anyway,
         // except in log/linear changes
-        if(optionsEdit[axLetter]!==undefined ||
-                optionsIn[axLetter]===undefined) {
+        if(optionsEdit[axLetter] !== undefined ||
+                optionsIn[axLetter] === undefined) {
             continue;
         }
 
@@ -253,7 +253,7 @@ annotations.draw = function(gd, index, opt, value) {
             position = optionsIn[axLetter],
             axTypeOld = oldPrivate['_' + axLetter + 'type'];
 
-        if(optionsEdit[axLetter + 'ref']!==undefined) {
+        if(optionsEdit[axLetter + 'ref'] !== undefined) {
             var autoAnchor = optionsIn[axLetter + 'anchor'] === 'auto',
                 plotSize = (axLetter === 'x' ? gs.w : gs.h),
                 halfSizeFrac = (oldPrivate['_' + axLetter + 'size'] || 0) /
@@ -285,15 +285,15 @@ annotations.draw = function(gd, index, opt, value) {
                 if(autoAnchor) {
                     var posPlus = position + halfSizeFrac,
                         posMinus = position - halfSizeFrac;
-                    if(position + posMinus < 2/3) position = posMinus;
-                    else if(position + posPlus > 4/3) position = posPlus;
+                    if(position + posMinus < 2 / 3) position = posMinus;
+                    else if(position + posPlus > 4 / 3) position = posPlus;
                 }
             }
             else if(axNew) { // paper -> data
                 // first see if we need to adjust auto alignment
                 if(autoAnchor) {
-                    if(position < 1/3) position += halfSizeFrac;
-                    else if(position > 2/3) position -= halfSizeFrac;
+                    if(position < 1 / 3) position += halfSizeFrac;
+                    else if(position > 2 / 3) position -= halfSizeFrac;
                 }
 
                 // next convert to fraction of the axis
@@ -306,13 +306,13 @@ annotations.draw = function(gd, index, opt, value) {
             }
         }
 
-        if(axNew && axNew===axOld && axTypeOld) {
-            if(axTypeOld==='log' && axNew.type!=='log') {
-                position = Math.pow(10,position);
+        if(axNew && axNew === axOld && axTypeOld) {
+            if(axTypeOld === 'log' && axNew.type !== 'log') {
+                position = Math.pow(10, position);
             }
-            else if(axTypeOld!=='log' && axNew.type==='log') {
-                position = (position>0) ?
-                    Math.log(position)/Math.LN10 : undefined;
+            else if(axTypeOld !== 'log' && axNew.type === 'log') {
+                position = (position > 0) ?
+                    Math.log(position) / Math.LN10 : undefined;
             }
         }
 
@@ -356,8 +356,8 @@ annotations.draw = function(gd, index, opt, value) {
         borderfull = borderwidth + borderpad;
 
     var annbg = ann.append('rect')
-        .attr('class','bg')
-        .style('stroke-width', borderwidth+'px')
+        .attr('class', 'bg')
+        .style('stroke-width', borderwidth + 'px')
         .call(Color.stroke, options.bordercolor)
         .call(Color.fill, options.bgcolor);
 
@@ -402,9 +402,9 @@ annotations.draw = function(gd, index, opt, value) {
         options._h = annheight;
 
         function shiftFraction(v, anchor) {
-            if(anchor==='auto') {
-                if(v < 1/3) anchor = 'left';
-                else if(v > 2/3) anchor = 'right';
+            if(anchor === 'auto') {
+                if(v < 1 / 3) anchor = 'left';
+                else if(v > 2 / 3) anchor = 'right';
                 else anchor = 'center';
             }
             return {
@@ -420,8 +420,8 @@ annotations.draw = function(gd, index, opt, value) {
         var annotationIsOffscreen = false;
         ['x', 'y'].forEach(function(axLetter) {
             var ax = Axes.getFromId(gd,
-                    options[axLetter+'ref']||axLetter),
-                dimAngle = (textangle + (axLetter==='x' ? 0 : 90)) * Math.PI/180,
+                    options[axLetter + 'ref'] || axLetter),
+                dimAngle = (textangle + (axLetter === 'x' ? 0 : 90)) * Math.PI / 180,
                 annSize = outerwidth * Math.abs(Math.cos(dimAngle)) +
                           outerheight * Math.abs(Math.sin(dimAngle)),
                 anchor = options[axLetter + 'anchor'],
@@ -438,7 +438,7 @@ annotations.draw = function(gd, index, opt, value) {
                     annotationIsOffscreen = true;
                     return;
                 }
-                annPosPx[axLetter] = ax._offset+ax.l2p(options[axLetter]);
+                annPosPx[axLetter] = ax._offset + ax.l2p(options[axLetter]);
                 alignPosition = 0.5;
             }
             else {
@@ -494,13 +494,13 @@ annotations.draw = function(gd, index, opt, value) {
         }
 
         annbg.call(Drawing.setRect, borderwidth / 2, borderwidth / 2,
-            outerwidth-borderwidth, outerheight - borderwidth);
+            outerwidth - borderwidth, outerheight - borderwidth);
 
         var annX = Math.round(annPosPx.x - outerwidth / 2),
             annY = Math.round(annPosPx.y - outerheight / 2);
         ann.call(Lib.setTranslate, annX, annY);
 
-        var annbase = 'annotations['+index+']';
+        var annbase = 'annotations[' + index + ']';
 
         // add the arrow
         // uses options[arrowwidth,arrowcolor,arrowhead] for styling
@@ -525,8 +525,8 @@ annotations.draw = function(gd, index, opt, value) {
                 applyTransform2 = Lib.apply2DTransform2(transform),
 
                 // calculate and transform bounding box
-                xHalf = annbg.attr('width')/2,
-                yHalf = annbg.attr('height')/2,
+                xHalf = annbg.attr('width') / 2,
+                yHalf = annbg.attr('height') / 2,
                 edges = [
                     [arrowX0 - xHalf, arrowY0 - yHalf, arrowX0 - xHalf, arrowY0 + yHalf],
                     [arrowX0 - xHalf, arrowY0 + yHalf, arrowX0 + xHalf, arrowY0 + yHalf],
@@ -565,8 +565,8 @@ annotations.draw = function(gd, index, opt, value) {
                 .attr('data-index', String(index));
 
             var arrow = arrowgroup.append('path')
-                .attr('d', 'M'+arrowX0+','+arrowY0+'L'+arrowX+','+arrowY)
-                .style('stroke-width', strokewidth+'px')
+                .attr('d', 'M' + arrowX0 + ',' + arrowY0 + 'L' + arrowX + ',' + arrowY)
+                .style('stroke-width', strokewidth + 'px')
                 .call(Color.stroke, Color.rgb(arrowColor));
 
             annotations.arrowhead(arrow, options.arrowhead, 'end', options.arrowsize);
@@ -576,10 +576,10 @@ annotations.draw = function(gd, index, opt, value) {
                 .classed('anndrag', true)
                 .attr({
                     'data-index': String(index),
-                    d: 'M3,3H-3V-3H3ZM0,0L' + (arrowX0-arrowX) + ',' + (arrowY0-arrowY),
-                    transform: 'translate('+arrowX+','+arrowY+')'
+                    d: 'M3,3H-3V-3H3ZM0,0L' + (arrowX0 - arrowX) + ',' + (arrowY0 - arrowY),
+                    transform: 'translate(' + arrowX + ',' + arrowY + ')'
                 })
-                .style('stroke-width', (strokewidth+6)+'px')
+                .style('stroke-width', (strokewidth + 6) + 'px')
                 .call(Color.stroke, 'rgba(0,0,0,0)')
                 .call(Color.fill, 'rgba(0,0,0,0)');
 
@@ -597,24 +597,24 @@ annotations.draw = function(gd, index, opt, value) {
                         anny0 = pos.y;
                         update = {};
                         if(xa && xa.autorange) {
-                            update[xa._name+'.autorange'] = true;
+                            update[xa._name + '.autorange'] = true;
                         }
                         if(ya && ya.autorange) {
-                            update[ya._name+'.autorange'] = true;
+                            update[ya._name + '.autorange'] = true;
                         }
                     },
                     moveFn: function(dx, dy) {
-                        arrowgroup.attr('transform', 'translate('+dx+','+dy+')');
+                        arrowgroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
 
                         var annxy0 = applyTransform(annx0, anny0),
                             xcenter = annxy0[0] + dx,
                             ycenter = annxy0[1] + dy;
                         ann.call(Lib.setTranslate, xcenter, ycenter);
 
-                        update[annbase+'.x'] = xa ?
+                        update[annbase + '.x'] = xa ?
                             (options.x + dx / xa._m) :
                             ((arrowX + dx - gs.l) / gs.w);
-                        update[annbase+'.y'] = ya ?
+                        update[annbase + '.y'] = ya ?
                             (options.y + dy / ya._m) :
                             (1 - ((arrowY + dy - gs.t) / gs.h));
 
@@ -660,8 +660,8 @@ annotations.draw = function(gd, index, opt, value) {
                     ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
-                        update[annbase+'.ax'] = options.ax + dx;
-                        update[annbase+'.ay'] = options.ay + dy;
+                        update[annbase + '.ax'] = options.ax + dx;
+                        update[annbase + '.ay'] = options.ay + dy;
                         drawArrow(dx, dy);
                     }
                     else {
@@ -724,14 +724,14 @@ annotations.draw = function(gd, index, opt, value) {
                 this.attr({'data-unformatted': options.text});
                 this.call(textLayout);
                 var update = {};
-                update['annotations['+index+'].text'] = options.text;
+                update['annotations[' + index + '].text'] = options.text;
                 if(xa && xa.autorange) {
-                    update[xa._name+'.autorange'] = true;
+                    update[xa._name + '.autorange'] = true;
                 }
                 if(ya && ya.autorange) {
-                    update[ya._name+'.autorange'] = true;
+                    update[ya._name + '.autorange'] = true;
                 }
-                Plotly.relayout(gd,update);
+                Plotly.relayout(gd, update);
             });
     }
     else anntext.call(textLayout);
@@ -754,7 +754,7 @@ annotations.arrowhead = function(el3, style, ends, mag) {
 
     if(typeof ends !== 'string' || !ends) ends = 'end';
 
-    var scale = (Drawing.getPx(el3,'stroke-width') || 1) * mag,
+    var scale = (Drawing.getPx(el3, 'stroke-width') || 1) * mag,
         stroke = el3.style('stroke') || Color.defaultLine,
         opacity = el3.style('stroke-opacity') || 1,
         doStart = ends.indexOf('start') >= 0,
@@ -819,7 +819,7 @@ annotations.arrowhead = function(el3, style, ends, mag) {
     }
 
     var drawhead = function(p, rot) {
-        if(style>5) rot=0; // don't rotate square or circle
+        if(style > 5) rot = 0; // don't rotate square or circle
         d3.select(el.parentElement).append('path')
             .attr({
                 'class': el3.attr('class'),
@@ -875,9 +875,9 @@ function annAutorange(gd) {
             ya = Axes.getFromId(gd, ann.yref);
         if(!(xa || ya)) return;
 
-        var halfWidth = (ann._xsize || 0)/2,
+        var halfWidth = (ann._xsize || 0) / 2,
             xShift = ann._xshift || 0,
-            halfHeight = (ann._ysize || 0)/2,
+            halfHeight = (ann._ysize || 0) / 2,
             yShift = ann._yshift || 0,
             leftSize = halfWidth - xShift,
             rightSize = halfWidth + xShift,
@@ -891,7 +891,7 @@ function annAutorange(gd) {
             bottomSize = Math.max(bottomSize, headSize);
         }
         if(xa && xa.autorange) {
-            Axes.expand(xa, [xa.l2c(ann.x)],{
+            Axes.expand(xa, [xa.l2c(ann.x)], {
                 ppadplus: rightSize,
                 ppadminus: leftSize
             });
@@ -921,7 +921,7 @@ function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     var t = (b * f - c * e) / det,
         u = (b * d - a * e) / det;
     // segments do not intersect?
-    if(u<0 || u>1 || t<0 || t>1) return null;
+    if(u < 0 || u > 1 || t < 0 || t > 1) return null;
 
     return {x: x1 + a * t, y: y1 + d * t};
 }

@@ -172,11 +172,11 @@ describe('Test plot structure', function() {
 
                 var buttonPan = selectButton(modeBar, 'pan2d');
 
-                var originalX = [-0.6225,5.5];
-                var originalY = [-1.6340975059013805,7.166241526218911];
+                var originalX = [-0.6225, 5.5];
+                var originalY = [-1.6340975059013805, 7.166241526218911];
 
-                var newX = [-2.0255729166666665,4.096927083333333];
-                var newY = [-0.3769062155984817,8.42343281652181];
+                var newX = [-2.0255729166666665, 4.096927083333333];
+                var newY = [-0.3769062155984817, 8.42343281652181];
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
@@ -562,7 +562,7 @@ describe('plot svg clip paths', function() {
     function plot() {
         return Plotly.plot(createGraphDiv(), [{
             type: 'contour',
-            z: [[1,2,3], [2,3,1]]
+            z: [[1, 2, 3], [2, 3, 1]]
         }, {
             type: 'scatter',
             y: [2, 1, 2]

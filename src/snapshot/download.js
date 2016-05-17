@@ -29,7 +29,7 @@ function downloadImage(gd, opts) {
     // default to png
     opts.format = opts.format || 'png';
 
-    return new Promise(function(resolve,reject) {
+    return new Promise(function(resolve, reject) {
         if(gd._snapshotInProgress) {
             reject(new Error('Snapshotting already in progress.'));
         }
@@ -51,7 +51,7 @@ function downloadImage(gd, opts) {
 
         promise.then(function(result) {
             gd._snapshotInProgress = false;
-            return fileSaver(result,filename);
+            return fileSaver(result, filename);
         }).then(function(name) {
             resolve(name);
         }).catch(function(err) {

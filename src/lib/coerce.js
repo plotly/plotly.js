@@ -29,7 +29,7 @@ exports.valObjects = {
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
             if(Array.isArray(v)) propOut.set(v);
-            else if(dflt!==undefined) propOut.set(dflt);
+            else if(dflt !== undefined) propOut.set(dflt);
         }
     },
     enumerated: {
@@ -41,7 +41,7 @@ exports.valObjects = {
         otherOpts: ['dflt', 'coerceNumber', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(opts.coerceNumber) v = +v;
-            if(opts.values.indexOf(v)===-1) propOut.set(dflt);
+            if(opts.values.indexOf(v) === -1) propOut.set(dflt);
             else propOut.set(v);
         }
     },
@@ -50,7 +50,7 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            if(v===true || v===false) propOut.set(v);
+            if(v === true || v === false) propOut.set(v);
             else propOut.set(dflt);
         }
     },
@@ -65,8 +65,8 @@ exports.valObjects = {
         otherOpts: ['dflt', 'min', 'max', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(!isNumeric(v) ||
-                    (opts.min!==undefined && v<opts.min) ||
-                    (opts.max!==undefined && v>opts.max)) {
+                    (opts.min !== undefined && v < opts.min) ||
+                    (opts.max !== undefined && v > opts.max)) {
                 propOut.set(dflt);
             }
             else propOut.set(+v);
@@ -81,9 +81,9 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt', 'min', 'max'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(v%1 || !isNumeric(v) ||
-                    (opts.min!==undefined && v<opts.min) ||
-                    (opts.max!==undefined && v>opts.max)) {
+            if(v % 1 || !isNumeric(v) ||
+                    (opts.min !== undefined && v < opts.min) ||
+                    (opts.max !== undefined && v > opts.max)) {
                 propOut.set(dflt);
             }
             else propOut.set(+v);
@@ -99,13 +99,13 @@ exports.valObjects = {
         // TODO 'values shouldn't be in there (edge case: 'dash' in Scatter)
         otherOpts: ['dflt', 'noBlank', 'strict', 'arrayOk', 'values'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(opts.strict===true && typeof v !== 'string') {
+            if(opts.strict === true && typeof v !== 'string') {
                 propOut.set(dflt);
                 return;
             }
 
             var s = String(v);
-            if(v===undefined || (opts.noBlank===true && !s)) {
+            if(v === undefined || (opts.noBlank === true && !s)) {
                 propOut.set(dflt);
             }
             else propOut.set(s);
@@ -151,10 +151,10 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            if(v==='auto') propOut.set('auto');
+            if(v === 'auto') propOut.set('auto');
             else if(!isNumeric(v)) propOut.set(dflt);
             else {
-                if(Math.abs(v)>180) v -= Math.round(v/360)*360;
+                if(Math.abs(v) > 180) v -= Math.round(v / 360) * 360;
                 propOut.set(+v);
             }
         }
@@ -192,16 +192,16 @@ exports.valObjects = {
                 propOut.set(dflt);
                 return;
             }
-            if(opts.extras.indexOf(v)!==-1) {
+            if(opts.extras.indexOf(v) !== -1) {
                 propOut.set(v);
                 return;
             }
             var vParts = v.split('+'),
                 i = 0;
-            while(i<vParts.length) {
+            while(i < vParts.length) {
                 var vi = vParts[i];
-                if(opts.flags.indexOf(vi)===-1 || vParts.indexOf(vi)<i) {
-                    vParts.splice(i,1);
+                if(opts.flags.indexOf(vi) === -1 || vParts.indexOf(vi) < i) {
+                    vParts.splice(i, 1);
                 }
                 else i++;
             }
@@ -214,7 +214,7 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            if(v===undefined) propOut.set(dflt);
+            if(v === undefined) propOut.set(dflt);
             else propOut.set(v);
         }
     },
@@ -261,7 +261,7 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
         propOut = nestedProperty(containerOut, attribute),
         v = propIn.get();
 
-    if(dflt===undefined) dflt = opts.dflt;
+    if(dflt === undefined) dflt = opts.dflt;
 
     /**
      * arrayOk: value MAY be an array, then we do no value checking
