@@ -51,6 +51,9 @@ and use the plotly.js `dist` file(s) or require plotly.js using CommonJS as `var
 
 <!-- OR use a specific plotly.js release (e.g. version 1.5.0) -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
+
+<!-- OR an un-minified version is also available -->
+<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.js"></script>
 ```
 
 and use the `Plotly` object in the window scope.
