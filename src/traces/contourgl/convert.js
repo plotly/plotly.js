@@ -85,7 +85,8 @@ proto.update = function(fullTrace, calcTrace) {
     // convert z from 2D -> 1D
     var z = calcPt.z,
         rowLen = z[0].length,
-        colLen = z.length;
+        colLen = z.length,
+        colorOptions;
 
     this.contourOptions.z = flattenZ(z, rowLen, colLen);
     this.heatmapOptions.z = [].concat.apply([], z);
@@ -95,9 +96,22 @@ proto.update = function(fullTrace, calcTrace) {
     this.contourOptions.x = this.heatmapOptions.x = calcPt.x;
     this.contourOptions.y = this.heatmapOptions.y = calcPt.y;
 
-    var colorOptions = convertColorscale(fullTrace);
-    this.contourOptions.levels = colorOptions.levels;
-    this.contourOptions.levelColors = colorOptions.levelColors;
+
+    // pass on fill information
+    if(fullTrace.contours.coloring === 'fill') {
+        colorOptions = convertColorscale(fullTrace, true);
+        this.contourOptions.levels = colorOptions.levels.slice(1);
+        // though gl-contour2d automatically defaults to a transparent layer for the last
+        // band color, it's set manually here in case the gl-contour2 API changes
+        this.contourOptions.fillColors = colorOptions.levelColors;
+        this.contourOptions.levelColors = [].concat.apply([], this.contourOptions.levels.map(function() {
+            return [0.25, 0.25, 0.25, 1.0];
+        }));
+    } else {
+        colorOptions = convertColorscale(fullTrace, false);
+        this.contourOptions.levels = colorOptions.levels;
+        this.contourOptions.levelColors = colorOptions.levelColors;
+    }
 
     // convert text from 2D -> 1D
     this.textLabels = [].concat.apply([], fullTrace.text);
@@ -124,7 +138,7 @@ function flattenZ(zIn, rowLen, colLen) {
     return zOut;
 }
 
-function convertColorscale(fullTrace) {
+function convertColorscale(fullTrace, fill) {
     var contours = fullTrace.contours,
         start = contours.start,
         end = contours.end,
@@ -132,12 +146,12 @@ function convertColorscale(fullTrace) {
 
     var colorMap = makeColorMap(fullTrace);
 
-    var N = Math.floor((end - start) / cs) + 1,
+    var N = Math.floor((end - start) / cs) + (fill ? 2 : 1), // for K thresholds (contour linees) there are K+1 areas
         levels = new Array(N),
         levelColors = new Array(4 * N);
 
     for(var i = 0; i < N; i++) {
-        var level = levels[i] = start + cs * (i);
+        var level = levels[i] = start + cs * (i) - (fill ? cs / 2 : 0); // in case of fill, use band midpoint
         var color = str2RGBArray(colorMap(level));
 
         for(var j = 0; j < 4; j++) {
