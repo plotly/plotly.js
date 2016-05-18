@@ -38,12 +38,12 @@ function toImage(gd, opts) {
         setTimeout(function() {
             var svg = Plotly.Snapshot.toSVG(clonedGd);
 
-            var canvasContainer = window.document.createElement('div');
-            var canvas = window.document.createElement('canvas');
+            var canvasContainer = document.createElement('div'),
+                canvas = document.createElement('canvas');
 
-            // window.document.body.appendChild(canvasContainer);
+            // no need to attach canvas container to DOM
+
             canvasContainer.appendChild(canvas);
-
             canvasContainer.id = Plotly.Lib.randstr();
             canvas.id = Plotly.Lib.randstr();
 

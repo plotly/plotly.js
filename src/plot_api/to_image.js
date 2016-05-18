@@ -61,11 +61,12 @@ function toImage(gd, opts) {
                 setTimeout(function() {
                     var svg = Snapshot.toSVG(clonedGd);
 
-                    var canvasContainer = window.document.createElement('div');
-                    var canvas = window.document.createElement('canvas');
+                    var canvasContainer = document.createElement('div'),
+                        canvas = document.createElement('canvas');
+
+                    // no need to attach canvas container to DOM
 
                     canvasContainer.appendChild(canvas);
-
                     canvasContainer.id = Plotly.Lib.randstr();
                     canvas.id = Plotly.Lib.randstr();
 
@@ -86,6 +87,7 @@ function toImage(gd, opts) {
                     }).catch(function(err) {
                         reject(err);
                     });
+
                 }, delay);
             });
         }
