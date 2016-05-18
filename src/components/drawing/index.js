@@ -46,7 +46,7 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
-drawing.translatePoints = function(s, xa, ya) {
+drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasing) {
     s.each(function(d) {
         // put xp and yp into d if pixel scaling is already done
         var x = d.xp || xa.c2p(d.x),
@@ -55,7 +55,16 @@ drawing.translatePoints = function(s, xa, ya) {
         if(isNumeric(x) && isNumeric(y)) {
             // for multiline text this works better
             if(this.nodeName==='text') p.attr('x',x).attr('y',y);
-            else p.attr('transform', 'translate('+x+','+y+')');
+            else {
+              if (isNumeric(transitionDuration)) {
+                p.transition()
+                  .duration(transitionDuration)
+                  .ease(transitionEasing)
+                  .attr('transform', 'translate('+x+','+y+')');
+              } else {
+                p.attr('transform', 'translate('+x+','+y+')');
+              }
+            }
         }
         else p.remove();
     });

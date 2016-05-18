@@ -1503,6 +1503,117 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 };
 
 // -----------------------------------------------------
+// animate the changing of data
+// -----------------------------------------------------
+// Sequence is:
+//
+// 1. prepare for animation (store copy of current data, if necessary)
+// 2. update gd.data
+// 3. update gl._fullData
+// 4. doCalcdata
+// 5. begin animation
+Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
+    var i;
+
+    gd = getGraphDiv(gd);
+    window.gd = gd;
+
+    if(isNumeric(traces)) traces=[traces];
+    else if(!Array.isArray(traces) || !traces.length) {
+        traces = gd._fullData.map(function (v,i) {return i;});
+    }
+
+    for (var i = 0; i < traces.length; i++) {
+        var newTraceData = newData[i];
+        var data = gd.data[traces[i]];
+        var trace = gd._fullData[traces[i]];
+
+        for (var ai in newTraceData) {
+            var value = newTraceData[ai];
+            var param = Lib.nestedProperty(data, ai);
+            param.set(value);
+        }
+    }
+
+    // Placeholder for more general transfer of data:
+    for (var i = 0; i < traces.length; i++) {
+        gd._fullData[traces[i]].x = gd.data[traces[i]].x;
+        gd._fullData[traces[i]].y = gd.data[traces[i]].y;
+    }
+
+    doCalcdata(gd);
+
+    for (var i = 0; i < traces.length; i++) {
+        var module = trace._module;
+        var cd = [];
+
+        if(module && trace.visible === true) {
+            if(module.calc) cd = module.calc(gd, trace);
+        }
+
+        // make sure there is a first point
+        // this ensures there is a calcdata item for every trace,
+        // even if cartesian logic doesn't handle it
+        if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+
+        // add the trace-wide properties to the first point,
+        // per point properties to every point
+        // t is the holder for trace-wide properties
+        if(!cd[0].t) cd[0].t = {};
+        cd[0].trace = trace;
+
+        Lib.markTime('done with calcdata for '+i);
+        gd.calcdata[traces[i]] = cd;
+    }
+
+    for (i = 0; i < traces.length; i++) {
+
+        var idx = traces[i];
+
+        var cont = gd.data[idx];
+        var contFull = gd._fullData[idx];
+        var module = contFull._module;
+
+        if (module.animate) {
+            module.animate(gd, contFull, newData[i], transitionOpts);
+        }
+    }
+
+    /*
+    for(var i = 0; i < gd.calcdata.length; i++) {
+        gd.calcdata[i][0].trace = gd._fullData[i];
+    }
+
+    var seq;
+    seq = [Plots.previousPromises];
+
+    seq.push(function doAnimate () {
+        for (var i = 0; i < traces.length; i++) {
+            //var cont = gd.data[traces[i]];
+            var trace = gd._fullData[traces[i]];
+            var mod = trace._module;
+
+            if (mod.animate) {
+                mod.animate(gd, trace, data[i], transitionOpts);
+            }
+        }
+        return Plots.previousPromises(gd);
+    });
+
+    var plotDone = Lib.syncOrAsync(seq, gd);
+
+    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+
+    return plotDone.then(function() {
+        gd.emit('plotly_beginanimate', [traces]);
+        return gd;
+    });
+    */
+
+
+}
+
+// -----------------------------------------------------
 // restyle and relayout: these two control all redrawing
 // for data (restyle) and everything else (relayout)
 // -----------------------------------------------------
