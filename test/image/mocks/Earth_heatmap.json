@@ -2604,7 +2604,8 @@
         ]
       ],
       "scl": "Earth",
-      "type": "heatmap"
+      "type": "heatmap",
+      "zsmooth": "fast"
     }
   ],
   "layout": {
