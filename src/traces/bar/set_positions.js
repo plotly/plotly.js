@@ -35,7 +35,7 @@ module.exports = function setPositions(gd, plotinfo) {
             pa = plotinfo[pLetter](),
             sa = plotinfo[sLetter]();
 
-        gd._fullData.forEach(function(trace,i) {
+        gd._fullData.forEach(function(trace, i) {
             if(trace.visible === true &&
                     Plots.traceIs(trace, 'bar') &&
                     trace.orientation === dir &&
@@ -74,7 +74,7 @@ module.exports = function setPositions(gd, plotinfo) {
                     gd.calcdata[i].forEach(function(v) {
                         if(overlap) return;
                         comparelist.forEach(function(cp) {
-                            if(Math.abs(v.p-cp) < barDiff) overlap = true;
+                            if(Math.abs(v.p - cp) < barDiff) overlap = true;
                         });
                     });
                     if(overlap) return;
@@ -116,7 +116,7 @@ module.exports = function setPositions(gd, plotinfo) {
         else barposition(bl);
 
         var stack = (fullLayout.barmode === 'stack'),
-            relative = (fullLayout.barmode ==='relative'),
+            relative = (fullLayout.barmode === 'relative'),
             norm = fullLayout.barnorm;
 
         // bar size range and stacking calculation
@@ -128,7 +128,7 @@ module.exports = function setPositions(gd, plotinfo) {
             // so we don't have to redo this later
             var sMax = sa.l2c(sa.c2l(0)),
                 sMin = sMax,
-                sums={},
+                sums = {},
 
                 // make sure if p is different only by rounding,
                 // we still stack
@@ -154,8 +154,8 @@ module.exports = function setPositions(gd, plotinfo) {
                     if(stack || relative) {
                         ti[j][sLetter] = barEnd;
                         if(!norm && isNumeric(sa.c2l(barEnd))) {
-                            sMax = Math.max(sMax,barEnd);
-                            sMin = Math.min(sMin,barEnd);
+                            sMax = Math.max(sMax, barEnd);
+                            sMin = Math.min(sMin, barEnd);
                         }
                     }
                 }
@@ -163,9 +163,9 @@ module.exports = function setPositions(gd, plotinfo) {
 
             if(norm) {
                 padded = false;
-                var top = norm==='fraction' ? 1 : 100,
+                var top = norm === 'fraction' ? 1 : 100,
                     relAndNegative = false,
-                    tiny = top/1e9; // in case of rounding error in sum
+                    tiny = top / 1e9; // in case of rounding error in sum
                 sMin = 0;
                 sMax = stack ? top : 0;
                 for(i = 0; i < bl.length; i++) { // trace index

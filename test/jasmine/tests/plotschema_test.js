@@ -48,7 +48,7 @@ describe('plot schema', function() {
     it('all nested objects should have the *object* `role`', function() {
         assertPlotSchema(
             function(attr, attrName) {
-                if(!isValObject(attr) && isPlainObject(attr) && attrName!=='items') {
+                if(!isValObject(attr) && isPlainObject(attr) && attrName !== 'items') {
                     expect(attr.role === 'object').toBe(true);
                 }
             }
@@ -80,7 +80,7 @@ describe('plot schema', function() {
 
                     Object.keys(attr).forEach(function(key) {
                         // handle the histogram marker.color case
-                        if(opts.indexOf(key)===-1 && opts[key]===undefined) return;
+                        if(opts.indexOf(key) === -1 && opts[key] === undefined) return;
 
                         expect(opts.indexOf(key) !== -1).toBe(true);
                     });

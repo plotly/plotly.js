@@ -96,7 +96,7 @@ dragElement.init = function init(options) {
 
         if(Math.abs(dx) < minDrag) dx = 0;
         if(Math.abs(dy) < minDrag) dy = 0;
-        if(dx||dy) {
+        if(dx || dy) {
             gd._dragged = true;
             dragElement.unhover(gd);
         }

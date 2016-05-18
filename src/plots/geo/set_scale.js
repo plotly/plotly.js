@@ -128,7 +128,7 @@ function makeRangeBox(lon0, lat0, lon1, lat1) {
         type: 'Polygon',
         coordinates: [
           [ [lon0, lat0],
-            [lon0 , lat1],
+            [lon0, lat1],
             [lon0 + dlon4, lat1],
             [lon0 + 2 * dlon4, lat1],
             [lon0 + 3 * dlon4, lat1],

@@ -48,7 +48,7 @@ function handleShapeDefaults(shapeIn, fullLayout) {
         shapeType = coerce('type', dfltType);
 
     // positioning
-    var axLetters = ['x','y'];
+    var axLetters = ['x', 'y'];
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i],
             tdMock = {_fullLayout: fullLayout};
@@ -109,7 +109,7 @@ shapes.drawAll = function(gd) {
 
 shapes.add = function(gd) {
     var nextShape = gd._fullLayout.shapes.length;
-    Plotly.relayout(gd, 'shapes['+nextShape+']', 'add');
+    Plotly.relayout(gd, 'shapes[' + nextShape + ']', 'add');
 };
 
 // -----------------------------------------------------
@@ -257,8 +257,8 @@ function updateShape(gd, index, opt, value) {
         // or axis type.
         // the defaults will be consistent most of the time anyway,
         // except in log/linear changes
-        if(optionsEdit[posAttr]!==undefined ||
-                optionsIn[posAttr]===undefined) {
+        if(optionsEdit[posAttr] !== undefined ||
+                optionsIn[posAttr] === undefined) {
             continue;
         }
 
@@ -270,7 +270,7 @@ function updateShape(gd, index, opt, value) {
             position = optionsIn[posAttr],
             linearizedPosition;
 
-        if(optionsEdit[axLetter + 'ref']!==undefined) {
+        if(optionsEdit[axLetter + 'ref'] !== undefined) {
             // first convert to fraction of the axis
             if(axOld) {
                 linearizedPosition = dataToLinear(axOld)(position);
@@ -398,9 +398,9 @@ function shapePath(gd, options) {
         y2p = function(v) { return gs.t + gs.h * (1 - v); };
     }
 
-    if(type==='path') {
-        if(xa && xa.type==='date') x2p = decodeDate(x2p);
-        if(ya && ya.type==='date') y2p = decodeDate(y2p);
+    if(type === 'path') {
+        if(xa && xa.type === 'date') x2p = decodeDate(x2p);
+        if(ya && ya.type === 'date') y2p = decodeDate(y2p);
         return shapes.convertPath(options.path, x2p, y2p);
     }
 
@@ -409,8 +409,8 @@ function shapePath(gd, options) {
         y0 = y2p(options.y0),
         y1 = y2p(options.y1);
 
-    if(type==='line') return 'M'+x0+','+y0+'L'+x1+','+y1;
-    if(type==='rect') return 'M'+x0+','+y0+'H'+x1+'V'+y1+'H'+x0+'Z';
+    if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
+    if(type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
     // circle
     var cx = (x0 + x1) / 2,
         cy = (y0 + y1) / 2,
@@ -526,7 +526,7 @@ shapes.calcAutorange = function(gd) {
 };
 
 function shapeBounds(ax, v0, v1, path, paramsToUse) {
-    var convertVal = (ax.type==='category') ? Number : ax.d2c;
+    var convertVal = (ax.type === 'category') ? Number : ax.d2c;
 
     if(v0 !== undefined) return [convertVal(v0), convertVal(v1)];
     if(!path) return;
@@ -540,7 +540,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
         params,
         val;
 
-    if(ax.type==='date') convertVal = decodeDate(convertVal);
+    if(ax.type === 'date') convertVal = decodeDate(convertVal);
 
     for(i = 0; i < segments.length; i++) {
         segment = segments[i];

@@ -58,7 +58,7 @@ module.exports = function UndoManager() {
         hasUndo: function() { return index !== -1; },
         hasRedo: function() { return index < (undoCommands.length - 1); },
         getCommands: function() { return undoCommands; },
-        getPreviousCommand: function() { return undoCommands[index-1]; },
+        getPreviousCommand: function() { return undoCommands[index - 1]; },
         getIndex: function() { return index; }
     };
 };

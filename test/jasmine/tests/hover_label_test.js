@@ -428,8 +428,8 @@ describe('hover info', function() {
     describe('textmode', function() {
 
         var data = [{
-                x: [1,2,3,4],
-                y: [2,3,4,5],
+                x: [1, 2, 3, 4],
+                y: [2, 3, 4, 5],
                 mode: 'text',
                 hoverinfo: 'text',
                 text: ['test', null, 42, undefined]
@@ -485,7 +485,7 @@ describe('hover info on stacked subplots', function() {
 
         it('responds to hover', function() {
             var gd = document.getElementById('graph');
-            Plotly.Fx.hover(gd, {xval: 3}, ['xy','xy2','xy3']);
+            Plotly.Fx.hover(gd, {xval: 3}, ['xy', 'xy2', 'xy3']);
 
             expect(gd._hoverdata.length).toEqual(2);
 

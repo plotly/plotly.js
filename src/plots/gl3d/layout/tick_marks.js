@@ -18,14 +18,14 @@ var convertHTML = require('../../../lib/html2unicode');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
-var centerPoint = [0,0,0];
+var centerPoint = [0, 0, 0];
 
 function contourLevelsFromTicks(ticks) {
     var result = new Array(3);
-    for(var i=0; i<3; ++i) {
+    for(var i = 0; i < 3; ++i) {
         var tlevel = ticks[i];
         var clevel = new Array(tlevel.length);
-        for(var j=0; j<tlevel.length; ++j) {
+        for(var j = 0; j < tlevel.length; ++j) {
             clevel[j] = tlevel[j].x;
         }
         result[i] = clevel;
@@ -38,7 +38,7 @@ function computeTickMarks(scene) {
     var glRange = scene.glplot.axesPixels;
     var sceneLayout = scene.fullSceneLayout;
 
-    var ticks = [[],[],[]];
+    var ticks = [[], [], []];
 
     for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
@@ -64,11 +64,11 @@ function computeTickMarks(scene) {
             var tickModeCached = axes.tickmode;
             if(axes.tickmode === 'auto') {
                 axes.tickmode = 'linear';
-                var nticks = axes.nticks || Plotly.Lib.constrain((axes._length/40), 4, 9);
-                Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1]-axes.range[0])/nticks);
+                var nticks = axes.nticks || Plotly.Lib.constrain((axes._length / 40), 4, 9);
+                Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1] - axes.range[0]) / nticks);
             }
             var dataTicks = Plotly.Axes.calcTicks(axes);
-            for(var j=0; j<dataTicks.length; ++j) {
+            for(var j = 0; j < dataTicks.length; ++j) {
                 dataTicks[j].x = dataTicks[j].x * scene.dataScale[i];
                 dataTicks[j].text = convertHTML(dataTicks[j].text);
             }
@@ -82,9 +82,9 @@ function computeTickMarks(scene) {
     axesOptions.ticks = ticks;
 
     //Calculate tick lengths dynamically
-    for(var i=0; i<3; ++i) {
+    for(var i = 0; i < 3; ++i) {
         centerPoint[i] = 0.5 * (scene.glplot.bounds[0][i] + scene.glplot.bounds[1][i]);
-        for(var j=0; j<2; ++j) {
+        for(var j = 0; j < 2; ++j) {
             axesOptions.bounds[j][i] = scene.glplot.bounds[j][i];
         }
     }

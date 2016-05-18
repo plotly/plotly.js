@@ -66,8 +66,8 @@ module.exports = function plot(gd, cdpie) {
             slices.exit().remove();
 
             var quadrants = [
-                    [[],[]], // y<0: x<0, x>=0
-                    [[],[]] // y>=0: x<0, x>=0
+                    [[], []], // y<0: x<0, x>=0
+                    [[], []] // y>=0: x<0, x>=0
                 ],
                 hasOutsideText = false;
 
@@ -580,8 +580,8 @@ function scalePies(cdpie, plotSize) {
                 pieBoxHeight / maxExtent(trace.tilt, Math.cos(tiltAxisRads), trace.depth)
             ) / (2 + 2 * maxPull);
 
-        cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0])/2;
-        cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0])/2;
+        cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
+        cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0]) / 2;
 
         if(trace.scalegroup && scaleGroups.indexOf(trace.scalegroup) === -1) {
             scaleGroups.push(trace.scalegroup);

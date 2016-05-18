@@ -242,7 +242,7 @@ plots.getSubplotData = function getSubplotData(data, type, subplotId) {
                 subplotX = 'x' + subplotId.match(spmatch)[1],
                 subplotY = 'y' + subplotId.match(spmatch)[2];
 
-            if(trace[attr[0]]===subplotX && trace[attr[1]]===subplotY) {
+            if(trace[attr[0]] === subplotX && trace[attr[1]] === subplotY) {
                 subplotData.push(trace);
             }
         }
@@ -272,7 +272,7 @@ plots.redrawText = function(gd) {
             });
 
             resolve(plots.previousPromises(gd));
-        },300);
+        }, 300);
     });
 };
 
@@ -308,7 +308,7 @@ plots.resize = function(gd) {
 plots.previousPromises = function(gd) {
     if((gd._promises || []).length) {
         return Promise.all(gd._promises)
-            .then(function() { gd._promises=[]; });
+            .then(function() { gd._promises = []; });
     }
 };
 
@@ -611,7 +611,7 @@ function relinkPrivateKeys(toLayout, fromLayout) {
 
     for(var i = 0; i < keys.length; ++i) {
         var k = keys[i];
-        if(k.charAt(0)==='_' || typeof fromLayout[k]==='function') {
+        if(k.charAt(0) === '_' || typeof fromLayout[k] === 'function') {
             // if it already exists at this point, it's something
             // that we recreate each time around, so ignore it
             if(k in toLayout) continue;
@@ -739,7 +739,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('margin.autoexpand');
 
     // called in plotAutoSize otherwise
-    if(autosize!=='initial') plots.sanitizeMargins(layoutOut);
+    if(autosize !== 'initial') plots.sanitizeMargins(layoutOut);
 
     coerce('paper_bgcolor');
 
@@ -894,14 +894,14 @@ plots.autoMargin = function(gd, id, o) {
 
             // if the item is too big, just give it enough automargin to
             // make sure you can still grab it and bring it back
-            if(o.l+o.r > fullLayout.width*0.5) o.l = o.r = 0;
-            if(o.b+o.t > fullLayout.height*0.5) o.b = o.t = 0;
+            if(o.l + o.r > fullLayout.width * 0.5) o.l = o.r = 0;
+            if(o.b + o.t > fullLayout.height * 0.5) o.b = o.t = 0;
 
             fullLayout._pushmargin[id] = {
-                l: {val: o.x, size: o.l+pad},
-                r: {val: o.x, size: o.r+pad},
-                b: {val: o.y, size: o.b+pad},
-                t: {val: o.y, size: o.t+pad}
+                l: {val: o.x, size: o.l + pad},
+                r: {val: o.x, size: o.r + pad},
+                b: {val: o.y, size: o.b + pad},
+                t: {val: o.y, size: o.t + pad}
             };
         }
 
@@ -926,7 +926,7 @@ plots.doAutoMargin = function(gd) {
         mb = Math.max(fullLayout.margin.b || 0, 0),
         pm = fullLayout._pushmargin;
 
-    if(fullLayout.margin.autoexpand!==false) {
+    if(fullLayout.margin.autoexpand !== false) {
         // fill in the requested margins
         pm.base = {
             l: {val: 0, size: ml},
@@ -937,8 +937,8 @@ plots.doAutoMargin = function(gd) {
         // now cycle through all the combinations of l and r
         // (and t and b) to find the required margins
         Object.keys(pm).forEach(function(k1) {
-            var pushleft = pm[k1].l||{},
-                pushbottom = pm[k1].b||{},
+            var pushleft = pm[k1].l || {},
+                pushbottom = pm[k1].b || {},
                 fl = pushleft.val,
                 pl = pushleft.size,
                 fb = pushbottom.val,
@@ -947,12 +947,12 @@ plots.doAutoMargin = function(gd) {
                 if(isNumeric(pl) && pm[k2].r) {
                     var fr = pm[k2].r.val,
                         pr = pm[k2].r.size;
-                    if(fr>fl) {
-                        var newl = (pl*fr +
-                                (pr-fullLayout.width)*fl) / (fr-fl),
-                            newr = (pr*(1-fl) +
-                                (pl-fullLayout.width)*(1-fr)) / (fr-fl);
-                        if(newl>=0 && newr>=0 && newl+newr>ml+mr) {
+                    if(fr > fl) {
+                        var newl = (pl * fr +
+                                (pr - fullLayout.width) * fl) / (fr - fl),
+                            newr = (pr * (1 - fl) +
+                                (pl - fullLayout.width) * (1 - fr)) / (fr - fl);
+                        if(newl >= 0 && newr >= 0 && newl + newr > ml + mr) {
                             ml = newl;
                             mr = newr;
                         }
@@ -961,12 +961,12 @@ plots.doAutoMargin = function(gd) {
                 if(isNumeric(pb) && pm[k2].t) {
                     var ft = pm[k2].t.val,
                         pt = pm[k2].t.size;
-                    if(ft>fb) {
-                        var newb = (pb*ft +
-                                (pt-fullLayout.height)*fb) / (ft-fb),
-                            newt = (pt*(1-fb) +
-                                (pb-fullLayout.height)*(1-ft)) / (ft-fb);
-                        if(newb>=0 && newt>=0 && newb+newt>mb+mt) {
+                    if(ft > fb) {
+                        var newb = (pb * ft +
+                                (pt - fullLayout.height) * fb) / (ft - fb),
+                            newt = (pt * (1 - fb) +
+                                (pb - fullLayout.height) * (1 - ft)) / (ft - fb);
+                        if(newb >= 0 && newt >= 0 && newb + newt > mb + mt) {
                             mb = newb;
                             mt = newt;
                         }
@@ -981,12 +981,12 @@ plots.doAutoMargin = function(gd) {
     gs.t = Math.round(mt);
     gs.b = Math.round(mb);
     gs.p = Math.round(fullLayout.margin.pad);
-    gs.w = Math.round(fullLayout.width)-gs.l-gs.r;
-    gs.h = Math.round(fullLayout.height)-gs.t-gs.b;
+    gs.w = Math.round(fullLayout.width) - gs.l - gs.r;
+    gs.h = Math.round(fullLayout.height) - gs.t - gs.b;
 
     // if things changed and we're not already redrawing, trigger a redraw
-    if(!gd._replotting && oldmargins!=='{}' &&
-            oldmargins!==JSON.stringify(fullLayout._size)) {
+    if(!gd._replotting && oldmargins !== '{}' &&
+            oldmargins !== JSON.stringify(fullLayout._size)) {
         return Plotly.plot(gd);
     }
 };
@@ -1028,38 +1028,38 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
             return null;
         }
         if(Lib.isPlainObject(d)) {
-            var o={}, v, src;
+            var o = {}, v, src;
             for(v in d) {
                 // remove private elements and functions
                 // _ is for private, [ is a mistake ie [object Object]
-                if(typeof d[v]==='function' ||
-                        ['_','['].indexOf(v.charAt(0))!==-1) {
+                if(typeof d[v] === 'function' ||
+                        ['_', '['].indexOf(v.charAt(0)) !== -1) {
                     continue;
                 }
 
                 // look for src/data matches and remove the appropriate one
-                if(mode==='keepdata') {
+                if(mode === 'keepdata') {
                     // keepdata: remove all ...src tags
-                    if(v.substr(v.length-3)==='src') {
+                    if(v.substr(v.length - 3) === 'src') {
                         continue;
                     }
                 }
-                else if(mode==='keepstream') {
+                else if(mode === 'keepstream') {
                     // keep sourced data if it's being streamed.
                     // similar to keepref, but if the 'stream' object exists
                     // in a trace, we will keep the data array.
-                    src = d[v+'src'];
-                    if(typeof src==='string' && src.indexOf(':')>0) {
+                    src = d[v + 'src'];
+                    if(typeof src === 'string' && src.indexOf(':') > 0) {
                         if(!Lib.isPlainObject(d.stream)) {
                             continue;
                         }
                     }
                 }
-                else if(mode!=='keepall') {
+                else if(mode !== 'keepall') {
                     // keepref: remove sourced data but only
                     // if the source tag is well-formed
-                    src = d[v+'src'];
-                    if(typeof src==='string' && src.indexOf(':')>0) {
+                    src = d[v + 'src'];
+                    if(typeof src === 'string' && src.indexOf(':') > 0) {
                         continue;
                     }
                 }
@@ -1096,5 +1096,5 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
 
     if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
-    return (output==='object') ? obj : JSON.stringify(obj);
+    return (output === 'object') ? obj : JSON.stringify(obj);
 };

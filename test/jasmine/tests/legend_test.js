@@ -406,7 +406,7 @@ describe('Test legend:', function() {
 
     describe('isRightAnchor anchor util', function() {
         var isRightAnchor = anchorUtils.isRightAnchor;
-        var threshold = 2/3;
+        var threshold = 2 / 3;
 
         it('should return true when \'xanchor\' is set to \'right\'', function() {
             expect(isRightAnchor({ xanchor: 'left' })).toBe(false);
@@ -427,8 +427,8 @@ describe('Test legend:', function() {
 
     describe('isCenterAnchor anchor util', function() {
         var isCenterAnchor = anchorUtils.isCenterAnchor;
-        var threshold0 = 1/3;
-        var threshold1 = 2/3;
+        var threshold0 = 1 / 3;
+        var threshold1 = 2 / 3;
 
         it('should return true when \'xanchor\' is set to \'center\'', function() {
             expect(isCenterAnchor({ xanchor: 'left' })).toBe(false);
@@ -449,7 +449,7 @@ describe('Test legend:', function() {
 
     describe('isBottomAnchor anchor util', function() {
         var isBottomAnchor = anchorUtils.isBottomAnchor;
-        var threshold = 1/3;
+        var threshold = 1 / 3;
 
         it('should return true when \'yanchor\' is set to \'right\'', function() {
             expect(isBottomAnchor({ yanchor: 'top' })).toBe(false);
@@ -470,8 +470,8 @@ describe('Test legend:', function() {
 
     describe('isMiddleAnchor anchor util', function() {
         var isMiddleAnchor = anchorUtils.isMiddleAnchor;
-        var threshold0 = 1/3;
-        var threshold1 = 2/3;
+        var threshold0 = 1 / 3;
+        var threshold1 = 2 / 3;
 
         it('should return true when \'yanchor\' is set to \'center\'', function() {
             expect(isMiddleAnchor({ yanchor: 'top' })).toBe(false);

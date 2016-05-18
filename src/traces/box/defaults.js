@@ -35,7 +35,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
 
     coerce('orientation', defaultOrientation);
 
-    coerce('line.color', (traceIn.marker||{}).color || defaultColor);
+    coerce('line.color', (traceIn.marker || {}).color || defaultColor);
     coerce('line.width', 2);
     coerce('fillcolor', Color.addOpacity(traceOut.line.color, 0.5));
 
@@ -49,8 +49,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
                     coerce('boxpoints');
 
     if(boxpoints) {
-        coerce('jitter', boxpoints==='all' ? 0.3 : 0);
-        coerce('pointpos', boxpoints==='all' ? -1.5 : 0);
+        coerce('jitter', boxpoints === 'all' ? 0.3 : 0);
+        coerce('pointpos', boxpoints === 'all' ? -1.5 : 0);
 
         coerce('marker.symbol');
         coerce('marker.opacity');
@@ -59,7 +59,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
         coerce('marker.line.color');
         coerce('marker.line.width');
 
-        if(boxpoints==='suspectedoutliers') {
+        if(boxpoints === 'suspectedoutliers') {
             coerce('marker.line.outliercolor', traceOut.marker.color);
             coerce('marker.line.outlierwidth');
         }

@@ -34,10 +34,10 @@ module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut)
             projRotation = projLayout.rotation;
             dfltSpans = constants[axisName + 'Span'];
 
-            halfSpan = dfltSpans[projType]!==undefined ?
+            halfSpan = dfltSpans[projType] !== undefined ?
                 dfltSpans[projType] / 2 :
                 dfltSpans['*'] / 2;
-            rotateAngle = axisName==='lonaxis' ?
+            rotateAngle = axisName === 'lonaxis' ?
                 projRotation.lon :
                 projRotation.lat;
 
@@ -58,7 +58,7 @@ module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut)
         Lib.noneOrAll(axisIn.range, axisOut.range, [0, 1]);
 
         coerce('tick0', range[0]);
-        coerce('dtick', axisName==='lonaxis' ? 30 : 10);
+        coerce('dtick', axisName === 'lonaxis' ? 30 : 10);
 
         var show = coerce('showgrid');
         if(show) {

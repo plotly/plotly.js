@@ -20,20 +20,20 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         t = cd[0].t,
         xa = pointData.xa,
         ya = pointData.ya,
-        barDelta = (hovermode==='closest') ?
-            t.barwidth/2 : t.dbar*(1-xa._gd._fullLayout.bargap)/2,
+        barDelta = (hovermode === 'closest') ?
+            t.barwidth / 2 : t.dbar * (1 - xa._gd._fullLayout.bargap) / 2,
         barPos;
 
-    if(hovermode!=='closest') barPos = function(di) { return di.p; };
-    else if(trace.orientation==='h') barPos = function(di) { return di.y; };
+    if(hovermode !== 'closest') barPos = function(di) { return di.p; };
+    else if(trace.orientation === 'h') barPos = function(di) { return di.y; };
     else barPos = function(di) { return di.x; };
 
     var dx, dy;
-    if(trace.orientation==='h') {
+    if(trace.orientation === 'h') {
         dx = function(di) {
             // add a gradient so hovering near the end of a
             // bar makes it a little closer match
-            return Fx.inbox(di.b-xval, di.x-xval) + (di.x-xval)/(di.x-di.b);
+            return Fx.inbox(di.b - xval, di.x - xval) + (di.x - xval) / (di.x - di.b);
         };
         dy = function(di) {
             var centerPos = barPos(di) - yval;
@@ -42,7 +42,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
     else {
         dy = function(di) {
-            return Fx.inbox(di.b-yval, di.y-yval) + (di.y-yval)/(di.y-di.b);
+            return Fx.inbox(di.b - yval, di.y - yval) + (di.y - yval) / (di.y - di.b);
         };
         dx = function(di) {
             var centerPos = barPos(di) - xval;
@@ -54,7 +54,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     Fx.getClosest(cd, distfn, pointData);
 
     // skip the rest (for this trace) if we didn't find a close point
-    if(pointData.index===false) return;
+    if(pointData.index === false) return;
 
     // the closest data point
     var di = cd[pointData.index],
@@ -64,7 +64,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     if(Color.opacity(mc)) pointData.color = mc;
     else if(Color.opacity(mlc) && mlw) pointData.color = mlc;
 
-    if(trace.orientation==='h') {
+    if(trace.orientation === 'h') {
         pointData.x0 = pointData.x1 = xa.c2p(di.x, true);
         pointData.xLabelVal = di.s;
 
@@ -73,7 +73,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         pointData.yLabelVal = di.p;
     }
     else {
-        pointData.y0 = pointData.y1 = ya.c2p(di.y,true);
+        pointData.y0 = pointData.y1 = ya.c2p(di.y, true);
         pointData.yLabelVal = di.s;
 
         pointData.x0 = xa.c2p(barPos(di) - barDelta, true);

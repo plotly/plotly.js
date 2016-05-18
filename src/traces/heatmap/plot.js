@@ -274,13 +274,13 @@ function plotOne(gd, plotinfo, cd) {
         if(z01 === undefined) {
             if(z11 === undefined) dxy = 0;
             else if(z10 === undefined) dxy = 2 * (z11 - z00);
-            else dxy = (2 * z11 - z10 - z00) * 2/3;
+            else dxy = (2 * z11 - z10 - z00) * 2 / 3;
         }
         else if(z11 === undefined) {
             if(z10 === undefined) dxy = 0;
-            else dxy = (2 * z00 - z01 - z10) * 2/3;
+            else dxy = (2 * z00 - z01 - z10) * 2 / 3;
         }
-        else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
+        else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2 / 3;
         else dxy = (z11 + z00 - z01 - z10);
 
         return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
@@ -324,7 +324,7 @@ function plotOne(gd, plotinfo, cd) {
                 row = z[j];
                 yb = ypx(j);
                 for(i = 0; i < n; i++) {
-                    c = setColor(row[i],1);
+                    c = setColor(row[i], 1);
                     pxIndex = (yb * imageWidth + xpx(i)) * 4;
                     putColor(pixels, pxIndex, c);
                 }
@@ -362,7 +362,7 @@ function plotOne(gd, plotinfo, cd) {
     Lib.markTime('done filling png');
 
     rcount = Math.round(rcount / pixcount);
-    gcount = Math.round(gcount/ pixcount);
+    gcount = Math.round(gcount / pixcount);
     bcount = Math.round(bcount / pixcount);
     var avgColor = tinycolor('rgb(' + rcount + ',' + gcount + ',' + bcount + ')');
 

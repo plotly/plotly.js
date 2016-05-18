@@ -10,7 +10,7 @@ module.exports = function(type, x, y, opts) {
         fullOpts.buttons = opts.buttons;
     }
 
-    var el = document.elementFromPoint(x,y);
+    var el = document.elementFromPoint(x, y);
     var ev = new window.MouseEvent(type, fullOpts);
     el.dispatchEvent(ev);
 };

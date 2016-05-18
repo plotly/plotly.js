@@ -34,8 +34,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     var resolution = coerce('resolution');
 
     var projType = coerce('projection.type', scopeParams.projType);
-    var isAlbersUsa = projType==='albers usa';
-    var isConic = projType.indexOf('conic')!==-1;
+    var isAlbersUsa = projType === 'albers usa';
+    var isConic = projType.indexOf('conic') !== -1;
 
     if(isConic) {
         var dfltProjParallels = scopeParams.projParallels || [0, 60];
@@ -79,7 +79,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
         coerce('countrywidth');
     }
 
-    if(scope==='usa' || (scope==='north america' && resolution===50)) {
+    if(scope === 'usa' || (scope === 'north america' && resolution === 50)) {
         // Only works for:
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
@@ -102,7 +102,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut);
 
     // bind a few helper variables
-    geoLayoutOut._isHighRes = resolution===50;
+    geoLayoutOut._isHighRes = resolution === 50;
     geoLayoutOut._clipAngle = constants.lonaxisSpan[projType] / 2;
     geoLayoutOut._isAlbersUsa = isAlbersUsa;
     geoLayoutOut._isConic = isConic;
