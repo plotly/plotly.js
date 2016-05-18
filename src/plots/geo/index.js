@@ -78,3 +78,27 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 };
+
+exports.toSVG = function(gd) {
+    var fullLayout = gd._fullLayout,
+        geoIds = Plots.getSubplotIds(fullLayout, 'geo'),
+        size = fullLayout._size;
+
+    for(var i = 0; i < geoIds.length; i++) {
+        var geoLayout = fullLayout[geoIds[i]],
+            domain = geoLayout.domain,
+            geoFramework = geoLayout._geo.framework;
+
+        geoFramework.attr('style', null);
+        geoFramework
+            .attr({
+                x: size.l + size.w * domain.x[0] + geoLayout._marginX,
+                y: size.t + size.h * (1 - domain.y[1]) + geoLayout._marginY,
+                width: geoLayout._width,
+                height: geoLayout._height
+            });
+
+        fullLayout._geoimages.node()
+            .appendChild(geoFramework.node());
+    }
+};

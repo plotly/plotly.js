@@ -11,6 +11,7 @@
 
 var Scene = require('./scene');
 var Plots = require('../plots');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
 
@@ -80,6 +81,33 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         if(!newFullLayout[oldSceneKey] && !!oldFullLayout[oldSceneKey]._scene) {
             oldFullLayout[oldSceneKey]._scene.destroy();
         }
+    }
+};
+
+exports.toSVG = function(gd) {
+    var fullLayout = gd._fullLayout,
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
+        size = fullLayout._size;
+
+    for(var i = 0; i < sceneIds.length; i++) {
+        var sceneLayout = fullLayout[sceneIds[i]],
+            domain = sceneLayout.domain,
+            scene = sceneLayout._scene;
+
+        var imageData = scene.toImage('png');
+        var image = fullLayout._glimages.append('svg:image');
+
+        image.attr({
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
+            x: size.l + size.w * domain.x[0],
+            y: size.t + size.h * (1 - domain.y[1]),
+            width: size.w * (domain.x[1] - domain.x[0]),
+            height: size.h * (domain.y[1] - domain.y[0]),
+            preserveAspectRatio: 'none'
+        });
+
+        scene.destroy();
     }
 };
 
