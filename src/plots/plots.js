@@ -642,9 +642,9 @@ function relinkPrivateKeys(toLayout, fromLayout) {
     }
 }
 
-plots.supplyDataDefaults = function(traceIn, i, layout) {
+plots.supplyDataDefaults = function(traceIn, traceIndex, layout) {
     var traceOut = {},
-        defaultColor = Color.defaults[i % Color.defaults.length];
+        defaultColor = Color.defaults[traceIndex % Color.defaults.length];
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
@@ -652,12 +652,13 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
     function coerceSubplotAttr(subplotType, subplotAttr) {
         if(!plots.traceIs(traceOut, subplotType)) return;
+
         return Lib.coerce(traceIn, traceOut,
             plots.subplotsRegistry[subplotType].attributes, subplotAttr);
     }
 
     // module-independent attributes
-    traceOut.index = i;
+    traceOut.index = traceIndex;
     var visible = coerce('visible');
 
     coerce('type');
@@ -684,7 +685,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
         if(_module) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
-        coerce('name', 'trace ' + i);
+        coerce('name', 'trace ' + traceIndex);
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
