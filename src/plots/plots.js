@@ -664,15 +664,19 @@ plots.supplyDataDefaults = function(traceIn, traceIndex, layout) {
     coerce('type');
     coerce('uid');
 
-    // this is necessary otherwise we lose references to scene objects when
-    // the traces of a scene are invisible. Also we handle visible/unvisible
-    // differently for 3D cases.
-    coerceSubplotAttr('gl3d', 'scene');
-    coerceSubplotAttr('geo', 'geo');
-    coerceSubplotAttr('ternary', 'subplot');
+    // coerce subplot attributes of all registered subplot types
+    var subplotTypes = Object.keys(subplotsRegistry);
+    for(var i = 0; i < subplotTypes.length; i++) {
+        var subplotType = subplotTypes[i];
 
+        // done below (only when visible is true)
+        // TODO unified this pattern
+        if(['cartesian', 'gl2d'].indexOf(subplotType) !== -1) continue;
 
+        var attr = subplotsRegistry[subplotType].attr;
 
+        if(attr) coerceSubplotAttr(subplotType, attr);
+    }
 
     if(visible) {
         var _module = plots.getModule(traceOut);
