@@ -658,9 +658,7 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
     // module-independent attributes
     traceOut.index = i;
-    var visible = coerce('visible'),
-        scene,
-        _module;
+    var visible = coerce('visible');
 
     coerce('type');
     coerce('uid');
@@ -672,19 +670,20 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
     coerceSubplotAttr('geo', 'geo');
     coerceSubplotAttr('ternary', 'subplot');
 
-    // module-specific attributes --- note: we need to send a trace into
-    // the 3D modules to have it removed from the webgl context.
-    if(visible || scene) {
-        _module = plots.getModule(traceOut);
-        traceOut._module = _module;
-    }
 
-    // gets overwritten in pie, geo and ternary modules
-    if(visible) coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
 
-    if(_module && visible) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
 
     if(visible) {
+        var _module = plots.getModule(traceOut);
+        traceOut._module = _module;
+
+        // gets overwritten in pie, geo and ternary modules
+        coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
+
+        // TODO add per-base-plot-module trace defaults step
+
+        if(_module) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
         coerce('name', 'trace ' + i);
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
