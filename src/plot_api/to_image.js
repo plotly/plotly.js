@@ -8,9 +8,11 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
-
 var isNumeric = require('fast-isnumeric');
+
+var Plotly = require('../plotly');
+var Lib = require('../lib');
+
 
 /**
  * @param {object} gd figure Object
@@ -61,13 +63,8 @@ function toImage(gd, opts) {
                 setTimeout(function() {
                     var svg = Snapshot.toSVG(clonedGd);
 
-                    var canvasContainer = window.document.createElement('div');
-                    var canvas = window.document.createElement('canvas');
-
-                    canvasContainer.appendChild(canvas);
-
-                    canvasContainer.id = Plotly.Lib.randstr();
-                    canvas.id = Plotly.Lib.randstr();
+                    var canvas = document.createElement('canvas');
+                    canvas.id = Lib.randstr();
 
                     Snapshot.svgToImg({
                         format: opts.format,
@@ -86,6 +83,7 @@ function toImage(gd, opts) {
                     }).catch(function(err) {
                         reject(err);
                     });
+
                 }, delay);
             });
         }

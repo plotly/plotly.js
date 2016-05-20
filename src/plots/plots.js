@@ -642,9 +642,9 @@ function relinkPrivateKeys(toLayout, fromLayout) {
     }
 }
 
-plots.supplyDataDefaults = function(traceIn, i, layout) {
+plots.supplyDataDefaults = function(traceIn, traceIndex, layout) {
     var traceOut = {},
-        defaultColor = Color.defaults[i % Color.defaults.length];
+        defaultColor = Color.defaults[traceIndex % Color.defaults.length];
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, plots.attributes, attr, dflt);
@@ -652,40 +652,44 @@ plots.supplyDataDefaults = function(traceIn, i, layout) {
 
     function coerceSubplotAttr(subplotType, subplotAttr) {
         if(!plots.traceIs(traceOut, subplotType)) return;
+
         return Lib.coerce(traceIn, traceOut,
             plots.subplotsRegistry[subplotType].attributes, subplotAttr);
     }
 
     // module-independent attributes
-    traceOut.index = i;
-    var visible = coerce('visible'),
-        scene,
-        _module;
+    traceOut.index = traceIndex;
+    var visible = coerce('visible');
 
     coerce('type');
     coerce('uid');
 
-    // this is necessary otherwise we lose references to scene objects when
-    // the traces of a scene are invisible. Also we handle visible/unvisible
-    // differently for 3D cases.
-    coerceSubplotAttr('gl3d', 'scene');
-    coerceSubplotAttr('geo', 'geo');
-    coerceSubplotAttr('ternary', 'subplot');
+    // coerce subplot attributes of all registered subplot types
+    var subplotTypes = Object.keys(subplotsRegistry);
+    for(var i = 0; i < subplotTypes.length; i++) {
+        var subplotType = subplotTypes[i];
 
-    // module-specific attributes --- note: we need to send a trace into
-    // the 3D modules to have it removed from the webgl context.
-    if(visible || scene) {
-        _module = plots.getModule(traceOut);
-        traceOut._module = _module;
+        // done below (only when visible is true)
+        // TODO unified this pattern
+        if(['cartesian', 'gl2d'].indexOf(subplotType) !== -1) continue;
+
+        var attr = subplotsRegistry[subplotType].attr;
+
+        if(attr) coerceSubplotAttr(subplotType, attr);
     }
 
-    // gets overwritten in pie, geo and ternary modules
-    if(visible) coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
-
-    if(_module && visible) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-
     if(visible) {
-        coerce('name', 'trace ' + i);
+        var _module = plots.getModule(traceOut);
+        traceOut._module = _module;
+
+        // gets overwritten in pie, geo and ternary modules
+        coerce('hoverinfo', (layout._dataLength === 1) ? 'x+y+z+text' : undefined);
+
+        // TODO add per-base-plot-module trace defaults step
+
+        if(_module) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
+
+        coerce('name', 'trace ' + traceIndex);
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 

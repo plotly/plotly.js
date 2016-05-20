@@ -6,12 +6,13 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-/*eslint dot-notation: [2, {"allowPattern": "^catch$"}]*/
-
 'use strict';
 
 var EventEmitter = require('events').EventEmitter;
+
 var Plotly = require('../plotly');
+var Lib = require('../lib');
+
 
 /**
  * @param {object} gd figure Object
@@ -38,14 +39,8 @@ function toImage(gd, opts) {
         setTimeout(function() {
             var svg = Plotly.Snapshot.toSVG(clonedGd);
 
-            var canvasContainer = window.document.createElement('div');
-            var canvas = window.document.createElement('canvas');
-
-            // window.document.body.appendChild(canvasContainer);
-            canvasContainer.appendChild(canvas);
-
-            canvasContainer.id = Plotly.Lib.randstr();
-            canvas.id = Plotly.Lib.randstr();
+            var canvas = document.createElement('canvas');
+            canvas.id = Lib.randstr();
 
             ev = Plotly.Snapshot.svgToImg({
                 format: opts.format,
