@@ -111,6 +111,8 @@ proto.update = function(data) {
         specular: data.lighting.specular,
         roughness: data.lighting.roughness,
         fresnel: data.lighting.fresnel,
+        vertexNormalsEpsilon: data.lighting.vertexnormalsepsilon,
+        faceNormalsEpsilon: data.lighting.facenormalsepsilon,
         opacity: data.opacity,
         contourEnable: data.contour.show,
         contourColor: str2RgbaArray(data.contour.color).slice(0, 3),

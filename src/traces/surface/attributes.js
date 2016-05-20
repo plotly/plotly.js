@@ -182,6 +182,20 @@ module.exports = {
             min: 0.00,
             max: 5.00,
             dflt: 0.2
+        },
+        vertexnormalsepsilon: {
+            valType: 'number',
+            role: 'style',
+            min: 0.00,
+            max: 1,
+            dflt: 1e-12 // otherwise finely tessellated things eg. the brain will have no specular light reflection
+        },
+        facenormalsepsilon: {
+            valType: 'number',
+            role: 'style',
+            min: 0.00,
+            max: 1,
+            dflt: 1e-6 // even the brain model doesn't appear to need finer than this
         }
     },
 

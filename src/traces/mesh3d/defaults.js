@@ -54,6 +54,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         'lighting.specular',
         'lighting.roughness',
         'lighting.fresnel',
+        'lighting.vertexnormalsepsilon',
+        'lighting.facenormalsepsilon',
         'contour.show',
         'contour.color',
         'contour.width',
