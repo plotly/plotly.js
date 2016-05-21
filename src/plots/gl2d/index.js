@@ -9,11 +9,9 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 var Scene2D = require('./scene2d');
-
-var Plots = Plotly.Plots;
+var Plots = require('../plots');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 
 exports.name = 'gl2d';
@@ -50,8 +48,9 @@ exports.plot = function plotGl2d(gd) {
         // If Scene is not instantiated, create one!
         if(scene === undefined) {
             scene = new Scene2D({
-                container: gd.querySelector('.gl-container'),
                 id: subplotId,
+                graphDiv: gd,
+                container: gd.querySelector('.gl-container'),
                 staticPlot: gd._context.staticPlot,
                 plotGlPixelRatio: gd._context.plotGlPixelRatio
             },
@@ -62,7 +61,7 @@ exports.plot = function plotGl2d(gd) {
             subplotObj._scene2d = scene;
         }
 
-        scene.plot(fullSubplotData, fullLayout, gd.layout);
+        scene.plot(fullSubplotData, gd.calcdata, fullLayout, gd.layout);
     }
 };
 
@@ -77,5 +76,31 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         if(!!oldSubplot._scene2d && (!newFullLayout[xaName] || !newFullLayout[yaName])) {
             oldSubplot._scene2d.destroy();
         }
+    }
+};
+
+exports.toSVG = function(gd) {
+    var fullLayout = gd._fullLayout,
+        subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d'),
+        size = fullLayout._size;
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplot = fullLayout._plots[subplotIds[i]],
+            scene = subplot._scene2d;
+
+        var imageData = scene.toImage('png');
+        var image = fullLayout._glimages.append('svg:image');
+
+        image.attr({
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
+            x: size.l,
+            y: size.t,
+            width: size.w,
+            height: size.h,
+            preserveAspectRatio: 'none'
+        });
+
+        scene.destroy();
     }
 };

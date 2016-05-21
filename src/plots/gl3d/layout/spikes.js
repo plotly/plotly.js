@@ -15,11 +15,11 @@ var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
 
 function SpikeOptions() {
     this.enabled = [true, true, true];
-    this.colors = [[0,0,0,1],
-                   [0,0,0,1],
-                   [0,0,0,1]];
+    this.colors = [[0, 0, 0, 1],
+                   [0, 0, 0, 1],
+                   [0, 0, 0, 1]];
     this.drawSides = [true, true, true];
-    this.lineWidth = [1,1,1];
+    this.lineWidth = [1, 1, 1];
 }
 
 var proto = SpikeOptions.prototype;

@@ -25,7 +25,7 @@ function fixSuperScript(x) {
         var nidx = x.indexOf('</sup>', idx);
         if(nidx < idx) break;
 
-        x = x.slice(0, idx) + toSuperScript(x.slice(idx+5, nidx)) + x.slice(nidx+6);
+        x = x.slice(0, idx) + toSuperScript(x.slice(idx + 5, nidx)) + x.slice(nidx + 6);
     }
 
     return x;
@@ -49,11 +49,11 @@ function fixEntities(x) {
             continue;
         }
 
-        var entity = ENTITIES[x.slice(idx+1, nidx)];
+        var entity = ENTITIES[x.slice(idx + 1, nidx)];
         if(entity) {
-            x = x.slice(0, idx) + entity + x.slice(nidx+1);
+            x = x.slice(0, idx) + entity + x.slice(nidx + 1);
         } else {
-            x = x.slice(0, idx) + x.slice(nidx+1);
+            x = x.slice(0, idx) + x.slice(nidx + 1);
         }
     }
 

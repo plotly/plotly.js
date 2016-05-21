@@ -22,8 +22,12 @@ module.exports = function plot(traces, plotinfo) {
 
     traces.each(function(d) {
         var trace = d[0].trace,
-            xObj = trace.error_x,
-            yObj = trace.error_y;
+            // || {} is in case the trace (specifically scatterternary)
+            // doesn't support error bars at all, but does go through
+            // the scatter.plot mechanics, which calls ErrorBars.plot
+            // internally
+            xObj = trace.error_x || {},
+            yObj = trace.error_y || {};
 
         var sparse = (
             subTypes.hasMarkers(trace) &&
@@ -55,7 +59,7 @@ module.exports = function plot(traces, plotinfo) {
                     coords.yh + 'h' + (2 * yw) + // hat
                     'm-' + yw + ',0V' + coords.ys; // bar
 
-                if(!coords.noYS) path += 'm-' + yw +',0h' + (2 * yw); // shoe
+                if(!coords.noYS) path += 'm-' + yw + ',0h' + (2 * yw); // shoe
 
                 errorbar.append('path')
                     .classed('yerror', true)

@@ -96,6 +96,68 @@ describe('Test click interactions:', function() {
         });
     });
 
+    describe('click event with hoverinfo set to none - plotly_click', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+
+            var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
+            modifiedMockCopy.data[0].hoverinfo = 'none';
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+                .then(done);
+
+            gd.on('plotly_click', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should contain the correct fields despite hoverinfo: "none"', function() {
+            click(pointPos[0], pointPos[1]);
+            expect(futureData.points.length).toEqual(1);
+
+            var pt = futureData.points[0];
+            expect(Object.keys(pt)).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber',
+                'x', 'y', 'xaxis', 'yaxis'
+            ]);
+            expect(pt.curveNumber).toEqual(0);
+            expect(pt.pointNumber).toEqual(11);
+            expect(pt.x).toEqual(0.125);
+            expect(pt.y).toEqual(2.125);
+        });
+    });
+
+    describe('click events with hoverinfo set to none - plotly_hover', function() {
+        var futureData;
+
+        beforeEach(function(done) {
+
+            var modifiedMockCopy = Lib.extendDeep({}, mockCopy);
+            modifiedMockCopy.data[0].hoverinfo = 'none';
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+                .then(done);
+
+            gd.on('plotly_hover', function(data) {
+                futureData = data;
+            });
+        });
+
+        it('should contain the correct fields despite hoverinfo: "none"', function() {
+            click(pointPos[0], pointPos[1]);
+            expect(futureData.points.length).toEqual(1);
+
+            var pt = futureData.points[0];
+            expect(Object.keys(pt)).toEqual([
+                'data', 'fullData', 'curveNumber', 'pointNumber',
+                'x', 'y', 'xaxis', 'yaxis'
+            ]);
+            expect(pt.curveNumber).toEqual(0);
+            expect(pt.pointNumber).toEqual(11);
+            expect(pt.x).toEqual(0.125);
+            expect(pt.y).toEqual(2.125);
+        });
+    });
+
     describe('double click events', function() {
         var futureData;
 
@@ -118,7 +180,13 @@ describe('Test click interactions:', function() {
 
     describe('drag interactions', function() {
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                // Do not let the notifier hide the drag elements
+                var tooltip = document.querySelector('.notifier-note');
+                if(tooltip) tooltip.style.display = 'None';
+
+                done();
+            });
         });
 
         it('on nw dragbox should update the axis ranges', function(done) {
@@ -665,6 +733,21 @@ describe('Test click interactions:', function() {
 
                 done();
             });
+        });
+
+
+        it('should move the plot when panning', function() {
+            var start = 100,
+                end = 300,
+                plot = gd._fullLayout._plots.xy.plot;
+
+            mouseEvent('mousemove', start, start);
+            mouseEvent('mousedown', start, start);
+            mouseEvent('mousemove', end, end);
+
+            expect(plot.attr('transform')).toBe('translate(250, 280)');
+
+            mouseEvent('mouseup', end, end);
         });
     });
 });

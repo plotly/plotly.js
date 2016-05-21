@@ -9,41 +9,19 @@
 
 'use strict';
 
-var Lib = require('../../../lib');
-var Plots = require('../../plots');
-var constants = require('../../../constants/geo_constants');
+var handleSubplotDefaults = require('../../subplot_defaults');
+var constants = require('../constants');
 var layoutAttributes = require('./layout_attributes');
 var supplyGeoAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    if(!layoutOut._hasGeo) return;
-
-    var geos = Plots.findSubplotIds(fullData, 'geo'),
-        geosLength = geos.length;
-
-    var geoLayoutIn, geoLayoutOut;
-
-    function coerce(attr, dflt) {
-        return Lib.coerce(geoLayoutIn, geoLayoutOut, layoutAttributes, attr, dflt);
-    }
-
-    for(var i = 0; i < geosLength; i++) {
-        var geo = geos[i];
-
-        // geo traces get a layout geo for free!
-        if(layoutIn[geo]) geoLayoutIn = layoutIn[geo];
-        else geoLayoutIn = layoutIn[geo] = {};
-
-        geoLayoutIn = layoutIn[geo];
-        geoLayoutOut = {};
-
-        coerce('domain.x');
-        coerce('domain.y', [i / geosLength, (i + 1) / geosLength]);
-
-        handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce);
-        layoutOut[geo] = geoLayoutOut;
-    }
+    handleSubplotDefaults(layoutIn, layoutOut, fullData, {
+        type: 'geo',
+        attributes: layoutAttributes,
+        handleDefaults: handleGeoDefaults,
+        partition: 'y'
+    });
 };
 
 function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
@@ -56,8 +34,8 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     var resolution = coerce('resolution');
 
     var projType = coerce('projection.type', scopeParams.projType);
-    var isAlbersUsa = projType==='albers usa';
-    var isConic = projType.indexOf('conic')!==-1;
+    var isAlbersUsa = projType === 'albers usa';
+    var isConic = projType.indexOf('conic') !== -1;
 
     if(isConic) {
         var dfltProjParallels = scopeParams.projParallels || [0, 60];
@@ -101,7 +79,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
         coerce('countrywidth');
     }
 
-    if(scope==='usa' || (scope==='north america' && resolution===50)) {
+    if(scope === 'usa' || (scope === 'north america' && resolution === 50)) {
         // Only works for:
         //   USA states at 110m
         //   USA states + Canada provinces at 50m
@@ -124,7 +102,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut);
 
     // bind a few helper variables
-    geoLayoutOut._isHighRes = resolution===50;
+    geoLayoutOut._isHighRes = resolution === 50;
     geoLayoutOut._clipAngle = constants.lonaxisSpan[projType] / 2;
     geoLayoutOut._isAlbersUsa = isAlbersUsa;
     geoLayoutOut._isConic = isConic;

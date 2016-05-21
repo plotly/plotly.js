@@ -24,7 +24,7 @@ module.exports = function calc(gd, trace) {
         posAxis, posLetter, pos, posDistinct, dPos;
 
     // Set value (val) and position (pos) keys via orientation
-    if(orientation==='h') {
+    if(orientation === 'h') {
         valAxis = xa;
         valLetter = 'x';
         posAxis = ya;
@@ -51,13 +51,13 @@ module.exports = function calc(gd, trace) {
         var pos0;
         if(posLetter in trace) pos = posAxis.makeCalcdata(trace, posLetter);
         else {
-            if(posLetter+'0' in trace) pos0 = trace[posLetter+'0'];
+            if(posLetter + '0' in trace) pos0 = trace[posLetter + '0'];
             else if('name' in trace && (
-                        posAxis.type==='category' ||
+                        posAxis.type === 'category' ||
                         (isNumeric(trace.name) &&
-                            ['linear','log'].indexOf(posAxis.type)!==-1) ||
+                            ['linear', 'log'].indexOf(posAxis.type) !== -1) ||
                         (Lib.isDateTime(trace.name) &&
-                         posAxis.type==='date')
+                         posAxis.type === 'date')
                     )) {
                 pos0 = trace.name;
             }
@@ -73,7 +73,7 @@ module.exports = function calc(gd, trace) {
     // get distinct positions and min difference
     var dv = Lib.distinctVals(pos);
     posDistinct = dv.vals;
-    dPos = dv.minDiff/2;
+    dPos = dv.minDiff / 2;
 
     function binVal(cd, val, pos, posDistinct, dPos) {
         var posDistinctLength = posDistinct.length,
@@ -89,14 +89,14 @@ module.exports = function calc(gd, trace) {
             bins[i] = p - dPos;
             valBinned[i] = [];
         }
-        bins.push(posDistinct[posDistinctLength-1] + dPos);
+        bins.push(posDistinct[posDistinctLength - 1] + dPos);
 
         // bin the values
         for(i = 0; i < valLength; ++i) {
             v = val[i];
             if(!isNumeric(v)) continue;
             n = Lib.findBin(pos[i], bins);
-            if(n>=0 && n<valLength) valBinned[n].push(v);
+            if(n >= 0 && n < valLength) valBinned[n].push(v);
         }
 
         return valBinned;
@@ -115,22 +115,22 @@ module.exports = function calc(gd, trace) {
 
             cdi.val = v;  // put all values into calcdata
             cdi.min = v[0];
-            cdi.max = v[l-1];
-            cdi.mean = Lib.mean(v,l);
-            cdi.sd = Lib.stdev(v,l,cdi.mean);
+            cdi.max = v[l - 1];
+            cdi.mean = Lib.mean(v, l);
+            cdi.sd = Lib.stdev(v, l, cdi.mean);
             cdi.q1 = Lib.interp(v, 0.25);  // first quartile
             cdi.med = Lib.interp(v, 0.5);  // median
             cdi.q3 = Lib.interp(v, 0.75);  // third quartile
             // lower and upper fences - last point inside
             // 1.5 interquartile ranges from quartiles
             cdi.lf = Math.min(cdi.q1, v[
-                Math.min(Lib.findBin(2.5*cdi.q1-1.5*cdi.q3,v,true)+1, l-1)]);
-            cdi.uf = Math.max(cdi.q3,v[
-                Math.max(Lib.findBin(2.5*cdi.q3-1.5*cdi.q1,v), 0)]);
+                Math.min(Lib.findBin(2.5 * cdi.q1 - 1.5 * cdi.q3, v, true) + 1, l - 1)]);
+            cdi.uf = Math.max(cdi.q3, v[
+                Math.max(Lib.findBin(2.5 * cdi.q3 - 1.5 * cdi.q1, v), 0)]);
             // lower and upper outliers - 3 IQR out (don't clip to max/min,
             // this is only for discriminating suspected & far outliers)
-            cdi.lo = 4*cdi.q1-3*cdi.q3;
-            cdi.uo = 4*cdi.q3-3*cdi.q1;
+            cdi.lo = 4 * cdi.q1 - 3 * cdi.q3;
+            cdi.uo = 4 * cdi.q3 - 3 * cdi.q1;
         }
     }
 

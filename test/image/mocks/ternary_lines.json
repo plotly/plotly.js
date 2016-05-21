@@ -1,0 +1,399 @@
+{
+    "data": [
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                0,
+                10,
+                0
+            ],
+            "b": [
+                100,
+                90,
+                90
+            ],
+            "c": [
+                0,
+                0,
+                10
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "4a9e8d"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                0,
+                10,
+                15,
+                0
+            ],
+            "b": [
+                90,
+                90,
+                85,
+                70
+            ],
+            "c": [
+                10,
+                0,
+                0,
+                30
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "6b700b"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                0,
+                15,
+                20,
+                20,
+                5,
+                5,
+                0
+            ],
+            "b": [
+                70,
+                85,
+                80,
+                53,
+                53,
+                45,
+                50
+            ],
+            "c": [
+                30,
+                0,
+                0,
+                32,
+                42,
+                50,
+                50
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "0e280c"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                20,
+                35,
+                35,
+                28,
+                20
+            ],
+            "b": [
+                80,
+                65,
+                45,
+                45,
+                53
+            ],
+            "c": [
+                0,
+                0,
+                20,
+                27,
+                32
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "40fccc"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                35,
+                35,
+                55
+            ],
+            "b": [
+                65,
+                45,
+                45
+            ],
+            "c": [
+                0,
+                20,
+                0
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "d990f2"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                55,
+                100,
+                60,
+                40,
+                40
+            ],
+            "b": [
+                45,
+                0,
+                0,
+                20,
+                45
+            ],
+            "c": [
+                0,
+                0,
+                40,
+                40,
+                15
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "b6c367"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                40,
+                40,
+                28,
+                28
+            ],
+            "b": [
+                45,
+                20,
+                20,
+                45
+            ],
+            "c": [
+                15,
+                40,
+                52,
+                27
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "90d4e2"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                60,
+                40,
+                40
+            ],
+            "b": [
+                0,
+                0,
+                20
+            ],
+            "c": [
+                40,
+                60,
+                40
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "c483e4"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                28,
+                28,
+                40,
+                40
+            ],
+            "b": [
+                0,
+                20,
+                20,
+                0
+            ],
+            "c": [
+                72,
+                52,
+                40,
+                60
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "9b3fa9"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                0,
+                28,
+                28,
+                12,
+                12,
+                0
+            ],
+            "b": [
+                50,
+                22,
+                0,
+                0,
+                8,
+                20
+            ],
+            "c": [
+                50,
+                50,
+                72,
+                88,
+                80,
+                80
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "5c8c5a"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                0,
+                0,
+                12,
+                12
+            ],
+            "b": [
+                0,
+                20,
+                8,
+                0
+            ],
+            "c": [
+                100,
+                80,
+                80,
+                88
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "845650"
+        },
+        {
+            "type": "scatterternary",
+            "mode": "lines",
+            "a": [
+                28,
+                28,
+                5,
+                5,
+                20
+            ],
+            "b": [
+                45,
+                22,
+                45,
+                53,
+                53
+            ],
+            "c": [
+                27,
+                50,
+                50,
+                42,
+                32
+            ],
+            "line": {
+                "color": "#c00"
+            },
+            "uid": "ca74b0"
+        }
+    ],
+    "layout": {
+        "ternary": {
+            "aaxis": {
+                "title": "Clay",
+                "min": 0.01,
+                "linewidth": 2,
+                "ticks": "outside",
+                "ticklen": 8,
+                "showgrid": true,
+                "tickvals": [
+                    0.2,
+                    0.4,
+                    0.6,
+                    0.8
+                ],
+                "ticktext": [
+                    "20%",
+                    "40%",
+                    "60%",
+                    "80%"
+                ]
+            },
+            "baxis": {
+                "title": "Sand",
+                "min": 0.01,
+                "linewidth": 2,
+                "ticks": "outside",
+                "ticklen": 8,
+                "showgrid": true,
+                "tickvals": [
+                    0.2,
+                    0.4,
+                    0.6,
+                    0.8
+                ],
+                "ticktext": [
+                    "20%",
+                    "40%",
+                    "60%",
+                    "80%"
+                ]
+            },
+            "caxis": {
+                "title": "Silt",
+                "min": 0.01,
+                "linewidth": 2,
+                "ticks": "outside",
+                "ticklen": 8,
+                "showgrid": true,
+                "tickvals": [
+                    0.2,
+                    0.4,
+                    0.6,
+                    0.8
+                ],
+                "ticktext": [
+                    "20%",
+                    "40%",
+                    "60%",
+                    "80%"
+                ]
+            }
+        },
+        "showlegend": false,
+        "width": 700,
+        "height": 450,
+        "autosize": false
+    }
+}

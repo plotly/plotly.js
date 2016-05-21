@@ -12,7 +12,14 @@
  * will only run the tests in axes_test.js
  *
  */
-var testFileGlob = process.argv[4] ? process.argv[4] : 'tests/*_test.js';
+
+var arg = process.argv[4];
+
+var testFileGlob = arg ? arg : 'tests/*_test.js';
+var isSingleSuiteRun = (arg && arg.indexOf('bundle_tests/') === -1);
+
+var pathToMain = '../../lib/index.js';
+var pathToJQuery = 'assets/jquery-1.8.3.min.js';
 
 
 function func(config) {
@@ -34,10 +41,9 @@ func.defaultConfig = {
     frameworks: ['jasmine', 'browserify'],
 
     // list of files / patterns to load in the browser
-    files: [
-        'assets/jquery-1.8.3.min.js',
-        testFileGlob
-    ],
+    //
+    // N.B. this field is filled below
+    files: [],
 
     exclude: [],
 
@@ -63,7 +69,16 @@ func.defaultConfig = {
 
     // start these browsers
     // available browser launchers: https://npmjs.org/browse/keyword/karma-launcher
-    browsers: ['Chrome'],
+    browsers: ['Chrome_WindowSized'],
+
+    // custom browser options
+    customLaunchers: {
+        Chrome_WindowSized: {
+            base: 'Chrome',
+            // window-size values came from observing default size
+            flags: ['--window-size=1035,617', '--ignore-gpu-blacklist']
+        }
+    },
 
     // Continuous Integration mode
     // if true, Karma captures browsers, runs the tests and exits
@@ -77,7 +92,27 @@ func.defaultConfig = {
     }
 };
 
-// browserify the test files
-func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+
+// Add lib/index.js to single-suite runs,
+// to avoid import conflicts due to plotly.js
+// circular dependencies.
+if(isSingleSuiteRun) {
+    func.defaultConfig.files = [
+        pathToJQuery,
+        pathToMain,
+        testFileGlob
+    ];
+
+    func.defaultConfig.preprocessors[pathToMain] = ['browserify'];
+    func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+}
+else {
+    func.defaultConfig.files = [
+        pathToJQuery,
+        testFileGlob
+    ];
+
+    func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+}
 
 module.exports = func;

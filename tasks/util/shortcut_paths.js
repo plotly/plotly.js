@@ -24,7 +24,7 @@ module.exports = transformTools.makeRequireTransform('requireTransform',
             if(pathIn.indexOf(k) !== -1) {
                 var tail = pathIn.split(k)[1];
                 var newPath = path.join(shortcutsConfig[k], tail).replace(/\\/g, '/');
-                pathOut = 'require(\''+ newPath + '\')';
+                pathOut = 'require(\'' + newPath + '\')';
             }
         });
 

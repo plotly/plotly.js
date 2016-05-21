@@ -26,13 +26,13 @@ module.exports = function formatBundleMsg(b, bundleName) {
         var date = new Date();
 
         // get locale date
-        msgParts[msgParts.length-4] = date.toLocaleDateString();
+        msgParts[msgParts.length - 4] = date.toLocaleDateString();
 
         // get locale time
-        msgParts[msgParts.length-3] = date.toLocaleTimeString();
+        msgParts[msgParts.length - 3] = date.toLocaleTimeString();
 
         // get time zone code
-        msgParts[msgParts.length-2] = date.toString().match(/\(([A-Za-z\s].*)\)/)[1];
+        msgParts[msgParts.length - 2] = date.toString().match(/\(([A-Za-z\s].*)\)/)[1];
 
         console.log(msgParts.join(' '));
     });

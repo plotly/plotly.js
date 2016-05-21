@@ -12,29 +12,25 @@
 var Lib = require('../../lib');
 var Plots = require('../plots');
 
+var constants = require('./constants');
+
 exports.name = 'cartesian';
 
 exports.attr = ['xaxis', 'yaxis'];
 
 exports.idRoot = ['x', 'y'];
 
+exports.idRegex = constants.idRegex;
+
+exports.attrRegex = constants.attrRegex;
+
 exports.attributes = require('./attributes');
-
-exports.idRegex = {
-    x: /^x([2-9]|[1-9][0-9]+)?$/,
-    y: /^y([2-9]|[1-9][0-9]+)?$/
-};
-
-exports.attrRegex = {
-    x: /^xaxis([2-9]|[1-9][0-9]+)?$/,
-    y: /^yaxis([2-9]|[1-9][0-9]+)?$/
-};
 
 exports.plot = function(gd) {
     var fullLayout = gd._fullLayout,
         subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
         calcdata = gd.calcdata,
-        modules = gd._modules;
+        modules = fullLayout._modules;
 
     function getCdSubplot(calcdata, subplot) {
         var cdSubplot = [];
@@ -82,28 +78,11 @@ exports.plot = function(gd) {
             // skip over non-cartesian trace modules
             if(_module.basePlotModule.name !== 'cartesian') continue;
 
-            // skip over pies, there are drawn below
-            if(_module.name === 'pie') continue;
-
             // plot all traces of this type on this subplot at once
             var cdModule = getCdModule(cdSubplot, _module);
             _module.plot(gd, subplotInfo, cdModule);
 
             Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
         }
-    }
-
-    // now draw stuff not on subplots (ie, only pies at the moment)
-    if(fullLayout._hasPie) {
-        var Pie = Plots.getModule('pie');
-        var cdPie = getCdModule(calcdata, Pie);
-
-        if(cdPie.length) Pie.plot(gd, cdPie);
-    }
-};
-
-exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
-    if(oldFullLayout._hasPie && !newFullLayout._hasPie) {
-        oldFullLayout._pielayer.selectAll('g.trace').remove();
     }
 };

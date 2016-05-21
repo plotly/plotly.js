@@ -48,7 +48,7 @@ describe('plot schema', function() {
     it('all nested objects should have the *object* `role`', function() {
         assertPlotSchema(
             function(attr, attrName) {
-                if(!isValObject(attr) && isPlainObject(attr) && attrName!=='items') {
+                if(!isValObject(attr) && isPlainObject(attr) && attrName !== 'items') {
                     expect(attr.role === 'object').toBe(true);
                 }
             }
@@ -80,7 +80,7 @@ describe('plot schema', function() {
 
                     Object.keys(attr).forEach(function(key) {
                         // handle the histogram marker.color case
-                        if(opts.indexOf(key)===-1 && opts[key]===undefined) return;
+                        if(opts.indexOf(key) === -1 && opts[key] === undefined) return;
 
                         expect(opts.indexOf(key) !== -1).toBe(true);
                     });
@@ -91,7 +91,7 @@ describe('plot schema', function() {
 
     it('all subplot objects should contain _isSubplotObj', function() {
         var IS_SUBPLOT_OBJ = '_isSubplotObj',
-            astrs = ['xaxis', 'yaxis', 'scene', 'geo'],
+            astrs = ['xaxis', 'yaxis', 'scene', 'geo', 'ternary'],
             list = [];
 
         // check if the subplot objects have '_isSubplotObj'
@@ -115,7 +115,7 @@ describe('plot schema', function() {
 
     it('should convert _isLinkedToArray attributes to items object', function() {
         var astrs = [
-            'annotations', 'shapes',
+            'annotations', 'shapes', 'images',
             'xaxis.rangeselector.buttons', 'yaxis.rangeselector.buttons'
         ];
 

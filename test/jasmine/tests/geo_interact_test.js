@@ -121,6 +121,34 @@ describe('Test geo interactions', function() {
             });
         });
 
+        describe('scattergeo unhover events', function() {
+            var ptData;
+
+            beforeEach(function() {
+                gd.on('plotly_unhover', function(eventData) {
+                    ptData = eventData.points[0];
+                });
+
+                mouseEventScatterGeo('mouseover');
+                mouseEventScatterGeo('mouseout');
+            });
+
+            it('should contain the correct fields', function() {
+                expect(Object.keys(ptData)).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber',
+                    'lon', 'lat', 'location'
+                ]);
+            });
+
+            it('should show the correct point data', function() {
+                expect(ptData.lon).toEqual(0);
+                expect(ptData.lat).toEqual(0);
+                expect(ptData.location).toBe(null);
+                expect(ptData.curveNumber).toEqual(0);
+                expect(ptData.pointNumber).toEqual(0);
+            });
+        });
+
         describe('choropleth hover labels', function() {
             beforeEach(function() {
                 mouseEventChoropleth('mouseover');
@@ -179,6 +207,33 @@ describe('Test geo interactions', function() {
                 });
 
                 mouseEventChoropleth('click');
+            });
+
+            it('should contain the correct fields', function() {
+                expect(Object.keys(ptData)).toEqual([
+                    'data', 'fullData', 'curveNumber', 'pointNumber',
+                    'location', 'z'
+                ]);
+            });
+
+            it('should show the correct point data', function() {
+                expect(ptData.location).toBe('RUS');
+                expect(ptData.z).toEqual(10);
+                expect(ptData.curveNumber).toEqual(1);
+                expect(ptData.pointNumber).toEqual(2);
+            });
+        });
+
+        describe('choropleth unhover events', function() {
+            var ptData;
+
+            beforeEach(function() {
+                gd.on('plotly_unhover', function(eventData) {
+                    ptData = eventData.points[0];
+                });
+
+                mouseEventChoropleth('mouseover');
+                mouseEventChoropleth('mouseout');
             });
 
             it('should contain the correct fields', function() {

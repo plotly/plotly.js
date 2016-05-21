@@ -8,20 +8,22 @@
 
 'use strict';
 
+var d3 = require('d3');
+
 var Symbols = require('../drawing/symbol_defs');
 var Drawing = require('../drawing');
 
 var helpers = require('./helpers');
-var dataProcessors = require('./data_processors');
 var svgNS = require('../../constants/xmlns_namespaces').svg;
 
 module.exports = function rangePlot(gd, w, h) {
 
-    var traces = gd._fullData,
-        xaxis = gd._fullLayout.xaxis,
-        yaxis = gd._fullLayout.yaxis,
-        minX = xaxis.range[0],
-        maxX = xaxis.range[1],
+    var fullLayout = gd._fullLayout,
+        traces = gd._fullData,
+        xaxis = fullLayout.xaxis,
+        yaxis = fullLayout.yaxis,
+        minX = xaxis.rangeslider.range[0],
+        maxX = xaxis.rangeslider.range[1],
         minY = yaxis.range[0],
         maxY = yaxis.range[1];
 
@@ -38,12 +40,8 @@ module.exports = function rangePlot(gd, w, h) {
     clipDefs.appendChild(clip);
 
     var rangePlot = document.createElementNS(svgNS, 'g');
-    rangePlot.setAttribute('clip-path', 'url(#range-clip-path)');
+    d3.select(rangePlot).call(Drawing.setClipUrl, 'range-clip-path');
     rangePlot.appendChild(clipDefs);
-
-
-    var processX = dataProcessors[gd._fullLayout.xaxis.type || 'category'],
-        processY = dataProcessors[gd._fullLayout.yaxis.type || 'category'];
 
 
     // for now, only scatter traces are supported
@@ -59,14 +57,17 @@ module.exports = function rangePlot(gd, w, h) {
             continue;
         }
 
-        for(var k = 0; k < trace.x.length; k++) {
-            var x = processX(trace.x[k], k),
-                y = processY(trace.y[k], k);
+        var x = makeLinearData(trace, xaxis),
+            y = makeLinearData(trace, yaxis);
 
-            var posX = w * (x - minX) / (maxX - minX),
-                posY = h * (1 - (y - minY) / (maxY - minY));
+        for(var k = 0; k < x.length; k++) {
 
-            pointPairs.push([posX, posY]);
+            var posX = w * (x[k] - minX) / (maxX - minX),
+                posY = h * (1 - (y[k] - minY) / (maxY - minY));
+
+            if(!isNaN(posX) && !isNaN(posY)) {
+                pointPairs.push([posX, posY]);
+            }
         }
 
         // more trace type range plots can be added here
@@ -76,6 +77,16 @@ module.exports = function rangePlot(gd, w, h) {
 
     return rangePlot;
 };
+
+function makeLinearData(trace, axis) {
+    var data = axis.makeCalcdata(trace || [], axis._id[0]);
+
+    for(var i = 0; i < data.length; i++) {
+        data[i] = axis.c2l(data[i]);
+    }
+
+    return data;
+}
 
 
 function makeScatter(trace, pointPairs, w, h) {

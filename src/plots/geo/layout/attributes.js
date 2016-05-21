@@ -11,7 +11,7 @@
 
 module.exports = {
     geo: {
-        valType: 'geoid',
+        valType: 'subplotid',
         role: 'info',
         dflt: 'geo',
         description: [

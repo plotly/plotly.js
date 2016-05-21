@@ -1,9 +1,22 @@
+'use strict';
+
+/* global Plotly:false */
+
 var Fuse = require('fuse.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 
+// put d3 in window scope
+var d3 = window.d3 = Plotly.d3;
 
 // Our gracious testing object
 var Tabs = {
+
+    // Set plot config options
+    setPlotConfig: function() {
+
+        // use local topojson files
+        Plotly.setPlotConfig({ topojsonURL: '../../dist/topojson/' });
+    },
 
     // Return the specified plot container (or default one)
     getGraph: function(id) {
@@ -18,7 +31,7 @@ var Tabs = {
         var graphDiv = Tabs.getGraph(id);
 
         if(graphDiv) {
-            graphDiv.remove();
+            graphDiv.parentNode.removeChild(graphDiv);
         }
 
         graphDiv = document.createElement('div');
@@ -35,10 +48,22 @@ var Tabs = {
     plotMock: function(mockName, id) {
         var mockURL = '/test/image/mocks/' + mockName + '.json';
 
-        window.Plotly.d3.json(mockURL, function(err, fig) {
-            window.Plotly.plot(Tabs.fresh(id), fig.data, fig.layout);
+        d3.json(mockURL, function(err, fig) {
+            Plotly.plot(Tabs.fresh(id), fig.data, fig.layout);
 
             console.warn('Plotting:', mockURL);
+        });
+    },
+
+    getMock: function(mockName, callback) {
+        var mockURL = '/test/image/mocks/' + mockName + '.json';
+
+        d3.json(mockURL, function(err, fig) {
+            if(typeof callback !== 'function') {
+                window.mock = fig;
+            } else {
+                callback(err, fig);
+            }
         });
     },
 
@@ -47,12 +72,13 @@ var Tabs = {
         var gd = Tabs.getGraph(id);
 
         if(!gd._fullLayout || !gd._fullData) {
+            console.error('no graph with id ' + id + ' found.');
             return;
         }
 
         var image = new Image();
 
-        window.Plotly.Snapshot.toImage(gd, { format: 'png' }).on('success', function(img) {
+        Plotly.Snapshot.toImage(gd, { format: 'png' }).on('success', function(img) {
             image.src = img;
 
             var imageDiv = document.getElementById('snapshot');
@@ -72,7 +98,7 @@ var Tabs = {
         }
 
         for(var i = 0; i < plots.length; i++) {
-            window.Plotly.purge(plots[i]);
+            Plotly.purge(plots[i]);
         }
     },
 
@@ -100,7 +126,13 @@ var Tabs = {
         console.warn('plotly.js reloaded at ' + reloadTime);
         reloaded.textContent = 'last reload at ' + reloadTime;
 
-        Tabs.onReload();
+        var interval = setInterval(function() {
+            if(window.Plotly) {
+                clearInterval(interval);
+                Tabs.setPlotConfig();
+                Tabs.onReload();
+            }
+        }, 100);
     }
 };
 
@@ -113,6 +145,8 @@ setInterval(function() {
     window.fullData = window.gd._fullData;
 }, 1000);
 
+// Set plot config on first load
+Tabs.setPlotConfig();
 
 // Mocks search and plotting
 var f = new Fuse(mocks, {
@@ -129,7 +163,24 @@ var searchBar = document.getElementById('mocks-search');
 var mocksList = document.getElementById('mocks-list');
 var plotArea = document.getElementById('plots');
 
-searchBar.addEventListener('keyup', function(e) {
+searchBar.addEventListener('keyup', debounce(searchMocks, 250));
+
+function debounce(func, wait, immediate) {
+    var timeout;
+    return function() {
+        var context = this, args = arguments;
+        var later = function() {
+            timeout = null;
+            if(!immediate) func.apply(context, args);
+        };
+        var callNow = immediate && !timeout;
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+        if(callNow) func.apply(context, args);
+    };
+}
+
+function searchMocks(e) {
 
     // Clear results.
     while(mocksList.firstChild) {
@@ -157,4 +208,4 @@ searchBar.addEventListener('keyup', function(e) {
         var plotAreaWidth = Math.floor(window.innerWidth - listWidth);
         plotArea.setAttribute('style', 'width: ' + plotAreaWidth + 'px;');
     });
-});
+}

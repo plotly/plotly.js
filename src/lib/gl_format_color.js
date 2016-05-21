@@ -9,12 +9,14 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
 var tinycolor = require('tinycolor2');
 var isNumeric = require('fast-isnumeric');
+
+var makeScaleFunction = require('../components/colorscale/make_scale_function');
+var colorDflt = require('../components/color/attributes').defaultLine;
+
 var str2RgbaArray = require('./str2rgbarray');
 
-var colorDflt = require('../components/color/attributes').defaultLine;
 var opacityDflt = 1;
 
 function calculateColor(colorIn, opacityIn) {
@@ -40,7 +42,7 @@ function formatColor(containerIn, opacityIn, len) {
     var sclFunc, getColor, getOpacity, colori, opacityi;
 
     if(containerIn.colorscale !== undefined) {
-        sclFunc = Plotly.Colorscale.makeScaleFunction(
+        sclFunc = makeScaleFunction(
             containerIn.colorscale, containerIn.cmin, containerIn.cmax
         );
     }
@@ -48,14 +50,14 @@ function formatColor(containerIn, opacityIn, len) {
 
     if(isArrayColorIn) {
         getColor = function(c, i) {
-            return c[i]===undefined ? colorDflt : sclFunc(c[i]);
+            return c[i] === undefined ? colorDflt : sclFunc(c[i]);
         };
     }
     else getColor = validateColor;
 
     if(isArrayOpacityIn) {
         getOpacity = function(o, i) {
-            return o[i]===undefined ? opacityDflt : validateOpacity(o[i]);
+            return o[i] === undefined ? opacityDflt : validateOpacity(o[i]);
         };
     }
     else getOpacity = validateOpacity;

@@ -11,7 +11,7 @@
 
 module.exports = {
     xaxis: {
-        valType: 'axisid',
+        valType: 'subplotid',
         role: 'info',
         dflt: 'x',
         description: [
@@ -23,7 +23,7 @@ module.exports = {
         ].join(' ')
     },
     yaxis: {
-        valType: 'axisid',
+        valType: 'subplotid',
         role: 'info',
         dflt: 'y',
         description: [

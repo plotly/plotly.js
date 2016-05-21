@@ -24,6 +24,7 @@ var Fx = require('../plots/cartesian/graph_interact');
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
+var Images = require('../components/images');
 var Legend = require('../components/legend');
 var RangeSlider = require('../components/rangeslider');
 var RangeSelector = require('../components/rangeselector');
@@ -185,7 +186,7 @@ Plotly.plot = function(gd, data, layout, config) {
             cd = calcdata[i];
             trace = cd[0].trace;
             if(trace.visible !== true || !trace._module.colorbar) {
-                Plots.autoMargin(gd, 'cb'+trace.uid);
+                Plots.autoMargin(gd, 'cb' + trace.uid);
             }
             else trace._module.colorbar(gd, cd);
         }
@@ -196,16 +197,16 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function marginPushersAgain() {
         // in case the margins changed, draw margin pushers again
-        var seq = JSON.stringify(fullLayout._size)===oldmargins ?
+        var seq = JSON.stringify(fullLayout._size) === oldmargins ?
             [] : [marginPushers, layoutStyles];
-        return Lib.syncOrAsync(seq.concat(Fx.init),gd);
+        return Lib.syncOrAsync(seq.concat(Fx.init), gd);
     }
 
     function positionAndAutorange() {
         if(!recalc) return;
 
         var subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
-            modules = gd._modules;
+            modules = fullLayout._modules;
 
         // position and range calculations for traces that
         // depend on each other ie bars (stacked or grouped)
@@ -245,17 +246,17 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function drawAxes() {
         // draw ticks, titles, and calculate axis scaling (._b, ._m)
-        RangeSlider.draw(gd);
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
     // Now plot the data
     function drawData() {
-        var calcdata = gd.calcdata;
+        var calcdata = gd.calcdata,
+            i;
 
         // in case of traces that were heatmaps or contour maps
         // previously, remove them and their colorbars explicitly
-        for(var i = 0; i < calcdata.length; i++) {
+        for(i = 0; i < calcdata.length; i++) {
             var trace = calcdata[i][0].trace,
                 isVisible = (trace.visible === true),
                 uid = trace.uid;
@@ -273,17 +274,11 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        var plotRegistry = Plots.subplotsRegistry;
-
-        if(fullLayout._hasGL3D) plotRegistry.gl3d.plot(gd);
-        if(fullLayout._hasGeo) plotRegistry.geo.plot(gd);
-        if(fullLayout._hasGL2D) plotRegistry.gl2d.plot(gd);
-        if(fullLayout._hasCartesian || fullLayout._hasPie) {
-            plotRegistry.cartesian.plot(gd);
+        // loop over the base plot modules present on graph
+        var basePlotModules = fullLayout._basePlotModules;
+        for(i = 0; i < basePlotModules.length; i++) {
+            basePlotModules[i].plot(gd);
         }
-
-        // clean up old scenes that no longer have associated data
-        // will this be a performance hit?
 
         // styling separate from drawing
         Plots.style(gd);
@@ -307,8 +302,10 @@ Plotly.plot = function(gd, data, layout, config) {
     // be set to false before these will work properly.
     function finalDraw() {
         Shapes.drawAll(gd);
+        Images.draw(gd);
         Plotly.Annotations.drawAll(gd);
         Legend.draw(gd);
+        RangeSlider.draw(gd);
         RangeSelector.draw(gd);
     }
 
@@ -319,12 +316,12 @@ Plotly.plot = function(gd, data, layout, config) {
         gd.emit('plotly_afterplot');
     }
 
-    var donePlotting = Lib.syncOrAsync([
+    Lib.syncOrAsync([
         Plots.previousPromises,
         marginPushers,
-        layoutStyles,
         marginPushersAgain,
         positionAndAutorange,
+        layoutStyles,
         drawAxes,
         drawData,
         finalDraw
@@ -332,8 +329,9 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // even if everything we did was synchronous, return a promise
     // so that the caller doesn't care which route we took
-    return (donePlotting && donePlotting.then) ?
-        donePlotting : Promise.resolve(gd);
+    return Promise.all(gd._promises).then(function() {
+        return gd;
+    });
 };
 
 // Get the container div: we store all variables for this plot as
@@ -351,7 +349,7 @@ function getGraphDiv(gd) {
 
         return gdElement;
     }
-    else if(gd===null || gd===undefined) {
+    else if(gd === null || gd === undefined) {
         throw new Error('DOM element provided is null or undefined');
     }
 
@@ -405,8 +403,8 @@ function plotPolar(gd, data, layout) {
     var paperDiv = plotContainer.selectAll('.svg-container')
         .data([0]);
     paperDiv.enter().append('div')
-        .classed('svg-container',true)
-        .style('position','relative');
+        .classed('svg-container', true)
+        .style('position', 'relative');
 
     // empty it everytime for now
     paperDiv.html('');
@@ -417,7 +415,7 @@ function plotPolar(gd, data, layout) {
     Plotly.micropolar.manager.fillLayout(gd);
 
     if(gd._fullLayout.autosize === 'initial' && gd._context.autosizable) {
-        plotAutoSize(gd,{});
+        plotAutoSize(gd, {});
         gd._fullLayout.autosize = layout.autosize = true;
     }
     // resize canvas
@@ -460,13 +458,13 @@ function plotPolar(gd, data, layout) {
             title.attr({'data-unformatted': placeholderText})
                 .text(placeholderText)
                 .style({opacity: opacity})
-                .on('mouseover.opacity',function() {
+                .on('mouseover.opacity', function() {
                     d3.select(this).transition().duration(100)
-                        .style('opacity',1);
+                        .style('opacity', 1);
                 })
-                .on('mouseout.opacity',function() {
+                .on('mouseout.opacity', function() {
                     d3.select(this).transition().duration(1000)
-                        .style('opacity',0);
+                        .style('opacity', 0);
                 });
         }
 
@@ -521,11 +519,11 @@ function cleanLayout(layout) {
 
         // old method of axis type - isdate and islog (before category existed)
         if(!ax.type) {
-            if(ax.isdate) ax.type='date';
-            else if(ax.islog) ax.type='log';
-            else if(ax.isdate===false && ax.islog===false) ax.type='linear';
+            if(ax.isdate) ax.type = 'date';
+            else if(ax.islog) ax.type = 'log';
+            else if(ax.isdate === false && ax.islog === false) ax.type = 'linear';
         }
-        if(ax.autorange==='withzero' || ax.autorange==='tozero') {
+        if(ax.autorange === 'withzero' || ax.autorange === 'tozero') {
             ax.autorange = true;
             ax.rangemode = 'tozero';
         }
@@ -553,11 +551,11 @@ function cleanLayout(layout) {
     for(i = 0; i < annotationsLen; i++) {
         var ann = layout.annotations[i];
         if(ann.ref) {
-            if(ann.ref==='paper') {
+            if(ann.ref === 'paper') {
                 ann.xref = 'paper';
                 ann.yref = 'paper';
             }
-            else if(ann.ref==='data') {
+            else if(ann.ref === 'data') {
                 ann.xref = 'x';
                 ann.yref = 'y';
             }
@@ -571,7 +569,7 @@ function cleanLayout(layout) {
         console.log('shapes must be an array');
         delete layout.shapes;
     }
-    var shapesLen = (layout.shapes||[]).length;
+    var shapesLen = (layout.shapes || []).length;
     for(i = 0; i < shapesLen; i++) {
         var shape = layout.shapes[i];
         cleanAxRef(shape, 'xref');
@@ -658,13 +656,11 @@ function cleanAxRef(container, attr) {
     }
 }
 
+// Make a few changes to the data right away
+// before it gets used for anything
 function cleanData(data, existingData) {
-    // make a few changes to the data right away
-    // before it gets used for anything
 
-    /*
-     * Enforce unique IDs
-     */
+    // Enforce unique IDs
     var suids = [], // seen uids --- so we can weed out incoming repeats
         uids = data.concat(Array.isArray(existingData) ? existingData : [])
                .filter(function(trace) { return 'uid' in trace; })
@@ -672,13 +668,15 @@ function cleanData(data, existingData) {
 
     for(var tracei = 0; tracei < data.length; tracei++) {
         var trace = data[tracei];
+        var i;
 
         // assign uids to each trace and detect collisions.
         if(!('uid' in trace) || suids.indexOf(trace.uid) !== -1) {
-            var newUid, i;
-            for(i=0; i<100; i++) {
+            var newUid;
+
+            for(i = 0; i < 100; i++) {
                 newUid = Lib.randstr(uids);
-                if(suids.indexOf(newUid)===-1) break;
+                if(suids.indexOf(newUid) === -1) break;
             }
             trace.uid = Lib.randstr(uids);
             uids.push(trace.uid);
@@ -691,7 +689,7 @@ function cleanData(data, existingData) {
         // BACKWARD COMPATIBILITY FIXES
 
         // use xbins to bin data in x, and ybins to bin data in y
-        if(trace.type==='histogramy' && 'xbins' in trace && !('ybins' in trace)) {
+        if(trace.type === 'histogramy' && 'xbins' in trace && !('ybins' in trace)) {
             trace.ybins = trace.xbins;
             delete trace.xbins;
         }
@@ -710,8 +708,8 @@ function cleanData(data, existingData) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir==='h' && (Plots.traceIs(trace, 'bar') ||
-                     trace.type.substr(0,9)==='histogram')) {
+            if(trace.bardir === 'h' && (Plots.traceIs(trace, 'bar') ||
+                     trace.type.substr(0, 9) === 'histogram')) {
                 trace.orientation = 'h';
                 swapXYData(trace);
             }
@@ -720,8 +718,8 @@ function cleanData(data, existingData) {
 
         // now we have only one 1D histogram type, and whether
         // it uses x or y data depends on trace.orientation
-        if(trace.type==='histogramy') swapXYData(trace);
-        if(trace.type==='histogramx' || trace.type==='histogramy') {
+        if(trace.type === 'histogramy') swapXYData(trace);
+        if(trace.type === 'histogramx' || trace.type === 'histogramy') {
             trace.type = 'histogram';
         }
 
@@ -764,6 +762,27 @@ function cleanData(data, existingData) {
             if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
         }
 
+        // fix typo in surface 'highlight*' definitions
+        if(trace.type === 'surface' && Lib.isPlainObject(trace.contours)) {
+            var dims = ['x', 'y', 'z'];
+
+            for(i = 0; i < dims.length; i++) {
+                var opts = trace.contours[dims[i]];
+
+                if(!Lib.isPlainObject(opts)) continue;
+
+                if(opts.highlightColor) {
+                    opts.highlightcolor = opts.highlightColor;
+                    delete opts.highlightColor;
+                }
+
+                if(opts.highlightWidth) {
+                    opts.highlightwidth = opts.highlightWidth;
+                    delete opts.highlightWidth;
+                }
+            }
+        }
+
         // prune empty containers made before the new nestedProperty
         if(emptyContainer(trace, 'line')) delete trace.line;
         if('marker' in trace) {
@@ -784,11 +803,11 @@ function cleanData(data, existingData) {
 function cleanTextPosition(textposition) {
     var posY = 'middle',
         posX = 'center';
-    if(textposition.indexOf('top')!==-1) posY = 'top';
-    else if(textposition.indexOf('bottom')!==-1) posY = 'bottom';
+    if(textposition.indexOf('top') !== -1) posY = 'top';
+    else if(textposition.indexOf('bottom') !== -1) posY = 'bottom';
 
-    if(textposition.indexOf('left')!==-1) posX = 'left';
-    else if(textposition.indexOf('right')!==-1) posX = 'right';
+    if(textposition.indexOf('left') !== -1) posX = 'left';
+    else if(textposition.indexOf('right') !== -1) posX = 'right';
 
     return posY + ' ' + posX;
 }
@@ -853,10 +872,10 @@ function doCalcdata(gd) {
     fullLayout._piecolormap = {};
     fullLayout._piedefaultcolorcount = 0;
 
-    // delete category list, if there is one, so we start over
+    // initialize the category list, if there is one, so we start over
     // to be filled in later by ax.d2c
     for(i = 0; i < axList.length; i++) {
-        axList[i]._categories = [];
+        axList[i]._categories = axList[i]._initialCategories.slice();
     }
 
     for(i = 0; i < fullData.length; i++) {
@@ -879,7 +898,7 @@ function doCalcdata(gd) {
         if(!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
-        Lib.markTime('done with calcdata for '+i);
+        Lib.markTime('done with calcdata for ' + i);
         calcdata[i] = cd;
     }
 }
@@ -1533,18 +1552,18 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Lib.isPlainObject(astr)) {
         aobj = astr;
-        if(traces===undefined) traces = val; // the 3-arg form
+        if(traces === undefined) traces = val; // the 3-arg form
     }
     else {
-        console.log('restyle fail',astr,val,traces);
+        console.log('restyle fail', astr, val, traces);
         return Promise.reject();
     }
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    if(isNumeric(traces)) traces=[traces];
+    if(isNumeric(traces)) traces = [traces];
     else if(!Array.isArray(traces) || !traces.length) {
-        traces=gd._fullData.map(function(v,i) { return i; });
+        traces = gd._fullData.map(function(v, i) { return i; });
     }
 
     // recalcAttrs attributes need a full regeneration of calcdata
@@ -1553,10 +1572,11 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // in principle we generally shouldn't need to redo ALL traces... that's
     // harder though.
     var recalcAttrs = [
-        'mode','visible','type','orientation','fill',
-        'histfunc','histnorm','text',
+        'mode', 'visible', 'type', 'orientation', 'fill',
+        'histfunc', 'histnorm', 'text',
         'x', 'y', 'z',
-        'xtype','x0','dx','ytype','y0','dy','xaxis','yaxis',
+        'a', 'b', 'c',
+        'xtype', 'x0', 'dx', 'ytype', 'y0', 'dy', 'xaxis', 'yaxis',
         'line.width',
         'connectgaps', 'transpose', 'zsmooth',
         'showscale', 'marker.showscale',
@@ -1564,16 +1584,16 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'autocolorscale', 'marker.autocolorscale',
         'colorscale', 'marker.colorscale',
         'reversescale', 'marker.reversescale',
-        'autobinx','nbinsx','xbins','xbins.start','xbins.end','xbins.size',
-        'autobiny','nbinsy','ybins','ybins.start','ybins.end','ybins.size',
-        'autocontour','ncontours','contours','contours.coloring',
-        'error_y','error_y.visible','error_y.value','error_y.type',
-        'error_y.traceref','error_y.array','error_y.symmetric',
-        'error_y.arrayminus','error_y.valueminus','error_y.tracerefminus',
-        'error_x','error_x.visible','error_x.value','error_x.type',
-        'error_x.traceref','error_x.array','error_x.symmetric',
-        'error_x.arrayminus','error_x.valueminus','error_x.tracerefminus',
-        'swapxy','swapxyaxes','orientationaxes',
+        'autobinx', 'nbinsx', 'xbins', 'xbins.start', 'xbins.end', 'xbins.size',
+        'autobiny', 'nbinsy', 'ybins', 'ybins.start', 'ybins.end', 'ybins.size',
+        'autocontour', 'ncontours', 'contours', 'contours.coloring',
+        'error_y', 'error_y.visible', 'error_y.value', 'error_y.type',
+        'error_y.traceref', 'error_y.array', 'error_y.symmetric',
+        'error_y.arrayminus', 'error_y.valueminus', 'error_y.tracerefminus',
+        'error_x', 'error_x.visible', 'error_x.value', 'error_x.type',
+        'error_x.traceref', 'error_x.array', 'error_x.symmetric',
+        'error_x.arrayminus', 'error_x.valueminus', 'error_x.tracerefminus',
+        'swapxy', 'swapxyaxes', 'orientationaxes',
         'marker.colors', 'values', 'labels', 'label0', 'dlabel', 'sort',
         'textinfo', 'textposition', 'textfont.size', 'textfont.family', 'textfont.color',
         'insidetextfont.size', 'insidetextfont.family', 'insidetextfont.color',
@@ -1595,17 +1615,17 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // TODO: could we break this out as well?
     var autorangeAttrs = [
         'marker', 'marker.size', 'textfont',
-        'boxpoints','jitter','pointpos','whiskerwidth','boxmean'
+        'boxpoints', 'jitter', 'pointpos', 'whiskerwidth', 'boxmean'
     ];
     // replotAttrs attributes need a replot (because different
     // objects need to be made) but not a recalc
     var replotAttrs = [
         'zmin', 'zmax', 'zauto',
         'marker.cmin', 'marker.cmax', 'marker.cauto',
-        'contours.start','contours.end','contours.size',
+        'contours.start', 'contours.end', 'contours.size',
         'contours.showlines',
-        'line','line.smoothing','line.shape',
-        'error_y.width','error_x.width','error_x.copy_ystyle',
+        'line', 'line.smoothing', 'line.shape',
+        'error_y.width', 'error_x.width', 'error_x.copy_ystyle',
         'marker.maxdisplayed'
     ];
     // these ones show up in restyle because they make more sense
@@ -1621,7 +1641,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // these ones may alter the axis type
     // (at least if the first trace is involved)
     var axtypeAttrs = [
-        'type','x','y','x0','y0','orientation','xaxis','yaxis'
+        'type', 'x', 'y', 'x0', 'y0', 'orientation', 'xaxis', 'yaxis'
     ];
 
     // flags for which kind of update we need to do
@@ -1638,10 +1658,12 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         axlist,
         flagAxForDelete = {};
 
-    // for now, if we detect gl or geo stuff, just re-do the plot
-    if(fullLayout._hasGL3D || fullLayout._hasGeo || fullLayout._hasGL2D) {
-        doplot = true;
-    }
+    // At the moment, only cartesian, pie and ternary plot types can afford
+    // to not go through a full replot
+    var doPlotWhiteList = ['cartesian', 'pie', 'ternary'];
+    fullLayout._basePlotModules.forEach(function(_module) {
+        if(doPlotWhiteList.indexOf(_module.name) === -1) doplot = true;
+    });
 
     // make a new empty vals array for undoit
     function a0() { return traces.map(function() { return undefined; }); }
@@ -1649,7 +1671,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // for autoranging multiple axes
     function addToAxlist(axid) {
         var axName = Plotly.Axes.id2name(axid);
-        if(axlist.indexOf(axName)===-1) { axlist.push(axName); }
+        if(axlist.indexOf(axName) === -1) { axlist.push(axName); }
     }
     function autorangeAttr(axName) { return 'LAYOUT' + axName + '.autorange'; }
     function rangeAttr(axName) { return 'LAYOUT' + axName + '.range'; }
@@ -1659,9 +1681,9 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // val=undefined will not set a value, just record what the value was.
     // val=null will delete the attribute
     // attr can be an array to set several at once (all to the same val)
-    function doextra(attr,val,i) {
+    function doextra(attr, val, i) {
         if(Array.isArray(attr)) {
-            attr.forEach(function(a) { doextra(a,val,i); });
+            attr.forEach(function(a) { doextra(a, val, i); });
             return;
         }
         // quit if explicitly setting this elsewhere
@@ -1677,10 +1699,10 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         if(!(attr in undoit)) {
             undoit[attr] = a0();
         }
-        if(undoit[attr][i]===undefined) {
-            undoit[attr][i]=extraparam.get();
+        if(undoit[attr][i] === undefined) {
+            undoit[attr][i] = extraparam.get();
         }
-        if(val!==undefined) {
+        if(val !== undefined) {
             extraparam.set(val);
         }
     }
@@ -1700,7 +1722,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             newVal;
         redoit[ai] = vi;
 
-        if(ai.substr(0,6)==='LAYOUT') {
+        if(ai.substr(0, 6) === 'LAYOUT') {
             param = Lib.nestedProperty(gd.layout, ai.replace('LAYOUT', ''));
             undoit[ai] = [param.get()];
             // since we're allowing val to be an array, allow it here too,
@@ -1714,16 +1736,16 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
         // set attribute in gd.data
         undoit[ai] = a0();
-        for(i=0; i<traces.length; i++) {
+        for(i = 0; i < traces.length; i++) {
             cont = gd.data[traces[i]];
             contFull = gd._fullData[traces[i]];
-            param = Lib.nestedProperty(cont,ai);
+            param = Lib.nestedProperty(cont, ai);
             oldVal = param.get();
-            newVal = Array.isArray(vi) ? vi[i%vi.length] : vi;
+            newVal = Array.isArray(vi) ? vi[i % vi.length] : vi;
 
             // setting bin or z settings should turn off auto
             // and setting auto should save bin or z settings
-            if(zscl.indexOf(ai)!==-1) {
+            if(zscl.indexOf(ai) !== -1) {
                 doextra('zauto', false, i);
             }
             else if(ai === 'colorscale') {
@@ -1738,35 +1760,35 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             else if(ai === 'marker.autocolorscale') {
                 doextra('marker.colorscale', undefined, i);
             }
-            else if(ai==='zauto') {
+            else if(ai === 'zauto') {
                 doextra(zscl, undefined, i);
             }
-            else if(xbins.indexOf(ai)!==-1) {
+            else if(xbins.indexOf(ai) !== -1) {
                 doextra('autobinx', false, i);
             }
-            else if(ai==='autobinx') {
+            else if(ai === 'autobinx') {
                 doextra(xbins, undefined, i);
             }
-            else if(ybins.indexOf(ai)!==-1) {
+            else if(ybins.indexOf(ai) !== -1) {
                 doextra('autobiny', false, i);
             }
-            else if(ai==='autobiny') {
+            else if(ai === 'autobiny') {
                 doextra(ybins, undefined, i);
             }
-            else if(contourAttrs.indexOf(ai)!==-1) {
+            else if(contourAttrs.indexOf(ai) !== -1) {
                 doextra('autocontour', false, i);
             }
-            else if(ai==='autocontour') {
+            else if(ai === 'autocontour') {
                 doextra(contourAttrs, undefined, i);
             }
             // heatmaps: setting x0 or dx, y0 or dy,
             // should turn xtype/ytype to 'scaled' if 'array'
-            else if(['x0','dx'].indexOf(ai)!==-1 &&
-                    contFull.x && contFull.xtype!=='scaled') {
+            else if(['x0', 'dx'].indexOf(ai) !== -1 &&
+                    contFull.x && contFull.xtype !== 'scaled') {
                 doextra('xtype', 'scaled', i);
             }
-            else if(['y0','dy'].indexOf(ai)!==-1 &&
-                    contFull.y && contFull.ytype!=='scaled') {
+            else if(['y0', 'dy'].indexOf(ai) !== -1 &&
+                    contFull.y && contFull.ytype !== 'scaled') {
                 doextra('ytype', 'scaled', i);
             }
             // changing colorbar size modes,
@@ -1774,25 +1796,25 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             // note that colorbar fractional sizing is based on the
             // original plot size, before anything (like a colorbar)
             // increases the margins
-            else if(ai==='colorbar.thicknessmode' && param.get() !== newVal &&
-                        ['fraction','pixels'].indexOf(newVal) !== -1 &&
+            else if(ai === 'colorbar.thicknessmode' && param.get() !== newVal &&
+                        ['fraction', 'pixels'].indexOf(newVal) !== -1 &&
                         contFull.colorbar) {
                 var thicknorm =
-                    ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
+                    ['top', 'bottom'].indexOf(contFull.colorbar.orient) !== -1 ?
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b) :
                         (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r);
                 doextra('colorbar.thickness', contFull.colorbar.thickness *
-                    (newVal === 'fraction' ? 1/thicknorm : thicknorm), i);
+                    (newVal === 'fraction' ? 1 / thicknorm : thicknorm), i);
             }
-            else if(ai==='colorbar.lenmode' && param.get() !== newVal &&
-                        ['fraction','pixels'].indexOf(newVal) !== -1 &&
+            else if(ai === 'colorbar.lenmode' && param.get() !== newVal &&
+                        ['fraction', 'pixels'].indexOf(newVal) !== -1 &&
                         contFull.colorbar) {
                 var lennorm =
-                    ['top','bottom'].indexOf(contFull.colorbar.orient)!==-1 ?
+                    ['top', 'bottom'].indexOf(contFull.colorbar.orient) !== -1 ?
                         (fullLayout.width - fullLayout.margin.l - fullLayout.margin.r) :
                         (fullLayout.height - fullLayout.margin.t - fullLayout.margin.b);
                 doextra('colorbar.len', contFull.colorbar.len *
-                    (newVal === 'fraction' ? 1/lennorm : lennorm), i);
+                    (newVal === 'fraction' ? 1 / lennorm : lennorm), i);
             }
             else if(ai === 'colorbar.tick0' || ai === 'colorbar.dtick') {
                 doextra('colorbar.tickmode', 'linear', i);
@@ -1832,18 +1854,18 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             // set the new value - if val is an array, it's one el per trace
             // first check for attributes that get more complex alterations
             var swapAttrs = [
-                'swapxy','swapxyaxes','orientation','orientationaxes'
+                'swapxy', 'swapxyaxes', 'orientation', 'orientationaxes'
             ];
-            if(swapAttrs.indexOf(ai)!==-1) {
+            if(swapAttrs.indexOf(ai) !== -1) {
                 // setting an orientation: make sure it's changing
                 // before we swap everything else
-                if(ai==='orientation') {
+                if(ai === 'orientation') {
                     param.set(newVal);
-                    if(param.get()===undoit[ai][i]) continue;
+                    if(param.get() === undoit[ai][i]) continue;
                 }
                 // orientationaxes has no value,
                 // it flips everything and the axes
-                else if(ai==='orientationaxes') {
+                else if(ai === 'orientationaxes') {
                     cont.orientation =
                         {v: 'h', h: 'v'}[contFull.orientation];
                 }
@@ -1855,7 +1877,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         }
 
         // swap the data attributes of the relevant x and y axes?
-        if(['swapxyaxes','orientationaxes'].indexOf(ai)!==-1) {
+        if(['swapxyaxes', 'orientationaxes'].indexOf(ai) !== -1) {
             Plotly.Axes.swap(gd, traces);
         }
 
@@ -1870,37 +1892,37 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         }
 
         // check if we need to call axis type
-        if((traces.indexOf(0)!==-1) && (axtypeAttrs.indexOf(ai)!==-1)) {
-            Plotly.Axes.clearTypes(gd,traces);
+        if((traces.indexOf(0) !== -1) && (axtypeAttrs.indexOf(ai) !== -1)) {
+            Plotly.Axes.clearTypes(gd, traces);
             docalc = true;
         }
 
         // switching from auto to manual binning or z scaling doesn't
         // actually do anything but change what you see in the styling
         // box. everything else at least needs to apply styles
-        if((['autobinx','autobiny','zauto'].indexOf(ai)===-1) ||
-                newVal!==false) {
+        if((['autobinx', 'autobiny', 'zauto'].indexOf(ai) === -1) ||
+                newVal !== false) {
             dostyle = true;
         }
-        if(['colorbar', 'line'].indexOf(param.parts[0])!==-1 ||
-            param.parts[0]==='marker' && param.parts[1]==='colorbar') {
+        if(['colorbar', 'line'].indexOf(param.parts[0]) !== -1 ||
+            param.parts[0] === 'marker' && param.parts[1] === 'colorbar') {
             docolorbars = true;
         }
 
-        if(recalcAttrs.indexOf(ai)!==-1) {
+        if(recalcAttrs.indexOf(ai) !== -1) {
             // major enough changes deserve autoscale, autobin, and
             // non-reversed axes so people don't get confused
-            if(['orientation','type'].indexOf(ai)!==-1) {
+            if(['orientation', 'type'].indexOf(ai) !== -1) {
                 axlist = [];
-                for(i=0; i<traces.length; i++) {
+                for(i = 0; i < traces.length; i++) {
                     var trace = gd.data[traces[i]];
 
                     if(Plots.traceIs(trace, 'cartesian')) {
-                        addToAxlist(trace.xaxis||'x');
-                        addToAxlist(trace.yaxis||'y');
+                        addToAxlist(trace.xaxis || 'x');
+                        addToAxlist(trace.yaxis || 'y');
 
                         if(astr === 'type') {
-                            doextra(['autobinx','autobiny'], true, i);
+                            doextra(['autobinx', 'autobiny'], true, i);
                         }
                     }
                 }
@@ -1910,8 +1932,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             }
             docalc = true;
         }
-        else if(replotAttrs.indexOf(ai)!==-1) doplot = true;
-        else if(autorangeAttrs.indexOf(ai)!==-1) docalcAutorange = true;
+        else if(replotAttrs.indexOf(ai) !== -1) doplot = true;
+        else if(autorangeAttrs.indexOf(ai) !== -1) docalcAutorange = true;
     }
 
     // check axes we've flagged for possible deletion
@@ -1973,7 +1995,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 var i, cdi, arraysToCalcdata;
                 for(i = 0; i < gd.calcdata.length; i++) {
                     cdi = gd.calcdata[i];
-                    arraysToCalcdata = (((cdi[0]||{}).trace||{})._module||{}).arraysToCalcdata;
+                    arraysToCalcdata = (((cdi[0] || {}).trace || {})._module || {}).arraysToCalcdata;
                     if(arraysToCalcdata) arraysToCalcdata(cdi);
                 }
                 Plots.style(gd);
@@ -1990,10 +2012,10 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
                         if(Plots.traceIs(trace, 'contour')) {
                             cb.line({
-                                width: trace.contours.showlines!==false ?
+                                width: trace.contours.showlines !== false ?
                                     trace.line.width : 0,
                                 dash: trace.line.dash,
-                                color: trace.contours.coloring==='line' ?
+                                color: trace.contours.coloring === 'line' ?
                                     cb._opts.line.color : trace.line.color
                             });
                         }
@@ -2037,9 +2059,9 @@ function swapXYData(trace) {
     }
     if(trace.hoverinfo) {
         var hoverInfoParts = trace.hoverinfo.split('+');
-        for(i=0; i<hoverInfoParts.length; i++) {
-            if(hoverInfoParts[i]==='x') hoverInfoParts[i] = 'y';
-            else if(hoverInfoParts[i]==='y') hoverInfoParts[i] = 'x';
+        for(i = 0; i < hoverInfoParts.length; i++) {
+            if(hoverInfoParts[i] === 'x') hoverInfoParts[i] = 'y';
+            else if(hoverInfoParts[i] === 'y') hoverInfoParts[i] = 'x';
         }
         trace.hoverinfo = hoverInfoParts.join('+');
     }
@@ -2077,7 +2099,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Lib.isPlainObject(astr)) aobj = astr;
     else {
-        console.log('relayout fail',astr,val);
+        console.log('relayout fail', astr, val);
         return Promise.reject();
     }
 
@@ -2088,8 +2110,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
     for(i = 0; i < keys.length; i++) {
         // look for 'allaxes', split out into all axes
-        if(keys[i].indexOf('allaxes')===0) {
-            for(var j=0; j<axes.length; j++) {
+        if(keys[i].indexOf('allaxes') === 0) {
+            for(var j = 0; j < axes.length; j++) {
                 // in case of 3D the axis are nested within a scene which is held in _id
                 scene = axes[j]._id.substr(1);
                 axisAttr = (scene.indexOf('scene') !== -1) ? (scene + '.') : '';
@@ -2101,9 +2123,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
         // split annotation.ref into xref and yref
         if(keys[i].match(/^annotations\[[0-9-]+\].ref$/)) {
             xyref = aobj[keys[i]].split('y');
-            aobj[keys[i].replace('ref','xref')] = xyref[0];
-            aobj[keys[i].replace('ref','yref')] = xyref.length===2 ?
-                ('y'+xyref[1]) : 'paper';
+            aobj[keys[i].replace('ref', 'xref')] = xyref[0];
+            aobj[keys[i].replace('ref', 'yref')] = xyref.length === 2 ?
+                ('y' + xyref[1]) : 'paper';
             delete aobj[keys[i]];
         }
     }
@@ -2117,34 +2139,34 @@ Plotly.relayout = function relayout(gd, astr, val) {
     // old vals before making the change
     // val=undefined will not set a value, just record what the value was.
     // attr can be an array to set several at once (all to the same val)
-    function doextra(attr,val) {
+    function doextra(attr, val) {
         if(Array.isArray(attr)) {
-            attr.forEach(function(a) { doextra(a,val); });
+            attr.forEach(function(a) { doextra(a, val); });
             return;
         }
         // quit if explicitly setting this elsewhere
         if(attr in aobj) return;
 
-        var p = Lib.nestedProperty(layout,attr);
+        var p = Lib.nestedProperty(layout, attr);
         if(!(attr in undoit)) undoit[attr] = p.get();
-        if(val!==undefined) p.set(val);
+        if(val !== undefined) p.set(val);
     }
 
     // for editing annotations or shapes - is it on autoscaled axes?
     function refAutorange(obj, axletter) {
-        var axName = Plotly.Axes.id2name(obj[axletter+'ref']||axletter);
-        return (fullLayout[axName]||{}).autorange;
+        var axName = Plotly.Axes.id2name(obj[axletter + 'ref'] || axletter);
+        return (fullLayout[axName] || {}).autorange;
     }
 
     var hw = ['height', 'width'];
 
     // alter gd.layout
     for(var ai in aobj) {
-        var p = Lib.nestedProperty(layout,ai),
+        var p = Lib.nestedProperty(layout, ai),
             vi = aobj[ai],
             plen = p.parts.length,
             // p.parts may end with an index integer if the property is an array
-            pend = typeof p.parts[plen-1] === 'string' ? (plen-1) : (plen-2),
+            pend = typeof p.parts[plen - 1] === 'string' ? (plen - 1) : (plen - 2),
             // last property in chain (leaf node)
             pleaf = p.parts[pend],
             // leaf plus immediate parent
@@ -2168,14 +2190,14 @@ Plotly.relayout = function relayout(gd, astr, val) {
             doextra(hw, undefined);
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.range(\[[0|1]\])?$/)) {
-            doextra(ptrunk+'.autorange', false);
+            doextra(ptrunk + '.autorange', false);
         }
         else if(pleafPlus.match(/^[xyz]axis[0-9]*\.autorange$/)) {
-            doextra([ptrunk + '.range[0]',ptrunk + '.range[1]'],
+            doextra([ptrunk + '.range[0]', ptrunk + '.range[1]'],
                 undefined);
         }
         else if(pleafPlus.match(/^aspectratio\.[xyz]$/)) {
-            doextra(p.parts[0]+'.aspectmode', 'manual');
+            doextra(p.parts[0] + '.aspectmode', 'manual');
         }
         else if(pleafPlus.match(/^aspectmode$/)) {
             doextra([ptrunk + '.x', ptrunk + '.y', ptrunk + '.z'], undefined);
@@ -2189,13 +2211,23 @@ Plotly.relayout = function relayout(gd, astr, val) {
         else if(/[xy]axis[0-9]*?$/.test(pleaf) && !Object.keys(vi || {}).length) {
             docalc = true;
         }
+        else if(/[xy]axis[0-9]*\.categoryorder$/.test(pleafPlus)) {
+            docalc = true;
+        }
+        else if(/[xy]axis[0-9]*\.categoryarray/.test(pleafPlus)) {
+            docalc = true;
+        }
+
+        if(pleafPlus.indexOf('rangeslider') !== -1) {
+            docalc = true;
+        }
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
-        if(pleaf==='type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
+        if(pleaf === 'type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
             var ax = parentIn;
             if(!ax || !ax.range) {
-                doextra(ptrunk+'.autorange', true);
+                doextra(ptrunk + '.autorange', true);
             }
             else if(!parentFull.autorange) {
                 var r0 = ax.range[0],
@@ -2203,18 +2235,18 @@ Plotly.relayout = function relayout(gd, astr, val) {
                 if(vi === 'log') {
                     // if both limits are negative, autorange
                     if(r0 <= 0 && r1 <= 0) {
-                        doextra(ptrunk+'.autorange', true);
+                        doextra(ptrunk + '.autorange', true);
                     }
                     // if one is negative, set it 6 orders below the other.
-                    if(r0 <= 0) r0 = r1/1e6;
-                    else if(r1 <= 0) r1 = r0/1e6;
+                    if(r0 <= 0) r0 = r1 / 1e6;
+                    else if(r1 <= 0) r1 = r0 / 1e6;
                     // now set the range values as appropriate
-                    doextra(ptrunk+'.range[0]', Math.log(r0) / Math.LN10);
-                    doextra(ptrunk+'.range[1]', Math.log(r1) / Math.LN10);
+                    doextra(ptrunk + '.range[0]', Math.log(r0) / Math.LN10);
+                    doextra(ptrunk + '.range[1]', Math.log(r1) / Math.LN10);
                 }
                 else {
-                    doextra(ptrunk+'.range[0]', Math.pow(10, r0));
-                    doextra(ptrunk+'.range[1]', Math.pow(10, r1));
+                    doextra(ptrunk + '.range[0]', Math.pow(10, r0));
+                    doextra(ptrunk + '.range[1]', Math.pow(10, r1));
                 }
             }
             else if(vi === 'log') {
@@ -2225,10 +2257,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
         }
 
         // handle axis reversal explicitly, as there's no 'reverse' flag
-        if(pleaf ==='reverse') {
+        if(pleaf === 'reverse') {
             if(parentIn.range) parentIn.range.reverse();
             else {
-                doextra(ptrunk+'.autorange', true);
+                doextra(ptrunk + '.autorange', true);
                 parentIn.range = [1, 0];
             }
 
@@ -2268,6 +2300,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // as it is we get separate calls for x and y (or ax and ay) on move
             objModule.draw(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
             delete aobj[ai];
+        } else if(p.parts[0] === 'images') {
+            var update = Lib.objectFromPath(astr, vi);
+            Lib.extendDeepAll(gd.layout, update);
+
+            Images.supplyLayoutDefaults(gd.layout, gd._fullLayout);
+            Images.draw(gd);
         }
         // alter gd.layout
         else {
@@ -2275,35 +2313,36 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // 3d or geo at this point just needs to redraw.
             if(p.parts[0].indexOf('scene') === 0) doplot = true;
             else if(p.parts[0].indexOf('geo') === 0) doplot = true;
-            else if(fullLayout._hasGL2D &&
+            else if(p.parts[0].indexOf('ternary') === 0) doplot = true;
+            else if(fullLayout._has('gl2d') &&
                 (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
             ) doplot = true;
             else if(ai === 'hiddenlabels') docalc = true;
-            else if(p.parts[0].indexOf('legend')!==-1) dolegend = true;
-            else if(ai.indexOf('title')!==-1) doticks = true;
-            else if(p.parts[0].indexOf('bgcolor')!==-1) dolayoutstyle = true;
-            else if(p.parts.length>1 &&
+            else if(p.parts[0].indexOf('legend') !== -1) dolegend = true;
+            else if(ai.indexOf('title') !== -1) doticks = true;
+            else if(p.parts[0].indexOf('bgcolor') !== -1) dolayoutstyle = true;
+            else if(p.parts.length > 1 &&
                     Lib.containsAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
                 doticks = true;
             }
-            else if(ai.indexOf('.linewidth')!==-1 &&
-                    ai.indexOf('axis')!==-1) {
+            else if(ai.indexOf('.linewidth') !== -1 &&
+                    ai.indexOf('axis') !== -1) {
                 doticks = dolayoutstyle = true;
             }
-            else if(p.parts.length>1 && p.parts[1].indexOf('line')!==-1) {
+            else if(p.parts.length > 1 && p.parts[1].indexOf('line') !== -1) {
                 dolayoutstyle = true;
             }
-            else if(p.parts.length>1 && p.parts[1]==='mirror') {
+            else if(p.parts.length > 1 && p.parts[1] === 'mirror') {
                 doticks = dolayoutstyle = true;
             }
-            else if(ai==='margin.pad') {
+            else if(ai === 'margin.pad') {
                 doticks = dolayoutstyle = true;
             }
-            else if(p.parts[0]==='margin' ||
-                    p.parts[1]==='autorange' ||
-                    p.parts[1]==='rangemode' ||
-                    p.parts[1]==='type' ||
-                    p.parts[1]==='domain' ||
+            else if(p.parts[0] === 'margin' ||
+                    p.parts[1] === 'autorange' ||
+                    p.parts[1] === 'rangemode' ||
+                    p.parts[1] === 'type' ||
+                    p.parts[1] === 'domain' ||
                     ai.match(/^(bar|box|font)/)) {
                 docalc = true;
             }
@@ -2314,8 +2353,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
              * of subplots - scenes - which require scene.updateFx to be called.
              */
             else if(['hovermode', 'dragmode'].indexOf(ai) !== -1) domodebar = true;
-            else if(['hovermode','dragmode','height',
-                    'width','autosize'].indexOf(ai)===-1) {
+            else if(['hovermode', 'dragmode', 'height',
+                    'width', 'autosize'].indexOf(ai) === -1) {
                 doplot = true;
             }
 
@@ -2330,7 +2369,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
     // calculate autosizing - if size hasn't changed,
     // will remove h&w so we don't need to redraw
-    if(aobj.autosize) aobj = plotAutoSize(gd,aobj);
+    if(aobj.autosize) aobj = plotAutoSize(gd, aobj);
 
     if(aobj.height || aobj.width || aobj.autosize) docalc = true;
 
@@ -2367,8 +2406,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         if(doticks) {
             seq.push(function() {
-                Plotly.Axes.doTicks(gd,'redraw');
-                Titles.draw(gd, 'gtitle');
+                Plotly.Axes.doTicks(gd, 'redraw');
+                drawMainTitle(gd);
                 return Plots.previousPromises(gd);
             });
         }
@@ -2508,7 +2547,7 @@ function plotAutoSize(gd, aobj) {
             reservedWidth = reservedMargins.left + reservedMargins.right,
             reservedHeight = reservedMargins.bottom + reservedMargins.top,
             gdBB = fullLayout._container.node().getBoundingClientRect(),
-            factor = 1 - 2*context.frameMargins;
+            factor = 1 - 2 * context.frameMargins;
 
         newWidth = Math.round(factor * (gdBB.width - reservedWidth));
         newHeight = Math.round(factor * (gdBB.height - reservedHeight));
@@ -2548,9 +2587,6 @@ function makePlotFramework(gd) {
     var gd3 = d3.select(gd),
         fullLayout = gd._fullLayout;
 
-    // TODO - find a better place for 3D to initialize axes
-    if(fullLayout._hasGL3D) Plots.subplotsRegistry.gl3d.initAxes(gd);
-
     // Plot container
     fullLayout._container = gd3.selectAll('.plot-container').data([0]);
     fullLayout._container.enter().insert('div', ':first-child')
@@ -2561,7 +2597,7 @@ function makePlotFramework(gd) {
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
     fullLayout._paperdiv.enter().append('div')
         .classed('svg-container', true)
-        .style('position','relative');
+        .style('position', 'relative');
 
     // Initial autosize
     if(fullLayout.autosize === 'initial') {
@@ -2613,15 +2649,40 @@ function makePlotFramework(gd) {
     fullLayout._draggers = fullLayout._paper.append('g')
         .classed('draglayer', true);
 
+    // lower shape layer
+    // (only for shapes to be drawn below the whole plot)
+    var layerBelow = fullLayout._paper.append('g')
+        .classed('layer-below', true);
+    fullLayout._imageLowerLayer = layerBelow.append('g')
+        .classed('imagelayer', true);
+    fullLayout._shapeLowerLayer = layerBelow.append('g')
+        .classed('shapelayer', true);
+
     var subplots = Plotly.Axes.getSubplots(gd);
     if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
         makeSubplots(gd, subplots);
     }
 
-    if(fullLayout._hasCartesian) makeCartesianPlotFramwork(gd, subplots);
+    if(fullLayout._has('cartesian')) makeCartesianPlotFramwork(gd, subplots);
 
-    // single shape and pie layers for the whole plot
-    fullLayout._shapelayer = fullLayout._paper.append('g').classed('shapelayer', true);
+    // single ternary layer for the whole plot
+    fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
+
+    // shape layers in subplots
+    var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
+    fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
+    fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
+
+    // upper shape layer
+    // (only for shapes to be drawn above the whole plot, including subplots)
+    var layerAbove = fullLayout._paper.append('g')
+        .classed('layer-above', true);
+    fullLayout._imageUpperLayer = layerAbove.append('g')
+        .classed('imagelayer', true);
+    fullLayout._shapeUpperLayer = layerAbove.append('g')
+        .classed('shapelayer', true);
+
+    // single pie layer for the whole plot
     fullLayout._pielayer = fullLayout._paper.append('g').classed('pielayer', true);
 
     // fill in image server scrape-svg
@@ -2632,6 +2693,7 @@ function makePlotFramework(gd) {
     // these are in a different svg element normally, but get collapsed into a single
     // svg when exporting (after inserting 3D)
     fullLayout._infolayer = fullLayout._toppaper.append('g').classed('infolayer', true);
+    fullLayout._zoomlayer = fullLayout._toppaper.append('g').classed('zoomlayer', true);
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 
     gd.emit('plotly_framework');
@@ -2639,7 +2701,7 @@ function makePlotFramework(gd) {
     // position and style the containers, make main title
     var frameWorkDone = Lib.syncOrAsync([
         layoutStyles,
-        function goAxes() { return Plotly.Axes.doTicks(gd,'redraw'); },
+        function goAxes() { return Plotly.Axes.doTicks(gd, 'redraw'); },
         Fx.init
     ], gd);
 
@@ -2730,8 +2792,8 @@ function makeCartesianPlotFramwork(gd, subplots) {
                 ya.overlaying = false;
             }
 
-            var mainplot = xa2._id+ya2._id;
-            if(mainplot!==subplot && subplots.indexOf(mainplot)!==-1) {
+            var mainplot = xa2._id + ya2._id;
+            if(mainplot !== subplot && subplots.indexOf(mainplot) !== -1) {
                 plotinfo.mainplot = mainplot;
                 overlays.push(plotinfo);
 
@@ -2749,11 +2811,21 @@ function makeCartesianPlotFramwork(gd, subplots) {
                 // the plot and containers for overlays
                 plotinfo.bg = plotgroup.append('rect')
                     .style('stroke-width', 0);
+
+                // back layer for shapes and images to
+                // be drawn below a subplot
+                var backlayer = plotgroup.append('g')
+                    .classed('layer-subplot', true);
+
+                plotinfo.shapelayer = backlayer.append('g')
+                    .classed('shapelayer', true);
+                plotinfo.imagelayer = backlayer.append('g')
+                    .classed('imagelayer', true);
                 plotinfo.gridlayer = plotgroup.append('g');
                 plotinfo.overgrid = plotgroup.append('g');
                 plotinfo.zerolinelayer = plotgroup.append('g');
                 plotinfo.overzero = plotgroup.append('g');
-                plotinfo.plot = plotgroup.append('svg').call(plotLayers);
+                plotinfo.plot = plotgroup.append('g').call(plotLayers);
                 plotinfo.overplot = plotgroup.append('g');
                 plotinfo.xlines = plotgroup.append('path');
                 plotinfo.ylines = plotgroup.append('path');
@@ -2779,7 +2851,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
 
         plotinfo.gridlayer = mainplot.overgrid.append('g');
         plotinfo.zerolinelayer = mainplot.overzero.append('g');
-        plotinfo.plot = mainplot.overplot.append('svg').call(plotLayers);
+        plotinfo.plot = mainplot.overplot.append('g').call(plotLayers);
         plotinfo.xlines = mainplot.overlines.append('path');
         plotinfo.ylines = mainplot.overlines.append('path');
         plotinfo.xaxislayer = mainplot.overaxes.append('g');
@@ -2790,9 +2862,6 @@ function makeCartesianPlotFramwork(gd, subplots) {
     subplots.forEach(function(subplot) {
         var plotinfo = fullLayout._plots[subplot];
 
-        plotinfo.plot
-            .attr('preserveAspectRatio', 'none')
-            .style('fill', 'none');
         plotinfo.xlines
             .style('fill', 'none')
             .classed('crisp', true);
@@ -2837,32 +2906,54 @@ function lsInner(gd) {
         if(plotinfo.bg) {
             plotinfo.bg
                 .call(Drawing.setRect,
-                    xa._offset-gs.p, ya._offset-gs.p,
-                    xa._length+2*gs.p, ya._length+2*gs.p)
+                    xa._offset - gs.p, ya._offset - gs.p,
+                    xa._length + 2 * gs.p, ya._length + 2 * gs.p)
                 .call(Color.fill, fullLayout.plot_bgcolor);
         }
-        plotinfo.plot
-            .call(Drawing.setRect,
-                xa._offset, ya._offset, xa._length, ya._length);
+
+
+        // Clip so that data only shows up on the plot area.
+        var clips = fullLayout._defs.selectAll('g.clips'),
+            clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+
+        var plotClip = clips.selectAll('#' + clipId)
+            .data([0]);
+
+        plotClip.enter().append('clipPath')
+            .attr({
+                'class': 'plotclip',
+                'id': clipId
+            })
+            .append('rect');
+
+        plotClip.selectAll('rect')
+            .attr({
+                'width': xa._length,
+                'height': ya._length
+            });
+
+
+        plotinfo.plot.call(Lib.setTranslate, xa._offset, ya._offset);
+        plotinfo.plot.call(Drawing.setClipUrl, clipId);
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),
-            xp = gs.p+ylw,
-            xpathPrefix = 'M'+(-xp)+',',
-            xpathSuffix = 'h'+(xa._length+2*xp),
-            showfreex = xa.anchor==='free' &&
-                freefinished.indexOf(xa._id)===-1,
-            freeposx = gs.h*(1-(xa.position||0))+((xlw/2)%1),
+            xp = gs.p + ylw,
+            xpathPrefix = 'M' + (-xp) + ',',
+            xpathSuffix = 'h' + (xa._length + 2 * xp),
+            showfreex = xa.anchor === 'free' &&
+                freefinished.indexOf(xa._id) === -1,
+            freeposx = gs.h * (1 - (xa.position||0)) + ((xlw / 2) % 1),
             showbottom =
-                (xa.anchor===ya._id && (xa.mirror||xa.side!=='top')) ||
-                xa.mirror==='all' || xa.mirror==='allticks' ||
-                (xa.mirrors && xa.mirrors[ya._id+'bottom']),
-            bottompos = ya._length+gs.p+xlw/2,
+                (xa.anchor === ya._id && (xa.mirror || xa.side !== 'top')) ||
+                xa.mirror === 'all' || xa.mirror === 'allticks' ||
+                (xa.mirrors && xa.mirrors[ya._id + 'bottom']),
+            bottompos = ya._length + gs.p + xlw / 2,
             showtop =
-                (xa.anchor===ya._id && (xa.mirror||xa.side==='top')) ||
-                xa.mirror==='all' || xa.mirror==='allticks' ||
-                (xa.mirrors && xa.mirrors[ya._id+'top']),
-            toppos = -gs.p-xlw/2,
+                (xa.anchor === ya._id && (xa.mirror || xa.side === 'top')) ||
+                xa.mirror === 'all' || xa.mirror === 'allticks' ||
+                (xa.mirrors && xa.mirrors[ya._id + 'top']),
+            toppos = -gs.p - xlw / 2,
 
             // shorten y axis lines so they don't overlap x axis lines
             yp = gs.p,
@@ -2870,21 +2961,21 @@ function lsInner(gd) {
             // TODO: this gets more complicated with multiple x and y axes
             ypbottom = showbottom ? 0 : xlw,
             yptop = showtop ? 0 : xlw,
-            ypathSuffix = ','+(-yp-yptop)+
-                'v'+(ya._length+2*yp+yptop+ypbottom),
-            showfreey = ya.anchor==='free' &&
-                freefinished.indexOf(ya._id)===-1,
-            freeposy = gs.w*(ya.position||0)+((ylw/2)%1),
+            ypathSuffix = ',' + (-yp - yptop) +
+                'v' + (ya._length + 2 * yp + yptop + ypbottom),
+            showfreey = ya.anchor === 'free' &&
+                freefinished.indexOf(ya._id) === -1,
+            freeposy = gs.w * (ya.position||0) + ((ylw / 2) % 1),
             showleft =
-                (ya.anchor===xa._id && (ya.mirror||ya.side!=='right')) ||
-                ya.mirror==='all' || ya.mirror==='allticks' ||
-                (ya.mirrors && ya.mirrors[xa._id+'left']),
-            leftpos = -gs.p-ylw/2,
+                (ya.anchor === xa._id && (ya.mirror || ya.side !== 'right')) ||
+                ya.mirror === 'all' || ya.mirror === 'allticks' ||
+                (ya.mirrors && ya.mirrors[xa._id + 'left']),
+            leftpos = -gs.p - ylw / 2,
             showright =
-                (ya.anchor===xa._id && (ya.mirror||ya.side==='right')) ||
-                ya.mirror==='all' || ya.mirror==='allticks' ||
-                (ya.mirrors && ya.mirrors[xa._id+'right']),
-            rightpos = xa._length+gs.p+ylw/2;
+                (ya.anchor === xa._id && (ya.mirror || ya.side === 'right')) ||
+                ya.mirror === 'all' || ya.mirror === 'allticks' ||
+                (ya.mirrors && ya.mirrors[xa._id + 'right']),
+            rightpos = xa._length + gs.p + ylw / 2;
 
         // save axis line positions for ticks, draggers, etc to reference
         // each subplot gets an entry:
@@ -2895,8 +2986,8 @@ function lsInner(gd) {
             showtop ? toppos : undefined,
             showfreex ? freeposx : undefined
         ];
-        if(xa.anchor===ya._id) {
-            xa._linepositions[subplot][3] = xa.side==='top' ?
+        if(xa.anchor === ya._id) {
+            xa._linepositions[subplot][3] = xa.side === 'top' ?
                 toppos : bottompos;
         }
         else if(showfreex) {
@@ -2908,8 +2999,8 @@ function lsInner(gd) {
             showright ? rightpos : undefined,
             showfreey ? freeposy : undefined
         ];
-        if(ya.anchor===xa._id) {
-            ya._linepositions[subplot][3] = ya.side==='right' ?
+        if(ya.anchor === xa._id) {
+            ya._linepositions[subplot][3] = ya.side === 'right' ?
                 rightpos : leftpos;
         }
         else if(showfreey) {
@@ -2918,47 +3009,47 @@ function lsInner(gd) {
 
         // translate all the extra stuff to have the
         // same origin as the plot area or axes
-        var origin = 'translate('+xa._offset+','+ya._offset+')',
+        var origin = 'translate(' + xa._offset + ',' + ya._offset + ')',
             originx = origin,
             originy = origin;
         if(showfreex) {
-            originx = 'translate('+xa._offset+','+gs.t+')';
+            originx = 'translate(' + xa._offset + ',' + gs.t + ')';
             toppos += ya._offset - gs.t;
             bottompos += ya._offset - gs.t;
         }
         if(showfreey) {
-            originy = 'translate('+gs.l+','+ya._offset+')';
+            originy = 'translate(' + gs.l + ',' + ya._offset + ')';
             leftpos += xa._offset - gs.l;
             rightpos += xa._offset - gs.l;
         }
 
         plotinfo.xlines
             .attr('transform', originx)
-            .attr('d',(
-                (showbottom ? (xpathPrefix+bottompos+xpathSuffix) : '') +
-                (showtop ? (xpathPrefix+toppos+xpathSuffix) : '') +
-                (showfreex ? (xpathPrefix+freeposx+xpathSuffix) : '')) ||
+            .attr('d', (
+                (showbottom ? (xpathPrefix + bottompos + xpathSuffix) : '') +
+                (showtop ? (xpathPrefix + toppos + xpathSuffix) : '') +
+                (showfreex ? (xpathPrefix + freeposx + xpathSuffix) : '')) ||
                 // so it doesn't barf with no lines shown
                 'M0,0')
-            .style('stroke-width',xlw+'px')
+            .style('stroke-width', xlw + 'px')
             .call(Color.stroke, xa.showline ?
                 xa.linecolor : 'rgba(0,0,0,0)');
         plotinfo.ylines
             .attr('transform', originy)
-            .attr('d',(
-                (showleft ? ('M'+leftpos+ypathSuffix) : '') +
-                (showright ? ('M'+rightpos+ypathSuffix) : '') +
-                (showfreey ? ('M'+freeposy+ypathSuffix) : '')) ||
+            .attr('d', (
+                (showleft ? ('M' + leftpos + ypathSuffix) : '') +
+                (showright ? ('M' + rightpos + ypathSuffix) : '') +
+                (showfreey ? ('M' + freeposy + ypathSuffix) : '')) ||
                 'M0,0')
-            .attr('stroke-width',ylw+'px')
-            .call(Color.stroke,ya.showline ?
+            .attr('stroke-width', ylw + 'px')
+            .call(Color.stroke, ya.showline ?
                 ya.linecolor : 'rgba(0,0,0,0)');
 
-        plotinfo.xaxislayer.attr('transform',originx);
-        plotinfo.yaxislayer.attr('transform',originy);
-        plotinfo.gridlayer.attr('transform',origin);
-        plotinfo.zerolinelayer.attr('transform',origin);
-        plotinfo.draglayer.attr('transform',origin);
+        plotinfo.xaxislayer.attr('transform', originx);
+        plotinfo.yaxislayer.attr('transform', originy);
+        plotinfo.gridlayer.attr('transform', origin);
+        plotinfo.zerolinelayer.attr('transform', origin);
+        plotinfo.draglayer.attr('transform', origin);
 
         // mark free axes as displayed, so we don't draw them again
         if(showfreex) { freefinished.push(xa._id); }
@@ -2967,9 +3058,24 @@ function lsInner(gd) {
 
     Plotly.Axes.makeClipPaths(gd);
 
-    Titles.draw(gd, 'gtitle');
+    drawMainTitle(gd);
 
     manageModeBar(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
+}
+
+function drawMainTitle(gd) {
+    var fullLayout = gd._fullLayout;
+
+    Titles.draw(gd, 'gtitle', {
+        propContainer: fullLayout,
+        propName: 'title',
+        dfltName: 'Plot',
+        attributes: {
+            x: fullLayout.width / 2,
+            y: fullLayout._size.t / 2,
+            'text-anchor': 'middle'
+        }
+    });
 }

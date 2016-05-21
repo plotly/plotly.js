@@ -16,6 +16,7 @@ var nestedProperty = require('./nested_property');
 var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 
+var idRegex = /^([2-9]|[1-9][0-9]+)$/;
 
 exports.valObjects = {
     data_array: {
@@ -28,7 +29,7 @@ exports.valObjects = {
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
             if(Array.isArray(v)) propOut.set(v);
-            else if(dflt!==undefined) propOut.set(dflt);
+            else if(dflt !== undefined) propOut.set(dflt);
         }
     },
     enumerated: {
@@ -40,7 +41,7 @@ exports.valObjects = {
         otherOpts: ['dflt', 'coerceNumber', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(opts.coerceNumber) v = +v;
-            if(opts.values.indexOf(v)===-1) propOut.set(dflt);
+            if(opts.values.indexOf(v) === -1) propOut.set(dflt);
             else propOut.set(v);
         }
     },
@@ -49,7 +50,7 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            if(v===true || v===false) propOut.set(v);
+            if(v === true || v === false) propOut.set(v);
             else propOut.set(dflt);
         }
     },
@@ -64,8 +65,8 @@ exports.valObjects = {
         otherOpts: ['dflt', 'min', 'max', 'arrayOk'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(!isNumeric(v) ||
-                    (opts.min!==undefined && v<opts.min) ||
-                    (opts.max!==undefined && v>opts.max)) {
+                    (opts.min !== undefined && v < opts.min) ||
+                    (opts.max !== undefined && v > opts.max)) {
                 propOut.set(dflt);
             }
             else propOut.set(+v);
@@ -80,9 +81,9 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt', 'min', 'max'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(v%1 || !isNumeric(v) ||
-                    (opts.min!==undefined && v<opts.min) ||
-                    (opts.max!==undefined && v>opts.max)) {
+            if(v % 1 || !isNumeric(v) ||
+                    (opts.min !== undefined && v < opts.min) ||
+                    (opts.max !== undefined && v > opts.max)) {
                 propOut.set(dflt);
             }
             else propOut.set(+v);
@@ -98,13 +99,13 @@ exports.valObjects = {
         // TODO 'values shouldn't be in there (edge case: 'dash' in Scatter)
         otherOpts: ['dflt', 'noBlank', 'strict', 'arrayOk', 'values'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(opts.strict===true && typeof v !== 'string') {
+            if(opts.strict === true && typeof v !== 'string') {
                 propOut.set(dflt);
                 return;
             }
 
             var s = String(v);
-            if(v===undefined || (opts.noBlank===true && !s)) {
+            if(v === undefined || (opts.noBlank === true && !s)) {
                 propOut.set(dflt);
             }
             else propOut.set(s);
@@ -150,61 +151,28 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            if(v==='auto') propOut.set('auto');
+            if(v === 'auto') propOut.set('auto');
             else if(!isNumeric(v)) propOut.set(dflt);
             else {
-                if(Math.abs(v)>180) v -= Math.round(v/360)*360;
+                if(Math.abs(v) > 180) v -= Math.round(v / 360) * 360;
                 propOut.set(+v);
             }
         }
     },
-    axisid: {
+    subplotid: {
         description: [
-            'An axis id string (e.g. \'x\', \'x2\', \'x3\', ...).'
+            'An id string of a subplot type (given by dflt), optionally',
+            'followed by an integer >1. e.g. if dflt=\'geo\', we can  have',
+            '\'geo\', \'geo2\', \'geo3\', ...'
         ].join(' '),
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            if(typeof v === 'string' && v.charAt(0)===dflt) {
-                var axnum = Number(v.substr(1));
-                if(axnum%1 === 0 && axnum>1) {
-                    propOut.set(v);
-                    return;
-                }
-            }
-            propOut.set(dflt);
-        }
-    },
-    sceneid: {
-        description: [
-            'A scene id string (e.g. \'scene\', \'scene2\', \'scene3\', ...).'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
-        coerceFunction: function(v, propOut, dflt) {
-            if(typeof v === 'string' && v.substr(0,5)===dflt) {
-                var scenenum = Number(v.substr(5));
-                if(scenenum%1 === 0 && scenenum>1) {
-                    propOut.set(v);
-                    return;
-                }
-            }
-            propOut.set(dflt);
-        }
-    },
-    geoid: {
-        description: [
-            'A geo id string (e.g. \'geo\', \'geo2\', \'geo3\', ...).'
-        ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
-        coerceFunction: function(v, propOut, dflt) {
-            if(typeof v === 'string' && v.substr(0,3)===dflt) {
-                var geonum = Number(v.substr(3));
-                if(geonum%1 === 0 && geonum>1) {
-                    propOut.set(v);
-                    return;
-                }
+            var dlen = dflt.length;
+            if(typeof v === 'string' && v.substr(0, dlen) === dflt &&
+                    idRegex.test(v.substr(dlen))) {
+                propOut.set(v);
+                return;
             }
             propOut.set(dflt);
         }
@@ -224,16 +192,16 @@ exports.valObjects = {
                 propOut.set(dflt);
                 return;
             }
-            if(opts.extras.indexOf(v)!==-1) {
+            if(opts.extras.indexOf(v) !== -1) {
                 propOut.set(v);
                 return;
             }
             var vParts = v.split('+'),
                 i = 0;
-            while(i<vParts.length) {
+            while(i < vParts.length) {
                 var vi = vParts[i];
-                if(opts.flags.indexOf(vi)===-1 || vParts.indexOf(vi)<i) {
-                    vParts.splice(i,1);
+                if(opts.flags.indexOf(vi) === -1 || vParts.indexOf(vi) < i) {
+                    vParts.splice(i, 1);
                 }
                 else i++;
             }
@@ -246,7 +214,7 @@ exports.valObjects = {
         requiredOpts: [],
         otherOpts: ['dflt'],
         coerceFunction: function(v, propOut, dflt) {
-            if(v===undefined) propOut.set(dflt);
+            if(v === undefined) propOut.set(dflt);
             else propOut.set(v);
         }
     },
@@ -293,7 +261,7 @@ exports.coerce = function(containerIn, containerOut, attributes, attribute, dflt
         propOut = nestedProperty(containerOut, attribute),
         v = propIn.get();
 
-    if(dflt===undefined) dflt = opts.dflt;
+    if(dflt === undefined) dflt = opts.dflt;
 
     /**
      * arrayOk: value MAY be an array, then we do no value checking

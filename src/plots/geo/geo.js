@@ -17,13 +17,15 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Axes = require('../../plots/cartesian/axes');
 
+var filterVisible = require('../../lib/filter_visible');
+
 var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');
 var createGeoZoom = require('./zoom');
 var createGeoZoomReset = require('./zoom_reset');
+var constants = require('./constants');
 
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
-var constants = require('../../constants/geo_constants');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson').feature;
 
@@ -35,9 +37,8 @@ function Geo(options, fullLayout) {
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
 
-    // add a few projection types to d3.geo,
-    // a subset of https://github.com/d3/d3-geo-projection
-    addProjectionsToD3();
+    // add a few projection types to d3.geo
+    addProjectionsToD3(d3);
 
     this.hoverContainer = null;
 
@@ -91,7 +92,7 @@ proto.plot = function(geoData, fullLayout, promises) {
 
     topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
-    if(_this.topojson===null || topojsonNameNew!==_this.topojsonName) {
+    if(_this.topojson === null || topojsonNameNew !== _this.topojsonName) {
         _this.topojsonName = topojsonNameNew;
 
         if(PlotlyGeoAssets.topojson[_this.topojsonName] !== undefined) {
@@ -139,20 +140,6 @@ proto.plot = function(geoData, fullLayout, promises) {
     // to avoid making multiple request while streaming
 };
 
-// filter out non-visible trace
-// geo plot routine use the classic join/enter/exit pattern to update traces
-function filterData(dataIn) {
-    var dataOut = [];
-
-    for(var i = 0; i < dataIn.length; i++) {
-        var trace = dataIn[i];
-
-        if(trace.visible === true) dataOut.push(trace);
-    }
-
-    return dataOut;
-}
-
 proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
     var i;
 
@@ -190,7 +177,7 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
         var moduleData = traceHash[moduleNames[i]];
         var _module = moduleData[0]._module;
 
-        _module.plot(this, filterData(moduleData), geoLayout);
+        _module.plot(this, filterVisible(moduleData), geoLayout);
     }
 
     this.traceHash = traceHash;
@@ -210,7 +197,7 @@ proto.updateFx = function(hovermode) {
 proto.makeProjection = function(geoLayout) {
     var projLayout = geoLayout.projection,
         projType = projLayout.type,
-        isNew = this.projection===null || projType!==this.projectionType,
+        isNew = this.projection === null || projType !== this.projectionType,
         projection;
 
     if(isNew) {
@@ -320,17 +307,14 @@ proto.adjustLayout = function(geoLayout, graphSize) {
             width: geoLayout._width,
             height: geoLayout._height
         })
-        .style({
-            'fill': geoLayout.bgcolor,
-            'stroke-width': 0
-        });
+        .call(Color.fill, geoLayout.bgcolor);
 };
 
 proto.drawTopo = function(selection, layerName, geoLayout) {
     if(geoLayout['show' + layerName] !== true) return;
 
     var topojson = this.topojson,
-        datum = layerName==='frame' ?
+        datum = layerName === 'frame' ?
             constants.sphereSVG :
             topojsonFeature(topojson, topojson.objects[layerName]);
 
@@ -358,7 +342,7 @@ proto.drawGraticule = function(selection, axisName, geoLayout) {
     var scopeDefaults = constants.scopeDefaults[geoLayout.scope],
         lonaxisRange = scopeDefaults.lonaxisRange,
         lataxisRange = scopeDefaults.lataxisRange,
-        step = axisName==='lonaxis' ?
+        step = axisName === 'lonaxis' ?
             [axisLayout.dtick] :
             [0, axisLayout.dtick],
         graticule = makeGraticule(lonaxisRange, lataxisRange, step);
@@ -383,7 +367,7 @@ proto.drawLayout = function(geoLayout) {
     for(var i = 0; i < baseLayers.length; i++) {
         layerName = baseLayers[i];
 
-        if(axesNames.indexOf(layerName)!==-1) {
+        if(axesNames.indexOf(layerName) !== -1) {
             this.drawGraticule(gBaseLayer, layerName, geoLayout);
         }
         else this.drawTopo(gBaseLayer, layerName, geoLayout);
@@ -423,10 +407,10 @@ proto.styleLayer = function(selection, layerName, geoLayout) {
     var fillLayers = constants.fillLayers,
         lineLayers = constants.lineLayers;
 
-    if(fillLayers.indexOf(layerName)!==-1) {
+    if(fillLayers.indexOf(layerName) !== -1) {
         styleFillLayer(selection, layerName, geoLayout);
     }
-    else if(lineLayers.indexOf(layerName)!==-1) {
+    else if(lineLayers.indexOf(layerName) !== -1) {
         styleLineLayer(selection, layerName, geoLayout);
     }
 };
@@ -440,7 +424,7 @@ proto.styleLayout = function(geoLayout) {
     for(var i = 0; i < baseLayers.length; i++) {
         layerName = baseLayers[i];
 
-        if(axesNames.indexOf(layerName)!==-1) {
+        if(axesNames.indexOf(layerName) !== -1) {
             styleGraticule(gBaseLayer, layerName, geoLayout);
         }
         else this.styleLayer(gBaseLayer, layerName, geoLayout);
@@ -500,7 +484,7 @@ function createMockAxis(fullLayout) {
         type: 'linear',
         showexponent: 'all',
         exponentformat: Axes.layoutAttributes.exponentformat.dflt,
-        _td: { _fullLayout: fullLayout }
+        _gd: { _fullLayout: fullLayout }
     };
 
     Axes.setConvert(mockAxis);

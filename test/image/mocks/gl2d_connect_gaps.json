@@ -1,0 +1,21 @@
+{
+  "data": [
+    {
+      "x": [1, 2, 3, 4, 5],
+      "y": [1, 1, null, -1, -1],
+      "connectgaps": false,
+      "mode": "lines",
+      "type": "scattergl"
+    },
+    {
+      "x": [1, 2, 3, 4, 5],
+      "y": [-2, -2, null, 2, 2],
+      "connectgaps": true,
+      "mode": "lines",
+      "type": "scattergl"
+    }
+  ],
+  "layout": {
+    "title": "Connect gaps test"
+  }
+}

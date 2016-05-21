@@ -1,9 +1,13 @@
-var Snapshot = require('@src/snapshot');
+var Plotly = require('@lib/index');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var subplotMock = require('../../image/mocks/multiple_subplots.json');
+var annotationMock = require('../../image/mocks/annotations.json');
 
-describe('Test Snapshot.clone', function() {
+describe('Plotly.Snapshot', function() {
     'use strict';
 
-    describe('Test clone', function() {
+    describe('clone', function() {
 
         var data,
             layout,
@@ -76,7 +80,7 @@ describe('Test Snapshot.clone', function() {
                 setBackground: 'opaque'
             };
 
-            var themeTile = Snapshot.clone(dummyGraphObj, themeOptions);
+            var themeTile = Plotly.Snapshot.clone(dummyGraphObj, themeOptions);
             expect(themeTile.layout.height).toEqual(THEMETILE_DEFAULT_LAYOUT.height);
             expect(themeTile.layout.width).toEqual(THEMETILE_DEFAULT_LAYOUT.width);
             expect(themeTile.td.defaultLayout).toEqual(THEMETILE_DEFAULT_LAYOUT);
@@ -101,7 +105,7 @@ describe('Test Snapshot.clone', function() {
                 'annotations': []
             };
 
-            var thumbTile = Snapshot.clone(dummyGraphObj, thumbnailOptions);
+            var thumbTile = Plotly.Snapshot.clone(dummyGraphObj, thumbnailOptions);
             expect(thumbTile.layout.hidesources).toEqual(THUMBNAIL_DEFAULT_LAYOUT.hidesources);
             expect(thumbTile.layout.showlegend).toEqual(THUMBNAIL_DEFAULT_LAYOUT.showlegend);
             expect(thumbTile.layout.borderwidth).toEqual(THUMBNAIL_DEFAULT_LAYOUT.borderwidth);
@@ -115,7 +119,7 @@ describe('Test Snapshot.clone', function() {
                 width: 888
             };
 
-            var customTile = Snapshot.clone(dummyGraphObj, customOptions);
+            var customTile = Plotly.Snapshot.clone(dummyGraphObj, customOptions);
             expect(customTile.layout.height).toEqual(customOptions.height);
             expect(customTile.layout.width).toEqual(customOptions.width);
         });
@@ -125,7 +129,7 @@ describe('Test Snapshot.clone', function() {
                 tileClass: 'notarealclass'
             };
 
-            var vanillaPlotTile = Snapshot.clone(dummyGraphObj, vanillaOptions);
+            var vanillaPlotTile = Plotly.Snapshot.clone(dummyGraphObj, vanillaOptions);
             expect(vanillaPlotTile.data[0].x).toEqual(data[0].x);
             expect(vanillaPlotTile.layout).toEqual(layout);
             expect(vanillaPlotTile.layout.height).toEqual(layout.height);
@@ -133,15 +137,49 @@ describe('Test Snapshot.clone', function() {
         });
 
         it('should set the background parameter appropriately', function() {
-            var pt = Snapshot.clone(dummyGraphObj, {
+            var pt = Plotly.Snapshot.clone(dummyGraphObj, {
                 setBackground: 'transparent'
             });
             expect(pt.config.setBackground).not.toBeDefined();
 
-            pt = Snapshot.clone(dummyGraphObj, {
+            pt = Plotly.Snapshot.clone(dummyGraphObj, {
                 setBackground: 'blue'
             });
             expect(pt.config.setBackground).toEqual('blue');
+        });
+    });
+
+    describe('toSVG', function() {
+        var parser = new DOMParser(),
+            gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+
+        it('should not return any nested svg tags of plots', function(done) {
+            Plotly.plot(gd, subplotMock.data, subplotMock.layout).then(function() {
+                return Plotly.Snapshot.toSVG(gd);
+            }).then(function(svg) {
+                var svgDOM = parser.parseFromString(svg, 'image/svg+xml'),
+                    svgElements = svgDOM.getElementsByTagName('svg');
+
+                expect(svgElements.length).toBe(1);
+            }).then(done);
+        });
+
+        it('should not return any nested svg tags of annotations', function(done) {
+            Plotly.plot(gd, annotationMock.data, annotationMock.layout).then(function() {
+                return Plotly.Snapshot.toSVG(gd);
+            }).then(function(svg) {
+                var svgDOM = parser.parseFromString(svg, 'image/svg+xml'),
+                    svgElements = svgDOM.getElementsByTagName('svg');
+
+                expect(svgElements.length).toBe(1);
+            }).then(done);
         });
     });
 });

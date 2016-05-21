@@ -10,12 +10,12 @@
 'use strict';
 
 function xformMatrix(m, v) {
-    var out = [0,0,0,0];
+    var out = [0, 0, 0, 0];
     var i, j;
 
     for(i = 0; i < 4; ++i) {
         for(j = 0; j < 4; ++j) {
-            out[j] += m[4*i + j] * v[i];
+            out[j] += m[4 * i + j] * v[i];
         }
     }
 

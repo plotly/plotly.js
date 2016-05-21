@@ -1,0 +1,52 @@
+{
+    "data": [
+        {
+            "a": [
+                2,
+                1,
+                1
+            ],
+            "b": [
+                1,
+                2,
+                1
+            ],
+            "c": [
+                1,
+                1,
+                2.12345
+            ],
+            "type": "scatterternary",
+            "uid": "412fa8"
+        }
+    ],
+    "layout": {
+        "ternary": {
+            "aaxis": {
+                "showline": true,
+                "ticks": "outside",
+                "showgrid": true,
+                "color": "#ccc",
+                "min": 0.231
+            },
+            "baxis": {
+                "showline": true,
+                "ticks": "outside",
+                "showgrid": true,
+                "color": "#0f0",
+                "title": "chocolate",
+                "min": 0.2
+            },
+            "caxis": {
+                "showline": true,
+                "ticks": "outside",
+                "showgrid": true,
+                "min": 0.11
+            },
+            "bgcolor": "#eee"
+        },
+        "height": 450,
+        "width": 700,
+        "autosize": true
+    }
+}

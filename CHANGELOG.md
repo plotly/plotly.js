@@ -10,6 +10,117 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.11.0] -- 2016-05-17
+
+### Added
+- Add top-level methods `Plotly.toImage` to convert a plotly graph to an image
+  data URL (svg, png, jpg, and webp are supported) and `Plotly.downloadImage` to
+  download a plotly graph as an image [#446]
+- Add the ability to add arbitrary images loaded from a url to a plot's layout
+  [#525]
+- Add the option of making legend span horizontally [#535]
+- Add `connectgaps` attribute to `scattergl` traces [#449]
+- Add new 'relative' bar mode which stacks on top of one another with negative
+  values below the axis, positive values above [#517]
+- Add support for the 'winkel tripel' projection in geo subplots [#492]
+- Event `plotly_relayout` is now emitted on gl2d subplot drag/pan/zoom
+  interactions [#466]
+- Add support for fill coloring in `contourgl` traces [#522, #543]
+
+### Changed
+- Cartesian on-hover routine is now uses a 50ms interval between search calls
+  instead of 100ms for smoother displaying hover labels [#514]
+- [Internal change] fullLayout `_has` fields are replaced by a `_has` method
+  which checks if a particular plot type is present on a graph [#491]
+
+### Fixed
+- Bar widths of traces with null coordinates are now correctly computed [#542]
+- Error bar spans on bar traces with null coordinates are now correctly computed
+  [#542]
+- All promises spawn in `Plotly.plot` are now guaranteed to be resolved before
+  the final resolve [#521]
+- Restyling `scatterternary` data attributes is now working [#540]
+- Error bar of 0 length in log axes are not included in hover labels (instead of
+  showing `NaN`s) [#533]
+
+
+## [1.10.2] -- 2016-05-05
+
+### Fixed
+- Subplot and range slider clip paths are now functional in AngularJS [#509]
+- `relayout` call involving axis `categoryorder` and `categoryarray` are now
+  working [#510]
+- Annotation drag interactions in `editable: true` mode are now functional (bug
+  introduced in 1.10.0)[#505]
+- Improved attribute description for shape `xref` and `yref` [#506]
+
+
+## [1.10.1] -- 2016-05-02
+
+### Fixed
+- Resizing a graph (e.g. via `Plotly.relayout` or Plotly.Plots.resize)
+  properly updates the plot area clip paths (bug introduced in 1.10.0) [#490]
+- `Plotly.Snapshot.toSVG` is now functional again in IE11 and old version of
+  Chrome and FF (bug introduced in 1.10.0) [#489]
+- Hover labels of superimposed traces when 'hovermode' is set to 'closest' are
+  properly displayed (bug introduced in 1.10.0) [#495]
+- Surface contour highlights are toggleable [#459]
+- Surface contour highlights style attributes are lower cased [#459]
+- Zoom overlay are drawn over shapes [#448]
+- Legend are draggable in `editable: true` contexts (bug introduced in 1.6.0)
+  [#487]
+- Legend scroll box are drawn outside the legend [#478]
+
+
+## [1.10.0] -- 2016-04-12
+
+### Added
+- Beta version of two new 2D WebGL trace types: `heatmapgl` and `contourgl`
+  [#427, #434]
+- Two new `scatter` line `fill` modes: `'toself'` and `'tonext'` [#462]
+- Fills for `scatterternary` traces are now supported [#462]
+- Configurable axis category ordering with `categoryorder` and an optional
+  `categoryarray` axis attributes [#419]
+- Configurable shapes layer position with shape attribute `layer` [#439]
+- Configurable range slider range (so that the initial xaxis range can differ
+  from the range slider range) [#473]
+
+### Changed
+- Nested SVG elements in SVG image exports are removed, making the to-image mode
+  bar button work in RStudio and SVG export compatible with Adobe Illustrator
+  [#415, #454, #442]
+- Use `country-regex` npm package instead of hard-coded file of ISO-3 code to
+  country regular expressions [#461]
+
+### Fixed
+- Legend positioning does not break on negative `x` and `y` settings (bug
+  introduced in 1.6.0) [#417]
+- Shapes are properly deleted when clearing all of them at once (bug introduced
+  in 1.9.0) [#465]
+- Promise are return after first render in gl3d and gl2d plots [#421]
+- Click and hover events are properly triggered when trace `hoverinfo` is set to
+  `'none'` [#438]
+- `plotly_unhover` events is now properly triggered on geo trace types [#429]
+- `plotly_relayout` event is now properly triggered on gl3d set camera [#458]
+- RGBA colors are now supported in `scatter` and `bar` custom color scales
+  [#422]
+- Range slider is now functional with `x0`/`dx` data [#441]
+- Range slider is now compatible with mode bar axis range buttons and double
+  click [#471]
+
+
+## [1.9.0] -- 2016-04-12
+
+### Added
+- Ternary plots with support for scatter traces (trace type `scatterternary`) [#390]
+
+### Fixed
+- Toggling the visibility of `scatter3d` traces with `surfaceaxis` now works [#405]
+- `scatter3d` traces with `surfaceaxis` turned now feature real 3D opacity [#408]
+- `plotly_unhover` is now properly triggered over `pie` traces [#407]
+- Better grammar in `scatter` attribute descriptions [#406]
+
+
 ## [1.8.0] -- 2016-04-04
 
 ### Added

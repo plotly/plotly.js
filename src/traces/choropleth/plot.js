@@ -22,7 +22,7 @@ var getTopojsonFeatures = require('../../lib/topojson_utils').getTopojsonFeature
 var locationToFeature = require('../../lib/geo_location_utils').locationToFeature;
 var arrayToCalcItem = require('../../lib/array_to_calc_item');
 
-var constants = require('../../constants/geo_constants');
+var constants = require('../../plots/geo/constants');
 var attributes = require('./attributes');
 
 var plotChoropleth = module.exports = {};
@@ -80,6 +80,9 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
             cleanHoverLabelsFunc = makeCleanHoverLabelsFunc(geo, trace),
             eventDataFunc = makeEventDataFunc(trace);
 
+        // keep ref to event data in this scope for plotly_unhover
+        var eventData = null;
+
         function handleMouseOver(pt, ptIndex) {
             if(!geo.showHover) return;
 
@@ -95,7 +98,9 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
                 container: geo.hoverContainer.node()
             });
 
-            geo.graphDiv.emit('plotly_hover', eventDataFunc(pt, ptIndex));
+            eventData = eventDataFunc(pt, ptIndex);
+
+            geo.graphDiv.emit('plotly_hover', eventData);
         }
 
         function handleClick(pt, ptIndex) {
@@ -111,6 +116,8 @@ plotChoropleth.plot = function(geo, choroplethData, geoLayout) {
             .on('click', handleClick)
             .on('mouseout', function() {
                 Fx.loneUnhover(geo.hoverContainer);
+
+                geo.graphDiv.emit('plotly_unhover', eventData);
             })
             .on('mousedown', function() {
                 // to simulate the 'zoomon' event

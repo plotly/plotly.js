@@ -40,7 +40,7 @@ Scatter.meta = {
         'The data visualized as scatter point or lines is set in `x` and `y`.',
         'Text (appearing either on the chart or on hover only) is via `text`.',
         'Bubble charts are achieved by setting `marker.size` and/or `marker.color`',
-        'to a numerical arrays.'
+        'to numerical arrays.'
     ].join(' ')
 };
 

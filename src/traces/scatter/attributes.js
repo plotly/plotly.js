@@ -152,18 +152,34 @@ module.exports = {
     },
     fill: {
         valType: 'enumerated',
-        values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx'],
+        values: ['none', 'tozeroy', 'tozerox', 'tonexty', 'tonextx', 'toself', 'tonext'],
         dflt: 'none',
         role: 'style',
         description: [
             'Sets the area to fill with a solid color.',
-            'Use with `fillcolor`.'
+            'Use with `fillcolor` if not *none*.',
+            '*tozerox* and *tozeroy* fill to x=0 and y=0 respectively.',
+            '*tonextx* and *tonexty* fill between the endpoints of this',
+            'trace and the endpoints of the trace before it, connecting those',
+            'endpoints with straight lines (to make a stacked area graph);',
+            'if there is no trace before it, they behave like *tozerox* and',
+            '*tozeroy*.',
+            '*toself* connects the endpoints of the trace (or each segment',
+            'of the trace if it has gaps) into a closed shape.',
+            '*tonext* fills the space between two traces if one completely',
+            'encloses the other (eg consecutive contour lines), and behaves like',
+            '*toself* if there is no trace before it. *tonext* should not be',
+            'used if one trace does not enclose the other.'
         ].join(' ')
     },
     fillcolor: {
         valType: 'color',
         role: 'style',
-        description: 'Sets the fill color.'
+        description: [
+            'Sets the fill color.',
+            'Defaults to a half-transparent variant of the line color,',
+            'marker color, or marker line color, whichever is available.'
+        ].join(' ')
     },
     marker: {
         symbol: {

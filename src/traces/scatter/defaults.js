@@ -17,6 +17,7 @@ var subTypes = require('./subtypes');
 var handleXYDefaults = require('./xy_defaults');
 var handleMarkerDefaults = require('./marker_defaults');
 var handleLineDefaults = require('./line_defaults');
+var handleLineShapeDefaults = require('./line_shape_defaults');
 var handleTextDefaults = require('./text_defaults');
 var handleFillColorDefaults = require('./fillcolor_defaults');
 var errorBarsSupplyDefaults = require('../../components/errorbars/defaults');
@@ -40,7 +41,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(subTypes.hasLines(traceOut)) {
         handleLineDefaults(traceIn, traceOut, defaultColor, coerce);
-        lineShapeDefaults(traceIn, traceOut, coerce);
+        handleLineShapeDefaults(traceIn, traceOut, coerce);
         coerce('connectgaps');
     }
 
@@ -59,14 +60,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('fill');
     if(traceOut.fill !== 'none') {
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
-        if(!subTypes.hasLines(traceOut)) lineShapeDefaults(traceIn, traceOut, coerce);
+        if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
     }
 
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
-
-function lineShapeDefaults(traceIn, traceOut, coerce) {
-    var shape = coerce('line.shape');
-    if(shape === 'spline') coerce('line.smoothing');
-}

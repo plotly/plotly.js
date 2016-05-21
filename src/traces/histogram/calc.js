@@ -29,14 +29,14 @@ module.exports = function calc(gd, trace) {
         size = [],
         i,
         pa = Axes.getFromId(gd,
-            trace.orientation==='h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
-        maindata = trace.orientation==='h' ? 'y' : 'x',
+            trace.orientation === 'h' ? (trace.yaxis || 'y') : (trace.xaxis || 'x')),
+        maindata = trace.orientation === 'h' ? 'y' : 'x',
         counterdata = {x: 'y', y: 'x'}[maindata];
 
     // prepare the raw data
     var pos0 = pa.makeCalcdata(trace, maindata);
     // calculate the bins
-    if((trace['autobin' + maindata]!==false) || !(maindata + 'bins' in trace)) {
+    if((trace['autobin' + maindata] !== false) || !(maindata + 'bins' in trace)) {
         trace[maindata + 'bins'] = Axes.autoBin(pos0, pa, trace['nbins' + maindata]);
 
         // copy bin info back to the source data.
@@ -55,17 +55,17 @@ module.exports = function calc(gd, trace) {
         total = 0,
         norm = trace.histnorm,
         func = trace.histfunc,
-        densitynorm = norm.indexOf('density')!==-1,
-        extremefunc = func==='max' || func==='min',
+        densitynorm = norm.indexOf('density') !== -1,
+        extremefunc = func === 'max' || func === 'min',
         sizeinit = extremefunc ? null : 0,
         binfunc = binFunctions.count,
         normfunc = normFunctions[norm],
         doavg = false,
         rawCounterData;
 
-    if(Array.isArray(trace[counterdata]) && func!=='count') {
+    if(Array.isArray(trace[counterdata]) && func !== 'count') {
         rawCounterData = trace[counterdata];
-        doavg = func==='avg';
+        doavg = func === 'avg';
         binfunc = binFunctions[func];
     }
 
@@ -75,7 +75,7 @@ module.exports = function calc(gd, trace) {
     // decrease end a little in case of rounding errors
     binend = binspec.end +
         (binspec.start - Axes.tickIncrement(binspec.start, binspec.size)) / 1e6;
-    while(i<binend && pos.length<5000) {
+    while(i < binend && pos.length < 5000) {
         i2 = Axes.tickIncrement(i, binspec.size);
         pos.push((i + i2) / 2);
         size.push(sizeinit);
@@ -90,9 +90,9 @@ module.exports = function calc(gd, trace) {
 
     var nMax = size.length;
     // bin the data
-    for(i=0; i<pos0.length; i++) {
+    for(i = 0; i < pos0.length; i++) {
         n = Lib.findBin(pos0[i], bins);
-        if(n>=0 && n<nMax) total += binfunc(n, i, size, rawCounterData, counts);
+        if(n >= 0 && n < nMax) total += binfunc(n, i, size, rawCounterData, counts);
     }
 
     // average and/or normalize the data, if needed
@@ -102,15 +102,15 @@ module.exports = function calc(gd, trace) {
     var serieslen = Math.min(pos.length, size.length),
         cd = [],
         firstNonzero = 0,
-        lastNonzero = serieslen-1;
+        lastNonzero = serieslen - 1;
     // look for empty bins at the ends to remove, so autoscale omits them
-    for(i=0; i<serieslen; i++) {
+    for(i = 0; i < serieslen; i++) {
         if(size[i]) {
             firstNonzero = i;
             break;
         }
     }
-    for(i=serieslen-1; i>firstNonzero; i--) {
+    for(i = serieslen - 1; i > firstNonzero; i--) {
         if(size[i]) {
             lastNonzero = i;
             break;
@@ -118,7 +118,7 @@ module.exports = function calc(gd, trace) {
     }
 
     // create the "calculated data" to plot
-    for(i=firstNonzero; i<=lastNonzero; i++) {
+    for(i = firstNonzero; i <= lastNonzero; i++) {
         if((isNumeric(pos[i]) && isNumeric(size[i]))) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }

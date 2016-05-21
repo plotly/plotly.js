@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../plots/cartesian/graph_interact');
 
@@ -19,7 +18,6 @@ var createSelectBox = require('gl-select-box');
 
 var createOptions = require('./convert');
 var createCamera = require('./camera');
-
 var htmlToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
@@ -29,6 +27,7 @@ var STATIC_CANVAS, STATIC_CONTEXT;
 
 function Scene2D(options, fullLayout) {
     this.container = options.container;
+    this.graphDiv = options.graphDiv;
     this.pixelRatio = options.plotGlPixelRatio || window.devicePixelRatio;
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
@@ -166,7 +165,7 @@ proto.toImage = function(format) {
     if(this.staticPlot) this.container.appendChild(STATIC_CANVAS);
 
     // force redraw
-    this.glplot.setDirty(true);
+    this.glplot.setDirty();
     this.glplot.draw();
 
     // grab context and yank out pixels
@@ -180,12 +179,12 @@ proto.toImage = function(format) {
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
     // flip pixels
-    for(var j=0,k=h-1; j<k; ++j, --k) {
-        for(var i=0; i<w; ++i) {
-            for(var l=0; l<4; ++l) {
-                var tmp = pixels[4*(w*j+i)+l];
-                pixels[4*(w*j+i)+l] = pixels[4*(w*k+i)+l];
-                pixels[4*(w*k+i)+l] = tmp;
+    for(var j = 0, k = h - 1; j < k; ++j, --k) {
+        for(var i = 0; i < w; ++i) {
+            for(var l = 0; l < 4; ++l) {
+                var tmp = pixels[4 * (w * j + i) + l];
+                pixels[4 * (w * j + i) + l] = pixels[4 * (w * k + i) + l];
+                pixels[4 * (w * k + i) + l] = tmp;
             }
         }
     }
@@ -270,6 +269,25 @@ proto.updateFx = function(options) {
     fullLayout.hovermode = options.hovermode;
 };
 
+var relayoutCallback = function(scene) {
+
+    var xrange = scene.xaxis.range,
+        yrange = scene.yaxis.range;
+
+    // Update the layout on the DIV
+    scene.graphDiv.layout.xaxis.range = xrange.slice(0);
+    scene.graphDiv.layout.yaxis.range = yrange.slice(0);
+
+    // Make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
+    var update = { // scene.camera has no many useful projection or scale information
+        lastInputTime: scene.camera.lastInputTime // helps determine which one is the latest input (if async)
+    };
+    update[scene.xaxis._name] = xrange.slice();
+    update[scene.yaxis._name] = yrange.slice();
+
+    scene.graphDiv.emit('plotly_relayout', update);
+};
+
 proto.cameraChanged = function() {
     var camera = this.camera,
         xrange = this.xaxis.range,
@@ -287,6 +305,7 @@ proto.cameraChanged = function() {
         this.glplotOptions.ticks = nextTicks;
         this.glplotOptions.dataBox = camera.dataBox;
         this.glplot.update(this.glplotOptions);
+        relayoutCallback(this);
     }
 };
 
@@ -301,11 +320,11 @@ proto.destroy = function() {
     this.stopped = true;
 };
 
-proto.plot = function(fullData, fullLayout) {
+proto.plot = function(fullData, calcData, fullLayout) {
     var glplot = this.glplot,
         pixelRatio = this.pixelRatio;
 
-    var i, j;
+    var i, j, trace;
 
     this.fullLayout = fullLayout;
     this.updateAxes(fullLayout);
@@ -322,21 +341,18 @@ proto.plot = function(fullData, fullLayout) {
         canvas.height = pixelHeight;
     }
 
-    if(!fullData) fullData = [];
-    else if(!Array.isArray(fullData)) fullData = [fullData];
-
     // update traces
-    var traceData, trace;
     for(i = 0; i < fullData.length; ++i) {
-        traceData = fullData[i];
-        trace = this.traces[traceData.uid];
+        var fullTrace = fullData[i],
+            calcTrace = calcData[i];
+        trace = this.traces[fullTrace.uid];
 
-        if(trace) trace.update(traceData);
+        if(trace) trace.update(fullTrace, calcTrace);
         else {
-            var traceModule = Plots.getModule(traceData.type);
-            trace = traceModule.plot(this, traceData);
+            trace = fullTrace._module.plot(this, fullTrace, calcTrace);
         }
-        this.traces[traceData.uid] = trace;
+
+        this.traces[fullTrace.uid] = trace;
     }
 
     // remove empty traces
@@ -344,8 +360,8 @@ proto.plot = function(fullData, fullLayout) {
 
     trace_id_loop:
     for(i = 0; i < traceIds.length; ++i) {
-        for(j = 0; j < fullData.length; ++j) {
-            if(fullData[j].uid === traceIds[i]) continue trace_id_loop;
+        for(j = 0; j < calcData.length; ++j) {
+            if(calcData[j][0].trace.uid === traceIds[i]) continue trace_id_loop;
         }
 
         trace = this.traces[traceIds[i]];
@@ -372,7 +388,7 @@ proto.plot = function(fullData, fullLayout) {
     this.mouseContainer.style.height = size.h * (domainY[1] - domainY[0]) + 'px';
     this.mouseContainer.height = size.h * (domainY[1] - domainY[0]);
     this.mouseContainer.style.left = size.l + domainX[0] * size.w + 'px';
-    this.mouseContainer.style.top = size.t + (1-domainY[1]) * size.h + 'px';
+    this.mouseContainer.style.top = size.t + (1 - domainY[1]) * size.h + 'px';
 
     var bounds = this.bounds;
     bounds[0] = bounds[1] = Infinity;
@@ -383,19 +399,19 @@ proto.plot = function(fullData, fullLayout) {
         trace = this.traces[traceIds[i]];
         for(var k = 0; k < 2; ++k) {
             bounds[k] = Math.min(bounds[k], trace.bounds[k]);
-            bounds[k+2] = Math.max(bounds[k+2], trace.bounds[k+2]);
+            bounds[k + 2] = Math.max(bounds[k + 2], trace.bounds[k + 2]);
         }
     }
 
     var ax;
     for(i = 0; i < 2; ++i) {
-        if(bounds[i] > bounds[i+2]) {
+        if(bounds[i] > bounds[i + 2]) {
             bounds[i] = -1;
-            bounds[i+2] = 1;
+            bounds[i + 2] = 1;
         }
 
         ax = this[AXES[i]];
-        ax._length = options.viewBox[i+2] - options.viewBox[i];
+        ax._length = options.viewBox[i + 2] - options.viewBox[i];
 
         Axes.doAutoRange(ax);
     }
@@ -408,6 +424,9 @@ proto.plot = function(fullData, fullLayout) {
 
     options.merge(fullLayout);
     glplot.update(options);
+
+    // force redraw so that promise is returned when rendering is completed
+    this.glplot.draw();
 };
 
 proto.draw = function() {
@@ -446,7 +465,7 @@ proto.draw = function() {
 
         var result = glplot.pick(
             (x / glplot.pixelRatio) + size.l + domainX[0] * size.w,
-            (y / glplot.pixelRatio) - (size.t + (1-domainY[1]) * size.h)
+            (y / glplot.pixelRatio) - (size.t + (1 - domainY[1]) * size.h)
         );
 
         if(result && fullLayout.hovermode) {
@@ -477,6 +496,7 @@ proto.draw = function() {
                     var parts = hoverinfo.split('+');
                     if(parts.indexOf('x') === -1) selection.traceCoord[0] = undefined;
                     if(parts.indexOf('y') === -1) selection.traceCoord[1] = undefined;
+                    if(parts.indexOf('z') === -1) selection.traceCoord[2] = undefined;
                     if(parts.indexOf('text') === -1) selection.textLabel = undefined;
                     if(parts.indexOf('name') === -1) selection.name = undefined;
                 }
@@ -486,6 +506,7 @@ proto.draw = function() {
                     y: selection.screenCoord[1],
                     xLabel: this.hoverFormatter('xaxis', selection.traceCoord[0]),
                     yLabel: this.hoverFormatter('yaxis', selection.traceCoord[1]),
+                    zLabel: selection.traceCoord[2],
                     text: selection.textLabel,
                     name: selection.name,
                     color: selection.color

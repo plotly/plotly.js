@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var Plots = require('../plots');
+var Color = require('../../components/color');
 
 var RangeSlider = require('../../components/rangeslider');
 var RangeSelector = require('../../components/rangeselector');
@@ -70,7 +71,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // if gl3d or geo is present on graph. This is retain backward compatible.
     //
     // TODO drop this in version 2.0
-    var ignoreOrphan = (layoutOut._hasGL3D || layoutOut._hasGeo);
+    var ignoreOrphan = (layoutOut._has('gl3d') || layoutOut._has('geo'));
 
     if(!ignoreOrphan) {
         for(i = 0; i < layoutKeys.length; i++) {
@@ -94,7 +95,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // make sure that plots with orphan cartesian axes
     // are considered 'cartesian'
     if(xaListCartesian.length && yaListCartesian.length) {
-        layoutOut._hasCartesian = true;
+        Lib.pushUnique(layoutOut._basePlotModules, Plots.subplotsRegistry.cartesian);
     }
 
     function axSort(a, b) {
@@ -107,7 +108,16 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         yaList = yaListCartesian.concat(yaListGl2d).sort(axSort),
         axesList = xaList.concat(yaList);
 
-    axesList.concat(yaList).forEach(function(axName) {
+    // plot_bgcolor only makes sense if there's a (2D) plot!
+    // TODO: bgcolor for each subplot, to inherit from the main one
+    var plot_bgcolor = Color.background;
+    if(xaList.length && yaList.length) {
+        plot_bgcolor = Lib.coerce(layoutIn, layoutOut, Plots.layoutAttributes, 'plot_bgcolor');
+    }
+
+    var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);
+
+    axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0),
             axLayoutIn = layoutIn[axName] || {},
             axLayoutOut = {},
@@ -117,13 +127,14 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                 outerTicks: outerTicks[axName],
                 showGrid: !noGrids[axName],
                 name: axName,
-                data: fullData
+                data: fullData,
+                bgColor: bgColor
             },
             positioningOptions = {
                 letter: axLetter,
                 counterAxes: {x: yaList, y: xaList}[axLetter].map(axisIds.name2id),
                 overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2) {
-                    return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
+                    return axName2 !== axName && !(layoutIn[axName2] || {}).overlaying;
                 }).map(axisIds.name2id)
             };
 
@@ -157,10 +168,4 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
             RangeSelector.supplyLayoutDefaults(axLayoutIn, axLayoutOut, layoutOut, counterAxes);
         }
     });
-
-    // plot_bgcolor only makes sense if there's a (2D) plot!
-    // TODO: bgcolor for each subplot, to inherit from the main one
-    if(xaList.length && yaList.length) {
-        Lib.coerce(layoutIn, layoutOut, Plots.layoutAttributes, 'plot_bgcolor');
-    }
 };

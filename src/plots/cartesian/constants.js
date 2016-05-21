@@ -10,6 +10,17 @@
 
 
 module.exports = {
+
+    idRegex: {
+        x: /^x([2-9]|[1-9][0-9]+)?$/,
+        y: /^y([2-9]|[1-9][0-9]+)?$/
+    },
+
+    attrRegex: {
+        x: /^xaxis([2-9]|[1-9][0-9]+)?$/,
+        y: /^yaxis([2-9]|[1-9][0-9]+)?$/
+    },
+
     /**
      * standardize all missing data in calcdata to use undefined
      * never null or NaN.
@@ -55,7 +66,7 @@ module.exports = {
     HOVERFONT: 'Arial, sans-serif',
 
     // minimum time (msec) between hover calls
-    HOVERMINTIME: 100,
+    HOVERMINTIME: 50,
 
     // max pixels off straight before a lasso select line counts as bent
     BENDPX: 1.5

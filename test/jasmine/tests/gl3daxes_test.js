@@ -11,7 +11,8 @@ describe('Test Gl3dAxes', function() {
         var options = {
             font: 'Open Sans',
             scene: {id: 'scene'},
-            data: [{x: [], y: []}]
+            data: [{x: [], y: []}],
+            bgColor: '#fff'
         };
 
         beforeEach(function() {
@@ -30,7 +31,7 @@ describe('Test Gl3dAxes', function() {
                     'showspikes': true,
                     'spikesides': true,
                     'spikethickness': 2,
-                    'spikecolor': 'rgb(0,0,0)',
+                    'spikecolor': '#444',
                     'showbackground': false,
                     'showaxeslabels': true
                 },
@@ -42,7 +43,7 @@ describe('Test Gl3dAxes', function() {
                     'showspikes': true,
                     'spikesides': true,
                     'spikethickness': 2,
-                    'spikecolor': 'rgb(0,0,0)',
+                    'spikecolor': '#444',
                     'showbackground': false,
                     'showaxeslabels': true
                 },
@@ -54,7 +55,7 @@ describe('Test Gl3dAxes', function() {
                     'showspikes': true,
                     'spikesides': true,
                     'spikethickness': 2,
-                    'spikecolor': 'rgb(0,0,0)',
+                    'spikecolor': '#444',
                     'showbackground': false,
                     'showaxeslabels': true
                 }
@@ -64,14 +65,14 @@ describe('Test Gl3dAxes', function() {
                 var keys = Object.keys(validObject);
                 for(var i = 0; i < keys.length; i++) {
                     var k = keys[i];
-                    if(validObject[k] !== testObject[k]) return false;
+                    expect(validObject[k]).toBe(testObject[k]);
                 }
                 return true;
             }
 
             supplyLayoutDefaults(layoutIn, layoutOut, options);
             ['xaxis', 'yaxis', 'zaxis'].forEach(function(axis) {
-                expect(checkKeys(expected[axis], layoutOut[axis])).toBe(true);
+                checkKeys(expected[axis], layoutOut[axis]);
             });
         });
     });

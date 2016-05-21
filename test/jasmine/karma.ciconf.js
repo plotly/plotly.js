@@ -14,7 +14,11 @@ function func(config) {
      * exclude them from the CircleCI test bundle.
      *
      */
-    func.defaultConfig.exclude = ['tests/gl_plot_interact_test.js'];
+    func.defaultConfig.exclude = [
+        'tests/gl_plot_interact_test.js',
+        'tests/gl_plot_interact_basic_test.js',
+        'tests/gl2d_scatterplot_contour_test.js'
+    ];
 
     // if true, Karma captures browsers, runs the tests and exits
     func.defaultConfig.singleRun = true;

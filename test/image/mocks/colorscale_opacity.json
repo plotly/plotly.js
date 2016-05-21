@@ -1,0 +1,56 @@
+{
+    "data": [
+        {
+            "y": [
+                5,
+                5,
+                5,
+                5
+            ],
+            "mode": "markers",
+            "marker": {
+                "size": 40,
+                "colorscale": [
+                    [
+                        0,
+                        "rgb(255,0.0,0.0)"
+                    ],
+                    [
+                        1,
+                        "rgba(0.0,0.0,255,0.5)"
+                    ]
+                ],
+                "color": [
+                    0,
+                    1,
+                    2,
+                    3
+                ],
+                "cmin": 0,
+                "cmax": 3
+            },
+            "uid": "07bab4"
+        }
+    ],
+    "layout": {
+        "title": "Scatter Plot with a Color Dimension",
+        "xaxis": {
+            "range": [
+                -0.271356783919598,
+                3.271356783919598
+            ],
+            "autorange": true
+        },
+        "yaxis": {
+            "type": "linear",
+            "range": [
+                4,
+                6
+            ],
+            "autorange": true
+        },
+        "height": 450,
+        "width": 1100,
+        "autosize": true
+    }
+}

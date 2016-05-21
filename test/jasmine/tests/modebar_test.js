@@ -4,6 +4,7 @@ var createModeBar = require('@src/components/modebar');
 var manageModeBar = require('@src/components/modebar/manage');
 
 var Plotly = require('@lib/index');
+var Plots = require('@src/plots/plots');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var selectButton = require('../assets/modebar_button');
@@ -28,7 +29,8 @@ describe('ModeBar', function() {
         return {
             _fullLayout: {
                 dragmode: 'zoom',
-                _paperdiv: d3.select(getMockContainerTree())
+                _paperdiv: d3.select(getMockContainerTree()),
+                _has: Plots._hasPlotType
             },
             _fullData: [],
             _context: {
@@ -186,7 +188,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
 
             manageModeBar(gd);
@@ -204,7 +206,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
             gd._fullData = [{
                 type: 'scatter',
@@ -226,7 +228,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -243,7 +245,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasGL3D = true;
+            gd._fullLayout._basePlotModules = [{ name: 'gl3d' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -259,7 +261,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasGeo = true;
+            gd._fullLayout._basePlotModules = [{ name: 'geo' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -276,7 +278,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasGL2D = true;
+            gd._fullLayout._basePlotModules = [{ name: 'gl2d' }];
             gd._fullLayout.xaxis = {fixedrange: false};
 
             manageModeBar(gd);
@@ -292,7 +294,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasPie = true;
+            gd._fullLayout._basePlotModules = [{ name: 'pie' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -307,11 +309,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
-            gd._fullLayout._hasGL3D = true;
-            gd._fullLayout._hasGeo = false;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = false;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'gl3d' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -326,11 +324,7 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
-            gd._fullLayout._hasGL3D = false;
-            gd._fullLayout._hasGeo = true;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = false;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'geo' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -347,7 +341,6 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
             gd._fullData = [{
                 type: 'scatter',
                 visible: true,
@@ -355,10 +348,7 @@ describe('ModeBar', function() {
                 _module: {selectPoints: true}
             }];
             gd._fullLayout.xaxis = {fixedrange: false};
-            gd._fullLayout._hasGL3D = false;
-            gd._fullLayout._hasGeo = false;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = true;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }, { name: 'pie' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -373,11 +363,74 @@ describe('ModeBar', function() {
             ]);
 
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = false;
-            gd._fullLayout._hasGL3D = true;
-            gd._fullLayout._hasGeo = true;
-            gd._fullLayout._hasGL2D = false;
-            gd._fullLayout._hasPie = false;
+            gd._fullLayout._basePlotModules = [{ name: 'geo' }, { name: 'gl3d' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (un-selectable ternary version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'ternary' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (selectable ternary version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d', 'select2d', 'lasso2d']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullData = [{
+                type: 'scatterternary',
+                visible: true,
+                mode: 'markers',
+                _module: {selectPoints: true}
+            }];
+            gd._fullLayout._basePlotModules = [{ name: 'ternary' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (ternary + cartesian version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['zoom2d', 'pan2d'],
+                ['hoverClosestCartesian', 'hoverCompareCartesian']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'ternary' }, { name: 'cartesian' }];
+
+            manageModeBar(gd);
+            var modeBar = gd._fullLayout._modeBar;
+
+            checkButtons(modeBar, buttons, 1);
+        });
+
+        it('creates mode bar (ternary + gl3d version)', function() {
+            var buttons = getButtons([
+                ['toImage', 'sendDataToCloud'],
+                ['resetViews', 'toggleHover']
+            ]);
+
+            var gd = getMockGraphInfo();
+            gd._fullLayout._basePlotModules = [{ name: 'ternary' }, { name: 'gl3d' }];
 
             manageModeBar(gd);
             var modeBar = gd._fullLayout._modeBar;
@@ -430,7 +483,7 @@ describe('ModeBar', function() {
         // gives 11 buttons in 5 groups by default
         function setupGraphInfo() {
             var gd = getMockGraphInfo();
-            gd._fullLayout._hasCartesian = true;
+            gd._fullLayout._basePlotModules = [{ name: 'cartesian' }];
             gd._fullLayout.xaxis = {fixedrange: false};
             return gd;
         }
@@ -439,8 +492,7 @@ describe('ModeBar', function() {
             var gd = setupGraphInfo();
             manageModeBar(gd);
 
-            gd._fullLayout._hasCartesian = false;
-            gd._fullLayout._hasGL3D = true;
+            gd._fullLayout._basePlotModules = [{ name: 'gl3d' }];
             manageModeBar(gd);
 
             expect(countButtons(gd._fullLayout._modeBar)).toEqual(10);
