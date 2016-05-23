@@ -347,7 +347,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var scrollViewBox = [0, 0, pw, ph],
         // wait a little after scrolling before redrawing
         redrawTimer = null,
-        REDRAWDELAY = 300,
+        REDRAWDELAY = 50,
         mainplot = plotinfo.mainplot ?
             fullLayout._plots[plotinfo.mainplot] : plotinfo;
 
@@ -608,19 +608,24 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 editY = ns && ya.indexOf(ya2) !== -1 && !ya2.fixedrange;
 
             if(editX || editY) {
-                // plot requires offset position and
-                // clip moves with opposite sign
-                var clipDx = editX ? viewBox[0] : 0,
-                    clipDy = editY ? viewBox[1] : 0,
-                    plotDx = xa2._offset - clipDx,
+
+                var xScaleFactor = xa2._length / viewBox[2],
+                    yScaleFactor = ya2._length / viewBox[3];
+
+                var clipDx = editX ? (viewBox[0] / viewBox[2] * xa2._length) : 0,
+                    clipDy = editY ? (viewBox[1] / viewBox[3] * ya2._length) : 0;
+
+                var plotDx = xa2._offset - clipDx,
                     plotDy = ya2._offset - clipDy;
 
                 var clipId = 'clip' + fullLayout._uid + subplots[i] + 'plot';
 
                 fullLayout._defs.selectAll('#' + clipId)
-                    .attr('transform', 'translate(' + clipDx + ', ' + clipDy + ')');
+                    .call(Lib.setTranslate, viewBox[0], viewBox[1])
+                    .call(Lib.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
                 subplot.plot
-                    .attr('transform', 'translate(' + plotDx + ', ' + plotDy + ')');
+                    .call(Lib.setTranslate, plotDx, plotDy)
+                    .call(Lib.setScale, xScaleFactor, yScaleFactor);
             }
         }
     }
