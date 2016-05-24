@@ -449,12 +449,12 @@ lib.addStyleRule = function(selector, styleString) {
 
 lib.getTranslate = function(element) {
 
-    var re = /(\btranslate\()(\d*\.?\d*)([^\d]*)(\d*\.?\d*)([^\d]*)(.*)/,
+    var re = /.*\btranslate\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/,
         getter = element.attr ? 'attr' : 'getAttribute',
         transform = element[getter]('transform') || '';
 
-    var translate = transform.replace(re, function(match, p1, p2, p3, p4) {
-        return [p2, p4].join(' ');
+    var translate = transform.replace(re, function(match, p1, p2) {
+        return [p1, p2].join(' ');
     })
     .split(' ');
 
@@ -485,14 +485,16 @@ lib.setTranslate = function(element, x, y) {
 
 lib.getScale = function(element) {
 
-    var re = /(\bscale\()(\d*\.?\d*)([^\d]*)(\d*\.?\d*)([^\d]*)(.*)/,
+    var re = /.*\bscale\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/,
         getter = element.attr ? 'attr' : 'getAttribute',
         transform = element[getter]('transform') || '';
 
-    var translate = transform.replace(re, function(match, p1, p2, p3, p4) {
-        return [p2, p4].join(' ');
+    var translate = transform.replace(re, function(match, p1, p2) {
+        return [p1, p2].join(' ');
     })
     .split(' ');
+
+    console.log(translate);
 
     return {
         x: +translate[0] || 1,
