@@ -347,7 +347,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var scrollViewBox = [0, 0, pw, ph],
         // wait a little after scrolling before redrawing
         redrawTimer = null,
-        REDRAWDELAY = 300,
+        REDRAWDELAY = 50,
         mainplot = plotinfo.mainplot ?
             fullLayout._plots[plotinfo.mainplot] : plotinfo;
 
@@ -601,27 +601,35 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             subplots = Object.keys(plotinfos);
 
         for(var i = 0; i < subplots.length; i++) {
+
             var subplot = plotinfos[subplots[i]],
+                clipId = 'clip' + fullLayout._uid + subplots[i] + 'plot',
                 xa2 = subplot.x(),
                 ya2 = subplot.y(),
                 editX = ew && xa.indexOf(xa2) !== -1 && !xa2.fixedrange,
                 editY = ns && ya.indexOf(ya2) !== -1 && !ya2.fixedrange;
 
-            if(editX || editY) {
-                // plot requires offset position and
-                // clip moves with opposite sign
-                var clipDx = editX ? viewBox[0] : 0,
-                    clipDy = editY ? viewBox[1] : 0,
-                    plotDx = xa2._offset - clipDx,
-                    plotDy = ya2._offset - clipDy;
 
-                var clipId = 'clip' + fullLayout._uid + subplots[i] + 'plot';
+            var xScaleFactor = editX ? xa2._length / viewBox[2] : 1,
+                yScaleFactor = editY ? ya2._length / viewBox[3] : 1;
 
-                fullLayout._defs.selectAll('#' + clipId)
-                    .attr('transform', 'translate(' + clipDx + ', ' + clipDy + ')');
-                subplot.plot
-                    .attr('transform', 'translate(' + plotDx + ', ' + plotDy + ')');
-            }
+            var clipDx = editX ? viewBox[0] : 0,
+                clipDy = editY ? viewBox[1] : 0;
+
+            var fracDx = editX ? (viewBox[0] / viewBox[2] * xa2._length) : 0,
+                fracDy = editY ? (viewBox[1] / viewBox[3] * ya2._length) : 0;
+
+            var plotDx = xa2._offset - fracDx,
+                plotDy = ya2._offset - fracDy;
+
+
+            fullLayout._defs.selectAll('#' + clipId)
+                .call(Lib.setTranslate, clipDx, clipDy)
+                .call(Lib.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
+
+            subplot.plot
+                .call(Lib.setTranslate, plotDx, plotDy)
+                .call(Lib.setScale, xScaleFactor, yScaleFactor);
         }
     }
 
