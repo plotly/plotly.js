@@ -711,6 +711,23 @@ describe('Test click interactions:', function() {
         });
     });
 
+    describe('scroll zoom interactions', function() {
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout, { scrollZoom: true }).then(done);
+        });
+
+        it('zooms in on scroll up', function() {
+
+            var plot = gd._fullLayout._plots.xy.plot;
+
+            mouseEvent('mousemove', 400, 250);
+            mouseEvent('scroll', 400, 250, { deltaX: 0, deltaY: -1000 });
+
+            expect(plot.attr('transform')).toBe('translate(62.841359973289855, 99.48344271809495) scale(1.2214027581601699, 1.22140275816017)');
+        });
+    });
+
     describe('pan interactions', function() {
         beforeEach(function(done) {
             mockCopy.layout.dragmode = 'pan';
