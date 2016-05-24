@@ -724,7 +724,21 @@ describe('Test click interactions:', function() {
             mouseEvent('mousemove', 400, 250);
             mouseEvent('scroll', 400, 250, { deltaX: 0, deltaY: -1000 });
 
-            expect(plot.attr('transform')).toBe('translate(62.841359973289855, 99.48344271809495) scale(1.2214027581601699, 1.22140275816017)');
+            var transform = plot.attr('transform');
+
+            console.log(transform);
+
+            var mockEl = {
+                attr: function() {
+                    return transform;
+                }
+            };
+
+            var translate = Lib.getTranslate(mockEl),
+                scale = Lib.getScale(mockEl);
+
+            expect([translate.x, translate.y]).toBeCloseToArray([62.841, 99.483]);
+            expect([scale.x, scale.y]).toBeCloseToArray([1.221, 1.221]);
         });
     });
 
