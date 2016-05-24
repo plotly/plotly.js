@@ -4,8 +4,22 @@ var path = require('path');
 var d3 = require('d3');
 
 var $plotlist = document.getElementById('plot-list'),
+    $toggles = document.getElementById('plot-toggles'),
     $images = document.getElementById('plot-images'),
-    $mock = document.getElementById('plot-mock');
+    $mock = document.getElementById('plot-mock'),
+    $toggleBaseline = document.createElement('button'),
+    $toggleTest = document.createElement('button'),
+    $toggleDiff = document.createElement('button'),
+    $imgBaseline = document.createElement('img'),
+    $imgTest = document.createElement('img'),
+    $imgDiff = document.createElement('img');
+
+$toggles.style.display = 'none';
+$images.style.display = 'none';
+
+setupToggle($toggleBaseline, $imgBaseline, 'Baseline');
+setupToggle($toggleTest, $imgTest, 'Test');
+setupToggle($toggleDiff, $imgDiff, 'Diff');
 
 var pathToRoot = path.join(__dirname, '../../'),
     pathToImageTest = path.join(pathToRoot, 'test/image'),
@@ -33,37 +47,58 @@ imageNames.forEach(function(imageName) {
 function createButton(imageName) {
     var button = document.createElement('button');
     button.style.cssFloat = 'left';
-    button.style.width = '100px';
     button.style.height = '40px';
     button.innerHTML = imageName;
+    button.style.padding = '0.5em';
+    button.style.border = '0';
+    button.style.margin = '1px';
+    button.style.cursor = 'pointer';
 
     button.addEventListener('click', function() {
-        var imgBaseline = createImg(dirBaseline, imageName),
-            imgTest = createImg(dirTest, imageName),
-            imgDiff = createImg(dirDiff, 'diff-' + imageName);
-
         d3.json(dirMocks + imageName + '.json', function(err, mock) {
-            $images.innerHTML = '';
-            $images.appendChild(imgBaseline);
-            $images.appendChild(imgTest);
-            $images.appendChild(imgDiff);
+            $toggles.style.display = 'block';
 
-            $mock.innerHTML = '';
-            $mock.appendChild(createJSONview(mock));
+            $images.style.display = 'block';
+            $imgBaseline.src = dirBaseline + imageName + '.png';
+            $imgTest.src = dirTest + imageName + '.png';
+            $imgDiff.src = dirDiff + 'diff-' + imageName + '.png';
+
+            $mock.innerHTML = JSON.stringify(mock, null, 2);
         });
     });
 
     return button;
 }
 
-function createImg(dir, name) {
-    var img = new Image();
-    img.src = dir + name + '.png';
-    return img;
+function setupToggle(toggle, img, title) {
+    img.title = title;
+    toggle.innerHTML = title;
+    toggle.style.padding = '0.5em';
+    toggle.style.border = '0';
+    toggle.style.margin = '1px';
+    toggle.style.cursor = 'pointer';
+
+    checkToggle(toggle, img);
+
+    toggle.addEventListener('click', function() {
+        if(toggle.value === 'checked') uncheckToggle(toggle, img);
+        else checkToggle(toggle, img);
+    });
+
+    $toggles.appendChild(toggle);
+    $images.appendChild(img);
 }
 
-function createJSONview(mock) {
-    var jsonView = document.createElement('pre');
-    jsonView.innerHTML = JSON.stringify(mock, null, 2);
-    return jsonView;
+function checkToggle(toggle, img) {
+    toggle.value = 'checked';
+    toggle.style.color = '#4c4c4c';
+    toggle.style.backgroundColor = '#f2f1f0';
+    img.style.display = 'inline';
+}
+
+function uncheckToggle(toggle, img) {
+    toggle.value = 'unchecked';
+    toggle.style.color = '#f2f1f0';
+    toggle.style.backgroundColor = '#4c4c4c';
+    img.style.display = 'none';
 }
