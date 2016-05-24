@@ -745,7 +745,7 @@ describe('Test click interactions:', function() {
             mouseEvent('mousedown', start, start);
             mouseEvent('mousemove', end, end);
 
-            expect(plot.attr('transform')).toBe('translate(250, 280)');
+            expect(plot.attr('transform')).toBe('translate(250, 280) scale(1, 1)');
 
             mouseEvent('mouseup', end, end);
         });
