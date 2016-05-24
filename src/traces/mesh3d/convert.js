@@ -106,6 +106,7 @@ proto.update = function(data) {
     var config = {
         positions: positions,
         cells: cells,
+        lightPosition: [data.lightposition.x, data.lightposition.y, data.lightposition.z],
         ambient: data.lighting.ambient,
         diffuse: data.lighting.diffuse,
         specular: data.lighting.specular,

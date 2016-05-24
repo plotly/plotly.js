@@ -124,6 +124,7 @@ module.exports = {
     reversescale: colorscaleAttrs.reversescale,
     showscale: colorscaleAttrs.showscale,
 
+    lightposition: extendFlat({}, surfaceAtts.lightposition),
     lighting: extendFlat({}, surfaceAtts.lighting),
 
     _nestedModules: {  // nested module coupling

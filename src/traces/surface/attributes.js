@@ -147,6 +147,30 @@ module.exports = {
         ].join(' ')
     },
 
+    lightposition: {
+        x: {
+            valType: 'number',
+            role: 'style',
+            min: -1e5,
+            max: 1e5,
+            dflt: 1e5
+        },
+        y: {
+            valType: 'number',
+            role: 'style',
+            min: -1e5,
+            max: 1e5,
+            dflt: 1e5
+        },
+        z: {
+            valType: 'number',
+            role: 'style',
+            min: -1e5,
+            max: 1e5,
+            dflt: 0
+        }
+    },
+
     lighting: {
         ambient: {
             valType: 'number',

@@ -50,13 +50,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    coerce('lighting.ambient');
-    coerce('lighting.diffuse');
-    coerce('lighting.specular');
-    coerce('lighting.roughness');
-    coerce('lighting.fresnel');
-    coerce('hidesurface');
-    coerce('opacity');
+    //Coerce remaining properties
+    [
+        'lighting.ambient',
+        'lighting.diffuse',
+        'lighting.specular',
+        'lighting.roughness',
+        'lighting.fresnel',
+        'lightposition.x',
+        'lightposition.y',
+        'lightposition.z',
+        'hidesurface',
+        'opacity'
+    ].forEach(function(x) { coerce(x); });
 
     var surfaceColor = coerce('surfacecolor');
 
