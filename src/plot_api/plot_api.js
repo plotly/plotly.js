@@ -2913,16 +2913,16 @@ function lsInner(gd) {
 
 
         // Clip so that data only shows up on the plot area.
-        var clips = fullLayout._defs.selectAll('g.clips'),
-            clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+        plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';
 
-        var plotClip = clips.selectAll('#' + clipId)
+        var plotClip = fullLayout._defs.selectAll('g.clips')
+            .selectAll('#' + plotinfo.clipId)
             .data([0]);
 
         plotClip.enter().append('clipPath')
             .attr({
                 'class': 'plotclip',
-                'id': clipId
+                'id': plotinfo.clipId
             })
             .append('rect');
 
@@ -2934,7 +2934,7 @@ function lsInner(gd) {
 
 
         plotinfo.plot.call(Lib.setTranslate, xa._offset, ya._offset);
-        plotinfo.plot.call(Drawing.setClipUrl, clipId);
+        plotinfo.plot.call(Drawing.setClipUrl, plotinfo.clipId);
 
         var xlw = Drawing.crispRound(gd, xa.linewidth, 1),
             ylw = Drawing.crispRound(gd, ya.linewidth, 1),

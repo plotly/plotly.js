@@ -449,12 +449,12 @@ lib.addStyleRule = function(selector, styleString) {
 
 lib.getTranslate = function(element) {
 
-    var re = /(\btranslate\()(\d*\.?\d*)([^\d]*)(\d*\.?\d*)([^\d]*)(.*)/,
+    var re = /.*\btranslate\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/,
         getter = element.attr ? 'attr' : 'getAttribute',
         transform = element[getter]('transform') || '';
 
-    var translate = transform.replace(re, function(match, p1, p2, p3, p4) {
-        return [p2, p4].join(' ');
+    var translate = transform.replace(re, function(match, p1, p2) {
+        return [p1, p2].join(' ');
     })
     .split(' ');
 
@@ -476,6 +476,42 @@ lib.setTranslate = function(element, x, y) {
 
     transform = transform.replace(re, '').trim();
     transform += ' translate(' + x + ', ' + y + ')';
+    transform = transform.trim();
+
+    element[setter]('transform', transform);
+
+    return transform;
+};
+
+lib.getScale = function(element) {
+
+    var re = /.*\bscale\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/,
+        getter = element.attr ? 'attr' : 'getAttribute',
+        transform = element[getter]('transform') || '';
+
+    var translate = transform.replace(re, function(match, p1, p2) {
+        return [p1, p2].join(' ');
+    })
+    .split(' ');
+
+    return {
+        x: +translate[0] || 1,
+        y: +translate[1] || 1
+    };
+};
+
+lib.setScale = function(element, x, y) {
+
+    var re = /(\bscale\(.*?\);?)/,
+        getter = element.attr ? 'attr' : 'getAttribute',
+        setter = element.attr ? 'attr' : 'setAttribute',
+        transform = element[getter]('transform') || '';
+
+    x = x || 1;
+    y = y || 1;
+
+    transform = transform.replace(re, '').trim();
+    transform += ' scale(' + x + ', ' + y + ')';
     transform = transform.trim();
 
     element[setter]('transform', transform);
