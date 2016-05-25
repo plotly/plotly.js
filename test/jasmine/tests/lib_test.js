@@ -823,6 +823,9 @@ describe('Test lib.js:', function() {
             el.setAttribute('transform', 'translate(1 2); rotate(20deg)');
             expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
 
+            el.setAttribute('transform', 'rotate(20deg) translate(1 2);');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
             el.setAttribute('transform', 'rotate(20deg)');
             expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
         });
@@ -881,6 +884,52 @@ describe('Test lib.js:', function() {
             el.attr('transform', 'translate(0, 0); rotate(30)');
             Lib.setTranslate(el, 30, 40);
             expect(el.attr('transform')).toBe('rotate(30) translate(30, 40)');
+        });
+    });
+
+    describe('getScale', function() {
+
+        it('should work with regular DOM elements', function() {
+            var el = document.createElement('div');
+
+            expect(Lib.getScale(el)).toEqual({ x: 1, y: 1 });
+
+            el.setAttribute('transform', 'scale(1.23, 45)');
+            expect(Lib.getScale(el)).toEqual({ x: 1.23, y: 45 });
+
+            el.setAttribute('transform', 'scale(123.45)');
+            expect(Lib.getScale(el)).toEqual({ x: 123.45, y: 1 });
+
+            el.setAttribute('transform', 'scale(0.1 2)');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.setAttribute('transform', 'scale(0.1 2); rotate(20deg)');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.setAttribute('transform', 'rotate(20deg) scale(0.1 2);');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.setAttribute('transform', 'rotate(20deg)');
+            expect(Lib.getScale(el)).toEqual({ x: 1, y: 1 });
+        });
+
+        it('should work with d3 elements', function() {
+            var el = d3.select(document.createElement('div'));
+
+            el.attr('transform', 'scale(1.23, 45)');
+            expect(Lib.getScale(el)).toEqual({ x: 1.23, y: 45 });
+
+            el.attr('transform', 'scale(123.45)');
+            expect(Lib.getScale(el)).toEqual({ x: 123.45, y: 1 });
+
+            el.attr('transform', 'scale(0.1 2)');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.attr('transform', 'scale(0.1 2); rotate(20)');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.attr('transform', 'rotate(20)');
+            expect(Lib.getScale(el)).toEqual({ x: 1, y: 1 });
         });
     });
 
