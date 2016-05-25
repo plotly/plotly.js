@@ -347,7 +347,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var scrollViewBox = [0, 0, pw, ph],
         // wait a little after scrolling before redrawing
         redrawTimer = null,
-        REDRAWDELAY = 50,
+        REDRAWDELAY = constants.REDRAWDELAY,
         mainplot = plotinfo.mainplot ?
             fullLayout._plots[plotinfo.mainplot] : plotinfo;
 
