@@ -50,7 +50,7 @@ exports.plot = function plotTernary(gd) {
                 fullLayout
             );
 
-            fullLayout[ternaryId]._ternary = ternary;
+            fullLayout[ternaryId]._subplot = ternary;
         }
 
         ternary.plot(fullTernaryData, fullLayout, gd._promises);
