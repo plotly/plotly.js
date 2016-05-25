@@ -153,21 +153,24 @@ module.exports = {
             role: 'style',
             min: -1e5,
             max: 1e5,
-            dflt: 1e5
+            dflt: 1e5,
+            description: 'Numeric vector, representing the X coordinate for each vertex.'
         },
         y: {
             valType: 'number',
             role: 'style',
             min: -1e5,
             max: 1e5,
-            dflt: 1e5
+            dflt: 1e5,
+            description: 'Numeric vector, representing the Y coordinate for each vertex.'
         },
         z: {
             valType: 'number',
             role: 'style',
             min: -1e5,
             max: 1e5,
-            dflt: 0
+            dflt: 0,
+            description: 'Numeric vector, representing the Z coordinate for each vertex.'
         }
     },
 
@@ -177,49 +180,59 @@ module.exports = {
             role: 'style',
             min: 0.00,
             max: 1.0,
-            dflt: 0.8
+            dflt: 0.8,
+            description: 'Ambient light increases overall color visibility but can wash out the image.'
         },
         diffuse: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 1.00,
-            dflt: 0.8
+            dflt: 0.8,
+            description: 'Represents the extent that incident rays are reflected in a range of angles.'
         },
         specular: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 2.00,
-            dflt: 0.05
+            dflt: 0.05,
+            description: 'Represents the level that incident rays are reflected in a single direction, causing shine.'
         },
         roughness: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 1.00,
-            dflt: 0.5
+            dflt: 0.5,
+            description: 'Alters specular reflection; the rougher the surface, the wider and less contrasty the shine.'
         },
         fresnel: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 5.00,
-            dflt: 0.2
+            dflt: 0.2,
+            description: [
+                'Represents the reflectance as a dependency of the viewing angle; e.g. paper is reflective',
+                'when viewing it from the edge of the paper (almost 90 degrees), causing shine.'
+                ].join(' ')
         },
         vertexnormalsepsilon: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 1,
-            dflt: 1e-12 // otherwise finely tessellated things eg. the brain will have no specular light reflection
+            dflt: 1e-12, // otherwise finely tessellated things eg. the brain will have no specular light reflection
+            description: 'Epsilon for vertex normals calculation avoids math issues arising from degenerate geometry.'
         },
         facenormalsepsilon: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 1,
-            dflt: 1e-6 // even the brain model doesn't appear to need finer than this
+            dflt: 1e-6, // even the brain model doesn't appear to need finer than this
+            description: 'Epsilon for face normals calculation avoids math issues arising from degenerate geometry.'
         }
     },
 
