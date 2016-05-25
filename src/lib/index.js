@@ -256,17 +256,6 @@ lib.smooth = function(arrayIn, FWHM) {
     return arrayOut;
 };
 
-// helpers for promises
-
-/**
- * promiseError: log errors properly inside promises
- * use:
- * <promise>.then(undefined,Plotly.Lib.promiseError) (for IE compatibility)
- * or <promise>.catch(Plotly.Lib.promiseError)
- * TODO: I guess we need another step to send this error to Sentry?
- */
-lib.promiseError = function(err) { console.log(err, err.stack); };
-
 /**
  * syncOrAsync: run a sequence of functions synchronously
  * as long as its returns are not promises (ie have no .then)

@@ -137,6 +137,25 @@ describe('the range slider', function() {
                 expect(rangeDiff3).toBeLessThan(rangeDiff2);
             }).then(done);
         });
+
+        it('should relayout with relayout "array syntax"', function(done) {
+            Plotly.relayout(gd, 'xaxis.range', [10, 20])
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.range).toEqual([10, 20]);
+                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(125.51, 0);
+                    expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(251.02, 0);
+                })
+                .then(done);
+        });
+
+        it('should relayout with relayout "element syntax"', function(done) {
+            Plotly.relayout(gd, 'xaxis.range[0]', 10)
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.range[0]).toEqual(10);
+                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(125.51, 0);
+                })
+                .then(done);
+        });
     });
 
 

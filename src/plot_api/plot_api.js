@@ -2438,8 +2438,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
     }
 
     function setRange(changes) {
-        var newMin = changes['xaxis.range[0]'],
-            newMax = changes['xaxis.range[1]'];
+
+        var newMin = changes['xaxis.range'] ? changes['xaxis.range'][0] : changes['xaxis.range[0]'],
+            newMax = changes['xaxis.range'] ? changes['xaxis.range'][1] : changes['xaxis.range[1]'];
 
         var rangeSlider = fullLayout.xaxis && fullLayout.xaxis.rangeslider ?
             fullLayout.xaxis.rangeslider : {};
