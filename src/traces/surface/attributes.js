@@ -216,7 +216,7 @@ module.exports = {
             description: [
                 'Represents the reflectance as a dependency of the viewing angle; e.g. paper is reflective',
                 'when viewing it from the edge of the paper (almost 90 degrees), causing shine.'
-                ].join(' ')
+            ].join(' ')
         },
         vertexnormalsepsilon: {
             valType: 'number',
