@@ -726,8 +726,6 @@ describe('Test click interactions:', function() {
 
             var transform = plot.attr('transform');
 
-            console.log(transform);
-
             var mockEl = {
                 attr: function() {
                     return transform;

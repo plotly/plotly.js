@@ -494,8 +494,6 @@ lib.getScale = function(element) {
     })
     .split(' ');
 
-    console.log(translate);
-
     return {
         x: +translate[0] || 1,
         y: +translate[1] || 1
