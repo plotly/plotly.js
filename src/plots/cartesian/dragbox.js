@@ -603,7 +603,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         for(var i = 0; i < subplots.length; i++) {
 
             var subplot = plotinfos[subplots[i]],
-                clipId = 'clip' + fullLayout._uid + subplots[i] + 'plot',
                 xa2 = subplot.x(),
                 ya2 = subplot.y(),
                 editX = ew && xa.indexOf(xa2) !== -1 && !xa2.fixedrange,
@@ -623,7 +622,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 plotDy = ya2._offset - fracDy;
 
 
-            fullLayout._defs.selectAll('#' + clipId)
+            fullLayout._defs.selectAll('#' + subplot.clipId)
                 .call(Lib.setTranslate, clipDx, clipDy)
                 .call(Lib.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
