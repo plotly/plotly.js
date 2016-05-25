@@ -2569,8 +2569,7 @@ function plotAutoSize(gd, aobj) {
     }
     // if there's no size change, update layout but
     // delete the autosize attr so we don't redraw
-    // but can't call layoutStyles for initial autosize
-    else if(fullLayout.autosize !== 'initial') {
+    else {
         delete(aobj.autosize);
         fullLayout.autosize = gd.layout.autosize = true;
     }
