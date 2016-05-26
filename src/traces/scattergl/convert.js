@@ -48,7 +48,7 @@ function LineWithMarkers(scene, uid) {
 
     this.hasLines = false;
     this.lineOptions = {
-        positions: new Float32Array(),
+        positions: new Float32Array(0),
         color: [0, 0, 0, 1],
         width: 1,
         fill: [false, false, false, false],
@@ -64,8 +64,8 @@ function LineWithMarkers(scene, uid) {
 
     this.hasErrorX = false;
     this.errorXOptions = {
-        positions: new Float32Array(),
-        errors: new Float32Array(),
+        positions: new Float32Array(0),
+        errors: new Float32Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
@@ -75,8 +75,8 @@ function LineWithMarkers(scene, uid) {
 
     this.hasErrorY = false;
     this.errorYOptions = {
-        positions: new Float32Array(),
-        errors: new Float32Array(),
+        positions: new Float32Array(0),
+        errors: new Float32Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
@@ -86,7 +86,7 @@ function LineWithMarkers(scene, uid) {
 
     this.hasMarkers = false;
     this.scatterOptions = {
-        positions: new Float32Array(),
+        positions: new Float32Array(0),
         sizes: [],
         colors: [],
         glyphs: [],
@@ -330,13 +330,13 @@ proto.updateFast = function(options) {
         this.scatter.update(this.scatterOptions);
     }
     else {
-        this.scatterOptions.positions = new Float32Array();
+        this.scatterOptions.positions = new Float32Array(0);
         this.scatterOptions.glyphs = [];
         this.scatter.update(this.scatterOptions);
     }
 
     // turn off fancy scatter plot
-    this.scatterOptions.positions = new Float32Array();
+    this.scatterOptions.positions = new Float32Array(0);
     this.scatterOptions.glyphs = [];
     this.fancyScatter.update(this.scatterOptions);
 
@@ -455,13 +455,13 @@ proto.updateFancy = function(options) {
         this.fancyScatter.update(this.scatterOptions);
     }
     else {
-        this.scatterOptions.positions = new Float32Array();
+        this.scatterOptions.positions = new Float32Array(0);
         this.scatterOptions.glyphs = [];
         this.fancyScatter.update(this.scatterOptions);
     }
 
     // turn off fast scatter plot
-    this.scatterOptions.positions = new Float32Array();
+    this.scatterOptions.positions = new Float32Array(0);
     this.scatterOptions.glyphs = [];
     this.scatter.update(this.scatterOptions);
 
@@ -514,7 +514,7 @@ proto.updateLines = function(options, positions) {
         this.lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
     }
     else {
-        this.lineOptions.positions = new Float32Array();
+        this.lineOptions.positions = new Float32Array(0);
     }
 
     this.line.update(this.lineOptions);
@@ -537,7 +537,7 @@ proto.updateError = function(axLetter, options, positions, errors) {
         errorObjOptions.color = convertColor(errorOptions.color, 1, 1);
     }
     else {
-        errorObjOptions.positions = new Float32Array();
+        errorObjOptions.positions = new Float32Array(0);
     }
 
     errorObj.update(errorObjOptions);

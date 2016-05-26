@@ -32,7 +32,7 @@ function Contour(scene, uid) {
     this.bounds = [0, 0, 0, 0];
 
     this.contourOptions = {
-        z: new Float32Array(),
+        z: new Float32Array(0),
         x: [],
         y: [],
         shape: [0, 0],
@@ -44,7 +44,7 @@ function Contour(scene, uid) {
     this.contour._trace = this;
 
     this.heatmapOptions = {
-        z: new Float32Array(),
+        z: new Float32Array(0),
         x: [],
         y: [],
         shape: [0, 0],
