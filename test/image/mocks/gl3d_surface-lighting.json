@@ -513,7 +513,7 @@
       "lightposition": {
         "x": 1e5,
         "y": 1e5,
-        "z": 1e5
+        "z": 1e4
       },
       "lighting": {
         "fresnel": 0.2,
