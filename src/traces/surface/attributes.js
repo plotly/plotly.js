@@ -153,7 +153,7 @@ module.exports = {
             role: 'style',
             min: -1e5,
             max: 1e5,
-            dflt: 1e5,
+            dflt: 10,
             description: 'Numeric vector, representing the X coordinate for each vertex.'
         },
         y: {
@@ -217,22 +217,6 @@ module.exports = {
                 'Represents the reflectance as a dependency of the viewing angle; e.g. paper is reflective',
                 'when viewing it from the edge of the paper (almost 90 degrees), causing shine.'
             ].join(' ')
-        },
-        vertexnormalsepsilon: {
-            valType: 'number',
-            role: 'style',
-            min: 0.00,
-            max: 1,
-            dflt: 1e-12, // otherwise finely tessellated things eg. the brain will have no specular light reflection
-            description: 'Epsilon for vertex normals calculation avoids math issues arising from degenerate geometry.'
-        },
-        facenormalsepsilon: {
-            valType: 'number',
-            role: 'style',
-            min: 0.00,
-            max: 1,
-            dflt: 1e-6, // even the brain model doesn't appear to need finer than this
-            description: 'Epsilon for face normals calculation avoids math issues arising from degenerate geometry.'
         }
     },
 
