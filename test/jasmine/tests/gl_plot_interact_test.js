@@ -584,7 +584,7 @@ describe('Test gl plot side effects', function() {
     it('should be able to replot from a blank graph', function(done) {
         var gd = createGraphDiv();
 
-        function assert(cnt) {
+        function countCanvases(cnt) {
             var nodes = d3.selectAll('canvas');
             expect(nodes.size()).toEqual(cnt);
         }
@@ -596,23 +596,23 @@ describe('Test gl plot side effects', function() {
         }];
 
         Plotly.plot(gd, []).then(function() {
-            assert(0);
+            countCanvases(0);
 
             return Plotly.plot(gd, data);
         }).then(function() {
-            assert(1);
+            countCanvases(1);
 
             return Plotly.purge(gd);
         }).then(function() {
-            assert(0);
+            countCanvases(0);
 
             return Plotly.plot(gd, data);
         }).then(function() {
-            assert(1);
+            countCanvases(1);
 
             return Plotly.deleteTraces(gd, [0]);
         }).then(function() {
-            assert(0);
+            countCanvases(0);
 
             return Plotly.purge(gd);
         }).then(done);
