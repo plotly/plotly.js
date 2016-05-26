@@ -49,11 +49,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     //Coerce remaining properties
-    ['lighting.ambient',
+    [
+        'lighting.ambient',
         'lighting.diffuse',
         'lighting.specular',
         'lighting.roughness',
         'lighting.fresnel',
+        'lighting.vertexnormalsepsilon',
+        'lighting.facenormalsepsilon',
+        'lightposition.x',
+        'lightposition.y',
+        'lightposition.z',
         'contour.show',
         'contour.color',
         'contour.width',
