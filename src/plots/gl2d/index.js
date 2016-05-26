@@ -86,8 +86,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
 exports.toSVG = function(gd) {
     var fullLayout = gd._fullLayout,
-        subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d'),
-        size = fullLayout._size;
+        subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
 
     for(var i = 0; i < subplotIds.length; i++) {
         var subplot = fullLayout._plots[subplotIds[i]],
@@ -99,10 +98,10 @@ exports.toSVG = function(gd) {
         image.attr({
             xmlns: xmlnsNamespaces.svg,
             'xlink:href': imageData,
-            x: size.l,
-            y: size.t,
-            width: size.w,
-            height: size.h,
+            x: 0,
+            y: 0,
+            width: '100%',
+            height: '100%',
             preserveAspectRatio: 'none'
         });
 
