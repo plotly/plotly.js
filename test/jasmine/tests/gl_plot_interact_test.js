@@ -539,7 +539,7 @@ describe('Test gl plot interactions', function() {
                 expect(gd._fullLayout._plots.xy._scene2d.glplot).toBeDefined();
 
                 Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
-                expect(gd._fullLayout._plots.xy._scene2d.glplot).toBe(null);
+                expect(gd._fullLayout._plots).toEqual({});
 
                 done();
             });
