@@ -539,7 +539,7 @@ describe('Test gl plot interactions', function() {
                 expect(gd._fullLayout._plots.xy._scene2d.glplot).toBeDefined();
 
                 Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
-                expect(gd._fullLayout._plots.xy._scene2d.glplot).toBe(null);
+                expect(gd._fullLayout._plots).toEqual({});
 
                 done();
             });
@@ -579,5 +579,42 @@ describe('Test gl plot side effects', function() {
                 done();
             });
         });
+    });
+
+    it('should be able to replot from a blank graph', function(done) {
+        var gd = createGraphDiv();
+
+        function countCanvases(cnt) {
+            var nodes = d3.selectAll('canvas');
+            expect(nodes.size()).toEqual(cnt);
+        }
+
+        var data = [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [2, 1, 2]
+        }];
+
+        Plotly.plot(gd, []).then(function() {
+            countCanvases(0);
+
+            return Plotly.plot(gd, data);
+        }).then(function() {
+            countCanvases(1);
+
+            return Plotly.purge(gd);
+        }).then(function() {
+            countCanvases(0);
+
+            return Plotly.plot(gd, data);
+        }).then(function() {
+            countCanvases(1);
+
+            return Plotly.deleteTraces(gd, [0]);
+        }).then(function() {
+            countCanvases(0);
+
+            return Plotly.purge(gd);
+        }).then(done);
     });
 });

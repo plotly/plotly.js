@@ -69,12 +69,17 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, 'gl2d');
 
     for(var i = 0; i < oldSceneKeys.length; i++) {
-        var oldSubplot = oldFullLayout._plots[oldSceneKeys[i]],
-            xaName = oldSubplot.xaxis._name,
-            yaName = oldSubplot.yaxis._name;
+        var id = oldSceneKeys[i],
+            oldSubplot = oldFullLayout._plots[id];
 
-        if(!!oldSubplot._scene2d && (!newFullLayout[xaName] || !newFullLayout[yaName])) {
+        // old subplot wasn't gl2d; nothing to do
+        if(!oldSubplot._scene2d) continue;
+
+        // if no traces are present, delete gl2d subplot
+        var subplotData = Plots.getSubplotData(newFullData, 'gl2d', id);
+        if(subplotData.length === 0) {
             oldSubplot._scene2d.destroy();
+            delete oldFullLayout._plots[id];
         }
     }
 };
