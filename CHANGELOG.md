@@ -10,6 +10,31 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.12.0] -- 2016-05-26
+
+### Added
+- Light positions, face normal epsilon and vertex normal epsilon are now
+  configurable in `mesh3d` traces [#556]
+- Light position is now configurable in `surface` traces [#556]
+- `surface` and `mesh3d` lighting attributes are now accompanied with
+  comprehensive descriptions. [#556]
+
+### Changed
+- Plot modules are now allowed to have their own `toSVG` method for
+  subplot-specific to-svg logic [#554]
+
+### Fixed
+- gl2d plots are now functional in `core-js` environments (e.g. in babel es6
+  presets) [#569]
+- gl2d replot calls from a blank plot are now functional [#570]
+- SVG graph config argument `scrollZoom` is now again functional (bug introduced
+  in v1.10.0) [#564]
+- `layout.separators` is now honored in pie text labels [#547]
+- Heatmap `zsmooth` value `'fast'` is now functional for arbitrary layout widths
+  [#548]
+- Range sliders now respond to all axis range relayout calls [#568]
+
+
 ## [1.11.0] -- 2016-05-17
 
 ### Added
