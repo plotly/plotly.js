@@ -147,7 +147,8 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
             try {
                 STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
                     preserveDrawingBuffer: true,
-                    premultipliedAlpha: true
+                    premultipliedAlpha: true,
+                    antialias: true
                 });
             } catch(e) {
                 throw new Error('error creating static canvas/context for image server');
@@ -183,7 +184,6 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
-            console.log('lost context');
             ev.preventDefault();
         });
     }
