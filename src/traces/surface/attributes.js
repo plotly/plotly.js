@@ -161,7 +161,7 @@ module.exports = {
             role: 'style',
             min: -1e5,
             max: 1e5,
-            dflt: 1e5,
+            dflt: 1e4,
             description: 'Numeric vector, representing the Y coordinate for each vertex.'
         },
         z: {

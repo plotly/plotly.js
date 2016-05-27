@@ -335,13 +335,7 @@ proto.update = function(data) {
     }
 
     if('lightposition' in data) {
-        if(surface.lightPosition === void(0)) {
-            surface.lightPosition = [data.lightposition.x, data.lightposition.y, data.lightposition.z];
-        } else {
-            surface.lightPosition.x = data.lightposition.x;
-            surface.lightPosition.y = data.lightposition.y;
-            surface.lightPosition.z = data.lightposition.z;
-        }
+        surface.lightPosition = [data.lightposition.x, data.lightposition.y, data.lightposition.z];
     }
 
     if(alpha && alpha < 1) {
