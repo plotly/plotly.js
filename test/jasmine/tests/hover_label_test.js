@@ -574,3 +574,34 @@ describe('hover info on stacked subplots', function() {
         });
     });
 });
+
+
+describe('hover info on overlaid subplots', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('should respond to hover', function(done) {
+        var mock = require('@mocks/autorange-tozero-rangemode.json');
+
+        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
+            mouseEvent('mousemove', 775, 352);
+
+            var axisText = d3.selectAll('g.axistext'),
+                hoverText = d3.selectAll('g.hovertext');
+
+            expect(axisText.size()).toEqual(1, 'with 1 label on axis');
+            expect(hoverText.size()).toEqual(2, 'with 2 labels on the overlaid pts');
+
+            expect(axisText.select('text').html()).toEqual('1', 'with correct axis label');
+
+            var textNodes = hoverText.selectAll('text');
+
+            expect(textNodes[0][0].innerHTML).toEqual('Take Rate', 'with correct hover labels');
+            expect(textNodes[0][1].innerHTML).toEqual('0.35', 'with correct hover labels');
+            expect(textNodes[1][0].innerHTML).toEqual('Revenue', 'with correct hover labels');
+            expect(textNodes[1][1].innerHTML).toEqual('2,352.5', 'with correct hover labels');
+
+        }).then(done);
+    });
+});
