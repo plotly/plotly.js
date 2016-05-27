@@ -287,17 +287,26 @@ plots.resize = function(gd) {
         if(gd._redrawTimer) clearTimeout(gd._redrawTimer);
 
         gd._redrawTimer = setTimeout(function() {
-            if((gd._fullLayout || {}).autosize) {
-                // autosizing doesn't count as a change that needs saving
-                var oldchanged = gd.changed;
+            // return if there is nothing to resize
+            if(gd.layout.width && gd.layout.height) {
+                resolve(gd);
+                return;
+            }
 
-                // nor should it be included in the undo queue
-                gd.autoplay = true;
+            delete gd._fullLayout._initialAutoSizeIsDone;
+            if(!gd.layout.width) delete (gd._fullLayout || {}).width;
+            if(!gd.layout.height) delete (gd._fullLayout || {}).height;
 
-                Plotly.relayout(gd, { autosize: true });
+            // autosizing doesn't count as a change that needs saving
+            var oldchanged = gd.changed;
+
+            // nor should it be included in the undo queue
+            gd.autoplay = true;
+
+            Plotly.plot(gd).then(function() {
                 gd.changed = oldchanged;
                 resolve(gd);
-            }
+            });
         }, 100);
     });
 };
@@ -455,7 +464,7 @@ plots.sendDataToCloud = function(gd) {
 plots.supplyDefaults = function(gd) {
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
-        newLayout = gd.layout || {};
+        layout = gd.layout || {};
 
     var oldFullData = gd._fullData || [],
         newFullData = gd._fullData = [],
@@ -468,7 +477,27 @@ plots.supplyDefaults = function(gd) {
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
-    plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
+
+    if(oldFullLayout._initialAutoSizeIsDone) {
+        // coerce the updated layout while preserving width and height
+        var oldWidth = oldFullLayout.width,
+            oldHeight = oldFullLayout.height;
+
+        plots.supplyLayoutGlobalDefaults(layout, newFullLayout);
+
+        if(!layout.width) newFullLayout.width = oldWidth;
+        if(!layout.height) newFullLayout.height = oldHeight;
+    }
+    else {
+        // coerce the updated layout and autosize if needed
+        plots.supplyLayoutGlobalDefaults(layout, newFullLayout);
+
+        if(!layout.width || !layout.height) {
+            plots.plotAutoSize(gd, layout, newFullLayout);
+        }
+    }
+
+    newFullLayout._initialAutoSizeIsDone = true;
 
     // keep track of how many traces are inputted
     newFullLayout._dataLength = newData.length;
@@ -505,7 +534,7 @@ plots.supplyDefaults = function(gd) {
     }
 
     // finally, fill in the pieces of layout that may need to look at data
-    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
+    plots.supplyLayoutModuleDefaults(layout, newFullLayout, newFullData);
 
     // TODO remove in v2.0.0
     // add has-plot-type refs to fullLayout for backward compatibility
@@ -522,6 +551,7 @@ plots.supplyDefaults = function(gd) {
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
+    // TODO may return a promise
     plots.doAutoMargin(gd);
 
     // can't quite figure out how to get rid of this... each axis needs
@@ -730,11 +760,9 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
         color: globalFont.color
     });
 
-    var autosize = coerce('autosize',
-        (layoutIn.width && layoutIn.height) ? false : 'initial');
+    coerce('autosize');
     coerce('width');
     coerce('height');
-
     coerce('margin.l');
     coerce('margin.r');
     coerce('margin.t');
@@ -743,7 +771,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('margin.autoexpand');
 
     // called in plotAutoSize otherwise
-    if(autosize !== 'initial') plots.sanitizeMargins(layoutOut);
+    if(layoutOut.width && layoutOut.height) plots.sanitizeMargins(layoutOut);
 
     coerce('paper_bgcolor');
 
@@ -751,6 +779,85 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('hidesources');
     coerce('smith');
 };
+
+plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
+    var context = gd._context || {},
+        frameMargins = context.frameMargins,
+        newWidth,
+        newHeight;
+
+    if(typeof gd.emit === 'function') gd.emit('plotly_autosize');
+
+    // embedded in an iframe - just take the full iframe size
+    // if we get to this point, with no aspect ratio restrictions
+    if(context.fillFrame) {
+        newWidth = window.innerWidth;
+        newHeight = window.innerHeight;
+
+        // somehow we get a few extra px height sometimes...
+        // just hide it
+        document.body.style.overflow = 'hidden';
+    }
+    else if(isNumeric(frameMargins) && frameMargins > 0) {
+        var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
+            reservedWidth = reservedMargins.left + reservedMargins.right,
+            reservedHeight = reservedMargins.bottom + reservedMargins.top,
+            gdBB = fullLayout._container.node().getBoundingClientRect(),
+            factor = 1 - 2 * frameMargins;
+
+        newWidth = Math.round(factor * (gdBB.width - reservedWidth));
+        newHeight = Math.round(factor * (gdBB.height - reservedHeight));
+    }
+    else {
+        // plotly.js - let the developers do what they want, either
+        // provide height and width for the container div,
+        // specify size in layout, or take the defaults,
+        // but don't enforce any ratio restrictions
+        var computedStyle;
+        try {
+            computedStyle = window.getComputedStyle(gd);
+        } catch(err) {
+            computedStyle = {};
+        }
+        newWidth = parseFloat(computedStyle.width) || fullLayout.width;
+        newHeight = parseFloat(computedStyle.height) || fullLayout.height;
+    }
+
+    var widthHasChanged = !layout.width &&
+            (Math.abs(fullLayout.width - newWidth) > 1),
+        heightHasChanged = !layout.height &&
+            (Math.abs(fullLayout.height - newHeight) > 1);
+
+    if(heightHasChanged || widthHasChanged) {
+        if(widthHasChanged) fullLayout.width = newWidth;
+        if(heightHasChanged) fullLayout.height = newHeight;
+
+        plots.sanitizeMargins(fullLayout);
+    }
+};
+
+/**
+ * Reduce all reserved margin objects to a single required margin reservation.
+ *
+ * @param {Object} margins
+ * @returns {{left: number, right: number, bottom: number, top: number}}
+ */
+function calculateReservedMargins(margins) {
+    var resultingMargin = {left: 0, right: 0, bottom: 0, top: 0},
+        marginName;
+
+    if(margins) {
+        for(marginName in margins) {
+            if(margins.hasOwnProperty(marginName)) {
+                resultingMargin.left += margins[marginName].left || 0;
+                resultingMargin.right += margins[marginName].right || 0;
+                resultingMargin.bottom += margins[marginName].bottom || 0;
+                resultingMargin.top += margins[marginName].top || 0;
+            }
+        }
+    }
+    return resultingMargin;
+}
 
 plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
     var i, _module;
