@@ -786,4 +786,29 @@ describe('Test plot api', function() {
             expect(gd.data[1].contours).toBeUndefined();
         });
     });
+
+    describe('Plotly.newPlot', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should respect layout.width and layout.height', function(done) {
+
+            // See issue https://github.com/plotly/plotly.js/issues/537
+            var data = [{
+                x: [1, 2],
+                y: [1, 2]
+            }];
+
+            Plotly.plot(gd, data).then(function() {
+                Plotly.newPlot(gd, data, { height: 50 }).then(function() {
+                    expect(gd._fullLayout.height).toBe(50);
+                }).then(done);
+            });
+        });
+    });
 });
