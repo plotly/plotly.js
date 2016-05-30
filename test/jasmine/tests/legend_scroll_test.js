@@ -79,6 +79,21 @@ describe('The legend', function() {
                 'translate(0, ' + finalDataScroll + ')');
         });
 
+        it('should keep the scrollbar position after a toggle event', function() {
+            var scrollBox = legend.getElementsByClassName('scrollbox')[0],
+                toggle = legend.getElementsByClassName('legendtoggle')[0],
+                wheelDeltaY = 100;
+
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+            var dataScroll = scrollBox.getAttribute('data-scroll');
+
+            toggle.dispatchEvent(new MouseEvent('click'));
+            expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+            expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + dataScroll + ')');
+        });
+
         it('should constrain scrolling to the contents', function() {
             var scrollBox = legend.getElementsByClassName('scrollbox')[0];
 
