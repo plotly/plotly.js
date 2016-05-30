@@ -198,28 +198,36 @@ module.exports = function draw(gd) {
     // legend, background and border, scroll box and scroll bar
     Lib.setTranslate(legend, lx, ly);
 
-    bg.attr({
-        width: legendWidth - opts.borderwidth,
-        height: legendHeight - opts.borderwidth,
-        x: opts.borderwidth / 2,
-        y: opts.borderwidth / 2
-    });
+    var scrollBarYMax = legendHeight -
+            constants.scrollBarHeight -
+            2 * constants.scrollBarMargin,
+        scrollBoxYMax = opts.height - legendHeight,
+        scrollBarY,
+        scrollBoxY;
 
-    var scrollPosition = scrollBox.attr('data-scroll') || 0;
+    if(opts.height <= legendHeight || gd._context.staticPlot) {
+        // if scrollbar should not be shown.
+        bg.attr({
+            width: legendWidth - opts.borderwidth,
+            height: legendHeight - opts.borderwidth,
+            x: opts.borderwidth / 2,
+            y: opts.borderwidth / 2
+        });
 
-    Lib.setTranslate(scrollBox, 0, scrollPosition);
+        Lib.setTranslate(scrollBox, 0, 0);
 
-    clipPath.select('rect').attr({
-        width: legendWidth - 2 * opts.borderwidth,
-        height: legendHeight - 2 * opts.borderwidth,
-        x: opts.borderwidth - scrollPosition,
-        y: opts.borderwidth
-    });
+        clipPath.select('rect').attr({
+            width: legendWidth - 2 * opts.borderwidth,
+            height: legendHeight - 2 * opts.borderwidth,
+            x: opts.borderwidth,
+            y: opts.borderwidth
+        });
 
-    scrollBox.call(Drawing.setClipUrl, clipId);
-
-    // If scrollbar should be shown.
-    if(opts.height - legendHeight > 0 && !gd._context.staticPlot) {
+        scrollBox.call(Drawing.setClipUrl, clipId);
+    }
+    else {
+        scrollBarY = constants.scrollBarMargin,
+        scrollBoxY = scrollBox.attr('data-scroll') || 0;
 
         // increase the background and clip-path width
         // by the scrollbar width and margin
@@ -227,57 +235,54 @@ module.exports = function draw(gd) {
             width: legendWidth -
                 2 * opts.borderwidth +
                 constants.scrollBarWidth +
-                constants.scrollBarMargin
+                constants.scrollBarMargin,
+            height: legendHeight - opts.borderwidth,
+            x: opts.borderwidth / 2,
+            y: opts.borderwidth / 2
         });
 
         clipPath.select('rect').attr({
             width: legendWidth -
                 2 * opts.borderwidth +
                 constants.scrollBarWidth +
-                constants.scrollBarMargin
+                constants.scrollBarMargin,
+            height: legendHeight - 2 * opts.borderwidth,
+            x: opts.borderwidth,
+            y: opts.borderwidth - scrollBoxY
         });
+
+        scrollBox.call(Drawing.setClipUrl, clipId);
 
         if(gd.firstRender) {
-            // Move scrollbar to starting position
-            scrollHandler(constants.scrollBarMargin, 0);
+            scrollHandler(scrollBarY, scrollBoxY);
+
+            legend.on('wheel', null);
+            legend.on('wheel', function() {
+                scrollBoxY = Lib.constrain(
+                    scrollBox.attr('data-scroll') -
+                        d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
+                    -scrollBoxYMax, 0);
+                scrollBarY = constants.scrollBarMargin -
+                    scrollBoxY / scrollBoxYMax * scrollBarYMax;
+                scrollHandler(scrollBarY, scrollBoxY);
+                d3.event.preventDefault();
+            });
+
+            scrollBar.on('.drag', null);
+            scrollBox.on('.drag', null);
+            var drag = d3.behavior.drag().on('drag', function() {
+                scrollBarY = Lib.constrain(
+                    d3.event.y - constants.scrollBarHeight / 2,
+                    constants.scrollBarMargin,
+                    constants.scrollBarMargin + scrollBarYMax);
+                scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
+                    scrollBarYMax * scrollBoxYMax;
+                scrollHandler(scrollBarY, scrollBoxY);
+            });
+
+            scrollBar.call(drag);
+            scrollBox.call(drag);
         }
-
-        var scrollBarYMax = legendHeight -
-                constants.scrollBarHeight -
-                2 * constants.scrollBarMargin,
-            scrollBoxYMax = opts.height - legendHeight,
-            scrollBarY = constants.scrollBarMargin,
-            scrollBoxY = 0;
-
-        scrollHandler(scrollBarY, scrollBoxY);
-
-        legend.on('wheel', null);
-        legend.on('wheel', function() {
-            scrollBoxY = Lib.constrain(
-                scrollBox.attr('data-scroll') -
-                    d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
-                -scrollBoxYMax, 0);
-            scrollBarY = constants.scrollBarMargin -
-                scrollBoxY / scrollBoxYMax * scrollBarYMax;
-            scrollHandler(scrollBarY, scrollBoxY);
-            d3.event.preventDefault();
-        });
-
-        scrollBar.on('.drag', null);
-        scrollBox.on('.drag', null);
-        var drag = d3.behavior.drag().on('drag', function() {
-            scrollBarY = Lib.constrain(
-                d3.event.y - constants.scrollBarHeight / 2,
-                constants.scrollBarMargin,
-                constants.scrollBarMargin + scrollBarYMax);
-            scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
-                scrollBarYMax * scrollBoxYMax;
-            scrollHandler(scrollBarY, scrollBoxY);
-        });
-
-        scrollBar.call(drag);
-        scrollBox.call(drag);
-
     }
 
 
