@@ -42,7 +42,7 @@ module.exports = {
         dflt: true,
         role: 'style',
         description: [
-            'Determines whether of not the contour level attributes at',
+            'Determines whether or not the contour level attributes are',
             'picked by an algorithm.',
             'If *true*, the number of contour levels can be set in `ncontours`.',
             'If *false*, set the contour level attributes in `contours`.'
@@ -52,7 +52,10 @@ module.exports = {
         valType: 'integer',
         dflt: 0,
         role: 'style',
-        description: 'Sets the number of contour levels.'
+        description: [
+            'Sets the number of contour levels.',
+            'Has an effect only if `autocontour` is *true*.'
+        ].join(' ')
     },
 
     contours: {
@@ -82,7 +85,7 @@ module.exports = {
             description: [
                 'Determines the coloring method showing the contour values.',
                 'If *fill*, coloring is done evenly between each contour level',
-                'If *heatmap*, a heatmap gradient is coloring is applied',
+                'If *heatmap*, a heatmap gradient coloring is applied',
                 'between each contour level.',
                 'If *lines*, coloring is done on the contour lines.',
                 'If *none*, no coloring is applied on this trace.'
