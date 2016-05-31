@@ -28,30 +28,32 @@ module.exports = function animate (gd, trace, data, opts) {
     var transitionDuration = isNumeric(opts.duration) ? opts.duration : 250;
     var transitionEasing = !!opts.easing ? opts.easing : 'cubic-in-out';
 
-    window.scattertraces = plotinfo.plot.select('.scatterlayer')
+    //window.scattertraces = plotinfo.plot.select('.scatterlayer')
 
-  /*return
+    /*return
 
-  var scattertraces = plotinfo.plot.select('.scatterlayer')
-      .selectAll('g.trace.scatter')
-      .data(gd.calcdata[trace.index])
-
-
-  scattertraces.selectAll('g.points')
-      .each(function (d) {
-        console.log('d =', d)
-      });
+    var scattertraces = plotinfo.plot.select('.scatterlayer')
+        .selectAll('g.trace.scatter')
+        .data(gd.calcdata[trace.index])
 
 
-  var prevpath = '',
-      ownFillEl3, ownFillDir, tonext, nexttonext;*/
+    scattertraces.selectAll('g.points')
+        .each(function (d) {
+          console.log('d =', d)
+        });
 
-  window.trace = trace;
+
+    var prevpath = '',
+        ownFillEl3, ownFillDir, tonext, nexttonext;*/
+
+    window.trace = trace;
+    window.plotinfo = plotinfo
     var xa = plotinfo.x(),
         ya = plotinfo.y();
 
     // make the container for scatter plots
     // (so error bars can find them along with bars)
+
     var scattertraces = plotinfo.plot.select('.scatterlayer')
         .selectAll('g.trace.scatter')
         .data(cdscatter);
@@ -178,7 +180,7 @@ module.exports = function animate (gd, trace, data, opts) {
                         .duration(transitionDuration).attr('d', thispath);
                 }
             }
-            /*if(ownFillEl3) {
+            if(ownFillEl3) {
                 if(pt0 && pt1) {
                     if(ownFillDir) {
                         if(ownFillDir === 'y') {
@@ -196,8 +198,7 @@ module.exports = function animate (gd, trace, data, opts) {
                     else ownFillEl3.attr('d', fullpath + 'Z');
                 }
             }
-            else*/
-            if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevpath) {
+            else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevpath) {
                 // fill to next: full trace path, plus the previous path reversed
                 if(trace.fill === 'tonext') {
                     // tonext: for use by concentric shapes, like manually constructed
@@ -238,7 +239,7 @@ module.exports = function animate (gd, trace, data, opts) {
                 if(showMarkers) {
                     s.selectAll('path.point')
                         .data(trace.marker.maxdisplayed ? visFilter : Lib.identity)
-                            .call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing);
+                            .call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace);
                 }
             }
         });

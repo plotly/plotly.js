@@ -46,7 +46,7 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
-drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasing) {
+drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasing, trace) {
     s.each(function(d) {
         // put xp and yp into d if pixel scaling is already done
         var x = d.xp || xa.c2p(d.x),
@@ -56,11 +56,16 @@ drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasi
             // for multiline text this works better
             if(this.nodeName==='text') p.attr('x',x).attr('y',y);
             else {
-              if (isNumeric(transitionDuration)) {
-                p.transition()
+              var join = p;
+              if (isNumeric(transitionDuration) && transitionDuration > 0) {
+                var trans = p.transition()
                   .duration(transitionDuration)
                   .ease(transitionEasing)
-                  .attr('transform', 'translate('+x+','+y+')');
+                  .attr('transform', 'translate('+x+','+y+')')
+
+                if (trace) {
+                  trans.call(drawing.pointStyle, trace)
+                }
               } else {
                 p.attr('transform', 'translate('+x+','+y+')');
               }

@@ -1516,12 +1516,12 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
     var i;
 
     gd = getGraphDiv(gd);
-    window.gd = gd;
 
-    if(isNumeric(traces)) traces=[traces];
+    if(isNumeric(traces)) traces = [traces];
     else if(!Array.isArray(traces) || !traces.length) {
         traces = gd._fullData.map(function (v,i) {return i;});
     }
+
 
     for (var i = 0; i < traces.length; i++) {
         var newTraceData = newData[i];
@@ -1537,6 +1537,9 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
 
     // Placeholder for more general transfer of data:
     for (var i = 0; i < traces.length; i++) {
+        if (gd.data[traces[i]].marker && gd.data[traces[i]].marker.size) {
+            gd._fullData[traces[i]].marker.size = gd.data[traces[i]].marker.size
+        }
         gd._fullData[traces[i]].x = gd.data[traces[i]].x;
         gd._fullData[traces[i]].y = gd.data[traces[i]].y;
     }
@@ -1544,6 +1547,7 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
     doCalcdata(gd);
 
     for (var i = 0; i < traces.length; i++) {
+        var trace = gd._fullData[traces[i]];
         var module = trace._module;
         var cd = [];
 
@@ -1560,6 +1564,7 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
         // per point properties to every point
         // t is the holder for trace-wide properties
         if(!cd[0].t) cd[0].t = {};
+
         cd[0].trace = trace;
 
         Lib.markTime('done with calcdata for '+i);
