@@ -38,7 +38,7 @@ exports.plot = function plotTernary(gd) {
     for(var i = 0; i < ternaryIds.length; i++) {
         var ternaryId = ternaryIds[i],
             fullTernaryData = Plots.getSubplotData(fullData, 'ternary', ternaryId),
-            ternary = fullLayout[ternaryId]._ternary;
+            ternary = fullLayout[ternaryId]._subplot;
 
         // If ternary is not instantiated, create one!
         if(ternary === undefined) {
@@ -50,7 +50,7 @@ exports.plot = function plotTernary(gd) {
                 fullLayout
             );
 
-            fullLayout[ternaryId]._ternary = ternary;
+            fullLayout[ternaryId]._subplot = ternary;
         }
 
         ternary.plot(fullTernaryData, fullLayout, gd._promises);
@@ -62,7 +62,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
     for(var i = 0; i < oldTernaryKeys.length; i++) {
         var oldTernaryKey = oldTernaryKeys[i];
-        var oldTernary = oldFullLayout[oldTernaryKey]._ternary;
+        var oldTernary = oldFullLayout[oldTernaryKey]._subplot;
 
         if(!newFullLayout[oldTernaryKey] && !!oldTernary) {
             oldTernary.plotContainer.remove();

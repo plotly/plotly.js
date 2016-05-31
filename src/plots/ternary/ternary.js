@@ -675,19 +675,6 @@ proto.initInteractions = function() {
     dragger.onclick = function(evt) {
         fx.click(gd, evt);
     };
-
-    // make a fake plotinfo for fx.hover
-    // it hardly uses it, could probably be refactored out...
-    // but specifying subplot by name does seem nice for js applications
-    // that want to hook into this.
-    if(!gd._fullLayout._plots) gd._fullLayout._plots = {};
-    gd._fullLayout._plots[_this.id] = {
-        overlays: [],
-        xaxis: _this.xaxis,
-        yaxis: _this.yaxis,
-        x: function() { return _this.xaxis; },
-        y: function() { return _this.yaxis; }
-    };
 };
 
 function removeZoombox(gd) {

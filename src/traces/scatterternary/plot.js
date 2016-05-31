@@ -13,11 +13,16 @@ var scatterPlot = require('../scatter/plot');
 
 
 module.exports = function plot(ternary, data) {
+    var plotContainer = ternary.plotContainer;
+
+    // remove all nodes inside the scatter layer
+    plotContainer.select('.scatterlayer').selectAll('*').remove();
+
     // mimic cartesian plotinfo
     var plotinfo = {
         x: function() { return ternary.xaxis; },
         y: function() { return ternary.yaxis; },
-        plot: ternary.plotContainer
+        plot: plotContainer
     };
 
     var calcdata = new Array(data.length),
