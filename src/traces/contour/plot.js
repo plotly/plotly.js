@@ -235,7 +235,7 @@ function makePath(pi, loc, edgeflag) {
 
         marchStep = NEWDELTA[mi];
         if(!marchStep) {
-            console.log('found bad marching index', mi, loc, pi.level);
+            Lib.log('Found bad marching index:', mi, loc, pi.level);
             break;
         }
 
@@ -259,7 +259,7 @@ function makePath(pi, loc, edgeflag) {
     }
 
     if(cnt === 10000) {
-        console.log('Infinite loop in contour?');
+        Lib.log('Infinite loop in contour?');
     }
     var closedpath = equalPts(pts[0], pts[pts.length - 1]),
         totaldist = 0,
@@ -343,7 +343,7 @@ function makePath(pi, loc, edgeflag) {
     }
     else {
         if(!edgeflag) {
-            console.log('unclosed interior contour?',
+            Lib.log('Unclosed interior contour?',
                 pi.level, startLocStr, pts.join('L'));
         }
 
@@ -410,7 +410,7 @@ function findAllPaths(pathinfo) {
             startLoc = Object.keys(pi.crossings)[0].split(',').map(Number);
             makePath(pi, startLoc);
         }
-        if(cnt === 10000) console.log('Infinite loop in contour?');
+        if(cnt === 10000) Lib.log('Infinite loop in contour?');
     }
 }
 
@@ -545,7 +545,7 @@ function joinAllPaths(pi, perimeter) {
         //now loop through sides, moving our endpoint until we find a new start
         for(cnt = 0; cnt < 4; cnt++) { // just to prevent infinite loops
             if(!endpt) {
-                console.log('missing end?', i, pi);
+                Lib.log('Missing end?', i, pi);
                 break;
             }
 
@@ -572,7 +572,7 @@ function joinAllPaths(pi, perimeter) {
                     }
                 }
                 else {
-                    console.log('endpt to newendpt is not vert. or horz.',
+                    Lib.log('endpt to newendpt is not vert. or horz.',
                         endpt, newendpt, ptNew);
                 }
             }
@@ -584,7 +584,7 @@ function joinAllPaths(pi, perimeter) {
         }
 
         if(nexti === pi.edgepaths.length) {
-            console.log('unclosed perimeter path');
+            Lib.log('unclosed perimeter path');
             break;
         }
 

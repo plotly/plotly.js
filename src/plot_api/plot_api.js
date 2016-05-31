@@ -63,7 +63,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
     if(!data && !layout && !Lib.isPlotDiv(gd)) {
-        console.log('Warning: calling Plotly.plot as if redrawing ' +
+        Lib.warn('Calling Plotly.plot as if redrawing ' +
             'but this container doesn\'t yet have a plot.', gd);
     }
 
@@ -539,7 +539,7 @@ function cleanLayout(layout) {
     }
 
     if(layout.annotations !== undefined && !Array.isArray(layout.annotations)) {
-        console.log('annotations must be an array');
+        Lib.warn('Annotations must be an array.');
         delete layout.annotations;
     }
     var annotationsLen = (layout.annotations || []).length;
@@ -561,7 +561,7 @@ function cleanLayout(layout) {
     }
 
     if(layout.shapes !== undefined && !Array.isArray(layout.shapes)) {
-        console.log('shapes must be an array');
+        Lib.warn('Shapes must be an array.');
         delete layout.shapes;
     }
     var shapesLen = (layout.shapes || []).length;
@@ -785,9 +785,7 @@ function cleanData(data, existingData) {
 
         // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
         // supported, but new tinycolor does not because they're not valid css
-        Lib.markTime('finished rest of cleanData, starting color');
         Color.clean(trace);
-        Lib.markTime('finished cleanData color.clean');
     }
 }
 
@@ -816,7 +814,7 @@ Plotly.redraw = function(gd) {
     gd = getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
-        console.log('This element is not a Plotly Plot', gd);
+        Lib.warn('This element is not a Plotly plot.', gd);
         return;
     }
 
@@ -891,7 +889,6 @@ function doCalcdata(gd) {
         if(!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
-        Lib.markTime('done with calcdata for ' + i);
         calcdata[i] = cd;
     }
 }
@@ -1548,7 +1545,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         if(traces === undefined) traces = val; // the 3-arg form
     }
     else {
-        console.log('restyle fail', astr, val, traces);
+        Lib.warn('Restyle fail.', astr, val, traces);
         return Promise.reject();
     }
 
@@ -2092,7 +2089,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Lib.isPlainObject(astr)) aobj = astr;
     else {
-        console.log('relayout fail', astr, val);
+        Lib.warn('Relayout fail.', astr, val);
         return Promise.reject();
     }
 
@@ -2283,7 +2280,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
                     }
                     else undoit[ai] = obji;
                 }
-                else console.log('???', aobj);
+                else Lib.log('???', aobj);
             }
             if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
                     !Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {

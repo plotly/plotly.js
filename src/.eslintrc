@@ -9,6 +9,7 @@
     "Uint8Array": true
   },
   "rules": {
-    "strict": [2, "global"]
+    "strict": [2, "global"],
+    "no-console": [1]
   }
 }

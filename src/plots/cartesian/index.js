@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Lib = require('../../lib');
 var Plots = require('../plots');
 
 var constants = require('./constants');

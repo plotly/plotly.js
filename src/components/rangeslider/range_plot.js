@@ -10,6 +10,7 @@
 
 var d3 = require('d3');
 
+var Lib = require('../../lib');
 var Symbols = require('../drawing/symbol_defs');
 var Drawing = require('../drawing');
 
@@ -53,7 +54,7 @@ module.exports = function rangePlot(gd, w, h) {
             pointPairs = [];
 
         if(allowedTypes.indexOf(trace.type) < 0) {
-            console.log('Trace type ' + trace.type + ' not supported for range slider!');
+            Lib.warn('Trace type ' + trace.type + ' not supported for range slider!');
             continue;
         }
 
@@ -161,7 +162,7 @@ function makeScatter(trace, pointPairs, w, h) {
                 break;
 
             default:
-                console.log('Fill type ' + trace.fill + ' not supported for range slider! (yet...)');
+                Lib.warn('Fill type ' + trace.fill + ' not supported for range slider! (yet...)');
                 break;
         }
 

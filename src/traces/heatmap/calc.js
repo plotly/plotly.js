@@ -264,7 +264,7 @@ function interp2d(z, emptyPoints, savedInterpZ) {
             correctionOvershoot(maxFractionalChange));
     }
     if(maxFractionalChange > INTERPTHRESHOLD) {
-        console.log('interp2d didn\'t converge quickly', maxFractionalChange);
+        Lib.log('interp2d didn\'t converge quickly', maxFractionalChange);
     }
 
     return z;

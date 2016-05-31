@@ -1412,7 +1412,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         };
     }
     else {
-        console.log('unrecognized doTicks axis', axid);
+        Lib.warn('Unrecognized doTicks axis:', axid);
         return;
     }
     var axside = ax.side || sides[0],

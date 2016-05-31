@@ -183,7 +183,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
-            console.log('lost context');
+            Lib.warn('Lost WebGL context.');
             ev.preventDefault();
         });
     }
@@ -281,7 +281,7 @@ proto.recoverContext = function() {
             return;
         }
         if(!initializeGLPlot(scene, scene.fullLayout, canvas, gl)) {
-            console.error('catastrophic/unrecoverable webgl error.  context lost.');
+            Lib.error('Catastrophic and unrecoverable WebGL error. Context lost.');
             return;
         }
         scene.plot.apply(scene, scene.plotArgs);

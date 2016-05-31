@@ -6,8 +6,9 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
+
+var Lib = require('../lib');
 
 /**
  * This will be transfered over to gd and overridden by
@@ -83,8 +84,10 @@ module.exports = {
     setBackground: defaultSetBackground,
 
     // URL to topojson files used in geo charts
-    topojsonURL: 'https://cdn.plot.ly/'
+    topojsonURL: 'https://cdn.plot.ly/',
 
+    // Turn all console logging on or off (errors will be thrown)
+    logging: false
 };
 
 // where and how the background gets set can be overridden by context
@@ -93,5 +96,5 @@ function defaultSetBackground(gd, bgColor) {
     try {
         gd._fullLayout._paper.style('background', bgColor);
     }
-    catch(e) { console.log(e); }
+    catch(e) { Lib.error(e); }
 }

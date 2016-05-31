@@ -442,7 +442,7 @@ function hover(gd, evt, subplot) {
         else yvalArray = p2c(yaArray, ypx);
 
         if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
-            console.log('Plotly.Fx.hover failed', evt, gd);
+            Lib.warn('Plotly.Fx.hover failed', evt, gd);
             return dragElement.unhoverRaw(gd, evt);
         }
     }
@@ -529,7 +529,7 @@ function hover(gd, evt, subplot) {
             }
         }
         else {
-            console.log('unrecognized trace type in hover', trace);
+            Lib.log('Unrecognized trace type in hover:', trace);
         }
 
         // in closest mode, remove any existing (farther) points

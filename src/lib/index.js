@@ -99,19 +99,36 @@ lib.pauseEvent = function(e) {
  * ------------------------------------------
  */
 
-// set VERBOSE to true to get a lot more logging and tracing
-lib.VERBOSE = false;
-// console.log that only runs if VERBOSE is on
+/* eslint-disable no-console */
 lib.log = function() {
-    if(lib.VERBOSE) console.log.apply(console, arguments);
     if(config.logging > 1) {
-        console.log.apply(console, arguments);
+        var messages = ['LOG:'];
+
+        for(var i = 0; i < arguments.length; i++) {
+            messages.push(arguments[i]);
+        }
+
+        if(console.trace) {
+            console.trace.apply(console, messages);
+        } else {
+            console.log.apply(console, messages);
+        }
     }
 };
 
 lib.warn = function() {
     if(config.logging > 0) {
-        console.warn.apply(console, arguments);
+        var messages = ['WARN:'];
+
+        for(var i = 0; i < arguments.length; i++) {
+            messages.push(arguments[i]);
+        }
+
+        if(console.trace) {
+            console.trace.apply(console, messages);
+        } else {
+            console.log.apply(console, messages);
+        }
     }
 };
 
@@ -120,6 +137,7 @@ lib.error = function() {
         console.error.apply(console, arguments);
     }
 };
+/* eslint-enable no-console */
 
 // constrain - restrict a number v to be between v0 and v1
 lib.constrain = function(v, v0, v1) {
@@ -432,7 +450,6 @@ lib.addStyleRule = function(selector, styleString) {
     else if(styleSheet.addRule) {
         styleSheet.addRule(selector, styleString, 0);
     }
-    else console.warn('addStyleRule failed');
     else lib.warn('addStyleRule failed');
 };
 

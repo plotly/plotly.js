@@ -10,7 +10,7 @@
 'use strict';
 
 var countryRegex = require('country-regex');
-var Lib = require('./');
+var Lib = require('../lib');
 
 
 // make list of all country iso3 ids from at runtime
@@ -32,8 +32,8 @@ exports.locationToFeature = function(locationmode, location, features) {
         if(feature.id === locationId) return feature;
     }
 
-    console.warn([
-        'location with id', locationId,
+    Lib.warn([
+        'Location with id', locationId,
         'does not have a matching topojson feature at this resolution.'
     ].join(' '));
 };
@@ -53,5 +53,5 @@ function countryNameToISO3(countryName) {
         if(regex.test(countryName.toLowerCase())) return iso3;
     }
 
-    console.warn('unrecognized country name: ' + countryName + '.');
+    Lib.warn('Unrecognized country name: ' + countryName + '.');
 }
