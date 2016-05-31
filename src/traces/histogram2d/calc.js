@@ -33,7 +33,6 @@ module.exports = function calc(gd, trace) {
     if(x.length > serieslen) x.splice(serieslen, x.length - serieslen);
     if(y.length > serieslen) y.splice(serieslen, y.length - serieslen);
 
-    Lib.markTime('done convert data');
 
     // calculate the bins
     if(trace.autobinx || !('xbins' in trace)) {
@@ -54,7 +53,6 @@ module.exports = function calc(gd, trace) {
         }
         trace._input.ybins = trace.ybins;
     }
-    Lib.markTime('done autoBin');
 
     // make the empty bin array & scale the map
     z = [];
@@ -138,7 +136,6 @@ module.exports = function calc(gd, trace) {
     }
 
 
-    Lib.markTime('done making bins');
     // put data into bins
     for(i = 0; i < serieslen; i++) {
         n = Lib.findBin(x[i], xbins);
@@ -154,7 +151,6 @@ module.exports = function calc(gd, trace) {
     if(normfunc) {
         for(m = 0; m < ny; m++) normfunc(z[m], total, xinc, yinc[m]);
     }
-    Lib.markTime('done binning');
 
     return {
         x: x,

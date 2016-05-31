@@ -51,7 +51,6 @@ var xmlnsNamespaces = require('../constants/xmlns_namespaces');
  *
  */
 Plotly.plot = function(gd, data, layout, config) {
-    Lib.markTime('in plot');
 
     gd = getGraphDiv(gd);
 
@@ -223,11 +222,9 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        Lib.markTime('done with bar/box adjustments');
 
         // calc and autorange for errorbars
         ErrorBars.calc(gd);
-        Lib.markTime('done ErrorBars.calc');
 
         // TODO: autosize extra for text markers
         return Lib.syncOrAsync([
@@ -282,7 +279,6 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // styling separate from drawing
         Plots.style(gd);
-        Lib.markTime('done Plots.style');
 
         // show annotations and shapes
         Shapes.drawAll(gd);
@@ -312,7 +308,6 @@ Plotly.plot = function(gd, data, layout, config) {
     function cleanUp() {
         // now we're REALLY TRULY done plotting...
         // so mark it as done and let other procedures call a replot
-        Lib.markTime('done plot');
         gd.emit('plotly_afterplot');
     }
 
@@ -641,9 +636,7 @@ function cleanLayout(layout) {
 
     // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
     // supported, but new tinycolor does not because they're not valid css
-    Lib.markTime('finished rest of cleanLayout, starting color');
     Color.clean(layout);
-    Lib.markTime('finished cleanLayout color.clean');
 
     return layout;
 }

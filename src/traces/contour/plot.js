@@ -51,7 +51,6 @@ var BOTTOMSTART = [1, 9, 13, 104, 713],
     SADDLEREMAINDER = {1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11};
 
 function plotOne(gd, plotinfo, cd) {
-    Lib.markTime('in Contour.plot');
     var trace = cd[0].trace,
         x = cd[0].x,
         y = cd[0].y,
@@ -103,8 +102,6 @@ function plotOne(gd, plotinfo, cd) {
     makeFills(plotGroup, pathinfo, perimeter, contours);
     makeLines(plotGroup, pathinfo, contours);
     clipGaps(plotGroup, plotinfo, cd[0], perimeter);
-
-    Lib.markTime('done Contour.plot');
 }
 
 function emptyPathinfo(contours, plotinfo, cd0) {

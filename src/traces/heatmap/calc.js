@@ -23,8 +23,6 @@ var maxRowLength = require('./max_row_length');
 
 
 module.exports = function calc(gd, trace) {
-    Lib.markTime('start convert x&y');
-
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
@@ -44,8 +42,6 @@ module.exports = function calc(gd, trace) {
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
     ya._minDtick = 0;
-
-    Lib.markTime('done convert x&y');
 
     if(isHist) {
         var binned = histogram2dCalc(gd, trace);

@@ -81,8 +81,6 @@ exports.plot = function(gd) {
             // plot all traces of this type on this subplot at once
             var cdModule = getCdModule(cdSubplot, _module);
             _module.plot(gd, subplotInfo, cdModule);
-
-            Lib.markTime('done ' + (cdModule[0] && cdModule[0][0].trace.type));
         }
     }
 };
