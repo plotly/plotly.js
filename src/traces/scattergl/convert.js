@@ -107,6 +107,7 @@ var proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(pickResult) {
     var index = pickResult.pointId;
+
     if(pickResult.object !== this.line || this.connectgaps) {
         index = this.idToIndex[pickResult.pointId];
     }
@@ -136,19 +137,20 @@ proto.isFancy = function(options) {
 
     if(!options.x || !options.y) return true;
 
-    var marker = options.marker || {};
-    if(Array.isArray(marker.symbol) ||
-         marker.symbol !== 'circle' ||
-         Array.isArray(marker.size) ||
-         Array.isArray(marker.line.width) ||
-         Array.isArray(marker.opacity)
-    ) return true;
+    if(this.hasMarkers) {
+        var marker = options.marker || {};
 
-    var markerColor = marker.color;
-    if(Array.isArray(markerColor)) return true;
+        if(Array.isArray(marker.symbol) ||
+             marker.symbol !== 'circle' ||
+             Array.isArray(marker.size) ||
+             Array.isArray(marker.color) ||
+             Array.isArray(marker.line.width) ||
+             Array.isArray(marker.line.color) ||
+             Array.isArray(marker.opacity)
+        ) return true;
+    }
 
-    var lineColor = Array.isArray(marker.line.color);
-    if(Array.isArray(lineColor)) return true;
+    if(this.hasLines && !this.connectgaps) return true;
 
     if(this.hasErrorX) return true;
     if(this.hasErrorY) return true;
@@ -471,8 +473,10 @@ proto.updateFancy = function(options) {
 
 proto.updateLines = function(options, positions) {
     var i;
+
     if(this.hasLines) {
         var linePositions = positions;
+
         if(!options.connectgaps) {
             var p = 0;
             var x = this.xData;
@@ -484,8 +488,8 @@ proto.updateLines = function(options, positions) {
                 linePositions[p++] = y[i];
             }
         }
-        this.lineOptions.positions = linePositions;
 
+        this.lineOptions.positions = linePositions;
 
         var lineColor = convertColor(options.line.color, options.opacity, 1),
             lineWidth = Math.round(0.5 * this.lineOptions.width),
