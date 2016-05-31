@@ -486,10 +486,9 @@ proto.updateLines = function(options, positions) {
         }
         this.lineOptions.positions = linePositions;
 
-        var lineColor = str2RGBArray(options.line.color);
-        if(this.hasMarkers) lineColor[3] *= options.marker.opacity;
 
-        var lineWidth = Math.round(0.5 * this.lineOptions.width),
+        var lineColor = convertColor(options.line.color, options.opacity, 1),
+            lineWidth = Math.round(0.5 * this.lineOptions.width),
             dashes = (DASHES[options.line.dash] || [1]).slice();
 
         for(i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
