@@ -129,7 +129,7 @@ var Tabs = {
         var interval = setInterval(function() {
             if(window.Plotly) {
                 clearInterval(interval);
-                Tabs.setPlotConfig();
+                Tabs.setPlotConfig({ logging: 2 });
                 Tabs.onReload();
             }
         }, 100);
