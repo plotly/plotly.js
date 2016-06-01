@@ -1,11 +1,12 @@
 var Plotly = require('@lib/index');
+var Plots = Plotly.Plots;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 
 describe('config argument', function() {
 
-    describe('attribute autosize', function() {
+    describe('attribute layout.autosize', function() {
         var layoutWidth = 1111,
             relayoutWidth = 555,
             containerWidthBeforePlot = 888,
@@ -30,9 +31,9 @@ describe('config argument', function() {
             expect(+svg.getAttribute('height')).toBe(height);
         }
 
-        function testAutosize(config, layoutHeight, relayoutHeight, done) {
+        function testAutosize(autosize, config, layoutHeight, relayoutHeight, done) {
             var layout = {
-                    autosize: config.autosizable,
+                    autosize: autosize,
                     width: layoutWidth
 
                 },
@@ -58,65 +59,79 @@ describe('config argument', function() {
         }
 
         it('should fill the frame when autosize: false, fillFrame: true, frameMargins: undefined', function(done) {
-            var config = {
-                    autosizable: false,
+            var autosize = false,
+                config = {
+                    autosizable: true,
                     fillFrame: true
                 },
                 layoutHeight = window.innerHeight,
                 relayoutHeight = layoutHeight;
-            testAutosize(config, layoutHeight, relayoutHeight, done);
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the frame when autosize: true, fillFrame: true and frameMargins: undefined', function(done) {
-            var config = {
-                    autosizable: true,
+            var autosize = true,
+                config = {
                     fillFrame: true
                 },
                 layoutHeight = window.innerHeight,
                 relayoutHeight = window.innerHeight;
-            testAutosize(config, layoutHeight, relayoutHeight, done);
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: false, fillFrame: false and frameMargins: undefined', function(done) {
-            var config = {
-                    autosizable: false,
-                    fillFrame: false
-                },
-                layoutHeight = containerHeightBeforePlot,
-                relayoutHeight = layoutHeight;
-            testAutosize(config, layoutHeight, relayoutHeight, done);
-        });
-
-        it('should fill the container when autosize: true, fillFrame: false and frameMargins: undefined', function(done) {
-            var config = {
+            var autosize = false,
+                config = {
                     autosizable: true,
                     fillFrame: false
                 },
                 layoutHeight = containerHeightBeforePlot,
+                relayoutHeight = layoutHeight;
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: true, fillFrame: false and frameMargins: undefined', function(done) {
+            var autosize = true,
+                config = {
+                    fillFrame: false
+                },
+                layoutHeight = containerHeightBeforePlot,
                 relayoutHeight = containerHeightBeforeRelayout;
-            testAutosize(config, layoutHeight, relayoutHeight, done);
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: false, fillFrame: false and frameMargins: 0.1', function(done) {
-            var config = {
-                    autosizable: false,
+            var autosize = false,
+                config = {
+                    autosizable: true,
                     fillFrame: false,
                     frameMargins: 0.1
                 },
                 layoutHeight = 360,
                 relayoutHeight = layoutHeight;
-            testAutosize(config, layoutHeight, relayoutHeight, done);
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
 
         it('should fill the container when autosize: true, fillFrame: false and frameMargins: 0.1', function(done) {
-            var config = {
-                    autosizable: true,
+            var autosize = true,
+                config = {
                     fillFrame: false,
                     frameMargins: 0.1
                 },
                 layoutHeight = 360,
                 relayoutHeight = 288;
-            testAutosize(config, layoutHeight, relayoutHeight, done);
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should respect attribute autosizable: false', function(done) {
+            var autosize = false,
+                config = {
+                    autosizable: false,
+                    fillFrame: true
+                },
+                layoutHeight = Plots.layoutAttributes.height.dflt,
+                relayoutHeight = layoutHeight;
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
         });
     });
 
