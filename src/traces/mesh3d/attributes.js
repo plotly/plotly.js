@@ -31,7 +31,7 @@ module.exports = {
     z: {
         valType: 'data_array',
         description: [
-            'Sets the X coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
+            'Sets the Z coordinates of the vertices. The nth element of vectors `x`, `y` and `z`',
             'jointly represent the X, Y and Z coordinates of the nth vertex.'
         ].join(' ')
     },
@@ -42,7 +42,7 @@ module.exports = {
             'A vector of vertex indices, i.e. integer values between 0 and the length of the vertex',
             'vectors, representing the *first* vertex of a triangle. For example, `{i[m], j[m], k[m]}`',
             'together represent face m (triangle m) in the mesh, where `i[m] = n` points to the triplet',
-            '`{x[n], y[n], z[v]}` in the vertex arrays. Therefore, each element in `i` represents a',
+            '`{x[n], y[n], z[n]}` in the vertex arrays. Therefore, each element in `i` represents a',
             'point in space, which is the first vertex of a triangle.'
         ].join(' ')
     },
@@ -52,7 +52,7 @@ module.exports = {
             'A vector of vertex indices, i.e. integer values between 0 and the length of the vertex',
             'vectors, representing the *second* vertex of a triangle. For example, `{i[m], j[m], k[m]}` ',
             'together represent face m (triangle m) in the mesh, where `j[m] = n` points to the triplet',
-            '`{x[n], y[n], z[v]}` in the vertex arrays. Therefore, each element in `j` represents a',
+            '`{x[n], y[n], z[n]}` in the vertex arrays. Therefore, each element in `j` represents a',
             'point in space, which is the second vertex of a triangle.'
         ].join(' ')
 
@@ -63,7 +63,7 @@ module.exports = {
             'A vector of vertex indices, i.e. integer values between 0 and the length of the vertex',
             'vectors, representing the *third* vertex of a triangle. For example, `{i[m], j[m], k[m]}`',
             'together represent face m (triangle m) in the mesh, where `k[m] = n` points to the triplet ',
-            '`{x[n], y[n], z[v]}` in the vertex arrays. Therefore, each element in `k` represents a',
+            '`{x[n], y[n], z[n]}` in the vertex arrays. Therefore, each element in `k` represents a',
             'point in space, which is the third vertex of a triangle.'
         ].join(' ')
 
@@ -91,24 +91,20 @@ module.exports = {
             'vertices (points) represented by the `x`, `y` and `z` arrays, if',
             'the `i`, `j`, `k` arrays are not supplied.',
             'For general use of `mesh3d` it is preferred that `i`, `j`, `k` are',
-            'supplied, because calculating the surface from points can be very',
-            'time consuming and usually lead to artifacts.',
+            'supplied.',
 
             'If *-1*, Delaunay triangulation is used, which is mainly suitable if the',
             'mesh is a single, more or less layer surface that is perpendicular to `delaunayaxis`.',
             'In case the `delaunayaxis` intersects the mesh surface at more than one point',
-            '(e.g. sphere, cube, potato, animal, donut etc. shapes) it will lead to triangles',
-            'that are very long in the dimension of `delaunayaxis`.',
+            'it will result triangles that are very long in the dimension of `delaunayaxis`.',
 
-            'If *>0*, the alpha-shape algorithm is used. In this case, the `alphahull` value',
-            'not only signals the intention to choose the alpha-shape algorithm, but its value',
-            'acts as the parameter for the mesh fitting. It can take minutes to calculate a large',
-            'mesh (e.g. over 10 thousand points), and the result is very sensitive to the',
-            'chosen value. ',
+            'If *>0*, the alpha-shape algorithm is used. In this case, the positive `alphahull` value',
+            'signals the use of the alpha-shape algorithm, _and_ its value',
+            'acts as the parameter for the mesh fitting.',
 
             'If *0*,  the convex-hull algorithm is used. It is suitable for convex bodies',
             'or if the intention is to enclose the `x`, `y` and `z` point set into a convex',
-            'hull. However it can not generate concave surfaces.'
+            'hull.'
         ].join(' ')
     },
 
