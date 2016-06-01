@@ -805,8 +805,14 @@ describe('Test plot api', function() {
             }];
 
             Plotly.plot(gd, data).then(function() {
-                Plotly.newPlot(gd, data, { height: 50 }).then(function() {
-                    expect(gd._fullLayout.height).toBe(50);
+                var height = 50;
+
+                Plotly.newPlot(gd, data, { height: height }).then(function() {
+                    var fullLayout = gd._fullLayout,
+                        svg = document.getElementsByClassName('main-svg')[0];
+
+                    expect(fullLayout.height).toBe(height);
+                    expect(+svg.getAttribute('height')).toBe(height);
                 }).then(done);
             });
         });
