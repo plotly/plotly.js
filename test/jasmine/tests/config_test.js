@@ -5,6 +5,121 @@ var mouseEvent = require('../assets/mouse_event');
 
 describe('config argument', function() {
 
+    describe('attribute autosize', function() {
+        var layoutWidth = 1111,
+            relayoutWidth = 555,
+            containerWidthBeforePlot = 888,
+            containerWidthBeforeRelayout = 666,
+            containerHeightBeforePlot = 543,
+            containerHeightBeforeRelayout = 321,
+            data = [],
+            gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function checkLayoutSize(width, height) {
+            expect(gd._fullLayout.width).toBe(width);
+            expect(gd._fullLayout.height).toBe(height);
+
+            var svg = document.getElementsByClassName('main-svg')[0];
+            expect(+svg.getAttribute('width')).toBe(width);
+            expect(+svg.getAttribute('height')).toBe(height);
+        }
+
+        function testAutosize(config, layoutHeight, relayoutHeight, done) {
+            var layout = {
+                    autosize: config.autosizable,
+                    width: layoutWidth
+
+                },
+                relayout = {
+                    width: relayoutWidth
+                };
+
+            var container = document.getElementById('graph');
+            container.style.width = containerWidthBeforePlot + 'px';
+            container.style.height = containerHeightBeforePlot + 'px';
+
+            Plotly.plot(gd, data, layout, config).then(function() {
+                checkLayoutSize(layoutWidth, layoutHeight);
+
+                container.style.width = containerWidthBeforeRelayout + 'px';
+                container.style.height = containerHeightBeforeRelayout + 'px';
+
+                Plotly.relayout(gd, relayout).then(function() {
+                    checkLayoutSize(relayoutWidth, relayoutHeight);
+                    done();
+                });
+            });
+        }
+
+        it('should fill the frame when autosize: false, fillFrame: true, frameMargins: undefined', function(done) {
+            var config = {
+                    autosizable: false,
+                    fillFrame: true
+                },
+                layoutHeight = window.innerHeight,
+                relayoutHeight = layoutHeight;
+            testAutosize(config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the frame when autosize: true, fillFrame: true and frameMargins: undefined', function(done) {
+            var config = {
+                    autosizable: true,
+                    fillFrame: true
+                },
+                layoutHeight = window.innerHeight,
+                relayoutHeight = window.innerHeight;
+            testAutosize(config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: false, fillFrame: false and frameMargins: undefined', function(done) {
+            var config = {
+                    autosizable: false,
+                    fillFrame: false
+                },
+                layoutHeight = containerHeightBeforePlot,
+                relayoutHeight = layoutHeight;
+            testAutosize(config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: true, fillFrame: false and frameMargins: undefined', function(done) {
+            var config = {
+                    autosizable: true,
+                    fillFrame: false
+                },
+                layoutHeight = containerHeightBeforePlot,
+                relayoutHeight = containerHeightBeforeRelayout;
+            testAutosize(config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: false, fillFrame: false and frameMargins: 0.1', function(done) {
+            var config = {
+                    autosizable: false,
+                    fillFrame: false,
+                    frameMargins: 0.1
+                },
+                layoutHeight = 360,
+                relayoutHeight = layoutHeight;
+            testAutosize(config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: true, fillFrame: false and frameMargins: 0.1', function(done) {
+            var config = {
+                    autosizable: true,
+                    fillFrame: false,
+                    frameMargins: 0.1
+                },
+                layoutHeight = 360,
+                relayoutHeight = 288;
+            testAutosize(config, layoutHeight, relayoutHeight, done);
+        });
+    });
+
     describe('showLink attribute', function() {
 
         var gd;
