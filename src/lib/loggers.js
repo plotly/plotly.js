@@ -53,6 +53,12 @@ loggers.warn = function() {
 
 loggers.error = function() {
     if(config.logging > 0) {
+        var messages = ['ERROR:'];
+
+        for(var i = 0; i < arguments.length; i++) {
+            messages.push(arguments[i]);
+        }
+
         console.error.apply(console, arguments);
     }
 };
