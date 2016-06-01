@@ -802,8 +802,17 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
         var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
             reservedWidth = reservedMargins.left + reservedMargins.right,
             reservedHeight = reservedMargins.bottom + reservedMargins.top,
-            gdBB = fullLayout._container.node().getBoundingClientRect(),
             factor = 1 - 2 * frameMargins;
+
+        var gdBB;
+        try {
+            gdBB = fullLayout._container.node().getBoundingClientRect();
+        } catch(err) {
+            gdBB = {
+                width: fullLayout.width,
+                height: fullLayout.height
+            };
+        }
 
         newWidth = Math.round(factor * (gdBB.width - reservedWidth));
         newHeight = Math.round(factor * (gdBB.height - reservedHeight));
@@ -822,6 +831,11 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
         newWidth = parseFloat(computedStyle.width) || fullLayout.width;
         newHeight = parseFloat(computedStyle.height) || fullLayout.height;
     }
+
+    var minWidth = plots.layoutAttributes.width.min,
+        minHeight = plots.layoutAttributes.height.min;
+    if(newWidth < minWidth) newWidth = minWidth;
+    if(newHeight < minHeight) newHeight = minHeight;
 
     var widthHasChanged = !layout.width &&
             (Math.abs(fullLayout.width - newWidth) > 1),
