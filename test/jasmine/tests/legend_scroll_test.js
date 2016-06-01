@@ -85,8 +85,27 @@ describe('The legend', function() {
                 wheelDeltaY = 100;
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
-            var dataScroll = scrollBox.getAttribute('data-scroll');
 
+            var dataScroll = scrollBox.getAttribute('data-scroll');
+            toggle.dispatchEvent(new MouseEvent('click'));
+            expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+            expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + dataScroll + ')');
+        });
+
+        it('should keep toggle listeners after relayout', function() {
+            Plotly.relayout(gd, 'showlegend', false);
+            Plotly.relayout(gd, 'showlegend', true);
+
+            var legend = document.getElementsByClassName('legend')[0],
+                scrollBox = legend.getElementsByClassName('scrollbox')[0],
+                toggle = legend.getElementsByClassName('legendtoggle')[0],
+                wheelDeltaY = 100;
+
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+
+            var dataScroll = scrollBox.getAttribute('data-scroll');
             toggle.dispatchEvent(new MouseEvent('click'));
             expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
             expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
