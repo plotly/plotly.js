@@ -13,9 +13,11 @@ var Tabs = {
 
     // Set plot config options
     setPlotConfig: function() {
-
-        // use local topojson files
-        Plotly.setPlotConfig({ topojsonURL: '../../dist/topojson/' });
+        Plotly.setPlotConfig({
+            // use local topojson files
+            topojsonURL: '../../dist/topojson/',
+            logging: 2
+        });
     },
 
     // Return the specified plot container (or default one)
@@ -129,7 +131,7 @@ var Tabs = {
         var interval = setInterval(function() {
             if(window.Plotly) {
                 clearInterval(interval);
-                Tabs.setPlotConfig({ logging: 2 });
+                Tabs.setPlotConfig();
                 Tabs.onReload();
             }
         }, 100);

@@ -12,7 +12,6 @@
 var d3 = require('d3');
 
 var lib = module.exports = {};
-var config = require('../plot_api/plot_config');
 
 lib.nestedProperty = require('./nested_property');
 lib.isPlainObject = require('./is_plain_object');
@@ -59,6 +58,11 @@ lib.extendFlat = extendModule.extendFlat;
 lib.extendDeep = extendModule.extendDeep;
 lib.extendDeepAll = extendModule.extendDeepAll;
 
+var loggersModule = require('./loggers');
+lib.log = loggersModule.log;
+lib.warn = loggersModule.warn;
+lib.error = loggersModule.error;
+
 lib.notifier = require('./notifier');
 
 /**
@@ -92,52 +96,6 @@ lib.pauseEvent = function(e) {
     e.cancelBubble = true;
     return false;
 };
-
-/**
- * ------------------------------------------
- * debugging tools
- * ------------------------------------------
- */
-
-/* eslint-disable no-console */
-lib.log = function() {
-    if(config.logging > 1) {
-        var messages = ['LOG:'];
-
-        for(var i = 0; i < arguments.length; i++) {
-            messages.push(arguments[i]);
-        }
-
-        if(console.trace) {
-            console.trace.apply(console, messages);
-        } else {
-            console.log.apply(console, messages);
-        }
-    }
-};
-
-lib.warn = function() {
-    if(config.logging > 0) {
-        var messages = ['WARN:'];
-
-        for(var i = 0; i < arguments.length; i++) {
-            messages.push(arguments[i]);
-        }
-
-        if(console.trace) {
-            console.trace.apply(console, messages);
-        } else {
-            console.log.apply(console, messages);
-        }
-    }
-};
-
-lib.error = function() {
-    if(config.logging > 0) {
-        console.error.apply(console, arguments);
-    }
-};
-/* eslint-enable no-console */
 
 // constrain - restrict a number v to be between v0 and v1
 lib.constrain = function(v, v0, v1) {

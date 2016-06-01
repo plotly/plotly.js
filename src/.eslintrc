@@ -10,6 +10,6 @@
   },
   "rules": {
     "strict": [2, "global"],
-    "no-console": [1]
+    "no-console": [2]
   }
 }

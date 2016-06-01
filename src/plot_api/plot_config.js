@@ -87,6 +87,7 @@ module.exports = {
     topojsonURL: 'https://cdn.plot.ly/',
 
     // Turn all console logging on or off (errors will be thrown)
+    // This should ONLY be set via Plotly.setPlotConfig
     logging: false
 };
 
