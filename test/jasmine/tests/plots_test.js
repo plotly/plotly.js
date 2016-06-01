@@ -7,6 +7,24 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Test Plots', function() {
     'use strict';
 
+    describe('Plotly.supplyDefaults', function() {
+        it('should not throw an error when gd is a plain object', function() {
+            var height = 100,
+                gd = {
+                    layout: {
+                        height: height
+                    }
+                };
+
+            Plots.supplyDefaults(gd);
+            expect(gd.layout.height).toBe(height);
+            expect(gd._fullLayout).toBeDefined();
+            expect(gd._fullLayout.height).toBe(height);
+            expect(gd._fullLayout.width).toBe(Plots.layoutAttributes.width.dflt);
+            expect(gd._fullData).toBeDefined();
+        });
+    });
+
     describe('Plots.supplyLayoutGlobalDefaults should', function() {
         var layoutIn,
             layoutOut,
