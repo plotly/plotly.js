@@ -492,8 +492,10 @@ plots.supplyDefaults = function(gd) {
         // coerce the updated layout and autosize if needed
         plots.supplyLayoutGlobalDefaults(layout, newFullLayout);
 
-        var initialAutoSize = (!layout.width || !layout.height) &&
-            (layout.autosize || gd._context.autosizable);
+        var missingWidthOrHeight = (!layout.width || !layout.height),
+            autosize = layout.autosize,
+            autosizable = gd._context && gd._context.autosizable,
+            initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
         if(initialAutoSize) plots.plotAutoSize(gd, layout, newFullLayout);
     }
 
