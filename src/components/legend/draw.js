@@ -253,36 +253,36 @@ module.exports = function draw(gd) {
 
         scrollBox.call(Drawing.setClipUrl, clipId);
 
-        if(gd.firstRender) {
+        if(gd.firstRender) scrollHandler(scrollBarY, scrollBoxY);
+
+        legend.on('wheel', null);  // to be safe, remove previous listeners
+        legend.on('wheel', function() {
+            scrollBoxY = Lib.constrain(
+                scrollBox.attr('data-scroll') -
+                    d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
+                -scrollBoxYMax, 0);
+            scrollBarY = constants.scrollBarMargin -
+                scrollBoxY / scrollBoxYMax * scrollBarYMax;
             scrollHandler(scrollBarY, scrollBoxY);
+            d3.event.preventDefault();
+        });
 
-            legend.on('wheel', null);
-            legend.on('wheel', function() {
-                scrollBoxY = Lib.constrain(
-                    scrollBox.attr('data-scroll') -
-                        d3.event.deltaY / scrollBarYMax * scrollBoxYMax,
-                    -scrollBoxYMax, 0);
-                scrollBarY = constants.scrollBarMargin -
-                    scrollBoxY / scrollBoxYMax * scrollBarYMax;
-                scrollHandler(scrollBarY, scrollBoxY);
-                d3.event.preventDefault();
-            });
+        // to be safe, remove previous listeners
+        scrollBar.on('.drag', null);
+        scrollBox.on('.drag', null);
 
-            scrollBar.on('.drag', null);
-            scrollBox.on('.drag', null);
-            var drag = d3.behavior.drag().on('drag', function() {
-                scrollBarY = Lib.constrain(
-                    d3.event.y - constants.scrollBarHeight / 2,
-                    constants.scrollBarMargin,
-                    constants.scrollBarMargin + scrollBarYMax);
-                scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
-                    scrollBarYMax * scrollBoxYMax;
-                scrollHandler(scrollBarY, scrollBoxY);
-            });
+        var drag = d3.behavior.drag().on('drag', function() {
+            scrollBarY = Lib.constrain(
+                d3.event.y - constants.scrollBarHeight / 2,
+                constants.scrollBarMargin,
+                constants.scrollBarMargin + scrollBarYMax);
+            scrollBoxY = - (scrollBarY - constants.scrollBarMargin) /
+                scrollBarYMax * scrollBoxYMax;
+            scrollHandler(scrollBarY, scrollBoxY);
+        });
 
-            scrollBar.call(drag);
-            scrollBox.call(drag);
-        }
+        scrollBar.call(drag);
+        scrollBox.call(drag);
     }
 
 
