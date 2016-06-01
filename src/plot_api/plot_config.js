@@ -25,7 +25,7 @@ module.exports = {
     // we can edit titles, move annotations, etc
     editable: false,
 
-    // plot will respect layout.autosize=true and infer its container size
+    // DO initial autosize
     autosizable: false,
 
     // if we DO autosize, do we fill the container or the screen?
