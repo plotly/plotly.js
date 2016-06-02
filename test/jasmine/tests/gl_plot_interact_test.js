@@ -548,16 +548,15 @@ describe('Test gl plot interactions', function() {
 });
 
 describe('Test gl plot side effects', function() {
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(destroyGraphDiv);
+
     describe('when present with rangeslider', function() {
-
-        var gd;
-
-        beforeEach(function() {
-            gd = createGraphDiv();
-        });
-
-        afterEach(destroyGraphDiv);
-
         it('should not draw the rangeslider', function(done) {
             var data = [{
                 x: [1, 2, 3],
@@ -582,8 +581,6 @@ describe('Test gl plot side effects', function() {
     });
 
     it('should be able to replot from a blank graph', function(done) {
-        var gd = createGraphDiv();
-
         function countCanvases(cnt) {
             var nodes = d3.selectAll('canvas');
             expect(nodes.size()).toEqual(cnt);
