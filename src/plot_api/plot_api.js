@@ -1575,7 +1575,6 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
 
         cd[0].trace = trace;
 
-        Lib.markTime('done with calcdata for '+i);
         gd.calcdata[traces[i]] = cd;
     }
 
