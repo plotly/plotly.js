@@ -21,13 +21,9 @@ var calcMarkerColorscale = require('./marker_colorscale_calc');
 module.exports = function calc(gd, trace) {
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
         ya = Axes.getFromId(gd, trace.yaxis || 'y');
-    Lib.markTime('in Scatter.calc');
 
-    var x = xa.makeCalcdata(trace, 'x');
-    Lib.markTime('finished convert x');
-
-    var y = ya.makeCalcdata(trace, 'y');
-    Lib.markTime('finished convert y');
+    var x = xa.makeCalcdata(trace, 'x'),
+        y = ya.makeCalcdata(trace, 'y');
 
     var serieslen = Math.min(x.length, y.length),
         marker,
@@ -111,11 +107,8 @@ module.exports = function calc(gd, trace) {
         yOptions.padded = false;
     }
 
-    Lib.markTime('ready for Axes.expand');
     Axes.expand(xa, x, xOptions);
-    Lib.markTime('done expand x');
     Axes.expand(ya, y, yOptions);
-    Lib.markTime('done expand y');
 
     // create the "calculated data" to plot
     var cd = new Array(serieslen);

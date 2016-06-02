@@ -11,6 +11,8 @@
 
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../lib');
+
 
 /**
  * findBin - find the bin for val - note that it can return outside the
@@ -45,7 +47,7 @@ exports.findBin = function(val, bins, linelow) {
             if(test(bins[n], val)) n1 = n + 1;
             else n2 = n;
         }
-        if(c > 90) console.log('Long binary search...');
+        if(c > 90) Lib.log('Long binary search...');
         return n1 - 1;
     }
 };

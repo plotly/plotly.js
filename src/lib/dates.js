@@ -12,6 +12,8 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../lib');
+
 
 /**
  * dateTime2ms - turn a date object or string s of the form
@@ -122,7 +124,7 @@ function lpad(val, digits) {
  */
 exports.ms2DateTime = function(ms, r) {
     if(typeof(d3) === 'undefined') {
-        console.log('d3 is not defined');
+        Lib.error('d3 is not defined.');
         return;
     }
 

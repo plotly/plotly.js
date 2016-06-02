@@ -41,6 +41,4 @@ module.exports = function colorbar(gd, cd) {
             .range(scl.map(function(v) { return v[1]; })))
         .filllevels({start: zmin, end: zmax, size: (zmax - zmin) / 254})
         .options(trace.colorbar)();
-
-    Lib.markTime('done colorbar');
 };

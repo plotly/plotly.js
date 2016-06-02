@@ -14,6 +14,7 @@
 var Plotly = require('../plotly');
 var d3 = require('d3');
 
+var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 
 var util = module.exports = {};
@@ -36,7 +37,7 @@ d3.selection.prototype.appendSVG = function(_svgString) {
         childNode = childNode.nextSibling;
     }
     if(dom.querySelector('parsererror')) {
-        console.log(dom.querySelector('parsererror div').textContent);
+        Lib.log(dom.querySelector('parsererror div').textContent);
         return null;
     }
     return d3.select(this.node().lastChild);
@@ -202,7 +203,7 @@ function texToSVG(_texString, _config, _callback) {
         var glyphDefs = d3.select('body').select('#MathJax_SVG_glyphs');
 
         if(tmpDiv.select('.MathJax_SVG').empty() || !tmpDiv.select('svg').node()) {
-            console.log('There was an error in the tex syntax.', _texString);
+            Lib.log('There was an error in the tex syntax.', _texString);
             _callback();
         }
         else {

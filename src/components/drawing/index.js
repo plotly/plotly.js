@@ -122,7 +122,7 @@ drawing.fillGroupStyle = function(s) {
             shape.call(Color.fill, d[0].trace.fillcolor);
         }
         catch(e) {
-            console.log(e, s);
+            Lib.error(e, s);
             shape.remove();
         }
     });

@@ -51,7 +51,6 @@ var xmlnsNamespaces = require('../constants/xmlns_namespaces');
  *
  */
 Plotly.plot = function(gd, data, layout, config) {
-    Lib.markTime('in plot');
 
     gd = getGraphDiv(gd);
 
@@ -64,7 +63,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // if there's no data or layout, and this isn't yet a plotly plot
     // container, log a warning to help plotly.js users debug
     if(!data && !layout && !Lib.isPlotDiv(gd)) {
-        console.log('Warning: calling Plotly.plot as if redrawing ' +
+        Lib.warn('Calling Plotly.plot as if redrawing ' +
             'but this container doesn\'t yet have a plot.', gd);
     }
 
@@ -223,11 +222,9 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-        Lib.markTime('done with bar/box adjustments');
 
         // calc and autorange for errorbars
         ErrorBars.calc(gd);
-        Lib.markTime('done ErrorBars.calc');
 
         // TODO: autosize extra for text markers
         return Lib.syncOrAsync([
@@ -282,7 +279,6 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // styling separate from drawing
         Plots.style(gd);
-        Lib.markTime('done Plots.style');
 
         // show annotations and shapes
         Shapes.drawAll(gd);
@@ -312,7 +308,6 @@ Plotly.plot = function(gd, data, layout, config) {
     function cleanUp() {
         // now we're REALLY TRULY done plotting...
         // so mark it as done and let other procedures call a replot
-        Lib.markTime('done plot');
         gd.emit('plotly_afterplot');
     }
 
@@ -544,7 +539,7 @@ function cleanLayout(layout) {
     }
 
     if(layout.annotations !== undefined && !Array.isArray(layout.annotations)) {
-        console.log('annotations must be an array');
+        Lib.warn('Annotations must be an array.');
         delete layout.annotations;
     }
     var annotationsLen = (layout.annotations || []).length;
@@ -566,7 +561,7 @@ function cleanLayout(layout) {
     }
 
     if(layout.shapes !== undefined && !Array.isArray(layout.shapes)) {
-        console.log('shapes must be an array');
+        Lib.warn('Shapes must be an array.');
         delete layout.shapes;
     }
     var shapesLen = (layout.shapes || []).length;
@@ -641,9 +636,7 @@ function cleanLayout(layout) {
 
     // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
     // supported, but new tinycolor does not because they're not valid css
-    Lib.markTime('finished rest of cleanLayout, starting color');
     Color.clean(layout);
-    Lib.markTime('finished cleanLayout color.clean');
 
     return layout;
 }
@@ -792,9 +785,7 @@ function cleanData(data, existingData) {
 
         // sanitize rgb(fractions) and rgba(fractions) that old tinycolor
         // supported, but new tinycolor does not because they're not valid css
-        Lib.markTime('finished rest of cleanData, starting color');
         Color.clean(trace);
-        Lib.markTime('finished cleanData color.clean');
     }
 }
 
@@ -823,7 +814,7 @@ Plotly.redraw = function(gd) {
     gd = getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
-        console.log('This element is not a Plotly Plot', gd);
+        Lib.warn('This element is not a Plotly plot.', gd);
         return;
     }
 
@@ -898,7 +889,6 @@ function doCalcdata(gd) {
         if(!cd[0].t) cd[0].t = {};
         cd[0].trace = trace;
 
-        Lib.markTime('done with calcdata for ' + i);
         calcdata[i] = cd;
     }
 }
@@ -1555,7 +1545,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         if(traces === undefined) traces = val; // the 3-arg form
     }
     else {
-        console.log('restyle fail', astr, val, traces);
+        Lib.warn('Restyle fail.', astr, val, traces);
         return Promise.reject();
     }
 
@@ -2099,7 +2089,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Lib.isPlainObject(astr)) aobj = astr;
     else {
-        console.log('relayout fail', astr, val);
+        Lib.warn('Relayout fail.', astr, val);
         return Promise.reject();
     }
 
@@ -2290,7 +2280,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
                     }
                     else undoit[ai] = obji;
                 }
-                else console.log('???', aobj);
+                else Lib.log('???', aobj);
             }
             if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
                     !Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {

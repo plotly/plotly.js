@@ -50,11 +50,9 @@ manager.framework = function(_gd) {
         (function(_configClone, _previousConfigClone) {
             undoManager.add({
                 undo: function() {
-                    //console.log('undo', _previousConfigClone);
                     if(_previousConfigClone) that(_previousConfigClone);
                 },
                 redo: function() {
-                    //console.log('redo', _configClone);
                     that(_configClone);
                 }
             });

@@ -28,8 +28,6 @@ module.exports = function(gd, plotinfo, cdheatmaps) {
 
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function plotOne(gd, plotinfo, cd) {
-    Lib.markTime('in Heatmap.plot');
-
     var trace = cd[0].trace,
         uid = trace.uid,
         xa = plotinfo.x(),
@@ -286,8 +284,6 @@ function plotOne(gd, plotinfo, cd) {
         return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
     }
 
-    Lib.markTime('done init png');
-
     if(zsmooth) { // best or fast, works fastest with imageData
         var pxIndex = 0,
             pixels = new Uint8Array(imageWidth * imageHeight * 4);
@@ -359,8 +355,6 @@ function plotOne(gd, plotinfo, cd) {
         }
     }
 
-    Lib.markTime('done filling png');
-
     rcount = Math.round(rcount / pixcount);
     gcount = Math.round(gcount / pixcount);
     bcount = Math.round(bcount / pixcount);
@@ -391,6 +385,4 @@ function plotOne(gd, plotinfo, cd) {
         y: top,
         preserveAspectRatio: 'none'
     });
-
-    Lib.markTime('done showing png');
 }
