@@ -1521,7 +1521,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 // 4. doCalcdata
 // 5. begin animation
 Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
-    var i;
+    var i, newTraceData, curData, value;
 
     gd = getGraphDiv(gd);
 
@@ -1530,16 +1530,16 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
         traces = gd._fullData.map(function (v,i) {return i;});
     }
 
+    cloneTraceDefinitions(gd);
 
-    for (var i = 0; i < traces.length; i++) {
-        var newTraceData = newData[i];
-        var data = gd.data[traces[i]];
-        var trace = gd._fullData[traces[i]];
+    for (i = 0; i < traces.length; i++) {
+        newTraceData = newData[i];
+        curData = gd.data[traces[i]];
+        //var trace = gd._fullData[traces[i]];
 
         for (var ai in newTraceData) {
             var value = newTraceData[ai];
-            var param = Lib.nestedProperty(data, ai);
-            param.set(value);
+            Lib.nestedProperty(curData, ai).set(value);
         }
     }
 
@@ -3184,4 +3184,31 @@ function drawMainTitle(gd) {
             'text-anchor': 'middle'
         }
     });
+}
+
+// Clone gd.data *excluding* the actual data arrays. So ideally this should be a
+// relatively cheap operation and only needs to be called once in order to sever
+// the connection between a trace and plotly's representation of the trace.
+function cloneTraceDefinitions (gd) {
+    var i, type, schema;
+    var isClonedFlag = '__isCloned__';
+
+    // Clone the traces array reference if it's not already cloned:
+    if (!gd.data[isClonedFlag]) {
+        gd.data = gd.data.slice(0);
+        gd.data[isClonedFlag] = true;
+    }
+
+    // Now clone individual traces
+    for (i = gd.data.length - 1; i >= 0; i--) {
+        if (gd.data[i][isClonedFlag]) continue;
+
+        // Clone this trace if it's not already cloned. Otherwise the original input
+        // to Plotly.plot gets mangled and we can't use it again, which is inconvenient.
+        // Notably, this does *not* copy data arrays.
+        type = gd._fullData[i].type;
+        schema = Plotly.PlotSchema.get().traces[type]
+        gd.data[i] = Lib.deepCloneTrace(gd.data[i], schema);
+        gd.data[i][isClonedFlag] = true;
+    }
 }
