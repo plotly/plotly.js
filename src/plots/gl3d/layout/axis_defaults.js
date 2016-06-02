@@ -8,6 +8,7 @@
 
 
 'use strict';
+
 var colorMix = require('tinycolor2').mix;
 
 var Lib = require('../../../lib');

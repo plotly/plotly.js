@@ -15,7 +15,7 @@
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.10.0';
+exports.version = '1.12.0';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -32,6 +32,8 @@ exports.moveTraces = Plotly.moveTraces;
 exports.purge = Plotly.purge;
 exports.setPlotConfig = require('./plot_api/set_plot_config');
 exports.register = Plotly.register;
+exports.toImage = require('./plot_api/to_image');
+exports.downloadImage = require('./snapshot/download');
 
 // plot icons
 exports.Icons = require('../build/ploticon');

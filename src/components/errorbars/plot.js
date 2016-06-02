@@ -59,7 +59,7 @@ module.exports = function plot(traces, plotinfo) {
                     coords.yh + 'h' + (2 * yw) + // hat
                     'm-' + yw + ',0V' + coords.ys; // bar
 
-                if(!coords.noYS) path += 'm-' + yw +',0h' + (2 * yw); // shoe
+                if(!coords.noYS) path += 'm-' + yw + ',0h' + (2 * yw); // shoe
 
                 errorbar.append('path')
                     .classed('yerror', true)

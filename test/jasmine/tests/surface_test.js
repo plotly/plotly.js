@@ -1,5 +1,7 @@
 var Surface = require('@src/traces/surface');
 
+var Lib = require('@src/lib');
+
 
 describe('Test surface', function() {
     'use strict';
@@ -25,38 +27,53 @@ describe('Test surface', function() {
 
         it('should fill \'x\' and \'y\' if not provided', function() {
             traceIn = {
-                z: [[1,2,3], [2,1,2]]
+                z: [[1, 2, 3], [2, 1, 2]]
             };
 
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.x).toEqual([0,1,2]);
-            expect(traceOut.y).toEqual([0,1]);
+            expect(traceOut.x).toEqual([0, 1, 2]);
+            expect(traceOut.y).toEqual([0, 1]);
         });
 
         it('should coerce \'project\' if contours or highlight lines are enabled', function() {
             traceIn = {
-                z: [[1,2,3], [2,1,2]],
+                z: [[1, 2, 3], [2, 1, 2]],
                 contours: {
-                    x: { show: true }
+                    x: {},
+                    y: { show: true },
+                    z: { show: false, highlight: false }
                 }
             };
 
+            var fullOpts = {
+                show: false,
+                highlight: true,
+                project: { x: false, y: false, z: false },
+                highlightcolor: '#444',
+                highlightwidth: 2
+            };
+
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.contours.x.project).toEqual({ x: false, y: false, z: false });
-            expect(traceOut.contours.y).toEqual({ show: false, highlight: false });
+            expect(traceOut.contours.x).toEqual(fullOpts);
+            expect(traceOut.contours.y).toEqual(Lib.extendDeep({}, fullOpts, {
+                show: true,
+                color: '#444',
+                width: 2,
+                usecolormap: false
+            }));
             expect(traceOut.contours.z).toEqual({ show: false, highlight: false });
         });
 
         it('should coerce contour style attributes if contours lines are enabled', function() {
             traceIn = {
-                z: [[1,2,3], [2,1,2]],
+                z: [[1, 2, 3], [2, 1, 2]],
                 contours: {
                     x: { show: true }
                 }
             };
 
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
-            expect(traceOut.contours.x.color).toEqual('#000');
+            expect(traceOut.contours.x.color).toEqual('#444');
             expect(traceOut.contours.x.width).toEqual(2);
             expect(traceOut.contours.x.usecolormap).toEqual(false);
 
@@ -69,7 +86,7 @@ describe('Test surface', function() {
 
         it('should coerce colorscale and colorbar attributes', function() {
             traceIn = {
-                z: [[1,2,3], [2,1,2]]
+                z: [[1, 2, 3], [2, 1, 2]]
             };
 
             supplyDefaults(traceIn, traceOut, defaultColor, layout);
@@ -90,7 +107,7 @@ describe('Test surface', function() {
 
         it('should coerce \'c\' attributes with \'z\' if \'c\' isn\'t present', function() {
             traceIn = {
-                z: [[1,2,3], [2,1,2]],
+                z: [[1, 2, 3], [2, 1, 2]],
                 zauto: false,
                 zmin: 0,
                 zmax: 10
@@ -104,7 +121,7 @@ describe('Test surface', function() {
 
         it('should coerce \'c\' attributes with \'c\' values regardless of `\'z\' if \'c\' is present', function() {
             traceIn = {
-                z: [[1,2,3], [2,1,2]],
+                z: [[1, 2, 3], [2, 1, 2]],
                 zauto: false,
                 zmin: 0,
                 zmax: 10,
@@ -121,8 +138,8 @@ describe('Test surface', function() {
 
         it('should default \'c\' attributes with if \'surfacecolor\' is present', function() {
             traceIn = {
-                z: [[1,2,3], [2,1,2]],
-                surfacecolor: [[2,1,2], [1,2,3]],
+                z: [[1, 2, 3], [2, 1, 2]],
+                surfacecolor: [[2, 1, 2], [1, 2, 3]],
                 zauto: false,
                 zmin: 0,
                 zmax: 10

@@ -71,7 +71,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // if gl3d or geo is present on graph. This is retain backward compatible.
     //
     // TODO drop this in version 2.0
-    var ignoreOrphan = (layoutOut._hasGL3D || layoutOut._hasGeo);
+    var ignoreOrphan = (layoutOut._has('gl3d') || layoutOut._has('geo'));
 
     if(!ignoreOrphan) {
         for(i = 0; i < layoutKeys.length; i++) {
@@ -95,7 +95,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // make sure that plots with orphan cartesian axes
     // are considered 'cartesian'
     if(xaListCartesian.length && yaListCartesian.length) {
-        layoutOut._hasCartesian = true;
+        Lib.pushUnique(layoutOut._basePlotModules, Plots.subplotsRegistry.cartesian);
     }
 
     function axSort(a, b) {
@@ -134,7 +134,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
                 letter: axLetter,
                 counterAxes: {x: yaList, y: xaList}[axLetter].map(axisIds.name2id),
                 overlayableAxes: {x: xaList, y: yaList}[axLetter].filter(function(axName2) {
-                    return axName2!==axName && !(layoutIn[axName2]||{}).overlaying;
+                    return axName2 !== axName && !(layoutIn[axName2] || {}).overlaying;
                 }).map(axisIds.name2id)
             };
 

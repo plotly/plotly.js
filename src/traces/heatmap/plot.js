@@ -28,8 +28,6 @@ module.exports = function(gd, plotinfo, cdheatmaps) {
 
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function plotOne(gd, plotinfo, cd) {
-    Lib.markTime('in Heatmap.plot');
-
     var trace = cd[0].trace,
         uid = trace.uid,
         xa = plotinfo.x(),
@@ -274,19 +272,17 @@ function plotOne(gd, plotinfo, cd) {
         if(z01 === undefined) {
             if(z11 === undefined) dxy = 0;
             else if(z10 === undefined) dxy = 2 * (z11 - z00);
-            else dxy = (2 * z11 - z10 - z00) * 2/3;
+            else dxy = (2 * z11 - z10 - z00) * 2 / 3;
         }
         else if(z11 === undefined) {
             if(z10 === undefined) dxy = 0;
-            else dxy = (2 * z00 - z01 - z10) * 2/3;
+            else dxy = (2 * z00 - z01 - z10) * 2 / 3;
         }
-        else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
+        else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2 / 3;
         else dxy = (z11 + z00 - z01 - z10);
 
         return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
     }
-
-    Lib.markTime('done init png');
 
     if(zsmooth) { // best or fast, works fastest with imageData
         var pxIndex = 0,
@@ -323,8 +319,8 @@ function plotOne(gd, plotinfo, cd) {
             for(j = 0; j < m; j++) {
                 row = z[j];
                 yb = ypx(j);
-                for(i = 0; i < n; i++) {
-                    c = setColor(row[i],1);
+                for(i = 0; i < imageWidth; i++) {
+                    c = setColor(row[i], 1);
                     pxIndex = (yb * imageWidth + xpx(i)) * 4;
                     putColor(pixels, pxIndex, c);
                 }
@@ -359,10 +355,8 @@ function plotOne(gd, plotinfo, cd) {
         }
     }
 
-    Lib.markTime('done filling png');
-
     rcount = Math.round(rcount / pixcount);
-    gcount = Math.round(gcount/ pixcount);
+    gcount = Math.round(gcount / pixcount);
     bcount = Math.round(bcount / pixcount);
     var avgColor = tinycolor('rgb(' + rcount + ',' + gcount + ',' + bcount + ')');
 
@@ -391,6 +385,4 @@ function plotOne(gd, plotinfo, cd) {
         y: top,
         preserveAspectRatio: 'none'
     });
-
-    Lib.markTime('done showing png');
 }

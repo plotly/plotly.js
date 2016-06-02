@@ -35,7 +35,7 @@ exports.cleanId = function cleanId(id, axLetter) {
     if(!id.match(constants.AX_ID_PATTERN)) return;
     if(axLetter && id.charAt(0) !== axLetter) return;
 
-    var axNum = id.substr(1).replace(/^0+/,'');
+    var axNum = id.substr(1).replace(/^0+/, '');
     if(axNum === '1') axNum = '';
     return id.charAt(0) + axNum;
 };
@@ -94,8 +94,8 @@ exports.listIds = function(gd, axletter) {
 exports.getFromId = function(gd, id, type) {
     var fullLayout = gd._fullLayout;
 
-    if(type === 'x') id = id.replace(/y[0-9]*/,'');
-    else if(type === 'y') id = id.replace(/x[0-9]*/,'');
+    if(type === 'x') id = id.replace(/y[0-9]*/, '');
+    else if(type === 'y') id = id.replace(/x[0-9]*/, '');
 
     return fullLayout[exports.id2name(id)];
 };

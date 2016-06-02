@@ -93,7 +93,7 @@ module.exports = function getLegendData(calcdata, opts) {
 
         for(i = 0; i < lgroupsLength; i++) {
             ltraces = lgroupToTraces[lgroups[i]][0];
-            legendData[0][helpers.isReversed(opts) ? lgroupsLength-i-1 : i] = ltraces;
+            legendData[0][helpers.isReversed(opts) ? lgroupsLength - i - 1 : i] = ltraces;
         }
         lgroupsLength = 1;
     }

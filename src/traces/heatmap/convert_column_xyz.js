@@ -18,7 +18,7 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
         zCol = trace.z,
         textCol = trace.text,
         colLen = Math.min(xCol.length, yCol.length, zCol.length),
-        hasColumnText = (textCol!==undefined && !Array.isArray(textCol[0]));
+        hasColumnText = (textCol !== undefined && !Array.isArray(textCol[0]));
 
     var i;
 

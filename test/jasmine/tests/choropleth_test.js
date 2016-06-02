@@ -20,7 +20,7 @@ describe('Test choropleth', function() {
 
         it('should slice z if it is longer than locations', function() {
             traceIn = {
-                locations: ['CAN','USA'],
+                locations: ['CAN', 'USA'],
                 z: [1, 2, 3]
             };
 

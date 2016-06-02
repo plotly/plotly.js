@@ -137,6 +137,25 @@ describe('the range slider', function() {
                 expect(rangeDiff3).toBeLessThan(rangeDiff2);
             }).then(done);
         });
+
+        it('should relayout with relayout "array syntax"', function(done) {
+            Plotly.relayout(gd, 'xaxis.range', [10, 20])
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.range).toEqual([10, 20]);
+                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(125.51, 0);
+                    expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(251.02, 0);
+                })
+                .then(done);
+        });
+
+        it('should relayout with relayout "element syntax"', function(done) {
+            Plotly.relayout(gd, 'xaxis.range[0]', 10)
+                .then(function() {
+                    expect(gd._fullLayout.xaxis.range[0]).toEqual(10);
+                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(125.51, 0);
+                })
+                .then(done);
+        });
     });
 
 
@@ -148,7 +167,7 @@ describe('the range slider', function() {
         afterEach(destroyGraphDiv);
 
         it('should not add the slider to the DOM by default', function(done) {
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() {
                     var rangeSlider = document.getElementsByClassName('range-slider')[0];
                     expect(rangeSlider).not.toBeDefined();
@@ -157,7 +176,7 @@ describe('the range slider', function() {
         });
 
         it('should add the slider if rangeslider is set to anything', function(done) {
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider', 'exists'); })
                 .then(function() {
                     var rangeSlider = document.getElementsByClassName('range-slider')[0];
@@ -167,7 +186,7 @@ describe('the range slider', function() {
         });
 
         it('should add the slider if visible changed to `true`', function(done) {
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', true); })
                 .then(function() {
                     var rangeSlider = document.getElementsByClassName('range-slider')[0];
@@ -177,7 +196,7 @@ describe('the range slider', function() {
         });
 
         it('should remove the slider if changed to `false` or `undefined`', function(done) {
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], { xaxis: { rangeslider: { visible: true }}})
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], { xaxis: { rangeslider: { visible: true }}})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', false); })
                 .then(function() {
                     var rangeSlider = document.getElementsByClassName('range-slider')[0];
@@ -323,7 +342,7 @@ describe('the range slider', function() {
         });
 
         it('should expand the rangeslider range to axis range', function() {
-            var layoutIn = { xaxis: { rangeslider: { range: [5,6] } }, yaxis: {}},
+            var layoutIn = { xaxis: { rangeslider: { range: [5, 6] } }, yaxis: {}},
                 layoutOut = { xaxis: { range: [1, 10]}, yaxis: {}},
                 axName = 'xaxis',
                 counterAxes = ['yaxis'],
@@ -382,7 +401,7 @@ describe('the range slider', function() {
         afterEach(destroyGraphDiv);
 
         it('should plot when only x data is provided', function(done) {
-            Plotly.plot(gd, [{ x: [1,2,3] }], { xaxis: { rangeslider: {} }})
+            Plotly.plot(gd, [{ x: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
                 .then(function() {
                     var rangeslider = document.getElementsByClassName('range-slider');
 
@@ -392,7 +411,7 @@ describe('the range slider', function() {
         });
 
         it('should plot when only y data is provided', function(done) {
-            Plotly.plot(gd, [{ y: [1,2,3] }], { xaxis: { rangeslider: {} }})
+            Plotly.plot(gd, [{ y: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
                 .then(function() {
                     var rangeslider = document.getElementsByClassName('range-slider');
 

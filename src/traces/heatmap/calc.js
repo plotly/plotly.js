@@ -23,12 +23,10 @@ var maxRowLength = require('./max_row_length');
 
 
 module.exports = function calc(gd, trace) {
-    Lib.markTime('start convert x&y');
-
     // prepare the raw data
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
-    var xa = Axes.getFromId(gd, trace.xaxis||'x'),
-        ya = Axes.getFromId(gd, trace.yaxis||'y'),
+    var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
+        ya = Axes.getFromId(gd, trace.yaxis || 'y'),
         isContour = Plots.traceIs(trace, 'contour'),
         isHist = Plots.traceIs(trace, 'histogram'),
         zsmooth = isContour ? 'best' : trace.zsmooth,
@@ -44,8 +42,6 @@ module.exports = function calc(gd, trace) {
     // cancel minimum tick spacings (only applies to bars and boxes)
     xa._minDtick = 0;
     ya._minDtick = 0;
-
-    Lib.markTime('done convert x&y');
 
     if(isHist) {
         var binned = histogram2dCalc(gd, trace);
@@ -82,25 +78,25 @@ module.exports = function calc(gd, trace) {
 
     // check whether we really can smooth (ie all boxes are about the same size)
     if(zsmooth === 'fast') {
-        if(xa.type==='log' || ya.type==='log') {
+        if(xa.type === 'log' || ya.type === 'log') {
             noZsmooth('log axis found');
         }
         else if(!isHist) {
             if(x.length) {
-                var avgdx = (x[x.length-1]-x[0]) / (x.length-1),
-                    maxErrX = Math.abs(avgdx/100);
-                for(i=0; i<x.length-1; i++) {
-                    if(Math.abs(x[i+1]-x[i]-avgdx)>maxErrX) {
+                var avgdx = (x[x.length - 1] - x[0]) / (x.length - 1),
+                    maxErrX = Math.abs(avgdx / 100);
+                for(i = 0; i < x.length - 1; i++) {
+                    if(Math.abs(x[i + 1] - x[i] - avgdx) > maxErrX) {
                         noZsmooth('x scale is not linear');
                         break;
                     }
                 }
             }
             if(y.length && zsmooth === 'fast') {
-                var avgdy = (y[y.length-1]-y[0])/(y.length-1),
-                    maxErrY = Math.abs(avgdy/100);
-                for(i=0; i<y.length-1; i++) {
-                    if(Math.abs(y[i+1]-y[i]-avgdy)>maxErrY) {
+                var avgdy = (y[y.length - 1] - y[0]) / (y.length - 1),
+                    maxErrY = Math.abs(avgdy / 100);
+                for(i = 0; i < y.length - 1; i++) {
+                    if(Math.abs(y[i + 1] - y[i] - avgdy) > maxErrY) {
                         noZsmooth('y scale is not linear');
                         break;
                     }
@@ -111,9 +107,9 @@ module.exports = function calc(gd, trace) {
 
     // create arrays of brick boundaries, to be used by autorange and heatmap.plot
     var xlen = maxRowLength(z),
-        xIn = trace.xtype==='scaled' ? '' : trace.x,
+        xIn = trace.xtype === 'scaled' ? '' : trace.x,
         xArray = makeBoundArray(trace, xIn, x0, dx, xlen, xa),
-        yIn = trace.ytype==='scaled' ? '' : trace.y,
+        yIn = trace.ytype === 'scaled' ? '' : trace.y,
         yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
 
     Axes.expand(xa, xArray);
@@ -124,7 +120,7 @@ module.exports = function calc(gd, trace) {
     // auto-z and autocolorscale if applicable
     colorscaleCalc(trace, z, '', 'z');
 
-    if(isContour && trace.contours && trace.contours.coloring==='heatmap') {
+    if(isContour && trace.contours && trace.contours.coloring === 'heatmap') {
         var hmType = trace.type === 'contour' ? 'heatmap' : 'histogram2d';
         cd0.xfill = makeBoundArray(hmType, xIn, x0, dx, xlen, xa);
         cd0.yfill = makeBoundArray(hmType, yIn, y0, dy, z.length, ya);
@@ -177,7 +173,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
         dv,
         i;
 
-    if(Array.isArray(arrayIn) && !isHist && (ax.type!=='category')) {
+    if(Array.isArray(arrayIn) && !isHist && (ax.type !== 'category')) {
         arrayIn = arrayIn.map(ax.d2c);
         var len = arrayIn.length;
 
@@ -187,13 +183,13 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
         if(len <= numbricks) {
             // contour plots only want the centers
             if(isContour || isGL2D) arrayOut = arrayIn.slice(0, numbricks);
-            else if(numbricks === 1) arrayOut = [arrayIn[0]-0.5,arrayIn[0]+0.5];
+            else if(numbricks === 1) arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
             else {
-                arrayOut = [1.5*arrayIn[0]-0.5*arrayIn[1]];
-                for(i=1; i<len; i++) {
-                    arrayOut.push((arrayIn[i-1] + arrayIn[i])*0.5);
+                arrayOut = [1.5 * arrayIn[0] - 0.5 * arrayIn[1]];
+                for(i = 1; i < len; i++) {
+                    arrayOut.push((arrayIn[i - 1] + arrayIn[i]) * 0.5);
                 }
-                arrayOut.push(1.5*arrayIn[len-1] - 0.5*arrayIn[len-2]);
+                arrayOut.push(1.5 * arrayIn[len - 1] - 0.5 * arrayIn[len - 2]);
             }
 
             if(len < numbricks) {
@@ -215,8 +211,8 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     }
     else {
         dv = dvIn || 1;
-        if(v0In===undefined) v0 = 0;
-        else if(isHist || ax.type==='category') v0 = v0In;
+        if(v0In === undefined) v0 = 0;
+        else if(isHist || ax.type === 'category') v0 = v0In;
         else v0 = ax.d2c(v0In);
 
         for(i = (isContour || isGL2D) ? 0 : -0.5; i < numbricks; i++) {
@@ -268,7 +264,7 @@ function interp2d(z, emptyPoints, savedInterpZ) {
             correctionOvershoot(maxFractionalChange));
     }
     if(maxFractionalChange > INTERPTHRESHOLD) {
-        console.log('interp2d didn\'t converge quickly', maxFractionalChange);
+        Lib.log('interp2d didn\'t converge quickly', maxFractionalChange);
     }
 
     return z;
@@ -302,7 +298,7 @@ function findEmpties(z) {
         row = nextRow;
         nextRow = z[i + 1] || [];
         for(j = 0; j < rowLength; j++) {
-            if(row[j]===undefined) {
+            if(row[j] === undefined) {
                 neighborCount = (row[j - 1] !== undefined ? 1 : 0) +
                     (row[j + 1] !== undefined ? 1 : 0) +
                     (prevRow[j] !== undefined ? 1 : 0) +
@@ -319,7 +315,7 @@ function findEmpties(z) {
                     // if all neighbors that could exist do, we don't
                     // need this for finding farther neighbors
                     if(neighborCount < 4) {
-                        neighborHash[[i,j]] = [i, j, neighborCount];
+                        neighborHash[[i, j]] = [i, j, neighborCount];
                     }
 
                     empties.push([i, j, neighborCount]);
@@ -342,7 +338,7 @@ function findEmpties(z) {
             neighborCount = ((neighborHash[[i - 1, j]] || blank)[2] +
                 (neighborHash[[i + 1, j]] || blank)[2] +
                 (neighborHash[[i, j - 1]] || blank)[2] +
-                (neighborHash[[i, j + 1]] || blank)[2])/20;
+                (neighborHash[[i, j + 1]] || blank)[2]) / 20;
 
             if(neighborCount) {
                 newNeighborHash[thisPt] = [i, j, neighborCount];

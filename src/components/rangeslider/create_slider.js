@@ -141,27 +141,49 @@ module.exports = function createSlider(gd) {
         window.addEventListener('mouseup', mouseUp);
 
         function mouseMove(e) {
-            var delta = +e.clientX - startX;
+            var delta = +e.clientX - startX,
+                pixelMin,
+                pixelMax;
 
             switch(target) {
                 case slideBox:
                     slider.style.cursor = 'ew-resize';
-                    setPixelRange(+maxVal + delta, +minVal + delta);
+
+                    pixelMin = +minVal + delta;
+                    pixelMax = +maxVal + delta;
+
+                    setPixelRange(pixelMin, pixelMax);
+                    setDataRange(pixelToData(pixelMin), pixelToData(pixelMax));
                     break;
 
                 case grabAreaMin:
                     slider.style.cursor = 'col-resize';
-                    setPixelRange(+minVal + delta, +maxVal);
+
+                    pixelMin = +minVal + delta;
+                    pixelMax = +maxVal;
+
+                    setPixelRange(pixelMin, pixelMax);
+                    setDataRange(pixelToData(pixelMin), pixelToData(pixelMax));
                     break;
 
                 case grabAreaMax:
                     slider.style.cursor = 'col-resize';
-                    setPixelRange(+minVal, +maxVal + delta);
+
+                    pixelMin = +minVal;
+                    pixelMax = +maxVal + delta;
+
+                    setPixelRange(pixelMin, pixelMax);
+                    setDataRange(pixelToData(pixelMin), pixelToData(pixelMax));
                     break;
 
                 default:
                     slider.style.cursor = 'ew-resize';
-                    setPixelRange(offsetX, offsetX + delta);
+
+                    pixelMin = offsetX;
+                    pixelMax = offsetX + delta;
+
+                    setPixelRange(pixelMin, pixelMax);
+                    setDataRange(pixelToData(pixelMin), pixelToData(pixelMax));
                     break;
             }
         }
@@ -172,6 +194,17 @@ module.exports = function createSlider(gd) {
             slider.style.cursor = 'auto';
         }
     });
+
+    function pixelToData(pixel) {
+        var rangeMin = options.range[0],
+            rangeMax = options.range[1],
+            range = rangeMax - rangeMin,
+            dataValue = pixel / width * range + rangeMin;
+
+        dataValue = Lib.constrain(dataValue, rangeMin, rangeMax);
+
+        return dataValue;
+    }
 
 
     function setRange(min, max) {
@@ -187,42 +220,7 @@ module.exports = function createSlider(gd) {
         setPixelRange(pixelMin, pixelMax);
     }
 
-
-    function setPixelRange(min, max) {
-
-        min = Lib.constrain(min, 0, width);
-        max = Lib.constrain(max, 0, width);
-
-        if(max < min) {
-            var temp = max;
-            max = min;
-            min = temp;
-        }
-
-        helpers.setAttributes(slider, {
-            'data-min': min,
-            'data-max': max
-        });
-
-        helpers.setAttributes(slideBox, {
-            'x': min,
-            'width': max - min
-        });
-
-        helpers.setAttributes(maskMin, { 'width': min });
-        helpers.setAttributes(maskMax, {
-            'x': max,
-            'width': width - max
-        });
-
-        helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (min - handleWidth - 1) + ')' });
-        helpers.setAttributes(grabberMax, { 'transform': 'translate(' + max + ')' });
-
-        var rangeMin = options.range[0],
-            rangeMax = options.range[1],
-            range = rangeMax - rangeMin,
-            dataMin = min / width * range + rangeMin,
-            dataMax = max / width * range + rangeMin;
+    function setDataRange(dataMin, dataMax) {
 
         if(window.requestAnimationFrame) {
             window.requestAnimationFrame(function() {
@@ -233,6 +231,38 @@ module.exports = function createSlider(gd) {
                 Plotly.relayout(gd, 'xaxis.range', [dataMin, dataMax]);
             }, 16);
         }
+    }
+
+
+    function setPixelRange(pixelMin, pixelMax) {
+
+        pixelMin = Lib.constrain(pixelMin, 0, width);
+        pixelMax = Lib.constrain(pixelMax, 0, width);
+
+        if(pixelMax < pixelMin) {
+            var temp = pixelMax;
+            pixelMax = pixelMin;
+            pixelMin = temp;
+        }
+
+        helpers.setAttributes(slider, {
+            'data-min': pixelMin,
+            'data-max': pixelMax
+        });
+
+        helpers.setAttributes(slideBox, {
+            'x': pixelMin,
+            'width': pixelMax - pixelMin
+        });
+
+        helpers.setAttributes(maskMin, { 'width': pixelMin });
+        helpers.setAttributes(maskMax, {
+            'x': pixelMax,
+            'width': width - pixelMax
+        });
+
+        helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (pixelMin - handleWidth - 1) + ')' });
+        helpers.setAttributes(grabberMax, { 'transform': 'translate(' + pixelMax + ')' });
     }
 
 

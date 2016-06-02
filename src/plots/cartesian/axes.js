@@ -38,8 +38,8 @@ axes.getFromTrace = axisIds.getFromTrace;
 
 // find the list of possible axes to reference with an xref or yref attribute
 // and coerce it to that list
-axes.coerceRef = function(containerIn, containerOut, gd, axLetter) {
-    var axlist = gd._fullLayout._hasGL2D ? [] : axes.listIds(gd, axLetter),
+axes.coerceRef = function(containerIn, containerOut, gd, axLetter, dflt) {
+    var axlist = gd._fullLayout._has('gl2d') ? [] : axes.listIds(gd, axLetter),
         refAttr = axLetter + 'ref',
         attrDef = {};
 
@@ -48,7 +48,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, axLetter) {
     attrDef[refAttr] = {
         valType: 'enumerated',
         values: axlist.concat(['paper']),
-        dflt: axlist[0] || 'paper'
+        dflt: dflt || axlist[0] || 'paper'
     };
 
     // xref, yref
@@ -78,14 +78,14 @@ axes.counterLetter = function(id) {
 
 // incorporate a new minimum difference and first tick into
 // forced
-axes.minDtick = function(ax,newDiff,newFirst,allow) {
+axes.minDtick = function(ax, newDiff, newFirst, allow) {
     // doesn't make sense to do forced min dTick on log or category axes,
     // and the plot itself may decide to cancel (ie non-grouped bars)
-    if(['log','category'].indexOf(ax.type)!==-1 || !allow) {
+    if(['log', 'category'].indexOf(ax.type) !== -1 || !allow) {
         ax._minDtick = 0;
     }
     // null means there's nothing there yet
-    else if(ax._minDtick===null) {
+    else if(ax._minDtick === null) {
         ax._minDtick = newDiff;
         ax._forceTick0 = newFirst;
     }
@@ -93,8 +93,8 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
         // existing minDtick is an integer multiple of newDiff
         // (within rounding err)
         // and forceTick0 can be shifted to newFirst
-        if((ax._minDtick/newDiff+1e-6)%1 < 2e-6 &&
-                (((newFirst-ax._forceTick0)/newDiff%1) +
+        if((ax._minDtick / newDiff + 1e-6) % 1 < 2e-6 &&
+                (((newFirst - ax._forceTick0) / newDiff % 1) +
                     1.000001) % 1 < 2e-6) {
             ax._minDtick = newDiff;
             ax._forceTick0 = newFirst;
@@ -102,8 +102,8 @@ axes.minDtick = function(ax,newDiff,newFirst,allow) {
         // if the converse is true (newDiff is a multiple of minDtick and
         // newFirst can be shifted to forceTick0) then do nothing - same
         // forcing stands. Otherwise, cancel forced minimum
-        else if((newDiff/ax._minDtick+1e-6)%1 > 2e-6 ||
-                (((newFirst-ax._forceTick0)/ax._minDtick%1) +
+        else if((newDiff / ax._minDtick + 1e-6) % 1 > 2e-6 ||
+                (((newFirst - ax._forceTick0) / ax._minDtick % 1) +
                     1.000001) % 1 > 2e-6) {
             ax._minDtick = 0;
         }
@@ -126,9 +126,9 @@ axes.getAutoRange = function(ax) {
         maxmax = Math.max(maxmax, ax._max[i].val);
     }
 
-    var j,minpt,maxpt,minbest,maxbest,dp,dv,
+    var j, minpt, maxpt, minbest, maxbest, dp, dv,
         mbest = 0,
-        axReverse = (ax.range && ax.range[1]<ax.range[0]);
+        axReverse = (ax.range && ax.range[1] < ax.range[0]);
 
     // one-time setting to easily reverse the axis
     // when plotting from code
@@ -137,52 +137,52 @@ axes.getAutoRange = function(ax) {
         ax.autorange = true;
     }
 
-    for(i=0; i<ax._min.length; i++) {
+    for(i = 0; i < ax._min.length; i++) {
         minpt = ax._min[i];
-        for(j=0; j<ax._max.length; j++) {
+        for(j = 0; j < ax._max.length; j++) {
             maxpt = ax._max[j];
-            dv = maxpt.val-minpt.val;
-            dp = ax._length-minpt.pad-maxpt.pad;
-            if(dv>0 && dp>0 && dv/dp > mbest) {
+            dv = maxpt.val - minpt.val;
+            dp = ax._length - minpt.pad - maxpt.pad;
+            if(dv > 0 && dp > 0 && dv / dp > mbest) {
                 minbest = minpt;
                 maxbest = maxpt;
-                mbest = dv/dp;
+                mbest = dv / dp;
             }
         }
     }
 
     if(minmin === maxmax) {
         newRange = axReverse ?
-            [minmin+1, ax.rangemode!=='normal' ? 0 : minmin-1] :
-            [ax.rangemode!=='normal' ? 0 : minmin-1, minmin+1];
+            [minmin + 1, ax.rangemode !== 'normal' ? 0 : minmin - 1] :
+            [ax.rangemode !== 'normal' ? 0 : minmin - 1, minmin + 1];
     }
     else if(mbest) {
-        if(ax.type==='linear' || ax.type==='-') {
-            if(ax.rangemode==='tozero' && minbest.val>=0) {
+        if(ax.type === 'linear' || ax.type === '-') {
+            if(ax.rangemode === 'tozero' && minbest.val >= 0) {
                 minbest = {val: 0, pad: 0};
             }
-            else if(ax.rangemode==='nonnegative') {
-                if(minbest.val - mbest*minbest.pad<0) {
+            else if(ax.rangemode === 'nonnegative') {
+                if(minbest.val - mbest * minbest.pad < 0) {
                     minbest = {val: 0, pad: 0};
                 }
-                if(maxbest.val<0) {
+                if(maxbest.val < 0) {
                     maxbest = {val: 1, pad: 0};
                 }
             }
 
             // in case it changed again...
-            mbest = (maxbest.val-minbest.val) /
-                (ax._length-minbest.pad-maxbest.pad);
+            mbest = (maxbest.val - minbest.val) /
+                (ax._length - minbest.pad - maxbest.pad);
         }
 
         newRange = [
-            minbest.val - mbest*minbest.pad,
-            maxbest.val + mbest*maxbest.pad
+            minbest.val - mbest * minbest.pad,
+            maxbest.val + mbest * maxbest.pad
         ];
 
         // don't let axis have zero size
         if(newRange[0] === newRange[1]) {
-            newRange = [newRange[0]-1, newRange[0]+1];
+            newRange = [newRange[0] - 1, newRange[0] + 1];
         }
 
         // maintain reversal
@@ -254,9 +254,8 @@ axes.saveRangeInitial = function(gd, overwrite) {
 //          (unless one end is overridden by tozero)
 //      tozero: (boolean) make sure to include zero if axis is linear,
 //          and make it a tight bound if possible
-var FP_SAFE = Number.MAX_VALUE/2;
+var FP_SAFE = Number.MAX_VALUE / 2;
 axes.expand = function(ax, data, options) {
-    // if(!(ax.autorange || (ax.rangeslider || {}).visible) || !data) return;
     if(!(ax.autorange || ax._needsExpand) || !data) return;
     if(!ax._min) ax._min = [];
     if(!ax._max) ax._max = [];
@@ -264,52 +263,52 @@ axes.expand = function(ax, data, options) {
     if(!ax._m) ax.setScale();
 
     var len = data.length,
-        extrappad = options.padded ? ax._length*0.05 : 0,
-        tozero = options.tozero && (ax.type==='linear' || ax.type==='-'),
+        extrappad = options.padded ? ax._length * 0.05 : 0,
+        tozero = options.tozero && (ax.type === 'linear' || ax.type === '-'),
         i, j, v, di, dmin, dmax,
         ppadiplus, ppadiminus, includeThis, vmin, vmax;
 
     function getPad(item) {
         if(Array.isArray(item)) {
-            return function(i) { return Math.max(Number(item[i]||0),0); };
+            return function(i) { return Math.max(Number(item[i]||0), 0); };
         }
         else {
-            var v = Math.max(Number(item||0),0);
+            var v = Math.max(Number(item||0), 0);
             return function() { return v; };
         }
     }
-    var ppadplus = getPad((ax._m>0 ?
+    var ppadplus = getPad((ax._m > 0 ?
             options.ppadplus : options.ppadminus) || options.ppad || 0),
-        ppadminus = getPad((ax._m>0 ?
+        ppadminus = getPad((ax._m > 0 ?
             options.ppadminus : options.ppadplus) || options.ppad || 0),
-        vpadplus = getPad(options.vpadplus||options.vpad),
-        vpadminus = getPad(options.vpadminus||options.vpad);
+        vpadplus = getPad(options.vpadplus || options.vpad),
+        vpadminus = getPad(options.vpadminus || options.vpad);
 
     function addItem(i) {
         di = data[i];
         if(!isNumeric(di)) return;
         ppadiplus = ppadplus(i) + extrappad;
         ppadiminus = ppadminus(i) + extrappad;
-        vmin = di-vpadminus(i);
-        vmax = di+vpadplus(i);
+        vmin = di - vpadminus(i);
+        vmax = di + vpadplus(i);
         // special case for log axes: if vpad makes this object span
         // more than an order of mag, clip it to one order. This is so
         // we don't have non-positive errors or absurdly large lower
         // range due to rounding errors
-        if(ax.type==='log' && vmin<vmax/10) { vmin = vmax/10; }
+        if(ax.type === 'log' && vmin < vmax / 10) { vmin = vmax / 10; }
 
         dmin = ax.c2l(vmin);
         dmax = ax.c2l(vmax);
 
         if(tozero) {
-            dmin = Math.min(0,dmin);
-            dmax = Math.max(0,dmax);
+            dmin = Math.min(0, dmin);
+            dmax = Math.max(0, dmax);
         }
 
         // In order to stop overflow errors, don't consider points
         // too close to the limits of js floating point
         function goodNumber(v) {
-            return isNumeric(v) && Math.abs(v)<FP_SAFE;
+            return isNumeric(v) && Math.abs(v) < FP_SAFE;
         }
 
         if(goodNumber(dmin)) {
@@ -318,40 +317,40 @@ axes.expand = function(ax, data, options) {
             // presently active point:
             // - if the item supercedes the new point, set includethis false
             // - if the new pt supercedes the item, delete it from ax._min
-            for(j=0; j<ax._min.length && includeThis; j++) {
+            for(j = 0; j < ax._min.length && includeThis; j++) {
                 v = ax._min[j];
-                if(v.val<=dmin && v.pad>=ppadiminus) {
+                if(v.val <= dmin && v.pad >= ppadiminus) {
                     includeThis = false;
                 }
-                else if(v.val>=dmin && v.pad<=ppadiminus) {
-                    ax._min.splice(j,1);
+                else if(v.val >= dmin && v.pad <= ppadiminus) {
+                    ax._min.splice(j, 1);
                     j--;
                 }
             }
             if(includeThis) {
                 ax._min.push({
                     val: dmin,
-                    pad: (tozero && dmin===0) ? 0 : ppadiminus
+                    pad: (tozero && dmin === 0) ? 0 : ppadiminus
                 });
             }
         }
 
         if(goodNumber(dmax)) {
             includeThis = true;
-            for(j=0; j<ax._max.length && includeThis; j++) {
+            for(j = 0; j < ax._max.length && includeThis; j++) {
                 v = ax._max[j];
-                if(v.val>=dmax && v.pad>=ppadiplus) {
+                if(v.val >= dmax && v.pad >= ppadiplus) {
                     includeThis = false;
                 }
-                else if(v.val<=dmax && v.pad<=ppadiplus) {
-                    ax._max.splice(j,1);
+                else if(v.val <= dmax && v.pad <= ppadiplus) {
+                    ax._max.splice(j, 1);
                     j--;
                 }
             }
             if(includeThis) {
                 ax._max.push({
                     val: dmax,
-                    pad: (tozero && dmax===0) ? 0 : ppadiplus
+                    pad: (tozero && dmax === 0) ? 0 : ppadiplus
                 });
             }
         }
@@ -360,15 +359,15 @@ axes.expand = function(ax, data, options) {
     // For efficiency covering monotonic or near-monotonic data,
     // check a few points at both ends first and then sweep
     // through the middle
-    for(i=0; i<6; i++) addItem(i);
-    for(i=len-1; i>5; i--) addItem(i);
+    for(i = 0; i < 6; i++) addItem(i);
+    for(i = len - 1; i > 5; i--) addItem(i);
 
 };
 
-axes.autoBin = function(data,ax,nbins,is2d) {
+axes.autoBin = function(data, ax, nbins, is2d) {
     var datamin = Lib.aggNums(Math.min, null, data),
         datamax = Lib.aggNums(Math.max, null, data);
-    if(ax.type==='category') {
+    if(ax.type === 'category') {
         return {
             start: datamin - 0.5,
             end: datamax + 0.5,
@@ -377,7 +376,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
     }
 
     var size0;
-    if(nbins) size0 = ((datamax-datamin)/nbins);
+    if(nbins) size0 = ((datamax - datamin) / nbins);
     else {
         // totally auto: scale off std deviation so the highest bin is
         // somewhat taller than the total number of bins, but don't let
@@ -388,14 +387,14 @@ axes.autoBin = function(data,ax,nbins,is2d) {
                 Math.log(distinctData.minDiff) / Math.LN10)),
             // TODO: there are some date cases where this will fail...
             minSize = msexp * Lib.roundUp(
-                distinctData.minDiff/msexp, [0.9, 1.9, 4.9, 9.9], true);
+                distinctData.minDiff / msexp, [0.9, 1.9, 4.9, 9.9], true);
         size0 = Math.max(minSize, 2 * Lib.stdev(data) /
             Math.pow(data.length, is2d ? 0.25 : 0.4));
     }
 
     // piggyback off autotick code to make "nice" bin sizes
     var dummyax = {
-        type: ax.type==='log' ? 'linear' : ax.type,
+        type: ax.type === 'log' ? 'linear' : ax.type,
         range: [datamin, datamax]
     };
     axes.autoTicks(dummyax, size0);
@@ -405,7 +404,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
 
     function nearEdge(v) {
         // is a value within 1% of a bin edge?
-        return (1 + (v-binstart)*100/dummyax.dtick)%100 < 2;
+        return (1 + (v - binstart) * 100 / dummyax.dtick) % 100 < 2;
     }
 
     // check for too many data points right at the edges of bins
@@ -416,21 +415,21 @@ axes.autoBin = function(data,ax,nbins,is2d) {
             midcount = 0,
             intcount = 0,
             blankcount = 0;
-        for(var i=0; i<data.length; i++) {
-            if(data[i]%1===0) intcount++;
+        for(var i = 0; i < data.length; i++) {
+            if(data[i] % 1 === 0) intcount++;
             else if(!isNumeric(data[i])) blankcount++;
 
             if(nearEdge(data[i])) edgecount++;
-            if(nearEdge(data[i] + dummyax.dtick/2)) midcount++;
+            if(nearEdge(data[i] + dummyax.dtick / 2)) midcount++;
         }
         var datacount = data.length - blankcount;
 
-        if(intcount===datacount && ax.type!=='date') {
+        if(intcount === datacount && ax.type !== 'date') {
             // all integers: if bin size is <1, it's because
             // that was specifically requested (large nbins)
             // so respect that... but center the bins containing
             // integers on those integers
-            if(dummyax.dtick<1) {
+            if(dummyax.dtick < 1) {
                 binstart = datamin - 0.5 * dummyax.dtick;
             }
             // otherwise start half an integer down regardless of
@@ -444,7 +443,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
                 // lots of points at the edge, not many in the middle
                 // shift half a bin
                 var binshift = dummyax.dtick / 2;
-                binstart += (binstart+binshift<datamin) ? binshift : -binshift;
+                binstart += (binstart + binshift < datamin) ? binshift : -binshift;
             }
         }
 
@@ -455,7 +454,7 @@ axes.autoBin = function(data,ax,nbins,is2d) {
         // calculate the endpoint for nonlinear ticks - you have to
         // just increment until you're done
         binend = binstart;
-        while(binend<=datamax) {
+        while(binend <= datamax) {
             binend = axes.tickIncrement(binend, dummyax.dtick);
         }
     }
@@ -493,9 +492,9 @@ axes.calcTicks = function calcTicks(ax) {
                 nt = Lib.constrain(ax._length / minPx, 4, 9) + 1;
             }
         }
-        axes.autoTicks(ax,Math.abs(ax.range[1]-ax.range[0])/nt);
+        axes.autoTicks(ax, Math.abs(ax.range[1] - ax.range[0]) / nt);
         // check for a forced minimum dtick
-        if(ax._minDtick>0 && ax.dtick<ax._minDtick*2) {
+        if(ax._minDtick > 0 && ax.dtick < ax._minDtick * 2) {
             ax.dtick = ax._minDtick;
             ax.tick0 = ax._forceTick0;
         }
@@ -503,34 +502,34 @@ axes.calcTicks = function calcTicks(ax) {
 
     // check for missing tick0
     if(!ax.tick0) {
-        ax.tick0 = (ax.type==='date') ?
-            new Date(2000,0,1).getTime() : 0;
+        ax.tick0 = (ax.type === 'date') ?
+            new Date(2000, 0, 1).getTime() : 0;
     }
 
     // now figure out rounding of tick values
     autoTickRound(ax);
 
     // find the first tick
-    ax._tmin=axes.tickFirst(ax);
+    ax._tmin = axes.tickFirst(ax);
 
     // check for reversed axis
-    var axrev = (ax.range[1]<ax.range[0]);
+    var axrev = (ax.range[1] < ax.range[0]);
 
     // return the full set of tick vals
     var vals = [],
         // add a tiny bit so we get ticks which may have rounded out
-        endtick = ax.range[1] * 1.0001 - ax.range[0]*0.0001;
-    if(ax.type==='category') {
-        endtick = (axrev) ? Math.max(-0.5,endtick) :
-            Math.min(ax._categories.length-0.5,endtick);
+        endtick = ax.range[1] * 1.0001 - ax.range[0] * 0.0001;
+    if(ax.type === 'category') {
+        endtick = (axrev) ? Math.max(-0.5, endtick) :
+            Math.min(ax._categories.length - 0.5, endtick);
     }
     for(var x = ax._tmin;
-            (axrev)?(x>=endtick):(x<=endtick);
-            x = axes.tickIncrement(x,ax.dtick,axrev)) {
+            (axrev) ? (x >= endtick) : (x <= endtick);
+            x = axes.tickIncrement(x, ax.dtick, axrev)) {
         vals.push(x);
 
         // prevent infinite loops
-        if(vals.length>1000) break;
+        if(vals.length > 1000) break;
     }
 
     // save the last tick as well as first, so we can
@@ -667,7 +666,7 @@ axes.autoTicks = function(ax, roughDTick) {
             ax.dtick = (roughDTick > 0.3) ? 'D2' : 'D1';
         }
     }
-    else if(ax.type==='category') {
+    else if(ax.type === 'category') {
         ax.tick0 = 0;
         ax.dtick = Math.ceil(Math.max(roughDTick, 1));
     }
@@ -682,7 +681,7 @@ axes.autoTicks = function(ax, roughDTick) {
     if(ax.dtick === 0) ax.dtick = 1;
 
     // TODO: this is from log axis histograms with autorange off
-    if(!isNumeric(ax.dtick) && typeof ax.dtick !=='string') {
+    if(!isNumeric(ax.dtick) && typeof ax.dtick !== 'string') {
         var olddtick = ax.dtick;
         ax.dtick = 1;
         throw 'ax.dtick error: ' + String(olddtick);
@@ -729,7 +728,7 @@ function autoTickRound(ax) {
             }
         }
     }
-    else if(dtick.charAt(0) === 'M') ax._tickround = (dtick.length===2) ? 'm' : 'y';
+    else if(dtick.charAt(0) === 'M') ax._tickround = (dtick.length === 2) ? 'm' : 'y';
     else ax._tickround = null;
 }
 
@@ -838,14 +837,14 @@ var yearFormat = d3.time.format('%Y'),
 // %{n}f where n is the max number of digits
 // of fractional seconds
 var fracMatch = /%(\d?)f/g;
-function modDateFormat(fmt,x) {
+function modDateFormat(fmt, x) {
     var fm = fmt.match(fracMatch),
         d = new Date(x);
     if(fm) {
-        var digits = Math.min(+fm[1]||6,6),
-            fracSecs = String((x/1000 % 1) + 2.0000005)
-                .substr(2,digits).replace(/0+$/,'')||'0';
-        return d3.time.format(fmt.replace(fracMatch,fracSecs))(d);
+        var digits = Math.min(+fm[1] || 6, 6),
+            fracSecs = String((x / 1000 % 1) + 2.0000005)
+                .substr(2, digits).replace(/0+$/, '') || '0';
+        return d3.time.format(fmt.replace(fracMatch, fracSecs))(d);
     }
     else {
         return d3.time.format(fmt)(d);
@@ -880,21 +879,21 @@ axes.tickText = function(ax, x, hover) {
         var first_or_last;
 
         if(showAttr === undefined) return true;
-        if(hover) return showAttr==='none';
+        if(hover) return showAttr === 'none';
 
         first_or_last = {
             first: ax._tmin,
             last: ax._tmax
         }[showAttr];
 
-        return showAttr!=='all' && x!==first_or_last;
+        return showAttr !== 'all' && x !== first_or_last;
     }
 
-    hideexp = ax.exponentformat!=='none' && isHidden(ax.showexponent) ? 'hide' : '';
+    hideexp = ax.exponentformat !== 'none' && isHidden(ax.showexponent) ? 'hide' : '';
 
-    if(ax.type==='date') formatDate(ax, out, hover, extraPrecision);
-    else if(ax.type==='log') formatLog(ax, out, hover, extraPrecision, hideexp);
-    else if(ax.type==='category') formatCategory(ax, out);
+    if(ax.type === 'date') formatDate(ax, out, hover, extraPrecision);
+    else if(ax.type === 'log') formatLog(ax, out, hover, extraPrecision, hideexp);
+    else if(ax.type === 'category') formatCategory(ax, out);
     else formatLinear(ax, out, hover, extraPrecision, hideexp);
 
     // add prefix and suffix
@@ -927,37 +926,37 @@ function formatDate(ax, out, hover, extraPrecision) {
         suffix = '',
         tt;
     if(hover && ax.hoverformat) {
-        tt = modDateFormat(ax.hoverformat,x);
+        tt = modDateFormat(ax.hoverformat, x);
     }
     else if(ax.tickformat) {
-        tt = modDateFormat(ax.tickformat,x);
+        tt = modDateFormat(ax.tickformat, x);
         // TODO: potentially hunt for ways to automatically add more
         // precision to the hover text?
     }
     else {
         if(extraPrecision) {
-            if(isNumeric(tr)) tr+=2;
+            if(isNumeric(tr)) tr += 2;
             else tr = {y: 'm', m: 'd', d: 'H', H: 'M', M: 'S', S: 2}[tr];
         }
-        if(tr==='y') tt = yearFormat(d);
-        else if(tr==='m') tt = monthFormat(d);
+        if(tr === 'y') tt = yearFormat(d);
+        else if(tr === 'm') tt = monthFormat(d);
         else {
-            if(x===ax._tmin && !hover) {
-                suffix = '<br>'+yearFormat(d);
+            if(x === ax._tmin && !hover) {
+                suffix = '<br>' + yearFormat(d);
             }
 
-            if(tr==='d') tt = dayFormat(d);
-            else if(tr==='H') tt = hourFormat(d);
+            if(tr === 'd') tt = dayFormat(d);
+            else if(tr === 'H') tt = hourFormat(d);
             else {
-                if(x===ax._tmin && !hover) {
-                    suffix = '<br>'+dayFormat(d)+', '+yearFormat(d);
+                if(x === ax._tmin && !hover) {
+                    suffix = '<br>' + dayFormat(d) + ', ' + yearFormat(d);
                 }
 
                 tt = minuteFormat(d);
-                if(tr!=='M') {
+                if(tr !== 'M') {
                     tt += secondFormat(d);
-                    if(tr!=='S') {
-                        tt += numFormat(mod(x/1000,1),ax,'none',hover)
+                    if(tr !== 'S') {
+                        tt += numFormat(mod(x / 1000, 1), ax, 'none', hover)
                             .substr(1);
                     }
                 }
@@ -970,13 +969,13 @@ function formatDate(ax, out, hover, extraPrecision) {
 function formatLog(ax, out, hover, extraPrecision, hideexp) {
     var dtick = ax.dtick,
         x = out.x;
-    if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0)!=='L')) dtick = 'L3';
+    if(extraPrecision && ((typeof dtick !== 'string') || dtick.charAt(0) !== 'L')) dtick = 'L3';
 
     if(ax.tickformat || (typeof dtick === 'string' && dtick.charAt(0) === 'L')) {
         out.text = numFormat(Math.pow(10, x), ax, hideexp, extraPrecision);
     }
-    else if(isNumeric(dtick)||((dtick.charAt(0)==='D')&&(mod(x+0.01,1)<0.1))) {
-        if(['e','E','power'].indexOf(ax.exponentformat)!==-1) {
+    else if(isNumeric(dtick) || ((dtick.charAt(0) === 'D') && (mod(x + 0.01, 1) < 0.1))) {
+        if(['e', 'E', 'power'].indexOf(ax.exponentformat) !== -1) {
             var p = Math.round(x);
             if(p === 0) out.text = 1;
             else if(p === 1) out.text = '10';
@@ -986,9 +985,9 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
             out.fontSize *= 1.25;
         }
         else {
-            out.text = numFormat(Math.pow(10,x), ax,'','fakehover');
-            if(dtick==='D1' && ax._id.charAt(0)==='y') {
-                out.dy -= out.fontSize/6;
+            out.text = numFormat(Math.pow(10, x), ax, '', 'fakehover');
+            if(dtick === 'D1' && ax._id.charAt(0) === 'y') {
+                out.dy -= out.fontSize / 6;
             }
         }
     }
@@ -999,7 +998,7 @@ function formatLog(ax, out, hover, extraPrecision, hideexp) {
     else throw 'unrecognized dtick ' + String(dtick);
 
     // if 9's are printed on log scale, move the 10's away a bit
-    if(ax.dtick==='D1') {
+    if(ax.dtick === 'D1') {
         var firstChar = String(out.text).charAt(0);
         if(firstChar === '0' || firstChar === '1') {
             if(ax._id.charAt(0) === 'y') {
@@ -1024,7 +1023,7 @@ function formatLinear(ax, out, hover, extraPrecision, hideexp) {
     // don't add an exponent to zero if we're showing all exponents
     // so the only reason you'd show an exponent on zero is if it's the
     // ONLY tick to get an exponent (first or last)
-    if(ax.showexponent==='all' && Math.abs(out.x/ax.dtick)<1e-6) {
+    if(ax.showexponent === 'all' && Math.abs(out.x / ax.dtick) < 1e-6) {
         hideexp = 'hide';
     }
     out.text = numFormat(out.x, ax, hideexp, extraPrecision);
@@ -1050,7 +1049,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         // make a dummy axis obj to get the auto rounding and exponent
         var ah = {
             exponentformat: ax.exponentformat,
-            dtick: ax.showexponent==='none' ? ax.dtick :
+            dtick: ax.showexponent === 'none' ? ax.dtick :
                 (isNumeric(v) ? Math.abs(v) || 1 : 1),
             // if not showing any exponents, don't change the exponent
             // from what we calculate
@@ -1062,7 +1061,7 @@ function numFormat(v, ax, fmtoverride, hover) {
         if(ax.hoverformat) tickformat = ax.hoverformat;
     }
 
-    if(tickformat) return d3.format(tickformat)(v).replace(/-/g,'\u2212');
+    if(tickformat) return d3.format(tickformat)(v).replace(/-/g, '\u2212');
 
     // 'epsilon' - rounding increment
     var e = Math.pow(10, -tickRound) / 2;
@@ -1106,7 +1105,7 @@ function numFormat(v, ax, fmtoverride, hover) {
             if(dp) v = v.substr(0, dp + tickRound).replace(/\.?0+$/, '');
         }
         // insert appropriate decimal point and thousands separator
-        v = numSeparate(v, ax._gd._fullLayout.separators);
+        v = Lib.numSeparate(v, ax._gd._fullLayout.separators);
     }
 
     // add exponent
@@ -1140,27 +1139,6 @@ function numFormat(v, ax, fmtoverride, hover) {
     // with a true minus sign
     if(isNeg) return '\u2212' + v;
     return v;
-}
-
-// add arbitrary decimal point and thousands separator
-var findThousands = /(\d+)(\d{3})/;
-function numSeparate(nStr, separators) {
-    // separators - first char is decimal point,
-    // next char is thousands separator if there is one
-
-    var dp = separators.charAt(0),
-        thou = separators.charAt(1),
-        x = nStr.split('.'),
-        x1 = x[0],
-        x2 = x.length > 1 ? dp + x[1] : '';
-    // even if there is a thousands separator, don't use it on
-    // 4-digit integers (like years)
-    if(thou && (x.length > 1 || x1.length>4)) {
-        while(findThousands.test(x1)) {
-            x1 = x1.replace(findThousands, '$1' + thou + '$2');
-        }
-    }
-    return x1 + x2;
 }
 
 
@@ -1246,7 +1224,7 @@ axes.getSubplots = function(gd, ax) {
             bMatch = b.match(spMatch);
 
         if(aMatch[1] === bMatch[1]) {
-            return +(aMatch[2]||1) - (bMatch[2]||1);
+            return +(aMatch[2] || 1) - (bMatch[2] || 1);
         }
 
         return +(aMatch[1]||0) - (bMatch[1]||0);
@@ -1286,7 +1264,7 @@ axes.makeClipPaths = function(gd) {
     for(i = 0; i < xaList.length; i++) {
         clipList.push({x: xaList[i], y: fullHeight});
         for(j = 0; j < yaList.length; j++) {
-            if(i===0) clipList.push({x: fullWidth, y: yaList[j]});
+            if(i === 0) clipList.push({x: fullWidth, y: yaList[j]});
             clipList.push({x: xaList[i], y: yaList[j]});
         }
     }
@@ -1434,7 +1412,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         };
     }
     else {
-        console.log('unrecognized doTicks axis', axid);
+        Lib.warn('Unrecognized doTicks axis:', axid);
         return;
     }
     var axside = ax.side || sides[0],
@@ -1456,13 +1434,13 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
     function drawTicks(container, tickpath) {
         var ticks = container.selectAll('path.' + tcls)
-            .data(ax.ticks==='inside' ? valsClipped : vals, datafn);
+            .data(ax.ticks === 'inside' ? valsClipped : vals, datafn);
         if(tickpath && ax.ticks) {
             ticks.enter().append('path').classed(tcls, 1).classed('ticks', 1)
                 .classed('crisp', 1)
                 .call(Color.stroke, ax.tickcolor)
                 .style('stroke-width', tickWidth + 'px')
-                .attr('d',tickpath);
+                .attr('d', tickpath);
             ticks.attr('transform', transfn);
             ticks.exit().remove();
         }
@@ -1506,7 +1484,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
                 if(isNumeric(angle) && Math.abs(angle) === 90) {
                     return 'middle';
                 }
-                return axside==='right' ? 'start' : 'end';
+                return axside === 'right' ? 'start' : 'end';
             };
         }
         var maxFontSize = 0,
@@ -1546,7 +1524,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
             maxFontSize = Math.max(maxFontSize, d.fontSize);
         });
 
-        function positionLabels(s,angle) {
+        function positionLabels(s, angle) {
             s.each(function(d) {
                 var anchor = labelanchor(angle);
                 var thisLabel = d3.select(this),
@@ -1584,7 +1562,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
         // do this without waiting, using the last calculated angle to
         // minimize flicker, then do it again when we know all labels are
         // there, putting back the prescribed angle to check for overlaps.
-        positionLabels(tickLabels,ax._lastangle || ax.tickangle);
+        positionLabels(tickLabels, ax._lastangle || ax.tickangle);
 
         function allLabelsReady() {
             return labelsReady.length && Promise.all(labelsReady);
@@ -1596,7 +1574,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
             // check for auto-angling if x labels overlap
             // don't auto-angle at all for log axes with
             // base and digit format
-            if(axletter==='x' && !isNumeric(ax.tickangle) &&
+            if(axletter === 'x' && !isNumeric(ax.tickangle) &&
                     (ax.type !== 'log' || String(ax.dtick).charAt(0) !== 'D')) {
                 var lbbArray = [];
                 tickLabels.each(function(d) {
@@ -1742,7 +1720,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
             zlcontainer = plotinfo.zerolinelayer,
             gridvals = plotinfo['hidegrid' + axletter] ? [] : valsClipped,
             gridpath = ax._gridpath ||
-                'M0,0' + ((axletter==='x') ? 'v' : 'h') + counteraxis._length,
+                'M0,0' + ((axletter === 'x') ? 'v' : 'h') + counteraxis._length,
             grid = gridcontainer.selectAll('path.' + gcls)
                 .data((ax.showgrid === false) ? [] : gridvals, datafn);
         grid.enter().append('path').classed(gcls, 1)
@@ -1798,12 +1776,12 @@ axes.doTicks = function(gd, axid, skipTitle) {
         var alldone = axes.getSubplots(gd, ax).map(function(subplot) {
             var plotinfo = fullLayout._plots[subplot];
 
-            if(!fullLayout._hasCartesian) return;
+            if(!fullLayout._has('cartesian')) return;
 
             var container = plotinfo[axletter + 'axislayer'],
 
                 // [bottom or left, top or right, free, main]
-                linepositions = ax._linepositions[subplot]||[],
+                linepositions = ax._linepositions[subplot] || [],
                 counteraxis = plotinfo[counterLetter](),
                 mainSubplot = counteraxis._id === ax.anchor,
                 ticksides = [false, false, false],
@@ -1878,7 +1856,7 @@ function makeAxisGroups(gd, traces) {
         var group0 = groups[groupsi[0]],
             groupj;
 
-        if(groupsi.length>1) {
+        if(groupsi.length > 1) {
             for(j = 1; j < groupsi.length; j++) {
                 groupj = groups[groupsi[j]];
                 mergeAxisGroups(group0.x, groupj.x);
@@ -1957,7 +1935,7 @@ function swapAxisGroup(gd, xIds, yIds) {
         var ann = gd._fullLayout.annotations[i];
         if(xIds.indexOf(ann.xref) !== -1 &&
                 yIds.indexOf(ann.yref) !== -1) {
-            Lib.swapAttrs(layout.annotations[i],['?']);
+            Lib.swapAttrs(layout.annotations[i], ['?']);
         }
     }
 }
@@ -1990,4 +1968,4 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
 
 // mod - version of modulus that always restricts to [0,divisor)
 // rather than built-in % which gives a negative value for negative v
-function mod(v,d) { return ((v%d) + d) % d; }
+function mod(v, d) { return ((v % d) + d) % d; }

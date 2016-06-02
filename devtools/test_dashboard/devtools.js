@@ -11,6 +11,15 @@ var d3 = window.d3 = Plotly.d3;
 // Our gracious testing object
 var Tabs = {
 
+    // Set plot config options
+    setPlotConfig: function() {
+        Plotly.setPlotConfig({
+            // use local topojson files
+            topojsonURL: '../../dist/topojson/',
+            logging: 2
+        });
+    },
+
     // Return the specified plot container (or default one)
     getGraph: function(id) {
         id = id || 'graph';
@@ -24,7 +33,7 @@ var Tabs = {
         var graphDiv = Tabs.getGraph(id);
 
         if(graphDiv) {
-            graphDiv.remove();
+            graphDiv.parentNode.removeChild(graphDiv);
         }
 
         graphDiv = document.createElement('div');
@@ -45,6 +54,18 @@ var Tabs = {
             Plotly.plot(Tabs.fresh(id), fig.data, fig.layout);
 
             console.warn('Plotting:', mockURL);
+        });
+    },
+
+    getMock: function(mockName, callback) {
+        var mockURL = '/test/image/mocks/' + mockName + '.json';
+
+        d3.json(mockURL, function(err, fig) {
+            if(typeof callback !== 'function') {
+                window.mock = fig;
+            } else {
+                callback(err, fig);
+            }
         });
     },
 
@@ -110,6 +131,7 @@ var Tabs = {
         var interval = setInterval(function() {
             if(window.Plotly) {
                 clearInterval(interval);
+                Tabs.setPlotConfig();
                 Tabs.onReload();
             }
         }, 100);
@@ -125,6 +147,8 @@ setInterval(function() {
     window.fullData = window.gd._fullData;
 }, 1000);
 
+// Set plot config on first load
+Tabs.setPlotConfig();
 
 // Mocks search and plotting
 var f = new Fuse(mocks, {

@@ -180,7 +180,13 @@ describe('Test click interactions:', function() {
 
     describe('drag interactions', function() {
         beforeEach(function(done) {
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+                // Do not let the notifier hide the drag elements
+                var tooltip = document.querySelector('.notifier-note');
+                if(tooltip) tooltip.style.display = 'None';
+
+                done();
+            });
         });
 
         it('on nw dragbox should update the axis ranges', function(done) {
@@ -705,6 +711,35 @@ describe('Test click interactions:', function() {
         });
     });
 
+    describe('scroll zoom interactions', function() {
+
+        beforeEach(function(done) {
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout, { scrollZoom: true }).then(done);
+        });
+
+        it('zooms in on scroll up', function() {
+
+            var plot = gd._fullLayout._plots.xy.plot;
+
+            mouseEvent('mousemove', 400, 250);
+            mouseEvent('scroll', 400, 250, { deltaX: 0, deltaY: -1000 });
+
+            var transform = plot.attr('transform');
+
+            var mockEl = {
+                attr: function() {
+                    return transform;
+                }
+            };
+
+            var translate = Lib.getTranslate(mockEl),
+                scale = Lib.getScale(mockEl);
+
+            expect([translate.x, translate.y]).toBeCloseToArray([62.841, 99.483]);
+            expect([scale.x, scale.y]).toBeCloseToArray([1.221, 1.221]);
+        });
+    });
+
     describe('pan interactions', function() {
         beforeEach(function(done) {
             mockCopy.layout.dragmode = 'pan';
@@ -739,7 +774,7 @@ describe('Test click interactions:', function() {
             mouseEvent('mousedown', start, start);
             mouseEvent('mousemove', end, end);
 
-            expect(plot.attr('transform')).toBe('translate(250, 280)');
+            expect(plot.attr('transform')).toBe('translate(250, 280) scale(1, 1)');
 
             mouseEvent('mouseup', end, end);
         });

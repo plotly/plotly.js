@@ -41,7 +41,7 @@ function makeProjectionAttr(axLetter) {
             role: 'style',
             min: 0,
             max: 10,
-            dflt: 2/3,
+            dflt: 2 / 3,
             description: [
                 'Sets the scale factor determining the size of the',
                 'projection marker points.'

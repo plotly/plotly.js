@@ -46,9 +46,9 @@ module.exports = {
                 size[n] = v;
                 return v;
             }
-            else if(size[n]>v) {
+            else if(size[n] > v) {
                 size[n] = v;
-                return v-size[n];
+                return v - size[n];
             }
         }
         return 0;
@@ -62,9 +62,9 @@ module.exports = {
                 size[n] = v;
                 return v;
             }
-            else if(size[n]<v) {
+            else if(size[n] < v) {
                 size[n] = v;
-                return v-size[n];
+                return v - size[n];
             }
         }
         return 0;

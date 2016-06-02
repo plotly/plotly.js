@@ -510,12 +510,17 @@
           "show": false
         }
       },
+      "lightposition": {
+        "x": 1e5,
+        "y": 1e5,
+        "z": 1e4
+      },
       "lighting": {
-        "fresnel": 0.8,
-        "roughness": 0.5,
-        "diffuse": 0.5,
-        "ambient": 0.5,
-        "specular": 0.5
+        "fresnel": 0.2,
+        "roughness": 0.1,
+        "diffuse": 2,
+        "ambient": 0.15,
+        "specular": 2
       }
     }
   ],
@@ -550,18 +555,18 @@
       "xaxis": {
         "showbackground": true,
         "type": "linear",
-        "backgroundcolor": "rgb(255, 127, 14)",
+        "backgroundcolor": "rgba(255, 127, 14, 0.2)",
         "tickangle": 180
       },
       "yaxis": {
         "showbackground": true,
         "type": "linear",
-        "backgroundcolor": "rgb(255, 0, 0)",
+        "backgroundcolor": "rgba(255, 0, 0, 0.2)",
         "tickangle": -45
       },
       "zaxis": {
         "showbackground": true,
-        "backgroundcolor": "rgb(44, 160, 44)",
+        "backgroundcolor": "rgba(44, 160, 44, 0.35)",
         "tickangle": 30
       }
     }

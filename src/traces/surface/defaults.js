@@ -50,13 +50,19 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    coerce('lighting.ambient');
-    coerce('lighting.diffuse');
-    coerce('lighting.specular');
-    coerce('lighting.roughness');
-    coerce('lighting.fresnel');
-    coerce('hidesurface');
-    coerce('opacity');
+    //Coerce remaining properties
+    [
+        'lighting.ambient',
+        'lighting.diffuse',
+        'lighting.specular',
+        'lighting.roughness',
+        'lighting.fresnel',
+        'lightposition.x',
+        'lightposition.y',
+        'lightposition.z',
+        'hidesurface',
+        'opacity'
+    ].forEach(function(x) { coerce(x); });
 
     var surfaceColor = coerce('surfacecolor');
 
@@ -82,8 +88,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
 
         if(highlight) {
-            coerce(contourDim + '.highlightColor');
-            coerce(contourDim + '.highlightWidth');
+            coerce(contourDim + '.highlightcolor');
+            coerce(contourDim + '.highlightwidth');
         }
     }
 
@@ -93,6 +99,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         mapLegacy(traceIn, 'zmax', 'cmax');
         mapLegacy(traceIn, 'zauto', 'cauto');
     }
+
+    // TODO if contours.?.usecolormap are false and hidesurface is true
+    // the colorbar shouldn't be shown by default
 
     colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'c'}

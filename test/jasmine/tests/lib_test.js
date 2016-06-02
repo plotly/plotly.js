@@ -124,8 +124,8 @@ describe('Test lib.js:', function() {
         function summation(a, b) { return a + b; }
 
         it('should work with 1D and 2D inputs and ignore non-numerics', function() {
-            var in1D = [1,2,3,4,'goose!',5,6],
-                in2D = [[1,2,3],['',4],[5,'hi!',6]];
+            var in1D = [1, 2, 3, 4, 'goose!', 5, 6],
+                in2D = [[1, 2, 3], ['', 4], [5, 'hi!', 6]];
 
             expect(aggNums(Math.min, null, in1D)).toEqual(1);
             expect(aggNums(Math.min, null, in2D)).toEqual(1);
@@ -165,7 +165,7 @@ describe('Test lib.js:', function() {
         it('return 2/3 on input [-1, 0, 1]:', function() {
             var input = [-1, 0, 1],
                 res = Lib.variance(input);
-            expect(res).toEqual(2/3);
+            expect(res).toEqual(2 / 3);
         });
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
@@ -188,7 +188,7 @@ describe('Test lib.js:', function() {
         it('return sqrt(2/3) on input [-1, 0, 1]:', function() {
             var input = [-1, 0, 1],
                 res = Lib.stdev(input);
-            expect(res).toEqual(Math.sqrt(2/3));
+            expect(res).toEqual(Math.sqrt(2 / 3));
         });
         it('toss out non-numerics (strings):', function() {
             var input = [1, 2, 'apple', 'orange'],
@@ -361,10 +361,10 @@ describe('Test lib.js:', function() {
 
         it('should remove containers but not data arrays', function() {
             var obj = {
-                    annotations: [{a: [1,2,3]}],
-                    c: [1,2,3],
-                    domain: [1,2],
-                    range: [2,3],
+                    annotations: [{a: [1, 2, 3]}],
+                    c: [1, 2, 3],
+                    domain: [1, 2],
+                    range: [2, 3],
                     shapes: ['elephant']
                 },
                 propA = np(obj, 'annotations[-1].a'),
@@ -418,7 +418,7 @@ describe('Test lib.js:', function() {
                 };
             }
 
-            for(var i=0; i<badProps.length; i++) {
+            for(var i = 0; i < badProps.length; i++) {
                 expect(badProps[i].get()).toBe(undefined);
                 expect(badSetter(i)).toThrow('bad container');
             }
@@ -435,9 +435,43 @@ describe('Test lib.js:', function() {
                 };
             }
 
-            for(var i=0; i<badStr.length; i++) {
+            for(var i = 0; i < badStr.length; i++) {
                 expect(badProp(i)).toThrow('bad property string');
             }
+        });
+    });
+
+    describe('objectFromPath', function() {
+
+        it('should return an object', function() {
+            var obj = Lib.objectFromPath('test', 'object');
+
+            expect(obj).toEqual({ test: 'object' });
+        });
+
+        it('should work for deep objects', function() {
+            var obj = Lib.objectFromPath('deep.nested.test', 'object');
+
+            expect(obj).toEqual({ deep: { nested: { test: 'object' }}});
+        });
+
+        it('should work for arrays', function() {
+            var obj = Lib.objectFromPath('nested[2].array', 'object');
+
+            expect(Object.keys(obj)).toEqual(['nested']);
+            expect(Array.isArray(obj.nested)).toBe(true);
+            expect(obj.nested[0]).toBe(undefined);
+            expect(obj.nested[2]).toEqual({ array: 'object' });
+        });
+
+        it('should work for any given value', function() {
+            var obj = Lib.objectFromPath('test.type', { an: 'object' });
+
+            expect(obj).toEqual({ test: { type: { an: 'object' }}});
+
+            obj = Lib.objectFromPath('test.type', [42]);
+
+            expect(obj).toEqual({ test: { type: [42] }});
         });
     });
 
@@ -770,4 +804,241 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('getTranslate', function() {
+
+        it('should work with regular DOM elements', function() {
+            var el = document.createElement('div');
+
+            expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
+
+            el.setAttribute('transform', 'translate(123.45px, 67)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 67 });
+
+            el.setAttribute('transform', 'translate(123.45)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 0 });
+
+            el.setAttribute('transform', 'translate(1 2)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
+            el.setAttribute('transform', 'translate(1 2); rotate(20deg)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
+            el.setAttribute('transform', 'rotate(20deg) translate(1 2);');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
+            el.setAttribute('transform', 'rotate(20deg)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
+        });
+
+        it('should work with d3 elements', function() {
+            var el = d3.select(document.createElement('div'));
+
+            el.attr('transform', 'translate(123.45px, 67)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 67 });
+
+            el.attr('transform', 'translate(123.45)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 123.45, y: 0 });
+
+            el.attr('transform', 'translate(1 2)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
+            el.attr('transform', 'translate(1 2); rotate(20)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 1, y: 2 });
+
+            el.attr('transform', 'rotate(20)');
+            expect(Lib.getTranslate(el)).toEqual({ x: 0, y: 0 });
+        });
+    });
+
+    describe('setTranslate', function() {
+
+        it('should work with regular DOM elements', function() {
+            var el = document.createElement('div');
+
+            Lib.setTranslate(el, 5);
+            expect(el.getAttribute('transform')).toBe('translate(5, 0)');
+
+            Lib.setTranslate(el, 10, 20);
+            expect(el.getAttribute('transform')).toBe('translate(10, 20)');
+
+            Lib.setTranslate(el);
+            expect(el.getAttribute('transform')).toBe('translate(0, 0)');
+
+            el.setAttribute('transform', 'translate(0, 0); rotate(30)');
+            Lib.setTranslate(el, 30, 40);
+            expect(el.getAttribute('transform')).toBe('rotate(30) translate(30, 40)');
+        });
+
+        it('should work with d3 elements', function() {
+            var el = d3.select(document.createElement('div'));
+
+            Lib.setTranslate(el, 5);
+            expect(el.attr('transform')).toBe('translate(5, 0)');
+
+            Lib.setTranslate(el, 30, 40);
+            expect(el.attr('transform')).toBe('translate(30, 40)');
+
+            Lib.setTranslate(el);
+            expect(el.attr('transform')).toBe('translate(0, 0)');
+
+            el.attr('transform', 'translate(0, 0); rotate(30)');
+            Lib.setTranslate(el, 30, 40);
+            expect(el.attr('transform')).toBe('rotate(30) translate(30, 40)');
+        });
+    });
+
+    describe('getScale', function() {
+
+        it('should work with regular DOM elements', function() {
+            var el = document.createElement('div');
+
+            expect(Lib.getScale(el)).toEqual({ x: 1, y: 1 });
+
+            el.setAttribute('transform', 'scale(1.23, 45)');
+            expect(Lib.getScale(el)).toEqual({ x: 1.23, y: 45 });
+
+            el.setAttribute('transform', 'scale(123.45)');
+            expect(Lib.getScale(el)).toEqual({ x: 123.45, y: 1 });
+
+            el.setAttribute('transform', 'scale(0.1 2)');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.setAttribute('transform', 'scale(0.1 2); rotate(20deg)');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.setAttribute('transform', 'rotate(20deg) scale(0.1 2);');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.setAttribute('transform', 'rotate(20deg)');
+            expect(Lib.getScale(el)).toEqual({ x: 1, y: 1 });
+        });
+
+        it('should work with d3 elements', function() {
+            var el = d3.select(document.createElement('div'));
+
+            el.attr('transform', 'scale(1.23, 45)');
+            expect(Lib.getScale(el)).toEqual({ x: 1.23, y: 45 });
+
+            el.attr('transform', 'scale(123.45)');
+            expect(Lib.getScale(el)).toEqual({ x: 123.45, y: 1 });
+
+            el.attr('transform', 'scale(0.1 2)');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.attr('transform', 'scale(0.1 2); rotate(20)');
+            expect(Lib.getScale(el)).toEqual({ x: 0.1, y: 2 });
+
+            el.attr('transform', 'rotate(20)');
+            expect(Lib.getScale(el)).toEqual({ x: 1, y: 1 });
+        });
+    });
+
+    describe('setScale', function() {
+
+        it('should work with regular DOM elements', function() {
+            var el = document.createElement('div');
+
+            Lib.setScale(el, 5);
+            expect(el.getAttribute('transform')).toBe('scale(5, 1)');
+
+            Lib.setScale(el, 30, 40);
+            expect(el.getAttribute('transform')).toBe('scale(30, 40)');
+
+            Lib.setScale(el);
+            expect(el.getAttribute('transform')).toBe('scale(1, 1)');
+
+            el.setAttribute('transform', 'scale(1, 1); rotate(30)');
+            Lib.setScale(el, 30, 40);
+            expect(el.getAttribute('transform')).toBe('rotate(30) scale(30, 40)');
+        });
+
+        it('should work with d3 elements', function() {
+            var el = d3.select(document.createElement('div'));
+
+            Lib.setScale(el, 5);
+            expect(el.attr('transform')).toBe('scale(5, 1)');
+
+            Lib.setScale(el, 30, 40);
+            expect(el.attr('transform')).toBe('scale(30, 40)');
+
+            Lib.setScale(el);
+            expect(el.attr('transform')).toBe('scale(1, 1)');
+
+            el.attr('transform', 'scale(0, 0); rotate(30)');
+            Lib.setScale(el, 30, 40);
+            expect(el.attr('transform')).toBe('rotate(30) scale(30, 40)');
+        });
+    });
+
+    describe('pushUnique', function() {
+
+        beforeEach(function() {
+            this.obj = { a: 'A' };
+            this.array = ['a', 'b', 'c', this.obj];
+        });
+
+        it('should fill new items in array', function() {
+            var out = Lib.pushUnique(this.array, 'd');
+
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }, 'd']);
+            expect(this.array).toBe(out);
+        });
+
+        it('should ignore falsy items', function() {
+            Lib.pushUnique(this.array, false);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.pushUnique(this.array, undefined);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.pushUnique(this.array, 0);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.pushUnique(this.array, null);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.pushUnique(this.array, '');
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+        });
+
+        it('should ignore item already in array', function() {
+            Lib.pushUnique(this.array, 'a');
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+            Lib.pushUnique(this.array, this.obj);
+            expect(this.array).toEqual(['a', 'b', 'c', { a: 'A' }]);
+
+        });
+    });
+
+    describe('numSeparate', function() {
+
+        it('should work on numbers and strings', function() {
+            expect(Lib.numSeparate(12345.67, '.,')).toBe('12,345.67');
+            expect(Lib.numSeparate('12345.67', '.,')).toBe('12,345.67');
+        });
+
+        it('should ignore years', function() {
+            expect(Lib.numSeparate(2016, '.,')).toBe('2016');
+        });
+
+        it('should work for multiple thousands', function() {
+            expect(Lib.numSeparate(1000000000, '.,')).toBe('1,000,000,000');
+        });
+
+        it('should work when there\'s only one separator', function() {
+            expect(Lib.numSeparate(12.34, '|')).toBe('12|34');
+            expect(Lib.numSeparate(1234.56, '|')).toBe('1234|56');
+        });
+
+        it('should throw an error when no separator is provided', function() {
+            expect(function() {
+                Lib.numSeparate(1234);
+            }).toThrowError('Separator string required for formatting!');
+
+            expect(function() {
+                Lib.numSeparate(1234, '');
+            }).toThrowError('Separator string required for formatting!');
+        });
+    });
 });

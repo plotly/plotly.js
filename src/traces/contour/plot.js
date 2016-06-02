@@ -25,10 +25,10 @@ module.exports = function plot(gd, plotinfo, cdcontours) {
 
 // some constants to help with marching squares algorithm
     // where does the path start for each index?
-var BOTTOMSTART = [1,9,13,104,713],
-    TOPSTART = [4,6,7,104,713],
-    LEFTSTART = [8,12,14,208,1114],
-    RIGHTSTART = [2,3,11,208,1114],
+var BOTTOMSTART = [1, 9, 13, 104, 713],
+    TOPSTART = [4, 6, 7, 104, 713],
+    LEFTSTART = [8, 12, 14, 208, 1114],
+    RIGHTSTART = [2, 3, 11, 208, 1114],
 
     // which way [dx,dy] do we leave a given index?
     // saddles are already disambiguated
@@ -51,7 +51,6 @@ var BOTTOMSTART = [1,9,13,104,713],
     SADDLEREMAINDER = {1: 4, 2: 8, 4: 1, 7: 13, 8: 2, 11: 14, 13: 7, 14: 11};
 
 function plotOne(gd, plotinfo, cd) {
-    Lib.markTime('in Contour.plot');
     var trace = cd[0].trace,
         x = cd[0].x,
         y = cd[0].y,
@@ -87,9 +86,9 @@ function plotOne(gd, plotinfo, cd) {
     findAllPaths(pathinfo);
 
     var leftedge = xa.c2p(x[0], true),
-        rightedge = xa.c2p(x[x.length-1], true),
+        rightedge = xa.c2p(x[x.length - 1], true),
         bottomedge = ya.c2p(y[0], true),
-        topedge = ya.c2p(y[y.length-1], true),
+        topedge = ya.c2p(y[y.length - 1], true),
         perimeter = [
             [leftedge, topedge],
             [rightedge, topedge],
@@ -103,14 +102,12 @@ function plotOne(gd, plotinfo, cd) {
     makeFills(plotGroup, pathinfo, perimeter, contours);
     makeLines(plotGroup, pathinfo, contours);
     clipGaps(plotGroup, plotinfo, cd[0], perimeter);
-
-    Lib.markTime('done Contour.plot');
 }
 
 function emptyPathinfo(contours, plotinfo, cd0) {
     var cs = contours.size || 1,
         pathinfo = [];
-    for(var ci = contours.start; ci < contours.end + cs/10; ci += cs) {
+    for(var ci = contours.start; ci < contours.end + cs / 10; ci += cs) {
         pathinfo.push({
             level: ci,
             // all the cells with nontrivial marching index
@@ -143,7 +140,7 @@ function emptyPathinfo(contours, plotinfo, cd0) {
 // except that the saddles bifurcate and I represent them
 // as the decimal combination of the two appropriate
 // non-saddle indices
-function getMarchingIndex(val,corners) {
+function getMarchingIndex(val, corners) {
     var mi = (corners[0][0] > val ? 0 : 1) +
              (corners[0][1] > val ? 0 : 2) +
              (corners[1][1] > val ? 0 : 4) +
@@ -167,7 +164,7 @@ function makeCrossings(pathinfo) {
     var z = pathinfo[0].z,
         m = z.length,
         n = z[0].length, // we already made sure z isn't ragged in interp2d
-        twoWide = m===2 || n===2,
+        twoWide = m === 2 || n === 2,
         xi,
         yi,
         startIndices,
@@ -178,26 +175,26 @@ function makeCrossings(pathinfo) {
         pi,
         i;
 
-    for(yi = 0; yi<m-1; yi++) {
+    for(yi = 0; yi < m - 1; yi++) {
         ystartIndices = [];
-        if(yi===0) ystartIndices = ystartIndices.concat(BOTTOMSTART);
-        if(yi===m-2) ystartIndices = ystartIndices.concat(TOPSTART);
+        if(yi === 0) ystartIndices = ystartIndices.concat(BOTTOMSTART);
+        if(yi === m - 2) ystartIndices = ystartIndices.concat(TOPSTART);
 
-        for(xi = 0; xi<n-1; xi++) {
+        for(xi = 0; xi < n - 1; xi++) {
             startIndices = ystartIndices.slice();
-            if(xi===0) startIndices = startIndices.concat(LEFTSTART);
-            if(xi===n-2) startIndices = startIndices.concat(RIGHTSTART);
+            if(xi === 0) startIndices = startIndices.concat(LEFTSTART);
+            if(xi === n - 2) startIndices = startIndices.concat(RIGHTSTART);
 
-            label = xi+','+yi;
-            corners = [[z[yi][xi], z[yi][xi+1]],
-                       [z[yi+1][xi], z[yi+1][xi+1]]];
+            label = xi + ',' + yi;
+            corners = [[z[yi][xi], z[yi][xi + 1]],
+                       [z[yi + 1][xi], z[yi + 1][xi + 1]]];
             for(i = 0; i < pathinfo.length; i++) {
                 pi = pathinfo[i];
-                mi = getMarchingIndex(pi.level,corners);
+                mi = getMarchingIndex(pi.level, corners);
                 if(!mi) continue;
 
                 pi.crossings[label] = mi;
-                if(startIndices.indexOf(mi)!==-1) {
+                if(startIndices.indexOf(mi) !== -1) {
                     pi.starts.push([xi, yi]);
                     if(twoWide && startIndices.indexOf(mi,
                             startIndices.indexOf(mi) + 1) !== -1) {
@@ -227,9 +224,9 @@ function makePath(pi, loc, edgeflag) {
         cnt;
 
     // now follow the path
-    for(cnt=0; cnt<10000; cnt++) { // just to avoid infinite loops
-        if(mi>20) {
-            mi = CHOOSESADDLE[mi][(marchStep[0]||marchStep[1])<0 ? 0 : 1];
+    for(cnt = 0; cnt < 10000; cnt++) { // just to avoid infinite loops
+        if(mi > 20) {
+            mi = CHOOSESADDLE[mi][(marchStep[0] || marchStep[1]) < 0 ? 0 : 1];
             pi.crossings[locStr] = SADDLEREMAINDER[mi];
         }
         else {
@@ -238,7 +235,7 @@ function makePath(pi, loc, edgeflag) {
 
         marchStep = NEWDELTA[mi];
         if(!marchStep) {
-            console.log('found bad marching index', mi, loc, pi.level);
+            Lib.log('Found bad marching index:', mi, loc, pi.level);
             break;
         }
 
@@ -248,23 +245,23 @@ function makePath(pi, loc, edgeflag) {
         loc[1] += marchStep[1];
 
         // don't include the same point multiple times
-        if(equalPts(pts[pts.length-1], pts[pts.length-2])) pts.pop();
+        if(equalPts(pts[pts.length - 1], pts[pts.length - 2])) pts.pop();
         locStr = loc.join(',');
 
         // have we completed a loop, or reached an edge?
-        if((locStr===startLocStr && marchStep.join(',')===startStepStr) ||
+        if((locStr === startLocStr && marchStep.join(',') === startStepStr) ||
             (edgeflag && (
-                (marchStep[0] && (loc[0]<0 || loc[0]>n-2)) ||
-                (marchStep[1] && (loc[1]<0 || loc[1]>m-2))))) {
+                (marchStep[0] && (loc[0] < 0 || loc[0] > n - 2)) ||
+                (marchStep[1] && (loc[1] < 0 || loc[1] > m - 2))))) {
             break;
         }
         mi = pi.crossings[locStr];
     }
 
-    if(cnt===10000) {
-        console.log('Infinite loop in contour?');
+    if(cnt === 10000) {
+        Lib.log('Infinite loop in contour?');
     }
-    var closedpath = equalPts(pts[0], pts[pts.length-1]),
+    var closedpath = equalPts(pts[0], pts[pts.length - 1]),
         totaldist = 0,
         distThresholdFactor = 0.2 * pi.smoothing,
         alldists = [],
@@ -280,58 +277,58 @@ function makePath(pi, loc, edgeflag) {
     // check for points that are too close together (<1/5 the average dist,
     // less if less smoothed) and just take the center (or avg of center 2)
     // this cuts down on funny behavior when a point is very close to a contour level
-    for(cnt=1; cnt<pts.length; cnt++) {
-        thisdist = ptDist(pts[cnt], pts[cnt-1]);
+    for(cnt = 1; cnt < pts.length; cnt++) {
+        thisdist = ptDist(pts[cnt], pts[cnt - 1]);
         totaldist += thisdist;
         alldists.push(thisdist);
     }
 
-    var distThreshold = totaldist/alldists.length*distThresholdFactor;
+    var distThreshold = totaldist / alldists.length * distThresholdFactor;
 
-    function getpt(i) { return pts[i%pts.length]; }
+    function getpt(i) { return pts[i % pts.length]; }
 
-    for(cnt=pts.length-2; cnt>=cropstart; cnt--) {
+    for(cnt = pts.length - 2; cnt >= cropstart; cnt--) {
         distgroup = alldists[cnt];
-        if(distgroup<distThreshold) {
+        if(distgroup < distThreshold) {
             cnt3 = 0;
-            for(cnt2=cnt-1; cnt2>=cropstart; cnt2--) {
-                if(distgroup+alldists[cnt2]<distThreshold) {
+            for(cnt2 = cnt - 1; cnt2 >= cropstart; cnt2--) {
+                if(distgroup + alldists[cnt2] < distThreshold) {
                     distgroup += alldists[cnt2];
                 }
                 else break;
             }
 
             // closed path with close points wrapping around the boundary?
-            if(closedpath && cnt===pts.length-2) {
-                for(cnt3=0; cnt3<cnt2; cnt3++) {
-                    if(distgroup+alldists[cnt3]<distThreshold) {
+            if(closedpath && cnt === pts.length - 2) {
+                for(cnt3 = 0; cnt3 < cnt2; cnt3++) {
+                    if(distgroup + alldists[cnt3] < distThreshold) {
                         distgroup += alldists[cnt3];
                     }
                     else break;
                 }
             }
-            ptcnt = cnt-cnt2+cnt3+1;
-            ptavg = Math.floor((cnt+cnt2+cnt3+2)/2);
+            ptcnt = cnt - cnt2 + cnt3 + 1;
+            ptavg = Math.floor((cnt + cnt2 + cnt3 + 2) / 2);
 
             // either endpoint included: keep the endpoint
-            if(!closedpath && cnt===pts.length-2) newpt = pts[pts.length-1];
-            else if(!closedpath && cnt2===-1) newpt = pts[0];
+            if(!closedpath && cnt === pts.length - 2) newpt = pts[pts.length - 1];
+            else if(!closedpath && cnt2 === -1) newpt = pts[0];
 
             // odd # of points - just take the central one
-            else if(ptcnt%2) newpt = getpt(ptavg);
+            else if(ptcnt % 2) newpt = getpt(ptavg);
 
             // even # of pts - average central two
             else {
-                newpt = [(getpt(ptavg)[0] + getpt(ptavg+1)[0]) / 2,
-                         (getpt(ptavg)[1] + getpt(ptavg+1)[1]) / 2];
+                newpt = [(getpt(ptavg)[0] + getpt(ptavg + 1)[0]) / 2,
+                         (getpt(ptavg)[1] + getpt(ptavg + 1)[1]) / 2];
             }
 
-            pts.splice(cnt2+1, cnt-cnt2+1, newpt);
-            cnt = cnt2+1;
+            pts.splice(cnt2 + 1, cnt - cnt2 + 1, newpt);
+            cnt = cnt2 + 1;
             if(cnt3) cropstart = cnt3;
             if(closedpath) {
-                if(cnt===pts.length-2) pts[cnt3] = pts[pts.length-1];
-                else if(cnt===0) pts[pts.length-1] = pts[0];
+                if(cnt === pts.length - 2) pts[cnt3] = pts[pts.length - 1];
+                else if(cnt === 0) pts[pts.length - 1] = pts[0];
             }
         }
     }
@@ -339,21 +336,21 @@ function makePath(pi, loc, edgeflag) {
 
     // don't return single-point paths (ie all points were the same
     // so they got deleted?)
-    if(pts.length<2) return;
+    if(pts.length < 2) return;
     else if(closedpath) {
         pts.pop();
         pi.paths.push(pts);
     }
     else {
         if(!edgeflag) {
-            console.log('unclosed interior contour?',
-                pi.level,startLocStr,pts.join('L'));
+            Lib.log('Unclosed interior contour?',
+                pi.level, startLocStr, pts.join('L'));
         }
 
         // edge path - does it start where an existing edge path ends, or vice versa?
         var merged = false;
         pi.edgepaths.forEach(function(edgepath, edgei) {
-            if(!merged && equalPts(edgepath[0], pts[pts.length-1])) {
+            if(!merged && equalPts(edgepath[0], pts[pts.length - 1])) {
                 pts.pop();
                 merged = true;
 
@@ -361,11 +358,11 @@ function makePath(pi, loc, edgeflag) {
                 var doublemerged = false;
                 pi.edgepaths.forEach(function(edgepath2, edgei2) {
                     if(!doublemerged && equalPts(
-                            edgepath2[edgepath2.length-1], pts[0])) {
+                            edgepath2[edgepath2.length - 1], pts[0])) {
                         doublemerged = true;
                         pts.splice(0, 1);
                         pi.edgepaths.splice(edgei, 1);
-                        if(edgei2===edgei) {
+                        if(edgei2 === edgei) {
                             // the path is now closed
                             pi.paths.push(pts.concat(edgepath2));
                         }
@@ -381,7 +378,7 @@ function makePath(pi, loc, edgeflag) {
             }
         });
         pi.edgepaths.forEach(function(edgepath, edgei) {
-            if(!merged && equalPts(edgepath[edgepath.length-1], pts[0])) {
+            if(!merged && equalPts(edgepath[edgepath.length - 1], pts[0])) {
                 pts.splice(0, 1);
                 pi.edgepaths[edgei] = edgepath.concat(pts);
                 merged = true;
@@ -408,12 +405,12 @@ function findAllPaths(pathinfo) {
         }
 
         cnt = 0;
-        while(Object.keys(pi.crossings).length && cnt<10000) {
+        while(Object.keys(pi.crossings).length && cnt < 10000) {
             cnt++;
             startLoc = Object.keys(pi.crossings)[0].split(',').map(Number);
             makePath(pi, startLoc);
         }
-        if(cnt===10000) console.log('Infinite loop in contour?');
+        if(cnt === 10000) Lib.log('Infinite loop in contour?');
     }
 }
 
@@ -422,20 +419,20 @@ function findAllPaths(pathinfo) {
 function startStep(mi, edgeflag, loc) {
     var dx = 0,
         dy = 0;
-    if(mi>20 && edgeflag) {
+    if(mi > 20 && edgeflag) {
         // these saddles start at +/- x
-        if(mi===208 || mi===1114) {
+        if(mi === 208 || mi === 1114) {
             // if we're starting at the left side, we must be going right
-            dx = loc[0]===0 ? 1 : -1;
+            dx = loc[0] === 0 ? 1 : -1;
         }
         else {
             // if we're starting at the bottom, we must be going up
-            dy = loc[1]===0 ? 1 : -1;
+            dy = loc[1] === 0 ? 1 : -1;
         }
     }
-    else if(BOTTOMSTART.indexOf(mi)!==-1) dy = 1;
-    else if(LEFTSTART.indexOf(mi)!==-1) dx = 1;
-    else if(TOPSTART.indexOf(mi)!==-1) dy = -1;
+    else if(BOTTOMSTART.indexOf(mi) !== -1) dy = 1;
+    else if(LEFTSTART.indexOf(mi) !== -1) dx = 1;
+    else if(TOPSTART.indexOf(mi) !== -1) dy = -1;
     else dx = -1;
     return [dx, dy];
 }
@@ -448,7 +445,7 @@ function equalPts(pt1, pt2) {
 function ptDist(pt1, pt2) {
     var dx = pt1[0] - pt2[0],
         dy = pt1[1] - pt2[1];
-    return Math.sqrt(dx*dx + dy*dy);
+    return Math.sqrt(dx * dx + dy * dy);
 }
 
 function getInterpPx(pi, loc, step) {
@@ -459,14 +456,14 @@ function getInterpPx(pi, loc, step) {
         ya = pi.yaxis;
 
     if(step[1]) {
-        var dx = (pi.level - zxy) / (pi.z[locy][locx+1] - zxy);
-        return [xa.c2p((1-dx) * pi.x[locx] + dx * pi.x[locx+1], true),
+        var dx = (pi.level - zxy) / (pi.z[locy][locx + 1] - zxy);
+        return [xa.c2p((1 - dx) * pi.x[locx] + dx * pi.x[locx + 1], true),
                 ya.c2p(pi.y[locy], true)];
     }
     else {
-        var dy = (pi.level - zxy) / (pi.z[locy+1][locx] - zxy);
+        var dy = (pi.level - zxy) / (pi.z[locy + 1][locx] - zxy);
         return [xa.c2p(pi.x[locx], true),
-                ya.c2p((1-dy) * pi.y[locy] + dy * pi.y[locy+1], true)];
+                ya.c2p((1 - dy) * pi.y[locy] + dy * pi.y[locy + 1], true)];
     }
 }
 
@@ -486,25 +483,25 @@ function makeContourGroup(plotinfo, cd, id) {
 
 function makeBackground(plotgroup, perimeter, contours) {
     var bggroup = plotgroup.selectAll('g.contourbg').data([0]);
-    bggroup.enter().append('g').classed('contourbg',true);
+    bggroup.enter().append('g').classed('contourbg', true);
 
     var bgfill = bggroup.selectAll('path')
-        .data(contours.coloring==='fill' ? [0] : []);
+        .data(contours.coloring === 'fill' ? [0] : []);
     bgfill.enter().append('path');
     bgfill.exit().remove();
     bgfill
-        .attr('d','M'+perimeter.join('L')+'Z')
-        .style('stroke','none');
+        .attr('d', 'M' + perimeter.join('L') + 'Z')
+        .style('stroke', 'none');
 }
 
 function makeFills(plotgroup, pathinfo, perimeter, contours) {
     var fillgroup = plotgroup.selectAll('g.contourfill')
         .data([0]);
     fillgroup.enter().append('g')
-        .classed('contourfill',true);
+        .classed('contourfill', true);
 
     var fillitems = fillgroup.selectAll('path')
-        .data(contours.coloring==='fill' ? pathinfo : []);
+        .data(contours.coloring === 'fill' ? pathinfo : []);
     fillitems.enter().append('path');
     fillitems.exit().remove();
     fillitems.each(function(pi) {
@@ -516,15 +513,15 @@ function makeFills(plotgroup, pathinfo, perimeter, contours) {
         var fullpath = joinAllPaths(pi, perimeter);
 
         if(!fullpath) d3.select(this).remove();
-        else d3.select(this).attr('d',fullpath).style('stroke', 'none');
+        else d3.select(this).attr('d', fullpath).style('stroke', 'none');
     });
 }
 
 function joinAllPaths(pi, perimeter) {
     var fullpath = (pi.edgepaths.length || pi.z[0][0] < pi.level) ?
-            '' : ('M'+perimeter.join('L')+'Z'),
+            '' : ('M' + perimeter.join('L') + 'Z'),
         i = 0,
-        startsleft = pi.edgepaths.map(function(v,i) { return i; }),
+        startsleft = pi.edgepaths.map(function(v, i) { return i; }),
         newloop = true,
         endpt,
         newendpt,
@@ -542,13 +539,13 @@ function joinAllPaths(pi, perimeter) {
         addpath = Drawing.smoothopen(pi.edgepaths[i], pi.smoothing);
         fullpath += newloop ? addpath : addpath.replace(/^M/, 'L');
         startsleft.splice(startsleft.indexOf(i), 1);
-        endpt = pi.edgepaths[i][pi.edgepaths[i].length-1];
+        endpt = pi.edgepaths[i][pi.edgepaths[i].length - 1];
         nexti = -1;
 
         //now loop through sides, moving our endpoint until we find a new start
-        for(cnt=0; cnt<4; cnt++) { // just to prevent infinite loops
+        for(cnt = 0; cnt < 4; cnt++) { // just to prevent infinite loops
             if(!endpt) {
-                console.log('missing end?',i,pi);
+                Lib.log('Missing end?', i, pi);
                 break;
             }
 
@@ -557,37 +554,37 @@ function joinAllPaths(pi, perimeter) {
             else if(isbottom(endpt)) newendpt = perimeter[3]; // right bottom
             else if(isright(endpt)) newendpt = perimeter[2]; // left bottom
 
-            for(possiblei=0; possiblei < pi.edgepaths.length; possiblei++) {
+            for(possiblei = 0; possiblei < pi.edgepaths.length; possiblei++) {
                 var ptNew = pi.edgepaths[possiblei][0];
                 // is ptNew on the (horz. or vert.) segment from endpt to newendpt?
-                if(Math.abs(endpt[0]-newendpt[0]) < 0.01) {
-                    if(Math.abs(endpt[0]-ptNew[0]) < 0.01 &&
-                            (ptNew[1]-endpt[1]) * (newendpt[1]-ptNew[1]) >= 0) {
+                if(Math.abs(endpt[0] - newendpt[0]) < 0.01) {
+                    if(Math.abs(endpt[0] - ptNew[0]) < 0.01 &&
+                            (ptNew[1] - endpt[1]) * (newendpt[1] - ptNew[1]) >= 0) {
                         newendpt = ptNew;
                         nexti = possiblei;
                     }
                 }
-                else if(Math.abs(endpt[1]-newendpt[1]) < 0.01) {
-                    if(Math.abs(endpt[1]-ptNew[1]) < 0.01 &&
-                            (ptNew[0]-endpt[0]) * (newendpt[0]-ptNew[0]) >= 0) {
+                else if(Math.abs(endpt[1] - newendpt[1]) < 0.01) {
+                    if(Math.abs(endpt[1] - ptNew[1]) < 0.01 &&
+                            (ptNew[0] - endpt[0]) * (newendpt[0] - ptNew[0]) >= 0) {
                         newendpt = ptNew;
                         nexti = possiblei;
                     }
                 }
                 else {
-                    console.log('endpt to newendpt is not vert. or horz.',
+                    Lib.log('endpt to newendpt is not vert. or horz.',
                         endpt, newendpt, ptNew);
                 }
             }
 
             endpt = newendpt;
 
-            if(nexti>=0) break;
-            fullpath += 'L'+newendpt;
+            if(nexti >= 0) break;
+            fullpath += 'L' + newendpt;
         }
 
         if(nexti === pi.edgepaths.length) {
-            console.log('unclosed perimeter path');
+            Lib.log('unclosed perimeter path');
             break;
         }
 
@@ -595,7 +592,7 @@ function joinAllPaths(pi, perimeter) {
 
         // if we closed back on a loop we already included,
         // close it and start a new loop
-        newloop = (startsleft.indexOf(i)===-1);
+        newloop = (startsleft.indexOf(i) === -1);
         if(newloop) {
             i = startsleft[0];
             fullpath += 'Z';
@@ -614,32 +611,32 @@ function makeLines(plotgroup, pathinfo, contours) {
     var smoothing = pathinfo[0].smoothing;
 
     var linegroup = plotgroup.selectAll('g.contourlevel')
-        .data(contours.showlines===false ? [] : pathinfo);
+        .data(contours.showlines === false ? [] : pathinfo);
     linegroup.enter().append('g')
-        .classed('contourlevel',true);
+        .classed('contourlevel', true);
     linegroup.exit().remove();
 
     var opencontourlines = linegroup.selectAll('path.openline')
         .data(function(d) { return d.edgepaths; });
     opencontourlines.enter().append('path')
-        .classed('openline',true);
+        .classed('openline', true);
     opencontourlines.exit().remove();
     opencontourlines
         .attr('d', function(d) {
             return Drawing.smoothopen(d, smoothing);
         })
-        .style('stroke-miterlimit',1);
+        .style('stroke-miterlimit', 1);
 
     var closedcontourlines = linegroup.selectAll('path.closedline')
         .data(function(d) { return d.paths; });
     closedcontourlines.enter().append('path')
-        .classed('closedline',true);
+        .classed('closedline', true);
     closedcontourlines.exit().remove();
     closedcontourlines
         .attr('d', function(d) {
             return Drawing.smoothclosed(d, smoothing);
         })
-        .style('stroke-miterlimit',1);
+        .style('stroke-miterlimit', 1);
 }
 
 function clipGaps(plotGroup, plotinfo, cd0, perimeter) {

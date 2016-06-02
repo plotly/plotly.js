@@ -28,11 +28,11 @@ module.exports = function style(gd) {
     // crispEdges to turn off antialiasing so an artificial gap
     // isn't introduced.
     .each(function(d) {
-        if((fullLayout.barmode==='stack' && barcount>1) ||
-                (fullLayout.bargap===0 &&
-                 fullLayout.bargroupgap===0 &&
+        if((fullLayout.barmode === 'stack' && barcount > 1) ||
+                (fullLayout.bargap === 0 &&
+                 fullLayout.bargroupgap === 0 &&
                  !d[0].trace.marker.line.width)) {
-            d3.select(this).attr('shape-rendering','crispEdges');
+            d3.select(this).attr('shape-rendering', 'crispEdges');
         }
     });
 
@@ -41,7 +41,7 @@ module.exports = function style(gd) {
         var trace = d[0].trace,
             marker = trace.marker,
             markerLine = marker.line,
-            markerIn = (trace._input||{}).marker||{},
+            markerIn = (trace._input || {}).marker || {},
             markerScale = Drawing.tryColorscale(marker, markerIn, ''),
             lineScale = Drawing.tryColorscale(marker, markerIn, 'line.');
 
@@ -50,7 +50,7 @@ module.exports = function style(gd) {
             // by given max and min to colorscales
             var fillColor,
                 lineColor,
-                lineWidth = (d.mlw+1 || markerLine.width+1) - 1,
+                lineWidth = (d.mlw + 1 || markerLine.width + 1) - 1,
                 p = d3.select(this);
 
             if('mc' in d) fillColor = d.mcc = markerScale(d.mc);

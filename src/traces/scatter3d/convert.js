@@ -36,8 +36,8 @@ function LineWithMarkers(scene, uid) {
     this.mode = '';
     this.dataPoints = [];
     this.axesBounds = [
-        [-Infinity,-Infinity,-Infinity],
-        [Infinity,Infinity,Infinity]
+        [-Infinity, -Infinity, -Infinity],
+        [Infinity, Infinity, Infinity]
     ];
     this.textLabels = null;
     this.data = null;
@@ -58,7 +58,7 @@ proto.handlePick = function(selection) {
             selection.object = this.scatterPlot;
             this.scatterPlot.highlight(selection.data);
         }
-        if(this.textLabels && this.textLabels[selection.data.index]!==undefined) {
+        if(this.textLabels && this.textLabels[selection.data.index] !== undefined) {
             selection.textLabel = this.textLabels[selection.data.index];
         }
         else selection.textLabel = '';
@@ -75,13 +75,13 @@ proto.handlePick = function(selection) {
 };
 
 function constructDelaunay(points, color, axis) {
-    var u = (axis+1)%3;
-    var v = (axis+2)%3;
+    var u = (axis + 1) % 3;
+    var v = (axis + 2) % 3;
     var filteredPoints = [];
     var filteredIds = [];
     var i;
 
-    for(i=0; i<points.length; ++i) {
+    for(i = 0; i < points.length; ++i) {
         var p = points[i];
         if(isNaN(p[u]) || !isFinite(p[u]) ||
            isNaN(p[v]) || !isFinite(p[v])) {
@@ -91,9 +91,9 @@ function constructDelaunay(points, color, axis) {
         filteredIds.push(i);
     }
     var cells = triangulate(filteredPoints);
-    for(i=0; i<cells.length; ++i) {
+    for(i = 0; i < cells.length; ++i) {
         var c = cells[i];
-        for(var j=0; j<c.length; ++j) {
+        for(var j = 0; j < c.length; ++j) {
             c[j] = filteredIds[c[j]];
         }
     }
@@ -106,7 +106,7 @@ function constructDelaunay(points, color, axis) {
 
 function calculateErrorParams(errors) {
     var capSize = [0.0, 0.0, 0.0],
-        color = [[0,0,0], [0,0,0], [0,0,0]],
+        color = [[0, 0, 0], [0, 0, 0], [0, 0, 0]],
         lineWidth = [0.0, 0.0, 0.0];
 
     for(var i = 0; i < 3; i++) {
@@ -152,7 +152,7 @@ function formatParam(paramIn, len, calculate, dflt, extraFn) {
         paramOut = [];
 
         for(var i = 0; i < len; i++) {
-            if(paramIn[i]===undefined) paramOut[i] = dflt;
+            if(paramIn[i] === undefined) paramOut[i] = dflt;
             else paramOut[i] = calculate(paramIn[i], extraFn);
         }
 
@@ -230,8 +230,8 @@ function convertPlotlyOptions(scene, data) {
 
     var dims = ['x', 'y', 'z'];
     params.project = [false, false, false];
-    params.projectScale = [1,1,1];
-    params.projectOpacity = [1,1,1];
+    params.projectScale = [1, 1, 1];
+    params.projectOpacity = [1, 1, 1];
     for(i = 0; i < 3; ++i) {
         var projection = data.projection[dims[i]];
         if((params.project[i] = projection.show)) {
@@ -259,8 +259,8 @@ function arrayToColor(color) {
 
         if(Array.isArray(c)) color = c;
 
-        return 'rgb(' + color.slice(0,3).map(function(x) {
-            return Math.round(x*255);
+        return 'rgb(' + color.slice(0, 3).map(function(x) {
+            return Math.round(x * 255);
         }) + ')';
     }
 

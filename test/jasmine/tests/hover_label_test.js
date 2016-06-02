@@ -214,6 +214,60 @@ describe('hover info', function() {
         });
     });
 
+    describe('hover error x text (log axis positive)', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].error_x = { array: [] };
+        mockCopy.data[0].error_x.array[17] = 1;
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('responds to hover x+text', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388 ± 1');
+        });
+    });
+
+    describe('hover error text (log axis 0)', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].error_x = { array: [] };
+        mockCopy.data[0].error_x.array[17] = 0;
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('responds to hover x+text', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+        });
+    });
+
+    describe('hover error text (log axis negative)', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].error_x = { array: [] };
+        mockCopy.data[0].error_x.array[17] = -1;
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('responds to hover x+text', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(1);
+            expect(d3.selectAll('g.axistext').select('text').html()).toEqual('0.388');
+        });
+    });
+
     describe('hover info text with html', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
@@ -269,6 +323,70 @@ describe('hover info', function() {
         });
     });
 
+    describe('\'closest\' hover info (superimposed case)', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        // superimposed traces
+        mockCopy.data.push(Lib.extendDeep({}, mockCopy.data[0]));
+        mockCopy.layout.hovermode = 'closest';
+
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('render hover labels of the above trace', function() {
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata.length).toEqual(1);
+
+            var hoverTrace = gd._hoverdata[0];
+
+            expect(hoverTrace.fullData.index).toEqual(1);
+            expect(hoverTrace.curveNumber).toEqual(1);
+            expect(hoverTrace.pointNumber).toEqual(16);
+            expect(hoverTrace.x).toEqual(0.33);
+            expect(hoverTrace.y).toEqual(1.25);
+
+            expect(d3.selectAll('g.axistext').size()).toEqual(0);
+            expect(d3.selectAll('g.hovertext').size()).toEqual(1);
+
+            var expectations = ['PV learning ...', '(0.33, 1.25)'];
+            d3.selectAll('g.hovertext').selectAll('text').each(function(_, i) {
+                expect(d3.select(this).html()).toEqual(expectations[i]);
+            });
+        });
+
+        it('render only non-hoverinfo \'none\' hover labels', function(done) {
+
+            Plotly.restyle(gd, 'hoverinfo', ['none', 'name']).then(function() {
+                Fx.hover('graph', evt, 'xy');
+
+                expect(gd._hoverdata.length).toEqual(1);
+
+                var hoverTrace = gd._hoverdata[0];
+
+                expect(hoverTrace.fullData.index).toEqual(1);
+                expect(hoverTrace.curveNumber).toEqual(1);
+                expect(hoverTrace.pointNumber).toEqual(16);
+                expect(hoverTrace.x).toEqual(0.33);
+                expect(hoverTrace.y).toEqual(1.25);
+
+                expect(d3.selectAll('g.axistext').size()).toEqual(0);
+                expect(d3.selectAll('g.hovertext').size()).toEqual(1);
+
+                var text = d3.selectAll('g.hovertext').select('text');
+                expect(text.size()).toEqual(1);
+                expect(text.html()).toEqual('PV learning ...');
+
+                done();
+            });
+
+        });
+    });
+
     describe('hoverformat', function() {
 
         var data = [{
@@ -310,8 +428,8 @@ describe('hover info', function() {
     describe('textmode', function() {
 
         var data = [{
-                x: [1,2,3,4],
-                y: [2,3,4,5],
+                x: [1, 2, 3, 4],
+                y: [2, 3, 4, 5],
                 mode: 'text',
                 hoverinfo: 'text',
                 text: ['test', null, 42, undefined]
@@ -367,7 +485,7 @@ describe('hover info on stacked subplots', function() {
 
         it('responds to hover', function() {
             var gd = document.getElementById('graph');
-            Plotly.Fx.hover(gd, {xval: 3}, ['xy','xy2','xy3']);
+            Plotly.Fx.hover(gd, {xval: 3}, ['xy', 'xy2', 'xy3']);
 
             expect(gd._hoverdata.length).toEqual(2);
 
@@ -454,5 +572,36 @@ describe('hover info on stacked subplots', function() {
             expect(textNodes[2][0].innerHTML).toEqual('trace 2');
             expect(textNodes[2][1].innerHTML).toEqual('3');
         });
+    });
+});
+
+
+describe('hover info on overlaid subplots', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('should respond to hover', function(done) {
+        var mock = require('@mocks/autorange-tozero-rangemode.json');
+
+        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
+            mouseEvent('mousemove', 775, 352);
+
+            var axisText = d3.selectAll('g.axistext'),
+                hoverText = d3.selectAll('g.hovertext');
+
+            expect(axisText.size()).toEqual(1, 'with 1 label on axis');
+            expect(hoverText.size()).toEqual(2, 'with 2 labels on the overlaid pts');
+
+            expect(axisText.select('text').html()).toEqual('1', 'with correct axis label');
+
+            var textNodes = hoverText.selectAll('text');
+
+            expect(textNodes[0][0].innerHTML).toEqual('Take Rate', 'with correct hover labels');
+            expect(textNodes[0][1].innerHTML).toEqual('0.35', 'with correct hover labels');
+            expect(textNodes[1][0].innerHTML).toEqual('Revenue', 'with correct hover labels');
+            expect(textNodes[1][1].innerHTML).toEqual('2,352.5', 'with correct hover labels');
+
+        }).then(done);
     });
 });

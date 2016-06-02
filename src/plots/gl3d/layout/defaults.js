@@ -17,14 +17,12 @@ var supplyGl3dAxisLayoutDefaults = require('./axis_defaults');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    if(!layoutOut._hasGL3D) return;
-
     var hasNon3D = (
-        layoutOut._hasCartesian ||
-        layoutOut._hasGeo ||
-        layoutOut._hasGL2D ||
-        layoutOut._hasPie ||
-        layoutOut._hasTernary
+        layoutOut._has('cartesian') ||
+        layoutOut._has('geo') ||
+        layoutOut._has('gl2d') ||
+        layoutOut._has('pie') ||
+        layoutOut._has('ternary')
     );
 
     // some layout-wide attribute are used in all scenes

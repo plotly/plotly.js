@@ -11,8 +11,7 @@ describe('Test Geo layout defaults', function() {
         var layoutIn, layoutOut, fullData;
 
         beforeEach(function() {
-            // if hasGeo is not at this stage, the default step is skipped
-            layoutOut = { _hasGeo: true };
+            layoutOut = {};
 
             // needs a geo-ref in a trace in order to be detected
             fullData = [{ type: 'scattergeo', geo: 'geo' }];

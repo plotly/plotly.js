@@ -10,6 +10,93 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.12.0] -- 2016-05-26
+
+### Added
+- Light positions, face normal epsilon and vertex normal epsilon are now
+  configurable in `mesh3d` traces [#556]
+- Light position is now configurable in `surface` traces [#556]
+- `surface` and `mesh3d` lighting attributes are now accompanied with
+  comprehensive descriptions. [#556]
+
+### Changed
+- Plot modules are now allowed to have their own `toSVG` method for
+  subplot-specific to-svg logic [#554]
+
+### Fixed
+- gl2d plots are now functional in `core-js` environments (e.g. in babel es6
+  presets) [#569]
+- gl2d replot calls from a blank plot are now functional [#570]
+- SVG graph config argument `scrollZoom` is now again functional (bug introduced
+  in v1.10.0) [#564]
+- `layout.separators` is now honored in pie text labels [#547]
+- Heatmap `zsmooth` value `'fast'` is now functional for arbitrary layout widths
+  [#548]
+- Range sliders now respond to all axis range relayout calls [#568]
+
+
+## [1.11.0] -- 2016-05-17
+
+### Added
+- Add top-level methods `Plotly.toImage` to convert a plotly graph to an image
+  data URL (svg, png, jpg, and webp are supported) and `Plotly.downloadImage` to
+  download a plotly graph as an image [#446]
+- Add the ability to add arbitrary images loaded from a url to a plot's layout
+  [#525]
+- Add the option of making legend span horizontally [#535]
+- Add `connectgaps` attribute to `scattergl` traces [#449]
+- Add new 'relative' bar mode which stacks on top of one another with negative
+  values below the axis, positive values above [#517]
+- Add support for the 'winkel tripel' projection in geo subplots [#492]
+- Event `plotly_relayout` is now emitted on gl2d subplot drag/pan/zoom
+  interactions [#466]
+- Add support for fill coloring in `contourgl` traces [#522, #543]
+
+### Changed
+- Cartesian on-hover routine is now uses a 50ms interval between search calls
+  instead of 100ms for smoother displaying hover labels [#514]
+- [Internal change] fullLayout `_has` fields are replaced by a `_has` method
+  which checks if a particular plot type is present on a graph [#491]
+
+### Fixed
+- Bar widths of traces with null coordinates are now correctly computed [#542]
+- Error bar spans on bar traces with null coordinates are now correctly computed
+  [#542]
+- All promises spawn in `Plotly.plot` are now guaranteed to be resolved before
+  the final resolve [#521]
+- Restyling `scatterternary` data attributes is now working [#540]
+- Error bar of 0 length in log axes are not included in hover labels (instead of
+  showing `NaN`s) [#533]
+
+
+## [1.10.2] -- 2016-05-05
+
+### Fixed
+- Subplot and range slider clip paths are now functional in AngularJS [#509]
+- `relayout` call involving axis `categoryorder` and `categoryarray` are now
+  working [#510]
+- Annotation drag interactions in `editable: true` mode are now functional (bug
+  introduced in 1.10.0)[#505]
+- Improved attribute description for shape `xref` and `yref` [#506]
+
+
+## [1.10.1] -- 2016-05-02
+
+### Fixed
+- Resizing a graph (e.g. via `Plotly.relayout` or Plotly.Plots.resize)
+  properly updates the plot area clip paths (bug introduced in 1.10.0) [#490]
+- `Plotly.Snapshot.toSVG` is now functional again in IE11 and old version of
+  Chrome and FF (bug introduced in 1.10.0) [#489]
+- Hover labels of superimposed traces when 'hovermode' is set to 'closest' are
+  properly displayed (bug introduced in 1.10.0) [#495]
+- Surface contour highlights are toggleable [#459]
+- Surface contour highlights style attributes are lower cased [#459]
+- Zoom overlay are drawn over shapes [#448]
+- Legend are draggable in `editable: true` contexts (bug introduced in 1.6.0)
+  [#487]
+- Legend scroll box are drawn outside the legend [#478]
+
+
 ## [1.10.0] -- 2016-04-12
 
 ### Added

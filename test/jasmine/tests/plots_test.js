@@ -140,20 +140,20 @@ describe('Test Plots', function() {
 
         it('returns cartesian ids', function() {
             var layout = {
+                _has: Plots._hasPlotType,
                 _plots: { xy: {}, x2y2: {} }
             };
 
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual([]);
 
-            layout._hasCartesian = true;
+            layout._basePlotModules = [{ name: 'cartesian' }];
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual(['xy', 'x2y2']);
             expect(getSubplotIds(layout, 'gl2d'))
                 .toEqual([]);
 
-            delete layout._hasCartesian;
-            layout._hasGL2D = true;
+            layout._basePlotModules = [{ name: 'gl2d' }];
             expect(getSubplotIds(layout, 'gl2d'))
                 .toEqual(['xy', 'x2y2']);
             expect(getSubplotIds(layout, 'cartesian'))
@@ -320,12 +320,56 @@ describe('Test Plots', function() {
 
     });
 
+    describe('Plots.resize', function() {
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
+                .then(function() {
+                    gd.style.width = '400px';
+                    gd.style.height = '400px';
+
+                    return Plotly.Plots.resize(gd);
+                })
+                .then(done);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should resize the plot clip', function() {
+            var uid = gd._fullLayout._uid;
+
+            var plotClip = document.getElementById('clip' + uid + 'xyplot'),
+                clipRect = plotClip.children[0],
+                clipWidth = +clipRect.getAttribute('width'),
+                clipHeight = +clipRect.getAttribute('height');
+
+            expect(clipWidth).toBe(240);
+            expect(clipHeight).toBe(220);
+        });
+
+        it('should resize the main svgs', function() {
+            var mainSvgs = document.getElementsByClassName('main-svg');
+
+            for(var i = 0; i < mainSvgs.length; i++) {
+                var svg = mainSvgs[i],
+                    svgWidth = +svg.getAttribute('width'),
+                    svgHeight = +svg.getAttribute('height');
+
+                expect(svgWidth).toBe(400);
+                expect(svgHeight).toBe(400);
+            }
+        });
+    });
+
     describe('Plots.purge', function() {
         var gd;
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {}).then(done);
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
         });
 
         afterEach(destroyGraphDiv);
@@ -351,7 +395,6 @@ describe('Test Plots', function() {
             expect(gd.undonum).toBeUndefined();
             expect(gd.autoplay).toBeUndefined();
             expect(gd.changed).toBeUndefined();
-            expect(gd._modules).toBeUndefined();
             expect(gd._tester).toBeUndefined();
             expect(gd._testref).toBeUndefined();
             expect(gd._promises).toBeUndefined();
