@@ -43,9 +43,6 @@ module.exports = function draw(gd) {
         return;
     }
 
-    if(typeof gd.firstRender === 'undefined') gd.firstRender = true;
-    else if(gd.firstRender) gd.firstRender = false;
-
     var legend = fullLayout._infolayer.selectAll('g.legend')
         .data([0]);
 
@@ -122,7 +119,8 @@ module.exports = function draw(gd) {
                 .call(setupTraceToggle, gd);
         });
 
-    if(gd.firstRender) {
+    var firstRender = legend.enter().size() !== 0;
+    if(firstRender) {
         computeLegendDimensions(gd, groups, traces);
         expandMargin(gd);
     }
@@ -253,7 +251,7 @@ module.exports = function draw(gd) {
 
         scrollBox.call(Drawing.setClipUrl, clipId);
 
-        if(gd.firstRender) scrollHandler(scrollBarY, scrollBoxY);
+        if(firstRender) scrollHandler(scrollBarY, scrollBoxY);
 
         legend.on('wheel', null);  // to be safe, remove previous listeners
         legend.on('wheel', function() {
