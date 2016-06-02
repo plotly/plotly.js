@@ -94,14 +94,22 @@ describe('The legend', function() {
                 'translate(0, ' + dataScroll + ')');
         });
 
-        it('should keep toggle listeners after relayout', function() {
+        it('should be restored and functional after relayout', function() {
+            var wheelDeltaY = 100,
+                legend = document.getElementsByClassName('legend')[0],
+                scrollBox,
+                scrollBar,
+                toggle;
+
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+
             Plotly.relayout(gd, 'showlegend', false);
             Plotly.relayout(gd, 'showlegend', true);
 
-            var legend = document.getElementsByClassName('legend')[0],
-                scrollBox = legend.getElementsByClassName('scrollbox')[0],
-                toggle = legend.getElementsByClassName('legendtoggle')[0],
-                wheelDeltaY = 100;
+            legend = document.getElementsByClassName('legend')[0];
+            scrollBox = legend.getElementsByClassName('scrollbox')[0];
+            scrollBar = legend.getElementsByClassName('scrollbar')[0];
+            toggle = legend.getElementsByClassName('legendtoggle')[0];
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
 
@@ -111,6 +119,8 @@ describe('The legend', function() {
             expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
             expect(scrollBox.getAttribute('transform')).toBe(
                 'translate(0, ' + dataScroll + ')');
+            expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
+            expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
         });
 
         it('should constrain scrolling to the contents', function() {
