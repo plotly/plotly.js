@@ -99,9 +99,14 @@ describe('The legend', function() {
                 legend = document.getElementsByClassName('legend')[0],
                 scrollBox,
                 scrollBar,
+                scrollBarX,
+                scrollBarY,
                 toggle;
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
+            scrollBar = legend.getElementsByClassName('scrollbar')[0];
+            scrollBarX = scrollBar.getAttribute('x'),
+            scrollBarY = scrollBar.getAttribute('y');
 
             Plotly.relayout(gd, 'showlegend', false);
             Plotly.relayout(gd, 'showlegend', true);
@@ -112,6 +117,8 @@ describe('The legend', function() {
             toggle = legend.getElementsByClassName('legendtoggle')[0];
 
             legend.dispatchEvent(scrollTo(wheelDeltaY));
+            expect(scrollBar.getAttribute('x')).toBe(scrollBarX);
+            expect(scrollBar.getAttribute('y')).toBe(scrollBarY);
 
             var dataScroll = scrollBox.getAttribute('data-scroll');
             toggle.dispatchEvent(new MouseEvent('click'));
