@@ -131,14 +131,31 @@ module.exports = {
         role: 'style',
         description: 'Sets the width (in px) of annotation arrow.'
     },
+    absoluteArrowTail: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        description: [
+            'Indicates if the tail of this arrow is a point in ',
+            'the coordinate system vs a relative offset in pixels.',
+            'This is useful for trendline annotations which should ',
+            'continue to indicate the correct trend when zoomed.',
+            'If *true*, `ax` is a value on the x axis and `ay` is ',
+            'a value on the y axis.',
+            'If *false*, `ax` and `ay` assume their normal offset ',
+            'roles.'
+        ].join(' ')
+    },
     ax: {
         valType: 'number',
         dflt: -10,
         role: 'info',
         description: [
             'Sets the x component of the arrow tail about the arrow head.',
-            'A positive (negative) component corresponds to an arrow pointing',
-            'from right to left (left to right)'
+            'If `absoluteArrowTail` is false, a positive (negative) ',
+            'component corresponds to an arrow pointing',
+            'from right to left (left to right).',
+            'If `absoluteArrowTail` is true, this is a value on the x axis.'
         ].join(' ')
     },
     ay: {
@@ -147,8 +164,10 @@ module.exports = {
         role: 'info',
         description: [
             'Sets the y component of the arrow tail about the arrow head.',
-            'A positive (negative) component corresponds to an arrow pointing',
-            'from bottom to top (top to bottom)'
+            'If `absoluteArrowTail` is false, a positive (negative) ',
+            'component corresponds to an arrow pointing',
+            'from bottom to top (top to bottom).',
+            'If `absoluteArrowTail` is true, this is a value on the y axis.'
         ].join(' ')
     },
     // positioning
