@@ -59,6 +59,7 @@ function handleAnnotationDefaults(annIn, fullLayout) {
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('ax');
         coerce('ay');
+        coerce('absoluteArrowTail');
 
         // if you have one part of arrow length you should have both
         Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
@@ -89,6 +90,11 @@ function handleAnnotationDefaults(annIn, fullLayout) {
                 if(ax.type === 'date') {
                     newval = Lib.dateTime2ms(annIn[axLetter]);
                     if(newval !== false) annIn[axLetter] = newval;
+
+                    if(annIn.absoluteArrowTail) {
+                        var newvalB = Lib.dateTime2ms(annIn['a' + axLetter]);
+                        if(newvalB !== false) annIn['a' + axLetter] = newvalB;
+                    }
                 }
                 else if((ax._categories || []).length) {
                     newval = ax._categories.indexOf(annIn[axLetter]);
@@ -450,13 +456,17 @@ annotations.draw = function(gd, index, opt, value) {
             }
 
             var alignShift = 0;
-            if(options.showarrow) {
-                alignShift = options['a' + axLetter];
+            if(options.absoluteArrowTail) {
+                annPosPx['aa' + axLetter] = ax._offset + ax.l2p(options['a' + axLetter]);
+            } else {
+                if(options.showarrow) {
+                    alignShift = options['a' + axLetter];
+                }
+                else {
+                    alignShift = annSize * shiftFraction(alignPosition, anchor);
+                }
+                annPosPx[axLetter] += alignShift;
             }
-            else {
-                alignShift = annSize * shiftFraction(alignPosition, anchor);
-            }
-            annPosPx[axLetter] += alignShift;
 
             // save the current axis type for later log/linear changes
             options['_' + axLetter + 'type'] = ax && ax.type;
@@ -473,11 +483,16 @@ annotations.draw = function(gd, index, opt, value) {
 
         var arrowX, arrowY;
 
-        // make sure the arrowhead (if there is one)
-        // and the annotation center are visible
-        if(options.showarrow) {
-            arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
-            arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
+        if(options.absoluteArrowTail) {
+            arrowX = Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
+            arrowY = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
+        } else {
+            // make sure the arrowhead (if there is one)
+            // and the annotation center are visible
+            if(options.showarrow) {
+                arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
+                arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
+            }
         }
         annPosPx.x = Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
         annPosPx.y = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
@@ -534,27 +549,32 @@ annotations.draw = function(gd, index, opt, value) {
                     [arrowX0 + xHalf, arrowY0 - yHalf, arrowX0 - xHalf, arrowY0 - yHalf]
                 ].map(applyTransform2);
 
-            // Remove the line if it ends inside the box.  Use ray
-            // casting for rotated boxes: see which edges intersect a
-            // line from the arrowhead to far away and reduce with xor
-            // to get the parity of the number of intersections.
-            if(edges.reduce(function(a, x) {
-                return a ^
-                    !!lineIntersect(arrowX, arrowY, arrowX + 1e6, arrowY + 1e6,
-                            x[0], x[1], x[2], x[3]);
-            }, false)) {
-                // no line or arrow - so quit drawArrow now
-                return;
-            }
-
-            edges.forEach(function(x) {
-                var p = lineIntersect(arrowX0, arrowY0, arrowX, arrowY,
-                            x[0], x[1], x[2], x[3]);
-                if(p) {
-                    arrowX0 = p.x;
-                    arrowY0 = p.y;
+            if(options.absoluteArrowTail) {
+                arrowX0 = annPosPx.aax;
+                arrowY0 = annPosPx.aay;
+            } else {
+                // Remove the line if it ends inside the box.  Use ray
+                // casting for rotated boxes: see which edges intersect a
+                // line from the arrowhead to far away and reduce with xor
+                // to get the parity of the number of intersections.
+                if(edges.reduce(function(a, x) {
+                    return a ^
+                        !!lineIntersect(arrowX, arrowY, arrowX + 1e6, arrowY + 1e6,
+                          x[0], x[1], x[2], x[3]);
+                }, false)) {
+                    // no line or arrow - so quit drawArrow now
+                    return;
                 }
-            });
+
+                edges.forEach(function(x) {
+                    var p = lineIntersect(arrowX0, arrowY0, arrowX, arrowY,
+                      x[0], x[1], x[2], x[3]);
+                    if(p) {
+                        arrowX0 = p.x;
+                        arrowY0 = p.y;
+                    }
+                });
+            }
 
             var strokewidth = options.arrowwidth,
                 arrowColor = options.arrowcolor;
