@@ -180,7 +180,7 @@ module.exports = {
         description: [
             'Sets the text displayed at the ticks position via `tickvals`.',
             'Only has an effect if `tickmode` is set to *array*.',
-            'Used with `ticktext`.'
+            'Used with `tickvals`.'
         ].join(' ')
     },
     ticks: {
