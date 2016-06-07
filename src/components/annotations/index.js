@@ -483,13 +483,13 @@ annotations.draw = function(gd, index, opt, value) {
 
         var arrowX, arrowY;
 
-        if(options.absoluteArrowTail) {
-            arrowX = Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
-            arrowY = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
-        } else {
-            // make sure the arrowhead (if there is one)
-            // and the annotation center are visible
-            if(options.showarrow) {
+        // make sure the arrowhead (if there is one)
+        // and the annotation center are visible
+        if(options.showarrow) {
+            if (options.absoluteArrowTail) {
+                arrowX = Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
+                arrowY = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
+            } else {
                 arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
                 arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
             }
@@ -511,8 +511,15 @@ annotations.draw = function(gd, index, opt, value) {
         annbg.call(Drawing.setRect, borderwidth / 2, borderwidth / 2,
             outerwidth - borderwidth, outerheight - borderwidth);
 
-        var annX = Math.round(annPosPx.x - outerwidth / 2),
+        var annX = 0, annY = 0;
+        if(options.absoluteArrowTail) {
+            annX = Math.round(annPosPx.aax - outerwidth / 2);
+            annY = Math.round(annPosPx.aay - outerheight / 2);
+        } else {
+            annX = Math.round(annPosPx.x - outerwidth / 2);
             annY = Math.round(annPosPx.y - outerheight / 2);
+        }
+
         ann.call(Lib.setTranslate, annX, annY);
 
         var annbase = 'annotations[' + index + ']';
@@ -530,11 +537,18 @@ annotations.draw = function(gd, index, opt, value) {
             // looks like there may be a cross-browser solution, see
             // http://stackoverflow.com/questions/5364980/
             //    how-to-get-the-width-of-an-svg-tspan-element
-            var arrowX0 = annPosPx.x + dx,
-                arrowY0 = annPosPx.y + dy,
+            var arrowX0, arrowY0;
+
+            if(options.absoluteArrowTail) {
+                arrowX0 = annPosPx.aax + dx;
+                arrowY0 = annPosPx.aay + dy;
+            } else {
+                arrowX0 = annPosPx.x + dx;
+                arrowY0 = annPosPx.y + dy;
+            }
 
                 // create transform matrix and related functions
-                transform =
+            var transform =
                     Lib.rotationXYMatrix(textangle, arrowX0, arrowY0),
                 applyTransform = Lib.apply2DTransform(transform),
                 applyTransform2 = Lib.apply2DTransform2(transform),
@@ -549,32 +563,28 @@ annotations.draw = function(gd, index, opt, value) {
                     [arrowX0 + xHalf, arrowY0 - yHalf, arrowX0 - xHalf, arrowY0 - yHalf]
                 ].map(applyTransform2);
 
-            if(options.absoluteArrowTail) {
-                arrowX0 = annPosPx.aax;
-                arrowY0 = annPosPx.aay;
-            } else {
-                // Remove the line if it ends inside the box.  Use ray
-                // casting for rotated boxes: see which edges intersect a
-                // line from the arrowhead to far away and reduce with xor
-                // to get the parity of the number of intersections.
-                if(edges.reduce(function(a, x) {
-                    return a ^
-                        !!lineIntersect(arrowX, arrowY, arrowX + 1e6, arrowY + 1e6,
-                          x[0], x[1], x[2], x[3]);
-                }, false)) {
-                    // no line or arrow - so quit drawArrow now
-                    return;
-                }
-
-                edges.forEach(function(x) {
-                    var p = lineIntersect(arrowX0, arrowY0, arrowX, arrowY,
+            // Remove the line if it ends inside the box.  Use ray
+            // casting for rotated boxes: see which edges intersect a
+            // line from the arrowhead to far away and reduce with xor
+            // to get the parity of the number of intersections.
+            if(edges.reduce(function(a, x) {
+                return a ^
+                    !!lineIntersect(arrowX, arrowY, arrowX + 1e6, arrowY + 1e6,
                       x[0], x[1], x[2], x[3]);
-                    if(p) {
-                        arrowX0 = p.x;
-                        arrowY0 = p.y;
-                    }
-                });
+            }, false)) {
+                // no line or arrow - so quit drawArrow now
+                return;
             }
+
+            edges.forEach(function(x) {
+                var p = lineIntersect(arrowX0, arrowY0, arrowX, arrowY,
+                  x[0], x[1], x[2], x[3]);
+                if(p) {
+                    arrowX0 = p.x;
+                    arrowY0 = p.y;
+                }
+            });
+
 
             var strokewidth = options.arrowwidth,
                 arrowColor = options.arrowcolor;
@@ -645,12 +655,12 @@ annotations.draw = function(gd, index, opt, value) {
                             update[annbase + '.ay'] = ya ?
                               (options.ay + dy / ya._m) :
                               (1 - ((arrowY + dy - gs.t) / gs.h));
-                        } else {
-                            anng.attr({
-                                transform: 'rotate(' + textangle + ',' +
-                                xcenter + ',' + ycenter + ')'
-                            });
                         }
+
+                        anng.attr({
+                            transform: 'rotate(' + textangle + ',' +
+                            xcenter + ',' + ycenter + ')'
+                        });
                     },
                     doneFn: function(dragged) {
                         if(dragged) {
@@ -680,7 +690,6 @@ annotations.draw = function(gd, index, opt, value) {
                 element: ann.node(),
                 prepFn: function() {
                     var pos = Lib.getTranslate(ann);
-
                     x0 = pos.x;
                     y0 = pos.y;
                     update = {};
@@ -689,8 +698,13 @@ annotations.draw = function(gd, index, opt, value) {
                     ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
-                        update[annbase + '.ax'] = options.ax + dx;
-                        update[annbase + '.ay'] = options.ay + dy;
+                        if(options.absoluteArrowTail) {
+                            update[annbase + '.ax'] = xa.p2l(xa.l2p(options.ax) + dx);
+                            update[annbase + '.ay'] = ya.p2l(ya.l2p(options.ay) + dy);
+                        } else {
+                            update[annbase + '.ax'] = options.ax + dx;
+                            update[annbase + '.ay'] = options.ay + dy;
+                        }
                         drawArrow(dx, dy);
                     }
                     else {

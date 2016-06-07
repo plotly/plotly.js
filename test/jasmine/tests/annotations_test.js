@@ -1,5 +1,7 @@
-var Annotations = require('@src/components/annotations');
+var PlotlyInternal = require('@src/plotly');
 var Plots = require('@src/plots/plots');
+var Annotations = require('@src/components/annotations');
+
 
 describe('Test annotations', function() {
     'use strict';
