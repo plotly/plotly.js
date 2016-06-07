@@ -497,6 +497,12 @@ plots.supplyDefaults = function(gd) {
             autosizable = gd._context && gd._context.autosizable,
             initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
         if(initialAutoSize) plots.plotAutoSize(gd, newLayout, newFullLayout);
+
+        // for backwards-compatibility with Plotly v1.x.x
+        if(!autosize && missingWidthOrHeight) {
+            newLayout.width = newFullLayout.width;
+            newLayout.height = newFullLayout.height;
+        }
     }
 
     newFullLayout._initialAutoSizeIsDone = true;
