@@ -104,9 +104,6 @@ module.exports = {
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash
     },
-    // Currently, `marker` etc. contain mixed attributes (colorAttributes
-    // and a bunch of others); maybe a future API change could wrap parts
-    // that belong together, under a `colorspec` or similar attribute name.
     marker: extendDeep({}, colorAttributes('marker'), {  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',
