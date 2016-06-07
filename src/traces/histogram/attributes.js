@@ -6,18 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var barAttrs = require('../bar/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 
-var extendFlat = require('../../lib').extendFlat;
-var extendDeep = require('../../lib/extend').extendDeep;
+var extendFlat = require('../../lib/extend').extendDeep;
 
 var barMarkerAttrs = barAttrs.marker;
 var barMarkerLineAttrs = barMarkerAttrs.line;
-
 
 module.exports = {
     x: {
@@ -115,12 +112,14 @@ module.exports = {
     },
     ybins: makeBinsAttr('y'),
 
-    marker: extendDeep({}, colorAttributes('marker'), {
+    marker: extendFlat({}, {
         showscale: barMarkerAttrs.showscale,
-        line: extendDeep({}, colorAttributes('marker.line'), {
-            width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})
-        })
-    }),
+        line: extendFlat({},
+            {width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})},
+            colorAttributes('marker.line'))
+    },
+        colorAttributes('marker')
+    ),
 
     _nestedModules: {
         'error_y': 'ErrorBars',

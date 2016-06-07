@@ -6,7 +6,6 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
@@ -14,7 +13,6 @@ var colorAttributes = require('../../components/colorscale/color_attributes');
 
 var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
-var extendDeep = require('../../lib/extend').extendDeep;
 
 var scatterLineAttrs = scatterAttrs.line,
     scatterMarkerAttrs = scatterAttrs.marker,
@@ -104,7 +102,7 @@ module.exports = {
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash
     },
-    marker: extendDeep({}, colorAttributes('marker'), {  // Parity with scatter.js?
+    marker: extendFlat({}, {  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',
             values: Object.keys(MARKER_SYMBOLS),
@@ -129,10 +127,13 @@ module.exports = {
             ].join(' ')
         }),
         showscale: scatterMarkerAttrs.showscale,
-        line: extendDeep({}, colorAttributes('marker.line'), {
-            width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false})
-        })
-    }),
+        line: extendFlat({},
+            {width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false})},
+            colorAttributes('marker.line')
+        )
+    },
+        colorAttributes('marker')
+    ),
     textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
     _nestedModules: {

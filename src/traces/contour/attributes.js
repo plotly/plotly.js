@@ -16,8 +16,6 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var scatterLineAttrs = scatterAttrs.line;
 
 module.exports = extendFlat({},
-    colorscaleAttrs,
-    {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})},
     {
         z: heatmapAttrs.z,
         x: heatmapAttrs.x,
@@ -118,4 +116,7 @@ module.exports = extendFlat({},
         _nestedModules: {
             'colorbar': 'Colorbar'
         }
-    });
+    },
+    colorscaleAttrs,
+    {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
+);

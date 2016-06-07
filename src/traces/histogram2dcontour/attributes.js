@@ -14,7 +14,7 @@ var colorscaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-module.exports = extendFlat({}, colorscaleAttrs, {
+module.exports = extendFlat({}, {
     x: histogram2dAttrs.x,
     y: histogram2dAttrs.y,
     z: histogram2dAttrs.z,
@@ -37,4 +37,6 @@ module.exports = extendFlat({}, colorscaleAttrs, {
     _nestedModules: {
         'colorbar': 'Colorbar'
     }
-});
+},
+    colorscaleAttrs
+);

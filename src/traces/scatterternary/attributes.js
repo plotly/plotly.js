@@ -13,12 +13,10 @@ var plotAttrs = require('../../plots/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
-var extendDeep = require('../../lib/extend').extendDeep;
 
 var scatterMarkerAttrs = scatterAttrs.marker,
     scatterLineAttrs = scatterAttrs.line,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
-
 
 module.exports = {
     a: {
@@ -98,7 +96,7 @@ module.exports = {
         ].join(' ')
     }),
     fillcolor: scatterAttrs.fillcolor,
-    marker: extendDeep({}, colorAttributes('marker'), {
+    marker: extendFlat({}, {
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
@@ -107,10 +105,13 @@ module.exports = {
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
         showscale: scatterMarkerAttrs.showscale,
-        line: extendDeep({}, colorAttributes('marker'.line), {
-            width: scatterMarkerLineAttrs.width
-        })
-    }),
+        line: extendFlat({},
+            {width: scatterMarkerLineAttrs.width},
+            colorAttributes('marker'.line)
+        )
+    },
+        colorAttributes('marker')
+    ),
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {

@@ -10,11 +10,10 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
-var extendDeep = require('../../lib/extend').extendDeep;
+var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
-
 
 module.exports = {
     x: scatterAttrs.x,
@@ -34,12 +33,14 @@ module.exports = {
             'along the vertical (horizontal).'
         ].join(' ')
     },
-    marker: extendDeep({}, colorAttributes('marker'), {
+    marker: extendFlat({}, {
         showscale: scatterMarkerAttrs.showscale,
-        line: extendDeep({}, colorAttributes('marker.line'), {
-            width: scatterMarkerLineAttrs.width
-        })
-    }),
+        line: extendFlat({},
+            {width: scatterMarkerLineAttrs.width},
+            colorAttributes('marker.line')
+        )},
+        colorAttributes('marker')
+    ),
 
     r: scatterAttrs.r,
     t: scatterAttrs.t,

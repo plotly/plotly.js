@@ -14,8 +14,7 @@ var Drawing = require('../../components/drawing');
 
 var constants = require('./constants');
 
-var extendDeep = require('../../lib/extend').extendDeep;
-
+var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
     x: {
@@ -185,7 +184,7 @@ module.exports = {
             'marker color, or marker line color, whichever is available.'
         ].join(' ')
     },
-    marker: extendDeep({}, colorAttributes('marker'), {
+    marker: extendFlat({}, {
         symbol: {
             valType: 'enumerated',
             values: Drawing.symbolList,
@@ -266,7 +265,7 @@ module.exports = {
                 'Determines whether or not a colorbar is displayed.'
             ].join(' ')
         },
-        line: extendDeep({}, colorAttributes('marker.line'), {
+        line: extendFlat({}, {
             width: {
                 valType: 'number',
                 min: 0,
@@ -274,8 +273,12 @@ module.exports = {
                 role: 'style',
                 description: 'Sets the width (in px) of the lines bounding the marker points.'
             }
-        })
-    }),
+        },
+            colorAttributes('marker.line')
+        )
+    },
+        colorAttributes('marker')
+    ),
     textposition: {
         valType: 'enumerated',
         values: [

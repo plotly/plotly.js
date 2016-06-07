@@ -15,7 +15,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 
-module.exports = extendFlat({}, colorscaleAttrs, {
+module.exports = extendFlat({}, {
     locations: {
         valType: 'data_array',
         description: [
@@ -44,4 +44,6 @@ module.exports = extendFlat({}, colorscaleAttrs, {
     _nestedModules: {
         'colorbar': 'Colorbar'
     }
-});
+},
+    colorscaleAttrs
+);

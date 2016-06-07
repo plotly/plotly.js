@@ -13,10 +13,7 @@ var colorscaleAttrs = require('../../components/colorscale/attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-
 module.exports = extendFlat({},
-    colorscaleAttrs,
-    {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})},
     {
         z: {
             valType: 'data_array',
@@ -83,4 +80,7 @@ module.exports = extendFlat({},
         _nestedModules: {
             'colorbar': 'Colorbar'
         }
-    });
+    },
+    colorscaleAttrs,
+    {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
+);
