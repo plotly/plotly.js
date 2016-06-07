@@ -464,7 +464,7 @@ plots.sendDataToCloud = function(gd) {
 plots.supplyDefaults = function(gd) {
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
-        layout = gd.layout || {};
+        newLayout = gd.layout || {};
 
     var oldFullData = gd._fullData || [],
         newFullData = gd._fullData = [],
@@ -483,20 +483,20 @@ plots.supplyDefaults = function(gd) {
         var oldWidth = oldFullLayout.width,
             oldHeight = oldFullLayout.height;
 
-        plots.supplyLayoutGlobalDefaults(layout, newFullLayout);
+        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
 
-        if(!layout.width) newFullLayout.width = oldWidth;
-        if(!layout.height) newFullLayout.height = oldHeight;
+        if(!newLayout.width) newFullLayout.width = oldWidth;
+        if(!newLayout.height) newFullLayout.height = oldHeight;
     }
     else {
         // coerce the updated layout and autosize if needed
-        plots.supplyLayoutGlobalDefaults(layout, newFullLayout);
+        plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
 
-        var missingWidthOrHeight = (!layout.width || !layout.height),
-            autosize = layout.autosize,
+        var missingWidthOrHeight = (!newLayout.width || !newLayout.height),
+            autosize = newLayout.autosize,
             autosizable = gd._context && gd._context.autosizable,
             initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
-        if(initialAutoSize) plots.plotAutoSize(gd, layout, newFullLayout);
+        if(initialAutoSize) plots.plotAutoSize(gd, newLayout, newFullLayout);
     }
 
     newFullLayout._initialAutoSizeIsDone = true;
@@ -536,7 +536,7 @@ plots.supplyDefaults = function(gd) {
     }
 
     // finally, fill in the pieces of layout that may need to look at data
-    plots.supplyLayoutModuleDefaults(layout, newFullLayout, newFullData);
+    plots.supplyLayoutModuleDefaults(newLayout, newFullLayout, newFullData);
 
     // TODO remove in v2.0.0
     // add has-plot-type refs to fullLayout for backward compatibility
