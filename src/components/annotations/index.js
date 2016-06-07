@@ -59,6 +59,7 @@ function handleAnnotationDefaults(annIn, fullLayout) {
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('ax');
         coerce('ay');
+        coerce('absolutetail');
 
         // if you have one part of arrow length you should have both
         Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
@@ -89,6 +90,11 @@ function handleAnnotationDefaults(annIn, fullLayout) {
                 if(ax.type === 'date') {
                     newval = Lib.dateTime2ms(annIn[axLetter]);
                     if(newval !== false) annIn[axLetter] = newval;
+
+                    if(annIn.absolutetail) {
+                        var newvalB = Lib.dateTime2ms(annIn['a' + axLetter]);
+                        if(newvalB !== false) annIn['a' + axLetter] = newvalB;
+                    }
                 }
                 else if((ax._categories || []).length) {
                     newval = ax._categories.indexOf(annIn[axLetter]);
@@ -450,13 +456,17 @@ annotations.draw = function(gd, index, opt, value) {
             }
 
             var alignShift = 0;
-            if(options.showarrow) {
-                alignShift = options['a' + axLetter];
+            if(options.absolutetail) {
+                annPosPx['aa' + axLetter] = ax._offset + ax.l2p(options['a' + axLetter]);
+            } else {
+                if(options.showarrow) {
+                    alignShift = options['a' + axLetter];
+                }
+                else {
+                    alignShift = annSize * shiftFraction(alignPosition, anchor);
+                }
+                annPosPx[axLetter] += alignShift;
             }
-            else {
-                alignShift = annSize * shiftFraction(alignPosition, anchor);
-            }
-            annPosPx[axLetter] += alignShift;
 
             // save the current axis type for later log/linear changes
             options['_' + axLetter + 'type'] = ax && ax.type;
@@ -476,8 +486,13 @@ annotations.draw = function(gd, index, opt, value) {
         // make sure the arrowhead (if there is one)
         // and the annotation center are visible
         if(options.showarrow) {
-            arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
-            arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
+            if(options.absolutetail) {
+                arrowX = Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
+                arrowY = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
+            } else {
+                arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
+                arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
+            }
         }
         annPosPx.x = Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
         annPosPx.y = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
@@ -496,8 +511,15 @@ annotations.draw = function(gd, index, opt, value) {
         annbg.call(Drawing.setRect, borderwidth / 2, borderwidth / 2,
             outerwidth - borderwidth, outerheight - borderwidth);
 
-        var annX = Math.round(annPosPx.x - outerwidth / 2),
+        var annX = 0, annY = 0;
+        if(options.absolutetail) {
+            annX = Math.round(annPosPx.aax - outerwidth / 2);
+            annY = Math.round(annPosPx.aay - outerheight / 2);
+        } else {
+            annX = Math.round(annPosPx.x - outerwidth / 2);
             annY = Math.round(annPosPx.y - outerheight / 2);
+        }
+
         ann.call(Lib.setTranslate, annX, annY);
 
         var annbase = 'annotations[' + index + ']';
@@ -515,11 +537,18 @@ annotations.draw = function(gd, index, opt, value) {
             // looks like there may be a cross-browser solution, see
             // http://stackoverflow.com/questions/5364980/
             //    how-to-get-the-width-of-an-svg-tspan-element
-            var arrowX0 = annPosPx.x + dx,
-                arrowY0 = annPosPx.y + dy,
+            var arrowX0, arrowY0;
+
+            if(options.absolutetail) {
+                arrowX0 = annPosPx.aax + dx;
+                arrowY0 = annPosPx.aay + dy;
+            } else {
+                arrowX0 = annPosPx.x + dx;
+                arrowY0 = annPosPx.y + dy;
+            }
 
                 // create transform matrix and related functions
-                transform =
+            var transform =
                     Lib.rotationXYMatrix(textangle, arrowX0, arrowY0),
                 applyTransform = Lib.apply2DTransform(transform),
                 applyTransform2 = Lib.apply2DTransform2(transform),
@@ -618,6 +647,15 @@ annotations.draw = function(gd, index, opt, value) {
                             (options.y + dy / ya._m) :
                             (1 - ((arrowY + dy - gs.t) / gs.h));
 
+                        if(options.absolutetail) {
+                            update[annbase + '.ax'] = xa ?
+                              (options.ax + dx / xa._m) :
+                              ((arrowX + dx - gs.l) / gs.w);
+                            update[annbase + '.ay'] = ya ?
+                              (options.ay + dy / ya._m) :
+                              (1 - ((arrowY + dy - gs.t) / gs.h));
+                        }
+
                         anng.attr({
                             transform: 'rotate(' + textangle + ',' +
                                    xcenter + ',' + ycenter + ')'
@@ -660,8 +698,13 @@ annotations.draw = function(gd, index, opt, value) {
                     ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
-                        update[annbase + '.ax'] = options.ax + dx;
-                        update[annbase + '.ay'] = options.ay + dy;
+                        if(options.absolutetail) {
+                            update[annbase + '.ax'] = xa.p2l(xa.l2p(options.ax) + dx);
+                            update[annbase + '.ay'] = ya.p2l(ya.l2p(options.ay) + dy);
+                        } else {
+                            update[annbase + '.ax'] = options.ax + dx;
+                            update[annbase + '.ay'] = options.ay + dy;
+                        }
                         drawArrow(dx, dy);
                     }
                     else {
