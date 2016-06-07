@@ -31,6 +31,11 @@ describe('config argument', function() {
             expect(+svg.getAttribute('height')).toBe(height);
         }
 
+        function compareLayoutAndFullLayout(gd) {
+            expect(gd.layout.width).toBe(gd._fullLayout.width);
+            expect(gd.layout.height).toBe(gd._fullLayout.height);
+        }
+
         function testAutosize(autosize, config, layoutHeight, relayoutHeight, done) {
             var layout = {
                     autosize: autosize,
@@ -47,12 +52,14 @@ describe('config argument', function() {
 
             Plotly.plot(gd, data, layout, config).then(function() {
                 checkLayoutSize(layoutWidth, layoutHeight);
+                if(!autosize) compareLayoutAndFullLayout(gd);
 
                 container.style.width = containerWidthBeforeRelayout + 'px';
                 container.style.height = containerHeightBeforeRelayout + 'px';
 
                 Plotly.relayout(gd, relayout).then(function() {
                     checkLayoutSize(relayoutWidth, relayoutHeight);
+                    if(!autosize) compareLayoutAndFullLayout(gd);
                     done();
                 });
             });
