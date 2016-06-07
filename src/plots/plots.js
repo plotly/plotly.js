@@ -773,7 +773,7 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('margin.autoexpand');
 
     // called in plotAutoSize otherwise
-    if(layoutOut.width && layoutOut.height) plots.sanitizeMargins(layoutOut);
+    if(layoutIn.width && layoutIn.height) plots.sanitizeMargins(layoutOut);
 
     coerce('paper_bgcolor');
 
