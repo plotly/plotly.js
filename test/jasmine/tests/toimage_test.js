@@ -107,7 +107,7 @@ describe('Plotly.toImage', function() {
             // now do svg
             return Plotly.toImage(gd, {format: 'svg'});
         }).then(function(url) {
-            expect(url.substr(1, 3)).toBe('svg');
+            expect(url.split('svg')[0]).toBe('data:image/');
             done();
         });
     });

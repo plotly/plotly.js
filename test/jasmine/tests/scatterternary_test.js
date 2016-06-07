@@ -285,7 +285,7 @@ describe('scatterternary hover', function() {
 
     beforeEach(function() {
         var cd = gd.calcdata,
-            ternary = gd._fullLayout.ternary._ternary;
+            ternary = gd._fullLayout.ternary._subplot;
 
         pointData = {
             index: false,

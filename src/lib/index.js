@@ -58,6 +58,11 @@ lib.extendFlat = extendModule.extendFlat;
 lib.extendDeep = extendModule.extendDeep;
 lib.extendDeepAll = extendModule.extendDeepAll;
 
+var loggersModule = require('./loggers');
+lib.log = loggersModule.log;
+lib.warn = loggersModule.warn;
+lib.error = loggersModule.error;
+
 lib.notifier = require('./notifier');
 
 /**
@@ -90,35 +95,6 @@ lib.pauseEvent = function(e) {
     if(e.preventDefault) e.preventDefault();
     e.cancelBubble = true;
     return false;
-};
-
-/**
- * ------------------------------------------
- * debugging tools
- * ------------------------------------------
- */
-
-// set VERBOSE to true to get a lot more logging and tracing
-lib.VERBOSE = false;
-
-// first markTime call will return time from page load
-lib.TIMER = new Date().getTime();
-
-// console.log that only runs if VERBOSE is on
-lib.log = function() {
-    if(lib.VERBOSE) console.log.apply(console, arguments);
-};
-
-/**
- * markTime - for debugging, mark the number of milliseconds
- * since the previous call to markTime and log arbitrary info too
- */
-lib.markTime = function(v) {
-    if(!lib.VERBOSE) return;
-    var t2 = new Date().getTime();
-    console.log(v, t2 - lib.TIMER, '(msec)');
-    if(lib.VERBOSE === 'trace') console.trace();
-    lib.TIMER = t2;
 };
 
 // constrain - restrict a number v to be between v0 and v1
@@ -271,18 +247,17 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
     var ret, fni;
 
     function continueAsync() {
-        lib.markTime('async done ' + fni.name);
         return lib.syncOrAsync(sequence, arg, finalStep);
     }
+
     while(sequence.length) {
         fni = sequence.splice(0, 1)[0];
         ret = fni(arg);
-        // lib.markTime('done calling '+fni.name)
+
         if(ret && ret.then) {
             return ret.then(continueAsync)
                 .then(undefined, lib.promiseError);
         }
-        lib.markTime('sync done ' + fni.name);
     }
 
     return finalStep && finalStep(arg);
@@ -433,7 +408,7 @@ lib.addStyleRule = function(selector, styleString) {
     else if(styleSheet.addRule) {
         styleSheet.addRule(selector, styleString, 0);
     }
-    else console.warn('addStyleRule failed');
+    else lib.warn('addStyleRule failed');
 };
 
 lib.getTranslate = function(element) {

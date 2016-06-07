@@ -310,27 +310,45 @@ function hover(gd, evt, subplot) {
 
     if(!subplot) subplot = 'xy';
 
+    // if the user passed in an array of subplots,
+    // use those instead of finding overlayed plots
+    var subplots = Array.isArray(subplot) ? subplot : [subplot];
+
     var fullLayout = gd._fullLayout,
-        plotinfo = fullLayout._plots[subplot],
+        plots = fullLayout._plots || [],
+        plotinfo = plots[subplot];
 
-        //If the user passed in an array of subplots, use those instead of finding overlayed plots
-        subplots = Array.isArray(subplot) ?
-            subplot :
-            // list of all overlaid subplots to look at
-            [subplot].concat(plotinfo.overlays
-                .map(function(pi) { return pi.id; })),
+    // list of all overlaid subplots to look at
+    if(plotinfo) {
+        var overlayedSubplots = plotinfo.overlays.map(function(pi) {
+            return pi.id;
+        });
 
-        xaArray = subplots.map(function(spId) {
-            var ternary = (gd._fullLayout[spId] || {})._ternary;
-            if(ternary) return ternary.xaxis;
-            return Axes.getFromId(gd, spId, 'x');
-        }),
-        yaArray = subplots.map(function(spId) {
-            var ternary = (gd._fullLayout[spId] || {})._ternary;
-            if(ternary) return ternary.yaxis;
-            return Axes.getFromId(gd, spId, 'y');
-        }),
-        hovermode = evt.hovermode || fullLayout.hovermode;
+        subplots = subplots.concat(overlayedSubplots);
+    }
+
+    var len = subplots.length,
+        xaArray = new Array(len),
+        yaArray = new Array(len);
+
+    for(var i = 0; i < len; i++) {
+        var spId = subplots[i];
+
+        // 'cartesian' case
+        var plotObj = plots[spId];
+        if(plotObj) {
+            xaArray[i] = plotObj.xaxis;
+            yaArray[i] = plotObj.yaxis;
+            continue;
+        }
+
+        // other subplot types
+        var _subplot = fullLayout[spId]._subplot;
+        xaArray[i] = _subplot.xaxis;
+        yaArray[i] = _subplot.yaxis;
+    }
+
+    var hovermode = evt.hovermode || fullLayout.hovermode;
 
     if(['x', 'y', 'closest'].indexOf(hovermode) === -1 || !gd.calcdata ||
             gd.querySelector('.zoombox') || gd._dragging) {
@@ -424,7 +442,7 @@ function hover(gd, evt, subplot) {
         else yvalArray = p2c(yaArray, ypx);
 
         if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
-            console.log('Plotly.Fx.hover failed', evt, gd);
+            Lib.warn('Plotly.Fx.hover failed', evt, gd);
             return dragElement.unhoverRaw(gd, evt);
         }
     }
@@ -511,7 +529,7 @@ function hover(gd, evt, subplot) {
             }
         }
         else {
-            console.log('unrecognized trace type in hover', trace);
+            Lib.log('Unrecognized trace type in hover:', trace);
         }
 
         // in closest mode, remove any existing (farther) points

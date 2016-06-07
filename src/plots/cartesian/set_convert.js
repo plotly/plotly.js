@@ -167,7 +167,7 @@ module.exports = function setConvert(ax) {
                     ax.range[1] = ar1[1];
                 }
             }
-            catch(e) { console.log(e, ax.range); }
+            catch(e) { Lib.error(e, ax.range); }
         }
     }
     else if(ax.type === 'category') {

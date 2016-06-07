@@ -351,7 +351,7 @@ function getShapeLayer(gd, index) {
         shapeLayer = gd._fullLayout._shapeUpperLayer;
 
     if(!shape) {
-        console.log('getShapeLayer: undefined shape: index', index);
+        Lib.log('getShapeLayer: undefined shape: index', index);
     }
     else if(shape.layer === 'below') {
         shapeLayer = (shape.xref === 'paper' && shape.yref === 'paper') ?
@@ -491,7 +491,7 @@ shapes.convertPath = function(pathIn, x2p, y2p) {
 
         if(paramNumber > nParams) {
             paramString = paramString.replace(/[\s,]*X.*/, '');
-            console.log('ignoring extra params in segment ' + segment);
+            Lib.log('Ignoring extra params in segment ' + segment);
         }
 
         return segmentType + paramString;

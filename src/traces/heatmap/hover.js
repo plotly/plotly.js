@@ -38,7 +38,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
             ny = Math.round(pointData.index[0]);
         }
         catch(e) {
-            console.log('Error hovering on heatmap, ' +
+            Lib.error('Error hovering on heatmap, ' +
                 'pointNumber must be [row,col], found:', pointData.index);
             return;
         }

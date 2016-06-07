@@ -86,7 +86,7 @@ function svgToImg(opts) {
                     imgData = canvas.toDataURL('image/webp');
                     break;
                 case 'svg':
-                    imgData = svg;
+                    imgData = url;
                     break;
                 default:
                     reject(new Error('Image format is not jpeg, png or svg'));

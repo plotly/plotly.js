@@ -42,7 +42,7 @@ plots.fontWeight = 'normal';
  */
 plots.register = function(_module, thisType, categoriesIn, meta) {
     if(modules[thisType]) {
-        console.log('type ' + thisType + ' already registered');
+        Lib.log('Type ' + thisType + ' already registered');
         return;
     }
 
@@ -71,7 +71,7 @@ function getTraceType(traceType) {
 
 plots.getModule = function(trace) {
     if(trace.r !== undefined) {
-        console.log('Oops, tried to put a polar trace ' +
+        Lib.warn('Tried to put a polar trace ' +
             'on an incompatible graph of cartesian ' +
             'data. Ignoring this dataset.', trace
         );
@@ -99,7 +99,7 @@ plots.traceIs = function traceIs(traceType, category) {
 
     if(!_module) {
         if(traceType !== undefined) {
-            console.warn('unrecognized trace type ' + traceType);
+            Lib.log('Unrecognized trace type ' + traceType + '.');
         }
         _module = modules[plots.attributes.type.dflt];
     }
@@ -133,7 +133,7 @@ plots.registerSubplot = function(_module) {
     var plotType = _module.name;
 
     if(subplotsRegistry[plotType]) {
-        console.log('plot type ' + plotType + ' already registered');
+        Lib.log('Plot type ' + plotType + ' already registered.');
         return;
     }
 

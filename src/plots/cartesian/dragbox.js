@@ -372,7 +372,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var wheelDelta = -e.deltaY;
         if(!isFinite(wheelDelta)) wheelDelta = e.wheelDelta / 10;
         if(!isFinite(wheelDelta)) {
-            console.log('did not find wheel motion attributes', e);
+            Lib.log('Did not find wheel motion attributes: ', e);
             return;
         }
 
