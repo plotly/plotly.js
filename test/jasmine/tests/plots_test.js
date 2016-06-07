@@ -8,6 +8,12 @@ describe('Test Plots', function() {
     'use strict';
 
     describe('Plotly.supplyDefaults', function() {
+        function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {
+            spyOn(Plots, 'sanitizeMargins').and.callThrough();
+            Plots.supplyDefaults(gd);
+            expect(Plots.sanitizeMargins).toHaveBeenCalledTimes(1);
+        }
+
         it('should not throw an error when gd is a plain object', function() {
             var height = 100,
                 gd = {
@@ -22,6 +28,39 @@ describe('Test Plots', function() {
             expect(gd._fullLayout.height).toBe(height);
             expect(gd._fullLayout.width).toBe(Plots.layoutAttributes.width.dflt);
             expect(gd._fullData).toBeDefined();
+        });
+
+        it('should call sanitizeMargins only once when both width and height are defined', function() {
+            var gd = {
+                layout: {
+                    width: 100,
+                    height: 100
+                }
+            };
+
+            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
+        });
+
+        it('should call sanitizeMargins only once when autosize is false', function() {
+            var gd = {
+                layout: {
+                    autosize: false,
+                    height: 100
+                }
+            };
+
+            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
+        });
+
+        it('should call sanitizeMargins only once when autosize is true', function() {
+            var gd = {
+                layout: {
+                    autosize: true,
+                    height: 100
+                }
+            };
+
+            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
         });
     });
 
