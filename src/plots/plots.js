@@ -788,7 +788,7 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
         newWidth,
         newHeight;
 
-    if(typeof gd.emit === 'function') gd.emit('plotly_autosize');
+    if(Lib.isPlotDiv(gd)) gd.emit('plotly_autosize');
 
     // embedded in an iframe - just take the full iframe size
     // if we get to this point, with no aspect ratio restrictions
@@ -806,15 +806,11 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
             reservedHeight = reservedMargins.bottom + reservedMargins.top,
             factor = 1 - 2 * frameMargins;
 
-        var gdBB;
-        try {
-            gdBB = fullLayout._container.node().getBoundingClientRect();
-        } catch(err) {
-            gdBB = {
+        var gdBB = fullLayout._container && fullLayout._container.node ?
+            fullLayout._container.node().getBoundingClientRect() : {
                 width: fullLayout.width,
                 height: fullLayout.height
             };
-        }
 
         newWidth = Math.round(factor * (gdBB.width - reservedWidth));
         newHeight = Math.round(factor * (gdBB.height - reservedHeight));
