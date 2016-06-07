@@ -236,3 +236,49 @@ describe('Test shapes:', function() {
         });
     });
 });
+
+describe('Test shapes: a plot with shapes and an overlaid axis', function() {
+    'use strict';
+
+    var gd, data, layout;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+
+        data = [{
+            'y': [1934.5, 1932.3, 1930.3],
+            'x': ['1947-01-01', '1947-04-01', '1948-07-01'],
+            'type': 'scatter'
+        }];
+
+        layout = {
+            'yaxis': {
+                'type': 'linear'
+            },
+            'xaxis': {
+                'type': 'date'
+            },
+            'yaxis2': {
+                'side': 'right',
+                'overlaying': 'y'
+            },
+            'shapes': [{
+                'fillcolor': '#ccc',
+                'type': 'rect',
+                'x0': '1947-01-01',
+                'x1': '1947-04-01',
+                'xref': 'x',
+                'y0': 0,
+                'y1': 1,
+                'yref': 'paper',
+                'layer': 'below'
+            }]
+        };
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should not throw an exception', function(done) {
+        Plotly.plot(gd, data, layout).then(done);
+    });
+});
