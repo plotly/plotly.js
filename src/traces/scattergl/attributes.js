@@ -9,9 +9,12 @@
 'use strict';
 
 var scatterAttrs = require('../scatter/attributes');
+var colorAttributes = require('../../components/colorscale/color_attributes');
+
 var DASHES = require('../../constants/gl2d_dashes');
 var MARKERS = require('../../constants/gl_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
+var extendDeep = require('../../lib/extend').extendDeep;
 
 var scatterLineAttrs = scatterAttrs.line,
     scatterMarkerAttrs = scatterAttrs.marker,
@@ -53,8 +56,7 @@ module.exports = {
             description: 'Sets the style of the lines.'
         }
     },
-    marker: {
-        color: scatterMarkerAttrs.color,
+    marker: extendDeep({}, colorAttributes('marker'), {
         symbol: {
             valType: 'enumerated',
             values: Object.keys(MARKERS),
@@ -68,24 +70,11 @@ module.exports = {
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
         opacity: scatterMarkerAttrs.opacity,
-        colorscale: scatterMarkerAttrs.colorscale,
-        cauto: scatterMarkerAttrs.cauto,
-        cmax: scatterMarkerAttrs.cmax,
-        cmin: scatterMarkerAttrs.cmin,
-        autocolorscale: scatterMarkerAttrs.autocolorscale,
-        reversescale: scatterMarkerAttrs.reversescale,
         showscale: scatterMarkerAttrs.showscale,
-        line: {
-            color: scatterMarkerLineAttrs.color,
-            width: scatterMarkerLineAttrs.width,
-            colorscale: scatterMarkerLineAttrs.colorscale,
-            cauto: scatterMarkerLineAttrs.cauto,
-            cmax: scatterMarkerLineAttrs.cmax,
-            cmin: scatterMarkerLineAttrs.cmin,
-            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
-            reversescale: scatterMarkerLineAttrs.reversescale
-        }
-    },
+        line: extendDeep({}, colorAttributes('marker.line'), {
+            width: scatterMarkerLineAttrs.width
+        })
+    }),
     connectgaps: scatterAttrs.connectgaps,
     fill: extendFlat({}, scatterAttrs.fill, {
         values: ['none', 'tozeroy', 'tozerox']

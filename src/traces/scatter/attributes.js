@@ -8,10 +8,13 @@
 
 'use strict';
 
+var colorAttributes = require('../../components/colorscale/color_attributes');
+
 var Drawing = require('../../components/drawing');
 
 var constants = require('./constants');
 
+var extendFlat = require('../../lib/extend').extendFlat;
 
 module.exports = {
     x: {
@@ -181,7 +184,7 @@ module.exports = {
             'marker color, or marker line color, whichever is available.'
         ].join(' ')
     },
-    marker: {
+    marker: extendFlat({}, {
         symbol: {
             valType: 'enumerated',
             values: Drawing.symbolList,
@@ -211,17 +214,6 @@ module.exports = {
             arrayOk: true,
             role: 'style',
             description: 'Sets the marker size (in px).'
-        },
-        color: {
-            valType: 'color',
-            arrayOk: true,
-            role: 'style',
-            description: [
-                'Sets the marker color. It accepts either a specific color',
-                'or an array of values that are mapped to the colorscale',
-                'relative to the max and min values of the array or relative to',
-                '`cmin` and `cmax` if set.'
-            ].join(' ')
         },
         maxdisplayed: {
             valType: 'number',
@@ -264,73 +256,6 @@ module.exports = {
                 'to pixels.'
             ].join(' ')
         },
-        colorscale: {
-            valType: 'colorscale',
-            role: 'style',
-            description: [
-                'Sets the colorscale and only has an effect',
-                'if `marker.color` is set to a numerical array.',
-                'The colorscale must be an array containing',
-                'arrays mapping a normalized value to an',
-                'rgb, rgba, hex, hsl, hsv, or named color string.',
-                'At minimum, a mapping for the lowest (0) and highest (1)',
-                'values are required. For example,',
-                '`[[0, \'rgb(0,0,255)\', [1, \'rgb(255,0,0)\']]`.',
-                'To control the bounds of the colorscale in color space,',
-                'use `marker.cmin` and `marker.cmax`.'
-            ].join(' ')
-        },
-        cauto: {
-            valType: 'boolean',
-            dflt: true,
-            role: 'style',
-            description: [
-                'Has an effect only if `marker.color` is set to a numerical array.',
-                'Determines the whether or not the color domain is computed',
-                'automatically.'
-            ].join(' ')
-        },
-        cmax: {
-            valType: 'number',
-            dflt: null,
-            role: 'info',
-            description: [
-                'Has an effect only if `marker.color` is set to a numerical array.',
-                'Sets the upper bound of the color domain.',
-                'Value should be associated to the `marker.color` array index,',
-                'and if set, `marker.cmin` must be set as well.'
-            ].join(' ')
-        },
-        cmin: {
-            valType: 'number',
-            dflt: null,
-            role: 'info',
-            description: [
-                'Has an effect only if `marker.color` is set to a numerical array.',
-                'Sets the lower bound of the color domain.',
-                'Value should be associated to the `marker.color` array index,',
-                'and if set, `marker.cmax` must be set as well.'
-            ].join(' ')
-        },
-        autocolorscale: {
-            valType: 'boolean',
-            dflt: true,
-            role: 'style',
-            description: [
-                'Has an effect only if `marker.color` is set to a numerical array.',
-                'Determines whether or not the colorscale is picked using',
-                'values inside `marker.color`.'
-            ].join(' ')
-        },
-        reversescale: {
-            valType: 'boolean',
-            role: 'style',
-            dflt: false,
-            description: [
-                'Has an effect only if `marker.color` is set to a numerical array.',
-                'Reverses the colorscale.'
-            ].join(' ')
-        },
         showscale: {
             valType: 'boolean',
             role: 'info',
@@ -340,94 +265,20 @@ module.exports = {
                 'Determines whether or not a colorbar is displayed.'
             ].join(' ')
         },
-        line: {
-            color: {
-                valType: 'color',
-                arrayOk: true,
-                role: 'style',
-                description: [
-                    'Sets the marker outline color. It accepts either a specific color',
-                    'or an array of values that are mapped to the colorscale',
-                    'relative to the max and min values of the array or relative to',
-                    '`cmin` and `cmax` if set.'
-                ].join(' ')
-            },
+        line: extendFlat({}, {
             width: {
                 valType: 'number',
                 min: 0,
                 arrayOk: true,
                 role: 'style',
                 description: 'Sets the width (in px) of the lines bounding the marker points.'
-            },
-            colorscale: {
-                valType: 'colorscale',
-                role: 'style',
-                description: [
-                    'Sets the colorscale and only has an effect',
-                    'if `marker.line.color` is set to a numerical array.',
-                    'The colorscale must be an array containing',
-                    'arrays mapping a normalized value to an',
-                    'rgb, rgba, hex, hsl, hsv, or named color string.',
-                    'At minimum, a mapping for the lowest (0) and highest (1)',
-                    'values are required. For example,',
-                    '`[[0, \'rgb(0,0,255)\', [1, \'rgb(255,0,0)\']]`.',
-                    'To control the bounds of the colorscale in color space,',
-                    'use `marker.line.cmin` and `marker.line.cmax`.'
-                ].join(' ')
-            },
-            cauto: {
-                valType: 'boolean',
-                dflt: true,
-                role: 'style',
-                description: [
-                    'Has an effect only if `marker.line.color` is set to a numerical array.',
-                    'Determines the whether or not the color domain is computed',
-                    'with respect to the input data.'
-                ].join(' ')
-            },
-            cmax: {
-                valType: 'number',
-                dflt: null,
-                role: 'info',
-                description: [
-                    'Has an effect only if `marker.line.color` is set to a numerical array.',
-                    'Sets the upper bound of the color domain.',
-                    'Value should be associated to the `marker.line.color` array index,',
-                    'and if set, `marker.line.cmin` must be set as well.'
-                ].join(' ')
-            },
-            cmin: {
-                valType: 'number',
-                dflt: null,
-                role: 'info',
-                description: [
-                    'Has an effect only if `marker.line.color` is set to a numerical array.',
-                    'Sets the lower bound of the color domain.',
-                    'Value should be associated to the `marker.line.color` array index,',
-                    'and if set, `marker.line.cmax` must be set as well.'
-                ].join(' ')
-            },
-            autocolorscale: {
-                valType: 'boolean',
-                dflt: true,
-                role: 'style',
-                description: [
-                    'Has an effect only if `marker.line.color` is set to a numerical array.',
-                    'Determines whether or not the colorscale is picked using',
-                    'the sign of values inside `marker.line.color`.'
-                ].join(' ')
-            },
-            reversescale: {
-                valType: 'boolean',
-                dflt: false,
-                role: 'style',
-                description: [
-                    'Has an effect only if `marker.line.color` is set to a numerical array.',
-                    'Reverses the colorscale.'
-                ].join(' ')
             }
-        }
+        },
+            colorAttributes('marker.line')
+        )
     },
+        colorAttributes('marker')
+    ),
     textposition: {
         valType: 'enumerated',
         values: [

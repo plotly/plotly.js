@@ -6,15 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var barAttrs = require('../bar/attributes');
-var extendFlat = require('../../lib').extendFlat;
+var colorAttributes = require('../../components/colorscale/color_attributes');
+
+var extendFlat = require('../../lib/extend').extendDeep;
 
 var barMarkerAttrs = barAttrs.marker;
 var barMarkerLineAttrs = barMarkerAttrs.line;
-
 
 module.exports = {
     x: {
@@ -112,26 +112,14 @@ module.exports = {
     },
     ybins: makeBinsAttr('y'),
 
-    marker: {
-        color: barMarkerAttrs.color,
-        colorscale: barMarkerAttrs.colorscale,
-        cauto: barMarkerAttrs.cauto,
-        cmax: barMarkerAttrs.cmax,
-        cmin: barMarkerAttrs.cmin,
-        autocolorscale: barMarkerAttrs.autocolorscale,
-        reversescale: barMarkerAttrs.reversescale,
+    marker: extendFlat({}, {
         showscale: barMarkerAttrs.showscale,
-        line: {
-            color: barMarkerLineAttrs.color,
-            colorscale: barMarkerLineAttrs.colorscale,
-            cauto: barMarkerLineAttrs.cauto,
-            cmax: barMarkerLineAttrs.cmax,
-            cmin: barMarkerLineAttrs.cmin,
-            autocolorscale: barMarkerLineAttrs.autocolorscale,
-            reversescale: barMarkerLineAttrs.reversescale,
-            width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})
-        }
+        line: extendFlat({},
+            {width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})},
+            colorAttributes('marker.line'))
     },
+        colorAttributes('marker')
+    ),
 
     _nestedModules: {
         'error_y': 'ErrorBars',

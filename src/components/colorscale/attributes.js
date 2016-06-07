@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 module.exports = {
     zauto: {
         valType: 'boolean',
@@ -68,18 +67,5 @@ module.exports = {
         description: [
             'Determines whether or not a colorbar is displayed for this trace.'
         ].join(' ')
-    },
-
-    _deprecated: {
-        scl: {
-            valType: 'colorscale',
-            role: 'style',
-            description: 'Renamed to `colorscale`.'
-        },
-        reversescl: {
-            valType: 'boolean',
-            role: 'style',
-            description: 'Renamed to `reversescale`.'
-        }
     }
 };
