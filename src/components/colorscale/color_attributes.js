@@ -8,6 +8,9 @@
 
 'use strict';
 
+var colorScaleAttributes = require('./attributes');
+var extendDeep = require('../../lib/extend').extendDeep;
+
 module.exports = function makeColorScaleAttributes(context) {
     return {
         color: {
@@ -21,9 +24,7 @@ module.exports = function makeColorScaleAttributes(context) {
                 ' `cmin` and `cmax` if set.'
             ].join('')
         },
-        colorscale: {
-            valType: 'colorscale',
-            role: 'style',
+        colorscale: extendDeep({}, colorScaleAttributes.colorscale, {
             description: [
                 'Sets the colorscale and only has an effect',
                 ' if `', context, '.color` is set to a numerical array.',
@@ -36,57 +37,42 @@ module.exports = function makeColorScaleAttributes(context) {
                 ' To control the bounds of the colorscale in color space,',
                 ' use `', context, '.cmin` and `', context, '.cmax`.'
             ].join('')
-        },
-        cauto: {
-            valType: 'boolean',
-            dflt: true,
-            role: 'style',
+        }),
+        cauto: extendDeep({}, colorScaleAttributes.zauto, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array.',
                 ' Determines the whether or not the color domain is computed',
                 ' automatically.'
             ].join('')
-        },
-        cmax: {
-            valType: 'number',
-            dflt: null,
-            role: 'info',
+        }),
+        cmax: extendDeep({}, colorScaleAttributes.zmax, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array.',
                 ' Sets the upper bound of the color domain.',
                 ' Value should be associated to the `', context, '.color` array index,',
                 ' and if set, `', context, '.cmin` must be set as well.'
             ].join('')
-        },
-        cmin: {
-            valType: 'number',
-            dflt: null,
-            role: 'info',
+        }),
+        cmin: extendDeep({}, colorScaleAttributes.zmin, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array.',
                 ' Sets the lower bound of the color domain.',
                 ' Value should be associated to the `', context, '.color` array index,',
                 ' and if set, `', context, '.cmax` must be set as well.'
             ].join('')
-        },
-        autocolorscale: {
-            valType: 'boolean',
-            dflt: true,
-            role: 'style',
+        }),
+        autocolorscale: extendDeep({}, colorScaleAttributes.autocolorscale, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array.',
                 ' Determines whether or not the colorscale is picked using',
                 ' values inside `', context, '.color`.'
             ].join('')
-        },
-        reversescale: {
-            valType: 'boolean',
-            role: 'style',
-            dflt: false,
+        }),
+        reversescale: extendDeep({}, colorScaleAttributes.reversescale, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array.',
                 ' Reverses the colorscale.'
             ].join('')
-        }
+        })
     };
 };

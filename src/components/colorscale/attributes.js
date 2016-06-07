@@ -8,7 +8,6 @@
 
 'use strict';
 
-
 module.exports = {
     zauto: {
         valType: 'boolean',
