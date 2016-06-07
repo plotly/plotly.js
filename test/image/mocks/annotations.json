@@ -42,7 +42,7 @@
                 "font":{"color":"rgb(0, 0, 255)","size":20},
                 "arrowcolor":"rgb(166, 28, 0)","borderpad":3,"textangle":50,"x":5,"y":1
             },
-            {"text":"","showarrow":true,"borderwidth":1.2,"arrowhead":2,"absoluteArrowTail":true,"x":5,"y":5,"ax":4,"ay":3}
+            {"text":"","showarrow":true,"borderwidth":1.2,"arrowhead":2,"absolutetail":true,"x":5,"y":5,"ax":4,"ay":3}
         ]
     }
 }

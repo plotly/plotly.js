@@ -131,7 +131,7 @@ module.exports = {
         role: 'style',
         description: 'Sets the width (in px) of annotation arrow.'
     },
-    absoluteArrowTail: {
+    absolutetail: {
         valType: 'boolean',
         dflt: false,
         role: 'style',
@@ -152,10 +152,10 @@ module.exports = {
         role: 'info',
         description: [
             'Sets the x component of the arrow tail about the arrow head.',
-            'If `absoluteArrowTail` is false, a positive (negative) ',
+            'If `absolutetail` is false, a positive (negative) ',
             'component corresponds to an arrow pointing',
             'from right to left (left to right).',
-            'If `absoluteArrowTail` is true, this is a value on the x axis.'
+            'If `absolutetail` is true, this is a value on the x axis.'
         ].join(' ')
     },
     ay: {
@@ -164,10 +164,10 @@ module.exports = {
         role: 'info',
         description: [
             'Sets the y component of the arrow tail about the arrow head.',
-            'If `absoluteArrowTail` is false, a positive (negative) ',
+            'If `absolutetail` is false, a positive (negative) ',
             'component corresponds to an arrow pointing',
             'from bottom to top (top to bottom).',
-            'If `absoluteArrowTail` is true, this is a value on the y axis.'
+            'If `absolutetail` is true, this is a value on the y axis.'
         ].join(' ')
     },
     // positioning

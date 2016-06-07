@@ -13,15 +13,15 @@ describe('Test annotations', function() {
 
             Annotations.supplyLayoutDefaults({ annotations: [{ showarrow: true, arrowhead: 2}] }, annotationDefaults);
 
-            expect(annotationDefaults.annotations[0].absoluteArrowTail).toBe(false);
+            expect(annotationDefaults.annotations[0].absolutetail).toBe(false);
         });
 
-        it('should convert ax/ay date coordinates to milliseconds if absoluteArrowTail is true', function() {
+        it('should convert ax/ay date coordinates to milliseconds if absolutetail is true', function() {
             var annotationOut = { xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }};
             annotationOut._has = Plots._hasPlotType.bind(annotationOut);
 
             var annotationIn = {
-                annotations: [{ showarrow: true, absoluteArrowTail: true, x: '2008-07-01', ax: '2004-07-01', y: 0, ay: 50}]
+                annotations: [{ showarrow: true, absolutetail: true, x: '2008-07-01', ax: '2004-07-01', y: 0, ay: 50}]
             };
 
             Annotations.supplyLayoutDefaults(annotationIn, annotationOut);
