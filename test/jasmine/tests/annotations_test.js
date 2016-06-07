@@ -3,29 +3,29 @@ var Annotations = require('@src/components/annotations');
 var Dates = require('@src/lib/dates');
 
 describe('Test annotations', function() {
-  'use strict';
+    'use strict';
 
-  describe('supplyLayoutDefaults', function() {
-    it('should default to not use absolute arrow tail', function() {
-      var annotationDefaults = {};
-      annotationDefaults._has = function() { return false };
+    describe('supplyLayoutDefaults', function() {
+        it('should default to not use absolute arrow tail', function() {
+            var annotationDefaults = {};
+            annotationDefaults._has = function() { return false; };
 
-      Annotations.supplyLayoutDefaults({ annotations: [{ showarrow: true, arrowhead: 2}] }, annotationDefaults);
+            Annotations.supplyLayoutDefaults({ annotations: [{ showarrow: true, arrowhead: 2}] }, annotationDefaults);
 
-      expect(annotationDefaults.annotations[0].absolutetail).toBe(false);
+            expect(annotationDefaults.annotations[0].absolutetail).toBe(false);
+        });
+
+        it('should convert ax/ay date coordinates to milliseconds if absolutetail is true', function() {
+            var annotationOut = { xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }};
+            annotationOut._has = function() { return false; };
+
+            var annotationIn = {
+                annotations: [{ showarrow: true, absolutetail: true, x: '2008-07-01', ax: '2004-07-01', y: 0, ay: 50}]
+            };
+
+            Annotations.supplyLayoutDefaults(annotationIn, annotationOut);
+
+            expect(annotationIn.annotations[0].ax).toEqual(Dates.dateTime2ms('2004-07-01'));
+        });
     });
-
-    it('should convert ax/ay date coordinates to milliseconds if absolutetail is true', function() {
-      var annotationOut = { xaxis: { type: 'date', range: ['2000-01-01', '2016-01-01'] }};
-      annotationOut._has = function() { return false };
-
-      var annotationIn = {
-        annotations: [{ showarrow: true, absolutetail: true, x: '2008-07-01', ax: '2004-07-01', y: 0, ay: 50}]
-      };
-
-      Annotations.supplyLayoutDefaults(annotationIn, annotationOut);
-
-      expect(annotationIn.annotations[0].ax).toEqual(Dates.dateTime2ms('2004-07-01'));
-    });
-  });
 });
