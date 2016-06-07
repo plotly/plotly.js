@@ -78,24 +78,12 @@ module.exports = function toSVG(gd, format) {
                 return;
             }
 
-            // I've seen font-family styles with non-escaped double quotes in them - breaks the
-            // serialized svg because the style attribute itself is double-quoted!
-            // Is this an IE thing? Any other attributes or style elements that can have quotes in them?
-            // TODO: this looks like a noop right now - what happened to it?
-
-            /*
-             * Font-family styles with double quotes in them breaks the to-image
-             * step in FF42 because the style attribute itself is wrapped in
-             * double quotes. See:
-             *
-             * - http://codepen.io/etpinard/pen/bEdQWK
-             * - https://github.com/plotly/plotly.js/pull/104
-             *
-             * for more info.
-             */
+            // Font family styles break things because of quotation marks,
+            // so we must remove them *after* the SVG DOM has been serialized
+            // to a string (browsers convert singles back)
             var ff = txt.style('font-family');
             if(ff && ff.indexOf('"') !== -1) {
-                txt.style('font-family', ff.replace(/"/g, '\\\''));
+                txt.style('font-family', ff.replace(/"/g, 'TOBESTRIPPED'));
             }
         });
 
@@ -114,6 +102,9 @@ module.exports = function toSVG(gd, format) {
     var s = new window.XMLSerializer().serializeToString(svg.node());
     s = svgTextUtils.html_entity_decode(s);
     s = svgTextUtils.xml_entity_encode(s);
+
+    // Fix quotations around font strings
+    s = s.replace(/("TOBESTRIPPED)|(TOBESTRIPPED")/g, '\'');
 
     return s;
 };
