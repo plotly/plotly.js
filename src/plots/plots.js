@@ -493,10 +493,11 @@ plots.supplyDefaults = function(gd) {
         plots.supplyLayoutGlobalDefaults(newLayout, newFullLayout);
 
         var missingWidthOrHeight = (!newLayout.width || !newLayout.height),
-            autosize = newLayout.autosize,
+            autosize = newFullLayout.autosize,
             autosizable = gd._context && gd._context.autosizable,
             initialAutoSize = missingWidthOrHeight && (autosize || autosizable);
         if(initialAutoSize) plots.plotAutoSize(gd, newLayout, newFullLayout);
+        else if(missingWidthOrHeight) plots.sanitizeMargins(gd);
 
         // for backwards-compatibility with Plotly v1.x.x
         if(!autosize && missingWidthOrHeight) {
@@ -778,7 +779,6 @@ plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     coerce('margin.pad');
     coerce('margin.autoexpand');
 
-    // called in plotAutoSize otherwise
     if(layoutIn.width && layoutIn.height) plots.sanitizeMargins(layoutOut);
 
     coerce('paper_bgcolor');
@@ -847,9 +847,9 @@ plots.plotAutoSize = function plotAutoSize(gd, layout, fullLayout) {
     if(heightHasChanged || widthHasChanged) {
         if(widthHasChanged) fullLayout.width = newWidth;
         if(heightHasChanged) fullLayout.height = newHeight;
-
-        plots.sanitizeMargins(fullLayout);
     }
+
+    plots.sanitizeMargins(fullLayout);
 };
 
 /**
