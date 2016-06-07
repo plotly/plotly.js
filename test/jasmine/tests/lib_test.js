@@ -1041,4 +1041,10 @@ describe('Test lib.js:', function() {
             }).toThrowError('Separator string required for formatting!');
         });
     });
+
+    describe('isPlotDiv', function() {
+        it('should work on plain objects', function() {
+            expect(Lib.isPlotDiv({})).toBe(false);
+        });
+    });
 });
