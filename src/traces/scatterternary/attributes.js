@@ -10,7 +10,10 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
+var colorAttributes = require('../../components/colorscale/color_attributes');
+
 var extendFlat = require('../../lib/extend').extendFlat;
+var extendDeep = require('../../lib/extend').extendDeep;
 
 var scatterMarkerAttrs = scatterAttrs.marker,
     scatterLineAttrs = scatterAttrs.line,
@@ -95,7 +98,7 @@ module.exports = {
         ].join(' ')
     }),
     fillcolor: scatterAttrs.fillcolor,
-    marker: {
+    marker: extendDeep({}, colorAttributes('marker'), {
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
@@ -103,25 +106,11 @@ module.exports = {
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
-        color: scatterMarkerAttrs.color,
-        colorscale: scatterMarkerAttrs.colorscale,
-        cauto: scatterMarkerAttrs.cauto,
-        cmax: scatterMarkerAttrs.cmax,
-        cmin: scatterMarkerAttrs.cmin,
-        autocolorscale: scatterMarkerAttrs.autocolorscale,
-        reversescale: scatterMarkerAttrs.reversescale,
         showscale: scatterMarkerAttrs.showscale,
-        line: {
-            color: scatterMarkerLineAttrs.color,
-            width: scatterMarkerLineAttrs.width,
-            colorscale: scatterMarkerLineAttrs.colorscale,
-            cauto: scatterMarkerLineAttrs.cauto,
-            cmax: scatterMarkerLineAttrs.cmax,
-            cmin: scatterMarkerLineAttrs.cmin,
-            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
-            reversescale: scatterMarkerLineAttrs.reversescale
-        }
-    },
+        line: extendDeep({}, colorAttributes('marker'.line), {
+            width: scatterMarkerLineAttrs.width
+        })
+    }),
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
