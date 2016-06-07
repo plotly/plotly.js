@@ -8,9 +8,12 @@
 
 'use strict';
 
-var scatterAttrs = require('../scatter/attributes'),
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+var scatterAttrs = require('../scatter/attributes');
+var colorAttributes = require('../../components/colorscale/color_attributes');
+var extendDeep = require('../../lib/extend').extendDeep;
+
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
 
 module.exports = {
@@ -31,26 +34,12 @@ module.exports = {
             'along the vertical (horizontal).'
         ].join(' ')
     },
-    marker: {
-        color: scatterMarkerAttrs.color,
-        colorscale: scatterMarkerAttrs.colorscale,
-        cauto: scatterMarkerAttrs.cauto,
-        cmax: scatterMarkerAttrs.cmax,
-        cmin: scatterMarkerAttrs.cmin,
-        autocolorscale: scatterMarkerAttrs.autocolorscale,
-        reversescale: scatterMarkerAttrs.reversescale,
+    marker: extendDeep({}, colorAttributes('marker'), {
         showscale: scatterMarkerAttrs.showscale,
-        line: {
-            color: scatterMarkerLineAttrs.color,
-            colorscale: scatterMarkerLineAttrs.colorscale,
-            cauto: scatterMarkerLineAttrs.cauto,
-            cmax: scatterMarkerLineAttrs.cmax,
-            cmin: scatterMarkerLineAttrs.cmin,
-            width: scatterMarkerLineAttrs.width,
-            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
-            reversescale: scatterMarkerLineAttrs.reversescale
-        }
-    },
+        line: extendDeep({}, colorAttributes('marker.line'), {
+            width: scatterMarkerLineAttrs.width
+        })
+    }),
 
     r: scatterAttrs.r,
     t: scatterAttrs.t,
