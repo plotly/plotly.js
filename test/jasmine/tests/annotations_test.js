@@ -1,5 +1,6 @@
 require('@src/plotly');
 var Annotations = require('@src/components/annotations');
+var Dates = require('@src/lib/dates');
 
 describe('Test annotations', function() {
   'use strict';
@@ -24,7 +25,7 @@ describe('Test annotations', function() {
 
       Annotations.supplyLayoutDefaults(annotationIn, annotationOut);
 
-      expect(annotationIn.annotations[0].ax).toEqual(1088654400000);
+      expect(annotationIn.annotations[0].ax).toEqual(Dates.dateTime2ms('2004-07-01'));
     });
   });
 });
