@@ -26,7 +26,8 @@ module.exports = {
     // we can edit titles, move annotations, etc
     editable: false,
 
-    // DO initial autosize
+    // DO autosize once regardless of layout.autosize
+    // (use default width or height values otherwise)
     autosizable: false,
 
     // if we DO autosize, do we fill the container or the screen?
