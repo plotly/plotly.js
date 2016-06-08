@@ -839,13 +839,14 @@ Plotly.newPlot = function(gd, data, layout, config) {
     return Plotly.plot(gd, data, layout, config);
 };
 
-function doCalcdata(gd) {
+function doCalcdata(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout;
 
     var i, trace, module, cd;
 
+    var oldCalcdata = (gd.calcdata || []).slice(0);
     var calcdata = gd.calcdata = new Array(fullData.length);
 
     // extra helper variables
@@ -870,6 +871,13 @@ function doCalcdata(gd) {
     }
 
     for(i = 0; i < fullData.length; i++) {
+        // If traces were specified and this trace was not included, then transfer it over from
+        // the old calcdata:
+        if (Array.isArray(traces) && traces.indexOf(i) === -1) {
+            calcdata[i] = oldCalcdata[i];
+            continue;
+        }
+
         trace = fullData[i];
         module = trace._module;
         cd = [];
@@ -1521,7 +1529,18 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 // 4. doCalcdata
 // 5. begin animation
 Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
-    var i, newTraceData, curData, value;
+    var i, newTraceData, curData, value, traceIdx;
+
+    if (!Array.isArray(newData)) {
+        Lib.warn('Animate fail. newData must be an array of traces');
+        return Promise.reject();
+    }
+
+    transitionOpts = transitionOpts || {};
+    transitionOpts.duration = transitionOpts.duration === undefined ? 250 : transitionOpts.duration;
+    transitionOpts.easing = transitionOpts.easing === undefined ? 'cubic-in-out' : transitionOpts.easing;
+    transitionOpts.cascade = transitionOpts.cascade === undefined ? 0 : transitionOpts.cascade;
+    transitionOpts.leadingEdgeRestyle = transitionOpts.leadingEdgeRestyle === undefined ? false : transitionOpts.leadingEdgeRestyle;
 
     gd = getGraphDiv(gd);
 
@@ -1532,30 +1551,58 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
 
     cloneTraceDefinitions(gd);
 
+    var animatedTraces = [];
+
     for (i = 0; i < traces.length; i++) {
+        var traceIdx = traces[i];
+        var trace = gd._fullData[traceIdx];
+        var module = trace._module;
+
+        if (!module.animate) {
+            continue;
+        }
+
+        animatedTraces.push(traceIdx);
+
         newTraceData = newData[i];
         curData = gd.data[traces[i]];
-        //var trace = gd._fullData[traces[i]];
 
         for (var ai in newTraceData) {
             var value = newTraceData[ai];
             Lib.nestedProperty(curData, ai).set(value);
         }
-    }
 
-    // Placeholder for more general transfer of data:
-    for (var i = 0; i < traces.length; i++) {
-        if (gd.data[traces[i]].marker && gd.data[traces[i]].marker.size) {
-            gd._fullData[traces[i]].marker.size = gd.data[traces[i]].marker.size
+
+        var traceIdx = traces[i];
+        if (gd.data[traceIdx].marker && gd.data[traceIdx].marker.size) {
+            gd._fullData[traceIdx].marker.size = gd.data[traceIdx].marker.size
         }
-        gd._fullData[traces[i]].x = gd.data[traces[i]].x;
-        gd._fullData[traces[i]].y = gd.data[traces[i]].y;
+        gd._fullData[traceIdx].x = gd.data[traceIdx].x;
+        gd._fullData[traceIdx].y = gd.data[traceIdx].y;
+        gd._fullData[traceIdx].z = gd.data[traceIdx].z;
+        gd._fullData[traceIdx].key = gd.data[traceIdx].key;
     }
 
-    doCalcdata(gd);
+    doCalcdata(gd, animatedTraces);
 
-    for (var i = 0; i < traces.length; i++) {
-        var trace = gd._fullData[traces[i]];
+    var animateList = [];
+    var restyleList = [];
+
+    function doAnimations () {
+        var a;
+        for (i = 0; i < animateList.length; i++) {
+            a = animateList[i];
+            a.module.animate(gd, a.contFull, a.newData, transitionOpts);
+        }
+        if (!transitionOpts.leadingEdgeRestyle) {
+            return new Promise(function(resolve, reject) {
+                setTimeout(resolve, transitionOpts.duration);
+            });
+        }
+    }
+
+    for (var i = 0; i < animatedTraces.length; i++) {
+        var trace = gd._fullData[animatedTraces[i]];
         var module = trace._module;
         var cd = [];
 
@@ -1579,50 +1626,46 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
     }
 
     for (i = 0; i < traces.length; i++) {
+        var traceIdx = traces[i];
 
-        var idx = traces[i];
-
-        var cont = gd.data[idx];
-        var contFull = gd._fullData[idx];
+        var cont = gd.data[traceIdx];
+        var contFull = gd._fullData[traceIdx];
         var module = contFull._module;
 
         if (module.animate) {
-            module.animate(gd, contFull, newData[i], transitionOpts);
-        }
-    }
+            animateList.push({
+                module: module,
+                contFull: contFull,
+                newData: newData[i]
+            });
+        } else {
+            var thisTrace = [traceIdx];
+            var thisUpdate = {};
 
-    /*
-    for(var i = 0; i < gd.calcdata.length; i++) {
-        gd.calcdata[i][0].trace = gd._fullData[i];
-    }
-
-    var seq;
-    seq = [Plots.previousPromises];
-
-    seq.push(function doAnimate () {
-        for (var i = 0; i < traces.length; i++) {
-            //var cont = gd.data[traces[i]];
-            var trace = gd._fullData[traces[i]];
-            var mod = trace._module;
-
-            if (mod.animate) {
-                mod.animate(gd, trace, data[i], transitionOpts);
+            for (ai in newData[i]) {
+                thisUpdate[ai] = [newData[i][ai]];
             }
+
+            restyleList.push((function (md, data, traces) {
+                return function () {
+                    return Plotly.restyle(gd, data, traces);
+                }
+            }(module, thisUpdate, [traceIdx])));
         }
-        return Plots.previousPromises(gd);
-    });
+    }
+
+    var seq = [Plots.previousPromises];
+    seq.push(doAnimations);
+    seq = seq.concat(restyleList);
 
     var plotDone = Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function() {
-        gd.emit('plotly_beginanimate', [traces]);
+        gd.emit('plotly_animate', []);
         return gd;
     });
-    */
-
-
 }
 
 // -----------------------------------------------------

@@ -27,6 +27,7 @@ module.exports = function animate (gd, trace, data, opts) {
     opts = opts || {};
     var transitionDuration = isNumeric(opts.duration) ? opts.duration : 250;
     var transitionEasing = !!opts.easing ? opts.easing : 'cubic-in-out';
+    var transitionCascade = !!opts.cascade ? opts.cascade : 0;
 
     //window.scattertraces = plotinfo.plot.select('.scatterlayer')
 
@@ -227,6 +228,16 @@ module.exports = function animate (gd, trace, data, opts) {
         return d.filter(function(v) { return v.vis; });
     }
 
+    function keyFunc (d) {
+        return d.key;
+    }
+
+    function getKeyFunc(trace) {
+        if (trace.key) {
+            return keyFunc;
+        }
+    }
+
     scattertraces.select('g.points')
         .each(function(d) {
             var trace = d[0].trace,
@@ -237,11 +248,47 @@ module.exports = function animate (gd, trace, data, opts) {
             if((!showMarkers && !showText) || trace.visible !== true) s.remove();
             else {
                 if(showMarkers) {
-                    s.selectAll('path.point')
-                        .data(trace.marker.maxdisplayed ? visFilter : Lib.identity)
-                            .call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace);
+                    var selection = s.selectAll('path.point')
+                        .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace))
+
+                    //console.log('d:', d.length);
+                    //console.log('transitionCascade:', transitionCascade);
+                    selection.call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace, null, 0, transitionCascade / d.length);
+
+                    var enter = selection.enter().append('path')
+                        .classed('point', true)
+                        .call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace, 1)
+
+                    selection.exit()
+                        .call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace, -1)
                 }
             }
         });
 
 };
+
+    /*
+    window.gd = gd;
+
+    scattertraces.select('g.points')
+        .each(function(d) {
+            var trace = d[0].trace,
+                s = d3.select(this),
+                showMarkers = subTypes.hasMarkers(trace),
+                showText = subTypes.hasText(trace);
+
+            if((!showMarkers && !showText) || trace.visible !== true) s.remove();
+            else {
+                if(showMarkers) {
+                    var selection = s.selectAll('path.point')
+                        .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace));
+
+                    selection.call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace);
+
+                    selection.enter().append('path')
+                        .classed('point', true)
+                        .call(Drawing.translatePoints, xa, ya);
+                }
+            }
+        });
+};*/

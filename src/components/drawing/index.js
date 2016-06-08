@@ -46,8 +46,8 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
-drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasing, trace) {
-    s.each(function(d) {
+drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasing, trace, dir, transitionDelay, transitionCascade) {
+    s.each(function(d, i) {
         // put xp and yp into d if pixel scaling is already done
         var x = d.xp || xa.c2p(d.x),
             y = d.yp || ya.c2p(d.y),
@@ -57,16 +57,39 @@ drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasi
             if(this.nodeName==='text') {
               p.attr('x',x).attr('y',y);
             } else {
-              var join = p;
               if (isNumeric(transitionDuration) && transitionDuration > 0) {
-                var trans = p.transition()
-                  .duration(transitionDuration)
-                  .ease(transitionEasing)
-                  .attr('transform', 'translate('+x+','+y+')')
+                var trans;
+                if (!dir) {
+                    trans = p.transition()
+                        .delay(transitionDelay + transitionCascade * i)
+                        .duration(transitionDuration)
+                        .ease(transitionEasing)
+                        .attr('transform', 'translate('+x+','+y+')')
 
-                if (trace) {
-                  trans.call(drawing.pointStyle, trace)
+                    if (trace) {
+                      trans.call(drawing.pointStyle, trace)
+                    }
+                } else if (dir === -1) {
+                    trans = p.style('opacity', 1)
+                        .transition()
+                            .duration(transitionDuration)
+                            .ease(transitionEasing)
+                            .style('opacity', 0)
+                            .remove();
+                } else if (dir === 1) {
+                    trans = p.attr('transform', 'translate('+x+','+y+')')
+
+                    if (trace) {
+                      trans.call(drawing.pointStyle, trace)
+                    }
+
+                    trans.style('opacity', 0)
+                        .transition()
+                            .duration(transitionDuration)
+                            .ease(transitionEasing)
+                            .style('opacity', 1)
                 }
+
               } else {
                 p.attr('transform', 'translate('+x+','+y+')');
               }

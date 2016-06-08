@@ -197,6 +197,16 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         return d.filter(function(v) { return v.vis; });
     }
 
+    function keyFunc (d) {
+        return d.key;
+    }
+
+    function getKeyFunc(trace) {
+        if (trace.key) {
+            return keyFunc;
+        }
+    }
+
     scattertraces.append('g')
         .attr('class', 'points')
         .each(function(d) {
@@ -209,7 +219,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
             else {
                 if(showMarkers) {
                     s.selectAll('path.point')
-                        .data(trace.marker.maxdisplayed ? visFilter : Lib.identity)
+                        .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace))
                         .enter().append('path')
                             .classed('point', true)
                             .call(Drawing.translatePoints, xa, ya);
