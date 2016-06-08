@@ -72,7 +72,11 @@ function readFiles(files) {
 }
 
 function createMocksList(files) {
-    var mocksList = files.map(function(file) {
+
+    // eliminate pollutants (e.g .DS_Store) that can accumulate in the mock directory
+    var jsonFiles = files.filter(function(file) {return file.extname === '.json';});
+
+    var mocksList = jsonFiles.map(function(file) {
         var contents = JSON.parse(file.contents);
 
         // get plot type keywords from mocks
