@@ -25,7 +25,7 @@ exports.attrRegex = constants.attrRegex;
 
 exports.attributes = require('./attributes');
 
-exports.plot = function(gd) {
+exports.plot = function(gd, animationConfig) {
     var fullLayout = gd._fullLayout,
         subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
         calcdata = gd.calcdata,
@@ -69,7 +69,7 @@ exports.plot = function(gd) {
         // remove old traces, then redraw everything
         // TODO: use enter/exit appropriately in the plot functions
         // so we don't need this - should sometimes be a big speedup
-        if(subplotInfo.plot) subplotInfo.plot.selectAll('g.trace').remove();
+        if(!animationConfig && subplotInfo.plot) subplotInfo.plot.selectAll('g.trace').remove();
 
         for(var j = 0; j < modules.length; j++) {
             var _module = modules[j];
@@ -79,7 +79,12 @@ exports.plot = function(gd) {
 
             // plot all traces of this type on this subplot at once
             var cdModule = getCdModule(cdSubplot, _module);
-            _module.plot(gd, subplotInfo, cdModule);
+
+            if (animationConfig) {
+              _module.animate(gd, subplotInfo, cdModule, transtionOpts);
+            } else {
+              _module.plot(gd, subplotInfo, cdModule);
+            }
         }
     }
 };

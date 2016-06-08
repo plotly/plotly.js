@@ -1529,6 +1529,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 // 4. doCalcdata
 // 5. begin animation
 Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
+    var fullLayout = gd._fullLayout;
     var i, newTraceData, curData, value, traceIdx;
 
     if (!Array.isArray(newData)) {
@@ -1592,7 +1593,11 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
         var a;
         for (i = 0; i < animateList.length; i++) {
             a = animateList[i];
-            a.module.animate(gd, a.contFull, a.newData, transitionOpts);
+            //a.module.animate(gd, a.contFull, a.newData, transitionOpts);
+            var basePlotModules = fullLayout._basePlotModules;
+            for(i = 0; i < basePlotModules.length; i++) {
+                basePlotModules[i].plot(gd, transitionOpts);
+            }
         }
         if (!transitionOpts.leadingEdgeRestyle) {
             return new Promise(function(resolve, reject) {

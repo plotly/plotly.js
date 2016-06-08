@@ -23,6 +23,8 @@ var linePoints = require('./line_points');
 module.exports = function plot(gd, plotinfo, cdscatter) {
     selectMarkers(gd, plotinfo, cdscatter);
 
+    //console.log('value:', value);
+
     var xa = plotinfo.x(),
         ya = plotinfo.y();
 
@@ -44,6 +46,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         ownFillEl3, ownFillDir, tonext, nexttonext;
 
     scattertraces.each(function(d) {
+        console.log('plot d:', d);
         var trace = d[0].trace,
             line = trace.line,
             tr = d3.select(this);

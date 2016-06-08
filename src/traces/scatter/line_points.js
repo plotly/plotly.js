@@ -60,7 +60,7 @@ module.exports = function linePoints(d, opts) {
     function getTolerance(pt) {
         var xFrac = pt[0] / xa._length,
             yFrac = pt[1] / ya._length;
-        return (1 + 10 * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance;
+        return (1 + 10 * Math.max(0, -xFrac, xFrac - 1, -yFrac, yFrac - 1)) * baseTolerance * 0;
     }
 
     function ptDist(pt1, pt2) {

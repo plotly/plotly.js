@@ -98,21 +98,24 @@ module.exports = function animate (gd, trace, data, opts) {
         // make the fill-to-zero path now, so it shows behind the line
         // fill to next puts the fill associated with one trace
         // grouped with the previous
-        /*if(trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
+        var fills = tr.selectAll('.js-fill')[0];
+        if(trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
                 (trace.fill.substr(0, 2) === 'to' && !prevpath)) {
-            ownFillEl3 = tr.append('path')
-                .classed('js-fill', true);
+            ownFillEl3 = d3.select(fills[0]);
         }
-        else ownFillEl3 = null;*/
+        else ownFillEl3 = null;
 
         // make the fill-to-next path now for the NEXT trace, so it shows
         // behind both lines.
         // nexttonext was created last time, but give it
         // this curve's data for fill color
-        if(nexttonext) tonext = nexttonext.datum(d);
+        if(nexttonext) tonext = nexttonext.data(d);
 
         // now make a new nexttonext for next time
-        //nexttonext = tr.append('path').classed('js-fill', true);
+        nexttonext = d3.select(fills[ownFillEl3 ? 0 : 1]);
+
+        console.log('ownFillEl3:', ownFillEl3);
+        console.log('nexttonext:', nexttonext);
 
         if(['hv', 'vh', 'hvh', 'vhv'].indexOf(line.shape) !== -1) {
             pathfn = Drawing.steps(line.shape);
@@ -193,10 +196,16 @@ module.exports = function animate (gd, trace, data, opts) {
 
                         // fill to zero: full trace path, plus extension of
                         // the endpoints to the appropriate axis
-                        ownFillEl3.attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
+                        ownFillEl3.transition()
+                            .duration(transitionDuration)
+                            .ease(transitionEasing)
+                            .attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
                     }
                     // fill to self: just join the path to itself
-                    else ownFillEl3.attr('d', fullpath + 'Z');
+                    else ownFillEl3.transition()
+                        .duration(transitionDuration)
+                        .ease(transitionEasing)
+                        .attr('d', fullpath + 'Z');
                 }
             }
             else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevpath) {
@@ -206,7 +215,10 @@ module.exports = function animate (gd, trace, data, opts) {
                     // contours, we just add the two paths closed on themselves.
                     // This makes strange results if one path is *not* entirely
                     // inside the other, but then that is a strange usage.
-                    tonext.attr('d', fullpath + 'Z' + prevpath + 'Z');
+                    tonext.transition()
+                        .duration(transitionDuration)
+                        .ease(transitionEasing)
+                        .attr('d', fullpath + 'Z' + prevpath + 'Z');
                 }
                 else {
                     // tonextx/y: for now just connect endpoints with lines. This is
@@ -214,7 +226,10 @@ module.exports = function animate (gd, trace, data, opts) {
                     // y/x, but if they *aren't*, we should ideally do more complicated
                     // things depending on whether the new endpoint projects onto the
                     // existing curve or off the end of it
-                    tonext.attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
+                    tonext.transition()
+                        .duration(transitionDuration)
+                        .ease(transitionEasing)
+                        .attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
                 }
             }
             prevpath = revpath;
