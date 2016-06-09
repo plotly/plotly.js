@@ -93,7 +93,7 @@ module.exports = {
         dflt: 0,
         role: 'style',
         description: [
-          'Specifies the desired amount of bins. This value will be used',
+          'Specifies the maximum number of desired bins. This value will be used',
           'in an algorithm that will decide the optimal bin size such that the',
           'histogram best visualizes the distribution of the data'
         ]
@@ -117,7 +117,7 @@ module.exports = {
         dflt: 0,
         role: 'style',
         description: [
-          'Specifies the desired amount of bins. This value will be used',
+          'Specifies the maximum number of desired bins. This value will be used',
           'in an algorithm that will decide the optimal bin size such that the',
           'histogram best visualizes the distribution of the data'
         ]
