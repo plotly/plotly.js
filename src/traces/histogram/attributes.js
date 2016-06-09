@@ -85,7 +85,7 @@ module.exports = {
             'by an algorithm. Note that this should be set to false if you',
             'want to manually set the number of bins using the attributes in',
             'xbins.'
-          ].join(' ')
+        ].join(' ')
     },
     nbinsx: {
         valType: 'integer',
@@ -93,9 +93,9 @@ module.exports = {
         dflt: 0,
         role: 'style',
         description: [
-          'Specifies the maximum number of desired bins. This value will be used',
-          'in an algorithm that will decide the optimal bin size such that the',
-          'histogram best visualizes the distribution of the data.'
+            'Specifies the maximum number of desired bins. This value will be used',
+            'in an algorithm that will decide the optimal bin size such that the',
+            'histogram best visualizes the distribution of the data.'
         ].join(' ')
     },
     xbins: makeBinsAttr('x'),
@@ -105,10 +105,10 @@ module.exports = {
         dflt: true,
         role: 'style',
         description: [
-          'Determines whether or not the y axis bin attributes are picked',
-          'by an algorithm. Note that this should be set to false if you',
-          'want to manually set the number of bins using the attributes in',
-          'ybins.'
+            'Determines whether or not the y axis bin attributes are picked',
+            'by an algorithm. Note that this should be set to false if you',
+            'want to manually set the number of bins using the attributes in',
+            'ybins.'
         ].join(' ')
     },
     nbinsy: {
@@ -117,9 +117,9 @@ module.exports = {
         dflt: 0,
         role: 'style',
         description: [
-          'Specifies the maximum number of desired bins. This value will be used',
-          'in an algorithm that will decide the optimal bin size such that the',
-          'histogram best visualizes the distribution of the data.'
+            'Specifies the maximum number of desired bins. This value will be used',
+            'in an algorithm that will decide the optimal bin size such that the',
+            'histogram best visualizes the distribution of the data.'
         ].join(' ')
     },
     ybins: makeBinsAttr('y'),
