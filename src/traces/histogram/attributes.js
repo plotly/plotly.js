@@ -96,7 +96,7 @@ module.exports = {
           'Specifies the maximum number of desired bins. This value will be used',
           'in an algorithm that will decide the optimal bin size such that the',
           'histogram best visualizes the distribution of the data.'
-        ]
+        ].join(' ')
     },
     xbins: makeBinsAttr('x'),
 
@@ -120,7 +120,7 @@ module.exports = {
           'Specifies the maximum number of desired bins. This value will be used',
           'in an algorithm that will decide the optimal bin size such that the',
           'histogram best visualizes the distribution of the data.'
-        ]
+        ].join(' ')
     },
     ybins: makeBinsAttr('y'),
 
