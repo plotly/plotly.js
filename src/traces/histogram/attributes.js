@@ -82,15 +82,21 @@ module.exports = {
         role: 'style',
         description: [
             'Determines whether or not the x axis bin attributes are picked',
-            'by an algorithm.'
-        ].join(' ')
+            'by an algorithm. Note that this should be set to false if you',
+            'want to manually set the number of bins using the attributes in',
+            'xbins'
+          ].join(' ')
     },
     nbinsx: {
         valType: 'integer',
         min: 0,
         dflt: 0,
         role: 'style',
-        description: 'Sets the number of x axis bins.'
+        description: [
+          'Specifies the desired amount of bins. This value will be used',
+          'in an algorithm that will decide the optimal bin size such that the',
+          'histogram best visualizes the distribution of the data'
+        ]
     },
     xbins: makeBinsAttr('x'),
 
@@ -99,8 +105,10 @@ module.exports = {
         dflt: true,
         role: 'style',
         description: [
-            'Determines whether or not the y axis bin attributes are picked',
-            'by an algorithm.'
+          'Determines whether or not the y axis bin attributes are picked',
+          'by an algorithm. Note that this should be set to false if you',
+          'want to manually set the number of bins using the attributes in',
+          'ybins'
         ].join(' ')
     },
     nbinsy: {
@@ -108,7 +116,11 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'style',
-        description: 'Sets the number of y axis bins.'
+        description: [
+          'Specifies the desired amount of bins. This value will be used',
+          'in an algorithm that will decide the optimal bin size such that the',
+          'histogram best visualizes the distribution of the data'
+        ]
     },
     ybins: makeBinsAttr('y'),
 
