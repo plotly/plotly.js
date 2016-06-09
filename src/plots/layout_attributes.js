@@ -45,9 +45,8 @@ module.exports = {
         description: 'Sets the title font.'
     }),
     autosize: {
-        valType: 'enumerated',
+        valType: 'boolean',
         role: 'info',
-        values: [false, true],
         dflt: false,
         description: [
             'Determines whether or not a layout width or height',
