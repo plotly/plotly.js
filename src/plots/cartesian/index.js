@@ -11,6 +11,8 @@
 
 var Plots = require('../plots');
 
+var d3 = require('d3');
+
 var constants = require('./constants');
 
 exports.name = 'cartesian';
@@ -61,30 +63,36 @@ exports.plot = function(gd, animationConfig) {
         return cdModule;
     }
 
+    function keyFunc (d) {
+        return d[0].trace.uid;
+    }
+
     for(var i = 0; i < subplots.length; i++) {
         var subplot = subplots[i],
             subplotInfo = fullLayout._plots[subplot],
             cdSubplot = getCdSubplot(calcdata, subplot);
 
-        // remove old traces, then redraw everything
-        // TODO: use enter/exit appropriately in the plot functions
-        // so we don't need this - should sometimes be a big speedup
-        if(!animationConfig && subplotInfo.plot) subplotInfo.plot.selectAll('g.trace').remove();
-
         for(var j = 0; j < modules.length; j++) {
             var _module = modules[j];
-
             // skip over non-cartesian trace modules
             if(_module.basePlotModule.name !== 'cartesian') continue;
 
             // plot all traces of this type on this subplot at once
             var cdModule = getCdModule(cdSubplot, _module);
 
-            if (animationConfig) {
-              _module.animate(gd, subplotInfo, cdModule, transtionOpts);
-            } else {
-              _module.plot(gd, subplotInfo, cdModule);
-            }
+            var tracelayer = subplotInfo.plot.select('g.' + _module.name + 'layer');
+            var subplotJoin = tracelayer.selectAll('g.trace').data(cdModule, keyFunc);
+
+            subplotJoin.enter()
+                .append('g')
+                    .classed('trace', true)
+                    .classed(_module.name, true)
+                    .each(function(d) {
+                        d[0].trace._module.plot(gd, subplotInfo, d, this)
+                    });
+
+            subplotJoin.exit()
+                .remove()
         }
     }
 };

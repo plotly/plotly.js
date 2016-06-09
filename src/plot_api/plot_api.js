@@ -1586,6 +1586,28 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
 
     doCalcdata(gd, animatedTraces);
 
+    function doSetPositions () {
+		var subplots = Plots.getSubplotIds(fullLayout, 'cartesian');
+		var modules = fullLayout._modules;
+
+		// position and range calculations for traces that
+		// depend on each other ie bars (stacked or grouped)
+		// and boxes (grouped) push each other out of the way
+
+		var subplotInfo, _module;
+
+		for(var i = 0; i < subplots.length; i++) {
+  		    subplotInfo = fullLayout._plots[subplots[i]];
+
+		    for(var j = 0; j < modules.length; j++) {
+			    _module = modules[j];
+			    if(_module.setPositions) _module.setPositions(gd, subplotInfo);
+		    }
+		}
+	}
+
+	doSetPositions();
+
     var animateList = [];
     var restyleList = [];
 
