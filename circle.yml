@@ -21,7 +21,7 @@ dependencies:
     - wget --server-response --spider --tries=8 --retry-connrefused http://localhost:9010/ping
 test:
   override:
-    - sudo ./tasks/run_in_testbed.sh mytestbed "node test/image/compare_pixels_test.js"
+    - sudo ./tasks/run_in_testbed.sh mytestbed "export CIRCLECI=1 && node test/image/compare_pixels_test.js"
     - sudo ./tasks/run_in_testbed.sh mytestbed "node test/image/export_test.js"
     - npm run citest-jasmine
     - npm run test-bundle
