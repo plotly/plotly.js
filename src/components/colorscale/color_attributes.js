@@ -44,9 +44,9 @@ module.exports = function makeColorScaleAttributes(context) {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array',
                 ' and `cmin`, `cmax` are set by the user. In this case,',
-                ' it controls whether the first/last colors in `colorscale` correspond to',
-                ' the lowest/highest values in `color` (`cauto: true`), or the `cmin`/`cmax`',
-                ' values (`cauto: false`).',
+                ' it controls whether the color range represented by `colorscale` is mapped to',
+                ' the value bounds of the `color` array (`cauto: true`), or to the `cmin`..`cmax`',
+                ' value bounds (`cauto: false`).',
                 ' Defaults to `false` when `cmin`, `cmax` are set by the user.'
             ].join('')
         }),
