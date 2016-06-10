@@ -260,6 +260,22 @@ describe('Layout images', function() {
             }).then(done);
         });
 
+        it('should update the image position if changed', function(done) {
+            var update = {
+                'images[0].x': 0,
+                'images[0].y': 1
+            };
+
+            var img = Plotly.d3.select('image');
+
+            expect([+img.attr('x'), +img.attr('y')]).toEqual([1160, -170]);
+
+            Plotly.relayout(gd, update).then(function() {
+                var newImg = Plotly.d3.select('image');
+                expect([+newImg.attr('x'), +newImg.attr('y')]).toEqual([80, 100]);
+            }).then(done);
+        });
+
         it('should remove the image tag if an invalid source', function(done) {
 
             var selection = Plotly.d3.select('image');
