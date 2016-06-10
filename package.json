@@ -70,6 +70,7 @@
     "gl-select-box": "^1.0.1",
     "gl-spikes2d": "^1.0.1",
     "gl-surface3d": "^1.2.3",
+    "mapbox-gl": "^0.18.0",
     "mouse-change": "^1.1.1",
     "mouse-wheel": "^1.0.2",
     "ndarray": "^1.0.16",
