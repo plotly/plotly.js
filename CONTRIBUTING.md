@@ -157,6 +157,18 @@ which shows the baseline image, the generated image, the diff and the json mocks
 
 To view the results of a run on CircleCI, download the `build/test_images/` and `build/test_images_diff/` artifacts into your local repo and then run `npm run start-image_viewer`.
 
+### Note on testing our `mapbox-gl` integration
+
+Creating `mapbox-gl` graphs requires an
+[`accessToken`](https://www.mapbox.com/help/define-access-token/). To make sure
+that mapbox image and jasmine tests run properly, locate your Mapbox access
+token and run:
+
+
+```bash
+export MAPBOX_ACCESS_TOKEN="<your access token>" && npm run pretest
+```
+
 
 ## Repo organization
 
