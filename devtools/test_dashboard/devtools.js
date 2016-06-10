@@ -4,6 +4,7 @@
 
 var Fuse = require('fuse.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
+var credentials = require('../../build/credentials.json');
 
 // put d3 in window scope
 var d3 = window.d3 = Plotly.d3;
@@ -14,8 +15,15 @@ var Tabs = {
     // Set plot config options
     setPlotConfig: function() {
         Plotly.setPlotConfig({
+
             // use local topojson files
             topojsonURL: '../../dist/topojson/',
+
+            // register mapbox access token
+            // run `npm run preset` if you haven't yet
+            mapboxAccessToken: credentials.MAPBOX_ACCESS_TOKEN,
+
+            // show all logs in console
             logging: 2
         });
     },
