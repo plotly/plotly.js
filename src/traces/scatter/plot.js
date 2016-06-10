@@ -20,14 +20,22 @@ var arraysToCalcdata = require('./arrays_to_calcdata');
 var linePoints = require('./line_points');
 
 
-module.exports = function plot(gd, plotinfo, cdscatter, group) {
+module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
     selectMarkers(gd, plotinfo, cdscatter);
+
+    transitionOpts = transitionOpts || {};
+
+    var transitionDuration = transitionOpts.duration === undefined ? 0 : transitionOpts.duration;
+    var transitionEasing = transitionOpts.easing === undefined ? 'in-out-cubic' : transitionOpts.easing;
+
+    function transition (selection) {
+        return selection.transition()
+            .duration(transitionDuration)
+            .ease(transitionEasing);
+    }
 
     var xa = plotinfo.x(),
         ya = plotinfo.y();
-
-    console.log('xa:', xa.range);
-    console.log('xa:', xa.domain);
 
     var trace = cdscatter[0].trace,
         line = trace.line,
@@ -44,9 +52,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group) {
 
     // BUILD LINES AND FILLS
     var ownFillEl3, tonext, nexttonext;
-
     var ownFillDir = trace.fill.charAt(trace.fill.length - 1);
-
     if(ownFillDir !== 'x' && ownFillDir !== 'y') ownFillDir = '';
 
     // store node for tweaking by selectPoints
@@ -79,9 +85,12 @@ module.exports = function plot(gd, plotinfo, cdscatter, group) {
     // grouped with the previous
     if(trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
             (trace.fill.substr(0, 2) === 'to' && !prevtrace)) {
-        ownFillEl3 = tr.append('path')
-            .classed('js-fill', true);
+        ownFillEl3 = tr.select('.js-fill.js-tozero');
+        if (!ownFillEl3.size()) {
+            ownFillEl3 = tr.append('path').attr('class', 'js-fill js-tozero');
+        }
     } else {
+        tr.selectAll('.js-fill.js-tozero').remove();
         ownFillEl3 = null;
     }
 
@@ -90,7 +99,13 @@ module.exports = function plot(gd, plotinfo, cdscatter, group) {
     // nexttonext was created last time, but give it
     // this curve's data for fill color
     if (trace._nexttrace) {
-        trace._nexttonext = tr.append('path').classed('js-fill', true);
+        trace._nexttonext = tr.select('.js-fill.js-tonext');
+        if (!trace._nexttonext.size()) {
+            trace._nexttonext = tr.append('path').attr('class', 'js-fill js-tonext');
+        }
+    } else {
+        tr.selectAll('.js-fill.js-tonext').remove();
+        trace._nexttonext = null;
     }
 
     if (tonext) {
@@ -158,7 +173,12 @@ module.exports = function plot(gd, plotinfo, cdscatter, group) {
                 revpath = thisrevpath + 'Z' + revpath;
             }
             if(subTypes.hasLines(trace) && pts.length > 1) {
-                tr.append('path').classed('js-line', true).attr('d', thispath);
+                var lineJoin = tr.selectAll('.js-line').data([cdscatter]);
+
+                lineJoin.enter()
+                    .append('path').classed('js-line', true).attr('d', thispath);
+
+                transition(lineJoin).attr('d', thispath);
             }
         }
         if(ownFillEl3) {
@@ -173,10 +193,11 @@ module.exports = function plot(gd, plotinfo, cdscatter, group) {
 
                     // fill to zero: full trace path, plus extension of
                     // the endpoints to the appropriate axis
-                    ownFillEl3.attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
+                    transition(ownFillEl3).attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
+                } else {
+                    // fill to self: just join the path to itself
+                    transition(ownFillEl3).attr('d', fullpath + 'Z');
                 }
-                // fill to self: just join the path to itself
-                else ownFillEl3.attr('d', fullpath + 'Z');
             }
         }
         else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevpath) {
@@ -186,7 +207,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group) {
                 // contours, we just add the two paths closed on themselves.
                 // This makes strange results if one path is *not* entirely
                 // inside the other, but then that is a strange usage.
-                tonext.attr('d', fullpath + 'Z' + prevpath + 'Z');
+                transition(tonext).attr('d', fullpath + 'Z' + prevpath + 'Z');
             }
             else {
                 // tonextx/y: for now just connect endpoints with lines. This is
@@ -194,7 +215,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group) {
                 // y/x, but if they *aren't*, we should ideally do more complicated
                 // things depending on whether the new endpoint projects onto the
                 // existing curve or off the end of it
-                tonext.attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
+                transition(tonext).attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
             }
         }
     }
@@ -218,34 +239,47 @@ module.exports = function plot(gd, plotinfo, cdscatter, group) {
         }
     }
 
-    tr.append('g')
-        .attr('class', 'points')
-        .each(function(d) {
-            var trace = d[0].trace,
-                s = d3.select(this),
-                showMarkers = subTypes.hasMarkers(trace),
-                showText = subTypes.hasText(trace);
 
-            if((!showMarkers && !showText) || trace.visible !== true) s.remove();
-            else {
-                if(showMarkers) {
-                    s.selectAll('path.point')
-                        .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace))
-                        .enter().append('path')
-                            .classed('point', true)
-                            .call(Drawing.translatePoints, xa, ya);
-                }
-                if(showText) {
-                    s.selectAll('g')
-                        .data(trace.marker.maxdisplayed ? visFilter : Lib.identity)
-                        // each text needs to go in its own 'g' in case
-                        // it gets converted to mathjax
-                        .enter().append('g')
-                            .append('text')
-                            .call(Drawing.translatePoints, xa, ya);
-                }
+    function makePoints (d) {
+        var trace = d[0].trace,
+            s = d3.select(this),
+            showMarkers = subTypes.hasMarkers(trace),
+            showText = subTypes.hasText(trace);
+
+        if((!showMarkers && !showText) || trace.visible !== true) s.remove();
+        else {
+            if(showMarkers) {
+                var join = s.selectAll('path.point')
+                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace))
+
+                join.enter().append('path')
+                    .classed('point', true)
+                    .call(Drawing.translatePoints, xa, ya);
+
+                join.transition()
+                    .duration(0)
+                    .call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace, 0, 0, 0);
             }
-        });
+            if(showText) {
+                s.selectAll('g')
+                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity)
+                    // each text needs to go in its own 'g' in case
+                    // it gets converted to mathjax
+                    .enter().append('g')
+                        .append('text')
+                        .call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace, 0, 0, 0);
+            }
+        }
+    }
+
+    var pointJoin = tr.selectAll('.points').data([cdscatter]);
+
+    pointJoin.enter().append('g')
+        .classed('points', true)
+        .each(makePoints);
+
+    pointJoin.transition()
+        .each(makePoints);
 };
 
 function selectMarkers(gd, plotinfo, cdscatter) {

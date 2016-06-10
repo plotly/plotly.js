@@ -27,7 +27,7 @@ exports.attrRegex = constants.attrRegex;
 
 exports.attributes = require('./attributes');
 
-exports.plot = function(gd, animationConfig) {
+exports.plot = function(gd, transitionOpts) {
     var fullLayout = gd._fullLayout,
         subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
         calcdata = gd.calcdata,
@@ -90,6 +90,12 @@ exports.plot = function(gd, animationConfig) {
                     .each(function(d) {
                         d[0].trace._module.plot(gd, subplotInfo, d, this)
                     });
+
+            subplotJoin.transition()
+                .each(function(d) {
+                    d[0].trace._module.plot(gd, subplotInfo, d, this, transitionOpts)
+                });
+
 
             subplotJoin.exit()
                 .remove()
