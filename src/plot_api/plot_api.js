@@ -1648,7 +1648,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // to not go through a full replot
     var doPlotWhiteList = ['cartesian', 'pie', 'ternary'];
     fullLayout._basePlotModules.forEach(function(_module) {
-        if(doPlotWhiteList.indexOf(_module.name) === -1) doplot = true;
+        if(doPlotWhiteList.indexOf(_module.name) === -1) docalc = true;
     });
 
     // make a new empty vals array for undoit
