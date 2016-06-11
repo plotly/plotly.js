@@ -46,7 +46,14 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
-drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasing, trace, dir, transitionDelay, transitionCascade) {
+drawing.translatePoints = function(s, xa, ya, transitionConfig, trace) {
+
+    var hasTransition = transitionConfig && (transitionConfig || {}).duration > 0;
+
+    if (hasTransition) {
+        var size = s.size();
+    }
+
     s.each(function(d, i) {
         // put xp and yp into d if pixel scaling is already done
         var x = d.xp || xa.c2p(d.x),
@@ -57,26 +64,26 @@ drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasi
             if(this.nodeName==='text') {
               p.attr('x',x).attr('y',y);
             } else {
-              if (isNumeric(transitionDuration) && transitionDuration > 0) {
+              if (hasTransition) {
                 var trans;
-                if (!dir) {
+                if (!transitionConfig.direction) {
                     trans = p.transition()
-                        .delay(transitionDelay + transitionCascade * i)
-                        .duration(transitionDuration)
-                        .ease(transitionEasing)
+                        .delay(transitionConfig.delay + transitionConfig.cascade / size * i)
+                        .duration(transitionConfig.duration)
+                        .ease(transitionConfig.easing)
                         .attr('transform', 'translate('+x+','+y+')')
 
                     if (trace) {
                       trans.call(drawing.pointStyle, trace)
                     }
-                } else if (dir === -1) {
+                } else if (transitionConfig.direction === -1) {
                     trans = p.style('opacity', 1)
                         .transition()
-                            .duration(transitionDuration)
-                            .ease(transitionEasing)
+                            .duration(transitionConfig.duration)
+                            .ease(transitionConfig.easing)
                             .style('opacity', 0)
                             .remove();
-                } else if (dir === 1) {
+                } else if (transitionConfig.direction === 1) {
                     trans = p.attr('transform', 'translate('+x+','+y+')')
 
                     if (trace) {
@@ -85,8 +92,8 @@ drawing.translatePoints = function(s, xa, ya, transitionDuration, transitionEasi
 
                     trans.style('opacity', 0)
                         .transition()
-                            .duration(transitionDuration)
-                            .ease(transitionEasing)
+                            .duration(transitionConfig.duration)
+                            .ease(transitionConfig.easing)
                             .style('opacity', 1)
                 }
 

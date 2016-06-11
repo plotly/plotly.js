@@ -23,15 +23,20 @@ var linePoints = require('./line_points');
 module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
     selectMarkers(gd, plotinfo, cdscatter);
 
-    transitionOpts = transitionOpts || {};
+    var transitionConfig = Lib.extendFlat({}, transitionOpts || {});
+    transitionConfig = Lib.extendFlat({
+        duration: 0,
+        easing: 'in-out-cubic',
+        cascade: 0,
+        delay: 0,
+    }, transitionConfig);
 
-    var transitionDuration = transitionOpts.duration === undefined ? 0 : transitionOpts.duration;
-    var transitionEasing = transitionOpts.easing === undefined ? 'in-out-cubic' : transitionOpts.easing;
+    var hasTransition = transitionConfig.duration > 0;
 
     function transition (selection) {
         return selection.transition()
-            .duration(transitionDuration)
-            .ease(transitionEasing);
+            .duration(transitionConfig.duration)
+            .ease(transitionConfig.easing);
     }
 
     var xa = plotinfo.x(),
@@ -60,8 +65,6 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
 
     arraysToCalcdata(cdscatter);
 
-    if(!subTypes.hasLines(trace) && trace.fill === 'none') return;
-
     var prevpath = '';
     var prevtrace = trace._prevtrace;
 
@@ -79,6 +82,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
         revpath = '',
         // functions for converting a point array to a path
         pathfn, revpathbase, revpathfn;
+
 
     // make the fill-to-zero path now, so it shows behind the line
     // fill to next puts the fill associated with one trace
@@ -108,119 +112,123 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
         trace._nexttonext = null;
     }
 
-    if (tonext) {
-        // This tells .style which trace to use for fill information:
-        tonext.datum(cdscatter);
-    }
+    if(subTypes.hasLines(trace) || trace.fill !== 'none') {
 
-    if(['hv', 'vh', 'hvh', 'vhv'].indexOf(line.shape) !== -1) {
-        pathfn = Drawing.steps(line.shape);
-        revpathbase = Drawing.steps(
-            line.shape.split('').reverse().join('')
-        );
-    }
-    else if(line.shape === 'spline') {
-        pathfn = revpathbase = function(pts) {
-            var pLast = pts[pts.length - 1];
-            if(pts[0][0] === pLast[0] && pts[0][1] === pLast[1]) {
-                // identical start and end points: treat it as a
-                // closed curve so we don't get a kink
-                return Drawing.smoothclosed(pts.slice(1), line.smoothing);
-            }
-            else {
-                return Drawing.smoothopen(pts, line.smoothing);
-            }
-        };
-    }
-    else {
-        pathfn = revpathbase = function(pts) {
-            return 'M' + pts.join('L');
-        };
-    }
-
-    revpathfn = function(pts) {
-        // note: this is destructive (reverses pts in place) so can't use pts after this
-        return revpathbase(pts.reverse());
-    };
-
-    var segments = linePoints(cdscatter, {
-        xaxis: xa,
-        yaxis: ya,
-        connectGaps: trace.connectgaps,
-        baseTolerance: Math.max(line.width || 1, 3) / 4,
-        linear: line.shape === 'linear'
-    });
-
-    if(segments.length) {
-        var pt0 = segments[0][0],
-            lastSegment = segments[segments.length - 1],
-            pt1 = lastSegment[lastSegment.length - 1];
-
-        for(var i = 0; i < segments.length; i++) {
-            var pts = segments[i];
-            thispath = pathfn(pts);
-            thisrevpath = revpathfn(pts);
-            if(!fullpath) {
-                fullpath = thispath;
-                revpath = thisrevpath;
-            }
-            else if(ownFillDir) {
-                fullpath += 'L' + thispath.substr(1);
-                revpath = thisrevpath + ('L' + revpath.substr(1));
-            }
-            else {
-                fullpath += 'Z' + thispath;
-                revpath = thisrevpath + 'Z' + revpath;
-            }
-            if(subTypes.hasLines(trace) && pts.length > 1) {
-                var lineJoin = tr.selectAll('.js-line').data([cdscatter]);
-
-                lineJoin.enter()
-                    .append('path').classed('js-line', true).attr('d', thispath);
-
-                transition(lineJoin).attr('d', thispath);
-            }
+        if (tonext) {
+            // This tells .style which trace to use for fill information:
+            tonext.datum(cdscatter);
         }
-        if(ownFillEl3) {
-            if(pt0 && pt1) {
-                if(ownFillDir) {
-                    if(ownFillDir === 'y') {
-                        pt0[1] = pt1[1] = ya.c2p(0, true);
-                    }
-                    else if(ownFillDir === 'x') {
-                        pt0[0] = pt1[0] = xa.c2p(0, true);
-                    }
 
-                    // fill to zero: full trace path, plus extension of
-                    // the endpoints to the appropriate axis
-                    transition(ownFillEl3).attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
-                } else {
-                    // fill to self: just join the path to itself
-                    transition(ownFillEl3).attr('d', fullpath + 'Z');
+        if(['hv', 'vh', 'hvh', 'vhv'].indexOf(line.shape) !== -1) {
+            pathfn = Drawing.steps(line.shape);
+            revpathbase = Drawing.steps(
+                line.shape.split('').reverse().join('')
+            );
+        }
+        else if(line.shape === 'spline') {
+            pathfn = revpathbase = function(pts) {
+                var pLast = pts[pts.length - 1];
+                if(pts[0][0] === pLast[0] && pts[0][1] === pLast[1]) {
+                    // identical start and end points: treat it as a
+                    // closed curve so we don't get a kink
+                    return Drawing.smoothclosed(pts.slice(1), line.smoothing);
+                }
+                else {
+                    return Drawing.smoothopen(pts, line.smoothing);
+                }
+            };
+        }
+        else {
+            pathfn = revpathbase = function(pts) {
+                return 'M' + pts.join('L');
+            };
+        }
+
+        revpathfn = function(pts) {
+            // note: this is destructive (reverses pts in place) so can't use pts after this
+            return revpathbase(pts.reverse());
+        };
+
+        var segments = linePoints(cdscatter, {
+            xaxis: xa,
+            yaxis: ya,
+            connectGaps: trace.connectgaps,
+            baseTolerance: Math.max(line.width || 1, 3) / 4,
+            linear: line.shape === 'linear'
+        });
+
+        if(segments.length) {
+            var pt0 = segments[0][0],
+                lastSegment = segments[segments.length - 1],
+                pt1 = lastSegment[lastSegment.length - 1];
+
+            for(var i = 0; i < segments.length; i++) {
+                var pts = segments[i];
+                thispath = pathfn(pts);
+                thisrevpath = revpathfn(pts);
+                if(!fullpath) {
+                    fullpath = thispath;
+                    revpath = thisrevpath;
+                }
+                else if(ownFillDir) {
+                    fullpath += 'L' + thispath.substr(1);
+                    revpath = thisrevpath + ('L' + revpath.substr(1));
+                }
+                else {
+                    fullpath += 'Z' + thispath;
+                    revpath = thisrevpath + 'Z' + revpath;
+                }
+                if(subTypes.hasLines(trace) && pts.length > 1) {
+                    var lineJoin = tr.selectAll('.js-line').data([cdscatter]);
+
+                    lineJoin.enter()
+                        .append('path').classed('js-line', true).attr('d', thispath);
+
+                    transition(lineJoin).attr('d', thispath);
+                }
+            }
+            if(ownFillEl3) {
+                if(pt0 && pt1) {
+                    if(ownFillDir) {
+                        if(ownFillDir === 'y') {
+                            pt0[1] = pt1[1] = ya.c2p(0, true);
+                        }
+                        else if(ownFillDir === 'x') {
+                            pt0[0] = pt1[0] = xa.c2p(0, true);
+                        }
+
+                        // fill to zero: full trace path, plus extension of
+                        // the endpoints to the appropriate axis
+                        transition(ownFillEl3).attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
+                    } else {
+                        // fill to self: just join the path to itself
+                        transition(ownFillEl3).attr('d', fullpath + 'Z');
+                    }
+                }
+            }
+            else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevpath) {
+                // fill to next: full trace path, plus the previous path reversed
+                if(trace.fill === 'tonext') {
+                    // tonext: for use by concentric shapes, like manually constructed
+                    // contours, we just add the two paths closed on themselves.
+                    // This makes strange results if one path is *not* entirely
+                    // inside the other, but then that is a strange usage.
+                    transition(tonext).attr('d', fullpath + 'Z' + prevpath + 'Z');
+                }
+                else {
+                    // tonextx/y: for now just connect endpoints with lines. This is
+                    // the correct behavior if the endpoints are at the same value of
+                    // y/x, but if they *aren't*, we should ideally do more complicated
+                    // things depending on whether the new endpoint projects onto the
+                    // existing curve or off the end of it
+                    transition(tonext).attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
                 }
             }
         }
-        else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevpath) {
-            // fill to next: full trace path, plus the previous path reversed
-            if(trace.fill === 'tonext') {
-                // tonext: for use by concentric shapes, like manually constructed
-                // contours, we just add the two paths closed on themselves.
-                // This makes strange results if one path is *not* entirely
-                // inside the other, but then that is a strange usage.
-                transition(tonext).attr('d', fullpath + 'Z' + prevpath + 'Z');
-            }
-            else {
-                // tonextx/y: for now just connect endpoints with lines. This is
-                // the correct behavior if the endpoints are at the same value of
-                // y/x, but if they *aren't*, we should ideally do more complicated
-                // things depending on whether the new endpoint projects onto the
-                // existing curve or off the end of it
-                transition(tonext).attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
-            }
-        }
+
+        trace._revpath = revpath;
     }
 
-    trace._revpath = revpath;
 
     // remove paths that didn't get used
     //tr.selectAll('path:not([d])').remove();
@@ -254,11 +262,14 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
 
                 join.enter().append('path')
                     .classed('point', true)
-                    .call(Drawing.translatePoints, xa, ya);
+                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 1}), trace)
 
                 join.transition()
                     .duration(0)
-                    .call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace, 0, 0, 0);
+                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 0}), trace);
+
+                join.exit()
+                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: -1}), trace);
             }
             if(showText) {
                 s.selectAll('g')
@@ -267,7 +278,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
                     // it gets converted to mathjax
                     .enter().append('g')
                         .append('text')
-                        .call(Drawing.translatePoints, xa, ya, transitionDuration, transitionEasing, trace, 0, 0, 0);
+                        .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 1}), trace);
             }
         }
     }

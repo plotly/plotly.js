@@ -36,7 +36,10 @@ module.exports = function setPositions(gd, plotinfo) {
 
             if (['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1) {
                 trace._prevtrace = prevtrace;
-                prevtrace._nexttrace = trace;
+
+                if (prevtrace) {
+                    prevtrace._nexttrace = trace;
+                }
             }
 
             prevtrace = trace;

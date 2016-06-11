@@ -1611,16 +1611,17 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
     var animateList = [];
     var restyleList = [];
 
+
     function doAnimations () {
-        var a;
+        var a, i, j;
         for (i = 0; i < animateList.length; i++) {
             a = animateList[i];
-            //a.module.animate(gd, a.contFull, a.newData, transitionOpts);
             var basePlotModules = fullLayout._basePlotModules;
-            for(i = 0; i < basePlotModules.length; i++) {
-                basePlotModules[i].plot(gd, transitionOpts);
+            for(j = 0; j < basePlotModules.length; j++) {
+                basePlotModules[j].plot(gd, transitionOpts);
             }
         }
+
         if (!transitionOpts.leadingEdgeRestyle) {
             return new Promise(function(resolve, reject) {
                 setTimeout(resolve, transitionOpts.duration);

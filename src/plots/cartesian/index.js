@@ -74,6 +74,9 @@ exports.plot = function(gd, transitionOpts) {
 
         for(var j = 0; j < modules.length; j++) {
             var _module = modules[j];
+
+            if(_module.setPositions) _module.setPositions(gd, subplotInfo);
+
             // skip over non-cartesian trace modules
             if(_module.basePlotModule.name !== 'cartesian') continue;
 
