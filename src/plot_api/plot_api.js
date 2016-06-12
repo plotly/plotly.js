@@ -1529,6 +1529,8 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 // 4. doCalcdata
 // 5. begin animation
 Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
+    gd = getGraphDiv(gd);
+
     var fullLayout = gd._fullLayout;
     var i, newTraceData, curData, value, traceIdx;
 

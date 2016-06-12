@@ -50,6 +50,7 @@ drawing.translatePoints = function(s, xa, ya, transitionConfig, trace) {
 
     var hasTransition = transitionConfig && (transitionConfig || {}).duration > 0;
 
+
     if (hasTransition) {
         var size = s.size();
     }
@@ -98,7 +99,7 @@ drawing.translatePoints = function(s, xa, ya, transitionConfig, trace) {
                 }
 
               } else {
-                p.attr('transform', 'translate('+x+','+y+')');
+                  p.attr('transform', 'translate('+x+','+y+')');
               }
             }
         }
@@ -263,7 +264,7 @@ drawing.pointStyle = function(s, trace) {
         markerScale = drawing.tryColorscale(marker, markerIn, ''),
         lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
 
-    s.each(function(d) {
+    s.each(function(d, i) {
         // 'so' is suspected outliers, for box plots
         var fillColor,
             lineColor,
@@ -280,11 +281,11 @@ drawing.pointStyle = function(s, trace) {
 
             if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
             // weird case: array wasn't long enough to apply to every point
-            else if(Array.isArray(markerLine.color)) lineColor = Color.defaultLine;
+            else if(Array.isArray(markerLine.color)) lineColor = marker.color[i];
             else lineColor = markerLine.color;
 
             if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-            else if(Array.isArray(marker.color)) fillColor = Color.defaultLine;
+            else if(Array.isArray(marker.color)) fillColor = marker.color[i];
             else fillColor = marker.color || 'rgba(0,0,0,0)';
         }
 

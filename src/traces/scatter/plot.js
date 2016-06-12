@@ -46,6 +46,8 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
         line = trace.line,
         tr = d3.select(group);
 
+    /*
+
     tr.style('stroke-miterlimit', 2);
 
     // (so error bars can find them along with bars)
@@ -232,6 +234,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
 
     // remove paths that didn't get used
     //tr.selectAll('path:not([d])').remove();
+    */
 
     function visFilter(d) {
         return d.filter(function(v) { return v.vis; });
@@ -263,13 +266,15 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
                 join.enter().append('path')
                     .classed('point', true)
                     .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 1}), trace)
+                    .call(Drawing.pointStyle, trace)
 
                 join.transition()
                     .duration(0)
-                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 0}), trace);
+                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 0}), trace)
+                    .call(Drawing.pointStyle, trace)
 
-                join.exit()
-                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: -1}), trace);
+                join.exit().remove();
+                    //.call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: -1}), trace);
             }
             if(showText) {
                 s.selectAll('g')
@@ -290,7 +295,10 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
         .each(makePoints);
 
     pointJoin.transition()
+        .duration(0)
         .each(makePoints);
+
+    pointJoin.exit().remove();
 };
 
 function selectMarkers(gd, plotinfo, cdscatter) {
