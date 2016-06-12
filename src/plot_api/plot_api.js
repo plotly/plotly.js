@@ -1529,6 +1529,8 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 // 4. doCalcdata
 // 5. begin animation
 Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
+    gd = getGraphDiv(gd);
+
     var fullLayout = gd._fullLayout;
     var i, newTraceData, curData, value, traceIdx;
 
@@ -1597,9 +1599,11 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
 		var subplotInfo, _module;
 
 		for(var i = 0; i < subplots.length; i++) {
+            console.log('i:', i);
   		    subplotInfo = fullLayout._plots[subplots[i]];
 
 		    for(var j = 0; j < modules.length; j++) {
+                console.log('j:', j);
 			    _module = modules[j];
 			    if(_module.setPositions) _module.setPositions(gd, subplotInfo);
 		    }

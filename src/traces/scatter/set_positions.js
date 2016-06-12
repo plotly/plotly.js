@@ -19,6 +19,7 @@ var Lib = require('../../lib');
  * doesn't require any links between traces.
  */
 module.exports = function setPositions(gd, plotinfo) {
+    console.log('setPositions:', plotinfo);
     var i, cd, trace;
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.x();
@@ -30,9 +31,12 @@ module.exports = function setPositions(gd, plotinfo) {
         cd = gd.calcdata[i];
         trace = cd[0].trace;
 
+        console.log('visible:', trace.uid, trace.visible);
         if(trace.visible === true && Plots.traceIs(trace, 'cartesian') &&
             trace.xaxis === xa._id &&
             trace.yaxis === ya._id) {
+
+            trace._nexttrace = null;
 
             if (['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1) {
                 trace._prevtrace = prevtrace;
@@ -43,6 +47,12 @@ module.exports = function setPositions(gd, plotinfo) {
             }
 
             prevtrace = trace;
+        } else {
+            trace._prevtrace = trace._nexttrace = null;
         }
+    }
+    for(i = 0; i < gd.calcdata.length; ++i) {
+        var trace = gd.calcdata[i][0].trace;
+        console.log('gd.calcdata[i]:', trace.uid, 'prev:', trace._prevtrace && trace._prevtrace.uid, 'next:', trace._nexttrace && trace._nexttrace.uid)
     }
 };

@@ -46,6 +46,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
         line = trace.line,
         tr = d3.select(group);
 
+    console.log('start plot of ', trace.uid);
     tr.style('stroke-miterlimit', 2);
 
     // (so error bars can find them along with bars)
@@ -53,7 +54,6 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
     tr.call(ErrorBars.plot, plotinfo);
 
     if(trace.visible !== true) return;
-
 
     // BUILD LINES AND FILLS
     var ownFillEl3, tonext, nexttonext;
@@ -72,6 +72,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
         prevpath = prevtrace._revpath || '';
         tonext = prevtrace._nexttonext;
     }
+    console.log(trace.uid, trace._prevtrace && trace._prevtrace.uid, 'prevtrace:', prevtrace, tonext);
 
     var thispath,
         thisrevpath,
@@ -103,11 +104,13 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
     // nexttonext was created last time, but give it
     // this curve's data for fill color
     if (trace._nexttrace) {
+        console.log(trace.uid, 'has nexttrace');
         trace._nexttonext = tr.select('.js-fill.js-tonext');
         if (!trace._nexttonext.size()) {
             trace._nexttonext = tr.append('path').attr('class', 'js-fill js-tonext');
         }
     } else {
+        console.log(trace.uid, 'does not have nexttrace');
         tr.selectAll('.js-fill.js-tonext').remove();
         trace._nexttonext = null;
     }
@@ -263,13 +266,15 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
                 join.enter().append('path')
                     .classed('point', true)
                     .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 1}), trace)
+                    .call(Drawing.pointStyle, trace)
 
                 join.transition()
                     .duration(0)
-                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 0}), trace);
+                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 0}), trace)
+                    .call(Drawing.pointStyle, trace)
 
-                join.exit()
-                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: -1}), trace);
+                join.exit().remove();
+                    //.call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: -1}), trace);
             }
             if(showText) {
                 s.selectAll('g')
@@ -290,7 +295,10 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
         .each(makePoints);
 
     pointJoin.transition()
+        .duration(0)
         .each(makePoints);
+
+    pointJoin.exit().remove();
 };
 
 function selectMarkers(gd, plotinfo, cdscatter) {
