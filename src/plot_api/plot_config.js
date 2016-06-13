@@ -86,6 +86,9 @@ module.exports = {
     // URL to topojson files used in geo charts
     topojsonURL: 'https://cdn.plot.ly/',
 
+    // Mapbox access token (required to plot mapbox trace types)
+    mapboxAccessToken: null,
+
     // Turn all console logging on or off (errors will be thrown)
     // This should ONLY be set via Plotly.setPlotConfig
     logging: false

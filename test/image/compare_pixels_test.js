@@ -57,6 +57,11 @@ function runAll() {
             );
         });
 
+        // skip mapbox mocks for now
+        mocks = mocks.filter(function(mock) {
+            return mock.indexOf('mapbox_') === -1;
+        });
+
         t.plan(mocks.length);
 
         for(var i = 0; i < mocks.length; i++) {

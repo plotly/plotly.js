@@ -51,6 +51,9 @@ module.exports = {
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
 
+    pathToCredentials: path.join(pathToBuild, 'credentials.json'),
+    pathToSetPlotConfig: path.join(pathToBuild, 'set_plot_config.js'),
+
     uglifyOptions: {
         fromString: true,
         mangle: true,

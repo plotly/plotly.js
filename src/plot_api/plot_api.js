@@ -1652,7 +1652,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // to not go through a full replot
     var doPlotWhiteList = ['cartesian', 'pie', 'ternary'];
     fullLayout._basePlotModules.forEach(function(_module) {
-        if(doPlotWhiteList.indexOf(_module.name) === -1) doplot = true;
+        if(doPlotWhiteList.indexOf(_module.name) === -1) docalc = true;
     });
 
     // make a new empty vals array for undoit
@@ -2297,6 +2297,19 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
             Images.supplyLayoutDefaults(gd.layout, gd._fullLayout);
             Images.draw(gd);
+        }
+        else if(p.parts[0] === 'mapbox' && p.parts[1] === 'layers') {
+            Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
+
+            // append empty container to mapbox.layers
+            // so that relinkPrivateKeys does not complain
+
+            var fullLayers = (gd._fullLayout.mapbox || {}).layers || [];
+            var diff = (p.parts[2] + 1) - fullLayers.length;
+
+            for(i = 0; i < diff; i++) fullLayers.push({});
+
+            doplot = true;
         }
         // alter gd.layout
         else {

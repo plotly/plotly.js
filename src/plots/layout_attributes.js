@@ -183,6 +183,7 @@ module.exports = {
         'annotations': 'Annotations',
         'shapes': 'Shapes',
         'images': 'Images',
-        'ternary': 'ternary'
+        'ternary': 'ternary',
+        'mapbox': 'mapbox'
     }
 };
