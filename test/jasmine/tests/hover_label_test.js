@@ -2,6 +2,7 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Fx = require('@src/plots/cartesian/graph_interact');
+var constants = require('@src/plots/cartesian/constants');
 var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -602,6 +603,52 @@ describe('hover info on overlaid subplots', function() {
             expect(textNodes[1][0].innerHTML).toEqual('Revenue', 'with correct hover labels');
             expect(textNodes[1][1].innerHTML).toEqual('2,352.5', 'with correct hover labels');
 
+        }).then(done);
+    });
+});
+
+describe('hover after resizing', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    function assertLabelCount(pos, cnt, msg) {
+        return new Promise(function(resolve) {
+            mouseEvent('mousemove', pos[0], pos[1]);
+
+            setTimeout(function() {
+                var hoverText = d3.selectAll('g.hovertext');
+                expect(hoverText.size()).toEqual(cnt, msg);
+
+                resolve();
+            }, constants.HOVERMINTIME);
+        });
+    }
+
+    it('should work', function(done) {
+        var data = [{ y: [2, 1, 2] }],
+            layout = { width: 600, height: 500 },
+            gd = createGraphDiv();
+
+        var pos0 = [311, 409],
+            pos1 = [407, 128];
+
+        Plotly.plot(gd, data, layout).then(function() {
+            return assertLabelCount(pos0, 1, 'before resize, showing pt label');
+        }).then(function() {
+            return assertLabelCount(pos1, 0, 'before resize, not showing blank spot');
+        }).then(function() {
+            return Plotly.relayout(gd, 'width', 500);
+        }).then(function() {
+            return assertLabelCount(pos0, 0, 'after resize, not showing blank spot');
+        }).then(function() {
+            return assertLabelCount(pos1, 1, 'after resize, showing pt label');
+        }).then(function() {
+            return Plotly.relayout(gd, 'width', 600);
+        }).then(function() {
+            return assertLabelCount(pos0, 1, 'back to initial, showing pt label');
+        }).then(function() {
+            return assertLabelCount(pos1, 0, 'back to initial, not showing blank spot');
         }).then(done);
     });
 });
