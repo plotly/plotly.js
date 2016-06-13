@@ -243,7 +243,9 @@ describe('Layout images', function() {
                     y: 2,
                     sizex: 1,
                     sizey: 1
-                }]
+                }],
+                width: 500,
+                height: 400
             }).then(done);
         });
 
@@ -268,7 +270,7 @@ describe('Layout images', function() {
 
             var img = Plotly.d3.select('image');
 
-            expect([+img.attr('x'), +img.attr('y')]).toEqual([1160, -170]);
+            expect([+img.attr('x'), +img.attr('y')]).toEqual([760, -120]);
 
             Plotly.relayout(gd, update).then(function() {
                 var newImg = Plotly.d3.select('image');
