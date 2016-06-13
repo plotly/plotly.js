@@ -14,6 +14,8 @@ module.exports = {
     styleUrlPrefix: 'mapbox://styles/mapbox/',
     styleUrlSuffix: 'v9',
 
+    controlContainerClassName: 'mapboxgl-control-container',
+
     noAccessTokenErrorMsg: [
         'Missing Mapbox access token.',
         'Mapbox trace type require a Mapbox access token to be registered.',
