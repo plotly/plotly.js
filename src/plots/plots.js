@@ -293,9 +293,8 @@ plots.resize = function(gd) {
                 return;
             }
 
-            delete gd._fullLayout._initialAutoSizeIsDone;
-            if(!gd.layout.width) delete (gd._fullLayout || {}).width;
-            if(!gd.layout.height) delete (gd._fullLayout || {}).height;
+            delete gd.layout.width;
+            delete gd.layout.height;
 
             // autosizing doesn't count as a change that needs saving
             var oldchanged = gd.changed;
@@ -303,7 +302,7 @@ plots.resize = function(gd) {
             // nor should it be included in the undo queue
             gd.autoplay = true;
 
-            Plotly.plot(gd).then(function() {
+            Plotly.relayout(gd, { autosize: true }).then(function() {
                 gd.changed = oldchanged;
                 resolve(gd);
             });
