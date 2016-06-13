@@ -45,17 +45,13 @@ module.exports = {
         description: 'Sets the title font.'
     }),
     autosize: {
-        valType: 'boolean',
+        valType: 'enumerated',
         role: 'info',
-        dflt: false,
+        // TODO: better handling of 'initial'
+        values: [true, false, 'initial'],
         description: [
-            'Determines whether or not a layout width or height',
-            'that has been left undefined by the user',
-            'is initialized on each relayout.',
-
-            'Note that, regardless of this attribute,',
-            'an undefined layout width or height',
-            'is always initialized on the first call to plot.'
+            'Determines whether or not the dimensions of the figure are',
+            'computed as a function of the display size.'
         ].join(' ')
     },
     width: {

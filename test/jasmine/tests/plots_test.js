@@ -7,63 +7,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Test Plots', function() {
     'use strict';
 
-    describe('Plotly.supplyDefaults', function() {
-        function testSanitizeMarginsHasBeenCalledOnlyOnce(gd) {
-            spyOn(Plots, 'sanitizeMargins').and.callThrough();
-            Plots.supplyDefaults(gd);
-            expect(Plots.sanitizeMargins).toHaveBeenCalledTimes(1);
-        }
-
-        it('should not throw an error when gd is a plain object', function() {
-            var height = 100,
-                gd = {
-                    layout: {
-                        height: height
-                    }
-                };
-
-            Plots.supplyDefaults(gd);
-            expect(gd.layout.height).toBe(height);
-            expect(gd._fullLayout).toBeDefined();
-            expect(gd._fullLayout.height).toBe(height);
-            expect(gd._fullLayout.width).toBe(Plots.layoutAttributes.width.dflt);
-            expect(gd._fullData).toBeDefined();
-        });
-
-        it('should call sanitizeMargins only once when both width and height are defined', function() {
-            var gd = {
-                layout: {
-                    width: 100,
-                    height: 100
-                }
-            };
-
-            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
-        });
-
-        it('should call sanitizeMargins only once when autosize is false', function() {
-            var gd = {
-                layout: {
-                    autosize: false,
-                    height: 100
-                }
-            };
-
-            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
-        });
-
-        it('should call sanitizeMargins only once when autosize is true', function() {
-            var gd = {
-                layout: {
-                    autosize: true,
-                    height: 100
-                }
-            };
-
-            testSanitizeMarginsHasBeenCalledOnlyOnce(gd);
-        });
-    });
-
     describe('Plots.supplyLayoutGlobalDefaults should', function() {
         var layoutIn,
             layoutOut,
@@ -383,7 +326,7 @@ describe('Test Plots', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], { autosize: true })
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() {
                     gd.style.width = '400px';
                     gd.style.height = '400px';
