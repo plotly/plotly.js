@@ -46,7 +46,6 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
         line = trace.line,
         tr = d3.select(group);
 
-    console.log('start plot of ', trace.uid);
     tr.style('stroke-miterlimit', 2);
 
     // (so error bars can find them along with bars)
@@ -235,6 +234,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
 
     // remove paths that didn't get used
     //tr.selectAll('path:not([d])').remove();
+    */
 
     function visFilter(d) {
         return d.filter(function(v) { return v.vis; });
