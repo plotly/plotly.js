@@ -12,7 +12,7 @@
 var Lib = require('../../lib');
 
 
-function MapboxLayer(mapbox, index, opts) {
+function MapboxLayer(mapbox, index) {
     this.mapbox = mapbox;
     this.map = mapbox.map;
 
@@ -26,10 +26,6 @@ function MapboxLayer(mapbox, index, opts) {
     this.source = null;
     this.layerType = null;
     this.below = null;
-
-    // IMPORTANT: must create source before layer to not cause errors
-    this.updateSource(opts);
-    this.updateLayer(opts);
 }
 
 var proto = MapboxLayer.prototype;
@@ -45,11 +41,7 @@ proto.update = function update(opts) {
         this.updateLayer(opts);
     }
 
-    var paintOpts = convertPaintOpts(opts);
-
-    if(isVisible(opts)) {
-        this.mapbox.setOptions(this.idLayer, 'setPaintProperty', paintOpts);
-    }
+    this.updateStyle(opts);
 };
 
 proto.needsNewSource = function(opts) {
@@ -100,6 +92,14 @@ proto.updateLayer = function(opts) {
     // the only way to make a layer invisible is to remove it
     var layoutOpts = { visibility: 'visible' };
     this.mapbox.setOptions(this.idLayer, 'setLayoutProperty', layoutOpts);
+};
+
+proto.updateStyle = function(opts) {
+    var paintOpts = convertPaintOpts(opts);
+
+    if(isVisible(opts)) {
+        this.mapbox.setOptions(this.idLayer, 'setPaintProperty', paintOpts);
+    }
 };
 
 proto.dispose = function dispose() {
@@ -166,8 +166,12 @@ function convertSourceOpts(opts) {
 }
 
 module.exports = function createMapboxLayer(mapbox, index, opts) {
-    var mapboxLayer = new MapboxLayer(mapbox, index, opts);
-    mapboxLayer.update(opts);
+    var mapboxLayer = new MapboxLayer(mapbox, index);
+
+    // IMPORTANT: must create source before layer to not cause errors
+    mapboxLayer.updateSource(opts);
+    mapboxLayer.updateLayer(opts);
+    mapboxLayer.updateStyle(opts);
 
     return mapboxLayer;
 };
