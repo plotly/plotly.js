@@ -116,7 +116,8 @@ describe('plot schema', function() {
     it('should convert _isLinkedToArray attributes to items object', function() {
         var astrs = [
             'annotations', 'shapes', 'images',
-            'xaxis.rangeselector.buttons', 'yaxis.rangeselector.buttons'
+            'xaxis.rangeselector.buttons', 'yaxis.rangeselector.buttons',
+            'mapbox.layers'
         ];
 
         astrs.forEach(function(astr) {
