@@ -24,7 +24,8 @@ module.exports = function convert(calcTrace) {
         hasLines = subTypes.hasLines(trace),
         hasMarkers = subTypes.hasMarkers(trace),
         hasText = subTypes.hasText(trace),
-        hasCircles = (hasMarkers && trace.marker.symbol === 'circle');
+        hasCircles = (hasMarkers && trace.marker.symbol === 'circle'),
+        hasSymbols = (hasMarkers && trace.marker.symbol !== 'circle');
 
     var fill = initContainer(),
         line = initContainer(),
@@ -84,7 +85,7 @@ module.exports = function convert(calcTrace) {
         });
     }
 
-    if(!hasCircles || hasText) {
+    if(hasSymbols || hasText) {
         symbol.geojson = makeSymbolGeoJSON(calcTrace);
 
         Lib.extendFlat(symbol.layout, {
@@ -93,7 +94,7 @@ module.exports = function convert(calcTrace) {
             'text-field': '{text}'
         });
 
-        if(hasMarkers) {
+        if(hasSymbols) {
             Lib.extendFlat(symbol.layout, {
                 'icon-size': trace.marker.size / 10
             });
@@ -314,8 +315,9 @@ function calcTextOpts(trace) {
 
     // ballpack values
     var ms = (trace.marker || {}).size,
-        xInc = 0.5 + (ms / 15),
-        yInc = 1.5 + (ms / 15);
+        factor = Array.isArray(ms) ? Lib.mean(ms) : ms,
+        xInc = 0.5 + (factor / 100),
+        yInc = 1.5 + (factor / 100);
 
     var anchorVals = ['', ''],
         offset = [0, 0];

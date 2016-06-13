@@ -363,15 +363,15 @@ describe('scattermapbox convert', function() {
 
     it('should correctly convert \'textposition\' to \'text-anchor\' and \'text-offset\'', function() {
         var specs = {
-            'top left': ['top-right', [-1.5, -2.5]],
-            'top center': ['top', [0, -2.5]],
-            'top right': ['top-left', [1.5, -2.5]],
-            'middle left': ['right', [-1.5, 0]],
+            'top left': ['top-right', [-0.65, -1.65]],
+            'top center': ['top', [0, -1.65]],
+            'top right': ['top-left', [0.65, -1.65]],
+            'middle left': ['right', [-0.65, 0]],
             'middle center': ['center', [0, 0]],
-            'middle right': ['left', [1.5, 0]],
-            'bottom left': ['bottom-right', [-1.5, 2.5]],
-            'bottom center': ['bottom', [0, 2.5]],
-            'bottom right': ['bottom-left', [1.5, 2.5]]
+            'middle right': ['left', [0.65, 0]],
+            'bottom left': ['bottom-right', [-0.65, 1.65]],
+            'bottom center': ['bottom', [0, 1.65]],
+            'bottom right': ['bottom-left', [0.65, 1.65]]
         };
 
         Object.keys(specs).forEach(function(k) {
