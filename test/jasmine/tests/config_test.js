@@ -1,9 +1,146 @@
 var Plotly = require('@lib/index');
+var Plots = Plotly.Plots;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 
 describe('config argument', function() {
+
+    describe('attribute layout.autosize', function() {
+        var layoutWidth = 1111,
+            relayoutWidth = 555,
+            containerWidthBeforePlot = 888,
+            containerWidthBeforeRelayout = 666,
+            containerHeightBeforePlot = 543,
+            containerHeightBeforeRelayout = 321,
+            data = [],
+            gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        function checkLayoutSize(width, height) {
+            expect(gd._fullLayout.width).toBe(width);
+            expect(gd._fullLayout.height).toBe(height);
+
+            var svg = document.getElementsByClassName('main-svg')[0];
+            expect(+svg.getAttribute('width')).toBe(width);
+            expect(+svg.getAttribute('height')).toBe(height);
+        }
+
+        function compareLayoutAndFullLayout(gd) {
+            expect(gd.layout.width).toBe(gd._fullLayout.width);
+            expect(gd.layout.height).toBe(gd._fullLayout.height);
+        }
+
+        function testAutosize(autosize, config, layoutHeight, relayoutHeight, done) {
+            var layout = {
+                    autosize: autosize,
+                    width: layoutWidth
+
+                },
+                relayout = {
+                    width: relayoutWidth
+                };
+
+            var container = document.getElementById('graph');
+            container.style.width = containerWidthBeforePlot + 'px';
+            container.style.height = containerHeightBeforePlot + 'px';
+
+            Plotly.plot(gd, data, layout, config).then(function() {
+                checkLayoutSize(layoutWidth, layoutHeight);
+                if(!autosize) compareLayoutAndFullLayout(gd);
+
+                container.style.width = containerWidthBeforeRelayout + 'px';
+                container.style.height = containerHeightBeforeRelayout + 'px';
+
+                Plotly.relayout(gd, relayout).then(function() {
+                    checkLayoutSize(relayoutWidth, relayoutHeight);
+                    if(!autosize) compareLayoutAndFullLayout(gd);
+                    done();
+                });
+            });
+        }
+
+        it('should fill the frame when autosize: false, fillFrame: true, frameMargins: undefined', function(done) {
+            var autosize = false,
+                config = {
+                    autosizable: true,
+                    fillFrame: true
+                },
+                layoutHeight = window.innerHeight,
+                relayoutHeight = layoutHeight;
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the frame when autosize: true, fillFrame: true and frameMargins: undefined', function(done) {
+            var autosize = true,
+                config = {
+                    fillFrame: true
+                },
+                layoutHeight = window.innerHeight,
+                relayoutHeight = window.innerHeight;
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: false, fillFrame: false and frameMargins: undefined', function(done) {
+            var autosize = false,
+                config = {
+                    autosizable: true,
+                    fillFrame: false
+                },
+                layoutHeight = containerHeightBeforePlot,
+                relayoutHeight = layoutHeight;
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: true, fillFrame: false and frameMargins: undefined', function(done) {
+            var autosize = true,
+                config = {
+                    fillFrame: false
+                },
+                layoutHeight = containerHeightBeforePlot,
+                relayoutHeight = containerHeightBeforeRelayout;
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: false, fillFrame: false and frameMargins: 0.1', function(done) {
+            var autosize = false,
+                config = {
+                    autosizable: true,
+                    fillFrame: false,
+                    frameMargins: 0.1
+                },
+                layoutHeight = 360,
+                relayoutHeight = layoutHeight;
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should fill the container when autosize: true, fillFrame: false and frameMargins: 0.1', function(done) {
+            var autosize = true,
+                config = {
+                    fillFrame: false,
+                    frameMargins: 0.1
+                },
+                layoutHeight = 360,
+                relayoutHeight = 288;
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+
+        it('should respect attribute autosizable: false', function(done) {
+            var autosize = false,
+                config = {
+                    autosizable: false,
+                    fillFrame: true
+                },
+                layoutHeight = Plots.layoutAttributes.height.dflt,
+                relayoutHeight = layoutHeight;
+            testAutosize(autosize, config, layoutHeight, relayoutHeight, done);
+        });
+    });
 
     describe('showLink attribute', function() {
 

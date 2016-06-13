@@ -643,6 +643,7 @@ describe('ModeBar', function() {
                 }];
 
                 var mockLayout = {
+                    autosize: true,
                     xaxis: {
                         anchor: 'y',
                         domain: [0, 0.5],
