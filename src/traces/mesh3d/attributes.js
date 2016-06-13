@@ -163,7 +163,6 @@ module.exports = {
         width: extendFlat({}, surfaceAtts.contours.x.width)
     },
 
-    colorscale: colorscaleAttrs.colorscale,
     reversescale: colorscaleAttrs.reversescale,
     showscale: colorscaleAttrs.showscale,
 
