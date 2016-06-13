@@ -1,6 +1,10 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
+// until it is part of the main plotly.js bundle
+Plotly.register(
+    require('@lib/scattermapbox')
+);
 
 describe('plot schema', function() {
     'use strict';

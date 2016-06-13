@@ -15,6 +15,11 @@ var TRANSITION_DELAY = 500;
 
 var noop = function() {};
 
+// until it is part of the main plotly.js bundle
+Plotly.register(
+    require('@lib/scattermapbox')
+);
+
 Plotly.setPlotConfig({
     mapboxAccessToken: MAPBOX_ACCESS_TOKEN
 });

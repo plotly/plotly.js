@@ -9,6 +9,11 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
 
+// until it is part of the main plotly.js bundle
+Plotly.register(
+    require('@lib/scattermapbox')
+);
+
 Plotly.setPlotConfig({
     mapboxAccessToken: require('@build/credentials.json').MAPBOX_ACCESS_TOKEN
 });
