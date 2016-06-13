@@ -36,7 +36,10 @@ else runSingle(userFileName);
 function runAll() {
     test('testing mocks', function(t) {
 
-        var allMocks = fs.readdirSync(constants.pathToTestImageMocks);
+        var fileNames = fs.readdirSync(constants.pathToTestImageMocks);
+
+        // eliminate pollutants (e.g .DS_Store) that can accumulate in the mock directory
+        var allMocks = fileNames.filter(function(name) {return name.slice(-5) === '.json';});
 
         /* Test cases:
          *
