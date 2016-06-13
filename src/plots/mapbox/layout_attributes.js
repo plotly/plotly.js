@@ -80,13 +80,16 @@ module.exports = {
         valType: 'number',
         dflt: 0,
         role: 'info',
-        description: 'Sets the bearing angle of the map (in degrees).'
+        description: 'Sets the bearing angle of the map (in degrees counter-clockwise from North).'
     },
     pitch: {
         valType: 'number',
         dflt: 0,
         role: 'info',
-        description: 'Sets the pitch angle of the map (in degrees).'
+        description: [
+            'Sets the pitch angle of the map',
+            '(in degrees, where *0* means perpendicular to the surface of the map).'
+        ].join(' ')
     },
 
     layers: {
