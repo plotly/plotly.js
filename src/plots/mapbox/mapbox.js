@@ -303,10 +303,11 @@ proto.updateLayers = function() {
     // delete them all, and start all over.
 
     if(layers.length !== layerList.length) {
-        for(i = layerList.length - 1; i > -1; i--) {
+        for(i = 0; i < layerList.length; i++) {
             layerList[i].dispose();
-            layerList.pop();
         }
+
+        layerList = this.layerList = [];
 
         for(i = 0; i < layers.length; i++) {
             layerList.push(createMapboxLayer(this, i, layers[i]));
