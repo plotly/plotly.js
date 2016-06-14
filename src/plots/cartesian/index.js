@@ -27,7 +27,7 @@ exports.attrRegex = constants.attrRegex;
 
 exports.attributes = require('./attributes');
 
-exports.plot = function(gd, transitionOpts) {
+exports.plot = function(gd, traces, transitionOpts) {
     var fullLayout = gd._fullLayout,
         subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
         calcdata = gd.calcdata,
@@ -39,6 +39,9 @@ exports.plot = function(gd, transitionOpts) {
         for(var i = 0; i < calcdata.length; i++) {
             var cd = calcdata[i];
             var trace = cd[0].trace;
+
+            // Skip trace if whitelist provided and it's not whitelisted:
+            // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
 
             if(trace.xaxis + trace.yaxis === subplot) {
                 cdSubplot.push(cd);
@@ -63,14 +66,19 @@ exports.plot = function(gd, transitionOpts) {
         return cdModule;
     }
 
-    function keyFunc (d) {
-        return d[0].trace.uid;
-    }
-
     for(var i = 0; i < subplots.length; i++) {
         var subplot = subplots[i],
             subplotInfo = fullLayout._plots[subplot],
             cdSubplot = getCdSubplot(calcdata, subplot);
+
+        // remove old traces, then redraw everything
+        // TODO: scatterlayer is manually excluded from this since it knows how
+        // to update instead of fully removing and redrawing every time. The
+        // remaining plot traces should also be able to do this. Once implemented,
+        // we won't need this - which should sometimes be a big speedup.
+        if(subplotInfo.plot) {
+            subplotInfo.plot.selectAll('g:not(.scatterlayer)').selectAll('g.trace').remove();
+        }
 
         for(var j = 0; j < modules.length; j++) {
             var _module = modules[j];
@@ -81,25 +89,7 @@ exports.plot = function(gd, transitionOpts) {
             // plot all traces of this type on this subplot at once
             var cdModule = getCdModule(cdSubplot, _module);
 
-            var tracelayer = subplotInfo.plot.select('g.' + _module.name + 'layer');
-            var subplotJoin = tracelayer.selectAll('g.trace').data(cdModule, keyFunc);
-
-            subplotJoin.enter()
-                .append('g')
-                    .classed('trace', true)
-                    .classed(_module.name, true)
-                    .each(function(d) {
-                        d[0].trace._module.plot(gd, subplotInfo, d, this)
-                    });
-
-            subplotJoin.transition()
-                .each(function(d) {
-                    d[0].trace._module.plot(gd, subplotInfo, d, this, transitionOpts)
-                });
-
-
-            subplotJoin.exit()
-                .remove()
+            _module.plot(gd, subplotInfo, cdModule, traces, transitionOpts);
         }
     }
 };

@@ -30,10 +30,10 @@ Scatter.colorbar = require('./colorbar');
 Scatter.style = require('./style');
 Scatter.hoverPoints = require('./hover');
 Scatter.selectPoints = require('./select');
-Scatter.animate = require('./animate');
 
 Scatter.moduleType = 'trace';
 Scatter.name = 'scatter';
+Scatter.animatable = true;
 Scatter.basePlotModule = require('../../plots/cartesian');
 Scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
 Scatter.meta = {

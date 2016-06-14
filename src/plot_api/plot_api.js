@@ -1561,7 +1561,7 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
         var trace = gd._fullData[traceIdx];
         var module = trace._module;
 
-        if (!module.animate) {
+        if (!module.animatable) {
             continue;
         }
 
@@ -1599,11 +1599,9 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
 		var subplotInfo, _module;
 
 		for(var i = 0; i < subplots.length; i++) {
-            console.log('i:', i);
   		    subplotInfo = fullLayout._plots[subplots[i]];
 
 		    for(var j = 0; j < modules.length; j++) {
-                console.log('j:', j);
 			    _module = modules[j];
 			    if(_module.setPositions) _module.setPositions(gd, subplotInfo);
 		    }
@@ -1612,20 +1610,14 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
 
 	doSetPositions();
 
-    var animateList = [];
     var restyleList = [];
-
 
     function doAnimations () {
         var a, i, j;
-        for (i = 0; i < animateList.length; i++) {
-            a = animateList[i];
-            var basePlotModules = fullLayout._basePlotModules;
-            for(j = 0; j < basePlotModules.length; j++) {
-                basePlotModules[j].plot(gd, transitionOpts);
-            }
+        var basePlotModules = fullLayout._basePlotModules;
+        for(j = 0; j < basePlotModules.length; j++) {
+            basePlotModules[j].plot(gd, animatedTraces, transitionOpts);
         }
-
         if (!transitionOpts.leadingEdgeRestyle) {
             return new Promise(function(resolve, reject) {
                 setTimeout(resolve, transitionOpts.duration);
@@ -1633,7 +1625,7 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
         }
     }
 
-    for (var i = 0; i < animatedTraces.length; i++) {
+    /*for (var i = 0; i < animatedTraces.length; i++) {
         var trace = gd._fullData[animatedTraces[i]];
         var module = trace._module;
         var cd = [];
@@ -1655,22 +1647,14 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
         cd[0].trace = trace;
 
         gd.calcdata[traces[i]] = cd;
-    }
+    }*/
 
     for (i = 0; i < traces.length; i++) {
         var traceIdx = traces[i];
-
-        var cont = gd.data[traceIdx];
         var contFull = gd._fullData[traceIdx];
         var module = contFull._module;
 
-        if (module.animate) {
-            animateList.push({
-                module: module,
-                contFull: contFull,
-                newData: newData[i]
-            });
-        } else {
+        if (!module.animatable) {
             var thisTrace = [traceIdx];
             var thisUpdate = {};
 

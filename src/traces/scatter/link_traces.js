@@ -9,17 +9,8 @@
 'use strict';
 
 var Plots = require('../../plots/plots');
-var Axes = require('../../plots/cartesian/axes');
-var Lib = require('../../lib');
 
-/**
- * setPositions is a bit of a misnomer here. It comes from the box plot
- * type that actually does setting of positions. It's the hook though
- * that we need to set up links between traces so that trace-level .plot
- * doesn't require any links between traces.
- */
-module.exports = function setPositions(gd, plotinfo) {
-    // console.log('setPositions:', plotinfo);
+module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     var i, cd, trace;
     var fullLayout = gd._fullLayout;
     var xa = plotinfo.x();
@@ -27,8 +18,8 @@ module.exports = function setPositions(gd, plotinfo) {
 
     var prevtrace = null;
 
-    for(i = 0; i < gd.calcdata.length; ++i) {
-        cd = gd.calcdata[i];
+    for(i = 0; i < cdscatter.length; ++i) {
+        cd = cdscatter[i];
         trace = cd[0].trace;
 
         // console.log('visible:', trace.uid, trace.visible);
@@ -51,8 +42,9 @@ module.exports = function setPositions(gd, plotinfo) {
             trace._prevtrace = trace._nexttrace = null;
         }
     }
-    for(i = 0; i < gd.calcdata.length; ++i) {
-        var trace = gd.calcdata[i][0].trace;
-        // console.log('gd.calcdata[i]:', trace.uid, 'prev:', trace._prevtrace && trace._prevtrace.uid, 'next:', trace._nexttrace && trace._nexttrace.uid)
-    }
-};
+
+    /*for(i = 0; i < cdscatter.length; ++i) {
+        var trace = cdscatter[i][0].trace;
+        console.log('gd.cdscatter[i]:', trace.uid, 'prev:', trace._prevtrace && trace._prevtrace.uid, 'next:', trace._nexttrace && trace._nexttrace.uid)
+    }*/
+}
