@@ -577,7 +577,7 @@ annotations.draw = function(gd, index, opt, value) {
             if(edges.reduce(function(a, x) {
                 return a ^
                     !!lineIntersect(arrowX, arrowY, arrowX + 1e6, arrowY + 1e6,
-                      x[0], x[1], x[2], x[3]);
+                            x[0], x[1], x[2], x[3]);
             }, false)) {
                 // no line or arrow - so quit drawArrow now
                 return;
@@ -585,13 +585,12 @@ annotations.draw = function(gd, index, opt, value) {
 
             edges.forEach(function(x) {
                 var p = lineIntersect(arrowX0, arrowY0, arrowX, arrowY,
-                  x[0], x[1], x[2], x[3]);
+                            x[0], x[1], x[2], x[3]);
                 if(p) {
                     arrowX0 = p.x;
                     arrowY0 = p.y;
                 }
             });
-
 
             var strokewidth = options.arrowwidth,
                 arrowColor = options.arrowcolor;
@@ -667,7 +666,7 @@ annotations.draw = function(gd, index, opt, value) {
 
                         anng.attr({
                             transform: 'rotate(' + textangle + ',' +
-                            xcenter + ',' + ycenter + ')'
+                                   xcenter + ',' + ycenter + ')'
                         });
                     },
                     doneFn: function(dragged) {
@@ -698,6 +697,7 @@ annotations.draw = function(gd, index, opt, value) {
                 element: ann.node(),
                 prepFn: function() {
                     var pos = Lib.getTranslate(ann);
+
                     x0 = pos.x;
                     y0 = pos.y;
                     update = {};
