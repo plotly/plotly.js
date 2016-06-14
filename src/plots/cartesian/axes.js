@@ -55,6 +55,26 @@ axes.coerceRef = function(containerIn, containerOut, gd, axLetter, dflt) {
     return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
+//todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
+// find the list of possible axes to reference with an axref or ayref attribute
+// and coerce it to that list
+axes.coerceARef = function(containerIn, containerOut, gd, axLetter, dflt) {
+    var axlist = gd._fullLayout._has('gl2d') ? [] : axes.listIds(gd, axLetter),
+        refAttr = 'a' + axLetter + 'ref',
+        attrDef = {};
+
+    // data-ref annotations are not supported in gl2d yet
+
+    attrDef[refAttr] = {
+        valType: 'enumerated',
+        values: axlist.concat(['pixel']),
+        dflt: dflt || 'pixel' || axlist[0]
+    };
+
+    // axref, ayref
+    return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
+};
+
 // empty out types for all axes containing these traces
 // so we auto-set them again
 axes.clearTypes = function(gd, traces) {

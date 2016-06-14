@@ -160,7 +160,7 @@ module.exports = {
         dflt: 'pixel',
         values: [
             'pixel',
-            'x'
+            cartesianConstants.idRegex.x.toString()
         ],
         role: 'info',
         description: [
@@ -177,7 +177,7 @@ module.exports = {
         dflt: 'pixel',
         values: [
             'pixel',
-            'y'
+            cartesianConstants.idRegex.y.toString()
         ],
         role: 'info',
         description: [
