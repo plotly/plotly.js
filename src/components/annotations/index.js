@@ -59,7 +59,8 @@ function handleAnnotationDefaults(annIn, fullLayout) {
         coerce('arrowwidth', ((borderOpacity && borderWidth) || 1) * 2);
         coerce('ax');
         coerce('ay');
-        coerce('absolutetail');
+        coerce('axref');
+        coerce('ayref');
 
         // if you have one part of arrow length you should have both
         Lib.noneOrAll(annIn, annOut, ['ax', 'ay']);
@@ -91,7 +92,7 @@ function handleAnnotationDefaults(annIn, fullLayout) {
                     newval = Lib.dateTime2ms(annIn[axLetter]);
                     if(newval !== false) annIn[axLetter] = newval;
 
-                    if(annIn.absolutetail) {
+                    if(annIn['a' + axLetter + 'ref'] === axRef) {
                         var newvalB = Lib.dateTime2ms(annIn['a' + axLetter]);
                         if(newvalB !== false) annIn['a' + axLetter] = newvalB;
                     }
@@ -425,8 +426,8 @@ annotations.draw = function(gd, index, opt, value) {
 
         var annotationIsOffscreen = false;
         ['x', 'y'].forEach(function(axLetter) {
-            var ax = Axes.getFromId(gd,
-                    options[axLetter + 'ref'] || axLetter),
+            var axRef = options[axLetter + 'ref'] || axLetter,
+                ax = Axes.getFromId(gd, axRef),
                 dimAngle = (textangle + (axLetter === 'x' ? 0 : 90)) * Math.PI / 180,
                 annSize = outerwidth * Math.abs(Math.cos(dimAngle)) +
                           outerheight * Math.abs(Math.sin(dimAngle)),
@@ -456,7 +457,7 @@ annotations.draw = function(gd, index, opt, value) {
             }
 
             var alignShift = 0;
-            if(options.absolutetail) {
+            if(options['a' + axLetter + 'ref'] === axRef) {
                 annPosPx['aa' + axLetter] = ax._offset + ax.l2p(options['a' + axLetter]);
             } else {
                 if(options.showarrow) {
@@ -486,13 +487,15 @@ annotations.draw = function(gd, index, opt, value) {
         // make sure the arrowhead (if there is one)
         // and the annotation center are visible
         if(options.showarrow) {
-            if (options.absolutetail) {
+            if(options.axref === options.xref)
                 arrowX = Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
-                arrowY = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
-            } else {
+            else
                 arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
+
+            if(options.ayref === options.yref)
+                arrowY = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
+            else
                 arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
-            }
         }
         annPosPx.x = Lib.constrain(annPosPx.x, 1, fullLayout.width - 1);
         annPosPx.y = Lib.constrain(annPosPx.y, 1, fullLayout.height - 1);
@@ -512,13 +515,15 @@ annotations.draw = function(gd, index, opt, value) {
             outerwidth - borderwidth, outerheight - borderwidth);
 
         var annX = 0, annY = 0;
-        if(options.absolutetail) {
+        if(options.axref === options.xref)
             annX = Math.round(annPosPx.aax - outerwidth / 2);
-            annY = Math.round(annPosPx.aay - outerheight / 2);
-        } else {
+        else
             annX = Math.round(annPosPx.x - outerwidth / 2);
+
+        if(options.ayref === options.yref)
+            annY = Math.round(annPosPx.aay - outerheight / 2);
+        else
             annY = Math.round(annPosPx.y - outerheight / 2);
-        }
 
         ann.call(Lib.setTranslate, annX, annY);
 
@@ -539,13 +544,15 @@ annotations.draw = function(gd, index, opt, value) {
             //    how-to-get-the-width-of-an-svg-tspan-element
             var arrowX0, arrowY0;
 
-            if(options.absolutetail) {
+            if(options.axref === options.xref)
                 arrowX0 = annPosPx.aax + dx;
-                arrowY0 = annPosPx.aay + dy;
-            } else {
+            else
                 arrowX0 = annPosPx.x + dx;
+
+            if(options.ayref === options.yref)
+                arrowY0 = annPosPx.aay + dy;
+            else
                 arrowY0 = annPosPx.y + dy;
-            }
 
                 // create transform matrix and related functions
             var transform =
@@ -648,14 +655,15 @@ annotations.draw = function(gd, index, opt, value) {
                             (options.y + dy / ya._m) :
                             (1 - ((arrowY + dy - gs.t) / gs.h));
 
-                        if(options.absolutetail) {
+                        if(options.axref === options.xref)
                             update[annbase + '.ax'] = xa ?
                               (options.ax + dx / xa._m) :
                               ((arrowX + dx - gs.l) / gs.w);
+
+                        if(options.ayref === options.yref)
                             update[annbase + '.ay'] = ya ?
                               (options.ay + dy / ya._m) :
                               (1 - ((arrowY + dy - gs.t) / gs.h));
-                        }
 
                         anng.attr({
                             transform: 'rotate(' + textangle + ',' +
@@ -698,13 +706,16 @@ annotations.draw = function(gd, index, opt, value) {
                     ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
                     var csr = 'pointer';
                     if(options.showarrow) {
-                        if(options.absolutetail) {
+                        if(options.axref === options.xref)
                             update[annbase + '.ax'] = xa.p2l(xa.l2p(options.ax) + dx);
-                            update[annbase + '.ay'] = ya.p2l(ya.l2p(options.ay) + dy);
-                        } else {
+                        else
                             update[annbase + '.ax'] = options.ax + dx;
+
+                        if(options.ayref === options.yref)
+                            update[annbase + '.ay'] = ya.p2l(ya.l2p(options.ay) + dy);
+                        else
                             update[annbase + '.ay'] = options.ay + dy;
-                        }
+
                         drawArrow(dx, dy);
                     }
                     else {
