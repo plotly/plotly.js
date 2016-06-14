@@ -15,13 +15,14 @@ dependencies:
     - docker pull plotly/testbed:latest
   post:
     - npm run cibuild
+    - npm run pretest
     - docker run -d --name mytestbed -v $PWD:/var/www/streambed/image_server/plotly.js -p 9010:9010 plotly/testbed:latest
-    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' mytestbed)" -- bash -c "cp -f /var/www/streambed/image_server/plotly.js/test/image/index.html /var/www/streambed/image_server/server_app/index.html"
+    - sudo ./tasks/run_in_testbed.sh mytestbed "cp -f test/image/index.html ../server_app/index.html"
     - wget --server-response --spider --tries=8 --retry-connrefused http://localhost:9010/ping
 test:
   override:
-    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' mytestbed)" -- bash -c "cd /var/www/streambed/image_server/plotly.js && node test/image/compare_pixels_test.js"
-    - sudo lxc-attach -n "$(docker inspect --format '{{.Id}}' mytestbed)" -- bash -c "cd /var/www/streambed/image_server/plotly.js && node test/image/export_test.js"
+    - sudo ./tasks/run_in_testbed.sh mytestbed "export CIRCLECI=1 && node test/image/compare_pixels_test.js"
+    - sudo ./tasks/run_in_testbed.sh mytestbed "node test/image/export_test.js"
     - npm run citest-jasmine
     - npm run test-bundle
     - npm run test-syntax

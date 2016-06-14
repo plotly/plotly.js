@@ -325,7 +325,7 @@ function updateShape(gd, index, opt, value) {
             plotinfo = plots[subplots[i]];
             clipAxes = subplots[i];
 
-            if(isShapeInSubplot(gd, options, plotinfo.id)) {
+            if(isShapeInSubplot(gd, options, plotinfo)) {
                 drawShape(plotinfo.shapelayer);
             }
         }
@@ -362,10 +362,13 @@ function getShapeLayer(gd, index) {
     return shapeLayer;
 }
 
-function isShapeInSubplot(gd, shape, subplot) {
-    var xa = Plotly.Axes.getFromId(gd, subplot, 'x')._id,
-        ya = Plotly.Axes.getFromId(gd, subplot, 'y')._id;
-    return shape.layer === 'below' && (xa === shape.xref || ya === shape.yref);
+function isShapeInSubplot(gd, shape, plotinfo) {
+    var xa = Plotly.Axes.getFromId(gd, plotinfo.id, 'x')._id,
+        ya = Plotly.Axes.getFromId(gd, plotinfo.id, 'y')._id,
+        isBelow = shape.layer === 'below',
+        inSuplotAxis = (xa === shape.xref || ya === shape.yref),
+        isNotAnOverlaidSubplot = !!plotinfo.shapelayer;
+    return isBelow && inSuplotAxis && isNotAnOverlaidSubplot;
 }
 
 function decodeDate(convertToPx) {

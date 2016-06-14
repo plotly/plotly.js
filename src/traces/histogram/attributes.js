@@ -6,15 +6,15 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var barAttrs = require('../bar/attributes');
-var extendFlat = require('../../lib').extendFlat;
+var colorAttributes = require('../../components/colorscale/color_attributes');
+
+var extendFlat = require('../../lib/extend').extendDeep;
 
 var barMarkerAttrs = barAttrs.marker;
 var barMarkerLineAttrs = barMarkerAttrs.line;
-
 
 module.exports = {
     x: {
@@ -82,7 +82,9 @@ module.exports = {
         role: 'style',
         description: [
             'Determines whether or not the x axis bin attributes are picked',
-            'by an algorithm.'
+            'by an algorithm. Note that this should be set to false if you',
+            'want to manually set the number of bins using the attributes in',
+            'xbins.'
         ].join(' ')
     },
     nbinsx: {
@@ -90,7 +92,11 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'style',
-        description: 'Sets the number of x axis bins.'
+        description: [
+            'Specifies the maximum number of desired bins. This value will be used',
+            'in an algorithm that will decide the optimal bin size such that the',
+            'histogram best visualizes the distribution of the data.'
+        ].join(' ')
     },
     xbins: makeBinsAttr('x'),
 
@@ -100,7 +106,9 @@ module.exports = {
         role: 'style',
         description: [
             'Determines whether or not the y axis bin attributes are picked',
-            'by an algorithm.'
+            'by an algorithm. Note that this should be set to false if you',
+            'want to manually set the number of bins using the attributes in',
+            'ybins.'
         ].join(' ')
     },
     nbinsy: {
@@ -108,30 +116,22 @@ module.exports = {
         min: 0,
         dflt: 0,
         role: 'style',
-        description: 'Sets the number of y axis bins.'
+        description: [
+            'Specifies the maximum number of desired bins. This value will be used',
+            'in an algorithm that will decide the optimal bin size such that the',
+            'histogram best visualizes the distribution of the data.'
+        ].join(' ')
     },
     ybins: makeBinsAttr('y'),
 
-    marker: {
-        color: barMarkerAttrs.color,
-        colorscale: barMarkerAttrs.colorscale,
-        cauto: barMarkerAttrs.cauto,
-        cmax: barMarkerAttrs.cmax,
-        cmin: barMarkerAttrs.cmin,
-        autocolorscale: barMarkerAttrs.autocolorscale,
-        reversescale: barMarkerAttrs.reversescale,
+    marker: extendFlat({}, {
         showscale: barMarkerAttrs.showscale,
-        line: {
-            color: barMarkerLineAttrs.color,
-            colorscale: barMarkerLineAttrs.colorscale,
-            cauto: barMarkerLineAttrs.cauto,
-            cmax: barMarkerLineAttrs.cmax,
-            cmin: barMarkerLineAttrs.cmin,
-            autocolorscale: barMarkerLineAttrs.autocolorscale,
-            reversescale: barMarkerLineAttrs.reversescale,
-            width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})
-        }
+        line: extendFlat({},
+            {width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})},
+            colorAttributes('marker.line'))
     },
+        colorAttributes('marker')
+    ),
 
     _nestedModules: {
         'error_y': 'ErrorBars',

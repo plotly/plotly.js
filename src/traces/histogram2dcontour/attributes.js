@@ -10,8 +10,11 @@
 
 var histogram2dAttrs = require('../histogram2d/attributes');
 var contourAttrs = require('../contour/attributes');
+var colorscaleAttrs = require('../../components/colorscale/attributes');
 
-module.exports = {
+var extendFlat = require('../../lib/extend').extendFlat;
+
+module.exports = extendFlat({}, {
     x: histogram2dAttrs.x,
     y: histogram2dAttrs.y,
     z: histogram2dAttrs.z,
@@ -26,14 +29,6 @@ module.exports = {
     nbinsy: histogram2dAttrs.nbinsy,
     ybins: histogram2dAttrs.ybins,
 
-    zauto: contourAttrs.zauto,
-    zmin: contourAttrs.zmin,
-    zmax: contourAttrs.zmax,
-    colorscale: contourAttrs.colorscale,
-    autocolorscale: contourAttrs.autocolorscale,
-    reversescale: contourAttrs.reversescale,
-    showscale: contourAttrs.showscale,
-
     autocontour: contourAttrs.autocontour,
     ncontours: contourAttrs.ncontours,
     contours: contourAttrs.contours,
@@ -42,4 +37,6 @@ module.exports = {
     _nestedModules: {
         'colorbar': 'Colorbar'
     }
-};
+},
+    colorscaleAttrs
+);

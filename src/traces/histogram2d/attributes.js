@@ -10,42 +10,41 @@
 
 var histogramAttrs = require('../histogram/attributes');
 var heatmapAttrs = require('../heatmap/attributes');
+var colorscaleAttrs = require('../../components/colorscale/attributes');
 
-module.exports = {
-    x: histogramAttrs.x,
-    y: histogramAttrs.y,
+var extendFlat = require('../../lib/extend').extendFlat;
 
-    z: {
-        valType: 'data_array',
-        description: 'Sets the aggregation data.'
-    },
-    marker: {
-        color: {
+module.exports = extendFlat({},
+    {
+        x: histogramAttrs.x,
+        y: histogramAttrs.y,
+
+        z: {
             valType: 'data_array',
             description: 'Sets the aggregation data.'
+        },
+        marker: {
+            color: {
+                valType: 'data_array',
+                description: 'Sets the aggregation data.'
+            }
+        },
+
+        histnorm: histogramAttrs.histnorm,
+        histfunc: histogramAttrs.histfunc,
+        autobinx: histogramAttrs.autobinx,
+        nbinsx: histogramAttrs.nbinsx,
+        xbins: histogramAttrs.xbins,
+        autobiny: histogramAttrs.autobiny,
+        nbinsy: histogramAttrs.nbinsy,
+        ybins: histogramAttrs.ybins,
+
+        zsmooth: heatmapAttrs.zsmooth,
+
+        _nestedModules: {
+            'colorbar': 'Colorbar'
         }
     },
-
-    histnorm: histogramAttrs.histnorm,
-    histfunc: histogramAttrs.histfunc,
-    autobinx: histogramAttrs.autobinx,
-    nbinsx: histogramAttrs.nbinsx,
-    xbins: histogramAttrs.xbins,
-    autobiny: histogramAttrs.autobiny,
-    nbinsy: histogramAttrs.nbinsy,
-    ybins: histogramAttrs.ybins,
-
-    zauto: heatmapAttrs.zauto,
-    zmin: heatmapAttrs.zmin,
-    zmax: heatmapAttrs.zmax,
-    colorscale: heatmapAttrs.colorscale,
-    autocolorscale: heatmapAttrs.autocolorscale,
-    reversescale: heatmapAttrs.reversescale,
-    showscale: heatmapAttrs.showscale,
-
-    zsmooth: heatmapAttrs.zsmooth,
-
-    _nestedModules: {
-        'colorbar': 'Colorbar'
-    }
-};
+    colorscaleAttrs,
+    {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
+);

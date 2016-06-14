@@ -6,13 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
-
 
 function makeContourProjAttr(axLetter) {
     return {
@@ -121,6 +119,7 @@ module.exports = {
         ].join(' ')
     },
 
+    // Todo this block has a structure of colorscale/attributes.js but with colorscale/color_attributes.js names
     cauto: colorscaleAttrs.zauto,
     cmin: colorscaleAttrs.zmin,
     cmax: colorscaleAttrs.zmax,

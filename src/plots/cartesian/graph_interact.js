@@ -337,8 +337,13 @@ function hover(gd, evt, subplot) {
         // 'cartesian' case
         var plotObj = plots[spId];
         if(plotObj) {
-            xaArray[i] = plotObj.xaxis;
-            yaArray[i] = plotObj.yaxis;
+
+            // TODO make sure that fullLayout_plots axis refs
+            // get updated properly so that we don't have
+            // to use Axes.getFromId in general.
+
+            xaArray[i] = Axes.getFromId(gd, plotObj.xaxis._id);
+            yaArray[i] = Axes.getFromId(gd, plotObj.yaxis._id);
             continue;
         }
 

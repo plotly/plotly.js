@@ -11,7 +11,8 @@ var constants = require('./constants');
 var shortcutsConfig = {
     '@src': constants.pathToSrc,
     '@lib': constants.pathToLib,
-    '@mocks': constants.pathToTestImageMocks
+    '@mocks': constants.pathToTestImageMocks,
+    '@build': constants.pathToBuild
 };
 
 module.exports = transformTools.makeRequireTransform('requireTransform',
