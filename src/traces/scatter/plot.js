@@ -18,12 +18,17 @@ var ErrorBars = require('../../components/errorbars');
 var subTypes = require('./subtypes');
 var arraysToCalcdata = require('./arrays_to_calcdata');
 var linePoints = require('./line_points');
+var linkTraces = require('./link_traces');
 
+function cdscatterKey (d) {
+    return d[0].trace.uid;
+}
 
-module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
-    selectMarkers(gd, plotinfo, cdscatter);
+module.exports = function plot(gd, plotinfo, cdscatter, traces, transitionOpts) {
+    var i, uids, noremove;
 
     var transitionConfig = Lib.extendFlat({}, transitionOpts || {});
+
     transitionConfig = Lib.extendFlat({
         duration: 0,
         easing: 'in-out-cubic',
@@ -32,6 +37,101 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
     }, transitionConfig);
 
     var hasTransition = transitionConfig.duration > 0;
+
+    if (!traces) {
+        // If no traces provided, redraw all:
+        for (i = 0, traces = []; i < cdscatter.length; i++) {
+            traces[i] = i;
+        }
+        noremove = false;
+    } else {
+        // If this is a partial update, then don't remove traces whose data is not updated
+        noremove = true;
+    }
+
+    var scatterlayer = plotinfo.plot.select('g.scatterlayer');
+    var traceJoin = scatterlayer.selectAll('g.trace').data(cdscatter, cdscatterKey);
+
+    var traceEnter = traceJoin.enter().append('g')
+        .attr('class', 'trace scatter')
+        .style('stroke-miterlimit', 2)
+
+    // After the elements are created but before they've been draw, we have to do
+    // this extra step of linking the traces due to z-ordering
+    linkTraces(gd, plotinfo, cdscatter)
+    createFills(gd, scatterlayer, cdscatter, traces)
+
+    traceEnter.each(function(d) {
+        //console.log('enter:', d[0].trace.uid);
+        plotOne(gd, plotinfo, d, this, transitionConfig)
+    });
+
+    traceJoin.transition()
+        .duration(0)
+        .each(function(d) {
+            //console.log('transition:', d[0].trace.uid);
+            plotOne(gd, plotinfo, d, this, transitionConfig)
+        });
+
+
+    if (!noremove) {
+        traceJoin.exit().remove();
+    }
+
+    // Sort the traces, once created, so that the ordering is preserved even when
+    // traces are shown and hidden. This is now needed since we're not just wiping
+    // everything out and recreating on every update.
+    for (i = 0, uids = []; i < cdscatter.length; i++) {
+        uids[i] = cdscatter[i][0].trace.uid;
+    }
+
+    scatterlayer.selectAll('g.trace').sort(function (a, b) {
+        var idx1 = uids.indexOf(a[0].trace.uid);
+        var idx2 = uids.indexOf(b[0].trace.uid);
+        return idx1 > idx2 ? 1 : -1;
+    });
+
+    // remove paths that didn't get used
+    // scatterlayer.selectAll('path:not([d])').remove();
+};
+
+function createFills (gd, scatterlayer, cdscatter, traces) {
+    var i, trace, prevtrace;
+
+    scatterlayer.selectAll('g.trace').each(function (d) {
+        var tr = d3.select(this);
+
+        // Loop only over the traces being redrawn:
+        trace = d[0].trace;
+
+        if(trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
+                (trace.fill.substr(0, 2) === 'to' && !trace._prevtrace)) {
+            trace._ownFill = tr.select('.js-fill.js-tozero');
+            if (!trace._ownFill.size()) {
+                trace._ownFill = tr.insert('path', ':first-child').attr('class', 'js-fill js-tozero');
+            }
+        } else {
+            tr.selectAll('.js-fill.js-tozero').remove();
+            trace._ownFill = null;
+        }
+
+        // make the fill-to-next path now for the NEXT trace, so it shows
+        // behind both lines.
+        if (trace._nexttrace) {
+            trace._nextFill = tr.select('.js-fill.js-tonext');
+            if (!trace._nextFill.size()) {
+                trace._nextFill = tr.insert('path', ':first-child').attr('class', 'js-fill js-tonext');
+            }
+        } else {
+            tr.selectAll('.js-fill.js-tonext').remove();
+            trace._nextFill = null;
+        }
+    });
+}
+
+
+function plotOne(gd, plotinfo, cdscatter, group, transitionConfig) {
+    selectMarkers(gd, plotinfo, cdscatter);
 
     function transition (selection) {
         return selection.transition()
@@ -45,8 +145,6 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
     var trace = cdscatter[0].trace,
         line = trace.line,
         tr = d3.select(group);
-
-    tr.style('stroke-miterlimit', 2);
 
     // (so error bars can find them along with bars)
     // error bars are at the bottom
@@ -69,9 +167,8 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
 
     if (prevtrace) {
         prevpath = prevtrace._revpath || '';
-        tonext = prevtrace._nexttonext;
+        tonext = prevtrace._nextFill;
     }
-    console.log(trace.uid, trace._prevtrace && trace._prevtrace.uid, 'prevtrace:', prevtrace, tonext);
 
     var thispath,
         thisrevpath,
@@ -83,36 +180,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
         // functions for converting a point array to a path
         pathfn, revpathbase, revpathfn;
 
-
-    // make the fill-to-zero path now, so it shows behind the line
-    // fill to next puts the fill associated with one trace
-    // grouped with the previous
-    if(trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
-            (trace.fill.substr(0, 2) === 'to' && !prevtrace)) {
-        ownFillEl3 = tr.select('.js-fill.js-tozero');
-        if (!ownFillEl3.size()) {
-            ownFillEl3 = tr.append('path').attr('class', 'js-fill js-tozero');
-        }
-    } else {
-        tr.selectAll('.js-fill.js-tozero').remove();
-        ownFillEl3 = null;
-    }
-
-    // make the fill-to-next path now for the NEXT trace, so it shows
-    // behind both lines.
-    // nexttonext was created last time, but give it
-    // this curve's data for fill color
-    if (trace._nexttrace) {
-        console.log(trace.uid, 'has nexttrace');
-        trace._nexttonext = tr.select('.js-fill.js-tonext');
-        if (!trace._nexttonext.size()) {
-            trace._nexttonext = tr.append('path').attr('class', 'js-fill js-tonext');
-        }
-    } else {
-        console.log(trace.uid, 'does not have nexttrace');
-        tr.selectAll('.js-fill.js-tonext').remove();
-        trace._nexttonext = null;
-    }
+    ownFillEl3 = trace._ownFill;
 
     if(subTypes.hasLines(trace) || trace.fill !== 'none') {
 
@@ -232,10 +300,6 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
     }
 
 
-    // remove paths that didn't get used
-    //tr.selectAll('path:not([d])').remove();
-    */
-
     function visFilter(d) {
         return d.filter(function(v) { return v.vis; });
     }
@@ -265,16 +329,15 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
 
                 join.enter().append('path')
                     .classed('point', true)
-                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 1}), trace)
                     .call(Drawing.pointStyle, trace)
+                    .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 1)
 
                 join.transition()
-                    .duration(0)
-                    .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 0}), trace)
+                    .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 0)
                     .call(Drawing.pointStyle, trace)
 
-                join.exit().remove();
-                    //.call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: -1}), trace);
+                join.exit()
+                    .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, -1);
             }
             if(showText) {
                 s.selectAll('g')
@@ -283,7 +346,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, group, transitionOpts) {
                     // it gets converted to mathjax
                     .enter().append('g')
                         .append('text')
-                        .call(Drawing.translatePoints, xa, ya, Lib.extendFlat(transitionConfig, {direction: 1}), trace);
+                        .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 1);
             }
         }
     }

@@ -46,7 +46,7 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
-drawing.translatePoints = function(s, xa, ya, transitionConfig, trace) {
+drawing.translatePoints = function(s, xa, ya, trace, transitionConfig, joinDirection) {
 
     var hasTransition = transitionConfig && (transitionConfig || {}).duration > 0;
 
@@ -67,7 +67,7 @@ drawing.translatePoints = function(s, xa, ya, transitionConfig, trace) {
             } else {
               if (hasTransition) {
                 var trans;
-                if (!transitionConfig.direction) {
+                if (!joinDirection) {
                     trans = p.transition()
                         .delay(transitionConfig.delay + transitionConfig.cascade / size * i)
                         .duration(transitionConfig.duration)
@@ -77,14 +77,14 @@ drawing.translatePoints = function(s, xa, ya, transitionConfig, trace) {
                     if (trace) {
                       trans.call(drawing.pointStyle, trace)
                     }
-                } else if (transitionConfig.direction === -1) {
+                } else if (joinDirection === -1) {
                     trans = p.style('opacity', 1)
                         .transition()
                             .duration(transitionConfig.duration)
                             .ease(transitionConfig.easing)
                             .style('opacity', 0)
                             .remove();
-                } else if (transitionConfig.direction === 1) {
+                } else if (joinDirection === 1) {
                     trans = p.attr('transform', 'translate('+x+','+y+')')
 
                     if (trace) {
