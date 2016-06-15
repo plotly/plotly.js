@@ -186,12 +186,40 @@ describe('ternary plots', function() {
         it('should respond zoom drag interactions', function(done) {
             assertRange(gd, [0.231, 0.2, 0.11]);
 
-            Plotly.relayout(gd, 'ternary.aaxis.min', 0.1).then(function() {
-                assertRange(gd, [0.1, 0.2, 0.11]);
+            drag([[390, 220], [300, 250]]);
+            assertRange(gd, [0.4486, 0.2480, 0.1453]);
 
-                return doubleClick(pointPos[0], pointPos[1]);
-            }).then(function() {
+            doubleClick(pointPos[0], pointPos[1]).then(function() {
                 assertRange(gd, [0, 0, 0]);
+
+                done();
+            });
+        });
+    });
+
+    describe('static plots', function() {
+        var mock = require('@mocks/ternary_simple.json');
+        var gd;
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+
+            var mockCopy = Lib.extendDeep({}, mock);
+            var config = { staticPlot: true };
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout, config).then(done);
+        });
+
+        it('should not respond to drag', function(done) {
+            var range = [0.231, 0.2, 0.11];
+
+            assertRange(gd, range);
+
+            drag([[390, 220], [300, 250]]);
+            assertRange(gd, range);
+
+            doubleClick(390, 220).then(function() {
+                assertRange(gd, range);
 
                 done();
             });
@@ -225,6 +253,19 @@ describe('ternary plots', function() {
                 resolve();
             }, DBLCLICKDELAY / 2);
         });
+    }
+
+    function drag(path) {
+        var len = path.length;
+
+        mouseEvent('mousemove', path[0][0], path[0][1]);
+        mouseEvent('mousedown', path[0][0], path[0][1]);
+
+        path.slice(1, len).forEach(function(pt) {
+            mouseEvent('mousemove', pt[0], pt[1]);
+        });
+
+        mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
     }
 
     function assertRange(gd, expected) {
