@@ -10,6 +10,7 @@
 
 var colorScaleAttributes = require('./attributes');
 var extendDeep = require('../../lib/extend').extendDeep;
+var palettes = require('./scales.js');
 
 module.exports = function makeColorScaleAttributes(context) {
     return {
@@ -37,16 +38,16 @@ module.exports = function makeColorScaleAttributes(context) {
                 ' To control the bounds of the colorscale in color space,',
                 ' use `', context, '.cmin` and `', context, '.cmax`.',
                 ' Alternatively, `colorscale` may be a palette name string',
-                ' such as `"Viridis"` or `"Greens"`.'
-            ].join('')
+                ' of the following list: '
+            ].join('').concat(Object.keys(palettes).join(', '))
         }),
         cauto: extendDeep({}, colorScaleAttributes.zauto, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array',
                 ' and `cmin`, `cmax` are set by the user. In this case,',
-                ' it controls whether the color range represented by `colorscale` is mapped to',
-                ' the value bounds of the `color` array (`cauto: true`), or to the `cmin`..`cmax`',
-                ' value bounds (`cauto: false`).',
+                ' it controls whether the range of colors in `colorscale` is mapped to',
+                ' the range of values in the `color` array (`cauto: true`), or the `cmin`/`cmax`',
+                ' values (`cauto: false`).',
                 ' Defaults to `false` when `cmin`, `cmax` are set by the user.'
             ].join('')
         }),
@@ -69,16 +70,18 @@ module.exports = function makeColorScaleAttributes(context) {
         autocolorscale: extendDeep({}, colorScaleAttributes.autocolorscale, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array.',
-                ' Determines whether the colorscale is the default palette (`autocolorscale: true`)',
-                ' or the palette determined by `', context, '.colorscale`.'
+                ' Determines whether the colorscale is a default palette (`autocolorscale: true`)',
+                ' or the palette determined by `', context, '.colorscale`.',
+                ' In case `colorscale` is unspecified or `autocolorscale` is true, the default ',
+                ' palette will be chosen according to whether numbers in the `color` array are',
+                ' all positive, all negative or mixed.'
             ].join('')
         }),
         reversescale: extendDeep({}, colorScaleAttributes.reversescale, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array.',
-                ' Reverses the color mapping if true (`cmin` or lowest `color` value will',
-                ' correspond to the last color and `cmax` or highest `color` value will',
-                ' correspond to the first color).'
+                ' Reverses the color mapping if true (`cmin` will correspond to the last color',
+                ' in the array and `cmax` will correspond to the first color).'
             ].join('')
         })
     };
