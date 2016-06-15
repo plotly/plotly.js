@@ -12,7 +12,10 @@ module.exports = {
                     return Math.abs(expected[i] - element) < precision;
                 });
 
-                var passed = tested.indexOf(false) < 0;
+                var passed = (
+                    expected.length === actual.length &&
+                    tested.indexOf(false) < 0
+                );
 
                 return {
                     pass: passed,
