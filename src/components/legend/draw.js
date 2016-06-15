@@ -62,14 +62,14 @@ module.exports = function draw(gd) {
     var bg = legend.selectAll('rect.bg')
         .data([0]);
 
-    bg.enter().append('rect')
-        .attr({
-            'class': 'bg',
-            'shape-rendering': 'crispEdges'
-        })
-        .call(Color.stroke, opts.bordercolor)
-        .call(Color.fill, opts.bgcolor)
-        .style('stroke-width', opts.borderwidth + 'px');
+    bg.enter().append('rect').attr({
+        'class': 'bg',
+        'shape-rendering': 'crispEdges'
+    });
+
+    bg.call(Color.stroke, opts.bordercolor);
+    bg.call(Color.fill, opts.bgcolor);
+    bg.style('stroke-width', opts.borderwidth + 'px');
 
     var scrollBox = legend.selectAll('g.scrollbox')
         .data([0]);
