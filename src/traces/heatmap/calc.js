@@ -173,7 +173,9 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
         dv,
         i;
 
-    if(Array.isArray(arrayIn) && !isHist && (ax.type !== 'category')) {
+    var isArrayOfTwoItemsOrMore = Array.isArray(arrayIn) && arrayIn.length > 1;
+
+    if(isArrayOfTwoItemsOrMore && !isHist && (ax.type !== 'category')) {
         arrayIn = arrayIn.map(ax.d2c);
         var len = arrayIn.length;
 
@@ -216,7 +218,9 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     }
     else {
         dv = dvIn || 1;
-        if(v0In === undefined) v0 = 0;
+
+        if(Array.isArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
+        else if(v0In === undefined) v0 = v0In;
         else if(isHist || ax.type === 'category') v0 = v0In;
         else v0 = ax.d2c(v0In);
 
