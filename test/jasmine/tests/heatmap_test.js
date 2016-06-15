@@ -204,9 +204,9 @@ describe('heatmap calc', function() {
         jasmine.addMatchers(customMatchers);
     });
 
-    function _calc(trace) {
+    function _calc(opts) {
         var base = { type: 'heatmap' },
-            trace = Lib.extendFlat({}, base, trace),
+            trace = Lib.extendFlat({}, base, opts),
             gd = { data: [trace] };
 
         Plots.supplyDefaults(gd);
@@ -221,7 +221,7 @@ describe('heatmap calc', function() {
         });
 
         expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
-        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5]);
         expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
 
@@ -283,7 +283,7 @@ describe('heatmap calc', function() {
         });
 
         expect(out.x).toBeCloseToArray([1.5, 2.5, 3.5, 4.5]);
-        expect(out.y).toBeCloseToArray([2.5, 3.5, 4.5, 5.5]);
+        expect(out.y).toBeCloseToArray([2.5, 3.5, 4.5]);
         expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
 
@@ -294,8 +294,8 @@ describe('heatmap calc', function() {
             z: [[1, 2, 3], [3, 1, 2]]
         });
 
-        expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5, 3.5]);
-        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5]);
         expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
 });

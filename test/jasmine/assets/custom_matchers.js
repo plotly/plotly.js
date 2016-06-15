@@ -63,7 +63,7 @@ module.exports = {
                 };
             }
         };
-    },
+    }
 };
 
 function coercePosition(precision) {

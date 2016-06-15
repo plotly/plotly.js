@@ -145,9 +145,9 @@ describe('contour calc', function() {
         jasmine.addMatchers(customMatchers);
     });
 
-    function _calc(trace) {
+    function _calc(opts) {
         var base = { type: 'contour' },
-            trace = Lib.extendFlat({}, base, trace),
+            trace = Lib.extendFlat({}, base, opts),
             gd = { data: [trace] };
 
         Plots.supplyDefaults(gd);
