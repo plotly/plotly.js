@@ -373,16 +373,19 @@ function plotOne(gd, plotinfo, cd) {
 
     var image3 = plotgroup.selectAll('image')
         .data(cd);
-    image3.enter().append('svg:image');
-    image3.exit().remove();
 
-    image3.attr({
+    image3.enter().append('svg:image').attr({
         xmlns: xmlnsNamespaces.svg,
         'xlink:href': canvas.toDataURL('image/png'),
+        preserveAspectRatio: 'none'
+    });
+
+    image3.attr({
         height: imageHeight,
         width: imageWidth,
         x: left,
-        y: top,
-        preserveAspectRatio: 'none'
+        y: top
     });
+
+    image3.exit().remove();
 }
