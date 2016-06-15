@@ -1,3 +1,4 @@
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
@@ -5,6 +6,10 @@ var Legend = require('@src/components/legend');
 var getLegendData = require('@src/components/legend/get_legend_data');
 var helpers = require('@src/components/legend/helpers');
 var anchorUtils = require('@src/components/legend/anchor_utils');
+
+var d3 = require('d3');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 
 describe('legend defaults', function() {
@@ -495,6 +500,43 @@ describe('legend anchor utils:', function() {
                 expect(isMiddleAnchor(opts))
                     .toBe(v > threshold0 && v < threshold1, 'case ' + v);
             });
+        });
+    });
+});
+
+describe('legend relayout update', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('should update border styling', function(done) {
+        var mock = require('@mocks/0.json'),
+            mockCopy = Lib.extendDeep({}, mock),
+            gd = createGraphDiv();
+
+        function assertLegendStyle(bgColor, borderColor, borderWidth) {
+            var node = d3.select('g.legend').select('rect');
+
+            expect(node.style('fill')).toEqual(bgColor);
+            expect(node.style('stroke')).toEqual(borderColor);
+            expect(node.style('stroke-width')).toEqual(borderWidth + 'px');
+        }
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            assertLegendStyle('rgb(255, 255, 255)', 'rgb(0, 0, 0)', 1);
+
+            return Plotly.relayout(gd, {
+                'legend.bordercolor': 'red',
+                'legend.bgcolor': 'blue'
+            });
+        }).then(function() {
+            assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 1);
+
+            return Plotly.relayout(gd, 'legend.borderwidth', 10);
+        }).then(function() {
+            assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 10);
+
+            done();
         });
     });
 });
