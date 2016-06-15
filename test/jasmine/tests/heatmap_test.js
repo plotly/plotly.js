@@ -1,6 +1,10 @@
+var Plots = require('@src/plots/plots');
+var Lib = require('@src/lib');
+
 var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
 var Heatmap = require('@src/traces/heatmap');
-var Plots = require('@src/plots/plots');
+
+var customMatchers = require('../assets/custom_matchers');
 
 
 describe('heatmap supplyDefaults', function() {
@@ -190,5 +194,108 @@ describe('heatmap convertColumnXYZ', function() {
             [, 4.210373, 4.32009, 4.246728, 4.293992, 4.316364, 4.361856,, ],
             [,, 4.234497, 4.321701, 4.450315, 4.416136,,, ]
         ]);
+    });
+});
+
+describe('heatmap calc', function() {
+    'use strict';
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    function _calc(trace) {
+        var base = { type: 'heatmap' },
+            trace = Lib.extendFlat({}, base, trace),
+            gd = { data: [trace] };
+
+        Plots.supplyDefaults(gd);
+        var fullTrace = gd._fullData[0];
+
+        return Heatmap.calc(gd, fullTrace)[0];
+    }
+
+    it('should fill in bricks if x/y not given', function() {
+        var out = _calc({
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should fill in bricks with x0/dx + y0/dy', function() {
+        var out = _calc({
+            z: [[1, 2, 3], [3, 1, 2]],
+            x0: 10,
+            dx: 0.5,
+            y0: -2,
+            dy: -2
+        });
+
+        expect(out.x).toBeCloseToArray([9.75, 10.25, 10.75, 11.25]);
+        expect(out.y).toBeCloseToArray([-1, -3, -5]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should convert x/y coordinates into bricks', function() {
+        var out = _calc({
+            x: [1, 2, 3],
+            y: [2, 6],
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([0.5, 1.5, 2.5, 3.5]);
+        expect(out.y).toBeCloseToArray([0, 4, 8]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should respect brick-link /y coordinates', function() {
+        var out = _calc({
+            x: [1, 2, 3, 4],
+            y: [2, 6, 10],
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([1, 2, 3, 4]);
+        expect(out.y).toBeCloseToArray([2, 6, 10]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should handle 1-xy + 1-brick case', function() {
+        var out = _calc({
+            x: [2],
+            y: [3],
+            z: [[1]]
+        });
+
+        expect(out.x).toBeCloseToArray([1.5, 2.5]);
+        expect(out.y).toBeCloseToArray([2.5, 3.5]);
+        expect(out.z).toBeCloseTo2DArray([[1]]);
+    });
+
+    it('should handle 1-xy + multi-brick case', function() {
+        var out = _calc({
+            x: [2],
+            y: [3],
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([1.5, 2.5, 3.5, 4.5]);
+        expect(out.y).toBeCloseToArray([2.5, 3.5, 4.5, 5.5]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should handle 0-xy + multi-brick case', function() {
+        var out = _calc({
+            x: [],
+            y: [],
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5, 3.5]);
+        expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5, 2.5]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
 });

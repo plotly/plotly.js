@@ -1,7 +1,12 @@
 var Plots = require('@src/plots/plots');
+var Lib = require('@src/lib');
+
 var Contour = require('@src/traces/contour');
 var makeColorMap = require('@src/traces/contour/make_color_map');
 var colorScales = require('@src/components/colorscale/scales');
+
+var customMatchers = require('../assets/custom_matchers');
+
 
 describe('contour defaults', function() {
     'use strict';
@@ -130,5 +135,108 @@ describe('contour makeColorMap', function() {
             'rgb(5,10,172)', 'rgb(106,137,247)', 'rgb(190,190,190)',
             'rgb(220,170,132)', 'rgb(230,145,90)', 'rgb(178,10,28)'
         ]);
+    });
+});
+
+describe('contour calc', function() {
+    'use strict';
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    function _calc(trace) {
+        var base = { type: 'contour' },
+            trace = Lib.extendFlat({}, base, trace),
+            gd = { data: [trace] };
+
+        Plots.supplyDefaults(gd);
+        var fullTrace = gd._fullData[0];
+
+        return Contour.calc(gd, fullTrace)[0];
+    }
+
+    it('should fill in bricks if x/y not given', function() {
+        var out = _calc({
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([0, 1, 2]);
+        expect(out.y).toBeCloseToArray([0, 1]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should fill in bricks with x0/dx + y0/dy', function() {
+        var out = _calc({
+            z: [[1, 2, 3], [3, 1, 2]],
+            x0: 10,
+            dx: 0.5,
+            y0: -2,
+            dy: -2
+        });
+
+        expect(out.x).toBeCloseToArray([10, 10.5, 11]);
+        expect(out.y).toBeCloseToArray([-2, -4]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should convert x/y coordinates into bricks', function() {
+        var out = _calc({
+            x: [1, 2, 3],
+            y: [2, 6],
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([1, 2, 3]);
+        expect(out.y).toBeCloseToArray([2, 6]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should trim brick-link /y coordinates', function() {
+        var out = _calc({
+            x: [1, 2, 3, 4],
+            y: [2, 6, 10],
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([1, 2, 3]);
+        expect(out.y).toBeCloseToArray([2, 6]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should handle 1-xy + 1-brick case', function() {
+        var out = _calc({
+            x: [2],
+            y: [3],
+            z: [[1]]
+        });
+
+        expect(out.x).toBeCloseToArray([2]);
+        expect(out.y).toBeCloseToArray([3]);
+        expect(out.z).toBeCloseTo2DArray([[1]]);
+    });
+
+    it('should handle 1-xy + multi-brick case', function() {
+        var out = _calc({
+            x: [2],
+            y: [3],
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([2, 3, 4]);
+        expect(out.y).toBeCloseToArray([3, 4]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
+    });
+
+    it('should handle 0-xy + multi-brick case', function() {
+        var out = _calc({
+            x: [],
+            y: [],
+            z: [[1, 2, 3], [3, 1, 2]]
+        });
+
+        expect(out.x).toBeCloseToArray([0, 1, 2]);
+        expect(out.y).toBeCloseToArray([0, 1]);
+        expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
 });
