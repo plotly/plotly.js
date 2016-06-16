@@ -1575,18 +1575,27 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
             Lib.nestedProperty(curData, ai).set(value);
         }
 
-
         var traceIdx = traces[i];
         if (gd.data[traceIdx].marker && gd.data[traceIdx].marker.size) {
             gd._fullData[traceIdx].marker.size = gd.data[traceIdx].marker.size
+        }
+        if (gd.data[traceIdx].error_y && gd.data[traceIdx].error_y.array) {
+            gd._fullData[traceIdx].error_y.array = gd.data[traceIdx].error_y.array
+        }
+        if (gd.data[traceIdx].error_x && gd.data[traceIdx].error_x.array) {
+            gd._fullData[traceIdx].error_x.array = gd.data[traceIdx].error_x.array
         }
         gd._fullData[traceIdx].x = gd.data[traceIdx].x;
         gd._fullData[traceIdx].y = gd.data[traceIdx].y;
         gd._fullData[traceIdx].z = gd.data[traceIdx].z;
         gd._fullData[traceIdx].key = gd.data[traceIdx].key;
+        gd._fullData[traceIdx].r = gd.data[traceIdx].r;
+        gd._fullData[traceIdx].t = gd.data[traceIdx].t;
     }
 
     doCalcdata(gd, animatedTraces);
+
+    ErrorBars.calc(gd);
 
     function doSetPositions () {
 		var subplots = Plots.getSubplotIds(fullLayout, 'cartesian');

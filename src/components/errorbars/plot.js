@@ -14,11 +14,16 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var subTypes = require('../../traces/scatter/subtypes');
+var styleError = require('./style');
 
 
-module.exports = function plot(traces, plotinfo) {
+module.exports = function plot(traces, plotinfo, transitionConfig) {
     var xa = plotinfo.x(),
         ya = plotinfo.y();
+
+
+    transitionConfig = transitionConfig || {};
+    var hasAnimation = isNumeric(transitionConfig.duration) && transitionConfig.duration > 0
 
     traces.each(function(d) {
         var trace = d[0].trace,
@@ -42,7 +47,9 @@ module.exports = function plot(traces, plotinfo) {
         errorbars.enter().append('g')
             .classed('errorbar', true);
 
-        errorbars.each(function(d) {
+        errorbars.exit().remove();
+
+        errorbars.each(function(d, i) {
             var errorbar = d3.select(this);
             var coords = errorCoords(d, xa, ya);
 
@@ -59,11 +66,23 @@ module.exports = function plot(traces, plotinfo) {
                     coords.yh + 'h' + (2 * yw) + // hat
                     'm-' + yw + ',0V' + coords.ys; // bar
 
+
                 if(!coords.noYS) path += 'm-' + yw + ',0h' + (2 * yw); // shoe
 
-                errorbar.append('path')
-                    .classed('yerror', true)
-                    .attr('d', path);
+                var yerror = errorbar.select('path.yerror');
+
+                if (!yerror.size()) {
+                    yerror = errorbar.append('path')
+                        .classed('yerror', true);
+                } else if (hasAnimation) {
+                    yerror = yerror.transition()
+                        .duration(transitionConfig.duration)
+                        .ease(transitionConfig.easing)
+                        .delay(transitionConfig.delay)
+
+                }
+
+                yerror.attr('d', path);
             }
 
             if(xObj.visible && isNumeric(coords.y) &&
@@ -77,11 +96,23 @@ module.exports = function plot(traces, plotinfo) {
 
                 if(!coords.noXS) path += 'm0,-' + xw + 'v' + (2 * xw); // shoe
 
-                errorbar.append('path')
-                    .classed('xerror', true)
-                    .attr('d', path);
+                var xerror = errorbar.select('path.xerror');
+
+                if (!xerror.size()) {
+                    xerror = errorbar.append('path')
+                        .classed('xerror', true);
+                } else if (hasAnimation) {
+                    xerror = xerror.transition()
+                        .duration(transitionConfig.duration)
+                        .ease(transitionConfig.easing)
+                        .delay(transitionConfig.delay)
+                }
+
+                xerror.attr('d', path);
             }
         });
+
+        d3.select(this).call(styleError);
     });
 };
 

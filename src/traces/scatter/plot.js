@@ -62,14 +62,12 @@ module.exports = function plot(gd, plotinfo, cdscatter, traces, transitionOpts) 
     createFills(gd, scatterlayer, cdscatter, traces)
 
     traceEnter.each(function(d) {
-        //console.log('enter:', d[0].trace.uid);
         plotOne(gd, plotinfo, d, this, transitionConfig)
     });
 
     traceJoin.transition()
         .duration(0)
         .each(function(d) {
-            //console.log('transition:', d[0].trace.uid);
             plotOne(gd, plotinfo, d, this, transitionConfig)
         });
 
@@ -148,7 +146,7 @@ function plotOne(gd, plotinfo, cdscatter, group, transitionConfig) {
 
     // (so error bars can find them along with bars)
     // error bars are at the bottom
-    tr.call(ErrorBars.plot, plotinfo);
+    tr.call(ErrorBars.plot, plotinfo, transitionConfig);
 
     if(trace.visible !== true) return;
 
@@ -314,6 +312,7 @@ function plotOne(gd, plotinfo, cdscatter, group, transitionConfig) {
         }
     }
 
+    var hasTransition = transitionConfig && (transitionConfig || {}).duration > 0;
 
     function makePoints (d) {
         var trace = d[0].trace,
@@ -336,8 +335,12 @@ function plotOne(gd, plotinfo, cdscatter, group, transitionConfig) {
                     .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 0)
                     .call(Drawing.pointStyle, trace)
 
-                join.exit()
-                    .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, -1);
+                if (hasTransition) {
+                    join.exit()
+                        .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, -1);
+                } else {
+                    join.exit().remove();
+                }
             }
             if(showText) {
                 s.selectAll('g')
