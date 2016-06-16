@@ -446,8 +446,16 @@ annotations.draw = function(gd, index, opt, value) {
                 // anyway to get its bounding box)
                 if(!ax.autorange && ((options[axLetter] - ax.range[0]) *
                                      (options[axLetter] - ax.range[1]) > 0)) {
-                    annotationIsOffscreen = true;
-                    return;
+                    if(options['a' + axLetter + 'ref'] === axRef) {
+                        if((options['a' + axLetter] - ax.range[0]) *
+                            (options['a' + axLetter] - ax.range[1]) > 0) {
+                            annotationIsOffscreen = true;
+                        }
+                    } else {
+                        annotationIsOffscreen = true;
+                    }
+
+                    if(annotationIsOffscreen) return;
                 }
                 annPosPx[axLetter] = ax._offset + ax.l2p(options[axLetter]);
                 alignPosition = 0.5;
