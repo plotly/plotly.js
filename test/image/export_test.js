@@ -70,7 +70,7 @@ function runInBatch(mockList) {
 // exported by (only) checking the file size of the generated images.
 function testExport(mockName, format, t) {
     var requestOpts = getRequestOpts({ mockName: mockName, format: format }),
-        imagePaths = getImagePaths(mockName),
+        imagePaths = getImagePaths(mockName, format),
         saveImageStream = fs.createWriteStream(imagePaths.test);
 
     function checkExport(err) {
