@@ -598,7 +598,7 @@ var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
 var getBBox = require('../assets/get_bbox');
 
 function mouseDown(node, x, y) {
-    node.dispatchEvent(new MouseEvent('mousedown', {
+    node.dispatchEvent(new window.MouseEvent('mousedown', {
         bubbles: true,
         clientX: x,
         clientY: y
@@ -606,7 +606,7 @@ function mouseDown(node, x, y) {
 }
 
 function mouseMove(node, x, y) {
-    node.dispatchEvent(new MouseEvent('mousemove', {
+    node.dispatchEvent(new window.MouseEvent('mousemove', {
         bubbles: true,
         clientX: x,
         clientY: y
@@ -614,7 +614,7 @@ function mouseMove(node, x, y) {
 }
 
 function mouseUp(node, x, y) {
-    node.dispatchEvent(new MouseEvent('mouseup', {
+    node.dispatchEvent(new window.MouseEvent('mouseup', {
         bubbles: true,
         clientX: x,
         clientY: y
