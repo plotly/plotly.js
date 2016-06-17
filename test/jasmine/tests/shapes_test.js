@@ -414,9 +414,9 @@ describe('Test shapes', function() {
     }
 
     function getShapeNode(index) {
-        return d3.selectAll('.shapelayer')
-            .selectAll('path[data-index="' + index + '"')
-            .node();
+        return d3.selectAll('.shapelayer path').filter(function() {
+            return +this.getAttribute('data-index') === index;
+        }).node();
     }
 
     function testShape(layoutShape, node) {
