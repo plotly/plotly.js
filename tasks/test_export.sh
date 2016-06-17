@@ -14,7 +14,7 @@ CMD=(
     "cp -f test/image/index.html ../server_app/index.html &&"
     "supervisorctl restart nw1 && "
     "wget --server-response --spider --tries=10 --retry-connrefused http://localhost:9010/ping &&"
-    "node test/image/export_test.js $1"
+    "node test/image/export_test.js $@"
 )
 
 docker exec -i $CONTAINER_NAME /bin/bash -c "${CMD[*]}"
