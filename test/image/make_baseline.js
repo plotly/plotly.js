@@ -17,8 +17,7 @@ var QUEUE_WAIT = 10;
  *
  *  CLI arguments:
  *
- *  1. 'pattern' :
- *      glob determining the baseline(s) are to be generated
+ *  1. 'pattern' : glob determining the baseline(s) to be generated
  *
  *  Examples:
  *
@@ -44,7 +43,6 @@ if(mockList.length === 0) {
 
 // main
 runInQueue(mockList);
-
 
 function runInQueue(mockList) {
     var index = 0;

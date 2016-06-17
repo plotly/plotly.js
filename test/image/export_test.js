@@ -26,8 +26,7 @@ var MIN_SIZE = 100;
  *
  *  CLI arguments:
  *
- *  1. 'pattern' :
- *      glob determining which mock(s) are to be tested
+ *  1. 'pattern' : glob determining which mock(s) are to be tested
  *
  *  Examples:
  *
@@ -53,7 +52,6 @@ if(mockList.length === 0) {
 
 // main
 runInBatch(mockList);
-
 
 function runInBatch(mockList) {
     test('testing image export formats', function(t) {

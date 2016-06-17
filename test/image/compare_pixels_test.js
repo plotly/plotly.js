@@ -28,11 +28,9 @@ var QUEUE_WAIT = 10;
  *
  *  CLI arguments:
  *
- *  1. 'pattern' :
- *      glob determining which mock(s) are to be tested
- *  2. --queue :
- *      if sent, the image will be run in queue instead of in batch.
- *      Makes the test run significantly longer, but is Recommended on weak hardware.
+ *  1. 'pattern' : glob determining which mock(s) are to be tested
+ *  2. --queue : if sent, the image will be run in queue instead of in batch.
+ *      Makes the test run significantly longer, but is recommended on weak hardware.
  *
  *  Examples:
  *
