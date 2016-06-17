@@ -426,8 +426,8 @@ describe('Test shapes', function() {
             y2p = getDataToPixel(gd, ya, true);
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p),
-            dx = 10,
-            dy = 10;
+            dx = 100,
+            dy = 100;
 
         return drag(node, dx, dy).then(function() {
             var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
@@ -456,8 +456,8 @@ describe('Test shapes', function() {
 
         var initialPath = layoutShape.path,
             initialCoordinates = getPathCoordinates(initialPath, x2p, y2p),
-            dx = 10,
-            dy = 10;
+            dx = 100,
+            dy = 100;
 
         expect(initialCoordinates.length).toBe(6);
 
