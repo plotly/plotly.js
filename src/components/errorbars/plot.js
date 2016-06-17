@@ -34,6 +34,12 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
             xObj = trace.error_x || {},
             yObj = trace.error_y || {};
 
+        var keyFunc;
+
+        if (trace.key) {
+            keyFunc = function (d) { return d.key };
+        }
+
         var sparse = (
             subTypes.hasMarkers(trace) &&
             trace.marker.maxdisplayed > 0
@@ -41,15 +47,25 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
 
         if(!yObj.visible && !xObj.visible) return;
 
+
         var errorbars = d3.select(this).selectAll('g.errorbar')
-            .data(Lib.identity);
+            .data(Lib.identity, keyFunc);
 
         errorbars.enter().append('g')
             .classed('errorbar', true);
 
-        errorbars.exit().remove();
+        if (hasAnimation) {
+            errorbars.exit()
+                .style('opacity', 1)
+                .transition()
+                    .duration(transitionConfig.duration)
+                    .style('opacity', 0)
+                    .remove();
+        } else {
+            errorbars.exit().remove();
+        }
 
-        errorbars.each(function(d, i) {
+        errorbars.each(function(d) {
             var errorbar = d3.select(this);
             var coords = errorCoords(d, xa, ya);
 
@@ -71,21 +87,32 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
 
                 var yerror = errorbar.select('path.yerror');
 
-                if (!yerror.size()) {
+                var isNew = !yerror.size();
+
+                if (isNew) {
                     yerror = errorbar.append('path')
                         .classed('yerror', true);
+
+                    if (hasAnimation) {
+                        yerror = yerror.style('opacity', 0);
+                    }
                 } else if (hasAnimation) {
                     yerror = yerror.transition()
                         .duration(transitionConfig.duration)
                         .ease(transitionConfig.easing)
                         .delay(transitionConfig.delay)
-
                 }
 
                 yerror.attr('d', path);
+
+                if (isNew && hasAnimation) {
+                    yerror = yerror.transition()
+                        .duration(transitionConfig.duration)
+                        .style('opacity', 1);
+                }
             }
 
-            if(xObj.visible && isNumeric(coords.y) &&
+            if(xObj.visible && isNumeric(coords.x) &&
                     isNumeric(coords.xh) &&
                     isNumeric(coords.xs)) {
                 var xw = (xObj.copy_ystyle ? yObj : xObj).width;
@@ -98,9 +125,15 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
 
                 var xerror = errorbar.select('path.xerror');
 
-                if (!xerror.size()) {
+                var isNew = !xerror.size();
+
+                if (isNew) {
                     xerror = errorbar.append('path')
                         .classed('xerror', true);
+
+                    if (hasAnimation) {
+                        xerror = xerror.style('opacity', 0);
+                    }
                 } else if (hasAnimation) {
                     xerror = xerror.transition()
                         .duration(transitionConfig.duration)
@@ -109,6 +142,12 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
                 }
 
                 xerror.attr('d', path);
+
+                if (isNew && hasAnimation) {
+                    xerror = xerror.transition()
+                        .duration(transitionConfig.duration)
+                        .style('opacity', 1);
+                }
             }
         });
 
