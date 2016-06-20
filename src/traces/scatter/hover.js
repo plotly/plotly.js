@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var Fx = require('../../plots/cartesian/graph_interact');
+var constants = require('../../plots/cartesian/constants');
 var ErrorBars = require('../../components/errorbars');
 var getTraceColor = require('./get_trace_color');
 var Color = require('../../components/color');
@@ -59,7 +60,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
             Lib.extendFlat(pointData, {
                 // never let a 2D override 1D type as closest point
-                distance: Fx.MAXDIST + 10,
+                distance: constants.MAXDIST + 10,
                 x0: x0,
                 x1: x1,
                 y0: y0,

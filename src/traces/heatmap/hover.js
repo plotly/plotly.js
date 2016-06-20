@@ -10,12 +10,13 @@
 'use strict';
 
 var Fx = require('../../plots/cartesian/graph_interact');
+var constants = require('../../plots/cartesian/constants');
 var Lib = require('../../lib');
 
 
 module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour) {
     // never let a heatmap override another type as closest point
-    if(pointData.distance < Fx.MAXDIST) return;
+    if(pointData.distance < constants.MAXDIST) return;
 
     var cd0 = pointData.cd[0],
         trace = cd0.trace,
@@ -46,8 +47,8 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
             return;
         }
     }
-    else if(Fx.inbox(xval - x[0], xval - x[x.length - 1]) > Fx.MAXDIST ||
-            Fx.inbox(yval - y[0], yval - y[y.length - 1]) > Fx.MAXDIST) {
+    else if(Fx.inbox(xval - x[0], xval - x[x.length - 1]) > constants.MAXDIST ||
+            Fx.inbox(yval - y[0], yval - y[y.length - 1]) > constants.MAXDIST) {
         return;
     }
     else {
@@ -99,7 +100,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     return [Lib.extendFlat(pointData, {
         index: [ny, nx],
         // never let a 2D override 1D type as closest point
-        distance: Fx.MAXDIST + 10,
+        distance: constants.MAXDIST + 10,
         x0: x0,
         x1: x1,
         y0: y0,
