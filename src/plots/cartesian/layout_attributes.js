@@ -131,7 +131,9 @@ module.exports = {
         dflt: 0,
         role: 'style',
         description: [
-            'Sets the number of ticks.',
+            'Specifies the maximum number of ticks for the particular axis.',
+            'The actual number of ticks will be chosen automatically to be',
+            'less than or equal to `nticks`.',
             'Has an effect only if `tickmode` is set to *auto*.'
         ].join(' ')
     },

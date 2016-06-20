@@ -220,7 +220,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
         dv = dvIn || 1;
 
         if(Array.isArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
-        else if(v0In === undefined) v0 = v0In;
+        else if(v0In === undefined) v0 = 0;
         else if(isHist || ax.type === 'category') v0 = v0In;
         else v0 = ax.d2c(v0In);
 
