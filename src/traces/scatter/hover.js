@@ -29,28 +29,50 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     // even if hoveron is 'fills', only use it if we have polygons too
     if(trace.hoveron === 'fills' && trace._polygons) {
         var polygons = trace._polygons,
+            polygonsIn = [],
             inside = false,
-            x0 = Infinity,
-            x1 = -Infinity,
-            y0 = Infinity,
-            y1 = -Infinity;
+            xmin = Infinity,
+            xmax = -Infinity,
+            ymin = Infinity,
+            ymax = -Infinity,
+            i, j, polygon, pts, xCross, x0, x1, y0, y1;
 
-        for(var i = 0; i < polygons.length; i++) {
-            var polygon = polygons[i];
+        for(i = 0; i < polygons.length; i++) {
+            polygon = polygons[i];
             // TODO: this is not going to work right for curved edges, it will
             // act as though they're straight. That's probably going to need
             // the elements themselves to capture the events. Worth it?
             if(polygon.contains(pt)) {
                 inside = !inside;
                 // TODO: need better than just the overall bounding box
-                x0 = Math.min(x0, polygon.xmin);
-                x1 = Math.max(x1, polygon.xmax);
-                y0 = Math.min(y0, polygon.ymin);
-                y1 = Math.max(y1, polygon.ymax);
+                polygonsIn.push(polygon);
+                ymin = Math.min(ymin, polygon.ymin);
+                ymax = Math.max(ymax, polygon.ymax);
             }
         }
 
         if(inside) {
+            // find the overall left-most and right-most points of the
+            // polygon(s) we're inside at their combined vertical midpoint.
+            // This is where we will draw the hover label.
+            // Note that this might not be the vertical midpoint of the
+            // whole trace, if it's disjoint.
+            var yAvg = (ymin + ymax) / 2;
+            for(i = 0; i < polygonsIn.length; i++) {
+                pts = polygonsIn[i].pts;
+                for(j = 1; j < pts.length; j++) {
+                    y0 = pts[j - 1][1];
+                    y1 = pts[j][1];
+                    if((y0 > yAvg) !== (y1 >= yAvg)) {
+                        x0 = pts[j - 1][0];
+                        x1 = pts[j][0];
+                        xCross = x0 + (x1 - x0) * (yAvg - y0) / (y1 - y0);
+                        xmin = Math.min(xmin, xCross);
+                        xmax = Math.max(xmax, xCross);
+                    }
+                }
+            }
+
             // get only fill or line color for the hover color
             var color = Color.defaultLine;
             if(Color.opacity(trace.fillcolor)) color = trace.fillcolor;
@@ -61,14 +83,20 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             Lib.extendFlat(pointData, {
                 // never let a 2D override 1D type as closest point
                 distance: constants.MAXDIST + 10,
-                x0: x0,
-                x1: x1,
-                y0: y0,
-                y1: y1,
+                x0: xmin,
+                x1: xmax,
+                y0: yAvg,
+                y1: yAvg,
                 color: color
             });
 
             delete pointData.index;
+
+            if(trace.text && !Array.isArray(trace.text)) {
+                pointData.text = String(trace.text);
+            }
+            else pointData.text = trace.name;
+
             return [pointData];
         }
     }
