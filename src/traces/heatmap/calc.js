@@ -173,28 +173,35 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
         dv,
         i;
 
-    if(Array.isArray(arrayIn) && !isHist && (ax.type !== 'category')) {
+    var isArrayOfTwoItemsOrMore = Array.isArray(arrayIn) && arrayIn.length > 1;
+
+    if(isArrayOfTwoItemsOrMore && !isHist && (ax.type !== 'category')) {
         arrayIn = arrayIn.map(ax.d2c);
         var len = arrayIn.length;
 
         // given vals are brick centers
-        // hopefully length==numbricks, but use this method even if too few are supplied
+        // hopefully length === numbricks, but use this method even if too few are supplied
         // and extend it linearly based on the last two points
         if(len <= numbricks) {
             // contour plots only want the centers
             if(isContour || isGL2D) arrayOut = arrayIn.slice(0, numbricks);
-            else if(numbricks === 1) arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
+            else if(numbricks === 1) {
+                arrayOut = [arrayIn[0] - 0.5, arrayIn[0] + 0.5];
+            }
             else {
                 arrayOut = [1.5 * arrayIn[0] - 0.5 * arrayIn[1]];
+
                 for(i = 1; i < len; i++) {
                     arrayOut.push((arrayIn[i - 1] + arrayIn[i]) * 0.5);
                 }
+
                 arrayOut.push(1.5 * arrayIn[len - 1] - 0.5 * arrayIn[len - 2]);
             }
 
             if(len < numbricks) {
                 var lastPt = arrayOut[arrayOut.length - 1],
                     delta = lastPt - arrayOut[arrayOut.length - 2];
+
                 for(i = len; i < numbricks; i++) {
                     lastPt += delta;
                     arrayOut.push(lastPt);
@@ -202,7 +209,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
             }
         }
         else {
-            // hopefully length==numbricks+1, but do something regardless:
+            // hopefully length === numbricks+1, but do something regardless:
             // given vals are brick boundaries
             return isContour ?
                 arrayIn.slice(0, numbricks) :  // we must be strict for contours
@@ -211,7 +218,9 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     }
     else {
         dv = dvIn || 1;
-        if(v0In === undefined) v0 = 0;
+
+        if(Array.isArray(arrayIn) && arrayIn.length === 1) v0 = arrayIn[0];
+        else if(v0In === undefined) v0 = 0;
         else if(isHist || ax.type === 'category') v0 = v0In;
         else v0 = ax.d2c(v0In);
 
@@ -219,6 +228,7 @@ function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
             arrayOut.push(v0 + dv * i);
         }
     }
+
     return arrayOut;
 }
 
