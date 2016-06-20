@@ -107,16 +107,16 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                 // always will show up regardless of point size, but
                 // prioritize smaller points
                 var rad = Math.max(3, di.mrc || 0);
-                return Math.max(Math.abs(xa.c2p(di.x) - xa.c2p(xval)) - rad, 1 - 3 / rad);
+                return Math.max(Math.abs(xa.c2p(di.x) - xpx) - rad, 1 - 3 / rad);
             },
             dy = function(di) {
                 var rad = Math.max(3, di.mrc || 0);
-                return Math.max(Math.abs(ya.c2p(di.y) - ya.c2p(yval)) - rad, 1 - 3 / rad);
+                return Math.max(Math.abs(ya.c2p(di.y) - ypx) - rad, 1 - 3 / rad);
             },
             dxy = function(di) {
                 var rad = Math.max(3, di.mrc || 0),
-                    dx = Math.abs(xa.c2p(di.x) - xa.c2p(xval)),
-                    dy = Math.abs(ya.c2p(di.y) - ya.c2p(yval));
+                    dx = xa.c2p(di.x) - xpx,
+                    dy = ya.c2p(di.y) - ypx;
                 return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
             },
             distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
@@ -132,15 +132,17 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
             yc = ya.c2p(di.y, true),
             rad = di.mrc || 1;
 
-        pointData.color = getTraceColor(trace, di);
+        Lib.extendFlat(pointData, {
+            color: getTraceColor(trace, di),
 
-        pointData.x0 = xc - rad;
-        pointData.x1 = xc + rad;
-        pointData.xLabelVal = di.x;
+            x0: xc - rad,
+            x1: xc + rad,
+            xLabelVal: di.x,
 
-        pointData.y0 = yc - rad;
-        pointData.y1 = yc + rad;
-        pointData.yLabelVal = di.y;
+            y0: yc - rad,
+            y1: yc + rad,
+            yLabelVal: di.y
+        });
 
         if(di.tx) pointData.text = di.tx;
         else if(trace.text) pointData.text = trace.text;
