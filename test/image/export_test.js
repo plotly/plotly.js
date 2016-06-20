@@ -1,106 +1,89 @@
 var fs = require('fs');
-var path = require('path');
 
+var getMockList = require('./assets/get_mock_list');
+var getRequestOpts = require('./assets/get_image_request_options');
+var getImagePaths = require('./assets/get_image_paths');
+
+// packages inside the image server docker
 var request = require('request');
 var test = require('tape');
 
-var constants = require('../../tasks/util/constants');
-var getOptions = require('../../tasks/util/get_image_request_options');
-
-var userFileName = process.argv[2];
-
-/**
- * Image formats to test
- *
- * N.B. 'png' is tested in `compare_pixels_test.js`
- *
- * TODO figure why 'jpeg' and 'webp' lead to errors
- *
- */
+// image formats to test
+// N.B. 'png' is tested in `npm run test-image, no need to duplicate here
+// TODO figure why 'jpeg' and 'webp' lead to errors
 var FORMATS = ['svg', 'pdf', 'eps'];
 
-/**
- * The tests below determine whether the images are properly
- * exported by (only) checking the file size of the generated images.
- *
- * MIN_SIZE is the minimum satisfactory file size.
- */
+// non-exhaustive list of mocks to test
+var DEFAULT_LIST = ['0', 'geo_first', 'gl3d_z-range', 'text_export'];
+
+// minimum satisfactory file size
 var MIN_SIZE = 100;
 
+/**
+ *  Image export test script.
+ *
+ *  Called by `tasks/test_export.sh in `npm run test-export`.
+ *
+ *  CLI arguments:
+ *
+ *  1. 'pattern' : glob determining which mock(s) are to be tested
+ *
+ *  Examples:
+ *
+ *  Run the export test on the default mock list (in batch):
+ *
+ *      npm run test-image
+ *
+ *  Run the export on the 'contour_nolines' mock:
+ *
+ *      npm run test-image -- contour_nolines
+ *
+ *  Run the export test on all gl3d mocks (in batch):
+ *
+ *      npm run test-image -- gl3d_*
+ */
 
-// make artifact folder
-if(!fs.existsSync(constants.pathToTestImages)) {
-    fs.mkdirSync(constants.pathToTestImages);
+var pattern = process.argv[2];
+var mockList = pattern ? getMockList(pattern) : DEFAULT_LIST;
+
+if(mockList.length === 0) {
+    throw new Error('No mocks found with pattern ' + pattern);
 }
 
-if(!userFileName) runAll();
-else {
+// main
+runInBatch(mockList);
 
-    if(path.extname(userFileName) !== '.json') {
-        throw new Error('user-specified mock must end with \'.json\'');
-    }
+function runInBatch(mockList) {
+    test('testing image export formats', function(t) {
+        t.plan(mockList.length * FORMATS.length);
 
-    runSingle(userFileName);
-}
-
-function runAll() {
-    test('testing export formats', function(t) {
-
-        // non-exhaustive list of mocks to test
-        var fileNames = [
-            '0.json',
-            'geo_first.json',
-            'gl3d_z-range.json',
-            'text_export.json'
-        ];
-
-        t.plan(fileNames.length * FORMATS.length);
-
-        fileNames.forEach(function(fileName) {
-            testExports(fileName, t);
+        // send all requests out at once
+        mockList.forEach(function(mockName) {
+            FORMATS.forEach(function(format) {
+                testExport(mockName, format, t);
+            });
         });
     });
 }
 
-function runSingle(userFileName) {
-    test('testing export for: ' + userFileName, function(t) {
-        t.plan(FORMATS.length);
-
-        testExports(userFileName, t);
-    });
-}
-
-function testExports(fileName, t) {
-    FORMATS.forEach(function(format) {
-        testExport(fileName, format, t);
-    });
-}
-
-function testExport(fileName, format, t) {
-    var figure = require(path.join(constants.pathToTestImageMocks, fileName));
-    var bodyMock = {
-        figure: figure,
-        format: format,
-        scale: 1
-    };
-
-    var imageFileName = fileName.split('.')[0] + '.' + format;
-    var savedImagePath = path.join(constants.pathToTestImages, imageFileName);
-    var savedImageStream = fs.createWriteStream(savedImagePath);
-
-    var options = getOptions(bodyMock, 'http://localhost:9010/');
+// The tests below determine whether the images are properly
+// exported by (only) checking the file size of the generated images.
+function testExport(mockName, format, t) {
+    var requestOpts = getRequestOpts({ mockName: mockName, format: format }),
+        imagePaths = getImagePaths(mockName, format),
+        saveImageStream = fs.createWriteStream(imagePaths.test);
 
     function checkExport(err) {
         if(err) throw err;
 
-        fs.stat(savedImagePath, function(err, stats) {
+        fs.stat(imagePaths.test, function(err, stats) {
             var didExport = stats.size > MIN_SIZE;
 
-            t.ok(didExport, imageFileName + ' should be properly exported');
+            t.ok(didExport, mockName + ' should be properly exported as a ' + format);
         });
     }
 
-    request(options)
-        .pipe(savedImageStream)
+    request(requestOpts)
+        .pipe(saveImageStream)
         .on('close', checkExport);
 }
