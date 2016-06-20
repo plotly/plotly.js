@@ -690,4 +690,17 @@ describe('hover on fill', function() {
             return assertLabelsCorrect([155, 260], [160.325, 248.1], 'trace 0');
         }).then(done);
     });
+
+    it('should work for scatterternary too', function(done) {
+        var mock = require('@mocks/ternary_fill.json');
+        mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
+
+        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
+            return assertLabelsCorrect([245, 171], [249.7, 166], 'trace 2');
+        }).then(function() {
+            return assertLabelsCorrect([245, 226], [268.75, 265], 'trace 1');
+        }).then(function() {
+            return assertLabelsCorrect([245, 259], [249.7, 254], 'trace 0');
+        }).then(done);
+    });
 });
