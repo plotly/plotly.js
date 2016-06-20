@@ -1,6 +1,8 @@
 var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Images = require('@src/components/images');
+
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
@@ -288,6 +290,62 @@ describe('Layout images', function() {
                 expect(newSelection.size()).toBe(0);
             }).then(done);
         });
+    });
+
+    describe('when adding/removing images', function() {
+
+        afterEach(destroyGraphDiv);
+
+        it('should properly add and removing image', function(done) {
+            var gd = createGraphDiv(),
+                data = [{ x: [1, 2, 3], y: [1, 2, 3] }],
+                layout = { width: 500, height: 400 };
+
+            function makeImage(source, x, y) {
+                return {
+                    source: source,
+                    x: x,
+                    y: y,
+                    sizex: 1,
+                    sizey: 1
+                };
+            }
+
+            function assertImages(cnt) {
+                expect(d3.selectAll('image').size()).toEqual(cnt);
+            }
+
+            Plotly.plot(gd, data, layout).then(function() {
+                assertImages(0);
+
+                return Plotly.relayout(gd, 'images[0]', makeImage(jsLogo, 0.1, 0.1));
+            }).then(function() {
+                assertImages(1);
+
+                return Plotly.relayout(gd, 'images[1]', makeImage(pythonLogo, 0.9, 0.9));
+            }).then(function() {
+                assertImages(2);
+
+                return Plotly.relayout(gd, 'images[2]', makeImage(pythonLogo, 0.2, 0.5));
+            }).then(function() {
+                assertImages(3);
+
+                return Plotly.relayout(gd, 'images[2]', 'remove');
+            }).then(function() {
+                assertImages(2);
+
+                return Plotly.relayout(gd, 'images[1]', 'remove');
+            }).then(function() {
+                assertImages(1);
+
+                return Plotly.relayout(gd, 'images[0]', 'remove');
+            }).then(function() {
+                assertImages(0);
+
+                done();
+            });
+        });
+
     });
 
 });
