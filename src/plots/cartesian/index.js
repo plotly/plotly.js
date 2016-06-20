@@ -27,6 +27,8 @@ exports.attrRegex = constants.attrRegex;
 
 exports.attributes = require('./attributes');
 
+exports.transitionAxes = require('./transition_axes');
+
 exports.plot = function(gd, traces, transitionOpts) {
     var fullLayout = gd._fullLayout,
         subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),

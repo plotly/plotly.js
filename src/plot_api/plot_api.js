@@ -1528,7 +1528,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 // 3. update gl._fullData
 // 4. doCalcdata
 // 5. begin animation
-Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
+Plotly.animate = function animate (gd, newData, transitionOpts, traces, newLayout) {
     gd = getGraphDiv(gd);
 
     var fullLayout = gd._fullLayout;
@@ -1597,7 +1597,7 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
 
     ErrorBars.calc(gd);
 
-    function doSetPositions () {
+    /*function doSetPositions () {
 		var subplots = Plots.getSubplotIds(fullLayout, 'cartesian');
 		var modules = fullLayout._modules;
 
@@ -1615,18 +1615,28 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces) {
 			    if(_module.setPositions) _module.setPositions(gd, subplotInfo);
 		    }
 		}
-	}
+	}*/
 
-	doSetPositions();
+	//doSetPositions();
 
     var restyleList = [];
+    var relayoutList = [];
 
     function doAnimations () {
         var a, i, j;
         var basePlotModules = fullLayout._basePlotModules;
-        for(j = 0; j < basePlotModules.length; j++) {
+        for (j = 0; j < basePlotModules.length; j++) {
             basePlotModules[j].plot(gd, animatedTraces, transitionOpts);
         }
+
+        if (newLayout) {
+            for (j = 0; j < basePlotModules.length; j++) {
+                if (basePlotModules[j].transitionAxes) {
+                    basePlotModules[j].transitionAxes(gd, newLayout, transitionOpts);
+                }
+            }
+        }
+
         if (!transitionOpts.leadingEdgeRestyle) {
             return new Promise(function(resolve, reject) {
                 setTimeout(resolve, transitionOpts.duration);
