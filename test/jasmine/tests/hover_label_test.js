@@ -652,3 +652,42 @@ describe('hover after resizing', function() {
         }).then(done);
     });
 });
+
+describe('hover on fill', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    function assertLabelsCorrect(mousePos, labelPos, labelText) {
+        return new Promise(function(resolve) {
+            mouseEvent('mousemove', mousePos[0], mousePos[1]);
+
+            setTimeout(function() {
+                var hoverText = d3.selectAll('g.hovertext');
+                expect(hoverText.size()).toEqual(1);
+                expect(hoverText.text()).toEqual(labelText);
+
+                var transformParts = hoverText.attr('transform').split('(');
+                expect(transformParts[0]).toEqual('translate');
+                var transformCoords = transformParts[1].split(')')[0].split(',');
+                expect(+transformCoords[0]).toBeCloseTo(labelPos[0], 0, labelText + ':x');
+                expect(+transformCoords[1]).toBeCloseTo(labelPos[1], 0, labelText + ':y');
+
+                resolve();
+            }, constants.HOVERMINTIME);
+        });
+    }
+
+    it('should always show one label in the right place', function(done) {
+        var mock = require('@mocks/scatter_fill_self_next.json');
+        mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
+
+        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
+            return assertLabelsCorrect([250, 150], [252.575, 133.8], 'trace 2');
+        }).then(function() {
+            return assertLabelsCorrect([250, 300], [234.125, 210], 'trace 1');
+        }).then(function() {
+            return assertLabelsCorrect([155, 260], [160.325, 248.1], 'trace 0');
+        }).then(done);
+    });
+});
