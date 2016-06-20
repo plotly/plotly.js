@@ -43,6 +43,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
 
     // BUILD LINES AND FILLS
     var prevpath = '',
+        prevPolygons = [],
         ownFillEl3, ownFillDir, tonext, nexttonext;
 
     scattertraces.each(function(d) {
@@ -131,8 +132,9 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
         // polygons for hover on fill
         // TODO: can we skip this if hoveron!=fills? That would mean we
         // need to redraw when you change hoveron...
-        trace._polygons = new Array(segments.length);
-        var i;
+        var thisPolygons = trace._polygons = new Array(segments.length),
+            i;
+
         for(i = 0; i < segments.length; i++) {
             trace._polygons[i] = polygonTester(segments[i]);
         }
@@ -197,8 +199,10 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
                     // existing curve or off the end of it
                     tonext.attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
                 }
+                trace._polygons = trace._polygons.concat(prevPolygons);
             }
             prevpath = revpath;
+            prevPolygons = thisPolygons;
         }
     });
 
