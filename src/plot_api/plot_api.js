@@ -1545,8 +1545,6 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces, newLayou
     transitionOpts.cascade = transitionOpts.cascade === undefined ? 0 : transitionOpts.cascade;
     transitionOpts.leadingEdgeRestyle = transitionOpts.leadingEdgeRestyle === undefined ? false : transitionOpts.leadingEdgeRestyle;
 
-    gd = getGraphDiv(gd);
-
     if(isNumeric(traces)) traces = [traces];
     else if(!Array.isArray(traces) || !traces.length) {
         traces = gd._fullData.map(function (v,i) {return i;});
@@ -1556,46 +1554,46 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces, newLayou
 
     var animatedTraces = [];
 
-    for (i = 0; i < traces.length; i++) {
-        var traceIdx = traces[i];
-        var trace = gd._fullData[traceIdx];
-        var module = trace._module;
+    function beginAnimation () {
+        for (i = 0; i < traces.length; i++) {
+            var traceIdx = traces[i];
+            var trace = gd._fullData[traceIdx];
+            var module = trace._module;
 
-        if (!module.animatable) {
-            continue;
+            if (!module.animatable) {
+                continue;
+            }
+
+            animatedTraces.push(traceIdx);
+
+            newTraceData = newData[i];
+            curData = gd.data[traces[i]];
+
+            for (var ai in newTraceData) {
+                var value = newTraceData[ai];
+                Lib.nestedProperty(curData, ai).set(value);
+            }
+
+            var traceIdx = traces[i];
+            if (gd.data[traceIdx].marker && gd.data[traceIdx].marker.size) {
+                gd._fullData[traceIdx].marker.size = gd.data[traceIdx].marker.size
+            }
+            if (gd.data[traceIdx].error_y && gd.data[traceIdx].error_y.array) {
+                gd._fullData[traceIdx].error_y.array = gd.data[traceIdx].error_y.array
+            }
+            if (gd.data[traceIdx].error_x && gd.data[traceIdx].error_x.array) {
+                gd._fullData[traceIdx].error_x.array = gd.data[traceIdx].error_x.array
+            }
+            gd._fullData[traceIdx].x = gd.data[traceIdx].x;
+            gd._fullData[traceIdx].y = gd.data[traceIdx].y;
+            gd._fullData[traceIdx].z = gd.data[traceIdx].z;
+            gd._fullData[traceIdx].key = gd.data[traceIdx].key;
         }
 
-        animatedTraces.push(traceIdx);
+        doCalcdata(gd, animatedTraces);
 
-        newTraceData = newData[i];
-        curData = gd.data[traces[i]];
-
-        for (var ai in newTraceData) {
-            var value = newTraceData[ai];
-            Lib.nestedProperty(curData, ai).set(value);
-        }
-
-        var traceIdx = traces[i];
-        if (gd.data[traceIdx].marker && gd.data[traceIdx].marker.size) {
-            gd._fullData[traceIdx].marker.size = gd.data[traceIdx].marker.size
-        }
-        if (gd.data[traceIdx].error_y && gd.data[traceIdx].error_y.array) {
-            gd._fullData[traceIdx].error_y.array = gd.data[traceIdx].error_y.array
-        }
-        if (gd.data[traceIdx].error_x && gd.data[traceIdx].error_x.array) {
-            gd._fullData[traceIdx].error_x.array = gd.data[traceIdx].error_x.array
-        }
-        gd._fullData[traceIdx].x = gd.data[traceIdx].x;
-        gd._fullData[traceIdx].y = gd.data[traceIdx].y;
-        gd._fullData[traceIdx].z = gd.data[traceIdx].z;
-        gd._fullData[traceIdx].key = gd.data[traceIdx].key;
-        gd._fullData[traceIdx].r = gd.data[traceIdx].r;
-        gd._fullData[traceIdx].t = gd.data[traceIdx].t;
+        ErrorBars.calc(gd);
     }
-
-    doCalcdata(gd, animatedTraces);
-
-    ErrorBars.calc(gd);
 
     /*function doSetPositions () {
 		var subplots = Plots.getSubplotIds(fullLayout, 'cartesian');
@@ -1621,6 +1619,8 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces, newLayou
 
     var restyleList = [];
     var relayoutList = [];
+    var completionTimeout = null;
+    var completion = null;
 
     function doAnimations () {
         var a, i, j;
@@ -1639,9 +1639,26 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces, newLayou
 
         if (!transitionOpts.leadingEdgeRestyle) {
             return new Promise(function(resolve, reject) {
-                setTimeout(resolve, transitionOpts.duration);
+                completion = resolve;
+                completionTimeout = setTimeout(resolve, transitionOpts.duration);
             });
         }
+    }
+
+    function executeInterrupt () {
+        var ret;
+        clearTimeout(completionTimeout);
+
+        if (completion) {
+            console.log('complete!');
+            completion();
+        }
+
+        if (gd._animationInterrupt) {
+            ret = gd._animationInterrupt();
+            gd._animationInterrupt = null;
+        }
+        return ret;
     }
 
     /*for (var i = 0; i < animatedTraces.length; i++) {
@@ -1689,7 +1706,7 @@ Plotly.animate = function animate (gd, newData, transitionOpts, traces, newLayou
         }
     }
 
-    var seq = [Plots.previousPromises];
+    var seq = [Plots.previousPromises, executeInterrupt, beginAnimation];
     seq.push(doAnimations);
     seq = seq.concat(restyleList);
 

@@ -236,6 +236,13 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
     return new Promise(function (resolve, reject) {
         var t1, t2, raf;
 
+        gd._animationInterrupt = function () {
+            reject();
+            cancelAnimationFrame(raf);
+            raf = null;
+            transitionTail();
+        };
+
         function doFrame () {
             t2 = Date.now();
 
