@@ -1,9 +1,13 @@
+var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var convertColumnXYZ = require('@src/traces/heatmap/convert_column_xyz');
 var Heatmap = require('@src/traces/heatmap');
 
+var d3 = require('d3');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 var customMatchers = require('../assets/custom_matchers');
 
 
@@ -298,4 +302,98 @@ describe('heatmap calc', function() {
         expect(out.y).toBeCloseToArray([-0.5, 0.5, 1.5]);
         expect(out.z).toBeCloseTo2DArray([[1, 2, 3], [3, 1, 2]]);
     });
+});
+
+describe('heatmap plot', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('should not draw traces that are off-screen', function(done) {
+        var mock = require('@mocks/heatmap_multi-trace.json'),
+            mockCopy = Lib.extendDeep({}, mock),
+            gd = createGraphDiv();
+
+        function assertImageCnt(cnt) {
+            var images = d3.selectAll('.hm').select('image');
+
+            expect(images.size()).toEqual(cnt);
+        }
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            assertImageCnt(5);
+
+            return Plotly.relayout(gd, 'xaxis.range', [2, 3]);
+        }).then(function() {
+            assertImageCnt(2);
+
+            return Plotly.relayout(gd, 'xaxis.autorange', true);
+        }).then(function() {
+            assertImageCnt(5);
+
+            done();
+        });
+    });
+});
+
+describe('heatmap hover', function() {
+    'use strict';
+
+    var gd;
+
+    beforeAll(function(done) {
+        jasmine.addMatchers(customMatchers);
+
+        gd = createGraphDiv();
+
+        var mock = require('@mocks/heatmap_multi-trace.json'),
+            mockCopy = Lib.extendDeep({}, mock);
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
+
+    afterAll(destroyGraphDiv);
+
+    function _hover(gd, xval, yval) {
+        var fullLayout = gd._fullLayout,
+            calcData = gd.calcdata,
+            hoverData = [];
+
+        for(var i = 0; i < calcData.length; i++) {
+            var pointData = {
+                index: false,
+                distance: 20,
+                cd: calcData[i],
+                trace: calcData[i][0].trace,
+                xa: fullLayout.xaxis,
+                ya: fullLayout.yaxis
+            };
+
+            var hoverPoint = Heatmap.hoverPoints(pointData, xval, yval);
+            if(hoverPoint) hoverData.push(hoverPoint[0]);
+        }
+
+        return hoverData;
+    }
+
+    function assertLabels(hoverPoint, xLabel, yLabel, zLabel) {
+        expect(hoverPoint.xLabelVal).toEqual(xLabel, 'have correct x label');
+        expect(hoverPoint.yLabelVal).toEqual(yLabel, 'have correct y label');
+        expect(hoverPoint.zLabelVal).toEqual(zLabel, 'have correct z label');
+    }
+
+    it('should find closest point (case 1) and should', function() {
+        var pt = _hover(gd, 0.5, 0.5)[0];
+
+        expect(pt.index).toEqual([1, 0], 'have correct index');
+        assertLabels(pt, 1, 1, 4);
+    });
+
+    it('should find closest point (case 2) and should', function() {
+        var pt = _hover(gd, 1.5, 0.5)[0];
+
+        expect(pt.index).toEqual([0, 0], 'have correct index');
+        assertLabels(pt, 2, 0.2, 6);
+    });
+
 });
