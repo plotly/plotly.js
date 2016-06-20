@@ -169,7 +169,9 @@ proto.makeFramework = function() {
     _this.plotContainer.selectAll('.backplot,.frontplot,.grids')
         .call(Drawing.setClipUrl, clipId);
 
-    _this.initInteractions();
+    if(!_this.graphDiv._context.staticPlot) {
+        _this.initInteractions();
+    }
 };
 
 var w_over_h = Math.sqrt(4 / 3);

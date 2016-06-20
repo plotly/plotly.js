@@ -286,4 +286,51 @@ describe('select box and lasso', function() {
             });
         });
     });
+
+    it('should skip over non-visible traces', function(done) {
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.dragmode = 'select';
+
+        var selectPath = [[100, 200], [150, 200]];
+        var lassoPath = [[331, 178], [333, 246], [350, 250], [343, 176]];
+
+        var gd = createGraphDiv();
+        var selectedPtLength;
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            gd.on('plotly_selected', function(data) {
+                selectedPtLength = data.points.length;
+            });
+
+            drag(selectPath);
+            expect(selectedPtLength).toEqual(2, '(case 0)');
+
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        }).then(function() {
+            drag(selectPath);
+            expect(selectedPtLength).toEqual(0, '(legendonly case)');
+
+            return Plotly.restyle(gd, 'visible', true);
+        }).then(function() {
+            drag(selectPath);
+            expect(selectedPtLength).toEqual(2, '(back to case 0)');
+
+            return Plotly.relayout(gd, 'dragmode', 'lasso');
+        }).then(function() {
+            drag(lassoPath);
+            expect(selectedPtLength).toEqual(1, '(case 0 lasso)');
+
+            return Plotly.restyle(gd, 'visible', 'legendonly');
+        }).then(function() {
+            drag(lassoPath);
+            expect(selectedPtLength).toEqual(0, '(lasso legendonly case)');
+
+            return Plotly.restyle(gd, 'visible', true);
+        }).then(function() {
+            drag(lassoPath);
+            expect(selectedPtLength).toEqual(1, '(back to lasso case 0)');
+
+            done();
+        });
+    });
 });

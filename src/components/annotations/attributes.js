@@ -137,8 +137,10 @@ module.exports = {
         role: 'info',
         description: [
             'Sets the x component of the arrow tail about the arrow head.',
-            'A positive (negative) component corresponds to an arrow pointing',
-            'from right to left (left to right)'
+            'If `axref` is `pixel`, a positive (negative) ',
+            'component corresponds to an arrow pointing',
+            'from right to left (left to right).',
+            'If `axref` is an axis, this is a value on that axis.'
         ].join(' ')
     },
     ay: {
@@ -147,8 +149,44 @@ module.exports = {
         role: 'info',
         description: [
             'Sets the y component of the arrow tail about the arrow head.',
-            'A positive (negative) component corresponds to an arrow pointing',
-            'from bottom to top (top to bottom)'
+            'If `ayref` is `pixel`, a positive (negative) ',
+            'component corresponds to an arrow pointing',
+            'from bottom to top (top to bottom).',
+            'If `ayref` is an axis, this is a value on that axis.'
+        ].join(' ')
+    },
+    axref: {
+        valType: 'enumerated',
+        dflt: 'pixel',
+        values: [
+            'pixel',
+            cartesianConstants.idRegex.x.toString()
+        ],
+        role: 'info',
+        description: [
+            'Indicates in what terms the tail of the annotation (ax,ay) ',
+            'is specified. If `pixel`, `ax` is a relative offset in pixels ',
+            'from `x`. If set to an x axis id (e.g. *x* or *x2*), `ax` is ',
+            'specified in the same terms as that axis. This is useful ',
+            'for trendline annotations which should continue to indicate ',
+            'the correct trend when zoomed.'
+        ].join(' ')
+    },
+    ayref: {
+        valType: 'enumerated',
+        dflt: 'pixel',
+        values: [
+            'pixel',
+            cartesianConstants.idRegex.y.toString()
+        ],
+        role: 'info',
+        description: [
+            'Indicates in what terms the tail of the annotation (ax,ay) ',
+            'is specified. If `pixel`, `ay` is a relative offset in pixels ',
+            'from `y`. If set to a y axis id (e.g. *y* or *y2*), `ay` is ',
+            'specified in the same terms as that axis. This is useful ',
+            'for trendline annotations which should continue to indicate ',
+            'the correct trend when zoomed.'
         ].join(' ')
     },
     // positioning
