@@ -145,8 +145,8 @@ module.exports = function draw(gd) {
 
 
     // Required for updating images
-    function keyFunction(d) {
-        return d.source;
+    function keyFunction(d, i) {
+        return d.source + i;
     }
 
 
