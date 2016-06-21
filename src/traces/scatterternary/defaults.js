@@ -81,11 +81,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
-    var dfltHoverOn = '';
+    var dfltHoverOn = [];
 
     if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
         coerce('marker.maxdisplayed');
-        dfltHoverOn = 'points';
+        dfltHoverOn.push('points');
     }
 
     coerce('fill');
@@ -96,8 +96,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('hoverinfo', (layout._dataLength === 1) ? 'a+b+c+text' : undefined);
 
-    if(!dfltHoverOn && (traceOut.fill === 'tonext' || traceOut.fill === 'toself')) {
-        dfltHoverOn = 'fills';
+    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
+        dfltHoverOn.push('fills');
     }
-    coerce('hoveron', dfltHoverOn || 'points');
+    coerce('hoveron', dfltHoverOn.join('+') || 'points');
 };

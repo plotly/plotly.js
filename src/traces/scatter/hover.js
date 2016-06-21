@@ -26,8 +26,63 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         ypx = ya.c2p(yval),
         pt = [xpx, ypx];
 
+    // look for points to hover on first, then take fills only if we
+    // didn't find a point
+    if(trace.hoveron.indexOf('points') !== -1) {
+        var dx = function(di) {
+                // scatter points: d.mrc is the calculated marker radius
+                // adjust the distance so if you're inside the marker it
+                // always will show up regardless of point size, but
+                // prioritize smaller points
+                var rad = Math.max(3, di.mrc || 0);
+                return Math.max(Math.abs(xa.c2p(di.x) - xpx) - rad, 1 - 3 / rad);
+            },
+            dy = function(di) {
+                var rad = Math.max(3, di.mrc || 0);
+                return Math.max(Math.abs(ya.c2p(di.y) - ypx) - rad, 1 - 3 / rad);
+            },
+            dxy = function(di) {
+                var rad = Math.max(3, di.mrc || 0),
+                    dx = xa.c2p(di.x) - xpx,
+                    dy = ya.c2p(di.y) - ypx;
+                return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
+            },
+            distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
+
+        Fx.getClosest(cd, distfn, pointData);
+
+        // skip the rest (for this trace) if we didn't find a close point
+        if(pointData.index !== false) {
+
+            // the closest data point
+            var di = cd[pointData.index],
+                xc = xa.c2p(di.x, true),
+                yc = ya.c2p(di.y, true),
+                rad = di.mrc || 1;
+
+            Lib.extendFlat(pointData, {
+                color: getTraceColor(trace, di),
+
+                x0: xc - rad,
+                x1: xc + rad,
+                xLabelVal: di.x,
+
+                y0: yc - rad,
+                y1: yc + rad,
+                yLabelVal: di.y
+            });
+
+            if(di.tx) pointData.text = di.tx;
+            else if(trace.text) pointData.text = trace.text;
+
+            ErrorBars.hoverInfo(di, trace, pointData);
+
+            return [pointData];
+        }
+    }
+
     // even if hoveron is 'fills', only use it if we have polygons too
-    if(trace.hoveron === 'fills' && trace._polygons) {
+    if(trace.hoveron.indexOf('fills') !== -1 && trace._polygons) {
         var polygons = trace._polygons,
             polygonsIn = [],
             inside = false,
@@ -99,56 +154,5 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
 
             return [pointData];
         }
-    }
-    else {
-        var dx = function(di) {
-                // scatter points: d.mrc is the calculated marker radius
-                // adjust the distance so if you're inside the marker it
-                // always will show up regardless of point size, but
-                // prioritize smaller points
-                var rad = Math.max(3, di.mrc || 0);
-                return Math.max(Math.abs(xa.c2p(di.x) - xpx) - rad, 1 - 3 / rad);
-            },
-            dy = function(di) {
-                var rad = Math.max(3, di.mrc || 0);
-                return Math.max(Math.abs(ya.c2p(di.y) - ypx) - rad, 1 - 3 / rad);
-            },
-            dxy = function(di) {
-                var rad = Math.max(3, di.mrc || 0),
-                    dx = xa.c2p(di.x) - xpx,
-                    dy = ya.c2p(di.y) - ypx;
-                return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
-            },
-            distfn = Fx.getDistanceFunction(hovermode, dx, dy, dxy);
-
-        Fx.getClosest(cd, distfn, pointData);
-
-        // skip the rest (for this trace) if we didn't find a close point
-        if(pointData.index === false) return;
-
-        // the closest data point
-        var di = cd[pointData.index],
-            xc = xa.c2p(di.x, true),
-            yc = ya.c2p(di.y, true),
-            rad = di.mrc || 1;
-
-        Lib.extendFlat(pointData, {
-            color: getTraceColor(trace, di),
-
-            x0: xc - rad,
-            x1: xc + rad,
-            xLabelVal: di.x,
-
-            y0: yc - rad,
-            y1: yc + rad,
-            yLabelVal: di.y
-        });
-
-        if(di.tx) pointData.text = di.tx;
-        else if(trace.text) pointData.text = trace.text;
-
-        ErrorBars.hoverInfo(di, trace, pointData);
-
-        return [pointData];
     }
 };

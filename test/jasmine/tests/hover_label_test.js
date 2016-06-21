@@ -693,10 +693,15 @@ describe('hover on fill', function() {
 
     it('should work for scatterternary too', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
-        mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
 
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
-            return assertLabelsCorrect([237, 163], [247.7, 166], 'trace 2');
+            // hover over a point when that's closest, even if you're over
+            // a fill, because by default we have hoveron='points+fills'
+            return assertLabelsCorrect([237, 150], [240.0, 144],
+                'trace 2Component A: 0.8Component B: 0.1Component C: 0.1');
+        }).then(function() {
+            // the rest are hovers over fills
+            return assertLabelsCorrect([237, 170], [247.7, 166], 'trace 2');
         }).then(function() {
             return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         }).then(function() {

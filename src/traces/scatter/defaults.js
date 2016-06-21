@@ -53,11 +53,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
-    var dfltHoverOn = '';
+    var dfltHoverOn = [];
 
     if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
         coerce('marker.maxdisplayed');
-        dfltHoverOn = 'points';
+        dfltHoverOn.push('points');
     }
 
     coerce('fill');
@@ -66,10 +66,10 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
     }
 
-    if(!dfltHoverOn && (traceOut.fill === 'tonext' || traceOut.fill === 'toself')) {
-        dfltHoverOn = 'fills';
+    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
+        dfltHoverOn.push('fills');
     }
-    coerce('hoveron', dfltHoverOn || 'points');
+    coerce('hoveron', dfltHoverOn.join('+') || 'points');
 
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});

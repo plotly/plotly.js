@@ -93,8 +93,8 @@ module.exports = {
         ].join(' ')
     },
     hoveron: {
-        valType: 'enumerated',
-        values: ['points', 'fills'],
+        valType: 'flaglist',
+        flags: ['points', 'fills'],
         role: 'info',
         description: [
             'Do the hover effects highlight individual points (markers or',

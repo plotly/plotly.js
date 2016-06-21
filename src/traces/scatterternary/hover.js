@@ -17,7 +17,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
     if(!scatterPointData || scatterPointData[0].index === false) return;
 
-    // if hoveron='fills', we don't show any point data so the label is
+    // if hovering on a fill, we don't show any point data so the label is
     // unchanged from what scatter gives us.
     if(scatterPointData[0].index === undefined) return scatterPointData;
 
