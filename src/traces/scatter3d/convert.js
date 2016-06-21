@@ -204,7 +204,7 @@ function convertPlotlyOptions(scene, data) {
     };
 
     if('line' in data) {
-        params.lineColor = str2RgbaArray(line.color);
+        params.lineColor = formatColor(line, 1, len);
         params.lineWidth = line.width;
         params.lineDashes = line.dash;
     }
