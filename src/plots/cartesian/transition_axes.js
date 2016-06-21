@@ -117,17 +117,14 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
         var viewBox = [0, 0, xa2._length, ya2._length];
 
-        var editX = true;
-        var editY = true;
+        var xScaleFactor = xa2._length / viewBox[2],
+            yScaleFactor = ya2._length / viewBox[3];
 
-        var xScaleFactor = editX ? xa2._length / viewBox[2] : 1,
-            yScaleFactor = editY ? ya2._length / viewBox[3] : 1;
+        var clipDx = viewBox[0],
+            clipDy = viewBox[1];
 
-        var clipDx = editX ? viewBox[0] : 0,
-            clipDy = editY ? viewBox[1] : 0;
-
-        var fracDx = editX ? (viewBox[0] / viewBox[2] * xa2._length) : 0,
-            fracDy = editY ? (viewBox[1] / viewBox[3] * ya2._length) : 0;
+        var fracDx = (viewBox[0] / viewBox[2] * xa2._length),
+            fracDy = (viewBox[1] / viewBox[3] * ya2._length);
 
         var plotDx = xa2._offset - fracDx,
             plotDy = ya2._offset - fracDy;
