@@ -587,7 +587,8 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             oldFullLayout._paper.selectAll(
                 '.hm' + oldUid +
                 ',.contour' + oldUid +
-                ',#clip' + oldUid
+                ',#clip' + oldUid +
+                ',.trace' + oldUid
             ).remove();
         }
 
