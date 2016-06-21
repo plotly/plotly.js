@@ -10,6 +10,7 @@
 
 var colorScaleAttributes = require('./attributes');
 var extendDeep = require('../../lib/extend').extendDeep;
+var palettes = require('./scales.js');
 
 module.exports = function makeColorScaleAttributes(context) {
     return {
@@ -19,7 +20,7 @@ module.exports = function makeColorScaleAttributes(context) {
             role: 'style',
             description: [
                 'Sets the ', context, ' color. It accepts either a specific color',
-                ' or an array of values that are mapped to the colorscale',
+                ' or an array of numbers that are mapped to the colorscale',
                 ' relative to the max and min values of the array or relative to',
                 ' `cmin` and `cmax` if set.'
             ].join('')
@@ -35,14 +36,19 @@ module.exports = function makeColorScaleAttributes(context) {
                 ' values are required. For example,',
                 ' `[[0, \'rgb(0,0,255)\', [1, \'rgb(255,0,0)\']]`.',
                 ' To control the bounds of the colorscale in color space,',
-                ' use `', context, '.cmin` and `', context, '.cmax`.'
-            ].join('')
+                ' use `', context, '.cmin` and `', context, '.cmax`.',
+                ' Alternatively, `colorscale` may be a palette name string',
+                ' of the following list: '
+            ].join('').concat(Object.keys(palettes).join(', '))
         }),
         cauto: extendDeep({}, colorScaleAttributes.zauto, {
             description: [
-                'Has an effect only if `', context, '.color` is set to a numerical array.',
-                ' Determines the whether or not the color domain is computed',
-                ' automatically.'
+                'Has an effect only if `', context, '.color` is set to a numerical array',
+                ' and `cmin`, `cmax` are set by the user. In this case,',
+                ' it controls whether the range of colors in `colorscale` is mapped to',
+                ' the range of values in the `color` array (`cauto: true`), or the `cmin`/`cmax`',
+                ' values (`cauto: false`).',
+                ' Defaults to `false` when `cmin`, `cmax` are set by the user.'
             ].join('')
         }),
         cmax: extendDeep({}, colorScaleAttributes.zmax, {
@@ -64,14 +70,18 @@ module.exports = function makeColorScaleAttributes(context) {
         autocolorscale: extendDeep({}, colorScaleAttributes.autocolorscale, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array.',
-                ' Determines whether or not the colorscale is picked using',
-                ' values inside `', context, '.color`.'
+                ' Determines whether the colorscale is a default palette (`autocolorscale: true`)',
+                ' or the palette determined by `', context, '.colorscale`.',
+                ' In case `colorscale` is unspecified or `autocolorscale` is true, the default ',
+                ' palette will be chosen according to whether numbers in the `color` array are',
+                ' all positive, all negative or mixed.'
             ].join('')
         }),
         reversescale: extendDeep({}, colorScaleAttributes.reversescale, {
             description: [
                 'Has an effect only if `', context, '.color` is set to a numerical array.',
-                ' Reverses the colorscale.'
+                ' Reverses the color mapping if true (`cmin` will correspond to the last color',
+                ' in the array and `cmax` will correspond to the first color).'
             ].join('')
         })
     };
