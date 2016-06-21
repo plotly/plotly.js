@@ -36,3 +36,11 @@ var setPlotConfig = [
 fs.writeFile(constants.pathToSetPlotConfig, setPlotConfig, function(err) {
     if(err) throw err;
 });
+
+// make artifact folders for image tests
+if(!fs.existsSync(constants.pathToTestImagesDiff)) {
+    fs.mkdirSync(constants.pathToTestImagesDiff);
+}
+if(!fs.existsSync(constants.pathToTestImages)) {
+    fs.mkdirSync(constants.pathToTestImages);
+}

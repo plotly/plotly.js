@@ -47,7 +47,9 @@ module.exports = extendFlat({},
             dflt: 0,
             role: 'style',
             description: [
-                'Sets the number of contour levels.',
+                'Sets the maximum number of contour levels. The actual number',
+                'of contours will be chosen automatically to be less than or',
+                'equal to the value of `ncontours`.',
                 'Has an effect only if `autocontour` is *true*.'
             ].join(' ')
         },

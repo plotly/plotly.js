@@ -137,10 +137,24 @@ function plotOne(gd, plotinfo, cd) {
     var imageWidth = Math.round(right - left),
         imageHeight = Math.round(bottom - top);
 
-    // now redraw
+    // setup image nodes
 
     // if image is entirely off-screen, don't even draw it
-    if(imageWidth <= 0 || imageHeight <= 0) return;
+    var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
+
+    var plotgroup = plotinfo.plot.select('.imagelayer')
+        .selectAll('g.hm.' + id)
+        .data(isOffScreen ? [] : [0]);
+
+    plotgroup.enter().append('g')
+        .classed('hm', true)
+        .classed(id, true);
+
+    plotgroup.exit().remove();
+
+    if(isOffScreen) return;
+
+    // generate image data
 
     var canvasW, canvasH;
     if(zsmooth === 'fast') {
@@ -363,26 +377,21 @@ function plotOne(gd, plotinfo, cd) {
     gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
     gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-    var plotgroup = plotinfo.plot.select('.imagelayer')
-        .selectAll('g.hm.' + id)
-        .data([0]);
-    plotgroup.enter().append('g')
-        .classed('hm', true)
-        .classed(id, true);
-    plotgroup.exit().remove();
-
     var image3 = plotgroup.selectAll('image')
         .data(cd);
-    image3.enter().append('svg:image');
-    image3.exit().remove();
 
-    image3.attr({
+    image3.enter().append('svg:image').attr({
         xmlns: xmlnsNamespaces.svg,
         'xlink:href': canvas.toDataURL('image/png'),
+        preserveAspectRatio: 'none'
+    });
+
+    image3.attr({
         height: imageHeight,
         width: imageWidth,
         x: left,
-        y: top,
-        preserveAspectRatio: 'none'
+        y: top
     });
+
+    image3.exit().remove();
 }
