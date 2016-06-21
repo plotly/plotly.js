@@ -168,13 +168,12 @@ describe('scatterternary defaults', function() {
             fill: 'tonext'
         };
 
-        // even with fill tonext, as long as there are markers or text
-        // you get points
+        // fills and markers, you get both hover types
         // you need visible: true here, as that normally gets set
         // outside of the module supplyDefaults
         traceOut = {visible: true};
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
-        expect(traceOut.hoveron).toBe('points');
+        expect(traceOut.hoveron).toBe('points+fills');
 
         // but with only lines (or just fill) and fill tonext or toself
         // you get fills
