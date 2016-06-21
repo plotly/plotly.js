@@ -679,7 +679,7 @@ describe('hover on fill', function() {
     }
 
     it('should always show one label in the right place', function(done) {
-        var mock = require('@mocks/scatter_fill_self_next.json');
+        var mock = Lib.extendDeep({}, require('@mocks/scatter_fill_self_next.json'));
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
 
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
@@ -692,7 +692,7 @@ describe('hover on fill', function() {
     });
 
     it('should work for scatterternary too', function(done) {
-        var mock = require('@mocks/ternary_fill.json');
+        var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
 
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
