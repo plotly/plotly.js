@@ -406,7 +406,7 @@ describe('hover info', function() {
 
         it('should display the correct format when ticklabels true', function() {
             Plotly.plot(this.gd, data, layout);
-            mouseEvent('mousemove', 310, 220);
+            mouseEvent('mousemove', 303, 213);
 
             var hovers = d3.selectAll('g.hovertext');
 
@@ -417,7 +417,7 @@ describe('hover info', function() {
         it('should display the correct format when ticklabels false', function() {
             layout.yaxis.showticklabels = false;
             Plotly.plot(this.gd, data, layout);
-            mouseEvent('mousemove', 310, 220);
+            mouseEvent('mousemove', 303, 213);
 
             var hovers = d3.selectAll('g.hovertext');
 
@@ -445,27 +445,27 @@ describe('hover info', function() {
         });
 
         it('should show text labels', function() {
-            mouseEvent('mousemove', 115, 310);
+            mouseEvent('mousemove', 108, 303);
             var hovers = d3.selectAll('g.hovertext');
             expect(hovers.size()).toEqual(1);
             expect(hovers.select('text')[0][0].textContent).toEqual('test');
         });
 
         it('should show number labels', function() {
-            mouseEvent('mousemove', 370, 180);
+            mouseEvent('mousemove', 363, 173);
             var hovers = d3.selectAll('g.hovertext');
             expect(hovers.size()).toEqual(1);
             expect(hovers.select('text')[0][0].textContent).toEqual('42');
         });
 
         it('should not show null text labels', function() {
-            mouseEvent('mousemove', 236, 246);
+            mouseEvent('mousemove', 229, 239);
             var hovers = d3.selectAll('g.hovertext');
             expect(hovers.size()).toEqual(0);
         });
 
         it('should not show undefined text labels', function() {
-            mouseEvent('mousemove', 500, 115);
+            mouseEvent('mousemove', 493, 108);
             var hovers = d3.selectAll('g.hovertext');
             expect(hovers.size()).toEqual(0);
         });
@@ -586,7 +586,7 @@ describe('hover info on overlaid subplots', function() {
         var mock = require('@mocks/autorange-tozero-rangemode.json');
 
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
-            mouseEvent('mousemove', 775, 352);
+            mouseEvent('mousemove', 768, 345);
 
             var axisText = d3.selectAll('g.axistext'),
                 hoverText = d3.selectAll('g.hovertext');
@@ -630,8 +630,8 @@ describe('hover after resizing', function() {
             layout = { width: 600, height: 500 },
             gd = createGraphDiv();
 
-        var pos0 = [311, 409],
-            pos1 = [407, 128];
+        var pos0 = [305, 403],
+            pos1 = [401, 122];
 
         Plotly.plot(gd, data, layout).then(function() {
             return assertLabelCount(pos0, 1, 'before resize, showing pt label');
@@ -683,11 +683,11 @@ describe('hover on fill', function() {
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
 
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
-            return assertLabelsCorrect([250, 150], [252.575, 133.8], 'trace 2');
+            return assertLabelsCorrect([242, 142], [249.175, 133.8], 'trace 2');
         }).then(function() {
-            return assertLabelsCorrect([250, 300], [234.125, 210], 'trace 1');
+            return assertLabelsCorrect([242, 292], [231.125, 210], 'trace 1');
         }).then(function() {
-            return assertLabelsCorrect([155, 260], [160.325, 248.1], 'trace 0');
+            return assertLabelsCorrect([147, 252], [158.925, 248.1], 'trace 0');
         }).then(done);
     });
 
@@ -696,11 +696,11 @@ describe('hover on fill', function() {
         mock.data.forEach(function(trace) { trace.hoveron = 'fills'; });
 
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
-            return assertLabelsCorrect([245, 171], [249.7, 166], 'trace 2');
+            return assertLabelsCorrect([237, 163], [247.7, 166], 'trace 2');
         }).then(function() {
-            return assertLabelsCorrect([245, 226], [268.75, 265], 'trace 1');
+            return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         }).then(function() {
-            return assertLabelsCorrect([245, 259], [249.7, 254], 'trace 0');
+            return assertLabelsCorrect([237, 251], [247.7, 254], 'trace 0');
         }).then(done);
     });
 });
