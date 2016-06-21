@@ -351,10 +351,17 @@ function updateShape(gd, index, opt, value) {
 }
 
 function setupDragElement(gd, shapePath, shapeOptions, index) {
+    var MINWIDTH = 10,
+        MINHEIGHT = 10;
+
     var update;
     var x0, y0, x1, y1, astrX0, astrY0, astrX1, astrY1;
+    var n0, s0, w0, e0, astrN, astrS, astrW, astrE, optN, optS, optW, optE;
     var pathIn, astrPath;
+
     var xa, ya, x2p, y2p, p2x, p2y;
+
+    var dragBBox, dragMode;
 
     var dragOptions = {
         element: shapePath.node(),
@@ -364,9 +371,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
 
     dragElement.init(dragOptions);
 
-    function startDrag() {
-        setCursor(shapePath, 'move');
-
+    function startDrag(evt, startX, startY) {
+        // setup conversion functions
         xa = Axes.getFromId(gd, shapeOptions.xref);
         ya = Axes.getFromId(gd, shapeOptions.yref);
 
@@ -375,6 +381,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
         p2x = getPixelToData(gd, xa);
         p2y = getPixelToData(gd, ya, true);
 
+        // setup update strings and initial values
         var astr = 'shapes[' + index + ']';
         if(shapeOptions.type === 'path') {
             pathIn = shapeOptions.path;
@@ -392,9 +399,43 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
             astrY1 = astr + '.y1';
         }
 
+        if(x0 < x1) {
+            w0 = x0; astrW = astr + '.x0'; optW = 'x0';
+            e0 = x1; astrE = astr + '.x1'; optE = 'x1';
+        }
+        else {
+            w0 = x1; astrW = astr + '.x1'; optW = 'x1';
+            e0 = x0; astrE = astr + '.x0'; optE = 'x0';
+        }
+        if(y0 < y1) {
+            n0 = y0; astrN = astr + '.y0'; optN = 'y0';
+            s0 = y1; astrS = astr + '.y1'; optS = 'y1';
+        }
+        else {
+            n0 = y1; astrN = astr + '.y1'; optN = 'y1';
+            s0 = y0; astrS = astr + '.y0'; optS = 'y0';
+        }
+
         update = {};
 
-        dragOptions.moveFn = moveShape;
+        // choose 'move' or 'resize'
+        // based on initial position of cursor within the drag element
+        dragBBox = dragOptions.element.getBoundingClientRect();
+
+        var w = dragBBox.right - dragBBox.left,
+            h = dragBBox.bottom - dragBBox.top,
+            x = startX - dragBBox.left,
+            y = startY - dragBBox.top,
+            cursor = (w > MINWIDTH && h > MINHEIGHT) ?
+                dragElement.getCursor(x / w, 1 - y / h) :
+                'move';
+
+        setCursor(shapePath, cursor);
+
+        // possible values 'move', 'sw', 'w', 'se', 'e', 'ne', 'n', 'nw' and 'w'
+        dragMode = cursor.split('-')[0];
+
+        dragOptions.moveFn = (dragMode === 'move') ? moveShape : resizeShape;
     }
 
     function endDrag(dragged) {
@@ -420,6 +461,38 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
             update[astrY0] = shapeOptions.y0 = p2y(y0 + dy);
             update[astrX1] = shapeOptions.x1 = p2x(x1 + dx);
             update[astrY1] = shapeOptions.y1 = p2y(y1 + dy);
+        }
+
+        shapePath.attr('d', getPathString(gd, shapeOptions));
+    }
+
+    function resizeShape(dx, dy) {
+        if(shapeOptions.type === 'path') {
+            // TODO: implement path resize
+            var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+            if(xa && xa.type === 'date') moveX = encodeDate(moveX);
+
+            var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+            if(ya && ya.type === 'date') moveY = encodeDate(moveY);
+
+            shapeOptions.path = movePath(pathIn, moveX, moveY);
+            update[astrPath] = shapeOptions.path;
+        }
+        else {
+            var newN = (~dragMode.indexOf('n')) ? n0 + dy : n0,
+                newS = (~dragMode.indexOf('s')) ? s0 + dy : s0,
+                newW = (~dragMode.indexOf('w')) ? w0 + dx : w0,
+                newE = (~dragMode.indexOf('e')) ? e0 + dx : e0;
+
+            if(newS - newN > MINHEIGHT) {
+                update[astrN] = shapeOptions[optN] = p2y(newN);
+                update[astrS] = shapeOptions[optS] = p2y(newS);
+            }
+
+            if(newE - newW > MINWIDTH) {
+                update[astrW] = shapeOptions[optW] = p2x(newW);
+                update[astrE] = shapeOptions[optE] = p2x(newE);
+            }
         }
 
         shapePath.attr('d', getPathString(gd, shapeOptions));
