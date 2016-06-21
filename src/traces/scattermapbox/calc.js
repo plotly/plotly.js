@@ -15,7 +15,7 @@ var Lib = require('../../lib');
 var hasColorscale = require('../../components/colorscale/has_colorscale');
 var makeColorScaleFn = require('../../components/colorscale/make_scale_function');
 var subtypes = require('../scatter/subtypes');
-var calcMarkerColorscale = require('../scatter/marker_colorscale_calc');
+var calcMarkerColorscale = require('../scatter/colorscale_calc');
 var makeBubbleSizeFn = require('../scatter/make_bubble_size_func');
 
 

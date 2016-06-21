@@ -15,7 +15,7 @@ var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
 var subTypes = require('../scatter/subtypes');
-var calcMarkerColorscale = require('../scatter/marker_colorscale_calc');
+var calcColorscale = require('../scatter/colorscale_calc');
 
 var dataArrays = ['a', 'b', 'c'];
 var arraysToFill = {a: ['b', 'c'], b: ['a', 'c'], c: ['a', 'b']};
@@ -88,7 +88,7 @@ module.exports = function calc(gd, trace) {
         }
     }
 
-    calcMarkerColorscale(trace);
+    calcColorscale(trace);
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
     if(typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');

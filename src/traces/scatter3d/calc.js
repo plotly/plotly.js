@@ -9,7 +9,7 @@
 'use strict';
 
 var arraysToCalcdata = require('../scatter/arrays_to_calcdata');
-var calcMarkerColorscale = require('../scatter/marker_colorscale_calc');
+var calcColorscales = require('../scatter/colorscale_calc');
 
 
 /**
@@ -21,7 +21,7 @@ module.exports = function calc(gd, trace) {
     var cd = [{x: false, y: false, trace: trace, t: {}}];
 
     arraysToCalcdata(cd);
-    calcMarkerColorscale(trace);
+    calcColorscales(trace);
 
     return cd;
 };

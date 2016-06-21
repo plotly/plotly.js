@@ -19,7 +19,7 @@ var subTypes = require('./subtypes');
 // common to 'scatter', 'scatter3d', 'scattergeo' and 'scattergl'
 module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var isBubble = subTypes.isBubble(traceIn),
-        lineColor = (traceIn.line || {}).color,
+        lineColor = !Array.isArray(traceIn.line) ? (traceIn.line || {}).color : undefined,
         defaultMLC;
 
     if(lineColor) defaultColor = lineColor;
