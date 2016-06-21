@@ -329,7 +329,7 @@ function updateShape(gd, index, opt, value) {
         var attrs = {
                 'data-index': index,
                 'fill-rule': 'evenodd',
-                d: shapePath(gd, options)
+                d: getPathString(gd, options)
             },
             lineColor = options.line.width ?
                 options.line.color : 'rgba(0,0,0,0)';
@@ -402,7 +402,7 @@ function updateShape(gd, index, opt, value) {
                     update[astrY1] = options.y1 = p2y(y1 + dy);
                 }
 
-                path.attr('d', shapePath(gd, options));
+                path.attr('d', getPathString(gd, options));
             },
             doneFn: function(dragged) {
                 setCursor(path);
@@ -488,7 +488,7 @@ function getPixelToData(gd, axis, isVertical) {
     return pixelToData;
 }
 
-function shapePath(gd, options) {
+function getPathString(gd, options) {
     var type = options.type,
         xa = Axes.getFromId(gd, options.xref),
         ya = Axes.getFromId(gd, options.yref),
