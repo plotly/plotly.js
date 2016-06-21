@@ -187,7 +187,7 @@ describe('ternary plots', function() {
             assertRange(gd, [0.231, 0.2, 0.11]);
 
             drag([[383, 213], [293, 243]]);
-            assertRange(gd, [0.4435,0.2462,0.1523]);
+            assertRange(gd, [0.4435, 0.2462, 0.1523]);
 
             doubleClick(pointPos[0], pointPos[1]).then(function() {
                 assertRange(gd, [0, 0, 0]);

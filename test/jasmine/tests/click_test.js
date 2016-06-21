@@ -530,8 +530,8 @@ describe('Test click interactions:', function() {
 
                 return drag(100, 100, 200, 200, DBLCLICKDELAY / 2);
             }).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.6480169249531356,-1.920115790911955]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([0.4372261777201992,1.2306899598686027]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.6480169249531356, -1.920115790911955]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.4372261777201992, 1.2306899598686027]);
 
                 done();
             });
@@ -698,13 +698,13 @@ describe('Test click interactions:', function() {
             expect(gd.layout.yaxis.range).toBeCloseToArray(autoRangeY);
 
             drag(93, 93, 393, 293).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.69897000,-0.515266602]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.30069513,1.2862324246]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.69897000, -0.515266602]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([-0.30069513, 1.2862324246]);
 
                 return drag(93, 93, 393, 293);
             }).then(function() {
-                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.56671754,-1.644025966]);
-                expect(gd.layout.yaxis.range).toBeCloseToArray([0.159513853,1.2174655634]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([-2.56671754, -1.644025966]);
+                expect(gd.layout.yaxis.range).toBeCloseToArray([0.159513853, 1.2174655634]);
 
                 done();
             });

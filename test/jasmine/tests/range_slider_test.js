@@ -87,7 +87,7 @@ describe('the range slider', function() {
 
                 expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(+dataMaxStart + diff, 0);
                 expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
-                testTranslate1D(handleMax, +dataMaxStart + diff)
+                testTranslate1D(handleMax, +dataMaxStart + diff);
             }).then(done);
         });
 
