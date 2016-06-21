@@ -34,15 +34,24 @@ module.exports = function plot(traces, plotinfo) {
             trace.marker.maxdisplayed > 0
         );
 
+        var keyFunc;
+
+        if (trace.key) {
+            keyFunc = function (d) { return d.key };
+        }
+
         if(!yObj.visible && !xObj.visible) return;
 
-        var errorbars = d3.select(this).selectAll('g.errorbar')
-            .data(Lib.identity);
+        var selection = d3.select(this).selectAll('g.errorbar');
 
-        errorbars.enter().append('g')
+        var join = selection.data(Lib.identity, keyFunc);
+
+        join.enter().append('g')
             .classed('errorbar', true);
 
-        errorbars.each(function(d) {
+        join.exit().remove();
+
+        join.each(function(d) {
             var errorbar = d3.select(this);
             var coords = errorCoords(d, xa, ya);
 
