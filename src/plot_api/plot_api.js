@@ -839,13 +839,14 @@ Plotly.newPlot = function(gd, data, layout, config) {
     return Plotly.plot(gd, data, layout, config);
 };
 
-function doCalcdata(gd) {
+function doCalcdata(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout;
 
     var i, trace, module, cd;
 
+    var oldCalcdata = (gd.calcdata || []).slice(0);
     var calcdata = gd.calcdata = new Array(fullData.length);
 
     // extra helper variables
@@ -870,6 +871,13 @@ function doCalcdata(gd) {
     }
 
     for(i = 0; i < fullData.length; i++) {
+        // If traces were specified and this trace was not included, then transfer it over from
+        // the old calcdata:
+        if (Array.isArray(traces) && traces.indexOf(i) === -1) {
+            calcdata[i] = oldCalcdata[i];
+            continue;
+        }
+
         trace = fullData[i];
         module = trace._module;
         cd = [];
@@ -1509,6 +1517,208 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 
     return promise;
 };
+
+// -----------------------------------------------------
+// animate the changing of data
+// -----------------------------------------------------
+// Sequence is:
+//
+// 1. prepare for animation (store copy of current data, if necessary)
+// 2. update gd.data
+// 3. update gl._fullData
+// 4. doCalcdata
+// 5. begin animation
+Plotly.animate = function animate (gd, newData, transitionOpts, traces, newLayout) {
+    gd = getGraphDiv(gd);
+
+    var fullLayout = gd._fullLayout;
+    var i, newTraceData, curData, value, traceIdx;
+
+    if (!Array.isArray(newData)) {
+        Lib.warn('Animate fail. newData must be an array of traces');
+        return Promise.reject();
+    }
+
+    transitionOpts = transitionOpts || {};
+    transitionOpts.duration = transitionOpts.duration === undefined ? 250 : transitionOpts.duration;
+    transitionOpts.easing = transitionOpts.easing === undefined ? 'cubic-in-out' : transitionOpts.easing;
+    transitionOpts.cascade = transitionOpts.cascade === undefined ? 0 : transitionOpts.cascade;
+    transitionOpts.leadingEdgeRestyle = transitionOpts.leadingEdgeRestyle === undefined ? false : transitionOpts.leadingEdgeRestyle;
+
+    if(isNumeric(traces)) traces = [traces];
+    else if(!Array.isArray(traces) || !traces.length) {
+        traces = gd._fullData.map(function (v,i) {return i;});
+    }
+
+    cloneTraceDefinitions(gd);
+
+    var animatedTraces = [];
+
+    function beginAnimation () {
+        for (i = 0; i < traces.length; i++) {
+            var traceIdx = traces[i];
+            var trace = gd._fullData[traceIdx];
+            var module = trace._module;
+
+            if (!module.animatable) {
+                continue;
+            }
+
+            animatedTraces.push(traceIdx);
+
+            newTraceData = newData[i];
+            curData = gd.data[traces[i]];
+
+            for (var ai in newTraceData) {
+                var value = newTraceData[ai];
+                Lib.nestedProperty(curData, ai).set(value);
+            }
+
+            var traceIdx = traces[i];
+            if (gd.data[traceIdx].marker && gd.data[traceIdx].marker.size) {
+                gd._fullData[traceIdx].marker.size = gd.data[traceIdx].marker.size
+            }
+            if (gd.data[traceIdx].error_y && gd.data[traceIdx].error_y.array) {
+                gd._fullData[traceIdx].error_y.array = gd.data[traceIdx].error_y.array
+            }
+            if (gd.data[traceIdx].error_x && gd.data[traceIdx].error_x.array) {
+                gd._fullData[traceIdx].error_x.array = gd.data[traceIdx].error_x.array
+            }
+            gd._fullData[traceIdx].x = gd.data[traceIdx].x;
+            gd._fullData[traceIdx].y = gd.data[traceIdx].y;
+            gd._fullData[traceIdx].z = gd.data[traceIdx].z;
+            gd._fullData[traceIdx].key = gd.data[traceIdx].key;
+        }
+
+        doCalcdata(gd, animatedTraces);
+
+        ErrorBars.calc(gd);
+    }
+
+    /*function doSetPositions () {
+		var subplots = Plots.getSubplotIds(fullLayout, 'cartesian');
+		var modules = fullLayout._modules;
+
+		// position and range calculations for traces that
+		// depend on each other ie bars (stacked or grouped)
+		// and boxes (grouped) push each other out of the way
+
+		var subplotInfo, _module;
+
+		for(var i = 0; i < subplots.length; i++) {
+  		    subplotInfo = fullLayout._plots[subplots[i]];
+
+		    for(var j = 0; j < modules.length; j++) {
+			    _module = modules[j];
+			    if(_module.setPositions) _module.setPositions(gd, subplotInfo);
+		    }
+		}
+	}*/
+
+	//doSetPositions();
+
+    var restyleList = [];
+    var relayoutList = [];
+    var completionTimeout = null;
+    var completion = null;
+
+    function doAnimations () {
+        var a, i, j;
+        var basePlotModules = fullLayout._basePlotModules;
+        for (j = 0; j < basePlotModules.length; j++) {
+            basePlotModules[j].plot(gd, animatedTraces, transitionOpts);
+        }
+
+        if (newLayout) {
+            for (j = 0; j < basePlotModules.length; j++) {
+                if (basePlotModules[j].transitionAxes) {
+                    basePlotModules[j].transitionAxes(gd, newLayout, transitionOpts);
+                }
+            }
+        }
+
+        if (!transitionOpts.leadingEdgeRestyle) {
+            return new Promise(function(resolve, reject) {
+                completion = resolve;
+                completionTimeout = setTimeout(resolve, transitionOpts.duration);
+            });
+        }
+    }
+
+    function executeInterrupt () {
+        var ret;
+        clearTimeout(completionTimeout);
+
+        if (completion) {
+            console.log('complete!');
+            completion();
+        }
+
+        if (gd._animationInterrupt) {
+            ret = gd._animationInterrupt();
+            gd._animationInterrupt = null;
+        }
+        return ret;
+    }
+
+    /*for (var i = 0; i < animatedTraces.length; i++) {
+        var trace = gd._fullData[animatedTraces[i]];
+        var module = trace._module;
+        var cd = [];
+
+        if(module && trace.visible === true) {
+            if(module.calc) cd = module.calc(gd, trace);
+        }
+
+        // make sure there is a first point
+        // this ensures there is a calcdata item for every trace,
+        // even if cartesian logic doesn't handle it
+        if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+
+        // add the trace-wide properties to the first point,
+        // per point properties to every point
+        // t is the holder for trace-wide properties
+        if(!cd[0].t) cd[0].t = {};
+
+        cd[0].trace = trace;
+
+        gd.calcdata[traces[i]] = cd;
+    }*/
+
+    for (i = 0; i < traces.length; i++) {
+        var traceIdx = traces[i];
+        var contFull = gd._fullData[traceIdx];
+        var module = contFull._module;
+
+        if (!module.animatable) {
+            var thisTrace = [traceIdx];
+            var thisUpdate = {};
+
+            for (ai in newData[i]) {
+                thisUpdate[ai] = [newData[i][ai]];
+            }
+
+            restyleList.push((function (md, data, traces) {
+                return function () {
+                    return Plotly.restyle(gd, data, traces);
+                }
+            }(module, thisUpdate, [traceIdx])));
+        }
+    }
+
+    var seq = [Plots.previousPromises, executeInterrupt, beginAnimation];
+    seq.push(doAnimations);
+    seq = seq.concat(restyleList);
+
+    var plotDone = Lib.syncOrAsync(seq, gd);
+
+    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+
+    return plotDone.then(function() {
+        gd.emit('plotly_animate', []);
+        return gd;
+    });
+}
 
 // -----------------------------------------------------
 // restyle and relayout: these two control all redrawing
@@ -3087,4 +3297,31 @@ function drawMainTitle(gd) {
             'text-anchor': 'middle'
         }
     });
+}
+
+// Clone gd.data *excluding* the actual data arrays. So ideally this should be a
+// relatively cheap operation and only needs to be called once in order to sever
+// the connection between a trace and plotly's representation of the trace.
+function cloneTraceDefinitions (gd) {
+    var i, type, schema;
+    var isClonedFlag = '__isCloned__';
+
+    // Clone the traces array reference if it's not already cloned:
+    if (!gd.data[isClonedFlag]) {
+        gd.data = gd.data.slice(0);
+        gd.data[isClonedFlag] = true;
+    }
+
+    // Now clone individual traces
+    for (i = gd.data.length - 1; i >= 0; i--) {
+        if (gd.data[i][isClonedFlag]) continue;
+
+        // Clone this trace if it's not already cloned. Otherwise the original input
+        // to Plotly.plot gets mangled and we can't use it again, which is inconvenient.
+        // Notably, this does *not* copy data arrays.
+        type = gd._fullData[i].type;
+        schema = Plotly.PlotSchema.get().traces[type]
+        gd.data[i] = Lib.deepCloneTrace(gd.data[i], schema);
+        gd.data[i][isClonedFlag] = true;
+    }
 }

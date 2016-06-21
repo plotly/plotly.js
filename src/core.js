@@ -21,6 +21,7 @@ exports.version = '1.13.0';
 exports.plot = Plotly.plot;
 exports.newPlot = Plotly.newPlot;
 exports.restyle = Plotly.restyle;
+exports.animate = Plotly.animate;
 exports.relayout = Plotly.relayout;
 exports.redraw = Plotly.redraw;
 exports.extendTraces = Plotly.extendTraces;

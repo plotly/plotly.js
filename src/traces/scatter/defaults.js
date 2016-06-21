@@ -36,6 +36,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         return;
     }
 
+    coerce('key');
     coerce('text');
     coerce('mode', defaultMode);
 

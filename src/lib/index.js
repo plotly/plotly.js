@@ -585,3 +585,89 @@ lib.numSeparate = function(value, separators) {
 
     return x1 + x2;
 };
+
+/*
+ * Deep copy of an object, subject to some caveats. Adapted from
+ * http://stackoverflow.com/questions/10728412/in-javascript-when-performing-a-deep-copy-how-do-i-avoid-a-cycle-due-to-a-pro#answer-10729242
+ *
+ * It does some basics like avoiding infinite loops, but leaves some gaps
+ * regarding prototypes and functions. But those shouldn't be part of the
+ * layout anyway, which is the intended use.
+ *
+ * @param   {object}    object         the object to be cloned
+ * @param   {function}  shallowFilter  a callback executed on each attribute name
+ * @param   {Array}     path           a stack representing the current attr path
+ *
+ * @return  {object}    the cloned object
+ */
+lib.deepClone = function deepClone (object, shallowFilter, path) {
+    var nextPath, isShallow;
+    var gdcc = "__getDeepCircularCopy__";
+    if (object !== Object(object)) {
+        return object; // primitive value
+    }
+
+    var set = gdcc in object;
+    var cache = object[gdcc];
+    var result;
+    if (set && typeof cache == "function") {
+        return cache();
+    }
+    // else
+    object[gdcc] = function () { return result; }; // overwrite
+
+    if (object instanceof Array) {
+        result = [];
+        for (var i=0; i<object.length; i++) {
+            nextPath = path ? (path + '.' + i) : i;
+            result[i] = deepClone(object[i], shallowFilter, nextPath);
+        }
+    } else {
+        result = {};
+        for (var attr in object) {
+            nextPath = path ? (path + '.' + attr) : attr;
+
+            if (attr !== gdcc) {
+                isShallow = shallowFilter && shallowFilter(nextPath);
+
+                if (isShallow) {
+                    result[attr] = object[attr];
+                } else {
+                    result[attr] = deepClone(object[attr], shallowFilter, nextPath);
+                }
+            } else if (set) {
+                result[attr] = deepClone(cache, shallowFilter, nextPath);
+            }
+        }
+    }
+    if (set) {
+        object[gdcc] = cache; // reset
+    } else {
+        delete object[gdcc]; // unset again
+    }
+    return result;
+};
+
+/*
+ * Deep copy of a trace, excluding deep copies of data arrays, to which the
+ * original reference is preserved.
+ *
+ * @param   {object}    trace    the trace to copy
+ * @param   {object}    schema   the corresponding schema, e.g.
+ *                               Plotly.PlotSchema.get().traces['scatter']
+ *
+ * @return  {object}    the cloned trace
+ */
+lib.deepCloneTrace = function deepCloneTrace (trace, schema) {
+    // This is intentionally allowed to fail if the schema is bad because
+    // the schema shouldn't be bad:
+    //
+    // var attrs = (!!schema ? schema.attributes : {}) || {};
+    //
+    var attrs = schema.attributes;
+
+    return lib.deepClone(trace, function (attr) {
+        var props = lib.nestedProperty(attrs, attr).get();
+        return props && props.valType === 'data_array';
+    });
+};

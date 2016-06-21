@@ -23,6 +23,7 @@ Scatter.attributes = require('./attributes');
 Scatter.supplyDefaults = require('./defaults');
 Scatter.cleanData = require('./clean_data');
 Scatter.calc = require('./calc');
+Scatter.setPositions = require('./set_positions');
 Scatter.arraysToCalcdata = require('./arrays_to_calcdata');
 Scatter.plot = require('./plot');
 Scatter.colorbar = require('./colorbar');
@@ -32,6 +33,7 @@ Scatter.selectPoints = require('./select');
 
 Scatter.moduleType = 'trace';
 Scatter.name = 'scatter';
+Scatter.animatable = true;
 Scatter.basePlotModule = require('../../plots/cartesian');
 Scatter.categories = ['cartesian', 'symbols', 'markerColorscale', 'errorBarsOK', 'showLegend'];
 Scatter.meta = {

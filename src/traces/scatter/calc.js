@@ -115,6 +115,10 @@ module.exports = function calc(gd, trace) {
     for(i = 0; i < serieslen; i++) {
         cd[i] = (isNumeric(x[i]) && isNumeric(y[i])) ?
             {x: x[i], y: y[i]} : {x: false, y: false};
+
+        if (trace.key && trace.key[i] !== undefined) {
+          cd[i].key = trace.key[i];
+        }
     }
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
