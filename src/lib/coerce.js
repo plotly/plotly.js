@@ -192,7 +192,7 @@ exports.valObjects = {
                 propOut.set(dflt);
                 return;
             }
-            if(opts.extras.indexOf(v) !== -1) {
+            if((opts.extras || []).indexOf(v) !== -1) {
                 propOut.set(v);
                 return;
             }
