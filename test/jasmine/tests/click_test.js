@@ -47,7 +47,7 @@ describe('Test click interactions:', function() {
             setTimeout(function() {
                 click(x, y);
                 setTimeout(function() { resolve(); }, DBLCLICKDELAY / 2);
-            }, DBLCLICKDELAY / 4);
+            }, DBLCLICKDELAY / 2);
         });
     }
 
