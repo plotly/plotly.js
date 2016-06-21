@@ -595,7 +595,6 @@ function decodeDate(convertToPx) {
 
 
 var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
-var getBBox = require('../assets/get_bbox');
 
 function mouseDown(node, x, y) {
     node.dispatchEvent(new MouseEvent('mousedown', {
@@ -622,9 +621,9 @@ function mouseUp(node, x, y) {
 }
 
 function drag(node, dx, dy) {
-    var bbox = getBBox(node),
-        fromX = bbox.x,
-        fromY = bbox.y,
+    var bbox = node.getBoundingClientRect(),
+        fromX = (bbox.left + bbox.right) / 2,
+        fromY = (bbox.bottom + bbox.top) / 2,
         toX = fromX + dx,
         toY = fromY + dy;
 
