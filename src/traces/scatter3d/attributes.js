@@ -97,11 +97,21 @@ module.exports = {
         z: makeProjectionAttr('z')
     },
     connectgaps: scatterAttrs.connectgaps,
-    line: {
-        color: scatterLineAttrs.color,
+    line: extendFlat({}, {
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash
+        dash: scatterLineAttrs.dash,
+        showscale: {
+            valType: 'boolean',
+            role: 'info',
+            dflt: false,
+            description: [
+                'Has an effect only if `line.color` is set to a numerical array.',
+                'Determines whether or not a colorbar is displayed.'
+            ].join(' ')
+        }
     },
+        colorAttributes('line')
+    ),
     marker: extendFlat({}, {  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',
