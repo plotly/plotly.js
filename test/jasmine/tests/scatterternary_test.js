@@ -158,6 +158,40 @@ describe('scatterternary defaults', function() {
         supplyDefaults(traceIn, traceOut, defaultColor, layout);
         expect(traceOut.hoverinfo).toBe('a+b+c+text');
     });
+
+    it('should correctly assign \'hoveron\' default', function() {
+        traceIn = {
+            a: [1, 2, 3],
+            b: [1, 2, 3],
+            c: [1, 2, 3],
+            mode: 'lines+markers',
+            fill: 'tonext'
+        };
+
+        // even with fill tonext, as long as there are markers or text
+        // you get points
+        // you need visible: true here, as that normally gets set
+        // outside of the module supplyDefaults
+        traceOut = {visible: true};
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.hoveron).toBe('points');
+
+        // but with only lines (or just fill) and fill tonext or toself
+        // you get fills
+        traceIn.mode = 'lines';
+        traceOut = {visible: true};
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.hoveron).toBe('fills');
+
+        // without a fill you always get points. For scatterternary, unlike
+        // scatter, every allowed fill but 'none' is an area fill (rather than
+        // a vertical / horizontal fill) so they all should default to
+        // hoveron points.
+        traceIn.fill = 'none';
+        traceOut = {visible: true};
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.hoveron).toBe('points');
+    });
 });
 
 describe('scatterternary calc', function() {
