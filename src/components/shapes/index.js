@@ -346,72 +346,77 @@ function updateShape(gd, index, opt, value) {
                 'clip' + gd._fullLayout._uid + clipAxes);
         }
 
-        if(!gd._context.editable) return;
-
-        var update;
-        var x0, y0, x1, y1, astrX0, astrY0, astrX1, astrY1;
-        var pathIn, astrPath;
-        var xa, ya, x2p, y2p, p2x, p2y;
-        dragElement.init({
-            element: path.node(),
-            prepFn: function() {
-                setCursor(path, 'move');
-
-                xa = Axes.getFromId(gd, options.xref);
-                ya = Axes.getFromId(gd, options.yref);
-
-                x2p = getDataToPixel(gd, xa);
-                y2p = getDataToPixel(gd, ya, true);
-                p2x = getPixelToData(gd, xa);
-                p2y = getPixelToData(gd, ya, true);
-
-                var astr = 'shapes[' + index + ']';
-                if(options.type === 'path') {
-                    pathIn = options.path;
-                    astrPath = astr + '.path';
-                }
-                else {
-                    x0 = x2p(options.x0);
-                    y0 = y2p(options.y0);
-                    x1 = x2p(options.x1);
-                    y1 = y2p(options.y1);
-
-                    astrX0 = astr + '.x0';
-                    astrY0 = astr + '.y0';
-                    astrX1 = astr + '.x1';
-                    astrY1 = astr + '.y1';
-                }
-
-                update = {};
-            },
-            moveFn: function(dx, dy) {
-                if(options.type === 'path') {
-                    var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
-                    if(xa && xa.type === 'date') moveX = encodeDate(moveX);
-
-                    var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
-                    if(ya && ya.type === 'date') moveY = encodeDate(moveY);
-
-                    options.path = movePath(pathIn, moveX, moveY);
-                    update[astrPath] = options.path;
-                }
-                else {
-                    update[astrX0] = options.x0 = p2x(x0 + dx);
-                    update[astrY0] = options.y0 = p2y(y0 + dy);
-                    update[astrX1] = options.x1 = p2x(x1 + dx);
-                    update[astrY1] = options.y1 = p2y(y1 + dy);
-                }
-
-                path.attr('d', getPathString(gd, options));
-            },
-            doneFn: function(dragged) {
-                setCursor(path);
-                if(dragged) {
-                    Plotly.relayout(gd, update);
-                }
-            }
-        });
+        if(gd._context.editable) setupDragElement(gd, path, options, index);
     }
+}
+
+function setupDragElement(gd, shapePath, shapeOptions, index) {
+    var update;
+    var x0, y0, x1, y1, astrX0, astrY0, astrX1, astrY1;
+    var pathIn, astrPath;
+    var xa, ya, x2p, y2p, p2x, p2y;
+
+    var dragOptions = {
+        element: shapePath.node(),
+        prepFn: function() {
+            setCursor(shapePath, 'move');
+
+            xa = Axes.getFromId(gd, shapeOptions.xref);
+            ya = Axes.getFromId(gd, shapeOptions.yref);
+
+            x2p = getDataToPixel(gd, xa);
+            y2p = getDataToPixel(gd, ya, true);
+            p2x = getPixelToData(gd, xa);
+            p2y = getPixelToData(gd, ya, true);
+
+            var astr = 'shapes[' + index + ']';
+            if(shapeOptions.type === 'path') {
+                pathIn = shapeOptions.path;
+                astrPath = astr + '.path';
+            }
+            else {
+                x0 = x2p(shapeOptions.x0);
+                y0 = y2p(shapeOptions.y0);
+                x1 = x2p(shapeOptions.x1);
+                y1 = y2p(shapeOptions.y1);
+
+                astrX0 = astr + '.x0';
+                astrY0 = astr + '.y0';
+                astrX1 = astr + '.x1';
+                astrY1 = astr + '.y1';
+            }
+
+            update = {};
+        },
+        moveFn: function(dx, dy) {
+            if(shapeOptions.type === 'path') {
+                var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+                if(xa && xa.type === 'date') moveX = encodeDate(moveX);
+
+                var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+                if(ya && ya.type === 'date') moveY = encodeDate(moveY);
+
+                shapeOptions.path = movePath(pathIn, moveX, moveY);
+                update[astrPath] = shapeOptions.path;
+            }
+            else {
+                update[astrX0] = shapeOptions.x0 = p2x(x0 + dx);
+                update[astrY0] = shapeOptions.y0 = p2y(y0 + dy);
+                update[astrX1] = shapeOptions.x1 = p2x(x1 + dx);
+                update[astrY1] = shapeOptions.y1 = p2y(y1 + dy);
+            }
+
+            shapePath.attr('d', getPathString(gd, shapeOptions));
+        },
+        doneFn: function(dragged) {
+            setCursor(shapePath);
+            if(dragged) {
+                Plotly.relayout(gd, update);
+            }
+        }
+    };
+
+    dragElement.init(dragOptions);
 }
 
 function getShapeLayer(gd, index) {
