@@ -17,16 +17,21 @@ var subTypes = require('./subtypes');
 
 // common to 'scatter', 'scatter3d' and 'scattergeo'
 module.exports = function calcMarkerColorscale(trace) {
-    if(!subTypes.hasMarkers(trace)) return;
-
-    var marker = trace.marker;
 
     // auto-z and autocolorscale if applicable
-    if(hasColorscale(trace, 'marker')) {
-        calcColorscale(trace, marker.color, 'marker', 'c');
+
+    if(subTypes.hasLines(trace) && hasColorscale(trace, 'line')) {
+        calcColorscale(trace, trace.line.color, 'line', 'c');
     }
 
-    if(hasColorscale(trace, 'marker.line')) {
-        calcColorscale(trace, marker.line.color, 'marker.line', 'c');
+    if(subTypes.hasMarkers(trace)) {
+
+        if(hasColorscale(trace, 'marker')) {
+            calcColorscale(trace, trace.marker.color, 'marker', 'c');
+        }
+
+        if(hasColorscale(trace, 'marker.line')) {
+            calcColorscale(trace, trace.marker.line.color, 'marker.line', 'c');
+        }
     }
 };
