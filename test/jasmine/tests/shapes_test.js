@@ -306,28 +306,40 @@ describe('Test shapes', function() {
     var testCases = [
         // xref: 'paper', yref: 'paper'
         {
-            title: 'linked to paper should be draggable'
+            title: 'linked to paper'
         },
 
         // xaxis.type: 'linear', yaxis.type: 'log'
         {
-            title: 'linked to linear and log axes should be draggable',
+            title: 'linked to linear and log axes',
             xaxis: { type: 'linear', range: [0, 10] },
             yaxis: { type: 'log', range: [Math.log10(1), Math.log10(1000)] }
         },
 
         // xaxis.type: 'date', yaxis.type: 'category'
         {
-            title: 'linked to date and category axes should be draggable',
+            title: 'linked to date and category axes',
             xaxis: { type: 'date', range: ['2000-01-01', '2000-01-02'] },
             yaxis: { type: 'category', range: ['a', 'b'] }
         }
     ];
 
     testCases.forEach(function(testCase) {
-        it(testCase.title, function(done) {
+        it(testCase.title + 'should be draggable', function(done) {
             setupLayout(testCase);
-            testAllShapes(done);
+            testDragEachShape(done);
+        });
+    });
+
+    testCases.forEach(function(testCase) {
+        ['n', 's', 'w', 'e', 'nw', 'se', 'ne', 'sw'].forEach(function(direction) {
+            var testTitle = testCase.title +
+                'should be resizeable over direction ' +
+                direction;
+            it(testTitle, function(done) {
+                setupLayout(testCase);
+                testResizeEachShape(direction, done);
+            });
         });
     });
 
@@ -392,7 +404,7 @@ describe('Test shapes', function() {
         layout.shapes = layoutShapes;
     }
 
-    function testAllShapes(done) {
+    function testDragEachShape(done) {
         var promise = Plotly.plot(gd, data, layout, config);
 
         var layoutShapes = gd.layout.shapes;
@@ -400,13 +412,52 @@ describe('Test shapes', function() {
         expect(layoutShapes.length).toBe(4);  // line, rect, circle and path
 
         layoutShapes.forEach(function(layoutShape, index) {
+            var dx = 100,
+                dy = 100;
             promise = promise.then(function() {
                 var node = getShapeNode(index);
                 expect(node).not.toBe(null);
 
                 return (layoutShape.path) ?
-                    testPath(layoutShape, node) :
-                    testShape(layoutShape, node);
+                    testPathDrag(dx, dy, layoutShape, node) :
+                    testShapeDrag(dx, dy, layoutShape, node);
+            });
+        });
+
+        return promise.then(done);
+    }
+
+    function testResizeEachShape(direction, done) {
+        var promise = Plotly.plot(gd, data, layout, config);
+
+        var layoutShapes = gd.layout.shapes;
+
+        expect(layoutShapes.length).toBe(4);  // line, rect, circle and path
+
+        var dxToShrinkWidth = {
+                n: 0, s: 0, w: 10, e: -10, nw: 10, se: -10, ne: -10, sw: 10
+            },
+            dyToShrinkHeight = {
+                n: 10, s: -10, w: 0, e: 0, nw: 10, se: -10, ne: 10, sw: -10
+            };
+        layoutShapes.forEach(function(layoutShape, index) {
+            if(layoutShape.path) return;
+
+            var dx = dxToShrinkWidth[direction],
+                dy = dyToShrinkHeight[direction];
+
+            promise = promise.then(function() {
+                var node = getShapeNode(index);
+                expect(node).not.toBe(null);
+
+                return testShapeResize(direction, dx, dy, layoutShape, node);
+            });
+
+            promise = promise.then(function() {
+                var node = getShapeNode(index);
+                expect(node).not.toBe(null);
+
+                return testShapeResize(direction, -dx, -dy, layoutShape, node);
             });
         });
 
@@ -419,15 +470,13 @@ describe('Test shapes', function() {
         }).node();
     }
 
-    function testShape(layoutShape, node) {
+    function testShapeDrag(dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref),
             ya = Axes.getFromId(gd, layoutShape.yref),
             x2p = getDataToPixel(gd, xa),
             y2p = getDataToPixel(gd, ya, true);
 
-        var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p),
-            dx = 100,
-            dy = 100;
+        var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
         return drag(node, dx, dy).then(function() {
             var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
@@ -448,16 +497,14 @@ describe('Test shapes', function() {
         };
     }
 
-    function testPath(layoutShape, node) {
+    function testPathDrag(dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref),
             ya = Axes.getFromId(gd, layoutShape.yref),
             x2p = getDataToPixel(gd, xa),
             y2p = getDataToPixel(gd, ya, true);
 
         var initialPath = layoutShape.path,
-            initialCoordinates = getPathCoordinates(initialPath, x2p, y2p),
-            dx = 100,
-            dy = 100;
+            initialCoordinates = getPathCoordinates(initialPath, x2p, y2p);
 
         expect(initialCoordinates.length).toBe(6);
 
@@ -479,6 +526,51 @@ describe('Test shapes', function() {
                     expect(finalCoordinate.y - initialCoordinate.y)
                         .toBeCloseTo(dy);
                 }
+            }
+        });
+    }
+
+    function testShapeResize(direction, dx, dy, layoutShape, node) {
+        var xa = Axes.getFromId(gd, layoutShape.xref),
+            ya = Axes.getFromId(gd, layoutShape.yref),
+            x2p = getDataToPixel(gd, xa),
+            y2p = getDataToPixel(gd, ya, true);
+
+        var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
+
+        return resize(direction, node, dx, dy).then(function() {
+            var finalCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
+
+            var keyN, keyS, keyW, keyE;
+            if(initialCoordinates.y0 < initialCoordinates.y1) {
+                keyN = 'y0'; keyS = 'y1';
+            }
+            else {
+                keyN = 'y1'; keyS = 'y0';
+            }
+            if(initialCoordinates.x0 < initialCoordinates.x1) {
+                keyW = 'x0'; keyE = 'x1';
+            }
+            else {
+                keyW = 'x1'; keyE = 'x0';
+            }
+
+            if(~direction.indexOf('n')) {
+                expect(finalCoordinates[keyN] - initialCoordinates[keyN])
+                    .toBeCloseTo(dy);
+            }
+            else if(~direction.indexOf('s')) {
+                expect(finalCoordinates[keyS] - initialCoordinates[keyS])
+                    .toBeCloseTo(dy);
+            }
+
+            if(~direction.indexOf('w')) {
+                expect(finalCoordinates[keyW] - initialCoordinates[keyW])
+                    .toBeCloseTo(dx);
+            }
+            else if(~direction.indexOf('e')) {
+                expect(finalCoordinates[keyE] - initialCoordinates[keyE])
+                    .toBeCloseTo(dx);
             }
         });
     }
@@ -626,6 +718,34 @@ function drag(node, dx, dy) {
         fromY = (bbox.bottom + bbox.top) / 2,
         toX = fromX + dx,
         toY = fromY + dy;
+
+    mouseMove(node, fromX, fromY);
+    mouseDown(node, fromX, fromY);
+
+    var promise = waitForDragCover().then(function(dragCoverNode) {
+        mouseMove(dragCoverNode, toX, toY);
+        mouseUp(dragCoverNode, toX, toY);
+        return waitForDragCoverRemoval();
+    });
+
+    return promise;
+}
+
+function resize(direction, node, dx, dy) {
+    var bbox = node.getBoundingClientRect();
+
+    var fromX, fromY, toX, toY;
+
+    if(~direction.indexOf('n')) fromY = bbox.top;
+    else if(~direction.indexOf('s')) fromY = bbox.bottom;
+    else fromY = (bbox.bottom + bbox.top) / 2;
+
+    if(~direction.indexOf('w')) fromX = bbox.left;
+    else if(~direction.indexOf('e')) fromX = bbox.right;
+    else fromX = (bbox.left + bbox.right) / 2;
+
+    toX = fromX + dx;
+    toY = fromY + dy;
 
     mouseMove(node, fromX, fromY);
     mouseDown(node, fromX, fromY);
