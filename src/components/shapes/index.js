@@ -379,7 +379,7 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
             h = dragBBox.bottom - dragBBox.top,
             x = evt.clientX - dragBBox.left,
             y = evt.clientY - dragBBox.top,
-            cursor = (w > MINWIDTH && h > MINHEIGHT) ?
+            cursor = (w > MINWIDTH && h > MINHEIGHT && !evt.shiftKey) ?
                 dragElement.getCursor(x / w, 1 - y / h) :
                 'move';
 
