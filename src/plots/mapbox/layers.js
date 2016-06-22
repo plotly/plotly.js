@@ -182,6 +182,7 @@ function convertOpts(opts) {
             });
 
             Lib.extendFlat(paint, {
+                'icon-color': opts.color,
                 'text-color': symbol.textfont.color,
                 'text-opacity': opts.opacity
             });
