@@ -532,7 +532,9 @@
           },
           "type": "fill",
           "below": "water",
-          "fillcolor": "#ece2f0",
+          "fill": {
+            "color": "#ece2f0"
+          },
           "opacity": 0.8
         },
         {

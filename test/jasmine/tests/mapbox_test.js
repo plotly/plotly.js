@@ -102,7 +102,10 @@ describe('mapbox defaults', function() {
                         color: 'red',
                         width: 3
                     },
-                    fillcolor: 'blue'
+                    fill: {
+                        color: 'blue',
+                        outlinecolor: 'green'
+                    }
                 }]
             }
         };
@@ -111,11 +114,11 @@ describe('mapbox defaults', function() {
 
         expect(layoutOut.mapbox.layers[0].line.color).toEqual('red');
         expect(layoutOut.mapbox.layers[0].line.width).toEqual(3);
-        expect(layoutOut.mapbox.layers[0].fillcolor).toBeUndefined();
+        expect(layoutOut.mapbox.layers[0].fill).toBeUndefined();
 
-        expect(layoutOut.mapbox.layers[1].line.color).toEqual('red');
-        expect(layoutOut.mapbox.layers[1].line.width).toBeUndefined();
-        expect(layoutOut.mapbox.layers[1].fillcolor).toEqual('blue');
+        expect(layoutOut.mapbox.layers[1].line).toBeUndefined();
+        expect(layoutOut.mapbox.layers[1].fill.color).toEqual('blue');
+        expect(layoutOut.mapbox.layers[1].fill.outlinecolor).toEqual('green');
     });
 });
 
@@ -353,8 +356,8 @@ describe('mapbox plots', function() {
         };
 
         var styleUpdate0 = {
-            'mapbox.layers[0].fillcolor': 'red',
-            'mapbox.layers[0].line.color': 'blue',
+            'mapbox.layers[0].fill.color': 'red',
+            'mapbox.layers[0].fill.outlinecolor': 'blue',
             'mapbox.layers[0].opacity': 0.3
         };
 

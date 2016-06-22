@@ -49,7 +49,7 @@ function handleLayerDefaults(containerIn, containerOut) {
     }
 
     for(var i = 0; i < layersIn.length; i++) {
-        layerIn = layersIn[i];
+        layerIn = layersIn[i] || {};
         layerOut = {};
 
         var sourceType = coerce('sourcetype');
@@ -57,18 +57,31 @@ function handleLayerDefaults(containerIn, containerOut) {
 
         if(sourceType === 'vector') coerce('sourcelayer');
 
-        // maybe add smart default based off 'fillcolor' ???
+        // maybe add smart default based off GeoJSON geometry
         var type = coerce('type');
 
-        var lineColor;
-        if(type === 'line' || type === 'fill') {
-            lineColor = coerce('line.color');
+        var dfltColor;
+
+        if(type === 'circle') {
+            dfltColor = (layerIn.line || {}).color || (layerIn.fill || {}).color;
+
+            coerce('circle.color', dfltColor);
+            coerce('circle.radius');
         }
 
-        // no way to pass line.width to fill layers
-        if(type === 'line') coerce('line.width');
+        if(type === 'line') {
+            dfltColor = (layerIn.circle || {}).color || (layerIn.fill || {}).color;
 
-        if(type === 'fill') coerce('fillcolor', lineColor);
+            coerce('line.color', dfltColor);
+            coerce('line.width');
+        }
+
+        if(type === 'fill') {
+            dfltColor = (layerIn.circle || {}).color || (layerIn.line || {}).color;
+
+            coerce('fill.color', dfltColor);
+            coerce('fill.outlinecolor', dfltColor);
+        }
 
         coerce('below');
         coerce('opacity');

@@ -126,21 +126,32 @@ function convertPaintOpts(opts) {
 
     switch(opts.type) {
 
-        case 'line':
+        case 'circle':
+            var circle = opts.circle;
             Lib.extendFlat(paintOpts, {
-                'line-width': opts.line.width,
-                'line-color': opts.line.color,
+                'circle-radius': circle.radius,
+                'circle-color': circle.color,
+                'circle-opacity': opts.opacity
+            });
+            break;
+
+        case 'line':
+            var line = opts.line;
+            Lib.extendFlat(paintOpts, {
+                'line-width': line.width,
+                'line-color': line.color,
                 'line-opacity': opts.opacity
             });
             break;
 
         case 'fill':
+            var fill = opts.fill;
             Lib.extendFlat(paintOpts, {
-                'fill-color': opts.fillcolor,
-                'fill-outline-color': opts.line.color,
+                'fill-color': fill.color,
+                'fill-outline-color': fill.outlinecolor,
                 'fill-opacity': opts.opacity
 
-                // no way to pass line.width at the moment
+                // no way to pass specify outline width at the moment
             });
             break;
     }

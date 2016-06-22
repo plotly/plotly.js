@@ -9,11 +9,7 @@
 
 'use strict';
 
-var scatterMapboxAttrs = require('../../traces/scattermapbox/attributes');
 var defaultLine = require('../../components/color').defaultLine;
-var extendFlat = require('../../lib').extendFlat;
-
-var lineAttrs = scatterMapboxAttrs.line;
 
 
 module.exports = {
@@ -129,12 +125,14 @@ module.exports = {
 
         type: {
             valType: 'enumerated',
-            values: ['line', 'fill'],
+            values: ['circle', 'line', 'fill'],
             dflt: 'line',
             role: 'info',
             description: [
                 'Sets the layer type.',
-                'Support for *raster*, *background* types is coming soon.'
+                'Support for *raster*, *background* types is coming soon.',
+                'Note that *line* and *fill* are not compatible with Point',
+                'GeoJSON geometry.'
             ].join(' ')
         },
 
@@ -150,14 +148,68 @@ module.exports = {
             ].join(' ')
         },
 
-        line: {
-            color: extendFlat({}, lineAttrs.color, {
-                dflt: defaultLine
-            }),
-            width: lineAttrs.width
+        circle: {
+            radius: {
+                valType: 'number',
+                dflt: 15,
+                role: 'style',
+                description: [
+                    'Sets the circle radius.',
+                    'Has an effect only when `type` is set to *circle*.'
+                ].join(' ')
+            },
+            color: {
+                valType: 'color',
+                dflt: defaultLine,
+                role: 'style',
+                description: [
+                    'Sets the circle color.',
+                    'Has an effect only when `type` is set to *circle*.'
+                ].join(' ')
+            }
         },
 
-        fillcolor: scatterMapboxAttrs.fillcolor,
+        line: {
+            width: {
+                valType: 'number',
+                dflt: 2,
+                role: 'style',
+                description: [
+                    'Sets the line radius.',
+                    'Has an effect only when `type` is set to *line*.'
+                ].join(' ')
+            },
+            color: {
+                valType: 'color',
+                dflt: defaultLine,
+                role: 'style',
+                description: [
+                    'Sets the line color.',
+                    'Has an effect only when `type` is set to *line*.'
+                ].join(' ')
+            }
+        },
+
+        fill: {
+            color: {
+                valType: 'color',
+                dflt: defaultLine,
+                role: 'style',
+                description: [
+                    'Sets the fill color.',
+                    'Has an effect only when `type` is set to *fill*.'
+                ].join(' ')
+            },
+            outlinecolor: {
+                valType: 'color',
+                dflt: defaultLine,
+                role: 'style',
+                description: [
+                    'Sets the fill outline color.',
+                    'Has an effect only when `type` is set to *fill*.'
+                ].join(' ')
+            }
+        },
 
         opacity: {
             valType: 'number',
