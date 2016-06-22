@@ -43,6 +43,10 @@ dragElement.unhoverRaw = unhover.raw;
  *          dragged is as in moveFn
  *          numClicks is how many clicks we've registered within
  *          a doubleclick time
+ *      setCursor (optional) function(event)
+ *          executed on mousemove before mousedown
+ *          the purpose of this callback is to update the mouse cursor before
+ *          the click & drag interaction has been initiated
  */
 dragElement.init = function init(options) {
     var gd = Lib.getPlotDiv(options.element) || {},
@@ -52,11 +56,15 @@ dragElement.init = function init(options) {
         startY,
         newMouseDownTime,
         dragCover,
-        initialTarget;
+        initialTarget,
+        initialOnMouseMove;
 
     if(!gd._mouseDownTime) gd._mouseDownTime = 0;
 
     function onStart(e) {
+        // disable call to options.setCursor(evt)
+        options.element.onmousemove = initialOnMouseMove;
+
         // make dragging and dragged into properties of gd
         // so that others can look at and modify them
         gd._dragged = false;
@@ -107,6 +115,10 @@ dragElement.init = function init(options) {
     }
 
     function onDone(e) {
+        // re-enable call to options.setCursor(evt)
+        initialOnMouseMove = options.element.onmousemove;
+        if(options.setCursor) options.element.onmousemove = options.setCursor;
+
         dragCover.onmousemove = null;
         dragCover.onmouseup = null;
         dragCover.onmouseout = null;
@@ -138,6 +150,10 @@ dragElement.init = function init(options) {
 
         return Lib.pauseEvent(e);
     }
+
+    // enable call to options.setCursor(evt)
+    initialOnMouseMove = options.element.onmousemove;
+    if(options.setCursor) options.element.onmousemove = options.setCursor;
 
     options.element.onmousedown = onStart;
     options.element.style.pointerEvents = 'all';

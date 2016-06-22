@@ -17,6 +17,8 @@ var Axes = require('../../plots/cartesian/axes');
 var Color = require('../color');
 var Drawing = require('../drawing');
 
+var dragElement = require('../dragelement');
+var setCursor = require('../../lib/setcursor');
 
 var shapes = module.exports = {};
 
@@ -299,15 +301,7 @@ function updateShape(gd, index, opt, value) {
     var options = handleShapeDefaults(optionsIn, gd._fullLayout);
     gd._fullLayout.shapes[index] = options;
 
-    var attrs = {
-            'data-index': index,
-            'fill-rule': 'evenodd',
-            d: shapePath(gd, options)
-        },
-        clipAxes;
-
-    var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
-
+    var clipAxes;
     if(options.layer !== 'below') {
         clipAxes = (options.xref + options.yref).replace(/paper/g, '');
         drawShape(gd._fullLayout._shapeUpperLayer);
@@ -332,6 +326,14 @@ function updateShape(gd, index, opt, value) {
     }
 
     function drawShape(shapeLayer) {
+        var attrs = {
+                'data-index': index,
+                'fill-rule': 'evenodd',
+                d: getPathString(gd, options)
+            },
+            lineColor = options.line.width ?
+                options.line.color : 'rgba(0,0,0,0)';
+
         var path = shapeLayer.append('path')
             .attr(attrs)
             .style('opacity', options.opacity)
@@ -343,6 +345,160 @@ function updateShape(gd, index, opt, value) {
             path.call(Drawing.setClipUrl,
                 'clip' + gd._fullLayout._uid + clipAxes);
         }
+
+        if(gd._context.editable) setupDragElement(gd, path, options, index);
+    }
+}
+
+function setupDragElement(gd, shapePath, shapeOptions, index) {
+    var MINWIDTH = 10,
+        MINHEIGHT = 10;
+
+    var update;
+    var x0, y0, x1, y1, astrX0, astrY0, astrX1, astrY1;
+    var n0, s0, w0, e0, astrN, astrS, astrW, astrE, optN, optS, optW, optE;
+    var pathIn, astrPath;
+
+    var xa, ya, x2p, y2p, p2x, p2y;
+
+    var dragOptions = {
+            setCursor: updateDragMode,
+            element: shapePath.node(),
+            prepFn: startDrag,
+            doneFn: endDrag
+        },
+        dragBBox = dragOptions.element.getBoundingClientRect(),
+        dragMode;
+
+    dragElement.init(dragOptions);
+
+    function updateDragMode(evt) {
+        // choose 'move' or 'resize'
+        // based on initial position of cursor within the drag element
+        var w = dragBBox.right - dragBBox.left,
+            h = dragBBox.bottom - dragBBox.top,
+            x = evt.clientX - dragBBox.left,
+            y = evt.clientY - dragBBox.top,
+            cursor = (w > MINWIDTH && h > MINHEIGHT && !evt.shiftKey) ?
+                dragElement.getCursor(x / w, 1 - y / h) :
+                'move';
+
+        setCursor(shapePath, cursor);
+
+        // possible values 'move', 'sw', 'w', 'se', 'e', 'ne', 'n', 'nw' and 'w'
+        dragMode = cursor.split('-')[0];
+    }
+
+    function startDrag(evt) {
+        // setup conversion functions
+        xa = Axes.getFromId(gd, shapeOptions.xref);
+        ya = Axes.getFromId(gd, shapeOptions.yref);
+
+        x2p = getDataToPixel(gd, xa);
+        y2p = getDataToPixel(gd, ya, true);
+        p2x = getPixelToData(gd, xa);
+        p2y = getPixelToData(gd, ya, true);
+
+        // setup update strings and initial values
+        var astr = 'shapes[' + index + ']';
+        if(shapeOptions.type === 'path') {
+            pathIn = shapeOptions.path;
+            astrPath = astr + '.path';
+        }
+        else {
+            x0 = x2p(shapeOptions.x0);
+            y0 = y2p(shapeOptions.y0);
+            x1 = x2p(shapeOptions.x1);
+            y1 = y2p(shapeOptions.y1);
+
+            astrX0 = astr + '.x0';
+            astrY0 = astr + '.y0';
+            astrX1 = astr + '.x1';
+            astrY1 = astr + '.y1';
+        }
+
+        if(x0 < x1) {
+            w0 = x0; astrW = astr + '.x0'; optW = 'x0';
+            e0 = x1; astrE = astr + '.x1'; optE = 'x1';
+        }
+        else {
+            w0 = x1; astrW = astr + '.x1'; optW = 'x1';
+            e0 = x0; astrE = astr + '.x0'; optE = 'x0';
+        }
+        if(y0 < y1) {
+            n0 = y0; astrN = astr + '.y0'; optN = 'y0';
+            s0 = y1; astrS = astr + '.y1'; optS = 'y1';
+        }
+        else {
+            n0 = y1; astrN = astr + '.y1'; optN = 'y1';
+            s0 = y0; astrS = astr + '.y0'; optS = 'y0';
+        }
+
+        update = {};
+
+        // setup dragMode and the corresponding handler
+        updateDragMode(evt);
+        dragOptions.moveFn = (dragMode === 'move') ? moveShape : resizeShape;
+    }
+
+    function endDrag(dragged) {
+        setCursor(shapePath);
+        if(dragged) {
+            Plotly.relayout(gd, update);
+        }
+    }
+
+    function moveShape(dx, dy) {
+        if(shapeOptions.type === 'path') {
+            var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+            if(xa && xa.type === 'date') moveX = encodeDate(moveX);
+
+            var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+            if(ya && ya.type === 'date') moveY = encodeDate(moveY);
+
+            shapeOptions.path = movePath(pathIn, moveX, moveY);
+            update[astrPath] = shapeOptions.path;
+        }
+        else {
+            update[astrX0] = shapeOptions.x0 = p2x(x0 + dx);
+            update[astrY0] = shapeOptions.y0 = p2y(y0 + dy);
+            update[astrX1] = shapeOptions.x1 = p2x(x1 + dx);
+            update[astrY1] = shapeOptions.y1 = p2y(y1 + dy);
+        }
+
+        shapePath.attr('d', getPathString(gd, shapeOptions));
+    }
+
+    function resizeShape(dx, dy) {
+        if(shapeOptions.type === 'path') {
+            // TODO: implement path resize
+            var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+            if(xa && xa.type === 'date') moveX = encodeDate(moveX);
+
+            var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+            if(ya && ya.type === 'date') moveY = encodeDate(moveY);
+
+            shapeOptions.path = movePath(pathIn, moveX, moveY);
+            update[astrPath] = shapeOptions.path;
+        }
+        else {
+            var newN = (~dragMode.indexOf('n')) ? n0 + dy : n0,
+                newS = (~dragMode.indexOf('s')) ? s0 + dy : s0,
+                newW = (~dragMode.indexOf('w')) ? w0 + dx : w0,
+                newE = (~dragMode.indexOf('e')) ? e0 + dx : e0;
+
+            if(newS - newN > MINHEIGHT) {
+                update[astrN] = shapeOptions[optN] = p2y(newN);
+                update[astrS] = shapeOptions[optS] = p2y(newS);
+            }
+
+            if(newE - newW > MINWIDTH) {
+                update[astrW] = shapeOptions[optW] = p2x(newW);
+                update[astrE] = shapeOptions[optE] = p2x(newE);
+            }
+        }
+
+        shapePath.attr('d', getPathString(gd, shapeOptions));
     }
 }
 
@@ -372,10 +528,58 @@ function isShapeInSubplot(gd, shape, plotinfo) {
 }
 
 function decodeDate(convertToPx) {
-    return function(v) { return convertToPx(v.replace('_', ' ')); };
+    return function(v) {
+        if(v.replace) v = v.replace('_', ' ');
+        return convertToPx(v);
+    };
 }
 
-function shapePath(gd, options) {
+function encodeDate(convertToDate) {
+    return function(v) { return convertToDate(v).replace(' ', '_'); };
+}
+
+function getDataToPixel(gd, axis, isVertical) {
+    var gs = gd._fullLayout._size,
+        dataToPixel;
+
+    if(axis) {
+        var d2l = dataToLinear(axis);
+
+        dataToPixel = function(v) {
+            return axis._offset + axis.l2p(d2l(v, true));
+        };
+
+        if(axis.type === 'date') dataToPixel = decodeDate(dataToPixel);
+    }
+    else if(isVertical) {
+        dataToPixel = function(v) { return gs.t + gs.h * (1 - v); };
+    }
+    else {
+        dataToPixel = function(v) { return gs.l + gs.w * v; };
+    }
+
+    return dataToPixel;
+}
+
+function getPixelToData(gd, axis, isVertical) {
+    var gs = gd._fullLayout._size,
+        pixelToData;
+
+    if(axis) {
+        var l2d = linearToData(axis);
+        pixelToData = function(p) { return l2d(axis.p2l(p - axis._offset)); };
+    }
+    else if(isVertical) {
+        pixelToData = function(p) { return 1 - (p - gs.t) / gs.h; };
+    }
+    else {
+        pixelToData = function(p) { return (p - gs.l) / gs.w; };
+    }
+
+    return pixelToData;
+}
+
+function getPathString(gd, options) {
     var type = options.type,
         xa = Axes.getFromId(gd, options.xref),
         ya = Axes.getFromId(gd, options.yref),
@@ -500,6 +704,29 @@ shapes.convertPath = function(pathIn, x2p, y2p) {
         return segmentType + paramString;
     });
 };
+
+function movePath(pathIn, moveX, moveY) {
+    return pathIn.replace(segmentRE, function(segment) {
+        var paramNumber = 0,
+            segmentType = segment.charAt(0),
+            xParams = paramIsX[segmentType],
+            yParams = paramIsY[segmentType],
+            nParams = numParams[segmentType];
+
+        var paramString = segment.substr(1).replace(paramRE, function(param) {
+            if(paramNumber >= nParams) return param;
+
+            if(xParams[paramNumber]) param = moveX(param);
+            else if(yParams[paramNumber]) param = moveY(param);
+
+            paramNumber++;
+
+            return param;
+        });
+
+        return segmentType + paramString;
+    });
+}
 
 shapes.calcAutorange = function(gd) {
     var fullLayout = gd._fullLayout,
