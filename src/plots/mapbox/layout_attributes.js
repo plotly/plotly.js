@@ -212,7 +212,7 @@ module.exports = {
         symbol: {
             icon: {
                 valType: 'string',
-                dflt: 'circle',
+                dflt: 'marker',
                 role: 'style',
                 description: [
                     'Sets the symbol icon image.',
