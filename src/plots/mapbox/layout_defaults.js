@@ -57,34 +57,25 @@ function handleLayerDefaults(containerIn, containerOut) {
 
         if(sourceType === 'vector') coerce('sourcelayer');
 
-        // maybe add smart default based off GeoJSON geometry
+        // maybe add smart default based off GeoJSON geometry?
         var type = coerce('type');
 
-        var dfltColor;
+        coerce('below');
+        coerce('color');
+        coerce('opacity');
 
         if(type === 'circle') {
-            dfltColor = (layerIn.line || {}).color || (layerIn.fill || {}).color;
-
-            coerce('circle.color', dfltColor);
             coerce('circle.radius');
         }
 
         if(type === 'line') {
-            dfltColor = (layerIn.circle || {}).color || (layerIn.fill || {}).color;
-
-            coerce('line.color', dfltColor);
             coerce('line.width');
         }
 
         if(type === 'fill') {
-            dfltColor = (layerIn.circle || {}).color || (layerIn.line || {}).color;
-
-            coerce('fill.color', dfltColor);
-            coerce('fill.outlinecolor', dfltColor);
+            coerce('fill.outlinecolor');
         }
 
-        coerce('below');
-        coerce('opacity');
 
         layersOut.push(layerOut);
     }

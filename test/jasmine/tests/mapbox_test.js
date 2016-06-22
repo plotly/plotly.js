@@ -85,40 +85,47 @@ describe('mapbox defaults', function() {
     });
 
     it('should only coerce relevant layer style attributes', function() {
+        var base = {
+            line: { width: 3 },
+            fill: { outlinecolor: '#d3d3d3' },
+            circle: { radius: 20 },
+            symbol: { icon: 'monument' }
+        };
+
         layoutIn = {
             mapbox: {
-                layers: [{
-                    sourcetype: 'vector',
-                    type: 'line',
-                    line: {
-                        color: 'red',
-                        width: 3
-                    },
-                    fillcolor: 'blue'
-                }, {
-                    sourcetype: 'geojson',
-                    type: 'fill',
-                    line: {
-                        color: 'red',
-                        width: 3
-                    },
-                    fill: {
-                        color: 'blue',
-                        outlinecolor: 'green'
-                    }
-                }]
+                layers: [
+                    Lib.extendFlat({}, base, {
+                        type: 'line',
+                        color: 'red'
+                    }),
+                    Lib.extendFlat({}, base, {
+                        type: 'fill',
+                        color: 'blue'
+                    }),
+                    Lib.extendFlat({}, base, {
+                        type: 'circle',
+                        color: 'green'
+                    }),
             }
         };
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-        expect(layoutOut.mapbox.layers[0].line.color).toEqual('red');
+        expect(layoutOut.mapbox.layers[0].color).toEqual('red');
         expect(layoutOut.mapbox.layers[0].line.width).toEqual(3);
         expect(layoutOut.mapbox.layers[0].fill).toBeUndefined();
+        expect(layoutOut.mapbox.layers[0].circle).toBeUndefined();
 
+        expect(layoutOut.mapbox.layers[1].color).toEqual('blue');
+        expect(layoutOut.mapbox.layers[1].fill.outlinecolor).toEqual('#d3d3d3');
         expect(layoutOut.mapbox.layers[1].line).toBeUndefined();
-        expect(layoutOut.mapbox.layers[1].fill.color).toEqual('blue');
-        expect(layoutOut.mapbox.layers[1].fill.outlinecolor).toEqual('green');
+        expect(layoutOut.mapbox.layers[1].circle).toBeUndefined();
+
+        expect(layoutOut.mapbox.layers[2].color).toEqual('green');
+        expect(layoutOut.mapbox.layers[2].circle.radius).toEqual(20);
+        expect(layoutOut.mapbox.layers[2].line).toBeUndefined();
+        expect(layoutOut.mapbox.layers[2].fill).toBeUndefined();
     });
 });
 

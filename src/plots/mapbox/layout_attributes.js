@@ -136,6 +136,7 @@ module.exports = {
             ].join(' ')
         },
 
+        // attributes shared between all types
         below: {
             valType: 'string',
             dflt: '',
@@ -147,7 +148,28 @@ module.exports = {
                 'the layer will be inserted above every existing layer.'
             ].join(' ')
         },
+        color: {
+            valType: 'color',
+            dflt: defaultLine,
+            role: 'style',
+            description: [
+                'Sets the primary layer color.',
+                'If `type` is *circle*, color corresponds to the circle color',
+                'If `type` is *line*, color corresponds to the line color',
+                'If `type` is *fill*, color corresponds to the fill color',
+                'If `type` is *symbol*, color corresponds to the icon color'
+            ].join(' ')
+        },
+        opacity: {
+            valType: 'number',
+            min: 0,
+            max: 1,
+            dflt: 1,
+            role: 'info',
+            description: 'Sets the opacity of the layer.'
+        },
 
+        // type-specific style attributes
         circle: {
             radius: {
                 valType: 'number',
@@ -155,15 +177,6 @@ module.exports = {
                 role: 'style',
                 description: [
                     'Sets the circle radius.',
-                    'Has an effect only when `type` is set to *circle*.'
-                ].join(' ')
-            },
-            color: {
-                valType: 'color',
-                dflt: defaultLine,
-                role: 'style',
-                description: [
-                    'Sets the circle color.',
                     'Has an effect only when `type` is set to *circle*.'
                 ].join(' ')
             }
@@ -178,28 +191,10 @@ module.exports = {
                     'Sets the line radius.',
                     'Has an effect only when `type` is set to *line*.'
                 ].join(' ')
-            },
-            color: {
-                valType: 'color',
-                dflt: defaultLine,
-                role: 'style',
-                description: [
-                    'Sets the line color.',
-                    'Has an effect only when `type` is set to *line*.'
-                ].join(' ')
             }
         },
 
         fill: {
-            color: {
-                valType: 'color',
-                dflt: defaultLine,
-                role: 'style',
-                description: [
-                    'Sets the fill color.',
-                    'Has an effect only when `type` is set to *fill*.'
-                ].join(' ')
-            },
             outlinecolor: {
                 valType: 'color',
                 dflt: defaultLine,
@@ -211,13 +206,6 @@ module.exports = {
             }
         },
 
-        opacity: {
-            valType: 'number',
-            min: 0,
-            max: 1,
-            dflt: 1,
-            role: 'info',
-            description: 'Sets the opacity of the layer.'
         }
     }
 
