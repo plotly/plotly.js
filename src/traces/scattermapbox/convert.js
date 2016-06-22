@@ -111,10 +111,12 @@ module.exports = function convert(calcTrace) {
             var textOpts = calcTextOpts(trace);
 
             Lib.extendFlat(symbol.layout, {
-                'text-font': trace.textfont.textfont,
                 'text-size': trace.textfont.size,
                 'text-anchor': textOpts.anchor,
                 'text-offset': textOpts.offset
+
+                // TODO font family
+                //'text-font': symbol.textfont.family.split(', '),
             });
 
             Lib.extendFlat(symbol.paint, {
