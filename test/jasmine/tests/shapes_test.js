@@ -319,7 +319,10 @@ describe('Test shapes', function() {
         // xaxis.type: 'date', yaxis.type: 'category'
         {
             title: 'linked to date and category axes',
-            xaxis: { type: 'date', range: ['2000-01-01', '2000-01-02'] },
+            xaxis: {
+                type: 'date',
+                range: ['2000-01-01', (new Date(2000, 1, 2)).getTime()]
+            },
             yaxis: { type: 'category', range: ['a', 'b'] }
         }
     ];
@@ -682,7 +685,10 @@ function getDataToPixel(gd, axis, isVertical) {
 }
 
 function decodeDate(convertToPx) {
-    return function(v) { return convertToPx(v.replace('_', ' ')); };
+    return function(v) {
+        if(v.replace) v = v.replace('_', ' ');
+        return convertToPx(v);
+    };
 }
 
 
