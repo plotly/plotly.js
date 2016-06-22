@@ -45,9 +45,15 @@ proto.update = function update(opts) {
 };
 
 proto.needsNewSource = function(opts) {
+
+    // for some reason changing layer to 'fill' w/o changing the source
+    // throws an exception in mapbox-gl 0.18
+    var changesToFill = (this.layerType !== 'fill' && opts.type === 'fill');
+
     return (
         this.sourceType !== opts.sourcetype ||
-        this.source !== opts.source
+        this.source !== opts.source ||
+        changesToFill
     );
 };
 
