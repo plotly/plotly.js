@@ -528,7 +528,10 @@ function isShapeInSubplot(gd, shape, plotinfo) {
 }
 
 function decodeDate(convertToPx) {
-    return function(v) { return convertToPx(v.replace('_', ' ')); };
+    return function(v) {
+        if(v.replace) v = v.replace('_', ' ');
+        return convertToPx(v);
+    };
 }
 
 function encodeDate(convertToDate) {
