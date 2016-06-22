@@ -10,6 +10,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var convertTextOpts = require('./convert_text_opts');
 
 
 function MapboxLayer(mapbox, index) {
@@ -46,14 +47,17 @@ proto.update = function update(opts) {
 
 proto.needsNewSource = function(opts) {
 
-    // for some reason changing layer to 'fill' w/o changing the source
-    // throws an exception in mapbox-gl 0.18
-    var changesToFill = (this.layerType !== 'fill' && opts.type === 'fill');
+    // for some reason changing layer to 'fill' or 'symbol'
+    // w/o changing the source throws an exception in mapbox-gl 0.18
+
+    var changesToFill = (this.layerType !== 'fill' && opts.type === 'fill'),
+        changesToSymbol = (this.layerType !== 'symbol' && opts.type === 'symbol');
 
     return (
         this.sourceType !== opts.sourcetype ||
         this.source !== opts.source ||
-        changesToFill
+        changesToFill ||
+        changesToSymbol
     );
 };
 
@@ -101,10 +105,11 @@ proto.updateLayer = function(opts) {
 };
 
 proto.updateStyle = function(opts) {
-    var paintOpts = convertPaintOpts(opts);
+    var convertedOpts = convertOpts(opts);
 
     if(isVisible(opts)) {
-        this.mapbox.setOptions(this.idLayer, 'setPaintProperty', paintOpts);
+        this.mapbox.setOptions(this.idLayer, 'setLayoutProperty', convertedOpts.layout);
+        this.mapbox.setOptions(this.idLayer, 'setPaintProperty', convertedOpts.paint);
     }
 };
 
@@ -127,42 +132,63 @@ function isVisible(opts) {
     );
 }
 
-function convertPaintOpts(opts) {
-    var paintOpts = {};
+function convertOpts(opts) {
+    var layout = {},
+        paint = {};
 
     switch(opts.type) {
 
         case 'circle':
-            var circle = opts.circle;
-            Lib.extendFlat(paintOpts, {
-                'circle-radius': circle.radius,
-                'circle-color': circle.color,
+            Lib.extendFlat(paint, {
+                'circle-radius': opts.circle.radius,
+                'circle-color': opts.color,
                 'circle-opacity': opts.opacity
             });
             break;
 
         case 'line':
-            var line = opts.line;
-            Lib.extendFlat(paintOpts, {
-                'line-width': line.width,
-                'line-color': line.color,
+            Lib.extendFlat(paint, {
+                'line-width': opts.line.width,
+                'line-color': opts.color,
                 'line-opacity': opts.opacity
             });
             break;
 
         case 'fill':
-            var fill = opts.fill;
-            Lib.extendFlat(paintOpts, {
-                'fill-color': fill.color,
-                'fill-outline-color': fill.outlinecolor,
+            Lib.extendFlat(paint, {
+                'fill-color': opts.color,
+                'fill-outline-color': opts.fill.outlinecolor,
                 'fill-opacity': opts.opacity
 
                 // no way to pass specify outline width at the moment
             });
             break;
+
+        case 'symbol':
+            var symbol = opts.symbol,
+                textOpts = convertTextOpts(symbol.textposition, symbol.iconsize);
+
+            Lib.extendFlat(layout, {
+                'icon-image': symbol.icon + '-15',
+                'icon-size': symbol.iconsize / 10,
+
+                'text-field': symbol.text,
+                'text-size': symbol.textfont.size,
+                'text-anchor': textOpts.anchor,
+                'text-offset': textOpts.offset
+
+                // TODO font family
+                //'text-font': symbol.textfont.family.split(', '),
+            });
+
+            Lib.extendFlat(paint, {
+                'text-color': symbol.textfont.color,
+                'text-opacity': opts.opacity
+            });
+            break;
     }
 
-    return paintOpts;
+    return { layout: layout, paint: paint };
 }
 
 function convertSourceOpts(opts) {

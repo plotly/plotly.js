@@ -76,6 +76,14 @@ function handleLayerDefaults(containerIn, containerOut) {
             coerce('fill.outlinecolor');
         }
 
+        if(type === 'symbol') {
+            coerce('symbol.icon');
+            coerce('symbol.iconsize');
+
+            coerce('symbol.text');
+            Lib.coerceFont(coerce, 'symbol.textfont');
+            coerce('symbol.textposition');
+        }
 
         layersOut.push(layerOut);
     }

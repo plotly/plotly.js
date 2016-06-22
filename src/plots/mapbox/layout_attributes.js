@@ -9,7 +9,10 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var defaultLine = require('../../components/color').defaultLine;
+var fontAttrs = require('../font_attributes');
+var textposition = require('../../traces/scatter/attributes').textposition;
 
 
 module.exports = {
@@ -125,7 +128,7 @@ module.exports = {
 
         type: {
             valType: 'enumerated',
-            values: ['circle', 'line', 'fill'],
+            values: ['circle', 'line', 'fill', 'symbol'],
             dflt: 'line',
             role: 'info',
             description: [
@@ -206,6 +209,43 @@ module.exports = {
             }
         },
 
+        symbol: {
+            icon: {
+                valType: 'string',
+                dflt: 'circle',
+                role: 'style',
+                description: [
+                    'Sets the symbol icon image.',
+                    'Full list: https://www.mapbox.com/maki-icons/'
+                ].join(' ')
+            },
+            iconsize: {
+                valType: 'number',
+                dflt: 10,
+                role: 'style',
+                description: [
+                    'Sets the icon size.',
+                    'Has an effect only when `type` is set to *symbol*.'
+                ].join(' ')
+            },
+            text: {
+                valType: 'string',
+                dflt: '',
+                role: 'info',
+                description: [
+                    'Sets the symbol text.'
+                ].join(' ')
+            },
+            textfont: Lib.extendDeep({}, fontAttrs, {
+                description: [
+                    'Sets the icon text font.',
+                    'Has an effect only when `type` is set to *symbol*.'
+                ].join(' '),
+                family: {
+                    dflt: 'Open Sans Regular, Arial Unicode MS Regular'
+                }
+            }),
+            textposition: Lib.extendFlat({}, textposition, { arrayOk: false })
         }
     }
 

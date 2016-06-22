@@ -107,6 +107,11 @@ describe('mapbox defaults', function() {
                         type: 'circle',
                         color: 'green'
                     }),
+                    Lib.extendFlat({}, base, {
+                        type: 'symbol',
+                        color: 'yellow'
+                    })
+                ]
             }
         };
 
@@ -116,16 +121,25 @@ describe('mapbox defaults', function() {
         expect(layoutOut.mapbox.layers[0].line.width).toEqual(3);
         expect(layoutOut.mapbox.layers[0].fill).toBeUndefined();
         expect(layoutOut.mapbox.layers[0].circle).toBeUndefined();
+        expect(layoutOut.mapbox.layers[0].symbol).toBeUndefined();
 
         expect(layoutOut.mapbox.layers[1].color).toEqual('blue');
         expect(layoutOut.mapbox.layers[1].fill.outlinecolor).toEqual('#d3d3d3');
         expect(layoutOut.mapbox.layers[1].line).toBeUndefined();
         expect(layoutOut.mapbox.layers[1].circle).toBeUndefined();
+        expect(layoutOut.mapbox.layers[1].symbol).toBeUndefined();
 
         expect(layoutOut.mapbox.layers[2].color).toEqual('green');
         expect(layoutOut.mapbox.layers[2].circle.radius).toEqual(20);
         expect(layoutOut.mapbox.layers[2].line).toBeUndefined();
         expect(layoutOut.mapbox.layers[2].fill).toBeUndefined();
+        expect(layoutOut.mapbox.layers[2].symbol).toBeUndefined();
+
+        expect(layoutOut.mapbox.layers[3].color).toEqual('yellow');
+        expect(layoutOut.mapbox.layers[3].symbol.icon).toEqual('monument');
+        expect(layoutOut.mapbox.layers[3].line).toBeUndefined();
+        expect(layoutOut.mapbox.layers[3].fill).toBeUndefined();
+        expect(layoutOut.mapbox.layers[3].circle).toBeUndefined();
     });
 });
 
@@ -363,14 +377,14 @@ describe('mapbox plots', function() {
         };
 
         var styleUpdate0 = {
-            'mapbox.layers[0].fill.color': 'red',
+            'mapbox.layers[0].color': 'red',
             'mapbox.layers[0].fill.outlinecolor': 'blue',
             'mapbox.layers[0].opacity': 0.3
         };
 
         var styleUpdate1 = {
+            'mapbox.layers[1].color': 'blue',
             'mapbox.layers[1].line.width': 3,
-            'mapbox.layers[1].line.color': 'blue',
             'mapbox.layers[1].opacity': 0.6
         };
 
