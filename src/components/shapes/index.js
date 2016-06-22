@@ -361,17 +361,35 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
 
     var xa, ya, x2p, y2p, p2x, p2y;
 
-    var dragBBox, dragMode;
-
     var dragOptions = {
-        element: shapePath.node(),
-        prepFn: startDrag,
-        doneFn: endDrag
-    };
+            setCursor: updateDragMode,
+            element: shapePath.node(),
+            prepFn: startDrag,
+            doneFn: endDrag
+        },
+        dragBBox = dragOptions.element.getBoundingClientRect(),
+        dragMode;
 
     dragElement.init(dragOptions);
 
-    function startDrag(evt, startX, startY) {
+    function updateDragMode(evt) {
+        // choose 'move' or 'resize'
+        // based on initial position of cursor within the drag element
+        var w = dragBBox.right - dragBBox.left,
+            h = dragBBox.bottom - dragBBox.top,
+            x = evt.clientX - dragBBox.left,
+            y = evt.clientY - dragBBox.top,
+            cursor = (w > MINWIDTH && h > MINHEIGHT) ?
+                dragElement.getCursor(x / w, 1 - y / h) :
+                'move';
+
+        setCursor(shapePath, cursor);
+
+        // possible values 'move', 'sw', 'w', 'se', 'e', 'ne', 'n', 'nw' and 'w'
+        dragMode = cursor.split('-')[0];
+    }
+
+    function startDrag(evt) {
         // setup conversion functions
         xa = Axes.getFromId(gd, shapeOptions.xref);
         ya = Axes.getFromId(gd, shapeOptions.yref);
@@ -418,23 +436,8 @@ function setupDragElement(gd, shapePath, shapeOptions, index) {
 
         update = {};
 
-        // choose 'move' or 'resize'
-        // based on initial position of cursor within the drag element
-        dragBBox = dragOptions.element.getBoundingClientRect();
-
-        var w = dragBBox.right - dragBBox.left,
-            h = dragBBox.bottom - dragBBox.top,
-            x = startX - dragBBox.left,
-            y = startY - dragBBox.top,
-            cursor = (w > MINWIDTH && h > MINHEIGHT) ?
-                dragElement.getCursor(x / w, 1 - y / h) :
-                'move';
-
-        setCursor(shapePath, cursor);
-
-        // possible values 'move', 'sw', 'w', 'se', 'e', 'ne', 'n', 'nw' and 'w'
-        dragMode = cursor.split('-')[0];
-
+        // setup dragMode and the corresponding handler
+        updateDragMode(evt);
         dragOptions.moveFn = (dragMode === 'move') ? moveShape : resizeShape;
     }
 
