@@ -660,7 +660,9 @@ describe('ModeBar', function() {
                     yaxis2: {
                         anchor: 'x2',
                         range: [0, 4]
-                    }
+                    },
+                    width: 600,
+                    height: 500
                 };
 
                 gd = createGraphDiv();
@@ -696,7 +698,7 @@ describe('ModeBar', function() {
 
                     buttonZoomIn.click();
                     buttonAutoScale.click();
-                    assertRange(gd._fullLayout.xaxis.range, [-0.1375913, 2.137591]);
+                    assertRange(gd._fullLayout.xaxis.range, [-0.1584327, 2.1584327]);
                     assertRange(gd._fullLayout.yaxis.range, [0.92675159, 2.073248]);
                     assertRange(gd._fullLayout.xaxis2.range, [-0.5, 2.5]);
                     assertRange(gd._fullLayout.yaxis2.range, [0, 2.105263]);

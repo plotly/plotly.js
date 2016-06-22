@@ -15,6 +15,8 @@ var Lib = require('../../lib');
 var Drawing = require('../../components/drawing');
 var ErrorBars = require('../../components/errorbars');
 
+var polygonTester = require('../../lib/polygon').tester;
+
 var subTypes = require('./subtypes');
 var arraysToCalcdata = require('./arrays_to_calcdata');
 var linePoints = require('./line_points');
@@ -41,6 +43,7 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
 
     // BUILD LINES AND FILLS
     var prevpath = '',
+        prevPolygons = [],
         ownFillEl3, ownFillDir, tonext, nexttonext;
 
     scattertraces.each(function(d) {
@@ -125,12 +128,23 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
             linear: line.shape === 'linear'
         });
 
+        // since we already have the pixel segments here, use them to make
+        // polygons for hover on fill
+        // TODO: can we skip this if hoveron!=fills? That would mean we
+        // need to redraw when you change hoveron...
+        var thisPolygons = trace._polygons = new Array(segments.length),
+            i;
+
+        for(i = 0; i < segments.length; i++) {
+            trace._polygons[i] = polygonTester(segments[i]);
+        }
+
         if(segments.length) {
             var pt0 = segments[0][0],
                 lastSegment = segments[segments.length - 1],
                 pt1 = lastSegment[lastSegment.length - 1];
 
-            for(var i = 0; i < segments.length; i++) {
+            for(i = 0; i < segments.length; i++) {
                 var pts = segments[i];
                 thispath = pathfn(pts);
                 thisrevpath = revpathfn(pts);
@@ -185,8 +199,10 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
                     // existing curve or off the end of it
                     tonext.attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
                 }
+                trace._polygons = trace._polygons.concat(prevPolygons);
             }
             prevpath = revpath;
+            prevPolygons = thisPolygons;
         }
     });
 

@@ -53,8 +53,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
+    var dfltHoverOn = [];
+
     if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
         coerce('marker.maxdisplayed');
+        dfltHoverOn.push('points');
     }
 
     coerce('fill');
@@ -62,6 +65,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleFillColorDefaults(traceIn, traceOut, defaultColor, coerce);
         if(!subTypes.hasLines(traceOut)) handleLineShapeDefaults(traceIn, traceOut, coerce);
     }
+
+    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
+        dfltHoverOn.push('fills');
+    }
+    coerce('hoveron', dfltHoverOn.join('+') || 'points');
 
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'y'});
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});

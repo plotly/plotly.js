@@ -12,6 +12,8 @@ describe('the range slider', function() {
         rangeSlider,
         children;
 
+    var sliderY = 393;
+
     describe('when specified as visible', function() {
 
         beforeEach(function(done) {
@@ -57,7 +59,7 @@ describe('the range slider', function() {
                 dataMinStart = rangeSlider.getAttribute('data-min'),
                 diff = end - start;
 
-            slide(start, 400, end, 400).then(function() {
+            slide(start, sliderY, end, sliderY).then(function() {
                 var maskMin = children[2],
                     handleMin = children[5];
 
@@ -67,19 +69,25 @@ describe('the range slider', function() {
             }).then(done);
         });
 
+        function testTranslate1D(node, val) {
+            var transformParts = node.getAttribute('transform').split('(');
+            expect(transformParts[0]).toEqual('translate');
+            expect(+transformParts[1].split(')')[0]).toBeCloseTo(val, 0);
+        }
+
         it('should react to resizing the maximum handle', function(done) {
-            var start = 705,
-                end = 500,
+            var start = 695,
+                end = 490,
                 dataMaxStart = rangeSlider.getAttribute('data-max'),
                 diff = end - start;
 
-            slide(start, 400, end, 400).then(function() {
+            slide(start, sliderY, end, sliderY).then(function() {
                 var maskMax = children[3],
                     handleMax = children[6];
 
-                expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
-                expect(maskMax.getAttribute('width')).toEqual(String(-diff));
-                expect(handleMax.getAttribute('transform')).toBe('translate(' + (+dataMaxStart + diff) + ')');
+                expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(+dataMaxStart + diff, 0);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
+                testTranslate1D(handleMax, +dataMaxStart + diff);
             }).then(done);
         });
 
@@ -89,13 +97,13 @@ describe('the range slider', function() {
                 dataMinStart = rangeSlider.getAttribute('data-min'),
                 diff = end - start;
 
-            slide(start, 400, end, 400).then(function() {
+            slide(start, sliderY, end, sliderY).then(function() {
                 var maskMin = children[2],
                     handleMin = children[5];
 
-                expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
-                expect(maskMin.getAttribute('width')).toEqual(String(diff));
-                expect(handleMin.getAttribute('transform')).toEqual('translate(' + (+dataMinStart + diff - 3) + ')');
+                expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(String(+dataMinStart + diff));
+                expect(+maskMin.getAttribute('width')).toBeCloseTo(String(diff));
+                testTranslate1D(handleMin, +dataMinStart + diff - 3);
             }).then(done);
         });
 
@@ -105,13 +113,13 @@ describe('the range slider', function() {
                 dataMaxStart = rangeSlider.getAttribute('data-max'),
                 diff = end - start;
 
-            slide(start, 400, end, 400).then(function() {
+            slide(start, sliderY, end, sliderY).then(function() {
                 var maskMax = children[3],
                     handleMax = children[6];
 
-                expect(rangeSlider.getAttribute('data-max')).toEqual(String(+dataMaxStart + diff));
-                expect(maskMax.getAttribute('width')).toEqual(String(-diff));
-                expect(handleMax.getAttribute('transform')).toEqual('translate(' + (+dataMaxStart + diff) + ')');
+                expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(+dataMaxStart + diff);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
+                testTranslate1D(handleMax, +dataMaxStart + diff);
             }).then(done);
 
 
@@ -124,14 +132,14 @@ describe('the range slider', function() {
                 rangeDiff2,
                 rangeDiff3;
 
-            slide(start, 400, end, 400).then(function() {
+            slide(start, sliderY, end, sliderY).then(function() {
                 rangeDiff2 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
                 expect(rangeDiff2).toBeLessThan(rangeDiff1);
             }).then(function() {
                 start = 400;
                 end = 200;
 
-                return slide(start, 400, end, 400);
+                return slide(start, sliderY, end, sliderY);
             }).then(function() {
                 rangeDiff3 = gd._fullLayout.xaxis.range[1] - gd._fullLayout.xaxis.range[0];
                 expect(rangeDiff3).toBeLessThan(rangeDiff2);
@@ -142,8 +150,8 @@ describe('the range slider', function() {
             Plotly.relayout(gd, 'xaxis.range', [10, 20])
                 .then(function() {
                     expect(gd._fullLayout.xaxis.range).toEqual([10, 20]);
-                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(125.51, 0);
-                    expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(251.02, 0);
+                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(124.69, -1);
+                    expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(249.39, -1);
                 })
                 .then(done);
         });
@@ -152,7 +160,7 @@ describe('the range slider', function() {
             Plotly.relayout(gd, 'xaxis.range[0]', 10)
                 .then(function() {
                     expect(gd._fullLayout.xaxis.range[0]).toEqual(10);
-                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(125.51, 0);
+                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(124.69, -1);
                 })
                 .then(done);
         });

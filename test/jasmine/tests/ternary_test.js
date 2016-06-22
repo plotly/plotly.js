@@ -186,8 +186,8 @@ describe('ternary plots', function() {
         it('should respond zoom drag interactions', function(done) {
             assertRange(gd, [0.231, 0.2, 0.11]);
 
-            drag([[390, 220], [300, 250]]);
-            assertRange(gd, [0.4486, 0.2480, 0.1453]);
+            drag([[383, 213], [293, 243]]);
+            assertRange(gd, [0.4435, 0.2462, 0.1523]);
 
             doubleClick(pointPos[0], pointPos[1]).then(function() {
                 assertRange(gd, [0, 0, 0]);

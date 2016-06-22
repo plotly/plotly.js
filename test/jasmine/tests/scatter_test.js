@@ -60,6 +60,38 @@ describe('Test scatter', function() {
             expect(traceOut.visible).toBe(false);
         });
 
+        it('should correctly assign \'hoveron\' default', function() {
+            traceIn = {
+                x: [1, 2, 3],
+                y: [1, 2, 3],
+                mode: 'lines+markers',
+                fill: 'tonext'
+            };
+
+            // fills and markers, you get both hover types
+            // you need visible: true here, as that normally gets set
+            // outside of the module supplyDefaults
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.hoveron).toBe('points+fills');
+
+            // but with only lines (or just fill) and fill tonext or toself
+            // you get fills
+            traceIn.mode = 'lines';
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.hoveron).toBe('fills');
+
+            // with the wrong fill you always get points
+            // only area fills default to hoveron points. Vertical or
+            // horizontal fills don't have the same physical meaning,
+            // they're generally just filling their own slice, so they
+            // default to hoveron points.
+            traceIn.fill = 'tonexty';
+            traceOut = {visible: true};
+            supplyDefaults(traceIn, traceOut, defaultColor, layout);
+            expect(traceOut.hoveron).toBe('points');
+        });
     });
 
     describe('isBubble', function() {

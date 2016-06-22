@@ -81,8 +81,11 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
+    var dfltHoverOn = [];
+
     if(subTypes.hasMarkers(traceOut) || subTypes.hasText(traceOut)) {
         coerce('marker.maxdisplayed');
+        dfltHoverOn.push('points');
     }
 
     coerce('fill');
@@ -92,4 +95,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('hoverinfo', (layout._dataLength === 1) ? 'a+b+c+text' : undefined);
+
+    if(traceOut.fill === 'tonext' || traceOut.fill === 'toself') {
+        dfltHoverOn.push('fills');
+    }
+    coerce('hoveron', dfltHoverOn.join('+') || 'points');
 };
