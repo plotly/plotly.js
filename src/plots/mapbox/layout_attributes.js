@@ -129,13 +129,13 @@ module.exports = {
         type: {
             valType: 'enumerated',
             values: ['circle', 'line', 'fill', 'symbol'],
-            dflt: 'line',
+            dflt: 'circle',
             role: 'info',
             description: [
                 'Sets the layer type.',
                 'Support for *raster*, *background* types is coming soon.',
                 'Note that *line* and *fill* are not compatible with Point',
-                'GeoJSON geometry.'
+                'GeoJSON geometries.'
             ].join(' ')
         },
 
