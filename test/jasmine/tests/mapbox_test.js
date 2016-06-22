@@ -7,6 +7,7 @@ var supplyLayoutDefaults = require('@src/plots/mapbox/layout_defaults');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var hasWebGLSupport = require('../assets/has_webgl_support');
 var mouseEvent = require('../assets/mouse_event');
 var customMatchers = require('../assets/custom_matchers');
 
@@ -121,6 +122,8 @@ describe('mapbox defaults', function() {
 describe('mapbox credentials', function() {
     'use strict';
 
+    if(!hasWebGLSupport('scattermapbox hover')) return;
+
     var dummyToken = 'asfdsa124331wersdsa1321q3';
     var gd;
 
@@ -167,6 +170,8 @@ describe('mapbox credentials', function() {
 
 describe('mapbox plots', function() {
     'use strict';
+
+    if(!hasWebGLSupport('scattermapbox hover')) return;
 
     var mock = require('@mocks/mapbox_0.json'),
         gd;

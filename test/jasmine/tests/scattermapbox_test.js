@@ -7,6 +7,7 @@ var convert = require('@src/traces/scattermapbox/convert');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var hasWebGLSupport = require('../assets/has_webgl_support');
 var customMatchers = require('../assets/custom_matchers');
 
 // until it is part of the main plotly.js bundle
@@ -410,6 +411,8 @@ describe('scattermapbox convert', function() {
 describe('scattermapbox hover', function() {
     'use strict';
 
+    if(!hasWebGLSupport('scattermapbox hover')) return;
+
     var hoverPoints = ScatterMapbox.hoverPoints;
 
     var gd;
@@ -456,7 +459,7 @@ describe('scattermapbox hover', function() {
 
         expect(out.index).toEqual(0);
         expect([out.x0, out.x1, out.y0, out.y1]).toBeCloseToArray([
-            444.444, 446.444, 105.410, 107.410
+            297.444, 299.444, 105.410, 107.410
         ]);
         expect(out.extraText).toEqual('(10°, 10°)<br>A');
         expect(out.color).toEqual('#1f77b4');
@@ -470,7 +473,7 @@ describe('scattermapbox hover', function() {
 
         expect(out.index).toEqual(0);
         expect([out.x0, out.x1, out.y0, out.y1]).toBeCloseToArray([
-            2492.444, 2494.444, 105.410, 107.410
+            2345.444, 2347.444, 105.410, 107.410
         ]);
         expect(out.extraText).toEqual('(10°, 10°)<br>A');
         expect(out.color).toEqual('#1f77b4');
@@ -484,7 +487,7 @@ describe('scattermapbox hover', function() {
 
         expect(out.index).toEqual(0);
         expect([out.x0, out.x1, out.y0, out.y1]).toBeCloseToArray([
-            -2627.555, -2625.555, 105.410, 107.410
+            -2774.555, -2772.555, 105.410, 107.410
         ]);
         expect(out.extraText).toEqual('(10°, 10°)<br>A');
         expect(out.color).toEqual('#1f77b4');
