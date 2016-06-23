@@ -149,7 +149,7 @@ module.exports = function setPositions(gd, plotinfo) {
 
                     sv = Math.round(ti[j].p / sumround);
                     // store the negative sum value for p at the same key, with sign flipped
-                    if(relative && ti[j].s < 0) sv = -sv;
+                    if(relative && ti[j].s < 0) sv = '-'+sv;  // use string to ensure -0 !== 0
                     var previousSum = sums[sv] || 0;
                     if(stack || relative) ti[j].b = previousSum;
                     barEnd = ti[j].b + ti[j].s;
