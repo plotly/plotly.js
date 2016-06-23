@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var subTypes = require('../scatter/subtypes');
+var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 
 var COLOR_PROP = 'circle-color';
 var SIZE_PROP = 'circle-radius';
@@ -108,13 +109,16 @@ module.exports = function convert(calcTrace) {
         }
 
         if(hasText) {
-            var textOpts = calcTextOpts(trace);
+            var iconSize = (trace.marker || {}).size,
+                textOpts = convertTextOpts(trace.textposition, iconSize);
 
             Lib.extendFlat(symbol.layout, {
-                'text-font': trace.textfont.textfont,
                 'text-size': trace.textfont.size,
                 'text-anchor': textOpts.anchor,
                 'text-offset': textOpts.offset
+
+                // TODO font family
+                //'text-font': symbol.textfont.family.split(', '),
             });
 
             Lib.extendFlat(symbol.paint, {
@@ -305,56 +309,6 @@ function calcCircleRadius(trace, hash) {
     }
 
     return out;
-}
-
-function calcTextOpts(trace) {
-    var textposition = trace.textposition,
-        parts = textposition.split(' '),
-        vPos = parts[0],
-        hPos = parts[1];
-
-    // ballpack values
-    var ms = (trace.marker || {}).size,
-        factor = Array.isArray(ms) ? Lib.mean(ms) : ms,
-        xInc = 0.5 + (factor / 100),
-        yInc = 1.5 + (factor / 100);
-
-    var anchorVals = ['', ''],
-        offset = [0, 0];
-
-    switch(vPos) {
-        case 'top':
-            anchorVals[0] = 'top';
-            offset[1] = -yInc;
-            break;
-        case 'bottom':
-            anchorVals[0] = 'bottom';
-            offset[1] = yInc;
-            break;
-    }
-
-    switch(hPos) {
-        case 'left':
-            anchorVals[1] = 'right';
-            offset[0] = -xInc;
-            break;
-        case 'right':
-            anchorVals[1] = 'left';
-            offset[0] = xInc;
-            break;
-    }
-
-    // Mapbox text-anchor must be one of:
-    //  center, left, right, top, bottom,
-    //  top-left, top-right, bottom-left, bottom-right
-
-    var anchor;
-    if(anchorVals[0] && anchorVals[1]) anchor = anchorVals.join('-');
-    else if(anchorVals[0]) anchor = anchorVals[0];
-    else if(anchorVals[1]) anchor = anchorVals[1];
-    else anchor = 'center';
-
-    return { anchor: anchor, offset: offset };
 }
 
 function getCoords(calcTrace) {

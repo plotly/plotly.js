@@ -10,6 +10,7 @@
 
 var scatterGeoAttrs = require('../scattergeo/attributes');
 var scatterAttrs = require('../scatter/attributes');
+var mapboxAttrs = require('../../plots/mapbox/layout_attributes');
 var plotAttrs = require('../../plots/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 
@@ -104,8 +105,8 @@ module.exports = {
     },
     fillcolor: scatterAttrs.fillcolor,
 
-    textfont: extendFlat({}, scatterAttrs.textfont, { arrayOk: false }),
-    textposition: extendFlat({}, scatterAttrs.textposition, { arrayOk: false }),
+    textfont: mapboxAttrs.layers.symbol.textfont,
+    textposition: mapboxAttrs.layers.symbol.textposition,
 
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'text', 'name']

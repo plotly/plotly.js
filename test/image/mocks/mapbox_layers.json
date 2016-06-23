@@ -532,16 +532,17 @@
           },
           "type": "fill",
           "below": "water",
-          "fillcolor": "#ece2f0",
+          "color": "#ece2f0",
           "opacity": 0.8
         },
         {
           "sourcetype": "vector",
           "source": "mapbox://mapbox.mapbox-terrain-v2",
           "sourcelayer": "contour",
+          "type": "line",
+          "color": "red",
           "line": {
-            "width": 2,
-            "color": "red"
+            "width": 2
           }
         }
       ]

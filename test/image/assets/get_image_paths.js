@@ -20,10 +20,10 @@ module.exports = function getImagePaths(mockName, format) {
     return {
         baseline: join(constants.pathToTestImageBaselines, mockName, format),
         test: join(constants.pathToTestImages, mockName, format),
-        diff: join(constants.pathToTestImagesDiff, mockName, format)
+        diff: join(constants.pathToTestImagesDiff, 'diff-' + mockName, format)
     };
 };
 
-function join(basePath, mockName, format) {
-    return path.join(basePath, mockName) + '.' + format;
+function join(basePath, fileName, format) {
+    return path.join(basePath, fileName) + '.' + format;
 }

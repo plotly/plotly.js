@@ -7,6 +7,7 @@ var supplyLayoutDefaults = require('@src/plots/mapbox/layout_defaults');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var hasWebGLSupport = require('../assets/has_webgl_support');
 var mouseEvent = require('../assets/mouse_event');
 var customMatchers = require('../assets/custom_matchers');
 
@@ -84,42 +85,68 @@ describe('mapbox defaults', function() {
     });
 
     it('should only coerce relevant layer style attributes', function() {
+        var base = {
+            line: { width: 3 },
+            fill: { outlinecolor: '#d3d3d3' },
+            circle: { radius: 20 },
+            symbol: { icon: 'monument' }
+        };
+
         layoutIn = {
             mapbox: {
-                layers: [{
-                    sourcetype: 'vector',
-                    type: 'line',
-                    line: {
-                        color: 'red',
-                        width: 3
-                    },
-                    fillcolor: 'blue'
-                }, {
-                    sourcetype: 'geojson',
-                    type: 'fill',
-                    line: {
-                        color: 'red',
-                        width: 3
-                    },
-                    fillcolor: 'blue'
-                }]
+                layers: [
+                    Lib.extendFlat({}, base, {
+                        type: 'line',
+                        color: 'red'
+                    }),
+                    Lib.extendFlat({}, base, {
+                        type: 'fill',
+                        color: 'blue'
+                    }),
+                    Lib.extendFlat({}, base, {
+                        type: 'circle',
+                        color: 'green'
+                    }),
+                    Lib.extendFlat({}, base, {
+                        type: 'symbol',
+                        color: 'yellow'
+                    })
+                ]
             }
         };
 
         supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-        expect(layoutOut.mapbox.layers[0].line.color).toEqual('red');
+        expect(layoutOut.mapbox.layers[0].color).toEqual('red');
         expect(layoutOut.mapbox.layers[0].line.width).toEqual(3);
-        expect(layoutOut.mapbox.layers[0].fillcolor).toBeUndefined();
+        expect(layoutOut.mapbox.layers[0].fill).toBeUndefined();
+        expect(layoutOut.mapbox.layers[0].circle).toBeUndefined();
+        expect(layoutOut.mapbox.layers[0].symbol).toBeUndefined();
 
-        expect(layoutOut.mapbox.layers[1].line.color).toEqual('red');
-        expect(layoutOut.mapbox.layers[1].line.width).toBeUndefined();
-        expect(layoutOut.mapbox.layers[1].fillcolor).toEqual('blue');
+        expect(layoutOut.mapbox.layers[1].color).toEqual('blue');
+        expect(layoutOut.mapbox.layers[1].fill.outlinecolor).toEqual('#d3d3d3');
+        expect(layoutOut.mapbox.layers[1].line).toBeUndefined();
+        expect(layoutOut.mapbox.layers[1].circle).toBeUndefined();
+        expect(layoutOut.mapbox.layers[1].symbol).toBeUndefined();
+
+        expect(layoutOut.mapbox.layers[2].color).toEqual('green');
+        expect(layoutOut.mapbox.layers[2].circle.radius).toEqual(20);
+        expect(layoutOut.mapbox.layers[2].line).toBeUndefined();
+        expect(layoutOut.mapbox.layers[2].fill).toBeUndefined();
+        expect(layoutOut.mapbox.layers[2].symbol).toBeUndefined();
+
+        expect(layoutOut.mapbox.layers[3].color).toEqual('yellow');
+        expect(layoutOut.mapbox.layers[3].symbol.icon).toEqual('monument');
+        expect(layoutOut.mapbox.layers[3].line).toBeUndefined();
+        expect(layoutOut.mapbox.layers[3].fill).toBeUndefined();
+        expect(layoutOut.mapbox.layers[3].circle).toBeUndefined();
     });
 });
 
 describe('mapbox credentials', function() {
     'use strict';
+
+    if(!hasWebGLSupport('scattermapbox hover')) return;
 
     var dummyToken = 'asfdsa124331wersdsa1321q3';
     var gd;
@@ -167,6 +194,8 @@ describe('mapbox credentials', function() {
 
 describe('mapbox plots', function() {
     'use strict';
+
+    if(!hasWebGLSupport('scattermapbox hover')) return;
 
     var mock = require('@mocks/mapbox_0.json'),
         gd;
@@ -348,14 +377,14 @@ describe('mapbox plots', function() {
         };
 
         var styleUpdate0 = {
-            'mapbox.layers[0].fillcolor': 'red',
-            'mapbox.layers[0].line.color': 'blue',
+            'mapbox.layers[0].color': 'red',
+            'mapbox.layers[0].fill.outlinecolor': 'blue',
             'mapbox.layers[0].opacity': 0.3
         };
 
         var styleUpdate1 = {
+            'mapbox.layers[1].color': 'blue',
             'mapbox.layers[1].line.width': 3,
-            'mapbox.layers[1].line.color': 'blue',
             'mapbox.layers[1].opacity': 0.6
         };
 

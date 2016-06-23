@@ -9,11 +9,10 @@
 
 'use strict';
 
-var scatterMapboxAttrs = require('../../traces/scattermapbox/attributes');
+var Lib = require('../../lib');
 var defaultLine = require('../../components/color').defaultLine;
-var extendFlat = require('../../lib').extendFlat;
-
-var lineAttrs = scatterMapboxAttrs.line;
+var fontAttrs = require('../font_attributes');
+var textposition = require('../../traces/scatter/attributes').textposition;
 
 
 module.exports = {
@@ -129,15 +128,18 @@ module.exports = {
 
         type: {
             valType: 'enumerated',
-            values: ['line', 'fill'],
-            dflt: 'line',
+            values: ['circle', 'line', 'fill', 'symbol'],
+            dflt: 'circle',
             role: 'info',
             description: [
                 'Sets the layer type.',
-                'Support for *raster*, *background* types is coming soon.'
+                'Support for *raster*, *background* types is coming soon.',
+                'Note that *line* and *fill* are not compatible with Point',
+                'GeoJSON geometries.'
             ].join(' ')
         },
 
+        // attributes shared between all types
         below: {
             valType: 'string',
             dflt: '',
@@ -149,16 +151,18 @@ module.exports = {
                 'the layer will be inserted above every existing layer.'
             ].join(' ')
         },
-
-        line: {
-            color: extendFlat({}, lineAttrs.color, {
-                dflt: defaultLine
-            }),
-            width: lineAttrs.width
+        color: {
+            valType: 'color',
+            dflt: defaultLine,
+            role: 'style',
+            description: [
+                'Sets the primary layer color.',
+                'If `type` is *circle*, color corresponds to the circle color',
+                'If `type` is *line*, color corresponds to the line color',
+                'If `type` is *fill*, color corresponds to the fill color',
+                'If `type` is *symbol*, color corresponds to the icon color'
+            ].join(' ')
         },
-
-        fillcolor: scatterMapboxAttrs.fillcolor,
-
         opacity: {
             valType: 'number',
             min: 0,
@@ -166,6 +170,82 @@ module.exports = {
             dflt: 1,
             role: 'info',
             description: 'Sets the opacity of the layer.'
+        },
+
+        // type-specific style attributes
+        circle: {
+            radius: {
+                valType: 'number',
+                dflt: 15,
+                role: 'style',
+                description: [
+                    'Sets the circle radius.',
+                    'Has an effect only when `type` is set to *circle*.'
+                ].join(' ')
+            }
+        },
+
+        line: {
+            width: {
+                valType: 'number',
+                dflt: 2,
+                role: 'style',
+                description: [
+                    'Sets the line radius.',
+                    'Has an effect only when `type` is set to *line*.'
+                ].join(' ')
+            }
+        },
+
+        fill: {
+            outlinecolor: {
+                valType: 'color',
+                dflt: defaultLine,
+                role: 'style',
+                description: [
+                    'Sets the fill outline color.',
+                    'Has an effect only when `type` is set to *fill*.'
+                ].join(' ')
+            }
+        },
+
+        symbol: {
+            icon: {
+                valType: 'string',
+                dflt: 'marker',
+                role: 'style',
+                description: [
+                    'Sets the symbol icon image.',
+                    'Full list: https://www.mapbox.com/maki-icons/'
+                ].join(' ')
+            },
+            iconsize: {
+                valType: 'number',
+                dflt: 10,
+                role: 'style',
+                description: [
+                    'Sets the symbol icon size.',
+                    'Has an effect only when `type` is set to *symbol*.'
+                ].join(' ')
+            },
+            text: {
+                valType: 'string',
+                dflt: '',
+                role: 'info',
+                description: [
+                    'Sets the symbol text.'
+                ].join(' ')
+            },
+            textfont: Lib.extendDeep({}, fontAttrs, {
+                description: [
+                    'Sets the icon text font.',
+                    'Has an effect only when `type` is set to *symbol*.'
+                ].join(' '),
+                family: {
+                    dflt: 'Open Sans Regular, Arial Unicode MS Regular'
+                }
+            }),
+            textposition: Lib.extendFlat({}, textposition, { arrayOk: false })
         }
     }
 

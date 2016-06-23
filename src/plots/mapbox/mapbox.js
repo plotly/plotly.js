@@ -96,7 +96,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     });
 
     // clear navigation container
-    var controlContainer = this.div.getElementsByClassName(constants.controlContainerClassName)[0];
+    var className = constants.controlContainerClassName,
+        controlContainer = this.div.getElementsByClassName(className)[0];
     this.div.removeChild(controlContainer);
 
     self.rejectOnError(reject);
@@ -113,6 +114,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         var center = map.getCenter();
         opts._input.center = opts.center = { lon: center.lng, lat: center.lat };
         opts._input.zoom = opts.zoom = map.getZoom();
+        opts._input.bearing = opts.bearing = map.getBearing();
+        opts._input.pitch = opts.pitch = map.getPitch();
     });
 
     map.on('mousemove', function(evt) {
