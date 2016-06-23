@@ -224,7 +224,7 @@ module.exports = {
                 dflt: 10,
                 role: 'style',
                 description: [
-                    'Sets the icon size.',
+                    'Sets the symbol icon size.',
                     'Has an effect only when `type` is set to *symbol*.'
                 ].join(' ')
             },
