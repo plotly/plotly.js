@@ -2,8 +2,6 @@ var d3 = require('d3');
 
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
-var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
-var click = require('../assets/click');
 var doubleClick = require('../assets/double_click');
 
 var createGraphDiv = require('../assets/create_graph_div');
