@@ -691,6 +691,26 @@ describe('hover on fill', function() {
         }).then(done);
     });
 
+    // click and doubleClick copied over from click_test
+    // TODO require from elsewhere
+    function click(x, y) {
+        mouseEvent('mousemove', x, y);
+        mouseEvent('mousedown', x, y);
+        mouseEvent('mouseup', x, y);
+    }
+
+    function doubleClick(x, y) {
+        return new Promise(function(resolve) {
+            click(x, y);
+
+            setTimeout(function() {
+                click(x, y);
+                setTimeout(function() { resolve(); }, DBLCLICKDELAY / 2);
+            }, DBLCLICKDELAY / 2);
+        });
+    }
+    var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
+
     it('should work for scatterternary too', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
 
@@ -706,6 +726,12 @@ describe('hover on fill', function() {
             return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         }).then(function() {
             return assertLabelsCorrect([237, 251], [247.7, 254], 'trace 0');
+        }).then(function() {
+            // trigger an autoscale redraw, which goes through dragElement
+            return doubleClick(237, 251);
+        }).then(function() {
+            // then make sure we can still select a *different* item afterward
+            return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         }).then(done);
     });
 });

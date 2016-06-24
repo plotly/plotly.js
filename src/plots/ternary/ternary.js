@@ -659,9 +659,9 @@ proto.initInteractions = function() {
         Plotly.relayout(gd, attrs);
     }
 
-    dragElement.init(dragOptions);
-
     // finally, set up hover and click
+    // these event handlers must already be set before dragElement.init
+    // so it can stash them and override them.
     dragger.onmousemove = function(evt) {
         fx.hover(gd, evt, _this.id);
         gd._fullLayout._lasthover = dragger;
@@ -677,6 +677,8 @@ proto.initInteractions = function() {
     dragger.onclick = function(evt) {
         fx.click(gd, evt);
     };
+
+    dragElement.init(dragOptions);
 };
 
 function removeZoombox(gd) {
