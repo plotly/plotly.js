@@ -3,6 +3,8 @@ var d3 = require('d3');
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
+var click = require('../assets/click');
+var doubleClick = require('../assets/double_click');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -33,23 +35,6 @@ describe('select box and lasso', function() {
         });
 
         mouseEvent('mouseup', path[len - 1][0], path[len - 1][1]);
-    }
-
-    // cartesian click events events use the hover data
-    // from the mousemove events and then simulate
-    // a click event on mouseup
-    function click(x, y) {
-        mouseEvent('mousemove', x, y);
-        mouseEvent('mousedown', x, y);
-        mouseEvent('mouseup', x, y);
-    }
-
-    function doubleClick(x, y, cb) {
-        click(x, y);
-        setTimeout(function() {
-            click(x, y);
-            cb();
-        }, DBLCLICKDELAY / 2);
     }
 
     function assertRange(actual, expected) {
@@ -104,7 +89,7 @@ describe('select box and lasso', function() {
 
             drag([[x0, y0], [x1, y1]]);
 
-            doubleClick(x2, y2, done);
+            doubleClick(x2, y2).then(done);
         });
     });
 
@@ -153,7 +138,7 @@ describe('select box and lasso', function() {
 
             drag([[x0, y0], [x1, y1]]);
 
-            doubleClick(x2, y2, done);
+            doubleClick(x2, y2).then(done);
         });
     });
 
@@ -225,7 +210,7 @@ describe('select box and lasso', function() {
                 y: [0.10209191961595454, 24.512223978291406]
             }, 'with the correct selected range');
 
-            doubleClick(250, 200, function() {
+            doubleClick(250, 200).then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
                 done();
             });
@@ -283,7 +268,7 @@ describe('select box and lasso', function() {
                 y: 2.75
             }], 'with the correct selected points');
 
-            doubleClick(250, 200, function() {
+            doubleClick(250, 200).then(function() {
                 expect(doubleClickData).toBe(null, 'with the correct deselect data');
                 done();
             });

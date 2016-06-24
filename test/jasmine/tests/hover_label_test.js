@@ -8,6 +8,7 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var doubleClick = require('../assets/double_click');
 
 describe('hover info', function() {
     'use strict';
@@ -690,26 +691,6 @@ describe('hover on fill', function() {
             return assertLabelsCorrect([147, 252], [158.925, 248.1], 'trace 0');
         }).then(done);
     });
-
-    // click and doubleClick copied over from click_test
-    // TODO require from elsewhere
-    function click(x, y) {
-        mouseEvent('mousemove', x, y);
-        mouseEvent('mousedown', x, y);
-        mouseEvent('mouseup', x, y);
-    }
-
-    function doubleClick(x, y) {
-        return new Promise(function(resolve) {
-            click(x, y);
-
-            setTimeout(function() {
-                click(x, y);
-                setTimeout(function() { resolve(); }, DBLCLICKDELAY / 2);
-            }, DBLCLICKDELAY / 2);
-        });
-    }
-    var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
 
     it('should work for scatterternary too', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
