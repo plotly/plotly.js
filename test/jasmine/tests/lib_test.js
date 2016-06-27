@@ -626,7 +626,22 @@ describe('Test lib.js:', function() {
                     .toEqual([0.5, 1]);
             });
 
+            it('should coerce unexpected input as best as it can', function() {
+                expect(coerce({range: [12]}, {}, infoArrayAttrs, 'range'))
+                    .toEqual([12]);
 
+                expect(coerce({range: [12]}, {}, infoArrayAttrs, 'range', [-1, 20]))
+                    .toEqual([12, 20]);
+
+                expect(coerce({domain: [0.5]}, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0.5, 1]);
+
+                expect(coerce({range: ['-10', 100, 12]}, {}, infoArrayAttrs, 'range'))
+                    .toEqual([-10, 100]);
+
+                expect(coerce({domain: [0, 0.5, 1]}, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0, 0.5]);
+            });
         });
 
         describe('subplotid valtype', function() {
