@@ -334,6 +334,43 @@ describe('heatmap plot', function() {
             done();
         });
     });
+
+    it('should be able to restyle', function(done) {
+        var mock = require('@mocks/13.json'),
+            mockCopy = Lib.extendDeep({}, mock),
+            gd = createGraphDiv();
+
+        function getImageURL() {
+            return d3.select('.hm > image').attr('href');
+        }
+
+        var imageURLs = [];
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            imageURLs.push(getImageURL());
+
+            return Plotly.restyle(gd, 'colorscale', 'Greens');
+        }).then(function() {
+            imageURLs.push(getImageURL());
+
+            expect(imageURLs[0]).not.toEqual(imageURLs[1]);
+
+            return Plotly.restyle(gd, 'colorscale', 'Reds');
+        }).then(function() {
+            imageURLs.push(getImageURL());
+
+            expect(imageURLs[1]).not.toEqual(imageURLs[2]);
+
+            return Plotly.restyle(gd, 'colorscale', 'Greens');
+        }).then(function() {
+            imageURLs.push(getImageURL());
+
+            expect(imageURLs[1]).toEqual(imageURLs[3]);
+
+            done();
+        });
+
+    });
 });
 
 describe('heatmap hover', function() {
