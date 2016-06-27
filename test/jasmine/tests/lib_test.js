@@ -905,8 +905,6 @@ describe('Test lib.js:', function() {
                 bad3 = [ ['red'], ['blue']],
                 bad4 = ['red', 'blue'];
 
-            // Fails at [], should be an easy fix though.
-
             var shouldPass = ['Viridis', 'Greens', good],
                 shouldFail = ['red', 1, undefined, null, {}, [], bad, bad2, bad3, bad4];
 
