@@ -241,6 +241,20 @@ exports.valObjects = {
             }
 
             propOut.set(vOut);
+        },
+        validateFunction: function(v, opts) {
+            if(!Array.isArray(v)) return false;
+
+            var items = opts.items;
+
+            // valid when one item is valid (which is subject to debate)
+            for(var i = 0; i < items.length; i++) {
+                var isItemValid = exports.validate(v[i], opts.items[i]);
+
+                if(isItemValid) return true;
+            }
+
+            return false;
         }
     }
 };
