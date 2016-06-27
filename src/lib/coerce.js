@@ -99,16 +99,18 @@ exports.valObjects = {
         // TODO 'values shouldn't be in there (edge case: 'dash' in Scatter)
         otherOpts: ['dflt', 'noBlank', 'strict', 'arrayOk', 'values'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(opts.strict === true && typeof v !== 'string') {
-                propOut.set(dflt);
-                return;
-            }
+            if(typeof v !== 'string') {
+                var okToCoerce = (
+                    typeof v === 'number' ||
+                    v instanceof Date ||
+                    typeof v === 'boolean'
+                );
 
-            var s = String(v);
-            if(v === undefined || (opts.noBlank === true && !s)) {
-                propOut.set(dflt);
+                if(opts.strict === true || !okToCoerce) propOut.set(dflt);
+                else propOut.set(String(v));
             }
-            else propOut.set(s);
+            else if(opts.noBlank && !v) propOut.set(dflt);
+            else propOut.set(v);
         }
     },
     color: {
