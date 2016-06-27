@@ -770,7 +770,7 @@ describe('Test lib.js:', function() {
         });
     });
 
-    fdescribe('validate', function() {
+    describe('validate', function() {
 
         function assert(shouldPass, shouldFail, valObject) {
             shouldPass.forEach(function(v) {
@@ -974,10 +974,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'info_array\' where', function() {
-            var shouldPass = [[1, 2]],
+            var shouldPass = [[1, 2], [10], [null, 10], [1, 10, null]],
                 shouldFail = [{}, [], ['aads', null], 'red', null, undefined, ''];
-
-            // This fails. All array including [] are considered valid
 
             assert(shouldPass, shouldFail, {
                 valType: 'info_array',
