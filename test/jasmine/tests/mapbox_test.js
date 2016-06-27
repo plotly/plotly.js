@@ -461,6 +461,16 @@ describe('mapbox plots', function() {
         }).then(function() {
             expect(countVisibleLayers(gd)).toEqual(0);
 
+            return Plotly.relayout(gd, 'mapbox.layers[0]', {});
+        }).then(function() {
+            expect(countVisibleLayers(gd)).toEqual(0);
+
+            // layer with no source are not drawn
+
+            return Plotly.relayout(gd, 'mapbox.layers[0].source', layer0.source);
+        }).then(function() {
+            expect(countVisibleLayers(gd)).toEqual(1);
+
             done();
         });
     });
