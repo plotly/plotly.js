@@ -8,6 +8,12 @@ var mouseEvent = require('../assets/mouse_event');
 var getRectCenter = require('../assets/get_rect_center');
 var customMatchers = require('../assets/custom_matchers');
 
+// cartesian click events events use the hover data
+// from the mousemove events and then simulate
+// a click event on mouseup
+var click = require('../assets/click');
+var doubleClick = require('../assets/double_click');
+
 
 describe('Test click interactions:', function() {
     var mock = require('@mocks/14.json');
@@ -30,26 +36,6 @@ describe('Test click interactions:', function() {
     });
 
     afterEach(destroyGraphDiv);
-
-    // cartesian click events events use the hover data
-    // from the mousemove events and then simulate
-    // a click event on mouseup
-    function click(x, y) {
-        mouseEvent('mousemove', x, y);
-        mouseEvent('mousedown', x, y);
-        mouseEvent('mouseup', x, y);
-    }
-
-    function doubleClick(x, y) {
-        return new Promise(function(resolve) {
-            click(x, y);
-
-            setTimeout(function() {
-                click(x, y);
-                setTimeout(function() { resolve(); }, DBLCLICKDELAY / 2);
-            }, DBLCLICKDELAY / 2);
-        });
-    }
 
     function drag(fromX, fromY, toX, toY, delay) {
         return new Promise(function(resolve) {
