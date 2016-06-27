@@ -526,13 +526,13 @@ describe('Test lib.js:', function() {
                     .toEqual('42');
 
                 expect(coerce({s: [1, 2, 3]}, {}, stringAttrs, 's'))
-                    .toEqual('1,2,3');
+                    .toEqual(dflt);
 
                 expect(coerce({s: true}, {}, stringAttrs, 's'))
                     .toEqual('true');
 
                 expect(coerce({s: {1: 2}}, {}, stringAttrs, 's'))
-                    .toEqual('[object Object]'); // useless, but that's what it does!!
+                    .toEqual(dflt);
             });
         });
 
@@ -861,27 +861,26 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'string\' where', function() {
+            var date = new Date(2016, 1, 1);
 
-            // This fails as the coerceFunction coerce all values
-            // (except when 'strict' is true) using String()
-            //
-            // Things like undefined, null, {}, [] should be considered valid!
-            //
-            // The question becomes how the change this while not
-            // scarifying perf??
-
-            assert(['3', '4', 'a'], [undefined, {}, [], null], {
+            assert(['3', '4', 'a', 3, 1.2113, '', date, false], [undefined, {}, [], null], {
                 valType: 'string',
                 dflt: 'a'
             });
 
-            assert(['3', '4', 'a'], [undefined, {}, [], null, ''], {
+            assert(['3', '4', 'a', 3, 1.2113, date, true], ['', undefined, {}, [], null], {
                 valType: 'string',
                 dflt: 'a',
                 noBlank: true
             });
 
-            assert(['3', '4'], [undefined, 1, {}, [], null, ''], {
+            assert(['3', '4', ''], [undefined, 1, {}, [], null, date, true, false], {
+                valType: 'string',
+                dflt: 'a',
+                strict: true
+            });
+
+            assert(['3', '4'], [undefined, 1, {}, [], null, date, '', true, false], {
                 valType: 'string',
                 dflt: 'a',
                 strict: true,
