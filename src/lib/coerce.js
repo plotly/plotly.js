@@ -177,6 +177,18 @@ exports.valObjects = {
                 return;
             }
             propOut.set(dflt);
+        },
+        validateFunction: function(v, opts) {
+            var dflt = opts.dflt,
+                dlen = dflt.length;
+
+            if(v === dflt) return true;
+            if(typeof v !== 'string') return false;
+            if(v.substr(0, dlen) === dflt && idRegex.test(v.substr(dlen))) {
+                return true;
+            }
+
+            return false;
         }
     },
     flaglist: {

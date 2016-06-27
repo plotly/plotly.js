@@ -938,14 +938,8 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'subplotid\' where', function() {
-            var shouldPass = ['sp', 'sp1', 'sp4'],
-                shouldFail = [{}, [], 'sp0', 'spee1', null, undefined];
-
-            // This fails because coerceFunction depends on dflt
-            // having a length.
-            //
-            // Solution: don't use dflt as base string ->
-            // add other options to valObject
+            var shouldPass = ['sp', 'sp4', 'sp10'],
+                shouldFail = [{}, [], 'sp1', 'sp0', 'spee1', null, undefined, true];
 
             assert(shouldPass, shouldFail, {
                 valType: 'subplotid',
