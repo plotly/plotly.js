@@ -694,8 +694,9 @@ describe('hover on fill', function() {
 
     it('should work for scatterternary too', function(done) {
         var mock = Lib.extendDeep({}, require('@mocks/ternary_fill.json'));
+        var gd = createGraphDiv();
 
-        Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(function() {
+        Plotly.plot(gd, mock.data, mock.layout).then(function() {
             // hover over a point when that's closest, even if you're over
             // a fill, because by default we have hoveron='points+fills'
             return assertLabelsCorrect([237, 150], [240.0, 144],
@@ -707,6 +708,16 @@ describe('hover on fill', function() {
             return assertLabelsCorrect([237, 218], [266.75, 265], 'trace 1');
         }).then(function() {
             return assertLabelsCorrect([237, 251], [247.7, 254], 'trace 0');
+        }).then(function() {
+            // zoom in to test clipping of large out-of-viewport shapes
+            return Plotly.relayout(gd, {
+                'ternary.aaxis.min': 0.5,
+                'ternary.baxis.min': 0.25
+            });
+        }).then(function() {
+            // this particular one has a hover label disconnected from the shape itself
+            // so if we ever fix this, the test will have to be fixed too.
+            return assertLabelsCorrect([295, 218], [275.1, 166], 'trace 2');
         }).then(function() {
             // trigger an autoscale redraw, which goes through dragElement
             return doubleClick(237, 251);
