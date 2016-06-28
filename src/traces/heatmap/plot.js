@@ -382,7 +382,6 @@ function plotOne(gd, plotinfo, cd) {
 
     image3.enter().append('svg:image').attr({
         xmlns: xmlnsNamespaces.svg,
-        'xlink:href': canvas.toDataURL('image/png'),
         preserveAspectRatio: 'none'
     });
 
@@ -390,7 +389,8 @@ function plotOne(gd, plotinfo, cd) {
         height: imageHeight,
         width: imageWidth,
         x: left,
-        y: top
+        y: top,
+        'xlink:href': canvas.toDataURL('image/png')
     });
 
     image3.exit().remove();
