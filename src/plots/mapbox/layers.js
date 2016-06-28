@@ -27,12 +27,21 @@ function MapboxLayer(mapbox, index) {
     this.source = null;
     this.layerType = null;
     this.below = null;
+
+    // is layer currently visible
+    this.visible = false;
 }
 
 var proto = MapboxLayer.prototype;
 
 proto.update = function update(opts) {
-    if(this.needsNewSource(opts)) {
+    if(!this.visible) {
+
+        // IMPORTANT: must create source before layer to not cause errors
+        this.updateSource(opts);
+        this.updateLayer(opts);
+    }
+    else if(this.needsNewSource(opts)) {
 
         // IMPORTANT: must delete layer before source to not cause errors
         this.updateLayer(opts);
@@ -43,6 +52,8 @@ proto.update = function update(opts) {
     }
 
     this.updateStyle(opts);
+
+    this.visible = isVisible(opts);
 };
 
 proto.needsNewSource = function(opts) {
@@ -209,10 +220,7 @@ function convertSourceOpts(opts) {
 module.exports = function createMapboxLayer(mapbox, index, opts) {
     var mapboxLayer = new MapboxLayer(mapbox, index);
 
-    // IMPORTANT: must create source before layer to not cause errors
-    mapboxLayer.updateSource(opts);
-    mapboxLayer.updateLayer(opts);
-    mapboxLayer.updateStyle(opts);
+    mapboxLayer.update(opts);
 
     return mapboxLayer;
 };

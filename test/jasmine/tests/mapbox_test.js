@@ -146,7 +146,7 @@ describe('mapbox defaults', function() {
 describe('mapbox credentials', function() {
     'use strict';
 
-    if(!hasWebGLSupport('scattermapbox hover')) return;
+    if(!hasWebGLSupport('mapbox credentials')) return;
 
     var dummyToken = 'asfdsa124331wersdsa1321q3';
     var gd;
@@ -195,7 +195,7 @@ describe('mapbox credentials', function() {
 describe('mapbox plots', function() {
     'use strict';
 
-    if(!hasWebGLSupport('scattermapbox hover')) return;
+    if(!hasWebGLSupport('mapbox plots')) return;
 
     var mock = require('@mocks/mapbox_0.json'),
         gd;
@@ -460,6 +460,16 @@ describe('mapbox plots', function() {
             return Plotly.relayout(gd, 'mapbox.layers[0]', 'remove');
         }).then(function() {
             expect(countVisibleLayers(gd)).toEqual(0);
+
+            return Plotly.relayout(gd, 'mapbox.layers[0]', {});
+        }).then(function() {
+            expect(countVisibleLayers(gd)).toEqual(0);
+
+            // layer with no source are not drawn
+
+            return Plotly.relayout(gd, 'mapbox.layers[0].source', layer0.source);
+        }).then(function() {
+            expect(countVisibleLayers(gd)).toEqual(1);
 
             done();
         });
