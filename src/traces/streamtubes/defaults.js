@@ -37,7 +37,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     if(subTypes.hasLines(traceOut)) {
         coerce('connectgaps');
         handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
-        coerce('line.connectionradius', traceIn.connectionradius)
+        coerce('line.connectionradius', traceIn.connectionradius);
     }
 
     if(subTypes.hasMarkers(traceOut)) {

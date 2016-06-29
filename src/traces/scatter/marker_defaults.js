@@ -21,7 +21,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
 
     var defaultMLC;
 
-    var isBubble = subTypes.isBubble(traceIn)
+    var isBubble = subTypes.isBubble(traceIn);
     var lineColor = markerBasicDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
     coerce('marker.symbol');

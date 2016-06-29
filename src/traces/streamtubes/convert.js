@@ -149,7 +149,7 @@ function convertPlotlyOptions(scene, data) {
     }
 
     if('textposition' in data) {
-        params.textOffset = calculateTextOffset(data.textposition, 1.5 * Math.pow(scene.dataScale[0] * scene.dataScale[1] * scene.dataScale[2], 1/2) * Math.max.apply(Math, data.marker.size));  // arrayOk === false
+        params.textOffset = calculateTextOffset(data.textposition, 1.5 * Math.pow(scene.dataScale[0] * scene.dataScale[1] * scene.dataScale[2], 0.5) * Math.max.apply(Math, data.marker.size));  // arrayOk === false
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
         params.textFont = data.textfont.family;  // arrayOk === false
@@ -213,7 +213,7 @@ proto.update = function(data) {
         connectGaps: data.connectgaps
     };
 
-    if(false && this.mode.indexOf('lines') !== -1) {
+    if(this.mode.indexOf('lines-FIXME') !== -1) {
         if(this.linePlot) this.linePlot.update(lineOptions);
         else {
             this.linePlot = createLinePlot(lineOptions);
@@ -242,7 +242,7 @@ proto.update = function(data) {
         projectOpacity: options.projectOpacity
     };
 
-    if(false && this.mode.indexOf('markers') !== -1) {
+    if(this.mode.indexOf('markers-FIXME') !== -1) {
         if(this.scatterPlot) this.scatterPlot.update(scatterOptions);
         else {
             this.scatterPlot = createScatterPlot(scatterOptions);
@@ -347,68 +347,68 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         d = t1 - t0;
         c1 = (t1 - T) / d;
         c2 = (T - t0) / d;
-        var A1x = c1*x[0] + c2*x[1];
-        var A1y = c1*y[0] + c2*y[1];
-        var A1z = c1*z[0] + c2*z[1];
-        var A1r = c1*r[0] + c2*r[1];
-        var A1R = c1*R[0] + c2*R[1];
-        var A1G = c1*G[0] + c2*G[1];
-        var A1B = c1*B[0] + c2*B[1];
+        var A1x = c1 * x[0] + c2 * x[1];
+        var A1y = c1 * y[0] + c2 * y[1];
+        var A1z = c1 * z[0] + c2 * z[1];
+        var A1r = c1 * r[0] + c2 * r[1];
+        var A1R = c1 * R[0] + c2 * R[1];
+        var A1G = c1 * G[0] + c2 * G[1];
+        var A1B = c1 * B[0] + c2 * B[1];
 
         d = t2 - t1;
         c1 = (t2 - T) / d;
         c2 = (T - t1) / d;
-        var A2x = c1*x[1] + c2*x[2];
-        var A2y = c1*y[1] + c2*y[2];
-        var A2z = c1*z[1] + c2*z[2];
-        var A2r = c1*r[1] + c2*r[2];
-        var A2R = c1*R[1] + c2*R[2];
-        var A2G = c1*G[1] + c2*G[2];
-        var A2B = c1*B[1] + c2*B[2];
+        var A2x = c1 * x[1] + c2 * x[2];
+        var A2y = c1 * y[1] + c2 * y[2];
+        var A2z = c1 * z[1] + c2 * z[2];
+        var A2r = c1 * r[1] + c2 * r[2];
+        var A2R = c1 * R[1] + c2 * R[2];
+        var A2G = c1 * G[1] + c2 * G[2];
+        var A2B = c1 * B[1] + c2 * B[2];
 
         d = t3 - t2;
         c1 = (t3 - T) / d;
         c2 = (T - t2) / d;
-        var A3x = c1*x[2] + c2*x[3];
-        var A3y = c1*y[2] + c2*y[3];
-        var A3z = c1*z[2] + c2*z[3];
-        var A3r = c1*r[2] + c2*r[3];
-        var A3R = c1*R[2] + c2*R[3];
-        var A3G = c1*G[2] + c2*G[3];
-        var A3B = c1*B[2] + c2*B[3];
+        var A3x = c1 * x[2] + c2 * x[3];
+        var A3y = c1 * y[2] + c2 * y[3];
+        var A3z = c1 * z[2] + c2 * z[3];
+        var A3r = c1 * r[2] + c2 * r[3];
+        var A3R = c1 * R[2] + c2 * R[3];
+        var A3G = c1 * G[2] + c2 * G[3];
+        var A3B = c1 * B[2] + c2 * B[3];
 
         d = t2 - t0;
         c1 = (t2 - T) / d;
         c2 = (T - t0) / d;
-        var B1x = c1*A1x + c2*A2x;
-        var B1y = c1*A1y + c2*A2y;
-        var B1z = c1*A1z + c2*A2z;
-        var B1r = c1*A1r + c2*A2r;
-        var B1R = c1*A1R + c2*A2R;
-        var B1G = c1*A1G + c2*A2G;
-        var B1B = c1*A1B + c2*A2B;
+        var B1x = c1 * A1x + c2 * A2x;
+        var B1y = c1 * A1y + c2 * A2y;
+        var B1z = c1 * A1z + c2 * A2z;
+        var B1r = c1 * A1r + c2 * A2r;
+        var B1R = c1 * A1R + c2 * A2R;
+        var B1G = c1 * A1G + c2 * A2G;
+        var B1B = c1 * A1B + c2 * A2B;
 
         d = t3 - t1;
         c1 = (t3 - T) / d;
         c2 = (T - t1) / d;
-        var B2x = c1*A2x + c2*A3x;
-        var B2y = c1*A2y + c2*A3y;
-        var B2z = c1*A2z + c2*A3z;
-        var B2r = c1*A2r + c2*A3r;
-        var B2R = c1*A2R + c2*A3R;
-        var B2G = c1*A2G + c2*A3G;
-        var B2B = c1*A2B + c2*A3B;
+        var B2x = c1 * A2x + c2 * A3x;
+        var B2y = c1 * A2y + c2 * A3y;
+        var B2z = c1 * A2z + c2 * A3z;
+        var B2r = c1 * A2r + c2 * A3r;
+        var B2R = c1 * A2R + c2 * A3R;
+        var B2G = c1 * A2G + c2 * A3G;
+        var B2B = c1 * A2B + c2 * A3B;
 
         d = t2 - t1;
         c1 = (t2 - T) / d;
         c2 = (T - t1) / d;
-        var Cx = c1*B1x + c2*B2x;
-        var Cy = c1*B1y + c2*B2y;
-        var Cz = c1*B1z + c2*B2z;
-        var Cr = c1*B1r + c2*B2r;
-        var CR = c1*B1R + c2*B2R;
-        var CG = c1*B1G + c2*B2G;
-        var CB = c1*B1B + c2*B2B;
+        var Cx = c1 * B1x + c2 * B2x;
+        var Cy = c1 * B1y + c2 * B2y;
+        var Cz = c1 * B1z + c2 * B2z;
+        var Cr = c1 * B1r + c2 * B2r;
+        var CR = c1 * B1R + c2 * B2R;
+        var CG = c1 * B1G + c2 * B2G;
+        var CB = c1 * B1B + c2 * B2B;
 
         return [Cx, Cy, Cz, Cr, CR, CG, CB];
     }
@@ -482,17 +482,17 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         y /= length;
         z /= length;
 
-        xxb = u*(u*x+v*y+w*z);
-        yyb = v*(u*x+v*y+w*z);
-        zzb = w*(u*x+v*y+w*z);
+        xxb = u * (u * x + v * y + w * z);
+        yyb = v * (u * x + v * y + w * z);
+        zzb = w * (u * x + v * y + w * z);
 
-        xxc = x*(v*v+w*w)-u*(v*y+w*z);
-        yyc = y*(u*u+w*w)-v*(u*x+w*z);
-        zzc = z*(u*u+v*v)-w*(u*x+v*y);
+        xxc = x * (v * v + w * w) - u * (v * y + w * z);
+        yyc = y * (u * u + w * w) - v * (u * x + w * z);
+        zzc = z * (u * u + v * v) - w * (u * x + v * y);
 
-        xxs = v*z-w*y;
-        yys = w*x-u*z;
-        zzs = u*y-v*x;
+        xxs = v * z - w * y;
+        yys = w * x - u * z;
+        zzs = u * y - v * x;
 
         var o = cont ? -quadCount : 0; // offset for possible welding (cont == true)
 
@@ -502,9 +502,9 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
                 sa = sinVector[q];
                 ca = cosVector[q];
 
-                xx = xxb+xxc*ca+xxs*sa;
-                yy = yyb+yyc*ca+yys*sa;
-                zz = zzb+zzc*ca+zzs*sa;
+                xx = xxb + xxc * ca + xxs * sa;
+                yy = yyb + yyc * ca + yys * sa;
+                zz = zzb + zzc * ca + zzs * sa;
 
                 av(xx + x1, yy + y1, zz + z1); // with translation
             }
@@ -514,26 +514,26 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         y /= length;
         z /= length;
 
-        xxb = u*(u*x+v*y+w*z);
-        yyb = v*(u*x+v*y+w*z);
-        zzb = w*(u*x+v*y+w*z);
+        xxb = u * (u * x + v * y + w * z);
+        yyb = v * (u * x + v * y + w * z);
+        zzb = w * (u * x + v * y + w * z);
 
-        xxc = x*(v*v+w*w)-u*(v*y+w*z);
-        yyc = y*(u*u+w*w)-v*(u*x+w*z);
-        zzc = z*(u*u+v*v)-w*(u*x+v*y);
+        xxc = x * (v * v + w * w) - u * (v * y + w * z);
+        yyc = y * (u * u + w * w) - v * (u * x + w * z);
+        zzc = z * (u * u + v * v) - w * (u * x + v * y);
 
-        xxs = v*z-w*y;
-        yys = w*x-u*z;
-        zzs = u*y-v*x;
+        xxs = v * z - w * y;
+        yys = w * x - u * z;
+        zzs = u * y - v * x;
 
         for(q = 0; q < quadCount; q++) {
 
             sa = sinVector[q];
             ca = cosVector[q];
 
-            xx = xxb+xxc*ca+xxs*sa;
-            yy = yyb+yyc*ca+yys*sa;
-            zz = zzb+zzc*ca+zzs*sa;
+            xx = xxb + xxc * ca + xxs * sa;
+            yy = yyb + yyc * ca + yys * sa;
+            zz = zzb + zzc * ca + zzs * sa;
 
             av(xx + uu + x1, yy + vv + y1, zz + ww + z1); // with translation
         }
@@ -576,20 +576,20 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         var av = addVertex.bind(null, X, Y, Z);
         var af = addFace.bind(null, I, J, K, F);
 
-        av(-s,  t,  0);
-        av( s,  t,  0);
-        av(-s, -t,  0);
-        av( s, -t,  0);
+        av(-s, t, 0);
+        av(s, t, 0);
+        av(-s, -t, 0);
+        av(s, -t, 0);
 
-        av( 0, -s,  t);
-        av( 0,  s,  t);
-        av( 0, -s, -t);
-        av( 0,  s, -t);
+        av(0, -s, t);
+        av(0, s, t);
+        av(0, -s, -t);
+        av(0, s, -t);
 
-        av( t,  0, -s);
-        av( t,  0,  s);
-        av(-t,  0, -s);
-        av(-t,  0,  s);
+        av(t, 0, -s);
+        av(t, 0, s);
+        av(-t, 0, -s);
+        av(-t, 0, s);
 
         af(0, 5, 11);
         af(0, 1, 5);
@@ -806,7 +806,7 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         z: inputZ,
         r: Array.isArray(inputW) ? inputW : inputX.map(function() {return inputW;}),
         c: inputC
-    }
+    };
 
     var rp = {
         x: [],
@@ -831,10 +831,10 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
             n3 = (n + 2) % p.x.length;
 
             var xyzrf = catmullRom(
-                [p.x[n0],    p.x[n1],    p.x[n2],    p.x[n3]],
-                [p.y[n0],    p.y[n1],    p.y[n2],    p.y[n3]],
-                [p.z[n0],    p.z[n1],    p.z[n2],    p.z[n3]],
-                [p.r[n0],    p.r[n1],    p.r[n2],    p.r[n3]],
+                [p.x[n0], p.x[n1], p.x[n2], p.x[n3]],
+                [p.y[n0], p.y[n1], p.y[n2], p.y[n3]],
+                [p.z[n0], p.z[n1], p.z[n2], p.z[n3]],
+                [p.r[n0], p.r[n1], p.r[n2], p.r[n3]],
                 [p.c[n0][0], p.c[n1][0], p.c[n2][0], p.c[n3][0]],
                 [p.c[n0][1], p.c[n1][1], p.c[n2][1], p.c[n3][1]],
                 [p.c[n0][2], p.c[n1][2], p.c[n2][2], p.c[n3][2]],
@@ -870,13 +870,13 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         cylinderModels.push(cylinderMaker(r, r2, x, x2, y, y2, z, z2, c, c2, n > 0));
     }
 
-    var X = []
-    var Y = []
-    var Z = []
-    var I = []
-    var J = []
-    var K = []
-    var F = []
+    var X = [];
+    var Y = [];
+    var Z = [];
+    var I = [];
+    var J = [];
+    var K = [];
+    var F = [];
 
     for(n = 0; n < rp.x.length - 1; n++) {
         index = addLine(cylinderModels[n], index, X, Y, Z, I, J, K, F);
@@ -891,8 +891,8 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
             X[i] * scalingFactor[0],
             Y[i] * scalingFactor[1],
             Z[i] * scalingFactor[2]
-        ]}),
-        cells:I.map(function(d, i) {return [I[i], J[i], K[i]]}),
+        ];}),
+        cells: I.map(function(d, i) {return [I[i], J[i], K[i]];}),
         cellColors: F,
  //       meshColor: [0.12156862745098039,0.4666666666666667,0.9058823529411765,1],
         opacity: 1,
@@ -904,10 +904,10 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         fresnel: 0,
         vertexNormalsEpsilon: 0,
         contourEnable: true, // fixme check what it is; doesn't seem to matter
-        contourCount: 100,// fixme check what it is; doesn't seem to matter
-        contourLineWidth: 10,// fixme check what it is; doesn't seem to matter
-        contourColor: [1,0,0] // fixme check what it is; doesn't seem to matter
-    }
+        contourCount: 100, // fixme check what it is; doesn't seem to matter
+        contourLineWidth: 10, // fixme check what it is; doesn't seem to matter
+        contourColor: [1, 0, 0] // fixme check what it is; doesn't seem to matter
+    };
 }
 
 module.exports = createLineWithMarkers;
