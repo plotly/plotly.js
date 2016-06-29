@@ -112,7 +112,7 @@ module.exports = {
     },
         colorAttributes('line')
     ),
-    marker: extendFlat({}, {
+    marker: extendFlat({}, {  // Parity with scatter.js?
         symbol: {
             valType: 'enumerated',
             values: Object.keys(MARKER_SYMBOLS),
