@@ -8,6 +8,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var failTest = require('../assets/fail_test');
 
+
 // Expected shape of projection-related data
 var cameraStructure = {
     up: {x: jasmine.any(Number), y: jasmine.any(Number), z: jasmine.any(Number)},
@@ -63,32 +64,20 @@ describe('gl3d plots', function() {
         gd = createGraphDiv();
     });
 
-    afterEach(function() {return
+    afterEach(function() {
         Plotly.purge(gd);
         destroyGraphDiv();
     });
 
-
-    fit('streamtubes', function(done) {
-
-        //var mock = require('@mocks/gl3d_errorbars_sqrt.json')
-        //var mock = require('@mocks/gl3d_scatter3d-with-delaunay.json')
-         var mock = require('@mocks/gl3d_streamtubes_basic.json')
-        //var mock = require('@mocks/gl3d_projection-traces.json')
-
-
-        var data = mock.data
-        var s = data[0]
-
-        var layout = mock.layout
-
-        window.gd = gd
-        window.data = data
-        window.s = s
-        window.Plotly = Plotly
-
-        Plotly.plot(gd, data, layout)
+    it('should respond to drag interactions with mock of unset camera', function(done) {
+        testEvents(makePlot(gd, require('@mocks/gl3d_scatter3d-connectgaps.json')))
+            .then(null, failTest) // current linter balks on .catch with 'dot-notation'; fixme a linter
             .then(done);
     });
 
+    it('should respond to drag interactions with mock of partially set camera', function(done) {
+        testEvents(makePlot(gd, require('@mocks/gl3d_errorbars_zx.json')))
+            .then(null, failTest)
+            .then(done);
+    });
 });
