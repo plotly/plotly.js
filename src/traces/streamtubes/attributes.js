@@ -11,12 +11,10 @@
 var scatterAttrs = require('../scatter/attributes');
 var colorAttributes = require('../../components/colorscale/color_attributes');
 
-var MARKER_SYMBOLS = require('../../constants/gl_markers');
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+    scatterMarkerAttrs = scatterAttrs.marker;
 
 function makeProjectionAttr(axLetter) {
     return {
@@ -75,22 +73,6 @@ module.exports = {
     }),
     mode: extendFlat({}, scatterAttrs.mode,  // shouldn't this be on-par with 2D?
         {dflt: 'lines+markers'}),
-    surfaceaxis: {
-        valType: 'enumerated',
-        role: 'info',
-        values: [-1, 0, 1, 2],
-        dflt: -1,
-        description: [
-            'If *-1*, the scatter points are not fill with a surface',
-            'If *0*, *1*, *2*, the scatter points are filled with',
-            'a Delaunay surface about the x, y, z respectively.'
-        ].join(' ')
-    },
-    surfacecolor: {
-        valType: 'color',
-        role: 'style',
-        description: 'Sets the surface fill color.'
-    },
     projection: {
         x: makeProjectionAttr('x'),
         y: makeProjectionAttr('y'),
@@ -99,7 +81,10 @@ module.exports = {
     connectgaps: scatterAttrs.connectgaps,
     line: extendFlat({}, {
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash,
+        connectionradius: extendFlat({}, scatterMarkerAttrs.size, {
+            dflt: 1,
+            description: 'Sets the radius of the line connection. Either a number, or an array with as many elements as the number of points.'
+        }),
         showscale: {
             valType: 'boolean',
             role: 'info',
@@ -113,14 +98,6 @@ module.exports = {
         colorAttributes('line')
     ),
     marker: extendFlat({}, {
-        symbol: {
-            valType: 'enumerated',
-            values: Object.keys(MARKER_SYMBOLS),
-            role: 'style',
-            dflt: 'circle',
-            arrayOk: true,
-            description: 'Sets the marker symbol type.'
-        },
         size: extendFlat({}, scatterMarkerAttrs.size, {dflt: 8}),
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
@@ -136,20 +113,13 @@ module.exports = {
                 'to an rgba color and use its alpha channel.'
             ].join(' ')
         }),
-        showscale: scatterMarkerAttrs.showscale,
-        line: extendFlat({},
-            {width: extendFlat({}, scatterMarkerLineAttrs.width, {arrayOk: false})},
-            colorAttributes('marker.line')
-        )
+        showscale: scatterMarkerAttrs.showscale
     },
         colorAttributes('marker')
     ),
     textposition: extendFlat({}, scatterAttrs.textposition, {dflt: 'top center'}),
     textfont: scatterAttrs.textfont,
     _nestedModules: {
-        'error_x': 'ErrorBars',
-        'error_y': 'ErrorBars',
-        'error_z': 'ErrorBars',
         'marker.colorbar': 'Colorbar'
     }
 };

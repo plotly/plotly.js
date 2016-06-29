@@ -1,0 +1,73 @@
+{
+  "data": [
+    {
+      "type":"mesh3d",
+      "y":[0, 0, 1, 2],
+      "x":[0, 1, 2, 0],
+      "z":[0, 2, 0, 1],
+      "i":[0, 0, 0, 1],
+      "j":[1, 2, 3, 2],
+      "k":[2, 3, 1, 3],
+      "color": "rgb(128,128,255)",
+      "opacity": 1,
+      "flatshading": false,
+      "lightposition": {
+        "x": 0,
+        "y": 0,
+        "z": -100
+      },
+      "lighting": {
+        "ambient": 0.4,
+        "diffuse": 2,
+        "specular": 0.5,
+        "fresnel": 0,
+        "roughness": 0.4
+      }}
+  ],"layout":{
+  "width": 1000,
+  "height": 1000,
+  "title":"Octopus",
+  "scene": {
+    "datascale": [1, 1, 1],
+    "xaxis": {
+      "title": "",
+      "showgrid": false,
+      "zeroline": false,
+      "showticklabels": false,
+      "showspikes": false
+    },
+    "yaxis": {
+      "title": "",
+      "showgrid": false,
+      "zeroline": false,
+      "showticklabels": false,
+      "showspikes": false
+    },
+    "zaxis": {
+      "title": "",
+      "showgrid": false,
+      "zeroline": false,
+      "showticklabels": false,
+      "showspikes": false
+    },
+    "hovermode": false,
+    "dragmode": "orbit",
+    "camera": {
+      "center": {
+        "x": 0,
+        "y": 0,
+        "z": 0
+      },
+      "eye": {
+        "x": 0,
+        "y": 0,
+        "z": 1.5
+      },
+      "up": {
+        "x": 0,
+        "y": 1,
+        "z": 0
+      }
+    }
+  }
+}}

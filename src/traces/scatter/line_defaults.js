@@ -9,26 +9,13 @@
 
 'use strict';
 
-var hasColorscale = require('../../components/colorscale/has_colorscale');
-var colorscaleDefaults = require('../../components/colorscale/defaults');
+var basicLineDefaults = require('./basic_line_defaults');
 
 
 // common to 'scatter', 'scatter3d', 'scattergeo' and 'scattergl'
 module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
 
-    var markerColor = (traceIn.marker || {}).color;
+    basicLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
-    coerce('line.color', defaultColor);
-    if(hasColorscale(traceIn, 'line')) {
-        colorscaleDefaults(
-            traceIn, traceOut, layout, coerce, {prefix: 'line.', cLetter: 'c'}
-        );
-    } else {
-        coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
-            defaultColor);
-    }
-
-
-    coerce('line.width');
     coerce('line.dash');
 };

@@ -17,7 +17,7 @@ Mesh3D.colorbar = require('../heatmap/colorbar');
 Mesh3D.plot = require('./convert');
 
 Mesh3D.moduleType = 'trace';
-Mesh3D.name = 'mesh3d',
+Mesh3D.name = 'mesh3d';
 Mesh3D.basePlotModule = require('../../plots/gl3d');
 Mesh3D.categories = ['gl3d'];
 Mesh3D.meta = {
