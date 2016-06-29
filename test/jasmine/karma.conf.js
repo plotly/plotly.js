@@ -45,7 +45,11 @@ func.defaultConfig = {
     // N.B. this field is filled below
     files: [],
 
-    exclude: [],
+    exclude: [
+        'tests/gl_plot_interact_test.js',
+        'tests/gl_plot_interact_basic_test.js',
+        'tests/gl2d_scatterplot_contour_test.js'
+    ],
 
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor

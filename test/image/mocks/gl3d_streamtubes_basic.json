@@ -19,7 +19,7 @@
         "color": [10,9,8,7,6,5,4,3,2,1,0],
         "showscale": true
       },
-      "type":"streamtubes",
+      "type":"streamtube",
       "projection": {
         "x": {
           "show": true,
@@ -53,7 +53,7 @@
     }
   ],
   "layout": {
-    "title": "Basic test for streamtubes",
+    "title": "Basic test for streamtube",
     "height":758,
     "width":1310
   }
