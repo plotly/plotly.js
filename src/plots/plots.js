@@ -452,6 +452,10 @@ plots.sendDataToCloud = function(gd) {
 // gd._fullLayout._basePlotModules
 //   is a list of all the plot modules required to draw the plot.
 //
+// gd._frameData
+//   object containing frame definitions (_frameData._frames) and
+//   associated metadata.
+//
 plots.supplyDefaults = function(gd) {
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
@@ -539,6 +543,23 @@ plots.supplyDefaults = function(gd) {
             var trace = newFullData[i];
             (gd.calcdata[i][0] || {}).trace = trace;
         }
+    }
+
+    // Set up the default keyframe if it doesn't exist:
+    if(!gd._frameData) {
+        gd._frameData = {};
+    }
+
+    if(!gd._frameData._frames) {
+        gd._frameData._frames = [];
+    }
+
+    if(!gd._frameData._frameHash) {
+        gd._frameData._frameHash = {};
+    }
+
+    if(!gd._frameData._counter) {
+        gd._frameData._counter = 0;
     }
 };
 
@@ -843,6 +864,7 @@ plots.purge = function(gd) {
     delete gd.numboxes;
     delete gd._hoverTimer;
     delete gd._lastHoverTime;
+    delete gd._frameData;
 
     // remove all event listeners
     if(gd.removeAllListeners) gd.removeAllListeners();
@@ -1106,4 +1128,44 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
     return (output === 'object') ? obj : JSON.stringify(obj);
+};
+
+/**
+ * Modify a keyframe using a list of operations:
+ *
+ * @param {array of objects} operations
+ *      Sequence of operations to be performed on the keyframes
+ */
+plots.modifyFrames = function(gd, operations) {
+    var i, op;
+    var _frames = gd._frameData._frames;
+    var _hash = gd._frameData._frameHash;
+
+    for(i = 0; i < operations.length; i++) {
+        op = operations[i];
+
+        switch(op.type) {
+            case 'rename':
+                var frame = _frames[op.index];
+                delete _hash[frame.name];
+                _hash[op.name] = frame;
+                break;
+            case 'replace':
+                frame = op.value;
+                _frames[op.index] = _hash[frame.name] = frame;
+                break;
+            case 'insert':
+                frame = op.value;
+                _hash[frame.name] = frame;
+                _frames.splice(op.index, 0, frame);
+                break;
+            case 'delete':
+                frame = _frames[op.index];
+                delete _hash[frame.name];
+                _frames.splice(op.index, 1);
+                break;
+        }
+    }
+
+    return Promise.resolve();
 };
