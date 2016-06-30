@@ -15,6 +15,19 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
+var markerLineWidth = extendFlat({},
+    scatterMarkerLineAttrs.width, { dflt: 0 });
+
+var markerLine = extendFlat({}, {
+    width: markerLineWidth
+}, colorAttributes('marker.line'));
+
+var marker = extendFlat({}, {
+    showscale: scatterMarkerAttrs.showscale,
+    line: markerLine
+}, colorAttributes('marker'));
+
+
 module.exports = {
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
@@ -23,6 +36,7 @@ module.exports = {
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
     text: scatterAttrs.text,
+
     orientation: {
         valType: 'enumerated',
         role: 'info',
@@ -33,14 +47,8 @@ module.exports = {
             'along the vertical (horizontal).'
         ].join(' ')
     },
-    marker: extendFlat({}, {
-        showscale: scatterMarkerAttrs.showscale,
-        line: extendFlat({},
-            {width: scatterMarkerLineAttrs.width},
-            colorAttributes('marker.line')
-        )},
-        colorAttributes('marker')
-    ),
+
+    marker: marker,
 
     r: scatterAttrs.r,
     t: scatterAttrs.t,
