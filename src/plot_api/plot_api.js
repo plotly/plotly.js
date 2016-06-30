@@ -106,6 +106,11 @@ Plotly.plot = function(gd, data, layout, config) {
 
     if(!gd.layout || graphWasEmpty) gd.layout = cleanLayout(layout);
 
+    // Set up the default keyframe if it doesn't exist:
+    if(!gd._frames) {
+        gd._frames = {default: {data: [], layout: {}, traces: null, baseFrame: null}};
+    }
+
     // if the user is trying to drag the axes, allow new data and layout
     // to come in but don't allow a replot.
     if(gd._dragging) {
@@ -839,7 +844,7 @@ Plotly.newPlot = function(gd, data, layout, config) {
     return Plotly.plot(gd, data, layout, config);
 };
 
-function doCalcdata(gd) {
+function doCalcdata(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout;
@@ -870,6 +875,13 @@ function doCalcdata(gd) {
     }
 
     for(i = 0; i < fullData.length; i++) {
+        // If traces were specified and this trace was not included, then transfer it over from
+        // the old calcdata:
+        if (Array.isArray(traces) && traces.indexOf(i) === -1) {
+            calcdata[i] = oldCalcdata[i];
+            continue;
+        }
+
         trace = fullData[i];
         module = trace._module;
         cd = [];
@@ -2475,6 +2487,313 @@ Plotly.relayout = function relayout(gd, astr, val) {
         return gd;
     });
 };
+
+/**
+ * Transition to a set of new data and layout properties
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ */
+Plotly.transition = function(gd, data, layout, traces, transitionConfig) {
+    gd = getGraphDiv(gd);
+
+    var fullLayout = gd._fullLayout;
+    var fullData = gd._fullData;
+
+    transitionConfig = Lib.extendFlat({
+        ease: 'cubic-in-out',
+        duration: 500,
+        delay: 0,
+    }, transitionConfig || {});
+
+    // Create a single transition to be passed around:
+    if (transitionConfig.duration > 0) {
+        gd._currentTransition = d3.transition()
+            .duration(transitionConfig.duration)
+            .delay(transitionConfig.delay)
+            .ease(transitionConfig.ease);
+    } else {
+        gd._currentTransition = null;
+    }
+
+    // Select which traces will be updated:
+    if(isNumeric(traces)) traces = [traces];
+    else if(!Array.isArray(traces) || !traces.length) {
+        traces = gd._fullData.map(function (v,i) {return i;});
+    }
+
+    var transitioningTraces = [];
+
+    function prepareAnimations () {
+        for (i = 0; i < traces.length; i++) {
+            var traceIdx = traces[i];
+            var trace = gd._fullData[traceIdx];
+            var module = trace._module;
+
+            if (!module.animatable) {
+                continue;
+            }
+
+            transitioningTraces.push(traceIdx);
+
+            newTraceData = newData[i];
+            curData = gd.data[traces[i]];
+
+            for (var ai in newTraceData) {
+                var value = newTraceData[ai];
+                Lib.nestedProperty(curData, ai).set(value);
+            }
+
+            var traceIdx = traces[i];
+            if (gd.data[traceIdx].marker && gd.data[traceIdx].marker.size) {
+                gd._fullData[traceIdx].marker.size = gd.data[traceIdx].marker.size
+            }
+            if (gd.data[traceIdx].error_y && gd.data[traceIdx].error_y.array) {
+                gd._fullData[traceIdx].error_y.array = gd.data[traceIdx].error_y.array
+            }
+            if (gd.data[traceIdx].error_x && gd.data[traceIdx].error_x.array) {
+                gd._fullData[traceIdx].error_x.array = gd.data[traceIdx].error_x.array
+            }
+            gd._fullData[traceIdx].x = gd.data[traceIdx].x;
+            gd._fullData[traceIdx].y = gd.data[traceIdx].y;
+            gd._fullData[traceIdx].z = gd.data[traceIdx].z;
+            gd._fullData[traceIdx].key = gd.data[traceIdx].key;
+        }
+
+        doCalcdata(gd, transitioningTraces);
+
+        ErrorBars.calc(gd);
+    }
+
+    function doAnimations () {
+        var a, i, j;
+        var basePlotModules = fullLayout._basePlotModules;
+        for (j = 0; j < basePlotModules.length; j++) {
+            basePlotModules[j].plot(gd, transitioningTraces, transitionOpts);
+        }
+
+        if (layout) {
+            for (j = 0; j < basePlotModules.length; j++) {
+                if (basePlotModules[j].transitionAxes) {
+                    basePlotModules[j].transitionAxes(gd, layout, transitionOpts);
+                }
+            }
+        }
+
+        if (!transitionOpts.leadingEdgeRestyle) {
+            return new Promise(function(resolve, reject) {
+                completion = resolve;
+                completionTimeout = setTimeout(resolve, transitionOpts.duration);
+            });
+        }
+    }
+};
+
+/**
+ * Animate to a keyframe
+ *
+ * @param {string} name
+ *      name of the keyframe to create
+ * @param {object} transitionConfig
+ *      configuration for transition
+ */
+Plotly.animate = function(gd, name, transitionConfig) {
+    gd = getGraphDiv(gd);
+
+    var _frames = gd._frames;
+
+    if (!_frames[name]) {
+        Lib.warn('animateToFrame failure: keyframe does not exist', name);
+        return Promise.reject();
+    }
+
+    return Promise.resolve();
+};
+
+/**
+ * Create a new keyframe
+ *
+ * @param {object} definition
+ *      full definition of the keyframe, including:
+ *      - name: {string} name of keyframe to add
+ *      - data: {array of objects} trace data
+ *      - layout {object} layout definition
+ *      - traces {array} trace indices
+ *      - baseFrame {string} name of keyframe from which this keyframe gets defaults
+ */
+Plotly.addFrame = function(gd, definition) {
+    gd = getGraphDiv(gd);
+
+    var _frames = gd._frames;
+    var name = definition.name;
+
+    if (_frames[name]) {
+        Lib.warn('addFrame failure: keyframe already exists', name);
+        return Promise.reject();
+    }
+
+    var undoFunc = Plotly.deleteFrame,
+        redoFunc = Plotly.addFrame,
+        undoArgs = [gd, name],
+        redoArgs = [gd, definition];
+
+    _frames[name] = Lib.extendFlat({
+        data: [],
+        layout: {},
+        traces: null,
+        baseFrame: null
+    }, definition || {});
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Promise.resolve();
+};
+
+/**
+ * Delete a keyframe
+ *
+ * @param {string} name
+ *      name of the keyframe to be deleted
+ */
+Plotly.deleteFrame = function(gd, name) {
+    gd = getGraphDiv(gd);
+
+    var _frames = gd._frames;
+
+    if (!_frames[name]) {
+        Lib.warn('deleteFrame failure: keyframe does not exist', name);
+        return Promise.reject();
+    }
+
+    var definition = _frames[name];
+
+    var undoFunc = Plotly.addFrame,
+        redoFunc = Plotly.deleteFrame,
+        undoArgs = [gd, definition],
+        redoArgs = [gd, name];
+
+    delete _frames[name];
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Promise.resolve(definition);
+};
+
+/**
+ * Rename a keyframe
+ *
+ * @param {string} oldName
+ *      name of the keyframe to rename
+ * @param {string} newName
+ *      new name of the keyframe
+ */
+Plotly.renameFrame = function(gd, oldName, newName) {
+    gd = getGraphDiv(gd);
+
+    var _frames = gd._frames;
+
+    if (_frames[newName]) {
+        Lib.warn('renameFrame failure: keyframe already exists', newName);
+        return Promise.reject();
+    }
+
+    if (!_frames[oldName]) {
+        Lib.warn('renameFrame failure: keyframe does not exist', oldName);
+        return Promise.reject();
+    }
+
+    var undoFunc = Plotly.renameFrame,
+        redoFunc = Plotly.renameFrame,
+        undoArgs = [gd, newName, oldName],
+        redoArgs = [gd, oldName, newName];
+
+    var frame = _frames[oldName];
+    delete _frames[oldName];
+    _frames[newName] = frame;
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Promise.resolve();
+};
+
+/**
+ * Modify a keyframe's definition
+ *
+ * @param {string} name
+ *      name of the keyframe to modify
+ * @param {object} frame
+ *      Object containing the properties that define a keyframe, including:
+ *      @param {array} data
+ *           optional list of trace object properties
+ *      @param {object} layout
+ *           optional layout properties for this keyframe
+ *      @param {array} traces
+ *           optional list of trace numbers to be modified
+ *      @param {string} baseFrame
+ *           base keyframe from which this keyframe derives its properties
+ */
+/*Plotly.modifyFrame = function(gd, name, newFrameProps, isOverwrite) {
+    gd = getGraphDiv(gd);
+
+    var _frames = gd._frames;
+    var _keyframe = _frames[name];
+
+    if (!_keyframe) {
+        Lib.warn('modifyFrame failure: keyframe does not exist', name);
+        return Promise.reject();
+    }
+
+    var oldFrameProps = {};
+
+    newFrameProps = newFrameProps || {};
+
+    if (newFrameProps.hasOwnProperty('baseFrame')) {
+        if (!!newFrameProps.baseFrame && !_frames[newFrameProps.baseFrame]) {
+            Lib.warn('modifyFrame failure: base keyframe does not exist', newFrameProps.baseFrame);
+            return Promise.reject();
+        }
+
+        oldFrameProps.baseFrame = _keyframe.baseFrame;
+        _keyframe.baseFrame = newFrameProps.baseFrame;
+    }
+
+    if (newFrameProps.hasOwnProperty('layout')) {
+        // Clone the existing props so we can return to it:
+        oldFrameProps.layout = Lib.extendDeep({}, _keyframe.layout);
+
+        // XXX: Simplified placeholder for merge logic:
+        if (isOverwrite) {
+            _keyframe.layout = newFrameProps.layout;
+        } else {
+            _keyframe.layout = Lib.extendDeep(_keyframe.layout || {}, newFrameProps.layout);
+        }
+    }
+
+    if (newFrameProps.hasOwnProperty('traces')) {
+        oldFrameProps.traces = Array.isArray(_keyframe.traces) ? _keyframe.traces.slice(0) : null;
+        _keyframe.traces = newFrameProps.traces;
+    }
+
+    if (newFrameProps.hasOwnProperty('data')) {
+        oldFrameProps.data = Lib.extendDeep([], _keyframe.data);
+
+        if (isOverwrite) {
+            _keyframe.data = newFrameProps.data;
+        } else {
+            _keyframe.data = Lib.extendDeep(_keyframe.data || {}, newFrameProps.data);
+        }
+    }
+
+
+    var undoFunc = Plotly.modifyFrame,
+        redoFunc = Plotly.modifyFrame,
+        undoArgs = [gd, name, oldFrameProps, true],
+        redoArgs = [gd, name, newFrameProps];
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Promise.resolve();
+};*/
 
 /**
  * Purge a graph container div back to its initial pre-Plotly.plot state
