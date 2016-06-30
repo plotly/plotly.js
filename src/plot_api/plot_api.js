@@ -839,14 +839,18 @@ Plotly.newPlot = function(gd, data, layout, config) {
     return Plotly.plot(gd, data, layout, config);
 };
 
-function doCalcdata(gd) {
+function doCalcdata(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout;
 
     var i, trace, module, cd;
 
-    var calcdata = gd.calcdata = new Array(fullData.length);
+    // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
+    // *all* needing doCalcdata:
+    var calcdata = new Array(fullData.length);
+    var oldCalcdata = gd.calcdata.slice(0);
+    gd.calcdata = calcdata;
 
     // extra helper variables
     // firstscatter: fill-to-next on the first trace goes to zero
@@ -870,6 +874,13 @@ function doCalcdata(gd) {
     }
 
     for(i = 0; i < fullData.length; i++) {
+        // If traces were specified and this trace was not included, then transfer it over from
+        // the old calcdata:
+        if(Array.isArray(traces) && traces.indexOf(i) === -1) {
+            calcdata[i] = oldCalcdata[i];
+            continue;
+        }
+
         trace = fullData[i];
         module = trace._module;
         cd = [];
@@ -2474,6 +2485,249 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         return gd;
     });
+};
+
+/**
+ * Transition to a set of new data and layout properties
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ */
+Plotly.transition = function(gd /*, data, layout, traces, transitionConfig*/) {
+    gd = getGraphDiv(gd);
+
+    /*var fullLayout = gd._fullLayout;
+
+    transitionConfig = Lib.extendFlat({
+        ease: 'cubic-in-out',
+        duration: 500,
+        delay: 0
+    }, transitionConfig || {});
+
+    // Create a single transition to be passed around:
+    if(transitionConfig.duration > 0) {
+        gd._currentTransition = d3.transition()
+            .duration(transitionConfig.duration)
+            .delay(transitionConfig.delay)
+            .ease(transitionConfig.ease);
+    } else {
+        gd._currentTransition = null;
+    }
+
+    // Select which traces will be updated:
+    if(isNumeric(traces)) traces = [traces];
+    else if(!Array.isArray(traces) || !traces.length) {
+        traces = gd._fullData.map(function(v, i) {return i;});
+    }
+
+    var transitioningTraces = [];
+
+    function prepareAnimations() {
+        for(i = 0; i < traces.length; i++) {
+            var traceIdx = traces[i];
+            var trace = gd._fullData[traceIdx];
+            var module = trace._module;
+
+            if(!module.animatable) {
+                continue;
+            }
+
+            transitioningTraces.push(traceIdx);
+
+            newTraceData = newData[i];
+            curData = gd.data[traces[i]];
+
+            for(var ai in newTraceData) {
+                var value = newTraceData[ai];
+                Lib.nestedProperty(curData, ai).set(value);
+            }
+
+            var traceIdx = traces[i];
+            if(gd.data[traceIdx].marker && gd.data[traceIdx].marker.size) {
+                gd._fullData[traceIdx].marker.size = gd.data[traceIdx].marker.size;
+            }
+            if(gd.data[traceIdx].error_y && gd.data[traceIdx].error_y.array) {
+                gd._fullData[traceIdx].error_y.array = gd.data[traceIdx].error_y.array;
+            }
+            if(gd.data[traceIdx].error_x && gd.data[traceIdx].error_x.array) {
+                gd._fullData[traceIdx].error_x.array = gd.data[traceIdx].error_x.array;
+            }
+            gd._fullData[traceIdx].x = gd.data[traceIdx].x;
+            gd._fullData[traceIdx].y = gd.data[traceIdx].y;
+            gd._fullData[traceIdx].z = gd.data[traceIdx].z;
+            gd._fullData[traceIdx].key = gd.data[traceIdx].key;
+        }
+
+        doCalcdata(gd, transitioningTraces);
+
+        ErrorBars.calc(gd);
+    }
+
+    function doAnimations() {
+        var a, i, j;
+        var basePlotModules = fullLayout._basePlotModules;
+        for(j = 0; j < basePlotModules.length; j++) {
+            basePlotModules[j].plot(gd, transitioningTraces, transitionOpts);
+        }
+
+        if(layout) {
+            for(j = 0; j < basePlotModules.length; j++) {
+                if(basePlotModules[j].transitionAxes) {
+                    basePlotModules[j].transitionAxes(gd, layout, transitionOpts);
+                }
+            }
+        }
+
+        if(!transitionOpts.leadingEdgeRestyle) {
+            return new Promise(function(resolve, reject) {
+                completion = resolve;
+                completionTimeout = setTimeout(resolve, transitionOpts.duration);
+            });
+        }
+    }*/
+};
+
+/**
+ * Animate to a keyframe
+ *
+ * @param {string} name
+ *      name of the keyframe to create
+ * @param {object} transitionConfig
+ *      configuration for transition
+ */
+Plotly.animate = function(gd, name /*, transitionConfig*/) {
+    gd = getGraphDiv(gd);
+
+    var _frames = gd._frameData._frames;
+
+    if(!_frames[name]) {
+        Lib.warn('animateToFrame failure: keyframe does not exist', name);
+        return Promise.reject();
+    }
+
+    return Promise.resolve();
+};
+
+/**
+ * Create new keyframes
+ *
+ * @param {array of objects} frameList
+ *      list of frame definitions, in which each object includes any of:
+ *      - name: {string} name of keyframe to add
+ *      - data: {array of objects} trace data
+ *      - layout {object} layout definition
+ *      - traces {array} trace indices
+ *      - baseFrame {string} name of keyframe from which this keyframe gets defaults
+ */
+Plotly.addFrames = function(gd, frameList, indices) {
+    gd = getGraphDiv(gd);
+
+    var i, frame, j, idx;
+    var _frames = gd._frameData._frames;
+    var _hash = gd._frameData._frameHash;
+
+
+    if(!Array.isArray(frameList)) {
+        Lib.warn('addFrames failure: frameList must be an Array of frame definitions', frameList);
+        return Promise.reject();
+    }
+
+    // Create a sorted list of insertions since we run into lots of problems if these
+    // aren't in ascending order of index:
+    //
+    // Strictly for sorting. Make sure this is guaranteed to never collide with any
+    // already-exisisting indices:
+    var bigIndex = _frames.length + frameList.length * 2;
+
+    var insertions = [];
+    for(i = frameList.length - 1; i >= 0; i--) {
+        insertions.push({
+            frame: frameList[i],
+            index: (indices && indices[i] !== undefined) ? indices[i] : bigIndex + i
+        });
+    }
+
+    // Sort this, taking note that undefined insertions end up at the end:
+    insertions.sort(function(a, b) {
+        if(a.index > b.index) return -1;
+        if(a.index < b.index) return 1;
+        return 0;
+    });
+
+    var ops = [];
+    var revops = [];
+    var frameCount = _frames.length;
+
+    for(i = insertions.length - 1; i >= 0; i--) {
+        //frame = frameList[i];
+        frame = insertions[i].frame;
+
+        if(!frame.name) {
+            while(_frames[(frame.name = 'frame ' + gd._frameData._counter++)]);
+        }
+
+        if(_hash[frame.name]) {
+            // If frame is present, overwrite its definition:
+            for(j = 0; j < _frames.length; j++) {
+                if(_frames[j].name === frame.name) break;
+            }
+            ops.push({type: 'replace', index: j, value: frame});
+            revops.unshift({type: 'replace', index: j, value: _frames[j]});
+        } else {
+            // Otherwise insert it at the end of the list:
+            idx = Math.min(insertions[i].index, frameCount);
+
+            ops.push({type: 'insert', index: idx, value: frame});
+            revops.unshift({type: 'delete', index: idx});
+            frameCount++;
+        }
+    }
+
+    Plots.modifyFrames(gd, ops);
+
+    var undoFunc = Plots.modifyFrames,
+        redoFunc = Plots.modifyFrames,
+        undoArgs = [gd, revops],
+        redoArgs = [gd, ops];
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Promise.resolve();
+};
+
+/**
+ * Delete keyframes
+ *
+ * @param {array of integers} frameList
+ *      list of integer indices of frames to be deleted
+ */
+Plotly.deleteFrames = function(gd, frameList) {
+    gd = getGraphDiv(gd);
+
+    var i, idx;
+    var _frames = gd._frameData._frames;
+    var ops = [];
+    var revops = [];
+
+    frameList = frameList.splice(0);
+    frameList.sort();
+
+    for(i = frameList.length - 1; i >= 0; i--) {
+        idx = frameList[i];
+        ops.push({type: 'delete', index: idx});
+        revops.unshift({type: 'insert', index: idx, value: _frames[idx]});
+    }
+
+    Plots.modifyFrames(gd, ops);
+
+    var undoFunc = Plots.modifyFrames,
+        redoFunc = Plots.modifyFrames,
+        undoArgs = [gd, revops],
+        redoArgs = [gd, ops];
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Promise.resolve();
 };
 
 /**
