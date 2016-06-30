@@ -9,12 +9,7 @@
 'use strict';
 
 var barAttrs = require('../bar/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
 
-var extendFlat = require('../../lib/extend').extendDeep;
-
-var barMarkerAttrs = barAttrs.marker;
-var barMarkerLineAttrs = barMarkerAttrs.line;
 
 module.exports = {
     x: {
@@ -124,14 +119,7 @@ module.exports = {
     },
     ybins: makeBinsAttr('y'),
 
-    marker: extendFlat({}, {
-        showscale: barMarkerAttrs.showscale,
-        line: extendFlat({},
-            {width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})},
-            colorAttributes('marker.line'))
-    },
-        colorAttributes('marker')
-    ),
+    marker: barAttrs.marker,
 
     _nestedModules: {
         'error_y': 'ErrorBars',
