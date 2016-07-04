@@ -96,7 +96,7 @@
     "fuse.js": "^2.2.0",
     "glob": "^7.0.0",
     "jasmine-core": "^2.4.1",
-    "karma": "^0.13.15",
+    "karma": "^1.1.0",
     "karma-browserify": "^5.0.1",
     "karma-chrome-launcher": "^1.0.1",
     "karma-coverage": "^1.0.0",
