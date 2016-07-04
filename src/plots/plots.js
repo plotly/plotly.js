@@ -635,17 +635,9 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
     var cnt = 0;
 
     function pushModule(fullTrace) {
-
-        // skip over polar for now
-        if('r' in fullTrace._input) {
-            console.log('skip over polar')
-            return;
-        }
-
         var _module = fullTrace._module;
         if(!_module) return;
 
-        // fill in module lists
         Lib.pushUnique(modules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
     }
