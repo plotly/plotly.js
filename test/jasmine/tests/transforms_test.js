@@ -776,6 +776,7 @@ describe('multiple traces with transforms:', function() {
 
 function assertDims(dims) {
     var traces = d3.selectAll('.trace');
+
     expect(traces.size())
         .toEqual(dims.length, 'to have correct number of traces');
 
