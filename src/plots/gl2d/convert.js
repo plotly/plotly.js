@@ -20,7 +20,7 @@ function Axes2DOptions(scene) {
     this.pixelRatio = scene.pixelRatio;
 
     this.screenBox = [0, 0, 1, 1];
-    this.viewBox = [0 ,0, 1, 1];
+    this.viewBox = [0, 0, 1, 1];
     this.dataBox = [-1, -1, 1, 1];
 
     this.borderLineEnable = [false, false, false, false];
@@ -53,7 +53,7 @@ function Axes2DOptions(scene) {
 
     this.labels = ['x', 'y'];
     this.labelEnable = [true, true, false, false];
-    this.labelAngle = [0, Math.PI/2, 0, 3.0*Math.PI/2];
+    this.labelAngle = [0, Math.PI / 2, 0, 3.0 * Math.PI / 2];
     this.labelPad = [15, 15, 15, 15];
     this.labelSize = [12, 12];
     this.labelFont = ['sans-serif', 'sans-serif'];
@@ -114,27 +114,27 @@ proto.merge = function(options) {
         axTitle = /Click to enter .+ title/.test(ax.title) ? '' : ax.title;
 
         for(j = 0; j <= 2; j += 2) {
-            this.labelEnable[i+j] = false;
-            this.labels[i+j] = htmlToUnicode(axTitle);
-            this.labelColor[i+j] = str2RGBArray(ax.titlefont.color);
-            this.labelFont[i+j] = ax.titlefont.family;
-            this.labelSize[i+j] = ax.titlefont.size;
-            this.labelPad[i+j] = this.getLabelPad(axisName, ax);
+            this.labelEnable[i + j] = false;
+            this.labels[i + j] = htmlToUnicode(axTitle);
+            this.labelColor[i + j] = str2RGBArray(ax.titlefont.color);
+            this.labelFont[i + j] = ax.titlefont.family;
+            this.labelSize[i + j] = ax.titlefont.size;
+            this.labelPad[i + j] = this.getLabelPad(axisName, ax);
 
-            this.tickEnable[i+j] = false;
-            this.tickColor[i+j] = str2RGBArray((ax.tickfont || {}).color);
-            this.tickAngle[i+j] = (ax.tickangle === 'auto') ?
+            this.tickEnable[i + j] = false;
+            this.tickColor[i + j] = str2RGBArray((ax.tickfont || {}).color);
+            this.tickAngle[i + j] = (ax.tickangle === 'auto') ?
                 0 :
                 Math.PI * -ax.tickangle / 180;
-            this.tickPad[i+j] = this.getTickPad(ax);
+            this.tickPad[i + j] = this.getTickPad(ax);
 
-            this.tickMarkLength[i+j] = 0;
-            this.tickMarkWidth[i+j] = ax.tickwidth || 0;
-            this.tickMarkColor[i+j] = str2RGBArray(ax.tickcolor);
+            this.tickMarkLength[i + j] = 0;
+            this.tickMarkWidth[i + j] = ax.tickwidth || 0;
+            this.tickMarkColor[i + j] = str2RGBArray(ax.tickcolor);
 
-            this.borderLineEnable[i+j] = false;
-            this.borderLineColor[i+j] = str2RGBArray(ax.linecolor);
-            this.borderLineWidth[i+j] = ax.linewidth || 0;
+            this.borderLineEnable[i + j] = false;
+            this.borderLineColor[i + j] = str2RGBArray(ax.linecolor);
+            this.borderLineWidth[i + j] = ax.linewidth || 0;
         }
 
         hasSharedAxis = this.hasSharedAxis(ax);
@@ -153,19 +153,19 @@ proto.merge = function(options) {
         //  and are never show on subplots that share existing axes.
 
         if(hasAxisInDfltPos) this.labelEnable[i] = true;
-        else if(hasAxisInAltrPos) this.labelEnable[i+2] = true;
+        else if(hasAxisInAltrPos) this.labelEnable[i + 2] = true;
 
         if(hasAxisInDfltPos) this.tickEnable[i] = ax.showticklabels;
-        else if(hasAxisInAltrPos) this.tickEnable[i+2] = ax.showticklabels;
+        else if(hasAxisInAltrPos) this.tickEnable[i + 2] = ax.showticklabels;
 
         // Grid lines and ticks can appear on both sides of the scene
         //  and can appear on subplot that share existing axes via `ax.mirror`.
 
         if(hasAxisInDfltPos || mirrorLines) this.borderLineEnable[i] = ax.showline;
-        if(hasAxisInAltrPos || mirrorLines) this.borderLineEnable[i+2] = ax.showline;
+        if(hasAxisInAltrPos || mirrorLines) this.borderLineEnable[i + 2] = ax.showline;
 
         if(hasAxisInDfltPos || mirrorTicks) this.tickMarkLength[i] = this.getTickMarkLength(ax);
-        if(hasAxisInAltrPos || mirrorTicks) this.tickMarkLength[i+2] = this.getTickMarkLength(ax);
+        if(hasAxisInAltrPos || mirrorTicks) this.tickMarkLength[i + 2] = this.getTickMarkLength(ax);
 
         this.gridLineEnable[i] = ax.showgrid;
         this.gridLineColor[i] = str2RGBArray(ax.gridcolor);

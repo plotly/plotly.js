@@ -50,14 +50,14 @@ function formatColor(containerIn, opacityIn, len) {
 
     if(isArrayColorIn) {
         getColor = function(c, i) {
-            return c[i]===undefined ? colorDflt : sclFunc(c[i]);
+            return c[i] === undefined ? colorDflt : sclFunc(c[i]);
         };
     }
     else getColor = validateColor;
 
     if(isArrayOpacityIn) {
         getOpacity = function(o, i) {
-            return o[i]===undefined ? opacityDflt : validateOpacity(o[i]);
+            return o[i] === undefined ? opacityDflt : validateOpacity(o[i]);
         };
     }
     else getOpacity = validateOpacity;

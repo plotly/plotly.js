@@ -140,20 +140,20 @@ describe('Test Plots', function() {
 
         it('returns cartesian ids', function() {
             var layout = {
+                _has: Plots._hasPlotType,
                 _plots: { xy: {}, x2y2: {} }
             };
 
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual([]);
 
-            layout._hasCartesian = true;
+            layout._basePlotModules = [{ name: 'cartesian' }];
             expect(getSubplotIds(layout, 'cartesian'))
                 .toEqual(['xy', 'x2y2']);
             expect(getSubplotIds(layout, 'gl2d'))
                 .toEqual([]);
 
-            delete layout._hasCartesian;
-            layout._hasGL2D = true;
+            layout._basePlotModules = [{ name: 'gl2d' }];
             expect(getSubplotIds(layout, 'gl2d'))
                 .toEqual(['xy', 'x2y2']);
             expect(getSubplotIds(layout, 'cartesian'))
@@ -326,7 +326,7 @@ describe('Test Plots', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
 
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {})
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() {
                     gd.style.width = '400px';
                     gd.style.height = '400px';
@@ -369,7 +369,7 @@ describe('Test Plots', function() {
 
         beforeEach(function(done) {
             gd = createGraphDiv();
-            Plotly.plot(gd, [{ x: [1,2,3], y: [2,3,4] }], {}).then(done);
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {}).then(done);
         });
 
         afterEach(destroyGraphDiv);
@@ -395,7 +395,6 @@ describe('Test Plots', function() {
             expect(gd.undonum).toBeUndefined();
             expect(gd.autoplay).toBeUndefined();
             expect(gd.changed).toBeUndefined();
-            expect(gd._modules).toBeUndefined();
             expect(gd._tester).toBeUndefined();
             expect(gd._testref).toBeUndefined();
             expect(gd._promises).toBeUndefined();

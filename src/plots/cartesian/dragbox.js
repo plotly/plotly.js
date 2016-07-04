@@ -81,7 +81,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
     dragger3.call(Drawing.setRect, x, y, w, h)
-        .call(setCursor,cursor);
+        .call(setCursor, cursor);
     var dragger = dragger3.node();
 
     // still need to make the element if the axes are disabled
@@ -160,17 +160,17 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         lum = gd._hmpixcount ?
             (gd._hmlumcount / gd._hmpixcount) :
             tinycolor(gd._fullLayout.plot_bgcolor).getLuminance();
-        path0 = 'M0,0H'+pw+'V'+ph+'H0V0';
+        path0 = 'M0,0H' + pw + 'V' + ph + 'H0V0';
         dimmed = false;
         zoomMode = 'xy';
 
         zb = zoomlayer.append('path')
             .attr('class', 'zoombox')
             .style({
-                'fill': lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+                'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
-            .attr('transform','translate(' + xs + ', ' + ys + ')')
+            .attr('transform', 'translate(' + xs + ', ' + ys + ')')
             .attr('d', path0 + 'Z');
 
         corners = zoomlayer.append('path')
@@ -181,8 +181,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 'stroke-width': 1,
                 opacity: 0
             })
-            .attr('transform','translate(' + xs + ', ' + ys + ')')
-            .attr('d','M0,0Z');
+            .attr('transform', 'translate(' + xs + ', ' + ys + ')')
+            .attr('d', 'M0,0Z');
 
         clearSelect();
         for(var i = 0; i < allaxes.length; i++) forceNumbers(allaxes[i].range);
@@ -240,14 +240,14 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         else {
             zoomMode = 'xy';
             corners.attr('d',
-                'M'+(box.l-3.5)+','+(box.t-0.5+clen)+'h3v'+(-clen)+
-                        'h'+clen+'v-3h-'+(clen+3)+'ZM'+
-                    (box.r+3.5)+','+(box.t-0.5+clen)+'h-3v'+(-clen)+
-                        'h'+(-clen)+'v-3h'+(clen+3)+'ZM'+
-                    (box.r+3.5)+','+(box.b+0.5-clen)+'h-3v'+clen+
-                        'h'+(-clen)+'v3h'+(clen+3)+'ZM'+
-                    (box.l-3.5)+','+(box.b+0.5-clen)+'h3v'+clen+
-                        'h'+clen+'v3h-'+(clen+3)+'Z');
+                'M' + (box.l - 3.5) + ',' + (box.t - 0.5 + clen) + 'h3v' + (-clen) +
+                        'h' + clen + 'v-3h-' + (clen + 3) + 'ZM' +
+                    (box.r + 3.5) + ',' + (box.t - 0.5 + clen) + 'h-3v' + (-clen) +
+                        'h' + (-clen) + 'v-3h' + (clen + 3) + 'ZM' +
+                    (box.r + 3.5) + ',' + (box.b + 0.5 - clen) + 'h-3v' + clen +
+                        'h' + (-clen) + 'v3h' + (clen + 3) + 'ZM' +
+                    (box.l - 3.5) + ',' + (box.b + 0.5 - clen) + 'h3v' + clen +
+                        'h' + clen + 'v3h-' + (clen + 3) + 'Z');
         }
         box.w = box.r - box.l;
         box.h = box.b - box.t;
@@ -255,15 +255,15 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // Not sure about the addition of window.scrollX/Y...
         // seems to work but doesn't seem robust.
         zb.attr('d',
-            path0+'M'+(box.l)+','+(box.t)+'v'+(box.h)+
-            'h'+(box.w)+'v-'+(box.h)+'h-'+(box.w)+'Z');
+            path0 + 'M' + (box.l) + ',' + (box.t) + 'v' + (box.h) +
+            'h' + (box.w) + 'v-' + (box.h) + 'h-' + (box.w) + 'Z');
         if(!dimmed) {
             zb.transition()
-                .style('fill', lum>0.2 ? 'rgba(0,0,0,0.4)' :
+                .style('fill', lum > 0.2 ? 'rgba(0,0,0,0.4)' :
                     'rgba(255,255,255,0.3)')
                 .duration(200);
             corners.transition()
-                .style('opacity',1)
+                .style('opacity', 1)
                 .duration(200);
             dimmed = true;
         }
@@ -300,7 +300,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dragTail(zoomMode);
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier('Double-click to<br>zoom back out','long');
+            Lib.notifier('Double-click to<br>zoom back out', 'long');
             SHOWZOOMOUTTIP = false;
         }
     }
@@ -311,7 +311,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         else if(numClicks === 2 && !singleEnd) doubleClick();
         else if(numClicks === 1 && singleEnd) {
             var ax = ns ? ya[0] : xa[0],
-                end = (ns==='s' || ew==='w') ? 0 : 1,
+                end = (ns === 's' || ew === 'w') ? 0 : 1,
                 attrStr = ax._name + '.range[' + end + ']',
                 initialText = getEndText(ax, end),
                 hAlign = 'left',
@@ -335,7 +335,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                     verticalAlign: vAlign
                 })
                 .on('edit', function(text) {
-                    var v = ax.type==='category' ? ax.c2l(text) : ax.d2l(text);
+                    var v = ax.type === 'category' ? ax.c2l(text) : ax.d2l(text);
                     if(v !== undefined) {
                         Plotly.relayout(gd, attrStr, v);
                     }
@@ -344,10 +344,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     // scroll zoom, on all draggers except corners
-    var scrollViewBox = [0,0,pw,ph],
+    var scrollViewBox = [0, 0, pw, ph],
         // wait a little after scrolling before redrawing
         redrawTimer = null,
-        REDRAWDELAY = 300,
+        REDRAWDELAY = constants.REDRAWDELAY,
         mainplot = plotinfo.mainplot ?
             fullLayout._plots[plotinfo.mainplot] : plotinfo;
 
@@ -362,8 +362,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // if the plot has scrollbars (more than a tiny excess)
         // disable scrollzoom too.
-        if(pc.scrollHeight-pc.clientHeight>10 ||
-                pc.scrollWidth-pc.clientWidth>10) {
+        if(pc.scrollHeight - pc.clientHeight > 10 ||
+                pc.scrollWidth - pc.clientWidth > 10) {
             return;
         }
 
@@ -372,7 +372,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         var wheelDelta = -e.deltaY;
         if(!isFinite(wheelDelta)) wheelDelta = e.wheelDelta / 10;
         if(!isFinite(wheelDelta)) {
-            console.log('did not find wheel motion attributes', e);
+            Lib.log('Did not find wheel motion attributes: ', e);
             return;
         }
 
@@ -380,9 +380,9 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             gbb = mainplot.draglayer.select('.nsewdrag')
                 .node().getBoundingClientRect(),
             xfrac = (e.clientX - gbb.left) / gbb.width,
-            vbx0 = scrollViewBox[0] + scrollViewBox[2]*xfrac,
-            yfrac = (gbb.bottom - e.clientY)/gbb.height,
-            vby0 = scrollViewBox[1]+scrollViewBox[3]*(1-yfrac),
+            vbx0 = scrollViewBox[0] + scrollViewBox[2] * xfrac,
+            yfrac = (gbb.bottom - e.clientY) / gbb.height,
+            vby0 = scrollViewBox[1] + scrollViewBox[3] * (1 - yfrac),
             i;
 
         function zoomWheelOneAxis(ax, centerFraction, zoom) {
@@ -406,12 +406,12 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         // viewbox redraw at first
         updateSubplots(scrollViewBox);
-        ticksAndAnnotations(ns,ew);
+        ticksAndAnnotations(ns, ew);
 
         // then replot after a delay to make sure
         // no more scrolling is coming
         redrawTimer = setTimeout(function() {
-            scrollViewBox = [0,0,pw,ph];
+            scrollViewBox = [0, 0, pw, ph];
             dragTail();
         }, REDRAWDELAY);
 
@@ -419,14 +419,14 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     // everything but the corners gets wheel zoom
-    if(ns.length*ew.length!==1) {
+    if(ns.length * ew.length !== 1) {
         // still seems to be some confusion about onwheel vs onmousewheel...
-        if(dragger.onwheel!==undefined) dragger.onwheel = zoomWheel;
-        else if(dragger.onmousewheel!==undefined) dragger.onmousewheel = zoomWheel;
+        if(dragger.onwheel !== undefined) dragger.onwheel = zoomWheel;
+        else if(dragger.onmousewheel !== undefined) dragger.onmousewheel = zoomWheel;
     }
 
     // plotDrag: move the plot in response to a drag
-    function plotDrag(dx,dy) {
+    function plotDrag(dx, dy) {
         function dragAxList(axList, pix) {
             for(var i = 0; i < axList.length; i++) {
                 var axi = axList[i];
@@ -450,8 +450,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // d<0 is expanding (cursor is off the plot, axis end moves
         //  nonlinearly so you can expand far)
         function dZoom(d) {
-            return 1-((d>=0) ? Math.min(d,0.9) :
-                1/(1/Math.max(d,-0.3)+3.222));
+            return 1 - ((d >= 0) ? Math.min(d, 0.9) :
+                1 / (1 / Math.max(d, -0.3) + 3.222));
         }
 
         // dz: set a new value for one end (0 or 1) of an axis array ax,
@@ -520,6 +520,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         redrawObjs(fullLayout.annotations || [], Plotly.Annotations);
         redrawObjs(fullLayout.shapes || [], Plotly.Shapes);
+        redrawObjs(fullLayout.images || [], Plotly.Images);
     }
 
     function doubleClick() {
@@ -579,17 +580,17 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         // through relayout - this lets relayout manage undo/redo
         for(var i = 0; i < allaxes.length; i++) {
             var axi = allaxes[i];
-            if(zoommode && zoommode.indexOf(axi._id.charAt(0))===-1) {
+            if(zoommode && zoommode.indexOf(axi._id.charAt(0)) === -1) {
                 continue;
             }
-            if(axi._r[0] !== axi.range[0]) attrs[axi._name+'.range[0]'] = axi.range[0];
-            if(axi._r[1] !== axi.range[1]) attrs[axi._name+'.range[1]'] = axi.range[1];
+            if(axi._r[0] !== axi.range[0]) attrs[axi._name + '.range[0]'] = axi.range[0];
+            if(axi._r[1] !== axi.range[1]) attrs[axi._name + '.range[1]'] = axi.range[1];
 
-            axi.range=axi._r.slice();
+            axi.range = axi._r.slice();
         }
 
-        updateSubplots([0,0,pw,ph]);
-        Plotly.relayout(gd,attrs);
+        updateSubplots([0, 0, pw, ph]);
+        Plotly.relayout(gd, attrs);
     }
 
     // updateSubplots - find all plot viewboxes that should be
@@ -600,27 +601,34 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             subplots = Object.keys(plotinfos);
 
         for(var i = 0; i < subplots.length; i++) {
+
             var subplot = plotinfos[subplots[i]],
                 xa2 = subplot.x(),
                 ya2 = subplot.y(),
-                editX = ew && xa.indexOf(xa2)!==-1 && !xa2.fixedrange,
-                editY = ns && ya.indexOf(ya2)!==-1 && !ya2.fixedrange;
+                editX = ew && xa.indexOf(xa2) !== -1 && !xa2.fixedrange,
+                editY = ns && ya.indexOf(ya2) !== -1 && !ya2.fixedrange;
 
-            if(editX || editY) {
-                // plot requires offset position and
-                // clip moves with opposite sign
-                var clipDx = editX ? viewBox[0] : 0,
-                    clipDy = editY ? viewBox[1] : 0,
-                    plotDx = xa2._offset - clipDx,
-                    plotDy = ya2._offset - clipDy;
 
-                var clipId = 'clip' + fullLayout._uid + subplots[i] + 'plot';
+            var xScaleFactor = editX ? xa2._length / viewBox[2] : 1,
+                yScaleFactor = editY ? ya2._length / viewBox[3] : 1;
 
-                fullLayout._defs.selectAll('#' + clipId)
-                    .attr('transform', 'translate(' + clipDx + ', ' + clipDy + ')');
-                subplot.plot
-                    .attr('transform', 'translate(' + plotDx + ', ' + plotDy + ')');
-            }
+            var clipDx = editX ? viewBox[0] : 0,
+                clipDy = editY ? viewBox[1] : 0;
+
+            var fracDx = editX ? (viewBox[0] / viewBox[2] * xa2._length) : 0,
+                fracDy = editY ? (viewBox[1] / viewBox[3] * ya2._length) : 0;
+
+            var plotDx = xa2._offset - fracDx,
+                plotDy = ya2._offset - fracDy;
+
+
+            fullLayout._defs.selectAll('#' + subplot.clipId)
+                .call(Lib.setTranslate, clipDx, clipDy)
+                .call(Lib.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
+
+            subplot.plot
+                .call(Lib.setTranslate, plotDx, plotDy)
+                .call(Lib.setScale, xScaleFactor, yScaleFactor);
         }
     }
 
@@ -635,14 +643,14 @@ function getEndText(ax, end) {
     if(ax.type === 'date') {
         return Lib.ms2DateTime(initialVal, diff);
     }
-    else if(ax.type==='log') {
+    else if(ax.type === 'log') {
         dig = Math.ceil(Math.max(0, -Math.log(diff) / Math.LN10)) + 3;
         return d3.format('.' + dig + 'g')(Math.pow(10, initialVal));
     }
     else { // linear numeric (or category... but just show numbers here)
         dig = Math.floor(Math.log(Math.abs(initialVal)) / Math.LN10) -
             Math.floor(Math.log(diff) / Math.LN10) + 4;
-        return d3.format('.'+String(dig)+'g')(initialVal);
+        return d3.format('.' + String(dig) + 'g')(initialVal);
     }
 }
 

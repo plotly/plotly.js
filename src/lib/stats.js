@@ -62,7 +62,7 @@ exports.variance = function(data, len, mean) {
 
     return exports.aggNums(function(a, b) {
         return a + Math.pow(b - mean, 2);
-    }, 0, data)/len;
+    }, 0, data) / len;
 };
 
 exports.stdev = function(data, len, mean) {

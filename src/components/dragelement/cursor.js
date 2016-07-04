@@ -22,9 +22,9 @@ var cursorset = [
 ];
 
 module.exports = function getCursor(x, y, xanchor, yanchor) {
-    if(xanchor === 'left') x=0;
-    else if(xanchor === 'center') x=1;
-    else if(xanchor === 'right') x=2;
+    if(xanchor === 'left') x = 0;
+    else if(xanchor === 'center') x = 1;
+    else if(xanchor === 'right') x = 2;
     else x = Lib.constrain(Math.floor(x * 3), 0, 2);
 
     if(yanchor === 'bottom') y = 0;

@@ -59,9 +59,9 @@ function createCamera(element, options) {
             var t = now();
             var delay = this.delay;
             var ctime = t - 2 * delay;
-            view.idle(t-delay);
+            view.idle(t - delay);
             view.recalcMatrix(ctime);
-            view.flush(t - (100+delay * 2));
+            view.flush(t - (100 + delay * 2));
             var allEqual = true;
             var matrix = view.computedMatrix;
             for(var i = 0; i < 16; ++i) {
@@ -115,7 +115,7 @@ function createCamera(element, options) {
                     //Hacky time warping stuff to generate smooth animation
                     var t0 = now();
                     view._active.lookAt(t0, curEye, curCenter, curUp);
-                    view._active.lookAt(t0 + 500, curEye, curCenter, [0,0,1]);
+                    view._active.lookAt(t0 + 500, curEye, curCenter, [0, 0, 1]);
                     view._active.flush(t0);
                 }
                 return view.getMode();
@@ -188,9 +188,9 @@ function createCamera(element, options) {
         var ctrl = !!mods.control;
         var alt = !!mods.alt;
         var shift = !!mods.shift;
-        var left = !!(buttons&1);
-        var right = !!(buttons&2);
-        var middle = !!(buttons&4);
+        var left = !!(buttons & 1);
+        var right = !!(buttons & 2);
+        var middle = !!(buttons & 4);
 
         var scale = 1.0 / element.clientHeight;
         var dx = scale * (x - lastX);

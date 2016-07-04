@@ -50,7 +50,7 @@ function calculateErrors(data, scaleFactor) {
     var errorBounds = new Array(n);
 
     for(var i = 0; i < n; i++) {
-        var bound = [[0,0,0], [0,0,0]];
+        var bound = [[0, 0, 0], [0, 0, 0]];
 
         for(var j = 0; j < 3; j++) {
             if(errors[j]) {

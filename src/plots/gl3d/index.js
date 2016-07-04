@@ -11,6 +11,7 @@
 
 var Scene = require('./scene');
 var Plots = require('../plots');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 var axesNames = ['xaxis', 'yaxis', 'zaxis'];
 
@@ -46,10 +47,13 @@ exports.plot = function plotGl3d(gd) {
     for(var i = 0; i < sceneIds.length; i++) {
         var sceneId = sceneIds[i],
             fullSceneData = Plots.getSubplotData(fullData, 'gl3d', sceneId),
-            scene = fullLayout[sceneId]._scene;  // ref. to corresp. Scene instance
+            sceneLayout = fullLayout[sceneId],
+            scene = sceneLayout._scene;
 
         // If Scene is not instantiated, create one!
         if(scene === undefined) {
+            initAxes(gd, sceneLayout);
+
             scene = new Scene({
                 id: sceneId,
                 graphDiv: gd,
@@ -60,10 +64,11 @@ exports.plot = function plotGl3d(gd) {
                 fullLayout
             );
 
-            fullLayout[sceneId]._scene = scene;  // set ref to Scene instance
+            // set ref to Scene instance
+            sceneLayout._scene = scene;
         }
 
-        scene.plot(fullSceneData, fullLayout, gd.layout);  // takes care of business
+        scene.plot(fullSceneData, fullLayout, gd.layout);
     }
 };
 
@@ -79,6 +84,33 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 };
 
+exports.toSVG = function(gd) {
+    var fullLayout = gd._fullLayout,
+        sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
+        size = fullLayout._size;
+
+    for(var i = 0; i < sceneIds.length; i++) {
+        var sceneLayout = fullLayout[sceneIds[i]],
+            domain = sceneLayout.domain,
+            scene = sceneLayout._scene;
+
+        var imageData = scene.toImage('png');
+        var image = fullLayout._glimages.append('svg:image');
+
+        image.attr({
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
+            x: size.l + size.w * domain.x[0],
+            y: size.t + size.h * (1 - domain.y[1]),
+            width: size.w * (domain.x[1] - domain.x[0]),
+            height: size.h * (domain.y[1] - domain.y[0]),
+            preserveAspectRatio: 'none'
+        });
+
+        scene.destroy();
+    }
+};
+
 // clean scene ids, 'scene1' -> 'scene'
 exports.cleanId = function cleanId(id) {
     if(!id.match(/^scene[0-9]*$/)) return;
@@ -91,18 +123,10 @@ exports.cleanId = function cleanId(id) {
 
 exports.setConvert = require('./set_convert');
 
-exports.initAxes = function(gd) {
-    var fullLayout = gd._fullLayout;
-    var sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
+function initAxes(gd, sceneLayout) {
+    for(var j = 0; j < 3; ++j) {
+        var axisName = axesNames[j];
 
-    for(var i = 0; i < sceneIds.length; ++i) {
-        var sceneId = sceneIds[i];
-        var sceneLayout = fullLayout[sceneId];
-
-        for(var j = 0; j < 3; ++j) {
-            var axisName = axesNames[j];
-            var ax = sceneLayout[axisName];
-            ax._gd = gd;
-        }
+        sceneLayout[axisName]._gd = gd;
     }
-};
+}

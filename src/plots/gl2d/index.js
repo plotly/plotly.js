@@ -9,11 +9,9 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
-
 var Scene2D = require('./scene2d');
-
-var Plots = Plotly.Plots;
+var Plots = require('../plots');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 
 exports.name = 'gl2d';
@@ -50,8 +48,9 @@ exports.plot = function plotGl2d(gd) {
         // If Scene is not instantiated, create one!
         if(scene === undefined) {
             scene = new Scene2D({
-                container: gd.querySelector('.gl-container'),
                 id: subplotId,
+                graphDiv: gd,
+                container: gd.querySelector('.gl-container'),
                 staticPlot: gd._context.staticPlot,
                 plotGlPixelRatio: gd._context.plotGlPixelRatio
             },
@@ -70,12 +69,43 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     var oldSceneKeys = Plots.getSubplotIds(oldFullLayout, 'gl2d');
 
     for(var i = 0; i < oldSceneKeys.length; i++) {
-        var oldSubplot = oldFullLayout._plots[oldSceneKeys[i]],
-            xaName = oldSubplot.xaxis._name,
-            yaName = oldSubplot.yaxis._name;
+        var id = oldSceneKeys[i],
+            oldSubplot = oldFullLayout._plots[id];
 
-        if(!!oldSubplot._scene2d && (!newFullLayout[xaName] || !newFullLayout[yaName])) {
+        // old subplot wasn't gl2d; nothing to do
+        if(!oldSubplot._scene2d) continue;
+
+        // if no traces are present, delete gl2d subplot
+        var subplotData = Plots.getSubplotData(newFullData, 'gl2d', id);
+        if(subplotData.length === 0) {
             oldSubplot._scene2d.destroy();
+            delete oldFullLayout._plots[id];
         }
+    }
+};
+
+exports.toSVG = function(gd) {
+    var fullLayout = gd._fullLayout,
+        subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d'),
+        size = fullLayout._size;
+
+    for(var i = 0; i < subplotIds.length; i++) {
+        var subplot = fullLayout._plots[subplotIds[i]],
+            scene = subplot._scene2d;
+
+        var imageData = scene.toImage('png');
+        var image = fullLayout._glimages.append('svg:image');
+
+        image.attr({
+            xmlns: xmlnsNamespaces.svg,
+            'xlink:href': imageData,
+            x: size.l,
+            y: size.t,
+            width: size.w,
+            height: size.h,
+            preserveAspectRatio: 'none'
+        });
+
+        scene.destroy();
     }
 };

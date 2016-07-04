@@ -38,10 +38,8 @@ module.exports = function colorbar(gd, cd) {
 
     var cb = cd[0].t.cb = drawColorbar(gd, cbId);
     cb.fillcolor(d3.scale.linear()
-            .domain(scl.map(function(v) { return zmin + v[0]*(zmax-zmin); }))
+            .domain(scl.map(function(v) { return zmin + v[0] * (zmax - zmin); }))
             .range(scl.map(function(v) { return v[1]; })))
-        .filllevels({start: zmin, end: zmax, size: (zmax-zmin)/254})
+        .filllevels({start: zmin, end: zmax, size: (zmax - zmin) / 254})
         .options(trace.colorbar)();
-
-    Lib.markTime('done colorbar');
 };

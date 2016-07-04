@@ -11,7 +11,6 @@
 
 var d3 = require('d3');
 
-var Plots = require('../plots/plots');
 var svgTextUtils = require('../lib/svg_text_utils');
 var Drawing = require('../components/drawing');
 var Color = require('../components/color');
@@ -20,80 +19,34 @@ var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 
 
 module.exports = function toSVG(gd, format) {
+    var fullLayout = gd._fullLayout,
+        svg = fullLayout._paper,
+        toppaper = fullLayout._toppaper,
+        i;
 
     // make background color a rect in the svg, then revert after scraping
     // all other alterations have been dealt with by properly preparing the svg
     // in the first place... like setting cursors with css classes so we don't
     // have to remove them, and providing the right namespaces in the svg to
     // begin with
-    var fullLayout = gd._fullLayout,
-        svg = fullLayout._paper,
-        size = fullLayout._size,
-        domain,
-        i;
-
     svg.insert('rect', ':first-child')
         .call(Drawing.setRect, 0, 0, fullLayout.width, fullLayout.height)
         .call(Color.fill, fullLayout.paper_bgcolor);
 
-    /* Grab the 3d scenes and rasterize em. Calculate their positions,
-     * then insert them into the SVG element as images */
-    var sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d'),
-        scene;
+    // subplot-specific to-SVG methods
+    // which notably add the contents of the gl-container
+    // into the main svg node
+    var basePlotModules = fullLayout._basePlotModules || [];
+    for(i = 0; i < basePlotModules.length; i++) {
+        var _module = basePlotModules[i];
 
-    for(i = 0; i < sceneIds.length; i++) {
-        scene = fullLayout[sceneIds[i]];
-        domain = scene.domain;
-        insertGlImage(fullLayout, scene._scene, {
-            x: size.l + size.w * domain.x[0],
-            y: size.t + size.h * (1 - domain.y[1]),
-            width: size.w * (domain.x[1] - domain.x[0]),
-            height: size.h * (domain.y[1] - domain.y[0])
-        });
+        if(_module.toSVG) _module.toSVG(gd);
     }
 
-    // similarly for 2d scenes
-    var subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d'),
-        subplot;
-
-    for(i = 0; i < subplotIds.length; i++) {
-        subplot = fullLayout._plots[subplotIds[i]];
-        insertGlImage(fullLayout, subplot._scene2d, {
-            x: size.l,
-            y: size.t,
-            width: size.w,
-            height: size.h
-        });
-    }
-
-    // Grab the geos off the geo-container and place them in geoimages
-    var geoIds = Plots.getSubplotIds(fullLayout, 'geo'),
-        geoLayout,
-        geoFramework;
-
-    for(i = 0; i < geoIds.length; i++) {
-        geoLayout = fullLayout[geoIds[i]];
-        domain = geoLayout.domain;
-        geoFramework = geoLayout._geo.framework;
-
-        geoFramework.attr('style', null);
-        geoFramework
-            .attr({
-                x: size.l + size.w * domain.x[0] + geoLayout._marginX,
-                y: size.t + size.h * (1 - domain.y[1]) + geoLayout._marginY,
-                width: geoLayout._width,
-                height: geoLayout._height
-            });
-
-        fullLayout._geoimages.node()
-            .appendChild(geoFramework.node());
-    }
-
-    // now that we've got the 3d images in the right layer,
     // add top items above them assumes everything in toppaper is either
     // a group or a defs, and if it's empty (like hoverlayer) we can ignore it.
-    if(fullLayout._toppaper) {
-        var nodes = fullLayout._toppaper.node().childNodes;
+    if(toppaper) {
+        var nodes = toppaper.node().childNodes;
 
         // make copy of nodes as childNodes prop gets mutated in loop below
         var topGroups = Array.prototype.slice.call(nodes);
@@ -125,24 +78,12 @@ module.exports = function toSVG(gd, format) {
                 return;
             }
 
-            // I've seen font-family styles with non-escaped double quotes in them - breaks the
-            // serialized svg because the style attribute itself is double-quoted!
-            // Is this an IE thing? Any other attributes or style elements that can have quotes in them?
-            // TODO: this looks like a noop right now - what happened to it?
-
-            /*
-             * Font-family styles with double quotes in them breaks the to-image
-             * step in FF42 because the style attribute itself is wrapped in
-             * double quotes. See:
-             *
-             * - http://codepen.io/etpinard/pen/bEdQWK
-             * - https://github.com/plotly/plotly.js/pull/104
-             *
-             * for more info.
-             */
+            // Font family styles break things because of quotation marks,
+            // so we must remove them *after* the SVG DOM has been serialized
+            // to a string (browsers convert singles back)
             var ff = txt.style('font-family');
             if(ff && ff.indexOf('"') !== -1) {
-                txt.style('font-family', ff.replace(/"/g, '\\\''));
+                txt.style('font-family', ff.replace(/"/g, 'TOBESTRIPPED'));
             }
         });
 
@@ -162,22 +103,8 @@ module.exports = function toSVG(gd, format) {
     s = svgTextUtils.html_entity_decode(s);
     s = svgTextUtils.xml_entity_encode(s);
 
+    // Fix quotations around font strings
+    s = s.replace(/("TOBESTRIPPED)|(TOBESTRIPPED")/g, '\'');
+
     return s;
 };
-
-function insertGlImage(fullLayout, scene, opts) {
-    var imageData = scene.toImage('png');
-
-    fullLayout._glimages.append('svg:image')
-        .attr({
-            xmlns: xmlnsNamespaces.svg,
-            'xlink:href': imageData,
-            x: opts.x,
-            y: opts.y,
-            width: opts.width,
-            height: opts.height,
-            preserveAspectRatio: 'none'
-        });
-
-    scene.destroy();
-}

@@ -10,6 +10,155 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.14.1] -- 2016-06-28
+
+### Fixed
+- Fix colorscale restyle calls on heatmap traces (bug introduced in 1.14.0)
+  [#694]
+- Hover after zoom / pan is now functional again in ternary plots (bug
+  introduced in 1.14.0) [#688]
+- Fix mapbox layer relayout starting from invisible layer [#693]
+- Hover labels when `hoveron: 'fills'` are now constrained to the viewports
+  [#688]
+- Fix `surface` countours description [#696]
+- Fix `mapbox.layers.line` description [#690]
+
+
+## [1.14.0] -- 2016-06-22
+
+### Added
+- Attribute `line.color` in `scatter3d` traces now support color scales [#617]
+- Annotations tail positions can now be set in data coordinates via the new
+  `axref` and `ayref` attributes [#610]
+- Attribute `hoveron` is added for `scatter` and `scatterternary` traces which
+  adds the option to show hover labels about fill regions (instead of simply of
+  about data points) [#673]
+- Layout shapes can now be moved and resized (except for 'path' shapes) in
+  editable contexts [#660]
+
+### Changed
+- Numerous additions and changes where made to the mapbox layout layers
+  attributes (introduced in 1.13.0). Namely, `circle` and `symbol` layer type
+  where added. Note that some style attributes have been renamed to match the
+  mapbox-gl API more closely. [#681]
+
+### Fixed
+- Off-screen heatmap traces are properly deleted (bug introduced in 1.5.1)
+  [#655]
+- Hover labels for multi-heatmap subplot is functional again (bug introduced in
+  1.4.0) [#655]
+- Heatmap x/y brick generation is now functional for 0 and 1 item columns [#651]
+- Multiple layout images can now shared the same image source [#672]
+- Updating legend border and bgcolor attribute now works via `Plotly.relayout`
+  [#652]
+- Dragmode 'select' and 'lasso' no longer throw exception when selecting
+  `legendonly` traces [#644]
+- Ternary plots now respect the `staticPlot` config option [#645]
+- Descriptions for axes `nticks` and contour traces `ncountours`now properly
+  describe their behavior [#662]
+
+
+## [1.13.0] -- 2016-06-13
+
+### Added
+- Beta version of the `scattermapbox` trace type - which allows users to create
+  `mapbox-gl` maps using the plotly.js API. Note that `scattermapbox` is only
+  available through custom bundling in this release [#626]
+- Configurable log levels. All plotly.js logging is now turned off by default.
+  Use `Plotly.setPlotConfig({ logging: /* 1 or 2 */ })` to (1) display warnings
+  only or (2) all logs [#590]
+- Thorough `mesh3d` attribute descriptions [#593]
+
+### Changed
+- Generalize hover picking routine (to make more easily re-usable for other plot
+  types) [#575, #631]
+
+### Fixed
+- Fix `Plotly.toImage` and `Plotly.downloadImage` bug specific to Chrome 51 on
+  OSX [#604]
+- Fix `Plotly.downloadImage` for `svg` types [#604]
+- Fix `scattergl` opacity and connectgaps for `'lines'` mode [#589]
+- Make legend scroll bar keep its position after redraws [#584]
+- Properly handle axis-reference shapes on overlaid axes [#612]
+- Fix `Plotly.relayout` calls for `layout.images` in `{ astr: val }` notation
+  [#624]
+- Bring back correct default value for `lightposition` in surface traces (bug
+  introduced in 1.12.0) [#571]
+- Fix typos in contours descriptions in contour traces [#583]
+- Fix typos in `axis.ticktext` description [#607]
+- Fix ambiguities in histogram `nbin` descriptions [#623]
+
+
+## [1.12.0] -- 2016-05-26
+
+### Added
+- Light positions, face normal epsilon and vertex normal epsilon are now
+  configurable in `mesh3d` traces [#556]
+- Light position is now configurable in `surface` traces [#556]
+- `surface` and `mesh3d` lighting attributes are now accompanied with
+  comprehensive descriptions. [#556]
+
+### Changed
+- Plot modules are now allowed to have their own `toSVG` method for
+  subplot-specific to-svg logic [#554]
+
+### Fixed
+- gl2d plots are now functional in `core-js` environments (e.g. in babel es6
+  presets) [#569]
+- gl2d replot calls from a blank plot are now functional [#570]
+- SVG graph config argument `scrollZoom` is now again functional (bug introduced
+  in v1.10.0) [#564]
+- `layout.separators` is now honored in pie text labels [#547]
+- Heatmap `zsmooth` value `'fast'` is now functional for arbitrary layout widths
+  [#548]
+- Range sliders now respond to all axis range relayout calls [#568]
+
+
+## [1.11.0] -- 2016-05-17
+
+### Added
+- Add top-level methods `Plotly.toImage` to convert a plotly graph to an image
+  data URL (svg, png, jpg, and webp are supported) and `Plotly.downloadImage` to
+  download a plotly graph as an image [#446]
+- Add the ability to add arbitrary images loaded from a url to a plot's layout
+  [#525]
+- Add the option of making legend span horizontally [#535]
+- Add `connectgaps` attribute to `scattergl` traces [#449]
+- Add new 'relative' bar mode which stacks on top of one another with negative
+  values below the axis, positive values above [#517]
+- Add support for the 'winkel tripel' projection in geo subplots [#492]
+- Event `plotly_relayout` is now emitted on gl2d subplot drag/pan/zoom
+  interactions [#466]
+- Add support for fill coloring in `contourgl` traces [#522, #543]
+
+### Changed
+- Cartesian on-hover routine is now uses a 50ms interval between search calls
+  instead of 100ms for smoother displaying hover labels [#514]
+- [Internal change] fullLayout `_has` fields are replaced by a `_has` method
+  which checks if a particular plot type is present on a graph [#491]
+
+### Fixed
+- Bar widths of traces with null coordinates are now correctly computed [#542]
+- Error bar spans on bar traces with null coordinates are now correctly computed
+  [#542]
+- All promises spawn in `Plotly.plot` are now guaranteed to be resolved before
+  the final resolve [#521]
+- Restyling `scatterternary` data attributes is now working [#540]
+- Error bar of 0 length in log axes are not included in hover labels (instead of
+  showing `NaN`s) [#533]
+
+
+## [1.10.2] -- 2016-05-05
+
+### Fixed
+- Subplot and range slider clip paths are now functional in AngularJS [#509]
+- `relayout` call involving axis `categoryorder` and `categoryarray` are now
+  working [#510]
+- Annotation drag interactions in `editable: true` mode are now functional (bug
+  introduced in 1.10.0)[#505]
+- Improved attribute description for shape `xref` and `yref` [#506]
+
+
 ## [1.10.1] -- 2016-05-02
 
 ### Fixed

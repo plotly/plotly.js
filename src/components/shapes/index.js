@@ -17,6 +17,8 @@ var Axes = require('../../plots/cartesian/axes');
 var Color = require('../color');
 var Drawing = require('../drawing');
 
+var dragElement = require('../dragelement');
+var setCursor = require('../../lib/setcursor');
 
 var shapes = module.exports = {};
 
@@ -48,7 +50,7 @@ function handleShapeDefaults(shapeIn, fullLayout) {
         shapeType = coerce('type', dfltType);
 
     // positioning
-    var axLetters = ['x','y'];
+    var axLetters = ['x', 'y'];
     for(var i = 0; i < 2; i++) {
         var axLetter = axLetters[i],
             tdMock = {_fullLayout: fullLayout};
@@ -98,7 +100,7 @@ shapes.drawAll = function(gd) {
     // Remove previous shapes before drawing new in shapes in fullLayout.shapes
     fullLayout._shapeUpperLayer.selectAll('path').remove();
     fullLayout._shapeLowerLayer.selectAll('path').remove();
-    fullLayout._subplotShapeLayer.selectAll('path').remove();
+    fullLayout._shapeSubplotLayer.selectAll('path').remove();
 
     for(var i = 0; i < fullLayout.shapes.length; i++) {
         shapes.draw(gd, i);
@@ -109,7 +111,7 @@ shapes.drawAll = function(gd) {
 
 shapes.add = function(gd) {
     var nextShape = gd._fullLayout.shapes.length;
-    Plotly.relayout(gd, 'shapes['+nextShape+']', 'add');
+    Plotly.relayout(gd, 'shapes[' + nextShape + ']', 'add');
 };
 
 // -----------------------------------------------------
@@ -257,8 +259,8 @@ function updateShape(gd, index, opt, value) {
         // or axis type.
         // the defaults will be consistent most of the time anyway,
         // except in log/linear changes
-        if(optionsEdit[posAttr]!==undefined ||
-                optionsIn[posAttr]===undefined) {
+        if(optionsEdit[posAttr] !== undefined ||
+                optionsIn[posAttr] === undefined) {
             continue;
         }
 
@@ -270,7 +272,7 @@ function updateShape(gd, index, opt, value) {
             position = optionsIn[posAttr],
             linearizedPosition;
 
-        if(optionsEdit[axLetter + 'ref']!==undefined) {
+        if(optionsEdit[axLetter + 'ref'] !== undefined) {
             // first convert to fraction of the axis
             if(axOld) {
                 linearizedPosition = dataToLinear(axOld)(position);
@@ -299,15 +301,7 @@ function updateShape(gd, index, opt, value) {
     var options = handleShapeDefaults(optionsIn, gd._fullLayout);
     gd._fullLayout.shapes[index] = options;
 
-    var attrs = {
-            'data-index': index,
-            'fill-rule': 'evenodd',
-            d: shapePath(gd, options)
-        },
-        clipAxes;
-
-    var lineColor = options.line.width ? options.line.color : 'rgba(0,0,0,0)';
-
+    var clipAxes;
     if(options.layer !== 'below') {
         clipAxes = (options.xref + options.yref).replace(/paper/g, '');
         drawShape(gd._fullLayout._shapeUpperLayer);
@@ -325,13 +319,21 @@ function updateShape(gd, index, opt, value) {
             plotinfo = plots[subplots[i]];
             clipAxes = subplots[i];
 
-            if(isShapeInSubplot(gd, options, plotinfo.id)) {
+            if(isShapeInSubplot(gd, options, plotinfo)) {
                 drawShape(plotinfo.shapelayer);
             }
         }
     }
 
     function drawShape(shapeLayer) {
+        var attrs = {
+                'data-index': index,
+                'fill-rule': 'evenodd',
+                d: getPathString(gd, options)
+            },
+            lineColor = options.line.width ?
+                options.line.color : 'rgba(0,0,0,0)';
+
         var path = shapeLayer.append('path')
             .attr(attrs)
             .style('opacity', options.opacity)
@@ -343,6 +345,160 @@ function updateShape(gd, index, opt, value) {
             path.call(Drawing.setClipUrl,
                 'clip' + gd._fullLayout._uid + clipAxes);
         }
+
+        if(gd._context.editable) setupDragElement(gd, path, options, index);
+    }
+}
+
+function setupDragElement(gd, shapePath, shapeOptions, index) {
+    var MINWIDTH = 10,
+        MINHEIGHT = 10;
+
+    var update;
+    var x0, y0, x1, y1, astrX0, astrY0, astrX1, astrY1;
+    var n0, s0, w0, e0, astrN, astrS, astrW, astrE, optN, optS, optW, optE;
+    var pathIn, astrPath;
+
+    var xa, ya, x2p, y2p, p2x, p2y;
+
+    var dragOptions = {
+            setCursor: updateDragMode,
+            element: shapePath.node(),
+            prepFn: startDrag,
+            doneFn: endDrag
+        },
+        dragBBox = dragOptions.element.getBoundingClientRect(),
+        dragMode;
+
+    dragElement.init(dragOptions);
+
+    function updateDragMode(evt) {
+        // choose 'move' or 'resize'
+        // based on initial position of cursor within the drag element
+        var w = dragBBox.right - dragBBox.left,
+            h = dragBBox.bottom - dragBBox.top,
+            x = evt.clientX - dragBBox.left,
+            y = evt.clientY - dragBBox.top,
+            cursor = (w > MINWIDTH && h > MINHEIGHT && !evt.shiftKey) ?
+                dragElement.getCursor(x / w, 1 - y / h) :
+                'move';
+
+        setCursor(shapePath, cursor);
+
+        // possible values 'move', 'sw', 'w', 'se', 'e', 'ne', 'n', 'nw' and 'w'
+        dragMode = cursor.split('-')[0];
+    }
+
+    function startDrag(evt) {
+        // setup conversion functions
+        xa = Axes.getFromId(gd, shapeOptions.xref);
+        ya = Axes.getFromId(gd, shapeOptions.yref);
+
+        x2p = getDataToPixel(gd, xa);
+        y2p = getDataToPixel(gd, ya, true);
+        p2x = getPixelToData(gd, xa);
+        p2y = getPixelToData(gd, ya, true);
+
+        // setup update strings and initial values
+        var astr = 'shapes[' + index + ']';
+        if(shapeOptions.type === 'path') {
+            pathIn = shapeOptions.path;
+            astrPath = astr + '.path';
+        }
+        else {
+            x0 = x2p(shapeOptions.x0);
+            y0 = y2p(shapeOptions.y0);
+            x1 = x2p(shapeOptions.x1);
+            y1 = y2p(shapeOptions.y1);
+
+            astrX0 = astr + '.x0';
+            astrY0 = astr + '.y0';
+            astrX1 = astr + '.x1';
+            astrY1 = astr + '.y1';
+        }
+
+        if(x0 < x1) {
+            w0 = x0; astrW = astr + '.x0'; optW = 'x0';
+            e0 = x1; astrE = astr + '.x1'; optE = 'x1';
+        }
+        else {
+            w0 = x1; astrW = astr + '.x1'; optW = 'x1';
+            e0 = x0; astrE = astr + '.x0'; optE = 'x0';
+        }
+        if(y0 < y1) {
+            n0 = y0; astrN = astr + '.y0'; optN = 'y0';
+            s0 = y1; astrS = astr + '.y1'; optS = 'y1';
+        }
+        else {
+            n0 = y1; astrN = astr + '.y1'; optN = 'y1';
+            s0 = y0; astrS = astr + '.y0'; optS = 'y0';
+        }
+
+        update = {};
+
+        // setup dragMode and the corresponding handler
+        updateDragMode(evt);
+        dragOptions.moveFn = (dragMode === 'move') ? moveShape : resizeShape;
+    }
+
+    function endDrag(dragged) {
+        setCursor(shapePath);
+        if(dragged) {
+            Plotly.relayout(gd, update);
+        }
+    }
+
+    function moveShape(dx, dy) {
+        if(shapeOptions.type === 'path') {
+            var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+            if(xa && xa.type === 'date') moveX = encodeDate(moveX);
+
+            var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+            if(ya && ya.type === 'date') moveY = encodeDate(moveY);
+
+            shapeOptions.path = movePath(pathIn, moveX, moveY);
+            update[astrPath] = shapeOptions.path;
+        }
+        else {
+            update[astrX0] = shapeOptions.x0 = p2x(x0 + dx);
+            update[astrY0] = shapeOptions.y0 = p2y(y0 + dy);
+            update[astrX1] = shapeOptions.x1 = p2x(x1 + dx);
+            update[astrY1] = shapeOptions.y1 = p2y(y1 + dy);
+        }
+
+        shapePath.attr('d', getPathString(gd, shapeOptions));
+    }
+
+    function resizeShape(dx, dy) {
+        if(shapeOptions.type === 'path') {
+            // TODO: implement path resize
+            var moveX = function moveX(x) { return p2x(x2p(x) + dx); };
+            if(xa && xa.type === 'date') moveX = encodeDate(moveX);
+
+            var moveY = function moveY(y) { return p2y(y2p(y) + dy); };
+            if(ya && ya.type === 'date') moveY = encodeDate(moveY);
+
+            shapeOptions.path = movePath(pathIn, moveX, moveY);
+            update[astrPath] = shapeOptions.path;
+        }
+        else {
+            var newN = (~dragMode.indexOf('n')) ? n0 + dy : n0,
+                newS = (~dragMode.indexOf('s')) ? s0 + dy : s0,
+                newW = (~dragMode.indexOf('w')) ? w0 + dx : w0,
+                newE = (~dragMode.indexOf('e')) ? e0 + dx : e0;
+
+            if(newS - newN > MINHEIGHT) {
+                update[astrN] = shapeOptions[optN] = p2y(newN);
+                update[astrS] = shapeOptions[optS] = p2y(newS);
+            }
+
+            if(newE - newW > MINWIDTH) {
+                update[astrW] = shapeOptions[optW] = p2x(newW);
+                update[astrE] = shapeOptions[optE] = p2x(newE);
+            }
+        }
+
+        shapePath.attr('d', getPathString(gd, shapeOptions));
     }
 }
 
@@ -351,28 +507,79 @@ function getShapeLayer(gd, index) {
         shapeLayer = gd._fullLayout._shapeUpperLayer;
 
     if(!shape) {
-        console.log('getShapeLayer: undefined shape: index', index);
+        Lib.log('getShapeLayer: undefined shape: index', index);
     }
     else if(shape.layer === 'below') {
         shapeLayer = (shape.xref === 'paper' && shape.yref === 'paper') ?
             gd._fullLayout._shapeLowerLayer :
-            gd._fullLayout._subplotShapeLayer;
+            gd._fullLayout._shapeSubplotLayer;
     }
 
     return shapeLayer;
 }
 
-function isShapeInSubplot(gd, shape, subplot) {
-    var xa = Plotly.Axes.getFromId(gd, subplot, 'x')._id,
-        ya = Plotly.Axes.getFromId(gd, subplot, 'y')._id;
-    return shape.layer === 'below' && (xa === shape.xref || ya === shape.yref);
+function isShapeInSubplot(gd, shape, plotinfo) {
+    var xa = Plotly.Axes.getFromId(gd, plotinfo.id, 'x')._id,
+        ya = Plotly.Axes.getFromId(gd, plotinfo.id, 'y')._id,
+        isBelow = shape.layer === 'below',
+        inSuplotAxis = (xa === shape.xref || ya === shape.yref),
+        isNotAnOverlaidSubplot = !!plotinfo.shapelayer;
+    return isBelow && inSuplotAxis && isNotAnOverlaidSubplot;
 }
 
 function decodeDate(convertToPx) {
-    return function(v) { return convertToPx(v.replace('_', ' ')); };
+    return function(v) {
+        if(v.replace) v = v.replace('_', ' ');
+        return convertToPx(v);
+    };
 }
 
-function shapePath(gd, options) {
+function encodeDate(convertToDate) {
+    return function(v) { return convertToDate(v).replace(' ', '_'); };
+}
+
+function getDataToPixel(gd, axis, isVertical) {
+    var gs = gd._fullLayout._size,
+        dataToPixel;
+
+    if(axis) {
+        var d2l = dataToLinear(axis);
+
+        dataToPixel = function(v) {
+            return axis._offset + axis.l2p(d2l(v, true));
+        };
+
+        if(axis.type === 'date') dataToPixel = decodeDate(dataToPixel);
+    }
+    else if(isVertical) {
+        dataToPixel = function(v) { return gs.t + gs.h * (1 - v); };
+    }
+    else {
+        dataToPixel = function(v) { return gs.l + gs.w * v; };
+    }
+
+    return dataToPixel;
+}
+
+function getPixelToData(gd, axis, isVertical) {
+    var gs = gd._fullLayout._size,
+        pixelToData;
+
+    if(axis) {
+        var l2d = linearToData(axis);
+        pixelToData = function(p) { return l2d(axis.p2l(p - axis._offset)); };
+    }
+    else if(isVertical) {
+        pixelToData = function(p) { return 1 - (p - gs.t) / gs.h; };
+    }
+    else {
+        pixelToData = function(p) { return (p - gs.l) / gs.w; };
+    }
+
+    return pixelToData;
+}
+
+function getPathString(gd, options) {
     var type = options.type,
         xa = Axes.getFromId(gd, options.xref),
         ya = Axes.getFromId(gd, options.yref),
@@ -398,9 +605,9 @@ function shapePath(gd, options) {
         y2p = function(v) { return gs.t + gs.h * (1 - v); };
     }
 
-    if(type==='path') {
-        if(xa && xa.type==='date') x2p = decodeDate(x2p);
-        if(ya && ya.type==='date') y2p = decodeDate(y2p);
+    if(type === 'path') {
+        if(xa && xa.type === 'date') x2p = decodeDate(x2p);
+        if(ya && ya.type === 'date') y2p = decodeDate(y2p);
         return shapes.convertPath(options.path, x2p, y2p);
     }
 
@@ -409,8 +616,8 @@ function shapePath(gd, options) {
         y0 = y2p(options.y0),
         y1 = y2p(options.y1);
 
-    if(type==='line') return 'M'+x0+','+y0+'L'+x1+','+y1;
-    if(type==='rect') return 'M'+x0+','+y0+'H'+x1+'V'+y1+'H'+x0+'Z';
+    if(type === 'line') return 'M' + x0 + ',' + y0 + 'L' + x1 + ',' + y1;
+    if(type === 'rect') return 'M' + x0 + ',' + y0 + 'H' + x1 + 'V' + y1 + 'H' + x0 + 'Z';
     // circle
     var cx = (x0 + x1) / 2,
         cy = (y0 + y1) / 2,
@@ -491,12 +698,35 @@ shapes.convertPath = function(pathIn, x2p, y2p) {
 
         if(paramNumber > nParams) {
             paramString = paramString.replace(/[\s,]*X.*/, '');
-            console.log('ignoring extra params in segment ' + segment);
+            Lib.log('Ignoring extra params in segment ' + segment);
         }
 
         return segmentType + paramString;
     });
 };
+
+function movePath(pathIn, moveX, moveY) {
+    return pathIn.replace(segmentRE, function(segment) {
+        var paramNumber = 0,
+            segmentType = segment.charAt(0),
+            xParams = paramIsX[segmentType],
+            yParams = paramIsY[segmentType],
+            nParams = numParams[segmentType];
+
+        var paramString = segment.substr(1).replace(paramRE, function(param) {
+            if(paramNumber >= nParams) return param;
+
+            if(xParams[paramNumber]) param = moveX(param);
+            else if(yParams[paramNumber]) param = moveY(param);
+
+            paramNumber++;
+
+            return param;
+        });
+
+        return segmentType + paramString;
+    });
+}
 
 shapes.calcAutorange = function(gd) {
     var fullLayout = gd._fullLayout,
@@ -526,7 +756,7 @@ shapes.calcAutorange = function(gd) {
 };
 
 function shapeBounds(ax, v0, v1, path, paramsToUse) {
-    var convertVal = (ax.type==='category') ? Number : ax.d2c;
+    var convertVal = (ax.type === 'category') ? Number : ax.d2c;
 
     if(v0 !== undefined) return [convertVal(v0), convertVal(v1)];
     if(!path) return;
@@ -540,7 +770,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
         params,
         val;
 
-    if(ax.type==='date') convertVal = decodeDate(convertVal);
+    if(ax.type === 'date') convertVal = decodeDate(convertVal);
 
     for(i = 0; i < segments.length; i++) {
         segment = segments[i];

@@ -12,7 +12,7 @@
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var setCursor = require('../../lib/setcursor');
-var Snapshot = require('../../snapshot');
+var downloadImage = require('../../snapshot/download');
 var Icons = require('../../../build/ploticon');
 
 
@@ -51,47 +51,20 @@ modeBarButtons.toImage = {
     click: function(gd) {
         var format = 'png';
 
-        if(Lib.isIE()) {
-            Lib.notifier('Snapshotting is unavailable in Internet Explorer. ' +
-                         'Consider exporting your images using the Plotly Cloud', 'long');
-            return;
-        }
-
-        if(gd._snapshotInProgress) {
-            Lib.notifier('Snapshotting is still in progress - please hold', 'long');
-            return;
-        }
-
-        gd._snapshotInProgress = true;
         Lib.notifier('Taking snapshot - this may take a few seconds', 'long');
 
-        var ev = Snapshot.toImage(gd, {format: format});
+        if(Lib.isIE()) {
+            Lib.notifier('IE only supports svg.  Changing format to svg.', 'long');
+            format = 'svg';
+        }
 
-        var filename = gd.fn || 'newplot';
-        filename += '.' + format;
-
-        ev.once('success', function(result) {
-            gd._snapshotInProgress = false;
-
-            var downloadLink = document.createElement('a');
-            downloadLink.href = result;
-            downloadLink.download = filename; // only supported by FF and Chrome
-
-            document.body.appendChild(downloadLink);
-            downloadLink.click();
-            document.body.removeChild(downloadLink);
-
-            ev.clean();
-        });
-
-        ev.once('error', function(err) {
-            gd._snapshotInProgress = false;
-
-            Lib.notifier('Sorry there was a problem downloading your ' + format, 'long');
-            console.error(err);
-
-            ev.clean();
-        });
+        downloadImage(gd, {'format': format})
+          .then(function(filename) {
+              Lib.notifier('Snapshot succeeded - ' + filename, 'long');
+          })
+          .catch(function() {
+              Lib.notifier('Sorry there was a problem downloading your snapshot!', 'long');
+          });
     }
 };
 
@@ -246,7 +219,7 @@ function handleCartesian(gd, ev) {
     }
     else {
         // if ALL traces have orientation 'h', 'hovermode': 'x' otherwise: 'y'
-        if(astr==='hovermode' && (val==='x' || val==='y')) {
+        if(astr === 'hovermode' && (val === 'x' || val === 'y')) {
             val = fullLayout._isHoriz ? 'y' : 'x';
             button.setAttribute('data-val', val);
         }
@@ -256,7 +229,7 @@ function handleCartesian(gd, ev) {
 
     Plotly.relayout(gd, aobj).then(function() {
         if(astr === 'dragmode') {
-            if(fullLayout._hasCartesian) {
+            if(fullLayout._has('cartesian')) {
                 setCursor(
                     fullLayout._paper.select('.nsewdrag'),
                     DRAGCURSORS[val]
@@ -350,6 +323,8 @@ function handleCamera3d(gd, ev) {
 
         if(attr === 'resetDefault') scene.setCameraToDefault();
         else if(attr === 'resetLastSave') {
+            // This handler looks in the un-updated fullLayout.scene.camera object to reset the camera
+            // to the last saved position.
             scene.setCamera(fullSceneLayout.camera);
         }
     }
@@ -500,7 +475,7 @@ function toggleHover(gd) {
     var fullLayout = gd._fullLayout;
 
     var onHoverVal;
-    if(fullLayout._hasCartesian) {
+    if(fullLayout._has('cartesian')) {
         onHoverVal = fullLayout._isHoriz ? 'y' : 'x';
     }
     else onHoverVal = 'closest';

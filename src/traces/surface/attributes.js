@@ -6,13 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
 var Color = require('../../components/color');
 var colorscaleAttrs = require('../../components/colorscale/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
-
 
 function makeContourProjAttr(axLetter) {
     return {
@@ -21,7 +19,7 @@ function makeContourProjAttr(axLetter) {
         dflt: false,
         description: [
             'Determines whether or not these contour lines are projected',
-            'on the', axLetter, 'axis walls.',
+            'on the', axLetter, 'plane.',
             'If `highlight` is set to *true* (the default), the projected',
             'lines are shown on hover.',
             'If `show` is set to *true*, the projected lines are shown',
@@ -121,6 +119,7 @@ module.exports = {
         ].join(' ')
     },
 
+    // Todo this block has a structure of colorscale/attributes.js but with colorscale/color_attributes.js names
     cauto: colorscaleAttrs.zauto,
     cmin: colorscaleAttrs.zmin,
     cmax: colorscaleAttrs.zmax,
@@ -147,41 +146,76 @@ module.exports = {
         ].join(' ')
     },
 
+    lightposition: {
+        x: {
+            valType: 'number',
+            role: 'style',
+            min: -1e5,
+            max: 1e5,
+            dflt: 10,
+            description: 'Numeric vector, representing the X coordinate for each vertex.'
+        },
+        y: {
+            valType: 'number',
+            role: 'style',
+            min: -1e5,
+            max: 1e5,
+            dflt: 1e4,
+            description: 'Numeric vector, representing the Y coordinate for each vertex.'
+        },
+        z: {
+            valType: 'number',
+            role: 'style',
+            min: -1e5,
+            max: 1e5,
+            dflt: 0,
+            description: 'Numeric vector, representing the Z coordinate for each vertex.'
+        }
+    },
+
     lighting: {
         ambient: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 1.0,
-            dflt: 0.8
+            dflt: 0.8,
+            description: 'Ambient light increases overall color visibility but can wash out the image.'
         },
         diffuse: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 1.00,
-            dflt: 0.8
+            dflt: 0.8,
+            description: 'Represents the extent that incident rays are reflected in a range of angles.'
         },
         specular: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 2.00,
-            dflt: 0.05
+            dflt: 0.05,
+            description: 'Represents the level that incident rays are reflected in a single direction, causing shine.'
         },
         roughness: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 1.00,
-            dflt: 0.5
+            dflt: 0.5,
+            description: 'Alters specular reflection; the rougher the surface, the wider and less contrasty the shine.'
         },
         fresnel: {
             valType: 'number',
             role: 'style',
             min: 0.00,
             max: 5.00,
-            dflt: 0.2
+            dflt: 0.2,
+            description: [
+                'Represents the reflectance as a dependency of the viewing angle; e.g. paper is reflective',
+                'when viewing it from the edge of the paper (almost 90 degrees), causing shine.'
+            ].join(' ')
         }
     },
 

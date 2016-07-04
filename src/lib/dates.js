@@ -12,6 +12,8 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
+var Lib = require('../lib');
+
 
 /**
  * dateTime2ms - turn a date object or string s of the form
@@ -64,11 +66,11 @@ exports.dateTime2ms = function(s) {
     if(p[0].length === 4) y = Number(p[0]);
     else if(p[0].length === 2) {
         var yNow = new Date().getFullYear();
-        y = ((Number(p[0]) - yNow + 70)%100 + 200)%100 + yNow - 70;
+        y = ((Number(p[0]) - yNow + 70) % 100 + 200) % 100 + yNow - 70;
     }
     else return false;
     if(!isNumeric(y)) return false;
-    if(p.length === 1) return new Date(y,0,1).getTime(); // year only
+    if(p.length === 1) return new Date(y, 0, 1).getTime(); // year only
 
     // month
     m = Number(p[1]) - 1; // new Date() uses zero-based months
@@ -88,19 +90,19 @@ exports.dateTime2ms = function(s) {
     // hour
     h = Number(p[0]);
     if(p[0].length > 2 || !(h >= 0 && h <= 23)) return false;
-    d += 3600000*h;
+    d += 3600000 * h;
     if(p.length === 1) return d;
 
     // minute
     m = Number(p[1]);
     if(p[1].length > 2 || !(m >= 0 && m <= 59)) return false;
-    d += 60000*m;
+    d += 60000 * m;
     if(p.length === 2) return d;
 
     // second
     s = Number(p[2]);
     if(!(s >= 0 && s < 60)) return false;
-    return d+s*1000;
+    return d + s * 1000;
 };
 
 // is string s a date? (see above)
@@ -121,31 +123,31 @@ function lpad(val, digits) {
  * If rng is big, the later parts of time will be omitted
  */
 exports.ms2DateTime = function(ms, r) {
-    if(typeof(d3)==='undefined') {
-        console.log('d3 is not defined');
+    if(typeof(d3) === 'undefined') {
+        Lib.error('d3 is not defined.');
         return;
     }
 
-    if(!r) r=0;
+    if(!r) r = 0;
     var d = new Date(ms),
         s = d3.time.format('%Y-%m-%d')(d);
-    if(r<7776000000) {
+    if(r < 7776000000) {
         // <90 days: add hours
-        s+=' '+lpad(d.getHours(),2);
-        if(r<432000000) {
+        s += ' ' + lpad(d.getHours(), 2);
+        if(r < 432000000) {
             // <5 days: add minutes
-            s+=':'+lpad(d.getMinutes(),2);
-            if(r<10800000) {
+            s += ':' + lpad(d.getMinutes(), 2);
+            if(r < 10800000) {
                 // <3 hours: add seconds
-                s+=':'+lpad(d.getSeconds(),2);
-                if(r<300000) {
+                s += ':' + lpad(d.getSeconds(), 2);
+                if(r < 300000) {
                     // <5 minutes: add ms
-                    s+='.'+lpad(d.getMilliseconds(),3);
+                    s += '.' + lpad(d.getMilliseconds(), 3);
                 }
             }
         }
         // strip trailing zeros
-        return s.replace(/([:\s]00)*\.?[0]*$/,'');
+        return s.replace(/([:\s]00)*\.?[0]*$/, '');
     }
     return s;
 };
@@ -232,8 +234,8 @@ var dateTimeFormats = {
                 var a = dateTimeFormats[dateType][timeType];
 
                 // 'date time', then 'time date'
-                a.push(formatter(dateFormat+'~'+timeFormat));
-                a.push(formatter(timeFormat+'~'+dateFormat));
+                a.push(formatter(dateFormat + '~' + timeFormat));
+                a.push(formatter(timeFormat + '~' + dateFormat));
             });
         });
     });
@@ -241,18 +243,18 @@ var dateTimeFormats = {
 
 // precompiled regexps for performance
 var matchword = /[a-z]*/g,
-    shortenword = function(m) { return m.substr(0,3); },
+    shortenword = function(m) { return m.substr(0, 3); },
     weekdaymatch = /(mon|tue|wed|thu|fri|sat|sun|the|of|st|nd|rd|th)/g,
     separatormatch = /[\s,\/\-\.\(\)]+/g,
     ampmmatch = /~?([ap])~?m(~|$)/,
-    replaceampm = function(m,ap) { return ap+'m '; },
+    replaceampm = function(m, ap) { return ap + 'm '; },
     match4Y = /\d\d\d\d/,
     matchMonthName = /(^|~)[a-z]{3}/,
     matchAMPM = /[ap]m/,
     matchcolon = /:/,
     matchquarter = /q([1-4])/,
-    quarters = ['31~mar','30~jun','30~sep','31~dec'],
-    replacequarter = function(m,n) { return quarters[n-1]; },
+    quarters = ['31~mar', '30~jun', '30~sep', '31~dec'],
+    replacequarter = function(m, n) { return quarters[n - 1]; },
     matchTZ = / ?([+\-]\d\d:?\d\d|Z)$/;
 
 function getDateType(v) {

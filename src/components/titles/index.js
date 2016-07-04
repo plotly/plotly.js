@@ -93,7 +93,7 @@ Titles.draw = function(gd, titleClass, options) {
         .attr('class', titleClass);
 
     function titleLayout(titleEl) {
-        Lib.syncOrAsync([drawTitle,scootTitle], titleEl);
+        Lib.syncOrAsync([drawTitle, scootTitle], titleEl);
     }
 
     function drawTitle(titleEl) {
@@ -104,7 +104,7 @@ Titles.draw = function(gd, titleClass, options) {
 
         titleEl.style({
             'font-family': font,
-            'font-size': d3.round(fontSize,2) + 'px',
+            'font-size': d3.round(fontSize, 2) + 'px',
             fill: Color.rgb(fontColor),
             opacity: opacity * Color.opacity(fontColor),
             'font-weight': Plots.fontWeight
@@ -133,7 +133,7 @@ Titles.draw = function(gd, titleClass, options) {
                     top: 'bottom',
                     bottom: 'top'
                 }[avoid.side],
-                shiftSign = (['left','top'].indexOf(avoid.side) !== -1) ?
+                shiftSign = (['left', 'top'].indexOf(avoid.side) !== -1) ?
                     -1 : 1,
                 pad = isNumeric(avoid.pad) ? avoid.pad : 2,
                 titlebb = Drawing.bBox(titleGroup.node()),
@@ -144,7 +144,7 @@ Titles.draw = function(gd, titleClass, options) {
                     bottom: fullLayout.height
                 },
                 maxshift = avoid.maxShift || (
-                    (paperbb[avoid.side]-titlebb[avoid.side]) *
+                    (paperbb[avoid.side] - titlebb[avoid.side]) *
                     ((avoid.side === 'left' || avoid.side === 'top') ? -1 : 1));
             // Prevent the title going off the paper
             if(maxshift < 0) shift = maxshift;
@@ -197,7 +197,7 @@ Titles.draw = function(gd, titleClass, options) {
                 d3.select(this).transition()
                     .duration(100).style('opacity', 1);
             })
-            .on('mouseout.opacity',function() {
+            .on('mouseout.opacity', function() {
                 d3.select(this).transition()
                     .duration(1000).style('opacity', 0);
             });

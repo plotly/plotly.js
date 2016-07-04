@@ -16,14 +16,14 @@ describe('calculated data and points', function() {
     describe('connectGaps', function() {
 
         it('should exclude null and undefined points when false', function() {
-            Plotly.plot(gd, [{ x: [1,2,3,undefined,5], y: [1,null,3,4,5]}], {});
+            Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5]}], {});
 
             expect(gd.calcdata[0][1]).toEqual({ x: false, y: false});
             expect(gd.calcdata[0][3]).toEqual({ x: false, y: false});
         });
 
         it('should exclude null and undefined points as categories when false', function() {
-            Plotly.plot(gd, [{ x: [1,2,3,undefined,5], y: [1,null,3,4,5] }], { xaxis: { type: 'category' }});
+            Plotly.plot(gd, [{ x: [1, 2, 3, undefined, 5], y: [1, null, 3, 4, 5] }], { xaxis: { type: 'category' }});
 
             expect(gd.calcdata[0][1]).toEqual({ x: false, y: false});
             expect(gd.calcdata[0][3]).toEqual({ x: false, y: false});
@@ -36,7 +36,7 @@ describe('calculated data and points', function() {
 
             it('should output categories in the given order by default', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category'
                 }});
 
@@ -49,7 +49,7 @@ describe('calculated data and points', function() {
 
             it('should output categories in the given order if `trace` order is explicitly specified', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'trace'
                     // Also, if axis tick order is made configurable, shouldn't we make trace order configurable?
@@ -70,7 +70,7 @@ describe('calculated data and points', function() {
 
             it('should output categories in ascending domain alphanumerical order', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
                 }});
@@ -84,7 +84,7 @@ describe('calculated data and points', function() {
 
             it('should output categories in descending domain alphanumerical order', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category descending'
                 }});
@@ -98,7 +98,7 @@ describe('calculated data and points', function() {
 
             it('should output categories in ascending domain alphanumerical order even if categories are all numbers', function() {
 
-                Plotly.plot(gd, [{x: [3,1,5,2,4], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: [3, 1, 5, 2, 4], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
                 }});
@@ -112,10 +112,10 @@ describe('calculated data and points', function() {
 
             it('should output categories in categoryorder order even if category array is defined', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending',
-                    categoryarray: ['b','a','d','e','c'] // These must be ignored. Alternative: error?
+                    categoryarray: ['b', 'a', 'd', 'e', 'c'] // These must be ignored. Alternative: error?
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 2, y: 15}));
@@ -127,7 +127,7 @@ describe('calculated data and points', function() {
 
             it('should output categories in ascending domain alphanumerical order, excluding undefined', function() {
 
-                Plotly.plot(gd, [{x: ['c',undefined,'e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', undefined, 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'category ascending'
                 }});
@@ -143,10 +143,10 @@ describe('calculated data and points', function() {
 
             it('should output categories in explicitly supplied order, independent of trace order', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
-                    categoryarray: ['b','a','d','e','c']
+                    categoryarray: ['b', 'a', 'd', 'e', 'c']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 4, y: 15}));
@@ -158,10 +158,10 @@ describe('calculated data and points', function() {
 
             it('should output categories in explicitly supplied order even if category values are all numbers', function() {
 
-                Plotly.plot(gd, [{x: [3,1,5,2,4], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: [3, 1, 5, 2, 4], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
-                    categoryarray: [2,1,4,5,3]
+                    categoryarray: [2, 1, 4, 5, 3]
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 4, y: 15}));
@@ -173,10 +173,10 @@ describe('calculated data and points', function() {
 
             it('should output categories in explicitly supplied order, independent of trace order, pruned', function() {
 
-                Plotly.plot(gd, [{x: ['c',undefined,'e','b','d'], y: [15,11,12,null,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', undefined, 'e', 'b', 'd'], y: [15, 11, 12, null, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
-                    categoryarray: ['b','a','d','e','c']
+                    categoryarray: ['b', 'a', 'd', 'e', 'c']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 4, y: 15}));
@@ -188,10 +188,10 @@ describe('calculated data and points', function() {
 
             it('should output categories in explicitly supplied order even if not all categories are present', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
-                    categoryarray: ['b','x','a','d','z','e','c']
+                    categoryarray: ['b', 'x', 'a', 'd', 'z', 'e', 'c']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 6, y: 15}));
@@ -203,10 +203,10 @@ describe('calculated data and points', function() {
 
             it('should output categories in explicitly supplied order even if some missing categories were at the beginning or end of categoryarray', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
-                    categoryarray: ['y','b','x','a','d','z','e','c', 'q', 'k']
+                    categoryarray: ['y', 'b', 'x', 'a', 'd', 'z', 'e', 'c', 'q', 'k']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 7, y: 15}));
@@ -230,10 +230,10 @@ describe('calculated data and points', function() {
                 // BUT keeps it if a data point with null is added; test is almost identical to the one above
                 // except that it explicitly adds an axis tick for y
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d', 'y'], y: [15,11,12,13,14, null]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd', 'y'], y: [15, 11, 12, 13, 14, null]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
-                    categoryarray: ['y','b','x','a','d','z','e','c', 'q', 'k']
+                    categoryarray: ['y', 'b', 'x', 'a', 'd', 'z', 'e', 'c', 'q', 'k']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 7, y: 15}));
@@ -250,10 +250,10 @@ describe('calculated data and points', function() {
 
             it('should output categories in explicitly supplied order even if not all categories are present, and should interact with a null value orthogonally', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,null,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, null, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
-                    categoryarray: ['b','x','a','d','z','e','c']
+                    categoryarray: ['b', 'x', 'a', 'd', 'z', 'e', 'c']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 6, y: 15}));
@@ -265,10 +265,10 @@ describe('calculated data and points', function() {
 
             it('should output categories in explicitly supplied order first, if not all categories are covered', function() {
 
-                Plotly.plot(gd, [{x: ['c','a','e','b','d'], y: [15,11,12,13,14]}], { xaxis: {
+                Plotly.plot(gd, [{x: ['c', 'a', 'e', 'b', 'd'], y: [15, 11, 12, 13, 14]}], { xaxis: {
                     type: 'category',
                     categoryorder: 'array',
-                    categoryarray: ['b','a','x','c']
+                    categoryarray: ['b', 'a', 'x', 'c']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 3, y: 15}));
@@ -326,7 +326,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'trace',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 0, y: 10}));
@@ -357,7 +357,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'category ascending',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                     // this is the expected sorted outcome: ['Bearing','Bulb','Cord','Fuse','Gear','Leak','Motor','Plug','Pump','Seals','Switch']
                 }});
 
@@ -389,7 +389,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'category descending',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                     // this is the expected sorted outcome: ["Switch", "Seals", "Pump", "Plug", "Motor", "Leak", "Gear", "Fuse", "Cord", "Bulb", "Bearing"]
                 }});
 
@@ -421,7 +421,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'array',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 9, y: 10}));
@@ -483,7 +483,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'trace',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 0, y: 10}));
@@ -515,7 +515,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'category ascending',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                     // this is the expected sorted outcome: ['Bearing','Bulb','Cord','Fuse','Gear','Leak','Motor','Plug','Pump','Seals','Switch']
                 }});
 
@@ -548,7 +548,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'category descending',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                     // this is the expected sorted outcome: ["Switch", "Seals", "Pump", "Plug", "Motor", "Leak", "Gear", "Fuse", "Cord", "Bulb", "Bearing"]
                 }});
 
@@ -581,7 +581,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'array',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 9, y: 10}));
@@ -641,7 +641,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'trace',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                 }});
 
                 expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 0, y: 10}));
@@ -670,7 +670,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'category ascending',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                     // this is the expected sorted outcome: ['Bearing','Bulb','Cord','Fuse','Gear','Leak','Motor','Plug','Pump','Seals','Switch']
                 }});
 
@@ -700,7 +700,7 @@ describe('calculated data and points', function() {
                 ], { xaxis: {
                     // type: 'category', // commented out to rely on autotyping for added realism
                     categoryorder: 'category descending',
-                    categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                    categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                     // this is the expected sorted outcome: ["Switch", "Seals", "Pump", "Plug", "Motor", "Leak", "Gear", "Fuse", "Cord", "Bulb", "Bearing"]
                 }});
 
@@ -731,7 +731,7 @@ describe('calculated data and points', function() {
                     xaxis: {
                         // type: 'category', // commented out to rely on autotyping for added realism
                         categoryorder: 'array',
-                        categoryarray: ['Bearing','Motor','Gear']
+                        categoryarray: ['Bearing', 'Motor', 'Gear']
                     }
                 });
 
@@ -762,7 +762,7 @@ describe('calculated data and points', function() {
                     xaxis: {
                         // type: 'category', // commented out to rely on autotyping for added realism
                         categoryorder: 'array',
-                        categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                        categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                     }
                 });
 
@@ -797,7 +797,7 @@ describe('calculated data and points', function() {
                     xaxis: {
                         // type: 'category', // commented out to rely on autotyping for added realism
                         categoryorder: 'array',
-                        categoryarray: ['Switch','Bearing','Motor','Seals','Pump','Cord','Plug','Bulb','Fuse','Gear','Leak']
+                        categoryarray: ['Switch', 'Bearing', 'Motor', 'Seals', 'Pump', 'Cord', 'Plug', 'Bulb', 'Fuse', 'Gear', 'Leak']
                     }
                 });
 
@@ -832,7 +832,7 @@ describe('calculated data and points', function() {
                     xaxis: {
                         // type: 'category', // commented out to rely on autotyping for added realism
                         categoryorder: 'array',
-                        categoryarray: ['Bearing','Motor','Gear']
+                        categoryarray: ['Bearing', 'Motor', 'Gear']
                     }
                 });
 

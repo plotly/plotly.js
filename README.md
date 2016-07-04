@@ -1,10 +1,7 @@
 <a href="https://plot.ly/javascript/"><img src="http://images.plot.ly/logo/plotlyjs-logo@2x.png" height="70"></a>
 
 [![npm version](https://badge.fury.io/js/plotly.js.svg)](https://badge.fury.io/js/plotly.js)
-
 [![circle ci](https://circleci.com/gh/plotly/plotly.js.png?&style=shield&circle-token=1f42a03b242bd969756fc3e53ede204af9b507c0)](https://circleci.com/gh/plotly/plotly.js)
-[![Dependency Status](https://david-dm.org/plotly/plotly.js.svg?style=flat-square)](https://david-dm.org/plotly/plotly.js)
-[![devDependency Status](https://david-dm.org/plotly/plotly.js/dev-status.svg?style=flat-square)](https://david-dm.org/plotly/plotly.js#info=devDependencies)
 
 Built on top of [d3.js](http://d3js.org/) and [stack.gl](http://stack.gl/),
 plotly.js is a high-level, declarative charting library. plotly.js ships with 20
@@ -24,6 +21,11 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 
 
 ## Quick start options
+
+**It is important to note that logging is turned off by default in v1.13.0 onwards.**
+To turn logging on for development, you will want to run
+`Plotly.setPlotConfig({ logging: 2 })` before any plotting.
+See [this file](https://github.com/plotly/plotly.js/blob/master/src/lib/loggers.js) for more details.
 
 #### Download the latest release
 [Latest Release on Github](https://github.com/plotly/plotly.js/releases/)
@@ -51,6 +53,9 @@ and use the plotly.js `dist` file(s) or require plotly.js using CommonJS as `var
 
 <!-- OR use a specific plotly.js release (e.g. version 1.5.0) -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-1.5.0.min.js"></script>
+
+<!-- OR an un-minified version is also available -->
+<script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.js"></script>
 ```
 
 and use the `Plotly` object in the window scope.

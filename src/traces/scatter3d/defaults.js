@@ -37,7 +37,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     if(subTypes.hasLines(traceOut)) {
         coerce('connectgaps');
-        handleLineDefaults(traceIn, traceOut, defaultColor, coerce);
+        handleLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
     }
 
     if(subTypes.hasMarkers(traceOut)) {
@@ -48,7 +48,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         handleTextDefaults(traceIn, traceOut, layout, coerce);
     }
 
-    var lineColor = (traceOut.line || {}).color ,
+    var lineColor = (traceOut.line || {}).color,
         markerColor = (traceOut.marker || {}).color;
     if(coerce('surfaceaxis') >= 0) coerce('surfacecolor', lineColor || markerColor);
 

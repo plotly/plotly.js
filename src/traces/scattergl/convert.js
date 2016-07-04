@@ -33,19 +33,22 @@ function LineWithMarkers(scene, uid) {
     this.scene = scene;
     this.uid = uid;
 
+    this.pickXData = [];
+    this.pickYData = [];
     this.xData = [];
     this.yData = [];
     this.textLabels = [];
     this.color = 'rgb(0, 0, 0)';
     this.name = '';
     this.hoverinfo = 'all';
+    this.connectgaps = true;
 
     this.idToIndex = [];
     this.bounds = [0, 0, 0, 0];
 
     this.hasLines = false;
     this.lineOptions = {
-        positions: new Float32Array(),
+        positions: new Float32Array(0),
         color: [0, 0, 0, 1],
         width: 1,
         fill: [false, false, false, false],
@@ -61,8 +64,8 @@ function LineWithMarkers(scene, uid) {
 
     this.hasErrorX = false;
     this.errorXOptions = {
-        positions: new Float32Array(),
-        errors: new Float32Array(),
+        positions: new Float32Array(0),
+        errors: new Float32Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
@@ -72,8 +75,8 @@ function LineWithMarkers(scene, uid) {
 
     this.hasErrorY = false;
     this.errorYOptions = {
-        positions: new Float32Array(),
-        errors: new Float32Array(),
+        positions: new Float32Array(0),
+        errors: new Float32Array(0),
         lineWidth: 1,
         capSize: 0,
         color: [0, 0, 0, 1]
@@ -83,7 +86,7 @@ function LineWithMarkers(scene, uid) {
 
     this.hasMarkers = false;
     this.scatterOptions = {
-        positions: new Float32Array(),
+        positions: new Float32Array(0),
         sizes: [],
         colors: [],
         glyphs: [],
@@ -103,14 +106,18 @@ function LineWithMarkers(scene, uid) {
 var proto = LineWithMarkers.prototype;
 
 proto.handlePick = function(pickResult) {
-    var index = this.idToIndex[pickResult.pointId];
+    var index = pickResult.pointId;
+
+    if(pickResult.object !== this.line || this.connectgaps) {
+        index = this.idToIndex[pickResult.pointId];
+    }
 
     return {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            this.xData[index],
-            this.yData[index]
+            this.pickXData[index],
+            this.pickYData[index]
         ],
         textLabel: Array.isArray(this.textLabels) ?
             this.textLabels[index] :
@@ -130,19 +137,20 @@ proto.isFancy = function(options) {
 
     if(!options.x || !options.y) return true;
 
-    var marker = options.marker || {};
-    if(Array.isArray(marker.symbol) ||
-         marker.symbol !== 'circle' ||
-         Array.isArray(marker.size) ||
-         Array.isArray(marker.line.width) ||
-         Array.isArray(marker.opacity)
-    ) return true;
+    if(this.hasMarkers) {
+        var marker = options.marker || {};
 
-    var markerColor = marker.color;
-    if(Array.isArray(markerColor)) return true;
+        if(Array.isArray(marker.symbol) ||
+             marker.symbol !== 'circle' ||
+             Array.isArray(marker.size) ||
+             Array.isArray(marker.color) ||
+             Array.isArray(marker.line.width) ||
+             Array.isArray(marker.line.color) ||
+             Array.isArray(marker.opacity)
+        ) return true;
+    }
 
-    var lineColor = Array.isArray(marker.line.color);
-    if(Array.isArray(lineColor)) return true;
+    if(this.hasLines && !this.connectgaps) return true;
 
     if(this.hasErrorX) return true;
     if(this.hasErrorY) return true;
@@ -202,9 +210,9 @@ function _convertColor(colors, opacities, count) {
     var result = new Array(4 * count);
 
     for(var i = 0; i < count; ++i) {
-        for(var j = 0; j < 3; ++j) result[4*i+j] = colors[i][j];
+        for(var j = 0; j < 3; ++j) result[4 * i + j] = colors[i][j];
 
-        result[4*i+3] = colors[i][3] * opacities[i];
+        result[4 * i + 3] = colors[i][3] * opacities[i];
     }
 
     return result;
@@ -248,6 +256,7 @@ proto.update = function(options) {
     this.name = options.name;
     this.hoverinfo = options.hoverinfo;
     this.bounds = [Infinity, Infinity, -Infinity, -Infinity];
+    this.connectgaps = !!options.connectgaps;
 
     if(this.isFancy(options)) {
         this.updateFancy(options);
@@ -262,8 +271,8 @@ proto.update = function(options) {
 };
 
 proto.updateFast = function(options) {
-    var x = this.xData = options.x;
-    var y = this.yData = options.y;
+    var x = this.xData = this.pickXData = options.x;
+    var y = this.yData = this.pickYData = options.y;
 
     var len = x.length,
         idToIndex = new Array(len),
@@ -323,13 +332,13 @@ proto.updateFast = function(options) {
         this.scatter.update(this.scatterOptions);
     }
     else {
-        this.scatterOptions.positions = new Float32Array();
+        this.scatterOptions.positions = new Float32Array(0);
         this.scatterOptions.glyphs = [];
         this.scatter.update(this.scatterOptions);
     }
 
     // turn off fancy scatter plot
-    this.scatterOptions.positions = new Float32Array();
+    this.scatterOptions.positions = new Float32Array(0);
     this.scatterOptions.glyphs = [];
     this.fancyScatter.update(this.scatterOptions);
 
@@ -344,8 +353,11 @@ proto.updateFancy = function(options) {
         bounds = this.bounds;
 
     // makeCalcdata runs d2c (data-to-coordinate) on every point
-    var x = this.xData = xaxis.makeCalcdata(options, 'x');
-    var y = this.yData = yaxis.makeCalcdata(options, 'y');
+    var x = this.pickXData = xaxis.makeCalcdata(options, 'x').slice();
+    var y = this.pickYData = yaxis.makeCalcdata(options, 'y').slice();
+
+    this.xData = x.slice();
+    this.yData = y.slice();
 
     // get error values
     var errorVals = ErrorBars.calcFromTrace(options, scene.fullLayout);
@@ -370,8 +382,8 @@ proto.updateFancy = function(options) {
     var i, j, xx, yy, ex0, ex1, ey0, ey1;
 
     for(i = 0; i < len; ++i) {
-        xx = getX(x[i]);
-        yy = getY(y[i]);
+        this.xData[i] = xx = getX(x[i]);
+        this.yData[i] = yy = getY(y[i]);
 
         if(isNaN(xx) || isNaN(yy)) continue;
 
@@ -437,21 +449,21 @@ proto.updateFancy = function(options) {
             this.scatterOptions.borderWidths[i] = 0.5 * borderWidths[index];
 
             for(j = 0; j < 4; ++j) {
-                this.scatterOptions.colors[4*i+j] = colors[4*index+j];
-                this.scatterOptions.borderColors[4*i+j] = borderColors[4*index+j];
+                this.scatterOptions.colors[4 * i + j] = colors[4 * index + j];
+                this.scatterOptions.borderColors[4 * i + j] = borderColors[4 * index + j];
             }
         }
 
         this.fancyScatter.update(this.scatterOptions);
     }
     else {
-        this.scatterOptions.positions = new Float32Array();
+        this.scatterOptions.positions = new Float32Array(0);
         this.scatterOptions.glyphs = [];
         this.fancyScatter.update(this.scatterOptions);
     }
 
     // turn off fast scatter plot
-    this.scatterOptions.positions = new Float32Array();
+    this.scatterOptions.positions = new Float32Array(0);
     this.scatterOptions.glyphs = [];
     this.scatter.update(this.scatterOptions);
 
@@ -460,16 +472,30 @@ proto.updateFancy = function(options) {
 };
 
 proto.updateLines = function(options, positions) {
+    var i;
+
     if(this.hasLines) {
-        this.lineOptions.positions = positions;
+        var linePositions = positions;
 
-        var lineColor = str2RGBArray(options.line.color);
-        if(this.hasMarkers) lineColor[3] *= options.marker.opacity;
+        if(!options.connectgaps) {
+            var p = 0;
+            var x = this.xData;
+            var y = this.yData;
+            linePositions = new Float32Array(2 * x.length);
 
-        var lineWidth = Math.round(0.5 * this.lineOptions.width),
+            for(i = 0; i < x.length; ++i) {
+                linePositions[p++] = x[i];
+                linePositions[p++] = y[i];
+            }
+        }
+
+        this.lineOptions.positions = linePositions;
+
+        var lineColor = convertColor(options.line.color, options.opacity, 1),
+            lineWidth = Math.round(0.5 * this.lineOptions.width),
             dashes = (DASHES[options.line.dash] || [1]).slice();
 
-        for(var i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
+        for(i = 0; i < dashes.length; ++i) dashes[i] *= lineWidth;
 
         switch(options.fill) {
             case 'tozeroy':
@@ -491,7 +517,7 @@ proto.updateLines = function(options, positions) {
         this.lineOptions.fillColor = [fillColor, fillColor, fillColor, fillColor];
     }
     else {
-        this.lineOptions.positions = new Float32Array();
+        this.lineOptions.positions = new Float32Array(0);
     }
 
     this.line.update(this.lineOptions);
@@ -514,7 +540,7 @@ proto.updateError = function(axLetter, options, positions, errors) {
         errorObjOptions.color = convertColor(errorOptions.color, 1, 1);
     }
     else {
-        errorObjOptions.positions = new Float32Array();
+        errorObjOptions.positions = new Float32Array(0);
     }
 
     errorObj.update(errorObjOptions);
@@ -533,7 +559,7 @@ proto.expandAxesFast = function(bounds, markerSize) {
 
         max = ax._max;
         if(!max) max = [];
-        max.push({ val: bounds[i+2], pad: pad });
+        max.push({ val: bounds[i + 2], pad: pad });
     }
 };
 

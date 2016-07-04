@@ -33,12 +33,12 @@ module.exports = function hasColorscale(trace, containerStr) {
     }
 
     return (
-        (typeof container==='object' && container!==null) && (
+        (typeof container === 'object' && container !== null) && (
             isArrayWithOneNumber ||
-            container.showscale===true ||
+            container.showscale === true ||
             (isNumeric(container.cmin) && isNumeric(container.cmax)) ||
             isValidScale(container.colorscale) ||
-            (typeof container.colorbar==='object' && container.colorbar!==null)
+            (typeof container.colorbar === 'object' && container.colorbar !== null)
         )
     );
 };

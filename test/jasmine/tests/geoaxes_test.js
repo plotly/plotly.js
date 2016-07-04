@@ -1,4 +1,4 @@
-var params = require('@src/constants/geo_constants');
+var params = require('@src/plots/geo/constants');
 var supplyLayoutDefaults = require('@src/plots/geo/layout/axis_defaults');
 
 

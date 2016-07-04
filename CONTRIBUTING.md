@@ -47,6 +47,7 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 | `type: feature` | planned feature additions |
 | `type: performance` | performance related tasks |
 | `type: maintenace` | source code cleanup resulting in no enhancement for users |
+| `type: documentation` | API doc or attribute description improvements |
 | `type: community` | issue left open for community input and pull requests |
 | `type: duplicate` | *self-explanatory* |
 | `type: wontfix` | *self-explanatory* |
@@ -72,7 +73,18 @@ cd plotly.js
 npm install
 ```
 
-#### Step 2: Start the test dashboard
+#### Step 2: Setup Mapbox access token
+
+As of `v1.13.0`, plotly.js includes a [`mapbox-gl`](https://github.com/mapbox/mapbox-gl-js) integration. Creating `mapbox-gl` graphs requires an
+[`accessToken`](https://www.mapbox.com/help/define-access-token/). To make sure
+that the plotly.js test suites and devtools work properly, locate your Mapbox access
+token and run:
+
+```bash
+export MAPBOX_ACCESS_TOKEN="<your access token>" && npm run pretest
+```
+
+#### Step 3: Start the test dashboard
 
 ```
 npm start
@@ -84,7 +96,7 @@ This command bundles up the source files with source maps using
 dev plotly.js bundle update every time a source file is saved) and opens up a
 tab in your browser.
 
-#### Step 3: Open up the console and start developing
+#### Step 4: Open up the console and start developing
 
 A typical workflow is to make some modifications to the source, update the
 test dashboard, inspect and debug the changes, then repeat. The test dashboard

@@ -13,7 +13,7 @@
 module.exports = function doAvg(size, counts) {
     var nMax = size.length,
         total = 0;
-    for(var i=0; i<nMax; i++) {
+    for(var i = 0; i < nMax; i++) {
         if(counts[i]) {
             size[i] /= counts[i];
             total += size[i];

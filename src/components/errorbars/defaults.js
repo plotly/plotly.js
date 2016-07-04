@@ -53,15 +53,15 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
             coerce('tracerefminus');
         }
     }
-    else if(type==='percent' || type==='constant') {
+    else if(type === 'percent' || type === 'constant') {
         coerce('value');
         if(!symmetric) coerce('valueminus');
     }
 
-    var copyAttr = 'copy_'+opts.inherit+'style';
+    var copyAttr = 'copy_' + opts.inherit + 'style';
     if(opts.inherit) {
         var inheritObj = traceOut['error_' + opts.inherit];
-        if((inheritObj||{}).visible) {
+        if((inheritObj || {}).visible) {
             coerce(copyAttr, !(containerIn.color ||
                                isNumeric(containerIn.thickness) ||
                                isNumeric(containerIn.width)));

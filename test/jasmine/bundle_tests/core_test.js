@@ -12,8 +12,6 @@ describe('Bundle with core only', function() {
     var mock = require('@mocks/bar_line.json');
 
     beforeEach(function(done) {
-        spyOn(console, 'warn');
-
         Plotly.plot(createGraphDiv(), mock.data, mock.layout).then(done);
     });
 
@@ -29,9 +27,5 @@ describe('Bundle with core only', function() {
         var nodes = d3.selectAll('g.trace.bars');
 
         expect(nodes.size()).toEqual(0);
-    });
-
-    it('should warn users about unregistered bar trace type', function() {
-        expect(console.warn).toHaveBeenCalled();
     });
 });

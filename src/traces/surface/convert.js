@@ -35,15 +35,15 @@ proto.handlePick = function(selection) {
     if(selection.object === this.surface) {
         var selectIndex = [
             Math.min(
-                Math.round(selection.data.index[0]/this.dataScale-1)|0,
-                this.data.z[0].length-1
+                Math.round(selection.data.index[0] / this.dataScale - 1)|0,
+                this.data.z[0].length - 1
             ),
             Math.min(
-                Math.round(selection.data.index[1]/this.dataScale-1)|0,
-                this.data.z.length-1
+                Math.round(selection.data.index[1] / this.dataScale - 1)|0,
+                this.data.z.length - 1
             )
         ];
-        var traceCoordinate = [0,0,0];
+        var traceCoordinate = [0, 0, 0];
 
         if(Array.isArray(this.data.x[0])) {
             traceCoordinate[0] = this.data.x[selectIndex[1]][selectIndex[0]];
@@ -67,7 +67,7 @@ proto.handlePick = function(selection) {
         ];
 
         var text = this.data.text;
-        if(text && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]]!==undefined) {
+        if(text && text[selectIndex[1]] && text[selectIndex[1]][selectIndex[0]] !== undefined) {
             selection.textLabel = text[selectIndex[1]][selectIndex[0]];
         }
         else selection.textLabel = '';
@@ -100,7 +100,7 @@ function parseColorScale(colorscale, alpha) {
 // Pad coords by +1
 function padField(field) {
     var shape = field.shape;
-    var nshape = [shape[0]+2, shape[1]+2];
+    var nshape = [shape[0] + 2, shape[1] + 2];
     var nfield = ndarray(new Float32Array(nshape[0] * nshape[1]), nshape);
 
     // Center
@@ -109,18 +109,18 @@ function padField(field) {
     // Edges
     ops.assign(nfield.lo(1).hi(shape[0], 1),
                 field.hi(shape[0], 1));
-    ops.assign(nfield.lo(1, nshape[1]-1).hi(shape[0], 1),
-                field.lo(0, shape[1]-1).hi(shape[0], 1));
+    ops.assign(nfield.lo(1, nshape[1] - 1).hi(shape[0], 1),
+                field.lo(0, shape[1] - 1).hi(shape[0], 1));
     ops.assign(nfield.lo(0, 1).hi(1, shape[1]),
                 field.hi(1));
-    ops.assign(nfield.lo(nshape[0]-1, 1).hi(1, shape[1]),
-                field.lo(shape[0]-1));
+    ops.assign(nfield.lo(nshape[0] - 1, 1).hi(1, shape[1]),
+                field.lo(shape[0] - 1));
 
     // Corners
     nfield.set(0, 0, field.get(0, 0));
-    nfield.set(0, nshape[1]-1, field.get(0, shape[1]-1));
-    nfield.set(nshape[0]-1, 0, field.get(shape[0]-1, 0));
-    nfield.set(nshape[0]-1, nshape[1]-1, field.get(shape[0]-1, shape[1]-1));
+    nfield.set(0, nshape[1] - 1, field.get(0, shape[1] - 1));
+    nfield.set(nshape[0] - 1, 0, field.get(shape[0] - 1, 0));
+    nfield.set(nshape[0] - 1, nshape[1] - 1, field.get(shape[0] - 1, shape[1] - 1));
 
     return nfield;
 }
@@ -131,8 +131,8 @@ function refine(coords) {
     if(minScale < MIN_RESOLUTION) {
         var scaleF = MIN_RESOLUTION / minScale;
         var nshape = [
-            Math.floor((coords[0].shape[0]) * scaleF+1)|0,
-            Math.floor((coords[0].shape[1]) * scaleF+1)|0 ];
+            Math.floor((coords[0].shape[0]) * scaleF + 1)|0,
+            Math.floor((coords[0].shape[1]) * scaleF + 1)|0 ];
         var nsize = nshape[0] * nshape[1];
 
         for(var i = 0; i < coords.length; ++i) {
@@ -332,6 +332,10 @@ proto.update = function(data) {
         surface.specularLight = data.lighting.specular;
         surface.roughness = data.lighting.roughness;
         surface.fresnel = data.lighting.fresnel;
+    }
+
+    if('lightposition' in data) {
+        surface.lightPosition = [data.lightposition.x, data.lightposition.y, data.lightposition.z];
     }
 
     if(alpha && alpha < 1) {

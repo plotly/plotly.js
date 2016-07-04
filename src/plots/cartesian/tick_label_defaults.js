@@ -69,13 +69,13 @@ function getShowAttrDflt(containerIn) {
                         'showtickprefix',
                         'showticksuffix'],
         showAttrs = showAttrsAll.filter(function(a) {
-            return containerIn[a]!==undefined;
+            return containerIn[a] !== undefined;
         }),
         sameVal = function(a) {
-            return containerIn[a]===containerIn[showAttrs[0]];
+            return containerIn[a] === containerIn[showAttrs[0]];
         };
 
-    if(showAttrs.every(sameVal) || showAttrs.length===1) {
+    if(showAttrs.every(sameVal) || showAttrs.length === 1) {
         return containerIn[showAttrs[0]];
     }
 }

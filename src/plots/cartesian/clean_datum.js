@@ -30,7 +30,7 @@ module.exports = function cleanDatum(c) {
         c = c.toString().replace(/['"%,$# ]/g, '');
     }
     catch(e) {
-        console.log(e, c);
+        Lib.error(e, c);
     }
 
     return c;

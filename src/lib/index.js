@@ -58,6 +58,11 @@ lib.extendFlat = extendModule.extendFlat;
 lib.extendDeep = extendModule.extendDeep;
 lib.extendDeepAll = extendModule.extendDeepAll;
 
+var loggersModule = require('./loggers');
+lib.log = loggersModule.log;
+lib.warn = loggersModule.warn;
+lib.error = loggersModule.error;
+
 lib.notifier = require('./notifier');
 
 /**
@@ -90,35 +95,6 @@ lib.pauseEvent = function(e) {
     if(e.preventDefault) e.preventDefault();
     e.cancelBubble = true;
     return false;
-};
-
-/**
- * ------------------------------------------
- * debugging tools
- * ------------------------------------------
- */
-
-// set VERBOSE to true to get a lot more logging and tracing
-lib.VERBOSE = false;
-
-// first markTime call will return time from page load
-lib.TIMER = new Date().getTime();
-
-// console.log that only runs if VERBOSE is on
-lib.log = function() {
-    if(lib.VERBOSE) console.log.apply(console, arguments);
-};
-
-/**
- * markTime - for debugging, mark the number of milliseconds
- * since the previous call to markTime and log arbitrary info too
- */
-lib.markTime = function(v) {
-    if(!lib.VERBOSE) return;
-    var t2 = new Date().getTime();
-    console.log(v, t2 - lib.TIMER, '(msec)');
-    if(lib.VERBOSE === 'trace') console.trace();
-    lib.TIMER = t2;
 };
 
 // constrain - restrict a number v to be between v0 and v1
@@ -206,7 +182,7 @@ lib.OptionControl = function(opt, optname) {
         self.optionList.push(optObj);
     };
 
-    self['_'+optname] = opt;
+    self['_' + optname] = opt;
     return self;
 };
 
@@ -256,17 +232,6 @@ lib.smooth = function(arrayIn, FWHM) {
     return arrayOut;
 };
 
-// helpers for promises
-
-/**
- * promiseError: log errors properly inside promises
- * use:
- * <promise>.then(undefined,Plotly.Lib.promiseError) (for IE compatibility)
- * or <promise>.catch(Plotly.Lib.promiseError)
- * TODO: I guess we need another step to send this error to Sentry?
- */
-lib.promiseError = function(err) { console.log(err, err.stack); };
-
 /**
  * syncOrAsync: run a sequence of functions synchronously
  * as long as its returns are not promises (ie have no .then)
@@ -282,18 +247,17 @@ lib.syncOrAsync = function(sequence, arg, finalStep) {
     var ret, fni;
 
     function continueAsync() {
-        lib.markTime('async done ' + fni.name);
         return lib.syncOrAsync(sequence, arg, finalStep);
     }
+
     while(sequence.length) {
         fni = sequence.splice(0, 1)[0];
         ret = fni(arg);
-        // lib.markTime('done calling '+fni.name)
+
         if(ret && ret.then) {
             return ret.then(continueAsync)
                 .then(undefined, lib.promiseError);
         }
-        lib.markTime('sync done ' + fni.name);
     }
 
     return finalStep && finalStep(arg);
@@ -335,10 +299,27 @@ lib.noneOrAll = function(containerIn, containerOut, attrList) {
     }
 };
 
+/**
+ * Push array with unique items
+ *
+ * @param {array} array
+ *  array to be filled
+ * @param {any} item
+ *  item to be or not to be inserted
+ * @return {array}
+ *  ref to array (now possibly containing one more item)
+ *
+ */
+lib.pushUnique = function(array, item) {
+    if(item && array.indexOf(item) === -1) array.push(item);
+
+    return array;
+};
+
 lib.mergeArray = function(traceAttr, cd, cdAttr) {
     if(Array.isArray(traceAttr)) {
         var imax = Math.min(traceAttr.length, cd.length);
-        for(var i=0; i<imax; i++) cd[i][cdAttr] = traceAttr[i];
+        for(var i = 0; i < imax; i++) cd[i][cdAttr] = traceAttr[i];
     }
 };
 
@@ -359,9 +340,9 @@ lib.minExtend = function(obj1, obj2) {
     for(i = 0; i < keys.length; i++) {
         k = keys[i];
         v = obj1[k];
-        if(k.charAt(0)==='_' || typeof v === 'function') continue;
-        else if(k==='module') objOut[k] = v;
-        else if(Array.isArray(v)) objOut[k] = v.slice(0,arrayLen);
+        if(k.charAt(0) === '_' || typeof v === 'function') continue;
+        else if(k === 'module') objOut[k] = v;
+        else if(Array.isArray(v)) objOut[k] = v.slice(0, arrayLen);
         else if(v && (typeof v === 'object')) objOut[k] = lib.minExtend(obj1[k], obj2[k]);
         else objOut[k] = v;
     }
@@ -384,7 +365,7 @@ lib.titleCase = function(s) {
 
 lib.containsAny = function(s, fragments) {
     for(var i = 0; i < fragments.length; i++) {
-        if(s.indexOf(fragments[i])!== -1) return true;
+        if(s.indexOf(fragments[i]) !== -1) return true;
     }
     return false;
 };
@@ -422,22 +403,22 @@ lib.addStyleRule = function(selector, styleString) {
     var styleSheet = lib.styleSheet;
 
     if(styleSheet.insertRule) {
-        styleSheet.insertRule(selector+'{'+styleString+'}',0);
+        styleSheet.insertRule(selector + '{' + styleString + '}', 0);
     }
     else if(styleSheet.addRule) {
-        styleSheet.addRule(selector,styleString,0);
+        styleSheet.addRule(selector, styleString, 0);
     }
-    else console.warn('addStyleRule failed');
+    else lib.warn('addStyleRule failed');
 };
 
 lib.getTranslate = function(element) {
 
-    var re = /(\btranslate\()(\d*\.?\d*)([^\d]*)(\d*\.?\d*)([^\d]*)(.*)/,
+    var re = /.*\btranslate\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/,
         getter = element.attr ? 'attr' : 'getAttribute',
         transform = element[getter]('transform') || '';
 
-    var translate = transform.replace(re, function(match, p1, p2, p3, p4) {
-        return [p2, p4].join(' ');
+    var translate = transform.replace(re, function(match, p1, p2) {
+        return [p1, p2].join(' ');
     })
     .split(' ');
 
@@ -466,6 +447,141 @@ lib.setTranslate = function(element, x, y) {
     return transform;
 };
 
+lib.getScale = function(element) {
+
+    var re = /.*\bscale\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/,
+        getter = element.attr ? 'attr' : 'getAttribute',
+        transform = element[getter]('transform') || '';
+
+    var translate = transform.replace(re, function(match, p1, p2) {
+        return [p1, p2].join(' ');
+    })
+    .split(' ');
+
+    return {
+        x: +translate[0] || 1,
+        y: +translate[1] || 1
+    };
+};
+
+lib.setScale = function(element, x, y) {
+
+    var re = /(\bscale\(.*?\);?)/,
+        getter = element.attr ? 'attr' : 'getAttribute',
+        setter = element.attr ? 'attr' : 'setAttribute',
+        transform = element[getter]('transform') || '';
+
+    x = x || 1;
+    y = y || 1;
+
+    transform = transform.replace(re, '').trim();
+    transform += ' scale(' + x + ', ' + y + ')';
+    transform = transform.trim();
+
+    element[setter]('transform', transform);
+
+    return transform;
+};
+
 lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
+};
+
+
+/**
+ * Converts a string path to an object.
+ *
+ * When given a string containing an array element, it will create a `null`
+ * filled array of the given size.
+ *
+ * @example
+ * lib.objectFromPath('nested.test[2].path', 'value');
+ * // returns { nested: { test: [null, null, { path: 'value' }]}
+ *
+ * @param   {string}    path to nested value
+ * @param   {*}         any value to be set
+ *
+ * @return {Object} the constructed object with a full nested path
+ */
+lib.objectFromPath = function(path, value) {
+    var keys = path.split('.'),
+        tmpObj,
+        obj = tmpObj = {};
+
+    for(var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+        var el = null;
+
+        var parts = keys[i].match(/(.*)\[([0-9]+)\]/);
+
+        if(parts) {
+            key = parts[1];
+            el = parts[2];
+
+            tmpObj = tmpObj[key] = [];
+
+            if(i === keys.length - 1) {
+                tmpObj[el] = value;
+            } else {
+                tmpObj[el] = {};
+            }
+
+            tmpObj = tmpObj[el];
+        } else {
+
+            if(i === keys.length - 1) {
+                tmpObj[key] = value;
+            } else {
+                tmpObj[key] = {};
+            }
+
+            tmpObj = tmpObj[key];
+        }
+    }
+
+    return obj;
+};
+
+/**
+ * Converts value to string separated by the provided separators.
+ *
+ * @example
+ * lib.numSeparate(2016, '.,');
+ * // returns '2016'
+ *
+ * @example
+ * lib.numSeparate(1234.56, '|,')
+ * // returns '1,234|56'
+ *
+ * @param   {string|number} value       the value to be converted
+ * @param   {string}    separators  string of decimal, then thousands separators
+ *
+ * @return  {string}    the value that has been separated
+ */
+lib.numSeparate = function(value, separators) {
+
+    if(typeof separators !== 'string' || separators.length === 0) {
+        throw new Error('Separator string required for formatting!');
+    }
+
+    if(typeof value === 'number') {
+        value = String(value);
+    }
+
+    var thousandsRe = /(\d+)(\d{3})/,
+        decimalSep = separators.charAt(0),
+        thouSep = separators.charAt(1);
+
+    var x = value.split('.'),
+        x1 = x[0],
+        x2 = x.length > 1 ? decimalSep + x[1] : '';
+
+    // Years are ignored for thousands separators
+    if(thouSep && (x.length > 1 || x1.length > 4)) {
+        while(thousandsRe.test(x1)) {
+            x1 = x1.replace(thousandsRe, '$1' + thouSep + '$2');
+        }
+    }
+
+    return x1 + x2;
 };

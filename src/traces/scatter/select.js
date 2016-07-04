@@ -27,7 +27,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
         y;
 
     // TODO: include lines? that would require per-segment line properties
-    if(!subtypes.hasMarkers(trace) && ! subtypes.hasText(trace)) return;
+    var hasOnlyLines = (!subtypes.hasMarkers(trace) && !subtypes.hasText(trace));
+    if(trace.visible !== true || hasOnlyLines) return;
 
     var opacity = Array.isArray(marker.opacity) ? 1 : marker.opacity;
 
@@ -57,7 +58,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     // d.dim in pointStyle in case something goes wrong with selection.
     cd[0].node3.selectAll('path.point')
         .style('opacity', function(d) {
-            return ((d.mo+1 || opacity+1) - 1) * (d.dim ? DESELECTDIM : 1);
+            return ((d.mo + 1 || opacity + 1) - 1) * (d.dim ? DESELECTDIM : 1);
         });
     cd[0].node3.selectAll('text')
         .style('opacity', function(d) {

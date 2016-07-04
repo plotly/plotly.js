@@ -41,18 +41,18 @@ color.addOpacity = function(cstr, op) {
 // color.background is assumed behind it
 color.combine = function(front, back) {
     var fc = tinycolor(front).toRgb();
-    if(fc.a===1) return tinycolor(front).toRgbString();
+    if(fc.a === 1) return tinycolor(front).toRgbString();
 
-    var bc = tinycolor(back||color.background).toRgb(),
-        bcflat = bc.a===1 ? bc : {
-            r: 255 * (1-bc.a) + bc.r*bc.a,
-            g: 255 * (1-bc.a) + bc.g*bc.a,
-            b: 255 * (1-bc.a) + bc.b*bc.a
+    var bc = tinycolor(back || color.background).toRgb(),
+        bcflat = bc.a === 1 ? bc : {
+            r: 255 * (1 - bc.a) + bc.r * bc.a,
+            g: 255 * (1 - bc.a) + bc.g * bc.a,
+            b: 255 * (1 - bc.a) + bc.b * bc.a
         },
         fcflat = {
-            r: bcflat.r*(1-fc.a) + fc.r*fc.a,
-            g: bcflat.g*(1-fc.a) + fc.g*fc.a,
-            b: bcflat.b*(1-fc.a) + fc.b*fc.a
+            r: bcflat.r * (1 - fc.a) + fc.r * fc.a,
+            g: bcflat.g * (1 - fc.a) + fc.g * fc.a,
+            b: bcflat.b * (1 - fc.a) + fc.b * fc.a
         };
     return tinycolor(fcflat).toRgbString();
 };
@@ -110,7 +110,7 @@ function cleanOne(val) {
     if(isNumeric(val) || typeof val !== 'string') return val;
 
     var valTrim = val.trim();
-    if(valTrim.substr(0,3) !== 'rgb') return val;
+    if(valTrim.substr(0, 3) !== 'rgb') return val;
 
     var match = valTrim.match(/^rgba?\s*\(([^()]*)\)$/);
     if(!match) return val;

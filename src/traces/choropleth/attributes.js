@@ -15,7 +15,7 @@ var extendFlat = require('../../lib/extend').extendFlat;
 
 var ScatterGeoMarkerLineAttrs = ScatterGeoAttrs.marker.line;
 
-module.exports = {
+module.exports = extendFlat({}, {
     locations: {
         valType: 'data_array',
         description: [
@@ -38,17 +38,12 @@ module.exports = {
             width: ScatterGeoMarkerLineAttrs.width
         }
     },
-    zauto: colorscaleAttrs.zauto,
-    zmin: colorscaleAttrs.zmin,
-    zmax: colorscaleAttrs.zmax,
-    colorscale: colorscaleAttrs.colorscale,
-    autocolorscale: colorscaleAttrs.autocolorscale,
-    reversescale: colorscaleAttrs.reversescale,
-    showscale: colorscaleAttrs.showscale,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['location', 'z', 'text', 'name']
     }),
     _nestedModules: {
         'colorbar': 'Colorbar'
     }
-};
+},
+    colorscaleAttrs
+);

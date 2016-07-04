@@ -56,7 +56,7 @@ glob('{' + srcGlob + ',' + libGlob + '}', function(err, files) {
             else if(hasWrongDate(header)) {
                 var codeLines = code.split('\n');
 
-                codeLines.splice(header.loc.start.line-1, header.loc.end.line);
+                codeLines.splice(header.loc.start.line - 1, header.loc.end.line);
 
                 var newCode = licenseSrc + '\n' + codeLines.join('\n');
 

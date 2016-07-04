@@ -12,13 +12,15 @@
 module.exports = {
     barmode: {
         valType: 'enumerated',
-        values: ['stack', 'group', 'overlay'],
+        values: ['stack', 'group', 'overlay', 'relative'],
         dflt: 'group',
         role: 'info',
         description: [
             'Determines how bars at the same location coordinate',
             'are displayed on the graph.',
             'With *stack*, the bars are stacked on top of one another',
+            'With *relative*, the bars are stacked on top of one another,',
+            'with negative values below the axis, positive values above',
             'With *group*, the bars are plotted next to one another',
             'centered around the shared location.',
             'With *overlay*, the bars are plotted over one another,',

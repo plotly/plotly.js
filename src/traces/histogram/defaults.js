@@ -29,17 +29,17 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('text');
 
     var orientation = coerce('orientation', (y && !x) ? 'h' : 'v'),
-        sample = traceOut[orientation==='v' ? 'x' : 'y'];
+        sample = traceOut[orientation === 'v' ? 'x' : 'y'];
 
     if(!(sample && sample.length)) {
         traceOut.visible = false;
         return;
     }
 
-    var hasAggregationData = traceOut[orientation==='h' ? 'x' : 'y'];
+    var hasAggregationData = traceOut[orientation === 'h' ? 'x' : 'y'];
     if(hasAggregationData) coerce('histfunc');
 
-    var binDirections = (orientation==='h') ? ['y'] : ['x'];
+    var binDirections = (orientation === 'h') ? ['y'] : ['x'];
     handleBinDefaults(traceIn, traceOut, coerce, binDirections);
 
     handleStyleDefaults(traceIn, traceOut, coerce, defaultColor, layout);

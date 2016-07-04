@@ -79,6 +79,57 @@ describe('The legend', function() {
                 'translate(0, ' + finalDataScroll + ')');
         });
 
+        it('should keep the scrollbar position after a toggle event', function() {
+            var scrollBox = legend.getElementsByClassName('scrollbox')[0],
+                toggle = legend.getElementsByClassName('legendtoggle')[0],
+                wheelDeltaY = 100;
+
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+
+            var dataScroll = scrollBox.getAttribute('data-scroll');
+            toggle.dispatchEvent(new MouseEvent('click'));
+            expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+            expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + dataScroll + ')');
+        });
+
+        it('should be restored and functional after relayout', function() {
+            var wheelDeltaY = 100,
+                legend = document.getElementsByClassName('legend')[0],
+                scrollBox,
+                scrollBar,
+                scrollBarX,
+                scrollBarY,
+                toggle;
+
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+            scrollBar = legend.getElementsByClassName('scrollbar')[0];
+            scrollBarX = scrollBar.getAttribute('x'),
+            scrollBarY = scrollBar.getAttribute('y');
+
+            Plotly.relayout(gd, 'showlegend', false);
+            Plotly.relayout(gd, 'showlegend', true);
+
+            legend = document.getElementsByClassName('legend')[0];
+            scrollBox = legend.getElementsByClassName('scrollbox')[0];
+            scrollBar = legend.getElementsByClassName('scrollbar')[0];
+            toggle = legend.getElementsByClassName('legendtoggle')[0];
+
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+            expect(scrollBar.getAttribute('x')).toBe(scrollBarX);
+            expect(scrollBar.getAttribute('y')).toBe(scrollBarY);
+
+            var dataScroll = scrollBox.getAttribute('data-scroll');
+            toggle.dispatchEvent(new MouseEvent('click'));
+            expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+            expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + dataScroll + ')');
+            expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
+            expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
+        });
+
         it('should constrain scrolling to the contents', function() {
             var scrollBox = legend.getElementsByClassName('scrollbox')[0];
 
@@ -140,7 +191,7 @@ describe('The legend', function() {
         beforeEach(function() {
             gd = createGraph();
 
-            var data = [{ x: [1,2,3], y: [2,3,4], name: 'Test' }];
+            var data = [{ x: [1, 2, 3], y: [2, 3, 4], name: 'Test' }];
             var layout = { showlegend: true };
 
             Plotly.plot(gd, data, layout);
@@ -172,7 +223,7 @@ describe('The legend', function() {
             bg = document.getElementsByClassName('bg')[0];
             var origLegendHeight = getLegendHeight();
 
-            Plotly.addTraces(gd, { x: [1,2,3], y: [4,3,2], name: 'Test2' }).then(function() {
+            Plotly.addTraces(gd, { x: [1, 2, 3], y: [4, 3, 2], name: 'Test2' }).then(function() {
                 legend = document.getElementsByClassName('legend')[0];
                 bg = document.getElementsByClassName('bg')[0];
                 var legendHeight = getLegendHeight();

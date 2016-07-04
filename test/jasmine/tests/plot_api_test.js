@@ -31,7 +31,7 @@ describe('Test plot api', function() {
 
         it('should update the plot clipPath if the plot is resized', function(done) {
 
-            Plotly.plot(gd, [{ x: [1,2,3], y: [1,2,3] }], { width: 500, height: 500 })
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], { width: 500, height: 500 })
                 .then(function() {
                     return Plotly.relayout(gd, { width: 400, height: 400 });
                 })
@@ -69,7 +69,7 @@ describe('Test plot api', function() {
 
         it('calls Scatter.arraysToCalcdata and Plots.style on scatter styling', function() {
             var gd = {
-                data: [{x: [1,2,3], y: [1,2,3]}],
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
                 layout: {}
             };
             mockDefaultsAndCalc(gd);
@@ -84,7 +84,7 @@ describe('Test plot api', function() {
 
         it('calls Bar.arraysToCalcdata and Plots.style on bar styling', function() {
             var gd = {
-                data: [{x: [1,2,3], y: [1,2,3], type: 'bar'}],
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'bar'}],
                 layout: {}
             };
             mockDefaultsAndCalc(gd);
@@ -194,7 +194,7 @@ describe('Test plot api', function() {
                 {name: 'trace #19'}
             ];
 
-            Plotly.deleteTraces(gd, [0,1,2,3,4,5,6,7,8,9,10,11]);
+            Plotly.deleteTraces(gd, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
             expect(gd.data).toEqual(expectedData);
             expect(PlotlyInternal.redraw).toHaveBeenCalled();
 
@@ -423,8 +423,8 @@ describe('Test plot api', function() {
         beforeEach(function() {
             gd = {
                 data: [
-                    {x: [0,1,2], marker: {size: [3,2,1]}},
-                    {x: [1,2,3], marker: {size: [2,3,4]}}
+                    {x: [0, 1, 2], marker: {size: [3, 2, 1]}},
+                    {x: [1, 2, 3], marker: {size: [2, 3, 4]}}
                 ]
             };
 
@@ -518,7 +518,7 @@ describe('Test plot api', function() {
         it('should throw an error when update keys mismatch trace keys', function() {
 
             // lets update y on both traces, but only 1 trace has "y"
-            gd.data[1].y = [1,2,3];
+            gd.data[1].y = [1, 2, 3];
 
             expect(function() {
                 Plotly.extendTraces(gd, {
@@ -535,8 +535,8 @@ describe('Test plot api', function() {
             }, [0, 1]);
 
             expect(gd.data).toEqual([
-                {x: [0,1,2,3,4], marker: {size: [3,2,1,0,-1]}},
-                {x: [1,2,3,4,5], marker: {size: [2,3,4,5,6]}}
+                {x: [0, 1, 2, 3, 4], marker: {size: [3, 2, 1, 0, -1]}},
+                {x: [1, 2, 3, 4, 5], marker: {size: [2, 3, 4, 5, 6]}}
             ]);
 
             expect(PlotlyInternal.redraw).toHaveBeenCalled();
@@ -546,12 +546,12 @@ describe('Test plot api', function() {
             var maxPoints = 3;
 
             Plotly.extendTraces(gd, {
-                x: [[3, 4],[4, 5]], 'marker.size': [[0, -1],[5, 6]]
+                x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
             }, [0, 1], maxPoints);
 
             expect(gd.data).toEqual([
-                {x: [2,3,4], marker: {size: [1,0,-1]}},
-                {x: [3,4,5], marker: {size: [4,5,6]}}
+                {x: [2, 3, 4], marker: {size: [1, 0, -1]}},
+                {x: [3, 4, 5], marker: {size: [4, 5, 6]}}
             ]);
         });
 
@@ -563,8 +563,8 @@ describe('Test plot api', function() {
             }, [0, 1], maxPoints);
 
             expect(gd.data).toEqual([
-                {x: [2,3,4], marker: {size: [1,0,-1]}},
-                {x: [3,4,5], marker: {size: [4,5,6]}}
+                {x: [2, 3, 4], marker: {size: [1, 0, -1]}},
+                {x: [3, 4, 5], marker: {size: [4, 5, 6]}}
             ]);
         });
 
@@ -576,8 +576,8 @@ describe('Test plot api', function() {
             }, [0, 1], maxPoints);
 
             expect(gd.data).toEqual([
-                {x: [3,4], marker: {size: [-1]}},
-                {x: [3,4,5], marker: {size: [5,6]}}
+                {x: [3, 4], marker: {size: [-1]}},
+                {x: [3, 4, 5], marker: {size: [5, 6]}}
             ]);
         });
 
@@ -658,7 +658,7 @@ describe('Test plot api', function() {
             var gd = createGraphDiv();
             var initialKeys = Object.keys(gd);
             var intialHTML = gd.innerHTML;
-            var mockData = [{ x: [1,2,3], y: [2,3,4] }];
+            var mockData = [{ x: [1, 2, 3], y: [2, 3, 4] }];
 
             Plotly.plot(gd, mockData).then(function() {
                 Plotly.purge(gd);

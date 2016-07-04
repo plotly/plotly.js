@@ -169,10 +169,12 @@ proto.makeFramework = function() {
     _this.plotContainer.selectAll('.backplot,.frontplot,.grids')
         .call(Drawing.setClipUrl, clipId);
 
-    _this.initInteractions();
+    if(!_this.graphDiv._context.staticPlot) {
+        _this.initInteractions();
+    }
 };
 
-var w_over_h = Math.sqrt(4/3);
+var w_over_h = Math.sqrt(4 / 3);
 
 proto.adjustLayout = function(ternaryLayout, graphSize) {
     var _this = this,
@@ -300,7 +302,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
     });
     setConvert(caxis);
 
-    var triangleClip = 'M' + x0 + ',' + (y0 + h) + 'h' + w + 'l-' + (w/2) + ',-' + h + 'Z';
+    var triangleClip = 'M' + x0 + ',' + (y0 + h) + 'h' + w + 'l-' + (w / 2) + ',-' + h + 'Z';
     _this.clipDef.select('path').attr('d', triangleClip);
     _this.layers.plotbg.select('path').attr('d', triangleClip);
 
@@ -478,13 +480,13 @@ proto.initInteractions = function() {
         mins = mins0;
         span0 = _this.aaxis.range[1] - mins0.a;
         lum = tinycolor(_this.graphDiv._fullLayout[_this.id].bgcolor).getLuminance();
-        path0 = 'M0,' + _this.h + 'L' + (_this.w / 2) +', 0L' + _this.w + ',' + _this.h + 'Z';
+        path0 = 'M0,' + _this.h + 'L' + (_this.w / 2) + ', 0L' + _this.w + ',' + _this.h + 'Z';
         dimmed = false;
 
         zb = zoomContainer.append('path')
             .attr('class', 'zoombox')
             .style({
-                'fill': lum>0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
+                'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
             .attr('d', path0);
@@ -497,7 +499,7 @@ proto.initInteractions = function() {
                 'stroke-width': 1,
                 opacity: 0
             })
-            .attr('d','M0,0Z');
+            .attr('d', 'M0,0Z');
 
         clearSelect();
     }
@@ -541,11 +543,11 @@ proto.initInteractions = function() {
 
         if(!dimmed) {
             zb.transition()
-                .style('fill', lum>0.2 ? 'rgba(0,0,0,0.4)' :
+                .style('fill', lum > 0.2 ? 'rgba(0,0,0,0.4)' :
                     'rgba(255,255,255,0.3)')
                 .duration(200);
             corners.transition()
-                .style('opacity',1)
+                .style('opacity', 1)
                 .duration(200);
             dimmed = true;
         }
@@ -568,7 +570,7 @@ proto.initInteractions = function() {
         Plotly.relayout(gd, attrs);
 
         if(SHOWZOOMOUTTIP && gd.data && gd._context.showTips) {
-            Lib.notifier('Double-click to<br>zoom back out','long');
+            Lib.notifier('Double-click to<br>zoom back out', 'long');
             SHOWZOOMOUTTIP = false;
         }
     }
@@ -657,9 +659,9 @@ proto.initInteractions = function() {
         Plotly.relayout(gd, attrs);
     }
 
-    dragElement.init(dragOptions);
-
     // finally, set up hover and click
+    // these event handlers must already be set before dragElement.init
+    // so it can stash them and override them.
     dragger.onmousemove = function(evt) {
         fx.hover(gd, evt, _this.id);
         gd._fullLayout._lasthover = dragger;
@@ -676,18 +678,7 @@ proto.initInteractions = function() {
         fx.click(gd, evt);
     };
 
-    // make a fake plotinfo for fx.hover
-    // it hardly uses it, could probably be refactored out...
-    // but specifying subplot by name does seem nice for js applications
-    // that want to hook into this.
-    if(!gd._fullLayout._plots) gd._fullLayout._plots = {};
-    gd._fullLayout._plots[_this.id] = {
-        overlays: [],
-        xaxis: _this.xaxis,
-        yaxis: _this.yaxis,
-        x: function() { return _this.xaxis; },
-        y: function() { return _this.yaxis; }
-    };
+    dragElement.init(dragOptions);
 };
 
 function removeZoombox(gd) {

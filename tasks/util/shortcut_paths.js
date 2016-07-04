@@ -12,7 +12,8 @@ var shortcutsConfig = {
     '@src': constants.pathToSrc,
     '@lib': constants.pathToLib,
     '@mocks': constants.pathToTestImageMocks,
-    '@assets': constants.pathToJasmineTestAssets
+    '@assets': constants.pathToJasmineTestAssets,
+    '@build': constants.pathToBuild
 };
 
 module.exports = transformTools.makeRequireTransform('requireTransform',
@@ -25,7 +26,7 @@ module.exports = transformTools.makeRequireTransform('requireTransform',
             if(pathIn.indexOf(k) !== -1) {
                 var tail = pathIn.split(k)[1];
                 var newPath = path.join(shortcutsConfig[k], tail).replace(/\\/g, '/');
-                pathOut = 'require(\''+ newPath + '\')';
+                pathOut = 'require(\'' + newPath + '\')';
             }
         });
 

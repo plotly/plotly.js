@@ -18,8 +18,6 @@ var handleAxisDefaults = require('./axis_defaults');
 var axesNames = ['aaxis', 'baxis', 'caxis'];
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
-    if(!layoutOut._hasTernary) return;
-
     handleSubplotDefaults(layoutIn, layoutOut, fullData, {
         type: 'ternary',
         attributes: layoutAttributes,

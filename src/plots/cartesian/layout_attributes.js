@@ -131,7 +131,9 @@ module.exports = {
         dflt: 0,
         role: 'style',
         description: [
-            'Sets the number of ticks.',
+            'Specifies the maximum number of ticks for the particular axis.',
+            'The actual number of ticks will be chosen automatically to be',
+            'less than or equal to `nticks`.',
             'Has an effect only if `tickmode` is set to *auto*.'
         ].join(' ')
     },
@@ -180,7 +182,7 @@ module.exports = {
         description: [
             'Sets the text displayed at the ticks position via `tickvals`.',
             'Only has an effect if `tickmode` is set to *array*.',
-            'Used with `ticktext`.'
+            'Used with `tickvals`.'
         ].join(' ')
     },
     ticks: {
