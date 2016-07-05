@@ -3,7 +3,7 @@ module.exports = {
     // toBeCloseTo... but for arrays
     toBeCloseToArray: function() {
         return {
-            compare: function(actual, expected, precision) {
+            compare: function(actual, expected, precision, msgExtra) {
                 precision = coercePosition(precision);
 
                 var tested = actual.map(function(element, i) {
@@ -15,9 +15,13 @@ module.exports = {
                     tested.indexOf(false) < 0
                 );
 
+                var message = [
+                    'Expected', actual, 'to be close to', expected, msgExtra
+                ].join(' ');
+
                 return {
                     pass: passed,
-                    message: 'Expected ' + actual + ' to be close to ' + expected + '.'
+                    message: message
                 };
             }
         };
@@ -26,7 +30,7 @@ module.exports = {
     // toBeCloseTo... but for 2D arrays
     toBeCloseTo2DArray: function() {
         return {
-            compare: function(actual, expected, precision) {
+            compare: function(actual, expected, precision, msgExtra) {
                 precision = coercePosition(precision);
 
                 var passed = true;
@@ -54,7 +58,8 @@ module.exports = {
                     'Expected',
                     arrayToStr(actual.map(arrayToStr)),
                     'to be close to',
-                    arrayToStr(expected.map(arrayToStr))
+                    arrayToStr(expected.map(arrayToStr)),
+                    msgExtra
                 ].join(' ');
 
                 return {
