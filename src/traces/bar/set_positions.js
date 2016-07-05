@@ -142,6 +142,11 @@ module.exports = function setPositions(gd, plotinfo) {
             for(i = 0; i < bl.length; i++) { // trace index
                 ti = gd.calcdata[bl[i]];
                 for(j = 0; j < ti.length; j++) {
+
+                    // skip over bars with no size,
+                    // so that we don't try to stack them
+                    if(!isNumeric(ti[j].s)) continue;
+
                     sv = Math.round(ti[j].p / sumround);
                     // store the negative sum value for p at the same key, with sign flipped
                     if(relative && ti[j].s < 0) sv = -sv;
