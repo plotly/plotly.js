@@ -1,3 +1,8 @@
+'use strict';
+
+var isNumeric = require('fast-isnumeric');
+
+
 module.exports = {
 
     // toBeCloseTo... but for arrays
@@ -7,7 +12,7 @@ module.exports = {
                 precision = coercePosition(precision);
 
                 var tested = actual.map(function(element, i) {
-                    return Math.abs(expected[i] - element) < precision;
+                    return isClose(element, expected[i], precision);
                 });
 
                 var passed = (
@@ -44,9 +49,7 @@ module.exports = {
                         }
 
                         for(var j = 0; j < expected[i].length; ++j) {
-                            var isClose = Math.abs(expected[i][j] - actual[i][j]) < precision;
-
-                            if(!isClose) {
+                            if(!isClose(actual[i][j], expected[i][j], precision)) {
                                 passed = false;
                                 break;
                             }
@@ -70,6 +73,14 @@ module.exports = {
         };
     }
 };
+
+function isClose(actual, expected, precision) {
+    if(isNumeric(actual) && isNumeric(expected)) {
+        return Math.abs(actual - expected) < precision;
+    }
+
+    return actual === expected;
+}
 
 function coercePosition(precision) {
     if(precision !== 0) {
