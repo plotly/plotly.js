@@ -15,7 +15,7 @@
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.14.0';
+exports.version = '1.14.1';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -28,10 +28,8 @@ exports.prependTraces = Plotly.prependTraces;
 exports.addTraces = Plotly.addTraces;
 exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
-exports.animate = Plotly.animate;
 exports.addFrames = Plotly.addFrames;
 exports.deleteFrames = Plotly.deleteFrames;
-exports.renameFrame = Plotly.renameFrame;
 exports.transition = Plotly.transition;
 exports.animate = Plotly.animate;
 exports.purge = Plotly.purge;

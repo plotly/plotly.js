@@ -19,7 +19,7 @@ function makeContourProjAttr(axLetter) {
         dflt: false,
         description: [
             'Determines whether or not these contour lines are projected',
-            'on the', axLetter, 'axis walls.',
+            'on the', axLetter, 'plane.',
             'If `highlight` is set to *true* (the default), the projected',
             'lines are shown on hover.',
             'If `show` is set to *true*, the projected lines are shown',

@@ -191,7 +191,7 @@ module.exports = {
                 dflt: 2,
                 role: 'style',
                 description: [
-                    'Sets the line radius.',
+                    'Sets the line width.',
                     'Has an effect only when `type` is set to *line*.'
                 ].join(' ')
             }

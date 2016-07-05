@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.14.0
+* plotly.js v1.14.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -60704,7 +60704,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.14.0';
+exports.version = '1.14.1';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -83808,9 +83808,9 @@ proto.initInteractions = function() {
         Plotly.relayout(gd, attrs);
     }
 
-    dragElement.init(dragOptions);
-
     // finally, set up hover and click
+    // these event handlers must already be set before dragElement.init
+    // so it can stash them and override them.
     dragger.onmousemove = function(evt) {
         fx.hover(gd, evt, _this.id);
         gd._fullLayout._lasthover = dragger;
@@ -83826,6 +83826,8 @@ proto.initInteractions = function() {
     dragger.onclick = function(evt) {
         fx.click(gd, evt);
     };
+
+    dragElement.init(dragOptions);
 };
 
 function removeZoombox(gd) {
@@ -89255,7 +89257,6 @@ function plotOne(gd, plotinfo, cd) {
 
     image3.enter().append('svg:image').attr({
         xmlns: xmlnsNamespaces.svg,
-        'xlink:href': canvas.toDataURL('image/png'),
         preserveAspectRatio: 'none'
     });
 
@@ -89263,7 +89264,8 @@ function plotOne(gd, plotinfo, cd) {
         height: imageHeight,
         width: imageWidth,
         x: left,
-        y: top
+        y: top,
+        'xlink:href': canvas.toDataURL('image/png')
     });
 
     image3.exit().remove();
@@ -93250,6 +93252,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         }
 
         if(inside) {
+            // constrain ymin/max to the visible plot, so the label goes
+            // at the middle of the piece you can see
+            ymin = Math.max(ymin, 0);
+            ymax = Math.min(ymax, ya._length);
+
             // find the overall left-most and right-most points of the
             // polygon(s) we're inside at their combined vertical midpoint.
             // This is where we will draw the hover label.
@@ -93270,6 +93277,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                     }
                 }
             }
+
+            // constrain xmin/max to the visible plot now too
+            xmin = Math.max(xmin, 0);
+            xmax = Math.min(xmax, xa._length);
 
             // get only fill or line color for the hover color
             var color = Color.defaultLine;
@@ -96665,12 +96676,29 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
     if(!scatterPointData || scatterPointData[0].index === false) return;
 
-    // if hovering on a fill, we don't show any point data so the label is
-    // unchanged from what scatter gives us.
-    if(scatterPointData[0].index === undefined) return scatterPointData;
+    var newPointData = scatterPointData[0];
 
-    var newPointData = scatterPointData[0],
-        cdi = newPointData.cd[newPointData.index];
+    // if hovering on a fill, we don't show any point data so the label is
+    // unchanged from what scatter gives us - except that it needs to
+    // be constrained to the trianglular plot area, not just the rectangular
+    // area defined by the synthetic x and y axes
+    // TODO: in some cases the vertical middle of the shape is not within
+    // the triangular viewport at all, so the label can become disconnected
+    // from the shape entirely. But calculating what portion of the shape
+    // is actually visible, as constrained by the diagonal axis lines, is not
+    // so easy and anyway we lost the information we would have needed to do
+    // this inside scatterHover.
+    if(newPointData.index === undefined) {
+        var yFracUp = 1 - (newPointData.y0 / pointData.ya._length),
+            xLen = pointData.xa._length,
+            xMin = xLen * yFracUp / 2,
+            xMax = xLen - xMin;
+        newPointData.x0 = Math.max(Math.min(newPointData.x0, xMax), xMin);
+        newPointData.x1 = Math.max(Math.min(newPointData.x1, xMax), xMin);
+        return scatterPointData;
+    }
+
+    var cdi = newPointData.cd[newPointData.index];
 
     newPointData.a = cdi.a;
     newPointData.b = cdi.b;
@@ -96867,7 +96895,7 @@ function makeContourProjAttr(axLetter) {
         dflt: false,
         description: [
             'Determines whether or not these contour lines are projected',
-            'on the', axLetter, 'axis walls.',
+            'on the', axLetter, 'plane.',
             'If `highlight` is set to *true* (the default), the projected',
             'lines are shown on hover.',
             'If `show` is set to *true*, the projected lines are shown',
