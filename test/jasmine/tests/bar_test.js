@@ -183,4 +183,44 @@ describe('heatmap calc / setPositions', function() {
         assertTraceField(out, 't.dbar', [1, 1]);
     });
 
+    it('should fill in calc pt fields (relative case)', function() {
+        var out = _calc([{
+            y: [20, 14, -23]
+        }, {
+            y: [-12, -18, -29]
+        }], {
+            barmode: 'relative'
+        });
+
+        assertPtField(out, 'x', [[0, 1, 2], [0, 1, 2]]);
+        assertPtField(out, 'y', [[20, 14, -23], [-12, -18, -52]]);
+        assertPtField(out, 'b', [[0, 0, 0], [0, 0, -23]]);
+        assertPtField(out, 's', [[20, 14, -23], [-12, -18, -29]]);
+        assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2]]);
+        assertTraceField(out, 't.barwidth', [0.8, 0.8]);
+        assertTraceField(out, 't.poffset', [-0.4, -0.4]);
+        assertTraceField(out, 't.dbar', [1, 1]);
+    });
+
+    it('should fill in calc pt fields (relative / percent case)', function() {
+        var out = _calc([{
+            x: ['A', 'B', 'C', 'D'],
+            y: [20, 14, 40, -60]
+        }, {
+            x: ['A', 'B', 'C', 'D'],
+            y: [-12, -18, 60, -40]
+        }], {
+            barmode: 'relative',
+            barnorm: 'percent'
+        });
+
+        assertPtField(out, 'x', [[0, 1, 2, 3], [0, 1, 2, 3]]);
+        assertPtField(out, 'y', [[100, 100, 40, -60], [-100, -100, 100, -100]]);
+        assertPtField(out, 'b', [[0, 0, 0, 0], [0, 0, 40, -60]]);
+        assertPtField(out, 's', [[100, 100, 40, -60], [-100, -100, 60, -40]]);
+        assertPtField(out, 'p', [[0, 1, 2, 3], [0, 1, 2, 3]]);
+        assertTraceField(out, 't.barwidth', [0.8, 0.8]);
+        assertTraceField(out, 't.poffset', [-0.4, -0.4]);
+        assertTraceField(out, 't.dbar', [1, 1]);
+    });
 });
