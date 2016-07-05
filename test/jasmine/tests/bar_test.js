@@ -1,4 +1,9 @@
+var Plots = require('@src/plots/plots');
+var Lib = require('@src/lib');
+
 var Bar = require('@src/traces/bar');
+
+var customMatchers = require('../assets/custom_matchers');
 
 describe('bar supplyDefaults', function() {
     'use strict';
@@ -56,17 +61,126 @@ describe('bar supplyDefaults', function() {
     });
 });
 
+describe('heatmap calc / setPositions', function() {
     'use strict';
 
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
 
+    function _calc(dataOpts, layout) {
+        var baseData = { type: 'bar' };
 
-
+        var data = dataOpts.map(function(traceOpts) {
+            return Lib.extendFlat({}, baseData, traceOpts);
         });
 
+        var gd = {
+            data: data,
+            layout: layout,
+            calcdata: []
+        };
+
+        Plots.supplyDefaults(gd);
+
+        gd._fullData.forEach(function(fullTrace) {
+            var cd = Bar.calc(gd, fullTrace);
+
+            cd[0].t = {};
+            cd[0].trace = fullTrace;
+
+            gd.calcdata.push(cd);
         });
 
+        var plotinfo = {
+            x: function() { return gd._fullLayout.xaxis; },
+            y: function() { return gd._fullLayout.yaxis; }
+        };
+
+        Bar.setPositions(gd, plotinfo);
+
+        return gd.calcdata;
+    }
+
+    function assertPtField(calcData, prop, expectation) {
+        var values = [];
+
+        calcData.forEach(function(calcTrace) {
+            var vals = calcTrace.map(function(pt) {
+                return Lib.nestedProperty(pt, prop).get();
+            });
+
+            values.push(vals);
         });
 
+        expect(values).toBeCloseTo2DArray(expectation, undefined, '- field ' + prop);
+    }
+
+    function assertTraceField(calcData, prop, expectation) {
+        var values = calcData.map(function(calcTrace) {
+            return Lib.nestedProperty(calcTrace[0], prop).get();
+        });
+
+        expect(values).toBeCloseToArray(expectation, undefined, '- field ' + prop);
+    }
+
+    it('should fill in calc pt fields (stack case)', function() {
+        var out = _calc([{
+            y: [2, 1, 2]
+        }, {
+            y: [3, 1, 2]
+        }, {
+            y: [null, null, 2]
+        }], {
+            barmode: 'stack'
+        });
+
+        assertPtField(out, 'x', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
+        assertPtField(out, 'y', [[2, 1, 2], [5, 2, 4], [undefined, undefined, 6]]);
+        assertPtField(out, 'b', [[0, 0, 0], [2, 1, 2], [0, 0, 4]]);
+        assertPtField(out, 's', [[2, 1, 2], [3, 1, 2], [undefined, undefined, 2]]);
+        assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
+        assertTraceField(out, 't.barwidth', [0.8, 0.8, 0.8]);
+        assertTraceField(out, 't.poffset', [-0.4, -0.4, -0.4]);
+        assertTraceField(out, 't.dbar', [1, 1, 1]);
+    });
+
+    it('should fill in calc pt fields (overlay case)', function() {
+        var out = _calc([{
+            y: [2, 1, 2]
+        }, {
+            y: [3, 1, 2]
+        }], {
+            barmode: 'overlay'
+        });
+
+        assertPtField(out, 'x', [[0, 1, 2], [0, 1, 2]]);
+        assertPtField(out, 'y', [[2, 1, 2], [3, 1, 2]]);
+        assertPtField(out, 'b', [[0, 0, 0], [0, 0, 0]]);
+        assertPtField(out, 's', [[2, 1, 2], [3, 1, 2]]);
+        assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2]]);
+        assertTraceField(out, 't.barwidth', [0.8, 0.8]);
+        assertTraceField(out, 't.poffset', [-0.4, -0.4]);
+        assertTraceField(out, 't.dbar', [1, 1]);
+    });
+
+    it('should fill in calc pt fields (group case)', function() {
+        var out = _calc([{
+            y: [2, 1, 2]
+        }, {
+            y: [3, 1, 2]
+        }], {
+            barmode: 'group'
+        });
+
+        assertPtField(out, 'x', [[-0.2, 0.8, 1.8], [0.2, 1.2, 2.2]]);
+        assertPtField(out, 'y', [[2, 1, 2], [3, 1, 2]]);
+        assertPtField(out, 'b', [[0, 0, 0], [0, 0, 0]]);
+        assertPtField(out, 's', [[2, 1, 2], [3, 1, 2]]);
+        assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2]]);
+        assertTraceField(out, 't.barwidth', [0.4, 0.4]);
+        assertTraceField(out, 't.poffset', [-0.4, 0]);
+        assertTraceField(out, 't.dbar', [1, 1]);
     });
 
 });
