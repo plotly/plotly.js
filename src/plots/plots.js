@@ -582,12 +582,17 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             if(oldUid === newTrace.uid) continue oldLoop;
         }
 
-        // clean old heatmap and contour traces
+        // clean old heatmap, contour, and scatter traces
+        //
+        // Note: This is also how scatter traces (cartesian and scatterternary) get
+        // removed since otherwise the scatter module is not called (and so the join
+        // doesn't register the removal) if scatter traces disappear entirely.
         if(hasPaper) {
             oldFullLayout._paper.selectAll(
                 '.hm' + oldUid +
                 ',.contour' + oldUid +
-                ',#clip' + oldUid
+                ',#clip' + oldUid +
+                ',.trace' + oldUid
             ).remove();
         }
 
