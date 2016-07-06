@@ -1181,3 +1181,86 @@ plots.modifyFrames = function(gd, operations) {
 
     return Promise.resolve();
 };
+
+/*
+ * Compute a keyframe. Merge a keyframe into its base frame(s) and
+ * expand properties.
+ *
+ * @param {object} frame
+ *      The keyframe to be computed
+ *
+ * Returns: a third object with the merged content
+ */
+plots.computeFrame = function(gd, frameName) {
+    var i, traceIndices, traceIndex, expandedObj, destIndex;
+    var _hash = gd._frameData._frameHash;
+
+    var framePtr = _hash[frameName];
+
+    // Return false if the name is invalid:
+    if(!framePtr) {
+        return false;
+    }
+
+    var frameStack = [framePtr];
+    var frameNameStack = [framePtr.name];
+
+    // Follow frame pointers:
+    while((framePtr = gd._frameData._frameHash[framePtr.baseFrame])) {
+        // Avoid infinite loops:
+        if(frameNameStack.indexOf(framePtr.name) !== -1) break;
+
+        frameStack.push(framePtr);
+        frameNameStack.push(framePtr.name);
+    }
+
+    // A new object for the merged result:
+    var result = {};
+
+    // Merge, starting with the last and ending with the desired frame:
+    while((framePtr = frameStack.pop())) {
+        if(framePtr.layout) {
+            expandedObj = Lib.expandObjectPaths(framePtr.layout);
+            result.layout = Lib.extendDeepNoArrays(result.layout || {}, expandedObj);
+        }
+
+        if(framePtr.data) {
+            if(!result.data) {
+                result.data = [];
+            }
+            traceIndices = framePtr.traceIndices;
+
+            if(!traceIndices) {
+                // If not defined, assume serial order starting at zero
+                traceIndices = [];
+                for(i = 0; i < framePtr.data.length; i++) {
+                    traceIndices[i] = i;
+                }
+            }
+
+            if(!result.traceIndices) {
+                result.traceIndices = [];
+            }
+
+            for(i = 0; i < framePtr.data.length; i++) {
+                // Loop through this frames data, find out where it should go,
+                // and merge it!
+                traceIndex = traceIndices[i];
+                if(traceIndex === undefined || traceIndex === null) {
+                    continue;
+                }
+
+                destIndex = result.traceIndices.indexOf(traceIndex);
+                if(destIndex === -1) {
+                    destIndex = result.data.length;
+                    result.traceIndices[destIndex] = traceIndex;
+                }
+
+                expandedObj = Lib.expandObjectPaths(framePtr.data[i]);
+                result.data[destIndex] = Lib.extendDeepNoArrays(result.data[destIndex] || {}, expandedObj);
+            }
+        }
+    }
+
+    return result;
+};

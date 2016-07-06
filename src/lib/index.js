@@ -546,10 +546,10 @@ lib.objectFromPath = function(path, value) {
  * Iterate through an object in-place, converting dotted properties to objects.
  *
  * @example
- * lib.expandObjectPaths('nested.test[2].path', 'value');
- * // returns { nested: { test: [null, null, { path: 'value' }]}
- *
+ * lib.expandObjectPaths({'nested.test.path': 'value'});
+ * // returns { nested: { test: {path: 'value'}}}
  */
+
 // Store this to avoid recompiling regex on every prop since this may happen many
 // many times for animations.
 // TODO: Premature optimization? Remove?
