@@ -1,62 +1,186 @@
+var Plots = require('@src/plots/plots');
+var Lib = require('@src/lib');
+
 var Bar = require('@src/traces/bar');
 
+var customMatchers = require('../assets/custom_matchers');
 
-describe('Test bar', function() {
+describe('bar supplyDefaults', function() {
     'use strict';
 
-    describe('supplyDefaults', function() {
-        var traceIn,
-            traceOut;
+    var traceIn,
+        traceOut;
 
-        var defaultColor = '#444';
+    var defaultColor = '#444';
 
-        var supplyDefaults = Bar.supplyDefaults;
+    var supplyDefaults = Bar.supplyDefaults;
 
-        beforeEach(function() {
-            traceOut = {};
+    beforeEach(function() {
+        traceOut = {};
+    });
+
+    it('should set visible to false when x and y are empty', function() {
+        traceIn = {};
+        supplyDefaults(traceIn, traceOut, defaultColor);
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            x: [],
+            y: []
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor);
+        expect(traceOut.visible).toBe(false);
+    });
+
+    it('should set visible to false when x or y is empty', function() {
+        traceIn = {
+            x: []
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor);
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            x: [],
+            y: [1, 2, 3]
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor);
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            y: []
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor);
+        expect(traceOut.visible).toBe(false);
+
+        traceIn = {
+            x: [1, 2, 3],
+            y: []
+        };
+        supplyDefaults(traceIn, traceOut, defaultColor);
+        expect(traceOut.visible).toBe(false);
+    });
+});
+
+describe('heatmap calc / setPositions', function() {
+    'use strict';
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    function _calc(dataOpts, layout) {
+        var baseData = { type: 'bar' };
+
+        var data = dataOpts.map(function(traceOpts) {
+            return Lib.extendFlat({}, baseData, traceOpts);
         });
 
-        it('should set visible to false when x and y are empty', function() {
-            traceIn = {};
-            supplyDefaults(traceIn, traceOut, defaultColor);
-            expect(traceOut.visible).toBe(false);
+        var gd = {
+            data: data,
+            layout: layout,
+            calcdata: []
+        };
 
-            traceIn = {
-                x: [],
-                y: []
-            };
-            supplyDefaults(traceIn, traceOut, defaultColor);
-            expect(traceOut.visible).toBe(false);
+        Plots.supplyDefaults(gd);
+
+        gd._fullData.forEach(function(fullTrace) {
+            var cd = Bar.calc(gd, fullTrace);
+
+            cd[0].t = {};
+            cd[0].trace = fullTrace;
+
+            gd.calcdata.push(cd);
         });
 
-        it('should set visible to false when x or y is empty', function() {
-            traceIn = {
-                x: []
-            };
-            supplyDefaults(traceIn, traceOut, defaultColor);
-            expect(traceOut.visible).toBe(false);
+        var plotinfo = {
+            x: function() { return gd._fullLayout.xaxis; },
+            y: function() { return gd._fullLayout.yaxis; }
+        };
 
-            traceIn = {
-                x: [],
-                y: [1, 2, 3]
-            };
-            supplyDefaults(traceIn, traceOut, defaultColor);
-            expect(traceOut.visible).toBe(false);
+        Bar.setPositions(gd, plotinfo);
 
-            traceIn = {
-                y: []
-            };
-            supplyDefaults(traceIn, traceOut, defaultColor);
-            expect(traceOut.visible).toBe(false);
+        return gd.calcdata;
+    }
 
-            traceIn = {
-                x: [1, 2, 3],
-                y: []
-            };
-            supplyDefaults(traceIn, traceOut, defaultColor);
-            expect(traceOut.visible).toBe(false);
+    function assertPtField(calcData, prop, expectation) {
+        var values = [];
+
+        calcData.forEach(function(calcTrace) {
+            var vals = calcTrace.map(function(pt) {
+                return Lib.nestedProperty(pt, prop).get();
+            });
+
+            values.push(vals);
         });
 
+        expect(values).toBeCloseTo2DArray(expectation, undefined, '- field ' + prop);
+    }
+
+    function assertTraceField(calcData, prop, expectation) {
+        var values = calcData.map(function(calcTrace) {
+            return Lib.nestedProperty(calcTrace[0], prop).get();
+        });
+
+        expect(values).toBeCloseToArray(expectation, undefined, '- field ' + prop);
+    }
+
+    it('should fill in calc pt fields (stack case)', function() {
+        var out = _calc([{
+            y: [2, 1, 2]
+        }, {
+            y: [3, 1, 2]
+        }, {
+            y: [null, null, 2]
+        }], {
+            barmode: 'stack'
+        });
+
+        assertPtField(out, 'x', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
+        assertPtField(out, 'y', [[2, 1, 2], [5, 2, 4], [undefined, undefined, 6]]);
+        assertPtField(out, 'b', [[0, 0, 0], [2, 1, 2], [0, 0, 4]]);
+        assertPtField(out, 's', [[2, 1, 2], [3, 1, 2], [undefined, undefined, 2]]);
+        assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2], [0, 1, 2]]);
+        assertTraceField(out, 't.barwidth', [0.8, 0.8, 0.8]);
+        assertTraceField(out, 't.poffset', [-0.4, -0.4, -0.4]);
+        assertTraceField(out, 't.dbar', [1, 1, 1]);
+    });
+
+    it('should fill in calc pt fields (overlay case)', function() {
+        var out = _calc([{
+            y: [2, 1, 2]
+        }, {
+            y: [3, 1, 2]
+        }], {
+            barmode: 'overlay'
+        });
+
+        assertPtField(out, 'x', [[0, 1, 2], [0, 1, 2]]);
+        assertPtField(out, 'y', [[2, 1, 2], [3, 1, 2]]);
+        assertPtField(out, 'b', [[0, 0, 0], [0, 0, 0]]);
+        assertPtField(out, 's', [[2, 1, 2], [3, 1, 2]]);
+        assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2]]);
+        assertTraceField(out, 't.barwidth', [0.8, 0.8]);
+        assertTraceField(out, 't.poffset', [-0.4, -0.4]);
+        assertTraceField(out, 't.dbar', [1, 1]);
+    });
+
+    it('should fill in calc pt fields (group case)', function() {
+        var out = _calc([{
+            y: [2, 1, 2]
+        }, {
+            y: [3, 1, 2]
+        }], {
+            barmode: 'group'
+        });
+
+        assertPtField(out, 'x', [[-0.2, 0.8, 1.8], [0.2, 1.2, 2.2]]);
+        assertPtField(out, 'y', [[2, 1, 2], [3, 1, 2]]);
+        assertPtField(out, 'b', [[0, 0, 0], [0, 0, 0]]);
+        assertPtField(out, 's', [[2, 1, 2], [3, 1, 2]]);
+        assertPtField(out, 'p', [[0, 1, 2], [0, 1, 2]]);
+        assertTraceField(out, 't.barwidth', [0.4, 0.4]);
+        assertTraceField(out, 't.poffset', [-0.4, 0]);
+        assertTraceField(out, 't.dbar', [1, 1]);
     });
 
 });
