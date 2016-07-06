@@ -550,29 +550,37 @@ annotations.draw = function(gd, index, opt, value) {
         var annbase = 'annotations[' + index + ']';
 
         var emitEditAnnotation = function(gd, update, optionsIn, options) {
-            var annBeingEdited = /(.*].)/.exec(Object.keys(update)[0])[1];
+            console.log('*** update: ' + JSON.stringify(update))
+            var annBeingEdited = null
+            for(var key in update) {
+                var match = /(.*].)/.exec(key)
+                if(match)
+                  annBeingEdited = match[1]
+            }
 
-            ['x', 'y'].forEach(function(axLetter) {
-                var axis = Axes.getFromId(gd, options[axLetter + 'ref']);
+            if(annBeingEdited) {
+                ['x', 'y'].forEach(function(axLetter) {
+                    var axis = Axes.getFromId(gd, options[axLetter + 'ref']);
 
-                if(axis.type === 'date') {
-                    if(update[annBeingEdited + axLetter]) {
-                        update[annBeingEdited + axLetter] = Lib.ms2DateTime(update[annBeingEdited + axLetter]);
-                    }
+                    if(axis.type === 'date') {
+                        if(update[annBeingEdited + axLetter]) {
+                            update[annBeingEdited + axLetter] = Lib.ms2DateTime(update[annBeingEdited + axLetter]);
+                        }
 
-                    if(options['a' + axLetter + 'ref'] === options[axLetter + 'ref']) {
-                        if(update[annBeingEdited + 'a' + axLetter]) {
-                            update[annBeingEdited + 'a' + axLetter] = Lib.ms2DateTime(update[annBeingEdited + 'a' + axLetter]);
+                        if(options['a' + axLetter + 'ref'] === options[axLetter + 'ref']) {
+                            if(update[annBeingEdited + 'a' + axLetter]) {
+                                update[annBeingEdited + 'a' + axLetter] = Lib.ms2DateTime(update[annBeingEdited + 'a' + axLetter]);
+                            }
                         }
                     }
-                }
-            });
+                });
 
-            gd.emit('plotly_editannotation', {
-                update: update,
-                annotation: optionsIn,
-                fullAnnotation: options
-            });
+                gd.emit('plotly_editannotation', {
+                    update: update,
+                    annotation: optionsIn,
+                    fullAnnotation: options
+                });
+            }
         };
 
         // add the arrow
