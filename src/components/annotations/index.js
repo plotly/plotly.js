@@ -549,6 +549,39 @@ annotations.draw = function(gd, index, opt, value) {
 
         var annbase = 'annotations[' + index + ']';
 
+        var emitEditAnnotation = function(gd, update, optionsIn, options) {
+            var annBeingEdited = null;
+            for(var key in update) {
+                var match = /(.*].)/.exec(key);
+                if(match)
+                    annBeingEdited = match[1];
+            }
+
+            if(annBeingEdited) {
+                ['x', 'y'].forEach(function(axLetter) {
+                    var axis = Axes.getFromId(gd, options[axLetter + 'ref']);
+
+                    if(axis.type === 'date') {
+                        if(update[annBeingEdited + axLetter]) {
+                            update[annBeingEdited + axLetter] = Lib.ms2DateTime(update[annBeingEdited + axLetter]);
+                        }
+
+                        if(options['a' + axLetter + 'ref'] === options[axLetter + 'ref']) {
+                            if(update[annBeingEdited + 'a' + axLetter]) {
+                                update[annBeingEdited + 'a' + axLetter] = Lib.ms2DateTime(update[annBeingEdited + 'a' + axLetter]);
+                            }
+                        }
+                    }
+                });
+
+                gd.emit('plotly_editannotation', {
+                    update: update,
+                    annotation: optionsIn,
+                    fullAnnotation: options
+                });
+            }
+        };
+
         // add the arrow
         // uses options[arrowwidth,arrowcolor,arrowhead] for styling
         var drawArrow = function(dx, dy) {
@@ -695,6 +728,7 @@ annotations.draw = function(gd, index, opt, value) {
                     },
                     doneFn: function(dragged) {
                         if(dragged) {
+                            emitEditAnnotation(gd, update, optionsIn, options);
                             Plotly.relayout(gd, update);
                             var notesBox = document.querySelector('.js-notes-box-panel');
                             if(notesBox) notesBox.redraw(notesBox.selectedObj);
@@ -787,6 +821,7 @@ annotations.draw = function(gd, index, opt, value) {
                 doneFn: function(dragged) {
                     setCursor(ann);
                     if(dragged) {
+                        emitEditAnnotation(gd, update, optionsIn, options);
                         Plotly.relayout(gd, update);
                         var notesBox = document.querySelector('.js-notes-box-panel');
                         if(notesBox) notesBox.redraw(notesBox.selectedObj);
