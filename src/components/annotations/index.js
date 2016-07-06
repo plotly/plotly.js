@@ -550,12 +550,11 @@ annotations.draw = function(gd, index, opt, value) {
         var annbase = 'annotations[' + index + ']';
 
         var emitEditAnnotation = function(gd, update, optionsIn, options) {
-            console.log('*** update: ' + JSON.stringify(update))
-            var annBeingEdited = null
+            var annBeingEdited = null;
             for(var key in update) {
-                var match = /(.*].)/.exec(key)
+                var match = /(.*].)/.exec(key);
                 if(match)
-                  annBeingEdited = match[1]
+                    annBeingEdited = match[1];
             }
 
             if(annBeingEdited) {
