@@ -318,6 +318,14 @@ proto.destroy = function() {
 
     this.glplot = null;
     this.stopped = true;
+
+    var traces = this.traces
+    if(traces) {
+        Object.keys(traces).map(function(key) {
+            traces[key].dispose();
+            traces[key] = null;
+        })
+    }
 };
 
 proto.plot = function(fullData, calcData, fullLayout) {
