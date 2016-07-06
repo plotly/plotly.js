@@ -107,25 +107,27 @@ function crawl(objIn, objOut, schema, list, path) {
         var valIn = objIn[k],
             valOut = objOut[k];
 
-        if(isPlainObject(valIn) && isPlainObject(valOut)) {
-            crawl(valIn, valOut, schema[k], list, p);
-        }
-        else if(!(k in schema)) {
+        var nestedSchema = getNestedSchema(schema, k);
+
+        if(!isInSchema(schema, k)) {
             list.push(format('schema', p));
         }
-        else if(schema[k].items && Array.isArray(valIn)) {
+        else if(isPlainObject(valIn) && isPlainObject(valOut)) {
+            crawl(valIn, valOut, nestedSchema, list, p);
+        }
+        else if(nestedSchema.items && Array.isArray(valIn)) {
             var itemName = k.substr(0, k.length - 1);
 
             for(var j = 0; j < valIn.length; j++) {
                 p[p.length - 1] = k + '[' + j + ']';
 
-                crawl(valIn[j], valOut[j], schema[k].items[itemName], list, p);
+                crawl(valIn[j], valOut[j], nestedSchema.items[itemName], list, p);
             }
         }
         else if(!(k in objOut)) {
             list.push(format('unused', p, valIn));
         }
-        else if(!Lib.validate(valIn, schema[k])) {
+        else if(!Lib.validate(valIn, nestedSchema)) {
             list.push(format('value', p, valIn));
         }
     }
@@ -152,5 +154,35 @@ function format(code, path, valIn) {
         code: code,
         path: path,
         msg: code2msgFunc[code](path, valIn)
+    };
+}
+
+function isInSchema(schema, key) {
+    var parts = splitKey(key),
+        keyMinusId = parts.keyMinusId,
+        id = parts.id;
+
+    if((keyMinusId in schema) && schema[keyMinusId]._isSubplotObj && id) {
+        return true;
+    }
+
+    return (key in schema);
+}
+
+function getNestedSchema(schema, key) {
+    var parts = splitKey(key);
+
+    return schema[parts.keyMinusId];
+}
+
+function splitKey(key) {
+    var idRegex = /([2-9]|[1-9][0-9]+)$/;
+
+    var keyMinusId = key.split(idRegex)[0],
+        id = key.substr(keyMinusId.length, key.length);
+
+    return {
+        keyMinusId: keyMinusId,
+        id: id
     };
 }
