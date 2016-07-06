@@ -809,6 +809,16 @@ plots.purge = function(gd) {
     // remove modebar
     if(fullLayout._modeBar) fullLayout._modeBar.destroy();
 
+    if(fullLayout._plots) {
+        Object.keys(fullLayout._plots).map(function(key) {
+            var plot = fullLayout._plots[key];
+            if(plot._scene2d) {
+                plot._scene2d.destroy();
+                plot._scene2d = null;
+            }
+        });
+    }
+
     // data and layout
     delete gd.data;
     delete gd.layout;
