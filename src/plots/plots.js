@@ -1137,7 +1137,7 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
  *      Sequence of operations to be performed on the keyframes
  */
 plots.modifyFrames = function(gd, operations) {
-    var i, op;
+    var i, op, frame;
     var _frames = gd._frameData._frames;
     var _hash = gd._frameData._frameHash;
 
@@ -1145,14 +1145,26 @@ plots.modifyFrames = function(gd, operations) {
         op = operations[i];
 
         switch(op.type) {
-            case 'rename':
-                var frame = _frames[op.index];
+            // No reason this couldn't exist, but is currently unused/untested:
+            /*case 'rename':
+                frame = _frames[op.index];
                 delete _hash[frame.name];
                 _hash[op.name] = frame;
-                break;
+                frame.name = op.name;
+                break;*/
             case 'replace':
                 frame = op.value;
-                _frames[op.index] = _hash[frame.name] = frame;
+                var oldName = _frames[op.index].name;
+                var newName = frame.name;
+                _frames[op.index] = _hash[newName] = frame;
+
+                if(newName !== oldName) {
+                    // If name has changed in addition to replacement, then update
+                    // the lookup table:
+                    delete _hash[oldName];
+                    _hash[newName] = frame;
+                }
+
                 break;
             case 'insert':
                 frame = op.value;

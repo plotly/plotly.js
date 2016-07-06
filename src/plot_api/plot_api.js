@@ -849,7 +849,7 @@ function doCalcdata(gd, traces) {
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
     var calcdata = new Array(fullData.length);
-    var oldCalcdata = gd.calcdata.slice(0);
+    var oldCalcdata = (gd.calcdata || []).slice(0);
     gd.calcdata = calcdata;
 
     // extra helper variables
@@ -2643,7 +2643,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
     for(i = frameList.length - 1; i >= 0; i--) {
         insertions.push({
             frame: frameList[i],
-            index: (indices && indices[i] !== undefined) ? indices[i] : bigIndex + i
+            index: (indices && indices[i] !== undefined && indices[i] !== null) ? indices[i] : bigIndex + i
         });
     }
 
@@ -2659,11 +2659,12 @@ Plotly.addFrames = function(gd, frameList, indices) {
     var frameCount = _frames.length;
 
     for(i = insertions.length - 1; i >= 0; i--) {
-        //frame = frameList[i];
         frame = insertions[i].frame;
 
         if(!frame.name) {
-            while(_frames[(frame.name = 'frame ' + gd._frameData._counter++)]);
+            // Repeatedly assign a default name, incrementing the counter each time until
+            // we get a name that's not in the hashed lookup table:
+            while(_hash[(frame.name = 'frame ' + gd._frameData._counter++)]);
         }
 
         if(_hash[frame.name]) {
@@ -2675,15 +2676,13 @@ Plotly.addFrames = function(gd, frameList, indices) {
             revops.unshift({type: 'replace', index: j, value: _frames[j]});
         } else {
             // Otherwise insert it at the end of the list:
-            idx = Math.min(insertions[i].index, frameCount);
+            idx = Math.max(0, Math.min(insertions[i].index, frameCount));
 
             ops.push({type: 'insert', index: idx, value: frame});
             revops.unshift({type: 'delete', index: idx});
             frameCount++;
         }
     }
-
-    Plots.modifyFrames(gd, ops);
 
     var undoFunc = Plots.modifyFrames,
         redoFunc = Plots.modifyFrames,
@@ -2692,7 +2691,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
 
     if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
-    return Promise.resolve();
+    return Plots.modifyFrames(gd, ops);
 };
 
 /**
@@ -2709,7 +2708,7 @@ Plotly.deleteFrames = function(gd, frameList) {
     var ops = [];
     var revops = [];
 
-    frameList = frameList.splice(0);
+    frameList = frameList.slice(0);
     frameList.sort();
 
     for(i = frameList.length - 1; i >= 0; i--) {
@@ -2718,8 +2717,6 @@ Plotly.deleteFrames = function(gd, frameList) {
         revops.unshift({type: 'insert', index: idx, value: _frames[idx]});
     }
 
-    Plots.modifyFrames(gd, ops);
-
     var undoFunc = Plots.modifyFrames,
         redoFunc = Plots.modifyFrames,
         undoArgs = [gd, revops],
@@ -2727,7 +2724,7 @@ Plotly.deleteFrames = function(gd, frameList) {
 
     if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
-    return Promise.resolve();
+    return Plots.modifyFrames(gd, ops);
 };
 
 /**
