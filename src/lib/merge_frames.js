@@ -21,7 +21,7 @@ var extend = require('./extend');
  *
  * Returns: a third object with the merged content
  */
-module.exports = function mergeKeyframes(target, source) {
+module.exports = function mergeFrames(target, source) {
     var result;
 
     result = extend.extendDeep({}, target);
