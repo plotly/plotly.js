@@ -24,6 +24,9 @@ var code2msgFunc = {
     schema: function(path) {
         return 'key ' + path.join('.') + ' is not part of the schema';
     },
+    container: function(path) {
+        return 'key ' + path.join('.') + ' is supposed to be linked to a container';
+    },
     unused: function(path, valIn) {
         var prefix = isPlainObject(valIn) ? 'container' : 'key';
 
@@ -114,6 +117,9 @@ function crawl(objIn, objOut, schema, list, path) {
         }
         else if(isPlainObject(valIn) && isPlainObject(valOut)) {
             crawl(valIn, valOut, nestedSchema, list, p);
+        }
+        else if(!isPlainObject(valIn) && isPlainObject(valOut)) {
+            list.push(format('container', p, valIn));
         }
         else if(nestedSchema.items && Array.isArray(valIn)) {
             var itemName = k.substr(0, k.length - 1);
