@@ -125,11 +125,13 @@ describe('Plotly.validate', function() {
                 bgcolor: 'red'
             },
             geo0: {},
+            yaxis5: 'sup'
         });
 
         assertErrorShape(out, [], 4);
         assertErrorContent(out.layout[0], 'value', ['xaxis2', 'range'], '');
         assertErrorContent(out.layout[1], 'unused', ['scene10'], '');
         assertErrorContent(out.layout[2], 'schema', ['geo0'], '');
+        assertErrorContent(out.layout[3], 'container', ['yaxis5'], '');
     });
 });
