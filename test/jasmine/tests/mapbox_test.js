@@ -13,6 +13,7 @@ var customMatchers = require('../assets/custom_matchers');
 
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var TRANSITION_DELAY = 500;
+var MOUSE_DELAY = 100;
 
 var noop = function() {};
 
@@ -763,15 +764,13 @@ describe('mapbox plots', function() {
     }
 
     function _mouseEvent(type, pos, cb) {
-        var DELAY = 100;
-
         return new Promise(function(resolve) {
             mouseEvent(type, pos[0], pos[1]);
 
             setTimeout(function() {
                 cb();
                 resolve();
-            }, DELAY);
+            }, MOUSE_DELAY);
         });
     }
 
