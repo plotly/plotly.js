@@ -97,8 +97,8 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     // clear navigation container
     var className = constants.controlContainerClassName,
-        controlContainer = this.div.getElementsByClassName(className)[0];
-    this.div.removeChild(controlContainer);
+        controlContainer = self.div.getElementsByClassName(className)[0];
+    self.div.removeChild(controlContainer);
 
     self.rejectOnError(reject);
 
