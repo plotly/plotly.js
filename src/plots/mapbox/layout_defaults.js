@@ -25,6 +25,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 };
 
 function handleDefaults(containerIn, containerOut, coerce) {
+    coerce('accesstoken');
     coerce('style');
     coerce('center.lon');
     coerce('center.lat');
