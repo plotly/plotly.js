@@ -1,8 +1,13 @@
 var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var computeFrame = require('@src/plots/plots').computeFrame;
+
+function clone(obj) {
+    return Lib.extendDeep({}, obj);
+}
 
 describe('Test mergeFrames', function() {
     'use strict';
@@ -18,15 +23,20 @@ describe('Test mergeFrames', function() {
     afterEach(destroyGraphDiv);
 
     describe('computing a single frame', function() {
-        var frame1;
+        var frame1, input;
 
         beforeEach(function(done) {
             frame1 = {
                 name: 'frame1',
-                data: [{'marker.size': 8, marker: {color: 'red'}}]
+                data: [{
+                    x: [1, 2, 3],
+                    'marker.size': 8,
+                    marker: {color: 'red'}
+                }]
             };
 
-            Plotly.addFrames(gd, [frame1]).then(done);
+            input = clone(frame1);
+            Plotly.addFrames(gd, [input]).then(done);
         });
 
         it('returns false if the frame does not exist', function() {
@@ -34,13 +44,30 @@ describe('Test mergeFrames', function() {
         });
 
         it('returns a new object', function() {
-            expect(computeFrame(gd, 'frame1')).not.toBe(frame1);
+            var result = computeFrame(gd, 'frame1');
+            expect(result).not.toBe(input);
+        });
+
+        it('copies objects', function() {
+            var result = computeFrame(gd, 'frame1');
+            expect(result.data).not.toBe(input.data);
+            expect(result.data[0].marker).not.toBe(input.data[0].marker);
+        });
+
+        it('does NOT copy arrays', function() {
+            var result = computeFrame(gd, 'frame1');
+            expect(result.data[0].x).toBe(input.data[0].x);
         });
 
         it('computes a single frame', function() {
             var computed = computeFrame(gd, 'frame1');
-            var expected = {data: [{marker: {size: 8, color: 'red'}}], traceIndices: [0]};
+            var expected = {data: [{x: [1, 2, 3], marker: {size: 8, color: 'red'}}], traceIndices: [0]};
             expect(computed).toEqual(expected);
+        });
+
+        it('leaves the frame unaffected', function() {
+            computeFrame(gd, 'frame1');
+            expect(gd._frameData._frameHash.frame1).toEqual(frame1);
         });
     });
 
@@ -78,7 +105,7 @@ describe('Test mergeFrames', function() {
     describe('computing trace data', function() {
         var frames;
 
-        beforeEach(function(done) {
+        beforeEach(function() {
             frames = [{
                 name: 'frame0',
                 data: [{'marker.size': 0}],
@@ -103,49 +130,65 @@ describe('Test mergeFrames', function() {
                     {'marker.size': 7}
                 ]
             }];
-
-            Plotly.addFrames(gd, frames).then(done);
         });
 
         it('merges orthogonal traces', function() {
             frames[0].baseFrame = frames[1].name;
-            var result = computeFrame(gd, 'frame0');
-            expect(result).toEqual({
+
+            // This technically returns a promise, but it's not actually asynchronous so
+            // that we'll just keep this synchronous:
+            Plotly.addFrames(gd, frames.map(clone));
+
+            expect(computeFrame(gd, 'frame0')).toEqual({
                 traceIndices: [8, 2],
                 data: [
                     {marker: {size: 1}},
                     {marker: {size: 0}}
                 ]
             });
+
+            // Verify that the frames are untouched (by value, at least, but they should
+            // also be unmodified by identity too) by the computation:
+            expect(gd._frameData._frames).toEqual(frames);
         });
 
         it('merges overlapping traces', function() {
             frames[0].baseFrame = frames[2].name;
-            var result = computeFrame(gd, 'frame0');
-            expect(result).toEqual({
+
+            Plotly.addFrames(gd, frames.map(clone));
+
+            expect(computeFrame(gd, 'frame0')).toEqual({
                 traceIndices: [2],
                 data: [{marker: {size: 0}}]
             });
+
+            expect(gd._frameData._frames).toEqual(frames);
         });
 
         it('merges partially overlapping traces', function() {
             frames[0].baseFrame = frames[1].name;
             frames[1].baseFrame = frames[2].name;
             frames[2].baseFrame = frames[3].name;
-            var result = computeFrame(gd, 'frame0');
-            expect(result).toEqual({
+
+            Plotly.addFrames(gd, frames.map(clone));
+
+            expect(computeFrame(gd, 'frame0')).toEqual({
                 traceIndices: [2, 8],
                 data: [
                     {marker: {size: 0}},
                     {marker: {size: 1}}
                 ]
             });
+
+            expect(gd._frameData._frames).toEqual(frames);
         });
 
         it('assumes serial order without traceIndices specified', function() {
             frames[4].baseFrame = frames[3].name;
-            var result = computeFrame(gd, 'frame4');
-            expect(result).toEqual({
+
+            Plotly.addFrames(gd, frames.map(clone));
+
+            expect(computeFrame(gd, 'frame4')).toEqual({
                 traceIndices: [2, 8, 0, 1],
                 data: [
                     {marker: {size: 7}},
@@ -154,11 +197,13 @@ describe('Test mergeFrames', function() {
                     {marker: {size: 6}}
                 ]
             });
+
+            expect(gd._frameData._frames).toEqual(frames);
         });
     });
 
     describe('computing trace layout', function() {
-        var frames;
+        var frames, frameCopies;
 
         beforeEach(function(done) {
             frames = [{
@@ -168,6 +213,8 @@ describe('Test mergeFrames', function() {
                 name: 'frame1',
                 layout: {'margin.l': 80}
             }];
+
+            frameCopies = frames.map(clone);
 
             Plotly.addFrames(gd, frames).then(done);
         });
@@ -181,5 +228,9 @@ describe('Test mergeFrames', function() {
             });
         });
 
+        it('leaves the frame unaffected', function() {
+            computeFrame(gd, 'frame0');
+            expect(gd._frameData._frames).toEqual(frameCopies);
+        });
     });
 });
