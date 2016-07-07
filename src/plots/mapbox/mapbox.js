@@ -12,6 +12,7 @@
 var mapboxgl = require('mapbox-gl');
 
 var Fx = require('../cartesian/graph_interact');
+var Lib = require('../../lib');
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var createMapboxLayer = require('./layers');
@@ -109,13 +110,18 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         self.resolveOnRender(resolve);
     });
 
-    // keep track of pan / zoom in user layout
+    // keep track of pan / zoom in user layout and emit relayout event
     map.on('move', function() {
-        var center = map.getCenter();
-        opts._input.center = opts.center = { lon: center.lng, lat: center.lat };
-        opts._input.zoom = opts.zoom = map.getZoom();
-        opts._input.bearing = opts.bearing = map.getBearing();
-        opts._input.pitch = opts.pitch = map.getPitch();
+        var view = self.getView();
+
+        opts._input.center = opts.center = view.center;
+        opts._input.zoom = opts.zoom = view.zoom;
+        opts._input.bearing = opts.bearing = view.bearing;
+        opts._input.pitch = opts.pitch = view.pitch;
+
+        var update = {};
+        update[self.id] = Lib.extendFlat({}, view);
+        gd.emit('plotly_relayout', update);
     });
 
     map.on('mousemove', function(evt) {
@@ -366,6 +372,21 @@ proto.setOptions = function(id, methodName, opts) {
 // convenience method to project a [lon, lat] array to pixel coords
 proto.project = function(v) {
     return this.map.project(new mapboxgl.LngLat(v[0], v[1]));
+};
+
+// get map's current view values in plotly.js notation
+proto.getView = function() {
+    var map = this.map;
+
+    var mapCenter = map.getCenter(),
+        center = { lon: mapCenter.lng, lat: mapCenter.lat };
+
+    return {
+        center: center,
+        zoom: map.getZoom(),
+        bearing: map.getBearing(),
+        pitch: map.getPitch()
+    };
 };
 
 function convertStyleUrl(style) {
