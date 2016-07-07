@@ -25,8 +25,10 @@ exports.attrRegex = constants.attrRegex;
 
 exports.attributes = require('./attributes');
 
-exports.plot = function(gd, traces) {
-    var cdSubplot, cd, trace, i, j, k, isFullReplot;
+exports.transitionAxes = require('./transition_axes');
+
+exports.plot = function(gd, traces, transitionOpts) {
+    var cdSubplot, cd, trace, i, j, k;
 
     var fullLayout = gd._fullLayout,
         subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
@@ -36,15 +38,10 @@ exports.plot = function(gd, traces) {
     if(!Array.isArray(traces)) {
       // If traces is not provided, then it's a complete replot and missing
       // traces are removed
-        isFullReplot = true;
         traces = [];
         for(i = 0; i < calcdata.length; i++) {
             traces.push(i);
         }
-    } else {
-      // If traces are explicitly specified, then it's a partial replot and
-      // traces are not removed.
-        isFullReplot = false;
     }
 
     for(i = 0; i < subplots.length; i++) {
@@ -92,7 +89,7 @@ exports.plot = function(gd, traces) {
                 }
             }
 
-            _module.plot(gd, subplotInfo, cdModule, isFullReplot);
+            _module.plot(gd, subplotInfo, cdModule, transitionOpts);
         }
     }
 };
