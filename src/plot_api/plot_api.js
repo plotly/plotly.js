@@ -2493,12 +2493,11 @@ Plotly.relayout = function relayout(gd, astr, val) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-Plotly.transition = function(gd, data, layout, traces, transitionConfig) {
+Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     gd = getGraphDiv(gd);
 
-    return Promise.resolve();
-
-    /*var fullLayout = gd._fullLayout;
+    var i, value, traceIdx;
+    var fullLayout = gd._fullLayout;
 
     transitionConfig = Lib.extendFlat({
         ease: 'cubic-in-out',
@@ -2517,16 +2516,16 @@ Plotly.transition = function(gd, data, layout, traces, transitionConfig) {
     }
 
     // Select which traces will be updated:
-    if(isNumeric(traces)) traces = [traces];
-    else if(!Array.isArray(traces) || !traces.length) {
-        traces = gd._fullData.map(function(v, i) {return i;});
+    if(isNumeric(traceIndices)) traceIndices = [traceIndices];
+    else if(!Array.isArray(traceIndices) || !traceIndices.length) {
+        traceIndices = gd._fullData.map(function(v, i) {return i;});
     }
 
-    var transitioningTraces = [];
+    var animatedTraces = [];
 
-    function prepareAnimations() {
-        for(i = 0; i < traces.length; i++) {
-            var traceIdx = traces[i];
+    function prepareTransitions() {
+        for(i = 0; i < traceIndices.length; i++) {
+            var traceIdx = traceIndices[i];
             var trace = gd._fullData[traceIdx];
             var module = trace._module;
 
@@ -2534,59 +2533,95 @@ Plotly.transition = function(gd, data, layout, traces, transitionConfig) {
                 continue;
             }
 
-            transitioningTraces.push(traceIdx);
+            animatedTraces.push(traceIdx);
 
-            newTraceData = newData[i];
-            curData = gd.data[traces[i]];
-
-            for(var ai in newTraceData) {
-                var value = newTraceData[ai];
-                Lib.nestedProperty(curData, ai).set(value);
-            }
-
-            var traceIdx = traces[i];
-            if(gd.data[traceIdx].marker && gd.data[traceIdx].marker.size) {
-                gd._fullData[traceIdx].marker.size = gd.data[traceIdx].marker.size;
-            }
-            if(gd.data[traceIdx].error_y && gd.data[traceIdx].error_y.array) {
-                gd._fullData[traceIdx].error_y.array = gd.data[traceIdx].error_y.array;
-            }
-            if(gd.data[traceIdx].error_x && gd.data[traceIdx].error_x.array) {
-                gd._fullData[traceIdx].error_x.array = gd.data[traceIdx].error_x.array;
-            }
-            gd._fullData[traceIdx].x = gd.data[traceIdx].x;
-            gd._fullData[traceIdx].y = gd.data[traceIdx].y;
-            gd._fullData[traceIdx].z = gd.data[traceIdx].z;
-            gd._fullData[traceIdx].key = gd.data[traceIdx].key;
+            Lib.extendDeepNoArrays(gd.data[traceIndices[i]], data[i]);
         }
 
-        doCalcdata(gd, transitioningTraces);
+        Plots.supplyDefaults(gd)
+
+        // doCalcdata(gd, animatedTraces);
+        doCalcdata(gd);
 
         ErrorBars.calc(gd);
     }
 
-    function doAnimations() {
-        var a, i, j;
+    var restyleList = [];
+    var relayoutList = [];
+    var completionTimeout = null;
+    var completion = null;
+
+    function executeTransitions () {
+        var j;
         var basePlotModules = fullLayout._basePlotModules;
-        for(j = 0; j < basePlotModules.length; j++) {
-            basePlotModules[j].plot(gd, transitioningTraces, transitionOpts);
+        for (j = 0; j < basePlotModules.length; j++) {
+            basePlotModules[j].plot(gd, animatedTraces, transitionConfig);
         }
 
-        if(layout) {
-            for(j = 0; j < basePlotModules.length; j++) {
-                if(basePlotModules[j].transitionAxes) {
-                    basePlotModules[j].transitionAxes(gd, layout, transitionOpts);
+        if (layout) {
+            for (j = 0; j < basePlotModules.length; j++) {
+                if (basePlotModules[j].transitionAxes) {
+                    var newLayout = Lib.extendDeep({}, gd._fullLayout, layout);
+                    basePlotModules[j].transitionAxes(gd, newLayout, transitionConfig);
                 }
             }
         }
 
-        if(!transitionOpts.leadingEdgeRestyle) {
-            return new Promise(function(resolve, reject) {
-                completion = resolve;
-                completionTimeout = setTimeout(resolve, transitionOpts.duration);
-            });
+        return new Promise(function(resolve, reject) {
+            completion = resolve;
+            completionTimeout = setTimeout(resolve, transitionConfig.duration);
+        });
+    }
+
+    function interruptPreviousTransitions () {
+        var ret;
+        clearTimeout(completionTimeout);
+
+        if (completion) {
+            completion();
         }
-    }*/
+
+        if (gd._animationInterrupt) {
+            ret = gd._animationInterrupt();
+            gd._animationInterrupt = null;
+        }
+        return ret;
+    }
+
+    for (i = 0; i < traceIndices.length; i++) {
+        var traceIdx = traceIndices[i];
+        var contFull = gd._fullData[traceIdx];
+        var module = contFull._module;
+
+        if (!module.animatable) {
+            var thisTrace = [traceIdx];
+            var thisUpdate = {};
+
+            for (var ai in data[i]) {
+                thisUpdate[ai] = [data[i][ai]];
+            }
+
+            restyleList.push((function (md, data, traces) {
+                return function () {
+                    return Plotly.restyle(gd, data, traces);
+                }
+            }(module, thisUpdate, [traceIdx])));
+        }
+    }
+
+    var seq = [Plots.previousPromises, interruptPreviousTransitions, prepareTransitions, executeTransitions];
+    seq = seq.concat(restyleList);
+
+    var plotDone = Lib.syncOrAsync(seq, gd);
+
+    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+
+    return plotDone.then(function() {
+        gd.emit('plotly_beginanimate', []);
+        return gd;
+    });
+
+    return Promise.resolve();
 };
 
 /**

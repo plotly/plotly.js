@@ -15,8 +15,6 @@
         "title": "Animation test",
         "showlegend": true,
         "autosize": false,
-        "width": 800,
-        "height": 440,
         "xaxis": {
             "range": [0, 2],
             "domain": [0, 1],
@@ -27,20 +25,61 @@
         }
     },
     "frames": [{
-        "name": 'frame0',
+        "name": "base",
         "data": [
             {"y": [0, 2, 8]},
             {"y": [4, 2, 3]}
         ],
+        "layout": {
+            "xaxis": {
+                "range": [0, 2]
+            },
+            "yaxis": {
+                "range": [0, 10]
+            }
+        }
+    }, {
+        "name": 'frame0',
+        "data": [
+            {"y": [0.5, 1.5, 7.5]},
+            {"y": [4.25, 2.25, 3.05]}
+        ],
+        "baseFrame": "base",
         "traceIndices": [0, 1],
         "layout": { }
     }, {
         "name": 'frame1',
         "data": [
-            {"y": [1, 3, 9]},
-            {"y": [5, 3, 4]}
+            {"y": [2.1, 1, 7]},
+            {"y": [4.5, 2.5, 3.1]}
         ],
+        "baseFrame": "base",
         "traceIndices": [0, 1],
         "layout": { }
+    }, {
+        "name": 'frame2',
+        "data": [
+            {"y": [3.5, 0.5, 6]},
+            {"y": [5.7, 2.7, 3.9]}
+        ],
+        "baseFrame": "base",
+        "traceIndices": [0, 1],
+        "layout": { }
+    }, {
+        "name": 'frame3',
+        "data": [
+            {"y": [5.1, 0.25, 5]},
+            {"y": [7, 2.9, 6]}
+        ],
+        "baseFrame": "base",
+        "traceIndices": [0, 1],
+        "layout": {
+            "xaxis": {
+                "range": [-1, 4]
+            },
+            "yaxis": {
+                "range": [-5, 15]
+            }
+        }
     }]
 }
