@@ -2493,8 +2493,10 @@ Plotly.relayout = function relayout(gd, astr, val) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-Plotly.transition = function(gd /*, data, layout, traces, transitionConfig*/) {
+Plotly.transition = function(gd, data, layout, traces, transitionConfig) {
     gd = getGraphDiv(gd);
+
+    return Promise.resolve();
 
     /*var fullLayout = gd._fullLayout;
 
