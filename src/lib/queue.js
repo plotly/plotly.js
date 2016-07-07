@@ -93,8 +93,6 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
         gd.undoQueue.queue.shift();
         gd.undoQueue.index--;
     }
-
-    console.log('QUEUE length: ', gd.undoQueue.queue.length)
 };
 
 /**
