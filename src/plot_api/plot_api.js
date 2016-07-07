@@ -2609,17 +2609,22 @@ Plotly.transition = function(gd /*, data, layout, traces, transitionConfig*/) {
  * @param {object} transitionConfig
  *      configuration for transition
  */
-Plotly.animate = function(gd, name /*, transitionConfig*/) {
+Plotly.animate = function(gd, frameName, transitionConfig) {
     gd = getGraphDiv(gd);
 
-    var _frames = gd._frameData._frames;
-
-    if(!_frames[name]) {
-        Lib.warn('animateToFrame failure: keyframe does not exist', name);
+    if(!gd._frameData._frameHash[frameName]) {
+        Lib.warn('animateToFrame failure: keyframe does not exist', frameName);
         return Promise.reject();
     }
 
-    return Promise.resolve();
+    var computedFrame = Plots.computeFrame(gd, frameName);
+
+    return Plotly.transition(gd,
+        computedFrame.data,
+        computedFrame.layout,
+        computedFrame.traceIndices,
+        transitionConfig
+    );
 };
 
 /**
