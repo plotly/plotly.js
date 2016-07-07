@@ -1192,7 +1192,7 @@ plots.modifyFrames = function(gd, operations) {
  * Returns: a third object with the merged content
  */
 plots.computeFrame = function(gd, frameName) {
-    var i, traceIndices, traceIndex, expandedObj, destIndex;
+    var i, traceIndices, traceIndex, expandedObj, destIndex, copy;
     var _hash = gd._frameData._frameHash;
 
     var framePtr = _hash[frameName];
@@ -1220,7 +1220,8 @@ plots.computeFrame = function(gd, frameName) {
     // Merge, starting with the last and ending with the desired frame:
     while((framePtr = frameStack.pop())) {
         if(framePtr.layout) {
-            expandedObj = Lib.expandObjectPaths(framePtr.layout);
+            copy = Lib.extendDeepNoArrays({}, framePtr.layout);
+            expandedObj = Lib.expandObjectPaths(copy);
             result.layout = Lib.extendDeepNoArrays(result.layout || {}, expandedObj);
         }
 
@@ -1256,7 +1257,8 @@ plots.computeFrame = function(gd, frameName) {
                     result.traceIndices[destIndex] = traceIndex;
                 }
 
-                expandedObj = Lib.expandObjectPaths(framePtr.data[i]);
+                copy = Lib.extendDeepNoArrays({}, framePtr.data[i]);
+                expandedObj = Lib.expandObjectPaths(copy);
                 result.data[destIndex] = Lib.extendDeepNoArrays(result.data[destIndex] || {}, expandedObj);
             }
         }
