@@ -52,7 +52,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         pw = xa[0]._length,
         ph = ya[0]._length,
         MINDRAG = constants.MINDRAG,
-        MINZOOM = constants.MINZOOM;
+        MINZOOM = constants.MINZOOM,
+        isMainDrag = (ns + ew === 'nsew');
 
     for(var i = 1; i < subplots.length; i++) {
         var subplotXa = subplots[i].x(),
@@ -89,7 +90,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // and stop there
     if(!yActive && !xActive) {
         dragger.onmousedown = null;
-        dragger.style.pointerEvents = (ns + ew === 'nsew') ? 'all' : 'none';
+        dragger.style.pointerEvents = isMainDrag ? 'all' : 'none';
         return dragger;
     }
 
@@ -107,7 +108,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         doubleclick: doubleClick,
         prepFn: function(e, startX, startY) {
             var dragModeNow = gd._fullLayout.dragmode;
-            if(ns + ew === 'nsew') {
+
+            if(isMainDrag) {
                 // main dragger handles all drag modes, and changes
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
