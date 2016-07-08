@@ -47,7 +47,10 @@ describe('Test animate API', function() {
             expect(args[1].length).toEqual(2);
 
             // layout
-            expect(args[2]).toEqual({});
+            expect(args[2]).toEqual({
+                xaxis: {range: [0, 2]},
+                yaxis: {range: [0, 10]}
+            });
 
             // traces are [0, 1]:
             expect(args[3]).toEqual([0, 1]);
