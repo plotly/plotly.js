@@ -2,7 +2,8 @@ var Fx = require('@src/plots/cartesian/graph_interact');
 var Plots = require('@src/plots/plots');
 
 
-describe('FX defaults', function() {
+
+describe('Fx defaults', function() {
     'use strict';
 
     var layoutIn, layoutOut, fullData;
