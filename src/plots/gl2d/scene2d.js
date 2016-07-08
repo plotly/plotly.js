@@ -310,6 +310,16 @@ proto.cameraChanged = function() {
 };
 
 proto.destroy = function() {
+
+    var traces = this.traces;
+
+    if(traces) {
+        Object.keys(traces).map(function(key) {
+            traces[key].dispose();
+            delete traces[key];
+        });
+    }
+
     this.glplot.dispose();
 
     if(!this.staticPlot) this.container.removeChild(this.canvas);
