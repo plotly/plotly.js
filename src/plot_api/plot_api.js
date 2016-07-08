@@ -2429,6 +2429,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
             var subplotIds;
             manageModeBar(gd);
 
+            Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
+            Plotly.Fx.init(gd);
+
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
                 scene = fullLayout[subplotIds[i]]._scene;
