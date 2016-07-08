@@ -2502,7 +2502,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     transitionConfig = Lib.extendFlat({
         ease: 'cubic-in-out',
         duration: 500,
-        delay: 0
+        delay: 0,
     }, transitionConfig || {});
 
     // Create a single transition to be passed around:
@@ -2560,13 +2560,19 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             basePlotModules[j].plot(gd, animatedTraces, transitionConfig);
         }
 
+        var hasAxisTransition = false;
+
         if(layout) {
             for(j = 0; j < basePlotModules.length; j++) {
                 if(basePlotModules[j].transitionAxes) {
                     var newLayout = Lib.extendDeep({}, gd._fullLayout, layout);
-                    basePlotModules[j].transitionAxes(gd, newLayout, transitionConfig);
+                    hasAxisTransition = hasAxisTransition || basePlotModules[j].transitionAxes(gd, newLayout, transitionConfig);
                 }
             }
+        }
+
+        if (!hasAxisTransition) {
+            return false;
         }
 
         return new Promise(function(resolve) {
