@@ -2540,7 +2540,10 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
 
         Plots.supplyDefaults(gd);
 
+        // TODO: Add logic that computes animatedTraces to avoid unnecessary work while
+        // still handling things like box plots that are interrelated.
         // doCalcdata(gd, animatedTraces);
+
         doCalcdata(gd);
 
         ErrorBars.calc(gd);
@@ -2548,7 +2551,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
 
     var restyleList = [];
     var completionTimeout = null;
-    var completion = null;
+    var resolveTransitionCallback = null;
 
     function executeTransitions() {
         var j;
@@ -2567,22 +2570,25 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         }
 
         return new Promise(function(resolve) {
-            completion = resolve;
+            resolveTransitionCallback = resolve;
             completionTimeout = setTimeout(resolve, transitionConfig.duration);
         });
     }
 
     function interruptPreviousTransitions() {
-        var ret;
+        var ret, interrupt;
         clearTimeout(completionTimeout);
 
-        if(completion) {
-            completion();
+        if(resolveTransitionCallback) {
+            resolveTransitionCallback();
         }
 
-        if(gd._animationInterrupt) {
-            ret = gd._animationInterrupt();
-            gd._animationInterrupt = null;
+        while(gd._frameData._layoutInterrupts.length) {
+            (gd._frameData._layoutInterrupts.pop())();
+        }
+
+        while(gd._frameData._styleInterrupts.length) {
+            (gd._frameData._styleInterrupts.pop())();
         }
         return ret;
     }

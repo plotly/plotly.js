@@ -561,6 +561,14 @@ plots.supplyDefaults = function(gd) {
     if(!gd._frameData._counter) {
         gd._frameData._counter = 0;
     }
+
+    if(!gd._frameData._layoutInterrupts) {
+        gd._frameData._layoutInterrupts = [];
+    }
+
+    if(!gd._frameData._styleInterrupts) {
+        gd._frameData._styleInterrupts = [];
+    }
 };
 
 // helper function to be bound to fullLayout to check
