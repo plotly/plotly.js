@@ -310,6 +310,16 @@ proto.cameraChanged = function() {
 };
 
 proto.destroy = function() {
+
+    var traces = this.traces;
+
+    if(traces) {
+        Object.keys(traces).map(function(key) {
+            traces[key].dispose();
+            delete traces[key];
+        });
+    }
+
     this.glplot.dispose();
 
     if(!this.staticPlot) this.container.removeChild(this.canvas);
@@ -318,14 +328,6 @@ proto.destroy = function() {
 
     this.glplot = null;
     this.stopped = true;
-
-    var traces = this.traces;
-    if(traces) {
-        Object.keys(traces).map(function(key) {
-            traces[key].dispose();
-            traces[key] = null;
-        });
-    }
 };
 
 proto.plot = function(fullData, calcData, fullLayout) {
