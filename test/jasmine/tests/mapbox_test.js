@@ -576,6 +576,59 @@ describe('mapbox plots', function() {
         });
     });
 
+    it('should respond drag / scroll interactions', function(done) {
+        var updateData;
+
+        gd.on('plotly_relayout', function(eventData) {
+            updateData = eventData;
+        });
+
+        function _drag(p0, p1, cb) {
+            var promise = _mouseEvent('mousemove', p0, noop).then(function() {
+                return _mouseEvent('mousedown', p0, noop);
+            }).then(function() {
+                return _mouseEvent('mousemove', p1, noop);
+            }).then(function() {
+                return _mouseEvent('mouseup', p1, noop);
+            }).then(function() {
+                return _mouseEvent('mouseup', p1, noop);
+            }).then(cb);
+
+            return promise;
+        }
+
+        function assertLayout(center, zoom, opts) {
+            var mapInfo = getMapInfo(gd),
+                layout = gd.layout.mapbox;
+
+            expect([mapInfo.center.lng, mapInfo.center.lat]).toBeCloseToArray(center);
+            expect(mapInfo.zoom).toBeCloseTo(zoom);
+
+            expect([layout.center.lon, layout.center.lat]).toBeCloseToArray(center);
+            expect(layout.zoom).toBeCloseTo(zoom);
+
+            if(opts && opts.withUpdateData) {
+                var mapboxUpdate = updateData.mapbox;
+
+                expect([mapboxUpdate.center.lon, mapboxUpdate.center.lat]).toBeCloseToArray(center);
+                expect(mapboxUpdate.zoom).toBeCloseTo(zoom);
+            }
+        }
+
+        assertLayout([-4.710, 19.475], 1.234);
+
+        var p1 = [pointPos[0] + 50, pointPos[1] - 20];
+
+        _drag(pointPos, p1, function() {
+            assertLayout([-19.651, 13.751], 1.234, { withUpdateData: true });
+
+        })
+        .then(done);
+
+        // TODO test scroll
+
+    });
+
     it('should respond to click interactions by', function(done) {
         var ptData;
 
@@ -608,45 +661,6 @@ describe('mapbox plots', function() {
             });
         })
         .then(done);
-    });
-
-    it('should respond drag / scroll interactions', function(done) {
-        function _drag(p0, p1, cb) {
-            var promise = _mouseEvent('mousemove', p0, noop).then(function() {
-                return _mouseEvent('mousedown', p0, noop);
-            }).then(function() {
-                return _mouseEvent('mousemove', p1, noop);
-            }).then(function() {
-                return _mouseEvent('mouseup', p1, cb);
-            });
-
-            return promise;
-        }
-
-        function assertLayout(center, zoom) {
-            var mapInfo = getMapInfo(gd),
-                layout = gd.layout.mapbox;
-
-            expect([mapInfo.center.lng, mapInfo.center.lat])
-                .toBeCloseToArray(center);
-            expect(mapInfo.zoom).toBeCloseTo(zoom);
-
-            expect([layout.center.lon, layout.center.lat])
-                .toBeCloseToArray(center);
-            expect(layout.zoom).toBeCloseTo(zoom);
-        }
-
-        assertLayout([-4.710, 19.475], 1.234);
-
-        var p1 = [pointPos[0] + 50, pointPos[1] - 20];
-
-        _drag(pointPos, p1, function() {
-            assertLayout([-19.651, 13.751], 1.234);
-        })
-        .then(done);
-
-        // TODO test scroll
-
     });
 
     function getMapInfo(gd) {
