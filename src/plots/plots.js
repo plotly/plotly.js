@@ -512,6 +512,15 @@ plots.supplyDefaults = function(gd) {
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
+    // XXX: This is a hack that should be refactored by more generally removing the
+    // need for relinkPrivateKeys
+    var subplots = plots.getSubplotIds(newFullLayout, 'cartesian');
+    for(i = 0; i < subplots.length; i++) {
+        var subplot = newFullLayout._plots[subplots[i]];
+        subplot.xaxis = newFullLayout[subplot.xaxis._name];
+        subplot.yaxis = newFullLayout[subplot.yaxis._name];
+    }
+
     plots.doAutoMargin(gd);
 
     // can't quite figure out how to get rid of this... each axis needs

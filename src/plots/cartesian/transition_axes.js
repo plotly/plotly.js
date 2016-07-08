@@ -54,7 +54,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         return updates;
     }
 
-    function computeAffectedSubplots(fullLayout, updatedAxisIds) {
+    function computeAffectedSubplots(fullLayout, updatedAxisIds, updates) {
         var plotName;
         var plotinfos = fullLayout._plots;
         var affectedSubplots = [];
@@ -66,6 +66,12 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
             var x = plotinfo.xaxis._id;
             var y = plotinfo.yaxis._id;
+            var fromX = plotinfo.xaxis.range;
+            var fromY = plotinfo.yaxis.range;
+            var toX = updates[x].to;
+            var toY = updates[y].to;
+
+            if (fromX[0] === toX[0] && fromX[1] === toX[1] && fromY[0] === toY[0] && fromY[1] === toY[1]) continue;
 
             if(updatedAxisIds.indexOf(x) !== -1 || updatedAxisIds.indexOf(y) !== -1) {
                 affectedSubplots.push(plotinfo);
@@ -77,8 +83,11 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
     var updates = computeUpdates(newLayout);
     var updatedAxisIds = Object.keys(updates);
-    var affectedSubplots = computeAffectedSubplots(fullLayout, updatedAxisIds);
-    var easeFn = d3.ease(transitionConfig.ease);
+    var affectedSubplots = computeAffectedSubplots(fullLayout, updatedAxisIds, updates);
+
+    if (!affectedSubplots.length) {
+        return false;
+    }
 
     function ticksAndAnnotations(xa, ya) {
         var activeAxIds = [],
@@ -225,6 +234,8 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
         Plotly.relayout(gd, attrs);
     }
+
+    var easeFn = d3.ease(transitionConfig.ease);
 
     return new Promise(function(resolve, reject) {
         var t1, t2, raf;
