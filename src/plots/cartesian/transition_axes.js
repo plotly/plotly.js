@@ -10,14 +10,9 @@
 'use strict';
 
 var d3 = require('d3');
-var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
-var svgTextUtils = require('../../lib/svg_text_utils');
-var Titles = require('../../components/titles');
-var Color = require('../../components/color');
-var Drawing = require('../../components/drawing');
 var Axes = require('./axes');
 
 var axisRegex = /((x|y)([2-9]|[1-9][0-9]+)?)axis$/;
@@ -26,26 +21,26 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
     var fullLayout = gd._fullLayout;
     var axes = [];
 
-    function computeUpdates (layout) {
-        var ai, attrList, match, to, axis, update, i;
+    function computeUpdates(layout) {
+        var ai, attrList, match, axis, update;
         var updates = {};
 
-        for (ai in layout) {
-            var attrList = ai.split('.');
-            var match = attrList[0].match(axisRegex);
-            if (match) {
+        for(ai in layout) {
+            attrList = ai.split('.');
+            match = attrList[0].match(axisRegex);
+            if(match) {
                 var axisName = match[1];
                 axis = fullLayout[axisName + 'axis'];
                 update = {};
 
-                if (Array.isArray(layout[ai])) {
+                if(Array.isArray(layout[ai])) {
                     update.to = layout[ai].slice(0);
                 } else {
-                    if (Array.isArray(layout[ai].range)) {
+                    if(Array.isArray(layout[ai].range)) {
                         update.to = layout[ai].range.slice(0);
                     }
                 }
-                if (!update.to) continue;
+                if(!update.to) continue;
 
                 update.axis = axis;
                 update.length = axis._length;
@@ -59,20 +54,20 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         return updates;
     }
 
-    function computeAffectedSubplots (fullLayout, updatedAxisIds) {
+    function computeAffectedSubplots(fullLayout, updatedAxisIds) {
         var plotName;
         var plotinfos = fullLayout._plots;
         var affectedSubplots = [];
 
-        for (plotName in plotinfos) {
+        for(plotName in plotinfos) {
             var plotinfo = plotinfos[plotName];
 
-            if (affectedSubplots.indexOf(plotinfo) !== -1) continue;
+            if(affectedSubplots.indexOf(plotinfo) !== -1) continue;
 
             var x = plotinfo.xaxis._id;
             var y = plotinfo.yaxis._id;
 
-            if (updatedAxisIds.indexOf(x) !== -1 || updatedAxisIds.indexOf(y) !== -1) {
+            if(updatedAxisIds.indexOf(x) !== -1 || updatedAxisIds.indexOf(y) !== -1) {
                 affectedSubplots.push(plotinfo);
             }
         }
@@ -111,7 +106,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         redrawObjs(fullLayout.images || [], Plotly.Images);
     }
 
-    function unsetSubplotTransform (subplot) {
+    function unsetSubplotTransform(subplot) {
         var xa2 = subplot.x();
         var ya2 = subplot.y();
 
@@ -139,14 +134,14 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
     }
 
-    function updateSubplot (subplot, progress) {
+    function updateSubplot(subplot, progress) {
         var axis, r0, r1;
         var xUpdate = updates[subplot.xaxis._id];
         var yUpdate = updates[subplot.yaxis._id];
 
         var viewBox = [];
 
-        if (xUpdate) {
+        if(xUpdate) {
             axis = xUpdate.axis;
             r0 = axis._r;
             r1 = xUpdate.to;
@@ -163,7 +158,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
             viewBox[2] = subplot.xaxis._length;
         }
 
-        if (yUpdate) {
+        if(yUpdate) {
             axis = yUpdate.axis;
             r0 = axis._r;
             r1 = yUpdate.to;
@@ -212,10 +207,11 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
     // transitionTail - finish a drag event with a redraw
     function transitionTail() {
+        var i;
         var attrs = {};
         // revert to the previous axis settings, then apply the new ones
         // through relayout - this lets relayout manage undo/redo
-        for(var i = 0; i < updatedAxisIds.length; i++) {
+        for(i = 0; i < updatedAxisIds.length; i++) {
             var axi = updates[updatedAxisIds[i]].axis;
             if(axi._r[0] !== axi.range[0]) attrs[axi._name + '.range[0]'] = axi.range[0];
             if(axi._r[1] !== axi.range[1]) attrs[axi._name + '.range[1]'] = axi.range[1];
@@ -223,34 +219,34 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
             axi.range = axi._r.slice();
         }
 
-        for (var i = 0; i < affectedSubplots.length; i++) {
+        for(i = 0; i < affectedSubplots.length; i++) {
             unsetSubplotTransform(affectedSubplots[i]);
         }
 
         Plotly.relayout(gd, attrs);
     }
 
-    return new Promise(function (resolve, reject) {
+    return new Promise(function(resolve, reject) {
         var t1, t2, raf;
 
-        gd._animationInterrupt = function () {
+        gd._animationInterrupt = function() {
             reject();
             cancelAnimationFrame(raf);
             raf = null;
             transitionTail();
         };
 
-        function doFrame () {
+        function doFrame() {
             t2 = Date.now();
 
             var tInterp = Math.min(1, (t2 - t1) / transitionConfig.duration);
             var progress = easeFn(tInterp);
 
-            for (var i = 0; i < affectedSubplots.length; i++) {
+            for(var i = 0; i < affectedSubplots.length; i++) {
                 updateSubplot(affectedSubplots[i], progress);
             }
 
-            if (t2 - t1 > transitionConfig.duration) {
+            if(t2 - t1 > transitionConfig.duration) {
                 raf = cancelAnimationFrame(doFrame);
                 transitionTail();
                 resolve();
@@ -263,4 +259,4 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         t1 = Date.now();
         raf = requestAnimationFrame(doFrame);
     });
-}
+};

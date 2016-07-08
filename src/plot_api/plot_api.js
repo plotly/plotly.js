@@ -2510,7 +2510,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     gd = getGraphDiv(gd);
 
-    var i, value, traceIdx;
+    var i, traceIdx;
     var fullLayout = gd._fullLayout;
 
     transitionConfig = Lib.extendFlat({
@@ -2552,7 +2552,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             Lib.extendDeepNoArrays(gd.data[traceIndices[i]], data[i]);
         }
 
-        Plots.supplyDefaults(gd)
+        Plots.supplyDefaults(gd);
 
         // doCalcdata(gd, animatedTraces);
         doCalcdata(gd);
@@ -2561,64 +2561,62 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     }
 
     var restyleList = [];
-    var relayoutList = [];
     var completionTimeout = null;
     var completion = null;
 
-    function executeTransitions () {
+    function executeTransitions() {
         var j;
         var basePlotModules = fullLayout._basePlotModules;
-        for (j = 0; j < basePlotModules.length; j++) {
+        for(j = 0; j < basePlotModules.length; j++) {
             basePlotModules[j].plot(gd, animatedTraces, transitionConfig);
         }
 
-        if (layout) {
-            for (j = 0; j < basePlotModules.length; j++) {
-                if (basePlotModules[j].transitionAxes) {
+        if(layout) {
+            for(j = 0; j < basePlotModules.length; j++) {
+                if(basePlotModules[j].transitionAxes) {
                     var newLayout = Lib.extendDeep({}, gd._fullLayout, layout);
                     basePlotModules[j].transitionAxes(gd, newLayout, transitionConfig);
                 }
             }
         }
 
-        return new Promise(function(resolve, reject) {
+        return new Promise(function(resolve) {
             completion = resolve;
             completionTimeout = setTimeout(resolve, transitionConfig.duration);
         });
     }
 
-    function interruptPreviousTransitions () {
+    function interruptPreviousTransitions() {
         var ret;
         clearTimeout(completionTimeout);
 
-        if (completion) {
+        if(completion) {
             completion();
         }
 
-        if (gd._animationInterrupt) {
+        if(gd._animationInterrupt) {
             ret = gd._animationInterrupt();
             gd._animationInterrupt = null;
         }
         return ret;
     }
 
-    for (i = 0; i < traceIndices.length; i++) {
-        var traceIdx = traceIndices[i];
+    for(i = 0; i < traceIndices.length; i++) {
+        traceIdx = traceIndices[i];
         var contFull = gd._fullData[traceIdx];
         var module = contFull._module;
 
-        if (!module.animatable) {
-            var thisTrace = [traceIdx];
+        if(!module.animatable) {
             var thisUpdate = {};
 
-            for (var ai in data[i]) {
+            for(var ai in data[i]) {
                 thisUpdate[ai] = [data[i][ai]];
             }
 
-            restyleList.push((function (md, data, traces) {
-                return function () {
+            restyleList.push((function(md, data, traces) {
+                return function() {
                     return Plotly.restyle(gd, data, traces);
-                }
+                };
             }(module, thisUpdate, [traceIdx])));
         }
     }
@@ -2634,8 +2632,6 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         gd.emit('plotly_beginanimate', []);
         return gd;
     });
-
-    return Promise.resolve();
 };
 
 /**
