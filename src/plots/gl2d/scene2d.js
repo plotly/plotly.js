@@ -487,7 +487,11 @@ proto.draw = function() {
                 this.lastPickResult.dataCoord[0] !== nextSelection.dataCoord[0] ||
                 this.lastPickResult.dataCoord[1] !== nextSelection.dataCoord[1])
             ) {
-                var selection = this.lastPickResult = nextSelection;
+                var selection = nextSelection;
+                this.lastPickResult = {
+                    trace: nextSelection.trace, // could we just retain/compare the trace uid?
+                    dataCoord: nextSelection.dataCoord.slice()
+                };
                 this.spikes.update({ center: result.dataCoord });
 
                 selection.screenCoord = [
@@ -523,8 +527,6 @@ proto.draw = function() {
                 }, {
                     container: this.svgContainer
                 });
-
-                this.lastPickResult = { dataCoord: result.dataCoord };
             }
         }
         else if(!result && this.lastPickResult) {
