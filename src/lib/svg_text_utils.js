@@ -95,8 +95,11 @@ util.convertToTspans = function(_context, _callback) {
                 visibility: 'visible',
                 'white-space': 'pre'
             });
+
         result = _context.appendSVG(converted);
+
         if(!result) _context.text(str);
+
         if(_context.select('a').size()) {
             // at least in Chrome, pointer-events does not seem
             // to be honored in children of <text> elements
@@ -246,6 +249,7 @@ function convertToSVG(_str) {
             var match = d.match(/<(\/?)([^ >]*)\s*(.*)>/i),
                 tag = match && match[2].toLowerCase(),
                 style = TAG_STYLES[tag];
+
             if(style !== undefined) {
                 var close = match[1],
                     extra = match[3],
@@ -263,12 +267,18 @@ function convertToSVG(_str) {
                     if(close) return '</a>';
                     else if(extra.substr(0, 4).toLowerCase() !== 'href') return '<a>';
                     else {
-                        var dummyAnchor = document.createElement('a');
-                        dummyAnchor.href = extra.substr(4).replace(/["'=]/g, '');
+                        // remove quotes, leading '=', replace '&' with '&amp;'
+                        var href = extra.substr(4)
+                            .replace(/["']/g, '')
+                            .replace(/=/, '')
+                            .replace(/&/g, '&amp;');
 
+                        // check protocol
+                        var dummyAnchor = document.createElement('a');
+                        dummyAnchor.href = href;
                         if(PROTOCOLS.indexOf(dummyAnchor.protocol) === -1) return '<a>';
 
-                        return '<a xlink:show="new" xlink:href' + extra.substr(4) + '>';
+                        return '<a xlink:show="new" xlink:href="' + href + '">';
                     }
                 }
                 else if(tag === 'br') return '<br>';
