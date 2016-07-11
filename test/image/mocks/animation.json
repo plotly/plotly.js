@@ -17,11 +17,11 @@
         "autosize": false,
         "xaxis": {
             "range": [0, 2],
-            "domain": [0, 1],
+            "domain": [0, 1]
         },
         "yaxis": {
             "range": [0, 10],
-            "domain": [0, 1],
+            "domain": [0, 1]
         }
     },
     "frames": [{
