@@ -184,7 +184,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
     if(!scene.staticMode) {
         scene.glplot.canvas.addEventListener('webglcontextlost', function(ev) {
-			Lib.warn('Lost WebGL context.');
+            Lib.warn('Lost WebGL context.');
             ev.preventDefault();
         });
     }
