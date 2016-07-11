@@ -6,7 +6,7 @@ var util = require('@src/lib/svg_text_utils');
 describe('svg+text utils', function() {
     'use strict';
 
-    describe('convertToTspans', function() {
+    describe('convertToTspans should', function() {
 
         function mockTextSVGElement(txt) {
             return d3.select('body')
@@ -14,56 +14,95 @@ describe('svg+text utils', function() {
                 .attr('id', 'text')
                 .append('text')
                 .text(txt)
-                .call(util.convertToTspans);
+                .call(util.convertToTspans)
+                .attr('transform', 'translate(50,50)');
+        }
+
+        function assertAnchorLink(node, href) {
+            var a = node.select('a');
+
+            expect(a.attr('xlink:href')).toBe(href);
+            expect(a.attr('xlink:show')).toBe(href === null ? null : 'new');
+        }
+
+        function assertAnchorAttrs(node) {
+            var a = node.select('a');
+
+            var WHITE_LIST = ['xlink:href', 'xlink:show', 'style'],
+                attrs = listAttributes(a.node());
+
+            // check that no other attribute are found in anchor,
+            // which can be lead to XSS attacks.
+
+            var hasWrongAttr = attrs.some(function(attr) {
+                return WHITE_LIST.indexOf(attr) === -1;
+            });
+
+            expect(hasWrongAttr).toBe(false);
+        }
+
+        function listAttributes(node) {
+            var items = Array.prototype.slice.call(node.attributes);
+
+            var attrs = items.map(function(item) {
+                return item.name;
+            });
+
+            return attrs;
         }
 
         afterEach(function() {
             d3.select('#text').remove();
         });
 
-        it('checks for XSS attack in href', function() {
+        it('check for XSS attack in href', function() {
             var node = mockTextSVGElement(
                 '<a href="javascript:alert(\'attack\')">XSS</a>'
             );
 
             expect(node.text()).toEqual('XSS');
-            expect(node.select('a').attr('xlink:href')).toBe(null);
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, null);
         });
 
-        it('checks for XSS attack in href (with plenty of white spaces)', function() {
+        it('check for XSS attack in href (with plenty of white spaces)', function() {
             var node = mockTextSVGElement(
                 '<a href =    "     javascript:alert(\'attack\')">XSS</a>'
             );
 
             expect(node.text()).toEqual('XSS');
-            expect(node.select('a').attr('xlink:href')).toBe(null);
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, null);
         });
 
-        it('whitelists http hrefs', function() {
+        it('whitelist http hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="http://bl.ocks.org/">bl.ocks.org</a>'
             );
 
             expect(node.text()).toEqual('bl.ocks.org');
-            expect(node.select('a').attr('xlink:href')).toEqual('http://bl.ocks.org/');
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, 'http://bl.ocks.org/');
         });
 
-        it('whitelists https hrefs', function() {
+        it('whitelist https hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="https://plot.ly">plot.ly</a>'
             );
 
             expect(node.text()).toEqual('plot.ly');
-            expect(node.select('a').attr('xlink:href')).toEqual('https://plot.ly');
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, 'https://plot.ly');
         });
 
-        it('whitelists mailto hrefs', function() {
+        it('whitelist mailto hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="mailto:support@plot.ly">support</a>'
             );
 
             expect(node.text()).toEqual('support');
-            expect(node.select('a').attr('xlink:href')).toEqual('mailto:support@plot.ly');
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, 'mailto:support@plot.ly');
         });
     });
 });
