@@ -420,6 +420,7 @@ describe('Test plot api', function() {
 
     describe('Plotly.ExtendTraces', function() {
         var gd;
+
         beforeEach(function() {
             gd = {
                 data: [
