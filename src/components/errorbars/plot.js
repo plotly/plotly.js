@@ -14,11 +14,16 @@ var isNumeric = require('fast-isnumeric');
 
 var Lib = require('../../lib');
 var subTypes = require('../../traces/scatter/subtypes');
+var styleError = require('./style');
 
 
-module.exports = function plot(traces, plotinfo) {
+module.exports = function plot(traces, plotinfo, transitionConfig) {
+    var isNew;
     var xa = plotinfo.x(),
         ya = plotinfo.y();
+
+    transitionConfig = transitionConfig || {};
+    var hasAnimation = isNumeric(transitionConfig.duration) && transitionConfig.duration > 0;
 
     traces.each(function(d) {
         var trace = d[0].trace,
@@ -29,29 +34,38 @@ module.exports = function plot(traces, plotinfo) {
             xObj = trace.error_x || {},
             yObj = trace.error_y || {};
 
+        var keyFunc;
+
+        if(trace.identifier) {
+            keyFunc = function(d) {return d.identifier;};
+        }
+
         var sparse = (
             subTypes.hasMarkers(trace) &&
             trace.marker.maxdisplayed > 0
         );
 
-        var keyFunc;
-
-        if(trace.key) {
-            keyFunc = function(d) { return d.key; };
-        }
-
         if(!yObj.visible && !xObj.visible) return;
 
-        var selection = d3.select(this).selectAll('g.errorbar');
 
-        var join = selection.data(Lib.identity, keyFunc);
+        var errorbars = d3.select(this).selectAll('g.errorbar')
+            .data(Lib.identity, keyFunc);
 
-        join.enter().append('g')
+        errorbars.enter().append('g')
             .classed('errorbar', true);
 
-        join.exit().remove();
+        if(hasAnimation) {
+            errorbars.exit()
+                .style('opacity', 1)
+                .transition()
+                    .duration(transitionConfig.duration)
+                    .style('opacity', 0)
+                    .remove();
+        } else {
+            errorbars.exit().remove();
+        }
 
-        join.each(function(d) {
+        errorbars.each(function(d) {
             var errorbar = d3.select(this);
             var coords = errorCoords(d, xa, ya);
 
@@ -68,14 +82,37 @@ module.exports = function plot(traces, plotinfo) {
                     coords.yh + 'h' + (2 * yw) + // hat
                     'm-' + yw + ',0V' + coords.ys; // bar
 
+
                 if(!coords.noYS) path += 'm-' + yw + ',0h' + (2 * yw); // shoe
 
-                errorbar.append('path')
-                    .classed('yerror', true)
-                    .attr('d', path);
+                var yerror = errorbar.select('path.yerror');
+
+                isNew = !yerror.size();
+
+                if(isNew) {
+                    yerror = errorbar.append('path')
+                        .classed('yerror', true);
+
+                    if(hasAnimation) {
+                        yerror = yerror.style('opacity', 0);
+                    }
+                } else if(hasAnimation) {
+                    yerror = yerror.transition()
+                        .duration(transitionConfig.duration)
+                        .ease(transitionConfig.ease)
+                        .delay(transitionConfig.delay);
+                }
+
+                yerror.attr('d', path);
+
+                if(isNew && hasAnimation) {
+                    yerror = yerror.transition()
+                        .duration(transitionConfig.duration)
+                        .style('opacity', 1);
+                }
             }
 
-            if(xObj.visible && isNumeric(coords.y) &&
+            if(xObj.visible && isNumeric(coords.x) &&
                     isNumeric(coords.xh) &&
                     isNumeric(coords.xs)) {
                 var xw = (xObj.copy_ystyle ? yObj : xObj).width;
@@ -86,11 +123,35 @@ module.exports = function plot(traces, plotinfo) {
 
                 if(!coords.noXS) path += 'm0,-' + xw + 'v' + (2 * xw); // shoe
 
-                errorbar.append('path')
-                    .classed('xerror', true)
-                    .attr('d', path);
+                var xerror = errorbar.select('path.xerror');
+
+                isNew = !xerror.size();
+
+                if(isNew) {
+                    xerror = errorbar.append('path')
+                        .classed('xerror', true);
+
+                    if(hasAnimation) {
+                        xerror = xerror.style('opacity', 0);
+                    }
+                } else if(hasAnimation) {
+                    xerror = xerror.transition()
+                        .duration(transitionConfig.duration)
+                        .ease(transitionConfig.ease)
+                        .delay(transitionConfig.delay);
+                }
+
+                xerror.attr('d', path);
+
+                if(isNew && hasAnimation) {
+                    xerror = xerror.transition()
+                        .duration(transitionConfig.duration)
+                        .style('opacity', 1);
+                }
             }
         });
+
+        d3.select(this).call(styleError);
     });
 };
 

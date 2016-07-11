@@ -65,6 +65,10 @@ module.exports = {
             'See `y0` for more info.'
         ].join(' ')
     },
+    identifier: {
+        valType: 'data_array',
+        description: 'A list of keys for object constancy of data points during animation'
+    },
     text: {
         valType: 'string',
         role: 'info',

@@ -46,16 +46,62 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
-drawing.translatePoints = function(s, xa, ya) {
-    s.each(function(d) {
+drawing.translatePoints = function(s, xa, ya, trace, transitionConfig, joinDirection) {
+    var size;
+
+    var hasTransition = transitionConfig && (transitionConfig || {}).duration > 0;
+
+    if(hasTransition) {
+        size = s.size();
+    }
+
+    s.each(function(d, i) {
         // put xp and yp into d if pixel scaling is already done
         var x = d.xp || xa.c2p(d.x),
             y = d.yp || ya.c2p(d.y),
             p = d3.select(this);
         if(isNumeric(x) && isNumeric(y)) {
             // for multiline text this works better
-            if(this.nodeName === 'text') p.attr('x', x).attr('y', y);
-            else p.attr('transform', 'translate(' + x + ',' + y + ')');
+            if(this.nodeName === 'text') {
+                p.attr('x', x).attr('y', y);
+            } else {
+                if(hasTransition) {
+                    var trans;
+                    if(!joinDirection) {
+                        trans = p.transition()
+                        .delay(transitionConfig.delay + transitionConfig.cascade / size * i)
+                        .duration(transitionConfig.duration)
+                        .ease(transitionConfig.ease)
+                        .attr('transform', 'translate(' + x + ',' + y + ')');
+
+                        if(trace) {
+                            trans.call(drawing.pointStyle, trace);
+                        }
+                    } else if(joinDirection === -1) {
+                        trans = p.style('opacity', 1)
+                        .transition()
+                            .duration(transitionConfig.duration)
+                            .ease(transitionConfig.ease)
+                            .style('opacity', 0)
+                            .remove();
+                    } else if(joinDirection === 1) {
+                        trans = p.attr('transform', 'translate(' + x + ',' + y + ')');
+
+                        if(trace) {
+                            trans.call(drawing.pointStyle, trace);
+                        }
+
+                        trans.style('opacity', 0)
+                        .transition()
+                            .duration(transitionConfig.duration)
+                            .ease(transitionConfig.ease)
+                            .style('opacity', 1);
+                    }
+
+                } else {
+                    p.attr('transform', 'translate(' + x + ',' + y + ')');
+                }
+            }
         }
         else p.remove();
     });

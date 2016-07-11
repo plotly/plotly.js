@@ -58,6 +58,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         var plotName;
         var plotinfos = fullLayout._plots;
         var affectedSubplots = [];
+        var toX, toY;
 
         for(plotName in plotinfos) {
             var plotinfo = plotinfos[plotName];
@@ -68,10 +69,18 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
             var y = plotinfo.yaxis._id;
             var fromX = plotinfo.xaxis.range;
             var fromY = plotinfo.yaxis.range;
-            var toX = updates[x].to;
-            var toY = updates[y].to;
+            if(updates[x]) {
+                toX = updates[x].to;
+            } else {
+                toX = fromX;
+            }
+            if(updates[y]) {
+                toY = updates[y].to;
+            } else {
+                toY = fromY;
+            }
 
-            if (fromX[0] === toX[0] && fromX[1] === toX[1] && fromY[0] === toY[0] && fromY[1] === toY[1]) continue;
+            if(fromX[0] === toX[0] && fromX[1] === toX[1] && fromY[0] === toY[0] && fromY[1] === toY[1]) continue;
 
             if(updatedAxisIds.indexOf(x) !== -1 || updatedAxisIds.indexOf(y) !== -1) {
                 affectedSubplots.push(plotinfo);
@@ -85,7 +94,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
     var updatedAxisIds = Object.keys(updates);
     var affectedSubplots = computeAffectedSubplots(fullLayout, updatedAxisIds, updates);
 
-    if (!affectedSubplots.length) {
+    if(!affectedSubplots.length) {
         return false;
     }
 
