@@ -64,7 +64,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig) {
     // Must run the selection again since otherwise enters/updates get grouped together
     // and these get executed out of order. Except we need them in order!
     scatterlayer.selectAll('g.trace').each(function(d, i) {
-        plotOne(gd, i, plotinfo, d, cdscatter, this);
+        plotOne(gd, i, plotinfo, d, cdscatter, this, transitionConfig);
     });
 
     if(isFullReplot) {
@@ -116,13 +116,26 @@ function createFills(gd, scatterlayer) {
     });
 }
 
-function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element) {
+function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionConfig) {
     var join, i;
 
     // Since this has been reorganized and we're executing this on individual traces,
     // we need to pass it the full list of cdscatter as well as this trace's index (idx)
     // since it does an internal n^2 loop over comparisons with other traces:
     selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll);
+
+    var hasTransition = !!transitionConfig && transitionConfig.duration > 0;
+
+    function transition(selection) {
+        if(hasTransition) {
+            return selection.transition()
+                .duration(transitionConfig.duration)
+                .delay(transitionConfig.delay)
+                .ease(transitionConfig.ease);
+        } else {
+            return selection;
+        }
+    }
 
     var xa = plotinfo.x(),
         ya = plotinfo.y();
@@ -133,7 +146,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element) {
 
     // (so error bars can find them along with bars)
     // error bars are at the bottom
-    tr.call(ErrorBars.plot, plotinfo);
+    tr.call(ErrorBars.plot, plotinfo, transitionConfig);
 
     if(trace.visible !== true) return;
 
@@ -227,12 +240,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element) {
                 lastSegment = segments[segments.length - 1],
                 pt1 = lastSegment[lastSegment.length - 1];
 
-            var lineJoin = tr.selectAll('.js-line').data(segments);
+            //var lineJoin = tr.selectAll('.js-line').data(segments);
+            //lineJoin.enter().append('path').classed('js-line', true);
 
-            lineJoin.enter()
-                .append('path').classed('js-line', true);
-
-            lineJoin.each(function(pts) {
+            for(i = 0; i < segments.length; i++) {
+                var pts = segments[i];
                 thispath = pathfn(pts);
                 thisrevpath = revpathfn(pts);
                 if(!fullpath) {
@@ -248,13 +260,16 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element) {
                     revpath = thisrevpath + 'Z' + revpath;
                 }
                 if(subTypes.hasLines(trace) && pts.length > 1) {
-                    d3.select(this)
-                        .attr('d', thispath)
-                        .datum(cdscatter);
-                }
-            });
+                    var lineJoin = tr.selectAll('.js-line').data([cdscatter]);
 
-            lineJoin.exit().remove();
+                    lineJoin.enter()
+                        .append('path').classed('js-line', true).attr('d', thispath);
+
+                    transition(lineJoin).attr('d', thispath);
+                }
+            }
+
+            //lineJoin.exit().remove();
 
             if(ownFillEl3) {
                 if(pt0 && pt1) {
@@ -268,10 +283,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element) {
 
                         // fill to zero: full trace path, plus extension of
                         // the endpoints to the appropriate axis
-                        ownFillEl3.attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
+                        transition(ownFillEl3).attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
                     } else {
                         // fill to self: just join the path to itself
-                        ownFillEl3.attr('d', fullpath + 'Z');
+                        transition(ownFillEl3).attr('d', fullpath + 'Z');
                     }
                 }
             }
@@ -282,7 +297,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element) {
                     // contours, we just add the two paths closed on themselves.
                     // This makes strange results if one path is *not* entirely
                     // inside the other, but then that is a strange usage.
-                    tonext.attr('d', fullpath + 'Z' + prevpath + 'Z');
+                    transition(tonext).attr('d', fullpath + 'Z' + prevpath + 'Z');
                 }
                 else {
                     // tonextx/y: for now just connect endpoints with lines. This is
@@ -290,7 +305,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element) {
                     // y/x, but if they *aren't*, we should ideally do more complicated
                     // things depending on whether the new endpoint projects onto the
                     // existing curve or off the end of it
-                    tonext.attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
+                    transition(tonext).attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
                 }
                 trace._polygons = trace._polygons.concat(prevPolygons);
             }
@@ -305,12 +320,12 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element) {
     }
 
     function keyFunc(d) {
-        return d.key;
+        return d.identifier;
     }
 
     // Returns a function if the trace is keyed, otherwise returns undefined
     function getKeyFunc(trace) {
-        if(trace.key) {
+        if(trace.identifier) {
             return keyFunc;
         }
     }
@@ -333,13 +348,18 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element) {
                 join.enter().append('path')
                     .classed('point', true)
                     .call(Drawing.pointStyle, trace)
-                    .call(Drawing.translatePoints, xa, ya);
+                    .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 1);
 
-                selection
-                    .call(Drawing.translatePoints, xa, ya)
+                join.transition()
+                    .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 0)
                     .call(Drawing.pointStyle, trace);
 
-                join.exit().remove();
+                if(hasTransition) {
+                    join.exit()
+                        .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, -1);
+                } else {
+                    join.exit().remove();
+                }
             }
             if(showText) {
                 selection = s.selectAll('g');

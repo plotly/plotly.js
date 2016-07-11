@@ -2517,6 +2517,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         ease: 'cubic-in-out',
         duration: 500,
         delay: 0,
+        cascade: 0
     }, transitionConfig || {});
 
     // Create a single transition to be passed around:
@@ -2529,13 +2530,19 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         gd._currentTransition = null;
     }
 
+    var dataLength = Array.isArray(data) ? data.length : 0;
+
     // Select which traces will be updated:
     if(isNumeric(traceIndices)) traceIndices = [traceIndices];
     else if(!Array.isArray(traceIndices) || !traceIndices.length) {
         traceIndices = gd._fullData.map(function(v, i) {return i;});
     }
 
-    var animatedTraces = [];
+    if(traceIndices.length > dataLength) {
+        traceIndices = traceIndices.slice(0, dataLength);
+    }
+
+    var transitionedTraces = [];
 
     function prepareTransitions() {
         for(i = 0; i < traceIndices.length; i++) {
@@ -2547,16 +2554,16 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
                 continue;
             }
 
-            animatedTraces.push(traceIdx);
+            transitionedTraces.push(traceIdx);
 
             Lib.extendDeepNoArrays(gd.data[traceIndices[i]], data[i]);
         }
 
         Plots.supplyDefaults(gd);
 
-        // TODO: Add logic that computes animatedTraces to avoid unnecessary work while
+        // TODO: Add logic that computes transitionedTraces to avoid unnecessary work while
         // still handling things like box plots that are interrelated.
-        // doCalcdata(gd, animatedTraces);
+        // doCalcdata(gd, transitionedTraces);
 
         doCalcdata(gd);
 
@@ -2568,10 +2575,14 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     var resolveTransitionCallback = null;
 
     function executeTransitions() {
+        var hasTraceTransition = false;
         var j;
         var basePlotModules = fullLayout._basePlotModules;
         for(j = 0; j < basePlotModules.length; j++) {
-            basePlotModules[j].plot(gd, animatedTraces, transitionConfig);
+            if(basePlotModules[j].animatable) {
+                hasTraceTransition = true;
+            }
+            basePlotModules[j].plot(gd, transitionedTraces, transitionConfig);
         }
 
         var hasAxisTransition = false;
@@ -2579,13 +2590,13 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         if(layout) {
             for(j = 0; j < basePlotModules.length; j++) {
                 if(basePlotModules[j].transitionAxes) {
-                    var newLayout = Lib.extendDeep({}, gd._fullLayout, layout);
+                    var newLayout = Lib.expandObjectPaths(layout);
                     hasAxisTransition = hasAxisTransition || basePlotModules[j].transitionAxes(gd, newLayout, transitionConfig);
                 }
             }
         }
 
-        if (!hasAxisTransition) {
+        if(!hasAxisTransition && !hasTraceTransition) {
             return false;
         }
 
@@ -2596,7 +2607,6 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     }
 
     function interruptPreviousTransitions() {
-        var ret, interrupt;
         clearTimeout(completionTimeout);
 
         if(resolveTransitionCallback) {
@@ -2610,7 +2620,6 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         while(gd._frameData._styleInterrupts.length) {
             (gd._frameData._styleInterrupts.pop())();
         }
-        return ret;
     }
 
     for(i = 0; i < traceIndices.length; i++) {
