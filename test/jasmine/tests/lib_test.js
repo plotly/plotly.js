@@ -2,6 +2,7 @@ var Lib = require('@src/lib');
 var setCursor = require('@src/lib/setcursor');
 
 var d3 = require('d3');
+var Plotly = require('@lib');
 var PlotlyInternal = require('@src/plotly');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -1039,6 +1040,76 @@ describe('Test lib.js:', function() {
             expect(function() {
                 Lib.numSeparate(1234, '');
             }).toThrowError('Separator string required for formatting!');
+        });
+    });
+});
+
+describe('Queue', function() {
+    'use strict';
+
+    var gd;
+
+    beforeEach(function() {
+        gd = createGraphDiv();
+    });
+
+    afterEach(function() {
+        destroyGraphDiv();
+        Plotly.setPlotConfig({ queueLength: 0 });
+    });
+
+    it('should not fill in undoQueue by default', function(done) {
+        Plotly.plot(gd, [{
+            y: [2, 1, 2]
+        }]).then(function() {
+            expect(gd.undoQueue).toBeUndefined();
+
+            return Plotly.restyle(gd, 'marker.color', 'red');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(0);
+            expect(gd.undoQueue.queue).toEqual([]);
+
+            return Plotly.relayout(gd, 'title', 'A title');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(0);
+            expect(gd.undoQueue.queue).toEqual([]);
+
+            done();
+        });
+    });
+
+    it('should fill in undoQueue up to value found in *queueLength* config', function(done) {
+        Plotly.setPlotConfig({ queueLength: 2 });
+
+        Plotly.plot(gd, [{
+            y: [2, 1, 2]
+        }]).then(function() {
+            expect(gd.undoQueue).toBeUndefined();
+
+            return Plotly.restyle(gd, 'marker.color', 'red');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(1);
+            expect(gd.undoQueue.queue[0].undo.args[0][1]['marker.color']).toEqual([undefined]);
+            expect(gd.undoQueue.queue[0].redo.args[0][1]['marker.color']).toEqual('red');
+
+            return Plotly.relayout(gd, 'title', 'A title');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(2);
+            expect(gd.undoQueue.queue[1].undo.args[0][1].title).toEqual(undefined);
+            expect(gd.undoQueue.queue[1].redo.args[0][1].title).toEqual('A title');
+
+            return Plotly.restyle(gd, 'mode', 'markers');
+        }).then(function() {
+            expect(gd.undoQueue.index).toEqual(2);
+            expect(gd.undoQueue.queue[2]).toBeUndefined();
+
+            expect(gd.undoQueue.queue[1].undo.args[0][1].mode).toEqual([undefined]);
+            expect(gd.undoQueue.queue[1].redo.args[0][1].mode).toEqual('markers');
+
+            expect(gd.undoQueue.queue[0].undo.args[0][1].title).toEqual(undefined);
+            expect(gd.undoQueue.queue[0].redo.args[0][1].title).toEqual('A title');
+
+            done();
         });
     });
 });
