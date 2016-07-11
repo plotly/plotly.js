@@ -105,6 +105,21 @@ describe('svg+text utils', function() {
             assertAnchorLink(node, 'mailto:support@plot.ly');
         });
 
+        it('wrap XSS attacks in href', function() {
+            var textCases = [
+                '<a href="XSS\" onmouseover=&quot;alert(1)\" style=&quot;font-size:300px">Subtitle</a>',
+                '<a href="XSS&quot; onmouseover=&quot;alert(1)&quot; style=&quot;font-size:300px">Subtitle</a>'
+            ];
+
+            textCases.forEach(function(textCase) {
+                var node = mockTextSVGElement(textCase);
+
+                expect(node.text()).toEqual('Subtitle');
+                assertAnchorAttrs(node);
+                assertAnchorLink(node, 'XSS onmouseover=alert(1) style=font-size:300px');
+            });
+        });
+
         it('should keep query parameters in href', function() {
             var textCases = [
                 '<a href="https://abc.com/myFeature.jsp?name=abc&pwd=def">abc.com?shared-key</a>',
