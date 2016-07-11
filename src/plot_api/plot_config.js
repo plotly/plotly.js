@@ -11,7 +11,7 @@
 var Lib = require('../lib');
 
 /**
- * This will be transfered over to gd and overridden by
+ * This will be transferred over to gd and overridden by
  * config args to Plotly.plot.
  *
  * The defaults are the appropriate settings for plotly.js,

@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
+var Lib = require('../lib');
 
 /**
  * Copy arg array *without* removing `undefined` values from objects.
@@ -28,8 +28,8 @@ function copyArgArray(gd, args) {
         if(arg === gd) copy[i] = arg;
         else if(typeof arg === 'object') {
             copy[i] = Array.isArray(arg) ?
-                Plotly.Lib.extendDeep([], arg) :
-                Plotly.Lib.extendDeepAll({}, arg);
+                Lib.extendDeep([], arg) :
+                Lib.extendDeepAll({}, arg);
         }
         else copy[i] = arg;
     }
