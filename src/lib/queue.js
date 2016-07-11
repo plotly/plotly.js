@@ -45,6 +45,8 @@ function copyArgArray(gd, args) {
 
 var queue = {};
 
+var maxElementCount = 10;
+
 // TODO: disable/enable undo and redo buttons appropriately
 
 /**
@@ -87,6 +89,10 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
     queueObj.redo.calls.push(redoFunc);
     queueObj.redo.args.push(redoArgs);
 
+    if(gd.undoQueue.queue.length > maxElementCount) {
+        gd.undoQueue.queue.shift();
+        gd.undoQueue.index--;
+    }
 };
 
 /**
