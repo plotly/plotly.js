@@ -26,6 +26,9 @@ module.exports = {
     // we can edit titles, move annotations, etc
     editable: false,
 
+    // set the length of the undo/redo queue
+    queueLength: 0,
+
     // plot will respect layout.autosize=true and infer its container size
     autosizable: false,
 
