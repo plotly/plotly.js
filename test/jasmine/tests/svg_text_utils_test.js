@@ -104,5 +104,20 @@ describe('svg+text utils', function() {
             assertAnchorAttrs(node);
             assertAnchorLink(node, 'mailto:support@plot.ly');
         });
+
+        it('should keep query parameters in href', function() {
+            var textCases = [
+                '<a href="https://abc.com/myFeature.jsp?name=abc&pwd=def">abc.com?shared-key</a>',
+                '<a href="https://abc.com/myFeature.jsp?name=abc&amp;pwd=def">abc.com?shared-key</a>'
+            ];
+
+            textCases.forEach(function(textCase) {
+                var node = mockTextSVGElement(textCase);
+
+                assertAnchorAttrs(node);
+                expect(node.text()).toEqual('abc.com?shared-key');
+                assertAnchorLink(node, 'https://abc.com/myFeature.jsp?name=abc&pwd=def');
+            });
+        });
     });
 });
