@@ -259,16 +259,16 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     fullpath += 'Z' + thispath;
                     revpath = thisrevpath + 'Z' + revpath;
                 }
-                if(subTypes.hasLines(trace) && pts.length > 1) {
-                    var lineJoin = tr.selectAll('.js-line').data([cdscatter]);
-
-                    lineJoin.enter()
-                        .append('path').classed('js-line', true).attr('d', thispath);
-
-                    transition(lineJoin).attr('d', thispath);
-                }
             }
 
+            if(subTypes.hasLines(trace) && pts.length > 1) {
+                var lineJoin = tr.selectAll('.js-line').data([cdscatter]);
+
+                lineJoin.enter()
+                    .append('path').classed('js-line', true).attr('d', fullpath);
+
+                transition(lineJoin).attr('d', fullpath);
+            }
             //lineJoin.exit().remove();
 
             if(ownFillEl3) {
