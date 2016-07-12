@@ -13,10 +13,9 @@ var tinycolor = require('tinycolor2');
 
 
 module.exports = function isValidScaleArray(scl) {
-    var isValid = true,
-        highestVal = 0;
+    var highestVal = 0;
 
-    if(!Array.isArray(scl) || scl.length === 0) return false;
+    if(!Array.isArray(scl) || scl.length < 2) return false;
 
     if(!scl[0] || !scl[scl.length - 1]) return false;
 
@@ -26,12 +25,11 @@ module.exports = function isValidScaleArray(scl) {
         var si = scl[i];
 
         if(si.length !== 2 || +si[0] < highestVal || !tinycolor(si[1]).isValid()) {
-            isValid = false;
-            break;
+            return false;
         }
 
         highestVal = +si[0];
     }
 
-    return isValid;
+    return true;
 };
