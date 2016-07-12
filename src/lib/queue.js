@@ -84,10 +84,12 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
     gd.undoQueue.beginSequence = false;
 
     // we unshift to handle calls for undo in a forward for loop later
-    queueObj.undo.calls.unshift(undoFunc);
-    queueObj.undo.args.unshift(undoArgs);
-    queueObj.redo.calls.push(redoFunc);
-    queueObj.redo.args.push(redoArgs);
+    if(queueObj) {
+        queueObj.undo.calls.unshift(undoFunc);
+        queueObj.undo.args.unshift(undoArgs);
+        queueObj.redo.calls.push(redoFunc);
+        queueObj.redo.args.push(redoArgs);
+    }
 
     if(gd.undoQueue.queue.length > config.queueLength) {
         gd.undoQueue.queue.shift();
