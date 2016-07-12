@@ -20,6 +20,7 @@ module.exports = {
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
     pathToBuild: pathToBuild,
+    pathToDist: pathToDist,
 
     pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
@@ -27,6 +28,10 @@ module.exports = {
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
+
+    partialBundleNames: [
+        'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox'
+    ],
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),

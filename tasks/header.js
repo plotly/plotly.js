@@ -17,6 +17,13 @@ var pathsDist = [
     constants.pathToPlotlyGeoAssetsDist
 ];
 
+constants.partialBundleNames.forEach(function(name) {
+    var pathToBundle = path.join(constants.pathToDist, 'plotly-' + name + '.js'),
+        pathToMinBundle = path.join(constants.pathToDist, 'plotly-' + name + '.min.js');
+
+    pathsDist.push(pathToBundle, pathToMinBundle);
+});
+
 function headerLicense(path) {
     prependFile(path, constants.licenseDist + '\n', function(err) {
         if(err) throw err;

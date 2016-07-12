@@ -1,4 +1,5 @@
 var fs = require('fs');
+var path = require('path');
 
 var browserify = require('browserify');
 var UglifyJS = require('uglify-js');
@@ -35,41 +36,55 @@ catch(e) {
 
 
 // Browserify plotly.js
-browserify(constants.pathToPlotlyIndex, {
-    debug: DEV,
+_bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDist, {
     standalone: 'Plotly',
-    transform: [compressAttributes]
-})
-.bundle(function(err, buf) {
-    if(err) throw err;
-
-    // generate plotly.min.js
-    if(!DEV) {
-        fs.writeFile(
-            constants.pathToPlotlyDistMin,
-            UglifyJS.minify(buf.toString(), constants.uglifyOptions).code
-        );
-    }
-})
-.pipe(fs.createWriteStream(constants.pathToPlotlyDist));
-
+    debug: DEV,
+    pathToMinBundle: constants.pathToPlotlyDistMin
+});
 
 // Browserify the geo assets
-browserify(constants.pathToPlotlyGeoAssetsSrc, {
+_bundle(constants.pathToPlotlyGeoAssetsSrc, constants.pathToPlotlyGeoAssetsDist, {
     standalone: 'PlotlyGeoAssets'
-})
-.bundle(function(err) {
-    if(err) throw err;
-})
-.pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist));
-
+});
 
 // Browserify the plotly.js with meta
-browserify(constants.pathToPlotlyIndex, {
-    debug: DEV,
-    standalone: 'Plotly'
-})
-.bundle(function(err) {
-    if(err) throw err;
-})
-.pipe(fs.createWriteStream(constants.pathToPlotlyDistWithMeta));
+_bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
+    standalone: 'Plotly',
+    debug: DEV
+});
+
+// Browserify the plotly.js partial bundles
+constants.partialBundleNames.forEach(function(name) {
+    var pathToIndex = path.join(constants.pathToLib, 'index-' + name + '.js'),
+        pathToBundle = path.join(constants.pathToDist, 'plotly-' + name + '.js'),
+        pathToMinBundle = path.join(constants.pathToDist, 'plotly-' + name + '.min.js');
+
+    _bundle(pathToIndex, pathToBundle, {
+        standalone: 'Plotly',
+        debug: DEV,
+        pathToMinBundle: pathToMinBundle
+    });
+});
+
+function _bundle(pathToIndex, pathToBundle, opts) {
+    opts = opts || {};
+
+    // do we output a minified file?
+    var outputMinified = !!opts.pathToMinBundle && !opts.debug;
+
+    var browserifyOpts = {};
+    browserifyOpts.standalone = opts.standalone;
+    browserifyOpts.debug = opts.debug;
+    browserifyOpts.transform = outputMinified ? [compressAttributes] : [];
+
+    browserify(pathToIndex, browserifyOpts).bundle(function(err, buf) {
+        if(err) throw err;
+
+        if(outputMinified) {
+            var minifiedCode = UglifyJS.minify(buf.toString(), constants.uglifyOptions).code;
+
+            fs.writeFile(opts.pathToMinBundle, minifiedCode);
+        }
+    })
+    .pipe(fs.createWriteStream(pathToBundle));
+}
