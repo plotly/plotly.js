@@ -26,9 +26,6 @@ exports.Lib = require('./lib');
 exports.util = require('./lib/svg_text_utils');
 exports.Queue = require('./lib/queue');
 
-// plot css
-require('../build/plotcss');
-
 // configuration
 exports.MathJaxConfig = require('./fonts/mathjax_config');
 exports.defaultConfig = require('./plot_api/plot_config');
