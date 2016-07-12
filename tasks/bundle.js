@@ -70,21 +70,39 @@ function _bundle(pathToIndex, pathToBundle, opts) {
     opts = opts || {};
 
     // do we output a minified file?
-    var outputMinified = !!opts.pathToMinBundle && !opts.debug;
+    var pathToMinBundle = opts.pathToMinBundle,
+        outputMinified = !!pathToMinBundle && !opts.debug;
 
     var browserifyOpts = {};
     browserifyOpts.standalone = opts.standalone;
     browserifyOpts.debug = opts.debug;
     browserifyOpts.transform = outputMinified ? [compressAttributes] : [];
 
-    browserify(pathToIndex, browserifyOpts).bundle(function(err, buf) {
+    var b = browserify(pathToIndex, browserifyOpts),
+        bundleWriteStream = fs.createWriteStream(pathToBundle);
+
+    bundleWriteStream.on('finish', function() {
+        logger(pathToBundle);
+    });
+
+    b.bundle(function(err, buf) {
         if(err) throw err;
 
         if(outputMinified) {
             var minifiedCode = UglifyJS.minify(buf.toString(), constants.uglifyOptions).code;
 
-            fs.writeFile(opts.pathToMinBundle, minifiedCode);
+            fs.writeFile(pathToMinBundle, minifiedCode, function(err) {
+                if(err) throw err;
+
+                logger(pathToMinBundle);
+            });
         }
     })
-    .pipe(fs.createWriteStream(pathToBundle));
+    .pipe(bundleWriteStream);
+}
+
+function logger(pathToOutput) {
+    var log = 'ok ' + path.basename(pathToOutput);
+
+    console.log(log);
 }
