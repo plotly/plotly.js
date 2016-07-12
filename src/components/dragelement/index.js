@@ -86,7 +86,7 @@ dragElement.init = function init(options) {
 
         if(options.prepFn) options.prepFn(e, startX, startY);
 
-        dragCover = coverSlip();
+        dragCover = coverSlip(gd);
 
         dragCover.onmousemove = onMove;
         dragCover.onmouseup = onDone;
@@ -159,8 +159,8 @@ dragElement.init = function init(options) {
     options.element.style.pointerEvents = 'all';
 };
 
-function coverSlip() {
-    var cover = document.createElement('div');
+function coverSlip(gd) {
+    var cover = gd.ownerDocument.createElement('div');
 
     cover.className = 'dragcover';
     var cStyle = cover.style;
@@ -172,7 +172,7 @@ function coverSlip() {
     cStyle.zIndex = 999999999;
     cStyle.background = 'none';
 
-    document.body.appendChild(cover);
+    gd.ownerDocument.body.appendChild(cover);
 
     return cover;
 }
