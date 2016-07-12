@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.14.1
+* plotly.js v1.14.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -56768,7 +56768,6 @@ function stylePies(d) {
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
-var setCursor = require('../../lib/setcursor');
 var downloadImage = require('../../snapshot/download');
 var Icons = require('../../../build/ploticon');
 
@@ -56928,13 +56927,6 @@ modeBarButtons.hoverCompareCartesian = {
     click: handleCartesian
 };
 
-var DRAGCURSORS = {
-    pan: 'move',
-    zoom: 'crosshair',
-    select: 'crosshair',
-    lasso: 'crosshair'
-};
-
 function handleCartesian(gd, ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
@@ -56984,18 +56976,7 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    Plotly.relayout(gd, aobj).then(function() {
-        if(astr === 'dragmode') {
-            if(fullLayout._has('cartesian')) {
-                setCursor(
-                    fullLayout._paper.select('.nsewdrag'),
-                    DRAGCURSORS[val]
-                );
-            }
-            Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
-            Plotly.Fx.init(gd);
-        }
-    });
+    Plotly.relayout(gd, aobj);
 }
 
 modeBarButtons.zoom3d = {
@@ -57281,7 +57262,7 @@ modeBarButtons.resetViews = {
     }
 };
 
-},{"../../../build/ploticon":2,"../../lib":382,"../../lib/setcursor":391,"../../plotly":402,"../../snapshot/download":469}],349:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":382,"../../plotly":402,"../../snapshot/download":469}],349:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -60280,7 +60261,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.14.1';
+exports.version = '1.14.2';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -64637,6 +64618,10 @@ Plotly.redraw = function(gd) {
  */
 Plotly.newPlot = function(gd, data, layout, config) {
     gd = getGraphDiv(gd);
+
+    // remove gl contexts
+    Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {});
+
     Plots.purge(gd);
     return Plotly.plot(gd, data, layout, config);
 };
@@ -66226,6 +66211,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(domodebar) {
             var subplotIds;
             manageModeBar(gd);
+
+            Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
+            Plotly.Fx.init(gd);
 
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {
@@ -70257,7 +70245,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         pw = xa[0]._length,
         ph = ya[0]._length,
         MINDRAG = constants.MINDRAG,
-        MINZOOM = constants.MINZOOM;
+        MINZOOM = constants.MINZOOM,
+        isMainDrag = (ns + ew === 'nsew');
 
     for(var i = 1; i < subplots.length; i++) {
         var subplotXa = subplots[i].x(),
@@ -70280,21 +70269,24 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dragClass = ns + ew + 'drag';
 
     var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
+
     dragger3.enter().append('rect')
         .classed('drag', true)
         .classed(dragClass, true)
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
+
     dragger3.call(Drawing.setRect, x, y, w, h)
         .call(setCursor, cursor);
+
     var dragger = dragger3.node();
 
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
     // and stop there
-    if(!yActive && !xActive) {
+    if(!yActive && !xActive && !isSelectOrLasso(fullLayout.dragmode)) {
         dragger.onmousedown = null;
-        dragger.style.pointerEvents = (ns + ew === 'nsew') ? 'all' : 'none';
+        dragger.style.pointerEvents = isMainDrag ? 'all' : 'none';
         return dragger;
     }
 
@@ -70312,7 +70304,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         doubleclick: doubleClick,
         prepFn: function(e, startX, startY) {
             var dragModeNow = gd._fullLayout.dragmode;
-            if(ns + ew === 'nsew') {
+
+            if(isMainDrag) {
                 // main dragger handles all drag modes, and changes
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
@@ -70336,7 +70329,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 dragOptions.doneFn = dragDone;
                 clearSelect();
             }
-            else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
+            else if(isSelectOrLasso(dragModeNow)) {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         }
@@ -70872,6 +70865,12 @@ function removeZoombox(gd) {
     d3.select(gd)
         .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
         .remove();
+}
+
+function isSelectOrLasso(dragmode) {
+    var modes = ['lasso', 'select'];
+
+    return modes.indexOf(dragmode) !== -1;
 }
 
 },{"../../components/color":303,"../../components/dragelement":324,"../../components/drawing":326,"../../lib":382,"../../lib/setcursor":391,"../../lib/svg_text_utils":395,"../../plotly":402,"./axes":405,"./constants":410,"./select":418,"d3":113,"tinycolor2":274}],412:[function(require,module,exports){
@@ -76740,6 +76739,16 @@ proto.cameraChanged = function() {
 };
 
 proto.destroy = function() {
+
+    var traces = this.traces;
+
+    if(traces) {
+        Object.keys(traces).map(function(key) {
+            traces[key].dispose();
+            delete traces[key];
+        });
+    }
+
     this.glplot.dispose();
 
     if(!this.staticPlot) this.container.removeChild(this.canvas);
@@ -83661,6 +83670,19 @@ var extendFlat = require('../../lib/extend').extendFlat;
 var scatterMarkerAttrs = scatterAttrs.marker;
 var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
 
+var markerLineWidth = extendFlat({},
+    scatterMarkerLineAttrs.width, { dflt: 0 });
+
+var markerLine = extendFlat({}, {
+    width: markerLineWidth
+}, colorAttributes('marker.line'));
+
+var marker = extendFlat({}, {
+    showscale: scatterMarkerAttrs.showscale,
+    line: markerLine
+}, colorAttributes('marker'));
+
+
 module.exports = {
     x: scatterAttrs.x,
     x0: scatterAttrs.x0,
@@ -83669,20 +83691,15 @@ module.exports = {
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
     text: scatterAttrs.text,
+
     orientation: {
         valType: 'enumerated',
         
         values: ['v', 'h'],
         
     },
-    marker: extendFlat({}, {
-        showscale: scatterMarkerAttrs.showscale,
-        line: extendFlat({},
-            {width: scatterMarkerLineAttrs.width},
-            colorAttributes('marker.line')
-        )},
-        colorAttributes('marker')
-    ),
+
+    marker: marker,
 
     r: scatterAttrs.r,
     t: scatterAttrs.t,
@@ -83745,7 +83762,13 @@ module.exports = function calc(gd, trace) {
     // create the "calculated data" to plot
     var serieslen = Math.min(pos.length, size.length),
         cd = [];
+
     for(i = 0; i < serieslen; i++) {
+
+        // add bars with non-numeric sizes to calcdata
+        // so that ensure that traces with gaps are
+        // plotted in the correct order
+
         if(isNumeric(pos[i])) {
             cd.push({p: pos[i], s: size[i], b: 0});
         }
@@ -84290,9 +84313,17 @@ module.exports = function setPositions(gd, plotinfo) {
             for(i = 0; i < bl.length; i++) { // trace index
                 ti = gd.calcdata[bl[i]];
                 for(j = 0; j < ti.length; j++) {
+
+                    // skip over bars with no size,
+                    // so that we don't try to stack them
+                    if(!isNumeric(ti[j].s)) continue;
+
                     sv = Math.round(ti[j].p / sumround);
-                    // store the negative sum value for p at the same key, with sign flipped
-                    if(relative && ti[j].s < 0) sv = -sv;
+
+                    // store the negative sum value for p at the same key,
+                    // with sign flipped using string to ensure -0 !== 0.
+                    if(relative && ti[j].s < 0) sv = '-' + sv;
+
                     var previousSum = sums[sv] || 0;
                     if(stack || relative) ti[j].b = previousSum;
                     barEnd = ti[j].b + ti[j].s;
@@ -84310,20 +84341,29 @@ module.exports = function setPositions(gd, plotinfo) {
             }
 
             if(norm) {
-                padded = false;
                 var top = norm === 'fraction' ? 1 : 100,
                     relAndNegative = false,
                     tiny = top / 1e9; // in case of rounding error in sum
+
+                padded = false;
                 sMin = 0;
                 sMax = stack ? top : 0;
+
                 for(i = 0; i < bl.length; i++) { // trace index
                     ti = gd.calcdata[bl[i]];
+
                     for(j = 0; j < ti.length; j++) {
-                        relAndNegative = relative && ti[j].s < 0;
+                        relAndNegative = (relative && ti[j].s < 0);
+
                         sv = Math.round(ti[j].p / sumround);
-                        if(relAndNegative) sv = -sv;  // locate negative sum amount for this p val
+
+                        // locate negative sum amount for this p val
+                        if(relAndNegative) sv = '-' + sv;
+
                         scale = top / sums[sv];
-                        if(relAndNegative) scale *= -1; // preserve sign if negative
+
+                        // preserve sign if negative
+                        if(relAndNegative) scale *= -1;
                         ti[j].b *= scale;
                         ti[j].s *= scale;
                         barEnd = ti[j].b + ti[j].s;
@@ -88330,12 +88370,7 @@ function isValidZ(z) {
 'use strict';
 
 var barAttrs = require('../bar/attributes');
-var colorAttributes = require('../../components/colorscale/color_attributes');
 
-var extendFlat = require('../../lib/extend').extendDeep;
-
-var barMarkerAttrs = barAttrs.marker;
-var barMarkerLineAttrs = barMarkerAttrs.line;
 
 module.exports = {
     x: {
@@ -88395,14 +88430,7 @@ module.exports = {
     },
     ybins: makeBinsAttr('y'),
 
-    marker: extendFlat({}, {
-        showscale: barMarkerAttrs.showscale,
-        line: extendFlat({},
-            {width: extendFlat({}, barMarkerLineAttrs.width, {dflt: 0})},
-            colorAttributes('marker.line'))
-    },
-        colorAttributes('marker')
-    ),
+    marker: barAttrs.marker,
 
     _nestedModules: {
         'error_y': 'ErrorBars',
@@ -88438,7 +88466,7 @@ function makeBinsAttr(axLetter) {
     };
 }
 
-},{"../../components/colorscale/color_attributes":311,"../../lib/extend":377,"../bar/attributes":476}],525:[function(require,module,exports){
+},{"../bar/attributes":476}],525:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.

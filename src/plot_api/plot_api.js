@@ -835,6 +835,10 @@ Plotly.redraw = function(gd) {
  */
 Plotly.newPlot = function(gd, data, layout, config) {
     gd = getGraphDiv(gd);
+
+    // remove gl contexts
+    Plots.cleanPlot([], {}, gd._fullData || {}, gd._fullLayout || {});
+
     Plots.purge(gd);
     return Plotly.plot(gd, data, layout, config);
 };
@@ -1259,9 +1263,7 @@ Plotly.extendTraces = function extendTraces(gd, update, indices, maxPoints) {
     var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if(Queue) {
-        Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
-    }
+    Queue.add(gd, Plotly.prependTraces, undoArgs, extendTraces, arguments);
 
     return promise;
 };
@@ -1288,9 +1290,7 @@ Plotly.prependTraces = function prependTraces(gd, update, indices, maxPoints) {
     var promise = Plotly.redraw(gd);
 
     var undoArgs = [gd, undo.update, indices, undo.maxPoints];
-    if(Queue) {
-        Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
-    }
+    Queue.add(gd, Plotly.extendTraces, undoArgs, prependTraces, arguments);
 
     return promise;
 };
@@ -1338,7 +1338,7 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
     // i.e., we can simply redraw and be done
     if(typeof newIndices === 'undefined') {
         promise = Plotly.redraw(gd);
-        if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+        Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
         return promise;
     }
 
@@ -1361,10 +1361,10 @@ Plotly.addTraces = function addTraces(gd, traces, newIndices) {
 
     // if we're here, the user has defined specific places to place the new traces
     // this requires some extra work that moveTraces will do
-    if(Queue) Queue.startSequence(gd);
-    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    Queue.startSequence(gd);
+    Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
     promise = Plotly.moveTraces(gd, currentIndices, newIndices);
-    if(Queue) Queue.stopSequence(gd);
+    Queue.stopSequence(gd);
     return promise;
 };
 
@@ -1405,8 +1405,7 @@ Plotly.deleteTraces = function deleteTraces(gd, indices) {
     }
 
     var promise = Plotly.redraw(gd);
-
-    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
 };
@@ -1504,8 +1503,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     gd.data = newData;
 
     var promise = Plotly.redraw(gd);
-
-    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+    Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
 
     return promise;
 };
@@ -1951,9 +1949,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     // now all attribute mods are done, as are redo and undo
     // so we can save them
-    if(Queue) {
-        Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
-    }
+    Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
 
     // do we need to force a recalc?
     var autorangeOn = false;
@@ -2371,9 +2367,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
     }
     // now all attribute mods are done, as are
     // redo and undo so we can save them
-    if(Queue) {
-        Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
-    }
+    Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
 
     // calculate autosizing - if size hasn't changed,
     // will remove h&w so we don't need to redraw
@@ -2424,6 +2418,9 @@ Plotly.relayout = function relayout(gd, astr, val) {
         if(domodebar) {
             var subplotIds;
             manageModeBar(gd);
+
+            Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
+            Plotly.Fx.init(gd);
 
             subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
             for(i = 0; i < subplotIds.length; i++) {

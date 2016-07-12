@@ -9,7 +9,9 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
+var Lib = require('../lib');
+var config = require('../plot_api/plot_config');
+
 
 /**
  * Copy arg array *without* removing `undefined` values from objects.
@@ -28,8 +30,8 @@ function copyArgArray(gd, args) {
         if(arg === gd) copy[i] = arg;
         else if(typeof arg === 'object') {
             copy[i] = Array.isArray(arg) ?
-                Plotly.Lib.extendDeep([], arg) :
-                Plotly.Lib.extendDeepAll({}, arg);
+                Lib.extendDeep([], arg) :
+                Lib.extendDeepAll({}, arg);
         }
         else copy[i] = arg;
     }
@@ -82,11 +84,17 @@ queue.add = function(gd, undoFunc, undoArgs, redoFunc, redoArgs) {
     gd.undoQueue.beginSequence = false;
 
     // we unshift to handle calls for undo in a forward for loop later
-    queueObj.undo.calls.unshift(undoFunc);
-    queueObj.undo.args.unshift(undoArgs);
-    queueObj.redo.calls.push(redoFunc);
-    queueObj.redo.args.push(redoArgs);
+    if(queueObj) {
+        queueObj.undo.calls.unshift(undoFunc);
+        queueObj.undo.args.unshift(undoArgs);
+        queueObj.redo.calls.push(redoFunc);
+        queueObj.redo.args.push(redoArgs);
+    }
 
+    if(gd.undoQueue.queue.length > config.queueLength) {
+        gd.undoQueue.queue.shift();
+        gd.undoQueue.index--;
+    }
 };
 
 /**
