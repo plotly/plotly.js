@@ -255,14 +255,16 @@ exports.valObjects = {
 
             var items = opts.items;
 
-            // valid when one item is valid (which is subject to debate)
+            if(v.length !== items.length) return false;
+
+            // valid when all items are valid
             for(var i = 0; i < items.length; i++) {
                 var isItemValid = exports.validate(v[i], opts.items[i]);
 
-                if(isItemValid) return true;
+                if(!isItemValid) return false;
             }
 
-            return false;
+            return true;
         }
     }
 };

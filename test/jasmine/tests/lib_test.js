@@ -969,8 +969,12 @@ describe('Test lib.js:', function() {
         });
 
         it('should work for valType \'info_array\' where', function() {
-            var shouldPass = [[1, 2], [10], [null, 10], [1, 10, null]],
-                shouldFail = [{}, [], ['aads', null], 'red', null, undefined, ''];
+            var shouldPass = [[1, 2], [-20, '20']],
+                shouldFail = [
+                    {}, [], [10], [null, 10], ['aads', null],
+                    'red', null, undefined, '',
+                    [1, 10, null]
+                ];
 
             assert(shouldPass, shouldFail, {
                 valType: 'info_array',
