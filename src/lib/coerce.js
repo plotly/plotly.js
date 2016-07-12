@@ -100,11 +100,7 @@ exports.valObjects = {
         otherOpts: ['dflt', 'noBlank', 'strict', 'arrayOk', 'values'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(typeof v !== 'string') {
-                var okToCoerce = (
-                    typeof v === 'number' ||
-                    v instanceof Date ||
-                    typeof v === 'boolean'
-                );
+                var okToCoerce = (typeof v === 'number');
 
                 if(opts.strict === true || !okToCoerce) propOut.set(dflt);
                 else propOut.set(String(v));
