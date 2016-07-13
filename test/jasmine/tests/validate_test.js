@@ -3,21 +3,61 @@ var Plotly = require('@lib/index');
 
 describe('Plotly.validate', function() {
 
-    function assertErrorShape(out, dataSize, layoutSize) {
-        var actualDataSize = out.data.map(function(t) {
-            return t.length;
+    function assertErrorContent(obj, code, cont, trace, path, astr, msg) {
+        expect(obj.code).toEqual(code);
+        expect(obj.container).toEqual(cont);
+        expect(obj.trace).toEqual(trace);
+        expect(obj.path).toEqual(path);
+        expect(obj.astr).toEqual(astr);
+        expect(obj.msg).toEqual(msg);
+    }
+
+    it('should return undefined when no errors are found', function() {
+        var out = Plotly.validate([{
+            type: 'scatter',
+            x: [1, 2, 3]
+        }], {
+            title: 'my simple graph'
         });
 
-        expect(actualDataSize).toEqual(dataSize);
-        expect(out.layout.length).toEqual(layoutSize);
-    }
+        expect(out).toBeUndefined();
+    });
 
-    function assertErrorContent(obj, code, path) {
-        expect(obj.code).toEqual(code);
-        expect(obj.path).toEqual(path);
+    it('should report when data is not an array', function() {
+        var out = Plotly.validate({
+            type: 'scatter',
+            x: [1, 2, 3]
+        });
 
-        // TODO test msg
-    }
+        expect(out.length).toEqual(1);
+        assertErrorContent(
+            out[0], 'array', 'data', null, '', '',
+            'The data argument must be linked to an array container'
+        );
+    });
+
+    it('should report when a data trace is not an object', function() {
+        var out = Plotly.validate([{
+            type: 'scatter',
+            x: [1, 2, 3]
+        }, [1, 2, 3]]);
+
+        expect(out.length).toEqual(1);
+        assertErrorContent(
+            out[0], 'object', 'data', 1, '', '',
+            'Trace 1 in the data argument must be linked to an object container'
+        );
+    });
+
+    it('should report when layout is not an object', function() {
+        var out = Plotly.validate([], [1, 2, 3]);
+
+        expect(out.length).toEqual(1);
+        assertErrorContent(
+            out[0], 'object', 'layout', null, '', '',
+            'The layout argument must be linked to an object container'
+        );
+    });
 
     it('should report when trace is defaulted to not be visible', function() {
         var out = Plotly.validate([{
@@ -25,8 +65,11 @@ describe('Plotly.validate', function() {
             // missing 'x' and 'y
         }], {});
 
-        assertErrorShape(out, [1], 0);
-        assertErrorContent(out.data[0][0], 'invisible', 0, '');
+        expect(out.length).toEqual(1);
+        assertErrorContent(
+            out[0], 'invisible', 'data', 0, '', '',
+            'Trace 0 got defaulted to be not visible'
+        );
     });
 
     it('should report when trace contains keys not part of the schema', function() {
@@ -35,8 +78,11 @@ describe('Plotly.validate', function() {
             markerColor: 'blue'
         }], {});
 
-        assertErrorShape(out, [1], 0);
-        assertErrorContent(out.data[0][0], 'schema', ['markerColor'], '');
+        expect(out.length).toEqual(1);
+        assertErrorContent(
+            out[0], 'schema', 'data', 0, ['markerColor'], 'markerColor',
+            'In data trace 0, key markerColor is not part of the schema'
+        );
     });
 
     it('should report when trace contains keys that are not coerced', function() {
@@ -53,11 +99,15 @@ describe('Plotly.validate', function() {
             }
         }], {});
 
-        assertErrorShape(out, [1, 1], 0);
-        expect(out.layout.length).toEqual(0);
-        assertErrorContent(out.data[0][0], 'unused', ['marker'], '');
-        assertErrorContent(out.data[1][0], 'unused', ['marker', 'cmin'], '');
-
+        expect(out.length).toEqual(2);
+        assertErrorContent(
+            out[0], 'unused', 'data', 0, ['marker'], 'marker',
+            'In data trace 0, container marker did not get coerced'
+        );
+        assertErrorContent(
+            out[1], 'unused', 'data', 1, ['marker', 'cmin'], 'marker.cmin',
+            'In data trace 1, key marker.cmin did not get coerced'
+        );
     });
 
     it('should report when trace contains keys set to invalid values', function() {
@@ -71,9 +121,15 @@ describe('Plotly.validate', function() {
             marker: { color: 10 }
         }], {});
 
-        assertErrorShape(out, [1, 1], 0);
-        assertErrorContent(out.data[0][0], 'value', ['line', 'width'], '');
-        assertErrorContent(out.data[1][0], 'value', ['marker', 'color'], '');
+        expect(out.length).toEqual(2);
+        assertErrorContent(
+            out[0], 'value', 'data', 0, ['line', 'width'], 'line.width',
+            'In data trace 0, key line.width is set to an invalid value (a big number)'
+        );
+        assertErrorContent(
+            out[1], 'value', 'data', 1, ['marker', 'color'], 'marker.color',
+            'In data trace 1, key marker.color is set to an invalid value (10)'
+        );
     });
 
     it('should work with isLinkedToArray attributes', function() {
@@ -82,6 +138,8 @@ describe('Plotly.validate', function() {
                 text: 'some text'
             }, {
                 arrowSymbol: 'cat'
+            }, {
+                font: { color: 'wont-work' }
             }],
             xaxis: {
                 type: 'date',
@@ -103,17 +161,57 @@ describe('Plotly.validate', function() {
                     }]
                 }
             },
+            xaxis3: {
+                type: 'date',
+                rangeselector: {
+                    buttons: 'wont-work'
+                }
+            },
             shapes: [{
                 opacity: 'none'
             }]
         });
 
-        assertErrorShape(out, [], 5);
-        assertErrorContent(out.layout[0], 'schema', ['annotations[1]', 'arrowSymbol'], '');
-        assertErrorContent(out.layout[1], 'unused', ['xaxis', 'rangeselector', 'buttons[0]', 'count'], '');
-        assertErrorContent(out.layout[2], 'schema', ['xaxis', 'rangeselector', 'buttons[1]', 'title'], '');
-        assertErrorContent(out.layout[3], 'schema', ['xaxis2', 'rangeselector', 'buttons[0]', 'title'], '');
-        assertErrorContent(out.layout[4], 'value', ['shapes[0]', 'opacity'], '');
+        expect(out.length).toEqual(7);
+        assertErrorContent(
+            out[0], 'schema', 'layout', null,
+            ['annotations', 1, 'arrowSymbol'], 'annotations[1].arrowSymbol',
+            'In layout, key annotations[1].arrowSymbol is not part of the schema'
+        );
+        assertErrorContent(
+            out[1], 'value', 'layout', null,
+            ['annotations', 2, 'font', 'color'], 'annotations[2].font.color',
+            'In layout, key annotations[2].font.color is set to an invalid value (wont-work)'
+        );
+        assertErrorContent(
+            out[2], 'unused', 'layout', null,
+            ['xaxis', 'rangeselector', 'buttons', 0, 'count'],
+            'xaxis.rangeselector.buttons[0].count',
+            'In layout, key xaxis.rangeselector.buttons[0].count did not get coerced'
+        );
+        assertErrorContent(
+            out[3], 'schema', 'layout', null,
+            ['xaxis', 'rangeselector', 'buttons', 1, 'title'],
+            'xaxis.rangeselector.buttons[1].title',
+            'In layout, key xaxis.rangeselector.buttons[1].title is not part of the schema'
+        );
+        assertErrorContent(
+            out[4], 'schema', 'layout', null,
+            ['xaxis2', 'rangeselector', 'buttons', 0, 'title'],
+            'xaxis2.rangeselector.buttons[0].title',
+            'In layout, key xaxis2.rangeselector.buttons[0].title is not part of the schema'
+        );
+        assertErrorContent(
+            out[5], 'array', 'layout', null,
+            ['xaxis3', 'rangeselector', 'buttons'],
+            'xaxis3.rangeselector.buttons',
+            'In layout, key xaxis3.rangeselector.buttons must be linked to an array container'
+        );
+        assertErrorContent(
+            out[6], 'value', 'layout', null,
+            ['shapes', 0, 'opacity'], 'shapes[0].opacity',
+            'In layout, key shapes[0].opacity is set to an invalid value (none)'
+        );
     });
 
     it('should work with isSubplotObj attributes', function() {
@@ -128,10 +226,26 @@ describe('Plotly.validate', function() {
             yaxis5: 'sup'
         });
 
-        assertErrorShape(out, [], 4);
-        assertErrorContent(out.layout[0], 'value', ['xaxis2', 'range'], '');
-        assertErrorContent(out.layout[1], 'unused', ['scene10'], '');
-        assertErrorContent(out.layout[2], 'schema', ['geo0'], '');
-        assertErrorContent(out.layout[3], 'container', ['yaxis5'], '');
+        expect(out.length).toEqual(4);
+        assertErrorContent(
+            out[0], 'value', 'layout', null,
+            ['xaxis2', 'range'], 'xaxis2.range',
+            'In layout, key xaxis2.range is set to an invalid value (30)'
+        );
+        assertErrorContent(
+            out[1], 'unused', 'layout', null,
+            ['scene10'], 'scene10',
+            'In layout, container scene10 did not get coerced'
+        );
+        assertErrorContent(
+            out[2], 'schema', 'layout', null,
+            ['geo0'], 'geo0',
+            'In layout, key geo0 is not part of the schema'
+        );
+        assertErrorContent(
+            out[3], 'object', 'layout', null,
+            ['yaxis5'], 'yaxis5',
+            'In layout, key yaxis5 must be linked to an object container'
+        );
     });
 });

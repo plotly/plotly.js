@@ -15,55 +15,75 @@ var Plots = require('../plots/plots');
 var PlotSchema = require('./plot_schema');
 
 var isPlainObject = Lib.isPlainObject;
+var isArray = Array.isArray;
 
-// validation error codes
-var code2msgFunc = {
-    invisible: function(path) {
-        return 'trace ' + path + ' got defaulted to be not visible';
-    },
-    schema: function(path) {
-        return 'key ' + path.join('.') + ' is not part of the schema';
-    },
-    container: function(path) {
-        return 'key ' + path.join('.') + ' is supposed to be linked to a container';
-    },
-    unused: function(path, valIn) {
-        var prefix = isPlainObject(valIn) ? 'container' : 'key';
 
-        return prefix + ' ' + path.join('.') + ' did not get coerced';
-    },
-    value: function(path, valIn) {
-        return 'key ' + path.join('.') + ' is set to an invalid value (' + valIn + ')';
-    }
-};
-
+/**
+ * Validate a data array and layout object.
+ *
+ * @param {array} data
+ * @param {object} layout
+ *
+ * @return {array} array of error objects each containing:
+ *  - {string} code
+ *      error code ('object', 'array', 'schema', 'unused', 'invisible' or 'value')
+ *  - {string} container
+ *      container where the error occurs ('data' or 'layout')
+ *  - {number} trace
+ *      trace index of the 'data' container where the error occurs
+ *  - {array} path
+ *      nested path to the key that causes the error
+ *  - {string} astr
+ *      attribute string variant of 'path' compatible with Plotly.restyle and
+ *      Plotly.relayout.
+ *  - {string} msg
+ *      error message (shown in console in logger config argument is enable)
+ */
 module.exports = function valiate(data, layout) {
-    if(!Array.isArray(data)) {
-        throw new Error('data must be an array');
+    var schema = PlotSchema.get(),
+        errorList = [],
+        gd = {};
+
+    var dataIn, layoutIn;
+
+    if(isArray(data)) {
+        gd.data = Lib.extendDeep([], data);
+        dataIn = data;
+    }
+    else {
+        gd.data = [];
+        dataIn = [];
+        errorList.push(format('array', 'data'));
     }
 
-    if(!isPlainObject(layout)) {
-        throw new Error('layout must be an object');
+    if(isPlainObject(layout)) {
+        gd.layout = Lib.extendDeep({}, layout);
+        layoutIn = layout;
+    }
+    else {
+        gd.layout = {};
+        layoutIn = {};
+        if(arguments.length > 1) {
+            errorList.push(format('object', 'layout'));
+        }
     }
 
-    var gd = {
-        data: Lib.extendDeep([], data),
-        layout: Lib.extendDeep({}, layout)
-    };
+    // N.B. dataIn and layoutIn are in general not the same as
+    // gd.data and gd.layout after supplyDefaults as some attributes
+    // in gd.data and gd.layout (still) get mutated during this step.
+
     Plots.supplyDefaults(gd);
 
-    var schema = PlotSchema.get();
-
     var dataOut = gd._fullData,
-        len = data.length,
-        dataList = new Array(len);
+        len = dataIn.length;
 
     for(var i = 0; i < len; i++) {
-        var traceIn = data[i];
-        var traceList = dataList[i] = [];
+        var traceIn = dataIn[i],
+            base = ['data', i];
 
         if(!isPlainObject(traceIn)) {
-            throw new Error('each data trace must be an object');
+            errorList.push(format('object', base));
+            continue;
         }
 
         var traceOut = dataOut[i],
@@ -78,25 +98,22 @@ module.exports = function valiate(data, layout) {
         };
 
         if(traceOut.visible === false && traceIn.visible !== false) {
-            traceList.push(format('invisible', i));
+            errorList.push(format('invisible', base));
         }
 
-        crawl(traceIn, traceOut, traceSchema, traceList);
+        crawl(traceIn, traceOut, traceSchema, errorList, base);
     }
 
     var layoutOut = gd._fullLayout,
-        layoutSchema = fillLayoutSchema(schema, dataOut),
-        layoutList = [];
+        layoutSchema = fillLayoutSchema(schema, dataOut);
 
-    crawl(layout, layoutOut, layoutSchema, layoutList);
+    crawl(layoutIn, layoutOut, layoutSchema, errorList, 'layout');
 
-    return {
-        data: dataList,
-        layout: layoutList
-    };
+    // return undefined if no validation errors were found
+    return (errorList.length === 0) ? void(0) : errorList;
 };
 
-function crawl(objIn, objOut, schema, list, path) {
+function crawl(objIn, objOut, schema, list, base, path) {
     path = path || [];
 
     var keys = Object.keys(objIn);
@@ -113,28 +130,34 @@ function crawl(objIn, objOut, schema, list, path) {
         var nestedSchema = getNestedSchema(schema, k);
 
         if(!isInSchema(schema, k)) {
-            list.push(format('schema', p));
+            list.push(format('schema', base, p));
         }
         else if(isPlainObject(valIn) && isPlainObject(valOut)) {
-            crawl(valIn, valOut, nestedSchema, list, p);
+            crawl(valIn, valOut, nestedSchema, list, base, p);
         }
-        else if(!isPlainObject(valIn) && isPlainObject(valOut)) {
-            list.push(format('container', p, valIn));
-        }
-        else if(nestedSchema.items && Array.isArray(valIn)) {
+        else if(nestedSchema.items && isArray(valIn)) {
             var itemName = k.substr(0, k.length - 1);
 
             for(var j = 0; j < valIn.length; j++) {
-                p[p.length - 1] = k + '[' + j + ']';
+                var _nestedSchema = nestedSchema.items[itemName],
+                    _p = p.slice();
 
-                crawl(valIn[j], valOut[j], nestedSchema.items[itemName], list, p);
+                _p.push(j);
+
+                crawl(valIn[j], valOut[j], _nestedSchema, list, base, _p);
             }
         }
+        else if(!isPlainObject(valIn) && isPlainObject(valOut)) {
+            list.push(format('object', base, p, valIn));
+        }
+        else if(!isArray(valIn) && isArray(valOut) && nestedSchema.valType !== 'info_array') {
+            list.push(format('array', base, p, valIn));
+        }
         else if(!(k in objOut)) {
-            list.push(format('unused', p, valIn));
+            list.push(format('unused', base, p, valIn));
         }
         else if(!Lib.validate(valIn, nestedSchema)) {
-            list.push(format('value', p, valIn));
+            list.push(format('value', base, p, valIn));
         }
     }
 
@@ -155,11 +178,82 @@ function fillLayoutSchema(schema, dataOut) {
     return schema.layout.layoutAttributes;
 }
 
-function format(code, path, valIn) {
+// validation error codes
+var code2msgFunc = {
+    object: function(base, astr) {
+        var prefix;
+
+        if(base === 'layout' && astr === '') prefix = 'The layout argument';
+        else if(base[0] === 'data') {
+            prefix = 'Trace ' + base[1] + ' in the data argument';
+        }
+        else prefix = inBase(base) + 'key ' + astr;
+
+        return prefix + ' must be linked to an object container';
+    },
+    array: function(base, astr) {
+        var prefix;
+
+        if(base === 'data') prefix = 'The data argument';
+        else prefix = inBase(base) + 'key ' + astr;
+
+        return prefix + ' must be linked to an array container';
+    },
+    schema: function(base, astr) {
+        return inBase(base) + 'key ' + astr + ' is not part of the schema';
+    },
+    unused: function(base, astr, valIn) {
+        var target = isPlainObject(valIn) ? 'container' : 'key';
+
+        return inBase(base) + target + ' ' + astr + ' did not get coerced';
+    },
+    invisible: function(base) {
+        return 'Trace ' + base[1] + ' got defaulted to be not visible';
+    },
+    value: function(base, astr, valIn) {
+        return [
+            inBase(base) + 'key ' + astr,
+            'is set to an invalid value (' + valIn + ')'
+        ].join(' ');
+    }
+};
+
+function inBase(base) {
+    if(isArray(base)) return 'In data trace ' + base[1] + ', ';
+
+    return 'In ' + base + ', ';
+}
+
+function format(code, base, path, valIn) {
+    path = path || '';
+
+    var container, trace;
+
+    // container is either 'data' or 'layout
+    // trace is the trace index if 'data', null otherwise
+
+    if(isArray(base)) {
+        container = base[0];
+        trace = base[1];
+    }
+    else {
+        container = base;
+        trace = null;
+    }
+
+    var astr = convertPathToAttributeString(path),
+        msg = code2msgFunc[code](base, astr, valIn);
+
+    // log to console if logger config option is enabled
+    Lib.log(msg);
+
     return {
         code: code,
+        container: container,
+        trace: trace,
         path: path,
-        msg: code2msgFunc[code](path, valIn)
+        astr: astr,
+        msg: msg
     };
 }
 
@@ -191,4 +285,25 @@ function splitKey(key) {
         keyMinusId: keyMinusId,
         id: id
     };
+}
+
+function convertPathToAttributeString(path) {
+    if(!isArray(path)) return String(path);
+
+    var astr = '';
+
+    for(var i = 0; i < path.length; i++) {
+        var p = path[i];
+
+        if(typeof p === 'number') {
+            astr = astr.substr(0, astr.length - 1) + '[' + p + ']';
+        }
+        else {
+            astr += p;
+        }
+
+        if(i < path.length - 1) astr += '.';
+    }
+
+    return astr;
 }
