@@ -13,21 +13,23 @@ var tinycolor = require('tinycolor2');
 
 
 module.exports = function isValidScaleArray(scl) {
-    var isValid = true,
-        highestVal = 0,
-        si;
+    var highestVal = 0;
 
-    if(!Array.isArray(scl)) return false;
-    else {
-        if(+scl[0][0] !== 0 || +scl[scl.length - 1][0] !== 1) return false;
-        for(var i = 0; i < scl.length; i++) {
-            si = scl[i];
-            if(si.length !== 2 || +si[0] < highestVal || !tinycolor(si[1]).isValid()) {
-                isValid = false;
-                break;
-            }
-            highestVal = +si[0];
+    if(!Array.isArray(scl) || scl.length < 2) return false;
+
+    if(!scl[0] || !scl[scl.length - 1]) return false;
+
+    if(+scl[0][0] !== 0 || +scl[scl.length - 1][0] !== 1) return false;
+
+    for(var i = 0; i < scl.length; i++) {
+        var si = scl[i];
+
+        if(si.length !== 2 || +si[0] < highestVal || !tinycolor(si[1]).isValid()) {
+            return false;
         }
-        return isValid;
+
+        highestVal = +si[0];
     }
+
+    return true;
 };

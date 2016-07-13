@@ -527,13 +527,13 @@ describe('Test lib.js:', function() {
                     .toEqual('42');
 
                 expect(coerce({s: [1, 2, 3]}, {}, stringAttrs, 's'))
-                    .toEqual('1,2,3');
+                    .toEqual(dflt);
 
                 expect(coerce({s: true}, {}, stringAttrs, 's'))
-                    .toEqual('true');
+                    .toEqual(dflt);
 
                 expect(coerce({s: {1: 2}}, {}, stringAttrs, 's'))
-                    .toEqual('[object Object]'); // useless, but that's what it does!!
+                    .toEqual(dflt);
             });
         });
 
@@ -627,7 +627,22 @@ describe('Test lib.js:', function() {
                     .toEqual([0.5, 1]);
             });
 
+            it('should coerce unexpected input as best as it can', function() {
+                expect(coerce({range: [12]}, {}, infoArrayAttrs, 'range'))
+                    .toEqual([12]);
 
+                expect(coerce({range: [12]}, {}, infoArrayAttrs, 'range', [-1, 20]))
+                    .toEqual([12, 20]);
+
+                expect(coerce({domain: [0.5]}, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0.5, 1]);
+
+                expect(coerce({range: ['-10', 100, 12]}, {}, infoArrayAttrs, 'range'))
+                    .toEqual([-10, 100]);
+
+                expect(coerce({domain: [0, 0.5, 1]}, {}, infoArrayAttrs, 'domain'))
+                    .toEqual([0, 0.5]);
+            });
         });
 
         describe('subplotid valtype', function() {
@@ -753,6 +768,222 @@ describe('Test lib.js:', function() {
             expect(array.length).toEqual(4);
             expect(array[0].length).toEqual(5);
             expect(array[3].length).toEqual(5);
+        });
+    });
+
+    describe('validate', function() {
+
+        function assert(shouldPass, shouldFail, valObject) {
+            shouldPass.forEach(function(v) {
+                var res = Lib.validate(v, valObject);
+                expect(res).toBe(true, JSON.stringify(v) + ' should pass');
+            });
+
+            shouldFail.forEach(function(v) {
+                var res = Lib.validate(v, valObject);
+                expect(res).toBe(false, JSON.stringify(v) + ' should fail');
+            });
+        }
+
+        it('should work for valType \'data_array\' where', function() {
+            var shouldPass = [[20], []],
+                shouldFail = ['a', {}, 20, undefined, null];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'data_array'
+            });
+
+            assert(shouldPass, shouldFail, {
+                valType: 'data_array',
+                dflt: [1, 2]
+            });
+        });
+
+        it('should work for valType \'enumerated\' where', function() {
+            assert(['a', 'b'], ['c', 1, null, undefined, ''], {
+                valType: 'enumerated',
+                values: ['a', 'b'],
+                dflt: 'a'
+            });
+
+            assert([1, '1', 2, '2'], ['c', 3, null, undefined, ''], {
+                valType: 'enumerated',
+                values: [1, 2],
+                coerceNumber: true,
+                dflt: 1
+            });
+
+            assert(['a', 'b', [1, 2]], ['c', 1, null, undefined, ''], {
+                valType: 'enumerated',
+                values: ['a', 'b'],
+                arrayOk: true,
+                dflt: 'a'
+            });
+        });
+
+        it('should work for valType \'boolean\' where', function() {
+            var shouldPass = [true, false],
+                shouldFail = ['a', 1, {}, [], null, undefined, ''];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'boolean',
+                dflt: true
+            });
+
+            assert(shouldPass, shouldFail, {
+                valType: 'boolean',
+                dflt: false
+            });
+        });
+
+        it('should work for valType \'number\' where', function() {
+            var shouldPass = [20, '20', 1e6],
+                shouldFail = ['a', [], {}, null, undefined, ''];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'number'
+            });
+
+            assert(shouldPass, shouldFail, {
+                valType: 'number',
+                dflt: null
+            });
+
+            assert([20, '20'], [-10, '-10', 25, '25'], {
+                valType: 'number',
+                dflt: 20,
+                min: 0,
+                max: 21
+            });
+
+            assert([20, '20', [1, 2]], ['a', {}], {
+                valType: 'number',
+                dflt: 20,
+                arrayOk: true
+            });
+        });
+
+        it('should work for valType \'integer\' where', function() {
+            assert([1, 2, '3', '4'], ['a', 1.321321, {}, [], null, 2 / 3, undefined, null], {
+                valType: 'integer',
+                dflt: 1
+            });
+
+            assert([1, 2, '3', '4'], [-1, '-2', 2.121, null, undefined, [], {}], {
+                valType: 'integer',
+                min: 0,
+                dflt: 1
+            });
+        });
+
+        it('should work for valType \'string\' where', function() {
+            var date = new Date(2016, 1, 1);
+
+            assert(['3', '4', 'a', 3, 1.2113, ''], [undefined, {}, [], null, date, false], {
+                valType: 'string',
+                dflt: 'a'
+            });
+
+            assert(['3', '4', 'a', 3, 1.2113], ['', undefined, {}, [], null, date, true], {
+                valType: 'string',
+                dflt: 'a',
+                noBlank: true
+            });
+
+            assert(['3', '4', ''], [undefined, 1, {}, [], null, date, true, false], {
+                valType: 'string',
+                dflt: 'a',
+                strict: true
+            });
+
+            assert(['3', '4'], [undefined, 1, {}, [], null, date, '', true, false], {
+                valType: 'string',
+                dflt: 'a',
+                strict: true,
+                noBlank: true
+            });
+        });
+
+        it('should work for valType \'color\' where', function() {
+            var shouldPass = ['red', '#d3d3d3', 'rgba(0,255,255,0.1)'],
+                shouldFail = [1, {}, [], 'rgq(233,122,332,1)', null, undefined];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'color'
+            });
+        });
+
+        it('should work for valType \'colorscale\' where', function() {
+            var good = [ [0, 'red'], [1, 'blue'] ],
+                bad = [ [0.1, 'red'], [1, 'blue'] ],
+                bad2 = [ [0], [1] ],
+                bad3 = [ ['red'], ['blue']],
+                bad4 = ['red', 'blue'];
+
+            var shouldPass = ['Viridis', 'Greens', good],
+                shouldFail = ['red', 1, undefined, null, {}, [], bad, bad2, bad3, bad4];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'colorscale'
+            });
+        });
+
+        it('should work for valType \'angle\' where', function() {
+            var shouldPass = ['auto', '120', 270],
+                shouldFail = [{}, [], 'red', null, undefined, ''];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'angle',
+                dflt: 0
+            });
+        });
+
+        it('should work for valType \'subplotid\' where', function() {
+            var shouldPass = ['sp', 'sp4', 'sp10'],
+                shouldFail = [{}, [], 'sp1', 'sp0', 'spee1', null, undefined, true];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'subplotid',
+                dflt: 'sp'
+            });
+        });
+
+        it('should work for valType \'flaglist\' where', function() {
+            var shouldPass = ['a', 'b', 'a+b', 'b+a', 'c'],
+                shouldFail = [{}, [], 'red', null, undefined, '', 'a + b'];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'flaglist',
+                flags: ['a', 'b'],
+                extras: ['c']
+            });
+        });
+
+        it('should work for valType \'any\' where', function() {
+            var shouldPass = ['', '120', null, false, {}, []],
+                shouldFail = [undefined];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'any'
+            });
+        });
+
+        it('should work for valType \'info_array\' where', function() {
+            var shouldPass = [[1, 2], [-20, '20']],
+                shouldFail = [
+                    {}, [], [10], [null, 10], ['aads', null],
+                    'red', null, undefined, '',
+                    [1, 10, null]
+                ];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'info_array',
+                items: [{
+                    valType: 'number', dflt: -20
+                }, {
+                    valType: 'number', dflt: 20
+                }]
+            });
         });
     });
 
