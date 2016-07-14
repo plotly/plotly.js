@@ -393,12 +393,12 @@ lib.removeElement = function(el) {
  * makes one stylesheet that contains all rules added
  * by all calls to this function
  */
-lib.addStyleRule = function(selector, styleString) {
+lib.addStyleRule = function(targetDocument, selector, styleString) {
     if(!lib.styleSheet) {
-        var style = document.createElement('style');
+        var style = targetDocument.createElement('style');
         // WebKit hack :(
-        style.appendChild(document.createTextNode(''));
-        document.head.appendChild(style);
+        style.appendChild(targetDocument.createTextNode(''));
+        targetDocument.head.appendChild(style);
         lib.styleSheet = style.sheet;
     }
     var styleSheet = lib.styleSheet;

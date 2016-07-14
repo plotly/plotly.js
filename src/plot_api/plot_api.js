@@ -18,6 +18,8 @@ var Lib = require('../lib');
 var Events = require('../lib/events');
 var Queue = require('../lib/queue');
 
+var injectStyles = require('../css/plotcss_injector');
+
 var Plots = require('../plots/plots');
 var Fx = require('../plots/cartesian/graph_interact');
 
@@ -53,6 +55,9 @@ var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 Plotly.plot = function(gd, data, layout, config) {
 
     gd = getGraphDiv(gd);
+
+		// Inject the plot styles into the document where we're plotting
+		injectStyles(gd.ownerDocument);
 
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
