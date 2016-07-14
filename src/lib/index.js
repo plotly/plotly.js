@@ -394,7 +394,7 @@ lib.removeElement = function(el) {
  * by all calls to this function
  */
 lib.addStyleRule = function(targetDocument, selector, styleString) {
-		var styleSheet = null;
+    var styleSheet = null;
 
     if(targetDocument.getElementsByTagName('style').length === 0) {
         var style = targetDocument.createElement('style');
@@ -403,10 +403,10 @@ lib.addStyleRule = function(targetDocument, selector, styleString) {
         targetDocument.head.appendChild(style);
         styleSheet = style.sheet;
     }
-		else{
-			// Just grab the first style element to append to
-			styleSheet = targetDocument.getElementsByTagName('style')[0].sheet;
-		}
+    else{
+        // Just grab the first style element to append to
+        styleSheet = targetDocument.getElementsByTagName('style')[0].sheet;
+    }
 
     if(styleSheet.insertRule) {
         styleSheet.insertRule(selector + '{' + styleString + '}', 0);

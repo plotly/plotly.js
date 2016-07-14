@@ -39,8 +39,8 @@ module.exports = function pullCSS(data, pathOut) {
         '\'use strict\';',
         '',
         'var rules = ' + rulesStr + ';',
-				'',
-				'module.exports = rules;',
+        '',
+        'module.exports = rules;',
         ''
     ].join('\n');
 

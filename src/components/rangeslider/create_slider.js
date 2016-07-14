@@ -137,8 +137,8 @@ module.exports = function createSlider(gd) {
             minVal = slider.getAttribute('data-min'),
             maxVal = slider.getAttribute('data-max');
 
-				gd.ownerDocument.defaultView.addEventListener('mousemove', mouseMove);
-				gd.ownerDocument.defaultView.addEventListener('mouseup', mouseUp);
+        gd.ownerDocument.defaultView.addEventListener('mousemove', mouseMove);
+        gd.ownerDocument.defaultView.addEventListener('mouseup', mouseUp);
 
         function mouseMove(e) {
             var delta = +e.clientX - startX,
