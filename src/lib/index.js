@@ -394,14 +394,19 @@ lib.removeElement = function(el) {
  * by all calls to this function
  */
 lib.addStyleRule = function(targetDocument, selector, styleString) {
-    if(!lib.styleSheet) {
+		var styleSheet = null;
+
+    if(targetDocument.getElementsByTagName('style').length === 0) {
         var style = targetDocument.createElement('style');
         // WebKit hack :(
         style.appendChild(targetDocument.createTextNode(''));
         targetDocument.head.appendChild(style);
-        lib.styleSheet = style.sheet;
+        styleSheet = style.sheet;
     }
-    var styleSheet = lib.styleSheet;
+		else{
+			// Just grab the first style element to append to
+			styleSheet = targetDocument.getElementsByTagName('style')[0].sheet;
+		}
 
     if(styleSheet.insertRule) {
         styleSheet.insertRule(selector + '{' + styleString + '}', 0);
