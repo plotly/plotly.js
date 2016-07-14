@@ -223,7 +223,8 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             yaxis: ya,
             connectGaps: trace.connectgaps,
             baseTolerance: Math.max(line.width || 1, 3) / 4,
-            linear: line.shape === 'linear'
+            linear: line.shape === 'linear',
+            simplify: line.simplify
         });
 
         // since we already have the pixel segments here, use them to make
