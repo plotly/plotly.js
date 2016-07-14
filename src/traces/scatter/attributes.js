@@ -156,6 +156,16 @@ module.exports = {
                 'Sets the style of the lines. Set to a dash string type',
                 'or a dash length in px.'
             ].join(' ')
+        },
+        simplify: {
+            valType: 'boolean',
+            dflt: true,
+            role: 'info',
+            description: [
+                'Simplifies lines by removing nearly-collinear points. When transitioning',
+                'lines, it may be desirable to disable this so that the number of points',
+                'along the resulting SVG path is unaffected.'
+            ].join(' ')
         }
     },
     connectgaps: {
