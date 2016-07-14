@@ -160,12 +160,12 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     arraysToCalcdata(cdscatter);
 
-    var prevpath = '';
+    var prevRevpath = '';
     var prevPolygons = [];
     var prevtrace = trace._prevtrace;
 
     if(prevtrace) {
-        prevpath = prevtrace._revpath || '';
+        prevRevpath = prevtrace._prevRevpath || '';
         tonext = prevtrace._nextFill;
         prevPolygons = prevtrace._polygons;
     }
@@ -284,21 +284,24 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
                         // fill to zero: full trace path, plus extension of
                         // the endpoints to the appropriate axis
-                        transition(ownFillEl3).attr('d', fullpath + 'L' + pt1 + 'L' + pt0 + 'Z');
+                        // For the sake of animations, wrap the points around so that
+                        // the points on the axes are the first two points. Otherwise
+                        // animations get a little crazy if the number of points changes.
+                        transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1));
                     } else {
                         // fill to self: just join the path to itself
                         transition(ownFillEl3).attr('d', fullpath + 'Z');
                     }
                 }
             }
-            else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevpath) {
+            else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
                 // fill to next: full trace path, plus the previous path reversed
                 if(trace.fill === 'tonext') {
                     // tonext: for use by concentric shapes, like manually constructed
                     // contours, we just add the two paths closed on themselves.
                     // This makes strange results if one path is *not* entirely
                     // inside the other, but then that is a strange usage.
-                    transition(tonext).attr('d', fullpath + 'Z' + prevpath + 'Z');
+                    transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z');
                 }
                 else {
                     // tonextx/y: for now just connect endpoints with lines. This is
@@ -306,11 +309,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // y/x, but if they *aren't*, we should ideally do more complicated
                     // things depending on whether the new endpoint projects onto the
                     // existing curve or off the end of it
-                    transition(tonext).attr('d', fullpath + 'L' + prevpath.substr(1) + 'Z');
+                    transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z');
                 }
                 trace._polygons = trace._polygons.concat(prevPolygons);
             }
-            trace._revpath = revpath;
+            trace._prevRevpath = revpath;
             trace._prevPolygons = thisPolygons;
         }
     }
