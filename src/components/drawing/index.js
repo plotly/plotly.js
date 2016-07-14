@@ -462,7 +462,8 @@ drawing.makeTester = function(gd) {
             left: '-10000px',
             top: '-10000px',
             width: '9000px',
-            height: '9000px'
+            height: '9000px',
+            'z-index': '1'
         });
 
     // browsers differ on how they describe the bounding rect of
