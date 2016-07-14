@@ -236,6 +236,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
 
         if(segments.length) {
+            var pts;
             var pt0 = segments[0][0],
                 lastSegment = segments[segments.length - 1],
                 pt1 = lastSegment[lastSegment.length - 1];
@@ -244,7 +245,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             //lineJoin.enter().append('path').classed('js-line', true);
 
             for(i = 0; i < segments.length; i++) {
-                var pts = segments[i];
+                pts = segments[i];
                 thispath = pathfn(pts);
                 thisrevpath = revpathfn(pts);
                 if(!fullpath) {
