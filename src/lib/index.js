@@ -21,6 +21,7 @@ lib.valObjects = coerceModule.valObjects;
 lib.coerce = coerceModule.coerce;
 lib.coerce2 = coerceModule.coerce2;
 lib.coerceFont = coerceModule.coerceFont;
+lib.validate = coerceModule.validate;
 
 var datesModule = require('./dates');
 lib.dateTime2ms = datesModule.dateTime2ms;

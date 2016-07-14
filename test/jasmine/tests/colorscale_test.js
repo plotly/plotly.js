@@ -20,6 +20,13 @@ describe('Test colorscale:', function() {
 
         it('should accept only array of 2-item arrays', function() {
             expect(isValidScale('a')).toBe(false);
+            expect(isValidScale([])).toBe(false);
+            expect(isValidScale([null, undefined])).toBe(false);
+            expect(isValidScale([{}, [1, 'rgb(0, 0, 200']])).toBe(false);
+            expect(isValidScale([[0, 'rgb(200, 0, 0)'], {}])).toBe(false);
+            expect(isValidScale([[0, 'rgb(0, 0, 200)'], undefined])).toBe(false);
+            expect(isValidScale([null, [1, 'rgb(0, 0, 200)']])).toBe(false);
+            expect(isValidScale(['a', 'b'])).toBe(false);
             expect(isValidScale(['a'])).toBe(false);
             expect(isValidScale([['a'], ['b']])).toBe(false);
 

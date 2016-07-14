@@ -99,16 +99,14 @@ exports.valObjects = {
         // TODO 'values shouldn't be in there (edge case: 'dash' in Scatter)
         otherOpts: ['dflt', 'noBlank', 'strict', 'arrayOk', 'values'],
         coerceFunction: function(v, propOut, dflt, opts) {
-            if(opts.strict === true && typeof v !== 'string') {
-                propOut.set(dflt);
-                return;
-            }
+            if(typeof v !== 'string') {
+                var okToCoerce = (typeof v === 'number');
 
-            var s = String(v);
-            if(v === undefined || (opts.noBlank === true && !s)) {
-                propOut.set(dflt);
+                if(opts.strict === true || !okToCoerce) propOut.set(dflt);
+                else propOut.set(String(v));
             }
-            else propOut.set(s);
+            else if(opts.noBlank && !v) propOut.set(dflt);
+            else propOut.set(v);
         }
     },
     color: {
@@ -162,11 +160,11 @@ exports.valObjects = {
     subplotid: {
         description: [
             'An id string of a subplot type (given by dflt), optionally',
-            'followed by an integer >1. e.g. if dflt=\'geo\', we can  have',
+            'followed by an integer >1. e.g. if dflt=\'geo\', we can have',
             '\'geo\', \'geo2\', \'geo3\', ...'
         ].join(' '),
-        requiredOpts: [],
-        otherOpts: ['dflt'],
+        requiredOpts: ['dflt'],
+        otherOpts: [],
         coerceFunction: function(v, propOut, dflt) {
             var dlen = dflt.length;
             if(typeof v === 'string' && v.substr(0, dlen) === dflt &&
@@ -175,6 +173,18 @@ exports.valObjects = {
                 return;
             }
             propOut.set(dflt);
+        },
+        validateFunction: function(v, opts) {
+            var dflt = opts.dflt,
+                dlen = dflt.length;
+
+            if(v === dflt) return true;
+            if(typeof v !== 'string') return false;
+            if(v.substr(0, dlen) === dflt && idRegex.test(v.substr(dlen))) {
+                return true;
+            }
+
+            return false;
         }
     },
     flaglist: {
@@ -239,6 +249,22 @@ exports.valObjects = {
             }
 
             propOut.set(vOut);
+        },
+        validateFunction: function(v, opts) {
+            if(!Array.isArray(v)) return false;
+
+            var items = opts.items;
+
+            if(v.length !== items.length) return false;
+
+            // valid when all items are valid
+            for(var i = 0; i < items.length; i++) {
+                var isItemValid = exports.validate(v[i], opts.items[i]);
+
+                if(!isItemValid) return false;
+            }
+
+            return true;
         }
     }
 };
@@ -308,4 +334,23 @@ exports.coerceFont = function(coerce, attr, dfltObj) {
     out.color = coerce(attr + '.color', dfltObj.color);
 
     return out;
+};
+
+exports.validate = function(value, opts) {
+    var valObject = exports.valObjects[opts.valType];
+
+    if(opts.arrayOk && Array.isArray(value)) return true;
+
+    if(valObject.validateFunction) {
+        return valObject.validateFunction(value, opts);
+    }
+
+    var failed = {},
+        out = failed,
+        propMock = { set: function(v) { out = v; } };
+
+    // 'failed' just something mutable that won't be === anything else
+
+    valObject.coerceFunction(value, propMock, failed, opts);
+    return out !== failed;
 };
