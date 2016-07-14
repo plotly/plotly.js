@@ -50,6 +50,7 @@ exports.plot = function(gd, traces, transitionOpts) {
 
         // Get all calcdata for this subplot:
         cdSubplot = [];
+        var pcd;
         for(j = 0; j < calcdata.length; j++) {
             cd = calcdata[j];
             trace = cd[0].trace;
@@ -57,8 +58,25 @@ exports.plot = function(gd, traces, transitionOpts) {
             // Skip trace if whitelist provided and it's not whitelisted:
             // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
 
-            if(trace.xaxis + trace.yaxis === subplot && traces.indexOf(trace.index) !== -1) {
-                cdSubplot.push(cd);
+            if(trace.xaxis + trace.yaxis === subplot) {
+                // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
+                // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
+                // is outdated. So this retroactively adds the previous trace if the
+                // traces are interdependent.
+                if (['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1) {
+                    if (cdSubplot.indexOf(pcd) === -1) {
+                        cdSubplot.push(pcd);
+                    }
+                }
+
+                // If this trace is specifically requested, add it to the list:
+                if (traces.indexOf(trace.index) !== -1) {
+                    cdSubplot.push(cd);
+                }
+
+                // Track the previous trace on this subplot for the retroactive-add step
+                // above:
+                pcd = cd;
             }
         }
 
