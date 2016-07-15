@@ -12,8 +12,8 @@
 var Plotly = require('../plotly');
 var plotcss = require('../../build/plotcss');
 
-module.exports = function injectStyles(targetDocument) {
-    var targetSelectors = getAllRuleSelectors(targetDocument);
+module.exports = function injectStyles(gd) {
+    var targetSelectors = getAllRuleSelectors(gd.ownerDocument);
 
     for(var selector in plotcss) {
         var fullSelector = selector.replace(/^,/,' ,')
@@ -22,7 +22,7 @@ module.exports = function injectStyles(targetDocument) {
 
         //Don't duplicate selectors
         if(targetSelectors.indexOf(fullSelector) === -1) {
-            Plotly.Lib.addStyleRule(targetDocument, fullSelector, plotcss[selector]);
+            Plotly.Lib.addStyleRule(gd.ownerDocument, fullSelector, plotcss[selector]);
         }
     }
 }
