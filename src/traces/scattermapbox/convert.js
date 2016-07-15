@@ -184,7 +184,7 @@ function makeCircleGeoJSON(calcTrace, hash) {
     // Translate vals in trace arrayOk containers
     // into a val-to-index hash object
     function translate(props, key, val, index) {
-        if(!hash[key][val]) hash[key][val] = index;
+        if(hash[key][val] === undefined) hash[key][val] = index;
 
         props[key] = hash[key][val];
     }
