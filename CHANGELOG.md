@@ -10,6 +10,35 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.14.2] -- 2016-07-11
+
+### Fixed
+- `Plotly.newPlot` correctly clears all present WebGL contexts [#724]
+- Bar traces with `layout.bargap` 0 and unset `marker.line.width` are functional
+  again (bug introduced in 1.3.0) [#709]
+- Stacked bar traces now correctly set the first bar position when leading gaps
+  are present (bug introduced in 1.11.0) [#716]
+- Bar traces with `layout.barmode` relative now correctly compute the bar sum of
+  the first position when positive and negative values are present [#723]
+- Event `plotly_relayout` is emitted upon pan / zoom on a mapbox subplot [#727]
+- Lasso and select box drag modes now work with fixed ranged axes [#728]
+- gl2d trace objects are purged when their parent scenes are destroyed [#724]
+
+
+## [1.14.1] -- 2016-06-28
+
+### Fixed
+- Fix colorscale restyle calls on heatmap traces (bug introduced in 1.14.0)
+  [#694]
+- Hover after zoom / pan is now functional again in ternary plots (bug
+  introduced in 1.14.0) [#688]
+- Fix mapbox layer relayout starting from invisible layer [#693]
+- Hover labels when `hoveron: 'fills'` are now constrained to the viewports
+  [#688]
+- Fix `surface` countours description [#696]
+- Fix `mapbox.layers.line` description [#690]
+
+
 ## [1.14.0] -- 2016-06-22
 
 ### Added

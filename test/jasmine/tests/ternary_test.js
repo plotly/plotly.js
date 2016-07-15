@@ -1,6 +1,5 @@
 var Plotly = require('@lib');
 var Lib = require('@src/lib');
-var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
 
 var supplyLayoutDefaults = require('@src/plots/ternary/layout/defaults');
 
@@ -8,6 +7,8 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
+var click = require('../assets/click');
+var doubleClick = require('../assets/double_click');
 var customMatchers = require('../assets/custom_matchers');
 
 
@@ -236,23 +237,6 @@ describe('ternary plots', function() {
 
     function findHoverLabels() {
         return d3.select('.hoverlayer').selectAll('g');
-    }
-
-    function click(x, y) {
-        mouseEvent('mousemove', x, y);
-        mouseEvent('mousedown', x, y);
-        mouseEvent('mouseup', x, y);
-    }
-
-    function doubleClick(x, y) {
-        return new Promise(function(resolve) {
-            click(x, y);
-
-            setTimeout(function() {
-                click(x, y);
-                resolve();
-            }, DBLCLICKDELAY / 2);
-        });
     }
 
     function drag(path) {

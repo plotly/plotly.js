@@ -107,6 +107,11 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
         }
 
         if(inside) {
+            // constrain ymin/max to the visible plot, so the label goes
+            // at the middle of the piece you can see
+            ymin = Math.max(ymin, 0);
+            ymax = Math.min(ymax, ya._length);
+
             // find the overall left-most and right-most points of the
             // polygon(s) we're inside at their combined vertical midpoint.
             // This is where we will draw the hover label.
@@ -127,6 +132,10 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
                     }
                 }
             }
+
+            // constrain xmin/max to the visible plot now too
+            xmin = Math.max(xmin, 0);
+            xmax = Math.min(xmax, xa._length);
 
             // get only fill or line color for the hover color
             var color = Color.defaultLine;

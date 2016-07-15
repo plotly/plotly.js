@@ -11,7 +11,6 @@
 
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
-var setCursor = require('../../lib/setcursor');
 var downloadImage = require('../../snapshot/download');
 var Icons = require('../../../build/ploticon');
 
@@ -171,13 +170,6 @@ modeBarButtons.hoverCompareCartesian = {
     click: handleCartesian
 };
 
-var DRAGCURSORS = {
-    pan: 'move',
-    zoom: 'crosshair',
-    select: 'crosshair',
-    lasso: 'crosshair'
-};
-
 function handleCartesian(gd, ev) {
     var button = ev.currentTarget,
         astr = button.getAttribute('data-attr'),
@@ -227,18 +219,7 @@ function handleCartesian(gd, ev) {
         aobj[astr] = val;
     }
 
-    Plotly.relayout(gd, aobj).then(function() {
-        if(astr === 'dragmode') {
-            if(fullLayout._has('cartesian')) {
-                setCursor(
-                    fullLayout._paper.select('.nsewdrag'),
-                    DRAGCURSORS[val]
-                );
-            }
-            Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
-            Plotly.Fx.init(gd);
-        }
-    });
+    Plotly.relayout(gd, aobj);
 }
 
 modeBarButtons.zoom3d = {

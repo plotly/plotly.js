@@ -52,7 +52,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         pw = xa[0]._length,
         ph = ya[0]._length,
         MINDRAG = constants.MINDRAG,
-        MINZOOM = constants.MINZOOM;
+        MINZOOM = constants.MINZOOM,
+        isMainDrag = (ns + ew === 'nsew');
 
     for(var i = 1; i < subplots.length; i++) {
         var subplotXa = subplots[i].x(),
@@ -75,21 +76,24 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         dragClass = ns + ew + 'drag';
 
     var dragger3 = plotinfo.draglayer.selectAll('.' + dragClass).data([0]);
+
     dragger3.enter().append('rect')
         .classed('drag', true)
         .classed(dragClass, true)
         .style({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
+
     dragger3.call(Drawing.setRect, x, y, w, h)
         .call(setCursor, cursor);
+
     var dragger = dragger3.node();
 
     // still need to make the element if the axes are disabled
     // but nuke its events (except for maindrag which needs them for hover)
     // and stop there
-    if(!yActive && !xActive) {
+    if(!yActive && !xActive && !isSelectOrLasso(fullLayout.dragmode)) {
         dragger.onmousedown = null;
-        dragger.style.pointerEvents = (ns + ew === 'nsew') ? 'all' : 'none';
+        dragger.style.pointerEvents = isMainDrag ? 'all' : 'none';
         return dragger;
     }
 
@@ -107,7 +111,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         doubleclick: doubleClick,
         prepFn: function(e, startX, startY) {
             var dragModeNow = gd._fullLayout.dragmode;
-            if(ns + ew === 'nsew') {
+
+            if(isMainDrag) {
                 // main dragger handles all drag modes, and changes
                 // to pan (or to zoom if it already is pan) on shift
                 if(e.shiftKey) {
@@ -131,7 +136,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 dragOptions.doneFn = dragDone;
                 clearSelect();
             }
-            else if(dragModeNow === 'select' || dragModeNow === 'lasso') {
+            else if(isSelectOrLasso(dragModeNow)) {
                 prepSelect(e, startX, startY, dragOptions, dragModeNow);
             }
         }
@@ -667,4 +672,10 @@ function removeZoombox(gd) {
     d3.select(gd)
         .selectAll('.zoombox,.js-zoombox-backdrop,.js-zoombox-menu,.zoombox-corners')
         .remove();
+}
+
+function isSelectOrLasso(dragmode) {
+    var modes = ['lasso', 'select'];
+
+    return modes.indexOf(dragmode) !== -1;
 }

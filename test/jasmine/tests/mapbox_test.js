@@ -146,7 +146,7 @@ describe('mapbox defaults', function() {
 describe('mapbox credentials', function() {
     'use strict';
 
-    if(!hasWebGLSupport('scattermapbox hover')) return;
+    if(!hasWebGLSupport('mapbox credentials')) return;
 
     var dummyToken = 'asfdsa124331wersdsa1321q3';
     var gd;
@@ -195,7 +195,7 @@ describe('mapbox credentials', function() {
 describe('mapbox plots', function() {
     'use strict';
 
-    if(!hasWebGLSupport('scattermapbox hover')) return;
+    if(!hasWebGLSupport('mapbox plots')) return;
 
     var mock = require('@mocks/mapbox_0.json'),
         gd;
@@ -461,6 +461,16 @@ describe('mapbox plots', function() {
         }).then(function() {
             expect(countVisibleLayers(gd)).toEqual(0);
 
+            return Plotly.relayout(gd, 'mapbox.layers[0]', {});
+        }).then(function() {
+            expect(countVisibleLayers(gd)).toEqual(0);
+
+            // layer with no source are not drawn
+
+            return Plotly.relayout(gd, 'mapbox.layers[0].source', layer0.source);
+        }).then(function() {
+            expect(countVisibleLayers(gd)).toEqual(1);
+
             done();
         });
     });
@@ -566,6 +576,59 @@ describe('mapbox plots', function() {
         });
     });
 
+    it('should respond drag / scroll interactions', function(done) {
+        var updateData;
+
+        gd.on('plotly_relayout', function(eventData) {
+            updateData = eventData;
+        });
+
+        function _drag(p0, p1, cb) {
+            var promise = _mouseEvent('mousemove', p0, noop).then(function() {
+                return _mouseEvent('mousedown', p0, noop);
+            }).then(function() {
+                return _mouseEvent('mousemove', p1, noop);
+            }).then(function() {
+                return _mouseEvent('mouseup', p1, noop);
+            }).then(function() {
+                return _mouseEvent('mouseup', p1, noop);
+            }).then(cb);
+
+            return promise;
+        }
+
+        function assertLayout(center, zoom, opts) {
+            var mapInfo = getMapInfo(gd),
+                layout = gd.layout.mapbox;
+
+            expect([mapInfo.center.lng, mapInfo.center.lat]).toBeCloseToArray(center);
+            expect(mapInfo.zoom).toBeCloseTo(zoom);
+
+            expect([layout.center.lon, layout.center.lat]).toBeCloseToArray(center);
+            expect(layout.zoom).toBeCloseTo(zoom);
+
+            if(opts && opts.withUpdateData) {
+                var mapboxUpdate = updateData.mapbox;
+
+                expect([mapboxUpdate.center.lon, mapboxUpdate.center.lat]).toBeCloseToArray(center);
+                expect(mapboxUpdate.zoom).toBeCloseTo(zoom);
+            }
+        }
+
+        assertLayout([-4.710, 19.475], 1.234);
+
+        var p1 = [pointPos[0] + 50, pointPos[1] - 20];
+
+        _drag(pointPos, p1, function() {
+            assertLayout([-19.651, 13.751], 1.234, { withUpdateData: true });
+
+        })
+        .then(done);
+
+        // TODO test scroll
+
+    });
+
     it('should respond to click interactions by', function(done) {
         var ptData;
 
@@ -598,45 +661,6 @@ describe('mapbox plots', function() {
             });
         })
         .then(done);
-    });
-
-    it('should respond drag / scroll interactions', function(done) {
-        function _drag(p0, p1, cb) {
-            var promise = _mouseEvent('mousemove', p0, noop).then(function() {
-                return _mouseEvent('mousedown', p0, noop);
-            }).then(function() {
-                return _mouseEvent('mousemove', p1, noop);
-            }).then(function() {
-                return _mouseEvent('mouseup', p1, cb);
-            });
-
-            return promise;
-        }
-
-        function assertLayout(center, zoom) {
-            var mapInfo = getMapInfo(gd),
-                layout = gd.layout.mapbox;
-
-            expect([mapInfo.center.lng, mapInfo.center.lat])
-                .toBeCloseToArray(center);
-            expect(mapInfo.zoom).toBeCloseTo(zoom);
-
-            expect([layout.center.lon, layout.center.lat])
-                .toBeCloseToArray(center);
-            expect(layout.zoom).toBeCloseTo(zoom);
-        }
-
-        assertLayout([-4.710, 19.475], 1.234);
-
-        var p1 = [pointPos[0] + 50, pointPos[1] - 20];
-
-        _drag(pointPos, p1, function() {
-            assertLayout([-19.651, 13.751], 1.234);
-        })
-        .then(done);
-
-        // TODO test scroll
-
     });
 
     function getMapInfo(gd) {

@@ -12,6 +12,20 @@
 var isPlainObject = require('./is_plain_object.js');
 var isArray = Array.isArray;
 
+function primitivesLoopSplice(source, target) {
+    var i, value;
+    for(i = 0; i < source.length; i++) {
+        value = source[i];
+        if(value !== null && typeof(value) === 'object') {
+            return false;
+        }
+        if(value !== void(0)) {
+            target[i] = value;
+        }
+    }
+    return true;
+}
+
 exports.extendFlat = function() {
     return _extend(arguments, false, false);
 };
@@ -45,7 +59,18 @@ function _extend(inputs, isDeep, keepAllKeys) {
     var target = inputs[0],
         length = inputs.length;
 
-    var input, key, src, copy, copyIsArray, clone;
+    var input, key, src, copy, copyIsArray, clone, allPrimitives;
+
+    if(length === 2 && isArray(target) && isArray(inputs[1]) && target.length === 0) {
+
+        allPrimitives = primitivesLoopSplice(inputs[1], target);
+
+        if(allPrimitives) {
+            return target;
+        } else {
+            target.splice(0, target.length); // reset target and continue to next block
+        }
+    }
 
     for(var i = 1; i < length; i++) {
         input = inputs[i];

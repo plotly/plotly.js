@@ -147,11 +147,12 @@ function comparePixels(mockName, cb) {
         saveImageStream = fs.createWriteStream(imagePaths.test);
 
     function checkImage() {
-        var gmOpts = {
-            file: imagePaths.diff,
-            highlightColor: 'purple',
-            tolerance: TOLERANCE
-        };
+
+        // baseline image must be generated first
+        if(!doesFileExist(imagePaths.baseline)) {
+            var err = new Error('baseline image not found');
+            return onEqualityCheck(err, false);
+        }
 
         /*
          * N.B. The non-zero tolerance was added in
@@ -168,6 +169,12 @@ function comparePixels(mockName, cb) {
          *
          * Further investigation is needed.
          */
+
+        var gmOpts = {
+            file: imagePaths.diff,
+            highlightColor: 'purple',
+            tolerance: TOLERANCE
+        };
 
         gm.compare(
             imagePaths.test,
@@ -192,6 +199,17 @@ function comparePixels(mockName, cb) {
     request(requestOpts)
         .pipe(saveImageStream)
         .on('close', checkImage);
+}
+
+function doesFileExist(filePath) {
+    try {
+        if(fs.statSync(filePath).isFile()) return true;
+    }
+    catch(e) {
+        return false;
+    }
+
+    return false;
 }
 
 function touch(filePath) {

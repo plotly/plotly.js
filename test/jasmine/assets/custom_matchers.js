@@ -1,13 +1,18 @@
+'use strict';
+
+var isNumeric = require('fast-isnumeric');
+
+
 module.exports = {
 
     // toBeCloseTo... but for arrays
     toBeCloseToArray: function() {
         return {
-            compare: function(actual, expected, precision) {
+            compare: function(actual, expected, precision, msgExtra) {
                 precision = coercePosition(precision);
 
                 var tested = actual.map(function(element, i) {
-                    return Math.abs(expected[i] - element) < precision;
+                    return isClose(element, expected[i], precision);
                 });
 
                 var passed = (
@@ -15,9 +20,13 @@ module.exports = {
                     tested.indexOf(false) < 0
                 );
 
+                var message = [
+                    'Expected', actual, 'to be close to', expected, msgExtra
+                ].join(' ');
+
                 return {
                     pass: passed,
-                    message: 'Expected ' + actual + ' to be close to ' + expected + '.'
+                    message: message
                 };
             }
         };
@@ -26,7 +35,7 @@ module.exports = {
     // toBeCloseTo... but for 2D arrays
     toBeCloseTo2DArray: function() {
         return {
-            compare: function(actual, expected, precision) {
+            compare: function(actual, expected, precision, msgExtra) {
                 precision = coercePosition(precision);
 
                 var passed = true;
@@ -40,9 +49,7 @@ module.exports = {
                         }
 
                         for(var j = 0; j < expected[i].length; ++j) {
-                            var isClose = Math.abs(expected[i][j] - actual[i][j]) < precision;
-
-                            if(!isClose) {
+                            if(!isClose(actual[i][j], expected[i][j], precision)) {
                                 passed = false;
                                 break;
                             }
@@ -54,7 +61,8 @@ module.exports = {
                     'Expected',
                     arrayToStr(actual.map(arrayToStr)),
                     'to be close to',
-                    arrayToStr(expected.map(arrayToStr))
+                    arrayToStr(expected.map(arrayToStr)),
+                    msgExtra
                 ].join(' ');
 
                 return {
@@ -65,6 +73,14 @@ module.exports = {
         };
     }
 };
+
+function isClose(actual, expected, precision) {
+    if(isNumeric(actual) && isNumeric(expected)) {
+        return Math.abs(actual - expected) < precision;
+    }
+
+    return actual === expected;
+}
 
 function coercePosition(precision) {
     if(precision !== 0) {
