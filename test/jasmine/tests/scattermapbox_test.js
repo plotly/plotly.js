@@ -243,6 +243,10 @@ describe('scattermapbox calc', function() {
 describe('scattermapbox convert', function() {
     'use strict';
 
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
     function _convert(trace) {
         var gd = { data: [trace] };
 
@@ -395,6 +399,23 @@ describe('scattermapbox convert', function() {
                 opts.symbol.layout['text-offset']
             ]).toEqual(spec, '(case ' + k + ')');
         });
+    });
+
+    it('for markers + circle bubbles traces with repeated values, should', function() {
+        var opts = _convert(Lib.extendFlat({}, base, {
+            lon: ['-96.796988', '-81.379236', '-85.311819', ''],
+            lat: ['32.776664', '28.538335', '35.047157', '' ],
+            marker: { size: ['5', '49', '5', ''] }
+        }));
+
+        expect(opts.circle.paint['circle-radius'].stops)
+            .toBeCloseTo2DArray([[0, 2.5], [1, 24.5]], 'not replicate stops');
+
+        var radii = opts.circle.geojson.features.map(function(f) {
+            return f.properties['circle-radius'];
+        });
+
+        expect(radii).toBeCloseToArray([0, 1, 0], 'link features to correct stops');
     });
 
     function assertVisibility(opts, expectations) {
