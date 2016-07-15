@@ -14,6 +14,9 @@ var plotcss = require('../../build/plotcss');
 
 // Inject styling information into the document containing the graph div
 module.exports = function injectStyles(gd) {
+    // If the graph div has already been styled, bail
+    if(gd._plotCSSLoaded) return;
+
     var targetSelectors = getAllRuleSelectors(gd.ownerDocument);
     var targetStyleSheet = null;
 
@@ -45,6 +48,8 @@ module.exports = function injectStyles(gd) {
             else lib.warn('injectStyles failed');
         }
     }
+
+    gd._plotCSSLoaded = true;
 }
 
 // Gets all the rules currently attached to the document

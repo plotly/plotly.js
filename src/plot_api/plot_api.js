@@ -56,7 +56,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     gd = getGraphDiv(gd);
 
-    // Inject the plot styles into the document where we're plotting
+    // Inject the plot styles into the document where we're plotting, bails if already styled
     injectStyles(gd);
 
     // Events.init is idempotent and bails early if gd has already been init'd
