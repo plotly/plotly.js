@@ -388,35 +388,6 @@ lib.removeElement = function(el) {
     if(elParent) elParent.removeChild(el);
 };
 
-/**
- * for dynamically adding style rules
- * makes one stylesheet that contains all rules added
- * by all calls to this function
- */
-lib.addStyleRule = function(targetDocument, selector, styleString) {
-    var styleSheet = null;
-
-    if(targetDocument.getElementsByTagName('style').length === 0) {
-        var style = targetDocument.createElement('style');
-        // WebKit hack :(
-        style.appendChild(targetDocument.createTextNode(''));
-        targetDocument.head.appendChild(style);
-        styleSheet = style.sheet;
-    }
-    else{
-        // Just grab the first style element to append to
-        styleSheet = targetDocument.getElementsByTagName('style')[0].sheet;
-    }
-
-    if(styleSheet.insertRule) {
-        styleSheet.insertRule(selector + '{' + styleString + '}', 0);
-    }
-    else if(styleSheet.addRule) {
-        styleSheet.addRule(selector, styleString, 0);
-    }
-    else lib.warn('addStyleRule failed');
-};
-
 lib.getTranslate = function(element) {
 
     var re = /.*\btranslate\((\d*\.?\d*)[^\d]*(\d*\.?\d*)[^\d].*/,
