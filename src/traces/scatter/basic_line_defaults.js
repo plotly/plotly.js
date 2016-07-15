@@ -27,7 +27,4 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
         coerce('line.color', (Array.isArray(markerColor) ? false : markerColor) ||
             defaultColor);
     }
-
-
-    coerce('line.width');
 };

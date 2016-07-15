@@ -526,7 +526,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     }
 
     /*
-     * Write aspect Ratio back to user data and fullLayout so that it is modifies as user
+     * Write aspect Ratio back to user data and fullLayout so that it is modified as user
      * manipulates the aspectmode settings and the fullLayout is up-to-date.
      */
     fullSceneLayout.aspectratio.x = sceneLayout.aspectratio.x = aspectRatio[0];

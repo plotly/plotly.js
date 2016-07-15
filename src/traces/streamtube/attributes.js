@@ -13,8 +13,7 @@ var colorAttributes = require('../../components/colorscale/color_attributes');
 
 var extendFlat = require('../../lib/extend').extendFlat;
 
-var scatterLineAttrs = scatterAttrs.line,
-    scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerAttrs = scatterAttrs.marker;
 
 function makeProjectionAttr(axLetter) {
     return {
@@ -78,10 +77,20 @@ module.exports = {
         y: makeProjectionAttr('y'),
         z: makeProjectionAttr('z')
     },
+    sizingaxis: {
+        valType: 'enumerated',
+        role: 'info',
+        values: [0, 1, 2],
+        dflt: 0,
+        description: [
+            'Specifies the axis index in relation to which the `line.width` and `marker.size` values are determined. The',
+            'default value is `0`, which specifies the `x` axis, i.e. sizes will be determined as a multiple of one unit',
+            'on the `x` axis. `0`, `1`, `2` refer to `x`, `y`, `z`, respectively.'
+        ].join(' ')
+    },
     connectgaps: scatterAttrs.connectgaps,
     line: extendFlat({}, {
-        width: scatterLineAttrs.width,
-        connectionradius: extendFlat({}, scatterMarkerAttrs.size, {
+        connectiondiameter: extendFlat({}, scatterMarkerAttrs.size, {
             dflt: 1,
             description: 'Sets the radius of the line connection. Either a number, or an array with as many elements as the number of points.'
         }),
@@ -98,7 +107,14 @@ module.exports = {
         colorAttributes('line')
     ),
     marker: extendFlat({}, {
-        size: extendFlat({}, scatterMarkerAttrs.size, {dflt: 8}),
+        size: {
+            valType: 'number',
+            min: 0,
+            dflt: 1,
+            arrayOk: true,
+            role: 'style',
+            description: 'Sets the marker radius, in units of `sizingaxis`. May be a number or an array of numbers.'
+        },
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,

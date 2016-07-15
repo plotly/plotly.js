@@ -17,5 +17,6 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
 
     basicLineDefaults(traceIn, traceOut, defaultColor, layout, coerce);
 
+    coerce('line.width');
     coerce('line.dash');
 };

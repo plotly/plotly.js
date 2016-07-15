@@ -73,7 +73,7 @@ function calculateTextOffset(tp, offsetValue) {
 
 function calculateSize(sizeIn, sizeFn) {
     // parity with scatter3d markers
-    return sizeFn(sizeIn * 4);
+    return sizeFn(sizeIn);
 }
 
 function formatParam(paramIn, len, calculate, dflt, extraFn) {
@@ -136,8 +136,7 @@ function convertPlotlyOptions(scene, data) {
 
     if('line' in data) {
         params.lineColor = formatColor(line, 1, len);
-        params.lineWidth = line.width;
-        params.connectionradius = line.connectionradius;
+        params.connectiondiameter = line.connectiondiameter;
     }
 
     if('marker' in data) {
@@ -145,11 +144,14 @@ function convertPlotlyOptions(scene, data) {
 
         params.scatterColor = formatColor(marker, 1, len);
         params.scatterSize = formatParam(marker.size, len, calculateSize, 20, sizeFn);
+        if(!Array.isArray(marker.size)) {
+            params.scatterSize *= 0.5; // for some reason, above formatParam divides by two only if it's an array
+        }
         params.scatterAngle = 0;
     }
 
     if('textposition' in data) {
-        params.textOffset = calculateTextOffset(data.textposition, 1.5 * Math.pow(scene.dataScale[0] * scene.dataScale[1] * scene.dataScale[2], 0.5) * Math.max.apply(Math, data.marker.size));  // arrayOk === false
+        params.textOffset = calculateTextOffset(data.textposition, 2 * (Array.isArray(data.marker.size) ? Math.max.apply(Math, data.marker.size) : data.marker.size));
         params.textColor = formatColor(data.textfont, 1, len);
         params.textSize = formatParam(data.textfont.size, len, Lib.identity, 12);
         params.textFont = data.textfont.family;  // arrayOk === false
@@ -242,7 +244,8 @@ proto.update = function(data) {
         projectOpacity: options.projectOpacity
     };
 
-    if(this.mode.indexOf('markers-FIXME') !== -1) {
+    if(this.mode.indexOf('markers') !== -1) {
+
         if(this.scatterPlot) this.scatterPlot.update(scatterOptions);
         else {
             this.scatterPlot = createScatterPlot(scatterOptions);
@@ -285,13 +288,13 @@ proto.update = function(data) {
         this.textMarkers = null;
     }
 
-    var meshOptions = calculateMesh(this.data.x, this.data.y, this.data.z, options.connectionradius, options.lineColor, options.scatterSize, options.scatterColor, this.scene.dataScale);
-    if(this.delaunayMesh) {
-        this.delaunayMesh.update(meshOptions);
+    var meshOptions = calculateMesh(this.data.x, this.data.y, this.data.z, options.connectiondiameter, options.lineColor, options.scatterSize, options.scatterColor, this.data.sizingaxis, this.scene.dataScale, this.scene.glplotLayout.aspectratio);
+    if(this.streamTubeMesh) {
+        this.streamTubeMesh.update(meshOptions);
     } else {
         meshOptions.gl = gl;
-        this.delaunayMesh = createMesh(meshOptions);
-        this.scene.glplot.add(this.delaunayMesh);
+        this.streamTubeMesh = createMesh(meshOptions);
+        this.scene.glplot.add(this.streamTubeMesh);
     }
 
 };
@@ -317,7 +320,11 @@ function createLineWithMarkers(scene, data) {
     return plot;
 }
 
-function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC, scalingFactor) {
+function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC, sizingaxis, scalingFactor, aspect) {
+
+    var sx = scalingFactor[0];
+    var sy = scalingFactor[1];
+    var sz = scalingFactor[2];
 
     function addVertex(X, Y, Z, x, y, z) {
         X.push(x);
@@ -423,9 +430,14 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         cosVector.push(Math.cos(a));
     }
 
-    var lastGymbal = null;
-
     function cylinderMaker(r1, r2, x1, x2, y1, y2, z1, z2, f1, f2, continuable) {
+
+        x1 *= sx;
+        x2 *= sx;
+        y1 *= sy;
+        y2 *= sy;
+        z1 *= sz;
+        z2 *= sz;
 
         var uu = x2 - x1;
         var vv = y2 - y1;
@@ -453,50 +465,32 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         var v = vv / length;
         var w = ww / length;
 
-        // Gymbaling (switch to quaternion based solution when time permits)
-        var sameGymbal;
-        var epsilon = 1e-9;
-        if(Math.abs(w) > epsilon) {
-            x = -1; y = -1; z = (u + v) / w;
-            sameGymbal = lastGymbal === 1;
-            lastGymbal = 1;
-        } else if(Math.abs(v) > epsilon) {
-            x = -1; y = (u + w) / v; z = -1;
-            sameGymbal = lastGymbal === 2;
-            lastGymbal = 2;
-        } else if(Math.abs(u) > epsilon) {
-            x = (v + w) / u; y = -1; z = -1;
-            sameGymbal = lastGymbal === 3;
-            lastGymbal = 3;
-        } else {
-            x = 1; y = 0; z = 0;
-            sameGymbal = lastGymbal === 3;
-            lastGymbal = 3;
-        }
-        var cont = continuable && sameGymbal;
+        x = - w; y = - w; z = u + v;
 
         var xxb, yyb, zzb, xxc, yyc, zzc, xxs, yys, zzs;
 
-        length = Math.sqrt(x * x + y * y + z * z) / r1;
-        x /= length;
-        y /= length;
-        z /= length;
+        // While we could easily avoid variable capture and turn this into a pure function,
+        // it would involve the creation of intermediary data (lots of small array allocations)
+        // so this function, which pushes things in a large array, is kept this way.
+        function ncompute(r1, uu, vv, ww) {
 
-        xxb = u * (u * x + v * y + w * z);
-        yyb = v * (u * x + v * y + w * z);
-        zzb = w * (u * x + v * y + w * z);
+            length = Math.sqrt(x * x + y * y + z * z) / r1;
+            x /= length;
+            y /= length;
+            z /= length;
 
-        xxc = x * (v * v + w * w) - u * (v * y + w * z);
-        yyc = y * (u * u + w * w) - v * (u * x + w * z);
-        zzc = z * (u * u + v * v) - w * (u * x + v * y);
+            xxb = u * (u * x + v * y + w * z);
+            yyb = v * (u * x + v * y + w * z);
+            zzb = w * (u * x + v * y + w * z);
 
-        xxs = v * z - w * y;
-        yys = w * x - u * z;
-        zzs = u * y - v * x;
+            xxc = x * (v * v + w * w) - u * (v * y + w * z);
+            yyc = y * (u * u + w * w) - v * (u * x + w * z);
+            zzc = z * (u * u + v * v) - w * (u * x + v * y);
 
-        var o = cont ? -quadCount : 0; // offset for possible welding (cont == true)
+            xxs = v * z - w * y;
+            yys = w * x - u * z;
+            zzs = u * y - v * x;
 
-        if(!cont)
             for(q = 0; q < quadCount; q++) {
 
                 sa = sinVector[q];
@@ -506,37 +500,18 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
                 yy = yyb + yyc * ca + yys * sa;
                 zz = zzb + zzc * ca + zzs * sa;
 
-                av(xx + x1, yy + y1, zz + z1); // with translation
+                av((xx + uu + x1) / sx, (yy + vv + y1) / sy, (zz + ww + z1) / sz); // with translation
             }
 
-        length = Math.sqrt(x * x + y * y + z * z) / r2; // renormalize it for the other circle
-        x /= length;
-        y /= length;
-        z /= length;
-
-        xxb = u * (u * x + v * y + w * z);
-        yyb = v * (u * x + v * y + w * z);
-        zzb = w * (u * x + v * y + w * z);
-
-        xxc = x * (v * v + w * w) - u * (v * y + w * z);
-        yyc = y * (u * u + w * w) - v * (u * x + w * z);
-        zzc = z * (u * u + v * v) - w * (u * x + v * y);
-
-        xxs = v * z - w * y;
-        yys = w * x - u * z;
-        zzs = u * y - v * x;
-
-        for(q = 0; q < quadCount; q++) {
-
-            sa = sinVector[q];
-            ca = cosVector[q];
-
-            xx = xxb + xxc * ca + xxs * sa;
-            yy = yyb + yyc * ca + yys * sa;
-            zz = zzb + zzc * ca + zzs * sa;
-
-            av(xx + uu + x1, yy + vv + y1, zz + ww + z1); // with translation
         }
+
+        if(!continuable) {
+            ncompute(r1, 0, 0, 0);
+        }
+
+        ncompute(r2, uu, vv, ww);
+
+        var o = continuable ? -quadCount : 0; // offset for possible welding (continue == true)
 
         for(q = 0; q < quadCount; q++) {
 
@@ -748,9 +723,9 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         var mk = geom.k;
 
         for(v = 0; v < mx.length; v++) {
-            X.push(x + mx[v] * r);
-            Y.push(y + my[v] * r);
-            Z.push(z + mz[v] * r);
+            X.push(x + mx[v] * r / sx * aspect.x);
+            Y.push(y + my[v] * r / sy * aspect.y);
+            Z.push(z + mz[v] * r / sz * aspect.z);
         }
 
         for(p = 0; p < mi.length; p++) {
@@ -760,7 +735,7 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
             F.push(f);
         }
 
-        return vOffset + mx.length;
+        return mx.length;
     }
 
     function addLine(geom, vOffset, X, Y, Z, I, J, K, F) {
@@ -777,9 +752,9 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
 
         for(v = 0; v < mx.length; v++) {
 
-            X.push(mx[v]);
-            Y.push(my[v]);
-            Z.push(mz[v]);
+            X.push(mx[v] * aspect.x);
+            Y.push(my[v] * aspect.y);
+            Z.push(mz[v] * aspect.z);
         }
 
         for(p = 0; p < mi.length; p++) {
@@ -789,23 +764,27 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
             F.push(mf[p]);
         }
 
-        return vOffset + mx.length;
+        return mx.length;
     }
 
     var x, y, z;
 
-    var index = 0;
+    var m, n, r, r2, c, c1, c2;
 
-    var n, r, r2, c, c1, c2;
+    var scaler = [sx, sy, sz][sizingaxis];
 
-    var scaler = 0.01; // fixme figure out something for sensibly calculating dimensions
+    var rArr = Array.isArray(inputW);
+    var cArr = Array.isArray(inputC[0]);
+
+    var mrArr = Array.isArray(inputMW);
+    var mcArr = Array.isArray(inputMC);
 
     var p = {
         x: inputX,
         y: inputY,
         z: inputZ,
-        r: Array.isArray(inputW) ? inputW : inputX.map(function() {return inputW;}),
-        c: inputC
+        r: rArr ? inputW : null,
+        c: cArr ? inputC : null
     };
 
     var rp = {
@@ -817,10 +796,10 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
     };
 
     var upsamplingFactor = 100; // convert every original point to as many upsampled points
-    var n0, n1, n2, n3;
+    var n0, n1, n2, n3, xyzrf;
     for(n = 0; n < p.x.length - 1; n++) {
 
-        for(var m = 0; m < upsamplingFactor; m++) {
+        for(m = 0; m < upsamplingFactor; m++) {
 
             c1 = m / upsamplingFactor;
             c2 = (upsamplingFactor - m) / upsamplingFactor;
@@ -830,14 +809,14 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
             n2 = (n + 1) % p.x.length;
             n3 = (n + 2) % p.x.length;
 
-            var xyzrf = catmullRom(
+            xyzrf = catmullRom(
                 [p.x[n0], p.x[n1], p.x[n2], p.x[n3]],
                 [p.y[n0], p.y[n1], p.y[n2], p.y[n3]],
                 [p.z[n0], p.z[n1], p.z[n2], p.z[n3]],
-                [p.r[n0], p.r[n1], p.r[n2], p.r[n3]],
-                [p.c[n0][0], p.c[n1][0], p.c[n2][0], p.c[n3][0]],
-                [p.c[n0][1], p.c[n1][1], p.c[n2][1], p.c[n3][1]],
-                [p.c[n0][2], p.c[n1][2], p.c[n2][2], p.c[n3][2]],
+                rArr ? [p.r[n0], p.r[n1], p.r[n2], p.r[n3]] : [inputW, inputW, inputW, inputW],
+                cArr ? [p.c[n0][0], p.c[n1][0], p.c[n2][0], p.c[n3][0]] : [inputC[0], inputC[0], inputC[0], inputC[0]],
+                cArr ? [p.c[n0][1], p.c[n1][1], p.c[n2][1], p.c[n3][1]] : [inputC[1], inputC[1], inputC[1], inputC[1]],
+                cArr ? [p.c[n0][2], p.c[n1][2], p.c[n2][2], p.c[n3][2]] : [inputC[2], inputC[2], inputC[2], inputC[2]],
                 c1);
 
             rp.x.push(xyzrf[0]);
@@ -867,7 +846,7 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
         r2 = rp.r[point2];
         c2 = rp.c[point2];
 
-        cylinderModels.push(cylinderMaker(r, r2, x, x2, y, y2, z, z2, c, c2, n > 0));
+        cylinderModels.push(cylinderMaker(scaler / 2 * r, scaler / 2 * r2, x, x2, y, y2, z, z2, c, c2, n > 0));
     }
 
     var X = [];
@@ -878,23 +857,26 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
     var K = [];
     var F = [];
 
+    var index = 0; // eslint-disable-line no-unused-vars // weird, index *is* used at two places...
+
     for(n = 0; n < rp.x.length - 1; n++) {
-        index = addLine(cylinderModels[n], index, X, Y, Z, I, J, K, F);
+        index += addLine(cylinderModels[n], index, X, Y, Z, I, J, K, F);
     }
 
-    for(n = 0; n < p.x.length; n++) {
-        index = addPointMarker(unitSphere, p.x[n], p.y[n], p.z[n], inputMC[n], scaler / 2 * (Array.isArray(inputMW) ? inputMW[n] : inputMW), index, X, Y, Z, I, J, K, F);
+    if(inputMC && inputMW) {
+        for(n = 0; n < p.x.length; n++) {
+            index += addPointMarker(unitSphere, p.x[n], p.y[n], p.z[n], mcArr ? inputMC[n] : inputMC, scaler * (mrArr ? inputMW[n] : inputMW), index, X, Y, Z, I, J, K, F);
+        }
     }
 
     return {
         positions: X.map(function(d, i) {return [
-            X[i] * scalingFactor[0],
-            Y[i] * scalingFactor[1],
-            Z[i] * scalingFactor[2]
+            X[i] * sx,
+            Y[i] * sy,
+            Z[i] * sz
         ];}),
         cells: I.map(function(d, i) {return [I[i], J[i], K[i]];}),
         cellColors: F,
- //       meshColor: [0.12156862745098039,0.4666666666666667,0.9058823529411765,1],
         opacity: 1,
         lightPosition: [1e6 * scalingFactor[0], 1e6 * scalingFactor[1], 1e6 * scalingFactor[2]],
         ambient: 0.2,
