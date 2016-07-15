@@ -13,33 +13,33 @@ var Plotly = require('../plotly');
 var plotcss = require('../../build/plotcss');
 
 module.exports = function injectStyles(targetDocument) {
-	var targetSelectors = getAllRuleSelectors(targetDocument);
+    var targetSelectors = getAllRuleSelectors(targetDocument);
 
-	for(var selector in plotcss) {
-		var fullSelector = selector.replace(/^,/,' ,')
-			.replace(/X/g, '.js-plotly-plot .plotly')
-			.replace(/Y/g, '.plotly-notifier');
+    for(var selector in plotcss) {
+        var fullSelector = selector.replace(/^,/,' ,')
+            .replace(/X/g, '.js-plotly-plot .plotly')
+            .replace(/Y/g, '.plotly-notifier');
 
-		//Don't duplicate selectors
-		if(targetSelectors.indexOf(fullSelector) === -1) {
-			Plotly.Lib.addStyleRule(targetDocument, fullSelector, plotcss[selector]);
-		}
-	}
+        //Don't duplicate selectors
+        if(targetSelectors.indexOf(fullSelector) === -1) {
+            Plotly.Lib.addStyleRule(targetDocument, fullSelector, plotcss[selector]);
+        }
+    }
 }
 
 // Gets all the rules currently attached to the document
 function getAllRuleSelectors(sourceDocument) {
-	var allSelectors = [];
+    var allSelectors = [];
 
-	for(var i = 0; i < sourceDocument.styleSheets.length; i++) {
-		var styleSheet = sourceDocument.styleSheets[i];
+    for(var i = 0; i < sourceDocument.styleSheets.length; i++) {
+        var styleSheet = sourceDocument.styleSheets[i];
 
-		for(var j = 0; j < styleSheet.cssRules.length; j++) {
-			var cssRule = styleSheet.cssRules[j];
+        for(var j = 0; j < styleSheet.cssRules.length; j++) {
+            var cssRule = styleSheet.cssRules[j];
 
-			allSelectors.push(cssRule.selectorText);
-		}
-	}
+            allSelectors.push(cssRule.selectorText);
+        }
+    }
 
-	return allSelectors;
+    return allSelectors;
 }
