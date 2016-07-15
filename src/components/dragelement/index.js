@@ -139,7 +139,7 @@ dragElement.init = function init(options) {
         if(options.doneFn) options.doneFn(gd._dragged, numClicks);
 
         if(!gd._dragged) {
-            var e2 = gd.ownerDocument.createEvent('MouseEvents');
+            var e2 = gd._document.createEvent('MouseEvents');
             e2.initEvent('click', true, true);
             initialTarget.dispatchEvent(e2);
         }
@@ -160,7 +160,7 @@ dragElement.init = function init(options) {
 };
 
 function coverSlip(gd) {
-    var cover = gd.ownerDocument.createElement('div');
+    var cover = gd._document.createElement('div');
 
     cover.className = 'dragcover';
     var cStyle = cover.style;
@@ -172,7 +172,7 @@ function coverSlip(gd) {
     cStyle.zIndex = 999999999;
     cStyle.background = 'none';
 
-    gd.ownerDocument.body.appendChild(cover);
+    gd._document.body.appendChild(cover);
 
     return cover;
 }
