@@ -857,7 +857,8 @@ function calculateMesh(inputX, inputY, inputZ, inputW, inputC, inputMW, inputMC,
     var K = [];
     var F = [];
 
-    var index = 0; // eslint-disable-line no-unused-vars // weird, index *is* used at two places...
+    // weird, index *is* used at two places...
+    var index = 0; // eslint-disable-line no-unused-vars
 
     for(n = 0; n < rp.x.length - 1; n++) {
         index += addLine(cylinderModels[n], index, X, Y, Z, I, J, K, F);
