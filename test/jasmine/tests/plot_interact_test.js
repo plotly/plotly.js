@@ -627,6 +627,7 @@ describe('plot svg clip paths', function() {
 });
 
 describe('css injection', function() {
+    var helpers = require('../../../src/css/helpers');
     var plotcss = require('../../../build/plotcss')
 
     // create a graph div in a child window
@@ -657,28 +658,11 @@ describe('css injection', function() {
         });
     }
 
-    // Gets all the rules currently attached to the document
-    function getAllRuleSelectors(sourceDocument) {
-        var allSelectors = [];
-
-        for(var i = 0; i < sourceDocument.styleSheets.length; i++) {
-            var styleSheet = sourceDocument.styleSheets[i];
-
-            for(var j = 0; j < styleSheet.cssRules.length; j++) {
-                var cssRule = styleSheet.cssRules[j];
-
-                allSelectors.push(cssRule.selectorText);
-            }
-        }
-
-        return allSelectors;
-    }
-
     // deletes all rules defined in plotcss
     function deletePlotCSSRules(sourceDocument) {
         for(var selector in plotcss) {
             var ruleDeleted = false;
-            var fullSelector = buildFullSelector(selector);
+            var fullSelector = helpers.buildFullSelector(selector);
 
             for(var i = 0; i < sourceDocument.styleSheets.length; i++) {
                 var styleSheet = sourceDocument.styleSheets[i];
@@ -700,25 +684,14 @@ describe('css injection', function() {
         }
     }
 
-    // expands a plotcss selector
-    function buildFullSelector(selector) {
-        var fullSelector = selector.replace(/,/, ', ')
-            .replace(/:after/g, '::after')
-            .replace(/:before/g, '::before')
-            .replace(/X/g, '.js-plotly-plot .plotly')
-            .replace(/Y/g, '.plotly-notifier');
-
-        return fullSelector;
-    }
-
     it('inserts styles on initial plot', function() {
         deletePlotCSSRules(document); // clear the rules
 
         // make sure the rules are clared
-        var allSelectors = getAllRuleSelectors(document);
+        var allSelectors = helpers.getAllRuleSelectors(document);
 
         for(var selector in plotcss) {
-            var fullSelector = buildFullSelector(selector);
+            var fullSelector = helpers.buildFullSelector(selector);
 
             expect(allSelectors.indexOf(fullSelector)).toEqual(-1);
         }
@@ -728,10 +701,10 @@ describe('css injection', function() {
         plot(gd);
 
         // check for styles
-        allSelectors = getAllRuleSelectors(document);
+        allSelectors = helpers.getAllRuleSelectors(document);
 
         for(var selector in plotcss) {
-            var fullSelector = buildFullSelector(selector);
+            var fullSelector = helpers.buildFullSelector(selector);
 
             expect(allSelectors.indexOf(fullSelector)).not.toEqual(-1);
         }
@@ -748,10 +721,10 @@ describe('css injection', function() {
         plot(gd);
 
         // check for styles
-        allSelectors = getAllRuleSelectors(gd.ownerDocument);
+        allSelectors = helpers.getAllRuleSelectors(gd.ownerDocument);
 
         for(var selector in plotcss) {
-            var fullSelector = buildFullSelector(selector);
+            var fullSelector = helpers.buildFullSelector(selector);
 
             expect(allSelectors.indexOf(fullSelector)).not.toEqual(-1);
         }
@@ -764,10 +737,10 @@ describe('css injection', function() {
         deletePlotCSSRules(document); // clear the rules
 
         // make sure the rules are clared
-        var allSelectors = getAllRuleSelectors(document);
+        var allSelectors = helpers.getAllRuleSelectors(document);
 
         for(var selector in plotcss) {
-            var fullSelector = buildFullSelector(selector);
+            var fullSelector = helpers.buildFullSelector(selector);
 
             expect(allSelectors.indexOf(fullSelector)).toEqual(-1);
         }
@@ -778,10 +751,10 @@ describe('css injection', function() {
         plot(gd); // plot again so injectStyles gets called again
 
         // check for styles
-        allSelectors = getAllRuleSelectors(document);
+        allSelectors = helpers.getAllRuleSelectors(document);
 
         for(var selector in plotcss) {
-            var fullSelector = buildFullSelector(selector);
+            var fullSelector = helpers.buildFullSelector(selector);
 
             var firstIndex = allSelectors.indexOf(fullSelector);
 
