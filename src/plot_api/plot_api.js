@@ -2542,7 +2542,16 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
 
             transitionedTraces.push(traceIdx);
 
-            Lib.extendDeepNoArrays(gd.data[traceIndices[i]], data[i]);
+            // This is a multi-step process. First clone w/o arrays so that
+            // we're not modifying the original:
+            var update = Lib.extendDeepNoArrays({}, data[i]);
+
+            // Then expand object paths since we don't obey object-overwrite
+            // semantics here:
+            update = Lib.expandObjectPaths(update);
+
+            // Finally apply the update (without copying arrays, of course):
+            Lib.extendDeepNoArrays(gd.data[traceIndices[i]], update);
         }
 
         Plots.supplyDefaults(gd);
