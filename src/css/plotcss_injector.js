@@ -9,6 +9,7 @@
 
 'use strict';
 
+var helpers = require('./helpers');
 var lib = require('../lib');
 var plotcss = require('../../build/plotcss');
 
@@ -17,7 +18,7 @@ module.exports = function injectStyles(gd) {
     // If the graph div has already been styled, bail
     if(gd._plotCSSLoaded) return;
 
-    var targetSelectors = getAllRuleSelectors(gd._document);
+    var targetSelectors = helpers.getAllRuleSelectors(gd._document);
     var targetStyleSheet = null;
 
     if(gd._document.getElementsByTagName('style').length === 0) {
@@ -33,9 +34,7 @@ module.exports = function injectStyles(gd) {
     }
 
     for(var selector in plotcss) {
-        var fullSelector = selector.replace(/^,/, ' ,')
-            .replace(/X/g, '.js-plotly-plot .plotly')
-            .replace(/Y/g, '.plotly-notifier');
+        var fullSelector = helpers.buildFullSelector(selector);
 
         // Don't duplicate selectors
         if(targetSelectors.indexOf(fullSelector) === -1) {
@@ -51,20 +50,3 @@ module.exports = function injectStyles(gd) {
 
     gd._plotCSSLoaded = true;
 };
-
-// Gets all the rules currently attached to the document
-function getAllRuleSelectors(sourceDocument) {
-    var allSelectors = [];
-
-    for(var i = 0; i < sourceDocument.styleSheets.length; i++) {
-        var styleSheet = sourceDocument.styleSheets[i];
-
-        for(var j = 0; j < styleSheet.cssRules.length; j++) {
-            var cssRule = styleSheet.cssRules[j];
-
-            allSelectors.push(cssRule.selectorText);
-        }
-    }
-
-    return allSelectors;
-}
