@@ -37,10 +37,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
         var keyFunc;
 
         if(trace.identifier) {
-            keyFunc = function(d) {
-                console.log('d:', d);
-                return d.identifier;
-            };
+            keyFunc = function(d) {return d.identifier;};
         }
 
         var sparse = (
@@ -51,18 +48,9 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
         if(!yObj.visible && !xObj.visible) return;
 
         var errorbars = d3.select(this).selectAll('g.errorbar')
-            .data(Lib.identity, keyFunc);
+            .data(d, keyFunc);
 
-        if(hasAnimation) {
-            errorbars.exit()
-                .style('opacity', 1)
-                .transition()
-                    .duration(transitionConfig.duration)
-                    .style('opacity', 0)
-                    .remove();
-        } else {
-            errorbars.exit().remove();
-        }
+        errorbars.exit().remove();
 
         errorbars.style('opacity', 1);
 
@@ -71,8 +59,8 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
 
         if (hasAnimation) {
             enter.style('opacity', 0).transition()
-                    .duration(transitionConfig.duration)
-                    .style('opacity', 1);
+                .duration(transitionConfig.duration)
+                .style('opacity', 1);
         }
 
         errorbars.each(function(d) {
