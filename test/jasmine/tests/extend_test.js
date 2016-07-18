@@ -44,6 +44,14 @@ var undef = {
     arr: [1, 2, undefined]
 };
 
+var undef2 = {
+    str: undefined,
+    layer: {
+        date: undefined
+    },
+    arr: [1, undefined, 2]
+};
+
 
 describe('extendFlat', function() {
     'use strict';
@@ -376,7 +384,7 @@ describe('extendDeep', function() {
 
         expect(ori).toEqual({
             layer: { },
-            arr: [1, 2 ]
+            arr: [1, 2]
         });
         expect(undef).toEqual({
             str: undefined,
@@ -387,7 +395,33 @@ describe('extendDeep', function() {
         });
         expect(target).toEqual({
             layer: { },
-            arr: [1, 2 ]
+            arr: [1, 2]
+        });
+    });
+
+    it('leaves a gap in the array for undefined of lower index than that of the highest defined value', function() {
+        ori = {};
+        target = extendDeep(ori, undef2);
+
+        var compare = [];
+        compare[0] = 1;
+        // compare[1] left undefined
+        compare[2] = 2;
+
+        expect(ori).toEqual({
+            layer: { },
+            arr: compare
+        });
+        expect(undef2).toEqual({
+            str: undefined,
+            layer: {
+                date: undefined
+            },
+            arr: [1, undefined, 2]
+        });
+        expect(target).toEqual({
+            layer: { },
+            arr: compare
         });
     });
 
