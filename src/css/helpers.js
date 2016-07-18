@@ -18,7 +18,7 @@ exports.buildFullSelector = function buildFullSelector(selector) {
         .replace(/Y/g, '.plotly-notifier');
 
     return fullSelector;
-}
+};
 
 // Gets all the rules currently attached to the document
 exports.getAllRuleSelectors = function getAllRuleSelectors(sourceDocument) {
@@ -35,4 +35,4 @@ exports.getAllRuleSelectors = function getAllRuleSelectors(sourceDocument) {
     }
 
     return allSelectors;
-}
+};
