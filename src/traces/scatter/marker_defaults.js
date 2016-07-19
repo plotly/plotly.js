@@ -18,9 +18,10 @@ var subTypes = require('./subtypes');
 
 module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var isBubble = subTypes.isBubble(traceIn),
-        lineColor = !Array.isArray(traceIn.line) ? (traceIn.line || {}).color : undefined,
+        lineColor = (traceIn.line || {}).color,
         defaultMLC;
 
+    // marker.color inherit from line.color (even if line.color is an array)
     if(lineColor) defaultColor = lineColor;
 
     coerce('marker.symbol');
@@ -34,8 +35,9 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
 
     // if there's a line with a different color than the marker, use
     // that line color as the default marker line color
+    // (except when it's an array)
     // mostly this is for transparent markers to behave nicely
-    if(lineColor && (traceOut.marker.color !== lineColor)) {
+    if(lineColor && !Array.isArray(lineColor) && (traceOut.marker.color !== lineColor)) {
         defaultMLC = lineColor;
     }
     else if(isBubble) defaultMLC = Color.background;
