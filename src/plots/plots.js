@@ -631,16 +631,19 @@ function relinkPrivateKeys(toContainer, fromContainer) {
 
 plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
     var modules = layout._modules = [],
-        basePlotModules = layout._basePlotModules = [];
-
-    var cnt = 0;
+        basePlotModules = layout._basePlotModules = [],
+        cnt = 0;
 
     function pushModule(fullTrace) {
+        dataOut.push(fullTrace);
+
         var _module = fullTrace._module;
         if(!_module) return;
 
         Lib.pushUnique(modules, _module);
         Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
+
+        cnt++;
     }
 
     for(var i = 0; i < dataIn.length; i++) {
@@ -663,15 +666,11 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
                 fullExpandedTrace._fullTransforms = fullTrace.transforms;
                 fullExpandedTrace._index = i;
 
-                dataOut.push(fullExpandedTrace);
                 pushModule(fullExpandedTrace);
-                cnt++;
             }
         }
         else {
-            dataOut.push(fullTrace);
             pushModule(fullTrace);
-            cnt++;
         }
     }
 };
