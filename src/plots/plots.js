@@ -809,6 +809,10 @@ plots.purge = function(gd) {
     // remove modebar
     if(fullLayout._modeBar) fullLayout._modeBar.destroy();
 
+    // styling
+    delete gd._document;
+    delete gd._plotCSSLoaded;
+
     // data and layout
     delete gd.data;
     delete gd.layout;
