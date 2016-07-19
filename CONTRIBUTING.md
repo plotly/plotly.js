@@ -2,40 +2,11 @@
 
 ## Opening issues
 
-Search for existing and closed issues. If your problem or idea is not addressed
-yet, [please open a new issue](https://github.com/plotly/plotly.js/issues/new).
-
-Bug reports must be accompanied with a reproducible example. We recommend using
-[codepen](http://codepen.io/), [jsfiddle](https://jsfiddle.net/) or
-[jsbin](https://jsbin.com) to share your example.
-
-Note that GitHub issues are reserved for bug reports and feature requests only.
-Implementation questions should be asked on
-community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)) or on Stack Overflow (tagged
-[`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
-
-Comments on GitHub issues or pull requests should add content to the discussions. 
-Approbation comments such as *+1* or *I would like this feature to be implemented as well* 
-will be deleted by the maintainers. Please use 
-[GitHub reactions](https://github.com/blog/2119-add-reactions-to-pull-requests-issues-and-comments) 
-instead.
+Please read the [issue guidelines](./.github/ISSUE_TEMPLATE.md).
 
 ## Making pull requests
 
-Developers are strongly encouraged to first make a PR to their own plotly.js
-fork and ask one of the maintainers to review the modifications there. Once the
-pull request is deemed satisfactory, the developer will be asked to make a pull
-request to the main plotly.js repo and may be asked to squash some commits
-before doing so.
-
-Developers should `git rebase` their local branch off the latest `master` before 
-opening a pull request.
-
-Note that it is forbidden to force push (i.e. `git push -f`) to remote branches
-associated with opened pull requests. Force pushes make it hard for maintainers 
-to keep track of updates. Therefore, if required, please
-`git merge master` into your PR branch instead of `git rebase master`.
-
+Please read the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md).
 
 ## GitHub labels
 
