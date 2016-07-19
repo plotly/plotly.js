@@ -117,7 +117,7 @@ describe('one-to-one transforms:', function() {
             assertDims([3]);
 
             var uid = data[0].uid;
-            expect(gd._fullData[0].uid).toEqual(uid + '-0');
+            expect(gd._fullData[0].uid).toEqual(uid + '0');
 
             done();
         });
