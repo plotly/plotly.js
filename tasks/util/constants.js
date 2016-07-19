@@ -70,6 +70,10 @@ module.exports = {
     pathToCredentials: path.join(pathToBuild, 'credentials.json'),
     pathToSetPlotConfig: path.join(pathToBuild, 'set_plot_config.js'),
 
+    testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',
+    testContainerUrl: 'http://localhost:9010/',
+    testContainerHome: '/var/www/streambed/image_server/plotly.js',
+
     uglifyOptions: {
         fromString: true,
         mangle: true,
