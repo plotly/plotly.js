@@ -113,8 +113,11 @@ describe('one-to-one transforms:', function() {
     it('Plotly.plot should plot the transform trace', function(done) {
         var data = Lib.extendDeep([], mockData0);
 
-        Plotly.plot(createGraphDiv(), data).then(function() {
+        Plotly.plot(createGraphDiv(), data).then(function(gd) {
             assertDims([3]);
+
+            var uid = data[0].uid;
+            expect(gd._fullData[0].uid).toEqual(uid + '-0');
 
             done();
         });

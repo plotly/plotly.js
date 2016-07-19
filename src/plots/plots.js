@@ -657,6 +657,10 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
                 var expandedTrace = expandedTraces[j],
                     fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, layout);
 
+                // mutate uid w.r.t to expanded index to promote consistency
+                // between update calls.
+                expandedTrace.uid = fullExpandedTrace.uid = fullTrace.uid + '-' + j;
+
                 // add info about parent data trace
                 fullExpandedTrace.index = i;
                 fullExpandedTrace._input = trace;
