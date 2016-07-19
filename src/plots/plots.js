@@ -647,29 +647,33 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
     }
 
     for(var i = 0; i < dataIn.length; i++) {
-        var trace = dataIn[i];
-
-        var fullTrace = plots.supplyTraceDefaults(trace, cnt, layout);
-
-        // keep track of pre-transform _input
-        var traceIn = fullTrace._input;
+        var trace = dataIn[i],
+            fullTrace = plots.supplyTraceDefaults(trace, cnt, layout);
 
         if(fullTrace.transforms && fullTrace.transforms.length) {
             var expandedTraces = applyTransforms(fullTrace, dataOut, layout);
 
             for(var j = 0; j < expandedTraces.length; j++) {
-                var expandedTrace = expandedTraces[j];
-                var fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, layout);
+                var expandedTrace = expandedTraces[j],
+                    fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, layout);
 
-                // copy refs
-                fullExpandedTrace._input = traceIn;
-                fullExpandedTrace._fullTransforms = fullTrace.transforms;
-                fullExpandedTrace._index = i;
+                // add info about parent data trace
+                fullExpandedTrace.index = i;
+                fullExpandedTrace._input = trace;
+                fullExpandedTrace._fullInput = fullTrace;
+
+                // add info about the expanded data
+                fullExpandedTrace._expandedIndex = cnt;
+                fullExpandedTrace._expandedInput = expandedTrace;
 
                 pushModule(fullExpandedTrace);
             }
         }
         else {
+            fullTrace.index = i;
+            fullTrace._input = trace;
+            fullTrace._expandedIndex = cnt;
+
             pushModule(fullTrace);
         }
     }
@@ -690,8 +694,6 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
             plots.subplotsRegistry[subplotType].attributes, subplotAttr);
     }
 
-    // module-independent attributes
-    traceOut.index = traceIndex;
     var visible = coerce('visible');
 
     coerce('type');
@@ -739,9 +741,6 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
 
         supplyTransformDefaults(traceIn, traceOut, layout);
     }
-
-    // reference back to the input object for convenience
-    traceOut._input = traceIn;
 
     return traceOut;
 };

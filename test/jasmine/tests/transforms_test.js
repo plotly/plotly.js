@@ -95,7 +95,7 @@ describe('one-to-one transforms:', function() {
         }]);
 
         // keep ref to full transforms array
-        expect(dataOut[0]._fullTransforms).toEqual([{
+        expect(dataOut[0]._fullInput.transforms).toEqual([{
             type: 'filter',
             operation: '>',
             value: 0,
@@ -107,7 +107,7 @@ describe('one-to-one transforms:', function() {
 
         // TODO do we really need this ???
         // set _index w.r.t. user data
-        expect(dataOut[0]._index).toEqual(0);
+        expect(dataOut[0].index).toEqual(0);
     });
 
     it('Plotly.plot should plot the transform trace', function(done) {
