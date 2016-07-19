@@ -16,7 +16,6 @@ var colorscaleDefaults = require('../../components/colorscale/defaults');
 var subTypes = require('./subtypes');
 
 
-// common to 'scatter', 'scatter3d', 'scattergeo' and 'scattergl'
 module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout, coerce) {
     var isBubble = subTypes.isBubble(traceIn),
         lineColor = !Array.isArray(traceIn.line) ? (traceIn.line || {}).color : undefined,
@@ -30,9 +29,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('marker.color', defaultColor);
     if(hasColorscale(traceIn, 'marker')) {
-        colorscaleDefaults(
-            traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'}
-        );
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.', cLetter: 'c'});
     }
 
     // if there's a line with a different color than the marker, use
@@ -46,9 +43,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
 
     coerce('marker.line.color', defaultMLC);
     if(hasColorscale(traceIn, 'marker.line')) {
-        colorscaleDefaults(
-            traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'}
-        );
+        colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: 'marker.line.', cLetter: 'c'});
     }
 
     coerce('marker.line.width', isBubble ? 1 : 0);
