@@ -12,7 +12,7 @@ machine:
 
 dependencies:
   pre:
-    - docker pull plotly/testbed:latest
+    - docker pull plotly/imagetest:latest
   post:
     - npm run cibuild
     - npm run pretest
@@ -21,8 +21,8 @@ dependencies:
     - wget --server-response --spider --tries=8 --retry-connrefused http://localhost:9010/ping
 test:
   override:
-    - sudo ./tasks/run_in_testbed.sh mytestbed "export CIRCLECI=1 && node test/image/compare_pixels_test.js"
-    - sudo ./tasks/run_in_testbed.sh mytestbed "node test/image/export_test.js"
+    - npm run test-image
+    - npm run test-export
     - npm run citest-jasmine
     - npm run test-bundle
     - npm run test-syntax
