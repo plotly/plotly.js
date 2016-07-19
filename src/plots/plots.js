@@ -747,7 +747,9 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
 };
 
 function supplyTransformDefaults(traceIn, traceOut, layout) {
-    var containerIn = traceIn.transforms || [],
+    if(!Array.isArray(traceIn.transforms)) return;
+
+    var containerIn = traceIn.transforms,
         containerOut = traceOut.transforms = [];
 
     for(var i = 0; i < containerIn.length; i++) {
