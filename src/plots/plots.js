@@ -740,10 +740,6 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
         supplyTransformDefaults(traceIn, traceOut, layout);
     }
 
-    // NOTE: I didn't include fit info at all... for now I think it can stay
-    // just in gd.data, as this info isn't involved in creating plots at all,
-    // only in pulling back up the fit popover
-
     // reference back to the input object for convenience
     traceOut._input = traceIn;
 
