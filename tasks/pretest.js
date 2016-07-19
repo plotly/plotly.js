@@ -38,9 +38,20 @@ fs.writeFile(constants.pathToSetPlotConfig, setPlotConfig, function(err) {
 });
 
 // make artifact folders for image tests
-if(!fs.existsSync(constants.pathToTestImagesDiff)) {
+if(!doesDirExist(constants.pathToTestImagesDiff)) {
     fs.mkdirSync(constants.pathToTestImagesDiff);
 }
-if(!fs.existsSync(constants.pathToTestImages)) {
+if(!doesDirExist(constants.pathToTestImages)) {
     fs.mkdirSync(constants.pathToTestImages);
+}
+
+function doesDirExist(dirPath) {
+    try {
+        if(fs.statSync(dirPath).isDirectory()) return true;
+    }
+    catch(e) {
+        return false;
+    }
+
+    return false;
 }
