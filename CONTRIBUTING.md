@@ -6,7 +6,7 @@ Please read the [issue guidelines](./.github/ISSUE_TEMPLATE.md).
 
 ## Making pull requests
 
-Please read the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md)
+Please read the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md).
 
 ## GitHub labels
 
