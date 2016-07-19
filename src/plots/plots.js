@@ -585,45 +585,46 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
 };
 
 /**
- * Relink private _keys and keys with a function value from one layout
- * (usually cached) to the new fullLayout.
- * relink means copying if object is pass-by-value and adding a reference
- * if object is pass-by-ref. This prevents deepCopying massive structures like
- * a webgl context.
+ * Relink private _keys and keys with a function value from one container
+ * to the new container.
+ * Relink means copying if object is pass-by-value and adding a reference
+ * if object is pass-by-ref.
+ * This prevents deepCopying massive structures like a webgl context.
  */
-function relinkPrivateKeys(toLayout, fromLayout) {
-    var keys = Object.keys(fromLayout);
-    var j;
+function relinkPrivateKeys(toContainer, fromContainer) {
+    var isPlainObject = Lib.isPlainObject,
+        isArray = Array.isArray;
 
-    for(var i = 0; i < keys.length; ++i) {
-        var k = keys[i];
-        if(k.charAt(0) === '_' || typeof fromLayout[k] === 'function') {
+    var keys = Object.keys(fromContainer);
+
+    for(var i = 0; i < keys.length; i++) {
+        var k = keys[i],
+            fromVal = fromContainer[k],
+            toVal = toContainer[k];
+
+        if(k.charAt(0) === '_' || typeof fromVal === 'function') {
+
             // if it already exists at this point, it's something
             // that we recreate each time around, so ignore it
-            if(k in toLayout) continue;
+            if(k in toContainer) continue;
 
-            toLayout[k] = fromLayout[k];
+            toContainer[k] = fromVal;
         }
-        else if(Array.isArray(fromLayout[k]) &&
-                 Array.isArray(toLayout[k]) &&
-                 fromLayout[k].length &&
-                 Lib.isPlainObject(fromLayout[k][0])) {
-            if(fromLayout[k].length !== toLayout[k].length) {
-                // this should be handled elsewhere, it causes
-                // ambiguity if we try to deal with it here.
-                throw new Error('relinkPrivateKeys needs equal ' +
-                                'length arrays');
-            }
+        else if(isArray(fromVal) && isArray(toVal)) {
 
-            for(j = 0; j < fromLayout[k].length; j++) {
-                relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
+            // recurse into arrays
+            for(var j = 0; j < fromVal.length; j++) {
+                if(isPlainObject(fromVal[j]) && isPlainObject(toVal[j])) {
+                    relinkPrivateKeys(toVal[j], fromVal[j]);
+                }
             }
         }
-        else if(Lib.isPlainObject(fromLayout[k]) &&
-                 Lib.isPlainObject(toLayout[k])) {
+        else if(isPlainObject(fromVal) && isPlainObject(toVal)) {
+
             // recurse into objects, but only if they still exist
-            relinkPrivateKeys(toLayout[k], fromLayout[k]);
-            if(!Object.keys(toLayout[k]).length) delete toLayout[k];
+            relinkPrivateKeys(toVal, fromVal);
+
+            if(!Object.keys(toVal).length) delete toContainer[k];
         }
     }
 }
