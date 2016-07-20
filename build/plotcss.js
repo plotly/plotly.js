@@ -1,6 +1,5 @@
 'use strict';
 
-var Plotly = require('../src/plotly');
 var rules = {
     "X,X div": "font-family:'Open Sans', verdana, arial, sans-serif;margin:0;padding:0;",
     "X input,X button": "font-family:'Open Sans', verdana, arial, sans-serif;",
@@ -54,9 +53,4 @@ var rules = {
     "Y .notifier-close:hover": "color:#444;text-decoration:none;cursor:pointer;"
 };
 
-for(var selector in rules) {
-    var fullSelector = selector.replace(/^,/,' ,')
-        .replace(/X/g, '.js-plotly-plot .plotly')
-        .replace(/Y/g, '.plotly-notifier');
-    Plotly.Lib.addStyleRule(fullSelector, rules[selector]);
-}
+module.exports = rules;

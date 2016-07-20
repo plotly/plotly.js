@@ -33,7 +33,7 @@ module.exports = function createSlider(gd) {
     var minStart = 0,
         maxStart = width;
 
-    var slider = document.createElementNS(svgNS, 'g');
+    var slider = gd._document.createElementNS(svgNS, 'g');
     helpers.setAttributes(slider, {
         'class': 'range-slider',
         'data-min': minStart,
@@ -43,7 +43,7 @@ module.exports = function createSlider(gd) {
     });
 
 
-    var sliderBg = document.createElementNS(svgNS, 'rect'),
+    var sliderBg = gd._document.createElementNS(svgNS, 'rect'),
         borderCorrect = options.borderwidth % 2 === 0 ? options.borderwidth : options.borderwidth - 1;
     helpers.setAttributes(sliderBg, {
         'fill': options.bgcolor,
@@ -56,7 +56,7 @@ module.exports = function createSlider(gd) {
     });
 
 
-    var maskMin = document.createElementNS(svgNS, 'rect');
+    var maskMin = gd._document.createElementNS(svgNS, 'rect');
     helpers.setAttributes(maskMin, {
         'x': 0,
         'width': minStart,
@@ -65,7 +65,7 @@ module.exports = function createSlider(gd) {
     });
 
 
-    var maskMax = document.createElementNS(svgNS, 'rect');
+    var maskMax = gd._document.createElementNS(svgNS, 'rect');
     helpers.setAttributes(maskMax, {
         'x': maxStart,
         'width': width - maxStart,
@@ -74,9 +74,9 @@ module.exports = function createSlider(gd) {
     });
 
 
-    var grabberMin = document.createElementNS(svgNS, 'g'),
-        grabAreaMin = document.createElementNS(svgNS, 'rect'),
-        handleMin = document.createElementNS(svgNS, 'rect');
+    var grabberMin = gd._document.createElementNS(svgNS, 'g'),
+        grabAreaMin = gd._document.createElementNS(svgNS, 'rect'),
+        handleMin = gd._document.createElementNS(svgNS, 'rect');
     helpers.setAttributes(grabberMin, { 'transform': 'translate(' + (minStart - handleWidth - 1) + ')' });
     helpers.setAttributes(grabAreaMin, {
         'width': 10,
@@ -97,9 +97,9 @@ module.exports = function createSlider(gd) {
     helpers.appendChildren(grabberMin, [handleMin, grabAreaMin]);
 
 
-    var grabberMax = document.createElementNS(svgNS, 'g'),
-        grabAreaMax = document.createElementNS(svgNS, 'rect'),
-        handleMax = document.createElementNS(svgNS, 'rect');
+    var grabberMax = gd._document.createElementNS(svgNS, 'g'),
+        grabAreaMax = gd._document.createElementNS(svgNS, 'rect'),
+        handleMax = gd._document.createElementNS(svgNS, 'rect');
     helpers.setAttributes(grabberMax, { 'transform': 'translate(' + maxStart + ')' });
     helpers.setAttributes(grabAreaMax, {
         'width': 10,
@@ -120,7 +120,7 @@ module.exports = function createSlider(gd) {
     helpers.appendChildren(grabberMax, [handleMax, grabAreaMax]);
 
 
-    var slideBox = document.createElementNS(svgNS, 'rect');
+    var slideBox = gd._document.createElementNS(svgNS, 'rect');
     helpers.setAttributes(slideBox, {
         'x': minStart,
         'width': maxStart - minStart,
@@ -137,8 +137,8 @@ module.exports = function createSlider(gd) {
             minVal = slider.getAttribute('data-min'),
             maxVal = slider.getAttribute('data-max');
 
-        window.addEventListener('mousemove', mouseMove);
-        window.addEventListener('mouseup', mouseUp);
+        gd._document.defaultView.addEventListener('mousemove', mouseMove);
+        gd._document.defaultView.addEventListener('mouseup', mouseUp);
 
         function mouseMove(e) {
             var delta = +e.clientX - startX,
@@ -189,8 +189,8 @@ module.exports = function createSlider(gd) {
         }
 
         function mouseUp() {
-            window.removeEventListener('mousemove', mouseMove);
-            window.removeEventListener('mouseup', mouseUp);
+            gd._document.defaultView.removeEventListener('mousemove', mouseMove);
+            gd._document.defaultView.removeEventListener('mouseup', mouseUp);
             slider.style.cursor = 'auto';
         }
     });
@@ -222,8 +222,8 @@ module.exports = function createSlider(gd) {
 
     function setDataRange(dataMin, dataMax) {
 
-        if(window.requestAnimationFrame) {
-            window.requestAnimationFrame(function() {
+        if(gd._document.defaultView.requestAnimationFrame) {
+            gd._document.defaultView.requestAnimationFrame(function() {
                 Plotly.relayout(gd, 'xaxis.range', [dataMin, dataMax]);
             });
         } else {
