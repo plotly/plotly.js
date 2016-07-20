@@ -29,6 +29,7 @@ var UNDERSCORE_ATTRS = [IS_SUBPLOT_OBJ, IS_LINKED_TO_ARRAY, DEPRECATED];
 var plotSchema = {
     traces: {},
     layout: {},
+    transforms: {},
     defs: {}
 };
 
@@ -45,7 +46,11 @@ PlotSchema.get = function() {
         .forEach(getTraceAttributes);
 
     getLayoutAttributes();
+
+    Object.keys(Plots.transformsRegistry).forEach(getTransformAttributes);
+
     getDefs();
+
     return plotSchema;
 };
 
@@ -134,6 +139,18 @@ function getLayoutAttributes() {
     handleLinkedToArray(layoutAttributes);
 
     plotSchema.layout = { layoutAttributes: layoutAttributes };
+}
+
+function getTransformAttributes(name) {
+    var _module = Plots.transformsRegistry[name],
+        _schema = {};
+
+    _schema = coupleAttrs(_schema, _module.attributes || {}, 'attributes', '*');
+    _schema = removeUnderscoreAttrs(_schema);
+    mergeValTypeAndRole(_schema);
+    handleLinkedToArray(_schema);
+
+    plotSchema.transforms[name] = { attributes: _schema };
 }
 
 function getDefs() {
