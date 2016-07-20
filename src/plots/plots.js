@@ -758,10 +758,18 @@ function supplyTransformDefaults(traceIn, traceOut, layout) {
     for(var i = 0; i < containerIn.length; i++) {
         var transformIn = containerIn[i],
             type = transformIn.type,
-            _module = transformsRegistry[type];
+            _module = transformsRegistry[type],
+            transformOut;
 
-        var transformOut = _module.supplyDefaults(transformIn, traceOut, layout);
-        transformOut.type = type;
+        if(!_module) Lib.warn('Unrecognized transform type ' + type + '.');
+
+        if(_module && _module.supplyDefaults) {
+            transformOut = _module.supplyDefaults(transformIn, traceOut, layout);
+            transformOut.type = type;
+        }
+        else {
+            transformOut = Lib.extendFlat({}, transformIn);
+        }
 
         containerOut.push(transformOut);
     }
@@ -776,12 +784,14 @@ function applyTransforms(fullTrace, fullData, layout) {
             type = transform.type,
             _module = transformsRegistry[type];
 
-        dataOut = _module.transform(dataOut, {
-            transform: transform,
-            fullTrace: fullTrace,
-            fullData: fullData,
-            layout: layout
-        });
+        if(_module) {
+            dataOut = _module.transform(dataOut, {
+                transform: transform,
+                fullTrace: fullTrace,
+                fullData: fullData,
+                layout: layout
+            });
+        }
     }
 
     return dataOut;

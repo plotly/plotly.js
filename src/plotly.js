@@ -22,7 +22,7 @@
 require('es6-promise').polyfill();
 
 // lib functions
-exports.Lib = require('./lib');
+var Lib = exports.Lib = require('./lib');
 exports.util = require('./lib/svg_text_utils');
 exports.Queue = require('./lib/queue');
 
@@ -55,7 +55,8 @@ exports.ModeBar = require('./components/modebar');
 exports.register = function register(_modules) {
     if(!_modules) {
         throw new Error('No argument passed to Plotly.register.');
-    } else if(_modules && !Array.isArray(_modules)) {
+    }
+    else if(_modules && !Array.isArray(_modules)) {
         _modules = [_modules];
     }
 
@@ -77,6 +78,22 @@ exports.register = function register(_modules) {
                 break;
 
             case 'transform':
+                if(typeof newModule.name !== 'string') {
+                    throw new Error('Transform module *name* must be a string.');
+                }
+
+                var prefix = 'Transform module ' + newModule.name;
+
+                if(typeof newModule.transform !== 'function') {
+                    throw new Error(prefix + ' is missing a *transform* function.');
+                }
+                if(!Lib.isPlainObject(newModule.attributes)) {
+                    Lib.log(prefix + ' registered without an *attributes* object.');
+                }
+                if(typeof newModule.supplyDefaults !== 'function') {
+                    Lib.log(prefix + ' registered without a *supplyDefaults* function.');
+                }
+
                 Plots.transformsRegistry[newModule.name] = newModule;
 
                 break;
