@@ -52,8 +52,22 @@ describe('one-to-one transforms:', function() {
         }]);
     });
 
-    it('supplyDataDefaults should apply the transform', function() {
+    it('supplyTraceDefaults should not bail if transform module is not found', function() {
+        var traceIn = {
+            y: [2, 1, 2],
+            transforms: [{ type: 'invalid' }]
+        };
+
+        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+
+        expect(traceOut.y).toBe(traceIn.y);
+    });
+
+    it('supplyDataDefaults should apply the transform while', function() {
         var dataIn = [{
+            x: [-2, -2, 1, 2, 3],
+            y: [1, 2, 2, 3, 1],
+        }, {
             x: [-2, -1, -2, 0, 1, 2, 3],
             y: [1, 2, 3, 1, 2, 3, 1],
             transforms: [{
@@ -67,47 +81,55 @@ describe('one-to-one transforms:', function() {
         var dataOut = [];
         Plots.supplyDataDefaults(dataIn, dataOut, {}, []);
 
-        // does not mutate user data
-        expect(dataIn[0].x).toEqual([-2, -1, -2, 0, 1, 2, 3]);
-        expect(dataIn[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
-        expect(dataIn[0].transforms).toEqual([{
+        var msg;
+
+        msg = 'does not mutate user data';
+        expect(dataIn[1].x).toEqual([-2, -1, -2, 0, 1, 2, 3], msg);
+        expect(dataIn[1].y).toEqual([1, 2, 3, 1, 2, 3, 1], msg);
+        expect(dataIn[1].transforms).toEqual([{
             type: 'filter',
             operation: '>',
             value: '0',
             filtersrc: 'x'
-        }]);
+        }], msg);
 
-        // applies transform
-        expect(dataOut[0].x).toEqual([1, 2, 3]);
-        expect(dataOut[0].y).toEqual([2, 3, 1]);
+        msg = 'applies transform';
+        expect(dataOut[1].x).toEqual([1, 2, 3], msg);
+        expect(dataOut[1].y).toEqual([2, 3, 1], msg);
 
-        // TODO what is the expected behavior ???
-//         expect(dataOut[0].transforms).toEqual([]);
-
-        // keep ref to user data
-        expect(dataOut[0]._input.x).toEqual([-2, -1, -2, 0, 1, 2, 3]);
-        expect(dataOut[0]._input.y).toEqual([1, 2, 3, 1, 2, 3, 1]);
-        expect(dataOut[0]._input.transforms).toEqual([{
-            type: 'filter',
-            operation: '>',
-            value: '0',
-            filtersrc: 'x'
-        }]);
-
-        // keep ref to full transforms array
-        expect(dataOut[0]._fullInput.transforms).toEqual([{
+        msg = 'supplying the transform defaults';
+        expect(dataOut[1].transforms[0]).toEqual({
             type: 'filter',
             operation: '>',
             value: 0,
             filtersrc: 'x'
-        }]);
+        }, msg);
 
-        // set index w.r.t. fullData
-        expect(dataOut[0].index).toEqual(0);
+        msg = 'keeping refs to user data';
+        expect(dataOut[1]._input.x).toEqual([-2, -1, -2, 0, 1, 2, 3], msg);
+        expect(dataOut[1]._input.y).toEqual([1, 2, 3, 1, 2, 3, 1], msg);
+        expect(dataOut[1]._input.transforms).toEqual([{
+            type: 'filter',
+            operation: '>',
+            value: '0',
+            filtersrc: 'x'
+        }], msg);
 
-        // TODO do we really need this ???
-        // set _index w.r.t. user data
-        expect(dataOut[0].index).toEqual(0);
+        msg = 'keeping refs to full transforms array';
+        expect(dataOut[1]._fullInput.transforms).toEqual([{
+            type: 'filter',
+            operation: '>',
+            value: 0,
+            filtersrc: 'x'
+        }], msg);
+
+        msg = 'setting index w.r.t user data';
+        expect(dataOut[0].index).toEqual(0, msg);
+        expect(dataOut[1].index).toEqual(1, msg);
+
+        msg = 'setting _expandedIndex w.r.t full data';
+        expect(dataOut[0]._expandedIndex).toEqual(0, msg);
+        expect(dataOut[1]._expandedIndex).toEqual(1, msg);
     });
 
     it('Plotly.plot should plot the transform trace', function(done) {
@@ -130,22 +152,34 @@ describe('one-to-one transforms:', function() {
         var gd = createGraphDiv();
         var dims = [3];
 
+        var uid;
+        function assertUid(gd) {
+            expect(gd._fullData[0].uid)
+                .toEqual(uid + '0', 'should preserve uid on restyle');
+        }
+
         Plotly.plot(gd, data).then(function() {
+            uid = gd.data[0].uid;
+
             expect(gd._fullData[0].marker.color).toEqual('red');
+            assertUid(gd);
             assertStyle(dims, ['rgb(255, 0, 0)'], [1]);
 
             return Plotly.restyle(gd, 'marker.color', 'blue');
         }).then(function() {
             expect(gd._fullData[0].marker.color).toEqual('blue');
+            assertUid(gd);
             assertStyle(dims, ['rgb(0, 0, 255)'], [1]);
 
             return Plotly.restyle(gd, 'marker.color', 'red');
         }).then(function() {
             expect(gd._fullData[0].marker.color).toEqual('red');
+            assertUid(gd);
             assertStyle(dims, ['rgb(255, 0, 0)'], [1]);
 
             return Plotly.restyle(gd, 'transforms[0].value', 2.5);
         }).then(function() {
+            assertUid(gd);
             assertStyle([1], ['rgb(255, 0, 0)'], [1]);
 
             done();
@@ -250,6 +284,34 @@ describe('one-to-many transforms:', function() {
     }];
 
     afterEach(destroyGraphDiv);
+
+    it('supplyDataDefaults should apply the transform while', function() {
+        var dummyTrace0 = {
+            x: [-2, -2, 1, 2, 3],
+            y: [1, 2, 2, 3, 1],
+        };
+
+        var dummyTrace1 = {
+            x: [-1, 2, 3],
+            y: [2, 3, 1],
+        };
+
+        var dataIn = [
+            dummyTrace0,
+            Lib.extendDeep({}, mockData0[0]),
+            dummyTrace1,
+            Lib.extendDeep({}, mockData1[0])
+        ];
+
+        var dataOut = [];
+        Plots.supplyDataDefaults(dataIn, dataOut, {}, []);
+
+        expect(dataOut.map(function(trace) { return trace.index; }))
+            .toEqual([0, 1, 1, 2, 3, 3], 'setting index w.r.t user data');
+
+        expect(dataOut.map(function(trace) { return trace._expandedIndex; }))
+            .toEqual([0, 1, 2, 3, 4, 5], 'setting index w.r.t full data');
+    });
 
     it('Plotly.plot should plot the transform traces', function(done) {
         var data = Lib.extendDeep([], mockData0);
@@ -427,6 +489,34 @@ describe('multiple transforms:', function() {
     }];
 
     afterEach(destroyGraphDiv);
+
+    it('supplyDataDefaults should apply the transform while', function() {
+        var dummyTrace0 = {
+            x: [-2, -2, 1, 2, 3],
+            y: [1, 2, 2, 3, 1],
+        };
+
+        var dummyTrace1 = {
+            x: [-1, 2, 3],
+            y: [2, 3, 1],
+        };
+
+        var dataIn = [
+            dummyTrace0,
+            Lib.extendDeep({}, mockData0[0]),
+            Lib.extendDeep({}, mockData1[0]),
+            dummyTrace1
+        ];
+
+        var dataOut = [];
+        Plots.supplyDataDefaults(dataIn, dataOut, {}, []);
+
+        expect(dataOut.map(function(trace) { return trace.index; }))
+            .toEqual([0, 1, 1, 2, 2, 3], 'setting index w.r.t user data');
+
+        expect(dataOut.map(function(trace) { return trace._expandedIndex; }))
+            .toEqual([0, 1, 2, 3, 4, 5], 'setting index w.r.t full data');
+    });
 
     it('Plotly.plot should plot the transform traces', function(done) {
         var data = Lib.extendDeep([], mockData0);
@@ -624,6 +714,34 @@ describe('multiple traces with transforms:', function() {
     }];
 
     afterEach(destroyGraphDiv);
+
+    it('supplyDataDefaults should apply the transform while', function() {
+        var dummyTrace0 = {
+            x: [-2, -2, 1, 2, 3],
+            y: [1, 2, 2, 3, 1],
+        };
+
+        var dummyTrace1 = {
+            x: [-1, 2, 3],
+            y: [2, 3, 1],
+        };
+
+        var dataIn = [
+            dummyTrace0,
+            Lib.extendDeep({}, mockData0[0]),
+            Lib.extendDeep({}, mockData0[1]),
+            dummyTrace1
+        ];
+
+        var dataOut = [];
+        Plots.supplyDataDefaults(dataIn, dataOut, {}, []);
+
+        expect(dataOut.map(function(trace) { return trace.index; }))
+            .toEqual([0, 1, 2, 2, 3], 'setting index w.r.t user data');
+
+        expect(dataOut.map(function(trace) { return trace._expandedIndex; }))
+            .toEqual([0, 1, 2, 3, 4], 'setting index w.r.t full data');
+    });
 
     it('Plotly.plot should plot the transform traces', function(done) {
         var data = Lib.extendDeep([], mockData0);
