@@ -6,7 +6,7 @@ Plotly.register([
     require('@lib/scattermapbox'),
 
     // until they become official
-    require('@assets/transforms/filter')
+    require('../assets/transforms/filter')
 ]);
 
 describe('plot schema', function() {

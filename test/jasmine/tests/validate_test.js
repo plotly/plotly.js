@@ -3,7 +3,7 @@ var Lib = require('@src/lib');
 
 Plotly.register([
     // until they become official
-    require('@assets/transforms/filter')
+    require('../assets/transforms/filter')
 ]);
 
 

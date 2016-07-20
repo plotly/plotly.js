@@ -12,7 +12,6 @@ var shortcutsConfig = {
     '@src': constants.pathToSrc,
     '@lib': constants.pathToLib,
     '@mocks': constants.pathToTestImageMocks,
-    '@assets': constants.pathToJasmineTestAssets,
     '@build': constants.pathToBuild
 };
 

@@ -50,7 +50,6 @@ module.exports = {
 
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
-    pathToJasmineTestAssets: path.join(pathToRoot, 'test/jasmine/assets'),
 
     pathToCredentials: path.join(pathToBuild, 'credentials.json'),
     pathToSetPlotConfig: path.join(pathToBuild, 'set_plot_config.js'),

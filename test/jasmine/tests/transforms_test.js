@@ -3,12 +3,12 @@ var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var d3 = require('d3');
-var createGraphDiv = require('@assets/create_graph_div');
-var destroyGraphDiv = require('@assets/destroy_graph_div');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 Plotly.register([
-    require('@assets/transforms/filter'),
-    require('@assets/transforms/groupby')
+    require('../assets/transforms/filter'),
+    require('../assets/transforms/groupby')
 ]);
 
 
