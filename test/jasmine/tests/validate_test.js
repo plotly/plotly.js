@@ -44,7 +44,7 @@ describe('Plotly.validate', function() {
 
     it('should report when a data trace is not an object', function() {
         var out = Plotly.validate([{
-            type: 'scatter',
+            type: 'bar',
             x: [1, 2, 3]
         }, [1, 2, 3]]);
 
@@ -67,7 +67,7 @@ describe('Plotly.validate', function() {
 
     it('should report when trace is defaulted to not be visible', function() {
         var out = Plotly.validate([{
-            type: 'scatter'
+            type: 'scattergeo'
             // missing 'x' and 'y
         }], {});
 
