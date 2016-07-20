@@ -119,16 +119,16 @@ Please read through our [contributing guidelines](https://github.com/plotly/plot
 
 ## Community
 
-Get updates on plotly.js's development and chat with the project maintainers and community members.
-
-* Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter.
-* Implementation help may be found at Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)) or community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)).
+* Follow [@plotlygraphs](https://twitter.com/plotlygraphs) on Twitter for the latest Plotly news.
+* Follow [@plotly_js](https://twitter.com/plotly_js) on Twitter for plotly.js release updates.
+* Implementation help may be found on community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)) or
+  on Stack Overflow (tagged [`plotly`](https://stackoverflow.com/questions/tagged/plotly)).
 * Developers should use the keyword `plotly` on packages which modify or add to the functionality of plotly.js when distributing through [npm](https://www.npmjs.com/browse/keyword/plotly).
 * Direct developer email support can be purchased through a [Plotly Pro](https://plot.ly/products/cloud/) plan.
 
 ## Versioning
 
-plotly.js is maintained under the [Semantic Versioning guidelines](http://semver.org/).
+This project is maintained under the [Semantic Versioning guidelines](http://semver.org/).
 
 See the [Releases section](https://github.com/plotly/plotly.js/releases) of our GitHub project for changelogs for each release version of plotly.js.
 
