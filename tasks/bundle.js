@@ -29,7 +29,7 @@ try {
 }
 catch(e) {
     throw new Error([
-        'build/ is missing a or more files',
+        'build/ is missing one or more files',
         'Please run `npm run preprocess` first'
     ].join('\n'));
 }
