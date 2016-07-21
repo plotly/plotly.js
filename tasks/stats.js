@@ -110,7 +110,7 @@ fs.writeFile(pathDistREADME, content.join('\n'), function(err) {
 
 function makeBundleHeaderInfo(pathObj) {
     var name = pathObj.name;
-    return '- [' + name + '](#plotly.js-' + name + ')';
+    return '- [' + name + '](#plotlyjs-' + name + ')';
 }
 
 function makeBundleInfo(pathObj) {
