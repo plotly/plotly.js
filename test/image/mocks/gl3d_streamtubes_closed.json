@@ -1,0 +1,59 @@
+{
+  "data": [
+    {
+      "x":[1,0,0,1,1,0],
+      "y":[0,0,1,1,0,0],
+      "z":[1,1,0,0,1,1],
+      "connectgaps": false,
+      "text": ["A","B","C","D","E","F","G","H","I","J","K"],
+      "mode": "lines+markers+text",
+      "line": {
+        "connectiondiameter": 1,
+        "colorscale": "Viridis",
+        "color": [0,0,1,1,0,0]
+      },
+      "marker": {
+        "size": 0,
+        "colorscale": "Viridis",
+        "color": [0,1,2,3,4,5,6,7,8,9,10],
+        "showscale": true
+      },
+      "type":"streamtube",
+      "projection": {
+        "x": {
+          "show": true,
+          "opacity": 1,
+          "scale": 1
+        },
+        "y": {
+          "show": true,
+          "opacity": 1,
+          "scale": 1
+        },
+        "z": {
+          "show": true,
+          "opacity": 1,
+          "scale": 1
+        }
+      },
+      "flatshading": false,
+      "lightposition": {
+        "x": 1000,
+        "y": 1000,
+        "z": 1000
+      },
+      "lighting": {
+        "ambient": 0.4,
+        "diffuse": 2,
+        "specular": 0.5,
+        "fresnel": 0,
+        "roughness": 0.4
+      }
+    }
+  ],
+  "layout": {
+    "title": "Basic test for streamtube",
+    "height":758,
+    "width":1310
+  }
+}
