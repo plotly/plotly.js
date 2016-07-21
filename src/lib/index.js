@@ -484,6 +484,35 @@ lib.setScale = function(element, x, y) {
     return transform;
 };
 
+lib.setPointGroupScale = function(selection, x, y) {
+    var t, scale, re;
+
+    x = x || 1;
+    y = y || 1;
+
+    if(x === 1 && y === 1) {
+        scale = '';
+    } else {
+        // The same scale transform for every point:
+        scale = ' scale(' + x + ',' + y + ')';
+    }
+
+    // A regex to strip any existing scale:
+    re = /\s*sc.*/;
+
+    selection.each(function() {
+        // Get the transform:
+        t = (this.getAttribute('transform') || '').replace(re, '');
+        t += scale;
+        t = t.trim();
+
+        // Append the scale transform
+        this.setAttribute('transform', t);
+    });
+
+    return scale;
+};
+
 lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
