@@ -47,22 +47,21 @@ exports.layoutAttributes = require('./layout_attributes');
 exports.supplyLayoutDefaults = require('./layout_defaults');
 
 exports.plot = function plotMapbox(gd) {
-
-    if(!gd._context.mapboxAccessToken) {
-        throw new Error(constants.noAccessTokenErrorMsg);
-    }
-    else {
-        mapboxgl.accessToken = gd._context.mapboxAccessToken;
-    }
-
     var fullLayout = gd._fullLayout,
         calcData = gd.calcdata,
         mapboxIds = Plots.getSubplotIds(fullLayout, 'mapbox');
 
+    var accessToken = findAccessToken(gd, mapboxIds);
+    mapboxgl.accessToken = accessToken;
+
     for(var i = 0; i < mapboxIds.length; i++) {
         var id = mapboxIds[i],
             subplotCalcData = getSubplotCalcData(calcData, id),
-            mapbox = fullLayout[id]._subplot;
+            opts = fullLayout[id],
+            mapbox = opts._subplot;
+
+        // copy access token to fullLayout (to handle the context case)
+        opts.accesstoken = accessToken;
 
         if(!mapbox) {
             mapbox = createMapbox({
@@ -130,4 +129,28 @@ function getSubplotCalcData(calcData, id) {
     }
 
     return subplotCalcData;
+}
+
+function findAccessToken(gd, mapboxIds) {
+    var fullLayout = gd._fullLayout,
+        context = gd._context;
+
+    // first look for access token in context
+    var accessToken = context.mapboxAccessToken;
+
+    // allow mapbox layout options to override it
+    for(var i = 0; i < mapboxIds.length; i++) {
+        var opts = fullLayout[mapboxIds[i]];
+
+        if(opts.accesstoken) {
+            accessToken = opts.accesstoken;
+            break;
+        }
+    }
+
+    if(!accessToken) {
+        throw new Error(constants.noAccessTokenErrorMsg);
+    }
+
+    return accessToken;
 }

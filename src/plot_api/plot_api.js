@@ -326,6 +326,10 @@ Plotly.plot = function(gd, data, layout, config) {
     // so that the caller doesn't care which route we took
     return Promise.all(gd._promises).then(function() {
         return gd;
+    }, function() {
+        // clear the promise queue if one of them got rejected
+        Lib.log('Clearing previous rejected promises from queue.');
+        gd._promises = [];
     });
 };
 

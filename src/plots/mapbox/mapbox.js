@@ -40,6 +40,7 @@ function Mapbox(opts) {
 
     // state variables used to infer how and what to update
     this.map = null;
+    this.accessToken = null;
     this.styleUrl = null;
     this.traceHash = {};
     this.layerList = [];
@@ -57,7 +58,16 @@ proto.plot = function(calcData, fullLayout, promises) {
     var self = this;
 
     // feed in new mapbox options
-    self.opts = fullLayout[this.id];
+    var opts = self.opts = fullLayout[this.id];
+
+    // remove map and create a new map if access token has change
+    if(self.map && (opts.accesstoken !== self.accessToken)) {
+        self.map.remove();
+        self.map = null;
+        self.styleUrl = null;
+        self.traceHash = [];
+        self.layerList = {};
+    }
 
     var promise;
 
@@ -82,6 +92,9 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
 
     // mapbox doesn't have a way to get the current style URL; do it ourselves
     var styleUrl = self.styleUrl = convertStyleUrl(opts.style);
+
+    // store access token associated with this map
+    self.accessToken = opts.accesstoken;
 
     var map = self.map = new mapboxgl.Map({
         container: self.div,
@@ -334,7 +347,7 @@ proto.updateLayers = function() {
 };
 
 proto.destroy = function() {
-    this.map.remove();
+    if(this.map) this.map.remove();
     this.container.removeChild(this.div);
 };
 

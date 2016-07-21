@@ -45,6 +45,17 @@ module.exports = {
         }
     },
 
+    accesstoken: {
+        valType: 'string',
+        noBlank: true,
+        strict: true,
+        role: 'info',
+        description: [
+            'Sets the mapbox access token to be used for this mapbox map.',
+            'Alternatively, the mapbox access token can be set in the',
+            'configuration options under `mapboxAccessToken`.'
+        ].join(' ')
+    },
     style: {
         valType: 'string',
         values: ['basic', 'streets', 'outdoors', 'light', 'dark', 'satellite', 'satellite-streets'],
@@ -55,6 +66,7 @@ module.exports = {
             'Either input the defaults Mapbox names or the URL to a custom style.'
         ].join(' ')
     },
+
     center: {
         lon: {
             valType: 'number',
