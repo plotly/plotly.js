@@ -494,9 +494,9 @@ lib.setPointScale = function(selection, x, y) {
     // A regex to strip any existing scale:
     var re = /sc.*/;
 
-    selection.each(function(p) {
+    selection.each(function() {
         // Get the transform:
-        var t = this.getAttribute('transform').replace(re,'');
+        var t = this.getAttribute('transform').replace(re, '');
 
         // Append the scale transform
         this.setAttribute('transform', t + scale);
