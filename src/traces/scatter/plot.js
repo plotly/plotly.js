@@ -161,7 +161,10 @@ module.exports = function plot(gd, plotinfo, cdscatter) {
                     revpath = thisrevpath + 'Z' + revpath;
                 }
                 if(subTypes.hasLines(trace) && pts.length > 1) {
-                    tr.append('path').classed('js-line', true).attr('d', thispath);
+                    tr.append('path')
+                        .classed('js-line', true)
+                        .style('vector-effect', 'non-scaling-stroke')
+                        .attr('d', thispath);
                 }
             }
             if(ownFillEl3) {
