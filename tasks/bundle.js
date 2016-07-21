@@ -54,15 +54,11 @@ _bundle(constants.pathToPlotlyIndex, constants.pathToPlotlyDistWithMeta, {
 });
 
 // Browserify the plotly.js partial bundles
-constants.partialBundleNames.forEach(function(name) {
-    var pathToIndex = path.join(constants.pathToLib, 'index-' + name + '.js'),
-        pathToBundle = path.join(constants.pathToDist, 'plotly-' + name + '.js'),
-        pathToMinBundle = path.join(constants.pathToDist, 'plotly-' + name + '.min.js');
-
-    _bundle(pathToIndex, pathToBundle, {
+constants.partialBundlePaths.forEach(function(pathObj) {
+    _bundle(pathObj.index, pathObj.dist, {
         standalone: 'Plotly',
         debug: DEV,
-        pathToMinBundle: pathToMinBundle
+        pathToMinBundle: pathObj.distMin
     });
 });
 
