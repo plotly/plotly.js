@@ -1,0 +1,175 @@
+{
+  "data": [
+    {
+      "x": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "y": [
+        null,
+        null,
+        null,
+        null,
+        7,
+        null,
+        6
+      ],
+      "name": "AA",
+      "type": "bar"
+    },
+    {
+      "x": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "y": [
+        8,
+        null,
+        null,
+        null,
+        null,
+        null
+      ],
+      "name": "BB",
+      "type": "bar"
+    },
+    {
+      "x": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "y": [
+        null,
+        null,
+        null,
+        1,
+        3,
+        null
+      ],
+      "name": "CC",
+      "type": "bar"
+    },
+    {
+      "x": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "y": [
+        null,
+        4,
+        4,
+        null,
+        null,
+        null
+      ],
+      "name": "DD",
+      "type": "bar"
+    },
+    {
+      "x": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "y": [
+        null,
+        null,
+        null,
+        8,
+        null,
+        null,
+        3
+      ],
+      "name": "EE",
+      "type": "bar"
+    },
+    {
+      "x": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "y": [
+        null,
+        null,
+        null,
+        2,
+        null,
+        null
+      ],
+      "name": "FF",
+      "type": "bar"
+    },
+    {
+      "x": [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G"
+      ],
+      "y": [
+        null,
+        null,
+        null,
+        null,
+        null,
+        1
+      ],
+      "name": "GG",
+      "type": "bar"
+    }
+  ],
+  "layout": {
+    "xaxis": {
+      "type": "category",
+      "range": [
+        -0.5,
+        6.5
+      ],
+      "autorange": true
+    },
+    "barmode": "stack",
+    "yaxis": {
+      "type": "linear",
+      "range": [
+        0,
+        11.578947368421053
+      ],
+      "autorange": true
+    },
+    "height": 450,
+    "width": 1100,
+    "autosize": true
+  }
+}

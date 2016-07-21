@@ -507,41 +507,131 @@ describe('Test gl plot interactions', function() {
         });
     });
 
-    describe('Plots.cleanPlot', function() {
+    describe('Removal of gl contexts', function() {
 
-        it('should remove gl context from the graph div of a gl3d plot', function(done) {
-            gd = createGraphDiv();
+        var mockData2d = [{
+            type: 'scattergl',
+            x: [1, 2, 3],
+            y: [2, 1, 3]
+        }];
 
-            var mockData = [{
-                type: 'scatter3d'
-            }];
 
-            Plotly.plot(gd, mockData).then(function() {
-                expect(gd._fullLayout.scene._scene.glplot).toBeDefined();
+        var mockData3d = [{
+            type: 'scatter3d',
+            x: [1, 2, 3],
+            y: [2, 1, 3],
+            z: [3, 2, 1]
+        }];
 
-                Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
-                expect(gd._fullLayout.scene._scene.glplot).toBe(null);
+        describe('Plots.cleanPlot', function() {
 
-                done();
+            it('should remove gl context from the graph div of a gl3d plot', function(done) {
+                gd = createGraphDiv();
+
+                Plotly.plot(gd, mockData3d).then(function() {
+                    expect(gd._fullLayout.scene._scene.glplot).toBeDefined();
+
+                    Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
+                    expect(gd._fullLayout.scene._scene.glplot).toBe(null);
+
+                    done();
+                });
+            });
+
+            it('should remove gl context from the graph div of a gl2d plot', function(done) {
+                gd = createGraphDiv();
+
+                Plotly.plot(gd, mockData2d).then(function() {
+                    expect(gd._fullLayout._plots.xy._scene2d.glplot).toBeDefined();
+
+                    Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
+                    expect(gd._fullLayout._plots).toEqual({});
+
+                    done();
+                });
             });
         });
+        describe('Plotly.newPlot', function() {
 
-        it('should remove gl context from the graph div of a gl2d plot', function(done) {
-            gd = createGraphDiv();
-
-            var mockData = [{
+            var mockData2dNew = [{
                 type: 'scattergl',
-                x: [1, 2, 3],
-                y: [1, 2, 3]
+                x: [1, 3, 2],
+                y: [2, 3, 1]
             }];
 
-            Plotly.plot(gd, mockData).then(function() {
-                expect(gd._fullLayout._plots.xy._scene2d.glplot).toBeDefined();
 
-                Plots.cleanPlot([], {}, gd._fullData, gd._fullLayout);
-                expect(gd._fullLayout._plots).toEqual({});
+            var mockData3dNew = [{
+                type: 'scatter3d',
+                x: [2, 1, 3],
+                y: [1, 2, 3],
+                z: [2, 1, 3]
+            }];
 
-                done();
+
+            it('should remove gl context from the graph div of a gl3d plot', function(done) {
+                gd = createGraphDiv();
+
+                Plotly.plot(gd, mockData3d).then(function() {
+
+                    var firstGlplotObject = gd._fullLayout.scene._scene.glplot;
+                    var firstGlContext = firstGlplotObject.gl;
+                    var firstCanvas = firstGlContext.canvas;
+
+                    expect(firstGlplotObject).toBeDefined();
+
+                    Plotly.newPlot(gd, mockData3dNew, {}).then(function() {
+
+                        var secondGlplotObject = gd._fullLayout.scene._scene.glplot;
+                        var secondGlContext = secondGlplotObject.gl;
+                        var secondCanvas = secondGlContext.canvas;
+
+                        expect(secondGlplotObject).not.toBe(firstGlplotObject);
+                        expect(firstGlplotObject.gl === null);
+                        expect(secondGlContext instanceof WebGLRenderingContext);
+                        expect(secondGlContext).not.toBe(firstGlContext);
+
+                        // The same canvas can't possibly be reassinged a new WebGL context, but let's leave room
+                        // for the implementation to make the context get lost and have the old canvas stick around
+                        // in a disused state.
+                        expect(firstCanvas.parentNode === null ||
+                            firstCanvas !== secondCanvas && firstGlContext.isContextLost());
+
+                        done();
+
+                    });
+                });
+            });
+
+            it('should remove gl context from the graph div of a gl2d plot', function(done) {
+                gd = createGraphDiv();
+
+                Plotly.plot(gd, mockData2d).then(function() {
+
+                    var firstGlplotObject = gd._fullLayout._plots.xy._scene2d.glplot;
+                    var firstGlContext = firstGlplotObject.gl;
+                    var firstCanvas = firstGlContext.canvas;
+
+                    expect(firstGlplotObject).toBeDefined();
+                    expect(firstGlContext).toBeDefined();
+                    expect(firstGlContext instanceof WebGLRenderingContext);
+
+                    Plotly.newPlot(gd, mockData2dNew, {}).then(function() {
+
+                        var secondGlplotObject = gd._fullLayout._plots.xy._scene2d.glplot;
+                        var secondGlContext = secondGlplotObject.gl;
+                        var secondCanvas = secondGlContext.canvas;
+
+                        expect(Object.keys(gd._fullLayout._plots).length === 1);
+                        expect(secondGlplotObject).not.toBe(firstGlplotObject);
+                        expect(firstGlplotObject.gl === null);
+                        expect(secondGlContext instanceof WebGLRenderingContext);
+                        expect(secondGlContext).not.toBe(firstGlContext);
+                        expect(firstCanvas.parentNode === null ||
+                            firstCanvas !== secondCanvas && firstGlContext.isContextLost());
+
+                        done();
+                    });
+                });
             });
         });
     });

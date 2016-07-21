@@ -12,7 +12,6 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Lib = require('../../lib');
 var subTypes = require('../../traces/scatter/subtypes');
 var styleError = require('./style');
 
@@ -57,7 +56,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
         var enter = errorbars.enter().append('g')
             .classed('errorbar', true);
 
-        if (hasAnimation) {
+        if(hasAnimation) {
             enter.style('opacity', 0).transition()
                 .duration(transitionConfig.duration)
                 .style('opacity', 1);
