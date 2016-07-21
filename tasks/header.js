@@ -7,27 +7,38 @@ var glob = require('glob');
 
 var constants = require('./util/constants');
 
+// main
+addHeadersInDistFiles();
 updateHeadersInSrcFiles();
 
 // add headers to dist files
+function addHeadersInDistFiles() {
+    function _prepend(path, header) {
+        prependFile(path, header + '\n', function(err) {
+            if(err) throw err;
+        });
+    }
 
-var pathsDist = [
-    constants.pathToPlotlyDistMin,
-    constants.pathToPlotlyDist,
-    constants.pathToPlotlyDistWithMeta,
-    constants.pathToPlotlyGeoAssetsDist
-];
+    // add header to main dist bundles
+    var pathsDist = [
+        constants.pathToPlotlyDistMin,
+        constants.pathToPlotlyDist,
+        constants.pathToPlotlyDistWithMeta,
+        constants.pathToPlotlyGeoAssetsDist
+    ];
+    pathsDist.forEach(function(path) {
+        _prepend(path, constants.licenseDist);
+    });
 
-constants.partialBundleNames.forEach(function(name) {
-    var pathToBundle = path.join(constants.pathToDist, 'plotly-' + name + '.js'),
-        pathToMinBundle = path.join(constants.pathToDist, 'plotly-' + name + '.min.js');
+    // add header and bundle name to partial bundle
+    constants.partialBundlePaths.forEach(function(pathObj) {
+        var headerDist = constants.licenseDist
+            .replace('plotly.js', 'plotly.js (' + pathObj.name + ')');
+        _prepend(pathObj.dist, headerDist);
 
-    pathsDist.push(pathToBundle, pathToMinBundle);
-});
-
-function headerLicense(path) {
-    prependFile(path, constants.licenseDist + '\n', function(err) {
-        if(err) throw err;
+        var headerDistMin = constants.licenseDist
+            .replace('plotly.js', 'plotly.js (' + pathObj.name + ' - minified)');
+        _prepend(pathObj.distMin, headerDistMin);
     });
 }
 
@@ -35,7 +46,6 @@ function headerLicense(path) {
 function updateHeadersInSrcFiles() {
     var srcGlob = path.join(constants.pathToSrc, '**/*.js');
     var libGlob = path.join(constants.pathToLib, '**/*.js');
-pathsDist.forEach(headerLicense);
 
     // remove leading '/*' and trailing '*/' for comparison with falafel output
     var licenseSrc = constants.licenseSrc;
