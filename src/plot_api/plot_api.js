@@ -328,6 +328,7 @@ Plotly.plot = function(gd, data, layout, config) {
         return gd;
     }, function() {
         // clear the promise queue if one of them got rejected
+        Lib.log('Clearing previous rejected promises from queue.');
         gd._promises = [];
     });
 };
