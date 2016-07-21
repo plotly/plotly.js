@@ -64,6 +64,9 @@ lib.log = loggersModule.log;
 lib.warn = loggersModule.warn;
 lib.error = loggersModule.error;
 
+var cssModule = require('./plotcss_utils');
+lib.injectStyles = cssModule.injectStyles;
+
 lib.notifier = require('./notifier');
 
 /**

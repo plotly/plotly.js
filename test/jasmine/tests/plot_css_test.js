@@ -4,7 +4,7 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
 describe('css injection', function() {
-    var helpers = require('@src/css/helpers');
+    var plotcss_utils = require('@src/lib/plotcss_utils');
     var plotcss = require('@build/plotcss');
 
     // create a graph div in a child window
@@ -38,7 +38,7 @@ describe('css injection', function() {
     // deletes all rules defined in plotcss
     function deletePlotCSSRules(sourceDocument) {
         for(var selector in plotcss) {
-            var fullSelector = helpers.buildFullSelector(selector);
+            var fullSelector = plotcss_utils.buildFullSelector(selector);
 
             for(var i = 0; i < sourceDocument.styleSheets.length; i++) {
                 var styleSheet = sourceDocument.styleSheets[i];
@@ -68,10 +68,10 @@ describe('css injection', function() {
         var fullSelector = null;
 
         // make sure the rules are cleared
-        var allSelectors = helpers.getAllRuleSelectors(document);
+        var allSelectors = plotcss_utils.getAllRuleSelectors(document);
 
         for(selector in plotcss) {
-            fullSelector = helpers.buildFullSelector(selector);
+            fullSelector = plotcss_utils.buildFullSelector(selector);
 
             expect(allSelectors.indexOf(fullSelector)).toEqual(-1);
         }
@@ -81,10 +81,10 @@ describe('css injection', function() {
         plot(gd);
 
         // check for styles
-        allSelectors = helpers.getAllRuleSelectors(document);
+        allSelectors = plotcss_utils.getAllRuleSelectors(document);
 
         for(selector in plotcss) {
-            fullSelector = helpers.buildFullSelector(selector);
+            fullSelector = plotcss_utils.buildFullSelector(selector);
 
             expect(allSelectors.indexOf(fullSelector)).not.toEqual(-1);
         }
@@ -101,10 +101,10 @@ describe('css injection', function() {
         plot(gd);
 
         // check for styles
-        var allSelectors = helpers.getAllRuleSelectors(gd.ownerDocument);
+        var allSelectors = plotcss_utils.getAllRuleSelectors(gd.ownerDocument);
 
         for(var selector in plotcss) {
-            var fullSelector = helpers.buildFullSelector(selector);
+            var fullSelector = plotcss_utils.buildFullSelector(selector);
 
             expect(allSelectors.indexOf(fullSelector)).not.toEqual(-1);
         }
@@ -121,10 +121,10 @@ describe('css injection', function() {
         var fullSelector = null;
 
         // make sure the rules are cleared
-        var allSelectors = helpers.getAllRuleSelectors(document);
+        var allSelectors = plotcss_utils.getAllRuleSelectors(document);
 
         for(selector in plotcss) {
-            fullSelector = helpers.buildFullSelector(selector);
+            fullSelector = plotcss_utils.buildFullSelector(selector);
 
             expect(allSelectors.indexOf(fullSelector)).toEqual(-1);
         }
@@ -135,10 +135,10 @@ describe('css injection', function() {
         plot(gd); // plot again so injectStyles gets called again
 
         // check for styles
-        allSelectors = helpers.getAllRuleSelectors(document);
+        allSelectors = plotcss_utils.getAllRuleSelectors(document);
 
         for(selector in plotcss) {
-            fullSelector = helpers.buildFullSelector(selector);
+            fullSelector = plotcss_utils.buildFullSelector(selector);
 
             var firstIndex = allSelectors.indexOf(fullSelector);
 
