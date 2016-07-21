@@ -484,22 +484,30 @@ lib.setScale = function(element, x, y) {
     return transform;
 };
 
-lib.setPointScale = function(selection, x, y) {
+lib.setPointGroupScale = function(selection, x, y) {
+    var t, scale, re;
+
     x = x || 1;
     y = y || 1;
 
-    // The same scale transform for every point:
-    var scale = ' scale(' + x + ',' + y + ')';
+    if(x === 1 && y === 1) {
+        scale = '';
+    } else {
+        // The same scale transform for every point:
+        scale = ' scale(' + x + ',' + y + ')';
+    }
 
     // A regex to strip any existing scale:
-    var re = /sc.*/;
+    re = /\s*sc.*/;
 
     selection.each(function() {
         // Get the transform:
-        var t = this.getAttribute('transform').replace(re, '');
+        t = (this.getAttribute('transform') || '').replace(re, '');
+        t += scale;
+        t = t.trim();
 
         // Append the scale transform
-        this.setAttribute('transform', t + scale);
+        this.setAttribute('transform', t);
     });
 
     return scale;

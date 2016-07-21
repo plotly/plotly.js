@@ -634,9 +634,12 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             subplot.plot
                 .call(Lib.setTranslate, plotDx, plotDy)
                 .call(Lib.setScale, xScaleFactor, yScaleFactor)
-                .selectAll('.points').selectAll('.point')
-                    .call(Lib.setPointScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
+                // This is specifically directed at scatter traces, applying an inverse
+                // scale to individual points to counteract the scale of the trace
+                // as a whole:
+                .selectAll('.points').selectAll('.point')
+                    .call(Lib.setPointGroupScale, 1 / xScaleFactor, 1 / yScaleFactor);
         }
     }
 
