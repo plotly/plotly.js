@@ -51,8 +51,9 @@ module.exports = {
         strict: true,
         role: 'info',
         description: [
-            'Sets the mapbox access token to be set or as a configuration option',
-            'under `mapboxAccessToken`.'
+            'Sets the mapbox access token to be used for this mapbox map.',
+            'Alternatively, the mapbox access token can be set in the',
+            'configuration options under `mapboxAccessToken`.'
         ].join(' ')
     },
     style: {
