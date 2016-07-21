@@ -484,6 +484,27 @@ lib.setScale = function(element, x, y) {
     return transform;
 };
 
+lib.setPointScale = function(selection, x, y) {
+    x = x || 1;
+    y = y || 1;
+
+    // The same scale transform for every point:
+    var scale = ' scale(' + x + ',' + y + ')';
+
+    // A regex to strip any existing scale:
+    var re = /sc.*/;
+
+    selection.each(function(p) {
+        // Get the transform:
+        var t = this.getAttribute('transform').replace(re,'');
+
+        // Append the scale transform
+        this.setAttribute('transform', t + scale);
+    });
+
+    return scale;
+};
+
 lib.isIE = function() {
     return typeof window.navigator.msSaveBlob !== 'undefined';
 };
