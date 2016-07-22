@@ -2173,7 +2173,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // trunk nodes (everything except the leaf)
             ptrunk = p.parts.slice(0, pend).join('.'),
             parentIn = Lib.nestedProperty(gd.layout, ptrunk).get(),
-            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get();
+            parentFull = Lib.nestedProperty(fullLayout, ptrunk).get(),
+            diff;
 
         redoit[ai] = vi;
 
@@ -2314,10 +2315,19 @@ Plotly.relayout = function relayout(gd, astr, val) {
             // so that relinkPrivateKeys does not complain
 
             var fullLayers = (gd._fullLayout.mapbox || {}).layers || [];
-            var diff = (p.parts[2] + 1) - fullLayers.length;
+            diff = (p.parts[2] + 1) - fullLayers.length;
 
             for(i = 0; i < diff; i++) fullLayers.push({});
 
+            doplot = true;
+        }
+        else if(p.parts[0] === 'updatemenus') {
+            Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
+
+            var menus = gd._fullLayout.updatemenus || [];
+            diff = (p.parts[2] + 1) - menus.length;
+
+            for(i = 0; i < diff; i++) menus.push({});
             doplot = true;
         }
         // alter gd.layout
