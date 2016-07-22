@@ -183,6 +183,7 @@ module.exports = {
         'annotations': 'Annotations',
         'shapes': 'Shapes',
         'images': 'Images',
+        'updatemenus': 'UpdateMenus',
         'ternary': 'ternary',
         'mapbox': 'mapbox'
     }
