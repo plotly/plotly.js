@@ -568,18 +568,33 @@ function computeLegendDimensions(gd, groups, traces) {
     else {
         opts.width = 0;
         opts.height = 0;
+        var rowHeight = 0;
+        var maxTraceHeight = 0;
+        var startX = 0;
 
         traces.each(function(d) {
+
             var legendItem = d[0],
                 traceWidth = 40 + legendItem.width,
                 traceGap = opts.tracegroupgap || 5;
 
-            Lib.setTranslate(this,
-                (borderwidth + opts.width),
-                (5 + borderwidth + legendItem.height / 2));
+            if((borderwidth + startX + traceGap + traceWidth) > fullLayout.width - fullLayout.margin.r) {
+              startX = 0;
+              rowHeight = rowHeight + maxTraceHeight;
+              opts.height = opts.height + maxTraceHeight;
+            }
 
             opts.width += traceGap + traceWidth;
             opts.height = Math.max(opts.height, legendItem.height);
+
+            Lib.setTranslate(this,
+                (borderwidth + startX),
+                (5 + borderwidth + legendItem.height / 2) + rowHeight);
+
+
+            //keep track of tallest trace in group
+            startX += traceGap + traceWidth;
+            maxTraceHeight = (legendItem.height > maxTraceHeight) ? legendItem.height : maxTraceHeight;
         });
 
         opts.width += borderwidth * 2;
