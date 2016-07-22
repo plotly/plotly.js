@@ -7,6 +7,63 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 describe('Test Plots', function() {
     'use strict';
 
+    describe('Plots.supplyDefaults', function() {
+
+        var gd;
+
+        it('should relink private keys', function() {
+            var oldFullData = [{
+                type: 'scatter3d',
+                z: [1, 2, 3]
+            }, {
+                type: 'contour',
+                _empties: [1, 2, 3]
+            }];
+
+            var oldFullLayout = {
+                _plots: { xy: {} },
+                xaxis: { c2p: function() {} },
+                yaxis: { _m: 20 },
+                scene: { _scene: {} },
+                annotations: [{ _min: 10, }, { _max: 20 }],
+                someFunc: function() {}
+            };
+
+            var newData = [{
+                type: 'scatter3d',
+                z: [1, 2, 3, 4]
+            }, {
+                type: 'contour',
+                z: [[1, 2, 3], [2, 3, 4]]
+            }];
+
+            var newLayout = {
+                annotations: [{}, {}, {}]
+            };
+
+            gd = {
+                _fullData: oldFullData,
+                _fullLayout: oldFullLayout,
+                data: newData,
+                layout: newLayout
+            };
+
+            Plots.supplyDefaults(gd);
+
+            expect(gd._fullData[1]._empties).toBe(oldFullData[1]._empties);
+            expect(gd._fullLayout.scene._scene).toBe(oldFullLayout.scene._scene);
+            expect(gd._fullLayout._plots).toBe(oldFullLayout._plots);
+            expect(gd._fullLayout.annotations[0]._min).toBe(oldFullLayout.annotations[0]._min);
+            expect(gd._fullLayout.annotations[1]._max).toBe(oldFullLayout.annotations[1]._max);
+            expect(gd._fullLayout.someFunc).toBe(oldFullLayout.someFunc);
+
+            expect(gd._fullLayout.xaxis.c2p)
+                .not.toBe(oldFullLayout.xaxis.c2p, '(set during ax.setScale');
+            expect(gd._fullLayout.yaxis._m)
+                .not.toBe(oldFullLayout.yaxis._m, '(set during ax.setScale');
+        });
+    });
+
     describe('Plots.supplyLayoutGlobalDefaults should', function() {
         var layoutIn,
             layoutOut,
@@ -66,8 +123,8 @@ describe('Test Plots', function() {
 
     });
 
-    describe('Plots.supplyDataDefaults', function() {
-        var supplyDataDefaults = Plots.supplyDataDefaults,
+    describe('Plots.supplyTraceDefaults', function() {
+        var supplyTraceDefaults = Plots.supplyTraceDefaults,
             layout = {};
 
         var traceIn, traceOut;
@@ -77,11 +134,11 @@ describe('Test Plots', function() {
                 layout._dataLength = 1;
 
                 traceIn = {};
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('x+y+z+text');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
 
@@ -89,11 +146,11 @@ describe('Test Plots', function() {
                 layout._dataLength = 2;
 
                 traceIn = {};
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('all');
 
                 traceIn = { hoverinfo: 'name' };
-                traceOut = supplyDataDefaults(traceIn, 0, layout);
+                traceOut = supplyTraceDefaults(traceIn, 0, layout);
                 expect(traceOut.hoverinfo).toEqual('name');
             });
         });

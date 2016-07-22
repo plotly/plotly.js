@@ -1,10 +1,13 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-// until it is part of the main plotly.js bundle
-Plotly.register(
-    require('@lib/scattermapbox')
-);
+Plotly.register([
+    // until it is part of the main plotly.js bundle
+    require('@lib/scattermapbox'),
+
+    // until they become official
+    require('../assets/transforms/filter')
+]);
 
 describe('plot schema', function() {
     'use strict';
@@ -180,4 +183,10 @@ describe('plot schema', function() {
         );
     });
 
+    it('should work with registered transforms', function() {
+        var valObjects = plotSchema.transforms.filter.attributes,
+            attrNames = Object.keys(valObjects);
+
+        expect(attrNames).toEqual(['operation', 'value', 'filtersrc']);
+    });
 });
