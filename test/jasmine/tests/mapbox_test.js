@@ -13,6 +13,7 @@ var customMatchers = require('../assets/custom_matchers');
 
 var MAPBOX_ACCESS_TOKEN = require('@build/credentials.json').MAPBOX_ACCESS_TOKEN;
 var TRANSITION_DELAY = 500;
+var MOUSE_DELAY = 100;
 
 var noop = function() {};
 
@@ -187,6 +188,22 @@ describe('mapbox credentials', function() {
             mapboxAccessToken: dummyToken
         }).catch(function(err) {
             expect(err).toEqual(new Error(constants.mapOnErrorMsg));
+        }).then(done);
+    });
+
+    it('should use access token in mapbox layout options if present', function(done) {
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30]
+        }], {
+            mapbox: {
+                accesstoken: MAPBOX_ACCESS_TOKEN
+            }
+        }, {
+            mapboxAccessToken: dummyToken
+        }).then(function() {
+            expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
             done();
         });
     });
@@ -474,6 +491,22 @@ describe('mapbox plots', function() {
             done();
         });
     });
+
+    it('should be able to update the access token', function(done) {
+        var promise = Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work');
+
+        promise.catch(function(err) {
+            expect(gd._fullLayout.mapbox.accesstoken).toEqual('wont-work');
+            expect(err).toEqual(new Error(constants.mapOnErrorMsg));
+        });
+
+        promise.then(function() {
+            return Plotly.relayout(gd, 'mapbox.accesstoken', MAPBOX_ACCESS_TOKEN);
+        }).then(function() {
+            expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
+        }).then(done);
+    });
+
 
     it('should be able to update traces', function(done) {
         function assertDataPts(lengths) {
@@ -763,15 +796,13 @@ describe('mapbox plots', function() {
     }
 
     function _mouseEvent(type, pos, cb) {
-        var DELAY = 100;
-
         return new Promise(function(resolve) {
             mouseEvent(type, pos[0], pos[1]);
 
             setTimeout(function() {
                 cb();
                 resolve();
-            }, DELAY);
+            }, MOUSE_DELAY);
         });
     }
 

@@ -1265,6 +1265,44 @@ describe('Test lib.js:', function() {
         });
     });
 
+    describe('setPointGroupScale', function() {
+        var el, sel;
+
+        beforeEach(function() {
+            el = document.createElement('div');
+            sel = d3.select(el);
+        });
+
+        it('sets the scale of a point', function() {
+            Lib.setPointGroupScale(sel, 2, 2);
+            expect(el.getAttribute('transform')).toBe('scale(2,2)');
+        });
+
+        it('appends the scale of a point', function() {
+            el.setAttribute('transform', 'translate(1,2)');
+            Lib.setPointGroupScale(sel, 2, 2);
+            expect(el.getAttribute('transform')).toBe('translate(1,2) scale(2,2)');
+        });
+
+        it('modifies the scale of a point', function() {
+            el.setAttribute('transform', 'translate(1,2) scale(3,4)');
+            Lib.setPointGroupScale(sel, 2, 2);
+            expect(el.getAttribute('transform')).toBe('translate(1,2) scale(2,2)');
+        });
+
+        it('does not apply the scale of a point if scale (1, 1)', function() {
+            el.setAttribute('transform', 'translate(1,2)');
+            Lib.setPointGroupScale(sel, 1, 1);
+            expect(el.getAttribute('transform')).toBe('translate(1,2)');
+        });
+
+        it('removes the scale of a point if scale (1, 1)', function() {
+            el.setAttribute('transform', 'translate(1,2) scale(3,4)');
+            Lib.setPointGroupScale(sel, 1, 1);
+            expect(el.getAttribute('transform')).toBe('translate(1,2)');
+        });
+    });
+
     describe('pushUnique', function() {
 
         beforeEach(function() {

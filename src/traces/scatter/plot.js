@@ -267,7 +267,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 var lineJoin = tr.selectAll('.js-line').data([cdscatter]);
 
                 lineJoin.enter()
-                    .append('path').classed('js-line', true).attr('d', fullpath);
+                    .append('path').classed('js-line', true).style('vector-effect', 'non-scaling-stroke').attr('d', fullpath);
 
                 transition(lineJoin).attr('d', fullpath);
             }
