@@ -579,9 +579,9 @@ function computeLegendDimensions(gd, groups, traces) {
                 traceGap = opts.tracegroupgap || 5;
 
             if((borderwidth + startX + traceGap + traceWidth) > fullLayout.width - fullLayout.margin.r) {
-              startX = 0;
-              rowHeight = rowHeight + maxTraceHeight;
-              opts.height = opts.height + maxTraceHeight;
+                startX = 0;
+                rowHeight = rowHeight + maxTraceHeight;
+                opts.height = opts.height + maxTraceHeight;
             }
 
             opts.width += traceGap + traceWidth;
