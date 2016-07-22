@@ -1,12 +1,11 @@
 build/*
-
 !build/plotcss.js
 !build/ploticon.js
 !build/README.md
 
 devtools
 test
-dist/extras/mathjax
+dist/extras
 
 circle.yml
 docker-compose.yml
