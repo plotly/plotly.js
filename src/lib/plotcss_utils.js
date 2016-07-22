@@ -17,7 +17,7 @@ exports.injectStyles = function injectStyles(gd) {
     // If the graph div has already been styled, bail
     if(gd._plotCSSLoaded) return;
 
-    var targetSelectors = module.exports.getAllRuleSelectors(gd._document);
+    var targetSelectors = exports.getAllRuleSelectors(gd._document);
     var targetStyleSheet = null;
 
     if(gd._document.getElementsByTagName('style').length === 0) {
@@ -33,7 +33,7 @@ exports.injectStyles = function injectStyles(gd) {
     }
 
     for(var selector in plotcss) {
-        var fullSelector = module.exports.buildFullSelector(selector);
+        var fullSelector = exports.buildFullSelector(selector);
 
         // Don't duplicate selectors
         if(targetSelectors.indexOf(fullSelector) === -1) {
@@ -67,6 +67,8 @@ exports.getAllRuleSelectors = function getAllRuleSelectors(sourceDocument) {
 
     for(var i = 0; i < sourceDocument.styleSheets.length; i++) {
         var styleSheet = sourceDocument.styleSheets[i];
+
+        if(!styleSheet.cssRules) continue; // It's possible for rules to be undefined
 
         for(var j = 0; j < styleSheet.cssRules.length; j++) {
             var cssRule = styleSheet.cssRules[j];
