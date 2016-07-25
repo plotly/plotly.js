@@ -578,7 +578,7 @@ function computeLegendDimensions(gd, groups, traces) {
                 traceWidth = 40 + legendItem.width,
                 traceGap = opts.tracegroupgap || 5;
 
-            if((borderwidth + offsetX + traceGap + traceWidth) > fullLayout.width - fullLayout.margin.r) {
+            if((borderwidth + offsetX + traceGap + traceWidth) > (fullLayout.width - (fullLayout.margin.r + fullLayout.margin.l))) {
                 offsetX = 0;
                 rowHeight = rowHeight + maxTraceHeight;
                 opts.height = opts.height + maxTraceHeight;
