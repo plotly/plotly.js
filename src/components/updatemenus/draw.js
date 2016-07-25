@@ -139,7 +139,7 @@ function keyFunction(opts, i) {
 }
 
 function areMenuButtonsDropped(gButton, menuOpts) {
-    var droppedIndex = gButton.attr(constants.menuIndexAttrName);
+    var droppedIndex = +gButton.attr(constants.menuIndexAttrName);
 
     return droppedIndex === menuOpts._index;
 }
