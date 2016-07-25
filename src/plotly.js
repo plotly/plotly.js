@@ -22,7 +22,7 @@
 require('es6-promise').polyfill();
 
 // lib functions
-exports.Lib = require('./lib');
+var Lib = exports.Lib = require('./lib');
 exports.util = require('./lib/svg_text_utils');
 exports.Queue = require('./lib/queue');
 
@@ -55,21 +55,51 @@ exports.ModeBar = require('./components/modebar');
 exports.register = function register(_modules) {
     if(!_modules) {
         throw new Error('No argument passed to Plotly.register.');
-    } else if(_modules && !Array.isArray(_modules)) {
+    }
+    else if(_modules && !Array.isArray(_modules)) {
         _modules = [_modules];
     }
 
     for(var i = 0; i < _modules.length; i++) {
         var newModule = _modules[i];
 
-        if(newModule && newModule.moduleType !== 'trace') {
+        if(!newModule) {
             throw new Error('Invalid module was attempted to be registered!');
-        } else {
-            Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
+        }
 
-            if(!Plots.subplotsRegistry[newModule.basePlotModule.name]) {
-                Plots.registerSubplot(newModule.basePlotModule);
-            }
+        switch(newModule.moduleType) {
+            case 'trace':
+                Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
+
+                if(!Plots.subplotsRegistry[newModule.basePlotModule.name]) {
+                    Plots.registerSubplot(newModule.basePlotModule);
+                }
+
+                break;
+
+            case 'transform':
+                if(typeof newModule.name !== 'string') {
+                    throw new Error('Transform module *name* must be a string.');
+                }
+
+                var prefix = 'Transform module ' + newModule.name;
+
+                if(typeof newModule.transform !== 'function') {
+                    throw new Error(prefix + ' is missing a *transform* function.');
+                }
+                if(!Lib.isPlainObject(newModule.attributes)) {
+                    Lib.log(prefix + ' registered without an *attributes* object.');
+                }
+                if(typeof newModule.supplyDefaults !== 'function') {
+                    Lib.log(prefix + ' registered without a *supplyDefaults* function.');
+                }
+
+                Plots.transformsRegistry[newModule.name] = newModule;
+
+                break;
+
+            default:
+                throw new Error('Invalid module was attempted to be registered!');
         }
     }
 };

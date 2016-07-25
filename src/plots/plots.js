@@ -21,7 +21,8 @@ var plots = module.exports = {};
 var modules = plots.modules = {},
     allTypes = plots.allTypes = [],
     allCategories = plots.allCategories = {},
-    subplotsRegistry = plots.subplotsRegistry = {};
+    subplotsRegistry = plots.subplotsRegistry = {},
+    transformsRegistry = plots.transformsRegistry = {};
 
 plots.attributes = require('./attributes');
 plots.attributes.type.values = allTypes;
@@ -465,10 +466,7 @@ plots.supplyDefaults = function(gd) {
         newFullData = gd._fullData = [],
         newData = gd.data || [];
 
-    var modules = newFullLayout._modules = [],
-        basePlotModules = newFullLayout._basePlotModules = [];
-
-    var i, _module;
+    var i;
 
     // first fill in what we can of layout without looking at data
     // because fullData needs a few things from layout
@@ -478,27 +476,15 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._dataLength = newData.length;
 
     // then do the data
-    for(i = 0; i < newData.length; i++) {
-        var fullTrace = plots.supplyDataDefaults(newData[i], i, newFullLayout);
-        newFullData.push(fullTrace);
-
-        // detect polar
-        if('r' in newData[i]) continue;
-
-        _module = fullTrace._module;
-        if(!_module) continue;
-
-        // fill in module lists
-        Lib.pushUnique(modules, _module);
-        Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
-    }
+    plots.supplyDataDefaults(newData, newFullData, newFullLayout);
 
     // attach helper method to check whether a plot type is present on graph
     newFullLayout._has = plots._hasPlotType.bind(newFullLayout);
 
     // special cases that introduce interactions between traces
-    for(i = 0; i < modules.length; i++) {
-        _module = modules[i];
+    var _modules = newFullLayout._modules;
+    for(i = 0; i < _modules.length; i++) {
+        var _module = _modules[i];
         if(_module.cleanData) _module.cleanData(newFullData);
     }
 
@@ -642,50 +628,105 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
 };
 
 /**
- * Relink private _keys and keys with a function value from one layout
- * (usually cached) to the new fullLayout.
- * relink means copying if object is pass-by-value and adding a reference
- * if object is pass-by-ref. This prevents deepCopying massive structures like
- * a webgl context.
+ * Relink private _keys and keys with a function value from one container
+ * to the new container.
+ * Relink means copying if object is pass-by-value and adding a reference
+ * if object is pass-by-ref.
+ * This prevents deepCopying massive structures like a webgl context.
  */
-function relinkPrivateKeys(toLayout, fromLayout) {
-    var keys = Object.keys(fromLayout);
-    var j;
+function relinkPrivateKeys(toContainer, fromContainer) {
+    var isPlainObject = Lib.isPlainObject,
+        isArray = Array.isArray;
 
-    for(var i = 0; i < keys.length; ++i) {
-        var k = keys[i];
-        if(k.charAt(0) === '_' || typeof fromLayout[k] === 'function') {
+    var keys = Object.keys(fromContainer);
+
+    for(var i = 0; i < keys.length; i++) {
+        var k = keys[i],
+            fromVal = fromContainer[k],
+            toVal = toContainer[k];
+
+        if(k.charAt(0) === '_' || typeof fromVal === 'function') {
+
             // if it already exists at this point, it's something
             // that we recreate each time around, so ignore it
-            if(k in toLayout) continue;
+            if(k in toContainer) continue;
 
-            toLayout[k] = fromLayout[k];
+            toContainer[k] = fromVal;
         }
-        else if(Array.isArray(fromLayout[k]) &&
-                 Array.isArray(toLayout[k]) &&
-                 fromLayout[k].length &&
-                 Lib.isPlainObject(fromLayout[k][0])) {
-            if(fromLayout[k].length !== toLayout[k].length) {
-                // this should be handled elsewhere, it causes
-                // ambiguity if we try to deal with it here.
-                throw new Error('relinkPrivateKeys needs equal ' +
-                                'length arrays');
-            }
+        else if(isArray(fromVal) && isArray(toVal)) {
 
-            for(j = 0; j < fromLayout[k].length; j++) {
-                relinkPrivateKeys(toLayout[k][j], fromLayout[k][j]);
+            // recurse into arrays
+            for(var j = 0; j < fromVal.length; j++) {
+                if(isPlainObject(fromVal[j]) && isPlainObject(toVal[j])) {
+                    relinkPrivateKeys(toVal[j], fromVal[j]);
+                }
             }
         }
-        else if(Lib.isPlainObject(fromLayout[k]) &&
-                 Lib.isPlainObject(toLayout[k])) {
+        else if(isPlainObject(fromVal) && isPlainObject(toVal)) {
+
             // recurse into objects, but only if they still exist
-            relinkPrivateKeys(toLayout[k], fromLayout[k]);
-            if(!Object.keys(toLayout[k]).length) delete toLayout[k];
+            relinkPrivateKeys(toVal, fromVal);
+
+            if(!Object.keys(toVal).length) delete toContainer[k];
         }
     }
 }
 
-plots.supplyDataDefaults = function(traceIn, traceIndex, layout) {
+plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
+    var modules = layout._modules = [],
+        basePlotModules = layout._basePlotModules = [],
+        cnt = 0;
+
+    function pushModule(fullTrace) {
+        dataOut.push(fullTrace);
+
+        var _module = fullTrace._module;
+        if(!_module) return;
+
+        Lib.pushUnique(modules, _module);
+        Lib.pushUnique(basePlotModules, fullTrace._module.basePlotModule);
+
+        cnt++;
+    }
+
+    for(var i = 0; i < dataIn.length; i++) {
+        var trace = dataIn[i],
+            fullTrace = plots.supplyTraceDefaults(trace, cnt, layout);
+
+        if(fullTrace.transforms && fullTrace.transforms.length) {
+            var expandedTraces = applyTransforms(fullTrace, dataOut, layout);
+
+            for(var j = 0; j < expandedTraces.length; j++) {
+                var expandedTrace = expandedTraces[j],
+                    fullExpandedTrace = plots.supplyTraceDefaults(expandedTrace, cnt, layout);
+
+                // mutate uid here using parent uid and expanded index
+                // to promote consistency between update calls
+                expandedTrace.uid = fullExpandedTrace.uid = fullTrace.uid + j;
+
+                // add info about parent data trace
+                fullExpandedTrace.index = i;
+                fullExpandedTrace._input = trace;
+                fullExpandedTrace._fullInput = fullTrace;
+
+                // add info about the expanded data
+                fullExpandedTrace._expandedIndex = cnt;
+                fullExpandedTrace._expandedInput = expandedTrace;
+
+                pushModule(fullExpandedTrace);
+            }
+        }
+        else {
+            fullTrace.index = i;
+            fullTrace._input = trace;
+            fullTrace._expandedIndex = cnt;
+
+            pushModule(fullTrace);
+        }
+    }
+};
+
+plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
     var traceOut = {},
         defaultColor = Color.defaults[traceIndex % Color.defaults.length];
 
@@ -700,8 +741,6 @@ plots.supplyDataDefaults = function(traceIn, traceIndex, layout) {
             plots.subplotsRegistry[subplotType].attributes, subplotAttr);
     }
 
-    // module-independent attributes
-    traceOut.index = traceIndex;
     var visible = coerce('visible');
 
     coerce('type');
@@ -746,17 +785,60 @@ plots.supplyDataDefaults = function(traceIn, traceIndex, layout) {
             coerce('showlegend');
             coerce('legendgroup');
         }
+
+        supplyTransformDefaults(traceIn, traceOut, layout);
     }
-
-    // NOTE: I didn't include fit info at all... for now I think it can stay
-    // just in gd.data, as this info isn't involved in creating plots at all,
-    // only in pulling back up the fit popover
-
-    // reference back to the input object for convenience
-    traceOut._input = traceIn;
 
     return traceOut;
 };
+
+function supplyTransformDefaults(traceIn, traceOut, layout) {
+    if(!Array.isArray(traceIn.transforms)) return;
+
+    var containerIn = traceIn.transforms,
+        containerOut = traceOut.transforms = [];
+
+    for(var i = 0; i < containerIn.length; i++) {
+        var transformIn = containerIn[i],
+            type = transformIn.type,
+            _module = transformsRegistry[type],
+            transformOut;
+
+        if(!_module) Lib.warn('Unrecognized transform type ' + type + '.');
+
+        if(_module && _module.supplyDefaults) {
+            transformOut = _module.supplyDefaults(transformIn, traceOut, layout);
+            transformOut.type = type;
+        }
+        else {
+            transformOut = Lib.extendFlat({}, transformIn);
+        }
+
+        containerOut.push(transformOut);
+    }
+}
+
+function applyTransforms(fullTrace, fullData, layout) {
+    var container = fullTrace.transforms,
+        dataOut = [fullTrace];
+
+    for(var i = 0; i < container.length; i++) {
+        var transform = container[i],
+            type = transform.type,
+            _module = transformsRegistry[type];
+
+        if(_module) {
+            dataOut = _module.transform(dataOut, {
+                transform: transform,
+                fullTrace: fullTrace,
+                fullData: fullData,
+                layout: layout
+            });
+        }
+    }
+
+    return dataOut;
+}
 
 plots.supplyLayoutGlobalDefaults = function(layoutIn, layoutOut) {
     function coerce(attr, dflt) {

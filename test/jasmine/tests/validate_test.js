@@ -1,4 +1,10 @@
 var Plotly = require('@lib/index');
+var Lib = require('@src/lib');
+
+Plotly.register([
+    // until they become official
+    require('../assets/transforms/filter')
+]);
 
 
 describe('Plotly.validate', function() {
@@ -38,7 +44,7 @@ describe('Plotly.validate', function() {
 
     it('should report when a data trace is not an object', function() {
         var out = Plotly.validate([{
-            type: 'scatter',
+            type: 'bar',
             x: [1, 2, 3]
         }, [1, 2, 3]]);
 
@@ -61,7 +67,7 @@ describe('Plotly.validate', function() {
 
     it('should report when trace is defaulted to not be visible', function() {
         var out = Plotly.validate([{
-            type: 'scatter'
+            type: 'scattergeo'
             // missing 'x' and 'y
         }], {});
 
@@ -246,6 +252,70 @@ describe('Plotly.validate', function() {
             out[3], 'object', 'layout', null,
             ['yaxis5'], 'yaxis5',
             'In layout, key yaxis5 must be linked to an object container'
+        );
+    });
+
+    it('should work with attributes in registered transforms', function() {
+        var base = {
+            x: [-2, -1, -2, 0, 1, 2, 3],
+            y: [1, 2, 3, 1, 2, 3, 1],
+        };
+
+        var out = Plotly.validate([
+            Lib.extendFlat({}, base, {
+                transforms: [{
+                    type: 'filter',
+                    operation: '='
+                }, {
+                    type: 'filter',
+                    operation: '=',
+                    wrongKey: 'sup?'
+                }, {
+                    type: 'filter',
+                    operation: 'wrongVal'
+                },
+                    'wont-work'
+                ]
+            }),
+            Lib.extendFlat({}, base, {
+                transforms: {
+                    type: 'filter'
+                }
+            }),
+            Lib.extendFlat({}, base, {
+                transforms: [{
+                    type: 'no gonna work'
+                }]
+            }),
+        ], {
+            title: 'my transformed graph'
+        });
+
+        expect(out.length).toEqual(5);
+        assertErrorContent(
+            out[0], 'schema', 'data', 0,
+            ['transforms', 1, 'wrongKey'], 'transforms[1].wrongKey',
+            'In data trace 0, key transforms[1].wrongKey is not part of the schema'
+        );
+        assertErrorContent(
+            out[1], 'value', 'data', 0,
+            ['transforms', 2, 'operation'], 'transforms[2].operation',
+            'In data trace 0, key transforms[2].operation is set to an invalid value (wrongVal)'
+        );
+        assertErrorContent(
+            out[2], 'object', 'data', 0,
+            ['transforms', 3], 'transforms[3]',
+            'In data trace 0, key transforms[3] must be linked to an object container'
+        );
+        assertErrorContent(
+            out[3], 'array', 'data', 1,
+            ['transforms'], 'transforms',
+            'In data trace 1, key transforms must be linked to an array container'
+        );
+        assertErrorContent(
+            out[4], 'value', 'data', 2,
+            ['transforms', 0, 'type'], 'transforms[0].type',
+            'In data trace 2, key transforms[0].type is set to an invalid value (no gonna work)'
         );
     });
 });

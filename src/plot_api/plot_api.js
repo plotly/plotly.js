@@ -850,9 +850,8 @@ Plotly.newPlot = function(gd, data, layout, config) {
 function doCalcdata(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
-        fullLayout = gd._fullLayout;
-
-    var i, trace, module, cd;
+        fullLayout = gd._fullLayout,
+        i;
 
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
@@ -889,12 +888,12 @@ function doCalcdata(gd, traces) {
             continue;
         }
 
-        trace = fullData[i];
-        module = trace._module;
-        cd = [];
+        var trace = fullData[i],
+            _module = trace._module,
+            cd = [];
 
-        if(module && trace.visible === true) {
-            if(module.calc) cd = module.calc(gd, trace);
+        if(_module && trace.visible === true) {
+            if(_module.calc) cd = _module.calc(gd, trace);
         }
 
         // make sure there is a first point
@@ -1566,7 +1565,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     if(isNumeric(traces)) traces = [traces];
     else if(!Array.isArray(traces) || !traces.length) {
-        traces = gd._fullData.map(function(v, i) { return i; });
+        traces = gd.data.map(function(v, i) { return i; });
     }
 
     // recalcAttrs attributes need a full regeneration of calcdata
@@ -1740,6 +1739,9 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             docalc = true;
             continue;
         }
+
+        // take no chances on transforms
+        if(ai.substr(0, 10) === 'transforms') docalc = true;
 
         // set attribute in gd.data
         undoit[ai] = a0();

@@ -9,6 +9,7 @@ describe('the register function', function() {
         this.modulesKeys = Object.keys(Plots.modules);
         this.allTypesKeys = Object.keys(Plots.allTypes);
         this.allCategoriesKeys = Object.keys(Plots.allCategories);
+        this.allTransformsKeys = Object.keys(Plots.transformsRegistry);
     });
 
     afterEach(function() {
@@ -21,6 +22,7 @@ describe('the register function', function() {
         revertObj(Plots.modules, this.modulesKeys);
         revertObj(Plots.allTypes, this.allTypesKeys);
         revertObj(Plots.allCategories, this.allCategoriesKeys);
+        revertObj(Plots.transformsRegistry, this.allTransformsKeys);
     });
 
     it('should throw an error when no argument is given', function() {
@@ -67,5 +69,36 @@ describe('the register function', function() {
         expect(function() {
             Plotly.register([invalidTrace]);
         }).toThrowError(Error, 'Invalid module was attempted to be registered!');
+    });
+
+    it('should throw when if transform module is invalid', function() {
+        var missingTransformName = {
+            moduleType: 'transform'
+        };
+
+        expect(function() {
+            Plotly.register(missingTransformName);
+        }).toThrowError(Error, 'Transform module *name* must be a string.');
+
+        var missingTransformFunc = {
+            moduleType: 'transform',
+            name: 'mah-transform'
+        };
+
+        expect(function() {
+            Plotly.register(missingTransformFunc);
+        }).toThrowError(Error, 'Transform module mah-transform is missing a *transform* function.');
+
+        var transformModule = {
+            moduleType: 'transform',
+            name: 'mah-transform',
+            transform: function() {}
+        };
+
+        expect(function() {
+            Plotly.register(transformModule);
+        }).not.toThrow();
+
+        expect(Plots.transformsRegistry['mah-transform']).toBeDefined();
     });
 });
