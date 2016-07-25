@@ -2,9 +2,6 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 Plotly.register([
-    // until it is part of the main plotly.js bundle
-    require('@lib/scattermapbox'),
-
     // until they become official
     require('../assets/transforms/filter')
 ]);
