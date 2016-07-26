@@ -7,77 +7,95 @@ var glob = require('glob');
 
 var constants = require('./util/constants');
 
+// main
+addHeadersInDistFiles();
+updateHeadersInSrcFiles();
 
 // add headers to dist files
+function addHeadersInDistFiles() {
+    function _prepend(path, header) {
+        prependFile(path, header + '\n', function(err) {
+            if(err) throw err;
+        });
+    }
 
-var pathsDist = [
-    constants.pathToPlotlyDistMin,
-    constants.pathToPlotlyDist,
-    constants.pathToPlotlyDistWithMeta,
-    constants.pathToPlotlyGeoAssetsDist
-];
+    // add header to main dist bundles
+    var pathsDist = [
+        constants.pathToPlotlyDistMin,
+        constants.pathToPlotlyDist,
+        constants.pathToPlotlyDistWithMeta,
+        constants.pathToPlotlyGeoAssetsDist
+    ];
+    pathsDist.forEach(function(path) {
+        _prepend(path, constants.licenseDist);
+    });
 
-function headerLicense(path) {
-    prependFile(path, constants.licenseDist + '\n', function(err) {
-        if(err) throw err;
+    // add header and bundle name to partial bundle
+    constants.partialBundlePaths.forEach(function(pathObj) {
+        var headerDist = constants.licenseDist
+            .replace('plotly.js', 'plotly.js (' + pathObj.name + ')');
+        _prepend(pathObj.dist, headerDist);
+
+        var headerDistMin = constants.licenseDist
+            .replace('plotly.js', 'plotly.js (' + pathObj.name + ' - minified)');
+        _prepend(pathObj.distMin, headerDistMin);
     });
 }
 
-pathsDist.forEach(headerLicense);
+// add or update header to src/ lib/ files
+function updateHeadersInSrcFiles() {
+    var srcGlob = path.join(constants.pathToSrc, '**/*.js');
+    var libGlob = path.join(constants.pathToLib, '**/*.js');
 
+    // remove leading '/*' and trailing '*/' for comparison with falafel output
+    var licenseSrc = constants.licenseSrc;
+    var licenseStr = licenseSrc.substring(2, licenseSrc.length - 2);
 
-// add or update header to src files
+    glob('{' + srcGlob + ',' + libGlob + '}', function(err, files) {
+        files.forEach(function(file) {
+            fs.readFile(file, 'utf-8', function(err, code) {
 
-// remove leading '/*' and trailing '*/' for comparison with falafel output
-var licenseSrc = constants.licenseSrc;
-var licenseStr = licenseSrc.substring(2, licenseSrc.length - 2);
+                // parse through code string while keeping track of comments
+                var comments = [];
+                falafel(code, {onComment: comments, locations: true}, function() {});
 
-var srcGlob = path.join(constants.pathToSrc, '**/*.js');
-var libGlob = path.join(constants.pathToLib, '**/*.js');
-glob('{' + srcGlob + ',' + libGlob + '}', function(err, files) {
-    files.forEach(function(file) {
-        fs.readFile(file, 'utf-8', function(err, code) {
+                var header = comments[0];
 
-            // parse through code string while keeping track of comments
-            var comments = [];
-            falafel(code, {onComment: comments, locations: true}, function() {});
+                // error out if no header is found
+                if(!header || header.loc.start.line > 1) {
+                    throw new Error(file + ' : has no header information.');
+                }
 
-            var header = comments[0];
+                // if header and license are the same, do nothing
+                if(isCorrect(header)) return;
 
-            // error out if no header is found
-            if(!header || header.loc.start.line > 1) {
-                throw new Error(file + ' : has no header information.');
-            }
+                // if header and license only differ by date, update header
+                else if(hasWrongDate(header)) {
+                    var codeLines = code.split('\n');
 
-            // if header and license are the same, do nothing
-            if(isCorrect(header)) return;
+                    codeLines.splice(header.loc.start.line - 1, header.loc.end.line);
 
-            // if header and license only differ by date, update header
-            else if(hasWrongDate(header)) {
-                var codeLines = code.split('\n');
+                    var newCode = licenseSrc + '\n' + codeLines.join('\n');
 
-                codeLines.splice(header.loc.start.line - 1, header.loc.end.line);
-
-                var newCode = licenseSrc + '\n' + codeLines.join('\n');
-
-                fs.writeFile(file, newCode, function(err) {
-                    if(err) throw err;
-                });
-            }
-            else {
-                // otherwise, throw an error
-                throw new Error(file + ' : has wrong header information.');
-            }
+                    fs.writeFile(file, newCode, function(err) {
+                        if(err) throw err;
+                    });
+                }
+                else {
+                    // otherwise, throw an error
+                    throw new Error(file + ' : has wrong header information.');
+                }
+            });
         });
     });
-});
 
-function isCorrect(header) {
-    return (header.value === licenseStr);
-}
+    function isCorrect(header) {
+        return (header.value === licenseStr);
+    }
 
-function hasWrongDate(header) {
-    var regex = /Copyright 20[0-9][0-9]-20[0-9][0-9]/g;
+    function hasWrongDate(header) {
+        var regex = /Copyright 20[0-9][0-9]-20[0-9][0-9]/g;
 
-    return (header.value.replace(regex, '') === licenseStr.replace(regex, ''));
+        return (header.value.replace(regex, '') === licenseStr.replace(regex, ''));
+    }
 }

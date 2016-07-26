@@ -1,5 +1,4 @@
 var path = require('path');
-
 var pkg = require('../../package.json');
 
 var pathToRoot = path.join(__dirname, '../../');
@@ -13,6 +12,19 @@ var pathToTopojsonSrc = path.join(
     path.dirname(require.resolve('sane-topojson')), 'dist/'
 );
 
+var partialBundleNames = [
+    'basic', 'cartesian', 'geo', 'gl3d', 'gl2d', 'mapbox'
+];
+
+var partialBundlePaths = partialBundleNames.map(function(name) {
+    return {
+        name: name,
+        index: path.join(pathToLib, 'index-' + name + '.js'),
+        dist: path.join(pathToDist, 'plotly-' + name + '.js'),
+        distMin: path.join(pathToDist, 'plotly-' + name + '.min.js')
+    };
+});
+
 var year = (new Date()).getFullYear();
 
 module.exports = {
@@ -20,6 +32,7 @@ module.exports = {
     pathToSrc: pathToSrc,
     pathToLib: pathToLib,
     pathToBuild: pathToBuild,
+    pathToDist: pathToDist,
 
     pathToPlotlyIndex: path.join(pathToLib, 'index.js'),
     pathToPlotlyCore: path.join(pathToSrc, 'core.js'),
@@ -27,6 +40,9 @@ module.exports = {
     pathToPlotlyDist: path.join(pathToDist, 'plotly.js'),
     pathToPlotlyDistMin: path.join(pathToDist, 'plotly.min.js'),
     pathToPlotlyDistWithMeta: path.join(pathToDist, 'plotly-with-meta.js'),
+
+    partialBundleNames: partialBundleNames,
+    partialBundlePaths: partialBundlePaths,
 
     pathToTopojsonSrc: pathToTopojsonSrc,
     pathToTopojsonDist: path.join(pathToDist, 'topojson/'),
