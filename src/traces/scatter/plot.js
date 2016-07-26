@@ -103,8 +103,8 @@ function createFills(gd, scatterlayer) {
             trace._nextFill = null;
         }
 
-        if(trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
-                (trace.fill.substr(0, 2) === 'to' && !trace._prevtrace)) {
+        if(trace.fill && (trace.fill.substr(0, 6) === 'tozero' || trace.fill === 'toself' ||
+                (trace.fill.substr(0, 2) === 'to' && !trace._prevtrace))) {
             trace._ownFill = tr.select('.js-fill.js-tozero');
             if(!trace._ownFill.size()) {
                 trace._ownFill = tr.insert('path', ':first-child').attr('class', 'js-fill js-tozero');
@@ -237,42 +237,53 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
 
         if(segments.length) {
-            var pts;
             var pt0 = segments[0][0],
                 lastSegment = segments[segments.length - 1],
                 pt1 = lastSegment[lastSegment.length - 1];
+        }
 
-            //var lineJoin = tr.selectAll('.js-line').data(segments);
-            //lineJoin.enter().append('path').classed('js-line', true);
+        var lineSegments = segments.filter(function (s) {
+            return s.length > 1;
+        });
 
-            for(i = 0; i < segments.length; i++) {
-                pts = segments[i];
-                thispath = pathfn(pts);
-                thisrevpath = revpathfn(pts);
-                if(!fullpath) {
-                    fullpath = thispath;
-                    revpath = thisrevpath;
-                }
-                else if(ownFillDir) {
-                    fullpath += 'L' + thispath.substr(1);
-                    revpath = thisrevpath + ('L' + revpath.substr(1));
-                }
-                else {
-                    fullpath += 'Z' + thispath;
-                    revpath = thisrevpath + 'Z' + revpath;
-                }
+        var lineJoin = tr.selectAll('.js-line').data(lineSegments);
+
+        var lineEnter = lineJoin.enter().append('path')
+            .classed('js-line', true)
+            .style('vector-effect', 'non-scaling-stroke')
+            .call(Drawing.lineGroupStyle)
+
+        lineJoin.each(function(pts) {
+            thispath = pathfn(pts);
+            thisrevpath = revpathfn(pts);
+            if(!fullpath) {
+                fullpath = thispath;
+                revpath = thisrevpath;
+            }
+            else if(ownFillDir) {
+                fullpath += 'L' + thispath.substr(1);
+                revpath = thisrevpath + ('L' + revpath.substr(1));
+            }
+            else {
+                fullpath += 'Z' + thispath;
+                revpath = thisrevpath + 'Z' + revpath;
             }
 
             if(subTypes.hasLines(trace) && pts.length > 1) {
-                var lineJoin = tr.selectAll('.js-line').data([cdscatter]);
+                var el = d3.select(this);
+                el.datum(cdscatter);
+                transition(el).attr('d', thispath)
+                    .call(Drawing.lineGroupStyle);
 
-                lineJoin.enter()
-                    .append('path').classed('js-line', true).style('vector-effect', 'non-scaling-stroke').attr('d', fullpath);
-
-                transition(lineJoin).attr('d', fullpath);
             }
-            //lineJoin.exit().remove();
+        });
 
+
+        transition(lineJoin.exit())
+            .style('opacity', 0)
+            .remove();
+
+        if(segments.length) {
             if(ownFillEl3) {
                 if(pt0 && pt1) {
                     if(ownFillDir) {
