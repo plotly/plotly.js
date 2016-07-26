@@ -45,7 +45,8 @@ module.exports = function selectPoints(searchInfo, polygon) {
                     curveNumber: curveNumber,
                     pointNumber: i,
                     x: di.x,
-                    y: di.y
+                    y: di.y,
+                    identifier: di.identifier
                 });
                 di.dim = 0;
             }
