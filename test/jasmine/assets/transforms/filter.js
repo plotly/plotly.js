@@ -131,7 +131,7 @@ function getFilterFunc(opts) {
         case '>':
             return function(v) { return v > value; };
         case 'in':
-            return function(v) { return value.indexOf(v) !== -1 };
+            return function(v) { return value.indexOf(v) !== -1; };
     }
 }
 

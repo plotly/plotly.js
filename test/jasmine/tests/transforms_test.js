@@ -66,7 +66,7 @@ describe('one-to-one transforms:', function() {
     it('supplyDataDefaults should apply the transform while', function() {
         var dataIn = [{
             x: [-2, -2, 1, 2, 3],
-            y: [1, 2, 2, 3, 1],
+            y: [1, 2, 2, 3, 1]
         }, {
             x: [-2, -1, -2, 0, 1, 2, 3],
             y: [1, 2, 3, 1, 2, 3, 1],
@@ -288,12 +288,12 @@ describe('one-to-many transforms:', function() {
     it('supplyDataDefaults should apply the transform while', function() {
         var dummyTrace0 = {
             x: [-2, -2, 1, 2, 3],
-            y: [1, 2, 2, 3, 1],
+            y: [1, 2, 2, 3, 1]
         };
 
         var dummyTrace1 = {
             x: [-1, 2, 3],
-            y: [2, 3, 1],
+            y: [2, 3, 1]
         };
 
         var dataIn = [
@@ -493,12 +493,12 @@ describe('multiple transforms:', function() {
     it('supplyDataDefaults should apply the transform while', function() {
         var dummyTrace0 = {
             x: [-2, -2, 1, 2, 3],
-            y: [1, 2, 2, 3, 1],
+            y: [1, 2, 2, 3, 1]
         };
 
         var dummyTrace1 = {
             x: [-1, 2, 3],
-            y: [2, 3, 1],
+            y: [2, 3, 1]
         };
 
         var dataIn = [
@@ -718,12 +718,12 @@ describe('multiple traces with transforms:', function() {
     it('supplyDataDefaults should apply the transform while', function() {
         var dummyTrace0 = {
             x: [-2, -2, 1, 2, 3],
-            y: [1, 2, 2, 3, 1],
+            y: [1, 2, 2, 3, 1]
         };
 
         var dummyTrace1 = {
             x: [-1, 2, 3],
-            y: [2, 3, 1],
+            y: [2, 3, 1]
         };
 
         var dataIn = [
