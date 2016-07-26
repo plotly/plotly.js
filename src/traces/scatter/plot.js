@@ -236,22 +236,24 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             trace._polygons[i] = polygonTester(segments[i]);
         }
 
+        var pt0, lastSegment, pt1;
+
         if(segments.length) {
-            var pt0 = segments[0][0],
-                lastSegment = segments[segments.length - 1],
-                pt1 = lastSegment[lastSegment.length - 1];
+            pt0 = segments[0][0];
+            lastSegment = segments[segments.length - 1];
+            pt1 = lastSegment[lastSegment.length - 1];
         }
 
-        var lineSegments = segments.filter(function (s) {
+        var lineSegments = segments.filter(function(s) {
             return s.length > 1;
         });
 
         var lineJoin = tr.selectAll('.js-line').data(lineSegments);
 
-        var lineEnter = lineJoin.enter().append('path')
+        lineJoin.enter().append('path')
             .classed('js-line', true)
             .style('vector-effect', 'non-scaling-stroke')
-            .call(Drawing.lineGroupStyle)
+            .call(Drawing.lineGroupStyle);
 
         lineJoin.each(function(pts) {
             thispath = pathfn(pts);
