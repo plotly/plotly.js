@@ -221,6 +221,8 @@ var TAG_STYLES = {
     em: 'font-style:italic;font-weight:bold'
 };
 
+var PROTOCOLS = ['http:', 'https:', 'mailto:'];
+
 var STRIP_TAGS = new RegExp('</?(' + Object.keys(TAG_STYLES).join('|') + ')( [^>]*)?/?>', 'g');
 
 util.plainText = function(_str){
@@ -252,7 +254,20 @@ function convertToSVG(_str){
                 if(tag === 'a'){
                     if(close) return '</a>';
                     else if(extra.substr(0,4).toLowerCase() !== 'href') return '<a>';
-                    else return '<a xlink:show="new" xlink:href' + extra.substr(4) + '>';
+                    else {
+                        // remove quotes, leading '=', replace '&' with '&amp;'
+                        var href = extra.substr(4)
+                            .replace(/["']/g, '')
+                            .replace(/=/, '')
+                            .replace(/&/g, '&amp;');
+
+                        // check protocol
+                        var dummyAnchor = document.createElement('a');
+                        dummyAnchor.href = href;
+                        if(PROTOCOLS.indexOf(dummyAnchor.protocol) === -1) return '<a>';
+
+                        return '<a xlink:show="new" xlink:href="' + href + '">';
+                    }
                 }
                 else if(tag === 'br') return '<br>';
                 else if(close) {
