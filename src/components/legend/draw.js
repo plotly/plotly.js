@@ -575,7 +575,7 @@ function computeLegendDimensions(gd, groups, traces) {
 
         //calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
-          maxTraceWidth = Math.max(40 + d[0].width, maxTraceWidth);
+            maxTraceWidth = Math.max(40 + d[0].width, maxTraceWidth);
         });
 
         traces.each(function(d) {
