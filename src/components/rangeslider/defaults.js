@@ -13,10 +13,9 @@ var attributes = require('./attributes');
 
 
 module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes) {
-
     if(!layoutIn[axName].rangeslider) return;
 
-    var containerIn = typeof layoutIn[axName].rangeslider === 'object' ?
+    var containerIn = Lib.isPlainObject(layoutIn[axName].rangeslider) ?
             layoutIn[axName].rangeslider : {},
         containerOut = layoutOut[axName].rangeslider = {};
 
