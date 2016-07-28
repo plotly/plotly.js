@@ -41,7 +41,7 @@ function Mapbox(opts) {
     // state variables used to infer how and what to update
     this.map = null;
     this.accessToken = null;
-    this.styleUrl = null;
+    this.styleObj = null;
     this.traceHash = {};
     this.layerList = [];
 }
@@ -64,7 +64,7 @@ proto.plot = function(calcData, fullLayout, promises) {
     if(self.map && (opts.accesstoken !== self.accessToken)) {
         self.map.remove();
         self.map = null;
-        self.styleUrl = null;
+        self.styleObj = null;
         self.traceHash = [];
         self.layerList = {};
     }
@@ -90,16 +90,17 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         gd = self.gd,
         opts = self.opts;
 
-    // mapbox doesn't have a way to get the current style URL; do it ourselves
-    var styleUrl = self.styleUrl = convertStyleUrl(opts.style);
+    // store style id and URL or object
+    var styleObj = self.styleObj = getStyleObj(opts.style);
 
     // store access token associated with this map
     self.accessToken = opts.accesstoken;
 
+    // create the map!
     var map = self.map = new mapboxgl.Map({
         container: self.div,
 
-        style: styleUrl,
+        style: styleObj.style,
         center: convertCenter(opts.center),
         zoom: opts.zoom,
         bearing: opts.bearing,
@@ -172,11 +173,11 @@ proto.updateMap = function(calcData, fullLayout, resolve, reject) {
 
     self.rejectOnError(reject);
 
-    var styleUrl = convertStyleUrl(self.opts.style);
+    var styleObj = getStyleObj(self.opts.style);
 
-    if(self.styleUrl !== styleUrl) {
-        self.styleUrl = styleUrl;
-        map.setStyle(styleUrl);
+    if(self.styleObj.id !== styleObj.id) {
+        self.styleObj = styleObj;
+        map.setStyle(styleObj.style);
 
         map.style.once('load', function() {
 
@@ -402,16 +403,32 @@ proto.getView = function() {
     };
 };
 
-function convertStyleUrl(style) {
-    var styleValues = layoutAttributes.style.values;
+function getStyleObj(val) {
+    var styleValues = layoutAttributes.style.values,
+        styleDflt = layoutAttributes.style.dflt,
+        styleObj = {};
 
-    // if style is part of the 'official' mapbox values,
-    // add URL prefix and suffix
-    if(styleValues.indexOf(style) !== -1) {
-        return constants.styleUrlPrefix + style + '-' + constants.styleUrlSuffix;
+    if(Lib.isPlainObject(val)) {
+        styleObj.id = val.id;
+        styleObj.style = val;
+    }
+    else if(typeof val === 'string') {
+        styleObj.id = val;
+        styleObj.style = (styleValues.indexOf(val) !== -1) ?
+             convertStyleVal(val) :
+             val;
+    }
+    else {
+        styleObj.id = styleDflt;
+        styleObj.style = convertStyleVal(styleDflt);
     }
 
-    return style;
+    return styleObj;
+}
+
+// if style is part of the 'official' mapbox values, add URL prefix and suffix
+function convertStyleVal(val) {
+    return constants.styleUrlPrefix + val + '-' + constants.styleUrlSuffix;
 }
 
 function convertCenter(center) {
