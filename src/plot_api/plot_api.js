@@ -326,10 +326,6 @@ Plotly.plot = function(gd, data, layout, config) {
     // so that the caller doesn't care which route we took
     return Promise.all(gd._promises).then(function() {
         return gd;
-    }, function() {
-        // clear the promise queue if one of them got rejected
-        Lib.log('Clearing previous rejected promises from queue.');
-        gd._promises = [];
     });
 };
 
@@ -353,6 +349,12 @@ function getGraphDiv(gd) {
     }
 
     return gd;  // otherwise assume that gd is a DOM element
+}
+
+// clear the promise queue if one of them got rejected
+function clearPromiseQueue(gd) {
+    Lib.log('Clearing previous rejected promises from queue.');
+    gd._promises = [];
 }
 
 function opaqueSetBackground(gd, bgColor) {
@@ -1536,6 +1538,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 // style files that want to specify cyclical default values).
 Plotly.restyle = function restyle(gd, astr, val, traces) {
     gd = getGraphDiv(gd);
+    clearPromiseQueue(gd);
 
     var i, fullLayout = gd._fullLayout,
         aobj = {};
@@ -2076,6 +2079,7 @@ function swapXYData(trace) {
 //          allows setting multiple attributes simultaneously
 Plotly.relayout = function relayout(gd, astr, val) {
     gd = getGraphDiv(gd);
+    clearPromiseQueue(gd);
 
     if(gd.framework && gd.framework.isPolar) {
         return Promise.resolve(gd);

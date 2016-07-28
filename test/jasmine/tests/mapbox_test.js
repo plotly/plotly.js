@@ -180,6 +180,8 @@ describe('mapbox credentials', function() {
     });
 
     it('should throw error if token is invalid', function(done) {
+        var cnt = 0;
+
         Plotly.plot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
@@ -187,11 +189,17 @@ describe('mapbox credentials', function() {
         }], {}, {
             mapboxAccessToken: dummyToken
         }).catch(function(err) {
+            cnt++;
             expect(err).toEqual(new Error(constants.mapOnErrorMsg));
-        }).then(done);
+        }).then(function() {
+            expect(cnt).toEqual(1);
+            done();
+        });
     });
 
     it('should use access token in mapbox layout options if present', function(done) {
+        var cnt = 0;
+
         Plotly.plot(gd, [{
             type: 'scattermapbox',
             lon: [10, 20, 30],
@@ -202,7 +210,10 @@ describe('mapbox credentials', function() {
             }
         }, {
             mapboxAccessToken: dummyToken
+        }).catch(function() {
+            cnt++;
         }).then(function() {
+            expect(cnt).toEqual(0);
             expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
             done();
         });
@@ -493,20 +504,18 @@ describe('mapbox plots', function() {
     });
 
     it('should be able to update the access token', function(done) {
-        var promise = Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work');
-
-        promise.catch(function(err) {
+        Plotly.relayout(gd, 'mapbox.accesstoken', 'wont-work').catch(function(err) {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual('wont-work');
             expect(err).toEqual(new Error(constants.mapOnErrorMsg));
-        });
+            expect(gd._promises.length).toEqual(1);
 
-        promise.then(function() {
             return Plotly.relayout(gd, 'mapbox.accesstoken', MAPBOX_ACCESS_TOKEN);
         }).then(function() {
             expect(gd._fullLayout.mapbox.accesstoken).toEqual(MAPBOX_ACCESS_TOKEN);
-        }).then(done);
+            expect(gd._promises.length).toEqual(0);
+            done();
+        });
     });
-
 
     it('should be able to update traces', function(done) {
         function assertDataPts(lengths) {
