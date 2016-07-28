@@ -60,6 +60,26 @@ describe('range selector defaults:', function() {
         }]);
     });
 
+    it('should skip over non-object buttons', function() {
+        var containerIn = {
+            rangeselector: {
+                buttons: [{
+                    label: 'button 0'
+                }, null, {
+                    label: 'button 2'
+                }, 'remove', {
+                    label: 'button 4'
+                }]
+            }
+        };
+        var containerOut = {};
+
+        supply(containerIn, containerOut);
+
+        expect(containerIn.rangeselector.buttons.length).toEqual(5);
+        expect(containerOut.rangeselector.buttons.length).toEqual(3);
+    });
+
     it('should coerce all buttons present', function() {
         var containerIn = {
             rangeselector: {
@@ -421,6 +441,22 @@ describe('range selector interactions:', function() {
 
     });
 
+    it('should be able to remove button(s) on `relayout`', function(done) {
+        var len = mockCopy.layout.xaxis.rangeselector.buttons.length;
+
+        assertNodeCount('.button', len);
+
+        Plotly.relayout(gd, 'xaxis.rangeselector.buttons[0]', null).then(function() {
+            assertNodeCount('.button', len - 1);
+
+            return Plotly.relayout(gd, 'xaxis.rangeselector.buttons[1]', 'remove');
+        }).then(function() {
+            assertNodeCount('.button', len - 2);
+
+            done();
+        });
+    });
+
     it('should update range and active button when clicked', function() {
         var range0 = gd.layout.xaxis.range[0];
         var buttons = d3.selectAll('.button').select('rect');
@@ -482,5 +518,4 @@ describe('range selector interactions:', function() {
             done();
         });
     });
-
 });
