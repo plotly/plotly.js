@@ -16,12 +16,13 @@ var NOTEDATA = [];
 
 /**
  * notifier
+ * @param {object} gd figure Object
  * @param {String} text The person's user name
  * @param {Number} [delay=1000] The delay time in milliseconds
  *          or 'long' which provides 2000 ms delay time.
  * @return {undefined} this function does not return a value
  */
-module.exports = function(text, displayLength) {
+module.exports = function(gd, text, displayLength) {
     if(NOTEDATA.indexOf(text) !== -1) return;
 
     NOTEDATA.push(text);
@@ -30,7 +31,7 @@ module.exports = function(text, displayLength) {
     if(isNumeric(displayLength)) ts = displayLength;
     else if(displayLength === 'long') ts = 3000;
 
-    var notifierContainer = d3.select('body')
+    var notifierContainer = d3.select(gd._document.body)
         .selectAll('.plotly-notifier')
         .data([0]);
     notifierContainer.enter()

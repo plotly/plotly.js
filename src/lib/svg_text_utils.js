@@ -242,6 +242,15 @@ util.plainText = function(_str) {
     return (_str || '').replace(STRIP_TAGS, ' ');
 };
 
+function encodeForHTML(_str) {
+    return (_str || '').replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#x27;')
+        .replace(/\//g, '&#x2F;');
+}
+
 function convertToSVG(_str) {
     var htmlEntitiesDecoded = Plotly.util.html_entity_decode(_str);
     var result = htmlEntitiesDecoded
@@ -270,15 +279,14 @@ function convertToSVG(_str) {
                         // remove quotes, leading '=', replace '&' with '&amp;'
                         var href = extra.substr(4)
                             .replace(/["']/g, '')
-                            .replace(/=/, '')
-                            .replace(/&/g, '&amp;');
+                            .replace(/=/, '');
 
                         // check protocol
                         var dummyAnchor = document.createElement('a');
                         dummyAnchor.href = href;
                         if(PROTOCOLS.indexOf(dummyAnchor.protocol) === -1) return '<a>';
 
-                        return '<a xlink:show="new" xlink:href="' + href + '">';
+                        return '<a xlink:show="new" xlink:href="' + encodeForHTML(href) + '">';
                     }
                 }
                 else if(tag === 'br') return '<br>';
@@ -302,7 +310,7 @@ function convertToSVG(_str) {
                         // most of the svg css users will care about is just like html,
                         // but font color is different. Let our users ignore this.
                         extraStyle = extraStyle[1].replace(/(^|;)\s*color:/, '$1 fill:');
-                        style = (style ? style + ';' : '') + extraStyle;
+                        style = (style ? style + ';' : '') + encodeForHTML(extraStyle);
                     }
 
                     return tspanStart + (style ? ' style="' + style + '"' : '') + '>';
