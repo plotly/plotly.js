@@ -124,20 +124,19 @@ module.exports = {
 
     bgcolor: {
         valType: 'color',
-        dflt: colorAttrs.lightLine,
         role: 'style',
         description: 'Sets the background color of the update menu buttons.'
     },
     bordercolor: {
         valType: 'color',
-        dflt: colorAttrs.defaultLine,
+        dflt: colorAttrs.borderLine,
         role: 'style',
         description: 'Sets the color of the border enclosing the update menu.'
     },
     borderwidth: {
         valType: 'number',
         min: 0,
-        dflt: 0,
+        dflt: 1,
         role: 'style',
         description: 'Sets the width (in px) of the border enclosing the update menu.'
     }

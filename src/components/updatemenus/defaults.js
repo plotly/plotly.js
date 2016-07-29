@@ -53,7 +53,7 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
 
     Lib.coerceFont(coerce, 'font', layoutOut.font);
 
-    coerce('bgcolor');
+    coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
 }

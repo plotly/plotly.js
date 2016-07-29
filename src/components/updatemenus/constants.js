@@ -51,13 +51,13 @@ module.exports = {
     ry: 2,
 
     // item  text x offset off left edge
-    textOffsetX: 10,
+    textOffsetX: 12,
 
     // item  text y offset (w.r.t. middle)
     textOffsetY: 3,
 
     // arrow offset off right edge
-    arrowOffsetX: 2,
+    arrowOffsetX: 4,
 
     // gap between header and buttons
     gapButtonHeader: 5,
@@ -66,8 +66,8 @@ module.exports = {
     gapButton: 2,
 
     // color given to active buttons
-    activeColor: '#d3d3d3',
+    activeColor: '#F4FAFF',
 
     // color given to hovered buttons
-    hoverColor: '#d3d3d3'
+    hoverColor: '#F4FAFF'
 };
