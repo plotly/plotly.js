@@ -19,7 +19,18 @@ containerCommands.setup = [
     'echo '
 ].join(' && ');
 
-containerCommands.runLocal = function(commands) {
+
+containerCommands.getRunCmd = function(commands, isCI) {
+    var _commands = Array.isArray(commands) ? commands.slice() : [commands];
+
+    if(isCI) return getRunCI(_commands);
+
+    // add setup commands locally
+    _commands = [containerCommands.setup].concat(_commands);
+    return getRunLocal(_commands);
+};
+
+function getRunLocal(commands) {
     commands = [containerCommands.cdHome].concat(commands);
 
     return [
@@ -28,9 +39,9 @@ containerCommands.runLocal = function(commands) {
         '/bin/bash -c',
         '"' + commands.join(' && ') + '"'
     ].join(' ');
-};
+}
 
-containerCommands.runCI = function(commands) {
+function getRunCI(commands) {
     commands = ['export CIRCLECI=1', containerCommands.cdHome].concat(commands);
 
     return [
@@ -39,6 +50,6 @@ containerCommands.runCI = function(commands) {
         '-- bash -c',
         commands.join(' && ')
     ].join(' ');
-};
+}
 
 module.exports = containerCommands;
