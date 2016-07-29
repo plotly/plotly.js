@@ -5,6 +5,7 @@ var falafel = require('falafel');
 var gzipSize = require('gzip-size');
 var prettySize = require('prettysize');
 
+var common = require('./util/common');
 var constants = require('./util/constants');
 var pkg = require('../package.json');
 
@@ -16,97 +17,111 @@ var ENC = 'utf-8';
 var JS = '.js';
 var MINJS = '.min.js';
 
+// main
+var content = getContent();
+common.writeFile(pathDistREADME, content.join('\n'));
+
+function getContent() {
+    return []
+        .concat(getInfoContent())
+        .concat(getMainBundleInfo())
+        .concat(getPartialBundleInfo())
+        .concat(getFooter());
+}
 
 // general info about distributed files
-var infoContent = [
-    '# Using distributed files',
-    '',
-    'All plotly.js dist bundles inject an object `Plotly` into the global scope.',
-    '',
-    'Import plotly.js as:',
-    '',
-    '```html',
-    '<script type="text/javascript" src="plotly.min.js"></script>',
-    '```',
-    '',
-    'or the un-minified version as:',
-    '',
-    '```html',
-    '<script type="text/javascript" src="plotly.js" charset="utf-8"></script>',
-    '```',
-    '',
-    'To support IE9, put:',
-    '',
-    '```html',
-    '<script>if(typeof window.Int16Array !== \'function\')document.write("<scri"+"pt src=\'extras/typedarray.min.js\'></scr"+"ipt>");</script>',
-    '```',
-    '',
-    'before the plotly.js script tag.',
-    '',
-    'To add MathJax, put',
-    '',
-    '```html',
-    '<script type="text/javascript" src="mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>',
-    '```',
-    '',
-    'before the plotly.js script tag. You can grab the relevant MathJax files in `./dist/extras/mathjax/`.',
-    ''
-];
+function getInfoContent() {
+    return [
+        '# Using distributed files',
+        '',
+        'All plotly.js dist bundles inject an object `Plotly` into the global scope.',
+        '',
+        'Import plotly.js as:',
+        '',
+        '```html',
+        '<script type="text/javascript" src="plotly.min.js"></script>',
+        '```',
+        '',
+        'or the un-minified version as:',
+        '',
+        '```html',
+        '<script type="text/javascript" src="plotly.js" charset="utf-8"></script>',
+        '```',
+        '',
+        'To support IE9, put:',
+        '',
+        '```html',
+        '<script>if(typeof window.Int16Array !== \'function\')document.write("<scri"+"pt src=\'extras/typedarray.min.js\'></scr"+"ipt>");</script>',
+        '```',
+        '',
+        'before the plotly.js script tag.',
+        '',
+        'To add MathJax, put',
+        '',
+        '```html',
+        '<script type="text/javascript" src="mathjax/MathJax.js?config=TeX-AMS-MML_SVG"></script>',
+        '```',
+        '',
+        'before the plotly.js script tag. You can grab the relevant MathJax files in `./dist/extras/mathjax/`.',
+        ''
+    ];
+}
 
-// add bundle content/size info
-var mainSizes = findSizes({
-    dist: constants.pathToPlotlyDist,
-    distMin: constants.pathToPlotlyDistMin,
-    withMeta: constants.pathToPlotlyDistWithMeta
-});
-var bundleInfo = [
-    '# Bundle information',
-    '',
-    'The main plotly.js bundle includes all the official (non-beta) trace modules.',
-    '',
-    'It be can imported as minified javascript',
-    '- using dist file `dist/plotly.min.js`',
-    '- using CDN URL ' + cdnRoot + 'plotly-latest.min.js OR ' + cdnRoot + 'plotly-' + pkg.version + MINJS,
-    '',
-    'or as raw javascript:',
-    '- using dist file `dist/plotly.js`',
-    '- using CDN URL ' + cdnRoot + 'plotly-latest.js OR ' + cdnRoot + 'plotly-' + pkg.version + JS,
-    '- using CommonJS with `require(\'plotly.js\')`',
-    '',
-    'If you would like to have access to the attribute meta information ' +
-    '(including attribute descriptions as on the [schema reference page](https://plot.ly/javascript/reference/)), ' +
-    'use dist file `dist/plotly-with-meta.js`',
-    '',
-    'The main plotly.js bundle weights in at:',
-    '',
-    '| plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |',
-    '|-----------|---------------|----------------------|---------------------|',
-    '| ' + mainSizes.raw + ' | ' + mainSizes.minified + ' | ' + mainSizes.gzipped + ' | ' + mainSizes.withMeta + ' |',
-    '',
-    '## Partial bundles',
-    '',
-    'Starting in `v1.15.0`, plotly.js also ships with several _partial_ bundles:',
-    '',
-    constants.partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
-    ''
-]
-.concat(
-    constants.partialBundlePaths.map(makeBundleInfo)
-);
+// info about main bundle
+function getMainBundleInfo() {
+    var mainSizes = findSizes({
+        dist: constants.pathToPlotlyDist,
+        distMin: constants.pathToPlotlyDistMin,
+        withMeta: constants.pathToPlotlyDistWithMeta
+    });
+
+    return [
+        '# Bundle information',
+        '',
+        'The main plotly.js bundle includes all the official (non-beta) trace modules.',
+        '',
+        'It be can imported as minified javascript',
+        '- using dist file `dist/plotly.min.js`',
+        '- using CDN URL ' + cdnRoot + 'plotly-latest.min.js OR ' + cdnRoot + 'plotly-' + pkg.version + MINJS,
+        '',
+        'or as raw javascript:',
+        '- using dist file `dist/plotly.js`',
+        '- using CDN URL ' + cdnRoot + 'plotly-latest.js OR ' + cdnRoot + 'plotly-' + pkg.version + JS,
+        '- using CommonJS with `require(\'plotly.js\')`',
+        '',
+        'If you would like to have access to the attribute meta information ' +
+        '(including attribute descriptions as on the [schema reference page](https://plot.ly/javascript/reference/)), ' +
+        'use dist file `dist/plotly-with-meta.js`',
+        '',
+        'The main plotly.js bundle weights in at:',
+        '',
+        '| plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |',
+        '|-----------|---------------|----------------------|---------------------|',
+        '| ' + mainSizes.raw + ' | ' + mainSizes.minified + ' | ' + mainSizes.gzipped + ' | ' + mainSizes.withMeta + ' |',
+        '',
+        '## Partial bundles',
+        '',
+        'Starting in `v1.15.0`, plotly.js also ships with several _partial_ bundles:',
+        '',
+        constants.partialBundlePaths.map(makeBundleHeaderInfo).join('\n'),
+        ''
+    ];
+}
+
+// info about partial bundles
+function getPartialBundleInfo() {
+    return constants.partialBundlePaths.map(makeBundleInfo);
+}
 
 // footer info
-var footer = [
-    '----------------',
-    '',
-    '_This file is auto-generated by `npm run stats`. ' +
-    'Please do not edit this file directly._'
-];
-
-var content = infoContent.concat(bundleInfo).concat(footer);
-
-fs.writeFile(pathDistREADME, content.join('\n'), function(err) {
-    if(err) throw err;
-});
+function getFooter() {
+    return [
+        '----------------',
+        '',
+        '_This file is auto-generated by `npm run stats`. ' +
+        'Please do not edit this file directly._'
+    ];
+}
 
 function makeBundleHeaderInfo(pathObj) {
     var name = pathObj.name;
