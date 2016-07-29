@@ -142,7 +142,7 @@ function drawButtonRect(button, selectorLayout, d) {
 
 function getFillColor(selectorLayout, d) {
     return (d.isActive || d.isHovered) ?
-        constants.activeColor :
+        selectorLayout.activecolor :
         selectorLayout.bgcolor;
 }
 

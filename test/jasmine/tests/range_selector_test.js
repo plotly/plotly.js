@@ -1,6 +1,5 @@
 var RangeSelector = require('@src/components/rangeselector');
 var getUpdateObject = require('@src/components/rangeselector/get_update_object');
-var constants = require('@src/components/rangeselector/constants');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
@@ -482,7 +481,7 @@ describe('range selector interactions:', function() {
         var pos = getRectCenter(button.node());
 
         var fillColor = Color.rgb(gd._fullLayout.xaxis.rangeselector.bgcolor);
-        var activeColor = Color.rgb(constants.activeColor);
+        var activeColor = 'rgb(212, 212, 212)';
 
         expect(button.style('fill')).toEqual(fillColor);
 

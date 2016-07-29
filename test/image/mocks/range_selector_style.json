@@ -1025,6 +1025,7 @@
                 "y": 0.2,
                 "yanchor": "bottom",
                 "bgcolor": "#d3d3d3",
+                "activecolor": "#d3d3d3",
                 "borderwidth": 2,
                 "bordercolor": "#ff7f0e"
             },
