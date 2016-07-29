@@ -1,5 +1,6 @@
 var fs = require('fs');
 
+var common = require('../../tasks/util/common');
 var getMockList = require('./assets/get_mock_list');
 var getRequestOpts = require('./assets/get_image_request_options');
 var getImagePaths = require('./assets/get_image_paths');
@@ -149,7 +150,7 @@ function comparePixels(mockName, cb) {
     function checkImage() {
 
         // baseline image must be generated first
-        if(!doesFileExist(imagePaths.baseline)) {
+        if(!common.doesFileExist(imagePaths.baseline)) {
             var err = new Error('baseline image not found');
             return onEqualityCheck(err, false);
         }
@@ -186,7 +187,7 @@ function comparePixels(mockName, cb) {
 
     function onEqualityCheck(err, isEqual) {
         if(err) {
-            touch(imagePaths.diff);
+            common.touch(imagePaths.diff);
             return console.error(err, mockName);
         }
         if(isEqual) {
@@ -199,19 +200,4 @@ function comparePixels(mockName, cb) {
     request(requestOpts)
         .pipe(saveImageStream)
         .on('close', checkImage);
-}
-
-function doesFileExist(filePath) {
-    try {
-        if(fs.statSync(filePath).isFile()) return true;
-    }
-    catch(e) {
-        return false;
-    }
-
-    return false;
-}
-
-function touch(filePath) {
-    fs.closeSync(fs.openSync(filePath, 'w'));
 }
