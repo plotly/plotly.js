@@ -27,7 +27,7 @@
     "stats": "node tasks/stats.js",
     "build": "npm run preprocess && npm run bundle && npm run header && npm run stats",
     "cibuild": "npm run preprocess && node tasks/cibundle.js",
-    "watch": "node tasks/watch_plotly.js",
+    "watch": "node tasks/watch.js",
     "lint": "eslint . || true",
     "lint-fix": "eslint . --fix",
     "pretest": "node tasks/pretest.js",
