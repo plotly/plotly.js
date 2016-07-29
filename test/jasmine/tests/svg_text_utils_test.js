@@ -80,6 +80,16 @@ describe('svg+text utils', function() {
             assertAnchorLink(node, null);
         });
 
+        it('whitelist relative hrefs (interpreted as http)', function() {
+            var node = mockTextSVGElement(
+                '<a href="/mylink">mylink</a>'
+            );
+
+            expect(node.text()).toEqual('mylink');
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, '/mylink');
+        });
+
         it('whitelist http hrefs', function() {
             var node = mockTextSVGElement(
                 '<a href="http://bl.ocks.org/">bl.ocks.org</a>'
