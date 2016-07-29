@@ -57,6 +57,8 @@ function buttonsDefaults(containerIn, containerOut) {
         buttonIn = buttonsIn[i];
         buttonOut = {};
 
+        if(!Lib.isPlainObject(buttonIn)) continue;
+
         var step = coerce('step');
         if(step !== 'all') {
             coerce('stepmode');
