@@ -12,7 +12,7 @@ machine:
 
 dependencies:
   pre:
-    - docker pull plotly/imagetest:latest
+    - docker pull plotly/testbed:latest
   post:
     - npm run cibuild
     - npm run pretest
