@@ -26,6 +26,10 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig) {
 
     var scatterlayer = plotinfo.plot.select('g.scatterlayer');
 
+    // If transition config is provided, then it is only a partial replot and traces not
+    // updated are removed.
+    var isFullReplot = !transitionConfig;
+
     selection = scatterlayer.selectAll('g.trace');
 
     join = selection.data(cdscatter, function(d) {return d[0].trace.uid;});
