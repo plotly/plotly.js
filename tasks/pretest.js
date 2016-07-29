@@ -1,14 +1,7 @@
 var fs = require('fs');
 var constants = require('./util/constants');
-var mapboxAccessToken = process.env.MAPBOX_ACCESS_TOKEN;
 
 
-if(!mapboxAccessToken) {
-    throw new Error([
-        'MAPBOX_ACCESS_TOKEN not found!!!',
-        'Please export your mapbox access token into and try again.'
-    ].join('\n'));
-}
 
 // Create a credentials json file,
 // to be required in jasmine test suites and test dashboard

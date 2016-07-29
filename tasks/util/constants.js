@@ -67,6 +67,7 @@ module.exports = {
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
 
+    mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
     pathToCredentials: path.join(pathToBuild, 'credentials.json'),
     pathToSetPlotConfig: path.join(pathToBuild, 'set_plot_config.js'),
 
