@@ -72,6 +72,7 @@ module.exports = {
     pathToSetPlotConfig: path.join(pathToBuild, 'set_plot_config.js'),
 
     testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',
+    testContainerPort: '9010',
     testContainerUrl: 'http://localhost:9010/',
     testContainerHome: '/var/www/streambed/image_server/plotly.js',
 
