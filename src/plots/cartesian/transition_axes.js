@@ -148,7 +148,13 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
         subplot.plot
             .call(Lib.setTranslate, plotDx, plotDy)
-            .call(Lib.setScale, xScaleFactor, yScaleFactor);
+            .call(Lib.setScale, xScaleFactor, yScaleFactor)
+
+            // This is specifically directed at scatter traces, applying an inverse
+            // scale to individual points to counteract the scale of the trace
+            // as a whole:
+            .selectAll('.points').selectAll('.point')
+                .call(Lib.setPointGroupScale, 1 / xScaleFactor, 1 / yScaleFactor);
 
     }
 
@@ -220,7 +226,14 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
         subplot.plot
             .call(Lib.setTranslate, plotDx, plotDy)
-            .call(Lib.setScale, xScaleFactor, yScaleFactor);
+            .call(Lib.setScale, xScaleFactor, yScaleFactor)
+
+            // This is specifically directed at scatter traces, applying an inverse
+            // scale to individual points to counteract the scale of the trace
+            // as a whole:
+            .selectAll('.points').selectAll('.point')
+                .call(Lib.setPointGroupScale, 1 / xScaleFactor, 1 / yScaleFactor);
+
     }
 
     // transitionTail - finish a drag event with a redraw
