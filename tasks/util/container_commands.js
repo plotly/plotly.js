@@ -19,6 +19,13 @@ containerCommands.setup = [
     'echo '
 ].join(' && ');
 
+containerCommands.dockerRun = [
+    'docker run -d',
+    '--name', constants.testContainerName,
+    '-v', constants.pathToRoot + ':' + constants.testContainerHome,
+    '-p', constants.testContainerUrl,
+    'plotly/testbed:latest'
+].join(' ');
 
 containerCommands.getRunCmd = function(commands, isCI) {
     var _commands = Array.isArray(commands) ? commands.slice() : [commands];
