@@ -9,6 +9,8 @@
 
 'use strict';
 
+var Lib = require('../../lib');
+
 module.exports = {
     hasLines: function(trace) {
         return trace.visible && trace.mode &&
@@ -26,7 +28,7 @@ module.exports = {
     },
 
     isBubble: function(trace) {
-        return (typeof trace.marker === 'object' &&
-                    Array.isArray(trace.marker.size));
+        return Lib.isPlainObject(trace.marker) &&
+            Array.isArray(trace.marker.size);
     }
 };
