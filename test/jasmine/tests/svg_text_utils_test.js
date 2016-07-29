@@ -25,6 +25,11 @@ describe('svg+text utils', function() {
             expect(a.attr('xlink:show')).toBe(href === null ? null : 'new');
         }
 
+        function assertTspanStyle(node, style) {
+            var tspan = node.select('tspan');
+            expect(tspan.attr('style')).toBe(style);
+        }
+
         function assertAnchorAttrs(node) {
             var a = node.select('a');
 
@@ -73,6 +78,16 @@ describe('svg+text utils', function() {
             expect(node.text()).toEqual('XSS');
             assertAnchorAttrs(node);
             assertAnchorLink(node, null);
+        });
+
+        it('whitelist relative hrefs (interpreted as http)', function() {
+            var node = mockTextSVGElement(
+                '<a href="/mylink">mylink</a>'
+            );
+
+            expect(node.text()).toEqual('mylink');
+            assertAnchorAttrs(node);
+            assertAnchorLink(node, '/mylink');
         });
 
         it('whitelist http hrefs', function() {
@@ -133,6 +148,51 @@ describe('svg+text utils', function() {
                 expect(node.text()).toEqual('abc.com?shared-key');
                 assertAnchorLink(node, 'https://abc.com/myFeature.jsp?name=abc&pwd=def');
             });
+        });
+
+        it('allow basic spans', function() {
+            var node = mockTextSVGElement(
+                '<span>text</span>'
+            );
+
+            expect(node.text()).toEqual('text');
+            assertTspanStyle(node, null);
+        });
+
+        it('ignore unquoted styles in spans', function() {
+            var node = mockTextSVGElement(
+                '<span style=unquoted>text</span>'
+            );
+
+            expect(node.text()).toEqual('text');
+            assertTspanStyle(node, null);
+        });
+
+        it('allow quoted styles in spans', function() {
+            var node = mockTextSVGElement(
+                '<span style="quoted: yeah;">text</span>'
+            );
+
+            expect(node.text()).toEqual('text');
+            assertTspanStyle(node, 'quoted: yeah;');
+        });
+
+        it('ignore extra stuff after span styles', function() {
+            var node = mockTextSVGElement(
+                '<span style="quoted: yeah;"disallowed: indeed;">text</span>'
+            );
+
+            expect(node.text()).toEqual('text');
+            assertTspanStyle(node, 'quoted: yeah;');
+        });
+
+        it('escapes HTML entities in span styles', function() {
+            var node = mockTextSVGElement(
+                '<span style="quoted: yeah&\';;">text</span>'
+            );
+
+            expect(node.text()).toEqual('text');
+            assertTspanStyle(node, 'quoted: yeah&\';;');
         });
     });
 });
