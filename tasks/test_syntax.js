@@ -4,8 +4,7 @@ var fs = require('fs');
 var falafel = require('falafel');
 var glob = require('glob');
 
-var constants = require('../tasks/util/constants');
-
+var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
 var libGlob = path.join(constants.pathToLib, '**/*.js');
 var testGlob = path.join(constants.pathToJasmineTests, '**/*.js');
