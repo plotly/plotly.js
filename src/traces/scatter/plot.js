@@ -290,6 +290,14 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             .style('opacity', 0)
             .remove();
 
+        lineJoin.each(makeUpdate(false));
+
+        var lineEnter = lineJoin.enter().append('path')
+            .classed('js-line', true)
+            .style('vector-effect', 'non-scaling-stroke')
+            .call(Drawing.lineGroupStyle)
+            .each(makeUpdate(true))
+
         if(segments.length) {
             if(ownFillEl3) {
                 if(pt0 && pt1) {
