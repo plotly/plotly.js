@@ -72,6 +72,10 @@ function buttonsDefaults(menuIn, menuOut) {
         buttonIn = buttonsIn[i];
         buttonOut = {};
 
+        if(!Lib.isPlainObject(buttonIn) || !Array.isArray(buttonIn.args)) {
+            continue;
+        }
+
         // Should we do some validation for 'args' depending on `method`
         // or just let Plotly[method] error out?
 
