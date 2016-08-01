@@ -82,21 +82,23 @@ module.exports = function draw(gd) {
         .classed(constants.buttonGroupClassName, true)
         .style('pointer-events', 'all');
 
-    // whenever we add new menu,
+    // whenever we add new menu, attach 'state' variable to node
+    // to keep track of the active menu ('-1' means no menu is active)
+    // and remove all dropped buttons (if any)
     if(headerGroups.enter().size()) {
-
-        // attach 'state' variable to node to keep track of the active menu
-        // '-1' means no menu is active
-        gButton.attr(constants.menuIndexAttrName, '-1');
-
-        // remove all dropped buttons (if any)
-        gButton.selectAll('g.' + constants.buttonClassName).remove();
+        gButton
+            .call(removeAllButtons)
+            .attr(constants.menuIndexAttrName, '-1');
     }
 
     // remove exiting header, remove dropped buttons and reset margins
     headerGroups.exit().each(function(menuOpts) {
         d3.select(this).remove();
-        gButton.selectAll('g.' + constants.buttonClassName).remove();
+
+        gButton
+            .call(removeAllButtons)
+            .attr(constants.menuIndexAttrName, '-1');
+
         Plots.autoMargin(gd, constants.autoMarginIdRoot + menuOpts._index);
     });
 
@@ -177,7 +179,7 @@ function drawHeader(gd, gHeader, gButton, menuOpts) {
     });
 
     header.on('click', function() {
-        gButton.selectAll('g.' + constants.buttonClassName).remove();
+        gButton.call(removeAllButtons);
 
         // if clicked index is same as dropped index => fold
         // otherwise => drop buttons associated with header
@@ -428,4 +430,8 @@ function setItemPosition(item, menuOpts, posOpts) {
     tspans.attr(textAttrs);
 
     posOpts.y += menuOpts.height1 + posOpts.yPad;
+}
+
+function removeAllButtons(gButton) {
+    gButton.selectAll('g.' + constants.buttonClassName).remove();
 }
