@@ -15,6 +15,12 @@ Boot up docker machine (named `default`):
 docker-machine start default
 ```
 
+If this is your first time, you'll need to create the machine instead:
+
+```bash
+docker-machine create --driver virtualbox default
+```
+
 Set up the docker environment for `docker-compose`:
 
 ```bash
@@ -117,7 +123,7 @@ which generates a baseline png image in [`test/image/baselines`][baselines].
 To update existing baseline image(s), run
 
 ```bash
-npm run basline -- <glob-of-mocks-to-update>
+npm run baseline -- <glob-of-mocks-to-update>
 ```
 
 
