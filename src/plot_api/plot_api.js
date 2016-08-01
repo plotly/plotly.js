@@ -891,6 +891,13 @@ function doCalcdata(gd, traces) {
     }
 
     for(i = 0; i < fullData.length; i++) {
+        // If traces were specified and this trace was not included, then transfer it over from
+        // the old calcdata:
+        if(Array.isArray(traces) && traces.indexOf(i) === -1) {
+            calcdata[i] = oldCalcdata[i];
+            continue;
+        }
+
         var trace = fullData[i],
             _module = trace._module,
             cd = [];
