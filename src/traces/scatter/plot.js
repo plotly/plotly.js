@@ -248,41 +248,55 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             return s.length > 1;
         });
 
+        function makeUpdate (isEnter) {
+            return function(pts) {
+                thispath = pathfn(pts);
+                thisrevpath = revpathfn(pts);
+                if(!fullpath) {
+                    fullpath = thispath;
+                    revpath = thisrevpath;
+                }
+                else if(ownFillDir) {
+                    fullpath += 'L' + thispath.substr(1);
+                    revpath = thisrevpath + ('L' + revpath.substr(1));
+                }
+                else {
+                    fullpath += 'Z' + thispath;
+                    revpath = thisrevpath + 'Z' + revpath;
+                }
+
+                if(subTypes.hasLines(trace) && pts.length > 1) {
+                    var el = d3.select(this);
+
+                    // This makes the coloring work correctly:
+                    el.datum(cdscatter);
+
+                    if (isEnter) {
+                        transition(el.style('opacity', 0)
+                            .attr('d', thispath)
+                            .call(Drawing.lineGroupStyle))
+                                .style('opacity', 1);
+                    } else {
+                        transition(el).attr('d', thispath)
+                            .call(Drawing.lineGroupStyle);
+                    }
+                }
+            };
+        }
+
         var lineJoin = tr.selectAll('.js-line').data(lineSegments);
-
-        lineJoin.enter().append('path')
-            .classed('js-line', true)
-            .style('vector-effect', 'non-scaling-stroke')
-            .call(Drawing.lineGroupStyle);
-
-        lineJoin.each(function(pts) {
-            thispath = pathfn(pts);
-            thisrevpath = revpathfn(pts);
-            if(!fullpath) {
-                fullpath = thispath;
-                revpath = thisrevpath;
-            }
-            else if(ownFillDir) {
-                fullpath += 'L' + thispath.substr(1);
-                revpath = thisrevpath + ('L' + revpath.substr(1));
-            }
-            else {
-                fullpath += 'Z' + thispath;
-                revpath = thisrevpath + 'Z' + revpath;
-            }
-
-            if(subTypes.hasLines(trace) && pts.length > 1) {
-                var el = d3.select(this);
-                el.datum(cdscatter);
-                transition(el).attr('d', thispath)
-                    .call(Drawing.lineGroupStyle);
-            }
-        });
-
 
         transition(lineJoin.exit())
             .style('opacity', 0)
             .remove();
+
+        lineJoin.each(makeUpdate(false));
+
+        var lineEnter = lineJoin.enter().append('path')
+            .classed('js-line', true)
+            .style('vector-effect', 'non-scaling-stroke')
+            .call(Drawing.lineGroupStyle)
+            .each(makeUpdate(true))
 
         if(segments.length) {
             if(ownFillEl3) {
