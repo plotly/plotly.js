@@ -248,7 +248,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             return s.length > 1;
         });
 
-        function makeUpdate (isEnter) {
+        var makeUpdate = function (isEnter) {
             return function(pts) {
                 thispath = pathfn(pts);
                 thisrevpath = revpathfn(pts);
@@ -271,7 +271,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     // This makes the coloring work correctly:
                     el.datum(cdscatter);
 
-                    if (isEnter) {
+                    if(isEnter) {
                         transition(el.style('opacity', 0)
                             .attr('d', thispath)
                             .call(Drawing.lineGroupStyle))
@@ -292,11 +292,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         lineJoin.each(makeUpdate(false));
 
-        var lineEnter = lineJoin.enter().append('path')
+        lineJoin.enter().append('path')
             .classed('js-line', true)
             .style('vector-effect', 'non-scaling-stroke')
             .call(Drawing.lineGroupStyle)
-            .each(makeUpdate(true))
+            .each(makeUpdate(true));
 
         if(segments.length) {
             if(ownFillEl3) {
