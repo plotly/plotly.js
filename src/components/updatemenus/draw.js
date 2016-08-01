@@ -64,6 +64,9 @@ module.exports = function draw(gd) {
 
     menus.exit().remove();
 
+    // remove push margin object(s)
+    if(menus.exit().size()) clearPushMargins(gd);
+
     // return early if no update menus are visible
     if(menuData.length === 0) return;
 
@@ -434,4 +437,17 @@ function setItemPosition(item, menuOpts, posOpts) {
 
 function removeAllButtons(gButton) {
     gButton.selectAll('g.' + constants.buttonClassName).remove();
+}
+
+function clearPushMargins(gd) {
+    var pushMargins = gd._fullLayout._pushmargin || {},
+        keys = Object.keys(pushMargins);
+
+    for(var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+
+        if(k.indexOf(constants.autoMarginIdRoot) !== -1) {
+            Plots.autoMargin(gd, k);
+        }
+    }
 }
