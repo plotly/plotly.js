@@ -40,6 +40,7 @@ var buttonsAttrs = {
     label: {
         valType: 'string',
         role: 'info',
+        dflt: '',
         description: 'Sets the text label to appear on the button.'
     }
 };
