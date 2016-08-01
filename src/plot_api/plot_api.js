@@ -55,6 +55,14 @@ Plotly.plot = function(gd, data, layout, config) {
 
     gd = getGraphDiv(gd);
 
+    // Get the document the graph div lives in, so we can make sure things like
+    // drag covers are attached to the correct document
+    gd._document = gd.ownerDocument || window.document;
+
+    // Inject the plot styles into the document where we're plotting, bails if
+    // already styled
+    Lib.injectStyles(gd);
+
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
 
@@ -329,10 +337,6 @@ Plotly.plot = function(gd, data, layout, config) {
     // so that the caller doesn't care which route we took
     return Promise.all(gd._promises).then(function() {
         return gd;
-    }, function() {
-        // clear the promise queue if one of them got rejected
-        Lib.log('Clearing previous rejected promises from queue.');
-        gd._promises = [];
     });
 };
 
@@ -356,6 +360,12 @@ function getGraphDiv(gd) {
     }
 
     return gd;  // otherwise assume that gd is a DOM element
+}
+
+// clear the promise queue if one of them got rejected
+function clearPromiseQueue(gd) {
+    Lib.log('Clearing previous rejected promises from queue.');
+    gd._promises = [];
 }
 
 function opaqueSetBackground(gd, bgColor) {
@@ -1539,6 +1549,7 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
 // style files that want to specify cyclical default values).
 Plotly.restyle = function restyle(gd, astr, val, traces) {
     gd = getGraphDiv(gd);
+    clearPromiseQueue(gd);
 
     var i, fullLayout = gd._fullLayout,
         aobj = {};
@@ -2079,6 +2090,7 @@ function swapXYData(trace) {
 //          allows setting multiple attributes simultaneously
 Plotly.relayout = function relayout(gd, astr, val) {
     gd = getGraphDiv(gd);
+    clearPromiseQueue(gd);
 
     if(gd.framework && gd.framework.isPolar) {
         return Promise.resolve(gd);
@@ -2560,12 +2572,12 @@ function plotAutoSize(gd, aobj) {
     // embedded in an iframe - just take the full iframe size
     // if we get to this point, with no aspect ratio restrictions
     if(gd._context.fillFrame) {
-        newWidth = window.innerWidth;
-        newHeight = window.innerHeight;
+        newWidth = gd._document.defaultView.innerWidth;
+        newHeight = gd._document.defaultView.innerHeight;
 
         // somehow we get a few extra px height sometimes...
         // just hide it
-        document.body.style.overflow = 'hidden';
+        gd._document.body.style.overflow = 'hidden';
     }
     else if(isNumeric(context.frameMargins) && context.frameMargins > 0) {
         var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
@@ -2582,7 +2594,7 @@ function plotAutoSize(gd, aobj) {
         // provide height and width for the container div,
         // specify size in layout, or take the defaults,
         // but don't enforce any ratio restrictions
-        computedStyle = window.getComputedStyle(gd);
+        computedStyle = gd._document.defaultView.getComputedStyle(gd);
         newHeight = parseFloat(computedStyle.height) || fullLayout.height;
         newWidth = parseFloat(computedStyle.width) || fullLayout.width;
     }

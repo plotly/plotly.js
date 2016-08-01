@@ -73,7 +73,7 @@ module.exports = function calc(gd, trace) {
 
     function noZsmooth(msg) {
         zsmooth = trace._input.zsmooth = trace.zsmooth = false;
-        Lib.notifier('cannot fast-zsmooth: ' + msg);
+        Lib.notifier(gd, 'cannot fast-zsmooth: ' + msg);
     }
 
     // check whether we really can smooth (ie all boxes are about the same size)

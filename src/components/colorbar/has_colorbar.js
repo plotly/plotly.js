@@ -9,10 +9,9 @@
 
 'use strict';
 
+var Lib = require('../../lib');
+
 
 module.exports = function hasColorbar(container) {
-    return (
-        typeof container.colorbar === 'object' &&
-        container.colorbar !== null
-    );
+    return Lib.isPlainObject(container.colorbar);
 };

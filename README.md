@@ -33,6 +33,7 @@ See [this file](https://github.com/plotly/plotly.js/blob/master/src/lib/loggers.
 and use the plotly.js `dist` file(s). More info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md).
 
 #### Clone the repo
+
 ```bash
 git clone https://github.com/plotly/plotly.js.git
 ```
@@ -40,11 +41,12 @@ git clone https://github.com/plotly/plotly.js.git
 and use the plotly.js `dist` file(s).
 
 #### Install with `npm`
+
 ```bash
 npm install plotly.js
 ```
 
-and use the plotly.js `dist` file(s) or require plotly.js using CommonJS as `var Plotly = require('plotly.js');`.
+and require plotly.js using CommonJS as `var Plotly = require('plotly.js');` or use the plotly.js `dist` file(s).
 
 #### Use the plotly.js CDN hosted by Fastly:
 ```html
@@ -64,7 +66,9 @@ and use the `Plotly` object in the window scope.
 
 ## Modules
 
-If you would like to reduce the bundle size of plotly.js, you can create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*:
+Starting in `v1.15.0`, plotly.js also ships with several _partial_ bundles (more info [here](https://github.com/plotly/plotly.js/blob/master/dist/README.md#partial-bundles)).
+
+If you would like to manually pick which plotly.js modules to include, you can create a *custom* bundle by using `plotly.js/lib/core`, and loading only the trace types that you need (e.g. `pie` or `choropleth`). The recommended way to do this is by creating a *bundling file*:
 
 ```javascript
 // in custom-plotly.js

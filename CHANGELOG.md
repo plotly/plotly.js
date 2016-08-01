@@ -10,6 +10,31 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.15.0] -- 2016-07-25
+
+### Added
+- Add `Plotly.validate` method [#697]
+- Add support for transforms plugins modules [#499]
+- Some partial bundles are now distributed  in `dist/` [#740]
+- Mapbox access token can now be set in `layout.mapbox` [#729]
+- Undo/Redo queue length is now configurable via configuration option
+  `queueLength` [#737]
+
+### Changed
+- Improve performance in gl2d request animation frame loop [#731]
+- Improve `Lib.extendDeep` performance for primitive arrays [#732]
+- Improve potential XSS input in `text` fields [#736]
+- Improve scaling on scroll zoom for scatter lines and markers [#761, #762]
+
+### Fixed
+- `toImage` pixel output for gl2d graphs are now scaled properly [#735]
+- `scattermapbox` marker size and color arrays are now correctly converted when
+  they include repeated values [#747]
+- Fix scatter3d marker line color inheritance [#754]
+- `text` fields can now support link with query params `=` and `&` [#736]
+- Fix Chrome 50 bug where tester svg blocked other DOM nodes [#745]
+
+
 ## [1.14.2] -- 2016-07-11
 
 ### Fixed
