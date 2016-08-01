@@ -851,13 +851,17 @@ Plotly.newPlot = function(gd, data, layout, config) {
     return Plotly.plot(gd, data, layout, config);
 };
 
-function doCalcdata(gd) {
+function doCalcdata(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout,
         i;
 
-    var calcdata = gd.calcdata = new Array(fullData.length);
+    // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
+    // *all* needing doCalcdata:
+    var calcdata = new Array(fullData.length);
+    var oldCalcdata = (gd.calcdata || []).slice(0);
+    gd.calcdata = calcdata;
 
     // extra helper variables
     // firstscatter: fill-to-next on the first trace goes to zero
@@ -881,9 +885,23 @@ function doCalcdata(gd) {
     }
 
     for(i = 0; i < fullData.length; i++) {
+        // If traces were specified and this trace was not included, then transfer it over from
+        // the old calcdata:
+        if(Array.isArray(traces) && traces.indexOf(i) === -1) {
+            calcdata[i] = oldCalcdata[i];
+            continue;
+        }
+
         var trace = fullData[i],
             _module = trace._module,
             cd = [];
+
+        // If traces were specified and this trace was not included, then transfer it over from
+        // the old calcdata:
+        if(Array.isArray(traces) && traces.indexOf(i) === -1) {
+            calcdata[i] = oldCalcdata[i];
+            continue;
+        }
 
         if(_module && trace.visible === true) {
             if(_module.calc) cd = _module.calc(gd, trace);
@@ -2504,6 +2522,314 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         return gd;
     });
+};
+
+/**
+ * Transition to a set of new data and layout properties
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ */
+Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
+    gd = getGraphDiv(gd);
+
+    var i, traceIdx;
+    var fullLayout = gd._fullLayout;
+
+    transitionConfig = Lib.extendFlat({
+        ease: 'cubic-in-out',
+        duration: 500,
+        delay: 0,
+        cascade: 0
+    }, transitionConfig || {});
+
+    // Create a single transition to be passed around:
+    if(transitionConfig.duration > 0) {
+        gd._currentTransition = d3.transition()
+            .duration(transitionConfig.duration)
+            .delay(transitionConfig.delay)
+            .ease(transitionConfig.ease);
+    } else {
+        gd._currentTransition = null;
+    }
+
+    var dataLength = Array.isArray(data) ? data.length : 0;
+
+    // Select which traces will be updated:
+    if(isNumeric(traceIndices)) traceIndices = [traceIndices];
+    else if(!Array.isArray(traceIndices) || !traceIndices.length) {
+        traceIndices = gd._fullData.map(function(v, i) {return i;});
+    }
+
+    if(traceIndices.length > dataLength) {
+        traceIndices = traceIndices.slice(0, dataLength);
+    }
+
+    var transitionedTraces = [];
+
+    function prepareTransitions() {
+        for(i = 0; i < traceIndices.length; i++) {
+            var traceIdx = traceIndices[i];
+            var trace = gd._fullData[traceIdx];
+            var module = trace._module;
+
+            if(!module.animatable) {
+                continue;
+            }
+
+            transitionedTraces.push(traceIdx);
+
+            // This is a multi-step process. First clone w/o arrays so that
+            // we're not modifying the original:
+            var update = Lib.extendDeepNoArrays({}, data[i]);
+
+            // Then expand object paths since we don't obey object-overwrite
+            // semantics here:
+            update = Lib.expandObjectPaths(update);
+
+            // Finally apply the update (without copying arrays, of course):
+            Lib.extendDeepNoArrays(gd.data[traceIndices[i]], update);
+        }
+
+        Plots.supplyDefaults(gd);
+
+        // TODO: Add logic that computes transitionedTraces to avoid unnecessary work while
+        // still handling things like box plots that are interrelated.
+        // doCalcdata(gd, transitionedTraces);
+
+        doCalcdata(gd);
+
+        ErrorBars.calc(gd);
+    }
+
+    var restyleList = [];
+    var completionTimeout = null;
+    var resolveTransitionCallback = null;
+
+    function executeTransitions() {
+        var hasTraceTransition = false;
+        var j;
+        var basePlotModules = fullLayout._basePlotModules;
+        for(j = 0; j < basePlotModules.length; j++) {
+            if(basePlotModules[j].animatable) {
+                hasTraceTransition = true;
+            }
+            basePlotModules[j].plot(gd, transitionedTraces, transitionConfig);
+        }
+
+        var hasAxisTransition = false;
+
+        if(layout) {
+            for(j = 0; j < basePlotModules.length; j++) {
+                if(basePlotModules[j].transitionAxes) {
+                    var newLayout = Lib.expandObjectPaths(layout);
+                    hasAxisTransition = hasAxisTransition || basePlotModules[j].transitionAxes(gd, newLayout, transitionConfig);
+                }
+            }
+        }
+
+        if(!hasAxisTransition && !hasTraceTransition) {
+            return false;
+        }
+
+        return new Promise(function(resolve) {
+            resolveTransitionCallback = resolve;
+            completionTimeout = setTimeout(resolve, transitionConfig.duration);
+        });
+    }
+
+    function interruptPreviousTransitions() {
+        clearTimeout(completionTimeout);
+
+        if(resolveTransitionCallback) {
+            resolveTransitionCallback();
+        }
+
+        while(gd._frameData._layoutInterrupts.length) {
+            (gd._frameData._layoutInterrupts.pop())();
+        }
+
+        while(gd._frameData._styleInterrupts.length) {
+            (gd._frameData._styleInterrupts.pop())();
+        }
+    }
+
+    for(i = 0; i < traceIndices.length; i++) {
+        traceIdx = traceIndices[i];
+        var contFull = gd._fullData[traceIdx];
+        var module = contFull._module;
+
+        if(!module.animatable) {
+            var thisUpdate = {};
+
+            for(var ai in data[i]) {
+                thisUpdate[ai] = [data[i][ai]];
+            }
+
+            restyleList.push((function(md, data, traces) {
+                return function() {
+                    return Plotly.restyle(gd, data, traces);
+                };
+            }(module, thisUpdate, [traceIdx])));
+        }
+    }
+
+    var seq = [Plots.previousPromises, interruptPreviousTransitions, prepareTransitions, executeTransitions];
+    seq = seq.concat(restyleList);
+
+    var plotDone = Lib.syncOrAsync(seq, gd);
+
+    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+
+    return plotDone.then(function() {
+        gd.emit('plotly_beginanimate', []);
+        return gd;
+    });
+};
+
+/**
+ * Animate to a keyframe
+ *
+ * @param {string} name
+ *      name of the keyframe to create
+ * @param {object} transitionConfig
+ *      configuration for transition
+ */
+Plotly.animate = function(gd, frameName, transitionConfig) {
+    gd = getGraphDiv(gd);
+
+    if(!gd._frameData._frameHash[frameName]) {
+        Lib.warn('animateToFrame failure: keyframe does not exist', frameName);
+        return Promise.reject();
+    }
+
+    var computedFrame = Plots.computeFrame(gd, frameName);
+
+    return Plotly.transition(gd,
+        computedFrame.data,
+        computedFrame.layout,
+        computedFrame.traceIndices,
+        transitionConfig
+    );
+};
+
+/**
+ * Create new keyframes
+ *
+ * @param {array of objects} frameList
+ *      list of frame definitions, in which each object includes any of:
+ *      - name: {string} name of keyframe to add
+ *      - data: {array of objects} trace data
+ *      - layout {object} layout definition
+ *      - traces {array} trace indices
+ *      - baseFrame {string} name of keyframe from which this keyframe gets defaults
+ */
+Plotly.addFrames = function(gd, frameList, indices) {
+    gd = getGraphDiv(gd);
+
+    var i, frame, j, idx;
+    var _frames = gd._frameData._frames;
+    var _hash = gd._frameData._frameHash;
+
+
+    if(!Array.isArray(frameList)) {
+        Lib.warn('addFrames failure: frameList must be an Array of frame definitions', frameList);
+        return Promise.reject();
+    }
+
+    // Create a sorted list of insertions since we run into lots of problems if these
+    // aren't in ascending order of index:
+    //
+    // Strictly for sorting. Make sure this is guaranteed to never collide with any
+    // already-exisisting indices:
+    var bigIndex = _frames.length + frameList.length * 2;
+
+    var insertions = [];
+    for(i = frameList.length - 1; i >= 0; i--) {
+        insertions.push({
+            frame: frameList[i],
+            index: (indices && indices[i] !== undefined && indices[i] !== null) ? indices[i] : bigIndex + i
+        });
+    }
+
+    // Sort this, taking note that undefined insertions end up at the end:
+    insertions.sort(function(a, b) {
+        if(a.index > b.index) return -1;
+        if(a.index < b.index) return 1;
+        return 0;
+    });
+
+    var ops = [];
+    var revops = [];
+    var frameCount = _frames.length;
+
+    for(i = insertions.length - 1; i >= 0; i--) {
+        frame = insertions[i].frame;
+
+        if(!frame.name) {
+            // Repeatedly assign a default name, incrementing the counter each time until
+            // we get a name that's not in the hashed lookup table:
+            while(_hash[(frame.name = 'frame ' + gd._frameData._counter++)]);
+        }
+
+        if(_hash[frame.name]) {
+            // If frame is present, overwrite its definition:
+            for(j = 0; j < _frames.length; j++) {
+                if(_frames[j].name === frame.name) break;
+            }
+            ops.push({type: 'replace', index: j, value: frame});
+            revops.unshift({type: 'replace', index: j, value: _frames[j]});
+        } else {
+            // Otherwise insert it at the end of the list:
+            idx = Math.max(0, Math.min(insertions[i].index, frameCount));
+
+            ops.push({type: 'insert', index: idx, value: frame});
+            revops.unshift({type: 'delete', index: idx});
+            frameCount++;
+        }
+    }
+
+    var undoFunc = Plots.modifyFrames,
+        redoFunc = Plots.modifyFrames,
+        undoArgs = [gd, revops],
+        redoArgs = [gd, ops];
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Plots.modifyFrames(gd, ops);
+};
+
+/**
+ * Delete keyframes
+ *
+ * @param {array of integers} frameList
+ *      list of integer indices of frames to be deleted
+ */
+Plotly.deleteFrames = function(gd, frameList) {
+    gd = getGraphDiv(gd);
+
+    var i, idx;
+    var _frames = gd._frameData._frames;
+    var ops = [];
+    var revops = [];
+
+    frameList = frameList.slice(0);
+    frameList.sort();
+
+    for(i = frameList.length - 1; i >= 0; i--) {
+        idx = frameList[i];
+        ops.push({type: 'delete', index: idx});
+        revops.unshift({type: 'insert', index: idx, value: _frames[idx]});
+    }
+
+    var undoFunc = Plots.modifyFrames,
+        redoFunc = Plots.modifyFrames,
+        undoArgs = [gd, revops],
+        redoArgs = [gd, ops];
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Plots.modifyFrames(gd, ops);
 };
 
 /**
