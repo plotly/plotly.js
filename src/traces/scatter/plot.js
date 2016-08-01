@@ -248,7 +248,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             return s.length > 1;
         });
 
-        var makeUpdate = function (isEnter) {
+        var makeUpdate = function(isEnter) {
             return function(pts) {
                 thispath = pathfn(pts);
                 thisrevpath = revpathfn(pts);
@@ -282,7 +282,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     }
                 }
             };
-        }
+        };
 
         var lineJoin = tr.selectAll('.js-line').data(lineSegments);
 
