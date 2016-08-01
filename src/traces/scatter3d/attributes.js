@@ -100,6 +100,7 @@ module.exports = {
     line: extendFlat({}, {
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash,
+        simplify: scatterLineAttrs.simplify,
         showscale: {
             valType: 'boolean',
             role: 'info',
