@@ -150,7 +150,7 @@ function makeBundleInfo(pathObj) {
         '',
         '| Raw size | Minified size | Minified + gzip size |',
         '|------|-----------------|------------------------|',
-        '| ' + sizes.raw + ' | ' + sizes.minified + ' | ' + sizes.gzipped + ' | ',
+        '| ' + sizes.raw + ' | ' + sizes.minified + ' | ' + sizes.gzipped + ' |',
         ''
     ].join('\n');
 }
@@ -205,7 +205,7 @@ function formatBundleInfo(bundleName, moduleList) {
         var len = moduleList.length,
             ending;
 
-        if(i === len - 2) ending = 'and';
+        if(i === len - 2) ending = ' and';
         else if(i < len - 1) ending = ',';
         else ending = '';
 
