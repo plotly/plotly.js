@@ -122,7 +122,13 @@ To run a specific suite, use:
 npm run test-jasmine -- tests/<suite>.js
 ```
 
-where the `<suite>` corresponds to the suite's file name as found in [`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests).
+where the `<suite>` corresponds to the suite's file name as found in [`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests). In certain situations, you may find that the default reporting is not verbose enough to pin down the source of the failing test. In this situation, you may wish to use [karma-verbose-reporter](https://www.npmjs.com/package/karma-verbose-reporter). You can use it without adding as a dev dependency by running:
+
+```
+npm install karma-verbose-reporter
+```
+
+and adding `reporters: ['verbose']` to the corresponding karma configuration file. (You should disable the `progress` reporter when using `verbose`.)
 
 
 Image pixel comparison tests are run in a docker container. For more

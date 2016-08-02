@@ -6,6 +6,11 @@ function func(config) {
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
     func.defaultConfig.logLevel = config.LOG_INFO;
 
+    // Note: config.LOG_DEBUG may not be verbose enough to pin down the source of failed tests.
+    // See the note in CONTRIBUTING.md about karma-verbose-reporter:
+    // func.defaultConfig.reporters = ['verbose'];
+
+
     // Continuous Integration mode
 
     /*
