@@ -15,7 +15,7 @@
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.10.4';
+exports.version = '1.10.5';
 
 // plot api
 exports.plot = Plotly.plot;

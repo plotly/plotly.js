@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.10.4
+* plotly.js v1.10.5
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -35796,7 +35796,7 @@ var ndarray   = require('ndarray')
 
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_34_arg0_||255>_inline_34_arg1_||255>_inline_34_arg2_||255>_inline_34_arg3_){var _inline_34_l=_inline_34_arg4_-_inline_34_arg6_[0],_inline_34_a=_inline_34_arg5_-_inline_34_arg6_[1],_inline_34_f=_inline_34_l*_inline_34_l+_inline_34_a*_inline_34_a;_inline_34_f<this_closestD2&&(this_closestD2=_inline_34_f,this_closestX=_inline_34_arg6_[0],this_closestY=_inline_34_arg6_[1])}}","args":[{"name":"_inline_34_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_34_a","_inline_34_f","_inline_34_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_31_arg0_||255>_inline_31_arg1_||255>_inline_31_arg2_||255>_inline_31_arg3_){var _inline_31_l=_inline_31_arg4_-_inline_31_arg6_[0],_inline_31_a=_inline_31_arg5_-_inline_31_arg6_[1],_inline_31_f=_inline_31_l*_inline_31_l+_inline_31_a*_inline_31_a;_inline_31_f<this_closestD2&&(this_closestD2=_inline_31_f,this_closestX=_inline_31_arg6_[0],this_closestY=_inline_31_arg6_[1])}}","args":[{"name":"_inline_31_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_31_a","_inline_31_f","_inline_31_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -42245,7 +42245,7 @@ function mouseWheelListen(element, callback, noScroll) {
 
 
 
-var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_4_arg1_=_inline_4_arg2_.apply(void 0,_inline_4_arg0_)}","args":[{"name":"_inline_4_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_4_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_4_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_1_arg1_=_inline_1_arg2_.apply(void 0,_inline_1_arg0_)}","args":[{"name":"_inline_1_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 module.exports = function(array, f) {
   fill(array, f)
@@ -42429,13 +42429,13 @@ module.exports.d3 = interp3d
 var interp  = require('ndarray-linear-interpolate')
 
 
-var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_18_arg4_)}","args":[{"name":"_inline_18_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_18_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_18_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_18_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_18_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_19_arg2_(this_warped,_inline_19_arg0_),_inline_19_arg1_=_inline_19_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_19_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_19_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_19_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_19_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_19_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
+var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_6_arg4_)}","args":[{"name":"_inline_6_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_6_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_7_arg2_(this_warped,_inline_7_arg0_),_inline_7_arg1_=_inline_7_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_7_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_7_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
 
-var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_22_arg2_(this_warped,_inline_22_arg0_),_inline_22_arg1_=_inline_22_arg3_(_inline_22_arg4_,this_warped[0])}","args":[{"name":"_inline_22_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_22_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
+var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_10_arg2_(this_warped,_inline_10_arg0_),_inline_10_arg1_=_inline_10_arg3_(_inline_10_arg4_,this_warped[0])}","args":[{"name":"_inline_10_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_10_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
 
-var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_25_arg2_(this_warped,_inline_25_arg0_),_inline_25_arg1_=_inline_25_arg3_(_inline_25_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_25_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_25_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
+var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_13_arg2_(this_warped,_inline_13_arg0_),_inline_13_arg1_=_inline_13_arg3_(_inline_13_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_13_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_13_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_13_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_13_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_13_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
 
-var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_28_arg2_(this_warped,_inline_28_arg0_),_inline_28_arg1_=_inline_28_arg3_(_inline_28_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_28_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_28_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
+var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_16_arg2_(this_warped,_inline_16_arg0_),_inline_16_arg1_=_inline_16_arg3_(_inline_16_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_16_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_16_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_16_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_16_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_16_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
 
 module.exports = function warp(dest, src, func) {
   switch(src.shape.length) {
@@ -59521,7 +59521,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.10.4';
+exports.version = '1.10.5';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -62585,8 +62585,7 @@ function encodeForHTML(_str) {
 }
 
 function convertToSVG(_str) {
-    var htmlEntitiesDecoded = Plotly.util.html_entity_decode(_str);
-    var result = htmlEntitiesDecoded
+    var result = _str
         .split(/(<[^<>]*>)/).map(function(d) {
             var match = d.match(/<(\/?)([^ >]*)\s*(.*)>/i),
                 tag = match && match[2].toLowerCase(),
@@ -67613,7 +67612,8 @@ function formatLinear(ax, out, hover, extraPrecision, hideexp) {
 // new, more reliable procedure than d3.round or similar:
 // add half the rounding increment, then stringify and truncate
 // also automatically switch to sci. notation
-var SIPREFIXES = ['f', 'p', 'n', '&mu;', 'm', '', 'k', 'M', 'G', 'T'];
+var SIPREFIXES = ['f', 'p', 'n', 'μ', 'm', '', 'k', 'M', 'G', 'T'];
+
 function numFormat(v, ax, fmtoverride, hover) {
         // negative?
     var isNeg = v < 0,
@@ -67704,7 +67704,7 @@ function numFormat(v, ax, fmtoverride, hover) {
             v += 'E' + signedExponent;
         }
         else if(exponentFormat === 'power') {
-            v += '&times;10<sup>' + signedExponent + '</sup>';
+            v += '×10<sup>' + signedExponent + '</sup>';
         }
         else if(exponentFormat === 'B' && exponent === 9) {
             v += 'B';
@@ -70457,7 +70457,7 @@ function cleanPoint(d, hovermode) {
             d.xLabel += ' +' + xeText + ' / -' +
                 Axes.tickText(d.xa, d.xa.c2l(d.xerrneg), 'hover').text;
         }
-        else d.xLabel += ' &plusmn; ' + xeText;
+        else d.xLabel += ' ± ' + xeText;
 
         // small distance penalty for error bars, so that if there are
         // traces with errors and some without, the error bar label will
@@ -70470,7 +70470,7 @@ function cleanPoint(d, hovermode) {
             d.yLabel += ' +' + yeText + ' / -' +
                 Axes.tickText(d.ya, d.ya.c2l(d.yerrneg), 'hover').text;
         }
-        else d.yLabel += ' &plusmn; ' + yeText;
+        else d.yLabel += ' ± ' + yeText;
 
         if(hovermode==='y') d.distance += 1;
     }
