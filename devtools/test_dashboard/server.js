@@ -4,10 +4,9 @@ var http = require('http');
 var ecstatic = require('ecstatic');
 var open = require('open');
 var browserify = require('browserify');
-var watchify = require('watchify');
 
 var constants = require('../../tasks/util/constants');
-var compress = require('../../tasks/util/compress_attributes');
+var makeWatchifiedBundle = require('../../tasks/util/watchified_bundle');
 var shortcutPaths = require('../../tasks/util/shortcut_paths');
 
 var PORT = process.argv[2] || 3000;
@@ -20,16 +19,11 @@ var server = http.createServer(ecstatic({
     gzip: true
 }));
 
-// Bundle development source code
-var b = browserify(constants.pathToPlotlyIndex, {
-    debug: true,
-    standalone: 'Plotly',
-    transform: [compress],
-    cache: {},
-    packageCache: {},
-    plugin: [watchify]
+// Make watchified bundle for plotly.js
+var bundlePlotly = makeWatchifiedBundle(function() {
+    // open up browser window on first bundle callback
+    open('http://localhost:' + PORT + '/devtools/test_dashboard');
 });
-b.on('update', bundlePlotly);
 
 // Bundle devtools code
 var devtoolsPath = path.join(constants.pathToRoot, 'devtools/test_dashboard');
@@ -37,14 +31,10 @@ var devtools = browserify(path.join(devtoolsPath, 'devtools.js'), {
     transform: [shortcutPaths]
 });
 
-var firstBundle = true;
-
-
 // Start the server up!
 server.listen(PORT);
 
 // Build and bundle all the things!
-console.log('Building the first bundle. This might take a little while...\n');
 getMockFiles()
     .then(readFiles)
     .then(createMocksList)
@@ -138,21 +128,6 @@ function writeFilePromise(path, contents) {
             }
         });
     });
-}
-
-function bundlePlotly() {
-    b.bundle(function(err) {
-        if(err) {
-            console.error('Error while bundling!', JSON.stringify(String(err)));
-        } else {
-            console.log('Bundle updated at ' + new Date().toLocaleTimeString());
-        }
-
-        if(firstBundle) {
-            open('http://localhost:' + PORT + '/devtools/test_dashboard');
-            firstBundle = false;
-        }
-    }).pipe(fs.createWriteStream(constants.pathToPlotlyBuild));
 }
 
 function bundleDevtools() {
