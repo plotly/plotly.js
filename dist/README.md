@@ -49,7 +49,7 @@ The main plotly.js bundle weights in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
-| 2.8 MB | 1.2 MB | 375.7 kB | 2.9 MB |
+| 2.8 MB | 1.2 MB | 378 kB | 2.9 MB |
 
 ## Partial bundles
 
@@ -78,7 +78,7 @@ The `basic` partial bundle contains the `scatter`, `bar`and `pie` trace modules.
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.4 MB | 539 kB | 177.9 kB | 
+| 1.4 MB | 541.2 kB | 178.3 kB | 
 
 ### plotly.js cartesian
 
@@ -96,7 +96,7 @@ The `cartesian` partial bundle contains the `scatter`, `bar`, `box`, `heatmap`, 
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.6 MB | 608 kB | 198.7 kB | 
+| 1.6 MB | 610.3 kB | 199 kB | 
 
 ### plotly.js geo
 
@@ -114,7 +114,7 @@ The `geo` partial bundle contains the `scatter`, `scattergeo`and `choropleth` tr
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.4 MB | 568.5 kB | 188.9 kB | 
+| 1.4 MB | 570.7 kB | 189.2 kB | 
 
 ### plotly.js gl3d
 
@@ -132,7 +132,7 @@ The `gl3d` partial bundle contains the `scatter`, `scatter3d`, `surface`and `mes
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.2 MB | 975 kB | 308 kB | 
+| 2.3 MB | 985.3 kB | 310.3 kB | 
 
 ### plotly.js gl2d
 
@@ -150,7 +150,7 @@ The `gl2d` partial bundle contains the `scatter`, `scattergl`, `heatmapgl`and `c
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2 MB | 844.6 kB | 268.4 kB | 
+| 2 MB | 849.3 kB | 268.9 kB | 
 
 ### plotly.js mapbox
 
@@ -168,7 +168,7 @@ The `mapbox` partial bundle contains the `scatter`and `scattermapbox` trace modu
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.3 MB | 947.6 kB | 282.4 kB | 
+| 2.3 MB | 958 kB | 283.3 kB | 
 
 ----------------
 
