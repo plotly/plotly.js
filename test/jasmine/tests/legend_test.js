@@ -540,3 +540,26 @@ describe('legend relayout update', function() {
         });
     });
 });
+
+describe('legend orientation change:', function() {
+    'use strict';
+
+    afterEach(destroyGraphDiv);
+
+    it('should update plot background', function(done) {
+        var mock = require('@mocks/legend_horizontal_autowrap.json'),
+            gd = createGraphDiv(),
+            initialLegendBGColor;
+
+        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            initialLegendBGColor = gd._fullLayout.legend.bgcolor;
+            return Plotly.relayout(gd, 'legend.bgcolor', '#000000');
+        }).then(function() {
+            expect(gd._fullLayout.legend.bgcolor).toBe('#000000');
+            return Plotly.relayout(gd, 'legend.bgcolor', initialLegendBGColor);
+        }).then(function() {
+            expect(gd._fullLayout.legend.bgcolor).toBe(initialLegendBGColor);
+            done();
+        });
+    });
+});
