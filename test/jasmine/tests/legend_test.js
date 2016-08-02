@@ -546,69 +546,20 @@ describe('legend orientation change:', function() {
 
     afterEach(destroyGraphDiv);
 
-    it('should update legend orientation', function(done) {
+    it('should update plot background', function(done) {
         var mock = require('@mocks/legend_horizontal_autowrap.json'),
             gd = createGraphDiv(),
-            initialLegendY = mock.layout.legend.y;
+            initialLegendBGColor;
 
         Plotly.plot(gd, mock.data, mock.layout).then(function() {
-            var node = d3.select('g.legend').select('rect'),
-                nw = node.property('width').baseVal.value,
-                gw = mock.layout.width,
-                maxTraceHeight = 0,
-                maxTraceWidth = 0,
-                maxOffsetX = 0,
-                maxOffsetY = 0,
-                traceGap = gd._fullLayout.legend.tracegroupgap || 5;
-
-            d3.selectAll('g.legend g.traces').each(function() {
-                var b = d3.select(this).select('text').node().getBBox(),
-                    w = b.width + traceGap + 40,
-                    h = d3.select(this).node().getBBox().height,
-                    t = d3.transform(d3.select(this).attr('transform'));
-                //console.log(t.translate[0], t.translate[1], w, h);
-                maxOffsetX = Math.max(maxOffsetX, t.translate[0]);
-                maxOffsetY = Math.max(maxOffsetY, t.translate[1]);
-                maxTraceWidth = Math.max(maxTraceWidth, w);
-                maxTraceHeight = Math.max(maxTraceHeight, h);
-            });
-
-            //legend rect less than width of plot
-            expect(nw).toBeLessThan(gw);
-            expect(maxTraceHeight).toBeGreaterThan(0);
-            expect(maxTraceWidth).toBeGreaterThan(0);
-            expect(maxOffsetX).toBeGreaterThan(0);
-            expect(maxOffsetY).toBeGreaterThan(0);
-
-            //none of the traces are pushed off the graph
-            expect(maxOffsetX).toBeLessThan(mock.layout.width);
-            expect(maxOffsetY).toBeLessThan(mock.layout.height);
-
-            //update mock
-            mock.layout.legend.orientation = 'v';
-            mock.layout.legend.y = 1;
-            //re-graph
-            destroyGraphDiv(gd);
-            gd = createGraphDiv();
-            return Plotly.plot(gd, mock.data, mock.layout);
+            initialLegendBGColor = gd._fullLayout.legend.bgcolor;
+            return Plotly.relayout(gd, 'legend.bgcolor', '#000000');
         }).then(function() {
-            expect(gd._fullLayout.legend.orientation).toBe('v');
-            //scrollbar has width and height now
-            var bbox = d3.select('rect.scrollbar').node().getBBox();
-            expect(bbox.width).toBeGreaterThan(0);
-            expect(bbox.height).toBeGreaterThan(0);
-            //update mock and re-graph
-            mock.layout.legend.orientation = 'h';
-            mock.layout.legend.y = initialLegendY;
-            destroyGraphDiv(gd);
-            gd = createGraphDiv();
-            return Plotly.plot(gd, mock.data, mock.layout);
+            expect(gd._fullLayout.legend.bgcolor).toBe('#000000');
+            return Plotly.relayout(gd, 'legend.bgcolor', initialLegendBGColor);
         }).then(function() {
-            //back to base case
-            expect(gd._fullLayout.legend.orientation).toBe('h');
-            expect(gd._fullLayout.legend.y).toBe(initialLegendY);
+            expect(gd._fullLayout.legend.bgcolor).toBe(initialLegendBGColor);
             done();
         });
     });
-
 });
