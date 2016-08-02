@@ -6,8 +6,6 @@ var Plotly = require('@lib');
 var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var getRectCenter = require('../assets/get_rect_center');
-var mouseEvent = require('../assets/mouse_event');
 var TRANSITION_DELAY = 100;
 
 describe('update menus defaults', function() {
@@ -201,27 +199,27 @@ describe('update menus interactions', function() {
     });
 
     it('should drop/fold buttons when clicking on header', function(done) {
-        var pos0 = getHeaderPos(0),
-            pos1 = getHeaderPos(1);
+        var header0 = selectHeader(0),
+            header1 = selectHeader(1);
 
-        click(pos0).then(function() {
+        click(header0).then(function() {
             assertMenus([3, 0]);
-            return click(pos0);
+            return click(header0);
         }).then(function() {
             assertMenus([0, 0]);
-            return click(pos1);
+            return click(header1);
         }).then(function() {
             assertMenus([0, 4]);
-            return click(pos1);
+            return click(header1);
         }).then(function() {
             assertMenus([0, 0]);
-            return click(pos0);
+            return click(header0);
         }).then(function() {
             assertMenus([3, 0]);
-            return click(pos1);
+            return click(header1);
         }).then(function() {
             assertMenus([0, 4]);
-            return click(pos0);
+            return click(header0);
         }).then(function() {
             assertMenus([3, 0]);
             done();
@@ -229,23 +227,23 @@ describe('update menus interactions', function() {
     });
 
     it('should apply update on button click', function(done) {
-        var pos0 = getHeaderPos(0),
-            pos1 = getHeaderPos(1);
+        var header0 = selectHeader(0),
+            header1 = selectHeader(1);
 
         assertActive(gd, [1, 2]);
 
-        click(pos0).then(function() {
+        click(header0).then(function() {
             assertItemColor(selectButton(1), activeColor);
 
-            return click(getButtonPos(0));
+            return click(selectButton(0));
         }).then(function() {
             assertActive(gd, [0, 2]);
 
-            return click(pos1);
+            return click(header1);
         }).then(function() {
             assertItemColor(selectButton(2), activeColor);
 
-            return click(getButtonPos(0));
+            return click(selectButton(0));
         }).then(function() {
             assertActive(gd, [0, 0]);
 
@@ -254,37 +252,34 @@ describe('update menus interactions', function() {
     });
 
     it('should change color on mouse over', function(done) {
-        var header0 = selectHeader(0),
-            pos0 = getHeaderPos(0);
+        var INDEX_0 = 2,
+            INDEX_1 = gd.layout.updatemenus[1].active;
+
+        var header0 = selectHeader(0);
 
         assertItemColor(header0, bgColor);
-        mouseEvent('mouseover', pos0[0], pos0[1]);
+        mouseEvent('mouseover', header0);
         assertItemColor(header0, activeColor);
-        mouseEvent('mouseout', pos0[0], pos0[1]);
+        mouseEvent('mouseout', header0);
         assertItemColor(header0, bgColor);
 
-        click(pos0).then(function() {
-            var index = 2,
-                button = selectButton(index),
-                pos = getButtonPos(index);
+        click(header0).then(function() {
+            var button = selectButton(INDEX_0);
 
             assertItemColor(button, bgColor);
-            mouseEvent('mouseover', pos[0], pos[1]);
+            mouseEvent('mouseover', button);
             assertItemColor(button, activeColor);
-            mouseEvent('mouseout', pos[0], pos[1]);
+            mouseEvent('mouseout', button);
             assertItemColor(button, bgColor);
 
-            var pos1 = getHeaderPos(1);
-            return click(pos1);
+            return click(selectHeader(1));
         }).then(function() {
-            var index = gd.layout.updatemenus[1].active,
-                button = selectButton(index),
-                pos = getButtonPos(index);
+            var button = selectButton(INDEX_1);
 
             assertItemColor(button, activeColor);
-            mouseEvent('mouseover', pos[0], pos[1]);
+            mouseEvent('mouseover', button);
             assertItemColor(button, activeColor);
-            mouseEvent('mouseout', pos[0], pos[1]);
+            mouseEvent('mouseout', button);
             assertItemColor(button, activeColor);
 
             done();
@@ -298,7 +293,7 @@ describe('update menus interactions', function() {
         Plotly.relayout(gd, 'updatemenus[0].bgcolor', 'red').then(function() {
             assertItemColor(selectHeader(0), 'rgb(255, 0, 0)');
 
-            return click(getHeaderPos(0));
+            return click(selectHeader(0));
         }).then(function() {
             assertMenus([3, 0]);
 
@@ -312,7 +307,7 @@ describe('update menus interactions', function() {
         }).then(function() {
             assertItemDims(selectHeader(1), 179, 34.2);
 
-            return click(getHeaderPos(1));
+            return click(selectHeader(1));
         }).then(function() {
             assertMenus([0, 4]);
 
@@ -321,7 +316,7 @@ describe('update menus interactions', function() {
             // and delete buttons
             assertMenus([0]);
 
-            return click(getHeaderPos(0));
+            return click(selectHeader(0));
         }).then(function() {
             assertMenus([3]);
 
@@ -375,18 +370,33 @@ describe('update menus interactions', function() {
     }
 
     function assertItemDims(node, width, height) {
-        var rect = node.select('rect');
-        expect(+rect.attr('width')).toEqual(width);
+        var rect = node.select('rect'),
+            actualWidth = +rect.attr('width');
+
+        // must compare with a tolerance as the exact result
+        // is browser/font dependent (via getBBox)
+        expect(Math.abs(actualWidth - width)).toBeLessThan(11);
+
+        // height is determined by 'fontsize',
+        // so no such tolerance is needed
         expect(+rect.attr('height')).toEqual(height);
     }
 
-    function click(pos) {
+    function click(selection) {
         return new Promise(function(resolve) {
             setTimeout(function() {
-                mouseEvent('click', pos[0], pos[1]);
+                mouseEvent('click', selection);
                 resolve();
             }, TRANSITION_DELAY);
         });
+    }
+
+    // For some reason, ../assets/mouse_event.js fails
+    // to detect the button elements in FF38 (like on CircleCI 2016/08/02),
+    // so dispatch the mouse event directly about the nodes instead.
+    function mouseEvent(type, selection) {
+        var ev = new window.MouseEvent(type, { bubbles: true });
+        selection.node().dispatchEvent(ev);
     }
 
     function selectHeader(menuIndex) {
@@ -395,19 +405,9 @@ describe('update menus interactions', function() {
         return header;
     }
 
-    function getHeaderPos(menuIndex) {
-        var header = selectHeader(menuIndex);
-        return getRectCenter(header.select('rect').node());
-    }
-
     function selectButton(buttonIndex) {
         var buttons = d3.selectAll('.' + constants.buttonClassName),
             button = d3.select(buttons[0][buttonIndex]);
         return button;
-    }
-
-    function getButtonPos(buttonIndex) {
-        var button = selectButton(buttonIndex);
-        return getRectCenter(button.select('rect').node());
     }
 });
