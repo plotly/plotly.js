@@ -167,8 +167,8 @@ describe('update menus interactions', function() {
 
         Plotly.relayout(gd, 'updatemenus[0].visible', false).then(function() {
             assertMenus([0]);
-            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeDefined();
-            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
+            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
+            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeDefined();
 
             return Plotly.relayout(gd, 'updatemenus[1]', null);
         }).then(function() {

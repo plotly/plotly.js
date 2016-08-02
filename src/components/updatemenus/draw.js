@@ -108,9 +108,6 @@ module.exports = function draw(gd) {
     // find dimensions before plotting anything (this mutates menuOpts)
     for(var i = 0; i < menuData.length; i++) {
         var menuOpts = menuData[i];
-
-        // often more convenient than playing with two arguments
-        menuOpts._index = i;
         findDimenstions(gd, menuOpts);
     }
 
@@ -128,19 +125,30 @@ module.exports = function draw(gd) {
 
 function makeMenuData(fullLayout) {
     var contOpts = fullLayout[constants.name],
-        menuData = [];
+        menuData = [],
+        cnt = 0;
+
+    // Filter visible dropdowns and attach '_index' to each
+    // fullLayout options object to be used for 'object constancy'
+    // in the data join key function.
+    //
+    // Note that '_index' is relinked from update to update via
+    // Plots.supplyDefaults.
 
     for(var i = 0; i < contOpts.length; i++) {
         var item = contOpts[i];
 
-        if(item.visible) menuData.push(item);
+        if(item.visible) {
+            if(!item._index) item._index = cnt++;
+            menuData.push(item);
+        }
     }
 
     return menuData;
 }
 
-function keyFunction(opts, i) {
-    return opts.visible + i;
+function keyFunction(opts) {
+    return opts._index;
 }
 
 function areMenuButtonsDropped(gButton, menuOpts) {
