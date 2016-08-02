@@ -56803,7 +56803,7 @@ function drawTexts(g, gd) {
     .text(name);
 
     text.on('click', function() {
-        toggleLegendItem(g, gd);
+        // toggleLegendItem(g, gd);
     });
 
     function textLayout(s) {
