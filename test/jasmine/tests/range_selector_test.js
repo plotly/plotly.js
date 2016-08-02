@@ -426,6 +426,16 @@ describe('range selector interactions:', function() {
         });
     }
 
+    function checkButtonColor(bgColor, activeColor) {
+        d3.selectAll('.button').each(function(d) {
+            var rect = d3.select(this).select('rect');
+
+            expect(rect.style('fill')).toEqual(
+                d.isActive ? activeColor : bgColor
+            );
+        });
+    }
+
     it('should display the correct nodes', function() {
         assertNodeCount('.rangeselector', 1);
         assertNodeCount('.button', mockCopy.layout.xaxis.rangeselector.buttons.length);
@@ -451,6 +461,22 @@ describe('range selector interactions:', function() {
             return Plotly.relayout(gd, 'xaxis.rangeselector.buttons[1]', 'remove');
         }).then(function() {
             assertNodeCount('.button', len - 2);
+
+            done();
+        });
+    });
+
+    it('should be able to change its style on `relayout`', function(done) {
+        var prefix = 'xaxis.rangeselector.';
+
+        checkButtonColor('rgb(238, 238, 238)', 'rgb(212, 212, 212)');
+
+        Plotly.relayout(gd, prefix + 'bgcolor', 'red').then(function() {
+            checkButtonColor('rgb(255, 0, 0)', 'rgb(255, 128, 128)');
+
+            return Plotly.relayout(gd, prefix + 'activecolor', 'blue');
+        }).then(function() {
+            checkButtonColor('rgb(255, 0, 0)', 'rgb(0, 0, 255)');
 
             done();
         });
