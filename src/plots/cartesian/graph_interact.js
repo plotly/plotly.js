@@ -695,7 +695,7 @@ function cleanPoint(d, hovermode) {
             d.xLabel += ' +' + xeText + ' / -' +
                 Axes.tickText(d.xa, d.xa.c2l(d.xerrneg), 'hover').text;
         }
-        else d.xLabel += ' &plusmn; ' + xeText;
+        else d.xLabel += ' ± ' + xeText;
 
         // small distance penalty for error bars, so that if there are
         // traces with errors and some without, the error bar label will
@@ -708,7 +708,7 @@ function cleanPoint(d, hovermode) {
             d.yLabel += ' +' + yeText + ' / -' +
                 Axes.tickText(d.ya, d.ya.c2l(d.yerrneg), 'hover').text;
         }
-        else d.yLabel += ' &plusmn; ' + yeText;
+        else d.yLabel += ' ± ' + yeText;
 
         if(hovermode === 'y') d.distance += 1;
     }
