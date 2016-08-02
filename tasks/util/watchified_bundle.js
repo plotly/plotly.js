@@ -2,10 +2,10 @@ var fs = require('fs');
 
 var browserify = require('browserify');
 var watchify = require('watchify');
+var prettySize = require('prettysize');
 
-var compressAttributes = require('./compress_attributes');
-var formatBundleMsg = require('./format_bundle_msg');
 var constants = require('./constants');
+var compressAttributes = require('./compress_attributes');
 
 /**
  * Make a plotly.js browserify bundle function watched by watchify.
@@ -56,3 +56,34 @@ module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
 
     return bundle;
 };
+
+function formatBundleMsg(b, bundleName) {
+    var msgParts = [
+        bundleName, ':', '',
+        'written', 'in', '', 'sec',
+        '[', '', '', '', ']'
+    ];
+
+    b.on('bytes', function(bytes) {
+        msgParts[2] = prettySize(bytes, true);
+    });
+
+    b.on('time', function(time) {
+        msgParts[5] = (time / 1000).toFixed(2);
+    });
+
+    b.on('log', function() {
+        var date = new Date();
+
+        // get locale date
+        msgParts[msgParts.length - 4] = date.toLocaleDateString();
+
+        // get locale time
+        msgParts[msgParts.length - 3] = date.toLocaleTimeString();
+
+        // get time zone code
+        msgParts[msgParts.length - 2] = date.toString().match(/\(([A-Za-z\s].*)\)/)[1];
+
+        console.log(msgParts.join(' '));
+    });
+}
