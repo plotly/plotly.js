@@ -81,6 +81,11 @@ module.exports = {
         role: 'style',
         description: 'Sets the background color of the range selector buttons.'
     },
+    activecolor: {
+        valType: 'color',
+        role: 'style',
+        description: 'Sets the background color of the active range selector button.'
+    },
     bordercolor: {
         valType: 'color',
         dflt: colorAttrs.defaultLine,

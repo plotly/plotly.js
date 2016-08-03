@@ -1,6 +1,5 @@
 var RangeSelector = require('@src/components/rangeselector');
 var getUpdateObject = require('@src/components/rangeselector/get_update_object');
-var constants = require('@src/components/rangeselector/constants');
 
 var d3 = require('d3');
 var Plotly = require('@lib');
@@ -427,6 +426,16 @@ describe('range selector interactions:', function() {
         });
     }
 
+    function checkButtonColor(bgColor, activeColor) {
+        d3.selectAll('.button').each(function(d) {
+            var rect = d3.select(this).select('rect');
+
+            expect(rect.style('fill')).toEqual(
+                d.isActive ? activeColor : bgColor
+            );
+        });
+    }
+
     it('should display the correct nodes', function() {
         assertNodeCount('.rangeselector', 1);
         assertNodeCount('.button', mockCopy.layout.xaxis.rangeselector.buttons.length);
@@ -457,6 +466,22 @@ describe('range selector interactions:', function() {
         });
     });
 
+    it('should be able to change its style on `relayout`', function(done) {
+        var prefix = 'xaxis.rangeselector.';
+
+        checkButtonColor('rgb(238, 238, 238)', 'rgb(212, 212, 212)');
+
+        Plotly.relayout(gd, prefix + 'bgcolor', 'red').then(function() {
+            checkButtonColor('rgb(255, 0, 0)', 'rgb(255, 128, 128)');
+
+            return Plotly.relayout(gd, prefix + 'activecolor', 'blue');
+        }).then(function() {
+            checkButtonColor('rgb(255, 0, 0)', 'rgb(0, 0, 255)');
+
+            done();
+        });
+    });
+
     it('should update range and active button when clicked', function() {
         var range0 = gd.layout.xaxis.range[0];
         var buttons = d3.selectAll('.button').select('rect');
@@ -482,7 +507,7 @@ describe('range selector interactions:', function() {
         var pos = getRectCenter(button.node());
 
         var fillColor = Color.rgb(gd._fullLayout.xaxis.rangeselector.bgcolor);
-        var activeColor = Color.rgb(constants.activeColor);
+        var activeColor = 'rgb(212, 212, 212)';
 
         expect(button.style('fill')).toEqual(fillColor);
 
