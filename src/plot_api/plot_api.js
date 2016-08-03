@@ -364,7 +364,10 @@ function getGraphDiv(gd) {
 
 // clear the promise queue if one of them got rejected
 function clearPromiseQueue(gd) {
-    Lib.log('Clearing previous rejected promises from queue.');
+    if(Array.isArray(gd._promises) && gd._promises.length > 0) {
+        Lib.log('Clearing previous rejected promises from queue.');
+    }
+
     gd._promises = [];
 }
 
