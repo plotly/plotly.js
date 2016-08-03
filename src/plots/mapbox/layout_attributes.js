@@ -57,13 +57,14 @@ module.exports = {
         ].join(' ')
     },
     style: {
-        valType: 'string',
+        valType: 'any',
         values: ['basic', 'streets', 'outdoors', 'light', 'dark', 'satellite', 'satellite-streets'],
         dflt: 'basic',
         role: 'style',
         description: [
             'Sets the Mapbox map style.',
-            'Either input the defaults Mapbox names or the URL to a custom style.'
+            'Either input one of the default Mapbox style names or the URL to a custom style',
+            'or a valid Mapbox style JSON.'
         ].join(' ')
     },
 

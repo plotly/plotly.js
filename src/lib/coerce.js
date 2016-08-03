@@ -222,7 +222,7 @@ exports.valObjects = {
     any: {
         description: 'Any type.',
         requiredOpts: [],
-        otherOpts: ['dflt'],
+        otherOpts: ['dflt', 'values'],
         coerceFunction: function(v, propOut, dflt) {
             if(v === undefined) propOut.set(dflt);
             else propOut.set(v);

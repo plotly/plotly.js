@@ -55,6 +55,24 @@ describe('mapbox defaults', function() {
         expect(layoutOut.mapbox._input).toBe(mapbox);
     });
 
+    it('should accept both string and object style', function() {
+        var mapboxStyleJSON = {
+            id: 'cdsa213wqdsa',
+            owner: 'johnny'
+        };
+
+        layoutIn = {
+            mapbox: { style: 'light' },
+            mapbox2: { style: mapboxStyleJSON }
+        };
+
+        fullData.push({ type: 'scattermapbox', subplot: 'mapbox2' });
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.mapbox.style).toEqual('light');
+        expect(layoutOut.mapbox2.style).toBe(mapboxStyleJSON);
+    });
+
     it('should fill layer containers', function() {
         layoutIn = {
             mapbox: {
