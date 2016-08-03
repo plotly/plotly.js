@@ -27,6 +27,7 @@ var buttonsAttrs = {
     args: {
         valType: 'info_array',
         role: 'info',
+        freeLength: true,
         items: [
             { valType: 'any' },
             { valType: 'any' },

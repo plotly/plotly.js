@@ -985,6 +985,29 @@ describe('Test lib.js:', function() {
                 }]
             });
         });
+
+        it('should work for valType \'info_array\' (freeLength case)', function() {
+            var shouldPass = [
+                ['marker.color', 'red'],
+                [{ 'marker.color': 'red' }, [1, 2]]
+            ];
+            var shouldFail = [
+                ['marker.color', 'red', 'red'],
+                [{ 'marker.color': 'red' }, [1, 2], 'blue']
+            ];
+
+            assert(shouldPass, shouldFail, {
+                valType: 'info_array',
+                freeLength: true,
+                items: [{
+                    valType: 'any'
+                }, {
+                    valType: 'any'
+                }, {
+                    valType: 'number'
+                }]
+            });
+        });
     });
 
     describe('setCursor', function() {
