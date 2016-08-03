@@ -173,15 +173,37 @@ function crawl(objIn, objOut, schema, list, base, path) {
             crawl(valIn, valOut, nestedSchema, list, base, p);
         }
         else if(nestedSchema.items && !isInfoArray && isArray(valIn)) {
-            var itemName = k.substr(0, k.length - 1);
+            var itemName = k.substr(0, k.length - 1),
+                indexList = [];
 
-            for(var j = 0; j < valIn.length; j++) {
+            var j, _p;
+
+            // loop over valOut items while keeping track of their
+            // corresponding input container index (given by _index)
+            for(j = 0; j < valOut.length; j++) {
                 var _nestedSchema = nestedSchema.items[itemName],
-                    _p = p.slice();
+                    _index = valOut[j]._index || j;
 
+                _p = p.slice();
+                _p.push(_index);
+
+                if(isPlainObject(valIn[_index]) && isPlainObject(valOut[j])) {
+                    indexList.push(_index);
+                    crawl(valIn[_index], valOut[j], _nestedSchema, list, base, _p);
+                }
+            }
+
+            // loop over valIn to determine where it went wrong for some items
+            for(j = 0; j < valIn.length; j++) {
+                _p = p.slice();
                 _p.push(j);
 
-                crawl(valIn[j], valOut[j], _nestedSchema, list, base, _p);
+                if(!isPlainObject(valIn[j])) {
+                    list.push(format('object', base, _p, valIn[j]));
+                }
+                else if(indexList.indexOf(j) === -1) {
+                    list.push(format('unused', base, _p));
+                }
             }
         }
         else if(!isPlainObject(valIn) && isPlainObject(valOut)) {
