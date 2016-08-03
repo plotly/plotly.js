@@ -961,7 +961,6 @@ describe('Test axes', function() {
             expect(getAutoRange(ax)).toEqual([0, 7]);
         });
 
-        // TODO: Broken test!
         it('returns an upper bound of 0 on rangemode tozero with negative points', function() {
             ax = {
                 _min: [
@@ -1039,7 +1038,6 @@ describe('Test axes', function() {
             expect(getAutoRange(ax)).toEqual([0, 6]);
         });
 
-        // TODO: Broken test!
         it('expands empty negative range to something including 0 with rangemode tozero', function() {
             ax = {
                 _min: [
@@ -1096,7 +1094,6 @@ describe('Test axes', function() {
             expect(getAutoRange(ax)).toEqual([0, 1]);
         });
 
-        // TODO: Broken test!
         it('expands empty range to something nonnegative with rangemode nonnegative', function() {
             ax = {
                 _min: [

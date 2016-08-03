@@ -172,14 +172,27 @@ axes.getAutoRange = function(ax) {
     }
 
     if(minmin === maxmax) {
-        newRange = axReverse ?
-            [minmin + 1, ax.rangemode !== 'normal' ? 0 : minmin - 1] :
-            [ax.rangemode !== 'normal' ? 0 : minmin - 1, minmin + 1];
+        var lower = minmin - 1;
+        var upper = minmin + 1;
+        if(ax.rangemode === 'tozero') {
+            newRange = minmin < 0 ? [lower, 0] : [0, upper];
+        }
+        else if(ax.rangemode === 'nonnegative') {
+            newRange = [Math.max(0, lower), Math.max(0, upper)];
+        }
+        else {
+            newRange = [lower, upper];
+        }
     }
     else if(mbest) {
         if(ax.type === 'linear' || ax.type === '-') {
-            if(ax.rangemode === 'tozero' && minbest.val >= 0) {
-                minbest = {val: 0, pad: 0};
+            if(ax.rangemode === 'tozero') {
+                if(minbest.val >= 0) {
+                    minbest = {val: 0, pad: 0};
+                }
+                if(maxbest.val <= 0) {
+                    maxbest = {val: 0, pad: 0};
+                }
             }
             else if(ax.rangemode === 'nonnegative') {
                 if(minbest.val - mbest * minbest.pad < 0) {
@@ -193,22 +206,39 @@ axes.getAutoRange = function(ax) {
             // in case it changed again...
             mbest = (maxbest.val - minbest.val) /
                 (ax._length - minbest.pad - maxbest.pad);
+
         }
 
         newRange = [
             minbest.val - mbest * minbest.pad,
             maxbest.val + mbest * maxbest.pad
         ];
+    }
 
-        // don't let axis have zero size
-        if(newRange[0] === newRange[1]) {
+    // don't let axis have zero size, while still respecting tozero and nonnegative
+    if(newRange[0] === newRange[1]) {
+        if(ax.rangemode === 'tozero') {
+            if(newRange[0] < 0) {
+                newRange = [newRange[0], 0];
+            }
+            else if(newRange[0] > 0) {
+                newRange = [0, newRange[0]];
+            }
+            else {
+                newRange = [0, 1];
+            }
+        }
+        else {
             newRange = [newRange[0] - 1, newRange[0] + 1];
+            if(ax.rangemode === 'nonnegative') {
+                newRange[0] = Math.max(0, newRange[0]);
+            }
         }
+    }
 
-        // maintain reversal
-        if(axReverse) {
-            newRange.reverse();
-        }
+    // maintain reversal
+    if(axReverse) {
+        newRange.reverse();
     }
 
     return newRange;
