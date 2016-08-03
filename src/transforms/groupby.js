@@ -1,7 +1,7 @@
 'use strict';
 
 // var Lib = require('@src/lib');
-var Lib = require('../../../../src/lib');
+var Lib = require('../lib');
 
 /* eslint no-unused-vars: 0*/
 
