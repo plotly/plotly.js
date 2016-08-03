@@ -48,17 +48,6 @@ var buttonsAttrs = {
 module.exports = {
     _isLinkedToArray: true,
 
-    // add more global settings?
-    //
-    // width
-    // height (instead of being inferred by the label dimensions)
-    // title (above header)
-    // header borderwidth
-    // active bgcolor
-    // hover bgcolor
-    // gap between buttons
-    // gap between header & buttons
-
     visible: {
         valType: 'boolean',
         role: 'info',

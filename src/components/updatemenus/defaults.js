@@ -82,9 +82,6 @@ function buttonsDefaults(menuIn, menuOut) {
             continue;
         }
 
-        // Should we do some validation for 'args' depending on `method`
-        // or just let Plotly[method] error out?
-
         coerce('method');
         coerce('args');
         coerce('label');
