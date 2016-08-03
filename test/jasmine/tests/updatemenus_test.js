@@ -194,6 +194,27 @@ describe('update menus interactions', function() {
             expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
             expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
 
+            return Plotly.relayout(gd, {
+                'updatemenus[2]': {
+                    buttons: [{
+                        method: 'relayout',
+                        args: ['title', 'new title']
+                    }]
+                }
+            });
+        }).then(function() {
+            assertMenus([0]);
+            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeUndefined();
+            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
+            expect(gd._fullLayout._pushmargin['updatemenu-2']).toBeDefined();
+
+            return Plotly.relayout(gd, 'updatemenus[0].visible', true);
+        }).then(function() {
+            assertMenus([0, 0]);
+            expect(gd._fullLayout._pushmargin['updatemenu-0']).toBeDefined();
+            expect(gd._fullLayout._pushmargin['updatemenu-1']).toBeUndefined();
+            expect(gd._fullLayout._pushmargin['updatemenu-2']).toBeDefined();
+
             done();
         });
     });

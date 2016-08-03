@@ -125,28 +125,24 @@ module.exports = function draw(gd) {
 
 function makeMenuData(fullLayout) {
     var contOpts = fullLayout[constants.name],
-        menuData = [],
-        cnt = 0;
+        menuData = [];
 
     // Filter visible dropdowns and attach '_index' to each
     // fullLayout options object to be used for 'object constancy'
     // in the data join key function.
-    //
-    // Note that '_index' is relinked from update to update via
-    // Plots.supplyDefaults.
 
     for(var i = 0; i < contOpts.length; i++) {
         var item = contOpts[i];
 
-        if(item.visible) {
-            if(!item._index) item._index = cnt++;
-            menuData.push(item);
-        }
+        if(item.visible) menuData.push(item);
     }
 
     return menuData;
 }
 
+// Note that '_index' is set at the default step,
+// it corresponds to the menu index in the user layout update menu container.
+// This is a more 'consistent' field than e.g. the index in the menuData.
 function keyFunction(opts) {
     return opts._index;
 }

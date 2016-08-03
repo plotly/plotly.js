@@ -26,7 +26,13 @@ module.exports = function updateMenusDefaults(layoutIn, layoutOut) {
             menuOut = {};
 
         menuDefaults(menuIn, menuOut, layoutOut);
+
+        // used on button click to update the 'active' field
         menuOut._input = menuIn;
+
+        // used to determine object constancy
+        menuOut._index = i;
+
         contOut.push(menuOut);
     }
 };
