@@ -163,7 +163,8 @@ function crawl(objIn, objOut, schema, list, base, path) {
         var valIn = objIn[k],
             valOut = objOut[k];
 
-        var nestedSchema = getNestedSchema(schema, k);
+        var nestedSchema = getNestedSchema(schema, k),
+            isInfoArray = (nestedSchema || {}).valType === 'info_array';
 
         if(!isInSchema(schema, k)) {
             list.push(format('schema', base, p));
@@ -171,7 +172,7 @@ function crawl(objIn, objOut, schema, list, base, path) {
         else if(isPlainObject(valIn) && isPlainObject(valOut)) {
             crawl(valIn, valOut, nestedSchema, list, base, p);
         }
-        else if(nestedSchema.items && isArray(valIn)) {
+        else if(nestedSchema.items && !isInfoArray && isArray(valIn)) {
             var itemName = k.substr(0, k.length - 1);
 
             for(var j = 0; j < valIn.length; j++) {
@@ -186,7 +187,7 @@ function crawl(objIn, objOut, schema, list, base, path) {
         else if(!isPlainObject(valIn) && isPlainObject(valOut)) {
             list.push(format('object', base, p, valIn));
         }
-        else if(!isArray(valIn) && isArray(valOut) && nestedSchema.valType !== 'info_array') {
+        else if(!isArray(valIn) && isArray(valOut) && !isInfoArray) {
             list.push(format('array', base, p, valIn));
         }
         else if(!(k in objOut)) {

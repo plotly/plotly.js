@@ -138,6 +138,21 @@ describe('Plotly.validate', function() {
         );
     });
 
+    it('should work with info arrays', function() {
+        var out = Plotly.validate([{
+            y: [1, 2, 2]
+        }], {
+            xaxis: { range: [0, 10] },
+            yaxis: { range: 'not-gonna-work' },
+        });
+
+        expect(out.length).toEqual(1);
+        assertErrorContent(
+            out[0], 'value', 'layout', null, ['yaxis', 'range'], 'yaxis.range',
+            'In layout, key yaxis.range is set to an invalid value (not-gonna-work)'
+        );
+    });
+
     it('should work with isLinkedToArray attributes', function() {
         var out = Plotly.validate([], {
             annotations: [{
