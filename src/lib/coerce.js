@@ -233,7 +233,7 @@ exports.valObjects = {
             'An {array} of plot information.'
         ].join(' '),
         requiredOpts: ['items'],
-        otherOpts: ['dflt', 'noFixLength'],
+        otherOpts: ['dflt', 'freeLength'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(!Array.isArray(v)) {
                 propOut.set(dflt);
