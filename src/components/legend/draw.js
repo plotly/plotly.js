@@ -115,8 +115,8 @@ module.exports = function draw(gd) {
         })
         .each(function() {
             d3.select(this)
-                .call(drawTexts, gd)
-                .call(setupTraceToggle, gd);
+                .call(setupTraceToggle, gd)
+                .call(drawTexts, gd);
         });
 
     var firstRender = legend.enter().size() !== 0;
@@ -348,10 +348,14 @@ function drawTexts(g, gd) {
         y: 0,
         'data-unformatted': name
     })
-    .style('text-anchor', 'start')
+    .style('text-anchor', 'start').style('cursor', 'pointer')
     .classed('user-select-none', true)
     .call(Drawing.font, fullLayout.legend.font)
     .text(name);
+
+    text.on('click', function() {
+        toggleLegendItem(g, gd);
+    });
 
     function textLayout(s) {
         Plotly.util.convertToTspans(s, function() {
@@ -389,40 +393,52 @@ function setupTraceToggle(g, gd) {
         .call(Color.fill, 'rgba(0,0,0,0)');
 
     traceToggle.on('click', function() {
-        if(gd._dragged) return;
+        toggleLegendItem(g, gd);
+    });
+}
 
-        var legendItem = g.data()[0][0],
-            fullData = gd._fullData,
-            trace = legendItem.trace,
-            legendgroup = trace.legendgroup,
-            traceIndicesInGroup = [],
-            tracei,
-            newVisible;
+function toggleLegendItem(g, gd) {
 
-        if(Plots.traceIs(trace, 'pie')) {
-            var thisLabel = legendItem.label,
-                thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 
-            if(thisLabelIndex === -1) hiddenSlices.push(thisLabel);
-            else hiddenSlices.splice(thisLabelIndex, 1);
 
-            Plotly.relayout(gd, 'hiddenlabels', hiddenSlices);
+    if(gd._dragged) return;
+
+
+    var hiddenSlices = gd._fullLayout.hiddenlabels ?
+        gd._fullLayout.hiddenlabels.slice() :
+        [];
+
+    var legendItem = g.data()[0][0],
+        fullData = gd._fullData,
+        trace = legendItem.trace,
+        legendgroup = trace.legendgroup,
+        traceIndicesInGroup = [],
+        tracei,
+        newVisible;
+
+    if(Plots.traceIs(trace, 'pie')) {
+        var thisLabel = legendItem.label,
+            thisLabelIndex = hiddenSlices.indexOf(thisLabel);
+
+        if(thisLabelIndex === -1) hiddenSlices.push(thisLabel);
+        else hiddenSlices.splice(thisLabelIndex, 1);
+
+        Plotly.relayout(gd, 'hiddenlabels', hiddenSlices);
+    } else {
+        if (legendgroup === '') {
+            traceIndicesInGroup = [trace.index];
         } else {
-            if(legendgroup === '') {
-                traceIndicesInGroup = [trace.index];
-            } else {
-                for(var i = 0; i < fullData.length; i++) {
-                    tracei = fullData[i];
-                    if(tracei.legendgroup === legendgroup) {
-                        traceIndicesInGroup.push(tracei.index);
-                    }
+            for (var i = 0; i < fullData.length; i++) {
+                tracei = fullData[i];
+                if (tracei.legendgroup === legendgroup) {
+                    traceIndicesInGroup.push(tracei.index);
                 }
             }
-
-            newVisible = trace.visible === true ? 'legendonly' : true;
-            Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
         }
-    });
+
+        newVisible = trace.visible === true ? 'legendonly' : true;
+        Plotly.restyle(gd, 'visible', newVisible, traceIndicesInGroup);
+    }
 }
 
 function computeTextDimensions(g, gd) {
