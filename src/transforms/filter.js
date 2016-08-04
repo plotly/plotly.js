@@ -124,11 +124,11 @@ function getFilterFunc(opts) {
     //   an array of [value,value] so the
     //   filter function will work
     //   but perhaps should just error out
-    var value_arr = [];
+    var valueArr = [];
     if (!Array.isArray(value)) {
-        value_arr = [value, value];
+        valueArr = [value, value];
     } else {
-        value_arr = value;
+        valueArr = value;
     }
 
     switch(opts.operation) {
@@ -141,19 +141,19 @@ function getFilterFunc(opts) {
         case 'within':
             return function(v) {
                 // keep the = ?
-                return v >= Math.min.apply( null, value ) &&
-                      v <= Math.max.apply( null, value );
+                return v >= Math.min.apply( null, valueArr ) &&
+                      v <= Math.max.apply( null, valueArr );
             };
         case 'notwithin':
             return function(v) {
                 // keep the = ?
-                return !(v >= Math.min.apply( null, value ) &&
-                      v <= Math.max.apply( null, value ));
+                return !(v >= Math.min.apply( null, valueArr ) &&
+                      v <= Math.max.apply( null, valueArr ));
             };
         case 'in':
-            return function(v) { return value.indexOf(v) >= 0 };
+            return function(v) { return valueArr.indexOf(v) >= 0 };
         case 'notin':
-            return function(v) { return value.indexOf(v) === -1 };
+            return function(v) { return valueArr.indexOf(v) === -1 };
     }
 }
 
