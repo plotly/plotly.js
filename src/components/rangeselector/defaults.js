@@ -69,6 +69,7 @@ function buttonsDefaults(containerIn, containerOut) {
 
         coerce('label');
 
+        buttonOut._index = i;
         buttonsOut.push(buttonOut);
     }
 

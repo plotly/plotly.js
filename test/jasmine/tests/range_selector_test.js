@@ -55,7 +55,8 @@ describe('range selector defaults:', function() {
         expect(containerOut.rangeselector.buttons).toEqual([{
             step: 'month',
             stepmode: 'backward',
-            count: 1
+            count: 1,
+            _index: 0
         }]);
     });
 
@@ -96,8 +97,8 @@ describe('range selector defaults:', function() {
 
         expect(containerOut.rangeselector.visible).toBe(true);
         expect(containerOut.rangeselector.buttons).toEqual([
-            { step: 'year', stepmode: 'backward', count: 10 },
-            { step: 'month', stepmode: 'backward', count: 6 }
+            { step: 'year', stepmode: 'backward', count: 10, _index: 0 },
+            { step: 'month', stepmode: 'backward', count: 6, _index: 1 }
         ]);
     });
 
@@ -116,7 +117,8 @@ describe('range selector defaults:', function() {
 
         expect(containerOut.rangeselector.buttons).toEqual([{
             step: 'all',
-            label: 'full range'
+            label: 'full range',
+            _index: 0
         }]);
     });
 

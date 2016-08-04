@@ -64,7 +64,8 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
             method: 'relayout',
             args: ['title', 'Hello World'],
-            label: ''
+            label: '',
+            _index: 1
         });
     });
 
@@ -87,7 +88,8 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].buttons[0]).toEqual({
             method: 'relayout',
             args: ['title', 'Hello World'],
-            label: ''
+            label: '',
+            _index: 1
         });
     });
 

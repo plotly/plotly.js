@@ -233,7 +233,7 @@ exports.valObjects = {
             'An {array} of plot information.'
         ].join(' '),
         requiredOpts: ['items'],
-        otherOpts: ['dflt'],
+        otherOpts: ['dflt', 'freeLength'],
         coerceFunction: function(v, propOut, dflt, opts) {
             if(!Array.isArray(v)) {
                 propOut.set(dflt);
@@ -255,10 +255,11 @@ exports.valObjects = {
 
             var items = opts.items;
 
-            if(v.length !== items.length) return false;
+            // when free length is off, input and declared lengths must match
+            if(!opts.freeLength && v.length !== items.length) return false;
 
-            // valid when all items are valid
-            for(var i = 0; i < items.length; i++) {
+            // valid when all input items are valid
+            for(var i = 0; i < v.length; i++) {
                 var isItemValid = exports.validate(v[i], opts.items[i]);
 
                 if(!isItemValid) return false;

@@ -138,6 +138,21 @@ describe('Plotly.validate', function() {
         );
     });
 
+    it('should work with info arrays', function() {
+        var out = Plotly.validate([{
+            y: [1, 2, 2]
+        }], {
+            xaxis: { range: [0, 10] },
+            yaxis: { range: 'not-gonna-work' },
+        });
+
+        expect(out.length).toEqual(1);
+        assertErrorContent(
+            out[0], 'value', 'layout', null, ['yaxis', 'range'], 'yaxis.range',
+            'In layout, key yaxis.range is set to an invalid value (not-gonna-work)'
+        );
+    });
+
     it('should work with isLinkedToArray attributes', function() {
         var out = Plotly.validate([], {
             annotations: [{
@@ -154,7 +169,7 @@ describe('Plotly.validate', function() {
                         label: '1 month',
                         step: 'all',
                         count: 10
-                    }, {
+                    }, 'wont-work', {
                         title: '1 month'
                     }]
                 }
@@ -175,10 +190,25 @@ describe('Plotly.validate', function() {
             },
             shapes: [{
                 opacity: 'none'
+            }],
+            updatemenus: [{
+                buttons: [{
+                    method: 'restyle',
+                    args: ['marker.color', 'red']
+                }]
+            }, 'wont-work', {
+                buttons: [{
+                    method: 'restyle',
+                    args: null
+                }, {
+                    method: 'relayout',
+                    args: ['marker.color', 'red'],
+                    title: 'not-gonna-work'
+                }, 'wont-work']
             }]
         });
 
-        expect(out.length).toEqual(7);
+        expect(out.length).toEqual(12);
         assertErrorContent(
             out[0], 'schema', 'layout', null,
             ['annotations', 1, 'arrowSymbol'], 'annotations[1].arrowSymbol',
@@ -197,26 +227,47 @@ describe('Plotly.validate', function() {
         );
         assertErrorContent(
             out[3], 'schema', 'layout', null,
-            ['xaxis', 'rangeselector', 'buttons', 1, 'title'],
-            'xaxis.rangeselector.buttons[1].title',
-            'In layout, key xaxis.rangeselector.buttons[1].title is not part of the schema'
+            ['xaxis', 'rangeselector', 'buttons', 2, 'title'],
+            'xaxis.rangeselector.buttons[2].title',
+            'In layout, key xaxis.rangeselector.buttons[2].title is not part of the schema'
         );
         assertErrorContent(
-            out[4], 'schema', 'layout', null,
+            out[4], 'object', 'layout', null,
+            ['xaxis', 'rangeselector', 'buttons', 1],
+            'xaxis.rangeselector.buttons[1]',
+            'In layout, key xaxis.rangeselector.buttons[1] must be linked to an object container'
+        );
+        assertErrorContent(
+            out[5], 'schema', 'layout', null,
             ['xaxis2', 'rangeselector', 'buttons', 0, 'title'],
             'xaxis2.rangeselector.buttons[0].title',
             'In layout, key xaxis2.rangeselector.buttons[0].title is not part of the schema'
         );
         assertErrorContent(
-            out[5], 'array', 'layout', null,
+            out[6], 'array', 'layout', null,
             ['xaxis3', 'rangeselector', 'buttons'],
             'xaxis3.rangeselector.buttons',
             'In layout, key xaxis3.rangeselector.buttons must be linked to an array container'
         );
         assertErrorContent(
-            out[6], 'value', 'layout', null,
+            out[7], 'value', 'layout', null,
             ['shapes', 0, 'opacity'], 'shapes[0].opacity',
             'In layout, key shapes[0].opacity is set to an invalid value (none)'
+        );
+        assertErrorContent(
+            out[8], 'schema', 'layout', null,
+            ['updatemenus', 2, 'buttons', 1, 'title'], 'updatemenus[2].buttons[1].title',
+            'In layout, key updatemenus[2].buttons[1].title is not part of the schema'
+        );
+        assertErrorContent(
+            out[9], 'unused', 'layout', null,
+            ['updatemenus', 2, 'buttons', 0], 'updatemenus[2].buttons[0]',
+            'In layout, key updatemenus[2].buttons[0] did not get coerced'
+        );
+        assertErrorContent(
+            out[10], 'object', 'layout', null,
+            ['updatemenus', 2, 'buttons', 2], 'updatemenus[2].buttons[2]',
+            'In layout, key updatemenus[2].buttons[2] must be linked to an object container'
         );
     });
 
