@@ -6,9 +6,7 @@ var Fuse = require('fuse.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
 var credentials = require('../../build/credentials.json');
 var Lib = require('@src/lib');
-
-// put d3 in window scope
-var d3 = window.d3 = Plotly.d3;
+var d3 = Plotly.d3;
 
 // Our gracious testing object
 var Tabs = {
@@ -140,7 +138,7 @@ var Tabs = {
         var interval = setInterval(function() {
             if(window.Plotly) {
                 clearInterval(interval);
-                Tabs.setPlotConfig();
+                handleOnLoad();
                 Tabs.onReload();
             }
         }, 100);
@@ -151,14 +149,13 @@ var Tabs = {
 // Bind things to the window
 window.Tabs = Tabs;
 window.Lib = Lib;
+window.d3 = d3;
+window.onload = handleOnLoad;
 setInterval(function() {
     window.gd = Tabs.getGraph() || Tabs.fresh();
     window.fullLayout = window.gd._fullLayout;
     window.fullData = window.gd._fullData;
 }, 1000);
-
-// Set plot config on first load
-Tabs.setPlotConfig();
 
 // Mocks search and plotting
 var f = new Fuse(mocks, {
@@ -176,14 +173,6 @@ var mocksList = document.getElementById('mocks-list');
 var plotArea = document.getElementById('plots');
 
 searchBar.addEventListener('keyup', debounce(searchMocks, 250));
-
-window.onload = function() {
-    var initialMock = window.location.hash.replace(/^#/, '');
-
-    if(initialMock.length > 0) {
-        Tabs.plotMock(initialMock);
-    }
-};
 
 function debounce(func, wait, immediate) {
     var timeout;
@@ -207,7 +196,6 @@ function searchMocks(e) {
         mocksList.removeChild(mocksList.firstChild);
     }
 
-
     var results = f.search(e.target.value);
 
     results.forEach(function(r) {
@@ -230,4 +218,17 @@ function searchMocks(e) {
         var plotAreaWidth = Math.floor(window.innerWidth - listWidth);
         plotArea.setAttribute('style', 'width: ' + plotAreaWidth + 'px;');
     });
+}
+
+function plotFromHash() {
+    var initialMock = window.location.hash.replace(/^#/, '');
+
+    if(initialMock.length > 0) {
+        Tabs.plotMock(initialMock);
+    }
+}
+
+function handleOnLoad() {
+    Tabs.setPlotConfig();
+    plotFromHash();
 }
