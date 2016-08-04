@@ -57,20 +57,19 @@ exports.plot = function(gd, traces, transitionOpts) {
 
             // Skip trace if whitelist provided and it's not whitelisted:
             // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
-
             if(trace.xaxis + trace.yaxis === subplot) {
-                // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
-                // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
-                // is outdated. So this retroactively adds the previous trace if the
-                // traces are interdependent.
-                if(pcd &&
-                        ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 &&
-                        cdSubplot.indexOf(pcd) === -1) {
-                    cdSubplot.push(pcd);
-                }
-
                 // If this trace is specifically requested, add it to the list:
                 if(traces.indexOf(trace.index) !== -1) {
+                    // Okay, so example: traces 0, 1, and 2 have fill = tonext. You animate
+                    // traces 0 and 2. Trace 1 also needs to be updated, otherwise its fill
+                    // is outdated. So this retroactively adds the previous trace if the
+                    // traces are interdependent.
+                    if(pcd &&
+                            ['tonextx', 'tonexty', 'tonext'].indexOf(trace.fill) !== -1 &&
+                            cdSubplot.indexOf(pcd) === -1) {
+                        cdSubplot.push(pcd);
+                    }
+
                     cdSubplot.push(cd);
                 }
 
