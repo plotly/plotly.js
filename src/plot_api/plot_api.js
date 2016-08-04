@@ -2591,7 +2591,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             Lib.extendDeepNoArrays(gd.data[traceIndices[i]], update);
         }
 
-        Plots.supplyDefaults(gd);
+        Plots.supplyDataDefaults(gd.data, gd._fullData, gd._fullLayout);
 
         // TODO: Add logic that computes transitionedTraces to avoid unnecessary work while
         // still handling things like box plots that are interrelated.

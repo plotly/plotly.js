@@ -617,7 +617,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
                 editX = ew && xa.indexOf(xa2) !== -1 && !xa2.fixedrange,
                 editY = ns && ya.indexOf(ya2) !== -1 && !ya2.fixedrange;
 
-
             var xScaleFactor = editX ? xa2._length / viewBox[2] : 1,
                 yScaleFactor = editY ? ya2._length / viewBox[3] : 1;
 
