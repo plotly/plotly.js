@@ -80,6 +80,20 @@ describe('mapbox defaults', function() {
         expect(layoutOut.mapbox.layers[1].sourcetype).toEqual('geojson');
     });
 
+    it('should skip over non-object layer containers', function() {
+        layoutIn = {
+            mapbox: {
+                layers: [{}, null, 'remove', {}]
+            }
+        };
+
+        supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        expect(layoutOut.mapbox.layers[0].sourcetype).toEqual('geojson');
+        expect(layoutOut.mapbox.layers[0]._index).toEqual(0);
+        expect(layoutOut.mapbox.layers[1].sourcetype).toEqual('geojson');
+        expect(layoutOut.mapbox.layers[1]._index).toEqual(3);
+    });
+
     it('should coerce \'sourcelayer\' only for *vector* \'sourcetype\'', function() {
         layoutIn = {
             mapbox: {
