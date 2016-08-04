@@ -55,10 +55,10 @@ if(mockList.length === 0) {
     throw new Error('No mocks found with pattern ' + pattern);
 }
 
-mockList = mockList.filter(untestableFilter);
-
-if(mockList.length === 0) {
-    throw new Error('All mocks found with pattern ' + pattern + ' are currently untestable');
+// filter out untestable mocks if no pattern is specified
+if(!pattern) {
+    console.log('Filtering out untestable mocks\n');
+    mockList = mockList.filter(untestableFilter);
 }
 
 // main
