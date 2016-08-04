@@ -610,9 +610,9 @@ function relinkPrivateKeys(toContainer, fromContainer) {
 
             toContainer[k] = fromVal;
         }
-        else if(isArray(fromVal) && isArray(toVal)) {
+        else if(isArray(fromVal) && isArray(toVal) && isPlainObject(fromVal[0])) {
 
-            // recurse into arrays
+            // recurse into arrays containers
             for(var j = 0; j < fromVal.length; j++) {
                 if(isPlainObject(fromVal[j]) && isPlainObject(toVal[j])) {
                     relinkPrivateKeys(toVal[j], fromVal[j]);

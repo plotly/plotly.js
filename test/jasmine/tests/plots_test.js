@@ -50,6 +50,8 @@ describe('Test Plots', function() {
 
             Plots.supplyDefaults(gd);
 
+            expect(gd._fullData[0].z).toBe(newData[0].z);
+            expect(gd._fullData[1].z).toBe(newData[1].z);
             expect(gd._fullData[1]._empties).toBe(oldFullData[1]._empties);
             expect(gd._fullLayout.scene._scene).toBe(oldFullLayout.scene._scene);
             expect(gd._fullLayout._plots).toBe(oldFullLayout._plots);
