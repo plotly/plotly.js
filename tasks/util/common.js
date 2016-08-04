@@ -46,6 +46,17 @@ exports.formatTime = function(date) {
     ].join(' ');
 };
 
+exports.getTimeLastModified = function(filePath) {
+    if(!exports.doesFileExist(filePath)) {
+        throw new Error(filePath + ' does not exist');
+    }
+
+    var stats = fs.statSync(filePath),
+        formattedTime = exports.formatTime(stats.mtime);
+
+    return formattedTime;
+};
+
 exports.touch = function(filePath) {
     fs.closeSync(fs.openSync(filePath, 'w'));
 };
