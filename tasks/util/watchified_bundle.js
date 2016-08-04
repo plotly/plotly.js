@@ -5,6 +5,7 @@ var watchify = require('watchify');
 var prettySize = require('prettysize');
 
 var constants = require('./constants');
+var common = require('./common');
 var compressAttributes = require('./compress_attributes');
 
 /**
@@ -61,7 +62,7 @@ function formatBundleMsg(b, bundleName) {
     var msgParts = [
         bundleName, ':', '',
         'written', 'in', '', 'sec',
-        '[', '', '', '', ']'
+        '[', '', ']'
     ];
 
     b.on('bytes', function(bytes) {
@@ -73,16 +74,9 @@ function formatBundleMsg(b, bundleName) {
     });
 
     b.on('log', function() {
-        var date = new Date();
+        var formattedTime = common.formatTime(new Date());
 
-        // get locale date
-        msgParts[msgParts.length - 4] = date.toLocaleDateString();
-
-        // get locale time
-        msgParts[msgParts.length - 3] = date.toLocaleTimeString();
-
-        // get time zone code
-        msgParts[msgParts.length - 2] = date.toString().match(/\(([A-Za-z\s].*)\)/)[1];
+        msgParts[msgParts.length - 2] = formattedTime;
 
         console.log(msgParts.join(' '));
     });

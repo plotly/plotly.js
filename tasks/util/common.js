@@ -38,6 +38,14 @@ exports.doesFileExist = function(filePath) {
     return false;
 };
 
+exports.formatTime = function(date) {
+    return [
+        date.toLocaleDateString(),
+        date.toLocaleTimeString(),
+        date.toString().match(/\(([A-Za-z\s].*)\)/)[1]
+    ].join(' ');
+};
+
 exports.touch = function(filePath) {
     fs.closeSync(fs.openSync(filePath, 'w'));
 };
