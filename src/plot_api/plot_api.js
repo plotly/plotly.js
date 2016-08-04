@@ -2573,7 +2573,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             var trace = gd._fullData[traceIdx];
             var module = trace._module;
 
-            if(!module.animatable) {
+            if(!module || !module.animatable) {
                 continue;
             }
 
@@ -2658,6 +2658,8 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         traceIdx = traceIndices[i];
         var contFull = gd._fullData[traceIdx];
         var module = contFull._module;
+
+        if (!module) continue;
 
         if(!module.animatable) {
             var thisUpdate = {};
