@@ -86,10 +86,7 @@ describe('plot schema', function() {
                             .concat(['valType', 'description', 'role']);
 
                     Object.keys(attr).forEach(function(key) {
-                        // handle the histogram marker.color case
-                        if(opts.indexOf(key) === -1 && opts[key] === undefined) return;
-
-                        expect(opts.indexOf(key) !== -1).toBe(true);
+                        expect(opts.indexOf(key) !== -1).toBe(true, key, attr);
                     });
                 }
             }
