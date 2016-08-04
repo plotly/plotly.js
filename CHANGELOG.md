@@ -10,6 +10,32 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.16.0] -- 2016-08-04
+
+### Added
+- Add `updatemenus` (aka dropdowns) layout components [#770]
+- Trace type `scattermapbox` is now part of the main bundle [#816]
+- Add support for `plot` in child windows [#764, #806]
+- Horizontal legends with many items are now wrapped into multiple lines [#786]
+- Active color of range selector button is now configurable via `activecolor`
+  [#796]
+- Add support for mapbox style JSON [#795]
+
+### Changed
+- Promise queue is cleared on `restyle` and `relayout` instead of in
+  the `plot` catch handler (which ate up user-defined catch handlers as of
+  1.15.0) [#776, #789]
+- Improve performance in `convertToSVG` step [#791, #804]
+
+### Fixed
+- Skip over non-container arrays in relink private key step (performance bug
+  introduced in 1.15.0) [#817]
+- Categorical heatmap traces with insufficient brick are now functional again
+  (bug introduced in 1.14.0) [#783, #812]
+- Fix `Plotly.validate` for info and container array attributes [#814, #819]
+- Range selector buttons can now be deleted via `relayout` [#793]
+
+
 ## [1.15.0] -- 2016-07-25
 
 ### Added
