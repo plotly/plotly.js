@@ -158,6 +158,28 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         zb,
         corners;
 
+    function recomputeAxisLists() {
+        xa = [plotinfo.x()];
+        ya = [plotinfo.y()];
+        pw = xa[0]._length;
+        ph = ya[0]._length;
+
+        for(var i = 1; i < subplots.length; i++) {
+            var subplotXa = subplots[i].x(),
+                subplotYa = subplots[i].y();
+            if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
+            if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
+        }
+        allaxes = xa.concat(ya);
+        xActive = isDirectionActive(xa, ew);
+        yActive = isDirectionActive(ya, ns);
+        cursor = getDragCursor(yActive + xActive, fullLayout.dragmode);
+        xs = plotinfo.x()._offset;
+        ys = plotinfo.y()._offset;
+        dragOptions.xa = xa;
+        dragOptions.ya = ya;
+    }
+
     function zoomPrep(e, startX, startY) {
         var dragBBox = dragger.getBoundingClientRect();
         x0 = startX - dragBBox.left;
@@ -358,6 +380,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             fullLayout._plots[plotinfo.mainplot] : plotinfo;
 
     function zoomWheel(e) {
+        recomputeAxisLists();
         // deactivate mousewheel scrolling on embedded graphs
         // devs can override this with layout._enablescrollzoom,
         // but _ ensures this setting won't leave their page
@@ -433,6 +456,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // plotDrag: move the plot in response to a drag
     function plotDrag(dx, dy) {
+        recomputeAxisLists();
+
         function dragAxList(axList, pix) {
             for(var i = 0; i < axList.length; i++) {
                 var axi = axList[i];
@@ -606,6 +631,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     // affected by this drag, and update them. look for all plots
     // sharing an affected axis (including the one being dragged)
     function updateSubplots(viewBox) {
+        var j;
         var plotinfos = fullLayout._plots,
             subplots = Object.keys(plotinfos);
 
@@ -614,8 +640,30 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var subplot = plotinfos[subplots[i]],
                 xa2 = subplot.x(),
                 ya2 = subplot.y(),
-                editX = ew && xa.indexOf(xa2) !== -1 && !xa2.fixedrange,
-                editY = ns && ya.indexOf(ya2) !== -1 && !ya2.fixedrange;
+                editX = ew && !xa2.fixedrange,
+                editY = ns && !ya2.fixedrange;
+
+            if(editX) {
+                var isInX = false;
+                for(j = 0; j < xa.length; j++) {
+                    if(xa[j]._id === xa2._id) {
+                        isInX = true;
+                        break;
+                    }
+                }
+                editX = editX && isInX;
+            }
+
+            if(editY) {
+                var isInY = false;
+                for(j = 0; j < ya.length; j++) {
+                    if(ya[j]._id === ya2._id) {
+                        isInY = true;
+                        break;
+                    }
+                }
+                editY = editY && isInY;
+            }
 
             var xScaleFactor = editX ? xa2._length / viewBox[2] : 1,
                 yScaleFactor = editY ? ya2._length / viewBox[3] : 1;

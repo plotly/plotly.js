@@ -2600,6 +2600,15 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         doCalcdata(gd);
 
         ErrorBars.calc(gd);
+
+        // While transitions are occuring, occurring, we get a double-transform
+        // issue if we transform the drawn layer *and* use the new axis range to
+        // draw the data. This causes setConvert to use the pre-interaction values
+        // of the axis range:
+        var axList = Plotly.Axes.list(gd);
+        for(i = 0; i < axList.length; i++) {
+            axList[i].setScale(true);
+        }
     }
 
     var restyleList = [];
@@ -2659,7 +2668,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         var contFull = gd._fullData[traceIdx];
         var module = contFull._module;
 
-        if (!module) continue;
+        if(!module) continue;
 
         if(!module.animatable) {
             var thisUpdate = {};
