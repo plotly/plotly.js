@@ -1,7 +1,6 @@
 var path = require('path');
 var constants = require('../../../tasks/util/constants');
 
-var DEFAULT_URL = 'http://localhost:9010/';
 var DEFAULT_FORMAT = 'png';
 var DEFAULT_SCALE = 1;
 
@@ -26,7 +25,7 @@ module.exports = function getRequestOpts(specs) {
 
     return {
         method: 'POST',
-        url: specs.url || DEFAULT_URL,
+        url: constants.testContainerUrl,
         body: JSON.stringify(body)
     };
 };

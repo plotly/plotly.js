@@ -6,6 +6,7 @@ var falafel = require('falafel');
 var glob = require('glob');
 
 var constants = require('./util/constants');
+var common = require('./util/common');
 
 // main
 addHeadersInDistFiles();
@@ -14,9 +15,7 @@ updateHeadersInSrcFiles();
 // add headers to dist files
 function addHeadersInDistFiles() {
     function _prepend(path, header) {
-        prependFile(path, header + '\n', function(err) {
-            if(err) throw err;
-        });
+        prependFile(path, header + '\n', common.throwOnError);
     }
 
     // add header to main dist bundles
@@ -77,9 +76,7 @@ function updateHeadersInSrcFiles() {
 
                     var newCode = licenseSrc + '\n' + codeLines.join('\n');
 
-                    fs.writeFile(file, newCode, function(err) {
-                        if(err) throw err;
-                    });
+                    common.writeFile(file, newCode);
                 }
                 else {
                     // otherwise, throw an error

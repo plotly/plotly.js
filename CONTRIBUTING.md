@@ -38,26 +38,21 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 
 #### Step 1: Clone the plotly.js repo and install its dependencies
 
-```
+```bash
 git clone https://github.com/plotly/plotly.js.git
 cd plotly.js
 npm install
 ```
 
-#### Step 2: Setup Mapbox access token
-
-As of `v1.13.0`, plotly.js includes a [`mapbox-gl`](https://github.com/mapbox/mapbox-gl-js) integration. Creating `mapbox-gl` graphs requires an
-[`accessToken`](https://www.mapbox.com/help/define-access-token/). To make sure
-that the plotly.js test suites and devtools work properly, locate your Mapbox access
-token and run:
+#### Step 2: Setup test environment
 
 ```bash
-export MAPBOX_ACCESS_TOKEN="<your access token>" && npm run pretest
+npm run pretest
 ```
 
 #### Step 3: Start the test dashboard
 
-```
+```bash
 npm start
 ```
 

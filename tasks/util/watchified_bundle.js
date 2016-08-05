@@ -2,10 +2,11 @@ var fs = require('fs');
 
 var browserify = require('browserify');
 var watchify = require('watchify');
+var prettySize = require('prettysize');
 
-var compressAttributes = require('./compress_attributes');
-var formatBundleMsg = require('./format_bundle_msg');
 var constants = require('./constants');
+var common = require('./common');
+var compressAttributes = require('./compress_attributes');
 
 /**
  * Make a plotly.js browserify bundle function watched by watchify.
@@ -56,3 +57,27 @@ module.exports = function makeWatchifiedBundle(onFirstBundleCallback) {
 
     return bundle;
 };
+
+function formatBundleMsg(b, bundleName) {
+    var msgParts = [
+        bundleName, ':', '',
+        'written', 'in', '', 'sec',
+        '[', '', ']'
+    ];
+
+    b.on('bytes', function(bytes) {
+        msgParts[2] = prettySize(bytes, true);
+    });
+
+    b.on('time', function(time) {
+        msgParts[5] = (time / 1000).toFixed(2);
+    });
+
+    b.on('log', function() {
+        var formattedTime = common.formatTime(new Date());
+
+        msgParts[msgParts.length - 2] = formattedTime;
+
+        console.log(msgParts.join(' '));
+    });
+}
