@@ -15,6 +15,7 @@ var Axes = require('../../plots/cartesian/axes');
 module.exports = function linePoints(d, opts) {
     var xa = opts.xaxis,
         ya = opts.yaxis,
+        simplify = opts.simplify,
         connectGaps = opts.connectGaps,
         baseTolerance = opts.baseTolerance,
         linear = opts.linear,
@@ -47,6 +48,10 @@ module.exports = function linePoints(d, opts) {
         clusterMinDeviation,
         clusterMaxDeviation,
         thisDeviation;
+
+    if(!simplify) {
+        baseTolerance = minTolerance = -1;
+    }
 
     // turn one calcdata point into pixel coordinates
     function getPt(index) {

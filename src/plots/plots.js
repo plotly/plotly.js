@@ -453,6 +453,10 @@ plots.sendDataToCloud = function(gd) {
 // gd._fullLayout._basePlotModules
 //   is a list of all the plot modules required to draw the plot.
 //
+// gd._frameData
+//   object containing frame definitions (_frameData._frames) and
+//   associated metadata.
+//
 plots.supplyDefaults = function(gd) {
     var oldFullLayout = gd._fullLayout || {},
         newFullLayout = gd._fullLayout = {},
@@ -508,6 +512,15 @@ plots.supplyDefaults = function(gd) {
     // relink functions and _ attributes to promote consistency between plots
     relinkPrivateKeys(newFullLayout, oldFullLayout);
 
+    // XXX: This is a hack that should be refactored by more generally removing the
+    // need for relinkPrivateKeys
+    var subplots = plots.getSubplotIds(newFullLayout, 'cartesian');
+    for(i = 0; i < subplots.length; i++) {
+        var subplot = newFullLayout._plots[subplots[i]];
+        subplot.xaxis = newFullLayout[subplot.xaxis._name];
+        subplot.yaxis = newFullLayout[subplot.yaxis._name];
+    }
+
     plots.doAutoMargin(gd);
 
     // can't quite figure out how to get rid of this... each axis needs
@@ -525,6 +538,31 @@ plots.supplyDefaults = function(gd) {
             var trace = newFullData[i];
             (gd.calcdata[i][0] || {}).trace = trace;
         }
+    }
+
+    // Set up the default keyframe if it doesn't exist:
+    if(!gd._frameData) {
+        gd._frameData = {};
+    }
+
+    if(!gd._frameData._frames) {
+        gd._frameData._frames = [];
+    }
+
+    if(!gd._frameData._frameHash) {
+        gd._frameData._frameHash = {};
+    }
+
+    if(!gd._frameData._counter) {
+        gd._frameData._counter = 0;
+    }
+
+    if(!gd._frameData._layoutInterrupts) {
+        gd._frameData._layoutInterrupts = [];
+    }
+
+    if(!gd._frameData._styleInterrupts) {
+        gd._frameData._styleInterrupts = [];
     }
 };
 
@@ -568,12 +606,17 @@ plots.cleanPlot = function(newFullData, newFullLayout, oldFullData, oldFullLayou
             if(oldUid === newTrace.uid) continue oldLoop;
         }
 
-        // clean old heatmap and contour traces
+        // clean old heatmap, contour, and scatter traces
+        //
+        // Note: This is also how scatter traces (cartesian and scatterternary) get
+        // removed since otherwise the scatter module is not called (and so the join
+        // doesn't register the removal) if scatter traces disappear entirely.
         if(hasPaper) {
             oldFullLayout._paper.selectAll(
                 '.hm' + oldUid +
                 ',.contour' + oldUid +
-                ',#clip' + oldUid
+                ',#clip' + oldUid +
+                ',.trace' + oldUid
             ).remove();
         }
 
@@ -923,6 +966,7 @@ plots.purge = function(gd) {
     delete gd.numboxes;
     delete gd._hoverTimer;
     delete gd._lastHoverTime;
+    delete gd._frameData;
 
     // remove all event listeners
     if(gd.removeAllListeners) gd.removeAllListeners();
@@ -1186,4 +1230,69 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
     if(gd.framework && gd.framework.isPolar) obj = gd.framework.getConfig();
 
     return (output === 'object') ? obj : JSON.stringify(obj);
+};
+
+/**
+ * Modify a keyframe using a list of operations:
+ *
+ * @param {array of objects} operations
+ *      Sequence of operations to be performed on the keyframes
+ */
+plots.modifyFrames = function(gd, operations) {
+    var i, op, frame;
+    var _frames = gd._frameData._frames;
+    var _hash = gd._frameData._frameHash;
+
+    for(i = 0; i < operations.length; i++) {
+        op = operations[i];
+
+        switch(op.type) {
+            // No reason this couldn't exist, but is currently unused/untested:
+            /*case 'rename':
+                frame = _frames[op.index];
+                delete _hash[frame.name];
+                _hash[op.name] = frame;
+                frame.name = op.name;
+                break;*/
+            case 'replace':
+                frame = op.value;
+                var oldName = _frames[op.index].name;
+                var newName = frame.name;
+                _frames[op.index] = _hash[newName] = frame;
+
+                if(newName !== oldName) {
+                    // If name has changed in addition to replacement, then update
+                    // the lookup table:
+                    delete _hash[oldName];
+                    _hash[newName] = frame;
+                }
+
+                break;
+            case 'insert':
+                frame = op.value;
+                _hash[frame.name] = frame;
+                _frames.splice(op.index, 0, frame);
+                break;
+            case 'delete':
+                frame = _frames[op.index];
+                delete _hash[frame.name];
+                _frames.splice(op.index, 1);
+                break;
+        }
+    }
+
+    return Promise.resolve();
+};
+
+/*
+ * Compute a keyframe. Merge a keyframe into its base frame(s) and
+ * expand properties.
+ *
+ * @param {string} frame
+ *      The name of the keyframe to be computed
+ *
+ * Returns: a new object with the merged content
+ */
+plots.computeFrame = function(gd, frameName) {
+    return Lib.computeFrame(gd._frameData._frameHash, frameName);
 };

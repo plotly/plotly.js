@@ -309,7 +309,7 @@ describe('Plotly.validate', function() {
     it('should work with attributes in registered transforms', function() {
         var base = {
             x: [-2, -1, -2, 0, 1, 2, 3],
-            y: [1, 2, 3, 1, 2, 3, 1],
+            y: [1, 2, 3, 1, 2, 3, 1]
         };
 
         var out = Plotly.validate([
@@ -337,7 +337,7 @@ describe('Plotly.validate', function() {
                 transforms: [{
                     type: 'no gonna work'
                 }]
-            }),
+            })
         ], {
             title: 'my transformed graph'
         });

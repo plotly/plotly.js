@@ -25,7 +25,7 @@ describe('Test Plots', function() {
                 xaxis: { c2p: function() {} },
                 yaxis: { _m: 20 },
                 scene: { _scene: {} },
-                annotations: [{ _min: 10, }, { _max: 20 }],
+                annotations: [{ _min: 10 }, { _max: 20 }],
                 someFunc: function() {}
             };
 

@@ -572,6 +572,39 @@ lib.objectFromPath = function(path, value) {
 
     return obj;
 };
+/**
+ * Iterate through an object in-place, converting dotted properties to objects.
+ *
+ * @example
+ * lib.expandObjectPaths({'nested.test.path': 'value'});
+ * // returns { nested: { test: {path: 'value'}}}
+ */
+
+// Store this to avoid recompiling regex on every prop since this may happen many
+// many times for animations.
+// TODO: Premature optimization? Remove?
+var dottedPropertyRegex = /^([^\.]*)\../;
+
+lib.expandObjectPaths = function(data) {
+    var match, key, prop, datum;
+    if(typeof data === 'object' && !Array.isArray(data)) {
+        for(key in data) {
+            if(data.hasOwnProperty(key)) {
+                if((match = key.match(dottedPropertyRegex))) {
+                    datum = data[key];
+                    prop = match[1];
+
+                    delete data[key];
+
+                    data[prop] = lib.extendDeepNoArrays(data[prop] || {}, lib.objectFromPath(key, lib.expandObjectPaths(datum))[prop]);
+                } else {
+                    data[key] = lib.expandObjectPaths(data[key]);
+                }
+            }
+        }
+    }
+    return data;
+};
 
 /**
  * Converts value to string separated by the provided separators.
@@ -615,4 +648,90 @@ lib.numSeparate = function(value, separators) {
     }
 
     return x1 + x2;
+};
+
+/*
+ * Compute a keyframe. Merge a keyframe into its base frame(s) and
+ * expand properties.
+ *
+ * @param {object} frameLookup
+ *      An object containing frames keyed by name (i.e. gd._frameData._frameHash)
+ * @param {string} frame
+ *      The name of the keyframe to be computed
+ *
+ * Returns: a new object with the merged content
+ */
+lib.computeFrame = function(frameLookup, frameName) {
+    var i, traceIndices, traceIndex, expandedObj, destIndex, copy;
+
+    var framePtr = frameLookup[frameName];
+
+    // Return false if the name is invalid:
+    if(!framePtr) {
+        return false;
+    }
+
+    var frameStack = [framePtr];
+    var frameNameStack = [framePtr.name];
+
+    // Follow frame pointers:
+    while((framePtr = frameLookup[framePtr.baseFrame])) {
+        // Avoid infinite loops:
+        if(frameNameStack.indexOf(framePtr.name) !== -1) break;
+
+        frameStack.push(framePtr);
+        frameNameStack.push(framePtr.name);
+    }
+
+    // A new object for the merged result:
+    var result = {};
+
+    // Merge, starting with the last and ending with the desired frame:
+    while((framePtr = frameStack.pop())) {
+        if(framePtr.layout) {
+            copy = lib.extendDeepNoArrays({}, framePtr.layout);
+            expandedObj = lib.expandObjectPaths(copy);
+            result.layout = lib.extendDeepNoArrays(result.layout || {}, expandedObj);
+        }
+
+        if(framePtr.data) {
+            if(!result.data) {
+                result.data = [];
+            }
+            traceIndices = framePtr.traceIndices;
+
+            if(!traceIndices) {
+                // If not defined, assume serial order starting at zero
+                traceIndices = [];
+                for(i = 0; i < framePtr.data.length; i++) {
+                    traceIndices[i] = i;
+                }
+            }
+
+            if(!result.traceIndices) {
+                result.traceIndices = [];
+            }
+
+            for(i = 0; i < framePtr.data.length; i++) {
+                // Loop through this frames data, find out where it should go,
+                // and merge it!
+                traceIndex = traceIndices[i];
+                if(traceIndex === undefined || traceIndex === null) {
+                    continue;
+                }
+
+                destIndex = result.traceIndices.indexOf(traceIndex);
+                if(destIndex === -1) {
+                    destIndex = result.data.length;
+                    result.traceIndices[destIndex] = traceIndex;
+                }
+
+                copy = lib.extendDeepNoArrays({}, framePtr.data[i]);
+                expandedObj = lib.expandObjectPaths(copy);
+                result.data[destIndex] = lib.extendDeepNoArrays(result.data[destIndex] || {}, expandedObj);
+            }
+        }
+    }
+
+    return result;
 };

@@ -48,6 +48,7 @@ module.exports = {
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
+        simplify: scatterLineAttrs.simplify,
         dash: {
             valType: 'enumerated',
             values: Object.keys(DASHES),

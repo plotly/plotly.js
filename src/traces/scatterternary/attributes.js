@@ -76,6 +76,7 @@ module.exports = {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash,
+        simplify: scatterLineAttrs.simplify,
         shape: extendFlat({}, scatterLineAttrs.shape,
             {values: ['linear', 'spline']}),
         smoothing: scatterLineAttrs.smoothing

@@ -16,16 +16,17 @@ exports.name = 'filter';
 exports.attributes = {
     operation: {
         valType: 'enumerated',
-        values: ['=', '<', '>'],
+        values: ['=', '<', '>', 'in'],
         dflt: '='
     },
     value: {
-        valType: 'number',
+        valType: 'any',
+        arrayOk: true,
         dflt: 0
     },
     filtersrc: {
         valType: 'enumerated',
-        values: ['x', 'y'],
+        values: ['x', 'y', 'identifier'],
         dflt: 'x'
     }
 };
@@ -129,6 +130,8 @@ function getFilterFunc(opts) {
             return function(v) { return v < value; };
         case '>':
             return function(v) { return v > value; };
+        case 'in':
+            return function(v) { return value.indexOf(v) !== -1; };
     }
 }
 

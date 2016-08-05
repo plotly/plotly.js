@@ -59,7 +59,8 @@ module.exports = {
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
-        dash: scatterLineAttrs.dash
+        dash: scatterLineAttrs.dash,
+        simplify: scatterLineAttrs.simplify
     },
     marker: extendFlat({}, {
         symbol: scatterMarkerAttrs.symbol,

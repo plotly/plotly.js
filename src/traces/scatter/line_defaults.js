@@ -28,4 +28,5 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
 
     coerce('line.width');
     coerce('line.dash');
+    coerce('line.simplify');
 };
