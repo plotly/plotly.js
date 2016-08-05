@@ -25,7 +25,7 @@ describe('css injection', function() {
 
     // the most basic of basic plots
     function plot(target) {
-        return Plotly.plot(target, [{
+        Plotly.plot(target, [{
             x: [1, 2, 3, 4, 5],
             y: [1, 2, 4, 8, 16]
         }], {
@@ -60,7 +60,7 @@ describe('css injection', function() {
         }
     }
 
-    it('inserts styles on initial plot', function(done) {
+    it('inserts styles on initial plot', function() {
         deletePlotCSSRules(document); // clear the rules
 
         // fix scope errors
@@ -78,44 +78,42 @@ describe('css injection', function() {
 
         // plot
         var gd = createGraphDiv();
-        plot(gd).then(function() {
+        plot(gd);
 
-            // check for styles
-            allSelectors = plotcss_utils.getAllRuleSelectors(document);
+        // check for styles
+        allSelectors = plotcss_utils.getAllRuleSelectors(document);
 
-            for(selector in plotcss) {
-                fullSelector = plotcss_utils.buildFullSelector(selector);
+        for(selector in plotcss) {
+            fullSelector = plotcss_utils.buildFullSelector(selector);
 
-                expect(allSelectors.indexOf(fullSelector)).not.toEqual(-1);
-            }
+            expect(allSelectors.indexOf(fullSelector)).not.toEqual(-1);
+        }
 
-            // clean up
-            return destroyGraphDiv();
-        }).then(done);
+        // clean up
+        destroyGraphDiv();
     });
 
-    it('inserts styles in a child window document', function(done) {
+    it('inserts styles in a child window document', function() {
         var gd = createGraphDivInChildWindow();
         var childWindow = gd.ownerDocument.defaultView;
 
         // plot
-        plot(gd).then(function() {
+        plot(gd);
 
-            // check for styles
-            var allSelectors = plotcss_utils.getAllRuleSelectors(gd.ownerDocument);
+        // check for styles
+        var allSelectors = plotcss_utils.getAllRuleSelectors(gd.ownerDocument);
 
-            for(var selector in plotcss) {
-                var fullSelector = plotcss_utils.buildFullSelector(selector);
+        for(var selector in plotcss) {
+            var fullSelector = plotcss_utils.buildFullSelector(selector);
 
-                expect(allSelectors.indexOf(fullSelector)).not.toEqual(-1);
-            }
+            expect(allSelectors.indexOf(fullSelector)).not.toEqual(-1);
+        }
 
-            // clean up
-            childWindow.close();
-        }).then(done);
+        // clean up
+        childWindow.close();
     });
 
-    it('does not insert duplicate styles', function(done) {
+    it('does not insert duplicate styles', function() {
         deletePlotCSSRules(document); // clear the rules
 
         // fix scope errors
@@ -133,23 +131,22 @@ describe('css injection', function() {
 
         // plot
         var gd = createGraphDiv();
-        plot(gd).then(function() {
-            return plot(gd); // plot again so injectStyles gets called again
-        }).then(function() {
-            // check for styles
-            allSelectors = plotcss_utils.getAllRuleSelectors(document);
+        plot(gd);
+        plot(gd); // plot again so injectStyles gets called again
 
-            for(selector in plotcss) {
-                fullSelector = plotcss_utils.buildFullSelector(selector);
+        // check for styles
+        allSelectors = plotcss_utils.getAllRuleSelectors(document);
 
-                var firstIndex = allSelectors.indexOf(fullSelector);
+        for(selector in plotcss) {
+            fullSelector = plotcss_utils.buildFullSelector(selector);
 
-                // there should be no occurences after the initial one
-                expect(allSelectors.indexOf(fullSelector, firstIndex + 1)).toEqual(-1);
-            }
+            var firstIndex = allSelectors.indexOf(fullSelector);
 
-            // clean up
-            return destroyGraphDiv();
-        }).then(done);
+            // there should be no occurences after the initial one
+            expect(allSelectors.indexOf(fullSelector, firstIndex + 1)).toEqual(-1);
+        }
+
+        // clean up
+        destroyGraphDiv();
     });
 });
