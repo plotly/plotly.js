@@ -15,6 +15,7 @@ containerCommands.ping = [
 containerCommands.setup = [
     containerCommands.cpIndex,
     containerCommands.restart,
+    'sleep 1',
     containerCommands.ping,
     'echo '
 ].join(' && ');

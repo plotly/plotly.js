@@ -62,7 +62,8 @@ function runAndSetupImageTestContainer() {
         var cmd = containerCommands.dockerRun;
         common.execCmd(cmd, function() {
             logger('run docker container');
-            setup();
+
+            setTimeout(setup, 500);
         });
     }
 
