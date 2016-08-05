@@ -15,7 +15,6 @@ describe('dragElement', function() {
         this.element = document.createElement('div');
 
         this.gd.className = 'js-plotly-plot';
-        this.gd._document = document;
         this.gd._fullLayout = {
             _hoverlayer: d3.select(this.hoverlayer)
         };
