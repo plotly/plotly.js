@@ -24,6 +24,7 @@ var Fx = require('../plots/cartesian/graph_interact');
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
+var Annotations = require('../components/annotations');
 var Images = require('../components/images');
 var Legend = require('../components/legend');
 var RangeSlider = require('../components/rangeslider');
@@ -231,7 +232,7 @@ Plotly.plot = function(gd, data, layout, config) {
         // TODO: autosize extra for text markers
         return Lib.syncOrAsync([
             Shapes.calcAutorange,
-            Plotly.Annotations.calcAutorange,
+            Annotations.calcAutorange,
             doAutoRange
         ], gd);
     }
@@ -284,7 +285,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // show annotations and shapes
         Shapes.drawAll(gd);
-        Plotly.Annotations.drawAll(gd);
+        Annotations.draw(gd);
 
         // source links
         Plots.addLinks(gd);
@@ -301,7 +302,7 @@ Plotly.plot = function(gd, data, layout, config) {
     function finalDraw() {
         Shapes.drawAll(gd);
         Images.draw(gd);
-        Plotly.Annotations.drawAll(gd);
+        Annotations.draw(gd);
         Legend.draw(gd);
         RangeSlider.draw(gd);
         RangeSelector.draw(gd);
@@ -2305,7 +2306,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
             }
             // TODO: combine all edits to a given annotation / shape into one call
             // as it is we get separate calls for x and y (or ax and ay) on move
-            objModule.draw(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
+            objModule.drawOne(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
             delete aobj[ai];
         }
         else if(p.parts[0] === 'images') {

@@ -265,7 +265,7 @@ plots.redrawText = function(gd) {
 
     return new Promise(function(resolve) {
         setTimeout(function() {
-            Plotly.Annotations.drawAll(gd);
+            Plotly.Annotations.draw(gd);
             Plotly.Legend.draw(gd);
 
             (gd.calcdata || []).forEach(function(d) {
