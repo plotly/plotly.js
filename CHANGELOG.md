@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.16.1] -- 2016-08-05
+
+### Changed
+- Drop support for plotting in child windows which broke `Plotly.plot` in
+  some numerous browsers (e.g. FF46, FF47, FF48) [#829]
+
+
 ## [1.16.0] -- 2016-08-04
 
 ### Added
