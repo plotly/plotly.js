@@ -55,14 +55,6 @@ Plotly.plot = function(gd, data, layout, config) {
 
     gd = getGraphDiv(gd);
 
-    // Get the document the graph div lives in, so we can make sure things like
-    // drag covers are attached to the correct document
-    gd._document = gd.ownerDocument || window.document;
-
-    // Inject the plot styles into the document where we're plotting, bails if
-    // already styled
-    Lib.injectStyles(gd);
-
     // Events.init is idempotent and bails early if gd has already been init'd
     Events.init(gd);
 
@@ -2575,12 +2567,12 @@ function plotAutoSize(gd, aobj) {
     // embedded in an iframe - just take the full iframe size
     // if we get to this point, with no aspect ratio restrictions
     if(gd._context.fillFrame) {
-        newWidth = gd._document.defaultView.innerWidth;
-        newHeight = gd._document.defaultView.innerHeight;
+        newWidth = window.innerWidth;
+        newHeight = window.innerHeight;
 
         // somehow we get a few extra px height sometimes...
         // just hide it
-        gd._document.body.style.overflow = 'hidden';
+        document.body.style.overflow = 'hidden';
     }
     else if(isNumeric(context.frameMargins) && context.frameMargins > 0) {
         var reservedMargins = calculateReservedMargins(gd._boundingBoxMargins),
@@ -2597,7 +2589,7 @@ function plotAutoSize(gd, aobj) {
         // provide height and width for the container div,
         // specify size in layout, or take the defaults,
         // but don't enforce any ratio restrictions
-        computedStyle = gd._document.defaultView.getComputedStyle(gd);
+        computedStyle = window.getComputedStyle(gd);
         newHeight = parseFloat(computedStyle.height) || fullLayout.height;
         newWidth = parseFloat(computedStyle.width) || fullLayout.width;
     }

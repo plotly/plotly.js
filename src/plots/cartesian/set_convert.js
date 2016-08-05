@@ -114,7 +114,6 @@ module.exports = function setConvert(ax) {
 
         if(!isFinite(ax._m) || !isFinite(ax._b)) {
             Lib.notifier(
-                ax._gd,
                 'Something went wrong with axis scaling',
                 'long');
             ax._gd._replotting = false;
