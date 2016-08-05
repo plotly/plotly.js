@@ -67,6 +67,8 @@ module.exports = {
     pathToJasmineTests: path.join(pathToRoot, 'test/jasmine/tests'),
     pathToJasmineBundleTests: path.join(pathToRoot, 'test/jasmine/bundle_tests'),
 
+    // this mapbox access token is 'public', no need to hide it
+    // more info: https://www.mapbox.com/help/define-access-token/
     mapboxAccessToken: 'pk.eyJ1IjoiZXRwaW5hcmQiLCJhIjoiY2luMHIzdHE0MGFxNXVubTRxczZ2YmUxaCJ9.hwWZful0U2CQxit4ItNsiQ',
     pathToCredentials: path.join(pathToBuild, 'credentials.json'),
     pathToSetPlotConfig: path.join(pathToBuild, 'set_plot_config.js'),

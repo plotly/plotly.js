@@ -38,7 +38,9 @@ function makeBuildFontSVG() {
 
 // copy topojson files from sane-topojson to dist/
 function copyTopojsonFiles() {
-    fs.copy(constants.pathToTopojsonSrc, constants.pathToTopojsonDist,
+    fs.copy(
+        constants.pathToTopojsonSrc,
+        constants.pathToTopojsonDist,
         { clobber: true },
         common.throwOnError
     );
