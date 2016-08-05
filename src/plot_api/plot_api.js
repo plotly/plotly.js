@@ -284,7 +284,7 @@ Plotly.plot = function(gd, data, layout, config) {
         Plots.style(gd);
 
         // show annotations and shapes
-        Shapes.drawAll(gd);
+        Shapes.draw(gd);
         Annotations.draw(gd);
 
         // source links
@@ -300,7 +300,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // correctly sized and the whole plot re-margined. gd._replotting must
     // be set to false before these will work properly.
     function finalDraw() {
-        Shapes.drawAll(gd);
+        Shapes.draw(gd);
         Images.draw(gd);
         Annotations.draw(gd);
         Legend.draw(gd);
