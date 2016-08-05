@@ -3,9 +3,19 @@
     {
       "x": [1,2,3],
       "y": [1,2,3]
+    }, {
+      "x": [1,2,3],
+      "y": [1,2,3],
+      "yaxis": "y2"
     }
   ],
   "layout": {
+    "yaxis": {
+        "domain": [0, 0.5]
+    },
+    "yaxis2": {
+        "domain": [0.5, 1]
+    },
     "images": [
       {
         "source": "https://images.plot.ly/language-icons/api-home/python-logo.png",
@@ -32,7 +42,7 @@
       {
         "source": "https://images.plot.ly/language-icons/api-home/r-logo.png",
         "xref": "x",
-        "yref": "y",
+        "yref": "y2",
         "x": 1,
         "y": 3,
         "sizex": 2,
