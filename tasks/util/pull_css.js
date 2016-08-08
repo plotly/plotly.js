@@ -38,14 +38,14 @@ module.exports = function pullCSS(data, pathOut) {
     var outStr = [
         '\'use strict\';',
         '',
-        'var Plotly = require(\'../src/plotly\');',
+        'var Lib = require(\'../src/lib\');',
         'var rules = ' + rulesStr + ';',
         '',
         'for(var selector in rules) {',
         '    var fullSelector = selector.replace(/^,/,\' ,\')',
         '        .replace(/X/g, \'.js-plotly-plot .plotly\')',
         '        .replace(/Y/g, \'.plotly-notifier\');',
-        '    Plotly.Lib.addStyleRule(fullSelector, rules[selector]);',
+        '    Lib.addStyleRule(fullSelector, rules[selector]);',
         '}',
         ''
     ].join('\n');
