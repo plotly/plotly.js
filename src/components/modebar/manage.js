@@ -9,7 +9,7 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Axes = require('../../plots/cartesian/axes');
 var scatterSubTypes = require('../../traces/scatter/subtypes');
 
 var createModeBar = require('./');
@@ -148,7 +148,7 @@ function getButtonGroups(gd, buttonsToRemove, buttonsToAdd) {
 }
 
 function areAllAxesFixed(fullLayout) {
-    var axList = Plotly.Axes.list({_fullLayout: fullLayout}, null, true);
+    var axList = Axes.list({_fullLayout: fullLayout}, null, true);
     var allFixed = true;
 
     for(var i = 0; i < axList.length; i++) {
