@@ -11,13 +11,10 @@
 
 /* global MathJax:false */
 
-var Plotly = require('../plotly');
 var d3 = require('d3');
 
 var Lib = require('../lib');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
-
-var util = module.exports = {};
 
 // Append SVG
 
@@ -45,7 +42,7 @@ d3.selection.prototype.appendSVG = function(_svgString) {
 
 // Text utilities
 
-util.html_entity_decode = function(s) {
+exports.html_entity_decode = function(s) {
     var hiddenDiv = d3.select('body').append('div').style({display: 'none'}).html('');
     var replaced = s.replace(/(&[^;]*;)/gi, function(d) {
         if(d === '&lt;') { return '&#60;'; } // special handling for brackets
@@ -56,7 +53,7 @@ util.html_entity_decode = function(s) {
     return replaced;
 };
 
-util.xml_entity_encode = function(str) {
+exports.xml_entity_encode = function(str) {
     return str.replace(/&(?!\w+;|\#[0-9]+;| \#x[0-9A-F]+;)/g, '&amp;');
 };
 
@@ -66,7 +63,7 @@ function getSize(_selection, _dimension) {
     return _selection.node().getBoundingClientRect()[_dimension];
 }
 
-util.convertToTspans = function(_context, _callback) {
+exports.convertToTspans = function(_context, _callback) {
     var str = _context.text();
     var converted = convertToSVG(str);
     var that = _context;
@@ -112,7 +109,7 @@ util.convertToTspans = function(_context, _callback) {
     }
 
     if(tex) {
-        var td = Plotly.Lib.getPlotDiv(that.node());
+        var td = Lib.getPlotDiv(that.node());
         ((td && td._promises) || []).push(new Promise(function(resolve) {
             that.style({visibility: 'hidden'});
             var config = {fontSize: parseInt(that.style('font-size'), 10)};
@@ -195,7 +192,7 @@ function cleanEscapesForTex(s) {
 }
 
 function texToSVG(_texString, _config, _callback) {
-    var randomID = 'math-output-' + Plotly.Lib.randstr([], 64);
+    var randomID = 'math-output-' + Lib.randstr([], 64);
     var tmpDiv = d3.select('body').append('div')
         .attr({id: randomID})
         .style({visibility: 'hidden', position: 'absolute'})
@@ -236,7 +233,7 @@ var PROTOCOLS = ['http:', 'https:', 'mailto:'];
 
 var STRIP_TAGS = new RegExp('</?(' + Object.keys(TAG_STYLES).join('|') + ')( [^>]*)?/?>', 'g');
 
-util.plainText = function(_str) {
+exports.plainText = function(_str) {
     // strip out our pseudo-html so we have a readable
     // version to put into text fields
     return (_str || '').replace(STRIP_TAGS, ' ');
@@ -316,7 +313,7 @@ function convertToSVG(_str) {
                 }
             }
             else {
-                return Plotly.util.xml_entity_encode(d).replace(/</g, '&lt;');
+                return exports.xml_entity_encode(d).replace(/</g, '&lt;');
             }
         });
 
@@ -397,7 +394,7 @@ function alignHTMLWith(_base, container, options) {
 
 // Editable title
 
-util.makeEditable = function(context, _delegate, options) {
+exports.makeEditable = function(context, _delegate, options) {
     if(!options) options = {};
     var that = this;
     var dispatch = d3.dispatch('edit', 'input', 'cancel');
@@ -431,7 +428,7 @@ util.makeEditable = function(context, _delegate, options) {
     }
 
     function appendEditable() {
-        var plotDiv = d3.select(Plotly.Lib.getPlotDiv(that.node())),
+        var plotDiv = d3.select(Lib.getPlotDiv(that.node())),
             container = plotDiv.select('.svg-container'),
             div = container.append('div');
         div.classed('plugin-editable editable', true)
