@@ -880,4 +880,430 @@ describe('Test axes', function() {
                 .toEqual(['xy']);
         });
     });
+
+    describe('getAutoRange', function() {
+        var getAutoRange = Axes.getAutoRange;
+        var ax;
+
+        it('returns reasonable range without explicit rangemode or autorange', function() {
+            ax = {
+                _min: [
+                    {val: 1, pad: 20},
+                    {val: 3, pad: 0},
+                    {val: 2, pad: 10}
+                ],
+                _max: [
+                    {val: 6, pad: 10},
+                    {val: 7, pad: 0},
+                    {val: 5, pad: 20},
+                ],
+                type: 'linear',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([-0.5, 7]);
+        });
+
+        it('reverses axes', function() {
+            ax = {
+                _min: [
+                    {val: 1, pad: 20},
+                    {val: 3, pad: 0},
+                    {val: 2, pad: 10}
+                ],
+                _max: [
+                    {val: 6, pad: 10},
+                    {val: 7, pad: 0},
+                    {val: 5, pad: 20},
+                ],
+                type: 'linear',
+                autorange: 'reversed',
+                rangemode: 'normal',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([7, -0.5]);
+        });
+
+        it('expands empty range', function() {
+            ax = {
+                _min: [
+                    {val: 2, pad: 0}
+                ],
+                _max: [
+                    {val: 2, pad: 0}
+                ],
+                type: 'linear',
+                rangemode: 'normal',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([1, 3]);
+        });
+
+        it('returns a lower bound of 0 on rangemode tozero with positive points', function() {
+            ax = {
+                _min: [
+                    {val: 1, pad: 20},
+                    {val: 3, pad: 0},
+                    {val: 2, pad: 10}
+                ],
+                _max: [
+                    {val: 6, pad: 10},
+                    {val: 7, pad: 0},
+                    {val: 5, pad: 20},
+                ],
+                type: 'linear',
+                rangemode: 'tozero',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([0, 7]);
+        });
+
+        it('returns an upper bound of 0 on rangemode tozero with negative points', function() {
+            ax = {
+                _min: [
+                    {val: -10, pad: 20},
+                    {val: -8, pad: 0},
+                    {val: -9, pad: 10}
+                ],
+                _max: [
+                    {val: -5, pad: 20},
+                    {val: -4, pad: 0},
+                    {val: -6, pad: 10},
+                ],
+                type: 'linear',
+                rangemode: 'tozero',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([-12.5, 0]);
+        });
+
+        it('returns a positive and negative range on rangemode tozero with positive and negative points', function() {
+            ax = {
+                _min: [
+                    {val: -10, pad: 20},
+                    {val: -8, pad: 0},
+                    {val: -9, pad: 10}
+                ],
+                _max: [
+                    {val: 6, pad: 10},
+                    {val: 7, pad: 0},
+                    {val: 5, pad: 20},
+                ],
+                type: 'linear',
+                rangemode: 'tozero',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([-15, 10]);
+        });
+
+        it('reverses range after applying rangemode tozero', function() {
+            ax = {
+                _min: [
+                    {val: 1, pad: 20},
+                    {val: 3, pad: 0},
+                    {val: 2, pad: 10}
+                ],
+                _max: [
+                    {val: 6, pad: 20},
+                    {val: 7, pad: 0},
+                    {val: 5, pad: 10},
+                ],
+                type: 'linear',
+                autorange: 'reversed',
+                rangemode: 'tozero',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([7.5, 0]);
+        });
+
+        it('expands empty positive range to something including 0 with rangemode tozero', function() {
+            ax = {
+                _min: [
+                    {val: 5, pad: 0}
+                ],
+                _max: [
+                    {val: 5, pad: 0}
+                ],
+                type: 'linear',
+                rangemode: 'tozero',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([0, 6]);
+        });
+
+        it('expands empty negative range to something including 0 with rangemode tozero', function() {
+            ax = {
+                _min: [
+                    {val: -5, pad: 0}
+                ],
+                _max: [
+                    {val: -5, pad: 0}
+                ],
+                type: 'linear',
+                rangemode: 'tozero',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([-6, 0]);
+        });
+
+        it('never returns a negative range when rangemode nonnegative is set with positive and negative points', function() {
+            ax = {
+                _min: [
+                    {val: -10, pad: 20},
+                    {val: -8, pad: 0},
+                    {val: -9, pad: 10}
+                ],
+                _max: [
+                    {val: 6, pad: 20},
+                    {val: 7, pad: 0},
+                    {val: 5, pad: 10},
+                ],
+                type: 'linear',
+                rangemode: 'nonnegative',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([0, 7.5]);
+        });
+
+        it('never returns a negative range when rangemode nonnegative is set with only negative points', function() {
+            ax = {
+                _min: [
+                    {val: -10, pad: 20},
+                    {val: -8, pad: 0},
+                    {val: -9, pad: 10}
+                ],
+                _max: [
+                    {val: -5, pad: 20},
+                    {val: -4, pad: 0},
+                    {val: -6, pad: 10},
+                ],
+                type: 'linear',
+                rangemode: 'nonnegative',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([0, 1]);
+        });
+
+        it('expands empty range to something nonnegative with rangemode nonnegative', function() {
+            ax = {
+                _min: [
+                    {val: -5, pad: 0}
+                ],
+                _max: [
+                    {val: -5, pad: 0}
+                ],
+                type: 'linear',
+                rangemode: 'nonnegative',
+                _length: 100
+            };
+
+            expect(getAutoRange(ax)).toEqual([0, 1]);
+        });
+    });
+
+    describe('expand', function() {
+        var expand = Axes.expand;
+        var ax, data, options;
+
+        // Axes.expand modifies ax, so this provides a simple
+        // way of getting a new clean copy each time.
+        function getDefaultAx() {
+            return {
+                c2l: Number,
+                type: 'linear',
+                _length: 100,
+                _m: 1,
+                _needsExpand: true
+            };
+        }
+
+        it('constructs simple ax._min and ._max correctly', function() {
+            ax = getDefaultAx();
+            data = [1, 4, 7, 2];
+
+            expand(ax, data);
+
+            expect(ax._min).toEqual([{val: 1, pad: 0}]);
+            expect(ax._max).toEqual([{val: 7, pad: 0}]);
+        });
+
+        it('calls ax.setScale if necessary', function() {
+            ax = {
+                c2l: Number,
+                type: 'linear',
+                setScale: function() {},
+                _needsExpand: true
+            };
+            spyOn(ax, 'setScale');
+            data = [1];
+
+            expand(ax, data);
+
+            expect(ax.setScale).toHaveBeenCalled();
+        });
+
+        it('handles symmetric pads as numbers', function() {
+            ax = getDefaultAx();
+            data = [1, 4, 2, 7];
+            options = {
+                vpad: 2,
+                ppad: 10
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: -1, pad: 10}]);
+            expect(ax._max).toEqual([{val: 9, pad: 10}]);
+        });
+
+        it('handles symmetric pads as number arrays', function() {
+            ax = getDefaultAx();
+            data = [1, 4, 2, 7];
+            options = {
+                vpad: [1, 10, 6, 3],
+                ppad: [0, 15, 20, 10]
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: -6, pad: 15}, {val: -4, pad: 20}]);
+            expect(ax._max).toEqual([{val: 14, pad: 15}, {val: 8, pad: 20}]);
+        });
+
+        it('handles separate pads as numbers', function() {
+            ax = getDefaultAx();
+            data = [1, 4, 2, 7];
+            options = {
+                vpadminus: 5,
+                vpadplus: 4,
+                ppadminus: 10,
+                ppadplus: 20
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: -4, pad: 10}]);
+            expect(ax._max).toEqual([{val: 11, pad: 20}]);
+        });
+
+        it('handles separate pads as number arrays', function() {
+            ax = getDefaultAx();
+            data = [1, 4, 2, 7];
+            options = {
+                vpadminus: [0, 3, 5, 1],
+                vpadplus: [8, 2, 1, 1],
+                ppadminus: [0, 30, 10, 20],
+                ppadplus: [0, 0, 40, 20]
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: 1, pad: 30}, {val: -3, pad: 10}]);
+            expect(ax._max).toEqual([{val: 9, pad: 0}, {val: 3, pad: 40}, {val: 8, pad: 20}]);
+        });
+
+        it('overrides symmetric pads with separate pads', function() {
+            ax = getDefaultAx();
+            data = [1, 5];
+            options = {
+                vpad: 1,
+                ppad: 10,
+                vpadminus: 2,
+                vpadplus: 4,
+                ppadminus: 20,
+                ppadplus: 40
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: -1, pad: 20}]);
+            expect(ax._max).toEqual([{val: 9, pad: 40}]);
+        });
+
+        it('adds 5% padding if specified by flag', function() {
+            ax = getDefaultAx();
+            data = [1, 5];
+            options = {
+                vpad: 1,
+                ppad: 10,
+                padded: true
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: 0, pad: 15}]);
+            expect(ax._max).toEqual([{val: 6, pad: 15}]);
+        });
+
+        it('has lower bound zero with all positive data if tozero is sset', function() {
+            ax = getDefaultAx();
+            data = [2, 5];
+            options = {
+                vpad: 1,
+                ppad: 10,
+                tozero: true
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: 0, pad: 0}]);
+            expect(ax._max).toEqual([{val: 6, pad: 10}]);
+        });
+
+        it('has upper bound zero with all negative data if tozero is set', function() {
+            ax = getDefaultAx();
+            data = [-7, -4];
+            options = {
+                vpad: 1,
+                ppad: 10,
+                tozero: true
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: -8, pad: 10}]);
+            expect(ax._max).toEqual([{val: 0, pad: 0}]);
+        });
+
+        it('sets neither bound to zero with positive and negative data if tozero is set', function() {
+            ax = getDefaultAx();
+            data = [-7, 4];
+            options = {
+                vpad: 1,
+                ppad: 10,
+                tozero: true
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: -8, pad: 10}]);
+            expect(ax._max).toEqual([{val: 5, pad: 10}]);
+        });
+
+        it('overrides padded with tozero', function() {
+            ax = getDefaultAx();
+            data = [2, 5];
+            options = {
+                vpad: 1,
+                ppad: 10,
+                tozero: true,
+                padded: true
+            };
+
+            expand(ax, data, options);
+
+            expect(ax._min).toEqual([{val: 0, pad: 0}]);
+            expect(ax._max).toEqual([{val: 6, pad: 15}]);
+        });
+    });
 });
