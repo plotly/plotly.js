@@ -13,7 +13,8 @@
 
 module.exports = computeTickMarks;
 
-var Plotly = require('../../../plotly');
+var Axes = require('../../cartesian/axes');
+var Lib = require('../../../lib');
 var convertHTMLToUnicode = require('../../../lib/html2unicode');
 
 var AXES_NAMES = ['xaxis', 'yaxis', 'zaxis'];
@@ -64,10 +65,10 @@ function computeTickMarks(scene) {
             var tickModeCached = axes.tickmode;
             if(axes.tickmode === 'auto') {
                 axes.tickmode = 'linear';
-                var nticks = axes.nticks || Plotly.Lib.constrain((axes._length / 40), 4, 9);
-                Plotly.Axes.autoTicks(axes, Math.abs(axes.range[1] - axes.range[0]) / nticks);
+                var nticks = axes.nticks || Lib.constrain((axes._length / 40), 4, 9);
+                Axes.autoTicks(axes, Math.abs(axes.range[1] - axes.range[0]) / nticks);
             }
-            var dataTicks = Plotly.Axes.calcTicks(axes);
+            var dataTicks = Axes.calcTicks(axes);
             for(var j = 0; j < dataTicks.length; ++j) {
                 dataTicks[j].x = dataTicks[j].x * scene.dataScale[i];
                 dataTicks[j].text = convertHTMLToUnicode(dataTicks[j].text);
