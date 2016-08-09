@@ -194,5 +194,14 @@ describe('svg+text utils', function() {
             expect(node.text()).toEqual('text');
             assertTspanStyle(node, 'quoted: yeah&\';;');
         });
+
+        it('decode some HTML entities in text', function() {
+            var node = mockTextSVGElement(
+                '100&mu; &amp; &lt; 10 &gt; 0&quot; &nbsp;' +
+                '100 &times; 20 &plusmn; 0.5 &deg;'
+            );
+
+            expect(node.text()).toEqual('100μ & < 10 > 0\"  100 × 20 ± 0.5 °');
+        });
     });
 });
