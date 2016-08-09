@@ -8,7 +8,7 @@
 
 'use strict';
 
-var Plots = require('../plots/plots');
+var Registry = require('../registry');
 var Lib = require('../lib');
 
 
@@ -43,10 +43,10 @@ module.exports = function register(_modules) {
 };
 
 function registerTraceModule(newModule) {
-    Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
+    Registry.register(newModule, newModule.name, newModule.categories, newModule.meta);
 
-    if(!Plots.subplotsRegistry[newModule.basePlotModule.name]) {
-        Plots.registerSubplot(newModule.basePlotModule);
+    if(!Registry.subplotsRegistry[newModule.basePlotModule.name]) {
+        Registry.registerSubplot(newModule.basePlotModule);
     }
 }
 
@@ -67,5 +67,5 @@ function registerTransformModule(newModule) {
         Lib.log(prefix + ' registered without a *supplyDefaults* function.');
     }
 
-    Plots.transformsRegistry[newModule.name] = newModule;
+    Registry.transformsRegistry[newModule.name] = newModule;
 }
