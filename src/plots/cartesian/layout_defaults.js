@@ -12,6 +12,7 @@
 var Lib = require('../../lib');
 var Plots = require('../plots');
 var Color = require('../../components/color');
+var basePlotLayoutAttributes = require('../layout_attributes');
 
 var RangeSlider = require('../../components/rangeslider');
 var RangeSelector = require('../../components/rangeselector');
@@ -112,7 +113,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // TODO: bgcolor for each subplot, to inherit from the main one
     var plot_bgcolor = Color.background;
     if(xaList.length && yaList.length) {
-        plot_bgcolor = Lib.coerce(layoutIn, layoutOut, Plots.layoutAttributes, 'plot_bgcolor');
+        plot_bgcolor = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'plot_bgcolor');
     }
 
     var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);

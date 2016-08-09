@@ -13,7 +13,6 @@ var createPlot = require('gl-plot3d');
 
 var Lib = require('../../lib');
 
-var Plots = require('../../plots/plots');
 var Axes = require('../../plots/cartesian/axes');
 var Fx = require('../../plots/cartesian/graph_interact');
 
@@ -399,8 +398,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
         if(trace) {
             trace.update(data);
         } else {
-            var traceModule = Plots.getModule(data.type);
-            trace = traceModule.plot(this, data);
+            trace = data._module.plot(this, data);
             this.traces[data.uid] = trace;
         }
         trace.name = data.name;

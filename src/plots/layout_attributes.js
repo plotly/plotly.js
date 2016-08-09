@@ -8,12 +8,11 @@
 
 'use strict';
 
-var fontAttrs = require('./font_attributes');
-var colorAttrs = require('../components/color/attributes');
-
 var Lib = require('../lib');
 var extendFlat = Lib.extendFlat;
 
+var fontAttrs = require('./font_attributes');
+var colorAttrs = require('../components/color/attributes');
 
 module.exports = {
     font: {

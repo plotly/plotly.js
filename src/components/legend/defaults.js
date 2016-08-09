@@ -13,6 +13,7 @@ var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
 
 var attributes = require('./attributes');
+var basePlotLayoutAttributes = require('../../plots/layout_attributes');
 var helpers = require('./helpers');
 
 
@@ -53,7 +54,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     }
 
     var showLegend = Lib.coerce(layoutIn, layoutOut,
-        Plots.layoutAttributes, 'showlegend', visibleTraces > 1);
+        basePlotLayoutAttributes, 'showlegend', visibleTraces > 1);
 
     if(showLegend === false) return;
 
