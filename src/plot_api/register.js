@@ -29,33 +29,11 @@ module.exports = function register(_modules) {
 
         switch(newModule.moduleType) {
             case 'trace':
-                Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
-
-                if(!Plots.subplotsRegistry[newModule.basePlotModule.name]) {
-                    Plots.registerSubplot(newModule.basePlotModule);
-                }
-
+                registerTraceModule(newModule);
                 break;
 
             case 'transform':
-                if(typeof newModule.name !== 'string') {
-                    throw new Error('Transform module *name* must be a string.');
-                }
-
-                var prefix = 'Transform module ' + newModule.name;
-
-                if(typeof newModule.transform !== 'function') {
-                    throw new Error(prefix + ' is missing a *transform* function.');
-                }
-                if(!Lib.isPlainObject(newModule.attributes)) {
-                    Lib.log(prefix + ' registered without an *attributes* object.');
-                }
-                if(typeof newModule.supplyDefaults !== 'function') {
-                    Lib.log(prefix + ' registered without a *supplyDefaults* function.');
-                }
-
-                Plots.transformsRegistry[newModule.name] = newModule;
-
+                registerTransformModule(newModule);
                 break;
 
             default:
@@ -63,3 +41,31 @@ module.exports = function register(_modules) {
         }
     }
 };
+
+function registerTraceModule(newModule) {
+    Plots.register(newModule, newModule.name, newModule.categories, newModule.meta);
+
+    if(!Plots.subplotsRegistry[newModule.basePlotModule.name]) {
+        Plots.registerSubplot(newModule.basePlotModule);
+    }
+}
+
+function registerTransformModule(newModule) {
+    if(typeof newModule.name !== 'string') {
+        throw new Error('Transform module *name* must be a string.');
+    }
+
+    var prefix = 'Transform module ' + newModule.name;
+
+    if(typeof newModule.transform !== 'function') {
+        throw new Error(prefix + ' is missing a *transform* function.');
+    }
+    if(!Lib.isPlainObject(newModule.attributes)) {
+        Lib.log(prefix + ' registered without an *attributes* object.');
+    }
+    if(typeof newModule.supplyDefaults !== 'function') {
+        Lib.log(prefix + ' registered without a *supplyDefaults* function.');
+    }
+
+    Plots.transformsRegistry[newModule.name] = newModule;
+}
