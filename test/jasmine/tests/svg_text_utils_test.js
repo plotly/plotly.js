@@ -121,34 +121,33 @@ describe('svg+text utils', function() {
         });
 
         it('wrap XSS attacks in href', function() {
-            var node = mockTextSVGElement(
-                '<a href="XSS" onmouseover="alert(1)" style="font-size:300px">Subtitle</a>'
-            );
-
-            expect(node.text()).toEqual('Subtitle');
-            assertAnchorAttrs(node);
-            assertAnchorLink(node, 'XSS onmouseover=alert(1) style=font-size:300px');
-        });
-
-        it('wrap XSS attacks with quoted entities in href', function() {
-            var node = mockTextSVGElement(
+            var textCases = [
+                '<a href="XSS\" onmouseover=&quot;alert(1)\" style=&quot;font-size:300px">Subtitle</a>',
                 '<a href="XSS&quot; onmouseover=&quot;alert(1)&quot; style=&quot;font-size:300px">Subtitle</a>'
-            );
+            ];
 
-            console.log(node.select('a').attr('xlink:href'));
-            expect(node.text()).toEqual('Subtitle');
-            assertAnchorAttrs(node);
-            assertAnchorLink(node, 'XSS&quot; onmouseover=&quot;alert(1)&quot; style=&quot;font-size:300px');
+            textCases.forEach(function(textCase) {
+                var node = mockTextSVGElement(textCase);
+
+                expect(node.text()).toEqual('Subtitle');
+                assertAnchorAttrs(node);
+                assertAnchorLink(node, 'XSS onmouseover=alert(1) style=font-size:300px');
+            });
         });
 
         it('should keep query parameters in href', function() {
-            var node = mockTextSVGElement(
-                '<a href="https://abc.com/myFeature.jsp?name=abc&pwd=def">abc.com?shared-key</a>'
-            );
+            var textCases = [
+                '<a href="https://abc.com/myFeature.jsp?name=abc&pwd=def">abc.com?shared-key</a>',
+                '<a href="https://abc.com/myFeature.jsp?name=abc&amp;pwd=def">abc.com?shared-key</a>'
+            ];
 
-            assertAnchorAttrs(node);
-            expect(node.text()).toEqual('abc.com?shared-key');
-            assertAnchorLink(node, 'https://abc.com/myFeature.jsp?name=abc&pwd=def');
+            textCases.forEach(function(textCase) {
+                var node = mockTextSVGElement(textCase);
+
+                assertAnchorAttrs(node);
+                expect(node.text()).toEqual('abc.com?shared-key');
+                assertAnchorLink(node, 'https://abc.com/myFeature.jsp?name=abc&pwd=def');
+            });
         });
 
         it('allow basic spans', function() {
