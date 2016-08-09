@@ -53,7 +53,7 @@ function draw(gd) {
     }
 
     // may need to resurrect this if we put text (LaTeX) in shapes
-    // return Plotly.Plots.previousPromises(gd);
+    // return Plots.previousPromises(gd);
 }
 
 function drawOne(gd, index, opt, value) {
@@ -450,8 +450,8 @@ function getShapeLayer(gd, index) {
 }
 
 function isShapeInSubplot(gd, shape, plotinfo) {
-    var xa = Plotly.Axes.getFromId(gd, plotinfo.id, 'x')._id,
-        ya = Plotly.Axes.getFromId(gd, plotinfo.id, 'y')._id,
+    var xa = Axes.getFromId(gd, plotinfo.id, 'x')._id,
+        ya = Axes.getFromId(gd, plotinfo.id, 'y')._id,
         isBelow = shape.layer === 'below',
         inSuplotAxis = (xa === shape.xref || ya === shape.yref),
         isNotAnOverlaidSubplot = !!plotinfo.shapelayer;
