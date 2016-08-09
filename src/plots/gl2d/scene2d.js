@@ -18,7 +18,7 @@ var createSelectBox = require('gl-select-box');
 
 var createOptions = require('./convert');
 var createCamera = require('./camera');
-var htmlToUnicode = require('../../lib/html2unicode');
+var convertHTMLToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
 var AXES = ['xaxis', 'yaxis'];
@@ -231,7 +231,7 @@ proto.computeTickMarks = function() {
         for(var i = 0; i < nextTicks[j].length; ++i) {
             // TODO add support for '\n' in gl-plot2d,
             // For now, replace '\n' with ' '
-            nextTicks[j][i].text = htmlToUnicode(nextTicks[j][i].text + '').replace(/\n/g, ' ');
+            nextTicks[j][i].text = convertHTMLToUnicode(nextTicks[j][i].text + '').replace(/\n/g, ' ');
         }
     }
 
