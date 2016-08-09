@@ -9,6 +9,7 @@
 
 'use strict';
 
+
 var d3 = require('d3');
 var m4FromQuat = require('gl-mat4/fromQuat');
 var isNumeric = require('fast-isnumeric');
@@ -2568,6 +2569,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     var transitionedTraces = [];
 
     function prepareTransitions() {
+        var plotinfo, i;
         for(i = 0; i < traceIndices.length; i++) {
             var traceIdx = traceIndices[i];
             var trace = gd._fullData[traceIdx];
@@ -2591,30 +2593,46 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             Lib.extendDeepNoArrays(gd.data[traceIndices[i]], update);
         }
 
-        Plots.supplyDataDefaults(gd.data, gd._fullData, gd._fullLayout);
+        // Supply defaults after applying the incoming properties. Note that any attempt
+        // to simplify this step and reduce the amount of work resulted in the reconstruction
+        // of essentially the whole supplyDefaults step, so that it seems sensible to just use
+        // supplyDefaults even though it's heavier than would otherwise be desired for
+        // transitions:
+        Plots.supplyDefaults(gd);
 
-        // TODO: Add logic that computes transitionedTraces to avoid unnecessary work while
-        // still handling things like box plots that are interrelated.
-        // doCalcdata(gd, transitionedTraces);
+        //Plotly.Axes.saveRangeInitial(gd, true);
+
+        // This step fies the .xaxis and .yaxis references that otherwise
+        // aren't updated by the supplyDefaults step:
+        var subplots = Plotly.Axes.getSubplots(gd);
+        for(i = 0; i < subplots.length; i++) {
+            plotinfo = gd._fullLayout._plots[subplots[i]];
+            plotinfo.xaxis = plotinfo.x();
+            plotinfo.yaxis = plotinfo.y();
+        }
 
         doCalcdata(gd);
 
         ErrorBars.calc(gd);
+    }
 
-        // While transitions are occuring, occurring, we get a double-transform
-        // issue if we transform the drawn layer *and* use the new axis range to
-        // draw the data. This causes setConvert to use the pre-interaction values
-        // of the axis range:
-        var axList = Plotly.Axes.list(gd);
-        for(i = 0; i < axList.length; i++) {
-            axList[i].setScale(true);
+    function executeCallbacks(list) {
+        var p = Promise.resolve();
+        if (!list) return p;
+        while(list.length) {
+            p = p.then((list.shift()));
+        }
+        return p;
+    }
+
+    function flushCallbacks(list) {
+        if (!list) return;
+        while(list.length) {
+            list.shift();
         }
     }
 
     var restyleList = [];
-    var completionTimeout = null;
-    var resolveTransitionCallback = null;
-
     function executeTransitions() {
         var hasTraceTransition = false;
         var j;
@@ -2637,30 +2655,33 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             }
         }
 
+        gd._transitionData._completionTimeout = setTimeout(completeTransition, transitionConfig.duration);
+
         if(!hasAxisTransition && !hasTraceTransition) {
             return false;
         }
+    }
 
-        return new Promise(function(resolve) {
-            resolveTransitionCallback = resolve;
-            completionTimeout = setTimeout(resolve, transitionConfig.duration);
-        });
+    function completeTransition() {
+        flushCallbacks(gd._transitionData._interruptCallbacks);
+
+        gd.emit('plotly_endtransition', []);
+
+        return executeCallbacks(gd._transitionData._cleanupCallbacks);
     }
 
     function interruptPreviousTransitions() {
-        clearTimeout(completionTimeout);
+        if (gd._transitionData._completionTimeout) {
+            // Prevent the previous completion from occurring:
+            clearTimeout(gd._transitionData._completionTimeout);
+            gd._transitionData._completionTimeout = null;
 
-        if(resolveTransitionCallback) {
-            resolveTransitionCallback();
+            // Interrupt an event to indicate that a transition was running:
+            gd.emit('plotly_interrupttransition', []);
         }
 
-        while(gd._frameData._layoutInterrupts.length) {
-            (gd._frameData._layoutInterrupts.pop())();
-        }
-
-        while(gd._frameData._styleInterrupts.length) {
-            (gd._frameData._styleInterrupts.pop())();
-        }
+        flushCallbacks(gd._transitionData._cleanupCallbacks);
+        return executeCallbacks(gd._transitionData._interruptCallbacks);
     }
 
     for(i = 0; i < traceIndices.length; i++) {
@@ -2677,23 +2698,23 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
                 thisUpdate[ai] = [data[i][ai]];
             }
 
-            restyleList.push((function(md, data, traces) {
+            /*restyleList.push((function(md, data, traces) {
                 return function() {
                     return Plotly.restyle(gd, data, traces);
                 };
-            }(module, thisUpdate, [traceIdx])));
+            }(module, thisUpdate, [traceIdx])));*/
         }
     }
 
     var seq = [Plots.previousPromises, interruptPreviousTransitions, prepareTransitions, executeTransitions];
-    seq = seq.concat(restyleList);
+    //seq = seq.concat(restyleList);
 
     var plotDone = Lib.syncOrAsync(seq, gd);
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function() {
-        gd.emit('plotly_beginanimate', []);
+        gd.emit('plotly_begintransition', []);
         return gd;
     });
 };
@@ -2709,7 +2730,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
 Plotly.animate = function(gd, frameName, transitionConfig) {
     gd = getGraphDiv(gd);
 
-    if(!gd._frameData._frameHash[frameName]) {
+    if(!gd._transitionData._frameHash[frameName]) {
         Lib.warn('animateToFrame failure: keyframe does not exist', frameName);
         return Promise.reject();
     }
@@ -2739,8 +2760,8 @@ Plotly.addFrames = function(gd, frameList, indices) {
     gd = getGraphDiv(gd);
 
     var i, frame, j, idx;
-    var _frames = gd._frameData._frames;
-    var _hash = gd._frameData._frameHash;
+    var _frames = gd._transitionData._frames;
+    var _hash = gd._transitionData._frameHash;
 
 
     if(!Array.isArray(frameList)) {
@@ -2780,7 +2801,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
         if(!frame.name) {
             // Repeatedly assign a default name, incrementing the counter each time until
             // we get a name that's not in the hashed lookup table:
-            while(_hash[(frame.name = 'frame ' + gd._frameData._counter++)]);
+            while(_hash[(frame.name = 'frame ' + gd._transitionData._counter++)]);
         }
 
         if(_hash[frame.name]) {
@@ -2820,7 +2841,7 @@ Plotly.deleteFrames = function(gd, frameList) {
     gd = getGraphDiv(gd);
 
     var i, idx;
-    var _frames = gd._frameData._frames;
+    var _frames = gd._transitionData._frames;
     var ops = [];
     var revops = [];
 

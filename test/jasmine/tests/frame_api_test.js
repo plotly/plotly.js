@@ -13,8 +13,8 @@ describe('Test frame api', function() {
         mock = [{x: [1, 2, 3], y: [2, 1, 3]}, {x: [1, 2, 3], y: [6, 4, 5]}];
         gd = createGraphDiv();
         Plotly.plot(gd, mock).then(function() {
-            f = gd._frameData._frames;
-            h = gd._frameData._frameHash;
+            f = gd._transitionData._frames;
+            h = gd._transitionData._frameHash;
         }).then(function() {
             Plotly.setPlotConfig({ queueLength: 10 });
         }).then(done);
@@ -27,11 +27,11 @@ describe('Test frame api', function() {
 
     describe('gd initialization', function() {
         it('creates an empty list for frames', function() {
-            expect(gd._frameData._frames).toEqual([]);
+            expect(gd._transitionData._frames).toEqual([]);
         });
 
         it('creates an empty lookup table for frames', function() {
-            expect(gd._frameData._counter).toEqual(0);
+            expect(gd._transitionData._counter).toEqual(0);
         });
     });
 

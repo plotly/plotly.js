@@ -420,29 +420,38 @@ plots.supplyDefaults = function(gd) {
         }
     }
 
+    // Create all the storage space for frames, but only if doesn't already
+    // exist:
+    if(!gd._transitionData) {
+        plots.createTransitionData(gd);
+    }
+};
+
+// Create storage for all of the data related to frames and transitions:
+plots.createTransitionData = function(gd) {
     // Set up the default keyframe if it doesn't exist:
-    if(!gd._frameData) {
-        gd._frameData = {};
+    if(!gd._transitionData) {
+        gd._transitionData = {};
     }
 
-    if(!gd._frameData._frames) {
-        gd._frameData._frames = [];
+    if(!gd._transitionData._frames) {
+        gd._transitionData._frames = [];
     }
 
-    if(!gd._frameData._frameHash) {
-        gd._frameData._frameHash = {};
+    if(!gd._transitionData._frameHash) {
+        gd._transitionData._frameHash = {};
     }
 
-    if(!gd._frameData._counter) {
-        gd._frameData._counter = 0;
+    if(!gd._transitionData._counter) {
+        gd._transitionData._counter = 0;
     }
 
-    if(!gd._frameData._layoutInterrupts) {
-        gd._frameData._layoutInterrupts = [];
+    if(!gd._transitionData._cleanupCallbacks) {
+        gd._transitionData._cleanupCallbacks = [];
     }
 
-    if(!gd._frameData._styleInterrupts) {
-        gd._frameData._styleInterrupts = [];
+    if(!gd._transitionData._interruptCallbacks) {
+        gd._transitionData._interruptCallbacks = [];
     }
 };
 
@@ -850,7 +859,7 @@ plots.purge = function(gd) {
     delete gd.numboxes;
     delete gd._hoverTimer;
     delete gd._lastHoverTime;
-    delete gd._frameData;
+    delete gd._transitionData;
 
     // remove all event listeners
     if(gd.removeAllListeners) gd.removeAllListeners();
@@ -1124,8 +1133,8 @@ plots.graphJson = function(gd, dataonly, mode, output, useDefaults) {
  */
 plots.modifyFrames = function(gd, operations) {
     var i, op, frame;
-    var _frames = gd._frameData._frames;
-    var _hash = gd._frameData._frameHash;
+    var _frames = gd._transitionData._frames;
+    var _hash = gd._transitionData._frameHash;
 
     for(i = 0; i < operations.length; i++) {
         op = operations[i];
@@ -1178,5 +1187,5 @@ plots.modifyFrames = function(gd, operations) {
  * Returns: a new object with the merged content
  */
 plots.computeFrame = function(gd, frameName) {
-    return Lib.computeFrame(gd._frameData._frameHash, frameName);
+    return Lib.computeFrame(gd._transitionData._frameHash, frameName);
 };

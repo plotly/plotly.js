@@ -14,7 +14,6 @@ var d3 = require('d3');
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Axes = require('./axes');
-
 var axisRegex = /((x|y)([2-9]|[1-9][0-9]+)?)axis$/;
 
 module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
@@ -29,8 +28,9 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
             attrList = ai.split('.');
             match = attrList[0].match(axisRegex);
             if(match) {
-                var axisName = match[1];
-                axis = fullLayout[axisName + 'axis'];
+                var axisLetter = match[1];
+                var axisName = axisLetter + 'axis';
+                axis = fullLayout[axisName];
                 update = {};
 
                 if(Array.isArray(layout[ai])) {
@@ -42,12 +42,12 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
                 }
                 if(!update.to) continue;
 
-                update.axis = axis;
+                update.axisName = axisName;
                 update.length = axis._length;
 
-                axes.push(axisName);
+                axes.push(axisLetter);
 
-                updates[axisName] = update;
+                updates[axisLetter] = update;
             }
         }
 
@@ -69,6 +69,11 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
             var y = plotinfo.yaxis._id;
             var fromX = plotinfo.xaxis.range;
             var fromY = plotinfo.yaxis.range;
+
+            // Store the initial range at the beginning of this transition:
+            plotinfo.xaxis._r = plotinfo.xaxis.range.slice();
+            plotinfo.yaxis._r = plotinfo.yaxis.range.slice();
+
             if(updates[x]) {
                 toX = updates[x].to;
             } else {
@@ -128,33 +133,19 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         var xa2 = subplot.x();
         var ya2 = subplot.y();
 
-        var viewBox = [0, 0, xa2._length, ya2._length];
-
-        var xScaleFactor = xa2._length / viewBox[2],
-            yScaleFactor = ya2._length / viewBox[3];
-
-        var clipDx = viewBox[0],
-            clipDy = viewBox[1];
-
-        var fracDx = (viewBox[0] / viewBox[2] * xa2._length),
-            fracDy = (viewBox[1] / viewBox[3] * ya2._length);
-
-        var plotDx = xa2._offset - fracDx,
-            plotDy = ya2._offset - fracDy;
-
         fullLayout._defs.selectAll('#' + subplot.clipId)
-            .call(Lib.setTranslate, clipDx, clipDy)
-            .call(Lib.setScale, 1 / xScaleFactor, 1 / yScaleFactor);
+            .call(Lib.setTranslate, 0, 0)
+            .call(Lib.setScale, 1, 1);
 
         subplot.plot
-            .call(Lib.setTranslate, plotDx, plotDy)
-            .call(Lib.setScale, xScaleFactor, yScaleFactor)
+            .call(Lib.setTranslate, xa2._offset, ya2._offset)
+            .call(Lib.setScale, 1, 1)
 
             // This is specifically directed at scatter traces, applying an inverse
             // scale to individual points to counteract the scale of the trace
             // as a whole:
             .selectAll('.points').selectAll('.point')
-                .call(Lib.setPointGroupScale, 1 / xScaleFactor, 1 / yScaleFactor);
+                .call(Lib.setPointGroupScale, 1, 1);
 
     }
 
@@ -166,7 +157,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         var viewBox = [];
 
         if(xUpdate) {
-            axis = xUpdate.axis;
+            axis = gd._fullLayout[xUpdate.axisName];
             r0 = axis._r;
             r1 = xUpdate.to;
             viewBox[0] = (r0[0] * (1 - progress) + progress * r1[0] - r0[0]) / (r0[1] - r0[0]) * subplot.xaxis._length;
@@ -183,7 +174,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         }
 
         if(yUpdate) {
-            axis = yUpdate.axis;
+            axis = gd._fullLayout[yUpdate.axisName];
             r0 = axis._r;
             r1 = yUpdate.to;
             viewBox[1] = (r0[1] * (1 - progress) + progress * r1[1] - r0[1]) / (r0[0] - r0[1]) * subplot.yaxis._length;
@@ -236,60 +227,78 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
     }
 
-    // transitionTail - finish a drag event with a redraw
-    function transitionTail() {
-        var i;
+
+    function transitionComplete() {
         var attrs = {};
-        // revert to the previous axis settings, then apply the new ones
-        // through relayout - this lets relayout manage undo/redo
-        for(i = 0; i < updatedAxisIds.length; i++) {
-            var axi = updates[updatedAxisIds[i]].axis;
-            if(axi._r[0] !== axi.range[0]) attrs[axi._name + '.range[0]'] = axi.range[0];
-            if(axi._r[1] !== axi.range[1]) attrs[axi._name + '.range[1]'] = axi.range[1];
+        for(var i = 0; i < updatedAxisIds.length; i++) {
+            var axi = gd._fullLayout[updates[updatedAxisIds[i]].axisName];
+            var to = updates[updatedAxisIds[i]].to;
+            attrs[axi._name + '.range[0]'] = to[0];
+            attrs[axi._name + '.range[1]'] = to[1];
+
+            axi.range = to.slice();
+        }
+
+        return Plotly.relayout(gd, attrs).then(function () {
+            for(var i = 0; i < affectedSubplots.length; i++) {
+                unsetSubplotTransform(affectedSubplots[i]);
+            }
+
+        });
+    }
+
+    function transitionTail() {
+        var attrs = {};
+        for(var i = 0; i < updatedAxisIds.length; i++) {
+            var axi = gd._fullLayout[updatedAxisIds[i] + 'axis'];
+            attrs[axi._name + '.range[0]'] = axi.range[0];
+            attrs[axi._name + '.range[1]'] = axi.range[1];
 
             axi.range = axi._r.slice();
         }
 
-        for(i = 0; i < affectedSubplots.length; i++) {
-            unsetSubplotTransform(affectedSubplots[i]);
-        }
-
-        Plotly.relayout(gd, attrs);
+        return Plotly.relayout(gd, attrs).then(function() {
+            for(var i = 0; i < affectedSubplots.length; i++) {
+                unsetSubplotTransform(affectedSubplots[i]);
+            }
+        });
     }
 
     var easeFn = d3.ease(transitionConfig.ease);
 
-    return new Promise(function(resolve, reject) {
-        var t1, t2, raf;
+    gd._transitionData._interruptCallbacks.push(function() {
+        cancelAnimationFrame(raf);
+        raf = null;
+        return transitionTail();
+    });
 
-        gd._frameData._layoutInterrupts.push(function() {
-            reject();
-            cancelAnimationFrame(raf);
-            raf = null;
-            transitionTail();
-        });
+    gd._transitionData._cleanupCallbacks.push(function () {
+        cancelAnimationFrame(raf);
+        raf = null;
+        return transitionComplete();
+    });
 
-        function doFrame() {
-            t2 = Date.now();
+    var t1, t2, raf;
 
-            var tInterp = Math.min(1, (t2 - t1) / transitionConfig.duration);
-            var progress = easeFn(tInterp);
+    function doFrame() {
+        t2 = Date.now();
 
-            for(var i = 0; i < affectedSubplots.length; i++) {
-                updateSubplot(affectedSubplots[i], progress);
-            }
+        var tInterp = Math.min(1, (t2 - t1) / transitionConfig.duration);
+        var progress = easeFn(tInterp);
 
-            if(t2 - t1 > transitionConfig.duration) {
-                raf = cancelAnimationFrame(doFrame);
-                transitionTail();
-                resolve();
-            } else {
-                raf = requestAnimationFrame(doFrame);
-                resolve();
-            }
+        for(var i = 0; i < affectedSubplots.length; i++) {
+            updateSubplot(affectedSubplots[i], progress);
         }
 
-        t1 = Date.now();
-        raf = requestAnimationFrame(doFrame);
-    });
+        if(t2 - t1 > transitionConfig.duration) {
+            raf = cancelAnimationFrame(doFrame);
+        } else {
+            raf = requestAnimationFrame(doFrame);
+        }
+    }
+
+    t1 = Date.now();
+    raf = requestAnimationFrame(doFrame);
+
+    return Promise.resolve();
 };

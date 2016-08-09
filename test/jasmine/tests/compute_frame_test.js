@@ -67,7 +67,7 @@ describe('Test mergeFrames', function() {
 
         it('leaves the frame unaffected', function() {
             computeFrame(gd, 'frame1');
-            expect(gd._frameData._frameHash.frame1).toEqual(frame1);
+            expect(gd._transitionData._frameHash.frame1).toEqual(frame1);
         });
     });
 
@@ -149,7 +149,7 @@ describe('Test mergeFrames', function() {
 
             // Verify that the frames are untouched (by value, at least, but they should
             // also be unmodified by identity too) by the computation:
-            expect(gd._frameData._frames).toEqual(frames);
+            expect(gd._transitionData._frames).toEqual(frames);
         });
 
         it('merges overlapping traces', function() {
@@ -162,7 +162,7 @@ describe('Test mergeFrames', function() {
                 data: [{marker: {size: 0}}]
             });
 
-            expect(gd._frameData._frames).toEqual(frames);
+            expect(gd._transitionData._frames).toEqual(frames);
         });
 
         it('merges partially overlapping traces', function() {
@@ -180,7 +180,7 @@ describe('Test mergeFrames', function() {
                 ]
             });
 
-            expect(gd._frameData._frames).toEqual(frames);
+            expect(gd._transitionData._frames).toEqual(frames);
         });
 
         it('assumes serial order without traceIndices specified', function() {
@@ -198,7 +198,7 @@ describe('Test mergeFrames', function() {
                 ]
             });
 
-            expect(gd._frameData._frames).toEqual(frames);
+            expect(gd._transitionData._frames).toEqual(frames);
         });
     });
 
@@ -230,7 +230,7 @@ describe('Test mergeFrames', function() {
 
         it('leaves the frame unaffected', function() {
             computeFrame(gd, 'frame0');
-            expect(gd._frameData._frames).toEqual(frameCopies);
+            expect(gd._transitionData._frames).toEqual(frameCopies);
         });
     });
 });
