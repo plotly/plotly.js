@@ -18,7 +18,6 @@ module.exports = {
         'amp': '&',
         'lt': '<',
         'gt': '>',
-        'quot': '\"',
         'nbsp': ' ',
         'times': '×',
         'plusmn': '±',

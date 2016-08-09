@@ -122,8 +122,8 @@ describe('svg+text utils', function() {
 
         it('wrap XSS attacks in href', function() {
             var textCases = [
-                '<a href="XSS\" onmouseover=&quot;alert(1)\" style=&quot;font-size:300px">Subtitle</a>',
-                '<a href="XSS&quot; onmouseover=&quot;alert(1)&quot; style=&quot;font-size:300px">Subtitle</a>'
+                '<a href="XSS\" onmouseover="alert(1)\" style="font-size:300px">Subtitle</a>',
+                '<a href="XSS" onmouseover="alert(1)" style="font-size:300px">Subtitle</a>'
             ];
 
             textCases.forEach(function(textCase) {
@@ -197,11 +197,11 @@ describe('svg+text utils', function() {
 
         it('decode some HTML entities in text', function() {
             var node = mockTextSVGElement(
-                '100&mu; &amp; &lt; 10 &gt; 0&quot; &nbsp;' +
+                '100&mu; &amp; &lt; 10 &gt; 0 &nbsp;' +
                 '100 &times; 20 &plusmn; 0.5 &deg;'
             );
 
-            expect(node.text()).toEqual('100μ & < 10 > 0\"  100 × 20 ± 0.5 °');
+            expect(node.text()).toEqual('100μ & < 10 > 0  100 × 20 ± 0.5 °');
         });
     });
 });
