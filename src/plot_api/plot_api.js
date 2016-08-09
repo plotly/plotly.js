@@ -18,6 +18,7 @@ var Lib = require('../lib');
 var Events = require('../lib/events');
 var Queue = require('../lib/queue');
 
+var Registry = require('../registry');
 var Plots = require('../plots/plots');
 var Fx = require('../plots/cartesian/graph_interact');
 var Polar = require('../plots/polar');
@@ -262,7 +263,7 @@ Plotly.plot = function(gd, data, layout, config) {
                 isVisible = (trace.visible === true),
                 uid = trace.uid;
 
-            if(!isVisible || !Plots.traceIs(trace, '2dMap')) {
+            if(!isVisible || !Registry.traceIs(trace, '2dMap')) {
                 fullLayout._paper.selectAll(
                     '.hm' + uid +
                     ',.contour' + uid +
@@ -705,7 +706,7 @@ function cleanData(data, existingData) {
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = Color.defaults,
                 yeColor = trace.error_y.color ||
-                (Plots.traceIs(trace, 'bar') ? Color.defaultLine : dc[tracei % dc.length]);
+                (Registry.traceIs(trace, 'bar') ? Color.defaultLine : dc[tracei % dc.length]);
             trace.error_y.color = Color.addOpacity(
                 Color.rgb(yeColor),
                 Color.opacity(yeColor) * trace.error_y.opacity);
@@ -715,7 +716,7 @@ function cleanData(data, existingData) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir === 'h' && (Plots.traceIs(trace, 'bar') ||
+            if(trace.bardir === 'h' && (Registry.traceIs(trace, 'bar') ||
                      trace.type.substr(0, 9) === 'histogram')) {
                 trace.orientation = 'h';
                 swapXYData(trace);
@@ -745,11 +746,11 @@ function cleanData(data, existingData) {
         if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if(Plots.traceIs(trace, 'gl3d') && trace.scene) {
+        if(Registry.traceIs(trace, 'gl3d') && trace.scene) {
             trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!Plots.traceIs(trace, 'pie')) {
+        if(!Registry.traceIs(trace, 'pie')) {
             if(Array.isArray(trace.textposition)) {
                 trace.textposition = trace.textposition.map(cleanTextPosition);
             }
@@ -759,11 +760,11 @@ function cleanData(data, existingData) {
         }
 
         // fix typo in colorscale definition
-        if(Plots.traceIs(trace, '2dMap')) {
+        if(Registry.traceIs(trace, '2dMap')) {
             if(trace.colorscale === 'YIGnBu') trace.colorscale = 'YlGnBu';
             if(trace.colorscale === 'YIOrRd') trace.colorscale = 'YlOrRd';
         }
-        if(Plots.traceIs(trace, 'markerColorscale') && trace.marker) {
+        if(Registry.traceIs(trace, 'markerColorscale') && trace.marker) {
             var cont = trace.marker;
             if(cont.colorscale === 'YIGnBu') cont.colorscale = 'YlGnBu';
             if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
@@ -1607,7 +1608,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'marker.line.showscale', 'marker.line.cauto', 'marker.line.autocolorscale', 'marker.line.reversescale'
     ];
     for(i = 0; i < traces.length; i++) {
-        if(Plots.traceIs(gd._fullData[traces[i]], 'box')) {
+        if(Registry.traceIs(gd._fullData[traces[i]], 'box')) {
             recalcAttrs.push('name');
             break;
         }
@@ -1850,7 +1851,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
-                } else if(Plots.traceIs(cont, 'cartesian')) {
+                } else if(Registry.traceIs(cont, 'cartesian')) {
                     Lib.nestedProperty(cont, 'marker.colors')
                         .set(Lib.nestedProperty(cont, 'marker.color').get());
                     //look for axes that are no longer in use and delete them
@@ -1926,7 +1927,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 for(i = 0; i < traces.length; i++) {
                     var trace = gd.data[traces[i]];
 
-                    if(Plots.traceIs(trace, 'cartesian')) {
+                    if(Registry.traceIs(trace, 'cartesian')) {
                         addToAxlist(trace.xaxis || 'x');
                         addToAxlist(trace.yaxis || 'y');
 
@@ -1954,7 +1955,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             axLetter = axId.charAt(0),
             axAttr = axLetter + 'axis';
         for(var j = 0; j < gd.data.length; j++) {
-            if(Plots.traceIs(gd.data[j], 'cartesian') &&
+            if(Registry.traceIs(gd.data[j], 'cartesian') &&
                     (gd.data[j][axAttr] || axLetter) === axId) {
                 continue axisLoop;
             }
@@ -2017,7 +2018,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                         var trace = cd[0].trace,
                             cb = cd[0].t.cb;
 
-                        if(Plots.traceIs(trace, 'contour')) {
+                        if(Registry.traceIs(trace, 'contour')) {
                             cb.line({
                                 width: trace.contours.showlines !== false ?
                                     trace.line.width : 0,
@@ -2026,7 +2027,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                                     cb._opts.line.color : trace.line.color
                             });
                         }
-                        if(Plots.traceIs(trace, 'markerColorscale')) {
+                        if(Registry.traceIs(trace, 'markerColorscale')) {
                             cb.options(trace.marker.colorbar)();
                         }
                         else cb.options(trace.colorbar)();

@@ -11,7 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 var Lib = require('../../lib');
 
@@ -37,7 +37,7 @@ module.exports = function setPositions(gd, plotinfo) {
 
         gd._fullData.forEach(function(trace, i) {
             if(trace.visible === true &&
-                    Plots.traceIs(trace, 'bar') &&
+                    Registry.traceIs(trace, 'bar') &&
                     trace.orientation === dir &&
                     trace.xaxis === xa._id &&
                     trace.yaxis === ya._id) {

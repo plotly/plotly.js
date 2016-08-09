@@ -11,8 +11,8 @@
 
 var d3 = require('d3');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
-var Plots = require('../../plots/plots');
 var Drawing = require('../drawing');
 var Color = require('../color');
 
@@ -165,7 +165,7 @@ function styleBars(d) {
         markerLine = marker.line || {},
         barpath = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendbar')
-            .data(Plots.traceIs(trace, 'bar') ? [d] : []);
+            .data(Registry.traceIs(trace, 'bar') ? [d] : []);
     barpath.enter().append('path').classed('legendbar', true)
         .attr('d', 'M6,6H-6V-6H6Z')
         .attr('transform', 'translate(20,0)');
@@ -187,7 +187,7 @@ function styleBoxes(d) {
     var trace = d[0].trace,
         pts = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendbox')
-            .data(Plots.traceIs(trace, 'box') && trace.visible ? [d] : []);
+            .data(Registry.traceIs(trace, 'box') && trace.visible ? [d] : []);
     pts.enter().append('path').classed('legendbox', true)
         // if we want the median bar, prepend M6,0H-6
         .attr('d', 'M6,6H-6V-6H6Z')
@@ -210,7 +210,7 @@ function stylePies(d) {
     var trace = d[0].trace,
         pts = d3.select(this).select('g.legendpoints')
             .selectAll('path.legendpie')
-            .data(Plots.traceIs(trace, 'pie') && trace.visible ? [d] : []);
+            .data(Registry.traceIs(trace, 'pie') && trace.visible ? [d] : []);
     pts.enter().append('path').classed('legendpie', true)
         .attr('d', 'M6,6H-6V-6H6Z')
         .attr('transform', 'translate(20,0)');

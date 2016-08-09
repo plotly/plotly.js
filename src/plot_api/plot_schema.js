@@ -10,6 +10,7 @@
 'use strict';
 
 var Plotly = require('../plotly');
+var Registry = require('../registry');
 var Plots = require('../plots/plots');
 var Lib = require('../lib');
 
@@ -41,13 +42,13 @@ var PlotSchema = module.exports = {};
 
 
 PlotSchema.get = function() {
-    Plots.allTypes
+    Registry.allTypes
         .concat('area')  // FIXME polar 'area' attributes
         .forEach(getTraceAttributes);
 
     getLayoutAttributes();
 
-    Object.keys(Plots.transformsRegistry).forEach(getTransformAttributes);
+    Object.keys(Registry.transformsRegistry).forEach(getTransformAttributes);
 
     getDefs();
 
@@ -142,7 +143,7 @@ function getLayoutAttributes() {
 }
 
 function getTransformAttributes(name) {
-    var _module = Plots.transformsRegistry[name],
+    var _module = Registry.transformsRegistry[name],
         _schema = {};
 
     _schema = coupleAttrs(_schema, _module.attributes || {}, 'attributes', '*');
@@ -248,10 +249,10 @@ function getModule(arg) {
     if('type' in arg) {
         return (arg.type === 'area') ?  // FIXME
             { attributes: polarAreaAttrs } :
-            Plots.getModule({type: arg.type});
+            Registry.getModule({type: arg.type});
     }
 
-    var subplotsRegistry = Plots.subplotsRegistry,
+    var subplotsRegistry = Registry.subplotsRegistry,
         _module = arg.module;
 
     if(subplotsRegistry[_module]) return subplotsRegistry[_module];
@@ -268,7 +269,7 @@ function removeUnderscoreAttrs(attributes) {
 
 function getMeta(type) {
     if(type === 'area') return {};  // FIXME
-    return Plots.modules[type].meta || {};
+    return Registry.modules[type].meta || {};
 }
 
 function assignPolarLayoutAttrs(layoutAttributes) {
@@ -285,9 +286,9 @@ function assignPolarLayoutAttrs(layoutAttributes) {
 function getSubplotRegistry(traceType) {
     if(traceType === 'area') return {};  // FIXME
 
-    var subplotsRegistry = Plots.subplotsRegistry,
+    var subplotsRegistry = Registry.subplotsRegistry,
         subplotType = Object.keys(subplotsRegistry).filter(function(subplotType) {
-            return Plots.traceIs({type: traceType}, subplotType);
+            return Registry.traceIs({type: traceType}, subplotType);
         })[0];
 
     if(subplotType === undefined) return {};
@@ -296,7 +297,7 @@ function getSubplotRegistry(traceType) {
 }
 
 function handleSubplotObjs(layoutAttributes) {
-    var subplotsRegistry = Plots.subplotsRegistry;
+    var subplotsRegistry = Registry.subplotsRegistry;
 
     Object.keys(layoutAttributes).forEach(function(k) {
         Object.keys(subplotsRegistry).forEach(function(subplotType) {

@@ -12,8 +12,8 @@
 var d3 = require('d3');
 var tinycolor = require('tinycolor2');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
-var Plots = require('../../plots/plots');
 var getColorscale = require('../../components/colorscale/get_scale');
 var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
@@ -50,7 +50,7 @@ function plotOne(gd, plotinfo, cd) {
         scl = getColorscale(trace.colorscale),
         x = cd[0].x,
         y = cd[0].y,
-        isContour = Plots.traceIs(trace, 'contour'),
+        isContour = Registry.traceIs(trace, 'contour'),
         zsmooth = isContour ? 'best' : trace.zsmooth,
 
         // get z dims

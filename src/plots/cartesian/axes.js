@@ -12,7 +12,7 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Plotly = require('../../plotly');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var svgTextUtils = require('../../lib/svg_text_utils');
 var Titles = require('../../components/titles');
@@ -1212,8 +1212,7 @@ axes.getSubplots = function(gd, ax) {
         var trace = data[i];
 
         if(trace.visible === false || trace.visible === 'legendonly' ||
-            !(Plotly.Plots.traceIs(trace, 'cartesian') ||
-                Plotly.Plots.traceIs(trace, 'gl2d'))
+            !(Registry.traceIs(trace, 'cartesian') || Registry.traceIs(trace, 'gl2d'))
         ) continue;
 
         var xId = trace.xaxis || 'x',
@@ -1762,7 +1761,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
     function traceHasBarsOrFill(trace, subplot) {
         if(trace.visible !== true || trace.xaxis + trace.yaxis !== subplot) return false;
-        if(Plotly.Plots.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axletter]) return true;
+        if(Registry.traceIs(trace, 'bar') && trace.orientation === {x: 'h', y: 'v'}[axletter]) return true;
         return trace.fill && trace.fill.charAt(trace.fill.length - 1) === axletter;
     }
 

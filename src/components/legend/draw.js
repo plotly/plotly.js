@@ -14,6 +14,7 @@ var d3 = require('d3');
 var Plotly = require('../../plotly');
 var Lib = require('../../lib');
 var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
 var Color = require('../color');
@@ -108,7 +109,7 @@ module.exports = function draw(gd) {
     traces.call(style)
         .style('opacity', function(d) {
             var trace = d[0].trace;
-            if(Plots.traceIs(trace, 'pie')) {
+            if(Registry.traceIs(trace, 'pie')) {
                 return hiddenSlices.indexOf(d[0].label) !== -1 ? 0.5 : 1;
             } else {
                 return trace.visible === 'legendonly' ? 0.5 : 1;
@@ -337,7 +338,7 @@ function drawTexts(g, gd) {
     var legendItem = g.data()[0][0],
         fullLayout = gd._fullLayout,
         trace = legendItem.trace,
-        isPie = Plots.traceIs(trace, 'pie'),
+        isPie = Registry.traceIs(trace, 'pie'),
         traceIndex = trace.index,
         name = isPie ? legendItem.label : trace.name;
 
@@ -400,7 +401,7 @@ function setupTraceToggle(g, gd) {
             tracei,
             newVisible;
 
-        if(Plots.traceIs(trace, 'pie')) {
+        if(Registry.traceIs(trace, 'pie')) {
             var thisLabel = legendItem.label,
                 thisLabelIndex = hiddenSlices.indexOf(thisLabel);
 

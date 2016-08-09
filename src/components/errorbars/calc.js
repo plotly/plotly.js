@@ -11,7 +11,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var Axes = require('../../plots/cartesian/axes');
 
 var makeComputeError = require('./compute_error');
@@ -24,7 +24,7 @@ module.exports = function calc(gd) {
         var calcTrace = calcdata[i],
             trace = calcTrace[0].trace;
 
-        if(!Plots.traceIs(trace, 'errorBarsOK')) continue;
+        if(!Registry.traceIs(trace, 'errorBarsOK')) continue;
 
         var xa = Axes.getFromId(gd, trace.xaxis),
             ya = Axes.getFromId(gd, trace.yaxis);

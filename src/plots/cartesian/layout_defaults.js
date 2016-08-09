@@ -9,8 +9,8 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
-var Plots = require('../plots');
 var Color = require('../../components/color');
 var basePlotLayoutAttributes = require('../layout_attributes');
 
@@ -39,11 +39,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var trace = fullData[i];
         var listX, listY;
 
-        if(Plots.traceIs(trace, 'cartesian')) {
+        if(Registry.traceIs(trace, 'cartesian')) {
             listX = xaListCartesian;
             listY = yaListCartesian;
         }
-        else if(Plots.traceIs(trace, 'gl2d')) {
+        else if(Registry.traceIs(trace, 'gl2d')) {
             listX = xaListGl2d;
             listY = yaListGl2d;
         }
@@ -57,12 +57,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         if(yaName && listY.indexOf(yaName) === -1) listY.push(yaName);
 
         // check for default formatting tweaks
-        if(Plots.traceIs(trace, '2dMap')) {
+        if(Registry.traceIs(trace, '2dMap')) {
             outerTicks[xaName] = true;
             outerTicks[yaName] = true;
         }
 
-        if(Plots.traceIs(trace, 'oriented')) {
+        if(Registry.traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation === 'h' ? yaName : xaName;
             noGrids[positionAxis] = true;
         }
@@ -96,7 +96,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // make sure that plots with orphan cartesian axes
     // are considered 'cartesian'
     if(xaListCartesian.length && yaListCartesian.length) {
-        Lib.pushUnique(layoutOut._basePlotModules, Plots.subplotsRegistry.cartesian);
+        Lib.pushUnique(layoutOut._basePlotModules, Registry.subplotsRegistry.cartesian);
     }
 
     function axSort(a, b) {

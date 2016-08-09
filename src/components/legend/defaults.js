@@ -9,8 +9,8 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
-var Plots = require('../../plots/plots');
 
 var attributes = require('./attributes');
 var basePlotLayoutAttributes = require('../../plots/layout_attributes');
@@ -34,10 +34,10 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
         if(helpers.legendGetsTrace(trace)) {
             visibleTraces++;
             // always show the legend by default if there's a pie
-            if(Plots.traceIs(trace, 'pie')) visibleTraces++;
+            if(Registry.traceIs(trace, 'pie')) visibleTraces++;
         }
 
-        if((Plots.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
+        if((Registry.traceIs(trace, 'bar') && layoutOut.barmode === 'stack') ||
                 ['tonextx', 'tonexty'].indexOf(trace.fill) !== -1) {
             defaultOrder = helpers.isGrouped({traceorder: defaultOrder}) ?
                 'grouped+reversed' : 'reversed';

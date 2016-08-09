@@ -12,8 +12,8 @@
 var isNumeric = require('fast-isnumeric');
 var colorMix = require('tinycolor2').mix;
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
-var Plots = require('../plots');
 var lightFraction = require('../../components/color/attributes').lightFraction;
 
 var layoutAttributes = require('./layout_attributes');
@@ -177,7 +177,7 @@ function setAutoType(ax, data) {
 
         for(var i = 0; i < data.length; i++) {
             trace = data[i];
-            if(!Plots.traceIs(trace, 'box') ||
+            if(!Registry.traceIs(trace, 'box') ||
                (trace[axLetter + 'axis'] || axLetter) !== id) continue;
 
             if(trace[posLetter] !== undefined) boxPositions.push(trace[posLetter][0]);
@@ -200,7 +200,7 @@ function isBoxWithoutPositionCoords(trace, axLetter) {
     var posLetter = getBoxPosLetter(trace);
 
     return (
-        Plots.traceIs(trace, 'box') &&
+        Registry.traceIs(trace, 'box') &&
         axLetter === posLetter &&
         trace[posLetter] === undefined &&
         trace[posLetter + '0'] === undefined
