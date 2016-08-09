@@ -10,6 +10,14 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.16.2] -- 2016-08-09
+
+### Fixed
+- Fix decoding for the supported HTML entities (bug introduced in 1.16.0) [#835]
+- Fix layout images position on subplots [#831]
+- Fix a few cartesian autorange edge cases [#813]
+
+
 ## [1.16.1] -- 2016-08-05
 
 ### Changed
