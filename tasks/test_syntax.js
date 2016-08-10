@@ -40,7 +40,7 @@ function assertJasmineSuites() {
 
         });
 
-        log(logs);
+        log('no jasmine suites focus/exclude blocks', logs);
     });
 }
 
@@ -70,7 +70,7 @@ function assertHeaders() {
             }
         });
 
-        log(logs);
+        log('correct headers in lib/ and src/', logs);
     });
 }
 
@@ -91,7 +91,7 @@ function assertFileNames() {
             }
         });
 
-        log(logs);
+        log('lower case only file names', logs);
     });
 
 }
@@ -113,12 +113,16 @@ function assertCircularDeps() {
 
     log('circular dependencies', logs);
 }
+
 function combineGlobs(arr) {
     return '{' + arr.join(',') + '}';
 }
 
-function log(logs) {
+function log(name, logs) {
     if(logs.length) {
+        console.error('test-syntax error [' + name + ']\n');
         throw new Error('\n' + logs.join('\n') + '\n');
     }
+
+    console.log('ok ' + name);
 }
