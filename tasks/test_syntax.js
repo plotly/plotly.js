@@ -3,6 +3,7 @@ var fs = require('fs');
 
 var falafel = require('falafel');
 var glob = require('glob');
+var madge = require('madge');
 
 var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
@@ -14,6 +15,7 @@ var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
 assertJasmineSuites();
 assertHeaders();
 assertFileNames();
+assertCircularDeps();
 
 
 // check for for focus and exclude jasmine blocks
@@ -94,6 +96,23 @@ function assertFileNames() {
 
 }
 
+// check circular dependencies
+function assertCircularDeps() {
+    var dependencyObject = madge(constants.pathToSrc);
+    var circularDeps = dependencyObject.circular().getArray();
+    var logs = [];
+
+    // as of 2016/08/19
+    // see https://github.com/plotly/plotly.js/milestone/9
+    // for more details
+    var MAX_ALLOWED_CIRCULAR_DEPS = 31;
+
+    if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {
+        logs.push('some new circular dependencies were added to src/');
+    }
+
+    log('circular dependencies', logs);
+}
 function combineGlobs(arr) {
     return '{' + arr.join(',') + '}';
 }
