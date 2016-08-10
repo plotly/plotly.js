@@ -125,7 +125,7 @@ module.exports = function setConvert(ax) {
         if(!isNumeric(v)) return constants.BADNUM;
 
         // include 2 fractional digits on pixel, for PDF zooming etc
-        return d3.round(ax._b + ax._m * v, 2);
+        return Math.round(100 * (ax._b + ax._m * v)) / 100;
     };
 
     ax.p2l = function(px) { return (px - ax._b) / ax._m; };

@@ -1324,6 +1324,7 @@ axes.makeClipPaths = function(gd) {
         .data([0]);
     defGroup.enter().append('g')
         .classed('clips', true);
+    defGroup = defs.select('g.clips');
 
     // selectors don't work right with camelCase tags,
     // have to use class instead
@@ -1336,7 +1337,7 @@ axes.makeClipPaths = function(gd) {
       .append('rect');
     axClips.exit().remove();
     axClips.each(function(d) {
-        d3.select(this).select('rect').attr({
+        d3.select(this).select('rect').attrs({
             x: d.x._offset || 0,
             y: d.y._offset || 0,
             width: d.x._length || 1,
@@ -1586,13 +1587,13 @@ axes.doTicks = function(gd, axid, skipTitle) {
                             (labely(d) - d.fontSize / 2) + ')') :
                         '');
                 if(mathjaxGroup.empty()) {
-                    var txt = thisLabel.select('text').attr({
+                    var txt = thisLabel.select('text').attrs({
                         transform: transform,
                         'text-anchor': anchor
                     });
 
                     if(!txt.empty()) {
-                        txt.selectAll('tspan.line').attr({
+                        txt.selectAll('tspan.line').attrs({
                             x: txt.attr('x'),
                             y: txt.attr('y')
                         });

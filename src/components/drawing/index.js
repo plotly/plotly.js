@@ -346,7 +346,7 @@ drawing.textPointStyle = function(s, trace) {
 
         // then fix multiline text
         if(numLines > 1) {
-            tspans.attr({ x: p.attr('x'), y: p.attr('y') });
+            tspans.attrs({ x: p.attr('x'), y: p.attr('y') });
         }
     });
 };
@@ -507,7 +507,7 @@ drawing.bBox = function(node) {
     var testNode = node.cloneNode(true);
     tester.appendChild(testNode);
     // standardize its position... do we really want to do this?
-    d3.select(testNode).attr({
+    d3.select(testNode).attrs({
         x: 0,
         y: 0,
         transform: ''
