@@ -8,7 +8,7 @@
 
 'use strict';
 
-var Lib = require('../lib');
+/* eslint-disable no-console */
 
 /**
  * This will be transferred over to gd and overridden by
@@ -98,10 +98,14 @@ module.exports = {
 };
 
 // where and how the background gets set can be overridden by context
-// so we define the default (plotlyjs) behavior here
+// so we define the default (plotly.js) behavior here
 function defaultSetBackground(gd, bgColor) {
     try {
         gd._fullLayout._paper.style('background', bgColor);
     }
-    catch(e) { Lib.error(e); }
+    catch(e) {
+        if(module.exports.logging > 0) {
+            console.error(e);
+        }
+    }
 }
