@@ -38,7 +38,6 @@ var Plots = exports.Plots = require('./plots/plots');
 
 exports.Axes = require('./plots/cartesian/axes');
 exports.Fx = require('./plots/cartesian/graph_interact');
-exports.micropolar = require('./plots/polar/micropolar');
 
 // components
 exports.Color = require('./components/color');

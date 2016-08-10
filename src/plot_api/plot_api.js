@@ -20,6 +20,7 @@ var Queue = require('../lib/queue');
 
 var Plots = require('../plots/plots');
 var Fx = require('../plots/cartesian/graph_interact');
+var Polar = require('../plots/polar');
 
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
@@ -419,7 +420,7 @@ function plotPolar(gd, data, layout) {
     // fulfill gd requirements
     if(data) gd.data = data;
     if(layout) gd.layout = layout;
-    Plotly.micropolar.manager.fillLayout(gd);
+    Polar.manager.fillLayout(gd);
 
     if(gd._fullLayout.autosize === 'initial' && gd._context.autosizable) {
         plotAutoSize(gd, {});
@@ -432,7 +433,7 @@ function plotPolar(gd, data, layout) {
     });
 
     // instantiate framework
-    gd.framework = Plotly.micropolar.manager.framework(gd);
+    gd.framework = Polar.manager.framework(gd);
 
     // plot
     gd.framework({data: gd.data, layout: gd.layout}, paperDiv.node());
