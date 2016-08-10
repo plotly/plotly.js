@@ -53,7 +53,6 @@
     "convex-hull": "^1.0.3",
     "country-regex": "^1.0.0",
     "d3": "^4.2.1",
-    "d3-selection-multi": "^1.0.0",
     "delaunay-triangulate": "^1.1.6",
     "es6-promise": "^3.0.2",
     "fast-isnumeric": "^1.1.1",

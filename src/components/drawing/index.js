@@ -108,7 +108,7 @@ drawing.dashLine = function(s, dash, lineWidth) {
     }
     // otherwise user wrote the dasharray themselves - leave it be
 
-    s.style({
+    s.styles({
         'stroke-dasharray': dash,
         'stroke-width': lineWidth + 'px'
     });
@@ -248,7 +248,7 @@ drawing.pointStyle = function(s, trace) {
             // open markers can't have zero linewidth, default to 1px,
             // and use fill color as stroke color
             p.call(Color.stroke, fillColor)
-                .style({
+                .styles({
                     'stroke-width': (lineWidth || 1) + 'px',
                     fill: 'none'
                 });
@@ -457,7 +457,7 @@ drawing.makeTester = function(gd) {
     tester.enter().append('svg')
         .attr('id', 'js-plotly-tester')
         .attrs(xmlnsNamespaces.svgAttrs)
-        .style({
+        .styles({
             position: 'absolute',
             left: '-10000px',
             top: '-10000px',
@@ -473,14 +473,14 @@ drawing.makeTester = function(gd) {
     testref.enter().append('path')
         .classed('js-reference-point', true)
         .attr('d', 'M0,0H1V1H0Z')
-        .style({
+        .styles({
             'stroke-width': 0,
             fill: 'black'
         });
 
-    if(!tester.node()._cache) {
-        tester.node()._cache = {};
-    }
+    //if(!tester.node()._cache) {
+        //tester.node()._cache = {};
+    //}
 
     gd._tester = tester;
     gd._testref = testref;
