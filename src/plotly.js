@@ -18,19 +18,7 @@
  *
  */
 
-// promise polyfill
-require('es6-promise').polyfill();
-
-// lib functions
-exports.Lib = require('./lib');
-exports.util = require('./lib/svg_text_utils');
-exports.Queue = require('./lib/queue');
-
-// plot css
-require('../build/plotcss');
-
 // configuration
-exports.MathJaxConfig = require('./fonts/mathjax_config');
 exports.defaultConfig = require('./plot_api/plot_config');
 
 // plots
@@ -53,7 +41,3 @@ exports.ModeBar = require('./components/modebar');
 
 // plot api
 require('./plot_api/plot_api');
-exports.PlotSchema = require('./plot_api/plot_schema');
-
-// imaging routines
-exports.Snapshot = require('./snapshot');

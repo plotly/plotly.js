@@ -17,6 +17,15 @@ var Plotly = require('./plotly');
 // package version injected by `npm run preprocess`
 exports.version = '1.16.2';
 
+// inject promise polyfill
+require('es6-promise').polyfill();
+
+// inject plot css
+require('../build/plotcss');
+
+// inject default MathJax config
+require('./fonts/mathjax_config');
+
 // plot api
 exports.plot = Plotly.plot;
 exports.newPlot = Plotly.newPlot;
@@ -44,9 +53,9 @@ exports.Icons = require('../build/ploticon');
 // unofficial 'beta' plot methods, use at your own risk
 exports.Plots = Plotly.Plots;
 exports.Fx = Plotly.Fx;
-exports.Snapshot = Plotly.Snapshot;
-exports.PlotSchema = Plotly.PlotSchema;
-exports.Queue = Plotly.Queue;
+exports.Snapshot = require('./snapshot');
+exports.PlotSchema = require('./plot_api/plot_schema');
+exports.Queue = require('./lib/queue');
 
 // export d3 used in the bundle
 exports.d3 = require('d3');

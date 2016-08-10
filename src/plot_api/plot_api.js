@@ -36,6 +36,7 @@ var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
+var svgTextUtils = require('../lib/svg_text_utils');
 
 
 /**
@@ -453,7 +454,7 @@ function plotPolar(gd, data, layout) {
     var placeholderText = 'Click to enter title';
 
     var titleLayout = function() {
-        this.call(Plotly.util.convertToTspans);
+        this.call(svgTextUtils.convertToTspans);
         //TODO: html/mathjax
         //TODO: center title
     };
@@ -479,7 +480,7 @@ function plotPolar(gd, data, layout) {
         }
 
         var setContenteditable = function() {
-            this.call(Plotly.util.makeEditable)
+            this.call(svgTextUtils.makeEditable)
                 .on('edit', function(text) {
                     gd.framework({layout: {title: text}});
                     this.attr({'data-unformatted': text})
