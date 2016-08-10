@@ -44,51 +44,46 @@ module.exports = function draw(gd) {
     }
 
     var legend = fullLayout._infolayer.selectAll('g.legend')
-        .data([0]);
-
-    legend.enter().append('g')
-        .attr({
-            'class': 'legend',
-            'pointer-events': 'all'
-        });
+        .data([0])
+        .enter().append('g')
+            .attrs({
+                'class': 'legend',
+                'pointer-events': 'all'
+            });
 
     var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
-        .data([0]);
-
-    clipPath.enter().append('clipPath')
-        .attr('id', clipId)
-        .append('rect');
+        .data([0])
+        .enter().append('clipPath')
+            .attr('id', clipId)
+            .append('rect');
 
     var bg = legend.selectAll('rect.bg')
-        .data([0]);
-
-    bg.enter().append('rect').attr({
-        'class': 'bg',
-        'shape-rendering': 'crispEdges'
-    });
+        .data([0])
+        .enter().append('rect').attrs({
+            'class': 'bg',
+            'shape-rendering': 'crispEdges'
+        });
 
     bg.call(Color.stroke, opts.bordercolor);
     bg.call(Color.fill, opts.bgcolor);
     bg.style('stroke-width', opts.borderwidth + 'px');
 
     var scrollBox = legend.selectAll('g.scrollbox')
-        .data([0]);
-
-    scrollBox.enter().append('g')
-        .attr('class', 'scrollbox');
+        .data([0])
+        .enter().append('g')
+            .attr('class', 'scrollbox');
 
     var scrollBar = legend.selectAll('rect.scrollbar')
-        .data([0]);
-
-    scrollBar.enter().append('rect')
-        .attr({
-            'class': 'scrollbar',
-            'rx': 20,
-            'ry': 2,
-            'width': 0,
-            'height': 0
-        })
-        .call(Color.fill, '#808BA4');
+        .data([0])
+        .enter().append('rect')
+            .attrs({
+                'class': 'scrollbar',
+                'rx': 20,
+                'ry': 2,
+                'width': 0,
+                'height': 0
+            })
+            .call(Color.fill, '#808BA4');
 
     var groups = scrollBox.selectAll('g.groups')
         .data(legendData);
@@ -205,7 +200,7 @@ module.exports = function draw(gd) {
 
     if(opts.height <= legendHeight || gd._context.staticPlot) {
         // if scrollbar should not be shown.
-        bg.attr({
+        bg.attrs({
             width: legendWidth - opts.borderwidth,
             height: legendHeight - opts.borderwidth,
             x: opts.borderwidth / 2,
@@ -214,7 +209,7 @@ module.exports = function draw(gd) {
 
         Lib.setTranslate(scrollBox, 0, 0);
 
-        clipPath.select('rect').attr({
+        clipPath.select('rect').attrs({
             width: legendWidth - 2 * opts.borderwidth,
             height: legendHeight - 2 * opts.borderwidth,
             x: opts.borderwidth,
@@ -229,7 +224,7 @@ module.exports = function draw(gd) {
 
         // increase the background and clip-path width
         // by the scrollbar width and margin
-        bg.attr({
+        bg.attrs({
             width: legendWidth -
                 2 * opts.borderwidth +
                 constants.scrollBarWidth +
@@ -239,7 +234,7 @@ module.exports = function draw(gd) {
             y: opts.borderwidth / 2
         });
 
-        clipPath.select('rect').attr({
+        clipPath.select('rect').attrs({
             width: legendWidth -
                 2 * opts.borderwidth +
                 constants.scrollBarWidth +
@@ -296,7 +291,7 @@ module.exports = function draw(gd) {
             constants.scrollBarWidth,
             constants.scrollBarHeight
         );
-        clipPath.select('rect').attr({
+        clipPath.select('rect').attrs({
             y: opts.borderwidth - scrollBoxY
         });
     }
@@ -341,9 +336,9 @@ function drawTexts(g, gd) {
         name = isPie ? legendItem.label : trace.name;
 
     var text = g.selectAll('text.legendtext')
-        .data([0]);
-    text.enter().append('text').classed('legendtext', true);
-    text.attr({
+        .data([0])
+        .enter().append('text').classed('legendtext', true);
+    text.attrs({
         x: 40,
         y: 0,
         'data-unformatted': name
@@ -355,7 +350,7 @@ function drawTexts(g, gd) {
 
     function textLayout(s) {
         Plotly.util.convertToTspans(s, function() {
-            s.selectAll('tspan.line').attr({x: s.attr('x')});
+            s.selectAll('tspan.line').attrs({x: s.attr('x')});
             g.call(computeTextDimensions, gd);
         });
     }
@@ -364,7 +359,7 @@ function drawTexts(g, gd) {
         text.call(Plotly.util.makeEditable)
             .call(textLayout)
             .on('edit', function(text) {
-                this.attr({'data-unformatted': text});
+                this.attrs({'data-unformatted': text});
                 this.text(text)
                     .call(textLayout);
                 if(!this.text()) text = ' \u0020\u0020 ';
@@ -380,13 +375,12 @@ function setupTraceToggle(g, gd) {
         [];
 
     var traceToggle = g.selectAll('rect')
-        .data([0]);
-
-    traceToggle.enter().append('rect')
-        .classed('legendtoggle', true)
-        .style('cursor', 'pointer')
-        .attr('pointer-events', 'all')
-        .call(Color.fill, 'rgba(0,0,0,0)');
+        .data([0])
+        .enter().append('rect')
+            .classed('legendtoggle', true)
+            .style('cursor', 'pointer')
+            .attr('pointer-events', 'all')
+            .call(Color.fill, 'rgba(0,0,0,0)');
 
     traceToggle.on('click', function() {
         if(gd._dragged) return;
@@ -464,7 +458,7 @@ function computeTextDimensions(g, gd) {
 
     height = Math.max(height, 16) + 3;
 
-    bg.attr({x: 0, y: -height / 2, height: height});
+    bg.attrs({x: 0, y: -height / 2, height: height});
 
     legendItem.height = height;
     legendItem.width = width;

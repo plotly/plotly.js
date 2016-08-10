@@ -79,11 +79,13 @@ Titles.draw = function(gd, titleClass, options) {
             .data([0]);
         group.enter().append('g')
             .classed('g-' + titleClass, true);
+        group = fullLayout._infolayer.select('.g-' + titleClass);
     }
 
     var el = group.selectAll('text')
         .data([0]);
     el.enter().append('text');
+    el = group.select('text');
     el.text(txt)
         // this is hacky, but convertToTspans uses the class
         // to determine whether to rotate mathJax...
@@ -102,19 +104,19 @@ Titles.draw = function(gd, titleClass, options) {
                 ') translate(0, ' + transform.offset + ')' :
             null);
 
-        titleEl.style({
+        titleEl.styles({
             'font-family': font,
-            'font-size': d3.round(fontSize, 2) + 'px',
+            'font-size': d3.format('.2f')(fontSize) + 'px',
             fill: Color.rgb(fontColor),
             opacity: opacity * Color.opacity(fontColor),
             'font-weight': Plots.fontWeight
         })
-        .attr(attributes)
+        .attrs(attributes)
         .call(svgTextUtils.convertToTspans)
-        .attr(attributes);
+        .attrs(attributes);
 
         titleEl.selectAll('tspan.line')
-            .attr(attributes);
+            .attrs(attributes);
         return Plots.previousPromises(gd);
     }
 
@@ -181,7 +183,7 @@ Titles.draw = function(gd, titleClass, options) {
         }
     }
 
-    el.attr({'data-unformatted': txt})
+    el.attrs({'data-unformatted': txt})
         .call(titleLayout);
 
     var placeholderText = 'Click to enter ' + name + ' title';
@@ -191,7 +193,7 @@ Titles.draw = function(gd, titleClass, options) {
         isplaceholder = true;
         txt = placeholderText;
         fullLayout._infolayer.select('.' + titleClass)
-            .attr({'data-unformatted': txt})
+            .attrs({'data-unformatted': txt})
             .text(txt)
             .on('mouseover.opacity', function() {
                 d3.select(this).transition()

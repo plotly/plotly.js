@@ -427,7 +427,7 @@ function plotPolar(gd, data, layout) {
         gd._fullLayout.autosize = layout.autosize = true;
     }
     // resize canvas
-    paperDiv.style({
+    paperDiv.styles({
         width: gd._fullLayout.width + 'px',
         height: gd._fullLayout.height + 'px'
     });
@@ -460,12 +460,12 @@ function plotPolar(gd, data, layout) {
         .call(titleLayout);
 
     if(gd._context.editable) {
-        title.attr({'data-unformatted': txt});
+        title.attrs({'data-unformatted': txt});
         if(!txt || txt === placeholderText) {
             opacity = 0.2;
-            title.attr({'data-unformatted': placeholderText})
+            title.attrs({'data-unformatted': placeholderText})
                 .text(placeholderText)
-                .style({opacity: opacity})
+                .styles({opacity: opacity})
                 .on('mouseover.opacity', function() {
                     d3.select(this).transition().duration(100)
                         .style('opacity', 1);
@@ -480,7 +480,7 @@ function plotPolar(gd, data, layout) {
             this.call(Plotly.util.makeEditable)
                 .on('edit', function(text) {
                     gd.framework({layout: {title: text}});
-                    this.attr({'data-unformatted': text})
+                    this.attrs({'data-unformatted': text})
                         .text(text)
                         .call(titleLayout);
                     this.call(setContenteditable);
@@ -2626,11 +2626,15 @@ function makePlotFramework(gd) {
         .classed('plot-container', true)
         .classed('plotly', true);
 
+    fullLayout._container = gd3.select('.plot-container');
+
     // Make the svg container
     fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
     fullLayout._paperdiv.enter().append('div')
         .classed('svg-container', true)
         .style('position', 'relative');
+
+    fullLayout._paperdiv = fullLayout._container.select('.svg-container');
 
     // Initial autosize
     if(fullLayout.autosize === 'initial') {
@@ -2648,6 +2652,8 @@ function makePlotFramework(gd) {
         .data([0]);
     fullLayout._glcontainer.enter().append('div')
         .classed('gl-container', true);
+
+    fullLayout._glContainer = fullLayout._paperdiv.select('.gl-container');
 
     fullLayout._geocontainer = fullLayout._paperdiv.selectAll('.geo-container')
         .data([0]);
@@ -2671,7 +2677,7 @@ function makePlotFramework(gd) {
     }
 
     fullLayout._paperdiv.selectAll('.main-svg')
-        .attr(xmlnsNamespaces.svgAttrs);
+        .attrs(xmlnsNamespaces.svgAttrs);
 
     fullLayout._defs = fullLayout._paper.append('defs')
         .attr('id', 'defs-' + fullLayout._uid);
@@ -2799,6 +2805,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
     fullLayout._paper.selectAll('g.subplot').data(subplots)
       .enter().append('g')
         .classed('subplot', true)
+    fullLayout._paper.selectAll('g.subplot').data(subplots)
         .each(function(subplot) {
             var plotinfo = fullLayout._plots[subplot],
                 plotgroup = plotinfo.plotgroup = d3.select(this).classed(subplot, true),
@@ -2919,7 +2926,7 @@ function lsInner(gd) {
     for(i = 0; i < axList.length; i++) axList[i]._linepositions = {};
 
     fullLayout._paperdiv
-        .style({
+        .styles({
             width: fullLayout.width + 'px',
             height: fullLayout.height + 'px'
         })
@@ -2953,14 +2960,14 @@ function lsInner(gd) {
             .data([0]);
 
         plotClip.enter().append('clipPath')
-            .attr({
+            .attrs({
                 'class': 'plotclip',
                 'id': plotinfo.clipId
             })
             .append('rect');
 
         plotClip.selectAll('rect')
-            .attr({
+            .attrs({
                 'width': xa._length,
                 'height': ya._length
             });

@@ -108,7 +108,7 @@ drawing.dashLine = function(s, dash, lineWidth) {
     }
     // otherwise user wrote the dasharray themselves - leave it be
 
-    s.style({
+    s.styles({
         'stroke-dasharray': dash,
         'stroke-width': lineWidth + 'px'
     });
@@ -248,7 +248,7 @@ drawing.pointStyle = function(s, trace) {
             // open markers can't have zero linewidth, default to 1px,
             // and use fill color as stroke color
             p.call(Color.stroke, fillColor)
-                .style({
+                .styles({
                     'stroke-width': (lineWidth || 1) + 'px',
                     fill: 'none'
                 });
@@ -346,7 +346,7 @@ drawing.textPointStyle = function(s, trace) {
 
         // then fix multiline text
         if(numLines > 1) {
-            tspans.attr({ x: p.attr('x'), y: p.attr('y') });
+            tspans.attrs({ x: p.attr('x'), y: p.attr('y') });
         }
     });
 };
@@ -456,8 +456,8 @@ drawing.makeTester = function(gd) {
 
     tester.enter().append('svg')
         .attr('id', 'js-plotly-tester')
-        .attr(xmlnsNamespaces.svgAttrs)
-        .style({
+        .attrs(xmlnsNamespaces.svgAttrs)
+        .styles({
             position: 'absolute',
             left: '-10000px',
             top: '-10000px',
@@ -465,6 +465,7 @@ drawing.makeTester = function(gd) {
             height: '9000px',
             'z-index': '1'
         });
+    tester = d3.select('body').select('#js-plotly-tester');
 
     // browsers differ on how they describe the bounding rect of
     // the svg if its contents spill over... so make a 1x1px
@@ -473,14 +474,15 @@ drawing.makeTester = function(gd) {
     testref.enter().append('path')
         .classed('js-reference-point', true)
         .attr('d', 'M0,0H1V1H0Z')
-        .style({
+        .styles({
             'stroke-width': 0,
             fill: 'black'
         });
+    testref = tester.select('.js-reference-point');
 
-    if(!tester.node()._cache) {
-        tester.node()._cache = {};
-    }
+    //if(!tester.node()._cache) {
+        //tester.node()._cache = {};
+    //}
 
     gd._tester = tester;
     gd._testref = testref;
@@ -507,7 +509,7 @@ drawing.bBox = function(node) {
     var testNode = node.cloneNode(true);
     tester.appendChild(testNode);
     // standardize its position... do we really want to do this?
-    d3.select(testNode).attr({
+    d3.select(testNode).attrs({
         x: 0,
         y: 0,
         transform: ''

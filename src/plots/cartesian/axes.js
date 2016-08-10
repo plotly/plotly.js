@@ -876,12 +876,12 @@ axes.tickFirst = function(ax) {
     else throw 'unrecognized dtick ' + String(dtick);
 };
 
-var yearFormat = d3.time.format('%Y'),
-    monthFormat = d3.time.format('%b %Y'),
-    dayFormat = d3.time.format('%b %-d'),
-    hourFormat = d3.time.format('%b %-d %Hh'),
-    minuteFormat = d3.time.format('%H:%M'),
-    secondFormat = d3.time.format(':%S');
+var yearFormat = d3.timeFormat('%Y'),
+    monthFormat = d3.timeFormat('%b %Y'),
+    dayFormat = d3.timeFormat('%b %-d'),
+    hourFormat = d3.timeFormat('%b %-d %Hh'),
+    minuteFormat = d3.timeFormat('%H:%M'),
+    secondFormat = d3.timeFormat(':%S');
 
 // add one item to d3's vocabulary:
 // %{n}f where n is the max number of digits
@@ -894,10 +894,10 @@ function modDateFormat(fmt, x) {
         var digits = Math.min(+fm[1] || 6, 6),
             fracSecs = String((x / 1000 % 1) + 2.0000005)
                 .substr(2, digits).replace(/0+$/, '') || '0';
-        return d3.time.format(fmt.replace(fracMatch, fracSecs))(d);
+        return d3.timeFormat(fmt.replace(fracMatch, fracSecs))(d);
     }
     else {
-        return d3.time.format(fmt)(d);
+        return d3.timeFormat(fmt)(d);
     }
 }
 
@@ -1324,6 +1324,7 @@ axes.makeClipPaths = function(gd) {
         .data([0]);
     defGroup.enter().append('g')
         .classed('clips', true);
+    defGroup = defs.select('g.clips');
 
     // selectors don't work right with camelCase tags,
     // have to use class instead
@@ -1336,7 +1337,7 @@ axes.makeClipPaths = function(gd) {
       .append('rect');
     axClips.exit().remove();
     axClips.each(function(d) {
-        d3.select(this).select('rect').attr({
+        d3.select(this).select('rect').attrs({
             x: d.x._offset || 0,
             y: d.y._offset || 0,
             width: d.x._length || 1,
@@ -1586,13 +1587,13 @@ axes.doTicks = function(gd, axid, skipTitle) {
                             (labely(d) - d.fontSize / 2) + ')') :
                         '');
                 if(mathjaxGroup.empty()) {
-                    var txt = thisLabel.select('text').attr({
+                    var txt = thisLabel.select('text').attrs({
                         transform: transform,
                         'text-anchor': anchor
                     });
 
                     if(!txt.empty()) {
-                        txt.selectAll('tspan.line').attr({
+                        txt.selectAll('tspan.line').attrs({
                             x: txt.attr('x'),
                             y: txt.attr('y')
                         });

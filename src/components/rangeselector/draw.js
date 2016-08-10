@@ -34,7 +34,7 @@ module.exports = function draw(gd) {
 
     selectors.exit().remove();
 
-    selectors.style({
+    selectors.styles({
         cursor: 'pointer',
         'pointer-events': 'all'
     });
@@ -123,14 +123,13 @@ function isActive(axisLayout, opts, update) {
 
 function drawButtonRect(button, selectorLayout, d) {
     var rect = button.selectAll('rect')
-        .data([0]);
-
-    rect.enter().append('rect')
-        .classed('selector-rect', true);
+        .data([0])
+        .enter().append('rect')
+            .classed('selector-rect', true);
 
     rect.attr('shape-rendering', 'crispEdges');
 
-    rect.attr({
+    rect.attrs({
         'rx': constants.rx,
         'ry': constants.ry
     });
@@ -154,11 +153,10 @@ function drawButtonText(button, selectorLayout, d) {
     }
 
     var text = button.selectAll('text')
-        .data([0]);
-
-    text.enter().append('text')
-        .classed('selector-text', true)
-        .classed('user-select-none', true);
+        .data([0])
+        .enter().append('text')
+            .classed('selector-text', true)
+            .classed('user-select-none', true);
 
     text.attr('text-anchor', 'middle');
 
@@ -213,7 +211,7 @@ function reposition(gd, buttons, opts, axName) {
             (borderWidth + opts.width) + ',' + borderWidth +
         ')');
 
-        rect.attr({
+        rect.attrs({
             x: 0,
             y: 0,
             width: wEff,
