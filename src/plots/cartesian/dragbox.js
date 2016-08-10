@@ -80,8 +80,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     dragger3.enter().append('rect')
         .classed('drag', true)
         .classed(dragClass, true)
-        .style({fill: 'transparent', 'stroke-width': 0})
+        .styles({fill: 'transparent', 'stroke-width': 0})
         .attr('data-subplot', plotinfo.id);
+
+    dragger3 = plotinfo.draglayer.selectAll('.' + dragClass);
 
     dragger3.call(Drawing.setRect, x, y, w, h)
         .call(setCursor, cursor);
@@ -171,7 +173,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         zb = zoomlayer.append('path')
             .attr('class', 'zoombox')
-            .style({
+            .styles({
                 'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
@@ -180,7 +182,7 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
         corners = zoomlayer.append('path')
             .attr('class', 'zoombox-corners')
-            .style({
+            .styles({
                 fill: Color.background,
                 stroke: Color.defaultLine,
                 'stroke-width': 1,

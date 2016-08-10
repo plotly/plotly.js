@@ -465,6 +465,7 @@ drawing.makeTester = function(gd) {
             height: '9000px',
             'z-index': '1'
         });
+    tester = d3.select('body').select('#js-plotly-tester');
 
     // browsers differ on how they describe the bounding rect of
     // the svg if its contents spill over... so make a 1x1px
@@ -477,6 +478,7 @@ drawing.makeTester = function(gd) {
             'stroke-width': 0,
             fill: 'black'
         });
+    testref = tester.select('.js-reference-point');
 
     //if(!tester.node()._cache) {
         //tester.node()._cache = {};
