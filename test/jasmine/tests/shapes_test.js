@@ -1,11 +1,12 @@
-var d3 = require('d3');
+var helpers = require('@src/components/shapes/helpers');
+var constants = require('@src/components/shapes/constants');
 
 var Plotly = require('@lib/index');
-var Lib = require('@src/lib');
-
 var PlotlyInternal = require('@src/plotly');
+var Lib = require('@src/lib');
 var Axes = PlotlyInternal.Axes;
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -476,8 +477,8 @@ describe('Test shapes', function() {
     function testShapeDrag(dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref),
             ya = Axes.getFromId(gd, layoutShape.yref),
-            x2p = getDataToPixel(gd, xa),
-            y2p = getDataToPixel(gd, ya, true);
+            x2p = helpers.getDataToPixel(gd, xa),
+            y2p = helpers.getDataToPixel(gd, ya, true);
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
@@ -503,8 +504,8 @@ describe('Test shapes', function() {
     function testPathDrag(dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref),
             ya = Axes.getFromId(gd, layoutShape.yref),
-            x2p = getDataToPixel(gd, xa),
-            y2p = getDataToPixel(gd, ya, true);
+            x2p = helpers.getDataToPixel(gd, xa),
+            y2p = helpers.getDataToPixel(gd, ya, true);
 
         var initialPath = layoutShape.path,
             initialCoordinates = getPathCoordinates(initialPath, x2p, y2p);
@@ -536,8 +537,8 @@ describe('Test shapes', function() {
     function testShapeResize(direction, dx, dy, layoutShape, node) {
         var xa = Axes.getFromId(gd, layoutShape.xref),
             ya = Axes.getFromId(gd, layoutShape.yref),
-            x2p = getDataToPixel(gd, xa),
-            y2p = getDataToPixel(gd, ya, true);
+            x2p = helpers.getDataToPixel(gd, xa),
+            y2p = helpers.getDataToPixel(gd, ya, true);
 
         var initialCoordinates = getShapeCoordinates(layoutShape, x2p, y2p);
 
@@ -578,65 +579,16 @@ describe('Test shapes', function() {
         });
     }
 
-    // Adapted from src/components/shapes/index.js
-    var segmentRE = /[MLHVQCTSZ][^MLHVQCTSZ]*/g,
-        paramRE = /[^\s,]+/g,
-
-        // which numbers in each path segment are x (or y) values
-        // drawn is which param is a drawn point, as opposed to a
-        // control point (which doesn't count toward autorange.
-        // TODO: this means curved paths could extend beyond the
-        // autorange bounds. This is a bit tricky to get right
-        // unless we revert to bounding boxes, but perhaps there's
-        // a calculation we could do...)
-        paramIsX = {
-            M: {0: true, drawn: 0},
-            L: {0: true, drawn: 0},
-            H: {0: true, drawn: 0},
-            V: {},
-            Q: {0: true, 2: true, drawn: 2},
-            C: {0: true, 2: true, 4: true, drawn: 4},
-            T: {0: true, drawn: 0},
-            S: {0: true, 2: true, drawn: 2},
-            // A: {0: true, 5: true},
-            Z: {}
-        },
-
-        paramIsY = {
-            M: {1: true, drawn: 1},
-            L: {1: true, drawn: 1},
-            H: {},
-            V: {0: true, drawn: 0},
-            Q: {1: true, 3: true, drawn: 3},
-            C: {1: true, 3: true, 5: true, drawn: 5},
-            T: {1: true, drawn: 1},
-            S: {1: true, 3: true, drawn: 5},
-            // A: {1: true, 6: true},
-            Z: {}
-        },
-        numParams = {
-            M: 2,
-            L: 2,
-            H: 1,
-            V: 1,
-            Q: 4,
-            C: 6,
-            T: 2,
-            S: 4,
-            // A: 7,
-            Z: 0
-        };
-
     function getPathCoordinates(pathString, x2p, y2p) {
         var coordinates = [];
 
-        pathString.match(segmentRE).forEach(function(segment) {
+        pathString.match(constants.segmentRE).forEach(function(segment) {
             var paramNumber = 0,
                 segmentType = segment.charAt(0),
-                xParams = paramIsX[segmentType],
-                yParams = paramIsY[segmentType],
-                nParams = numParams[segmentType],
-                params = segment.substr(1).match(paramRE);
+                xParams = constants.paramIsX[segmentType],
+                yParams = constants.paramIsY[segmentType],
+                nParams = constants.numParams[segmentType],
+                params = segment.substr(1).match(constants.paramRE);
 
             if(params) {
                 params.forEach(function(param) {
@@ -657,40 +609,6 @@ describe('Test shapes', function() {
         return coordinates;
     }
 });
-
-
-// getDataToPixel and decodeDate
-// adapted from src/components/shapes.index.js
-function getDataToPixel(gd, axis, isVertical) {
-    var gs = gd._fullLayout._size,
-        dataToPixel;
-
-    if(axis) {
-        var d2l = axis.type === 'category' ? axis.c2l : axis.d2l;
-
-        dataToPixel = function(v) {
-            return axis._offset + axis.l2p(d2l(v, true));
-        };
-
-        if(axis.type === 'date') dataToPixel = decodeDate(dataToPixel);
-    }
-    else if(isVertical) {
-        dataToPixel = function(v) { return gs.t + gs.h * (1 - v); };
-    }
-    else {
-        dataToPixel = function(v) { return gs.l + gs.w * v; };
-    }
-
-    return dataToPixel;
-}
-
-function decodeDate(convertToPx) {
-    return function(v) {
-        if(v.replace) v = v.replace('_', ' ');
-        return convertToPx(v);
-    };
-}
-
 
 var DBLCLICKDELAY = require('@src/plots/cartesian/constants').DBLCLICKDELAY;
 
