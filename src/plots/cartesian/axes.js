@@ -876,12 +876,12 @@ axes.tickFirst = function(ax) {
     else throw 'unrecognized dtick ' + String(dtick);
 };
 
-var yearFormat = d3.time.format('%Y'),
-    monthFormat = d3.time.format('%b %Y'),
-    dayFormat = d3.time.format('%b %-d'),
-    hourFormat = d3.time.format('%b %-d %Hh'),
-    minuteFormat = d3.time.format('%H:%M'),
-    secondFormat = d3.time.format(':%S');
+var yearFormat = d3.timeFormat('%Y'),
+    monthFormat = d3.timeFormat('%b %Y'),
+    dayFormat = d3.timeFormat('%b %-d'),
+    hourFormat = d3.timeFormat('%b %-d %Hh'),
+    minuteFormat = d3.timeFormat('%H:%M'),
+    secondFormat = d3.timeFormat(':%S');
 
 // add one item to d3's vocabulary:
 // %{n}f where n is the max number of digits
@@ -894,10 +894,10 @@ function modDateFormat(fmt, x) {
         var digits = Math.min(+fm[1] || 6, 6),
             fracSecs = String((x / 1000 % 1) + 2.0000005)
                 .substr(2, digits).replace(/0+$/, '') || '0';
-        return d3.time.format(fmt.replace(fracMatch, fracSecs))(d);
+        return d3.timeFormat(fmt.replace(fracMatch, fracSecs))(d);
     }
     else {
-        return d3.time.format(fmt)(d);
+        return d3.timeFormat(fmt)(d);
     }
 }
 

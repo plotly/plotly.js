@@ -456,7 +456,7 @@ drawing.makeTester = function(gd) {
 
     tester.enter().append('svg')
         .attr('id', 'js-plotly-tester')
-        .attr(xmlnsNamespaces.svgAttrs)
+        .attrs(xmlnsNamespaces.svgAttrs)
         .style({
             position: 'absolute',
             left: '-10000px',

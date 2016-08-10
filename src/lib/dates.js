@@ -130,7 +130,7 @@ exports.ms2DateTime = function(ms, r) {
 
     if(!r) r = 0;
     var d = new Date(ms),
-        s = d3.time.format('%Y-%m-%d')(d);
+        s = d3.timeFormat('%Y-%m-%d')(d);
     if(r < 7776000000) {
         // <90 days: add hours
         s += ' ' + lpad(d.getHours(), 2);
@@ -207,7 +207,7 @@ var dateFormats = {
 };
 
 // use utc formatter since we're ignoring timezone info
-var formatter = d3.time.format.utc;
+var formatter = d3.utcFormat;
 
 /**
  * ISO8601 and YYYYMMDDHHMMSS are the only ones where date and time
