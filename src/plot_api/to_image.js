@@ -12,6 +12,7 @@ var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../plotly');
 var Lib = require('../lib');
+var Snapshot = require('../snapshot');
 
 
 /**
@@ -22,7 +23,6 @@ var Lib = require('../lib');
  * @param opts.height height of snapshot in px
  */
 function toImage(gd, opts) {
-    var Snapshot = require('../snapshot');
 
     var promise = new Promise(function(resolve, reject) {
         // check for undefined opts
@@ -91,12 +91,6 @@ function toImage(gd, opts) {
         var redrawFunc = Snapshot.getRedrawFunc(clonedGd);
 
         Plotly.plot(clonedGd, clone.data, clone.layout, clone.config)
-            // TODO: the following is Plotly.Plots.redrawText but without the waiting.
-            // we shouldn't need to do this, but in *occasional* cases we do. Figure
-            // out why and take it out.
-
-            // not sure the above TODO makes sense anymore since
-            //   we have converted to promises
             .then(redrawFunc)
             .then(wait)
             .then(function(url) { resolve(url); })

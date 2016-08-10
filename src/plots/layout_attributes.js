@@ -8,12 +8,11 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
-
 var fontAttrs = require('./font_attributes');
 var colorAttrs = require('../components/color/attributes');
 
-var extendFlat = Plotly.Lib.extendFlat;
+var Lib = require('../lib');
+var extendFlat = Lib.extendFlat;
 
 
 module.exports = {

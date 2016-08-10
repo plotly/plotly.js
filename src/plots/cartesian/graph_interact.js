@@ -447,7 +447,7 @@ function hover(gd, evt, subplot) {
         else yvalArray = p2c(yaArray, ypx);
 
         if(!isNumeric(xvalArray[0]) || !isNumeric(yvalArray[0])) {
-            Lib.warn('Plotly.Fx.hover failed', evt, gd);
+            Lib.warn('Fx.hover failed', evt, gd);
             return dragElement.unhoverRaw(gd, evt);
         }
     }

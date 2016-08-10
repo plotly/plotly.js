@@ -70,7 +70,7 @@ module.exports = function style(gd) {
         });
         // TODO: text markers on bars, either extra text or just bar values
         // d3.select(this).selectAll('text')
-        //     .call(Plotly.Drawing.textPointStyle,d.t||d[0].t);
+        //     .call(Drawing.textPointStyle,d.t||d[0].t);
     });
 
     s.call(ErrorBars.style);

@@ -20,6 +20,7 @@ var Queue = require('../lib/queue');
 
 var Plots = require('../plots/plots');
 var Fx = require('../plots/cartesian/graph_interact');
+var Polar = require('../plots/polar');
 
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
@@ -32,7 +33,7 @@ var RangeSelector = require('../components/rangeselector');
 var UpdateMenus = require('../components/updatemenus');
 var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
-var manageModeBar = require('../components/modebar/manage');
+var ModeBar = require('../components/modebar');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 
 
@@ -420,7 +421,7 @@ function plotPolar(gd, data, layout) {
     // fulfill gd requirements
     if(data) gd.data = data;
     if(layout) gd.layout = layout;
-    Plotly.micropolar.manager.fillLayout(gd);
+    Polar.manager.fillLayout(gd);
 
     if(gd._fullLayout.autosize === 'initial' && gd._context.autosizable) {
         plotAutoSize(gd, {});
@@ -433,7 +434,7 @@ function plotPolar(gd, data, layout) {
     });
 
     // instantiate framework
-    gd.framework = Plotly.micropolar.manager.framework(gd);
+    gd.framework = Polar.manager.framework(gd);
 
     // plot
     gd.framework({data: gd.data, layout: gd.layout}, paperDiv.node());
@@ -2444,7 +2445,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) {
             var subplotIds;
-            manageModeBar(gd);
+            ModeBar.manage(gd);
 
             Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
             Plotly.Fx.init(gd);
@@ -3093,7 +3094,7 @@ function lsInner(gd) {
 
     drawMainTitle(gd);
 
-    manageModeBar(gd);
+    ModeBar.manage(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
 }

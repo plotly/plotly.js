@@ -9,7 +9,8 @@
 
 'use strict';
 
-var Plotly = require('../../plotly');
+var Plots = require('../plots');
+var Axes = require('../cartesian/axes');
 
 var convertHTMLToUnicode = require('../../lib/html2unicode');
 var str2RGBArray = require('../../lib/str2rgbarray');
@@ -180,8 +181,8 @@ proto.merge = function(options) {
 // is an axis shared with an already-drawn subplot ?
 proto.hasSharedAxis = function(ax) {
     var scene = this.scene,
-        subplotIds = Plotly.Plots.getSubplotIds(scene.fullLayout, 'gl2d'),
-        list = Plotly.Axes.findSubplotsWithAxis(subplotIds, ax);
+        subplotIds = Plots.getSubplotIds(scene.fullLayout, 'gl2d'),
+        list = Axes.findSubplotsWithAxis(subplotIds, ax);
 
     // if index === 0, then the subplot is already drawn as subplots
     // are drawn in order.

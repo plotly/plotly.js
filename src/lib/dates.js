@@ -12,8 +12,6 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Lib = require('../lib');
-
 
 /**
  * dateTime2ms - turn a date object or string s of the form
@@ -123,14 +121,11 @@ function lpad(val, digits) {
  * If rng is big, the later parts of time will be omitted
  */
 exports.ms2DateTime = function(ms, r) {
-    if(typeof(d3) === 'undefined') {
-        Lib.error('d3 is not defined.');
-        return;
-    }
-
     if(!r) r = 0;
+
     var d = new Date(ms),
         s = d3.time.format('%Y-%m-%d')(d);
+
     if(r < 7776000000) {
         // <90 days: add hours
         s += ' ' + lpad(d.getHours(), 2);

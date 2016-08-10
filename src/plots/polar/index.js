@@ -6,7 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-
 'use strict';
 
-exports.manage = require('./manage');
+var Polar = module.exports = require('./micropolar');
+
+Polar.manager = require('./micropolar_manager');

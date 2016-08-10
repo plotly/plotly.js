@@ -17,6 +17,7 @@ var Plots = require('../../plots/plots');
 var dragElement = require('../dragelement');
 var Drawing = require('../drawing');
 var Color = require('../color');
+var svgTextUtils = require('../../lib/svg_text_utils');
 
 var constants = require('./constants');
 var getLegendData = require('./get_legend_data');
@@ -354,14 +355,14 @@ function drawTexts(g, gd) {
     .text(name);
 
     function textLayout(s) {
-        Plotly.util.convertToTspans(s, function() {
+        svgTextUtils.convertToTspans(s, function() {
             s.selectAll('tspan.line').attr({x: s.attr('x')});
             g.call(computeTextDimensions, gd);
         });
     }
 
     if(gd._context.editable && !isPie) {
-        text.call(Plotly.util.makeEditable)
+        text.call(svgTextUtils.makeEditable)
             .call(textLayout)
             .on('edit', function(text) {
                 this.attr({'data-unformatted': text});
