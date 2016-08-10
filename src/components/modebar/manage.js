@@ -12,7 +12,7 @@
 var Axes = require('../../plots/cartesian/axes');
 var scatterSubTypes = require('../../traces/scatter/subtypes');
 
-var createModeBar = require('./');
+var createModeBar = require('./modebar');
 var modeBarButtons = require('./buttons');
 
 /**

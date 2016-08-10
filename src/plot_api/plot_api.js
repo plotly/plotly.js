@@ -32,7 +32,7 @@ var RangeSelector = require('../components/rangeselector');
 var UpdateMenus = require('../components/updatemenus');
 var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
-var manageModeBar = require('../components/modebar/manage');
+var ModeBar = require('../components/modebar');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
 
 
@@ -2444,7 +2444,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         // this is decoupled enough it doesn't need async regardless
         if(domodebar) {
             var subplotIds;
-            manageModeBar(gd);
+            ModeBar.manage(gd);
 
             Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
             Plotly.Fx.init(gd);
@@ -3093,7 +3093,7 @@ function lsInner(gd) {
 
     drawMainTitle(gd);
 
-    manageModeBar(gd);
+    ModeBar.manage(gd);
 
     return gd._promises.length && Promise.all(gd._promises);
 }
