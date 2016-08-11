@@ -36,6 +36,10 @@ module.exports = function register(_modules) {
                 registerTransformModule(newModule);
                 break;
 
+            case 'component':
+                registerComponentModule(newModule);
+                break;
+
             default:
                 throw new Error('Invalid module was attempted to be registered!');
         }
@@ -68,4 +72,8 @@ function registerTransformModule(newModule) {
     }
 
     Registry.transformsRegistry[newModule.name] = newModule;
+}
+
+function registerComponentModule(newModule) {
+    Registry.componentsRegistry[newModule.name] = newModule;
 }

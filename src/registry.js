@@ -17,6 +17,7 @@ exports.allTypes = [];
 exports.allCategories = {};
 exports.subplotsRegistry = {};
 exports.transformsRegistry = {};
+exports.componentsRegistry = {};
 
 /**
  * register a module as the handler for a trace type
