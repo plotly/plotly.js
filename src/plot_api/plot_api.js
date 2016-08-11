@@ -1752,6 +1752,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             oldVal = param.get();
             newVal = Array.isArray(vi) ? vi[i % vi.length] : vi;
 
+            if(newVal === undefined) continue;
+
             // setting bin or z settings should turn off auto
             // and setting auto should save bin or z settings
             if(zscl.indexOf(ai) !== -1) {
@@ -2184,6 +2186,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
             parentIn = Lib.nestedProperty(gd.layout, ptrunk).get(),
             parentFull = Lib.nestedProperty(fullLayout, ptrunk).get(),
             diff;
+
+        if(vi === undefined) continue;
 
         redoit[ai] = vi;
 

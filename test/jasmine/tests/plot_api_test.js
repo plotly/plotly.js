@@ -48,6 +48,40 @@ describe('Test plot api', function() {
                 })
                 .then(done);
         });
+
+        it('sets null values to their default', function(done) {
+            var defaultWidth;
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    defaultWidth = gd._fullLayout.width;
+                    return Plotly.relayout(gd, { width: defaultWidth - 25});
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                    return Plotly.relayout(gd, { width: null });
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth);
+                })
+                .then(done);
+        });
+
+        it('ignores undefined values', function(done) {
+            var defaultWidth;
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    defaultWidth = gd._fullLayout.width;
+                    return Plotly.relayout(gd, { width: defaultWidth - 25});
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                    return Plotly.relayout(gd, { width: undefined });
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                })
+                .then(done);
+        });
     });
 
     describe('Plotly.restyle', function() {
@@ -94,6 +128,64 @@ describe('Test plot api', function() {
             expect(Plots.style).toHaveBeenCalled();
             expect(Plotly.plot).not.toHaveBeenCalled();
             expect(gd.calcdata).toBeDefined();
+        });
+
+        it('ignores undefined values', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+
+            // Check to see that the color is updated:
+            Plotly.restyle(gd, {'marker.color': 'blue'});
+            expect(gd._fullData[0].marker.color).toBe('blue');
+
+            // Check to see that the color is unaffected:
+            Plotly.restyle(gd, {'marker.color': undefined});
+            expect(gd._fullData[0].marker.color).toBe('blue');
+        });
+
+        it('restores null values to defaults', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            var colorDflt = gd._fullData[0].marker.color;
+
+            // Check to see that the color is updated:
+            Plotly.restyle(gd, {'marker.color': 'blue'});
+            expect(gd._fullData[0].marker.color).toBe('blue');
+
+            // Check to see that the color is restored to the original default:
+            Plotly.restyle(gd, {'marker.color': null});
+            expect(gd._fullData[0].marker.color).toBe(colorDflt);
+        });
+
+        it('can target specific traces by leaving properties undefined', function() {
+            var gd = {
+                data: [
+                    {x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'},
+                    {x: [1, 2, 3], y: [3, 4, 5], type: 'scatter'}
+                ],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            var colorDflt = [gd._fullData[0].marker.color, gd._fullData[1].marker.color];
+
+            // Check only second trace's color has been changed:
+            Plotly.restyle(gd, {'marker.color': [undefined, 'green']});
+            expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
+            expect(gd._fullData[1].marker.color).toBe('green');
+
+            // Check both colors restored to the original default:
+            Plotly.restyle(gd, {'marker.color': [null, null]});
+            expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
+            expect(gd._fullData[1].marker.color).toBe(colorDflt[1]);
         });
 
     });
