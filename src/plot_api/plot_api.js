@@ -2042,7 +2042,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function() {
-        gd.emit('plotly_restyle', Lib.extendDeep([], [redoit, traces]));
+        gd.emit('plotly_restyle', Lib.extendDeepNoArrays([], [redoit, traces]));
         return gd;
     });
 };
