@@ -26,13 +26,6 @@ var Polar = require('../plots/polar');
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
-var Annotations = require('../components/annotations');
-var Images = require('../components/images');
-var Legend = require('../components/legend');
-var RangeSlider = require('../components/rangeslider');
-var RangeSelector = require('../components/rangeselector');
-var UpdateMenus = require('../components/updatemenus');
-var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
@@ -183,9 +176,9 @@ Plotly.plot = function(gd, data, layout, config) {
         var calcdata = gd.calcdata;
         var i, cd, trace;
 
-        Legend.draw(gd);
-        RangeSelector.draw(gd);
-        UpdateMenus.draw(gd);
+        Registry.getComponentMethod('legend', 'draw')(gd);
+        Registry.getComponentMethod('rangeselector', 'draw')(gd);
+        Registry.getComponentMethod('updatemenus', 'draw')(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -234,8 +227,8 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // TODO: autosize extra for text markers
         return Lib.syncOrAsync([
-            Shapes.calcAutorange,
-            Annotations.calcAutorange,
+            Registry.getComponentMethod('shapes', 'calcAutorange'),
+            Registry.getComponentMethod('annotations', 'calcAutorange'),
             doAutoRange
         ], gd);
     }
@@ -287,8 +280,8 @@ Plotly.plot = function(gd, data, layout, config) {
         Plots.style(gd);
 
         // show annotations and shapes
-        Shapes.draw(gd);
-        Annotations.draw(gd);
+        Registry.getComponentMethod('shapes', 'draw')(gd);
+        Registry.getComponentMethod('annoations', 'draw')(gd);
 
         // source links
         Plots.addLinks(gd);
@@ -303,13 +296,13 @@ Plotly.plot = function(gd, data, layout, config) {
     // correctly sized and the whole plot re-margined. gd._replotting must
     // be set to false before these will work properly.
     function finalDraw() {
-        Shapes.draw(gd);
-        Images.draw(gd);
-        Annotations.draw(gd);
-        Legend.draw(gd);
-        RangeSlider.draw(gd);
-        RangeSelector.draw(gd);
-        UpdateMenus.draw(gd);
+        Registry.getComponentMethod('shapes', 'draw')(gd);
+        Registry.getComponentMethod('images', 'draw')(gd);
+        Registry.getComponentMethod('annotations', 'draw')(gd);
+        Registry.getComponentMethod('legend', 'draw')(gd);
+        Registry.getComponentMethod('rangeslider', 'draw')(gd);
+        Registry.getComponentMethod('rangeselector', 'draw')(gd);
+        Registry.getComponentMethod('updatemenus', 'draw')(gd);
     }
 
     function cleanUp() {
@@ -2007,8 +2000,10 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                     arraysToCalcdata = (((cdi[0] || {}).trace || {})._module || {}).arraysToCalcdata;
                     if(arraysToCalcdata) arraysToCalcdata(cdi);
                 }
+
                 Plots.style(gd);
-                Legend.draw(gd);
+                Registry.getComponentMethod('legend', 'draw')(gd);
+
                 return Plots.previousPromises(gd);
             });
         }
@@ -2285,8 +2280,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
             var objNum = p.parts[1],
                 objType = p.parts[0],
                 objList = layout[objType] || [],
-                objModule = Plotly[Lib.titleCase(objType)],
                 obji = objList[objNum] || {};
+
             // if p.parts is just an annotation number, and val is either
             // 'add' or an entire annotation to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
@@ -2303,21 +2298,25 @@ Plotly.relayout = function relayout(gd, astr, val) {
                 }
                 else Lib.log('???', aobj);
             }
+
             if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
                     !Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {
                 docalc = true;
             }
+
             // TODO: combine all edits to a given annotation / shape into one call
             // as it is we get separate calls for x and y (or ax and ay) on move
-            objModule.drawOne(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
+
+            var drawOne = Registry.getComponentMethod(objType, 'drawOne');
+            drawOne(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
             delete aobj[ai];
         }
         else if(p.parts[0] === 'images') {
             var update = Lib.objectFromPath(ai, vi);
             Lib.extendDeepAll(gd.layout, update);
 
-            Images.supplyLayoutDefaults(gd.layout, gd._fullLayout);
-            Images.draw(gd);
+            Registry.getComponentMethod('images', 'supplyLayoutDefaults')(gd.layout, gd._fullLayout);
+            Registry.getComponentMethod('images', 'draw')(gd);
         }
         else if(p.parts[0] === 'mapbox' && p.parts[1] === 'layers') {
             Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
@@ -2429,7 +2428,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         if(dolegend) {
             seq.push(function doLegend() {
-                Legend.draw(gd);
+                Registry.getComponentMethod('legend', 'draw')(gd);
                 return Plots.previousPromises(gd);
             });
         }

@@ -122,7 +122,7 @@ exports.traceIs = function(traceType, category) {
     var _module = exports.modules[traceType];
 
     if(!_module) {
-        if(traceType !== undefined) {
+        if(traceType && traceType !== 'area') {
             Lib.log('Unrecognized trace type ' + traceType + '.');
         }
 
@@ -130,6 +130,22 @@ exports.traceIs = function(traceType, category) {
     }
 
     return !!_module.categories[category];
+};
+
+/**
+ * Retrieve component module method
+ *
+ * @param {string} name
+ *  name of component (as declared in component module)
+ * @param {string} method
+ *  name of component module method
+ * @return {function}
+ */
+exports.getComponentMethod = function(name, method) {
+    var _module = exports.componentsRegistry[name];
+
+    if(!_module) return Lib.noop;
+    return _module[method];
 };
 
 function getTraceType(traceType) {
