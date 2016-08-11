@@ -14,6 +14,10 @@ var Registry = require('../registry');
 var Plots = require('../plots/plots');
 var Lib = require('../lib');
 
+// FIXME polar attribute are not part of Plotly yet
+var polarAreaAttrs = require('../plots/polar/area_attributes');
+var polarAxisAttrs = require('../plots/polar/axis_attributes');
+
 var extendFlat = Lib.extendFlat;
 var extendDeep = Lib.extendDeep;
 var extendDeepAll = Lib.extendDeepAll;
@@ -34,9 +38,6 @@ var plotSchema = {
     defs: {}
 };
 
-// FIXME polar attribute are not part of Plotly yet
-var polarAreaAttrs = require('../plots/polar/area_attributes'),
-    polarAxisAttrs = require('../plots/polar/axis_attributes');
 
 var PlotSchema = module.exports = {};
 
@@ -169,7 +170,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
 
         if(k === NESTED_MODULE) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
-                nestedModule = getModule({module: attrsIn[k][kk]});
+                nestedModule = getModule({_module: attrsIn[k][kk]});
                 if(nestedModule === undefined) return;
 
                 nestedAttrs = nestedModule[whichAttrs];
@@ -187,7 +188,7 @@ function coupleAttrs(attrsIn, attrsOut, whichAttrs, type) {
             Object.keys(attrsIn[k]).forEach(function(kk) {
                 if(kk !== type) return;
 
-                composedModule = getModule({module: attrsIn[k][kk]});
+                composedModule = getModule({_module: attrsIn[k][kk]});
                 if(composedModule === undefined) return;
 
                 composedAttrs = composedModule[whichAttrs];
@@ -253,7 +254,8 @@ function getModule(arg) {
     }
 
     var subplotsRegistry = Registry.subplotsRegistry,
-        _module = arg.module;
+        componentsRegistry = Registry.componentsRegistry,
+        _module = arg._module;
 
     if(subplotsRegistry[_module]) return subplotsRegistry[_module];
     else if('module' in arg) return Plotly[_module];
