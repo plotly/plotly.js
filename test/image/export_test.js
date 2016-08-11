@@ -14,7 +14,7 @@ var test = require('tape');
 var FORMATS = ['svg', 'pdf', 'eps'];
 
 // non-exhaustive list of mocks to test
-var DEFAULT_LIST = ['0', 'geo_first', 'gl3d_z-range', 'text_export'];
+var DEFAULT_LIST = ['0', 'geo_first', 'gl3d_z-range', 'text_export', 'layout_image'];
 
 // minimum satisfactory file size
 var MIN_SIZE = 100;
