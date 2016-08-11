@@ -239,7 +239,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
             axi.range = to.slice();
         }
 
-        return Plotly.relayout(gd, attrs).then(function () {
+        return Plotly.relayout(gd, attrs).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }
@@ -264,6 +264,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         });
     }
 
+    var t1, t2, raf;
     var easeFn = d3.ease(transitionConfig.ease);
 
     gd._transitionData._interruptCallbacks.push(function() {
@@ -272,13 +273,11 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         return transitionTail();
     });
 
-    gd._transitionData._cleanupCallbacks.push(function () {
+    gd._transitionData._cleanupCallbacks.push(function() {
         cancelAnimationFrame(raf);
         raf = null;
         return transitionComplete();
     });
-
-    var t1, t2, raf;
 
     function doFrame() {
         t2 = Date.now();

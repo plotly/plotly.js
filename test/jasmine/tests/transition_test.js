@@ -1,5 +1,4 @@
 var Plotly = require('@lib/index');
-var PlotlyInternal = require('@src/plotly');
 var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -37,7 +36,7 @@ describe('Transition API', function() {
     it('emits plotly_begintransition on transition start', function(done) {
         var beginTransitionCnt = 0;
 
-        gd.on('plotly_begintransition', function () {
+        gd.on('plotly_begintransition', function() {
             beginTransitionCnt++;
         });
 
