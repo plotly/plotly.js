@@ -2187,6 +2187,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
             parentFull = Lib.nestedProperty(fullLayout, ptrunk).get(),
             diff;
 
+        if(vi === undefined) continue;
+
         redoit[ai] = vi;
 
         // axis reverse is special - it is its own inverse

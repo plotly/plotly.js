@@ -48,6 +48,40 @@ describe('Test plot api', function() {
                 })
                 .then(done);
         });
+
+        it('sets null values to their default', function(done) {
+            var defaultWidth;
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    defaultWidth = gd._fullLayout.width;
+                    return Plotly.relayout(gd, { width: defaultWidth - 25});
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                    return Plotly.relayout(gd, { width: null });
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth);
+                })
+                .then(done);
+        });
+
+        it('ignores undefined values', function(done) {
+            var defaultWidth;
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    defaultWidth = gd._fullLayout.width;
+                    return Plotly.relayout(gd, { width: defaultWidth - 25});
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                    return Plotly.relayout(gd, { width: undefined });
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                })
+                .then(done);
+        });
     });
 
     describe('Plotly.restyle', function() {
