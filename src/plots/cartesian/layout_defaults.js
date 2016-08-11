@@ -14,9 +14,6 @@ var Lib = require('../../lib');
 var Color = require('../../components/color');
 var basePlotLayoutAttributes = require('../layout_attributes');
 
-var RangeSlider = require('../../components/rangeslider');
-var RangeSelector = require('../../components/rangeselector');
-
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
 var handleAxisDefaults = require('./axis_defaults');
@@ -157,16 +154,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 
     // quick second pass for range slider and selector defaults
+    var rangeSliderDefaults = Registry.getComponentMethod('rangeslider', 'handleDefaults'),
+        rangeSelectorDefaults = Registry.getComponentMethod('rangeselector', 'handleDefaults');
+
     axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0),
             axLayoutIn = layoutIn[axName],
             axLayoutOut = layoutOut[axName],
             counterAxes = {x: yaList, y: xaList}[axLetter];
 
-        RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+        rangeSliderDefaults(layoutIn, layoutOut, axName, counterAxes);
 
         if(axLetter === 'x' && axLayoutOut.type === 'date') {
-            RangeSelector.supplyLayoutDefaults(axLayoutIn, axLayoutOut, layoutOut, counterAxes);
+            rangeSelectorDefaults(axLayoutIn, axLayoutOut, layoutOut, counterAxes);
         }
     });
 };
