@@ -9,6 +9,9 @@
 
 'use strict';
 
+exports.moduleType = 'component';
+
+exports.name = 'shapes';
 
 exports.layoutAttributes = require('./attributes');
 

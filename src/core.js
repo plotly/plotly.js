@@ -47,6 +47,17 @@ exports.validate = require('./plot_api/validate');
 // scatter is the only trace included by default
 exports.register(require('./traces/scatter'));
 
+// register all registrable components modules
+exports.register([
+    require('./components/legend'),
+    require('./components/annotations'),
+    require('./components/shapes'),
+    require('./components/images'),
+    require('./components/updatemenus'),
+    require('./components/rangeslider'),
+    require('./components/rangeselector')
+]);
+
 // plot icons
 exports.Icons = require('../build/ploticon');
 

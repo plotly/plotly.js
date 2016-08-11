@@ -12,12 +12,16 @@
 var Plots = require('../../plots/plots');
 
 var createSlider = require('./create_slider');
-var supplyLayoutDefaults = require('./defaults');
+var layoutAttributes = require('./attributes');
+var handleDefaults = require('./defaults');
 
 
 module.exports = {
-    draw: draw,
-    supplyLayoutDefaults: supplyLayoutDefaults
+    moduleType: 'component',
+    name: 'rangeslider',
+    layoutAttributes: layoutAttributes,
+    handleDefaults: handleDefaults,
+    draw: draw
 };
 
 function draw(gd) {
