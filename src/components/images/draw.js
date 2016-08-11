@@ -11,6 +11,7 @@
 var d3 = require('d3');
 var Drawing = require('../drawing');
 var Axes = require('../../plots/cartesian/axes');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 module.exports = function draw(gd) {
 
@@ -52,8 +53,9 @@ module.exports = function draw(gd) {
 
     // Images must be converted to dataURL's for exporting.
     function setImage(d) {
-
         var thisImage = d3.select(this);
+
+        thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
         var imagePromise = new Promise(function(resolve) {
 
