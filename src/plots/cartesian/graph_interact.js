@@ -840,12 +840,17 @@ function createHoverText(hoverData, opts) {
             ltext = label.selectAll('text').data([0]);
 
         lpath.enter().append('path')
-            .style({fill: Color.defaultLine, 'stroke-width': '1px', stroke: Color.background});
+            .styles({fill: Color.defaultLine, 'stroke-width': '1px', stroke: Color.background});
+
+        lpath = label.selectAll('path');
+
         ltext.enter().append('text')
             .call(Drawing.font, HOVERFONT, HOVERFONTSIZE, Color.background)
             // prohibit tex interpretation until we can handle
             // tex and regular text together
             .attr('data-notex', 1);
+
+        ltext = label.selectAll('text');
 
         ltext.text(t0)
             .call(svgTextUtils.convertToTspans)
@@ -861,7 +866,7 @@ function createHoverText(hoverData, opts) {
                     (outerTop - tbb.bottom - HOVERARROWSIZE - HOVERTEXTPAD) :
                     (outerTop - tbb.top + HOVERARROWSIZE + HOVERTEXTPAD)))
                 .selectAll('tspan.line')
-                    .attr({
+                    .attrs({
                         x: ltext.attr('x'),
                         y: ltext.attr('y')
                     });
@@ -884,7 +889,7 @@ function createHoverText(hoverData, opts) {
                     (ya.side === 'right' ? 1 : -1) * (HOVERTEXTPAD + HOVERARROWSIZE),
                     outerTop - tbb.top - tbb.height / 2)
                 .selectAll('tspan.line')
-                    .attr({
+                    .attrs({
                         x: ltext.attr('x'),
                         y: ltext.attr('y')
                     });
@@ -1021,7 +1026,7 @@ function createHoverText(hoverData, opts) {
         }
 
         g.select('path')
-            .style({
+            .styles({
                 fill: traceColor,
                 stroke: contrastColor
             });
@@ -1283,7 +1288,7 @@ function alignHoverText(hoverLabels, rotateLabels) {
         tx.call(Drawing.setPosition,
                 txx + offsetX, offsetY + d.ty0 - d.by / 2 + HOVERTEXTPAD)
             .selectAll('tspan.line')
-                .attr({
+                .attrs({
                     x: tx.attr('x'),
                     y: tx.attr('y')
                 });

@@ -91,7 +91,7 @@ exports.toSVG = function(gd) {
 
         geoFramework.attr('style', null);
         geoFramework
-            .attr({
+            .attrs({
                 x: size.l + size.w * domain.x[0] + geoLayout._marginX,
                 y: size.t + size.h * (1 - domain.y[1]) + geoLayout._marginY,
                 width: geoLayout._width,

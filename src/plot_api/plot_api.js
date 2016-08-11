@@ -2620,18 +2620,18 @@ function makePlotFramework(gd) {
         fullLayout = gd._fullLayout;
 
     // Plot container
-    fullLayout._container = gd3.selectAll('.plot-container').data([0]);
-    fullLayout._container.enter().insert('div', ':first-child')
-        .classed('plot-container', true)
-        .classed('plotly', true);
+    gd3.selectAll('.plot-container').data([0])
+        .enter().insert('div', ':first-child')
+            .classed('plot-container', true)
+            .classed('plotly', true);
 
     fullLayout._container = gd3.select('.plot-container');
 
     // Make the svg container
-    fullLayout._paperdiv = fullLayout._container.selectAll('.svg-container').data([0]);
-    fullLayout._paperdiv.enter().append('div')
-        .classed('svg-container', true)
-        .style('position', 'relative');
+    fullLayout._container.selectAll('.svg-container').data([0])
+        .enter().append('div')
+            .classed('svg-container', true)
+            .style('position', 'relative');
 
     fullLayout._paperdiv = fullLayout._container.select('.svg-container');
 
@@ -2647,17 +2647,15 @@ function makePlotFramework(gd) {
     // right, rather than enter/exit which can muck up the order
     // TODO: sort out all the ordering so we don't have to
     // explicitly delete anything
-    fullLayout._glcontainer = fullLayout._paperdiv.selectAll('.gl-container')
-        .data([0]);
-    fullLayout._glcontainer.enter().append('div')
-        .classed('gl-container', true);
+    fullLayout._paperdiv.selectAll('.gl-container').data([0])
+        .enter().append('div')
+            .classed('gl-container', true);
 
     fullLayout._glContainer = fullLayout._paperdiv.select('.gl-container');
 
-    fullLayout._geocontainer = fullLayout._paperdiv.selectAll('.geo-container')
-        .data([0]);
-    fullLayout._geocontainer.enter().append('div')
-        .classed('geo-container', true);
+    fullLayout._paperdiv.selectAll('.geo-container').data([0])
+        .enter().append('div')
+            .classed('geo-container', true);
 
     fullLayout._paperdiv.selectAll('.main-svg').remove();
 

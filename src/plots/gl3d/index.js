@@ -37,7 +37,7 @@ exports.plot = function plotGl3d(gd) {
         fullData = gd._fullData,
         sceneIds = Plots.getSubplotIds(fullLayout, 'gl3d');
 
-    fullLayout._paperdiv.style({
+    fullLayout._paperdiv.styles({
         width: fullLayout.width + 'px',
         height: fullLayout.height + 'px'
     });
@@ -97,7 +97,7 @@ exports.toSVG = function(gd) {
         var imageData = scene.toImage('png');
         var image = fullLayout._glimages.append('svg:image');
 
-        image.attr({
+        image.attrs({
             xmlns: xmlnsNamespaces.svg,
             'xlink:href': imageData,
             x: size.l + size.w * domain.x[0],

@@ -26,7 +26,7 @@ module.exports = function style(gd) {
                 .call(Color.stroke, trace.line.color)
                 .call(Color.fill, trace.fillcolor);
             d3.select(this).selectAll('path.mean')
-                .style({
+                .styles({
                     'stroke-width': lineWidth,
                     'stroke-dasharray': (2 * lineWidth) + 'px,' + lineWidth + 'px'
                 })

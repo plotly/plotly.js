@@ -254,7 +254,7 @@ proto.makeFramework = function() {
     var hoverContainer = this.hoverContainer = geoDiv.append('svg');
     hoverContainer
         .attr(xmlnsNamespaces.svgAttrs)
-        .style({
+        .styles({
             'position': 'absolute',
             'z-index': 20,
             'pointer-events': 'none'
@@ -263,7 +263,7 @@ proto.makeFramework = function() {
     var framework = this.framework = geoDiv.append('svg');
     framework
         .attr(xmlnsNamespaces.svgAttrs)
-        .attr({
+        .attrs({
             'position': 'absolute',
             'preserveAspectRatio': 'none'
         });
@@ -285,25 +285,25 @@ proto.makeFramework = function() {
 proto.adjustLayout = function(geoLayout, graphSize) {
     var domain = geoLayout.domain;
 
-    this.geoDiv.style({
+    this.geoDiv.styles({
         left: graphSize.l + graphSize.w * domain.x[0] + geoLayout._marginX + 'px',
         top: graphSize.t + graphSize.h * (1 - domain.y[1]) + geoLayout._marginY + 'px',
         width: geoLayout._width + 'px',
         height: geoLayout._height + 'px'
     });
 
-    this.hoverContainer.attr({
+    this.hoverContainer.attrs({
         width: geoLayout._width,
         height: geoLayout._height
     });
 
-    this.framework.attr({
+    this.framework.attrs({
         width: geoLayout._width,
         height: geoLayout._height
     });
 
     this.framework.select('.bglayer').select('rect')
-        .attr({
+        .attrs({
             width: geoLayout._width,
             height: geoLayout._height
         })

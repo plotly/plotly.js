@@ -142,13 +142,13 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                 var newSvg = this.appendChild(this.ownerDocument.importNode(doc.documentElement, true));
                 svg = d3.select(newSvg);
             }
-            svg.select('.guides-group').style({
+            svg.select('.guides-group').styles({
                 'pointer-events': 'none'
             });
-            svg.select('.angular.axis-group').style({
+            svg.select('.angular.axis-group').styles({
                 'pointer-events': 'none'
             });
-            svg.select('.radial.axis-group').style({
+            svg.select('.radial.axis-group').styles({
                 'pointer-events': 'none'
             });
             var chartGroup = svg.select('.chart-group');
@@ -166,9 +166,9 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             };
             var legendContainer;
             if (axisConfig.showLegend) {
-                legendContainer = svg.select('.legend-group').attr({
+                legendContainer = svg.select('.legend-group').attrs({
                     transform: 'translate(' + [ radius, axisConfig.margin.top ] + ')'
-                }).style({
+                }).styles({
                     display: 'block'
                 });
                 var elements = data.map(function(d, i) {
@@ -201,17 +201,17 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                 liveConfig.layout.radialAxis.domain = radialScale.domain();
                 legendContainer.attr('transform', 'translate(' + [ chartCenter[0] + radius, chartCenter[1] - radius ] + ')');
             } else {
-                legendContainer = svg.select('.legend-group').style({
+                legendContainer = svg.select('.legend-group').styles({
                     display: 'none'
                 });
             }
-            svg.attr({
+            svg.attrs({
                 width: axisConfig.width,
                 height: axisConfig.height
-            }).style({
+            }).styles({
                 opacity: axisConfig.opacity
             });
-            chartGroup.attr('transform', 'translate(' + chartCenter + ')').style({
+            chartGroup.attr('transform', 'translate(' + chartCenter + ')').styles({
                 cursor: 'crosshair'
             });
             var centeringOffset = [ (axisConfig.width - (axisConfig.margin.left + axisConfig.margin.right + radius * 2 + (legendBBox ? legendBBox.width : 0))) / 2, (axisConfig.height - (axisConfig.margin.top + axisConfig.margin.bottom + radius * 2)) / 2 ];
@@ -221,7 +221,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             if (axisConfig.title) {
                 var title = svg.select('g.title-group text').style(fontStyle).text(axisConfig.title);
                 var titleBBox = title.node().getBBox();
-                title.attr({
+                title.attrs({
                     x: chartCenter[0] - titleBBox.width / 2,
                     y: chartCenter[1] - radius - 20
                 });
@@ -229,18 +229,18 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             var radialAxis = svg.select('.radial.axis-group');
             if (axisConfig.radialAxis.gridLinesVisible) {
                 var gridCircles = radialAxis.selectAll('circle.grid-circle').data(radialScale.ticks(5));
-                gridCircles.enter().append('circle').attr({
+                gridCircles.enter().append('circle').attrs({
                     'class': 'grid-circle'
                 }).style(lineStyle);
                 gridCircles.attr('r', radialScale);
                 gridCircles.exit().remove();
             }
-            radialAxis.select('circle.outside-circle').attr({
+            radialAxis.select('circle.outside-circle').attrs({
                 r: radius
             }).style(lineStyle);
-            var backgroundCircle = svg.select('circle.background-circle').attr({
+            var backgroundCircle = svg.select('circle.background-circle').attrs({
                 r: radius
-            }).style({
+            }).styles({
                 fill: axisConfig.backgroundColor,
                 stroke: axisConfig.stroke
             });
@@ -249,15 +249,15 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             }
             if (axisConfig.radialAxis.visible) {
                 var axis = d3.svg.axis().scale(radialScale).ticks(5).tickSize(5);
-                radialAxis.call(axis).attr({
+                radialAxis.call(axis).attrs({
                     transform: 'rotate(' + axisConfig.radialAxis.orientation + ')'
                 });
                 radialAxis.selectAll('.domain').style(lineStyle);
                 radialAxis.selectAll('g>text').text(function(d, i) {
                     return this.textContent + axisConfig.radialAxis.ticksSuffix;
-                }).style(fontStyle).style({
+                }).style(fontStyle).styles({
                     'text-anchor': 'start'
-                }).attr({
+                }).attrs({
                     x: 0,
                     y: 0,
                     dx: 0,
@@ -268,17 +268,17 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                         } else return 'translate(' + [ 0, fontStyle['font-size'] ] + ')';
                     }
                 });
-                radialAxis.selectAll('g>line').style({
+                radialAxis.selectAll('g>line').styles({
                     stroke: 'black'
                 });
             }
             var angularAxis = svg.select('.angular.axis-group').selectAll('g.angular-tick').data(angularAxisRange);
             var angularAxisEnter = angularAxis.enter().append('g').classed('angular-tick', true);
-            angularAxis.attr({
+            angularAxis.attrs({
                 transform: function(d, i) {
                     return 'rotate(' + currentAngle(d, i) + ')';
                 }
-            }).style({
+            }).styles({
                 display: axisConfig.angularAxis.visible ? 'block' : 'none'
             });
             angularAxis.exit().remove();
@@ -287,17 +287,17 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             }).classed('minor', function(d, i) {
                 return !(i % (axisConfig.minorTicks + 1) == 0);
             }).style(lineStyle);
-            angularAxisEnter.selectAll('.minor').style({
+            angularAxisEnter.selectAll('.minor').styles({
                 stroke: axisConfig.minorTickColor
             });
-            angularAxis.select('line.grid-line').attr({
+            angularAxis.select('line.grid-line').attrs({
                 x1: axisConfig.tickLength ? radius - axisConfig.tickLength : 0,
                 x2: radius
-            }).style({
+            }).styles({
                 display: axisConfig.angularAxis.gridLinesVisible ? 'block' : 'none'
             });
             angularAxisEnter.append('text').classed('axis-text', true).style(fontStyle);
-            var ticksText = angularAxis.select('text.axis-text').attr({
+            var ticksText = angularAxis.select('text.axis-text').attrs({
                 x: radius + axisConfig.labelOffset,
                 dy: '.35em',
                 transform: function(d, i) {
@@ -306,7 +306,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                     var orient = axisConfig.angularAxis.tickOrientation;
                     if (orient == 'horizontal') return 'rotate(' + -angle + ' ' + rad + ' 0)'; else if (orient == 'radial') return angle < 270 && angle > 90 ? 'rotate(180 ' + rad + ' 0)' : null; else return 'rotate(' + (angle <= 180 && angle > 0 ? -90 : 90) + ' ' + rad + ' 0)';
                 }
-            }).style({
+            }).styles({
                 'text-anchor': 'middle',
                 display: axisConfig.angularAxis.labelsVisible ? 'block' : 'none'
             }).text(function(d, i) {
@@ -322,12 +322,12 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             var rightmostTickEndX = d3.max(chartGroup.selectAll('.angular-tick text')[0].map(function(d, i) {
                 return d.getCTM().e + d.getBBox().width;
             }));
-            legendContainer.attr({
+            legendContainer.attrs({
                 transform: 'translate(' + [ radius + rightmostTickEndX, axisConfig.margin.top ] + ')'
             });
             var hasGeometry = svg.select('g.geometry-group').selectAll('g').size() > 0;
             var geometryContainer = svg.select('g.geometry-group').selectAll('g.geometry').data(data);
-            geometryContainer.enter().append('g').attr({
+            geometryContainer.enter().append('g').attrs({
                 'class': function(d, i) {
                     return 'geometry geometry' + i;
                 }
@@ -385,20 +385,20 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             })();
             var angularValue, radialValue;
             if (!isOrdinal) {
-                var angularGuideLine = guides.select('line').attr({
+                var angularGuideLine = guides.select('line').attrs({
                     x1: 0,
                     y1: 0,
                     y2: 0
-                }).style({
+                }).styles({
                     stroke: 'grey',
                     'pointer-events': 'none'
                 });
                 chartGroup.on('mousemove.angular-guide', function(d, i) {
                     var mouseAngle = µ.util.getMousePos(backgroundCircle).angle;
-                    angularGuideLine.attr({
+                    angularGuideLine.attrs({
                         x2: -radius,
                         transform: 'rotate(' + mouseAngle + ')'
-                    }).style({
+                    }).styles({
                         opacity: .5
                     });
                     var angleWithOriginOffset = (mouseAngle + 180 + 360 - axisConfig.orientation) % 360;
@@ -406,27 +406,27 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                     var pos = µ.util.convertToCartesian(radius + 12, mouseAngle + 180);
                     angularTooltip.text(µ.util.round(angularValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
                 }).on('mouseout.angular-guide', function(d, i) {
-                    guides.select('line').style({
+                    guides.select('line').styles({
                         opacity: 0
                     });
                 });
             }
-            var angularGuideCircle = guides.select('circle').style({
+            var angularGuideCircle = guides.select('circle').styles({
                 stroke: 'grey',
                 fill: 'none'
             });
             chartGroup.on('mousemove.radial-guide', function(d, i) {
                 var r = µ.util.getMousePos(backgroundCircle).radius;
-                angularGuideCircle.attr({
+                angularGuideCircle.attrs({
                     r: r
-                }).style({
+                }).styles({
                     opacity: .5
                 });
                 radialValue = radialScale.invert(µ.util.getMousePos(backgroundCircle).radius);
                 var pos = µ.util.convertToCartesian(r, axisConfig.radialAxis.orientation);
                 radialTooltip.text(µ.util.round(radialValue)).move([ pos[0] + chartCenter[0], pos[1] + chartCenter[1] ]);
             }).on('mouseout.radial-guide', function(d, i) {
-                angularGuideCircle.style({
+                angularGuideCircle.styles({
                     opacity: 0
                 });
                 geometryTooltip.hide();
@@ -438,15 +438,15 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                 var color = el.style('fill');
                 var newColor = 'black';
                 var opacity = el.style('opacity') || 1;
-                el.attr({
+                el.attrs({
                     'data-opacity': opacity
                 });
                 if (color != 'none') {
-                    el.attr({
+                    el.attrs({
                         'data-fill': color
                     });
                     newColor = d3.hsl(color).darker().toString();
-                    el.style({
+                    el.styles({
                         fill: newColor,
                         opacity: 1
                     });
@@ -465,11 +465,11 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                     geometryTooltip.move(pos);
                 } else {
                     color = el.style('stroke');
-                    el.attr({
+                    el.attrs({
                         'data-stroke': color
                     });
                     newColor = d3.hsl(color).darker().toString();
-                    el.style({
+                    el.styles({
                         stroke: newColor,
                         opacity: 1
                     });
@@ -481,10 +481,10 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                 geometryTooltip.hide();
                 var el = d3.select(this);
                 var fillColor = el.attr('data-fill');
-                if (fillColor) el.style({
+                if (fillColor) el.styles({
                     fill: fillColor,
                     opacity: el.attr('data-opacity')
-                }); else el.style({
+                }); else el.styles({
                     stroke: el.attr('data-stroke'),
                     opacity: el.attr('data-opacity')
                 });
@@ -797,7 +797,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                 var h = geometryConfig.radialScale(d[1]) - geometryConfig.radialScale(0);
                 var stackTop = geometryConfig.radialScale(d[2] || 0);
                 var w = dataConfig.barWidth;
-                d3.select(this).attr({
+                d3.select(this).attrs({
                     'class': 'mark bar',
                     d: 'M' + [ [ h + stackTop, -w / 2 ], [ h + stackTop, w / 2 ], [ stackTop, w / 2 ], [ stackTop, -w / 2 ] ].join('L') + 'Z',
                     transform: function(d, i) {
@@ -808,7 +808,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             generator.dot = function(d, i, pI) {
                 var stackedData = d[2] ? [ d[0], d[1] + d[2] ] : d;
                 var symbol = d3.svg.symbol().size(_config[pI].data.dotSize).type(_config[pI].data.dotType)(d, i);
-                d3.select(this).attr({
+                d3.select(this).attrs({
                     'class': 'mark dot',
                     d: symbol,
                     transform: function(d, i) {
@@ -826,25 +826,25 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                 var lineData = d[2] ? data[pI].map(function(d, i) {
                     return [ d[0], d[1] + d[2] ];
                 }) : data[pI];
-                d3.select(this).each(generator['dot']).style({
+                d3.select(this).each(generator['dot']).styles({
                     opacity: function(dB, iB) {
                         return +_config[pI].data.dotVisible;
                     },
                     fill: markStyle.stroke(d, i, pI)
-                }).attr({
+                }).attrs({
                     'class': 'mark dot'
                 });
                 if (i > 0) return;
                 var lineSelection = d3.select(this.parentNode).selectAll('path.line').data([ 0 ]);
                 lineSelection.enter().insert('path');
-                lineSelection.attr({
+                lineSelection.attrs({
                     'class': 'line',
                     d: line(lineData),
                     transform: function(dB, iB) {
                         return 'rotate(' + (geometryConfig.orientation + 90) + ')';
                     },
                     'pointer-events': 'none'
-                }).style({
+                }).styles({
                     fill: function(dB, iB) {
                         return markStyle.fill(d, i, pI);
                     },
@@ -878,7 +878,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                 return geometryConfig.radialScale(domainMin + (d[2] || 0)) + geometryConfig.radialScale(d[1]);
             });
             generator.arc = function(d, i, pI) {
-                d3.select(this).attr({
+                d3.select(this).attrs({
                     'class': 'mark arc',
                     d: arc,
                     transform: function(d, i) {
@@ -907,13 +907,13 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                 }
             };
             var geometryLayer = d3.select(this).selectAll('g.layer').data(data);
-            geometryLayer.enter().append('g').attr({
+            geometryLayer.enter().append('g').attrs({
                 'class': 'layer'
             });
             var geometry = geometryLayer.selectAll('path.mark').data(function(d, i) {
                 return d;
             });
-            geometry.enter().append('path').attr({
+            geometry.enter().append('path').attrs({
                 'class': 'mark'
             });
             geometry.style(markStyle).each(generator[geometryConfig.geometryType]);
@@ -1067,7 +1067,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
         var height = isContinuous ? legendConfig.height : lineHeight * data.length;
         var legendContainerGroup = container.classed('legend-group', true);
         var svg = legendContainerGroup.selectAll('svg').data([ 0 ]);
-        var svgEnter = svg.enter().append('svg').attr({
+        var svgEnter = svg.enter().append('svg').attrs({
             width: 300,
             height: height + lineHeight,
             xmlns: 'http://www.w3.org/2000/svg',
@@ -1086,7 +1086,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             } else if (d3.svg.symbolTypes.indexOf(_type) != -1) return d3.svg.symbol().type(_type).size(squareSize)(); else return d3.svg.symbol().type('square').size(squareSize)();
         };
         if (isContinuous) {
-            var gradient = svg.select('.legend-marks').append('defs').append('linearGradient').attr({
+            var gradient = svg.select('.legend-marks').append('defs').append('linearGradient').attrs({
                 id: 'grad1',
                 x1: '0%',
                 y1: '0%',
@@ -1094,16 +1094,16 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
                 y2: '100%'
             }).selectAll('stop').data(colors);
             gradient.enter().append('stop');
-            gradient.attr({
+            gradient.attrs({
                 offset: function(d, i) {
                     return i / (colors.length - 1) * 100 + '%';
                 }
-            }).style({
+            }).styles({
                 'stop-color': function(d, i) {
                     return d;
                 }
             });
-            svg.append('rect').classed('legend-mark', true).attr({
+            svg.append('rect').classed('legend-mark', true).attrs({
                 height: legendConfig.height,
                 width: legendConfig.colorBandWidth,
                 fill: 'url(#grad1)'
@@ -1111,7 +1111,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
         } else {
             var legendElement = svg.select('.legend-marks').selectAll('path.legend-mark').data(data);
             legendElement.enter().append('path').classed('legend-mark', true);
-            legendElement.attr({
+            legendElement.attrs({
                 transform: function(d, i) {
                     return 'translate(' + [ lineHeight / 2, dataScale(i) + lineHeight / 2 ] + ')';
                 },
@@ -1126,18 +1126,18 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
             legendElement.exit().remove();
         }
         var legendAxis = d3.svg.axis().scale(dataScale).orient('right');
-        var axis = svg.select('g.legend-axis').attr({
+        var axis = svg.select('g.legend-axis').attrs({
             transform: 'translate(' + [ isContinuous ? legendConfig.colorBandWidth : lineHeight, lineHeight / 2 ] + ')'
         }).call(legendAxis);
-        axis.selectAll('.domain').style({
+        axis.selectAll('.domain').styles({
             fill: 'none',
             stroke: 'none'
         });
-        axis.selectAll('line').style({
+        axis.selectAll('line').styles({
             fill: 'none',
             stroke: isContinuous ? legendConfig.textColor : 'none'
         });
-        axis.selectAll('text').style({
+        axis.selectAll('text').styles({
             fill: legendConfig.textColor,
             'font-size': legendConfig.fontSize
         }).text(function(d, i) {
@@ -1193,17 +1193,17 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
     var tickSize = 10;
     var exports = function() {
         tooltipEl = config.container.selectAll('g.' + id).data([ 0 ]);
-        var tooltipEnter = tooltipEl.enter().append('g').classed(id, true).style({
+        var tooltipEnter = tooltipEl.enter().append('g').classed(id, true).styles({
             'pointer-events': 'none',
             display: 'none'
         });
-        backgroundEl = tooltipEnter.append('path').style({
+        backgroundEl = tooltipEnter.append('path').styles({
             fill: 'white',
             'fill-opacity': .9
-        }).attr({
+        }).attrs({
             d: 'M0 0'
         });
-        tooltipTextEl = tooltipEnter.append('text').attr({
+        tooltipTextEl = tooltipEnter.append('text').attrs({
             dx: config.padding + tickSize,
             dy: +config.fontSize * .3
         });
@@ -1214,7 +1214,7 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
         var strokeColor = l >= .5 ? '#aaa' : 'white';
         var fillColor = l >= .5 ? 'black' : 'white';
         var text = _text || '';
-        tooltipTextEl.style({
+        tooltipTextEl.styles({
             fill: fillColor,
             'font-size': config.fontSize + 'px'
         }).text(text);
@@ -1227,36 +1227,36 @@ var extendDeepAll = Plotly.Lib.extendDeepAll;
         };
         var backGroundW = bbox.width + padding * 2 + tickSize;
         var backGroundH = bbox.height + padding * 2;
-        backgroundEl.attr({
+        backgroundEl.attrs({
             d: 'M' + [ [ tickSize, -backGroundH / 2 ], [ tickSize, -backGroundH / 4 ], [ config.hasTick ? 0 : tickSize, 0 ], [ tickSize, backGroundH / 4 ], [ tickSize, backGroundH / 2 ], [ backGroundW, backGroundH / 2 ], [ backGroundW, -backGroundH / 2 ] ].join('L') + 'Z'
         }).style(boxStyle);
-        tooltipEl.attr({
+        tooltipEl.attrs({
             transform: 'translate(' + [ tickSize, -backGroundH / 2 + padding * 2 ] + ')'
         });
-        tooltipEl.style({
+        tooltipEl.styles({
             display: 'block'
         });
         return exports;
     };
     exports.move = function(_pos) {
         if (!tooltipEl) return;
-        tooltipEl.attr({
+        tooltipEl.attrs({
             transform: 'translate(' + [ _pos[0], _pos[1] ] + ')'
-        }).style({
+        }).styles({
             display: 'block'
         });
         return exports;
     };
     exports.hide = function() {
         if (!tooltipEl) return;
-        tooltipEl.style({
+        tooltipEl.styles({
             display: 'none'
         });
         return exports;
     };
     exports.show = function() {
         if (!tooltipEl) return;
-        tooltipEl.style({
+        tooltipEl.styles({
             display: 'block'
         });
         return exports;

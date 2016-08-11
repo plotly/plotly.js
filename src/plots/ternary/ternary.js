@@ -485,7 +485,7 @@ proto.initInteractions = function() {
 
         zb = zoomContainer.append('path')
             .attr('class', 'zoombox')
-            .style({
+            .styles({
                 'fill': lum > 0.2 ? 'rgba(0,0,0,0)' : 'rgba(255,255,255,0)',
                 'stroke-width': 0
             })
@@ -493,7 +493,7 @@ proto.initInteractions = function() {
 
         corners = zoomContainer.append('path')
             .attr('class', 'zoombox-corners')
-            .style({
+            .styles({
                 fill: Color.background,
                 stroke: Color.defaultLine,
                 'stroke-width': 1,

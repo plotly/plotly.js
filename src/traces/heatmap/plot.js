@@ -380,12 +380,12 @@ function plotOne(gd, plotinfo, cd) {
     var image3 = plotgroup.selectAll('image')
         .data(cd);
 
-    image3.enter().append('svg:image').attr({
+    image3.enter().append('svg:image').attrs({
         xmlns: xmlnsNamespaces.svg,
         preserveAspectRatio: 'none'
     });
 
-    image3.attr({
+    image3.attrs({
         height: imageHeight,
         width: imageWidth,
         x: left,

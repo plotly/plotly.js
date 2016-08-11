@@ -25,7 +25,7 @@ module.exports = function plot(gd, cdpie) {
     var pieGroups = fullLayout._pielayer.selectAll('g.trace').data(cdpie);
 
     pieGroups.enter().append('g')
-        .attr({
+        .attrs({
             'stroke-linejoin': 'round', // TODO: miter might look better but can sometimes cause problems
                                         // maybe miter with a small-ish stroke-miterlimit?
             'class': 'trace'
@@ -150,7 +150,7 @@ module.exports = function plot(gd, cdpie) {
 
                 slicePath.enter().append('path')
                     .classed('surface', true)
-                    .style({'pointer-events': 'all'});
+                    .styles({'pointer-events': 'all'});
 
                 sliceTop.select('path.textline').remove();
 
@@ -230,7 +230,7 @@ module.exports = function plot(gd, cdpie) {
                     sliceText.exit().remove();
 
                     sliceText.text(pt.text)
-                        .attr({
+                        .attrs({
                             'class': 'slicetext',
                             transform: '',
                             'data-bb': '',
@@ -241,7 +241,7 @@ module.exports = function plot(gd, cdpie) {
                         .call(Drawing.font, textPosition === 'outside' ?
                             trace.outsidetextfont : trace.insidetextfont)
                         .call(svgTextUtils.convertToTspans);
-                    sliceText.selectAll('tspan.line').attr({x: 0, y: 0});
+                    sliceText.selectAll('tspan.line').attrs({x: 0, y: 0});
 
                     // position the text relative to the slice
                     // TODO: so far this only accounts for flat
@@ -256,7 +256,7 @@ module.exports = function plot(gd, cdpie) {
                             sliceText.call(Drawing.font, trace.outsidetextfont);
                             if(trace.outsidetextfont.family !== trace.insidetextfont.family ||
                                     trace.outsidetextfont.size !== trace.insidetextfont.size) {
-                                sliceText.attr({'data-bb': ''});
+                                sliceText.attrs({'data-bb': ''});
                                 textBB = Drawing.bBox(sliceText.node());
                             }
                             transform = transformOutsideText(textBB, pt);
@@ -325,7 +325,7 @@ module.exports = function plot(gd, cdpie) {
                     sliceTop.append('path')
                         .classed('textline', true)
                         .call(Color.stroke, trace.outsidetextfont.color)
-                        .attr({
+                        .attrs({
                             'stroke-width': Math.min(2, trace.outsidetextfont.size / 8),
                             d: textLinePath,
                             fill: 'none'

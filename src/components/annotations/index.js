@@ -381,7 +381,7 @@ annotations.draw = function(gd, index, opt, value) {
 
     function textLayout(s) {
         s.call(Drawing.font, font)
-        .attr({
+        .attrs({
             'text-anchor': {
                 left: 'start',
                 right: 'end'
@@ -396,7 +396,7 @@ annotations.draw = function(gd, index, opt, value) {
 
         // make sure lines are aligned the way they will be
         // at the end, even if their position changes
-        anntext.selectAll('tspan.line').attr({y: 0, x: 0});
+        anntext.selectAll('tspan.line').attrs({y: 0, x: 0});
 
         var mathjaxGroup = ann.select('.annotation-math-group'),
             hasMathjax = !mathjaxGroup.empty(),
@@ -522,11 +522,11 @@ annotations.draw = function(gd, index, opt, value) {
             textx = borderfull - anntextBB.left;
 
         if(hasMathjax) {
-            mathjaxGroup.select('svg').attr({x: borderfull - 1, y: borderfull});
+            mathjaxGroup.select('svg').attrs({x: borderfull - 1, y: borderfull});
         }
         else {
-            anntext.attr({x: textx, y: texty});
-            anntext.selectAll('tspan.line').attr({y: texty, x: textx});
+            anntext.attrs({x: textx, y: texty});
+            anntext.selectAll('tspan.line').attrs({y: texty, x: textx});
         }
 
         annbg.call(Drawing.setRect, borderwidth / 2, borderwidth / 2,
@@ -618,7 +618,7 @@ annotations.draw = function(gd, index, opt, value) {
                 arrowColor = options.arrowcolor;
 
             var arrowgroup = anngroup.append('g')
-                .style({opacity: Color.opacity(arrowColor)})
+                .styles({opacity: Color.opacity(arrowColor)})
                 .classed('annotation-arrow-g', true)
                 .attr('data-index', String(index));
 
@@ -632,7 +632,7 @@ annotations.draw = function(gd, index, opt, value) {
             var arrowdrag = arrowgroup.append('path')
                 .classed('annotation', true)
                 .classed('anndrag', true)
-                .attr({
+                .attrs({
                     'data-index': String(index),
                     d: 'M3,3H-3V-3H3ZM0,0L' + (arrowX0 - arrowX) + ',' + (arrowY0 - arrowY),
                     transform: 'translate(' + arrowX + ',' + arrowY + ')'
@@ -688,7 +688,7 @@ annotations.draw = function(gd, index, opt, value) {
                               (1 - ((arrowY + dy - gs.t) / gs.h));
                         }
 
-                        anng.attr({
+                        anng.attrs({
                             transform: 'rotate(' + textangle + ',' +
                                    xcenter + ',' + ycenter + ')'
                         });
@@ -777,7 +777,7 @@ annotations.draw = function(gd, index, opt, value) {
 
                     ann.call(Lib.setTranslate, x0 + dx, y0 + dy);
 
-                    anng.attr({
+                    anng.attrs({
                         transform: 'rotate(' + textangle + ',' +
                                x1 + ',' + y1 + ')'
                     });
@@ -801,7 +801,7 @@ annotations.draw = function(gd, index, opt, value) {
             .call(textLayout)
             .on('edit', function(_text) {
                 options.text = _text;
-                this.attr({'data-unformatted': options.text});
+                this.attrs({'data-unformatted': options.text});
                 this.call(textLayout);
                 var update = {};
                 update['annotations[' + index + '].text'] = options.text;
@@ -817,7 +817,7 @@ annotations.draw = function(gd, index, opt, value) {
     else anntext.call(textLayout);
 
     // rotate and position text and background
-    anng.attr({transform: 'rotate(' + textangle + ',' +
+    anng.attrs({transform: 'rotate(' + textangle + ',' +
                         annPosPx.x + ',' + annPosPx.y + ')'})
         .call(Drawing.setPosition, annPosPx.x, annPosPx.y);
 };
@@ -857,12 +857,12 @@ annotations.arrowhead = function(el3, style, ends, mag) {
             if(doStart) {
                 start.x -= backOffX;
                 start.y -= backOffY;
-                el3.attr({x1: start.x, y1: start.y});
+                el3.attrs({x1: start.x, y1: start.y});
             }
             if(doEnd) {
                 end.x += backOffX;
                 end.y += backOffY;
-                el3.attr({x2: end.x, y2: end.y});
+                el3.attrs({x2: end.x, y2: end.y});
             }
         }
     }
@@ -901,7 +901,7 @@ annotations.arrowhead = function(el3, style, ends, mag) {
     var drawhead = function(p, rot) {
         if(style > 5) rot = 0; // don't rotate square or circle
         d3.select(el.parentElement).append('path')
-            .attr({
+            .attrs({
                 'class': el3.attr('class'),
                 d: headStyle.path,
                 transform:
@@ -909,7 +909,7 @@ annotations.arrowhead = function(el3, style, ends, mag) {
                     'rotate(' + (rot * 180 / Math.PI) + ')' +
                     'scale(' + scale + ')'
             })
-            .style({
+            .styles({
                 fill: stroke,
                 opacity: opacity,
                 'stroke-width': 0

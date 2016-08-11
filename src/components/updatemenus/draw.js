@@ -180,7 +180,7 @@ function drawHeader(gd, gHeader, gButton, menuOpts) {
         .call(Drawing.font, menuOpts.font)
         .text('▼');
 
-    arrow.attr({
+    arrow.attrs({
         x: menuOpts.width - constants.arrowOffsetX,
         y: menuOpts.height1 / 2 + constants.textOffsetY
     });
@@ -282,7 +282,7 @@ function drawItemRect(item, menuOpts) {
 
     rect.enter().append('rect')
         .classed(constants.itemRectClassName, true)
-        .attr({
+        .attrs({
             rx: constants.rx,
             ry: constants.ry,
             'shape-rendering': 'crispEdges'
@@ -417,7 +417,7 @@ function setItemPosition(item, menuOpts, posOpts) {
 
     Lib.setTranslate(item, borderWidth, borderWidth + posOpts.y);
 
-    rect.attr({
+    rect.attrs({
         x: 0,
         y: 0,
         width: menuOpts.width,

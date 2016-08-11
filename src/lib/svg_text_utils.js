@@ -44,7 +44,7 @@ d3.selection.prototype.appendSVG = function(_svgString) {
 // Text utilities
 
 exports.html_entity_decode = function(s) {
-    var hiddenDiv = d3.select('body').append('div').style({display: 'none'}).html('');
+    var hiddenDiv = d3.select('body').append('div').styles({display: 'none'}).html('');
     var replaced = s.replace(/(&[^;]*;)/gi, function(d) {
         if(d === '&lt;') { return '&#60;'; } // special handling for brackets
         if(d === '&rt;') { return '&#62;'; }
@@ -79,7 +79,7 @@ exports.convertToTspans = function(_context, _callback) {
     svgClass += '-math';
     parent.selectAll('svg.' + svgClass).remove();
     parent.selectAll('g.' + svgClass + '-group').remove();
-    _context.style({visibility: null});
+    _context.styles({visibility: null});
     for(var up = _context.node(); up && up.removeAttribute; up = up.parentNode) {
         up.removeAttribute('data-bb');
     }
@@ -90,7 +90,7 @@ exports.convertToTspans = function(_context, _callback) {
             parent.select('svg.' + svgClass).remove();
         }
         _context.text('')
-            .style({
+            .styles({
                 visibility: 'visible',
                 'white-space': 'pre'
             });
@@ -113,7 +113,7 @@ exports.convertToTspans = function(_context, _callback) {
     if(tex) {
         var td = Lib.getPlotDiv(that.node());
         ((td && td._promises) || []).push(new Promise(function(resolve) {
-            that.style({visibility: 'hidden'});
+            that.styles({visibility: 'hidden'});
             var config = {fontSize: parseInt(that.style('font-size'), 10)};
 
             texToSVG(tex[2], config, function(_svgEl, _glyphDefs, _svgBBox) {
@@ -129,7 +129,7 @@ exports.convertToTspans = function(_context, _callback) {
 
                 var mathjaxGroup = parent.append('g')
                     .classed(svgClass + '-group', true)
-                    .attr({'pointer-events': 'none'});
+                    .attrs({'pointer-events': 'none'});
 
                 mathjaxGroup.node().appendChild(newSvg.node());
 
@@ -139,15 +139,15 @@ exports.convertToTspans = function(_context, _callback) {
                                                newSvg.node().firstChild);
                 }
 
-                newSvg.attr({
+                newSvg.attrs({
                     'class': svgClass,
                     height: _svgBBox.height,
                     preserveAspectRatio: 'xMinYMin meet'
                 })
-                .style({overflow: 'visible', 'pointer-events': 'none'});
+                .styles({overflow: 'visible', 'pointer-events': 'none'});
 
                 var fill = that.style('fill') || 'black';
-                newSvg.select('g').attr({fill: fill, stroke: fill});
+                newSvg.select('g').attrs({fill: fill, stroke: fill});
 
                 var newSvgW = getSize(newSvg, 'width'),
                     newSvgH = getSize(newSvg, 'height'),
@@ -159,20 +159,20 @@ exports.convertToTspans = function(_context, _callback) {
                     dy = -textHeight / 4;
 
                 if(svgClass[0] === 'y') {
-                    mathjaxGroup.attr({
+                    mathjaxGroup.attrs({
                         transform: 'rotate(' + [-90, +that.attr('x'), +that.attr('y')] +
                         ') translate(' + [-newSvgW / 2, dy - newSvgH / 2] + ')'
                     });
-                    newSvg.attr({x: +that.attr('x'), y: +that.attr('y')});
+                    newSvg.attrs({x: +that.attr('x'), y: +that.attr('y')});
                 }
                 else if(svgClass[0] === 'l') {
-                    newSvg.attr({x: that.attr('x'), y: dy - (newSvgH / 2)});
+                    newSvg.attrs({x: that.attr('x'), y: dy - (newSvgH / 2)});
                 }
                 else if(svgClass[0] === 'a') {
-                    newSvg.attr({x: 0, y: dy});
+                    newSvg.attrs({x: 0, y: dy});
                 }
                 else {
-                    newSvg.attr({x: newX, y: (+that.attr('y') + dy - newSvgH / 2)});
+                    newSvg.attrs({x: newX, y: (+that.attr('y') + dy - newSvgH / 2)});
                 }
 
                 if(_callback) _callback.call(that, mathjaxGroup);
@@ -196,9 +196,9 @@ function cleanEscapesForTex(s) {
 function texToSVG(_texString, _config, _callback) {
     var randomID = 'math-output-' + Lib.randstr([], 64);
     var tmpDiv = d3.select('body').append('div')
-        .attr({id: randomID})
-        .style({visibility: 'hidden', position: 'absolute'})
-        .style({'font-size': _config.fontSize + 'px'})
+        .attrs({id: randomID})
+        .styles({visibility: 'hidden', position: 'absolute'})
+        .styles({'font-size': _config.fontSize + 'px'})
         .text(cleanEscapesForTex(_texString));
 
     MathJax.Hub.Queue(['Typeset', MathJax.Hub, tmpDiv.node()], function() {
@@ -412,7 +412,7 @@ function alignHTMLWith(_base, container, options) {
 
     return function() {
         thisRect = this.node().getBoundingClientRect();
-        this.style({
+        this.styles({
             top: (getTop() - cRect.top) + 'px',
             left: (getLeft() - cRect.left) + 'px',
             'z-index': 1000
@@ -428,21 +428,21 @@ exports.makeEditable = function(context, _delegate, options) {
     var that = this;
     var dispatch = d3.dispatch('edit', 'input', 'cancel');
     var textSelection = d3.select(this.node())
-        .style({'pointer-events': 'all'});
+        .styles({'pointer-events': 'all'});
 
     var handlerElement = _delegate || textSelection;
-    if(_delegate) textSelection.style({'pointer-events': 'none'});
+    if(_delegate) textSelection.styles({'pointer-events': 'none'});
 
     function handleClick() {
         appendEditable();
-        that.style({opacity: 0});
+        that.styles({opacity: 0});
         // also hide any mathjax svg
         var svgClass = handlerElement.attr('class'),
             mathjaxClass;
         if(svgClass) mathjaxClass = '.' + svgClass.split(' ')[0] + '-math-group';
         else mathjaxClass = '[class*=-math-group]';
         if(mathjaxClass) {
-            d3.select(that.node().parentNode).select(mathjaxClass).style({opacity: 0});
+            d3.select(that.node().parentNode).select(mathjaxClass).styles({opacity: 0});
         }
     }
 
@@ -461,7 +461,7 @@ exports.makeEditable = function(context, _delegate, options) {
             container = plotDiv.select('.svg-container'),
             div = container.append('div');
         div.classed('plugin-editable editable', true)
-            .style({
+            .styles({
                 position: 'absolute',
                 'font-family': that.style('font-family') || 'Arial',
                 'font-size': that.style('font-size') || 12,
@@ -473,18 +473,18 @@ exports.makeEditable = function(context, _delegate, options) {
                 padding: '0',
                 'box-sizing': 'border-box'
             })
-            .attr({contenteditable: true})
+            .attrs({contenteditable: true})
             .text(options.text || that.attr('data-unformatted'))
             .call(alignHTMLWith(that, container, options))
             .on('blur', function() {
                 that.text(this.textContent)
-                    .style({opacity: 1});
+                    .styles({opacity: 1});
                 var svgClass = d3.select(this).attr('class'),
                     mathjaxClass;
                 if(svgClass) mathjaxClass = '.' + svgClass.split(' ')[0] + '-math-group';
                 else mathjaxClass = '[class*=-math-group]';
                 if(mathjaxClass) {
-                    d3.select(that.node().parentNode).select(mathjaxClass).style({opacity: 0});
+                    d3.select(that.node().parentNode).select(mathjaxClass).styles({opacity: 0});
                 }
                 var text = this.textContent;
                 d3.select(this).transition().duration(0).remove();
@@ -500,9 +500,9 @@ exports.makeEditable = function(context, _delegate, options) {
             })
             .on('keyup', function() {
                 if(d3.event.which === 27) {
-                    that.style({opacity: 1});
+                    that.styles({opacity: 1});
                     d3.select(this)
-                        .style({opacity: 0})
+                        .styles({opacity: 0})
                         .on('blur', function() { return false; })
                         .transition().remove();
                     dispatch.cancel.call(that, this.textContent);

@@ -17,7 +17,7 @@ module.exports = function styleOne(s, pt, trace) {
     var lineWidth = trace.marker.line.width || 0;
     if(Array.isArray(lineWidth)) lineWidth = lineWidth[pt.i] || 0;
 
-    s.style({
+    s.styles({
         'stroke-width': lineWidth,
         fill: pt.color
     })

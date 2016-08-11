@@ -366,7 +366,7 @@ module.exports = function draw(gd, id) {
 
                 // Colorbar cannot currently support opacities so we
                 // use an opaque fill even when alpha channels present
-                d3.select(this).attr({
+                d3.select(this).attrs({
                     x: xLeft,
                     width: Math.max(thickPx, 2),
                     y: d3.min(z),
@@ -495,7 +495,7 @@ module.exports = function draw(gd, id) {
                     opts.borderwidth + opts.outlinewidth / 2,
                 outerheight = yBottomPx - yTopPx;
 
-            container.select('.cbbg').attr({
+            container.select('.cbbg').attrs({
                 x: xLeft - opts.xpad -
                     (opts.borderwidth + opts.outlinewidth) / 2,
                 y: yTopPx - yExtraPx,
@@ -504,9 +504,9 @@ module.exports = function draw(gd, id) {
             })
             .call(Color.fill, opts.bgcolor)
             .call(Color.stroke, opts.bordercolor)
-            .style({'stroke-width': opts.borderwidth});
+            .styles({'stroke-width': opts.borderwidth});
 
-            container.selectAll('.cboutline').attr({
+            container.selectAll('.cboutline').attrs({
                 x: xLeft,
                 y: yTopPx + opts.ypad +
                     (opts.titleside === 'top' ? titleHeight : 0),
@@ -514,7 +514,7 @@ module.exports = function draw(gd, id) {
                 height: Math.max(outerheight - 2 * opts.ypad - titleHeight, 2)
             })
             .call(Color.stroke, opts.outlinecolor)
-            .style({
+            .styles({
                 fill: 'None',
                 'stroke-width': opts.outlinewidth
             });

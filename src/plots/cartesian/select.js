@@ -52,7 +52,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
 
     var corners = plot.append('path')
         .attr('class', 'zoombox-corners')
-        .style({
+        .styles({
             fill: color.background,
             stroke: color.defaultLine,
             'stroke-width': 1

@@ -323,22 +323,21 @@ plots.addLinks = function(gd) {
     var fullLayout = gd._fullLayout;
 
     var linkContainer = fullLayout._paper
-        .selectAll('text.js-plot-link-container').data([0]);
-
-    linkContainer.enter().append('text')
-        .classed('js-plot-link-container', true)
-        .style({
-            'font-family': '"Open Sans", Arial, sans-serif',
-            'font-size': '12px',
-            'fill': Color.defaultLine,
-            'pointer-events': 'all'
-        })
-        .each(function() {
-            var links = d3.select(this);
-            links.append('tspan').classed('js-link-to-tool', true);
-            links.append('tspan').classed('js-link-spacer', true);
-            links.append('tspan').classed('js-sourcelinks', true);
-        });
+        .selectAll('text.js-plot-link-container').data([0])
+        .enter().append('text')
+            .classed('js-plot-link-container', true)
+            .styles({
+                'font-family': '"Open Sans", Arial, sans-serif',
+                'font-size': '12px',
+                'fill': Color.defaultLine,
+                'pointer-events': 'all'
+            })
+            .each(function() {
+                var links = d3.select(this);
+                links.append('tspan').classed('js-link-to-tool', true);
+                links.append('tspan').classed('js-link-spacer', true);
+                links.append('tspan').classed('js-sourcelinks', true);
+            });
 
     // The text node inside svg
     var text = linkContainer.node(),
@@ -382,7 +381,7 @@ plots.addLinks = function(gd) {
 function positionPlayWithData(gd, container) {
     container.text('');
     var link = container.append('a')
-        .attr({
+        .attrs({
             'xlink:xlink:href': '#',
             'class': 'link--impt link--embedview',
             'font-weight': 'bold'
@@ -397,7 +396,7 @@ function positionPlayWithData(gd, container) {
     else {
         var path = window.location.pathname.split('/');
         var query = window.location.search;
-        link.attr({
+        link.attrs({
             'xlink:xlink:show': 'new',
             'xlink:xlink:href': '/' + path[2].split('.')[0] + '/' + path[1] + query
         });
@@ -415,7 +414,7 @@ plots.sendDataToCloud = function(gd) {
 
     var hiddenform = hiddenformDiv
         .append('form')
-        .attr({
+        .attrs({
             action: baseUrl + '/external',
             method: 'post',
             target: '_blank'
@@ -423,7 +422,7 @@ plots.sendDataToCloud = function(gd) {
 
     var hiddenformInput = hiddenform
         .append('input')
-        .attr({
+        .attrs({
             type: 'text',
             name: 'data'
         });

@@ -43,38 +43,42 @@ module.exports = function draw(gd) {
         return;
     }
 
-    var legend = fullLayout._infolayer.selectAll('g.legend')
-        .data([0])
+    fullLayout._infolayer.selectAll('g.legend').data([0])
         .enter().append('g')
             .attrs({
                 'class': 'legend',
                 'pointer-events': 'all'
             });
 
-    var clipPath = fullLayout._topdefs.selectAll('#' + clipId)
-        .data([0])
+    var legend = fullLayout._infolayer.selectAll('g.legend');
+
+    fullLayout._topdefs.selectAll('#' + clipId).data([0])
         .enter().append('clipPath')
             .attr('id', clipId)
             .append('rect');
 
-    var bg = legend.selectAll('rect.bg')
-        .data([0])
+    var clipPath = fullLayout._topdefs.selectAll('#' + clipId);
+
+
+    legend.selectAll('rect.bg').data([0])
         .enter().append('rect').attrs({
             'class': 'bg',
             'shape-rendering': 'crispEdges'
         });
 
+    var bg = legend.selectAll('rect.bg');
+
     bg.call(Color.stroke, opts.bordercolor);
     bg.call(Color.fill, opts.bgcolor);
     bg.style('stroke-width', opts.borderwidth + 'px');
 
-    var scrollBox = legend.selectAll('g.scrollbox')
-        .data([0])
+    legend.selectAll('g.scrollbox').data([0])
         .enter().append('g')
             .attr('class', 'scrollbox');
 
-    var scrollBar = legend.selectAll('rect.scrollbar')
-        .data([0])
+    var scrollBox = legend.selectAll('g.scrollbox');
+
+    legend.selectAll('rect.scrollbar').data([0])
         .enter().append('rect')
             .attrs({
                 'class': 'scrollbar',
@@ -85,16 +89,16 @@ module.exports = function draw(gd) {
             })
             .call(Color.fill, '#808BA4');
 
-    var groups = scrollBox.selectAll('g.groups')
-        .data(legendData);
+    var scrollBar = legend.selectAll('rect.scrollbar');
+
+    var groups = scrollBox.selectAll('g.groups').data(legendData);
 
     groups.enter().append('g')
         .attr('class', 'groups');
 
     groups.exit().remove();
 
-    var traces = groups.selectAll('g.traces')
-        .data(Lib.identity);
+    var traces = groups.selectAll('g.traces').data(Lib.identity);
 
     traces.enter().append('g').attr('class', 'traces');
     traces.exit().remove();
@@ -335,9 +339,12 @@ function drawTexts(g, gd) {
         traceIndex = trace.index,
         name = isPie ? legendItem.label : trace.name;
 
-    var text = g.selectAll('text.legendtext')
+    g.selectAll('text.legendtext')
         .data([0])
         .enter().append('text').classed('legendtext', true);
+
+    var text = g.selectAll('text.legendtext');
+
     text.attrs({
         x: 40,
         y: 0,
@@ -374,13 +381,15 @@ function setupTraceToggle(g, gd) {
         gd._fullLayout.hiddenlabels.slice() :
         [];
 
-    var traceToggle = g.selectAll('rect')
+    g.selectAll('rect')
         .data([0])
         .enter().append('rect')
             .classed('legendtoggle', true)
             .style('cursor', 'pointer')
             .attr('pointer-events', 'all')
             .call(Color.fill, 'rgba(0,0,0,0)');
+
+    var traceToggle = g.selectAll('rect');
 
     traceToggle.on('click', function() {
         if(gd._dragged) return;
