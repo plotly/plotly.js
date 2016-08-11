@@ -94,7 +94,6 @@ module.exports = function draw(gd) {
     }
 
     function applyAttributes(d) {
-
         var thisImage = d3.select(this);
 
         // Axes if specified
@@ -142,7 +141,9 @@ module.exports = function draw(gd) {
             yId = yref ? yref._id : '',
             clipAxes = xId + yId;
 
-        thisImage.call(Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
+        if(clipAxes) {
+            thisImage.call(Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
+        }
     }
 
 
