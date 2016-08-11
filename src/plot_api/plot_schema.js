@@ -258,7 +258,10 @@ function getModule(arg) {
         _module = arg._module;
 
     if(subplotsRegistry[_module]) return subplotsRegistry[_module];
-    else if('module' in arg) return Plotly[_module];
+    else if(componentsRegistry[_module]) return componentsRegistry[_module];
+
+    // look it internal Plotly if all previous attempts fail
+    return Plotly[_module];
 }
 
 function removeUnderscoreAttrs(attributes) {

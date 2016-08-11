@@ -171,18 +171,18 @@ module.exports = {
         '*': 'Fx'
     },
 
-    // TODO merge with moduleLayoutDefaults in plots.js
     _nestedModules: {
         'xaxis': 'Axes',
         'yaxis': 'Axes',
         'scene': 'gl3d',
         'geo': 'geo',
-        'legend': 'Legend',
-        'annotations': 'Annotations',
-        'shapes': 'Shapes',
-        'images': 'Images',
-        'updatemenus': 'UpdateMenus',
         'ternary': 'ternary',
-        'mapbox': 'mapbox'
+        'mapbox': 'mapbox',
+
+        'legend': 'legend',
+        'annotations': 'annotations',
+        'shapes': 'shapes',
+        'images': 'images',
+        'updatemenus': 'updatemenus'
     }
 };
