@@ -650,6 +650,10 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
         var trace = dataIn[i],
             fullTrace = plots.supplyTraceDefaults(trace, cnt, layout);
 
+        fullTrace.index = i;
+        fullTrace._input = trace;
+        fullTrace._expandedIndex = cnt;
+
         if(fullTrace.transforms && fullTrace.transforms.length) {
             var expandedTraces = applyTransforms(fullTrace, dataOut, layout);
 
@@ -674,10 +678,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
             }
         }
         else {
-            fullTrace.index = i;
-            fullTrace._input = trace;
-            fullTrace._expandedIndex = cnt;
-
             pushModule(fullTrace);
         }
     }
