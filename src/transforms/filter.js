@@ -154,8 +154,8 @@ function getFilterFunc(opts) {
             return function(v) {
                 // if character then ignore with no side effect
                 function notDateNumber(d){
-                    return !(isNumeric(d) || d instanceof Date);
-                }
+                    return !(isNumeric(d) || Lib.isDateTime(d));
+                };
                 if(valueArr.some(notDateNumber)) {
                     return true;
                 }
