@@ -2,14 +2,11 @@ var fs = require('fs');
 
 var constants = require('./util/constants');
 var common = require('./util/common');
-var containerCommands = require('./util/container_commands');
-var isCI = process.env.CIRCLECI;
 
 // main
 makeCredentialsFile();
 makeSetPlotConfigFile();
 makeTestImageFolders();
-if(isCI) runAndSetupImageTestContainer();
 
 // Create a credentials json file,
 // to be required in jasmine test suites and test dashboard
@@ -53,30 +50,6 @@ function makeTestImageFolders() {
 
     makeOne(constants.pathToTestImages, 'test image folder');
     makeOne(constants.pathToTestImagesDiff, 'test image diff folder');
-}
-
-// On CircleCI, run and setup image test container once an for all
-function runAndSetupImageTestContainer() {
-
-    function run() {
-        var cmd = containerCommands.dockerRun;
-        common.execCmd(cmd, function() {
-            logger('run docker container');
-
-            setTimeout(setup, 500);
-        });
-    }
-
-    function setup() {
-        var cmd = containerCommands.getRunCmd(isCI, [
-            containerCommands.setup
-        ]);
-        common.execCmd(cmd, function() {
-            logger('setup docker container');
-        });
-    }
-
-    run();
 }
 
 function logger(task) {
