@@ -472,7 +472,7 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._dataLength = newData.length;
 
     // then do the data
-    newFullLayout._globalTransforms = gd._context.globalTransforms;
+    newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
     plots.supplyDataDefaults(newData, newFullData, newFullLayout);
 
     // attach helper method to check whether a plot type is present on graph
