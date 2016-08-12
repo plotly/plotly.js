@@ -1334,6 +1334,34 @@ describe('Test lib.js:', function() {
             }).toThrowError('Separator string required for formatting!');
         });
     });
+
+    describe('interleaveTraceUpdates', function() {
+        it('wraps property updates in arrays', function() {
+            var input = [{x: [1], 'marker.color': 'red'}];
+            var output = Lib.interleaveTraceUpdates(input);
+
+            expect(output).toEqual({
+                x: [[1]],
+                'marker.color': ['red']
+            });
+        });
+
+        it('merges traces into a single restyle', function() {
+            var input = [
+                {x: [1], 'marker.color': 'red'},
+                {y: [[7, 8], [4, 2]], 'marker.goodness': 'very', symbols: {visible: 'please'}}
+            ];
+            var output = Lib.interleaveTraceUpdates(input);
+
+            expect(output).toEqual({
+                x: [[1], undefined],
+                y: [undefined, [[7, 8], [4, 2]]],
+                'marker.color': ['red', undefined],
+                'marker.goodness': [undefined, 'very'],
+                'symbols': [undefined, {visible: 'please'}]
+            });
+        });
+    });
 });
 
 describe('Queue', function() {

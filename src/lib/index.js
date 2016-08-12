@@ -616,3 +616,42 @@ lib.numSeparate = function(value, separators) {
 
     return x1 + x2;
 };
+
+/**
+ * Interleaves separate trace updates (frames) into a restyle command.
+ * Attributes not specified in both traces are set to `undefined` so that
+ * they are not altered by restyle. Object paths are *not* expanded.
+ *
+ * @example
+ * lib.interleaveTraceUpdates([{x: [1]}, {x: [2]}])
+ * // returns {x: [[1], [2]]}
+ *
+ * @param   {array} traces       the trace updates to be interleaved
+ *
+ * @return  {object}    an object contianing the interleaved properties
+ */
+lib.interleaveTraceUpdates = function(traces) {
+    var i, j, k, prop, trace, props;
+    var n = traces.length;
+    var output = {};
+
+    for(i = 0; i < traces.length; i++) {
+        trace = traces[i];
+        props = Object.keys(trace);
+        for(j = 0; j < props.length; j++) {
+            prop = props[j];
+            if(!output[prop]) {
+                // If not present, allocate a new array:
+                output[prop] = [];
+
+                // Explicitly fill this array with undefined:
+                for(k = 0; k < n; k++) {
+                    output[prop][k] = undefined;
+                }
+            }
+            output[prop][i] = traces[i][prop];
+        }
+    }
+
+    return output;
+};
