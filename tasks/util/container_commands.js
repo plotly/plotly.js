@@ -8,7 +8,7 @@ var containerCommands = {
 
 containerCommands.ping = [
     'wget',
-    '--server-response --spider --tries=10 --retry-connrefused',
+    '--server-response --spider --tries=20 --retry-connrefused',
     constants.testContainerUrl + 'ping'
 ].join(' ');
 
