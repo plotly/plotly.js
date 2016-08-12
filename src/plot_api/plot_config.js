@@ -94,7 +94,11 @@ module.exports = {
 
     // Turn all console logging on or off (errors will be thrown)
     // This should ONLY be set via Plotly.setPlotConfig
-    logging: false
+    logging: false,
+
+    // Set global transform to be applied to all traces with no
+    // specification needed
+    globalTransforms: []
 };
 
 // where and how the background gets set can be overridden by context

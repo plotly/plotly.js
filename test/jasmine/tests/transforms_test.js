@@ -63,6 +63,40 @@ describe('one-to-one transforms:', function() {
         expect(traceOut.y).toBe(traceIn.y);
     });
 
+    it('supplyTraceDefaults should honored global transforms', function() {
+        var traceIn = {
+            y: [2, 1, 2],
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: '0',
+                filtersrc: 'x'
+            }]
+        };
+
+        var layout = {
+            _globalTransforms: [{
+                type: 'filter'
+            }]
+        };
+
+        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
+
+        expect(traceOut.transforms[0]).toEqual({
+            type: 'filter',
+            operation: '=',
+            value: 0,
+            filtersrc: 'x'
+        }, '- global first');
+
+        expect(traceOut.transforms[1]).toEqual({
+            type: 'filter',
+            operation: '>',
+            value: 0,
+            filtersrc: 'x'
+        }, '- trace second');
+    });
+
     it('supplyDataDefaults should apply the transform while', function() {
         var dataIn = [{
             x: [-2, -2, 1, 2, 3],
