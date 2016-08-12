@@ -310,6 +310,14 @@ module.exports = {
             'If *B*, 1B.'
         ].join(' ')
     },
+    separatethousands: {
+        valType: 'boolean',
+        dflt: false,
+        role: 'style',
+        description: [
+            'even 4-digit integers are separated if true'
+        ].join(' ')
+    },
     tickformat: {
         valType: 'string',
         dflt: '',

@@ -43,6 +43,7 @@ module.exports = function handleTickLabelDefaults(containerIn, containerOut, coe
             if(!tickFormat && axType !== 'date') {
                 coerce('showexponent', showAttrDflt);
                 coerce('exponentformat');
+                coerce('separatethousands');
             }
         }
     }
