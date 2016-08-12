@@ -84,7 +84,7 @@ proto.makeFramework = function() {
 
             try {
                 STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
-                    preserveDrawingBuffer: true,
+                    preserveDrawingBuffer: false,
                     premultipliedAlpha: true,
                     antialias: true
                 });
