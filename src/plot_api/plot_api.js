@@ -2537,22 +2537,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     var i, traceIdx;
     var fullLayout = gd._fullLayout;
 
-    transitionConfig = Lib.extendFlat({
-        ease: 'cubic-in-out',
-        duration: 500,
-        delay: 0,
-        cascade: 0
-    }, transitionConfig || {});
-
-    // Create a single transition to be passed around:
-    if(transitionConfig.duration > 0) {
-        gd._currentTransition = d3.transition()
-            .duration(transitionConfig.duration)
-            .delay(transitionConfig.delay)
-            .ease(transitionConfig.ease);
-    } else {
-        gd._currentTransition = null;
-    }
+    transitionConfig = Plots.supplyTransitionDefaults(transitionConfig);
 
     var dataLength = Array.isArray(data) ? data.length : 0;
 
@@ -2666,7 +2651,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             basePlotModules[j].plot(gd, transitionedTraces, traceTransitionConfig);
         }
 
-        gd._transitionData._completionTimeout = setTimeout(completeTransition, transitionConfig.duration);
+        gd._transitionData._completionTimeout = setTimeout(completeTransition, transitionConfig.duration + transitionConfig.delay);
 
         if(!hasAxisTransition && !hasTraceTransition) {
             return false;

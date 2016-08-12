@@ -18,6 +18,7 @@ var Lib = require('../lib');
 var Color = require('../components/color');
 
 var plots = module.exports = {};
+var transitionAttrs = require('./transition_attributes');
 
 // Expose registry methods on Plots for backward-compatibility
 Lib.extendFlat(plots, Registry);
@@ -616,6 +617,21 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
             pushModule(fullTrace);
         }
     }
+};
+
+plots.supplyTransitionDefaults = function(config) {
+    var configOut = {};
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(config, configOut, transitionAttrs, attr, dflt);
+    }
+
+    coerce('duration');
+    coerce('ease');
+    coerce('delay');
+    coerce('redraw');
+
+    return configOut;
 };
 
 plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
