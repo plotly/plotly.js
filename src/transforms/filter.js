@@ -152,6 +152,14 @@ function getFilterFunc(opts) {
             return function(v) { return v > value; };
         case 'within':
             return function(v) {
+                // if character then ignore with no side effect
+                function notDateNumber(d){
+                    return !(isNumeric(d) || d instanceof Date);
+                }
+                if(valueArr.some(notDateNumber)) {
+                    return true;
+                }
+
                 // keep the = ?
                 return v >= Math.min.apply( null, valueArr ) &&
                       v <= Math.max.apply( null, valueArr );
