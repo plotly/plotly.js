@@ -384,6 +384,43 @@ describe('one-to-one transforms:', function() {
         }]);
     });
 
+    it('supplyTraceDefaults should accept numeric as character', function() {
+        var traceIn = {
+            x: '1',
+            transforms: [{
+                type: 'filter',
+                value: '0'
+            }]
+        };
+
+        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+
+        expect(traceOut.transforms).toEqual([{
+            type: 'filter',
+            operation: '=',
+            value: 0,
+            filtersrc: 'x'
+        }]);
+
+        // should also convert if array
+        var traceIn = {
+            x: '1',
+            transforms: [{
+                type: 'filter',
+                value: ['0']
+            }]
+        };
+
+        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+
+        expect(traceOut.transforms).toEqual([{
+            type: 'filter',
+            operation: '=',
+            value: [0],
+            filtersrc: 'x'
+        }]);
+    });
+
     it('supplyDataDefaults should apply the transform', function() {
         var dataIn = [{
             x: [-2, -1, -2, 0, 1, 2, 3],

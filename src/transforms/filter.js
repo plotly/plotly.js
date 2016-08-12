@@ -1,5 +1,7 @@
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
+
 // var Lib = require('@src/lib');
 var Lib = require('../lib');
 
@@ -52,6 +54,16 @@ exports.supplyDefaults = function(transformIn, fullData, layout) {
     coerce('operation');
     coerce('value');
     coerce('filtersrc');
+
+    // numeric values as character should be converted to numeric
+    if(Array.isArray(transformOut.value)) {
+        transformOut.value = transformOut.value.map(function(v) {
+            if(isNumeric(v)) v = +v;
+            return v;
+        })
+    } else {
+        if(isNumeric(transformOut.value)) transformOut.value = +transformOut.value;
+    }
 
     // or some more complex logic using fullData and layout
 
