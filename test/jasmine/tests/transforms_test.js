@@ -63,6 +63,79 @@ describe('one-to-one transforms:', function() {
         expect(traceOut.y).toBe(traceIn.y);
     });
 
+    it('supplyTraceDefaults should honored global transforms', function() {
+        var traceIn = {
+            y: [2, 1, 2],
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: '0',
+                filtersrc: 'x'
+            }]
+        };
+
+        var layout = {
+            _globalTransforms: [{
+                type: 'filter'
+            }]
+        };
+
+        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
+
+        expect(traceOut.transforms[0]).toEqual({
+            type: 'filter',
+            operation: '=',
+            value: 0,
+            filtersrc: 'x'
+        }, '- global first');
+
+        expect(traceOut.transforms[1]).toEqual({
+            type: 'filter',
+            operation: '>',
+            value: 0,
+            filtersrc: 'x'
+        }, '- trace second');
+    });
+
+    it('should pass correctly arguments to transform methods', function() {
+        var transformIn = { type: 'fake' };
+        var transformOut = {};
+
+        var dataIn = [{
+            transforms: [transformIn]
+        }];
+
+        var layout = {};
+
+        function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
+            expect(_transformIn).toBe(transformIn);
+            expect(_layout).toBe(layout);
+
+            return transformOut;
+        }
+
+        function assertTransformArgs(dataOut, opts) {
+            expect(dataOut[0]._input).toBe(dataIn[0]);
+            expect(opts.transform).toBe(transformOut);
+            expect(opts.fullTrace._input).toBe(dataIn[0]);
+            expect(opts.layout).toBe(layout);
+
+            return dataOut;
+        }
+
+        var fakeTransformModule = {
+            moduleType: 'transform',
+            name: 'fake',
+            attributes: {},
+            supplyDefaults: assertSupplyDefaultsArgs,
+            transform: assertTransformArgs
+        };
+
+        Plotly.register(fakeTransformModule);
+        Plots.supplyDataDefaults(dataIn, [], layout);
+        delete Plots.transformsRegistry.fake;
+    });
+
     it('supplyDataDefaults should apply the transform while', function() {
         var dataIn = [{
             x: [-2, -2, 1, 2, 3],
