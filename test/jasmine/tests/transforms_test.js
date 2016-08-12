@@ -97,6 +97,45 @@ describe('one-to-one transforms:', function() {
         }, '- trace second');
     });
 
+    it('should pass correctly arguments to transform methods', function() {
+        var transformIn = { type: 'fake' };
+        var transformOut = {};
+
+        var dataIn = [{
+            transforms: [transformIn]
+        }];
+
+        var layout = {};
+
+        function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
+            expect(_transformIn).toBe(transformIn);
+            expect(_layout).toBe(layout);
+
+            return transformOut;
+        }
+
+        function assertTransformArgs(dataOut, opts) {
+            expect(dataOut[0]._input).toBe(dataIn[0]);
+            expect(opts.transform).toBe(transformOut);
+            expect(opts.fullTrace._input).toBe(dataIn[0]);
+            expect(opts.layout).toBe(layout);
+
+            return dataOut;
+        }
+
+        var fakeTransformModule = {
+            moduleType: 'transform',
+            name: 'fake',
+            attributes: {},
+            supplyDefaults: assertSupplyDefaultsArgs,
+            transform: assertTransformArgs
+        };
+
+        Plotly.register(fakeTransformModule);
+        Plots.supplyDataDefaults(dataIn, [], layout);
+        delete Plots.transformsRegistry.fake;
+    });
+
     it('supplyDataDefaults should apply the transform while', function() {
         var dataIn = [{
             x: [-2, -2, 1, 2, 3],
