@@ -394,14 +394,16 @@ function hover(gd, evt, subplot) {
         hovermode = 'array';
         for(itemnum = 0; itemnum < evt.length; itemnum++) {
             cd = gd.calcdata[evt[itemnum].curveNumber||0];
-            searchData.push(cd);
+            if(cd[0].trace.hoverinfo !== 'skip') {
+                searchData.push(cd);
+            }
         }
     }
     else {
         for(curvenum = 0; curvenum < gd.calcdata.length; curvenum++) {
             cd = gd.calcdata[curvenum];
             trace = cd[0].trace;
-            if(subplots.indexOf(getSubplot(trace)) !== -1) {
+            if(trace.hoverinfo !== 'skip' && subplots.indexOf(getSubplot(trace)) !== -1) {
                 searchData.push(cd);
             }
         }

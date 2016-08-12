@@ -300,6 +300,23 @@ describe('hover info', function() {
         });
     });
 
+    describe('hover info skip', function() {
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        mockCopy.data[0].hoverinfo = 'skip';
+
+        beforeEach(function(done) {
+            Plotly.plot(createGraphDiv(), mockCopy.data, mockCopy.layout).then(done);
+        });
+
+        it('does not hover if hover info is set to skip', function() {
+            var gd = document.getElementById('graph');
+            Fx.hover('graph', evt, 'xy');
+
+            expect(gd._hoverdata, undefined);
+        });
+    });
+
     describe('hover info none', function() {
         var mockCopy = Lib.extendDeep({}, mock);
 
