@@ -1315,6 +1315,10 @@ describe('Test lib.js:', function() {
             expect(Lib.numSeparate(2016, '.,')).toBe('2016');
         });
 
+        it('should work even for 4-digit integer if third argument is true', function() {
+            expect(Lib.numSeparate(3000, '.,', true)).toBe('3,000');
+        });
+
         it('should work for multiple thousands', function() {
             expect(Lib.numSeparate(1000000000, '.,')).toBe('1,000,000,000');
         });
