@@ -315,7 +315,7 @@ module.exports = {
         dflt: false,
         role: 'style',
         description: [
-            'even 4-digit integers are separated if true'
+            'If "true", even 4-digit integers are separated'
         ].join(' ')
     },
     tickformat: {
