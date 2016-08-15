@@ -312,7 +312,6 @@ proto.cameraChanged = function() {
 };
 
 proto.destroy = function() {
-
     var traces = this.traces;
 
     if(traces) {
@@ -336,10 +335,11 @@ proto.plot = function(fullData, calcData, fullLayout) {
     var glplot = this.glplot,
         pixelRatio = this.pixelRatio;
 
-    var i, j, trace;
+    var i;
 
     this.fullLayout = fullLayout;
     this.updateAxes(fullLayout);
+    this.updateTraces(fullData, calcData);
 
     var width = fullLayout.width,
         height = fullLayout.height,
@@ -351,34 +351,6 @@ proto.plot = function(fullData, calcData, fullLayout) {
     if(canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
         canvas.width = pixelWidth;
         canvas.height = pixelHeight;
-    }
-
-    // update traces
-    for(i = 0; i < fullData.length; ++i) {
-        var fullTrace = fullData[i],
-            calcTrace = calcData[i];
-        trace = this.traces[fullTrace.uid];
-
-        if(trace) trace.update(fullTrace, calcTrace);
-        else {
-            trace = fullTrace._module.plot(this, fullTrace, calcTrace);
-        }
-
-        this.traces[fullTrace.uid] = trace;
-    }
-
-    // remove empty traces
-    var traceIds = Object.keys(this.traces);
-
-    trace_id_loop:
-    for(i = 0; i < traceIds.length; ++i) {
-        for(j = 0; j < calcData.length; ++j) {
-            if(calcData[j][0].trace.uid === traceIds[i]) continue trace_id_loop;
-        }
-
-        trace = this.traces[traceIds[i]];
-        trace.dispose();
-        delete this.traces[traceIds[i]];
     }
 
     var options = this.glplotOptions;
@@ -406,12 +378,13 @@ proto.plot = function(fullData, calcData, fullLayout) {
     bounds[0] = bounds[1] = Infinity;
     bounds[2] = bounds[3] = -Infinity;
 
-    traceIds = Object.keys(this.traces);
+    var traceIds = Object.keys(this.traces);
     for(i = 0; i < traceIds.length; ++i) {
-        trace = this.traces[traceIds[i]];
+        var traceObj = this.traces[traceIds[i]];
+
         for(var k = 0; k < 2; ++k) {
-            bounds[k] = Math.min(bounds[k], trace.bounds[k]);
-            bounds[k + 2] = Math.max(bounds[k + 2], trace.bounds[k + 2]);
+            bounds[k] = Math.min(bounds[k], traceObj.bounds[k]);
+            bounds[k + 2] = Math.max(bounds[k + 2], traceObj.bounds[k + 2]);
         }
     }
 
@@ -439,6 +412,43 @@ proto.plot = function(fullData, calcData, fullLayout) {
 
     // force redraw so that promise is returned when rendering is completed
     this.glplot.draw();
+};
+
+proto.updateTraces = function(fullData, calcData) {
+    var traceIds = Object.keys(this.traces);
+    var i, j, fullTrace;
+
+    // remove empty traces
+    trace_id_loop:
+    for(i = 0; i < traceIds.length; i++) {
+        var oldUid = traceIds[i],
+            oldTrace = this.traces[oldUid];
+
+        for(j = 0; j < fullData.length; j++) {
+            fullTrace = fullData[j];
+
+            if(fullTrace.uid === oldUid && fullTrace.type === oldTrace.type) {
+                continue trace_id_loop;
+            }
+        }
+
+        oldTrace.dispose();
+        delete this.traces[oldUid];
+    }
+
+    // update / create trace objects
+    for(i = 0; i < fullData.length; i++) {
+        fullTrace = fullData[i];
+
+        var calcTrace = calcData[i],
+            traceObj = this.traces[fullTrace.uid];
+
+        if(traceObj) traceObj.update(fullTrace, calcTrace);
+        else {
+            traceObj = fullTrace._module.plot(this, fullTrace, calcTrace);
+            this.traces[fullTrace.uid] = traceObj;
+        }
+    }
 };
 
 proto.draw = function() {

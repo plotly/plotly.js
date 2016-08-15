@@ -20,6 +20,7 @@ var str2RGBArray = require('../../lib/str2rgbarray');
 function Contour(scene, uid) {
     this.scene = scene;
     this.uid = uid;
+    this.type = 'contourgl';
 
     this.name = '';
     this.hoverinfo = 'all';
