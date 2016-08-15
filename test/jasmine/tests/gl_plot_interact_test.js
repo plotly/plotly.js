@@ -248,6 +248,8 @@ describe('Test gl plot interactions', function() {
             var newX = [-0.23224043715846995, 4.811895754518705];
             var newY = [-1.2962655110623016, 4.768255474123081];
 
+            expect(gd.layout.xaxis.autorange).toBe(true);
+            expect(gd.layout.yaxis.autorange).toBe(true);
             expect(gd.layout.xaxis.range).toBeCloseToArray(originalX, precision);
             expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
 
@@ -269,6 +271,9 @@ describe('Test gl plot interactions', function() {
                 // Drag scene along the X axis
 
                 mouseEvent('mousemove', 220, 200, {buttons: 1});
+
+                expect(gd.layout.xaxis.autorange).toBe(false);
+                expect(gd.layout.yaxis.autorange).toBe(false);
 
                 expect(gd.layout.xaxis.range).toBeCloseToArray(newX, precision);
                 expect(gd.layout.yaxis.range).toBeCloseToArray(originalY, precision);
