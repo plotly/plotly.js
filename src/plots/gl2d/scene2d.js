@@ -275,7 +275,9 @@ var relayoutCallback = function(scene) {
         yrange = scene.yaxis.range;
 
     // Update the layout on the DIV
+    scene.graphDiv.layout.xaxis.autorange = scene.xaxis.autorange;
     scene.graphDiv.layout.xaxis.range = xrange.slice(0);
+    scene.graphDiv.layout.yaxis.autorange = scene.yaxis.autorange;
     scene.graphDiv.layout.yaxis.range = yrange.slice(0);
 
     // Make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
