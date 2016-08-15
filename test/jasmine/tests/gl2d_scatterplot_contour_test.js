@@ -4,8 +4,9 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var d3 = require('d3');
 
-// contourgl is not part of the dist plotly.js bundle initially
+// heatmapgl & contourgl is not part of the dist plotly.js bundle initially
 Plotly.register(
+    require('@lib/heatmapgl'),
     require('@lib/contourgl')
 );
 
@@ -207,5 +208,46 @@ describe('contourgl plots', function() {
         mock.data[0].contours.coloring = 'fill'; // 'fill' is the default
         mock.data[0].line = {smoothing: 0};
         makePlot(gd, mock, done);
+    });
+
+    it('should update properly', function(done) {
+        var mock = plotDataElliptical(0);
+        var scene2d;
+
+        Plotly.plot(gd, mock.data, mock.layout).then(function() {
+            scene2d = gd._fullLayout._plots.xy._scene2d;
+
+            expect(scene2d.traces[mock.data[0].uid].type).toEqual('contourgl');
+            expect(scene2d.xaxis._min).toEqual([{ val: -1, pad: 0}]);
+            expect(scene2d.xaxis._max).toEqual([{ val: 1, pad: 0}]);
+
+            return Plotly.relayout(gd, 'xaxis.range', [0, -10]);
+        }).then(function() {
+            expect(scene2d.xaxis._min).toEqual([]);
+            expect(scene2d.xaxis._max).toEqual([]);
+
+            return Plotly.relayout(gd, 'xaxis.autorange', true);
+        }).then(function() {
+            expect(scene2d.xaxis._min).toEqual([{ val: -1, pad: 0}]);
+            expect(scene2d.xaxis._max).toEqual([{ val: 1, pad: 0}]);
+
+            return Plotly.restyle(gd, 'type', 'heatmapgl');
+        }).then(function() {
+            expect(scene2d.traces[mock.data[0].uid].type).toEqual('heatmapgl');
+            expect(scene2d.xaxis._min).toEqual([{ val: -1, pad: 0}]);
+            expect(scene2d.xaxis._max).toEqual([{ val: 1, pad: 0}]);
+
+            return Plotly.relayout(gd, 'xaxis.range', [0, -10]);
+        }).then(function() {
+            expect(scene2d.xaxis._min).toEqual([]);
+            expect(scene2d.xaxis._max).toEqual([]);
+
+            return Plotly.relayout(gd, 'xaxis.autorange', true);
+        }).then(function() {
+            expect(scene2d.xaxis._min).toEqual([{ val: -1, pad: 0}]);
+            expect(scene2d.xaxis._max).toEqual([{ val: 1, pad: 0}]);
+
+            done();
+        });
     });
 });
