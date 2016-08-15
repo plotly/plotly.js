@@ -29,6 +29,7 @@ module.exports = function calc(gd, trace) {
         ya = Axes.getFromId(gd, trace.yaxis || 'y'),
         isContour = Plots.traceIs(trace, 'contour'),
         isHist = Plots.traceIs(trace, 'histogram'),
+        isGL2D = Plots.traceIs(trace, 'gl2d'),
         zsmooth = isContour ? 'best' : trace.zsmooth,
         x,
         x0,
@@ -112,8 +113,11 @@ module.exports = function calc(gd, trace) {
         yIn = trace.ytype === 'scaled' ? '' : trace.y,
         yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
 
-    Axes.expand(xa, xArray);
-    Axes.expand(ya, yArray);
+    // handler in gl2d convert step
+    if(!isGL2D) {
+        Axes.expand(xa, xArray);
+        Axes.expand(ya, yArray);
+    }
 
     var cd0 = {x: xArray, y: yArray, z: z};
 
