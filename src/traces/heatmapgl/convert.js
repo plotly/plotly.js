@@ -17,6 +17,7 @@ var str2RGBArray = require('../../lib/str2rgbarray');
 function Heatmap(scene, uid) {
     this.scene = scene;
     this.uid = uid;
+    this.type = 'heatmapgl';
 
     this.name = '';
     this.hoverinfo = 'all';

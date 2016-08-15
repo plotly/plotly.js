@@ -32,6 +32,7 @@ var AXES = ['xaxis', 'yaxis'];
 function LineWithMarkers(scene, uid) {
     this.scene = scene;
     this.uid = uid;
+    this.type = 'scattergl';
 
     this.pickXData = [];
     this.pickYData = [];
