@@ -35,6 +35,7 @@ module.exports = {
     ticksuffix: axesAttrs.ticksuffix,
     showexponent: axesAttrs.showexponent,
     exponentformat: axesAttrs.exponentformat,
+    separatethousands: axesAttrs.separatethousands,
     tickfont: axesAttrs.tickfont,
     tickangle: axesAttrs.tickangle,
     tickformat: axesAttrs.tickformat,

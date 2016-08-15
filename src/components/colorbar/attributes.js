@@ -167,6 +167,7 @@ module.exports = {
     showtickprefix: axesAttrs.showtickprefix,
     ticksuffix: axesAttrs.ticksuffix,
     showticksuffix: axesAttrs.showticksuffix,
+    separatethousands: axesAttrs.separatethousands,
     exponentformat: axesAttrs.exponentformat,
     showexponent: axesAttrs.showexponent,
     title: {
