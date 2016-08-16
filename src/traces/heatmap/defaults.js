@@ -29,6 +29,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
+    coerce('xgap');
+    coerce('ygap');
     coerce('zsmooth');
     coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
 

@@ -89,6 +89,28 @@ describe('heatmap supplyDefaults', function() {
         expect(traceOut.visible).toBe(false);
     });
 
+    it('should set paddings to 0 when not defined', function() {
+        traceIn = {
+            type: 'heatmap',
+            z: [[1, 2], [3, 4]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.xgap).toBe(0);
+        expect(traceOut.ygap).toBe(0);
+    });
+
+    it('should not step on defined paddings', function() {
+        traceIn = {
+            xgap: 10,
+            type: 'heatmap',
+            z: [[1, 2], [3, 4]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.xgap).toBe(10);
+        expect(traceOut.ygap).toBe(0);
+    });
 });
 
 describe('heatmap convertColumnXYZ', function() {
@@ -381,7 +403,43 @@ describe('heatmap plot', function() {
 
             done();
         });
+    });
 
+    it('draws canvas with correct margins', function(done) {
+        var mockWithPadding = require('@mocks/heatmap_brick_padding.json'),
+            mockWithoutPadding = Lib.extendDeep({}, mockWithPadding),
+            gd = createGraphDiv(),
+            getContextStub = {
+                fillRect: jasmine.createSpy()
+            },
+            originalCreateElement = document.createElement;
+
+        mockWithoutPadding.data[0].xgap = 0;
+        mockWithoutPadding.data[0].ygap = 0;
+
+        spyOn(document, 'createElement').and.callFake(function(elementType) {
+            var element = originalCreateElement.call(document, elementType);
+            if(elementType === 'canvas') {
+                spyOn(element, 'getContext').and.returnValue(getContextStub);
+            }
+            return element;
+        });
+
+        var argumentsWithoutPadding = [],
+            argumentsWithPadding = [];
+        Plotly.plot(gd, mockWithoutPadding.data, mockWithoutPadding.layout).then(function() {
+            argumentsWithoutPadding = getContextStub.fillRect.calls.allArgs().slice(0);
+            expect(argumentsWithoutPadding).toEqual([[0, 180, 177, 90], [177, 180, 177, 90], [354, 180, 177, 90],
+                                                     [0, 90, 177, 90], [177, 90, 177, 90], [354, 90, 177, 90],
+                                                     [0, 0, 177, 90], [177, 0, 177, 90], [354, 0, 177, 90]]);
+            return Plotly.plot(gd, mockWithPadding.data, mockWithPadding.layout);
+        }).then(function() {
+            argumentsWithPadding = getContextStub.fillRect.calls.allArgs().slice(getContextStub.fillRect.calls.allArgs().length - 9);
+            expect(argumentsWithPadding).toEqual([[0, 184, 171, 86], [180, 184, 171, 86], [360, 184, 171, 86],
+                                                  [0, 92, 171, 86], [180, 92, 171, 86], [360, 92, 171, 86],
+                                                  [0, 0, 171, 86], [180, 0, 171, 86], [360, 0, 171, 86]]);
+            done();
+        });
     });
 });
 
