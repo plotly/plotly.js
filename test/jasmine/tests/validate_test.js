@@ -1,12 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-Plotly.register([
-    // until they become official
-    require('../assets/transforms/filter')
-]);
-
-
 describe('Plotly.validate', function() {
 
     function assertErrorContent(obj, code, cont, trace, path, astr, msg) {
