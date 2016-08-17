@@ -35,15 +35,17 @@ describe('one-to-one transforms:', function() {
         }]
     }];
 
+    var traceIn, traceOut;
+
     afterEach(destroyGraphDiv);
 
     it('supplyTraceDefaults should supply the transform defaults', function() {
-        var traceIn = {
+        traceIn = {
             y: [2, 1, 2],
             transforms: [{ type: 'filter' }]
         };
 
-        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -54,18 +56,18 @@ describe('one-to-one transforms:', function() {
     });
 
     it('supplyTraceDefaults should not bail if transform module is not found', function() {
-        var traceIn = {
+        traceIn = {
             y: [2, 1, 2],
             transforms: [{ type: 'invalid' }]
         };
 
-        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
 
         expect(traceOut.y).toBe(traceIn.y);
     });
 
     it('supplyTraceDefaults should honored global transforms', function() {
-        var traceIn = {
+        traceIn = {
             y: [2, 1, 2],
             transforms: [{
                 type: 'filter',
@@ -81,7 +83,7 @@ describe('one-to-one transforms:', function() {
             }]
         };
 
-        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
 
         expect(traceOut.transforms[0]).toEqual({
             type: 'filter',
@@ -140,7 +142,7 @@ describe('one-to-one transforms:', function() {
     it('supplyDataDefaults should apply the transform while', function() {
         var dataIn = [{
             x: [-2, -2, 1, 2, 3],
-            y: [1, 2, 2, 3, 1],
+            y: [1, 2, 2, 3, 1]
         }, {
             x: [-2, -1, -2, 0, 1, 2, 3],
             y: [1, 2, 3, 1, 2, 3, 1],
@@ -332,12 +334,12 @@ describe('one-to-one transforms:', function() {
 
 
     it('supplyTraceDefaults should supply the transform defaults', function() {
-        var traceIn = {
+        traceIn = {
             y: [2, 1, 2],
             transforms: [{ type: 'filter' }]
         };
 
-        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -348,7 +350,7 @@ describe('one-to-one transforms:', function() {
     });
 
     it('supplyTraceDefaults should accept numeric as character', function() {
-        var traceIn = {
+        traceIn = {
             x: '1',
             transforms: [{
                 type: 'filter',
@@ -356,7 +358,7 @@ describe('one-to-one transforms:', function() {
             }]
         };
 
-        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -366,7 +368,7 @@ describe('one-to-one transforms:', function() {
         }]);
 
         // should also convert if array
-        var traceIn = {
+        traceIn = {
             x: '1',
             transforms: [{
                 type: 'filter',
@@ -374,7 +376,7 @@ describe('one-to-one transforms:', function() {
             }]
         };
 
-        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -385,7 +387,7 @@ describe('one-to-one transforms:', function() {
     });
 
     it('supplyTraceDefaults should accept numeric as character', function() {
-        var traceIn = {
+        traceIn = {
             x: '1',
             transforms: [{
                 type: 'filter',
@@ -393,7 +395,7 @@ describe('one-to-one transforms:', function() {
             }]
         };
 
-        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -403,7 +405,7 @@ describe('one-to-one transforms:', function() {
         }]);
 
         // should also convert if array
-        var traceIn = {
+        traceIn = {
             x: '1',
             transforms: [{
                 type: 'filter',
@@ -411,7 +413,7 @@ describe('one-to-one transforms:', function() {
             }]
         };
 
-        var traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
@@ -479,23 +481,23 @@ describe('one-to-one transforms:', function() {
         expect(dataOut[0].index).toEqual(0);
     });
 
-    it('filters should chain as AND', function(){
+    it('filters should chain as AND', function() {
         var dataIn = [{
             x: [-2, -1, -2, 0, 1, 2, 3],
             y: [1, 2, 3, 1, 2, 3, 1],
             transforms: [
-              {
-                type: 'filter',
-                operation: '>',
-                value: 0,
-                filtersrc: 'x'
-              },
-              {
-                type: 'filter',
-                operation: '<',
-                value: 3,
-                filtersrc: 'x'
-              }
+                {
+                    type: 'filter',
+                    operation: '>',
+                    value: 0,
+                    filtersrc: 'x'
+                },
+                {
+                    type: 'filter',
+                    operation: '<',
+                    value: 3,
+                    filtersrc: 'x'
+                }
             ]
         }];
 

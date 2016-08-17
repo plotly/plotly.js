@@ -1,3 +1,12 @@
+/**
+ * Copyright 2012-2016, Plotly, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
+
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
@@ -60,7 +69,7 @@ exports.supplyDefaults = function(transformIn, fullData, layout) {
         transformOut.value = transformOut.value.map(function(v) {
             if(isNumeric(v)) v = +v;
             return v;
-        })
+        });
     } else {
         if(isNumeric(transformOut.value)) transformOut.value = +transformOut.value;
     }
@@ -137,7 +146,7 @@ function getFilterFunc(opts) {
     //   filter function will work
     //   but perhaps should just error out
     var valueArr = [];
-    if (!Array.isArray(value)) {
+    if(!Array.isArray(value)) {
         valueArr = [value, value];
     } else {
         valueArr = value;
@@ -153,27 +162,27 @@ function getFilterFunc(opts) {
         case 'within':
             return function(v) {
                 // if character then ignore with no side effect
-                function notDateNumber(d){
+                function notDateNumber(d) {
                     return !(isNumeric(d) || Lib.isDateTime(d));
-                };
+                }
                 if(valueArr.some(notDateNumber)) {
                     return true;
                 }
 
                 // keep the = ?
-                return v >= Math.min.apply( null, valueArr ) &&
-                      v <= Math.max.apply( null, valueArr );
+                return v >= Math.min.apply(null, valueArr) &&
+                      v <= Math.max.apply(null, valueArr);
             };
         case 'notwithin':
             return function(v) {
                 // keep the = ?
-                return !(v >= Math.min.apply( null, valueArr ) &&
-                      v <= Math.max.apply( null, valueArr ));
+                return !(v >= Math.min.apply(null, valueArr) &&
+                      v <= Math.max.apply(null, valueArr));
             };
         case 'in':
-            return function(v) { return valueArr.indexOf(v) >= 0 };
+            return function(v) { return valueArr.indexOf(v) >= 0; };
         case 'notin':
-            return function(v) { return valueArr.indexOf(v) === -1 };
+            return function(v) { return valueArr.indexOf(v) === -1; };
     }
 }
 
