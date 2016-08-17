@@ -50,7 +50,7 @@ function render(scene) {
     var selection = scene.glplot.selection;
     for(var i = 0; i < keys.length; ++i) {
         trace = scene.traces[keys[i]];
-        if(trace.handlePick(selection)) {
+        if(trace.data.hoverinfo !== 'skip' && trace.handlePick(selection)) {
             lastPicked = trace;
         }
 

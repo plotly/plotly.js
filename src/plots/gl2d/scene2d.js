@@ -478,7 +478,7 @@ proto.draw = function() {
             (y / glplot.pixelRatio) - (size.t + (1 - domainY[1]) * size.h)
         );
 
-        if(result && fullLayout.hovermode) {
+        if(result && result.object._trace.hoverinfo !== 'skip' && fullLayout.hovermode) {
             var nextSelection = result.object._trace.handlePick(result);
 
             if(nextSelection && (
@@ -488,6 +488,7 @@ proto.draw = function() {
                 this.lastPickResult.dataCoord[1] !== nextSelection.dataCoord[1])
             ) {
                 var selection = nextSelection;
+
                 this.lastPickResult = {
                     traceUid: nextSelection.trace ? nextSelection.trace.uid : null,
                     dataCoord: nextSelection.dataCoord.slice()
