@@ -584,15 +584,21 @@ lib.objectFromPath = function(path, value) {
  * // returns '2016'
  *
  * @example
+ * lib.numSeparate(3000, '.,', true);
+ * // returns '3,000'
+ *
+ * @example
  * lib.numSeparate(1234.56, '|,')
  * // returns '1,234|56'
  *
  * @param   {string|number} value       the value to be converted
  * @param   {string}    separators  string of decimal, then thousands separators
+ * @param   {boolean}    separatethousands  boolean, 4-digit integers are separated if true
  *
  * @return  {string}    the value that has been separated
  */
-lib.numSeparate = function(value, separators) {
+lib.numSeparate = function(value, separators, separatethousands) {
+    if(!separatethousands) separatethousands = false;
 
     if(typeof separators !== 'string' || separators.length === 0) {
         throw new Error('Separator string required for formatting!');
@@ -611,7 +617,7 @@ lib.numSeparate = function(value, separators) {
         x2 = x.length > 1 ? decimalSep + x[1] : '';
 
     // Years are ignored for thousands separators
-    if(thouSep && (x.length > 1 || x1.length > 4)) {
+    if(thouSep && (x.length > 1 || x1.length > 4 || separatethousands)) {
         while(thousandsRe.test(x1)) {
             x1 = x1.replace(thousandsRe, '$1' + thouSep + '$2');
         }

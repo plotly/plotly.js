@@ -84,7 +84,7 @@ proto.makeFramework = function() {
 
             try {
                 STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
-                    preserveDrawingBuffer: true,
+                    preserveDrawingBuffer: false,
                     premultipliedAlpha: true,
                     antialias: true
                 });
@@ -275,7 +275,9 @@ var relayoutCallback = function(scene) {
         yrange = scene.yaxis.range;
 
     // Update the layout on the DIV
+    scene.graphDiv.layout.xaxis.autorange = scene.xaxis.autorange;
     scene.graphDiv.layout.xaxis.range = xrange.slice(0);
+    scene.graphDiv.layout.yaxis.autorange = scene.yaxis.autorange;
     scene.graphDiv.layout.yaxis.range = yrange.slice(0);
 
     // Make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
@@ -310,7 +312,6 @@ proto.cameraChanged = function() {
 };
 
 proto.destroy = function() {
-
     var traces = this.traces;
 
     if(traces) {
@@ -334,10 +335,9 @@ proto.plot = function(fullData, calcData, fullLayout) {
     var glplot = this.glplot,
         pixelRatio = this.pixelRatio;
 
-    var i, j, trace;
-
     this.fullLayout = fullLayout;
     this.updateAxes(fullLayout);
+    this.updateTraces(fullData, calcData);
 
     var width = fullLayout.width,
         height = fullLayout.height,
@@ -349,34 +349,6 @@ proto.plot = function(fullData, calcData, fullLayout) {
     if(canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
         canvas.width = pixelWidth;
         canvas.height = pixelHeight;
-    }
-
-    // update traces
-    for(i = 0; i < fullData.length; ++i) {
-        var fullTrace = fullData[i],
-            calcTrace = calcData[i];
-        trace = this.traces[fullTrace.uid];
-
-        if(trace) trace.update(fullTrace, calcTrace);
-        else {
-            trace = fullTrace._module.plot(this, fullTrace, calcTrace);
-        }
-
-        this.traces[fullTrace.uid] = trace;
-    }
-
-    // remove empty traces
-    var traceIds = Object.keys(this.traces);
-
-    trace_id_loop:
-    for(i = 0; i < traceIds.length; ++i) {
-        for(j = 0; j < calcData.length; ++j) {
-            if(calcData[j][0].trace.uid === traceIds[i]) continue trace_id_loop;
-        }
-
-        trace = this.traces[traceIds[i]];
-        trace.dispose();
-        delete this.traces[traceIds[i]];
     }
 
     var options = this.glplotOptions;
@@ -404,16 +376,18 @@ proto.plot = function(fullData, calcData, fullLayout) {
     bounds[0] = bounds[1] = Infinity;
     bounds[2] = bounds[3] = -Infinity;
 
-    traceIds = Object.keys(this.traces);
+    var traceIds = Object.keys(this.traces);
+    var ax, i;
+
     for(i = 0; i < traceIds.length; ++i) {
-        trace = this.traces[traceIds[i]];
+        var traceObj = this.traces[traceIds[i]];
+
         for(var k = 0; k < 2; ++k) {
-            bounds[k] = Math.min(bounds[k], trace.bounds[k]);
-            bounds[k + 2] = Math.max(bounds[k + 2], trace.bounds[k + 2]);
+            bounds[k] = Math.min(bounds[k], traceObj.bounds[k]);
+            bounds[k + 2] = Math.max(bounds[k + 2], traceObj.bounds[k + 2]);
         }
     }
 
-    var ax;
     for(i = 0; i < 2; ++i) {
         if(bounds[i] > bounds[i + 2]) {
             bounds[i] = -1;
@@ -437,6 +411,43 @@ proto.plot = function(fullData, calcData, fullLayout) {
 
     // force redraw so that promise is returned when rendering is completed
     this.glplot.draw();
+};
+
+proto.updateTraces = function(fullData, calcData) {
+    var traceIds = Object.keys(this.traces);
+    var i, j, fullTrace;
+
+    // remove empty traces
+    trace_id_loop:
+    for(i = 0; i < traceIds.length; i++) {
+        var oldUid = traceIds[i],
+            oldTrace = this.traces[oldUid];
+
+        for(j = 0; j < fullData.length; j++) {
+            fullTrace = fullData[j];
+
+            if(fullTrace.uid === oldUid && fullTrace.type === oldTrace.type) {
+                continue trace_id_loop;
+            }
+        }
+
+        oldTrace.dispose();
+        delete this.traces[oldUid];
+    }
+
+    // update / create trace objects
+    for(i = 0; i < fullData.length; i++) {
+        fullTrace = fullData[i];
+
+        var calcTrace = calcData[i],
+            traceObj = this.traces[fullTrace.uid];
+
+        if(traceObj) traceObj.update(fullTrace, calcTrace);
+        else {
+            traceObj = fullTrace._module.plot(this, fullTrace, calcTrace);
+            this.traces[fullTrace.uid] = traceObj;
+        }
+    }
 };
 
 proto.draw = function() {
@@ -478,7 +489,7 @@ proto.draw = function() {
             (y / glplot.pixelRatio) - (size.t + (1 - domainY[1]) * size.h)
         );
 
-        if(result && fullLayout.hovermode) {
+        if(result && result.object._trace.hoverinfo !== 'skip' && fullLayout.hovermode) {
             var nextSelection = result.object._trace.handlePick(result);
 
             if(nextSelection && (
@@ -488,6 +499,7 @@ proto.draw = function() {
                 this.lastPickResult.dataCoord[1] !== nextSelection.dataCoord[1])
             ) {
                 var selection = nextSelection;
+
                 this.lastPickResult = {
                     traceUid: nextSelection.trace ? nextSelection.trace.uid : null,
                     dataCoord: nextSelection.dataCoord.slice()

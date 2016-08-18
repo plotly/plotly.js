@@ -12,6 +12,7 @@
 var createContour2D = require('gl-contour2d');
 var createHeatmap2D = require('gl-heatmap2d');
 
+var Axes = require('../../plots/cartesian/axes');
 var makeColorMap = require('../contour/make_color_map');
 var str2RGBArray = require('../../lib/str2rgbarray');
 
@@ -19,6 +20,7 @@ var str2RGBArray = require('../../lib/str2rgbarray');
 function Contour(scene, uid) {
     this.scene = scene;
     this.uid = uid;
+    this.type = 'contourgl';
 
     this.name = '';
     this.hoverinfo = 'all';
@@ -96,7 +98,6 @@ proto.update = function(fullTrace, calcTrace) {
     this.contourOptions.x = this.heatmapOptions.x = calcPt.x;
     this.contourOptions.y = this.heatmapOptions.y = calcPt.y;
 
-
     // pass on fill information
     if(fullTrace.contours.coloring === 'fill') {
         colorOptions = convertColorScale(fullTrace, {fill: true});
@@ -118,6 +119,10 @@ proto.update = function(fullTrace, calcTrace) {
 
     this.contour.update(this.contourOptions);
     this.heatmap.update(this.heatmapOptions);
+
+    // expand axes
+    Axes.expand(this.scene.xaxis, calcPt.x);
+    Axes.expand(this.scene.yaxis, calcPt.y);
 };
 
 proto.dispose = function() {

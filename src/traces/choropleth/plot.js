@@ -165,7 +165,7 @@ plotChoropleth.style = function(geo) {
 function makeCleanHoverLabelsFunc(geo, trace) {
     var hoverinfo = trace.hoverinfo;
 
-    if(hoverinfo === 'none') {
+    if(hoverinfo === 'none' || hoverinfo === 'skip') {
         return function cleanHoverLabelsFunc(pt) {
             delete pt.nameLabel;
             delete pt.textLabel;

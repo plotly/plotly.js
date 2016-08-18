@@ -96,7 +96,7 @@ module.exports = function plot(gd, cdpie) {
                     // in case we dragged over the pie from another subplot,
                     // or if hover is turned off
                     if(gd._dragging || fullLayout2.hovermode === false ||
-                            hoverinfo === 'none' || !hoverinfo) {
+                            hoverinfo === 'none' || hoverinfo === 'skip' || !hoverinfo) {
                         return;
                     }
 

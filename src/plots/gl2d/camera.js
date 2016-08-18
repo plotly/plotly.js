@@ -32,6 +32,11 @@ function createCamera(scene) {
         plot = scene.glplot,
         result = new Camera2D(element, plot);
 
+    function unSetAutoRange() {
+        scene.xaxis.autorange = false;
+        scene.yaxis.autorange = false;
+    }
+
     result.mouseListener = mouseChange(element, function(buttons, x, y) {
         var xrange = scene.xaxis.range,
             yrange = scene.yaxis.range,
@@ -84,7 +89,7 @@ function createCamera(scene) {
                 else if(result.boxEnabled) {
                     updateRange(xrange, result.boxStart[0], result.boxEnd[0]);
                     updateRange(yrange, result.boxStart[1], result.boxEnd[1]);
-
+                    unSetAutoRange();
                     result.boxEnabled = false;
                 }
                 break;
@@ -104,7 +109,7 @@ function createCamera(scene) {
                     yrange[1] += dy;
 
                     result.lastInputTime = Date.now();
-
+                    unSetAutoRange();
                     scene.cameraChanged();
                 }
                 break;
@@ -142,6 +147,7 @@ function createCamera(scene) {
                 yrange[1] = (yrange[1] - cy) * scale + cy;
 
                 result.lastInputTime = Date.now();
+                unSetAutoRange();
                 scene.cameraChanged();
                 break;
         }

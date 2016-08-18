@@ -1747,6 +1747,8 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             oldVal = param.get();
             newVal = Array.isArray(vi) ? vi[i % vi.length] : vi;
 
+            if(newVal === undefined) continue;
+
             // setting bin or z settings should turn off auto
             // and setting auto should save bin or z settings
             if(zscl.indexOf(ai) !== -1) {
@@ -2039,7 +2041,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
 
     return plotDone.then(function() {
-        gd.emit('plotly_restyle', Lib.extendDeep([], [redoit, traces]));
+        gd.emit('plotly_restyle', Lib.extendDeepNoArrays([], [redoit, traces]));
         return gd;
     });
 };
@@ -2181,6 +2183,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
             parentIn = Lib.nestedProperty(gd.layout, ptrunk).get(),
             parentFull = Lib.nestedProperty(fullLayout, ptrunk).get(),
             diff;
+
+        if(vi === undefined) continue;
 
         redoit[ai] = vi;
 

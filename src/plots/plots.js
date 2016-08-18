@@ -370,6 +370,7 @@ plots.supplyDefaults = function(gd) {
     newFullLayout._dataLength = newData.length;
 
     // then do the data
+    newFullLayout._globalTransforms = (gd._context || {}).globalTransforms;
     plots.supplyDataDefaults(newData, newFullData, newFullLayout);
 
     // attach helper method to check whether a plot type is present on graph
@@ -548,6 +549,10 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
         var trace = dataIn[i],
             fullTrace = plots.supplyTraceDefaults(trace, cnt, layout);
 
+        fullTrace.index = i;
+        fullTrace._input = trace;
+        fullTrace._expandedIndex = cnt;
+
         if(fullTrace.transforms && fullTrace.transforms.length) {
             var expandedTraces = applyTransforms(fullTrace, dataOut, layout);
 
@@ -572,10 +577,6 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
             }
         }
         else {
-            fullTrace.index = i;
-            fullTrace._input = trace;
-            fullTrace._expandedIndex = cnt;
-
             pushModule(fullTrace);
         }
     }
@@ -648,13 +649,16 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
 };
 
 function supplyTransformDefaults(traceIn, traceOut, layout) {
-    if(!Array.isArray(traceIn.transforms)) return;
+    var globalTransforms = layout._globalTransforms || [];
 
-    var containerIn = traceIn.transforms,
+    if(!Array.isArray(traceIn.transforms) && globalTransforms.length === 0) return;
+
+    var containerIn = traceIn.transforms || [],
+        transformList = globalTransforms.concat(containerIn),
         containerOut = traceOut.transforms = [];
 
-    for(var i = 0; i < containerIn.length; i++) {
-        var transformIn = containerIn[i],
+    for(var i = 0; i < transformList.length; i++) {
+        var transformIn = transformList[i],
             type = transformIn.type,
             _module = transformsRegistry[type],
             transformOut;

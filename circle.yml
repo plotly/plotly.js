@@ -13,8 +13,10 @@ dependencies:
   pre:
     - docker pull plotly/testbed:latest
   post:
+    - eval $(node tasks/run_docker.js)
     - npm run cibuild
     - npm run pretest
+    - eval $(node tasks/setup_docker.js)
 
 test:
   override:
