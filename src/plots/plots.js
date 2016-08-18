@@ -19,14 +19,8 @@ var Color = require('../components/color');
 
 var plots = module.exports = {};
 
-// Expose registry methods that used to be on Plots for backward-compatibility
-plots.modules = Registry.modules;
-plots.allTypes = Registry.allTypes;
-plots.allCategories = Registry.allCategories;
-plots.subplotsRegistry = Registry.subplotsRegistry;
-plots.transformsRegistry = Registry.transformsRegistry;
-plots.traceIs = Registry.traceIs;
-plots.getModule = Registry.getModule;
+// Expose registry methods on Plots for backward-compatibility
+Lib.extendFlat(plots, Registry);
 
 plots.attributes = require('./attributes');
 plots.attributes.type.values = plots.allTypes;
