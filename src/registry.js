@@ -117,7 +117,8 @@ exports.getModule = function(trace) {
 exports.traceIs = function(traceType, category) {
     traceType = getTraceType(traceType);
 
-    if(traceType === 'various') return false;  // FIXME
+    // old plot.ly workspace hack, nothing to see here
+    if(traceType === 'various') return false;
 
     var _module = exports.modules[traceType];
 
