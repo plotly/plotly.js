@@ -10,13 +10,14 @@
 'use strict';
 
 var createHeatmap2D = require('gl-heatmap2d');
-
+var Axes = require('../../plots/cartesian/axes');
 var str2RGBArray = require('../../lib/str2rgbarray');
 
 
 function Heatmap(scene, uid) {
     this.scene = scene;
     this.uid = uid;
+    this.type = 'heatmapgl';
 
     this.name = '';
     this.hoverinfo = 'all';
@@ -87,6 +88,9 @@ proto.update = function(fullTrace, calcTrace) {
     this.textLabels = [].concat.apply([], fullTrace.text);
 
     this.heatmap.update(this.options);
+
+    Axes.expand(this.scene.xaxis, calcPt.x);
+    Axes.expand(this.scene.yaxis, calcPt.y);
 };
 
 proto.dispose = function() {
