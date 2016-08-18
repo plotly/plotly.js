@@ -335,8 +335,6 @@ proto.plot = function(fullData, calcData, fullLayout) {
     var glplot = this.glplot,
         pixelRatio = this.pixelRatio;
 
-    var i;
-
     this.fullLayout = fullLayout;
     this.updateAxes(fullLayout);
     this.updateTraces(fullData, calcData);
@@ -379,6 +377,8 @@ proto.plot = function(fullData, calcData, fullLayout) {
     bounds[2] = bounds[3] = -Infinity;
 
     var traceIds = Object.keys(this.traces);
+    var ax, i;
+
     for(i = 0; i < traceIds.length; ++i) {
         var traceObj = this.traces[traceIds[i]];
 
@@ -388,7 +388,6 @@ proto.plot = function(fullData, calcData, fullLayout) {
         }
     }
 
-    var ax;
     for(i = 0; i < 2; ++i) {
         if(bounds[i] > bounds[i + 2]) {
             bounds[i] = -1;

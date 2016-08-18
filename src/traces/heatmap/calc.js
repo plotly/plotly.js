@@ -113,7 +113,7 @@ module.exports = function calc(gd, trace) {
         yIn = trace.ytype === 'scaled' ? '' : trace.y,
         yArray = makeBoundArray(trace, yIn, y0, dy, z.length, ya);
 
-    // handler in gl2d convert step
+    // handled in gl2d convert step
     if(!isGL2D) {
         Axes.expand(xa, xArray);
         Axes.expand(ya, yArray);
