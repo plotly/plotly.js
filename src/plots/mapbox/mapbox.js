@@ -358,16 +358,24 @@ proto.toImage = function() {
 
 // convenience wrapper to create blank GeoJSON sources
 // and avoid 'invalid GeoJSON' errors
-proto.createGeoJSONSource = function() {
+proto.initSource = function(idSource) {
     var blank = {
-        type: 'Feature',
-        geometry: {
-            type: 'Point',
-            coordinates: []
+        type: 'geojson',
+        data: {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: []
+            }
         }
     };
 
-    return new mapboxgl.GeoJSONSource({data: blank});
+    return this.map.addSource(idSource, blank);
+};
+
+// convenience wrapper to set data of GeoJSON sources
+proto.setSourceData = function(idSource, data) {
+    this.map.getSource(idSource).setData(data);
 };
 
 // convenience wrapper to create set multiple layer
