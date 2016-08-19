@@ -45,16 +45,16 @@ module.exports = function nestedProperty(container, propStr) {
         if(indexed) {
             if(indexed[1]) propParts[j] = indexed[1];
             // allow propStr to start with bracketed array indices
-            else if(j === 0) propParts.splice(0,1);
+            else if(j === 0) propParts.splice(0, 1);
             else throw 'bad property string';
 
             indices = indexed[2]
-                .substr(1,indexed[2].length-2)
+                .substr(1, indexed[2].length - 2)
                 .split('][');
 
-            for(i=0; i<indices.length; i++) {
+            for(i = 0; i < indices.length; i++) {
                 j++;
-                propParts.splice(j,0,Number(indices[i]));
+                propParts.splice(j, 0, Number(indices[i]));
             }
         }
         j++;
@@ -84,12 +84,12 @@ function npGet(cont, parts) {
 
         for(i = 0; i < parts.length - 1; i++) {
             curPart = parts[i];
-            if(curPart===-1) {
+            if(curPart === -1) {
                 allSame = true;
                 out = [];
                 for(j = 0; j < curCont.length; j++) {
                     out[j] = npGet(curCont[j], parts.slice(i + 1))();
-                    if(out[j]!==out[0]) allSame = false;
+                    if(out[j] !== out[0]) allSame = false;
                 }
                 return allSame ? out[0] : out;
             }
@@ -129,7 +129,7 @@ function npSet(cont, parts) {
     return function(val) {
         var curCont = cont,
             containerLevels = [cont],
-            toDelete = emptyObj(val) && !isDataArray(val, parts[parts.length-1]),
+            toDelete = emptyObj(val) && !isDataArray(val, parts[parts.length - 1]),
             curPart,
             i;
 
@@ -141,7 +141,7 @@ function npSet(cont, parts) {
             }
 
             // handle special -1 array index
-            if(curPart===-1) {
+            if(curPart === -1) {
                 toDelete = !setArrayAll(curCont, parts.slice(i + 1), val);
                 if(toDelete) break;
                 else return;
@@ -237,7 +237,7 @@ function pruneContainers(containerLevels) {
 }
 
 function emptyObj(obj) {
-    if(obj===undefined || obj===null) return true;
+    if(obj === undefined || obj === null) return true;
     if(typeof obj !== 'object') return false; // any plain value
     if(Array.isArray(obj)) return !obj.length; // []
     return !Object.keys(obj).length; // {}

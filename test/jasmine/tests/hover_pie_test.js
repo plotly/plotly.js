@@ -54,8 +54,8 @@ describe('pie hovering', function() {
                 unhoverData = data;
             });
 
-            mouseEvent('mouseover', width / 2, height / 2);
-            mouseEvent('mouseout', width / 2, height / 2);
+            mouseEvent('mouseover', width / 2 - 7, height / 2 - 7);
+            mouseEvent('mouseout', width / 2 - 7, height / 2 - 7);
 
             expect(hoverData.points.length).toEqual(1);
             expect(unhoverData.points.length).toEqual(1);
@@ -82,9 +82,9 @@ describe('pie hovering', function() {
                 hoverData.push(data);
             });
 
-            mouseEvent('mouseover', 180, 140);
+            mouseEvent('mouseover', 173, 133);
             setTimeout(function() {
-                mouseEvent('mouseover', 240, 200);
+                mouseEvent('mouseover', 233, 193);
                 expect(count).toEqual(2);
                 expect(hoverData[0]).not.toEqual(hoverData[1]);
                 done();
@@ -100,15 +100,68 @@ describe('pie hovering', function() {
                 unhoverData.push(data);
             });
 
-            mouseEvent('mouseover', 180, 140);
-            mouseEvent('mouseout', 180, 140);
+            mouseEvent('mouseover', 173, 133);
+            mouseEvent('mouseout', 173, 133);
             setTimeout(function() {
-                mouseEvent('mouseover', 240, 200);
-                mouseEvent('mouseout', 240, 200);
+                mouseEvent('mouseover', 233, 193);
+                mouseEvent('mouseout', 233, 193);
                 expect(count).toEqual(2);
                 expect(unhoverData[0]).not.toEqual(unhoverData[1]);
                 done();
             }, 100);
+        });
+    });
+
+    describe('labels', function() {
+
+        var gd,
+            mockCopy;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+            mockCopy = Lib.extendDeep({}, mock);
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should show the default selected values', function(done) {
+
+            var expected = ['4', '5', '33.3%'];
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+                mouseEvent('mouseover', 223, 143);
+
+                var labels = Plotly.d3.selectAll('.hovertext .nums .line');
+
+                expect(labels[0].length).toBe(3);
+
+                labels.each(function(_, i) {
+                    expect(Plotly.d3.select(this).text()).toBe(expected[i]);
+                });
+            }).then(done);
+        });
+
+        it('should show the correct separators for values', function(done) {
+
+            var expected = ['0', '12|345|678@91', '99@9%'];
+
+            mockCopy.layout.separators = '@|';
+            mockCopy.data[0].values[0] = 12345678.912;
+            mockCopy.data[0].values[1] = 10000;
+
+            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+
+                mouseEvent('mouseover', 223, 143);
+
+                var labels = Plotly.d3.selectAll('.hovertext .nums .line');
+
+                expect(labels[0].length).toBe(3);
+
+                labels.each(function(_, i) {
+                    expect(Plotly.d3.select(this).text()).toBe(expected[i]);
+                });
+            }).then(done);
         });
     });
 });

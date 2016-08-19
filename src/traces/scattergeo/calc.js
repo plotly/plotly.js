@@ -9,13 +9,13 @@
 
 'use strict';
 
-var calcMarkerColorscale = require('../scatter/marker_colorscale_calc');
+var calcColorscale = require('../scatter/colorscale_calc');
 
 
 module.exports = function calc(gd, trace) {
     var cd = [{x: false, y: false, trace: trace, t: {}}];
 
-    calcMarkerColorscale(trace);
+    calcColorscale(trace);
 
     return cd;
 };

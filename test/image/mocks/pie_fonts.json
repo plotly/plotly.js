@@ -2,8 +2,8 @@
   "data": [
     {
       "values": [
-        1,
-        9
+        1.151,
+        8.134
       ],
       "text": [
         "inherit from<br><b>global...</b>",
@@ -17,8 +17,8 @@
     },
     {
       "values": [
-        1,
-        9
+        1.151,
+        8.134
       ],
       "text": [
         "a font of...",
@@ -37,8 +37,8 @@
     },
     {
       "values": [
-        1,
-        9
+        1.151,
+        8.134
       ],
       "text": [
         "outside and textfont<br>both modify...",
@@ -58,8 +58,8 @@
     },
     {
       "values": [
-        1,
-        9
+        1.151,
+        8.134
       ],
       "text": [
         "independent fonts<br>outside and...",
@@ -89,6 +89,7 @@
       "family": "Old Standard TT, serif",
       "size": 20
     },
-    "showlegend": true
+    "showlegend": true,
+    "separators": "∆|"
   }
 }

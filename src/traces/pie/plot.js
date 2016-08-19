@@ -66,8 +66,8 @@ module.exports = function plot(gd, cdpie) {
             slices.exit().remove();
 
             var quadrants = [
-                    [[],[]], // y<0: x<0, x>=0
-                    [[],[]] // y>=0: x<0, x>=0
+                    [[], []], // y<0: x<0, x>=0
+                    [[], []] // y>=0: x<0, x>=0
                 ],
                 hasOutsideText = false;
 
@@ -96,20 +96,22 @@ module.exports = function plot(gd, cdpie) {
                     // in case we dragged over the pie from another subplot,
                     // or if hover is turned off
                     if(gd._dragging || fullLayout2.hovermode === false ||
-                            hoverinfo === 'none' || !hoverinfo) {
+                            hoverinfo === 'none' || hoverinfo === 'skip' || !hoverinfo) {
                         return;
                     }
 
                     var rInscribed = getInscribedRadiusFraction(pt, cd0),
                         hoverCenterX = cx + pt.pxmid[0] * (1 - rInscribed),
                         hoverCenterY = cy + pt.pxmid[1] * (1 - rInscribed),
+                        separators = fullLayout.separators,
                         thisText = [];
+
                     if(hoverinfo.indexOf('label') !== -1) thisText.push(pt.label);
                     if(trace2.text && trace2.text[pt.i] && hoverinfo.indexOf('text') !== -1) {
                         thisText.push(trace2.text[pt.i]);
                     }
-                    if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v));
-                    if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal));
+                    if(hoverinfo.indexOf('value') !== -1) thisText.push(helpers.formatPieValue(pt.v, separators));
+                    if(hoverinfo.indexOf('percent') !== -1) thisText.push(helpers.formatPiePercent(pt.v / cd0.vTotal, separators));
 
                     Fx.loneHover({
                         x0: hoverCenterX - rInscribed * cd0.r,
@@ -578,8 +580,8 @@ function scalePies(cdpie, plotSize) {
                 pieBoxHeight / maxExtent(trace.tilt, Math.cos(tiltAxisRads), trace.depth)
             ) / (2 + 2 * maxPull);
 
-        cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0])/2;
-        cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0])/2;
+        cd0.cx = plotSize.l + plotSize.w * (trace.domain.x[1] + trace.domain.x[0]) / 2;
+        cd0.cy = plotSize.t + plotSize.h * (2 - trace.domain.y[1] - trace.domain.y[0]) / 2;
 
         if(trace.scalegroup && scaleGroups.indexOf(trace.scalegroup) === -1) {
             scaleGroups.push(trace.scalegroup);

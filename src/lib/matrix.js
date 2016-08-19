@@ -73,7 +73,7 @@ exports.translationMatrix = function(x, y) {
 
 // rotate by alpha around (0,0)
 exports.rotationMatrix = function(alpha) {
-    var a = alpha*Math.PI/180;
+    var a = alpha * Math.PI / 180;
     return [[Math.cos(a), -Math.sin(a), 0],
             [Math.sin(a), Math.cos(a), 0],
             [0, 0, 1]];

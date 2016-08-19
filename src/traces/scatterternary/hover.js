@@ -17,8 +17,29 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     var scatterPointData = scatterHover(pointData, xval, yval, hovermode);
     if(!scatterPointData || scatterPointData[0].index === false) return;
 
-    var newPointData = scatterPointData[0],
-        cdi = newPointData.cd[newPointData.index];
+    var newPointData = scatterPointData[0];
+
+    // if hovering on a fill, we don't show any point data so the label is
+    // unchanged from what scatter gives us - except that it needs to
+    // be constrained to the trianglular plot area, not just the rectangular
+    // area defined by the synthetic x and y axes
+    // TODO: in some cases the vertical middle of the shape is not within
+    // the triangular viewport at all, so the label can become disconnected
+    // from the shape entirely. But calculating what portion of the shape
+    // is actually visible, as constrained by the diagonal axis lines, is not
+    // so easy and anyway we lost the information we would have needed to do
+    // this inside scatterHover.
+    if(newPointData.index === undefined) {
+        var yFracUp = 1 - (newPointData.y0 / pointData.ya._length),
+            xLen = pointData.xa._length,
+            xMin = xLen * yFracUp / 2,
+            xMax = xLen - xMin;
+        newPointData.x0 = Math.max(Math.min(newPointData.x0, xMax), xMin);
+        newPointData.x1 = Math.max(Math.min(newPointData.x1, xMax), xMin);
+        return scatterPointData;
+    }
+
+    var cdi = newPointData.cd[newPointData.index];
 
     newPointData.a = cdi.a;
     newPointData.b = cdi.b;

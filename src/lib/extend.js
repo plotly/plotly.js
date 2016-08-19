@@ -12,16 +12,34 @@
 var isPlainObject = require('./is_plain_object.js');
 var isArray = Array.isArray;
 
+function primitivesLoopSplice(source, target) {
+    var i, value;
+    for(i = 0; i < source.length; i++) {
+        value = source[i];
+        if(value !== null && typeof(value) === 'object') {
+            return false;
+        }
+        if(value !== void(0)) {
+            target[i] = value;
+        }
+    }
+    return true;
+}
+
 exports.extendFlat = function() {
-    return _extend(arguments, false, false);
+    return _extend(arguments, false, false, false);
 };
 
 exports.extendDeep = function() {
-    return _extend(arguments, true, false);
+    return _extend(arguments, true, false, false);
 };
 
 exports.extendDeepAll = function() {
-    return _extend(arguments, true, true);
+    return _extend(arguments, true, true, false);
+};
+
+exports.extendDeepNoArrays = function() {
+    return _extend(arguments, true, false, true);
 };
 
 /*
@@ -41,11 +59,22 @@ exports.extendDeepAll = function() {
  *   Warning: this might result in infinite loops.
  *
  */
-function _extend(inputs, isDeep, keepAllKeys) {
+function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     var target = inputs[0],
         length = inputs.length;
 
-    var input, key, src, copy, copyIsArray, clone;
+    var input, key, src, copy, copyIsArray, clone, allPrimitives;
+
+    if(length === 2 && isArray(target) && isArray(inputs[1]) && target.length === 0) {
+
+        allPrimitives = primitivesLoopSplice(inputs[1], target);
+
+        if(allPrimitives) {
+            return target;
+        } else {
+            target.splice(0, target.length); // reset target and continue to next block
+        }
+    }
 
     for(var i = 1; i < length; i++) {
         input = inputs[i];
@@ -54,8 +83,13 @@ function _extend(inputs, isDeep, keepAllKeys) {
             src = target[key];
             copy = input[key];
 
+            // Stop early and just transfer the array if array copies are disallowed:
+            if(noArrayCopies && isArray(copy)) {
+                target[key] = copy;
+            }
+
             // recurse if we're merging plain objects or arrays
-            if(isDeep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
+            else if(isDeep && copy && (isPlainObject(copy) || (copyIsArray = isArray(copy)))) {
                 if(copyIsArray) {
                     copyIsArray = false;
                     clone = src && isArray(src) ? src : [];
@@ -64,7 +98,7 @@ function _extend(inputs, isDeep, keepAllKeys) {
                 }
 
                 // never move original objects, clone them
-                target[key] = _extend([clone, copy], isDeep, keepAllKeys);
+                target[key] = _extend([clone, copy], isDeep, keepAllKeys, noArrayCopies);
             }
 
             // don't bring in undefined values, except for extendDeepAll

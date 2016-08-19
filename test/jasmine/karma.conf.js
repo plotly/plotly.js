@@ -26,6 +26,9 @@ function func(config) {
 
     // level of logging
     // possible values: config.LOG_DISABLE || config.LOG_ERROR || config.LOG_WARN || config.LOG_INFO || config.LOG_DEBUG
+    //
+    // NB: if you try config.LOG_DEBUG, you may actually be looking for karma-verbose-reporter.
+    //     See CONTRIBUTING.md for additional notes on reporting.
     func.defaultConfig.logLevel = config.LOG_INFO;
 
     config.set(func.defaultConfig);
@@ -56,6 +59,10 @@ func.defaultConfig = {
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
+    //
+    // See note in CONTRIBUTING.md about more verbose reporting via karma-verbose-reporter:
+    // https://www.npmjs.com/package/karma-verbose-reporter ('verbose')
+    //
     reporters: ['progress'],
 
     // web server port
@@ -75,7 +82,8 @@ func.defaultConfig = {
     customLaunchers: {
         Chrome_WindowSized: {
             base: 'Chrome',
-            flags: ['--window-size=1035,617'] // values came from observing default size; all test cases pass with it
+            // window-size values came from observing default size
+            flags: ['--window-size=1035,617', '--ignore-gpu-blacklist']
         }
     },
 

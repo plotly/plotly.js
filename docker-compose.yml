@@ -18,4 +18,3 @@ dev:
     - .:/var/www/streambed/image_server/plotly.js
   ports:
     - "9010:9010"
-    - "2022:22"

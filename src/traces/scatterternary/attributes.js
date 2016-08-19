@@ -10,12 +10,13 @@
 
 var scatterAttrs = require('../scatter/attributes');
 var plotAttrs = require('../../plots/attributes');
+var colorAttributes = require('../../components/colorscale/color_attributes');
+
 var extendFlat = require('../../lib/extend').extendFlat;
 
 var scatterMarkerAttrs = scatterAttrs.marker,
     scatterLineAttrs = scatterAttrs.line,
     scatterMarkerLineAttrs = scatterMarkerAttrs.line;
-
 
 module.exports = {
     a: {
@@ -80,7 +81,22 @@ module.exports = {
         smoothing: scatterLineAttrs.smoothing
     },
     connectgaps: scatterAttrs.connectgaps,
-    marker: {
+    fill: extendFlat({}, scatterAttrs.fill, {
+        values: ['none', 'toself', 'tonext'],
+        description: [
+            'Sets the area to fill with a solid color.',
+            'Use with `fillcolor` if not *none*.',
+            'scatterternary has a subset of the options available to scatter.',
+            '*toself* connects the endpoints of the trace (or each segment',
+            'of the trace if it has gaps) into a closed shape.',
+            '*tonext* fills the space between two traces if one completely',
+            'encloses the other (eg consecutive contour lines), and behaves like',
+            '*toself* if there is no trace before it. *tonext* should not be',
+            'used if one trace does not enclose the other.'
+        ].join(' ')
+    }),
+    fillcolor: scatterAttrs.fillcolor,
+    marker: extendFlat({}, {
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
         maxdisplayed: scatterMarkerAttrs.maxdisplayed,
@@ -88,30 +104,20 @@ module.exports = {
         sizeref: scatterMarkerAttrs.sizeref,
         sizemin: scatterMarkerAttrs.sizemin,
         sizemode: scatterMarkerAttrs.sizemode,
-        color: scatterMarkerAttrs.color,
-        colorscale: scatterMarkerAttrs.colorscale,
-        cauto: scatterMarkerAttrs.cauto,
-        cmax: scatterMarkerAttrs.cmax,
-        cmin: scatterMarkerAttrs.cmin,
-        autocolorscale: scatterMarkerAttrs.autocolorscale,
-        reversescale: scatterMarkerAttrs.reversescale,
         showscale: scatterMarkerAttrs.showscale,
-        line: {
-            color: scatterMarkerLineAttrs.color,
-            width: scatterMarkerLineAttrs.width,
-            colorscale: scatterMarkerLineAttrs.colorscale,
-            cauto: scatterMarkerLineAttrs.cauto,
-            cmax: scatterMarkerLineAttrs.cmax,
-            cmin: scatterMarkerLineAttrs.cmin,
-            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
-            reversescale: scatterMarkerLineAttrs.reversescale
-        }
+        line: extendFlat({},
+            {width: scatterMarkerLineAttrs.width},
+            colorAttributes('marker'.line)
+        )
     },
+        colorAttributes('marker')
+    ),
     textfont: scatterAttrs.textfont,
     textposition: scatterAttrs.textposition,
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['a', 'b', 'c', 'text', 'name']
     }),
+    hoveron: scatterAttrs.hoveron,
     _nestedModules: {
         'marker.colorbar': 'Colorbar'
     }

@@ -22,13 +22,13 @@ module.exports = function style(gd) {
             var trace = d[0].trace,
                 lineWidth = trace.line.width;
             d3.select(this).selectAll('path.box')
-                .style('stroke-width', lineWidth+'px')
+                .style('stroke-width', lineWidth + 'px')
                 .call(Color.stroke, trace.line.color)
                 .call(Color.fill, trace.fillcolor);
             d3.select(this).selectAll('path.mean')
                 .style({
                     'stroke-width': lineWidth,
-                    'stroke-dasharray': (2*lineWidth)+'px,'+lineWidth+'px'
+                    'stroke-dasharray': (2 * lineWidth) + 'px,' + lineWidth + 'px'
                 })
                 .call(Color.stroke, trace.line.color);
             d3.select(this).selectAll('g.points path')

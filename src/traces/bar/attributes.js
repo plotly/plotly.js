@@ -8,9 +8,24 @@
 
 'use strict';
 
-var scatterAttrs = require('../scatter/attributes'),
-    scatterMarkerAttrs = scatterAttrs.marker,
-    scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+var scatterAttrs = require('../scatter/attributes');
+var colorAttributes = require('../../components/colorscale/color_attributes');
+var extendFlat = require('../../lib/extend').extendFlat;
+
+var scatterMarkerAttrs = scatterAttrs.marker;
+var scatterMarkerLineAttrs = scatterMarkerAttrs.line;
+
+var markerLineWidth = extendFlat({},
+    scatterMarkerLineAttrs.width, { dflt: 0 });
+
+var markerLine = extendFlat({}, {
+    width: markerLineWidth
+}, colorAttributes('marker.line'));
+
+var marker = extendFlat({}, {
+    showscale: scatterMarkerAttrs.showscale,
+    line: markerLine
+}, colorAttributes('marker'));
 
 
 module.exports = {
@@ -21,6 +36,7 @@ module.exports = {
     y0: scatterAttrs.y0,
     dy: scatterAttrs.dy,
     text: scatterAttrs.text,
+
     orientation: {
         valType: 'enumerated',
         role: 'info',
@@ -31,26 +47,8 @@ module.exports = {
             'along the vertical (horizontal).'
         ].join(' ')
     },
-    marker: {
-        color: scatterMarkerAttrs.color,
-        colorscale: scatterMarkerAttrs.colorscale,
-        cauto: scatterMarkerAttrs.cauto,
-        cmax: scatterMarkerAttrs.cmax,
-        cmin: scatterMarkerAttrs.cmin,
-        autocolorscale: scatterMarkerAttrs.autocolorscale,
-        reversescale: scatterMarkerAttrs.reversescale,
-        showscale: scatterMarkerAttrs.showscale,
-        line: {
-            color: scatterMarkerLineAttrs.color,
-            colorscale: scatterMarkerLineAttrs.colorscale,
-            cauto: scatterMarkerLineAttrs.cauto,
-            cmax: scatterMarkerLineAttrs.cmax,
-            cmin: scatterMarkerLineAttrs.cmin,
-            width: scatterMarkerLineAttrs.width,
-            autocolorscale: scatterMarkerLineAttrs.autocolorscale,
-            reversescale: scatterMarkerLineAttrs.reversescale
-        }
-    },
+
+    marker: marker,
 
     r: scatterAttrs.r,
     t: scatterAttrs.t,

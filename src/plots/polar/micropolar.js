@@ -6,15 +6,11 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-var Plotly = require('../../plotly');
 var d3 = require('d3');
+var Lib = require('../../lib');
+var extendDeepAll = Lib.extendDeepAll;
 
-var µ = module.exports = {
-    version: '0.2.2',
-    manager: require('./micropolar_manager')
-};
-
-var extendDeepAll = Plotly.Lib.extendDeepAll;
+var µ = module.exports = { version: '0.2.2' };
 
 µ.Axis = function module() {
     var config = {

@@ -21,7 +21,7 @@ if(typeof MathJax !== 'undefined') {
         skipStartupTypeset: true,
         displayAlign: 'left',
         tex2jax: {
-            inlineMath: [['$','$'],['\\(','\\)']]
+            inlineMath: [['$', '$'], ['\\(', '\\)']]
         }
     });
 

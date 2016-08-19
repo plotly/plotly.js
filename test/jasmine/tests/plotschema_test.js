@@ -1,6 +1,10 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
+Plotly.register([
+    // until they become official
+    require('../assets/transforms/filter')
+]);
 
 describe('plot schema', function() {
     'use strict';
@@ -48,7 +52,7 @@ describe('plot schema', function() {
     it('all nested objects should have the *object* `role`', function() {
         assertPlotSchema(
             function(attr, attrName) {
-                if(!isValObject(attr) && isPlainObject(attr) && attrName!=='items') {
+                if(!isValObject(attr) && isPlainObject(attr) && attrName !== 'items') {
                     expect(attr.role === 'object').toBe(true);
                 }
             }
@@ -79,10 +83,7 @@ describe('plot schema', function() {
                             .concat(['valType', 'description', 'role']);
 
                     Object.keys(attr).forEach(function(key) {
-                        // handle the histogram marker.color case
-                        if(opts.indexOf(key)===-1 && opts[key]===undefined) return;
-
-                        expect(opts.indexOf(key) !== -1).toBe(true);
+                        expect(opts.indexOf(key) !== -1).toBe(true, key, attr);
                     });
                 }
             }
@@ -91,7 +92,7 @@ describe('plot schema', function() {
 
     it('all subplot objects should contain _isSubplotObj', function() {
         var IS_SUBPLOT_OBJ = '_isSubplotObj',
-            astrs = ['xaxis', 'yaxis', 'scene', 'geo', 'ternary'],
+            astrs = ['xaxis', 'yaxis', 'scene', 'geo', 'ternary', 'mapbox'],
             list = [];
 
         // check if the subplot objects have '_isSubplotObj'
@@ -115,8 +116,9 @@ describe('plot schema', function() {
 
     it('should convert _isLinkedToArray attributes to items object', function() {
         var astrs = [
-            'annotations', 'shapes',
-            'xaxis.rangeselector.buttons', 'yaxis.rangeselector.buttons'
+            'annotations', 'shapes', 'images',
+            'xaxis.rangeselector.buttons', 'yaxis.rangeselector.buttons',
+            'mapbox.layers'
         ];
 
         astrs.forEach(function(astr) {
@@ -175,4 +177,10 @@ describe('plot schema', function() {
         );
     });
 
+    it('should work with registered transforms', function() {
+        var valObjects = plotSchema.transforms.filter.attributes,
+            attrNames = Object.keys(valObjects);
+
+        expect(attrNames).toEqual(['operation', 'value', 'filtersrc']);
+    });
 });

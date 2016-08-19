@@ -20,6 +20,13 @@ describe('Test colorscale:', function() {
 
         it('should accept only array of 2-item arrays', function() {
             expect(isValidScale('a')).toBe(false);
+            expect(isValidScale([])).toBe(false);
+            expect(isValidScale([null, undefined])).toBe(false);
+            expect(isValidScale([{}, [1, 'rgb(0, 0, 200']])).toBe(false);
+            expect(isValidScale([[0, 'rgb(200, 0, 0)'], {}])).toBe(false);
+            expect(isValidScale([[0, 'rgb(0, 0, 200)'], undefined])).toBe(false);
+            expect(isValidScale([null, [1, 'rgb(0, 0, 200)']])).toBe(false);
+            expect(isValidScale(['a', 'b'])).toBe(false);
             expect(isValidScale(['a'])).toBe(false);
             expect(isValidScale([['a'], ['b']])).toBe(false);
 
@@ -365,7 +372,7 @@ describe('Test colorscale:', function() {
             z = [[undefined, undefined], [0.5, undefined]];
             calcColorscale(trace, z, '', 'z');
             expect(trace.autocolorscale).toBe(true);
-            expect(trace.colorscale[trace.colorscale.length-1])
+            expect(trace.colorscale[trace.colorscale.length - 1])
                 .toEqual([1, 'rgb(220,220,220)']);
         });
 
@@ -373,12 +380,12 @@ describe('Test colorscale:', function() {
 
     describe('makeScaleFunction', function() {
         var scale = [
-                [0,'rgb(5,10,172)'],
-                [0.35,'rgb(106,137,247)'],
-                [0.5,'rgb(190,190,190)'],
-                [0.6,'rgb(220,170,132)'],
-                [0.7,'rgb(230,145,90)'],
-                [1,'rgb(178,10,28)']
+                [0, 'rgb(5,10,172)'],
+                [0.35, 'rgb(106,137,247)'],
+                [0.5, 'rgb(190,190,190)'],
+                [0.6, 'rgb(220,170,132)'],
+                [0.7, 'rgb(230,145,90)'],
+                [1, 'rgb(178,10,28)']
             ],
             scaleFunction = Colorscale.makeScaleFunction(scale, 2, 3);
 

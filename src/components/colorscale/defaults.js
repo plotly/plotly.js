@@ -22,7 +22,7 @@ var flipScale = require('./flip_scale');
 module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, opts) {
     var prefix = opts.prefix,
         cLetter = opts.cLetter,
-        containerStr = prefix.slice(0, prefix.length-1),
+        containerStr = prefix.slice(0, prefix.length - 1),
         containerIn = prefix ?
             Lib.nestedProperty(traceIn, containerStr).get() || {} :
             traceIn,
@@ -41,7 +41,7 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     // handles both the trace case (autocolorscale is false by default) and
     // the marker and marker.line case (autocolorscale is true by default)
     var autoColorscaleDftl;
-    if(sclIn!==undefined) autoColorscaleDftl = !isValidScale(sclIn);
+    if(sclIn !== undefined) autoColorscaleDftl = !isValidScale(sclIn);
     coerce(prefix + 'autocolorscale', autoColorscaleDftl);
     var sclOut = coerce(prefix + 'colorscale');
 

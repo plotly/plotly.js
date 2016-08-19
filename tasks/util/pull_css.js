@@ -25,7 +25,7 @@ module.exports = function pullCSS(data, pathOut) {
             .replace(/[\.]plotly-notifier/g, 'Y');
 
         // take out newlines in rule, and make sure it ends in a semicolon
-        rule = rule.replace(/;\s*/g,';').replace(/;?\s*$/,';');
+        rule = rule.replace(/;\s*/g, ';').replace(/;?\s*$/, ';');
 
         // omit blank rules (why do we get these occasionally?)
         if(rule.match(/^[\s;]*$/)) return;
@@ -38,14 +38,14 @@ module.exports = function pullCSS(data, pathOut) {
     var outStr = [
         '\'use strict\';',
         '',
-        'var Plotly = require(\'../src/plotly\');',
+        'var Lib = require(\'../src/lib\');',
         'var rules = ' + rulesStr + ';',
         '',
         'for(var selector in rules) {',
         '    var fullSelector = selector.replace(/^,/,\' ,\')',
         '        .replace(/X/g, \'.js-plotly-plot .plotly\')',
         '        .replace(/Y/g, \'.plotly-notifier\');',
-        '    Plotly.Lib.addStyleRule(fullSelector, rules[selector]);',
+        '    Lib.addStyleRule(fullSelector, rules[selector]);',
         '}',
         ''
     ].join('\n');

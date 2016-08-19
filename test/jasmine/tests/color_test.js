@@ -175,4 +175,25 @@ describe('Test color:', function() {
         });
 
     });
+
+    describe('contrast', function() {
+
+        it('should darken light colors', function() {
+            var out = Color.contrast('#eee', 10, 20);
+
+            expect(out).toEqual('#bbbbbb');
+        });
+
+        it('should darken light colors (2)', function() {
+            var out = Color.contrast('#fdae61', 10, 20);
+
+            expect(out).toEqual('#f57a03');
+        });
+
+        it('should lighten dark colors', function() {
+            var out = Color.contrast('#2b83ba', 10, 20);
+
+            expect(out).toEqual('#449dd4');
+        });
+    });
 });

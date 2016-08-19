@@ -2,28 +2,23 @@
 
 ## Opening issues
 
-Search for existing and closed issues. If your problem or idea is not addressed
-yet, [please open a new issue](https://github.com/plotly/plotly.js/issues/new).
+Please read the [issue guidelines](./.github/ISSUE_TEMPLATE.md).
 
-Bug reports must be accompanied with a reproducible example. We recommend using
-[codepen](http://codepen.io/), [jsfiddle](https://jsfiddle.net/) or
-[jsbin](https://jsbin.com) to share your example.
+## Making pull requests
 
-Note that GitHub issues are reserved for bug reports and feature requests only.
-Implementation questions should be asked on Stack Overflow (tagged
-[`plotly`](https://stackoverflow.com/questions/tagged/plotly)) or on
-community.plot.ly (tagged [`plotly-js`](http://community.plot.ly/c/plotly-js)).
+Please read the [pull request guidelines](./.github/PULL_REQUEST_TEMPLATE.md).
 
-## Issue labels
+## GitHub labels
 
-We use the following [labels](https://github.com/plotly/plotly.js/labels) to track issues:
+We use the following [labels](https://github.com/plotly/plotly.js/labels) to track issues and PRs:
 
 | Label | Purpose |
 |--------|---------|
 | `type: bug` | bug report confirmed by a plotly team member |
 | `type: feature` | planned feature additions |
 | `type: performance` | performance related tasks |
-| `type: maintenace` | source code cleanup resulting in no enhancement for users |
+| `type: maintenance` | source code cleanup resulting in no enhancement for users |
+| `type: documentation` | API doc or attribute description improvements |
 | `type: community` | issue left open for community input and pull requests |
 | `type: duplicate` | *self-explanatory* |
 | `type: wontfix` | *self-explanatory* |
@@ -43,15 +38,21 @@ We use the following [labels](https://github.com/plotly/plotly.js/labels) to tra
 
 #### Step 1: Clone the plotly.js repo and install its dependencies
 
-```
+```bash
 git clone https://github.com/plotly/plotly.js.git
 cd plotly.js
 npm install
 ```
 
-#### Step 2: Start the test dashboard
+#### Step 2: Setup test environment
 
+```bash
+npm run pretest
 ```
+
+#### Step 3: Start the test dashboard
+
+```bash
 npm start
 ```
 
@@ -61,7 +62,7 @@ This command bundles up the source files with source maps using
 dev plotly.js bundle update every time a source file is saved) and opens up a
 tab in your browser.
 
-#### Step 3: Open up the console and start developing
+#### Step 4: Open up the console and start developing
 
 A typical workflow is to make some modifications to the source, update the
 test dashboard, inspect and debug the changes, then repeat. The test dashboard
@@ -109,6 +110,21 @@ Jasmine tests are run in a browser using
 ```
 npm run test-jasmine
 ```
+
+To run a specific suite, use:
+
+```
+npm run test-jasmine -- tests/<suite>.js
+```
+
+where the `<suite>` corresponds to the suite's file name as found in [`test/jasmine/tests/`](https://github.com/plotly/plotly.js/tree/master/test/jasmine/tests). In certain situations, you may find that the default reporting is not verbose enough to pin down the source of the failing test. In this situation, you may wish to use [karma-verbose-reporter](https://www.npmjs.com/package/karma-verbose-reporter). You can use it without adding as a dev dependency by running:
+
+```
+npm install karma-verbose-reporter
+```
+
+and adding `reporters: ['verbose']` to the corresponding karma configuration file. (You should disable the `progress` reporter when using `verbose`.)
+
 
 Image pixel comparison tests are run in a docker container. For more
 information on how to run them locally, please refer to [image test

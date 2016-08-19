@@ -1,101 +1,159 @@
 var fs = require('fs');
-var path = require('path');
 
-var constants = require('../../tasks/util/constants');
-var getOptions = require('../../tasks/util/get_image_request_options');
+var common = require('../../tasks/util/common');
+var getMockList = require('./assets/get_mock_list');
+var getRequestOpts = require('./assets/get_image_request_options');
+var getImagePaths = require('./assets/get_image_paths');
 
 // packages inside the image server docker
-var request = require('request');
 var test = require('tape');
+var request = require('request');
 var gm = require('gm');
 
-var TOLERANCE = 1e-6;    // pixel comparison tolerance
-var BASE_TIMEOUT = 500;  // base timeout time
-var BATCH_SIZE = 5;      // size of each test 'batch'
+// pixel comparison tolerance
+var TOLERANCE = 1e-6;
 
-var touch = function(fileName) {
-    fs.closeSync(fs.openSync(fileName, 'w'));
-};
+// wait time between each test batch
+var BATCH_WAIT = 500;
 
+// number of tests in each test batch
+var BATCH_SIZE = 5;
 
-// make artifact folders
-if(!fs.existsSync(constants.pathToTestImagesDiff)) {
-    fs.mkdirSync(constants.pathToTestImagesDiff);
+// wait time between each test in test queue
+var QUEUE_WAIT = 10;
+
+/**
+ *  Image pixel comparison test script.
+ *
+ *  Called by `tasks/test_image.sh in `npm run test-image`.
+ *
+ *  CLI arguments:
+ *
+ *  1. 'pattern' : glob determining which mock(s) are to be tested
+ *  2. --queue : if sent, the image will be run in queue instead of in batch.
+ *      Makes the test run significantly longer, but is recommended on weak hardware.
+ *
+ *  Examples:
+ *
+ *  Run all tests in batch:
+ *
+ *      npm run test-image
+ *
+ *  Run the 'contour_nolines' test:
+ *
+ *      npm run test-image -- contour_nolines
+ *
+ *  Run all gl3d image test in queue:
+ *
+ *      npm run test-image -- gl3d_* --queue
+ */
+
+var pattern = process.argv[2];
+var mockList = getMockList(pattern);
+var isInQueue = (process.argv[3] === '--queue');
+
+if(mockList.length === 0) {
+    throw new Error('No mocks found with pattern ' + pattern);
 }
-if(!fs.existsSync(constants.pathToTestImages)) {
-    fs.mkdirSync(constants.pathToTestImages);
+
+// filter out untestable mocks if no pattern is specified
+if(!pattern) {
+    console.log('Filtering out untestable mocks\n');
+    mockList = mockList.filter(untestableFilter);
 }
 
-var userFileName = process.argv[2];
+// main
+if(isInQueue) {
+    runInQueue(mockList);
+}
+else {
+    runInBatch(mockList);
+}
 
-// run the test(s)
-if(!userFileName) runAll();
-else runSingle(userFileName);
+/* Test cases:
+ *
+ * - font-wishlist
+ * - all gl2d
+ * - all mapbox
+ *
+ * don't behave consistently from run-to-run and/or
+ * machine-to-machine; skip over them for now.
+ *
+ */
+function untestableFilter(mockName) {
+    return !(
+        mockName === 'font-wishlist' ||
+        mockName.indexOf('gl2d_') !== -1 ||
+        mockName.indexOf('mapbox_') !== -1
+    );
+}
 
-function runAll() {
-    test('testing mocks', function(t) {
+function runInBatch(mockList) {
+    var running = 0;
 
-        var allMocks = fs.readdirSync(constants.pathToTestImageMocks);
+    // remove mapbox mocks if circle ci
 
-        /* Test cases:
-         *
-         * - font-wishlist
-         * - all gl2d
-         *
-         * don't behave consistently from run-to-run and/or
-         * machine-to-machine; skip over them.
-         *
-         */
-        var mocks = allMocks.filter(function(mock) {
-            return !(
-                mock === 'font-wishlist.json' ||
-                mock.indexOf('gl2d') !== -1
-            );
+    test('testing mocks in batch', function(t) {
+        t.plan(mockList.length);
+
+        for(var i = 0; i < mockList.length; i++) {
+            run(mockList[i], t);
+        }
+    });
+
+    function run(mockName, t) {
+        if(running >= BATCH_SIZE) {
+            setTimeout(function() {
+                run(mockName, t);
+            }, BATCH_WAIT);
+            return;
+        }
+        running++;
+
+        // throttle the number of tests running concurrently
+
+        comparePixels(mockName, function(isEqual, mockName) {
+            running--;
+            t.ok(isEqual, mockName + ' should be pixel perfect');
         });
-
-        var cnt = 0;
-
-        function testFunction() {
-            testMock(mocks[cnt++], t);
-        }
-
-        t.plan(mocks.length);
-
-        for(var i = 0; i < mocks.length; i++) {
-            setTimeout(testFunction,
-                BASE_TIMEOUT * Math.floor(i / BATCH_SIZE) * BATCH_SIZE);
-        }
-
-    });
+    }
 }
 
-function runSingle(userFileName) {
-    test('testing single mock: ' + userFileName, function(t) {
-        t.plan(1);
-        testMock(userFileName, t);
+function runInQueue(mockList) {
+    var index = 0;
+
+    test('testing mocks in queue', function(t) {
+        t.plan(mockList.length);
+
+        run(mockList[index], t);
     });
+
+    function run(mockName, t) {
+        comparePixels(mockName, function(isEqual, mockName) {
+            t.ok(isEqual, mockName + ' should be pixel perfect');
+
+            index++;
+            if(index < mockList.length) {
+                setTimeout(function() {
+                    run(mockList[index], t);
+                }, QUEUE_WAIT);
+            }
+        });
+    }
 }
 
-function testMock(fileName, t) {
-    var figure = require(path.join(constants.pathToTestImageMocks, fileName));
-    var bodyMock = {
-        figure: figure,
-        format: 'png',
-        scale: 1
-    };
-
-    var imageFileName = fileName.split('.')[0] + '.png';
-    var savedImagePath = path.join(constants.pathToTestImages, imageFileName);
-    var diffPath = path.join(constants.pathToTestImagesDiff, 'diff-' + imageFileName);
-    var savedImageStream = fs.createWriteStream(savedImagePath);
-    var options = getOptions(bodyMock, 'http://localhost:9010/');
+function comparePixels(mockName, cb) {
+    var requestOpts = getRequestOpts({ mockName: mockName }),
+        imagePaths = getImagePaths(mockName),
+        saveImageStream = fs.createWriteStream(imagePaths.test);
 
     function checkImage() {
-        var options = {
-            file: diffPath,
-            highlightColor: 'purple',
-            tolerance: TOLERANCE
-        };
+
+        // baseline image must be generated first
+        if(!common.doesFileExist(imagePaths.baseline)) {
+            var err = new Error('baseline image not found');
+            return onEqualityCheck(err, false);
+        }
 
         /*
          * N.B. The non-zero tolerance was added in
@@ -113,27 +171,33 @@ function testMock(fileName, t) {
          * Further investigation is needed.
          */
 
+        var gmOpts = {
+            file: imagePaths.diff,
+            highlightColor: 'purple',
+            tolerance: TOLERANCE
+        };
+
         gm.compare(
-            savedImagePath,
-            path.join(constants.pathToTestImageBaselines, imageFileName),
-            options,
+            imagePaths.test,
+            imagePaths.baseline,
+            gmOpts,
             onEqualityCheck
         );
     }
 
     function onEqualityCheck(err, isEqual) {
         if(err) {
-            touch(diffPath);
-            return console.error(err, imageFileName);
+            common.touch(imagePaths.diff);
+            return console.error(err, mockName);
         }
         if(isEqual) {
-            fs.unlinkSync(diffPath);
+            fs.unlinkSync(imagePaths.diff);
         }
 
-        t.ok(isEqual, imageFileName + ' should be pixel perfect');
+        cb(isEqual, mockName);
     }
 
-    request(options)
-        .pipe(savedImageStream)
+    request(requestOpts)
+        .pipe(saveImageStream)
         .on('close', checkImage);
 }

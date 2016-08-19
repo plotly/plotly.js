@@ -8,12 +8,11 @@
 
 'use strict';
 
-var Plotly = require('../plotly');
-
 var fontAttrs = require('./font_attributes');
 var colorAttrs = require('../components/color/attributes');
 
-var extendFlat = Plotly.Lib.extendFlat;
+var Lib = require('../lib');
+var extendFlat = Lib.extendFlat;
 
 
 module.exports = {
@@ -168,30 +167,7 @@ module.exports = {
         role: 'info',
         description: 'Determines whether or not a legend is drawn.'
     },
-    _hasCartesian: {
-        valType: 'boolean',
-        dflt: false
-    },
-    _hasGL3D: {
-        valType: 'boolean',
-        dflt: false
-    },
-    _hasGeo: {
-        valType: 'boolean',
-        dflt: false
-    },
-    _hasPie: {
-        valType: 'boolean',
-        dflt: false
-    },
-    _hasGL2D: {
-        valType: 'boolean',
-        dflt: false
-    },
-    _hasTernary: {
-        valType: 'boolean',
-        dflt: false
-    },
+
     _composedModules: {
         '*': 'Fx'
     },
@@ -205,6 +181,9 @@ module.exports = {
         'legend': 'Legend',
         'annotations': 'Annotations',
         'shapes': 'Shapes',
-        'ternary': 'ternary'
+        'images': 'Images',
+        'updatemenus': 'UpdateMenus',
+        'ternary': 'ternary',
+        'mapbox': 'mapbox'
     }
 };

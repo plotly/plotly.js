@@ -9,32 +9,16 @@
 
 'use strict';
 
-function getDelay(fullLayout) {
-    return (fullLayout._hasGL3D || fullLayout._hasGL2D) ? 500 : 0;
-}
-
-function getRedrawFunc(gd) {
-    return function() {
-        var fullLayout = gd._fullLayout;
-
-        // doesn't work presently (and not needed) for polar or gl
-        if(fullLayout._hasGL3D || fullLayout._hasGL2D ||
-            (gd.data && gd.data[0] && gd.data[0].r)
-        ) return;
-
-        (gd.calcdata || []).forEach(function(d) {
-            if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
-        });
-    };
-}
+var helpers = require('./helpers');
 
 var Snapshot = {
-    getDelay: getDelay,
-    getRedrawFunc: getRedrawFunc,
+    getDelay: helpers.getDelay,
+    getRedrawFunc: helpers.getRedrawFunc,
     clone: require('./cloneplot'),
     toSVG: require('./tosvg'),
     svgToImg: require('./svgtoimg'),
-    toImage: require('./toimage')
+    toImage: require('./toimage'),
+    downloadImage: require('./download')
 };
 
 module.exports = Snapshot;

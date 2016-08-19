@@ -9,6 +9,7 @@
 'use strict';
 
 var Lib = require('../../lib');
+var Color = require('../color');
 
 var attributes = require('./attributes');
 var buttonAttrs = require('./button_attributes');
@@ -38,7 +39,8 @@ module.exports = function rangeSelectorDefaults(containerIn, containerOut, layou
 
     Lib.coerceFont(coerce, 'font', layout.font);
 
-    coerce('bgcolor');
+    var bgColor = coerce('bgcolor');
+    coerce('activecolor', Color.contrast(bgColor, constants.lightAmount, constants.darkAmount));
     coerce('bordercolor');
     coerce('borderwidth');
 };
@@ -57,6 +59,8 @@ function buttonsDefaults(containerIn, containerOut) {
         buttonIn = buttonsIn[i];
         buttonOut = {};
 
+        if(!Lib.isPlainObject(buttonIn)) continue;
+
         var step = coerce('step');
         if(step !== 'all') {
             coerce('stepmode');
@@ -65,6 +69,7 @@ function buttonsDefaults(containerIn, containerOut) {
 
         coerce('label');
 
+        buttonOut._index = i;
         buttonsOut.push(buttonOut);
     }
 

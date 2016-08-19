@@ -9,23 +9,20 @@
 
 'use strict';
 
-var locationUtils = module.exports = {};
+var countryRegex = require('country-regex');
+var Lib = require('../lib');
 
-var Plotly = require('../plotly');
-
-// an hash object iso3 to regex string
-var countryNameData = require('../constants/country-name_to_iso3');
 
 // make list of all country iso3 ids from at runtime
-var countryIds = Object.keys(countryNameData);
+var countryIds = Object.keys(countryRegex);
 
 var locationmodeToIdFinder = {
-    'ISO-3': Plotly.Lib.identity,
-    'USA-states': Plotly.Lib.identity,
+    'ISO-3': Lib.identity,
+    'USA-states': Lib.identity,
     'country names': countryNameToISO3
 };
 
-locationUtils.locationToFeature = function(locationmode, location, features) {
+exports.locationToFeature = function(locationmode, location, features) {
     var locationId = getLocationId(locationmode, location);
     var feature;
 
@@ -35,8 +32,8 @@ locationUtils.locationToFeature = function(locationmode, location, features) {
         if(feature.id === locationId) return feature;
     }
 
-    console.warn([
-        'location with id', locationId,
+    Lib.warn([
+        'Location with id', locationId,
         'does not have a matching topojson feature at this resolution.'
     ].join(' '));
 };
@@ -51,10 +48,10 @@ function countryNameToISO3(countryName) {
 
     for(var i = 0; i < countryIds.length; i++) {
         iso3 = countryIds[i];
-        regex = new RegExp(countryNameData[iso3]);
+        regex = new RegExp(countryRegex[iso3]);
 
         if(regex.test(countryName.toLowerCase())) return iso3;
     }
 
-    console.warn('unrecognized country name: ' + countryName + '.');
+    Lib.warn('Unrecognized country name: ' + countryName + '.');
 }

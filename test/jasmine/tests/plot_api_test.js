@@ -20,6 +20,70 @@ describe('Test plot api', function() {
         });
     });
 
+    describe('Plotly.relayout', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should update the plot clipPath if the plot is resized', function(done) {
+
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }], { width: 500, height: 500 })
+                .then(function() {
+                    return Plotly.relayout(gd, { width: 400, height: 400 });
+                })
+                .then(function() {
+                    var uid = gd._fullLayout._uid;
+
+                    var plotClip = document.getElementById('clip' + uid + 'xyplot'),
+                        clipRect = plotClip.children[0],
+                        clipWidth = +clipRect.getAttribute('width'),
+                        clipHeight = +clipRect.getAttribute('height');
+
+                    expect(clipWidth).toBe(240);
+                    expect(clipHeight).toBe(220);
+                })
+                .then(done);
+        });
+
+        it('sets null values to their default', function(done) {
+            var defaultWidth;
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    defaultWidth = gd._fullLayout.width;
+                    return Plotly.relayout(gd, { width: defaultWidth - 25});
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                    return Plotly.relayout(gd, { width: null });
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth);
+                })
+                .then(done);
+        });
+
+        it('ignores undefined values', function(done) {
+            var defaultWidth;
+            Plotly.plot(gd, [{ x: [1, 2, 3], y: [1, 2, 3] }])
+                .then(function() {
+                    defaultWidth = gd._fullLayout.width;
+                    return Plotly.relayout(gd, { width: defaultWidth - 25});
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                    return Plotly.relayout(gd, { width: undefined });
+                })
+                .then(function() {
+                    expect(gd._fullLayout.width).toBe(defaultWidth - 25);
+                })
+                .then(done);
+        });
+    });
+
     describe('Plotly.restyle', function() {
         beforeEach(function() {
             spyOn(Plotly, 'plot');
@@ -39,7 +103,7 @@ describe('Test plot api', function() {
 
         it('calls Scatter.arraysToCalcdata and Plots.style on scatter styling', function() {
             var gd = {
-                data: [{x: [1,2,3], y: [1,2,3]}],
+                data: [{x: [1, 2, 3], y: [1, 2, 3]}],
                 layout: {}
             };
             mockDefaultsAndCalc(gd);
@@ -54,7 +118,7 @@ describe('Test plot api', function() {
 
         it('calls Bar.arraysToCalcdata and Plots.style on bar styling', function() {
             var gd = {
-                data: [{x: [1,2,3], y: [1,2,3], type: 'bar'}],
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'bar'}],
                 layout: {}
             };
             mockDefaultsAndCalc(gd);
@@ -64,6 +128,64 @@ describe('Test plot api', function() {
             expect(Plots.style).toHaveBeenCalled();
             expect(Plotly.plot).not.toHaveBeenCalled();
             expect(gd.calcdata).toBeDefined();
+        });
+
+        it('ignores undefined values', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+
+            // Check to see that the color is updated:
+            Plotly.restyle(gd, {'marker.color': 'blue'});
+            expect(gd._fullData[0].marker.color).toBe('blue');
+
+            // Check to see that the color is unaffected:
+            Plotly.restyle(gd, {'marker.color': undefined});
+            expect(gd._fullData[0].marker.color).toBe('blue');
+        });
+
+        it('restores null values to defaults', function() {
+            var gd = {
+                data: [{x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            var colorDflt = gd._fullData[0].marker.color;
+
+            // Check to see that the color is updated:
+            Plotly.restyle(gd, {'marker.color': 'blue'});
+            expect(gd._fullData[0].marker.color).toBe('blue');
+
+            // Check to see that the color is restored to the original default:
+            Plotly.restyle(gd, {'marker.color': null});
+            expect(gd._fullData[0].marker.color).toBe(colorDflt);
+        });
+
+        it('can target specific traces by leaving properties undefined', function() {
+            var gd = {
+                data: [
+                    {x: [1, 2, 3], y: [1, 2, 3], type: 'scatter'},
+                    {x: [1, 2, 3], y: [3, 4, 5], type: 'scatter'}
+                ],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            var colorDflt = [gd._fullData[0].marker.color, gd._fullData[1].marker.color];
+
+            // Check only second trace's color has been changed:
+            Plotly.restyle(gd, {'marker.color': [undefined, 'green']});
+            expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
+            expect(gd._fullData[1].marker.color).toBe('green');
+
+            // Check both colors restored to the original default:
+            Plotly.restyle(gd, {'marker.color': [null, null]});
+            expect(gd._fullData[0].marker.color).toBe(colorDflt[0]);
+            expect(gd._fullData[1].marker.color).toBe(colorDflt[1]);
         });
 
     });
@@ -164,7 +286,7 @@ describe('Test plot api', function() {
                 {name: 'trace #19'}
             ];
 
-            Plotly.deleteTraces(gd, [0,1,2,3,4,5,6,7,8,9,10,11]);
+            Plotly.deleteTraces(gd, [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11]);
             expect(gd.data).toEqual(expectedData);
             expect(PlotlyInternal.redraw).toHaveBeenCalled();
 
@@ -390,11 +512,12 @@ describe('Test plot api', function() {
 
     describe('Plotly.ExtendTraces', function() {
         var gd;
+
         beforeEach(function() {
             gd = {
                 data: [
-                    {x: [0,1,2], marker: {size: [3,2,1]}},
-                    {x: [1,2,3], marker: {size: [2,3,4]}}
+                    {x: [0, 1, 2], marker: {size: [3, 2, 1]}},
+                    {x: [1, 2, 3], marker: {size: [2, 3, 4]}}
                 ]
             };
 
@@ -488,7 +611,7 @@ describe('Test plot api', function() {
         it('should throw an error when update keys mismatch trace keys', function() {
 
             // lets update y on both traces, but only 1 trace has "y"
-            gd.data[1].y = [1,2,3];
+            gd.data[1].y = [1, 2, 3];
 
             expect(function() {
                 Plotly.extendTraces(gd, {
@@ -505,8 +628,8 @@ describe('Test plot api', function() {
             }, [0, 1]);
 
             expect(gd.data).toEqual([
-                {x: [0,1,2,3,4], marker: {size: [3,2,1,0,-1]}},
-                {x: [1,2,3,4,5], marker: {size: [2,3,4,5,6]}}
+                {x: [0, 1, 2, 3, 4], marker: {size: [3, 2, 1, 0, -1]}},
+                {x: [1, 2, 3, 4, 5], marker: {size: [2, 3, 4, 5, 6]}}
             ]);
 
             expect(PlotlyInternal.redraw).toHaveBeenCalled();
@@ -516,12 +639,12 @@ describe('Test plot api', function() {
             var maxPoints = 3;
 
             Plotly.extendTraces(gd, {
-                x: [[3, 4],[4, 5]], 'marker.size': [[0, -1],[5, 6]]
+                x: [[3, 4], [4, 5]], 'marker.size': [[0, -1], [5, 6]]
             }, [0, 1], maxPoints);
 
             expect(gd.data).toEqual([
-                {x: [2,3,4], marker: {size: [1,0,-1]}},
-                {x: [3,4,5], marker: {size: [4,5,6]}}
+                {x: [2, 3, 4], marker: {size: [1, 0, -1]}},
+                {x: [3, 4, 5], marker: {size: [4, 5, 6]}}
             ]);
         });
 
@@ -533,8 +656,8 @@ describe('Test plot api', function() {
             }, [0, 1], maxPoints);
 
             expect(gd.data).toEqual([
-                {x: [2,3,4], marker: {size: [1,0,-1]}},
-                {x: [3,4,5], marker: {size: [4,5,6]}}
+                {x: [2, 3, 4], marker: {size: [1, 0, -1]}},
+                {x: [3, 4, 5], marker: {size: [4, 5, 6]}}
             ]);
         });
 
@@ -546,8 +669,8 @@ describe('Test plot api', function() {
             }, [0, 1], maxPoints);
 
             expect(gd.data).toEqual([
-                {x: [3,4], marker: {size: [-1]}},
-                {x: [3,4,5], marker: {size: [5,6]}}
+                {x: [3, 4], marker: {size: [-1]}},
+                {x: [3, 4, 5], marker: {size: [5, 6]}}
             ]);
         });
 
@@ -628,7 +751,7 @@ describe('Test plot api', function() {
             var gd = createGraphDiv();
             var initialKeys = Object.keys(gd);
             var intialHTML = gd.innerHTML;
-            var mockData = [{ x: [1,2,3], y: [2,3,4] }];
+            var mockData = [{ x: [1, 2, 3], y: [2, 3, 4] }];
 
             Plotly.plot(gd, mockData).then(function() {
                 Plotly.purge(gd);
@@ -688,6 +811,72 @@ describe('Test plot api', function() {
 
             Plotly.plot(gd, data);
             expect(gd.data[0].marker.colorscale).toBe('YlOrRd');
+        });
+
+        it('should rename \'highlightColor\' to \'highlightcolor\')', function() {
+            var data = [{
+                type: 'surface',
+                contours: {
+                    x: { highlightColor: 'red' },
+                    y: { highlightcolor: 'blue' }
+                }
+            }, {
+                type: 'surface'
+            }, {
+                type: 'surface',
+                contours: false
+            }, {
+                type: 'surface',
+                contours: {
+                    stuff: {},
+                    x: false,
+                    y: []
+                }
+            }];
+
+            spyOn(Plots.subplotsRegistry.gl3d, 'plot');
+
+            Plotly.plot(gd, data);
+
+            expect(Plots.subplotsRegistry.gl3d.plot).toHaveBeenCalled();
+
+            var contours = gd.data[0].contours;
+
+            expect(contours.x.highlightColor).toBeUndefined();
+            expect(contours.x.highlightcolor).toEqual('red');
+            expect(contours.y.highlightcolor).toEqual('blue');
+            expect(contours.z).toBeUndefined();
+
+            expect(gd.data[1].contours).toBeUndefined();
+            expect(gd.data[2].contours).toBe(false);
+            expect(gd.data[3].contours).toEqual({ stuff: {}, x: false, y: [] });
+        });
+
+        it('should rename \'highlightWidth\' to \'highlightwidth\')', function() {
+            var data = [{
+                type: 'surface',
+                contours: {
+                    z: { highlightwidth: 'red' },
+                    y: { highlightWidth: 'blue' }
+                }
+            }, {
+                type: 'surface'
+            }];
+
+            spyOn(Plots.subplotsRegistry.gl3d, 'plot');
+
+            Plotly.plot(gd, data);
+
+            expect(Plots.subplotsRegistry.gl3d.plot).toHaveBeenCalled();
+
+            var contours = gd.data[0].contours;
+
+            expect(contours.x).toBeUndefined();
+            expect(contours.y.highlightwidth).toEqual('blue');
+            expect(contours.z.highlightWidth).toBeUndefined();
+            expect(contours.z.highlightwidth).toEqual('red');
+
+            expect(gd.data[1].contours).toBeUndefined();
         });
     });
 });

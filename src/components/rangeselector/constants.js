@@ -21,6 +21,7 @@ module.exports = {
     rx: 3,
     ry: 3,
 
-    // color given to active and hovered buttons
-    activeColor: '#d3d3d3'
+    // light fraction used to compute the 'activecolor' default
+    lightAmount: 25,
+    darkAmount: 10
 };

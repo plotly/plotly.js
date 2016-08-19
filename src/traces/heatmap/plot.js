@@ -28,8 +28,6 @@ module.exports = function(gd, plotinfo, cdheatmaps) {
 
 // From http://www.xarg.org/2010/03/generate-client-side-png-files-using-javascript/
 function plotOne(gd, plotinfo, cd) {
-    Lib.markTime('in Heatmap.plot');
-
     var trace = cd[0].trace,
         uid = trace.uid,
         xa = plotinfo.x(),
@@ -139,10 +137,24 @@ function plotOne(gd, plotinfo, cd) {
     var imageWidth = Math.round(right - left),
         imageHeight = Math.round(bottom - top);
 
-    // now redraw
+    // setup image nodes
 
     // if image is entirely off-screen, don't even draw it
-    if(imageWidth <= 0 || imageHeight <= 0) return;
+    var isOffScreen = (imageWidth <= 0 || imageHeight <= 0);
+
+    var plotgroup = plotinfo.plot.select('.imagelayer')
+        .selectAll('g.hm.' + id)
+        .data(isOffScreen ? [] : [0]);
+
+    plotgroup.enter().append('g')
+        .classed('hm', true)
+        .classed(id, true);
+
+    plotgroup.exit().remove();
+
+    if(isOffScreen) return;
+
+    // generate image data
 
     var canvasW, canvasH;
     if(zsmooth === 'fast') {
@@ -274,19 +286,17 @@ function plotOne(gd, plotinfo, cd) {
         if(z01 === undefined) {
             if(z11 === undefined) dxy = 0;
             else if(z10 === undefined) dxy = 2 * (z11 - z00);
-            else dxy = (2 * z11 - z10 - z00) * 2/3;
+            else dxy = (2 * z11 - z10 - z00) * 2 / 3;
         }
         else if(z11 === undefined) {
             if(z10 === undefined) dxy = 0;
-            else dxy = (2 * z00 - z01 - z10) * 2/3;
+            else dxy = (2 * z00 - z01 - z10) * 2 / 3;
         }
-        else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2/3;
+        else if(z10 === undefined) dxy = (2 * z11 - z01 - z00) * 2 / 3;
         else dxy = (z11 + z00 - z01 - z10);
 
         return setColor(z00 + xinterp.frac * dx + yinterp.frac * (dy + xinterp.frac * dxy));
     }
-
-    Lib.markTime('done init png');
 
     if(zsmooth) { // best or fast, works fastest with imageData
         var pxIndex = 0,
@@ -323,8 +333,8 @@ function plotOne(gd, plotinfo, cd) {
             for(j = 0; j < m; j++) {
                 row = z[j];
                 yb = ypx(j);
-                for(i = 0; i < n; i++) {
-                    c = setColor(row[i],1);
+                for(i = 0; i < imageWidth; i++) {
+                    c = setColor(row[i], 1);
                     pxIndex = (yb * imageWidth + xpx(i)) * 4;
                     putColor(pixels, pxIndex, c);
                 }
@@ -359,38 +369,29 @@ function plotOne(gd, plotinfo, cd) {
         }
     }
 
-    Lib.markTime('done filling png');
-
     rcount = Math.round(rcount / pixcount);
-    gcount = Math.round(gcount/ pixcount);
+    gcount = Math.round(gcount / pixcount);
     bcount = Math.round(bcount / pixcount);
     var avgColor = tinycolor('rgb(' + rcount + ',' + gcount + ',' + bcount + ')');
 
     gd._hmpixcount = (gd._hmpixcount||0) + pixcount;
     gd._hmlumcount = (gd._hmlumcount||0) + pixcount * avgColor.getLuminance();
 
-    var plotgroup = plotinfo.plot.select('.imagelayer')
-        .selectAll('g.hm.' + id)
-        .data([0]);
-    plotgroup.enter().append('g')
-        .classed('hm', true)
-        .classed(id, true);
-    plotgroup.exit().remove();
-
     var image3 = plotgroup.selectAll('image')
         .data(cd);
-    image3.enter().append('svg:image');
-    image3.exit().remove();
+
+    image3.enter().append('svg:image').attr({
+        xmlns: xmlnsNamespaces.svg,
+        preserveAspectRatio: 'none'
+    });
 
     image3.attr({
-        xmlns: xmlnsNamespaces.svg,
-        'xlink:href': canvas.toDataURL('image/png'),
         height: imageHeight,
         width: imageWidth,
         x: left,
         y: top,
-        preserveAspectRatio: 'none'
+        'xlink:href': canvas.toDataURL('image/png')
     });
 
-    Lib.markTime('done showing png');
+    image3.exit().remove();
 }

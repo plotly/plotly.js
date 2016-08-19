@@ -11,7 +11,7 @@ var mock = require('../../image/mocks/legend_scroll.json');
 describe('The legend', function() {
     'use strict';
 
-    var gd, legend;
+    var gd, legend, bg;
 
     function countLegendGroups(gd) {
         return gd._fullLayout._toppaper.selectAll('g.legend').size();
@@ -27,6 +27,9 @@ describe('The legend', function() {
         return gd._fullLayout.height - gd._fullLayout.margin.t - gd._fullLayout.margin.b;
     }
 
+    function getLegendHeight() {
+        return gd._fullLayout.legend.borderwidth + getBBox(bg).height;
+    }
 
     describe('when plotted with many traces', function() {
         beforeEach(function(done) {
@@ -36,6 +39,7 @@ describe('The legend', function() {
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
                 legend = document.getElementsByClassName('legend')[0];
+                bg = document.getElementsByClassName('bg')[0];
                 done();
             });
         });
@@ -43,7 +47,7 @@ describe('The legend', function() {
         afterEach(destroyGraph);
 
         it('should not exceed plot height', function() {
-            var legendHeight = getBBox(legend).height;
+            var legendHeight = getLegendHeight();
 
             expect(+legendHeight).toBe(getPlotHeight(gd));
         });
@@ -57,7 +61,7 @@ describe('The legend', function() {
 
         it('should scroll when there\'s a wheel event', function() {
             var scrollBox = legend.getElementsByClassName('scrollbox')[0],
-                legendHeight = getBBox(legend).height,
+                legendHeight = getLegendHeight(),
                 scrollBoxYMax = gd._fullLayout.legend.height - legendHeight,
                 scrollBarYMax = legendHeight -
                     constants.scrollBarHeight -
@@ -75,6 +79,57 @@ describe('The legend', function() {
                 'translate(0, ' + finalDataScroll + ')');
         });
 
+        it('should keep the scrollbar position after a toggle event', function() {
+            var scrollBox = legend.getElementsByClassName('scrollbox')[0],
+                toggle = legend.getElementsByClassName('legendtoggle')[0],
+                wheelDeltaY = 100;
+
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+
+            var dataScroll = scrollBox.getAttribute('data-scroll');
+            toggle.dispatchEvent(new MouseEvent('click'));
+            expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+            expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + dataScroll + ')');
+        });
+
+        it('should be restored and functional after relayout', function() {
+            var wheelDeltaY = 100,
+                legend = document.getElementsByClassName('legend')[0],
+                scrollBox,
+                scrollBar,
+                scrollBarX,
+                scrollBarY,
+                toggle;
+
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+            scrollBar = legend.getElementsByClassName('scrollbar')[0];
+            scrollBarX = scrollBar.getAttribute('x'),
+            scrollBarY = scrollBar.getAttribute('y');
+
+            Plotly.relayout(gd, 'showlegend', false);
+            Plotly.relayout(gd, 'showlegend', true);
+
+            legend = document.getElementsByClassName('legend')[0];
+            scrollBox = legend.getElementsByClassName('scrollbox')[0];
+            scrollBar = legend.getElementsByClassName('scrollbar')[0];
+            toggle = legend.getElementsByClassName('legendtoggle')[0];
+
+            legend.dispatchEvent(scrollTo(wheelDeltaY));
+            expect(scrollBar.getAttribute('x')).toBe(scrollBarX);
+            expect(scrollBar.getAttribute('y')).toBe(scrollBarY);
+
+            var dataScroll = scrollBox.getAttribute('data-scroll');
+            toggle.dispatchEvent(new MouseEvent('click'));
+            expect(+toggle.parentNode.style.opacity).toBeLessThan(1);
+            expect(scrollBox.getAttribute('data-scroll')).toBe(dataScroll);
+            expect(scrollBox.getAttribute('transform')).toBe(
+                'translate(0, ' + dataScroll + ')');
+            expect(scrollBar.getAttribute('width')).toBeGreaterThan(0);
+            expect(scrollBar.getAttribute('height')).toBeGreaterThan(0);
+        });
+
         it('should constrain scrolling to the contents', function() {
             var scrollBox = legend.getElementsByClassName('scrollbox')[0];
 
@@ -87,7 +142,7 @@ describe('The legend', function() {
 
         it('should scale the scrollbar movement from top to bottom', function() {
             var scrollBar = legend.getElementsByClassName('scrollbar')[0],
-                legendHeight = getBBox(legend).height;
+                legendHeight = getLegendHeight();
 
             // The scrollbar is 20px tall and has 4px margins
 
@@ -111,10 +166,10 @@ describe('The legend', function() {
         });
 
         it('should resize when relayout\'ed with new height', function(done) {
-            var origLegendHeight = getBBox(legend).height;
+            var origLegendHeight = getLegendHeight();
 
             Plotly.relayout(gd, 'height', gd._fullLayout.height / 2).then(function() {
-                var legendHeight = getBBox(legend).height;
+                var legendHeight = getLegendHeight();
 
                 //legend still exists and not duplicated
                 expect(countLegendGroups(gd)).toBe(1);
@@ -136,7 +191,7 @@ describe('The legend', function() {
         beforeEach(function() {
             gd = createGraph();
 
-            var data = [{ x: [1,2,3], y: [2,3,4], name: 'Test' }];
+            var data = [{ x: [1, 2, 3], y: [2, 3, 4], name: 'Test' }];
             var layout = { showlegend: true };
 
             Plotly.plot(gd, data, layout);
@@ -164,14 +219,15 @@ describe('The legend', function() {
         });
 
         it('should resize when traces added', function(done) {
-            var origLegend = document.getElementsByClassName('legend')[0];
-            var origLegendHeight = getBBox(origLegend).height;
+            legend = document.getElementsByClassName('legend')[0];
+            bg = document.getElementsByClassName('bg')[0];
+            var origLegendHeight = getLegendHeight();
 
-            Plotly.addTraces(gd, { x: [1,2,3], y: [4,3,2], name: 'Test2' }).then(function() {
-                var legend = document.getElementsByClassName('legend')[0];
-                var legendHeight = getBBox(legend).height;
+            Plotly.addTraces(gd, { x: [1, 2, 3], y: [4, 3, 2], name: 'Test2' }).then(function() {
+                legend = document.getElementsByClassName('legend')[0];
+                bg = document.getElementsByClassName('bg')[0];
+                var legendHeight = getLegendHeight();
 
-                // clippath resized to show new trace
                 expect(+legendHeight).toBeCloseTo(+origLegendHeight + 19, 0);
 
                 done();

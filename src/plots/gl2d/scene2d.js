@@ -18,7 +18,7 @@ var createSelectBox = require('gl-select-box');
 
 var createOptions = require('./convert');
 var createCamera = require('./camera');
-var htmlToUnicode = require('../../lib/html2unicode');
+var convertHTMLToUnicode = require('../../lib/html2unicode');
 var showNoWebGlMsg = require('../../lib/show_no_webgl_msg');
 
 var AXES = ['xaxis', 'yaxis'];
@@ -27,6 +27,7 @@ var STATIC_CANVAS, STATIC_CONTEXT;
 
 function Scene2D(options, fullLayout) {
     this.container = options.container;
+    this.graphDiv = options.graphDiv;
     this.pixelRatio = options.plotGlPixelRatio || window.devicePixelRatio;
     this.id = options.id;
     this.staticPlot = !!options.staticPlot;
@@ -83,7 +84,7 @@ proto.makeFramework = function() {
 
             try {
                 STATIC_CONTEXT = STATIC_CANVAS.getContext('webgl', {
-                    preserveDrawingBuffer: true,
+                    preserveDrawingBuffer: false,
                     premultipliedAlpha: true,
                     antialias: true
                 });
@@ -178,12 +179,12 @@ proto.toImage = function(format) {
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
     // flip pixels
-    for(var j=0,k=h-1; j<k; ++j, --k) {
-        for(var i=0; i<w; ++i) {
-            for(var l=0; l<4; ++l) {
-                var tmp = pixels[4*(w*j+i)+l];
-                pixels[4*(w*j+i)+l] = pixels[4*(w*k+i)+l];
-                pixels[4*(w*k+i)+l] = tmp;
+    for(var j = 0, k = h - 1; j < k; ++j, --k) {
+        for(var i = 0; i < w; ++i) {
+            for(var l = 0; l < 4; ++l) {
+                var tmp = pixels[4 * (w * j + i) + l];
+                pixels[4 * (w * j + i) + l] = pixels[4 * (w * k + i) + l];
+                pixels[4 * (w * k + i) + l] = tmp;
             }
         }
     }
@@ -230,7 +231,7 @@ proto.computeTickMarks = function() {
         for(var i = 0; i < nextTicks[j].length; ++i) {
             // TODO add support for '\n' in gl-plot2d,
             // For now, replace '\n' with ' '
-            nextTicks[j][i].text = htmlToUnicode(nextTicks[j][i].text + '').replace(/\n/g, ' ');
+            nextTicks[j][i].text = convertHTMLToUnicode(nextTicks[j][i].text + '').replace(/\n/g, ' ');
         }
     }
 
@@ -268,6 +269,25 @@ proto.updateFx = function(options) {
     fullLayout.hovermode = options.hovermode;
 };
 
+var relayoutCallback = function(scene) {
+
+    var xrange = scene.xaxis.range,
+        yrange = scene.yaxis.range;
+
+    // Update the layout on the DIV
+    scene.graphDiv.layout.xaxis.range = xrange.slice(0);
+    scene.graphDiv.layout.yaxis.range = yrange.slice(0);
+
+    // Make a meaningful value to be passed on to the possible 'plotly_relayout' subscriber(s)
+    var update = { // scene.camera has no many useful projection or scale information
+        lastInputTime: scene.camera.lastInputTime // helps determine which one is the latest input (if async)
+    };
+    update[scene.xaxis._name] = xrange.slice();
+    update[scene.yaxis._name] = yrange.slice();
+
+    scene.graphDiv.emit('plotly_relayout', update);
+};
+
 proto.cameraChanged = function() {
     var camera = this.camera,
         xrange = this.xaxis.range,
@@ -285,10 +305,21 @@ proto.cameraChanged = function() {
         this.glplotOptions.ticks = nextTicks;
         this.glplotOptions.dataBox = camera.dataBox;
         this.glplot.update(this.glplotOptions);
+        relayoutCallback(this);
     }
 };
 
 proto.destroy = function() {
+
+    var traces = this.traces;
+
+    if(traces) {
+        Object.keys(traces).map(function(key) {
+            traces[key].dispose();
+            delete traces[key];
+        });
+    }
+
     this.glplot.dispose();
 
     if(!this.staticPlot) this.container.removeChild(this.canvas);
@@ -367,7 +398,7 @@ proto.plot = function(fullData, calcData, fullLayout) {
     this.mouseContainer.style.height = size.h * (domainY[1] - domainY[0]) + 'px';
     this.mouseContainer.height = size.h * (domainY[1] - domainY[0]);
     this.mouseContainer.style.left = size.l + domainX[0] * size.w + 'px';
-    this.mouseContainer.style.top = size.t + (1-domainY[1]) * size.h + 'px';
+    this.mouseContainer.style.top = size.t + (1 - domainY[1]) * size.h + 'px';
 
     var bounds = this.bounds;
     bounds[0] = bounds[1] = Infinity;
@@ -378,19 +409,19 @@ proto.plot = function(fullData, calcData, fullLayout) {
         trace = this.traces[traceIds[i]];
         for(var k = 0; k < 2; ++k) {
             bounds[k] = Math.min(bounds[k], trace.bounds[k]);
-            bounds[k+2] = Math.max(bounds[k+2], trace.bounds[k+2]);
+            bounds[k + 2] = Math.max(bounds[k + 2], trace.bounds[k + 2]);
         }
     }
 
     var ax;
     for(i = 0; i < 2; ++i) {
-        if(bounds[i] > bounds[i+2]) {
+        if(bounds[i] > bounds[i + 2]) {
             bounds[i] = -1;
-            bounds[i+2] = 1;
+            bounds[i + 2] = 1;
         }
 
         ax = this[AXES[i]];
-        ax._length = options.viewBox[i+2] - options.viewBox[i];
+        ax._length = options.viewBox[i + 2] - options.viewBox[i];
 
         Axes.doAutoRange(ax);
     }
@@ -444,19 +475,24 @@ proto.draw = function() {
 
         var result = glplot.pick(
             (x / glplot.pixelRatio) + size.l + domainX[0] * size.w,
-            (y / glplot.pixelRatio) - (size.t + (1-domainY[1]) * size.h)
+            (y / glplot.pixelRatio) - (size.t + (1 - domainY[1]) * size.h)
         );
 
-        if(result && fullLayout.hovermode) {
+        if(result && result.object._trace.hoverinfo !== 'skip' && fullLayout.hovermode) {
             var nextSelection = result.object._trace.handlePick(result);
 
             if(nextSelection && (
                 !this.lastPickResult ||
-                this.lastPickResult.trace !== nextSelection.trace ||
+                this.lastPickResult.traceUid !== nextSelection.trace.uid ||
                 this.lastPickResult.dataCoord[0] !== nextSelection.dataCoord[0] ||
                 this.lastPickResult.dataCoord[1] !== nextSelection.dataCoord[1])
             ) {
-                var selection = this.lastPickResult = nextSelection;
+                var selection = nextSelection;
+
+                this.lastPickResult = {
+                    traceUid: nextSelection.trace ? nextSelection.trace.uid : null,
+                    dataCoord: nextSelection.dataCoord.slice()
+                };
                 this.spikes.update({ center: result.dataCoord });
 
                 selection.screenCoord = [
@@ -492,8 +528,6 @@ proto.draw = function() {
                 }, {
                     container: this.svgContainer
                 });
-
-                this.lastPickResult = { dataCoord: result.dataCoord };
             }
         }
         else if(!result && this.lastPickResult) {

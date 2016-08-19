@@ -47,8 +47,8 @@ module.exports = function setPositions(gd, plotinfo) {
                     trace.yaxis === ya._id) {
                 boxlist.push(j);
                 if(trace.boxpoints !== false) {
-                    minPad = Math.max(minPad, trace.jitter-trace.pointpos-1);
-                    maxPad = Math.max(maxPad, trace.jitter+trace.pointpos-1);
+                    minPad = Math.max(minPad, trace.jitter - trace.pointpos - 1);
+                    maxPad = Math.max(maxPad, trace.jitter + trace.pointpos - 1);
                 }
             }
         }
@@ -64,11 +64,11 @@ module.exports = function setPositions(gd, plotinfo) {
         // and then use for posAxis autorange
 
         var boxdv = Lib.distinctVals(boxpointlist),
-            dPos = boxdv.minDiff/2;
+            dPos = boxdv.minDiff / 2;
 
         // if there's no duplication of x points,
         // disable 'group' mode by setting numboxes=1
-        if(boxpointlist.length===boxdv.vals.length) gd.numboxes = 1;
+        if(boxpointlist.length === boxdv.vals.length) gd.numboxes = 1;
 
         // check for forced minimum dtick
         Axes.minDtick(posAxis, boxdv.minDiff, boxdv.vals[0], true);
@@ -81,11 +81,11 @@ module.exports = function setPositions(gd, plotinfo) {
         // autoscale the x axis - including space for points if they're off the side
         // TODO: this will overdo it if the outermost boxes don't have
         // their points as far out as the other boxes
-        var padfactor = (1-fullLayout.boxgap) * (1-fullLayout.boxgroupgap) *
+        var padfactor = (1 - fullLayout.boxgap) * (1 - fullLayout.boxgroupgap) *
                 dPos / gd.numboxes;
         Axes.expand(posAxis, boxdv.vals, {
-            vpadminus: dPos+minPad*padfactor,
-            vpadplus: dPos+maxPad*padfactor
+            vpadminus: dPos + minPad * padfactor,
+            vpadplus: dPos + maxPad * padfactor
         });
     }
 };

@@ -8,6 +8,9 @@
 
 'use strict';
 
+var d3 = require('d3');
+
+var Lib = require('../../lib');
 var Symbols = require('../drawing/symbol_defs');
 var Drawing = require('../drawing');
 
@@ -16,11 +19,12 @@ var svgNS = require('../../constants/xmlns_namespaces').svg;
 
 module.exports = function rangePlot(gd, w, h) {
 
-    var traces = gd._fullData,
-        xaxis = gd._fullLayout.xaxis,
-        yaxis = gd._fullLayout.yaxis,
-        minX = xaxis.range[0],
-        maxX = xaxis.range[1],
+    var fullLayout = gd._fullLayout,
+        traces = gd._fullData,
+        xaxis = fullLayout.xaxis,
+        yaxis = fullLayout.yaxis,
+        minX = xaxis.rangeslider.range[0],
+        maxX = xaxis.rangeslider.range[1],
         minY = yaxis.range[0],
         maxY = yaxis.range[1];
 
@@ -37,7 +41,7 @@ module.exports = function rangePlot(gd, w, h) {
     clipDefs.appendChild(clip);
 
     var rangePlot = document.createElementNS(svgNS, 'g');
-    rangePlot.setAttribute('clip-path', 'url(#range-clip-path)');
+    d3.select(rangePlot).call(Drawing.setClipUrl, 'range-clip-path');
     rangePlot.appendChild(clipDefs);
 
 
@@ -50,7 +54,7 @@ module.exports = function rangePlot(gd, w, h) {
             pointPairs = [];
 
         if(allowedTypes.indexOf(trace.type) < 0) {
-            console.log('Trace type ' + trace.type + ' not supported for range slider!');
+            Lib.warn('Trace type ' + trace.type + ' not supported for range slider!');
             continue;
         }
 
@@ -62,7 +66,9 @@ module.exports = function rangePlot(gd, w, h) {
             var posX = w * (x[k] - minX) / (maxX - minX),
                 posY = h * (1 - (y[k] - minY) / (maxY - minY));
 
-            pointPairs.push([posX, posY]);
+            if(!isNaN(posX) && !isNaN(posY)) {
+                pointPairs.push([posX, posY]);
+            }
         }
 
         // more trace type range plots can be added here
@@ -156,7 +162,7 @@ function makeScatter(trace, pointPairs, w, h) {
                 break;
 
             default:
-                console.log('Fill type ' + trace.fill + ' not supported for range slider! (yet...)');
+                Lib.warn('Fill type ' + trace.fill + ' not supported for range slider! (yet...)');
                 break;
         }
 

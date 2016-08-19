@@ -2,8 +2,9 @@ var fs = require('fs');
 
 var browserify = require('browserify');
 
-var compressAttributes = require('./util/compress_attributes');
 var constants = require('./util/constants');
+var common = require('./util/common');
+var compressAttributes = require('./util/compress_attributes');
 
 /*
  * Trimmed down version of ./bundle.js for CI testing
@@ -20,9 +21,7 @@ browserify(constants.pathToPlotlyIndex, {
     standalone: 'Plotly',
     transform: [compressAttributes]
 })
-.bundle(function(err) {
-    if(err) throw err;
-})
+.bundle(common.throwOnError)
 .pipe(fs.createWriteStream(constants.pathToPlotlyBuild));
 
 
@@ -30,7 +29,5 @@ browserify(constants.pathToPlotlyIndex, {
 browserify(constants.pathToPlotlyGeoAssetsSrc, {
     standalone: 'PlotlyGeoAssets'
 })
-.bundle(function(err) {
-    if(err) throw err;
-})
+.bundle(common.throwOnError)
 .pipe(fs.createWriteStream(constants.pathToPlotlyGeoAssetsDist));

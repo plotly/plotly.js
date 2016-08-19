@@ -21,7 +21,8 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     if(containerStr) {
         container = Lib.nestedProperty(trace, containerStr).get();
         inputContainer = Lib.nestedProperty(trace._input, containerStr).get();
-    } else {
+    }
+    else {
         container = trace;
         inputContainer = trace._input;
     }
@@ -31,11 +32,11 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
         max = container[cLetter + 'max'],
         scl = container.colorscale;
 
-    if(auto!==false || min===undefined) {
+    if(auto !== false || min === undefined) {
         min = Lib.aggNums(Math.min, null, vals);
     }
 
-    if(auto!==false || max===undefined) {
+    if(auto !== false || max === undefined) {
         max = Lib.aggNums(Math.max, null, vals);
     }
 

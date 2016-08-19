@@ -313,7 +313,7 @@ function unRoll(rotateAngles, pt, lastRotate) {
         b = Math.sqrt(a * a - g * g);
     }
 
-    var newYaw2 = 180 - newYaw1 - 2*theta,
+    var newYaw2 = 180 - newYaw1 - 2 * theta,
         newPitch1 = (Math.atan2(h, f) - Math.atan2(z, b)) * degrees,
         newPitch2 = (Math.atan2(h, f) - Math.atan2(z, -b)) * degrees;
 
@@ -333,7 +333,7 @@ function angleDistance(yaw0, pitch0, yaw1, pitch1) {
 
 // reduce an angle in degrees to [-180,180]
 function angleMod(angle) {
-    return (angle % 360 + 540) %360 - 180;
+    return (angle % 360 + 540) % 360 - 180;
 }
 
 // rotate a cartesian vector
@@ -342,8 +342,8 @@ function angleMod(angle) {
 function rotateCartesian(vector, axis, angle) {
     var angleRads = angle * radians,
         vectorOut = vector.slice(),
-        ax1 = (axis===0) ? 1 : 0,
-        ax2 = (axis===2) ? 1 : 2,
+        ax1 = (axis === 0) ? 1 : 0,
+        ax2 = (axis === 2) ? 1 : 2,
         cosa = Math.cos(angleRads),
         sina = Math.sin(angleRads);
 

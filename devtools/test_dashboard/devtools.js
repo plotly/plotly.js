@@ -4,12 +4,28 @@
 
 var Fuse = require('fuse.js');
 var mocks = require('../../build/test_dashboard_mocks.json');
-
-// put d3 in window scope
-var d3 = window.d3 = Plotly.d3;
+var credentials = require('../../build/credentials.json');
+var Lib = require('@src/lib');
+var d3 = Plotly.d3;
 
 // Our gracious testing object
 var Tabs = {
+
+    // Set plot config options
+    setPlotConfig: function() {
+        Plotly.setPlotConfig({
+
+            // use local topojson files
+            topojsonURL: '../../dist/topojson/',
+
+            // register mapbox access token
+            // run `npm run preset` if you haven't yet
+            mapboxAccessToken: credentials.MAPBOX_ACCESS_TOKEN,
+
+            // show all logs in console
+            logging: 2
+        });
+    },
 
     // Return the specified plot container (or default one)
     getGraph: function(id) {
@@ -24,7 +40,7 @@ var Tabs = {
         var graphDiv = Tabs.getGraph(id);
 
         if(graphDiv) {
-            graphDiv.remove();
+            graphDiv.parentNode.removeChild(graphDiv);
         }
 
         graphDiv = document.createElement('div');
@@ -45,6 +61,18 @@ var Tabs = {
             Plotly.plot(Tabs.fresh(id), fig.data, fig.layout);
 
             console.warn('Plotting:', mockURL);
+        });
+    },
+
+    getMock: function(mockName, callback) {
+        var mockURL = '/test/image/mocks/' + mockName + '.json';
+
+        d3.json(mockURL, function(err, fig) {
+            if(typeof callback !== 'function') {
+                window.mock = fig;
+            } else {
+                callback(err, fig);
+            }
         });
     },
 
@@ -110,6 +138,7 @@ var Tabs = {
         var interval = setInterval(function() {
             if(window.Plotly) {
                 clearInterval(interval);
+                handleOnLoad();
                 Tabs.onReload();
             }
         }, 100);
@@ -119,12 +148,14 @@ var Tabs = {
 
 // Bind things to the window
 window.Tabs = Tabs;
+window.Lib = Lib;
+window.d3 = d3;
+window.onload = handleOnLoad;
 setInterval(function() {
     window.gd = Tabs.getGraph() || Tabs.fresh();
     window.fullLayout = window.gd._fullLayout;
     window.fullData = window.gd._fullData;
 }, 1000);
-
 
 // Mocks search and plotting
 var f = new Fuse(mocks, {
@@ -165,7 +196,6 @@ function searchMocks(e) {
         mocksList.removeChild(mocksList.firstChild);
     }
 
-
     var results = f.search(e.target.value);
 
     results.forEach(function(r) {
@@ -174,10 +204,12 @@ function searchMocks(e) {
         result.innerText = r.name;
 
         result.addEventListener('click', function() {
+            var mockName = r.file.slice(0, -5);
+            window.location.hash = mockName;
 
             // Clear plots and plot selected.
             Tabs.purge();
-            Tabs.plotMock(r.file.slice(0, -5));
+            Tabs.plotMock(mockName);
         });
 
         mocksList.appendChild(result);
@@ -186,4 +218,17 @@ function searchMocks(e) {
         var plotAreaWidth = Math.floor(window.innerWidth - listWidth);
         plotArea.setAttribute('style', 'width: ' + plotAreaWidth + 'px;');
     });
+}
+
+function plotFromHash() {
+    var initialMock = window.location.hash.replace(/^#/, '');
+
+    if(initialMock.length > 0) {
+        Tabs.plotMock(initialMock);
+    }
+}
+
+function handleOnLoad() {
+    Tabs.setPlotConfig();
+    plotFromHash();
 }
