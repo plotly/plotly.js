@@ -2651,7 +2651,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             basePlotModules[j].plot(gd, transitionedTraces, traceTransitionConfig);
         }
 
-        gd._transitionData._completionTimeout = setTimeout(completeTransition, transitionConfig.duration + transitionConfig.delay);
+        gd._transitionData._completionTimeout = setTimeout(completeTransition, transitionConfig.duration + transitionConfig.delay + 1000);
 
         if(!hasAxisTransition && !hasTraceTransition) {
             return false;
@@ -2661,9 +2661,14 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     function completeTransition() {
         flushCallbacks(gd._transitionData._interruptCallbacks);
 
-        gd.emit('plotly_endtransition', []);
-
-        return executeCallbacks(gd._transitionData._cleanupCallbacks);
+        return Promise.resolve().then(function () {
+            if (transitionConfig.redraw) {
+                return Plotly.redraw(gd);
+            }
+        }).then(function () {
+            gd.emit('plotly_endtransition', []);
+            return executeCallbacks(gd._transitionData._cleanupCallbacks);
+        });
     }
 
     function interruptPreviousTransitions() {

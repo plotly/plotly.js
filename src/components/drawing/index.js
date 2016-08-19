@@ -69,7 +69,7 @@ drawing.translatePoints = function(s, xa, ya, trace, transitionConfig, joinDirec
                     var trans;
                     if(!joinDirection) {
                         trans = p.transition()
-                        .delay(transitionConfig.delay + transitionConfig.cascade / size * i)
+                        .delay(transitionConfig.delay)
                         .duration(transitionConfig.duration)
                         .ease(transitionConfig.ease)
                         .attr('transform', 'translate(' + x + ',' + y + ')');
