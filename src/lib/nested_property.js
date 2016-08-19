@@ -10,6 +10,7 @@
 'use strict';
 
 var isNumeric = require('fast-isnumeric');
+var isArray = require('./is_array');
 
 /**
  * convert a string s (such as 'xaxis.range[0]')
@@ -93,7 +94,7 @@ function npGet(cont, parts) {
                 }
                 return allSame ? out[0] : out;
             }
-            if(typeof curPart === 'number' && !Array.isArray(curCont)) {
+            if(typeof curPart === 'number' && !isArray(curCont)) {
                 return undefined;
             }
             curCont = curCont[curPart];
@@ -122,7 +123,7 @@ function isDataArray(val, key) {
     var containers = ['annotations', 'shapes', 'range', 'domain', 'buttons'],
         isNotAContainer = containers.indexOf(key) === -1;
 
-    return Array.isArray(val) && isNotAContainer;
+    return isArray(val) && isNotAContainer;
 }
 
 function npSet(cont, parts) {
@@ -136,7 +137,7 @@ function npSet(cont, parts) {
         for(i = 0; i < parts.length - 1; i++) {
             curPart = parts[i];
 
-            if(typeof curPart === 'number' && !Array.isArray(curCont)) {
+            if(typeof curPart === 'number' && !isArray(curCont)) {
                 throw 'array index but container is not an array';
             }
 
@@ -170,7 +171,7 @@ function npSet(cont, parts) {
 
 // handle special -1 array index
 function setArrayAll(containerArray, innerParts, val) {
-    var arrayVal = Array.isArray(val),
+    var arrayVal = isArray(val),
         allSet = true,
         thisVal = val,
         deleteThis = arrayVal ? false : emptyObj(val),
@@ -215,7 +216,7 @@ function pruneContainers(containerLevels) {
     for(i = containerLevels.length - 1; i >= 0; i--) {
         curCont = containerLevels[i];
         remainingKeys = false;
-        if(Array.isArray(curCont)) {
+        if(isArray(curCont)) {
             for(j = curCont.length - 1; j >= 0; j--) {
                 if(emptyObj(curCont[j])) {
                     if(remainingKeys) curCont[j] = undefined;
@@ -239,7 +240,7 @@ function pruneContainers(containerLevels) {
 function emptyObj(obj) {
     if(obj === undefined || obj === null) return true;
     if(typeof obj !== 'object') return false; // any plain value
-    if(Array.isArray(obj)) return !obj.length; // []
+    if(isArray(obj)) return !obj.length; // []
     return !Object.keys(obj).length; // {}
 }
 
