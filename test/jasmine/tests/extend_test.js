@@ -1,3 +1,5 @@
+/*global Float32Array, Float64Array, Int16Array, Int32Array */
+
 var extendModule = require('@src/lib/extend.js');
 var extendFlat = extendModule.extendFlat;
 var extendDeep = extendModule.extendDeep;
