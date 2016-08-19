@@ -454,10 +454,26 @@ describe('extendDeepAll', function() {
     });
 });
 
-describe('extendDeepNoArrays', function() {
+describe('array by reference vs deep-copy', function() {
     'use strict';
 
-    it('does not copy arrays', function() {
+    it('extendDeep DOES deep-copy untyped source arrays', function() {
+        var src = {foo: {bar: [1, 2, 3], baz: [5, 4, 3]}};
+        var tar = {foo: {bar: [4, 5, 6], bop: [8, 2, 1]}};
+        var ext = extendDeep(tar, src);
+
+        expect(ext).not.toBe(src);
+        expect(ext).toBe(tar);
+
+        expect(ext.foo).not.toBe(src.foo);
+        expect(ext.foo).toBe(tar.foo);
+
+        expect(ext.foo.bar).not.toBe(src.foo.bar);
+        expect(ext.foo.baz).not.toBe(src.foo.baz);
+        expect(ext.foo.bop).toBe(tar.foo.bop); // what comes from the target isn't deep copied
+    });
+
+    it('extendDeepNoArrays includes by reference untyped arrays from source', function() {
         var src = {foo: {bar: [1, 2, 3], baz: [5, 4, 3]}};
         var tar = {foo: {bar: [4, 5, 6], bop: [8, 2, 1]}};
         var ext = extendDeepNoArrays(tar, src);
@@ -472,4 +488,37 @@ describe('extendDeepNoArrays', function() {
         expect(ext.foo.baz).toBe(src.foo.baz);
         expect(ext.foo.bop).toBe(tar.foo.bop);
     });
+
+    it('extendDeepNoArrays includes by reference typed arrays from source', function() {
+        var src = {foo: {bar: new Int32Array([1, 2, 3]), baz: new Float32Array([5, 4, 3])}};
+        var tar = {foo: {bar: new Int16Array([4, 5, 6]), bop: new Float64Array([8, 2, 1])}};
+        var ext = extendDeepNoArrays(tar, src);
+
+        expect(ext).not.toBe(src);
+        expect(ext).toBe(tar);
+
+        expect(ext.foo).not.toBe(src.foo);
+        expect(ext.foo).toBe(tar.foo);
+
+        expect(ext.foo.bar).toBe(src.foo.bar);
+        expect(ext.foo.baz).toBe(src.foo.baz);
+        expect(ext.foo.bop).toBe(tar.foo.bop);
+    });
+
+    it('extendDeep ALSO includes by reference typed arrays from source', function() {
+        var src = {foo: {bar: new Int32Array([1, 2, 3]), baz: new Float32Array([5, 4, 3])}};
+        var tar = {foo: {bar: new Int16Array([4, 5, 6]), bop: new Float64Array([8, 2, 1])}};
+        var ext = extendDeep(tar, src);
+
+        expect(ext).not.toBe(src);
+        expect(ext).toBe(tar);
+
+        expect(ext.foo).not.toBe(src.foo);
+        expect(ext.foo).toBe(tar.foo);
+
+        expect(ext.foo.bar).toBe(src.foo.bar);
+        expect(ext.foo.baz).toBe(src.foo.baz);
+        expect(ext.foo.bop).toBe(tar.foo.bop);
+    });
+
 });
