@@ -15,6 +15,7 @@ var lib = module.exports = {};
 
 lib.nestedProperty = require('./nested_property');
 lib.isPlainObject = require('./is_plain_object');
+lib.isArray = require('./is_array');
 
 var coerceModule = require('./coerce');
 lib.valObjects = coerceModule.valObjects;

@@ -9,8 +9,7 @@
 'use strict';
 
 /**
- * Truncate a Float32Array to some length. A wrapper to support environments
- * (e.g. node-webkit) that do not implement Float32Array.prototype.slice
+ * Return true for arrays, whether they're untyped or not.
  */
 module.exports = function isArray(a) {
     return Array.isArray(a) || ArrayBuffer.isView(a);
