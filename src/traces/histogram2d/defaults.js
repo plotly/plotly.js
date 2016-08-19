@@ -24,6 +24,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, layout) {
     handleSampleDefaults(traceIn, traceOut, coerce);
 
     coerce('zsmooth');
+    coerce('xgap');
+    coerce('ygap');
 
     colorscaleDefaults(
         traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'}

@@ -429,15 +429,52 @@ describe('heatmap plot', function() {
             argumentsWithPadding = [];
         Plotly.plot(gd, mockWithoutPadding.data, mockWithoutPadding.layout).then(function() {
             argumentsWithoutPadding = getContextStub.fillRect.calls.allArgs().slice(0);
-            expect(argumentsWithoutPadding).toEqual([[0, 180, 177, 90], [177, 180, 177, 90], [354, 180, 177, 90],
-                                                     [0, 90, 177, 90], [177, 90, 177, 90], [354, 90, 177, 90],
-                                                     [0, 0, 177, 90], [177, 0, 177, 90], [354, 0, 177, 90]]);
             return Plotly.plot(gd, mockWithPadding.data, mockWithPadding.layout);
         }).then(function() {
+            var centerXGap = mockWithPadding.data[0].xgap / 3;
+            var centerYGap = mockWithPadding.data[0].ygap / 3;
+            var edgeXGap = mockWithPadding.data[0].xgap * 2 / 3;
+            var edgeYGap = mockWithPadding.data[0].ygap * 2 / 3;
+
             argumentsWithPadding = getContextStub.fillRect.calls.allArgs().slice(getContextStub.fillRect.calls.allArgs().length - 9);
-            expect(argumentsWithPadding).toEqual([[0, 184, 171, 86], [180, 184, 171, 86], [360, 184, 171, 86],
-                                                  [0, 92, 171, 86], [180, 92, 171, 86], [360, 92, 171, 86],
-                                                  [0, 0, 171, 86], [180, 0, 171, 86], [360, 0, 171, 86]]);
+            expect(argumentsWithPadding).toEqual([
+              [argumentsWithoutPadding[0][0],
+               argumentsWithoutPadding[0][1] + edgeYGap,
+               argumentsWithoutPadding[0][2] - edgeXGap,
+               argumentsWithoutPadding[0][3] - edgeYGap],
+              [argumentsWithoutPadding[1][0] + centerXGap,
+               argumentsWithoutPadding[1][1] + edgeYGap,
+               argumentsWithoutPadding[1][2] - edgeXGap,
+               argumentsWithoutPadding[1][3] - edgeYGap],
+              [argumentsWithoutPadding[2][0] + edgeXGap,
+               argumentsWithoutPadding[2][1] + edgeYGap,
+               argumentsWithoutPadding[2][2] - edgeXGap,
+               argumentsWithoutPadding[2][3] - edgeYGap],
+              [argumentsWithoutPadding[3][0],
+               argumentsWithoutPadding[3][1] + centerYGap,
+               argumentsWithoutPadding[3][2] - edgeXGap,
+               argumentsWithoutPadding[3][3] - edgeYGap],
+              [argumentsWithoutPadding[4][0] + centerXGap,
+               argumentsWithoutPadding[4][1] + centerYGap,
+               argumentsWithoutPadding[4][2] - edgeXGap,
+               argumentsWithoutPadding[4][3] - edgeYGap],
+              [argumentsWithoutPadding[5][0] + edgeXGap,
+               argumentsWithoutPadding[5][1] + centerYGap,
+               argumentsWithoutPadding[5][2] - edgeXGap,
+               argumentsWithoutPadding[5][3] - edgeYGap],
+              [argumentsWithoutPadding[6][0],
+               argumentsWithoutPadding[6][1],
+               argumentsWithoutPadding[6][2] - edgeXGap,
+               argumentsWithoutPadding[6][3] - edgeYGap],
+              [argumentsWithoutPadding[7][0] + centerXGap,
+               argumentsWithoutPadding[7][1],
+               argumentsWithoutPadding[7][2] - edgeXGap,
+               argumentsWithoutPadding[7][3] - edgeYGap],
+              [argumentsWithoutPadding[8][0] + edgeXGap,
+               argumentsWithoutPadding[8][1],
+               argumentsWithoutPadding[8][2] - edgeXGap,
+               argumentsWithoutPadding[8][3] - edgeYGap
+             ]]);
             done();
         });
     });
