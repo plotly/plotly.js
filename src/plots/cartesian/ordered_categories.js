@@ -41,7 +41,7 @@ function flattenUniqueSort(axisLetter, sortFunction, data) {
             insertionIndex = bisector(categoryArray, category);
 
             // skip loop on already encountered values
-            if(insertionIndex < categoryArray.length - 1 && categoryArray[insertionIndex] === category) continue;
+            if(insertionIndex < categoryArray.length && categoryArray[insertionIndex] === category) continue;
 
             // insert value
             categoryArray.splice(insertionIndex, 0, category);
