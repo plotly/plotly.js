@@ -28,7 +28,7 @@ describe('Test histogram2d', function() {
 
         it('should set xgap and ygap to 0 when xgap and ygap are empty', function() {
             traceIn = {};
-            supplyDefaults(traceIn, traceOut,{});
+            supplyDefaults(traceIn, traceOut, {});
             expect(traceOut.xgap).toBe(0);
             expect(traceOut.ygap).toBe(0);
         });
