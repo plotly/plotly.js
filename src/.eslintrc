@@ -6,7 +6,8 @@
   "globals": {
     "Promise": true,
     "Float32Array": true,
-    "Uint8Array": true
+    "Uint8Array": true,
+    "ArrayBuffer": true
   },
   "rules": {
     "strict": [2, "global"],

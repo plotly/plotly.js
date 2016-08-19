@@ -1,15 +1,17 @@
 var Lib = require('@src/lib');
 
-describe('isPlainObject', function() {
+describe('isArray', function() {
     'use strict';
 
-    var isPlainObject = Lib.isPlainObject;
+    var isArray = Lib.isArray;
 
     function A() {}
 
     var shouldPass = [
-        {},
-        {a: 'A', 'B': 'b'}
+        [],
+        new Array(10),
+        new Float32Array(1),
+        new Int32Array([1, 2, 3])
     ];
 
     var shouldFail = [
@@ -19,8 +21,6 @@ describe('isPlainObject', function() {
         window,
         null,
         undefined,
-        [],
-        new Float32Array(1),
         'string',
         true,
         false,
@@ -28,21 +28,20 @@ describe('isPlainObject', function() {
         Infinity,
         /foo/,
         '\n',
-        new Array(10),
         new Date(),
         new RegExp('foo'),
         new String('string')
     ];
 
     shouldPass.forEach(function(obj) {
-        it('treats ' + JSON.stringify(obj) + ' as a plain object', function() {
-            expect(isPlainObject(obj)).toBe(true);
+        it('treats ' + JSON.stringify(obj) + ' as an array', function() {
+            expect(isArray(obj)).toBe(true);
         });
     });
 
     shouldFail.forEach(function(obj) {
-        it('treats ' + JSON.stringify(obj !== window ? obj : 'window') + ' as NOT a plain object', function() {
-            expect(isPlainObject(obj)).toBe(false);
+        it('treats ' + JSON.stringify(obj !== window ? obj : 'window') + ' as NOT an array', function() {
+            expect(isArray(obj)).toBe(false);
         });
     });
 });
