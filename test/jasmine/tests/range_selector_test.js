@@ -14,7 +14,7 @@ var mouseEvent = require('../assets/mouse_event');
 describe('range selector defaults:', function() {
     'use strict';
 
-    var supplyLayoutDefaults = RangeSelector.supplyLayoutDefaults;
+    var handleDefaults = RangeSelector.handleDefaults;
 
     function supply(containerIn, containerOut) {
         containerOut.domain = [0, 1];
@@ -25,7 +25,7 @@ describe('range selector defaults:', function() {
 
         var counterAxes = ['yaxis'];
 
-        supplyLayoutDefaults(containerIn, containerOut, layout, counterAxes);
+        handleDefaults(containerIn, containerOut, layout, counterAxes);
     }
 
     it('should set \'visible\' to false when no buttons are present', function() {
@@ -139,7 +139,7 @@ describe('range selector defaults:', function() {
         };
         var counterAxes = ['yaxis'];
 
-        supplyLayoutDefaults(containerIn, containerOut, layout, counterAxes);
+        handleDefaults(containerIn, containerOut, layout, counterAxes);
 
         expect(containerOut.rangeselector.x).toEqual(0);
         expect(containerOut.rangeselector.y).toBeCloseTo(0.47);
@@ -170,7 +170,7 @@ describe('range selector defaults:', function() {
         };
         var counterAxes = ['yaxis', 'yaxis2', 'yaxis3'];
 
-        supplyLayoutDefaults(containerIn, containerOut, layout, counterAxes);
+        handleDefaults(containerIn, containerOut, layout, counterAxes);
 
         expect(containerOut.rangeselector.x).toEqual(0.5);
         expect(containerOut.rangeselector.y).toBeCloseTo(0.87);

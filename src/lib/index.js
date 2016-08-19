@@ -121,6 +121,9 @@ lib.bBoxIntersect = function(a, b, pad) {
 // minor convenience/performance booster for d3...
 lib.identity = function(d) { return d; };
 
+// minor convenience helper
+lib.noop = function() {};
+
 // random string generator
 lib.randstr = function randstr(existing, bits, base) {
     /*

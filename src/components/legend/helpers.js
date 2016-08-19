@@ -9,11 +9,11 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 
 
 exports.legendGetsTrace = function legendGetsTrace(trace) {
-    return trace.visible && Plots.traceIs(trace, 'showLegend');
+    return trace.visible && Registry.traceIs(trace, 'showLegend');
 };
 
 exports.isGrouped = function isGrouped(legendLayout) {

@@ -12,6 +12,11 @@
 
 var legend = module.exports = {};
 
+
+legend.moduleType = 'component';
+
+legend.name = 'legend';
+
 legend.layoutAttributes = require('./attributes');
 
 legend.supplyLayoutDefaults = require('./defaults');

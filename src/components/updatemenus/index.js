@@ -9,6 +9,10 @@
 'use strict';
 
 
+exports.moduleType = 'component';
+
+exports.name = 'updatemenus';
+
 exports.layoutAttributes = require('./attributes');
 
 exports.supplyLayoutDefaults = require('./defaults');

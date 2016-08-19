@@ -18,6 +18,7 @@ var Lib = require('../lib');
 var Events = require('../lib/events');
 var Queue = require('../lib/queue');
 
+var Registry = require('../registry');
 var Plots = require('../plots/plots');
 var Fx = require('../plots/cartesian/graph_interact');
 var Polar = require('../plots/polar');
@@ -25,16 +26,10 @@ var Polar = require('../plots/polar');
 var Color = require('../components/color');
 var Drawing = require('../components/drawing');
 var ErrorBars = require('../components/errorbars');
-var Annotations = require('../components/annotations');
-var Images = require('../components/images');
-var Legend = require('../components/legend');
-var RangeSlider = require('../components/rangeslider');
-var RangeSelector = require('../components/rangeselector');
-var UpdateMenus = require('../components/updatemenus');
-var Shapes = require('../components/shapes');
 var Titles = require('../components/titles');
 var ModeBar = require('../components/modebar');
 var xmlnsNamespaces = require('../constants/xmlns_namespaces');
+var svgTextUtils = require('../lib/svg_text_utils');
 
 
 /**
@@ -181,9 +176,9 @@ Plotly.plot = function(gd, data, layout, config) {
         var calcdata = gd.calcdata;
         var i, cd, trace;
 
-        Legend.draw(gd);
-        RangeSelector.draw(gd);
-        UpdateMenus.draw(gd);
+        Registry.getComponentMethod('legend', 'draw')(gd);
+        Registry.getComponentMethod('rangeselector', 'draw')(gd);
+        Registry.getComponentMethod('updatemenus', 'draw')(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -232,8 +227,8 @@ Plotly.plot = function(gd, data, layout, config) {
 
         // TODO: autosize extra for text markers
         return Lib.syncOrAsync([
-            Shapes.calcAutorange,
-            Annotations.calcAutorange,
+            Registry.getComponentMethod('shapes', 'calcAutorange'),
+            Registry.getComponentMethod('annotations', 'calcAutorange'),
             doAutoRange
         ], gd);
     }
@@ -262,7 +257,7 @@ Plotly.plot = function(gd, data, layout, config) {
                 isVisible = (trace.visible === true),
                 uid = trace.uid;
 
-            if(!isVisible || !Plots.traceIs(trace, '2dMap')) {
+            if(!isVisible || !Registry.traceIs(trace, '2dMap')) {
                 fullLayout._paper.selectAll(
                     '.hm' + uid +
                     ',.contour' + uid +
@@ -285,8 +280,8 @@ Plotly.plot = function(gd, data, layout, config) {
         Plots.style(gd);
 
         // show annotations and shapes
-        Shapes.draw(gd);
-        Annotations.draw(gd);
+        Registry.getComponentMethod('shapes', 'draw')(gd);
+        Registry.getComponentMethod('annoations', 'draw')(gd);
 
         // source links
         Plots.addLinks(gd);
@@ -301,13 +296,13 @@ Plotly.plot = function(gd, data, layout, config) {
     // correctly sized and the whole plot re-margined. gd._replotting must
     // be set to false before these will work properly.
     function finalDraw() {
-        Shapes.draw(gd);
-        Images.draw(gd);
-        Annotations.draw(gd);
-        Legend.draw(gd);
-        RangeSlider.draw(gd);
-        RangeSelector.draw(gd);
-        UpdateMenus.draw(gd);
+        Registry.getComponentMethod('shapes', 'draw')(gd);
+        Registry.getComponentMethod('images', 'draw')(gd);
+        Registry.getComponentMethod('annotations', 'draw')(gd);
+        Registry.getComponentMethod('legend', 'draw')(gd);
+        Registry.getComponentMethod('rangeslider', 'draw')(gd);
+        Registry.getComponentMethod('rangeselector', 'draw')(gd);
+        Registry.getComponentMethod('updatemenus', 'draw')(gd);
     }
 
     function cleanUp() {
@@ -452,7 +447,7 @@ function plotPolar(gd, data, layout) {
     var placeholderText = 'Click to enter title';
 
     var titleLayout = function() {
-        this.call(Plotly.util.convertToTspans);
+        this.call(svgTextUtils.convertToTspans);
         //TODO: html/mathjax
         //TODO: center title
     };
@@ -478,7 +473,7 @@ function plotPolar(gd, data, layout) {
         }
 
         var setContenteditable = function() {
-            this.call(Plotly.util.makeEditable)
+            this.call(svgTextUtils.makeEditable)
                 .on('edit', function(text) {
                     gd.framework({layout: {title: text}});
                     this.attr({'data-unformatted': text})
@@ -705,7 +700,7 @@ function cleanData(data, existingData) {
         if(trace.error_y && 'opacity' in trace.error_y) {
             var dc = Color.defaults,
                 yeColor = trace.error_y.color ||
-                (Plots.traceIs(trace, 'bar') ? Color.defaultLine : dc[tracei % dc.length]);
+                (Registry.traceIs(trace, 'bar') ? Color.defaultLine : dc[tracei % dc.length]);
             trace.error_y.color = Color.addOpacity(
                 Color.rgb(yeColor),
                 Color.opacity(yeColor) * trace.error_y.opacity);
@@ -715,7 +710,7 @@ function cleanData(data, existingData) {
         // convert bardir to orientation, and put the data into
         // the axes it's eventually going to be used with
         if('bardir' in trace) {
-            if(trace.bardir === 'h' && (Plots.traceIs(trace, 'bar') ||
+            if(trace.bardir === 'h' && (Registry.traceIs(trace, 'bar') ||
                      trace.type.substr(0, 9) === 'histogram')) {
                 trace.orientation = 'h';
                 swapXYData(trace);
@@ -745,11 +740,11 @@ function cleanData(data, existingData) {
         if(trace.yaxis) trace.yaxis = Plotly.Axes.cleanId(trace.yaxis, 'y');
 
         // scene ids scene1 -> scene
-        if(Plots.traceIs(trace, 'gl3d') && trace.scene) {
+        if(Registry.traceIs(trace, 'gl3d') && trace.scene) {
             trace.scene = Plots.subplotsRegistry.gl3d.cleanId(trace.scene);
         }
 
-        if(!Plots.traceIs(trace, 'pie')) {
+        if(!Registry.traceIs(trace, 'pie')) {
             if(Array.isArray(trace.textposition)) {
                 trace.textposition = trace.textposition.map(cleanTextPosition);
             }
@@ -759,11 +754,11 @@ function cleanData(data, existingData) {
         }
 
         // fix typo in colorscale definition
-        if(Plots.traceIs(trace, '2dMap')) {
+        if(Registry.traceIs(trace, '2dMap')) {
             if(trace.colorscale === 'YIGnBu') trace.colorscale = 'YlGnBu';
             if(trace.colorscale === 'YIOrRd') trace.colorscale = 'YlOrRd';
         }
-        if(Plots.traceIs(trace, 'markerColorscale') && trace.marker) {
+        if(Registry.traceIs(trace, 'markerColorscale') && trace.marker) {
             var cont = trace.marker;
             if(cont.colorscale === 'YIGnBu') cont.colorscale = 'YlGnBu';
             if(cont.colorscale === 'YIOrRd') cont.colorscale = 'YlOrRd';
@@ -1607,7 +1602,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'marker.line.showscale', 'marker.line.cauto', 'marker.line.autocolorscale', 'marker.line.reversescale'
     ];
     for(i = 0; i < traces.length; i++) {
-        if(Plots.traceIs(gd._fullData[traces[i]], 'box')) {
+        if(Registry.traceIs(gd._fullData[traces[i]], 'box')) {
             recalcAttrs.push('name');
             break;
         }
@@ -1852,7 +1847,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
                     // super kludgy - but if all pies are gone we won't remove them otherwise
                     fullLayout._pielayer.selectAll('g.trace').remove();
-                } else if(Plots.traceIs(cont, 'cartesian')) {
+                } else if(Registry.traceIs(cont, 'cartesian')) {
                     Lib.nestedProperty(cont, 'marker.colors')
                         .set(Lib.nestedProperty(cont, 'marker.color').get());
                     //look for axes that are no longer in use and delete them
@@ -1928,7 +1923,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 for(i = 0; i < traces.length; i++) {
                     var trace = gd.data[traces[i]];
 
-                    if(Plots.traceIs(trace, 'cartesian')) {
+                    if(Registry.traceIs(trace, 'cartesian')) {
                         addToAxlist(trace.xaxis || 'x');
                         addToAxlist(trace.yaxis || 'y');
 
@@ -1956,7 +1951,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             axLetter = axId.charAt(0),
             axAttr = axLetter + 'axis';
         for(var j = 0; j < gd.data.length; j++) {
-            if(Plots.traceIs(gd.data[j], 'cartesian') &&
+            if(Registry.traceIs(gd.data[j], 'cartesian') &&
                     (gd.data[j][axAttr] || axLetter) === axId) {
                 continue axisLoop;
             }
@@ -2007,8 +2002,10 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                     arraysToCalcdata = (((cdi[0] || {}).trace || {})._module || {}).arraysToCalcdata;
                     if(arraysToCalcdata) arraysToCalcdata(cdi);
                 }
+
                 Plots.style(gd);
-                Legend.draw(gd);
+                Registry.getComponentMethod('legend', 'draw')(gd);
+
                 return Plots.previousPromises(gd);
             });
         }
@@ -2019,7 +2016,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                         var trace = cd[0].trace,
                             cb = cd[0].t.cb;
 
-                        if(Plots.traceIs(trace, 'contour')) {
+                        if(Registry.traceIs(trace, 'contour')) {
                             cb.line({
                                 width: trace.contours.showlines !== false ?
                                     trace.line.width : 0,
@@ -2028,7 +2025,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                                     cb._opts.line.color : trace.line.color
                             });
                         }
-                        if(Plots.traceIs(trace, 'markerColorscale')) {
+                        if(Registry.traceIs(trace, 'markerColorscale')) {
                             cb.options(trace.marker.colorbar)();
                         }
                         else cb.options(trace.colorbar)();
@@ -2287,8 +2284,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
             var objNum = p.parts[1],
                 objType = p.parts[0],
                 objList = layout[objType] || [],
-                objModule = Plotly[Lib.titleCase(objType)],
                 obji = objList[objNum] || {};
+
             // if p.parts is just an annotation number, and val is either
             // 'add' or an entire annotation to add, the undo is 'remove'
             // if val is 'remove' then undo is the whole annotation object
@@ -2305,21 +2302,25 @@ Plotly.relayout = function relayout(gd, astr, val) {
                 }
                 else Lib.log('???', aobj);
             }
+
             if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
                     !Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {
                 docalc = true;
             }
+
             // TODO: combine all edits to a given annotation / shape into one call
             // as it is we get separate calls for x and y (or ax and ay) on move
-            objModule.drawOne(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
+
+            var drawOne = Registry.getComponentMethod(objType, 'drawOne');
+            drawOne(gd, objNum, p.parts.slice(2).join('.'), aobj[ai]);
             delete aobj[ai];
         }
         else if(p.parts[0] === 'images') {
             var update = Lib.objectFromPath(ai, vi);
             Lib.extendDeepAll(gd.layout, update);
 
-            Images.supplyLayoutDefaults(gd.layout, gd._fullLayout);
-            Images.draw(gd);
+            Registry.getComponentMethod('images', 'supplyLayoutDefaults')(gd.layout, gd._fullLayout);
+            Registry.getComponentMethod('images', 'draw')(gd);
         }
         else if(p.parts[0] === 'mapbox' && p.parts[1] === 'layers') {
             Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
@@ -2431,7 +2432,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         if(dolegend) {
             seq.push(function doLegend() {
-                Legend.draw(gd);
+                Registry.getComponentMethod('legend', 'draw')(gd);
                 return Plots.previousPromises(gd);
             });
         }

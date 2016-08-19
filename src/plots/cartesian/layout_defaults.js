@@ -9,12 +9,10 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
-var Plots = require('../plots');
 var Color = require('../../components/color');
-
-var RangeSlider = require('../../components/rangeslider');
-var RangeSelector = require('../../components/rangeselector');
+var basePlotLayoutAttributes = require('../layout_attributes');
 
 var constants = require('./constants');
 var layoutAttributes = require('./layout_attributes');
@@ -38,11 +36,11 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         var trace = fullData[i];
         var listX, listY;
 
-        if(Plots.traceIs(trace, 'cartesian')) {
+        if(Registry.traceIs(trace, 'cartesian')) {
             listX = xaListCartesian;
             listY = yaListCartesian;
         }
-        else if(Plots.traceIs(trace, 'gl2d')) {
+        else if(Registry.traceIs(trace, 'gl2d')) {
             listX = xaListGl2d;
             listY = yaListGl2d;
         }
@@ -56,12 +54,12 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
         if(yaName && listY.indexOf(yaName) === -1) listY.push(yaName);
 
         // check for default formatting tweaks
-        if(Plots.traceIs(trace, '2dMap')) {
+        if(Registry.traceIs(trace, '2dMap')) {
             outerTicks[xaName] = true;
             outerTicks[yaName] = true;
         }
 
-        if(Plots.traceIs(trace, 'oriented')) {
+        if(Registry.traceIs(trace, 'oriented')) {
             var positionAxis = trace.orientation === 'h' ? yaName : xaName;
             noGrids[positionAxis] = true;
         }
@@ -95,7 +93,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // make sure that plots with orphan cartesian axes
     // are considered 'cartesian'
     if(xaListCartesian.length && yaListCartesian.length) {
-        Lib.pushUnique(layoutOut._basePlotModules, Plots.subplotsRegistry.cartesian);
+        Lib.pushUnique(layoutOut._basePlotModules, Registry.subplotsRegistry.cartesian);
     }
 
     function axSort(a, b) {
@@ -112,7 +110,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     // TODO: bgcolor for each subplot, to inherit from the main one
     var plot_bgcolor = Color.background;
     if(xaList.length && yaList.length) {
-        plot_bgcolor = Lib.coerce(layoutIn, layoutOut, Plots.layoutAttributes, 'plot_bgcolor');
+        plot_bgcolor = Lib.coerce(layoutIn, layoutOut, basePlotLayoutAttributes, 'plot_bgcolor');
     }
 
     var bgColor = Color.combine(plot_bgcolor, layoutOut.paper_bgcolor);
@@ -156,16 +154,19 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 
     // quick second pass for range slider and selector defaults
+    var rangeSliderDefaults = Registry.getComponentMethod('rangeslider', 'handleDefaults'),
+        rangeSelectorDefaults = Registry.getComponentMethod('rangeselector', 'handleDefaults');
+
     axesList.forEach(function(axName) {
         var axLetter = axName.charAt(0),
             axLayoutIn = layoutIn[axName],
             axLayoutOut = layoutOut[axName],
             counterAxes = {x: yaList, y: xaList}[axLetter];
 
-        RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+        rangeSliderDefaults(layoutIn, layoutOut, axName, counterAxes);
 
         if(axLetter === 'x' && axLayoutOut.type === 'date') {
-            RangeSelector.supplyLayoutDefaults(axLayoutIn, axLayoutOut, layoutOut, counterAxes);
+            rangeSelectorDefaults(axLayoutIn, axLayoutOut, layoutOut, counterAxes);
         }
     });
 };

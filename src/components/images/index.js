@@ -15,6 +15,8 @@ var attributes = require('./attributes');
 
 
 module.exports = {
+    moduleType: 'component',
+    name: 'images',
     draw: draw,
     layoutAttributes: attributes,
     supplyLayoutDefaults: supplyLayoutDefaults

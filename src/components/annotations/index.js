@@ -11,6 +11,9 @@
 
 var Plotly = require('../../plotly');
 
+exports.moduleType = 'component';
+
+exports.name = 'annotations';
 
 exports.ARROWPATHS = require('./arrow_paths');
 

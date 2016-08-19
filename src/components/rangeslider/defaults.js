@@ -12,7 +12,7 @@ var Lib = require('../../lib');
 var attributes = require('./attributes');
 
 
-module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes) {
+module.exports = function handleDefaults(layoutIn, layoutOut, axName, counterAxes) {
     if(!layoutIn[axName].rangeslider) return;
 
     var containerIn = Lib.isPlainObject(layoutIn[axName].rangeslider) ?

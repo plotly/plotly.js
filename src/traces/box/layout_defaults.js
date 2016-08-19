@@ -8,7 +8,7 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var layoutAttributes = require('./layout_attributes');
 
@@ -19,7 +19,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
 
     var hasBoxes;
     for(var i = 0; i < fullData.length; i++) {
-        if(Plots.traceIs(fullData[i], 'box')) {
+        if(Registry.traceIs(fullData[i], 'box')) {
             hasBoxes = true;
             break;
         }

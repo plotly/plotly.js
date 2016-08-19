@@ -17,6 +17,15 @@ var Plotly = require('./plotly');
 // package version injected by `npm run preprocess`
 exports.version = '1.16.2';
 
+// inject promise polyfill
+require('es6-promise').polyfill();
+
+// inject plot css
+require('../build/plotcss');
+
+// inject default MathJax config
+require('./fonts/mathjax_config');
+
 // plot api
 exports.plot = Plotly.plot;
 exports.newPlot = Plotly.newPlot;
@@ -30,10 +39,24 @@ exports.deleteTraces = Plotly.deleteTraces;
 exports.moveTraces = Plotly.moveTraces;
 exports.purge = Plotly.purge;
 exports.setPlotConfig = require('./plot_api/set_plot_config');
-exports.register = Plotly.register;
+exports.register = require('./plot_api/register');
 exports.toImage = require('./plot_api/to_image');
 exports.downloadImage = require('./snapshot/download');
 exports.validate = require('./plot_api/validate');
+
+// scatter is the only trace included by default
+exports.register(require('./traces/scatter'));
+
+// register all registrable components modules
+exports.register([
+    require('./components/legend'),
+    require('./components/annotations'),
+    require('./components/shapes'),
+    require('./components/images'),
+    require('./components/updatemenus'),
+    require('./components/rangeslider'),
+    require('./components/rangeselector')
+]);
 
 // plot icons
 exports.Icons = require('../build/ploticon');
@@ -41,9 +64,9 @@ exports.Icons = require('../build/ploticon');
 // unofficial 'beta' plot methods, use at your own risk
 exports.Plots = Plotly.Plots;
 exports.Fx = Plotly.Fx;
-exports.Snapshot = Plotly.Snapshot;
-exports.PlotSchema = Plotly.PlotSchema;
-exports.Queue = Plotly.Queue;
+exports.Snapshot = require('./snapshot');
+exports.PlotSchema = require('./plot_api/plot_schema');
+exports.Queue = require('./lib/queue');
 
 // export d3 used in the bundle
 exports.d3 = require('d3');

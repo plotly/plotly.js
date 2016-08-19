@@ -214,7 +214,7 @@ describe('the range slider', function() {
         });
     });
 
-    describe('supplyLayoutDefaults function', function() {
+    describe('handleDefaults function', function() {
 
         it('should not coerce anything if rangeslider isn\'t set', function() {
             var layoutIn = { xaxis: {}, yaxis: {}},
@@ -223,7 +223,7 @@ describe('the range slider', function() {
                 counterAxes = ['yaxis'],
                 expected = { xaxis: {}, yaxis: {}};
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutIn).toEqual(expected);
         });
@@ -235,7 +235,7 @@ describe('the range slider', function() {
                 counterAxes = ['yaxis'],
                 expected = { xaxis: { rangeslider: { visible: true }}, yaxis: {}};
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutIn).toEqual(expected);
         });
@@ -261,7 +261,7 @@ describe('the range slider', function() {
                     }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -287,7 +287,7 @@ describe('the range slider', function() {
                     }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -319,7 +319,7 @@ describe('the range slider', function() {
                     }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -344,7 +344,7 @@ describe('the range slider', function() {
                     yaxis2: { fixedrange: true }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -369,7 +369,7 @@ describe('the range slider', function() {
                     yaxis: { fixedrange: true }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });
@@ -394,7 +394,7 @@ describe('the range slider', function() {
                     yaxis: { fixedrange: true }
                 };
 
-            RangeSlider.supplyLayoutDefaults(layoutIn, layoutOut, axName, counterAxes);
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
 
             expect(layoutOut).toEqual(expected);
         });

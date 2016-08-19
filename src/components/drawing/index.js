@@ -12,7 +12,7 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var Color = require('../color');
 var Colorscale = require('../colorscale');
 var Lib = require('../../lib');
@@ -183,7 +183,7 @@ drawing.pointStyle = function(s, trace) {
 
     // only scatter & box plots get marker path and opacity
     // bars, histograms don't
-    if(Plots.traceIs(trace, 'symbols')) {
+    if(Registry.traceIs(trace, 'symbols')) {
         var sizeFn = makeBubbleSizeFn(trace);
 
         s.attr('d', function(d) {

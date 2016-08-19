@@ -11,9 +11,9 @@
 
 var isNumeric = require('fast-isnumeric');
 
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 var Axes = require('../../plots/cartesian/axes');
-var Plots = require('../../plots/plots');
 
 var histogram2dCalc = require('../histogram2d/calc');
 var colorscaleCalc = require('../../components/colorscale/calc');
@@ -27,9 +27,9 @@ module.exports = function calc(gd, trace) {
     // run makeCalcdata on x and y even for heatmaps, in case of category mappings
     var xa = Axes.getFromId(gd, trace.xaxis || 'x'),
         ya = Axes.getFromId(gd, trace.yaxis || 'y'),
-        isContour = Plots.traceIs(trace, 'contour'),
-        isHist = Plots.traceIs(trace, 'histogram'),
-        isGL2D = Plots.traceIs(trace, 'gl2d'),
+        isContour = Registry.traceIs(trace, 'contour'),
+        isHist = Registry.traceIs(trace, 'histogram'),
+        isGL2D = Registry.traceIs(trace, 'gl2d'),
         zsmooth = isContour ? 'best' : trace.zsmooth,
         x,
         x0,
@@ -170,9 +170,9 @@ function cleanZ(trace) {
 
 function makeBoundArray(trace, arrayIn, v0In, dvIn, numbricks, ax) {
     var arrayOut = [],
-        isContour = Plots.traceIs(trace, 'contour'),
-        isHist = Plots.traceIs(trace, 'histogram'),
-        isGL2D = Plots.traceIs(trace, 'gl2d'),
+        isContour = Registry.traceIs(trace, 'contour'),
+        isHist = Registry.traceIs(trace, 'histogram'),
+        isGL2D = Registry.traceIs(trace, 'gl2d'),
         v0,
         dv,
         i;

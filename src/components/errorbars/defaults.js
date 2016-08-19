@@ -10,7 +10,7 @@
 
 var isNumeric = require('fast-isnumeric');
 
-var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 var Lib = require('../../lib');
 
 var attributes = require('./attributes');
@@ -70,6 +70,6 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     if(!opts.inherit || !containerOut[copyAttr]) {
         coerce('color', defaultColor);
         coerce('thickness');
-        coerce('width', Plots.traceIs(traceOut, 'gl3d') ? 0 : 4);
+        coerce('width', Registry.traceIs(traceOut, 'gl3d') ? 0 : 4);
     }
 };

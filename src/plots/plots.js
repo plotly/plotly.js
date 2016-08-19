@@ -13,134 +13,26 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var Plotly = require('../plotly');
+var Registry = require('../registry');
 var Lib = require('../lib');
 var Color = require('../components/color');
 
 var plots = module.exports = {};
 
-var modules = plots.modules = {},
-    allTypes = plots.allTypes = [],
-    allCategories = plots.allCategories = {},
-    subplotsRegistry = plots.subplotsRegistry = {},
-    transformsRegistry = plots.transformsRegistry = {};
+// Expose registry methods on Plots for backward-compatibility
+Lib.extendFlat(plots, Registry);
 
 plots.attributes = require('./attributes');
-plots.attributes.type.values = allTypes;
+plots.attributes.type.values = plots.allTypes;
 plots.fontAttrs = require('./font_attributes');
 plots.layoutAttributes = require('./layout_attributes');
 
 // TODO make this a plot attribute?
 plots.fontWeight = 'normal';
 
-/**
- * plots.register: register a module as the handler for a trace type
- *
- * @param {object} _module the module that will handle plotting this trace type
- * @param {string} thisType
- * @param {array of strings} categoriesIn all the categories this type is in,
- *     tested by calls: Plotly.Plots.traceIs(trace, oneCategory)
- * @param {object} meta meta information about the trace type
- */
-plots.register = function(_module, thisType, categoriesIn, meta) {
-    if(modules[thisType]) {
-        Lib.log('Type ' + thisType + ' already registered');
-        return;
-    }
+var subplotsRegistry = plots.subplotsRegistry;
+var transformsRegistry = plots.transformsRegistry;
 
-    var categoryObj = {};
-    for(var i = 0; i < categoriesIn.length; i++) {
-        categoryObj[categoriesIn[i]] = true;
-        allCategories[categoriesIn[i]] = true;
-    }
-
-    modules[thisType] = {
-        _module: _module,
-        categories: categoryObj
-    };
-
-    if(meta && Object.keys(meta).length) {
-        modules[thisType].meta = meta;
-    }
-
-    allTypes.push(thisType);
-};
-
-function getTraceType(traceType) {
-    if(typeof traceType === 'object') traceType = traceType.type;
-    return traceType;
-}
-
-plots.getModule = function(trace) {
-    if(trace.r !== undefined) {
-        Lib.warn('Tried to put a polar trace ' +
-            'on an incompatible graph of cartesian ' +
-            'data. Ignoring this dataset.', trace
-        );
-        return false;
-    }
-
-    var _module = modules[getTraceType(trace)];
-    if(!_module) return false;
-    return _module._module;
-};
-
-
-/**
- * plots.traceIs: is this trace type in this category?
- *
- * traceType: a trace (object) or trace type (string)
- * category: a category (string)
- */
-plots.traceIs = function traceIs(traceType, category) {
-    traceType = getTraceType(traceType);
-
-    if(traceType === 'various') return false;  // FIXME
-
-    var _module = modules[traceType];
-
-    if(!_module) {
-        if(traceType !== undefined) {
-            Lib.log('Unrecognized trace type ' + traceType + '.');
-        }
-        _module = modules[plots.attributes.type.dflt];
-    }
-
-    return !!_module.categories[category];
-};
-
-
-/**
- * plots.registerSubplot: register a subplot type
- *
- * @param {object} _module subplot module:
- *
- *      @param {string or array of strings} attr
- *          attribute name in traces and layout
- *      @param {string or array of strings} idRoot
- *          root of id (setting the possible value for attrName)
- *      @param {object} attributes
- *          attribute(s) for traces of this subplot type
- *
- * In trace objects `attr` is the object key taking a valid `id` as value
- * (the set of all valid ids is generated below and stored in idRegex).
- *
- * In the layout object, a or several valid `attr` name(s) can be keys linked
- * to a nested attribute objects
- * (the set of all valid attr names is generated below and stored in attrRegex).
- *
- * TODO use these in Lib.coerce
- */
-plots.registerSubplot = function(_module) {
-    var plotType = _module.name;
-
-    if(subplotsRegistry[plotType]) {
-        Lib.log('Plot type ' + plotType + ' already registered.');
-        return;
-    }
-
-    // not sure what's best for the 'cartesian' type at this point
-    subplotsRegistry[plotType] = _module;
-};
 
 /**
  * Find subplot ids in data.
@@ -265,8 +157,8 @@ plots.redrawText = function(gd) {
 
     return new Promise(function(resolve) {
         setTimeout(function() {
-            Plotly.Annotations.draw(gd);
-            Plotly.Legend.draw(gd);
+            Registry.getComponentMethod('annotations', 'draw')(gd);
+            Registry.getComponentMethod('legend', 'draw')(gd);
 
             (gd.calcdata || []).forEach(function(d) {
                 if(d[0] && d[0].t && d[0].t.cb) d[0].t.cb();
@@ -869,17 +761,15 @@ plots.supplyLayoutModuleDefaults = function(layoutIn, layoutOut, fullData) {
         }
     }
 
-    // TODO register these
-    // Legend must come after traces (e.g. it depends on 'barmode')
-    var moduleLayoutDefaults = [
-        'Fx', 'Annotations', 'Shapes', 'Legend', 'Images', 'UpdateMenus'
-    ];
+    // should FX be a component?
+    Plotly.Fx.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
 
-    for(i = 0; i < moduleLayoutDefaults.length; i++) {
-        _module = moduleLayoutDefaults[i];
+    var components = Object.keys(Registry.componentsRegistry);
+    for(i = 0; i < components.length; i++) {
+        _module = Registry.componentsRegistry[components[i]];
 
-        if(Plotly[_module]) {
-            Plotly[_module].supplyLayoutDefaults(layoutIn, layoutOut, fullData);
+        if(_module.supplyLayoutDefaults) {
+            _module.supplyLayoutDefaults(layoutIn, layoutOut, fullData);
         }
     }
 };

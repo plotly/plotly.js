@@ -8,13 +8,13 @@
 
 'use strict';
 
-var Plots = require('../../plots/plots');
+var Registry = require('../../registry');
 
 
 exports.name = 'pie';
 
 exports.plot = function(gd) {
-    var Pie = Plots.getModule('pie');
+    var Pie = Registry.getModule('pie');
     var cdPie = getCdModule(gd.calcdata, Pie);
 
     if(cdPie.length) Pie.plot(gd, cdPie);

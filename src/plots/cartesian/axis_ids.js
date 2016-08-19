@@ -8,6 +8,7 @@
 
 'use strict';
 
+var Registry = require('../../registry');
 var Plots = require('../plots');
 var Lib = require('../../lib');
 
@@ -105,7 +106,7 @@ exports.getFromTrace = function(gd, fullTrace, type) {
     var fullLayout = gd._fullLayout;
     var ax = null;
 
-    if(Plots.traceIs(fullTrace, 'gl3d')) {
+    if(Registry.traceIs(fullTrace, 'gl3d')) {
         var scene = fullTrace.scene;
         if(scene.substr(0, 5) === 'scene') {
             ax = fullLayout[scene][type + 'axis'];
