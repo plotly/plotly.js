@@ -137,6 +137,18 @@ describe('calculated data and points', function() {
                 expect(gd.calcdata[0][3]).toEqual(jasmine.objectContaining({x: 0, y: 13}));
                 expect(gd.calcdata[0][4]).toEqual(jasmine.objectContaining({x: 2, y: 14}));
             });
+
+            it('should combine duplicate categories', function() {
+                Plotly.plot(gd, [{x: [ '1', '1'], y: [10, 20]}], { xaxis: {
+                    type: 'category',
+                    categoryorder: 'category ascending'
+                }});
+
+                expect(gd.calcdata[0][0]).toEqual(jasmine.objectContaining({x: 0, y: 10}));
+                expect(gd.calcdata[0][1]).toEqual(jasmine.objectContaining({x: 0, y: 20}));
+
+                expect(gd._fullLayout.xaxis._categories).toEqual(['1']);
+            });
         });
 
         describe('explicit category ordering', function() {
