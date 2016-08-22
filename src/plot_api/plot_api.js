@@ -1279,15 +1279,6 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'error_y.width', 'error_x.width', 'error_x.copy_ystyle',
         'marker.maxdisplayed'
     ];
-    // these ones show up in restyle because they make more sense
-    // in the style box, but they're graph-wide attributes, so set
-    // in gd.layout also axis scales and range show up here because
-    // we may need to undo them. These all trigger a recalc
-    // var layoutAttrs = [
-    //     'barmode', 'barnorm','bargap', 'bargroupgap',
-    //     'boxmode', 'boxgap', 'boxgroupgap',
-    //     '?axis.autorange', '?axis.range', '?axis.rangemode'
-    // ];
 
     // these ones may alter the axis type
     // (at least if the first trace is involved)
@@ -1299,7 +1290,6 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     var docalc = false,
         docalcAutorange = false,
         doplot = false,
-        dolayout = false,
         dostyle = false,
         docolorbars = false;
     // copies of the change (and previous values of anything affected)
@@ -1627,12 +1617,6 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // now update the graphics
     // a complete layout redraw takes care of plot and
     var seq;
-    if(dolayout) {
-        seq = [function changeLayout() {
-            var copyLayout = gd.layout;
-            gd.layout = undefined;
-            return Plotly.plot(gd, '', copyLayout);
-        }];
     }
     else if(docalc || doplot || docalcAutorange) {
         seq = [Plotly.plot];
