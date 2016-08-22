@@ -86,7 +86,7 @@ describe('Test plot api', function() {
 
     describe('Plotly.restyle', function() {
         beforeEach(function() {
-            spyOn(Plotly, 'plot');
+            spyOn(PlotlyInternal, 'plot');
             spyOn(Plots, 'previousPromises');
             spyOn(Scatter, 'arraysToCalcdata');
             spyOn(Bar, 'arraysToCalcdata');
@@ -111,7 +111,7 @@ describe('Test plot api', function() {
             expect(Scatter.arraysToCalcdata).toHaveBeenCalled();
             expect(Bar.arraysToCalcdata).not.toHaveBeenCalled();
             expect(Plots.style).toHaveBeenCalled();
-            expect(Plotly.plot).not.toHaveBeenCalled();
+            expect(PlotlyInternal.plot).not.toHaveBeenCalled();
             // "docalc" deletes gd.calcdata - make sure this didn't happen
             expect(gd.calcdata).toBeDefined();
         });
@@ -126,8 +126,22 @@ describe('Test plot api', function() {
             expect(Scatter.arraysToCalcdata).not.toHaveBeenCalled();
             expect(Bar.arraysToCalcdata).toHaveBeenCalled();
             expect(Plots.style).toHaveBeenCalled();
-            expect(Plotly.plot).not.toHaveBeenCalled();
+            expect(PlotlyInternal.plot).not.toHaveBeenCalled();
             expect(gd.calcdata).toBeDefined();
+        });
+
+        it('calls plot on xgap and ygap styling', function() {
+            var gd = {
+                data: [{z: [[1, 2, 3], [4, 5, 6], [7, 8, 9]], showscale: false, type: 'heatmap'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {'xgap': 2});
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+            Plotly.restyle(gd, {'ygap': 2});
+            expect(PlotlyInternal.plot.calls.count()).toEqual(2);
         });
 
         it('ignores undefined values', function() {
