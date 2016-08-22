@@ -1705,17 +1705,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
         return Promise.resolve(gd);
     }
 
-    var layout = gd.layout,
-        fullLayout = gd._fullLayout,
-        aobj = {},
-        dolegend = false,
-        doticks = false,
-        dolayoutstyle = false,
-        doplot = false,
-        docalc = false,
-        domodebar = false,
-        newkey, axes, keys, xyref, scene, axisAttr, i;
-
+    var aobj = {};
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Lib.isPlainObject(astr)) aobj = astr;
     else {
@@ -1725,29 +1715,83 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
     if(Object.keys(aobj).length) gd.changed = true;
 
-    keys = Object.keys(aobj);
-    axes = Plotly.Axes.list(gd);
+    var specs = _relayout(gd, aobj),
+        flags = specs.flags;
 
+    // clear calcdata if required
+    if(flags.docalc) gd.calcdata = undefined;
+
+    // fill in redraw sequence
+    var seq = [];
+
+    if(flags.layoutReplot) {
+        seq.push(subroutines.layoutReplot);
+    }
+    else if(Object.keys(aobj).length) {
+        seq.push(Plots.previousPromises);
+        Plots.supplyDefaults(gd);
+
+        if(flags.dolegend) seq.push(subroutines.doLegend);
+        if(flags.dolayoutstyle) seq.push(subroutines.layoutStyles);
+        if(flags.doticks) seq.push(subroutines.doTicksRelayout);
+        if(flags.domodebar) seq.push(subroutines.doModeBar);
+    }
+
+    Queue.add(gd,
+        relayout, [gd, specs.undoit],
+        relayout, [gd, specs.redoit]
+    );
+
+    var plotDone = Lib.syncOrAsync(seq, gd);
+    if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
+
+    return plotDone.then(function() {
+        subroutines.setRangeSliderRange(gd, specs.eventData);
+        gd.emit('plotly_relayout', specs.eventData);
+        return gd;
+    });
+};
+
+function _relayout(gd, aobj) {
+    var layout = gd.layout,
+        fullLayout = gd._fullLayout,
+        keys = Object.keys(aobj),
+        axes = Plotly.Axes.list(gd),
+        i;
+
+    // look for 'allaxes', split out into all axes
+    // in case of 3D the axis are nested within a scene which is held in _id
     for(i = 0; i < keys.length; i++) {
-        // look for 'allaxes', split out into all axes
         if(keys[i].indexOf('allaxes') === 0) {
             for(var j = 0; j < axes.length; j++) {
-                // in case of 3D the axis are nested within a scene which is held in _id
-                scene = axes[j]._id.substr(1);
-                axisAttr = (scene.indexOf('scene') !== -1) ? (scene + '.') : '';
-                newkey = keys[i].replace('allaxes', axisAttr + axes[j]._name);
-                if(!aobj[newkey]) { aobj[newkey] = aobj[keys[i]]; }
+                var scene = axes[j]._id.substr(1),
+                    axisAttr = (scene.indexOf('scene') !== -1) ? (scene + '.') : '',
+                    newkey = keys[i].replace('allaxes', axisAttr + axes[j]._name);
+
+                if(!aobj[newkey]) aobj[newkey] = aobj[keys[i]];
             }
-            delete aobj[keys[i]];
-        }
+
             delete aobj[keys[i]];
         }
     }
+
+    // initialize flags
+    var flags = {
+        dolegend: false,
+        doticks: false,
+        dolayoutstyle: false,
+        doplot: false,
+        docalc: false,
+        domodebar: false,
+        layoutReplot: false
+    };
 
     // copies of the change (and previous values of anything affected)
     // for the undo / redo queue
     var redoit = {},
         undoit = {};
+
+    var hw = ['height', 'width'];
 
     // for attrs that interact (like scales & autoscales), save the
     // old vals before making the change
@@ -1771,8 +1815,6 @@ Plotly.relayout = function relayout(gd, astr, val) {
         var axName = Plotly.Axes.id2name(obj[axletter + 'ref'] || axletter);
         return (fullLayout[axName] || {}).autorange;
     }
-
-    var hw = ['height', 'width'];
 
     // alter gd.layout
     for(var ai in aobj) {
@@ -1826,23 +1868,24 @@ Plotly.relayout = function relayout(gd, astr, val) {
             doextra([ptrunk + '.tick0', ptrunk + '.dtick'], undefined);
         }
         else if(/[xy]axis[0-9]*?$/.test(pleaf) && !Object.keys(vi || {}).length) {
-            docalc = true;
+            flags.docalc = true;
         }
         else if(/[xy]axis[0-9]*\.categoryorder$/.test(pleafPlus)) {
-            docalc = true;
+            flags.docalc = true;
         }
         else if(/[xy]axis[0-9]*\.categoryarray/.test(pleafPlus)) {
-            docalc = true;
+            flags.docalc = true;
         }
 
         if(pleafPlus.indexOf('rangeslider') !== -1) {
-            docalc = true;
+            flags.docalc = true;
         }
 
         // toggling log without autorange: need to also recalculate ranges
         // logical XOR (ie are we toggling log)
         if(pleaf === 'type' && ((parentFull.type === 'log') !== (vi === 'log'))) {
             var ax = parentIn;
+
             if(!ax || !ax.range) {
                 doextra(ptrunk + '.autorange', true);
             }
@@ -1881,8 +1924,8 @@ Plotly.relayout = function relayout(gd, astr, val) {
                 parentIn.range = [1, 0];
             }
 
-            if(parentFull.autorange) docalc = true;
-            else doplot = true;
+            if(parentFull.autorange) flags.docalc = true;
+            else flags.doplot = true;
         }
         // send annotation and shape mods one-by-one through Annotations.draw(),
         // don't set via nestedProperty
@@ -1912,7 +1955,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
             if((refAutorange(obji, 'x') || refAutorange(obji, 'y')) &&
                     !Lib.containsAny(ai, ['color', 'opacity', 'align', 'dash'])) {
-                docalc = true;
+                flags.docalc = true;
             }
 
             // TODO: combine all edits to a given annotation / shape into one call
@@ -1940,7 +1983,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
             for(i = 0; i < diff; i++) fullLayers.push({});
 
-            doplot = true;
+            flags.doplot = true;
         }
         else if(p.parts[0] === 'updatemenus') {
             Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
@@ -1949,38 +1992,38 @@ Plotly.relayout = function relayout(gd, astr, val) {
             diff = (p.parts[2] + 1) - menus.length;
 
             for(i = 0; i < diff; i++) menus.push({});
-            doplot = true;
+            flags.doplot = true;
         }
         // alter gd.layout
         else {
             // check whether we can short-circuit a full redraw
             // 3d or geo at this point just needs to redraw.
-            if(p.parts[0].indexOf('scene') === 0) doplot = true;
-            else if(p.parts[0].indexOf('geo') === 0) doplot = true;
-            else if(p.parts[0].indexOf('ternary') === 0) doplot = true;
+            if(p.parts[0].indexOf('scene') === 0) flags.doplot = true;
+            else if(p.parts[0].indexOf('geo') === 0) flags.doplot = true;
+            else if(p.parts[0].indexOf('ternary') === 0) flags.doplot = true;
             else if(fullLayout._has('gl2d') &&
                 (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
-            ) doplot = true;
-            else if(ai === 'hiddenlabels') docalc = true;
-            else if(p.parts[0].indexOf('legend') !== -1) dolegend = true;
-            else if(ai.indexOf('title') !== -1) doticks = true;
-            else if(p.parts[0].indexOf('bgcolor') !== -1) dolayoutstyle = true;
+            ) flags.doplot = true;
+            else if(ai === 'hiddenlabels') flags.docalc = true;
+            else if(p.parts[0].indexOf('legend') !== -1) flags.dolegend = true;
+            else if(ai.indexOf('title') !== -1) flags.doticks = true;
+            else if(p.parts[0].indexOf('bgcolor') !== -1) flags.dolayoutstyle = true;
             else if(p.parts.length > 1 &&
                     Lib.containsAny(p.parts[1], ['tick', 'exponent', 'grid', 'zeroline'])) {
-                doticks = true;
+                flags.doticks = true;
             }
             else if(ai.indexOf('.linewidth') !== -1 &&
                     ai.indexOf('axis') !== -1) {
-                doticks = dolayoutstyle = true;
+                flags.doticks = flags.dolayoutstyle = true;
             }
             else if(p.parts.length > 1 && p.parts[1].indexOf('line') !== -1) {
-                dolayoutstyle = true;
+                flags.dolayoutstyle = true;
             }
             else if(p.parts.length > 1 && p.parts[1] === 'mirror') {
-                doticks = dolayoutstyle = true;
+                flags.doticks = flags.dolayoutstyle = true;
             }
             else if(ai === 'margin.pad') {
-                doticks = dolayoutstyle = true;
+                flags.doticks = flags.dolayoutstyle = true;
             }
             else if(p.parts[0] === 'margin' ||
                     p.parts[1] === 'autorange' ||
@@ -1988,126 +2031,62 @@ Plotly.relayout = function relayout(gd, astr, val) {
                     p.parts[1] === 'type' ||
                     p.parts[1] === 'domain' ||
                     ai.match(/^(bar|box|font)/)) {
-                docalc = true;
+                flags.docalc = true;
             }
             /*
              * hovermode and dragmode don't need any redrawing, since they just
-             * affect reaction to user input. everything else, assume full replot.
+             * affect reaction to user input, everything else, assume full replot.
              * height, width, autosize get dealt with below. Except for the case of
              * of subplots - scenes - which require scene.updateFx to be called.
              */
-            else if(['hovermode', 'dragmode'].indexOf(ai) !== -1) domodebar = true;
+            else if(['hovermode', 'dragmode'].indexOf(ai) !== -1) flags.domodebar = true;
             else if(['hovermode', 'dragmode', 'height',
                     'width', 'autosize'].indexOf(ai) === -1) {
-                doplot = true;
+                flags.doplot = true;
             }
 
             p.set(vi);
         }
     }
-    // now all attribute mods are done, as are
-    // redo and undo so we can save them
-    Queue.add(gd, relayout, [gd, undoit], relayout, [gd, redoit]);
 
     // calculate autosizing - if size hasn't changed,
     // will remove h&w so we don't need to redraw
     if(aobj.autosize) aobj = plotAutoSize(gd, aobj);
+    if(aobj.height || aobj.width || aobj.autosize) flags.docalc = true;
 
-    if(aobj.height || aobj.width || aobj.autosize) docalc = true;
-
-    // redraw
-    // first check if there's still anything to do
-    var ak = Object.keys(aobj),
-        seq = [Plots.previousPromises];
-
-    if(doplot || docalc) {
-        seq.push(function layoutReplot() {
-            // force plot() to redo the layout
-            gd.layout = undefined;
-
-            // force it to redo calcdata?
-            if(docalc) gd.calcdata = undefined;
-
-            // replot with the modified layout
-            return Plotly.plot(gd, '', layout);
-        });
-    }
-    else if(ak.length) {
-        // if we didn't need to redraw entirely, just do the needed parts
-        Plots.supplyDefaults(gd);
-        fullLayout = gd._fullLayout;
-
-        if(dolegend) {
-            seq.push(function doLegend() {
-                Registry.getComponentMethod('legend', 'draw')(gd);
-                return Plots.previousPromises(gd);
-            });
-        }
-
-        if(dolayoutstyle) seq.push(layoutStyles);
-
-        if(doticks) {
-            seq.push(function() {
-                Plotly.Axes.doTicks(gd, 'redraw');
-                drawMainTitle(gd);
-                return Plots.previousPromises(gd);
-            });
-        }
-
-        // this is decoupled enough it doesn't need async regardless
-        if(domodebar) {
-            var subplotIds;
-            ModeBar.manage(gd);
-
-            Plotly.Fx.supplyLayoutDefaults(gd.layout, fullLayout, gd._fullData);
-            Plotly.Fx.init(gd);
-
-            subplotIds = Plots.getSubplotIds(fullLayout, 'gl3d');
-            for(i = 0; i < subplotIds.length; i++) {
-                scene = fullLayout[subplotIds[i]]._scene;
-                scene.updateFx(fullLayout.dragmode, fullLayout.hovermode);
-            }
-
-            subplotIds = Plots.getSubplotIds(fullLayout, 'gl2d');
-            for(i = 0; i < subplotIds.length; i++) {
-                scene = fullLayout._plots[subplotIds[i]]._scene2d;
-                scene.updateFx(fullLayout);
-            }
-
-            subplotIds = Plots.getSubplotIds(fullLayout, 'geo');
-            for(i = 0; i < subplotIds.length; i++) {
-                var geo = fullLayout[subplotIds[i]]._geo;
-                geo.updateFx(fullLayout.hovermode);
-            }
-        }
+    if(flags.doplot || flags.docalc) {
+        flags.layoutReplot = true;
     }
 
-    function setRange(changes) {
+    // now all attribute mods are done, as are
+    // redo and undo so we can save them
 
-        var newMin = changes['xaxis.range'] ? changes['xaxis.range'][0] : changes['xaxis.range[0]'],
-            newMax = changes['xaxis.range'] ? changes['xaxis.range'][1] : changes['xaxis.range[1]'];
+    return {
+        flags: flags,
+        undoit: undoit,
+        redoit: redoit,
+        eventData: Lib.extendDeep({}, redoit)
+    };
+}
 
-        var rangeSlider = fullLayout.xaxis && fullLayout.xaxis.rangeslider ?
-            fullLayout.xaxis.rangeslider : {};
 
-        if(rangeSlider.visible) {
-            if(newMin || newMax) {
-                fullLayout.xaxis.rangeslider.setRange(newMin, newMax);
-            } else if(changes['xaxis.autorange']) {
-                fullLayout.xaxis.rangeslider.setRange();
-            }
-        }
     }
 
-    var plotDone = Lib.syncOrAsync(seq, gd);
+
+
+
+
+
+
+    }
+
+    }
+
 
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
-        var changes = Lib.extendDeep({}, redoit);
 
-        setRange(changes);
-        gd.emit('plotly_relayout', changes);
 
         return gd;
     });
