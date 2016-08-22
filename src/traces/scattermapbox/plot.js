@@ -28,17 +28,10 @@ function ScatterMapbox(mapbox, uid) {
     this.idLayerCircle = uid + '-layer-circle';
     this.idLayerSymbol = uid + '-layer-symbol';
 
-    this.sourceFill = mapbox.createGeoJSONSource();
-    this.map.addSource(this.idSourceFill, this.sourceFill);
-
-    this.sourceLine = mapbox.createGeoJSONSource();
-    this.map.addSource(this.idSourceLine, this.sourceLine);
-
-    this.sourceCircle = mapbox.createGeoJSONSource();
-    this.map.addSource(this.idSourceCircle, this.sourceCircle);
-
-    this.sourceSymbol = mapbox.createGeoJSONSource();
-    this.map.addSource(this.idSourceSymbol, this.sourceSymbol);
+    this.mapbox.initSource(this.idSourceFill);
+    this.mapbox.initSource(this.idSourceLine);
+    this.mapbox.initSource(this.idSourceCircle);
+    this.mapbox.initSource(this.idSourceSymbol);
 
     this.map.addLayer({
         id: this.idLayerFill,
@@ -73,7 +66,6 @@ var proto = ScatterMapbox.prototype;
 
 proto.update = function update(calcTrace) {
     var mapbox = this.mapbox;
-
     var opts = convert(calcTrace);
 
     mapbox.setOptions(this.idLayerFill, 'setLayoutProperty', opts.fill.layout);
@@ -82,22 +74,22 @@ proto.update = function update(calcTrace) {
     mapbox.setOptions(this.idLayerSymbol, 'setLayoutProperty', opts.symbol.layout);
 
     if(isVisible(opts.fill)) {
-        this.sourceFill.setData(opts.fill.geojson);
+        mapbox.setSourceData(this.idSourceFill, opts.fill.geojson);
         mapbox.setOptions(this.idLayerFill, 'setPaintProperty', opts.fill.paint);
     }
 
     if(isVisible(opts.line)) {
-        this.sourceLine.setData(opts.line.geojson);
+        mapbox.setSourceData(this.idSourceLine, opts.line.geojson);
         mapbox.setOptions(this.idLayerLine, 'setPaintProperty', opts.line.paint);
     }
 
     if(isVisible(opts.circle)) {
-        this.sourceCircle.setData(opts.circle.geojson);
+        mapbox.setSourceData(this.idSourceCircle, opts.circle.geojson);
         mapbox.setOptions(this.idLayerCircle, 'setPaintProperty', opts.circle.paint);
     }
 
     if(isVisible(opts.symbol)) {
-        this.sourceSymbol.setData(opts.symbol.geojson);
+        mapbox.setSourceData(this.idSourceSymbol, opts.symbol.geojson);
         mapbox.setOptions(this.idLayerSymbol, 'setPaintProperty', opts.symbol.paint);
     }
 };

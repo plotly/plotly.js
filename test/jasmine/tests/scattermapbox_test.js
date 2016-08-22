@@ -307,14 +307,14 @@ describe('scattermapbox convert', function() {
 
         assertVisibility(opts, ['visible', 'visible', 'visible', 'none']);
 
-        var lineCoords = [[
-            [10, 20], [20, 20], [30, 10]
-        ], [
-            [20, 10], [10, 20]
-        ]];
+        var segment1 = [[10, 20], [20, 20], [30, 10]],
+            segment2 = [[20, 10], [10, 20]];
 
-        expect(opts.fill.geojson.coordinates).toEqual(lineCoords, 'have correct fill coords');
+        var lineCoords = [segment1, segment2],
+            fillCoords = [[segment1], [segment2]];
+
         expect(opts.line.geojson.coordinates).toEqual(lineCoords, 'have correct line coords');
+        expect(opts.fill.geojson.coordinates).toEqual(fillCoords, 'have correct fill coords');
 
         var circleCoords = opts.circle.geojson.features.map(function(f) {
             return f.geometry.coordinates;
