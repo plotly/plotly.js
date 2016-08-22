@@ -43,6 +43,17 @@ describe('Test histogram2d', function() {
             expect(traceOut.ygap).toBe(5);
         });
 
+        it('shouldnt coerce gap when zsmooth is set', function() {
+            traceIn = {
+                xgap: 10,
+                ygap: 5,
+                zsmooth: 'best'
+            };
+            supplyDefaults(traceIn, traceOut, {});
+            expect(traceOut.xgap).toBe(undefined);
+            expect(traceOut.ygap).toBe(undefined);
+        });
+
     });
 
 });

@@ -111,6 +111,20 @@ describe('heatmap supplyDefaults', function() {
         expect(traceOut.xgap).toBe(10);
         expect(traceOut.ygap).toBe(0);
     });
+
+    it('should not coerce gap if zsmooth is set', function() {
+        traceIn = {
+            xgap: 10,
+            zsmooth: 'best',
+            type: 'heatmap',
+            z: [[1, 2], [3, 4]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.xgap).toBe(undefined);
+        expect(traceOut.ygap).toBe(undefined);
+    });
+
 });
 
 describe('heatmap convertColumnXYZ', function() {
