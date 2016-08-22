@@ -1740,12 +1740,6 @@ Plotly.relayout = function relayout(gd, astr, val) {
             }
             delete aobj[keys[i]];
         }
-        // split annotation.ref into xref and yref
-        if(keys[i].match(/^annotations\[[0-9-]+\].ref$/)) {
-            xyref = aobj[keys[i]].split('y');
-            aobj[keys[i].replace('ref', 'xref')] = xyref[0];
-            aobj[keys[i].replace('ref', 'yref')] = xyref.length === 2 ?
-                ('y' + xyref[1]) : 'paper';
             delete aobj[keys[i]];
         }
     }
