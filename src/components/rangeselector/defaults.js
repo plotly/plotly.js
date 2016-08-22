@@ -83,7 +83,8 @@ function getPosDflt(containerOut, layout, counterAxes) {
 
     var posY = 0;
     for(var i = 0; i < anchoredList.length; i++) {
-        posY = Math.max(layout[anchoredList[i]].domain[1], posY);
+        var domain = layout[anchoredList[i]].domain;
+        if(domain) posY = Math.max(domain[1], posY);
     }
 
     return [containerOut.domain[0], posY + constants.yPad];
