@@ -1193,8 +1193,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     gd = helpers.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
-    var i, fullLayout = gd._fullLayout,
-        aobj = {};
+    var aobj = {};
 
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Lib.isPlainObject(astr)) {
@@ -1208,10 +1207,71 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
 
     if(Object.keys(aobj).length) gd.changed = true;
 
+    var specs = _restyle(gd, aobj, traces),
+        flags = specs.flags;
+
+    // clear calcdata if required
+    if(flags.clearCalc) gd.calcdata = undefined;
+
+    // fill in redraw sequence
+    var seq = [];
+
+    if(flags.fullReplot) {
+        seq.push(Plotly.plot);
+    }
+    else {
+        seq.push(Plots.previousPromises);
+
+        Plots.supplyDefaults(gd);
+
+        if(flags.dostyle) seq.push(subroutines.doTraceStyle);
+        if(flags.docolorbars) seq.push(subroutines.doColorBars);
+    }
+
+    Queue.add(gd,
+        restyle, [gd, specs.undoit, specs.traces],
+        restyle, [gd, specs.redoit, specs.traces]
+    );
+
+    var plotDone = Lib.syncOrAsync(seq, gd);
+    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+
+    return plotDone.then(function() {
+        gd.emit('plotly_restyle', specs.eventData);
+        return gd;
+    });
+};
+
+function _restyle(gd, aobj, traces) {
+    var fullLayout = gd._fullLayout,
+        fullData = gd._fullData,
+        data = gd.data,
+        i;
+
+    // fill up traces
     if(isNumeric(traces)) traces = [traces];
     else if(!Array.isArray(traces) || !traces.length) {
-        traces = gd.data.map(function(v, i) { return i; });
+        traces = data.map(function(_, i) { return i; });
     }
+
+    // initialize flags
+    var flags = {
+        docalc: false,
+        docalcAutorange: false,
+        doplot: false,
+        dostyle: false,
+        docolorbars: false,
+        autorangeOn: false,
+        clearCalc: false,
+        fullReplot: false
+    };
+
+    // copies of the change (and previous values of anything affected)
+    // for the undo / redo queue
+    var redoit = {},
+        undoit = {},
+        axlist,
+        flagAxForDelete = {};
 
     // recalcAttrs attributes need a full regeneration of calcdata
     // as well as a replot, because the right objects may not exist,
@@ -1251,8 +1311,9 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'line.showscale', 'line.cauto', 'line.autocolorscale', 'line.reversescale',
         'marker.line.showscale', 'marker.line.cauto', 'marker.line.autocolorscale', 'marker.line.reversescale'
     ];
+
     for(i = 0; i < traces.length; i++) {
-        if(Registry.traceIs(gd._fullData[traces[i]], 'box')) {
+        if(Registry.traceIs(fullData[traces[i]], 'box')) {
             recalcAttrs.push('name');
             break;
         }
@@ -1266,6 +1327,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'marker', 'marker.size', 'textfont',
         'boxpoints', 'jitter', 'pointpos', 'whiskerwidth', 'boxmean'
     ];
+
     // replotAttrs attributes need a replot (because different
     // objects need to be made) but not a recalc
     var replotAttrs = [
@@ -1286,24 +1348,16 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         'type', 'x', 'y', 'x0', 'y0', 'orientation', 'xaxis', 'yaxis'
     ];
 
-    // flags for which kind of update we need to do
-    var docalc = false,
-        docalcAutorange = false,
-        doplot = false,
-        dostyle = false,
-        docolorbars = false;
-    // copies of the change (and previous values of anything affected)
-    // for the undo / redo queue
-    var redoit = {},
-        undoit = {},
-        axlist,
-        flagAxForDelete = {};
+    var zscl = ['zmin', 'zmax'],
+        xbins = ['xbins.start', 'xbins.end', 'xbins.size'],
+        ybins = ['ybins.start', 'ybins.end', 'ybins.size'],
+        contourAttrs = ['contours.start', 'contours.end', 'contours.size'];
 
     // At the moment, only cartesian, pie and ternary plot types can afford
     // to not go through a full replot
     var doPlotWhiteList = ['cartesian', 'pie', 'ternary'];
     fullLayout._basePlotModules.forEach(function(_module) {
-        if(doPlotWhiteList.indexOf(_module.name) === -1) docalc = true;
+        if(doPlotWhiteList.indexOf(_module.name) === -1) flags.docalc = true;
     });
 
     // make a new empty vals array for undoit
@@ -1312,9 +1366,11 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     // for autoranging multiple axes
     function addToAxlist(axid) {
         var axName = Plotly.Axes.id2name(axid);
-        if(axlist.indexOf(axName) === -1) { axlist.push(axName); }
+        if(axlist.indexOf(axName) === -1) axlist.push(axName);
     }
+
     function autorangeAttr(axName) { return 'LAYOUT' + axName + '.autorange'; }
+
     function rangeAttr(axName) { return 'LAYOUT' + axName + '.range'; }
 
     // for attrs that interact (like scales & autoscales), save the
@@ -1334,7 +1390,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         if(attr.substr(0, 6) === 'LAYOUT') {
             extraparam = Lib.nestedProperty(gd.layout, attr.replace('LAYOUT', ''));
         } else {
-            extraparam = Lib.nestedProperty(gd.data[traces[i]], attr);
+            extraparam = Lib.nestedProperty(data[traces[i]], attr);
         }
 
         if(!(attr in undoit)) {
@@ -1347,10 +1403,6 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             extraparam.set(val);
         }
     }
-    var zscl = ['zmin', 'zmax'],
-        xbins = ['xbins.start', 'xbins.end', 'xbins.size'],
-        ybins = ['ybins.start', 'ybins.end', 'ybins.size'],
-        contourAttrs = ['contours.start', 'contours.end', 'contours.size'];
 
     // now make the changes to gd.data (and occasionally gd.layout)
     // and figure out what kind of graphics update we need to do
@@ -1361,6 +1413,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             param,
             oldVal,
             newVal;
+
         redoit[ai] = vi;
 
         if(ai.substr(0, 6) === 'LAYOUT') {
@@ -1371,18 +1424,18 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             param.set(Array.isArray(vi) ? vi[0] : vi);
             // ironically, the layout attrs in restyle only require replot,
             // not relayout
-            docalc = true;
+            flags.docalc = true;
             continue;
         }
 
         // take no chances on transforms
-        if(ai.substr(0, 10) === 'transforms') docalc = true;
+        if(ai.substr(0, 10) === 'transforms') flags.docalc = true;
 
         // set attribute in gd.data
         undoit[ai] = a0();
         for(i = 0; i < traces.length; i++) {
-            cont = gd.data[traces[i]];
-            contFull = gd._fullData[traces[i]];
+            cont = data[traces[i]];
+            contFull = fullData[traces[i]];
             param = Lib.nestedProperty(cont, ai);
             oldVal = param.get();
             newVal = Array.isArray(vi) ? vi[i % vi.length] : vi;
@@ -1540,7 +1593,7 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         // check if we need to call axis type
         if((traces.indexOf(0) !== -1) && (axtypeAttrs.indexOf(ai) !== -1)) {
             Plotly.Axes.clearTypes(gd, traces);
-            docalc = true;
+            flags.docalc = true;
         }
 
         // switching from auto to manual binning or z scaling doesn't
@@ -1548,11 +1601,11 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         // box. everything else at least needs to apply styles
         if((['autobinx', 'autobiny', 'zauto'].indexOf(ai) === -1) ||
                 newVal !== false) {
-            dostyle = true;
+            flags.dostyle = true;
         }
         if(['colorbar', 'line'].indexOf(param.parts[0]) !== -1 ||
             param.parts[0] === 'marker' && param.parts[1] === 'colorbar') {
-            docolorbars = true;
+            flags.docolorbars = true;
         }
 
         if(recalcAttrs.indexOf(ai) !== -1) {
@@ -1561,13 +1614,13 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
             if(['orientation', 'type'].indexOf(ai) !== -1) {
                 axlist = [];
                 for(i = 0; i < traces.length; i++) {
-                    var trace = gd.data[traces[i]];
+                    var trace = data[traces[i]];
 
                     if(Registry.traceIs(trace, 'cartesian')) {
                         addToAxlist(trace.xaxis || 'x');
                         addToAxlist(trace.yaxis || 'y');
 
-                        if(astr === 'type') {
+                        if(ai === 'type') {
                             doextra(['autobinx', 'autobiny'], true, i);
                         }
                     }
@@ -1576,11 +1629,16 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
                 doextra(axlist.map(autorangeAttr), true, 0);
                 doextra(axlist.map(rangeAttr), [0, 1], 0);
             }
-            docalc = true;
+            flags.docalc = true;
         }
-        else if(replotAttrs.indexOf(ai) !== -1) doplot = true;
-        else if(autorangeAttrs.indexOf(ai) !== -1) docalcAutorange = true;
+        else if(replotAttrs.indexOf(ai) !== -1) flags.doplot = true;
+        else if(autorangeAttrs.indexOf(ai) !== -1) flags.docalcAutorange = true;
     }
+
+    // do we need to force a recalc?
+    Plotly.Axes.list(gd).forEach(function(ax) {
+        if(ax.autorange) flags.autorangeOn = true;
+    });
 
     // check axes we've flagged for possible deletion
     // flagAxForDelete is a hash so we can make sure we only get each axis once
@@ -1590,9 +1648,10 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         var axId = axListForDelete[i],
             axLetter = axId.charAt(0),
             axAttr = axLetter + 'axis';
-        for(var j = 0; j < gd.data.length; j++) {
-            if(Registry.traceIs(gd.data[j], 'cartesian') &&
-                    (gd.data[j][axAttr] || axLetter) === axId) {
+
+        for(var j = 0; j < data.length; j++) {
+            if(Registry.traceIs(data[j], 'cartesian') &&
+                    (data[j][axAttr] || axLetter) === axId) {
                 continue axisLoop;
             }
         }
@@ -1601,83 +1660,21 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
         doextra('LAYOUT' + Plotly.Axes.id2name(axId), null, 0);
     }
 
-    // now all attribute mods are done, as are redo and undo
-    // so we can save them
-    Queue.add(gd, restyle, [gd, undoit, traces], restyle, [gd, redoit, traces]);
-
-    // do we need to force a recalc?
-    var autorangeOn = false;
-    Plotly.Axes.list(gd).forEach(function(ax) {
-        if(ax.autorange) autorangeOn = true;
-    });
-    if(docalc || dolayout || (docalcAutorange && autorangeOn)) {
-        gd.calcdata = undefined;
+    // combine a few flags together;
+    if(flags.docalc || (flags.docalcAutorange && flags.autorangeOn)) {
+        flags.clearCalc = true;
+    }
+    if(flags.docalc || flags.doplot || flags.docalcAutorange) {
+        flags.fullReplot = true;
     }
 
-    // now update the graphics
-    // a complete layout redraw takes care of plot and
-    var seq;
-    }
-    else if(docalc || doplot || docalcAutorange) {
-        seq = [Plotly.plot];
-    }
-    else {
-        Plots.supplyDefaults(gd);
-        seq = [Plots.previousPromises];
-        if(dostyle) {
-            seq.push(function doStyle() {
-                // first see if we need to do arraysToCalcdata
-                // call it regardless of what change we made, in case
-                // supplyDefaults brought in an array that was already
-                // in gd.data but not in gd._fullData previously
-                var i, cdi, arraysToCalcdata;
-                for(i = 0; i < gd.calcdata.length; i++) {
-                    cdi = gd.calcdata[i];
-                    arraysToCalcdata = (((cdi[0] || {}).trace || {})._module || {}).arraysToCalcdata;
-                    if(arraysToCalcdata) arraysToCalcdata(cdi);
-                }
-
-                Plots.style(gd);
-                Registry.getComponentMethod('legend', 'draw')(gd);
-
-                return Plots.previousPromises(gd);
-            });
-        }
-        if(docolorbars) {
-            seq.push(function doColorBars() {
-                gd.calcdata.forEach(function(cd) {
-                    if((cd[0].t || {}).cb) {
-                        var trace = cd[0].trace,
-                            cb = cd[0].t.cb;
-
-                        if(Registry.traceIs(trace, 'contour')) {
-                            cb.line({
-                                width: trace.contours.showlines !== false ?
-                                    trace.line.width : 0,
-                                dash: trace.line.dash,
-                                color: trace.contours.coloring === 'line' ?
-                                    cb._opts.line.color : trace.line.color
-                            });
-                        }
-                        if(Registry.traceIs(trace, 'markerColorscale')) {
-                            cb.options(trace.marker.colorbar)();
-                        }
-                        else cb.options(trace.colorbar)();
-                    }
-                });
-                return Plots.previousPromises(gd);
-            });
-        }
-    }
-
-    var plotDone = Lib.syncOrAsync(seq, gd);
-
-    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
-
-    return plotDone.then(function() {
-        gd.emit('plotly_restyle', Lib.extendDeepNoArrays([], [redoit, traces]));
-        return gd;
-    });
+    return {
+        flags: flags,
+        undoit: undoit,
+        redoit: redoit,
+        traces: traces,
+        eventData: Lib.extendDeepNoArrays([], [redoit, traces])
+    };
 }
 
 /**
