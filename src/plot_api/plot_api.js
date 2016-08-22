@@ -1163,29 +1163,34 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
     return promise;
 };
 
-// -----------------------------------------------------
-// restyle and relayout: these two control all redrawing
-// for data (restyle) and everything else (relayout)
-// -----------------------------------------------------
-
-// restyle: change styling of an existing plot
-// can be called two ways:
-//
-// restyle(gd, astr, val [,traces])
-//      gd - graph div (string id or dom element)
-//      astr - attribute string (like 'marker.symbol')
-//      val - value to give this attribute
-//      traces - integer or array of integers for the traces
-//          to alter (all if omitted)
-//
-// restyle(gd, aobj [,traces])
-//      aobj - {astr1:val1, astr2:val2...} allows setting
-//          multiple attributes simultaneously
-//
-// val (or val1, val2... in the object form) can be an array,
-// to apply different values to each trace.
-// If the array is too short, it will wrap around (useful for
-// style files that want to specify cyclical default values).
+/**
+ * restyle: update trace attributes of an existing plot
+ *
+ * Can be called two ways.
+ *
+ * Signature 1:
+ * @param {string id or DOM element} gd
+ *  the id or DOM element of the graph container div
+ * @param {string} astr
+ *  attribute string (like `'marker.symbol'`) to update
+ * @param {any} val
+ *  value to give this attribute
+ * @param {number or array} traces (optional)
+ *  integer or array of integers for the traces to alter (all if omitted)
+ *
+ * Signature 2:
+ * @param {string id or DOM element} gd (as in signature 1)
+ * @param {object} aobj
+ *  attribute object `{astr1: val1, astr2: val2 ...}`
+ *  allows setting multiple attributes simultaneously
+ * @param {number or array} traces (optional, as in signature 1)
+ *
+ * `val` (or `val1`, `val2` ... in the object form) can be an array,
+ * to apply different values to each trace.
+ *
+ * If the array is too short, it will wrap around (useful for
+ * style files that want to specify cyclical default values).
+ */
 Plotly.restyle = function restyle(gd, astr, val, traces) {
     gd = helpers.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
@@ -1693,17 +1698,26 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     });
 }
 
-// relayout: change layout in an existing plot
-// can be called two ways:
-//
-// relayout(gd, astr, val)
-//      gd - graph div (string id or dom element)
-//      astr - attribute string (like 'xaxis.range[0]')
-//      val - value to give this attribute
-//
-// relayout(gd,aobj)
-//      aobj - {astr1:val1, astr2:val2...}
-//          allows setting multiple attributes simultaneously
+/**
+ * relayout: update layout attributes of an existing plot
+ *
+ * Can be called two ways:
+ *
+ * Signature 1:
+ * @param {string id or dom element} gd
+ *  the id or dom element of the graph container div
+ * @param {string} astr
+ *  attribute string (like `'xaxis.range[0]'`) to update
+ * @param {any} val
+ *  value to give this attribute
+ *
+ * Signature 2:
+ * @param {string id or DOM element} gd (as in signature 1)
+ *  the id or DOM element of the graph container div
+ * @param {object} aobj
+ *  attribute object `{astr1: val1, astr2: val2 ...}`
+ *  allows setting multiple attributes simultaneously
+ */
 Plotly.relayout = function relayout(gd, astr, val) {
     gd = helpers.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
