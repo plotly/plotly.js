@@ -2069,24 +2069,85 @@ function _relayout(gd, aobj) {
     };
 }
 
+/**
+ * update: update trace and layout attributes of an existing plot
+ *
+ * @param {string id or DOM element} gd
+ *  the id or DOM element of the graph container div
+ * @param {object} traceUpdate
+ *  attribute object `{astr1: val1, astr2: val2 ...}`
+ *  corresponding to updates in the plot's traces
+ * @param {object} layoutUpdate
+ *  attribute object `{astr1: val1, astr2: val2 ...}`
+ *  corresponding to updates in the plot's layout
+ * @param {number or array} traces (optional)
+ *  integer or array of integers for the traces to alter (all if omitted)
+ *
+ */
+Plotly.update = function update(gd, traceUpdate, layoutUpdate, indices) {
+    gd = helpers.getGraphDiv(gd);
+    helpers.clearPromiseQueue(gd);
 
+    if(gd.framework && gd.framework.isPolar) {
+        return Promise.resolve(gd);
     }
 
+    if(!Lib.isPlainObject(traceUpdate)) traceUpdate = {};
+    if(!Lib.isPlainObject(layoutUpdate)) layoutUpdate = {};
 
+    if(Object.keys(traceUpdate).length) gd.changed = true;
+    if(Object.keys(layoutUpdate).length) gd.changed = true;
 
+    var restyleSpecs = _restyle(gd, traceUpdate, indices),
+        restyleFlags = restyleSpecs.flags;
 
+    var relayoutSpecs = _relayout(gd, layoutUpdate),
+        relayoutFlags = relayoutSpecs.flags;
 
+    // clear calcdata if required
+    if(restyleFlags.clearCalc || relayoutFlags.docalc) gd.calcdata = undefined;
 
+    // fill in redraw sequence
+    var seq = [];
 
+    if(restyleFlags.fullReplot && relayoutFlags.layoutReplot) {
+        var layout = gd.layout;
+        gd.layout = undefined;
+        seq.push(function() { return Plotly.plot(gd, gd.data, layout); });
+    }
+    else if(restyleFlags.fullReplot) {
+        seq.push(Plotly.plot);
+    }
+    else if(relayoutFlags.layoutReplot) {
+        seq.push(subroutines.layoutReplot);
+    }
+    else {
+        seq.push(Plots.previousPromises);
+        Plots.supplyDefaults(gd);
+
+        if(restyleFlags.dostyle) seq.push(subroutines.doTraceStyle);
+        if(restyleFlags.docolorbars) seq.push(subroutines.doColorBars);
+        if(relayoutFlags.dolegend) seq.push(subroutines.doLegend);
+        if(relayoutFlags.dolayoutstyle) seq.push(subroutines.layoutStyles);
+        if(relayoutFlags.doticks) seq.push(subroutines.doTicksRelayout);
+        if(relayoutFlags.domodebar) seq.push(subroutines.doModeBar);
     }
 
-    }
+    Queue.add(gd,
+        update, [gd, restyleSpecs.undoit, relayoutSpecs.undoit, restyleSpecs.traces],
+        update, [gd, restyleSpecs.redoit, relayoutSpecs.redoit, restyleSpecs.traces]
+    );
 
-
+    var plotDone = Lib.syncOrAsync(seq, gd);
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
+        subroutines.setRangeSliderRange(gd, relayoutSpecs.eventData);
 
+        gd.emit('plotly_update', {
+            data: restyleSpecs.eventData,
+            layout: relayoutSpecs.eventData
+        });
 
         return gd;
     });
