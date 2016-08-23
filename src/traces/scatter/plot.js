@@ -29,6 +29,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig) {
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionConfig;
+    var hasTransition = !!transitionConfig && transitionConfig.duration > 0;
 
     selection = scatterlayer.selectAll('g.trace');
 
@@ -61,11 +62,27 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig) {
         return idx1 > idx2 ? 1 : -1;
     });
 
-    // Must run the selection again since otherwise enters/updates get grouped together
-    // and these get executed out of order. Except we need them in order!
-    scatterlayer.selectAll('g.trace').each(function(d, i) {
-        plotOne(gd, i, plotinfo, d, cdscatter, this, transitionConfig);
-    });
+    if (hasTransition) {
+        var transition = d3.transition()
+            .duration(transitionConfig.duration)
+            .ease(transitionConfig.ease)
+            .delay(transitionConfig.delay)
+            .each('end', function () {
+                transitionConfig.onComplete && transitionConfig.onComplete();
+            });
+
+        transition.each(function () {
+            // Must run the selection again since otherwise enters/updates get grouped together
+            // and these get executed out of order. Except we need them in order!
+            scatterlayer.selectAll('g.trace').each(function(d, i) {
+                plotOne(gd, i, plotinfo, d, cdscatter, this, transitionConfig);
+            });
+        });
+    } else {
+        scatterlayer.selectAll('g.trace').each(function(d, i) {
+            plotOne(gd, i, plotinfo, d, cdscatter, this, transitionConfig);
+        });
+    }
 
     if(isFullReplot) {
         join.exit().remove();
@@ -127,14 +144,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     var hasTransition = !!transitionConfig && transitionConfig.duration > 0;
 
     function transition(selection) {
-        if(hasTransition) {
-            return selection.transition()
-                .duration(transitionConfig.duration)
-                .delay(transitionConfig.delay)
-                .ease(transitionConfig.ease);
-        } else {
-            return selection;
-        }
+        return hasTransition ? selection.transition() : selection;
     }
 
     var xa = plotinfo.x(),
@@ -277,8 +287,9 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                             .call(Drawing.lineGroupStyle))
                                 .style('opacity', 1);
                     } else {
-                        transition(el).attr('d', thispath)
-                            .call(Drawing.lineGroupStyle);
+                        var sel = transition(el);
+                        sel.attr('d', thispath);
+                        Drawing.singleLineStyle(cdscatter, sel);
                     }
                 }
             };
@@ -376,14 +387,17 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 join = selection
                     .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace));
 
-                join.enter().append('path')
-                    .classed('point', true)
-                    .call(Drawing.pointStyle, trace)
+                var enter = join.enter().append('path')
+                    .classed('point', true);
+
+                enter.call(Drawing.pointStyle, trace)
                     .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 1);
 
-                join.transition()
-                    .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 0)
-                    .call(Drawing.pointStyle, trace);
+                join.transition().each(function (d) {
+                    var sel = transition(d3.select(this));
+                    Drawing.translatePoint(d, sel, xa, ya, trace, transitionConfig, 0)
+                    Drawing.singlePointStyle(d, sel, trace);
+                });
 
                 if(hasTransition) {
                     join.exit()

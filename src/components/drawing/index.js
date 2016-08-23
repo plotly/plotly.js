@@ -46,64 +46,26 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
-drawing.translatePoints = function(s, xa, ya, trace, transitionConfig, joinDirection) {
-    var size;
+drawing.translatePoint = function(d, sel, xa, ya, trace, transitionConfig, joinDirection) {
+    // put xp and yp into d if pixel scaling is already done
+    var x = d.xp || xa.c2p(d.x),
+        y = d.yp || ya.c2p(d.y);
 
-    var hasTransition = transitionConfig && (transitionConfig || {}).duration > 0;
-
-    if(hasTransition) {
-        size = s.size();
-    }
-
-    s.each(function(d, i) {
-        // put xp and yp into d if pixel scaling is already done
-        var x = d.xp || xa.c2p(d.x),
-            y = d.yp || ya.c2p(d.y),
-            p = d3.select(this);
-        if(isNumeric(x) && isNumeric(y)) {
-            // for multiline text this works better
-            if(this.nodeName === 'text') {
-                p.attr('x', x).attr('y', y);
-            } else {
-                if(hasTransition) {
-                    var trans;
-                    if(!joinDirection) {
-                        trans = p.transition()
-                        .delay(transitionConfig.delay)
-                        .duration(transitionConfig.duration)
-                        .ease(transitionConfig.ease)
-                        .attr('transform', 'translate(' + x + ',' + y + ')');
-
-                        if(trace) {
-                            trans.call(drawing.pointStyle, trace);
-                        }
-                    } else if(joinDirection === -1) {
-                        trans = p.style('opacity', 1)
-                        .transition()
-                            .duration(transitionConfig.duration)
-                            .ease(transitionConfig.ease)
-                            .style('opacity', 0)
-                            .remove();
-                    } else if(joinDirection === 1) {
-                        trans = p.attr('transform', 'translate(' + x + ',' + y + ')');
-
-                        if(trace) {
-                            trans.call(drawing.pointStyle, trace);
-                        }
-
-                        trans.style('opacity', 0)
-                        .transition()
-                            .duration(transitionConfig.duration)
-                            .ease(transitionConfig.ease)
-                            .style('opacity', 1);
-                    }
-
-                } else {
-                    p.attr('transform', 'translate(' + x + ',' + y + ')');
-                }
-            }
+    if(isNumeric(x) && isNumeric(y)) {
+        // for multiline text this works better
+        if(this.nodeName === 'text') {
+            sel.node().attr('x', x).attr('y', y);
+        } else {
+            sel.attr('transform', 'translate(' + x + ',' + y + ')');
         }
-        else p.remove();
+    }
+    else sel.remove();
+};
+
+drawing.translatePoints = function(s, xa, ya, trace, transitionConfig, joinDirection) {
+    s.each(function(d, i) {
+        var sel = d3.select(this);
+        drawing.translatePoint(d, sel, xa, ya, trace, transitionConfig, joinDirection);
     });
 };
 
@@ -124,6 +86,16 @@ drawing.crispRound = function(td, lineWidth, dflt) {
 
     if(lineWidth < 1) return 1;
     return Math.round(lineWidth);
+};
+
+drawing.singleLineStyle = function(d, s, lw, lc, ld) {
+    s.style('fill', 'none')
+    var line = (((d || [])[0] || {}).trace || {}).line || {},
+        lw1 = lw || line.width||0,
+        dash = ld || line.dash || '';
+
+    Color.stroke(s, lc || line.color);
+    drawing.dashLine(s, dash, lw1);
 };
 
 drawing.lineGroupStyle = function(s, lw, lc, ld) {
@@ -221,6 +193,64 @@ drawing.symbolNumber = function(v) {
     return Math.floor(Math.max(v, 0));
 };
 
+function singlePointStyle (d, sel, trace, markerScale, lineScale, marker, markerLine) {
+
+    // 'so' is suspected outliers, for box plots
+    var fillColor,
+        lineColor,
+        lineWidth;
+    if(d.so) {
+        lineWidth = markerLine.outlierwidth;
+        lineColor = markerLine.outliercolor;
+        fillColor = marker.outliercolor;
+    }
+    else {
+        lineWidth = (d.mlw + 1 || markerLine.width + 1 ||
+            // TODO: we need the latter for legends... can we get rid of it?
+            (d.trace ? d.trace.marker.line.width : 0) + 1) - 1;
+
+        if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
+        // weird case: array wasn't long enough to apply to every point
+        else if(Array.isArray(markerLine.color)) lineColor = Color.defaultLine;
+        else lineColor = markerLine.color;
+
+        if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
+        else if(Array.isArray(marker.color)) fillColor = Color.defaultLine;
+        else fillColor = marker.color || 'rgba(0,0,0,0)';
+    }
+
+    if(d.om) {
+        // open markers can't have zero linewidth, default to 1px,
+        // and use fill color as stroke color
+        sel.call(Color.stroke, fillColor)
+            .style({
+                'stroke-width': (lineWidth || 1) + 'px',
+                fill: 'none'
+            });
+    }
+    else {
+        sel.style('stroke-width', lineWidth + 'px')
+            .call(Color.fill, fillColor);
+        if(lineWidth) {
+            sel.call(Color.stroke, lineColor);
+        }
+    }
+};
+
+drawing.singlePointStyle = function(d, sel, trace) {
+    var marker = trace.marker,
+        markerLine = marker.line;
+
+    // allow array marker and marker line colors to be
+    // scaled by given max and min to colorscales
+    var markerIn = (trace._input || {}).marker || {},
+        markerScale = drawing.tryColorscale(marker, markerIn, ''),
+        lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
+
+    singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine);
+
+}
+
 drawing.pointStyle = function(s, trace) {
     if(!s.size()) return;
 
@@ -265,47 +295,7 @@ drawing.pointStyle = function(s, trace) {
         lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
 
     s.each(function(d) {
-        // 'so' is suspected outliers, for box plots
-        var fillColor,
-            lineColor,
-            lineWidth;
-        if(d.so) {
-            lineWidth = markerLine.outlierwidth;
-            lineColor = markerLine.outliercolor;
-            fillColor = marker.outliercolor;
-        }
-        else {
-            lineWidth = (d.mlw + 1 || markerLine.width + 1 ||
-                // TODO: we need the latter for legends... can we get rid of it?
-                (d.trace ? d.trace.marker.line.width : 0) + 1) - 1;
-
-            if('mlc' in d) lineColor = d.mlcc = lineScale(d.mlc);
-            // weird case: array wasn't long enough to apply to every point
-            else if(Array.isArray(markerLine.color)) lineColor = Color.defaultLine;
-            else lineColor = markerLine.color;
-
-            if('mc' in d) fillColor = d.mcc = markerScale(d.mc);
-            else if(Array.isArray(marker.color)) fillColor = Color.defaultLine;
-            else fillColor = marker.color || 'rgba(0,0,0,0)';
-        }
-
-        var p = d3.select(this);
-        if(d.om) {
-            // open markers can't have zero linewidth, default to 1px,
-            // and use fill color as stroke color
-            p.call(Color.stroke, fillColor)
-                .style({
-                    'stroke-width': (lineWidth || 1) + 'px',
-                    fill: 'none'
-                });
-        }
-        else {
-            p.style('stroke-width', lineWidth + 'px')
-                .call(Color.fill, fillColor);
-            if(lineWidth) {
-                p.call(Color.stroke, lineColor);
-            }
-        }
+        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale)
     });
 };
 

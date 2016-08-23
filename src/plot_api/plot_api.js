@@ -2617,7 +2617,13 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         }
     }
 
+    var aborted = false;
+
     function executeTransitions() {
+        gd._transitionData._interruptCallbacks.push(function () {
+            aborted = true;
+        });
+
         var traceTransitionConfig;
         var hasTraceTransition = false;
         var j;
@@ -2647,15 +2653,30 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             traceTransitionConfig = transitionConfig;
         }
 
-        for(j = 0; j < basePlotModules.length; j++) {
-            basePlotModules[j].plot(gd, transitionedTraces, traceTransitionConfig);
+        // Construct callbacks that are executed on transition end. This ensures the d3 transitions
+        // are *complete* before anything else is done.
+        var numCallbacks = 0;
+        var numCompleted = 0;
+        function makeCallback () {
+            numCallbacks++;
+            return function () {
+                numCompleted++;
+                // When all are complete, perform a redraw:
+                if (!aborted && numCompleted === numCallbacks) {
+                    completeTransition();
+                }
+            }
         }
 
-        gd._transitionData._completionTimeout = setTimeout(completeTransition, transitionConfig.duration + transitionConfig.delay + 1000);
+        for(j = 0; j < basePlotModules.length; j++) {
+            var _config = Lib.extendFlat({onComplete: makeCallback()}, traceTransitionConfig);
+            basePlotModules[j].plot(gd, transitionedTraces, _config);
+        }
 
         if(!hasAxisTransition && !hasTraceTransition) {
             return false;
         }
+
     }
 
     function completeTransition() {
@@ -2672,14 +2693,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     }
 
     function interruptPreviousTransitions() {
-        if(gd._transitionData._completionTimeout) {
-            // Prevent the previous completion from occurring:
-            clearTimeout(gd._transitionData._completionTimeout);
-            gd._transitionData._completionTimeout = null;
-
-            // Interrupt an event to indicate that a transition was running:
-            gd.emit('plotly_interrupttransition', []);
-        }
+        gd.emit('plotly_interrupttransition', []);
 
         flushCallbacks(gd._transitionData._cleanupCallbacks);
         return executeCallbacks(gd._transitionData._interruptCallbacks);

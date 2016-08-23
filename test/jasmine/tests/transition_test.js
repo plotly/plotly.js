@@ -85,5 +85,4 @@ describe('Plotly.transition', function() {
         Plotly.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {duration: 50});
         gd.on('plotly_endtransition', done);
     });
-
 });
