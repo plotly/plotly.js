@@ -10,6 +10,18 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.16.3] -- 2016-08-23
+
+### Fixed
+- Fix SVG exports for graphs with layout images [#846]
+- Properly handles duplicate categories in non-default `categoryorder` [#863]
+- Fix range selector position logic for overlaying axes [#873]
+- Autorange is now properly computed for heatmapgl and contourgl traces [#855,
+  #874]
+- Trace toggling via legend preserves axis ranges in gl2d plots [#855, #874]
+- Bump `mapbox-gl` dependency to 0.22.0 [#867]
+
+
 ## [1.16.2] -- 2016-08-09
 
 ### Fixed
