@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.16.2
+* plotly.js (geo) v1.16.3
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -18298,6 +18298,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
 var d3 = require('d3');
 var Drawing = require('../drawing');
 var Axes = require('../../plots/cartesian/axes');
+var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 
 module.exports = function draw(gd) {
 
@@ -18339,8 +18340,9 @@ module.exports = function draw(gd) {
 
     // Images must be converted to dataURL's for exporting.
     function setImage(d) {
-
         var thisImage = d3.select(this);
+
+        thisImage.attr('xmlns', xmlnsNamespaces.svg);
 
         var imagePromise = new Promise(function(resolve) {
 
@@ -18379,7 +18381,6 @@ module.exports = function draw(gd) {
     }
 
     function applyAttributes(d) {
-
         var thisImage = d3.select(this);
 
         // Axes if specified
@@ -18427,7 +18428,9 @@ module.exports = function draw(gd) {
             yId = yref ? yref._id : '',
             clipAxes = xId + yId;
 
-        thisImage.call(Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
+        if(clipAxes) {
+            thisImage.call(Drawing.setClipUrl, 'clip' + fullLayout._uid + clipAxes);
+        }
     }
 
 
@@ -18457,7 +18460,7 @@ module.exports = function draw(gd) {
     imagesAbove.each(applyAttributes);
 };
 
-},{"../../plots/cartesian/axes":122,"../drawing":43,"d3":10}],55:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":90,"../../plots/cartesian/axes":122,"../drawing":43,"d3":10}],55:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -21056,7 +21059,8 @@ function getPosDflt(containerOut, layout, counterAxes) {
 
     var posY = 0;
     for(var i = 0; i < anchoredList.length; i++) {
-        posY = Math.max(layout[anchoredList[i]].domain[1], posY);
+        var domain = layout[anchoredList[i]].domain;
+        if(domain) posY = Math.max(domain[1], posY);
     }
 
     return [containerOut.domain[0], posY + constants.yPad];
@@ -24041,7 +24045,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.16.2';
+exports.version = '1.16.3';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -37066,7 +37070,7 @@ function flattenUniqueSort(axisLetter, sortFunction, data) {
             insertionIndex = bisector(categoryArray, category);
 
             // skip loop on already encountered values
-            if(insertionIndex < categoryArray.length - 1 && categoryArray[insertionIndex] === category) continue;
+            if(insertionIndex < categoryArray.length && categoryArray[insertionIndex] === category) continue;
 
             // insert value
             categoryArray.splice(insertionIndex, 0, category);
