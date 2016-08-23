@@ -2620,32 +2620,43 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     var aborted = false;
 
     function executeTransitions() {
-        gd._transitionData._interruptCallbacks.push(function () {
+        gd._transitionData._interruptCallbacks.push(function() {
             aborted = true;
         });
+
+        // Construct callbacks that are executed on transition end. This ensures the d3 transitions
+        // are *complete* before anything else is done.
+        var numCallbacks = 0;
+        var numCompleted = 0;
+        function makeCallback() {
+            numCallbacks++;
+            return function() {
+                numCompleted++;
+                // When all are complete, perform a redraw:
+                if(!aborted && numCompleted === numCallbacks) {
+                    completeTransition();
+                }
+            };
+        }
 
         var traceTransitionConfig;
         var hasTraceTransition = false;
         var j;
         var basePlotModules = fullLayout._basePlotModules;
-        for(j = 0; j < basePlotModules.length; j++) {
-            if(basePlotModules[j].animatable) {
-                hasTraceTransition = true;
-            }
-            basePlotModules[j].plot(gd, transitionedTraces, transitionConfig);
-        }
-
         var hasAxisTransition = false;
 
         if(layout) {
             for(j = 0; j < basePlotModules.length; j++) {
                 if(basePlotModules[j].transitionAxes) {
                     var newLayout = Lib.expandObjectPaths(layout);
-                    hasAxisTransition = hasAxisTransition || basePlotModules[j].transitionAxes(gd, newLayout, transitionConfig);
+                    hasAxisTransition = basePlotModules[j].transitionAxes(gd, newLayout, transitionConfig, makeCallback) || hasAxisTransition;
                 }
             }
         }
 
+        // Here handle the exception that we refuse to animate scales and axes at the same
+        // time. In other words, if there's an axis transition, then set the data transition
+        // to instantaneous.
         if(hasAxisTransition) {
             traceTransitionConfig = Lib.extendFlat({}, transitionConfig);
             traceTransitionConfig.duration = 0;
@@ -2653,24 +2664,12 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             traceTransitionConfig = transitionConfig;
         }
 
-        // Construct callbacks that are executed on transition end. This ensures the d3 transitions
-        // are *complete* before anything else is done.
-        var numCallbacks = 0;
-        var numCompleted = 0;
-        function makeCallback () {
-            numCallbacks++;
-            return function () {
-                numCompleted++;
-                // When all are complete, perform a redraw:
-                if (!aborted && numCompleted === numCallbacks) {
-                    completeTransition();
-                }
-            }
-        }
-
         for(j = 0; j < basePlotModules.length; j++) {
-            var _config = Lib.extendFlat({onComplete: makeCallback()}, traceTransitionConfig);
-            basePlotModules[j].plot(gd, transitionedTraces, _config);
+            // Note that we pass a callback to *create* the callback that must be invoked on completion.
+            // This is since not all traces know about transitions, so it greatly simplifies matters if
+            // the trace is responsible for creating a callback, if needed, and then executing it when
+            // the time is right.
+            basePlotModules[j].plot(gd, transitionedTraces, traceTransitionConfig, makeCallback);
         }
 
         if(!hasAxisTransition && !hasTraceTransition) {
@@ -2682,20 +2681,18 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     function completeTransition() {
         flushCallbacks(gd._transitionData._interruptCallbacks);
 
-        return Promise.resolve().then(function () {
-            if (transitionConfig.redraw) {
+        return Promise.resolve().then(function() {
+            if(transitionConfig.redraw) {
                 return Plotly.redraw(gd);
             }
-        }).then(function () {
+        }).then(function() {
             gd.emit('plotly_endtransition', []);
-            return executeCallbacks(gd._transitionData._cleanupCallbacks);
         });
     }
 
     function interruptPreviousTransitions() {
         gd.emit('plotly_interrupttransition', []);
 
-        flushCallbacks(gd._transitionData._cleanupCallbacks);
         return executeCallbacks(gd._transitionData._interruptCallbacks);
     }
 

@@ -447,10 +447,6 @@ plots.createTransitionData = function(gd) {
         gd._transitionData._counter = 0;
     }
 
-    if(!gd._transitionData._cleanupCallbacks) {
-        gd._transitionData._cleanupCallbacks = [];
-    }
-
     if(!gd._transitionData._interruptCallbacks) {
         gd._transitionData._interruptCallbacks = [];
     }

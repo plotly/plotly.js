@@ -46,7 +46,7 @@ drawing.setRect = function(s, x, y, w, h) {
     s.call(drawing.setPosition, x, y).call(drawing.setSize, w, h);
 };
 
-drawing.translatePoint = function(d, sel, xa, ya, trace, transitionConfig, joinDirection) {
+drawing.translatePoint = function(d, sel, xa, ya) {
     // put xp and yp into d if pixel scaling is already done
     var x = d.xp || xa.c2p(d.x),
         y = d.yp || ya.c2p(d.y);
@@ -62,10 +62,10 @@ drawing.translatePoint = function(d, sel, xa, ya, trace, transitionConfig, joinD
     else sel.remove();
 };
 
-drawing.translatePoints = function(s, xa, ya, trace, transitionConfig, joinDirection) {
-    s.each(function(d, i) {
+drawing.translatePoints = function(s, xa, ya, trace, transitionConfig) {
+    s.each(function(d) {
         var sel = d3.select(this);
-        drawing.translatePoint(d, sel, xa, ya, trace, transitionConfig, joinDirection);
+        drawing.translatePoint(d, sel, xa, ya, trace, transitionConfig);
     });
 };
 
@@ -89,7 +89,7 @@ drawing.crispRound = function(td, lineWidth, dflt) {
 };
 
 drawing.singleLineStyle = function(d, s, lw, lc, ld) {
-    s.style('fill', 'none')
+    s.style('fill', 'none');
     var line = (((d || [])[0] || {}).trace || {}).line || {},
         lw1 = lw || line.width||0,
         dash = ld || line.dash || '';
@@ -193,7 +193,7 @@ drawing.symbolNumber = function(v) {
     return Math.floor(Math.max(v, 0));
 };
 
-function singlePointStyle (d, sel, trace, markerScale, lineScale, marker, markerLine) {
+function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine) {
 
     // 'so' is suspected outliers, for box plots
     var fillColor,
@@ -235,7 +235,7 @@ function singlePointStyle (d, sel, trace, markerScale, lineScale, marker, marker
             sel.call(Color.stroke, lineColor);
         }
     }
-};
+}
 
 drawing.singlePointStyle = function(d, sel, trace) {
     var marker = trace.marker,
@@ -249,13 +249,12 @@ drawing.singlePointStyle = function(d, sel, trace) {
 
     singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine);
 
-}
+};
 
 drawing.pointStyle = function(s, trace) {
     if(!s.size()) return;
 
-    var marker = trace.marker,
-        markerLine = marker.line;
+    var marker = trace.marker;
 
     // only scatter & box plots get marker path and opacity
     // bars, histograms don't
@@ -295,7 +294,7 @@ drawing.pointStyle = function(s, trace) {
         lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
 
     s.each(function(d) {
-        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale)
+        drawing.singlePointStyle(d, d3.select(this), trace, markerScale, lineScale);
     });
 };
 

@@ -27,7 +27,7 @@ exports.attributes = require('./attributes');
 
 exports.transitionAxes = require('./transition_axes');
 
-exports.plot = function(gd, traces, transitionOpts) {
+exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     var cdSubplot, cd, trace, i, j, k;
 
     var fullLayout = gd._fullLayout,
@@ -106,7 +106,7 @@ exports.plot = function(gd, traces, transitionOpts) {
                 }
             }
 
-            _module.plot(gd, subplotInfo, cdModule, transitionOpts);
+            _module.plot(gd, subplotInfo, cdModule, transitionOpts, makeOnCompleteCallback);
         }
     }
 };

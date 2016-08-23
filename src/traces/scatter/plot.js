@@ -21,7 +21,7 @@ var linePoints = require('./line_points');
 var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
 
-module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig) {
+module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOnCompleteCallback) {
     var i, uids, selection, join;
 
     var scatterlayer = plotinfo.plot.select('g.scatterlayer');
@@ -30,6 +30,14 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig) {
     // updated are removed.
     var isFullReplot = !transitionConfig;
     var hasTransition = !!transitionConfig && transitionConfig.duration > 0;
+
+    var onComplete;
+    if(makeOnCompleteCallback && hasTransition) {
+        // If it was passed a callback to register completion, make a callback. If
+        // this is created, then it must be executed on completion, otherwise the
+        // pos-transition redraw will not execute:
+        onComplete = makeOnCompleteCallback();
+    }
 
     selection = scatterlayer.selectAll('g.trace');
 
@@ -62,16 +70,16 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig) {
         return idx1 > idx2 ? 1 : -1;
     });
 
-    if (hasTransition) {
+    if(hasTransition) {
         var transition = d3.transition()
             .duration(transitionConfig.duration)
             .ease(transitionConfig.ease)
             .delay(transitionConfig.delay)
-            .each('end', function () {
-                transitionConfig.onComplete && transitionConfig.onComplete();
+            .each('end', function() {
+                onComplete && onComplete();
             });
 
-        transition.each(function () {
+        transition.each(function() {
             // Must run the selection again since otherwise enters/updates get grouped together
             // and these get executed out of order. Except we need them in order!
             scatterlayer.selectAll('g.trace').each(function(d, i) {
@@ -393,9 +401,9 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 enter.call(Drawing.pointStyle, trace)
                     .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 1);
 
-                join.transition().each(function (d) {
+                join.transition().each(function(d) {
                     var sel = transition(d3.select(this));
-                    Drawing.translatePoint(d, sel, xa, ya, trace, transitionConfig, 0)
+                    Drawing.translatePoint(d, sel, xa, ya, trace, transitionConfig, 0);
                     Drawing.singlePointStyle(d, sel, trace);
                 });
 

@@ -16,7 +16,7 @@ var Lib = require('../../lib');
 var Axes = require('./axes');
 var axisRegex = /((x|y)([2-9]|[1-9][0-9]+)?)axis$/;
 
-module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
+module.exports = function transitionAxes(gd, newLayout, transitionConfig, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var axes = [];
 
@@ -227,6 +227,12 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
 
     }
 
+    var onComplete;
+    if(makeOnCompleteCallback) {
+        // This module makes the choice whether or not it notifies Plotly.transition
+        // about completion:
+        onComplete = makeOnCompleteCallback();
+    }
 
     function transitionComplete() {
         var attrs = {};
@@ -239,15 +245,17 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
             axi.range = to.slice();
         }
 
+        // Signal that this transition has completed:
+        onComplete && onComplete();
+
         return Plotly.relayout(gd, attrs).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }
-
         });
     }
 
-    function transitionTail() {
+    function transitionInterrupt() {
         var attrs = {};
         for(var i = 0; i < updatedAxisIds.length; i++) {
             var axi = gd._fullLayout[updatedAxisIds[i] + 'axis'];
@@ -270,13 +278,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
     gd._transitionData._interruptCallbacks.push(function() {
         cancelAnimationFrame(raf);
         raf = null;
-        return transitionTail();
-    });
-
-    gd._transitionData._cleanupCallbacks.push(function() {
-        cancelAnimationFrame(raf);
-        raf = null;
-        return transitionComplete();
+        return transitionInterrupt();
     });
 
     function doFrame() {
@@ -290,6 +292,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig) {
         }
 
         if(t2 - t1 > transitionConfig.duration) {
+            transitionComplete();
             raf = cancelAnimationFrame(doFrame);
         } else {
             raf = requestAnimationFrame(doFrame);
