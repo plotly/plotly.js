@@ -13,6 +13,7 @@ module.exports = {
         valType: 'number',
         role: 'info',
         dflt: 500,
+        min: 0,
         description: [
             'The duration of the transition, in milliseconds. If equal to zero,',
             'updates are synchronous.'
@@ -61,15 +62,6 @@ module.exports = {
         ],
         role: 'info',
         description: 'The easing function used for the transition'
-    },
-    delay: {
-        valType: 'number',
-        role: 'info',
-        dflt: 0,
-        description: [
-            'The duration of the transition, in milliseconds. If equal to zero,',
-            'updates are synchronous.'
-        ].join(' ')
     },
     redraw: {
         valType: 'boolean',

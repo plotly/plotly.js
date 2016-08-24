@@ -13,16 +13,13 @@ var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
 var subTypes = require('../../traces/scatter/subtypes');
-var styleError = require('./style');
-
 
 module.exports = function plot(traces, plotinfo, transitionConfig) {
     var isNew;
     var xa = plotinfo.x(),
         ya = plotinfo.y();
 
-    transitionConfig = transitionConfig || {};
-    var hasAnimation = isNumeric(transitionConfig.duration) && transitionConfig.duration > 0;
+    var hasAnimation = transitionConfig && transitionConfig.duration > 0;
 
     traces.each(function(d) {
         var trace = d[0].trace,
@@ -35,8 +32,8 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
 
         var keyFunc;
 
-        if(trace.identifier) {
-            keyFunc = function(d) {return d.identifier;};
+        if(trace.ids) {
+            keyFunc = function(d) {return d.id;};
         }
 
         var sparse = (
@@ -70,7 +67,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
 
             var path;
 
-            if(yObj.visible && isNumeric(coords.x) &&
+            if(yObj.visible && isNumeric(coords.y) &&
                     isNumeric(coords.yh) &&
                     isNumeric(coords.ys)) {
                 var yw = yObj.width;
@@ -93,8 +90,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
                     yerror = yerror
                         .transition()
                             .duration(transitionConfig.duration)
-                            .ease(transitionConfig.ease)
-                            .delay(transitionConfig.delay);
+                            .ease(transitionConfig.ease);
                 }
 
                 yerror.attr('d', path);
@@ -122,15 +118,12 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
                     xerror = xerror
                         .transition()
                             .duration(transitionConfig.duration)
-                            .ease(transitionConfig.ease)
-                            .delay(transitionConfig.delay);
+                            .ease(transitionConfig.ease);
                 }
 
                 xerror.attr('d', path);
             }
         });
-
-        d3.select(this).call(styleError);
     });
 };
 

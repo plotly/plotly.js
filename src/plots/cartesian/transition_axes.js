@@ -119,7 +119,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig, makeOn
                 obji = objArray[i];
                 if((activeAxIds.indexOf(obji.xref) !== -1) ||
                     (activeAxIds.indexOf(obji.yref) !== -1)) {
-                    module.draw(gd, i);
+                    module.drawOne(gd, i);
                 }
             }
         }
@@ -235,12 +235,12 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig, makeOn
     }
 
     function transitionComplete() {
-        var attrs = {};
+        var aobj = {};
         for(var i = 0; i < updatedAxisIds.length; i++) {
             var axi = gd._fullLayout[updates[updatedAxisIds[i]].axisName];
             var to = updates[updatedAxisIds[i]].to;
-            attrs[axi._name + '.range[0]'] = to[0];
-            attrs[axi._name + '.range[1]'] = to[1];
+            aobj[axi._name + '.range[0]'] = to[0];
+            aobj[axi._name + '.range[1]'] = to[1];
 
             axi.range = to.slice();
         }
@@ -248,7 +248,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig, makeOn
         // Signal that this transition has completed:
         onComplete && onComplete();
 
-        return Plotly.relayout(gd, attrs).then(function() {
+        return Plotly.relayout(gd, aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }
@@ -256,16 +256,16 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig, makeOn
     }
 
     function transitionInterrupt() {
-        var attrs = {};
+        var aobj = {};
         for(var i = 0; i < updatedAxisIds.length; i++) {
             var axi = gd._fullLayout[updatedAxisIds[i] + 'axis'];
-            attrs[axi._name + '.range[0]'] = axi.range[0];
-            attrs[axi._name + '.range[1]'] = axi.range[1];
+            aobj[axi._name + '.range[0]'] = axi.range[0];
+            aobj[axi._name + '.range[1]'] = axi.range[1];
 
             axi.range = axi._r.slice();
         }
 
-        return Plotly.relayout(gd, attrs).then(function() {
+        return Plotly.relayout(gd, aobj).then(function() {
             for(var i = 0; i < affectedSubplots.length; i++) {
                 unsetSubplotTransform(affectedSubplots[i]);
             }

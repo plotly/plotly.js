@@ -62,10 +62,10 @@ drawing.translatePoint = function(d, sel, xa, ya) {
     else sel.remove();
 };
 
-drawing.translatePoints = function(s, xa, ya, trace, transitionConfig) {
+drawing.translatePoints = function(s, xa, ya, trace) {
     s.each(function(d) {
         var sel = d3.select(this);
-        drawing.translatePoint(d, sel, xa, ya, trace, transitionConfig);
+        drawing.translatePoint(d, sel, xa, ya, trace);
     });
 };
 

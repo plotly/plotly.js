@@ -67,7 +67,6 @@ describe('ternary plots', function() {
                 expect(countTraces('scatter')).toEqual(0);
 
                 var trace = Lib.extendDeep({}, mock.data[0]);
-                delete trace.uid;
 
                 return Plotly.addTraces(gd, [trace]);
             }).then(function() {
@@ -75,7 +74,6 @@ describe('ternary plots', function() {
                 expect(countTraces('scatter')).toEqual(1);
 
                 var trace = Lib.extendDeep({}, mock.data[0]);
-                delete trace.uid;
 
                 return Plotly.addTraces(gd, [trace]);
             }).then(function() {

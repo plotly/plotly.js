@@ -61,7 +61,7 @@ describe('Plotly.transition', function() {
         function end() {if(++calls === 2) done();}
 
         // Not testing this, but make sure not to exit before the transition is all done:
-        gd.on('plotly_endtransition', end);
+        gd.on('plotly_transitioned', end);
 
         Plotly.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {duration: duration}).then(function() {
             var t2 = Date.now();
@@ -69,10 +69,10 @@ describe('Plotly.transition', function() {
         }).catch(fail).then(end);
     });
 
-    it('emits plotly_begintransition on transition start', function(done) {
+    it('emits plotly_transitioning on transition start', function(done) {
         var beginTransitionCnt = 0;
 
-        gd.on('plotly_begintransition', function() {
+        gd.on('plotly_transitioning', function() {
             beginTransitionCnt++;
         });
 
@@ -81,8 +81,8 @@ describe('Plotly.transition', function() {
         }).catch(fail).then(done);
     });
 
-    it('emits plotly_endtransition on transition end', function(done) {
+    it('emits plotly_transitioned on transition end', function(done) {
         Plotly.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {duration: 50});
-        gd.on('plotly_endtransition', done);
+        gd.on('plotly_transitioned', done);
     });
 });

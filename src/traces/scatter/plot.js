@@ -74,7 +74,6 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOn
         var transition = d3.transition()
             .duration(transitionConfig.duration)
             .ease(transitionConfig.ease)
-            .delay(transitionConfig.delay)
             .each('end', function() {
                 onComplete && onComplete();
             });
@@ -370,12 +369,12 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     }
 
     function keyFunc(d) {
-        return d.identifier;
+        return d.id;
     }
 
     // Returns a function if the trace is keyed, otherwise returns undefined
     function getKeyFunc(trace) {
-        if(trace.identifier) {
+        if(trace.ids) {
             return keyFunc;
         }
     }

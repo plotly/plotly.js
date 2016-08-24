@@ -116,8 +116,8 @@ module.exports = function calc(gd, trace) {
         cd[i] = (isNumeric(x[i]) && isNumeric(y[i])) ?
             {x: x[i], y: y[i]} : {x: false, y: false};
 
-        if(trace.identifier && trace.identifier[i] !== undefined) {
-            cd[i].identifier = trace.identifier[i];
+        if(trace.ids) {
+            cd[i].id = String(trace.ids[i]);
         }
     }
 
