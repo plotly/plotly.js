@@ -180,13 +180,13 @@ describe('select box and lasso', function() {
                 pointNumber: 0,
                 x: 0.002,
                 y: 16.25,
-                identifier: undefined
+                id: undefined
             }, {
                 curveNumber: 0,
                 pointNumber: 1,
                 x: 0.004,
                 y: 12.5,
-                identifier: undefined
+                id: undefined
             }], 'with the correct selecting points');
             assertRange(selectingData.range, {
                 x: [0.002000, 0.0046236],
@@ -199,13 +199,13 @@ describe('select box and lasso', function() {
                 pointNumber: 0,
                 x: 0.002,
                 y: 16.25,
-                identifier: undefined
+                id: undefined
             }, {
                 curveNumber: 0,
                 pointNumber: 1,
                 x: 0.004,
                 y: 12.5,
-                identifier: undefined
+                id: undefined
             }], 'with the correct selected points');
             assertRange(selectedData.range, {
                 x: [0.002000, 0.0046236],
@@ -260,7 +260,7 @@ describe('select box and lasso', function() {
                 pointNumber: 10,
                 x: 0.099,
                 y: 2.75,
-                identifier: undefined
+                id: undefined
             }], 'with the correct selecting points');
 
             expect(selectedCnt).toEqual(1, 'with the correct selected count');
@@ -269,7 +269,7 @@ describe('select box and lasso', function() {
                 pointNumber: 10,
                 x: 0.099,
                 y: 2.75,
-                identifier: undefined
+                id: undefined
             }], 'with the correct selected points');
 
             doubleClick(250, 200).then(function() {

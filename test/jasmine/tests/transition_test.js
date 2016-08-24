@@ -15,8 +15,7 @@ describe('Plots.supplyTransitionDefaults', function() {
         expect(Plots.supplyTransitionDefaults({})).toEqual({
             duration: 500,
             ease: 'cubic-in-out',
-            redraw: true,
-            delay: 0,
+            redraw: true
         });
     });
 
@@ -24,13 +23,11 @@ describe('Plots.supplyTransitionDefaults', function() {
         expect(Plots.supplyTransitionDefaults({
             duration: 100,
             ease: 'quad-in-out',
-            redraw: false,
-            delay: 50,
+            redraw: false
         })).toEqual({
             duration: 100,
             ease: 'quad-in-out',
-            redraw: false,
-            delay: 50,
+            redraw: false
         });
     });
 
