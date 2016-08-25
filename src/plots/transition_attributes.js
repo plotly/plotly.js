@@ -12,8 +12,8 @@ module.exports = {
     duration: {
         valType: 'number',
         role: 'info',
-        dflt: 500,
         min: 0,
+        dflt: 500,
         description: [
             'The duration of the transition, in milliseconds. If equal to zero,',
             'updates are synchronous.'

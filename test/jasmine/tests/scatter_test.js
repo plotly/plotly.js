@@ -237,6 +237,12 @@ describe('Test scatter', function() {
             expect(ptsOut).toEqual([[[0, 0], [15, 30], [22, 16], [30, 0]]]);
         });
 
+        it('should not collapse straight lines if simplify is false', function() {
+            var ptsIn = [[0, 0], [5, 10], [13, 26], [15, 30], [22, 16], [28, 4], [30, 0]];
+            var ptsOut = callLinePoints(ptsIn, {simplify: false});
+            expect(ptsOut).toEqual([ptsIn]);
+        });
+
         it('should separate out blanks, unless connectgaps is true', function() {
             var ptsIn = [
                 [0, 0], [10, 20], [20, 10], [undefined, undefined],
