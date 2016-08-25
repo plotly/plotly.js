@@ -76,9 +76,9 @@ describe('Test mergeFrames', function() {
 
         beforeEach(function(done) {
             frames = [
-                {name: 'frame0', baseFrame: 'frame1', data: [{'marker.size': 0}]},
-                {name: 'frame1', baseFrame: 'frame2', data: [{'marker.size': 1}]},
-                {name: 'frame2', baseFrame: 'frame0', data: [{'marker.size': 2}]}
+                {name: 'frame0', baseframe: 'frame1', data: [{'marker.size': 0}]},
+                {name: 'frame1', baseframe: 'frame2', data: [{'marker.size': 1}]},
+                {name: 'frame2', baseframe: 'frame0', data: [{'marker.size': 2}]}
             ];
 
             results = [
@@ -133,7 +133,7 @@ describe('Test mergeFrames', function() {
         });
 
         it('merges orthogonal traces', function() {
-            frames[0].baseFrame = frames[1].name;
+            frames[0].baseframe = frames[1].name;
 
             // This technically returns a promise, but it's not actually asynchronous so
             // that we'll just keep this synchronous:
@@ -153,7 +153,7 @@ describe('Test mergeFrames', function() {
         });
 
         it('merges overlapping traces', function() {
-            frames[0].baseFrame = frames[2].name;
+            frames[0].baseframe = frames[2].name;
 
             Plotly.addFrames(gd, frames.map(clone));
 
@@ -166,9 +166,9 @@ describe('Test mergeFrames', function() {
         });
 
         it('merges partially overlapping traces', function() {
-            frames[0].baseFrame = frames[1].name;
-            frames[1].baseFrame = frames[2].name;
-            frames[2].baseFrame = frames[3].name;
+            frames[0].baseframe = frames[1].name;
+            frames[1].baseframe = frames[2].name;
+            frames[2].baseframe = frames[3].name;
 
             Plotly.addFrames(gd, frames.map(clone));
 
@@ -184,7 +184,7 @@ describe('Test mergeFrames', function() {
         });
 
         it('assumes serial order without traceIndices specified', function() {
-            frames[4].baseFrame = frames[3].name;
+            frames[4].baseframe = frames[3].name;
 
             Plotly.addFrames(gd, frames.map(clone));
 
@@ -220,7 +220,7 @@ describe('Test mergeFrames', function() {
         });
 
         it('merges layouts', function() {
-            frames[0].baseFrame = frames[1].name;
+            frames[0].baseframe = frames[1].name;
             var result = computeFrame(gd, 'frame0');
 
             expect(result).toEqual({

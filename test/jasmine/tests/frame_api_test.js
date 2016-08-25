@@ -80,11 +80,11 @@ describe('Test frame api', function() {
             }
 
             Plotly.addFrames(gd, frames).then(validate).then(function() {
-                return Plotly.addFrames(gd, [{name: 'frame5', x: [1]}, {name: 'frame7', x: [2]}, {name: 'frame10', x: [3]}], [5, 7, undefined]);
+                return Plotly.addFrames(gd, [{name: 'frame5', data: [1]}, {name: 'frame7', data: [2]}, {name: 'frame10', data: [3]}], [5, 7, undefined]);
             }).then(function() {
-                expect(f[5]).toEqual({name: 'frame5', x: [1]});
-                expect(f[7]).toEqual({name: 'frame7', x: [2]});
-                expect(f[10]).toEqual({name: 'frame10', x: [3]});
+                expect(f[5]).toEqual({name: 'frame5', data: [1]});
+                expect(f[7]).toEqual({name: 'frame7', data: [2]});
+                expect(f[10]).toEqual({name: 'frame10', data: [3]});
 
                 return Plotly.Queue.undo(gd);
             }).then(validate).catch(fail).then(done);
@@ -104,11 +104,11 @@ describe('Test frame api', function() {
             }
 
             Plotly.addFrames(gd, frames).then(validate).then(function() {
-                return Plotly.addFrames(gd, [{name: 'frame10', x: [3]}, {name: 'frame7', x: [2]}, {name: 'frame5', x: [1]}], [undefined, 7, 5]);
+                return Plotly.addFrames(gd, [{name: 'frame10', data: [3]}, {name: 'frame7', data: [2]}, {name: 'frame5', data: [1]}], [undefined, 7, 5]);
             }).then(function() {
-                expect(f[5]).toEqual({name: 'frame5', x: [1]});
-                expect(f[7]).toEqual({name: 'frame7', x: [2]});
-                expect(f[10]).toEqual({name: 'frame10', x: [3]});
+                expect(f[5]).toEqual({name: 'frame5', data: [1]});
+                expect(f[7]).toEqual({name: 'frame7', data: [2]});
+                expect(f[10]).toEqual({name: 'frame10', data: [3]});
 
                 return Plotly.Queue.undo(gd);
             }).then(validate).catch(fail).then(done);
@@ -132,8 +132,8 @@ describe('Test frame api', function() {
 
         it('overwrites frames', function(done) {
             // The whole shebang. This hits insertion + replacements + deletion + undo + redo:
-            Plotly.addFrames(gd, [{name: 'test1', x: 'y'}, {name: 'test2'}]).then(function() {
-                expect(f).toEqual([{name: 'test1', x: 'y'}, {name: 'test2'}]);
+            Plotly.addFrames(gd, [{name: 'test1', data: ['y']}, {name: 'test2'}]).then(function() {
+                expect(f).toEqual([{name: 'test1', data: ['y']}, {name: 'test2'}]);
                 expect(Object.keys(h)).toEqual(['test1', 'test2']);
 
                 return Plotly.addFrames(gd, [{name: 'test1'}, {name: 'test3'}]);
@@ -143,7 +143,7 @@ describe('Test frame api', function() {
 
                 return Plotly.Queue.undo(gd);
             }).then(function() {
-                expect(f).toEqual([{name: 'test1', x: 'y'}, {name: 'test2'}]);
+                expect(f).toEqual([{name: 'test1', data: ['y']}, {name: 'test2'}]);
                 expect(Object.keys(h)).toEqual(['test1', 'test2']);
 
                 return Plotly.Queue.redo(gd);

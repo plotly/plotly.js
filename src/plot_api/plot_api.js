@@ -2532,7 +2532,7 @@ Plotly.relayout = function relayout(gd, astr, val) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
+Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig, onTransitioned) {
     gd = getGraphDiv(gd);
 
     var i, traceIdx;
@@ -2700,6 +2700,8 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
             gd._transitioningWithDuration = false;
 
             gd.emit('plotly_transitioned', []);
+            onTransitioned && onTransitioned();
+            onTransitioned = null;
         });
     }
 
@@ -2753,22 +2755,133 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
  * @param {object} transitionConfig
  *      configuration for transition
  */
-Plotly.animate = function(gd, frameName, transitionConfig) {
+Plotly.animate = function(gd, groupNameOrFrameList, transitionConfig) {
     gd = getGraphDiv(gd);
+    var trans = gd._transitionData;
 
-    if(!gd._transitionData._frameHash[frameName]) {
-        Lib.warn('animateToFrame failure: keyframe does not exist', frameName);
-        return Promise.reject();
+    // This is the queue of frames that will be animated as soon as possible. They
+    // are popped immediately upon the *start* of a transition:
+    if(!trans._frameQueue) {
+        trans._frameQueue = [];
     }
 
-    var computedFrame = Plots.computeFrame(gd, frameName);
+    // Since frames are popped immediately, an empty queue only means all frames have
+    // *started* to transition, not that the animation is complete. To solve that,
+    // track a separate counter that increments at the same time as frames are added
+    // to the queue, but decrements only when the transition is complete.
+    if(trans._frameWaitingCnt === undefined) {
+        trans._frameWaitingCnt = 0;
+    }
 
-    return Plotly.transition(gd,
-        computedFrame.data,
-        computedFrame.layout,
-        computedFrame.traceIndices,
-        transitionConfig
-    );
+    function queueFrames(frameList) {
+        if(frameList.length === 0) return;
+
+        for(var i = 0; i < frameList.length; i++) {
+            var computedFrame = Plots.computeFrame(gd, frameList[i].name);
+
+            trans._frameWaitingCnt++;
+            trans._frameQueue.push({
+                frame: computedFrame,
+                name: frameList[i].name,
+                transitionConfig: frameList[i].transitionConfig || {},
+                frameduration: 0,
+            });
+        }
+
+        if(!trans._animationRaf) {
+            beginAnimation();
+        }
+    }
+
+    function completeAnimation() {
+        cancelAnimationFrame(trans._animationRaf);
+        trans._animationRaf = null;
+    }
+
+    function beginAnimation() {
+        gd.emit('plotly_animating');
+
+        // If no timer is running, then set last frame = long ago:
+        trans._lastframeat = 0;
+        trans._timetonext = 0;
+
+        var doFrame = function() {
+            // Check if we need to pop a frame:
+            if(Date.now() - trans._lastframeat > trans._timetonext) {
+                var newFrame = trans._frameQueue.shift();
+
+                var onTransitioned = function() {
+                    trans._frameWaitingCnt--;
+                    if(trans._frameWaitingCnt === 0) {
+                        gd.emit('plotly_animated');
+                    }
+                };
+
+                if(newFrame) {
+                    trans._lastframeat = Date.now();
+                    trans._timetonext = newFrame.transitionConfig.frameduration === undefined ? 50 : newFrame.transitionConfig.frameduration;
+
+
+                    Plotly.transition(gd,
+                        newFrame.frame.data,
+                        newFrame.frame.layout,
+                        newFrame.frame.traces,
+                        newFrame.transitionConfig,
+                        onTransitioned
+                    );
+                }
+
+                if(trans._frameQueue.length === 0) {
+                    completeAnimation();
+                    return;
+                }
+            }
+
+            trans._animationRaf = requestAnimationFrame(doFrame);
+        };
+
+        return doFrame();
+    }
+
+    var counter = 0;
+    function setTransitionConfig(frame) {
+        if(Array.isArray(transitionConfig)) {
+            frame.transitionConfig = transitionConfig[counter];
+        } else {
+            frame.transitionConfig = transitionConfig;
+        }
+        counter++;
+        return frame;
+    }
+
+    var i, frame;
+    var frameList = [];
+    var allFrames = typeof groupNameOrFrameList === 'undefined';
+    if(allFrames || typeof groupNameOrFrameList === 'string') {
+        for(i = 0; i < trans._frames.length; i++) {
+            frame = trans._frames[i];
+
+            if(allFrames || frame.group === groupNameOrFrameList) {
+                frameList.push(setTransitionConfig({name: frame.name}));
+            }
+        }
+    } else if(Array.isArray(groupNameOrFrameList)) {
+        for(i = 0; i < groupNameOrFrameList.length; i++) {
+            frameList.push(setTransitionConfig({name: groupNameOrFrameList[i]}));
+        }
+    }
+
+    // Verify that all of these frames actually exist; return and reject if not:
+    for(i = 0; i < frameList.length; i++) {
+        if(!trans._frameHash[frameList[i].name]) {
+            Lib.warn('animate failure: frame not found: "' + frameList[i].name + '"');
+            return Promise.reject();
+        }
+    }
+
+    queueFrames(frameList);
+
+    return Promise.resolve();
 };
 
 /**
@@ -2780,7 +2893,7 @@ Plotly.animate = function(gd, frameName, transitionConfig) {
  *      - data: {array of objects} trace data
  *      - layout {object} layout definition
  *      - traces {array} trace indices
- *      - baseFrame {string} name of keyframe from which this keyframe gets defaults
+ *      - baseframe {string} name of keyframe from which this keyframe gets defaults
  */
 Plotly.addFrames = function(gd, frameList, indices) {
     gd = getGraphDiv(gd);
@@ -2805,7 +2918,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
     var insertions = [];
     for(i = frameList.length - 1; i >= 0; i--) {
         insertions.push({
-            frame: frameList[i],
+            frame: Plots.supplyFrameDefaults(frameList[i]),
             index: (indices && indices[i] !== undefined && indices[i] !== null) ? indices[i] : bigIndex + i
         });
     }

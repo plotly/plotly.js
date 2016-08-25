@@ -19,6 +19,7 @@ var Color = require('../components/color');
 
 var plots = module.exports = {};
 var transitionAttrs = require('./transition_attributes');
+var frameAttrs = require('./frame_attributes');
 
 // Expose registry methods on Plots for backward-compatibility
 Lib.extendFlat(plots, Registry);
@@ -626,6 +627,23 @@ plots.supplyTransitionDefaults = function(config) {
     return configOut;
 };
 
+plots.supplyFrameDefaults = function(frameIn) {
+    var frameOut = {};
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(frameIn, frameOut, frameAttrs, attr, dflt);
+    }
+
+    coerce('group');
+    coerce('name');
+    coerce('traces');
+    coerce('baseframe');
+    coerce('data');
+    coerce('layout');
+
+    return frameOut;
+};
+
 plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
     var traceOut = {},
         defaultColor = Color.defaults[traceIndex % Color.defaults.length];
@@ -1211,7 +1229,7 @@ plots.computeFrame = function(gd, frameName) {
     var frameNameStack = [framePtr.name];
 
     // Follow frame pointers:
-    while((framePtr = frameLookup[framePtr.baseFrame])) {
+    while((framePtr = frameLookup[framePtr.baseframe])) {
         // Avoid infinite loops:
         if(frameNameStack.indexOf(framePtr.name) !== -1) break;
 
@@ -1234,7 +1252,7 @@ plots.computeFrame = function(gd, frameName) {
             if(!result.data) {
                 result.data = [];
             }
-            traceIndices = framePtr.traceIndices;
+            traceIndices = framePtr.traces;
 
             if(!traceIndices) {
                 // If not defined, assume serial order starting at zero
@@ -1244,8 +1262,8 @@ plots.computeFrame = function(gd, frameName) {
                 }
             }
 
-            if(!result.traceIndices) {
-                result.traceIndices = [];
+            if(!result.traces) {
+                result.traces = [];
             }
 
             for(i = 0; i < framePtr.data.length; i++) {
@@ -1256,10 +1274,10 @@ plots.computeFrame = function(gd, frameName) {
                     continue;
                 }
 
-                destIndex = result.traceIndices.indexOf(traceIndex);
+                destIndex = result.traces.indexOf(traceIndex);
                 if(destIndex === -1) {
                     destIndex = result.data.length;
-                    result.traceIndices[destIndex] = traceIndex;
+                    result.traces[destIndex] = traceIndex;
                 }
 
                 copy = Lib.extendDeepNoArrays({}, framePtr.data[i]);
