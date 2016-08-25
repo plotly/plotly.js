@@ -67,7 +67,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
 
             var path;
 
-            if(yObj.visible && isNumeric(coords.y) &&
+            if(yObj.visible && isNumeric(coords.x) &&
                     isNumeric(coords.yh) &&
                     isNumeric(coords.ys)) {
                 var yw = yObj.width;
@@ -96,7 +96,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
                 yerror.attr('d', path);
             }
 
-            if(xObj.visible && isNumeric(coords.x) &&
+            if(xObj.visible && isNumeric(coords.y) &&
                     isNumeric(coords.xh) &&
                     isNumeric(coords.xs)) {
                 var xw = (xObj.copy_ystyle ? yObj : xObj).width;
