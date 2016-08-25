@@ -107,7 +107,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // if the user is trying to drag the axes, allow new data and layout
     // to come in but don't allow a replot.
-    if(gd._dragging) {
+    if(gd._dragging && !gd._transitioning) {
         // signal to drag handler that after everything else is done
         // we need to replot, because something has changed
         gd._replotPending = true;
@@ -235,6 +235,7 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function doAutoRange() {
+        if(gd._transitioning) return;
         var axList = Plotly.Axes.list(gd, '', true);
         for(var i = 0; i < axList.length; i++) {
             Plotly.Axes.doAutoRange(axList[i]);
@@ -2597,6 +2598,8 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         doCalcdata(gd);
 
         ErrorBars.calc(gd);
+
+        return Promise.resolve();
     }
 
     function executeCallbacks(list) {
@@ -2618,6 +2621,16 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
     var aborted = false;
 
     function executeTransitions() {
+        // This flag is used to disabled things like autorange:
+        gd._transitioning = true;
+
+        // When instantaneous updates are coming through quickly, it's too much to simply disable
+        // all interaction, so store this flag so we can disambiguate whether mouse interactions
+        // should be fully disabled or not:
+        if(transitionConfig.duration > 0) {
+            gd._transitioningWithDuration = true;
+        }
+
         gd._transitionData._interruptCallbacks.push(function() {
             aborted = true;
         });
@@ -2638,7 +2651,6 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         }
 
         var traceTransitionConfig;
-        var hasTraceTransition = false;
         var j;
         var basePlotModules = fullLayout._basePlotModules;
         var hasAxisTransition = false;
@@ -2671,12 +2683,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
         }
 
         // If nothing else creates a callback, then this will trigger the completion in the next tick:
-        setTimeout(makeCallback());
-
-        if(!hasAxisTransition && !hasTraceTransition) {
-            return false;
-        }
-
+        setTimeout(makeCallback('first'));
     }
 
     function completeTransition() {
@@ -2687,12 +2694,24 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
                 return Plotly.redraw(gd);
             }
         }).then(function() {
+            // Set transitioning false again once the redraw has occurred. This is used, for example,
+            // to prevent the trailing redraw from autoranging:
+            gd._transitioning = false;
+            gd._transitioningWithDuration = false;
+
             gd.emit('plotly_transitioned', []);
         });
     }
 
     function interruptPreviousTransitions() {
         gd.emit('plotly_transitioninterrupted', []);
+
+        // If a transition is interrupted, set this to false. At the moment, the only thing that would
+        // interrupt a transition is another transition, so that it will momentarily be set to true
+        // again, but this determines whether autorange or dragbox work, so it's for the sake of
+        // cleanliness:
+        gd._transitioning = false;
+        gd._transtionWithDuration = false;
 
         return executeCallbacks(gd._transitionData._interruptCallbacks);
     }
@@ -2715,11 +2734,12 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig) {
 
     var seq = [Plots.previousPromises, interruptPreviousTransitions, prepareTransitions, executeTransitions];
 
-    var plotDone = Lib.syncOrAsync(seq, gd);
 
-    if(!plotDone || !plotDone.then) plotDone = Promise.resolve();
+    var transitionStarting = Lib.syncOrAsync(seq, gd);
 
-    return plotDone.then(function() {
+    if(!transitionStarting || !transitionStarting.then) transitionStarting = Promise.resolve();
+
+    return transitionStarting.then(function() {
         gd.emit('plotly_transitioning', []);
         return gd;
     });

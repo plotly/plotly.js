@@ -224,6 +224,10 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function zoomMove(dx0, dy0) {
+        if(gd._transitioningWithDuration) {
+            return false;
+        }
+
         var x1 = Math.max(0, Math.min(pw, dx0 + x0)),
             y1 = Math.max(0, Math.min(ph, dy0 + y0)),
             dx = Math.abs(x1 - x0),
@@ -380,14 +384,21 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             fullLayout._plots[plotinfo.mainplot] : plotinfo;
 
     function zoomWheel(e) {
-        recomputeAxisLists();
         // deactivate mousewheel scrolling on embedded graphs
         // devs can override this with layout._enablescrollzoom,
         // but _ ensures this setting won't leave their page
         if(!gd._context.scrollZoom && !fullLayout._enablescrollzoom) {
             return;
         }
+
+        // If a transition is in progress, then disable any behavior:
+        if(gd._transitioningWithDuration) {
+            return Lib.pauseEvent(e);
+        }
+
         var pc = gd.querySelector('.plotly');
+
+        recomputeAxisLists();
 
         // if the plot has scrollbars (more than a tiny excess)
         // disable scrollzoom too.
@@ -456,6 +467,11 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
     // plotDrag: move the plot in response to a drag
     function plotDrag(dx, dy) {
+        // If a transition is in progress, then disable any behavior:
+        if(gd._transitioningWithDuration) {
+            return;
+        }
+
         recomputeAxisLists();
 
         function dragAxList(axList, pix) {
@@ -558,6 +574,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     }
 
     function doubleClick() {
+        if(gd._transitioningWithDuration) return;
+
         var doubleClickConfig = gd._context.doubleClick,
             axList = (xActive ? xa : []).concat(yActive ? ya : []),
             attrs = {};

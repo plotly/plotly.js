@@ -22,7 +22,7 @@ var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
 
 module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOnCompleteCallback) {
-    var i, uids, selection, join;
+    var i, uids, selection, join, onComplete;
 
     var scatterlayer = plotinfo.plot.select('g.scatterlayer');
 
@@ -30,14 +30,6 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOn
     // updated are removed.
     var isFullReplot = !transitionConfig;
     var hasTransition = !!transitionConfig && transitionConfig.duration > 0;
-
-    var onComplete;
-    if(makeOnCompleteCallback && hasTransition) {
-        // If it was passed a callback to register completion, make a callback. If
-        // this is created, then it must be executed on completion, otherwise the
-        // pos-transition redraw will not execute:
-        onComplete = makeOnCompleteCallback();
-    }
 
     selection = scatterlayer.selectAll('g.trace');
 
@@ -71,10 +63,20 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOn
     });
 
     if(hasTransition) {
+        if(makeOnCompleteCallback) {
+            // If it was passed a callback to register completion, make a callback. If
+            // this is created, then it must be executed on completion, otherwise the
+            // pos-transition redraw will not execute:
+            onComplete = makeOnCompleteCallback();
+        }
+
         var transition = d3.transition()
             .duration(transitionConfig.duration)
             .ease(transitionConfig.ease)
             .each('end', function() {
+                onComplete && onComplete();
+            })
+            .each('interrupt', function() {
                 onComplete && onComplete();
             });
 
