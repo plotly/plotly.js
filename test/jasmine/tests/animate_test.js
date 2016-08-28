@@ -307,7 +307,7 @@ describe('Test animate API', function() {
 
     it('animates reasonably even when transition duration >> frame duration', function(done) {
         var starts = 0;
-        var ends= 0;
+        var ends = 0;
 
         gd.on('plotly_animating', function() {
             starts++;

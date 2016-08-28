@@ -400,17 +400,23 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                     .classed('point', true);
 
                 enter.call(Drawing.pointStyle, trace)
-                    .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, 1);
+                    .call(Drawing.translatePoints, xa, ya, trace);
 
-                join.transition().each(function(d) {
+                if(hasTransition) {
+                    enter.style('opacity', 0).transition()
+                        .style('opacity', 1);
+                }
+
+                join.each(function(d) {
                     var sel = transition(d3.select(this));
-                    Drawing.translatePoint(d, sel, xa, ya, trace, transitionConfig, 0);
+                    Drawing.translatePoint(d, sel, xa, ya);
                     Drawing.singlePointStyle(d, sel, trace);
                 });
 
                 if(hasTransition) {
-                    join.exit()
-                        .call(Drawing.translatePoints, xa, ya, trace, transitionConfig, -1);
+                    join.exit().transition()
+                        .style('opacity', 0)
+                        .remove();
                 } else {
                     join.exit().remove();
                 }
