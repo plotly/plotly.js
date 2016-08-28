@@ -9,6 +9,13 @@
 'use strict';
 
 module.exports = {
+    frameduration: {
+        valType: 'number',
+        role: 'info',
+        min: 0,
+        dflt: 500,
+        description: 'The duration in milliseconds of each frame.'
+    },
     duration: {
         valType: 'number',
         role: 'info',

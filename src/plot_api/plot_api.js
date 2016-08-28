@@ -2532,13 +2532,13 @@ Plotly.relayout = function relayout(gd, astr, val) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig, onTransitioned) {
+Plotly.transition = function(gd, data, layout, traceIndices, transitionOpts) {
     gd = getGraphDiv(gd);
 
     var i, traceIdx;
     var fullLayout = gd._fullLayout;
 
-    transitionConfig = Plots.supplyTransitionDefaults(transitionConfig);
+    transitionOpts = Plots.supplyTransitionDefaults(transitionOpts);
 
     var dataLength = Array.isArray(data) ? data.length : 0;
 
@@ -2621,76 +2621,79 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig, o
     var aborted = false;
 
     function executeTransitions() {
-        // This flag is used to disabled things like autorange:
-        gd._transitioning = true;
+        return new Promise(function(resolve) {
+            // This flag is used to disabled things like autorange:
+            gd._transitioning = true;
 
-        // When instantaneous updates are coming through quickly, it's too much to simply disable
-        // all interaction, so store this flag so we can disambiguate whether mouse interactions
-        // should be fully disabled or not:
-        if(transitionConfig.duration > 0) {
-            gd._transitioningWithDuration = true;
-        }
+            // When instantaneous updates are coming through quickly, it's too much to simply disable
+            // all interaction, so store this flag so we can disambiguate whether mouse interactions
+            // should be fully disabled or not:
+            if(transitionOpts.duration > 0) {
+                gd._transitioningWithDuration = true;
+            }
 
-        gd._transitionData._interruptCallbacks.push(function() {
-            aborted = true;
-        });
+            gd._transitionData._interruptCallbacks.push(function() {
+                aborted = true;
+            });
 
-        // Construct callbacks that are executed on transition end. This ensures the d3 transitions
-        // are *complete* before anything else is done.
-        var numCallbacks = 0;
-        var numCompleted = 0;
-        function makeCallback() {
-            numCallbacks++;
-            return function() {
-                numCompleted++;
-                // When all are complete, perform a redraw:
-                if(!aborted && numCompleted === numCallbacks) {
-                    completeTransition();
-                }
-            };
-        }
+            // Construct callbacks that are executed on transition end. This ensures the d3 transitions
+            // are *complete* before anything else is done.
+            var numCallbacks = 0;
+            var numCompleted = 0;
+            function makeCallback() {
+                numCallbacks++;
+                return function() {
+                    numCompleted++;
+                    // When all are complete, perform a redraw:
+                    if(!aborted && numCompleted === numCallbacks) {
+                        completeTransition(resolve);
+                    }
+                };
+            }
 
-        var traceTransitionConfig;
-        var j;
-        var basePlotModules = fullLayout._basePlotModules;
-        var hasAxisTransition = false;
+            var traceTransitionOpts;
+            var j;
+            var basePlotModules = fullLayout._basePlotModules;
+            var hasAxisTransition = false;
 
-        if(layout) {
-            for(j = 0; j < basePlotModules.length; j++) {
-                if(basePlotModules[j].transitionAxes) {
-                    var newLayout = Lib.expandObjectPaths(layout);
-                    hasAxisTransition = basePlotModules[j].transitionAxes(gd, newLayout, transitionConfig, makeCallback) || hasAxisTransition;
+            if(layout) {
+                for(j = 0; j < basePlotModules.length; j++) {
+                    if(basePlotModules[j].transitionAxes) {
+                        var newLayout = Lib.expandObjectPaths(layout);
+                        hasAxisTransition = basePlotModules[j].transitionAxes(gd, newLayout, transitionOpts, makeCallback) || hasAxisTransition;
+                    }
                 }
             }
-        }
 
-        // Here handle the exception that we refuse to animate scales and axes at the same
-        // time. In other words, if there's an axis transition, then set the data transition
-        // to instantaneous.
-        if(hasAxisTransition) {
-            traceTransitionConfig = Lib.extendFlat({}, transitionConfig);
-            traceTransitionConfig.duration = 0;
-        } else {
-            traceTransitionConfig = transitionConfig;
-        }
+            // Here handle the exception that we refuse to animate scales and axes at the same
+            // time. In other words, if there's an axis transition, then set the data transition
+            // to instantaneous.
+            if(hasAxisTransition) {
+                traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
+                traceTransitionOpts.duration = 0;
+            } else {
+                traceTransitionOpts = transitionOpts;
+            }
 
-        for(j = 0; j < basePlotModules.length; j++) {
-            // Note that we pass a callback to *create* the callback that must be invoked on completion.
-            // This is since not all traces know about transitions, so it greatly simplifies matters if
-            // the trace is responsible for creating a callback, if needed, and then executing it when
-            // the time is right.
-            basePlotModules[j].plot(gd, transitionedTraces, traceTransitionConfig, makeCallback);
-        }
+            for(j = 0; j < basePlotModules.length; j++) {
+                // Note that we pass a callback to *create* the callback that must be invoked on completion.
+                // This is since not all traces know about transitions, so it greatly simplifies matters if
+                // the trace is responsible for creating a callback, if needed, and then executing it when
+                // the time is right.
+                basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+            }
 
-        // If nothing else creates a callback, then this will trigger the completion in the next tick:
-        setTimeout(makeCallback('first'));
+            // If nothing else creates a callback, then this will trigger the completion in the next tick:
+            setTimeout(makeCallback());
+
+        });
     }
 
-    function completeTransition() {
+    function completeTransition(callback) {
         flushCallbacks(gd._transitionData._interruptCallbacks);
 
         return Promise.resolve().then(function() {
-            if(transitionConfig.redraw) {
+            if(transitionOpts.redraw) {
                 return Plotly.redraw(gd);
             }
         }).then(function() {
@@ -2700,9 +2703,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig, o
             gd._transitioningWithDuration = false;
 
             gd.emit('plotly_transitioned', []);
-            onTransitioned && onTransitioned();
-            onTransitioned = null;
-        });
+        }).then(callback);
     }
 
     function interruptPreviousTransitions() {
@@ -2752,10 +2753,10 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionConfig, o
  *
  * @param {string} name
  *      name of the keyframe to create
- * @param {object} transitionConfig
+ * @param {object} transitionOpts
  *      configuration for transition
  */
-Plotly.animate = function(gd, groupNameOrFrameList, transitionConfig) {
+Plotly.animate = function(gd, groupNameOrFrameList, transitionOpts, animationOpts) {
     gd = getGraphDiv(gd);
     var trans = gd._transitionData;
 
@@ -2765,6 +2766,8 @@ Plotly.animate = function(gd, groupNameOrFrameList, transitionConfig) {
         trans._frameQueue = [];
     }
 
+    animationOpts = Plots.supplyAnimationDefaults(animationOpts);
+
     // Since frames are popped immediately, an empty queue only means all frames have
     // *started* to transition, not that the animation is complete. To solve that,
     // track a separate counter that increments at the same time as frames are added
@@ -2773,115 +2776,161 @@ Plotly.animate = function(gd, groupNameOrFrameList, transitionConfig) {
         trans._frameWaitingCnt = 0;
     }
 
-    function queueFrames(frameList) {
-        if(frameList.length === 0) return;
-
-        for(var i = 0; i < frameList.length; i++) {
-            var computedFrame = Plots.computeFrame(gd, frameList[i].name);
-
-            trans._frameWaitingCnt++;
-            trans._frameQueue.push({
-                frame: computedFrame,
-                name: frameList[i].name,
-                transitionConfig: frameList[i].transitionConfig || {},
-                frameduration: 0,
-            });
-        }
-
-        if(!trans._animationRaf) {
-            beginAnimation();
+    function getTransitionOpts(i) {
+        if(Array.isArray(transitionOpts)) {
+            if(i >= transitionOpts.length) {
+                return transitionOpts[0];
+            } else {
+                return transitionOpts[i];
+            }
+        } else {
+            return transitionOpts;
         }
     }
 
-    function completeAnimation() {
-        cancelAnimationFrame(trans._animationRaf);
-        trans._animationRaf = null;
-    }
+    return new Promise(function(resolve, reject) {
+        function discardExistingFrames() {
+            if(trans._frameQueue.length === 0) {
+                return;
+            }
 
-    function beginAnimation() {
-        gd.emit('plotly_animating');
+            while(trans._frameQueue.length) {
+                var next = trans._frameQueue.pop();
+                if(next.onInterrupt) {
+                    next.onInterrupt();
+                }
+            }
 
-        // If no timer is running, then set last frame = long ago:
-        trans._lastframeat = 0;
-        trans._timetonext = 0;
+            gd.emit('plotly_animationinterrupted', []);
+        }
 
-        var doFrame = function() {
-            // Check if we need to pop a frame:
-            if(Date.now() - trans._lastframeat > trans._timetonext) {
-                var newFrame = trans._frameQueue.shift();
+        function queueFrames(frameList) {
+            if(frameList.length === 0) return;
 
-                var onTransitioned = function() {
-                    trans._frameWaitingCnt--;
-                    if(trans._frameWaitingCnt === 0) {
-                        gd.emit('plotly_animated');
-                    }
+            for(var i = 0; i < frameList.length; i++) {
+                var computedFrame = Plots.computeFrame(gd, frameList[i].name);
+
+                var opts = Plots.supplyTransitionDefaults(getTransitionOpts(i));
+
+                var nextFrame = {
+                    frame: computedFrame,
+                    name: frameList[i].name,
+                    transitionOpts: opts
                 };
 
-                if(newFrame) {
-                    trans._lastframeat = Date.now();
-                    trans._timetonext = newFrame.transitionConfig.frameduration === undefined ? 50 : newFrame.transitionConfig.frameduration;
-
-
-                    Plotly.transition(gd,
-                        newFrame.frame.data,
-                        newFrame.frame.layout,
-                        newFrame.frame.traces,
-                        newFrame.transitionConfig,
-                        onTransitioned
-                    );
+                if(i === frameList.length - 1) {
+                    nextFrame.onComplete = resolve;
+                    nextFrame.onInterrupt = reject;
                 }
 
-                if(trans._frameQueue.length === 0) {
-                    completeAnimation();
-                    return;
+                trans._frameQueue.push(nextFrame);
+            }
+
+            if(!trans._animationRaf) {
+                beginAnimationLoop();
+            }
+        }
+
+        function stopAnimationLoop() {
+            cancelAnimationFrame(trans._animationRaf);
+            trans._animationRaf = null;
+        }
+
+        function beginAnimationLoop() {
+            gd.emit('plotly_animating');
+
+            // If no timer is running, then set last frame = long ago:
+            trans._lastframeat = 0;
+            trans._timetonext = 0;
+            trans._runningTransitions = 0;
+            trans._currentFrame = null;
+
+            var doFrame = function() {
+                // Check if we need to pop a frame:
+                if(Date.now() - trans._lastframeat > trans._timetonext) {
+                    if(trans._currentFrame) {
+                        if(trans._currentFrame.onComplete) {
+                            trans._currentFrame.onComplete();
+                        }
+                    }
+
+                    var newFrame = trans._currentFrame = trans._frameQueue.shift();
+
+                    if(newFrame) {
+                        trans._lastframeat = Date.now();
+                        trans._timetonext = newFrame.transitionOpts.frameduration;
+
+                        Plotly.transition(gd,
+                            newFrame.frame.data,
+                            newFrame.frame.layout,
+                            newFrame.frame.traces,
+                            newFrame.transitionOpts
+                        ).then(function() {
+                            if(trans._frameQueue.length === 0) {
+                                gd.emit('plotly_animated');
+                                if(trans._currentFrame && trans._currentFrame.onComplete) {
+                                    trans._currentFrame.onComplete();
+                                    trans._currentFrame = null;
+                                }
+                            }
+                        });
+                    }
+
+                    if(trans._frameQueue.length === 0) {
+                        stopAnimationLoop();
+                        return;
+                    }
+                }
+
+                trans._animationRaf = requestAnimationFrame(doFrame);
+            };
+
+            return doFrame();
+        }
+
+        var counter = 0;
+        function setTransitionConfig(frame) {
+            if(Array.isArray(transitionOpts)) {
+                frame.transitionOpts = transitionOpts[counter];
+            } else {
+                frame.transitionOpts = transitionOpts;
+            }
+            counter++;
+            return frame;
+        }
+
+        var i, frame;
+        var frameList = [];
+        var allFrames = typeof groupNameOrFrameList === 'undefined';
+        if(allFrames || typeof groupNameOrFrameList === 'string') {
+            for(i = 0; i < trans._frames.length; i++) {
+                frame = trans._frames[i];
+
+                if(allFrames || frame.group === groupNameOrFrameList) {
+                    frameList.push(setTransitionConfig({name: frame.name}));
                 }
             }
-
-            trans._animationRaf = requestAnimationFrame(doFrame);
-        };
-
-        return doFrame();
-    }
-
-    var counter = 0;
-    function setTransitionConfig(frame) {
-        if(Array.isArray(transitionConfig)) {
-            frame.transitionConfig = transitionConfig[counter];
-        } else {
-            frame.transitionConfig = transitionConfig;
-        }
-        counter++;
-        return frame;
-    }
-
-    var i, frame;
-    var frameList = [];
-    var allFrames = typeof groupNameOrFrameList === 'undefined';
-    if(allFrames || typeof groupNameOrFrameList === 'string') {
-        for(i = 0; i < trans._frames.length; i++) {
-            frame = trans._frames[i];
-
-            if(allFrames || frame.group === groupNameOrFrameList) {
-                frameList.push(setTransitionConfig({name: frame.name}));
+        } else if(Array.isArray(groupNameOrFrameList)) {
+            for(i = 0; i < groupNameOrFrameList.length; i++) {
+                frameList.push(setTransitionConfig({name: groupNameOrFrameList[i]}));
             }
         }
-    } else if(Array.isArray(groupNameOrFrameList)) {
-        for(i = 0; i < groupNameOrFrameList.length; i++) {
-            frameList.push(setTransitionConfig({name: groupNameOrFrameList[i]}));
+
+        // Verify that all of these frames actually exist; return and reject if not:
+        for(i = 0; i < frameList.length; i++) {
+            if(!trans._frameHash[frameList[i].name]) {
+                Lib.warn('animate failure: frame not found: "' + frameList[i].name + '"');
+                reject();
+                return;
+            }
         }
-    }
 
-    // Verify that all of these frames actually exist; return and reject if not:
-    for(i = 0; i < frameList.length; i++) {
-        if(!trans._frameHash[frameList[i].name]) {
-            Lib.warn('animate failure: frame not found: "' + frameList[i].name + '"');
-            return Promise.reject();
+        if(animationOpts.immediate) {
+            discardExistingFrames();
         }
-    }
 
-    queueFrames(frameList);
-
-    return Promise.resolve();
+        queueFrames(frameList);
+    });
 };
 
 /**

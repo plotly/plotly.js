@@ -19,6 +19,7 @@ var Color = require('../components/color');
 
 var plots = module.exports = {};
 var transitionAttrs = require('./transition_attributes');
+var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
 
 // Expose registry methods on Plots for backward-compatibility
@@ -613,18 +614,31 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
     }
 };
 
-plots.supplyTransitionDefaults = function(config) {
-    var configOut = {};
+plots.supplyAnimationDefaults = function(opts) {
+    var optsOut = {};
 
     function coerce(attr, dflt) {
-        return Lib.coerce(config, configOut, transitionAttrs, attr, dflt);
+        return Lib.coerce(opts || {}, optsOut, animationAttrs, attr, dflt);
     }
 
+    coerce('immediate');
+
+    return optsOut;
+};
+
+plots.supplyTransitionDefaults = function(opts) {
+    var optsOut = {};
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(opts || {}, optsOut, transitionAttrs, attr, dflt);
+    }
+
+    coerce('frameduration');
     coerce('duration');
     coerce('ease');
     coerce('redraw');
 
-    return configOut;
+    return optsOut;
 };
 
 plots.supplyFrameDefaults = function(frameIn) {
@@ -856,6 +870,10 @@ plots.purge = function(gd) {
     // remove modebar
     if(fullLayout._modeBar) fullLayout._modeBar.destroy();
 
+    if(gd._transitionData._animationRaf) {
+        cancelAnimationFrame(gd._transitionData._animationRaf);
+    }
+
     // data and layout
     delete gd.data;
     delete gd.layout;
@@ -886,6 +904,7 @@ plots.purge = function(gd) {
     delete gd._hoverTimer;
     delete gd._lastHoverTime;
     delete gd._transitionData;
+    delete gd._transitioning;
 
     // remove all event listeners
     if(gd.removeAllListeners) gd.removeAllListeners();
