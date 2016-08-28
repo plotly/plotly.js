@@ -60,7 +60,7 @@ describe('Test animate API', function() {
         var transOpts = {frameduration: duration};
 
         it('animates to a frame', function(done) {
-            Plotly.animate(gd, ['frame0'], {duration: 1.2345}).then(function() {
+            Plotly.animate(gd, ['frame0'], {transitionduration: 1.2345}).then(function() {
                 expect(PlotlyInternal.transition).toHaveBeenCalled();
 
                 var args = PlotlyInternal.transition.calls.mostRecent().args;
@@ -72,7 +72,7 @@ describe('Test animate API', function() {
                 expect(args[1].length).toEqual(2);
 
                 // Verify transition config has been passed:
-                expect(args[4].duration).toEqual(1.2345);
+                expect(args[4].transitionduration).toEqual(1.2345);
 
                 // layout
                 expect(args[2]).toEqual({
@@ -87,6 +87,31 @@ describe('Test animate API', function() {
 
         it('rejects if a frame is not found', function(done) {
             Plotly.animate(gd, ['foobar'], transOpts).then(fail).then(done, done);
+        });
+
+        it('treats objects as frames', function(done) {
+            var frame = {data: [{x: [1, 2, 3]}]};
+            Plotly.animate(gd, frame, transOpts).then(function() {
+                expect(PlotlyInternal.transition.calls.count()).toEqual(1);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('treats a list of objects as frames', function(done) {
+            var frame1 = {data: [{x: [1, 2, 3]}], traces: [0], layout: {foo: 'bar'}};
+            var frame2 = {data: [{x: [3, 4, 5]}], traces: [1], layout: {foo: 'baz'}};
+            Plotly.animate(gd, [frame1, frame2], transOpts).then(function() {
+                expect(PlotlyInternal.transition.calls.argsFor(0)[1]).toEqual(frame1.data);
+                expect(PlotlyInternal.transition.calls.argsFor(0)[2]).toEqual(frame1.layout);
+                expect(PlotlyInternal.transition.calls.argsFor(0)[3]).toEqual(frame1.traces);
+
+                expect(PlotlyInternal.transition.calls.argsFor(1)[1]).toEqual(frame2.data);
+                expect(PlotlyInternal.transition.calls.argsFor(1)[2]).toEqual(frame2.layout);
+                expect(PlotlyInternal.transition.calls.argsFor(1)[3]).toEqual(frame2.traces);
+
+                expect(PlotlyInternal.transition.calls.count()).toEqual(2);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
         });
 
         it('animates all frames if list is null', function(done) {
@@ -139,26 +164,26 @@ describe('Test animate API', function() {
         });
 
         it('accepts a single transitionOpts', function(done) {
-            Plotly.animate(gd, ['frame0', 'frame1'], {duration: 1.12345}).then(function() {
+            Plotly.animate(gd, ['frame0', 'frame1'], {transitionduration: 1.12345}).then(function() {
                 var calls = PlotlyInternal.transition.calls;
-                expect(calls.argsFor(0)[4].duration).toEqual(1.12345);
-                expect(calls.argsFor(1)[4].duration).toEqual(1.12345);
+                expect(calls.argsFor(0)[4].transitionduration).toEqual(1.12345);
+                expect(calls.argsFor(1)[4].transitionduration).toEqual(1.12345);
             }).catch(fail).then(done);
         });
 
         it('accepts an array of transitionOpts', function(done) {
-            Plotly.animate(gd, ['frame0', 'frame1'], [{duration: 1.123}, {duration: 1.456}]).then(function() {
+            Plotly.animate(gd, ['frame0', 'frame1'], [{transitionduration: 1.123}, {transitionduration: 1.456}]).then(function() {
                 var calls = PlotlyInternal.transition.calls;
-                expect(calls.argsFor(0)[4].duration).toEqual(1.123);
-                expect(calls.argsFor(1)[4].duration).toEqual(1.456);
+                expect(calls.argsFor(0)[4].transitionduration).toEqual(1.123);
+                expect(calls.argsFor(1)[4].transitionduration).toEqual(1.456);
             }).catch(fail).then(done);
         });
 
         it('falls back to transitionOpts[0] if not enough supplied in array', function(done) {
-            Plotly.animate(gd, ['frame0', 'frame1'], [{duration: 1.123}]).then(function() {
+            Plotly.animate(gd, ['frame0', 'frame1'], [{transitionduration: 1.123}]).then(function() {
                 var calls = PlotlyInternal.transition.calls;
-                expect(calls.argsFor(0)[4].duration).toEqual(1.123);
-                expect(calls.argsFor(1)[4].duration).toEqual(1.123);
+                expect(calls.argsFor(0)[4].transitionduration).toEqual(1.123);
+                expect(calls.argsFor(1)[4].transitionduration).toEqual(1.123);
             }).catch(fail).then(done);
         });
 
@@ -252,8 +277,8 @@ describe('Test animate API', function() {
                 expect(starts).toEqual(1);
             });
 
-            Plotly.animate(gd, 'even-frames', {duration: 16});
-            Plotly.animate(gd, 'odd-frames', {duration: 16}).then(delay(10)).then(function() {
+            Plotly.animate(gd, 'even-frames', {transitionduration: 16});
+            Plotly.animate(gd, 'odd-frames', {transitionduration: 16}).then(delay(10)).then(function() {
                 expect(ends).toEqual(1);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
@@ -315,7 +340,7 @@ describe('Test animate API', function() {
             ends++;
         });
 
-        Plotly.animate(gd, ['frame0', 'frame1'], {duration: 200, frameduration: 20}).then(function() {
+        Plotly.animate(gd, ['frame0', 'frame1'], {transitionduration: 200, frameduration: 20}).then(function() {
             expect(starts).toEqual(1);
             expect(ends).toEqual(1);
             expect(PlotlyInternal.transition.calls.count()).toEqual(2);

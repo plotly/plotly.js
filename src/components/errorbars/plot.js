@@ -19,7 +19,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
     var xa = plotinfo.x(),
         ya = plotinfo.y();
 
-    var hasAnimation = transitionConfig && transitionConfig.duration > 0;
+    var hasAnimation = transitionConfig && transitionConfig.transitionduration > 0;
 
     traces.each(function(d) {
         var trace = d[0].trace,
@@ -55,7 +55,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
 
         if(hasAnimation) {
             enter.style('opacity', 0).transition()
-                .duration(transitionConfig.duration)
+                .duration(transitionConfig.transitionduration)
                 .style('opacity', 1);
         }
 
@@ -89,7 +89,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
                 } else if(hasAnimation) {
                     yerror = yerror
                         .transition()
-                            .duration(transitionConfig.duration)
+                            .duration(transitionConfig.transitionduration)
                             .ease(transitionConfig.ease);
                 }
 
@@ -117,7 +117,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
                 } else if(hasAnimation) {
                     xerror = xerror
                         .transition()
-                            .duration(transitionConfig.duration)
+                            .duration(transitionConfig.transitionduration)
                             .ease(transitionConfig.ease);
                 }
 

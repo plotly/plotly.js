@@ -288,14 +288,14 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig, makeOn
     function doFrame() {
         t2 = Date.now();
 
-        var tInterp = Math.min(1, (t2 - t1) / transitionConfig.duration);
+        var tInterp = Math.min(1, (t2 - t1) / transitionConfig.transitionduration);
         var progress = easeFn(tInterp);
 
         for(var i = 0; i < affectedSubplots.length; i++) {
             updateSubplot(affectedSubplots[i], progress);
         }
 
-        if(t2 - t1 > transitionConfig.duration) {
+        if(t2 - t1 > transitionConfig.transitionduration) {
             transitionComplete();
             raf = cancelAnimationFrame(doFrame);
         } else {

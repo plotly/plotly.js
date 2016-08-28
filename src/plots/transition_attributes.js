@@ -16,7 +16,7 @@ module.exports = {
         dflt: 500,
         description: 'The duration in milliseconds of each frame.'
     },
-    duration: {
+    transitionduration: {
         valType: 'number',
         role: 'info',
         min: 0,

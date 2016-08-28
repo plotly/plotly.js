@@ -634,7 +634,7 @@ plots.supplyTransitionDefaults = function(opts) {
     }
 
     coerce('frameduration');
-    coerce('duration');
+    coerce('transitionduration');
     coerce('ease');
     coerce('redraw');
 

@@ -15,7 +15,7 @@ describe('Plots.supplyTransitionDefaults', function() {
     it('supplies transition defaults', function() {
         expect(Plots.supplyTransitionDefaults({})).toEqual({
             frameduration: 500,
-            duration: 500,
+            transitionduration: 500,
             ease: 'cubic-in-out',
             redraw: true
         });
@@ -24,12 +24,12 @@ describe('Plots.supplyTransitionDefaults', function() {
     it('uses provided values', function() {
         expect(Plots.supplyTransitionDefaults({
             frameduration: 200,
-            duration: 100,
+            transitionduration: 100,
             ease: 'quad-in-out',
             redraw: false
         })).toEqual({
             frameduration: 200,
-            duration: 100,
+            transitionduration: 100,
             ease: 'quad-in-out',
             redraw: false
         });
@@ -59,7 +59,7 @@ function runTests(transitionDuration) {
         it('resolves only once the transition has completed', function(done) {
             var t1 = Date.now();
 
-            Plotly.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {duration: transitionDuration})
+            Plotly.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {transitionduration: transitionDuration})
                 .then(delay(20))
                 .then(function() {
                     expect(Date.now() - t1).toBeGreaterThan(transitionDuration);
@@ -70,7 +70,7 @@ function runTests(transitionDuration) {
             var beginTransitionCnt = 0;
             gd.on('plotly_transitioning', function() { beginTransitionCnt++; });
 
-            Plotly.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {duration: transitionDuration})
+            Plotly.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {transitionduration: transitionDuration})
                 .then(delay(20))
                 .then(function() {
                     expect(beginTransitionCnt).toBe(1);
@@ -81,7 +81,7 @@ function runTests(transitionDuration) {
             var trEndCnt = 0;
             gd.on('plotly_transitioned', function() { trEndCnt++; });
 
-            Plotly.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {duration: transitionDuration})
+            Plotly.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {transitionduration: transitionDuration})
                 .then(delay(20))
                 .then(function() {
                     expect(trEndCnt).toEqual(1);
@@ -99,7 +99,7 @@ function runTests(transitionDuration) {
             gd.on('plotly_transitioned', function() { currentlyRunning--; endCnt++; });
 
             function doTransition() {
-                return Plotly.transition(gd, [{x: [1, 2]}], null, null, {duration: transitionDuration});
+                return Plotly.transition(gd, [{x: [1, 2]}], null, null, {transitionduration: transitionDuration});
             }
 
             function checkNoneRunning() {

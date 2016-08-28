@@ -29,7 +29,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOn
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
     var isFullReplot = !transitionConfig;
-    var hasTransition = !!transitionConfig && transitionConfig.duration > 0;
+    var hasTransition = !!transitionConfig && transitionConfig.transitionduration > 0;
 
     selection = scatterlayer.selectAll('g.trace');
 
@@ -71,7 +71,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOn
         }
 
         var transition = d3.transition()
-            .duration(transitionConfig.duration)
+            .duration(transitionConfig.transitionduration)
             .ease(transitionConfig.ease)
             .each('end', function() {
                 onComplete && onComplete();
@@ -150,7 +150,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     // since it does an internal n^2 loop over comparisons with other traces:
     selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll);
 
-    var hasTransition = !!transitionConfig && transitionConfig.duration > 0;
+    var hasTransition = !!transitionConfig && transitionConfig.transitionduration > 0;
 
     function transition(selection) {
         return hasTransition ? selection.transition() : selection;

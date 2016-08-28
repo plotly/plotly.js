@@ -2628,7 +2628,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionOpts) {
             // When instantaneous updates are coming through quickly, it's too much to simply disable
             // all interaction, so store this flag so we can disambiguate whether mouse interactions
             // should be fully disabled or not:
-            if(transitionOpts.duration > 0) {
+            if(transitionOpts.transitionduration > 0) {
                 gd._transitioningWithDuration = true;
             }
 
@@ -2670,7 +2670,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionOpts) {
             // to instantaneous.
             if(hasAxisTransition) {
                 traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
-                traceTransitionOpts.duration = 0;
+                traceTransitionOpts.transitionduration = 0;
             } else {
                 traceTransitionOpts = transitionOpts;
             }
@@ -2756,7 +2756,7 @@ Plotly.transition = function(gd, data, layout, traceIndices, transitionOpts) {
  * @param {object} transitionOpts
  *      configuration for transition
  */
-Plotly.animate = function(gd, groupNameOrFrameList, transitionOpts, animationOpts) {
+Plotly.animate = function(gd, frameOrGroupNameOrFrameList, transitionOpts, animationOpts) {
     gd = getGraphDiv(gd);
     var trans = gd._transitionData;
 
@@ -2808,7 +2808,12 @@ Plotly.animate = function(gd, groupNameOrFrameList, transitionOpts, animationOpt
             if(frameList.length === 0) return;
 
             for(var i = 0; i < frameList.length; i++) {
-                var computedFrame = Plots.computeFrame(gd, frameList[i].name);
+                var computedFrame;
+                if(frameList[i].name) {
+                    computedFrame = Plots.computeFrame(gd, frameList[i].name);
+                } else {
+                    computedFrame = frameList[i].frame;
+                }
 
                 var opts = Plots.supplyTransitionDefaults(getTransitionOpts(i));
 
@@ -2836,8 +2841,53 @@ Plotly.animate = function(gd, groupNameOrFrameList, transitionOpts, animationOpt
             trans._animationRaf = null;
         }
 
+        function nextFrame() {
+            if(trans._currentFrame) {
+                if(trans._currentFrame.onComplete) {
+                    trans._currentFrame.onComplete();
+                }
+            }
+
+            var newFrame = trans._currentFrame = trans._frameQueue.shift();
+
+            if(newFrame) {
+                trans._lastframeat = Date.now();
+                trans._timetonext = newFrame.transitionOpts.frameduration;
+
+                Plotly.transition(gd,
+                    newFrame.frame.data,
+                    newFrame.frame.layout,
+                    newFrame.frame.traces,
+                    newFrame.transitionOpts
+                ).then(function() {
+                    if(trans._frameQueue.length === 0) {
+                        gd.emit('plotly_animated');
+                        if(trans._currentFrame && trans._currentFrame.onComplete) {
+                            trans._currentFrame.onComplete();
+                            trans._currentFrame = null;
+                        }
+                    }
+                });
+            }
+
+            if(trans._frameQueue.length === 0) {
+                stopAnimationLoop();
+                return;
+            }
+        }
+
         function beginAnimationLoop() {
             gd.emit('plotly_animating');
+
+            var canAnimateSynchronously = !trans._animationRaf && trans._frameQueue.length === 1;
+
+            if(canAnimateSynchronously) {
+                // If there is no animation running and only one frame has been received, then
+                // simply transition this frame synchonously and avoid starting and stopping the
+                // timing loop.
+                nextFrame();
+                return;
+            }
 
             // If no timer is running, then set last frame = long ago:
             trans._lastframeat = 0;
@@ -2848,38 +2898,7 @@ Plotly.animate = function(gd, groupNameOrFrameList, transitionOpts, animationOpt
             var doFrame = function() {
                 // Check if we need to pop a frame:
                 if(Date.now() - trans._lastframeat > trans._timetonext) {
-                    if(trans._currentFrame) {
-                        if(trans._currentFrame.onComplete) {
-                            trans._currentFrame.onComplete();
-                        }
-                    }
-
-                    var newFrame = trans._currentFrame = trans._frameQueue.shift();
-
-                    if(newFrame) {
-                        trans._lastframeat = Date.now();
-                        trans._timetonext = newFrame.transitionOpts.frameduration;
-
-                        Plotly.transition(gd,
-                            newFrame.frame.data,
-                            newFrame.frame.layout,
-                            newFrame.frame.traces,
-                            newFrame.transitionOpts
-                        ).then(function() {
-                            if(trans._frameQueue.length === 0) {
-                                gd.emit('plotly_animated');
-                                if(trans._currentFrame && trans._currentFrame.onComplete) {
-                                    trans._currentFrame.onComplete();
-                                    trans._currentFrame = null;
-                                }
-                            }
-                        });
-                    }
-
-                    if(trans._frameQueue.length === 0) {
-                        stopAnimationLoop();
-                        return;
-                    }
+                    nextFrame();
                 }
 
                 trans._animationRaf = requestAnimationFrame(doFrame);
@@ -2891,7 +2910,11 @@ Plotly.animate = function(gd, groupNameOrFrameList, transitionOpts, animationOpt
         var counter = 0;
         function setTransitionConfig(frame) {
             if(Array.isArray(transitionOpts)) {
-                frame.transitionOpts = transitionOpts[counter];
+                if(counter >= transitionOpts.length) {
+                    frame.transitionOpts = transitionOpts[counter];
+                } else {
+                    frame.transitionOpts = transitionOpts[0];
+                }
             } else {
                 frame.transitionOpts = transitionOpts;
             }
@@ -2899,26 +2922,47 @@ Plotly.animate = function(gd, groupNameOrFrameList, transitionOpts, animationOpt
             return frame;
         }
 
+        // Disambiguate what's been received. The possibilities are:
+        //
+        //  - group: 'groupname': select frames by group name
+        //  - frames ['frame1', frame2']: a list of frames
+        //  - object: {data: ...}: a single frame itself
+        //  - frames [{data: ...}, {data: ...}]: a list of frames
+        //
         var i, frame;
         var frameList = [];
-        var allFrames = groupNameOrFrameList === undefined || groupNameOrFrameList === null;
-        if(allFrames || typeof groupNameOrFrameList === 'string') {
+        var allFrames = frameOrGroupNameOrFrameList === undefined || frameOrGroupNameOrFrameList === null;
+        var isFrameArray = Array.isArray(frameOrGroupNameOrFrameList);
+        var isSingleFrame = !allFrames && !isFrameArray && typeof frameOrGroupNameOrFrameList === 'object';
+
+        if(isSingleFrame) {
+            frameList.push(setTransitionConfig({
+                frame: Lib.extendFlat({}, frameOrGroupNameOrFrameList)
+            }));
+        } else if(allFrames || typeof frameOrGroupNameOrFrameList === 'string') {
             for(i = 0; i < trans._frames.length; i++) {
                 frame = trans._frames[i];
 
-                if(allFrames || frame.group === groupNameOrFrameList) {
+                if(allFrames || frame.group === frameOrGroupNameOrFrameList) {
                     frameList.push(setTransitionConfig({name: frame.name}));
                 }
             }
-        } else if(Array.isArray(groupNameOrFrameList)) {
-            for(i = 0; i < groupNameOrFrameList.length; i++) {
-                frameList.push(setTransitionConfig({name: groupNameOrFrameList[i]}));
+        } else if(isFrameArray) {
+            for(i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
+                var frameOrName = frameOrGroupNameOrFrameList[i];
+                if(typeof frameOrName === 'string') {
+                    frameList.push(setTransitionConfig({name: frameOrName}));
+                } else {
+                    frameList.push(setTransitionConfig({
+                        frame: Lib.extendFlat({}, frameOrName)
+                    }));
+                }
             }
         }
 
         // Verify that all of these frames actually exist; return and reject if not:
         for(i = 0; i < frameList.length; i++) {
-            if(!trans._frameHash[frameList[i].name]) {
+            if(frameList[i].name && !trans._frameHash[frameList[i].name]) {
                 Lib.warn('animate failure: frame not found: "' + frameList[i].name + '"');
                 reject();
                 return;
