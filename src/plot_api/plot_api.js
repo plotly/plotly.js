@@ -2901,7 +2901,7 @@ Plotly.animate = function(gd, groupNameOrFrameList, transitionOpts, animationOpt
 
         var i, frame;
         var frameList = [];
-        var allFrames = typeof groupNameOrFrameList === 'undefined';
+        var allFrames = groupNameOrFrameList === undefined || groupNameOrFrameList === null;
         if(allFrames || typeof groupNameOrFrameList === 'string') {
             for(i = 0; i < trans._frames.length; i++) {
                 frame = trans._frames[i];
@@ -2929,7 +2929,12 @@ Plotly.animate = function(gd, groupNameOrFrameList, transitionOpts, animationOpt
             discardExistingFrames();
         }
 
-        queueFrames(frameList);
+        if(frameList.length > 0) {
+            queueFrames(frameList);
+        } else {
+            gd.emit('plotly_animated');
+            resolve();
+        }
     });
 };
 

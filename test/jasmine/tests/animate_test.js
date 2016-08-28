@@ -9,49 +9,55 @@ var delay = require('../assets/delay');
 
 var mock = require('@mocks/animation');
 
-function runTests(duration) {
-    describe('Test animate API (frame duration = ' + duration + ')', function() {
-        'use strict';
+describe('Test animate API', function() {
+    'use strict';
 
-        var gd, mockCopy;
+    var gd, mockCopy;
+
+    function verifyQueueEmpty(gd) {
+        expect(gd._transitionData._frameQueue.length).toEqual(0);
+    }
+
+    function verifyFrameTransitionOrder(gd, expectedFrames) {
+        var calls = PlotlyInternal.transition.calls;
+
+        expect(calls.count()).toEqual(expectedFrames.length);
+
+        for(var i = 0; i < calls.count(); i++) {
+            expect(calls.argsFor(i)[1]).toEqual(
+                gd._transitionData._frameHash[expectedFrames[i]].data
+            );
+        }
+    }
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        mockCopy = Lib.extendDeep({}, mock);
+
+        spyOn(PlotlyInternal, 'transition').and.callFake(function() {
+            // Transition's fake behaviro is to resolve after a short period of time:
+            return Promise.resolve().then(delay(5));
+        });
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            Plotly.addFrames(gd, mockCopy.frames);
+        }).then(done);
+    });
+
+    afterEach(function() {
+        // *must* purge between tests otherwise dangling async events might not get cleaned up properly:
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    for(var i = 0; i < 2; i++) {
+        // Run tests for 0ms and 30ms duration:
+        runTests(10 + 30 * i);
+    }
+
+    function runTests(duration) {
         var transOpts = {frameduration: duration};
-
-        function verifyQueueEmpty(gd) {
-            expect(gd._transitionData._frameQueue.length).toEqual(0);
-        }
-
-        function verifyFrameTransitionOrder(gd, expectedFrames) {
-            var calls = PlotlyInternal.transition.calls;
-
-            expect(calls.count()).toEqual(expectedFrames.length);
-
-            for(var i = 0; i < calls.count(); i++) {
-                expect(calls.argsFor(i)[1]).toEqual(
-                    gd._transitionData._frameHash[expectedFrames[i]].data
-                );
-            }
-        }
-
-        beforeEach(function(done) {
-            gd = createGraphDiv();
-
-            mockCopy = Lib.extendDeep({}, mock);
-
-            spyOn(PlotlyInternal, 'transition').and.callFake(function() {
-                // Transition's fake behaviro is to resolve after a short period of time:
-                return Promise.resolve().then(delay(duration));
-            });
-
-            Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                Plotly.addFrames(gd, mockCopy.frames);
-            }).then(done);
-        });
-
-        afterEach(function() {
-            // *must* purge between tests otherwise dangling async events might not get cleaned up properly:
-            Plotly.purge(gd);
-            destroyGraphDiv();
-        });
 
         it('animates to a frame', function(done) {
             Plotly.animate(gd, ['frame0'], {duration: 1.2345}).then(function() {
@@ -83,9 +89,30 @@ function runTests(duration) {
             Plotly.animate(gd, ['foobar'], transOpts).then(fail).then(done, done);
         });
 
+        it('animates all frames if list is null', function(done) {
+            Plotly.animate(gd, null, transOpts).then(function() {
+                verifyFrameTransitionOrder(gd, ['base', 'frame0', 'frame1', 'frame2', 'frame3']);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('animates all frames if list is undefined', function(done) {
+            Plotly.animate(gd, undefined, transOpts).then(function() {
+                verifyFrameTransitionOrder(gd, ['base', 'frame0', 'frame1', 'frame2', 'frame3']);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
         it('animates to a single frame', function(done) {
             Plotly.animate(gd, ['frame0'], transOpts).then(function() {
                 expect(PlotlyInternal.transition.calls.count()).toEqual(1);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('animates to an empty list', function(done) {
+            Plotly.animate(gd, [], transOpts).then(function() {
+                expect(PlotlyInternal.transition.calls.count()).toEqual(0);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
@@ -104,33 +131,9 @@ function runTests(duration) {
             }).catch(fail).then(done);
         });
 
-        it('animates groups in the correct order', function(done) {
-            Plotly.animate(gd, 'even-frames', transOpts);
-            Plotly.animate(gd, 'odd-frames', transOpts).then(function() {
-                verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame1', 'frame3']);
-                verifyQueueEmpty(gd);
-            }).catch(fail).then(done);
-        });
-
-        it('drops queued frames when immediate = true', function(done) {
-            Plotly.animate(gd, 'even-frames', transOpts);
-            Plotly.animate(gd, 'odd-frames', transOpts, {immediate: true}).then(function() {
-                verifyFrameTransitionOrder(gd, ['frame0', 'frame1', 'frame3']);
-                verifyQueueEmpty(gd);
-            }).catch(fail).then(done);
-        });
-
         it('animates frames in the correct order', function(done) {
             Plotly.animate(gd, ['frame0', 'frame2', 'frame1', 'frame3'], transOpts).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame1', 'frame3']);
-                verifyQueueEmpty(gd);
-            }).catch(fail).then(done);
-        });
-
-        it('animates frames and groups in sequence', function(done) {
-            Plotly.animate(gd, 'even-frames', transOpts);
-            Plotly.animate(gd, ['frame0', 'frame2', 'frame1', 'frame3'], transOpts).then(function() {
-                verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame0', 'frame2', 'frame1', 'frame3']);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
@@ -204,18 +207,23 @@ function runTests(duration) {
             }).catch(fail).then(done);
         });
 
-        it('rejects when an animation is interrupted', function(done) {
-            var interrupted = false;
-            Plotly.animate(gd, ['frame0', 'frame1'], transOpts).then(fail, function() {
-                interrupted = true;
-            });
-
-            Plotly.animate(gd, ['frame2'], transOpts, {immediate: true}).then(function() {
-                expect(interrupted).toBe(true);
-                verifyFrameTransitionOrder(gd, ['frame0', 'frame2']);
+        it('resolves at the end of each animation sequence', function(done) {
+            Plotly.animate(gd, 'even-frames', transOpts).then(function() {
+                return Plotly.animate(gd, ['frame0', 'frame2', 'frame1', 'frame3'], transOpts);
+            }).then(function() {
+                verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame0', 'frame2', 'frame1', 'frame3']);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
+    }
+
+    // The tests above use promises to ensure ordering, but the tests below this call Plotly.animate
+    // without chaining promises which would result in race conditions. This is not invalid behavior,
+    // but it doesn't ensure proper ordering and completion, so these must be performed with finite
+    // duration. Stricly speaking, these tests *do* involve race conditions, but the finite duration
+    // prevents that from causing problems.
+    describe('Calling Plotly.animate synchronously in series', function() {
+        var transOpts = {frameduration: 30};
 
         it('emits plotly_animationinterrupted when an animation is interrupted', function(done) {
             var interrupted = false;
@@ -231,6 +239,7 @@ function runTests(duration) {
             }).catch(fail).then(done);
         });
 
+
         it('queues successive animations', function(done) {
             var starts = 0;
             var ends = 0;
@@ -243,27 +252,75 @@ function runTests(duration) {
                 expect(starts).toEqual(1);
             });
 
-            Plotly.animate(gd, 'even-frames', transOpts);
-            Plotly.animate(gd, 'odd-frames', transOpts).then(delay(10)).then(function() {
+            Plotly.animate(gd, 'even-frames', {duration: 16});
+            Plotly.animate(gd, 'odd-frames', {duration: 16}).then(delay(10)).then(function() {
                 expect(ends).toEqual(1);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
 
-        it('resolves at the end of each animation sequence', function(done) {
-            Plotly.animate(gd, 'even-frames', transOpts).then(function() {
-                return Plotly.animate(gd, ['frame0', 'frame2', 'frame1', 'frame3'], transOpts);
-            }).then(function() {
+        it('an empty list with immediate dumps previous frames', function(done) {
+            Plotly.animate(gd, ['frame0', 'frame1'], {frameduration: 50});
+            Plotly.animate(gd, [], null, {immediate: true}).then(function() {
+                expect(PlotlyInternal.transition.calls.count()).toEqual(1);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('animates groups in the correct order', function(done) {
+            Plotly.animate(gd, 'even-frames', transOpts);
+            Plotly.animate(gd, 'odd-frames', transOpts).then(function() {
+                verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame1', 'frame3']);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('drops queued frames when immediate = true', function(done) {
+            Plotly.animate(gd, 'even-frames', transOpts);
+            Plotly.animate(gd, 'odd-frames', transOpts, {immediate: true}).then(function() {
+                verifyFrameTransitionOrder(gd, ['frame0', 'frame1', 'frame3']);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+
+        it('animates frames and groups in sequence', function(done) {
+            Plotly.animate(gd, 'even-frames', transOpts);
+            Plotly.animate(gd, ['frame0', 'frame2', 'frame1', 'frame3'], transOpts).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame0', 'frame2', 'frame0', 'frame2', 'frame1', 'frame3']);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
+
+        it('rejects when an animation is interrupted', function(done) {
+            var interrupted = false;
+            Plotly.animate(gd, ['frame0', 'frame1'], transOpts).then(fail, function() {
+                interrupted = true;
+            });
+
+            Plotly.animate(gd, ['frame2'], transOpts, {immediate: true}).then(function() {
+                expect(interrupted).toBe(true);
+                verifyFrameTransitionOrder(gd, ['frame0', 'frame2']);
+                verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
     });
-}
 
-for(var i = 0; i < 2; i++) {
-    // Set a duration:
-    var d = 30 * i;
+    it('animates reasonably even when transition duration >> frame duration', function(done) {
+        var starts = 0;
+        var ends= 0;
 
-    runTests(d);
-}
+        gd.on('plotly_animating', function() {
+            starts++;
+        }).on('plotly_animated', function() {
+            ends++;
+        });
+
+        Plotly.animate(gd, ['frame0', 'frame1'], {duration: 200, frameduration: 20}).then(function() {
+            expect(starts).toEqual(1);
+            expect(ends).toEqual(1);
+            expect(PlotlyInternal.transition.calls.count()).toEqual(2);
+            verifyQueueEmpty(gd);
+        }).catch(fail).then(done);
+    });
+
+});

@@ -61,7 +61,7 @@ describe('Test mergeFrames', function() {
 
         it('computes a single frame', function() {
             var computed = computeFrame(gd, 'frame1');
-            var expected = {data: [{x: [1, 2, 3], marker: {size: 8, color: 'red'}}], traceIndices: [0]};
+            var expected = {data: [{x: [1, 2, 3], marker: {size: 8, color: 'red'}}], traces: [0]};
             expect(computed).toEqual(expected);
         });
 
@@ -82,9 +82,9 @@ describe('Test mergeFrames', function() {
             ];
 
             results = [
-                {traceIndices: [0], data: [{marker: {size: 0}}]},
-                {traceIndices: [0], data: [{marker: {size: 1}}]},
-                {traceIndices: [0], data: [{marker: {size: 2}}]}
+                {traces: [0], data: [{marker: {size: 0}}]},
+                {traces: [0], data: [{marker: {size: 1}}]},
+                {traces: [0], data: [{marker: {size: 2}}]}
             ];
 
             Plotly.addFrames(gd, frames).then(done);
@@ -109,19 +109,19 @@ describe('Test mergeFrames', function() {
             frames = [{
                 name: 'frame0',
                 data: [{'marker.size': 0}],
-                traceIndices: [2]
+                traces: [2]
             }, {
                 name: 'frame1',
                 data: [{'marker.size': 1}],
-                traceIndices: [8]
+                traces: [8]
             }, {
                 name: 'frame2',
                 data: [{'marker.size': 2}],
-                traceIndices: [2]
+                traces: [2]
             }, {
                 name: 'frame3',
                 data: [{'marker.size': 3}, {'marker.size': 4}],
-                traceIndices: [2, 8]
+                traces: [2, 8]
             }, {
                 name: 'frame4',
                 data: [
@@ -140,7 +140,7 @@ describe('Test mergeFrames', function() {
             Plotly.addFrames(gd, frames.map(clone));
 
             expect(computeFrame(gd, 'frame0')).toEqual({
-                traceIndices: [8, 2],
+                traces: [8, 2],
                 data: [
                     {marker: {size: 1}},
                     {marker: {size: 0}}
@@ -158,7 +158,7 @@ describe('Test mergeFrames', function() {
             Plotly.addFrames(gd, frames.map(clone));
 
             expect(computeFrame(gd, 'frame0')).toEqual({
-                traceIndices: [2],
+                traces: [2],
                 data: [{marker: {size: 0}}]
             });
 
@@ -173,7 +173,7 @@ describe('Test mergeFrames', function() {
             Plotly.addFrames(gd, frames.map(clone));
 
             expect(computeFrame(gd, 'frame0')).toEqual({
-                traceIndices: [2, 8],
+                traces: [2, 8],
                 data: [
                     {marker: {size: 0}},
                     {marker: {size: 1}}
@@ -183,13 +183,13 @@ describe('Test mergeFrames', function() {
             expect(gd._transitionData._frames).toEqual(frames);
         });
 
-        it('assumes serial order without traceIndices specified', function() {
+        it('assumes serial order without traces specified', function() {
             frames[4].baseframe = frames[3].name;
 
             Plotly.addFrames(gd, frames.map(clone));
 
             expect(computeFrame(gd, 'frame4')).toEqual({
-                traceIndices: [2, 8, 0, 1],
+                traces: [2, 8, 0, 1],
                 data: [
                     {marker: {size: 7}},
                     {marker: {size: 4}},

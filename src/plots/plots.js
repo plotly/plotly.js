@@ -870,7 +870,7 @@ plots.purge = function(gd) {
     // remove modebar
     if(fullLayout._modeBar) fullLayout._modeBar.destroy();
 
-    if(gd._transitionData._animationRaf) {
+    if(gd._transitionData && gd._transitionData._animationRaf) {
         cancelAnimationFrame(gd._transitionData._animationRaf);
     }
 
