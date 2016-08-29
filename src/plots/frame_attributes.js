@@ -43,13 +43,13 @@ module.exports = {
         description: [
             'A list of traces this frame modifies. The format is identical to the',
             'normal trace definition.'
-        ]
+        ].join(' ')
     },
     layout: {
         valType: 'any',
         description: [
             'Layout properties which this frame modifies. The format is identical',
             'to the normal layout definition.'
-        ]
+        ].join(' ')
     }
 };
