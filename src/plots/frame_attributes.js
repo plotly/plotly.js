@@ -20,7 +20,7 @@ module.exports = {
     name: {
         valType: 'string',
         role: 'info',
-        description: ['A label by which to identify the frame']
+        description: 'A label by which to identify the frame'
     },
     traces: {
         valType: 'data_array',
