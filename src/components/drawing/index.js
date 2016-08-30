@@ -194,6 +194,37 @@ drawing.symbolNumber = function(v) {
 };
 
 function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerLine) {
+    // only scatter & box plots get marker path and opacity
+    // bars, histograms don't
+    if(Registry.traceIs(trace, 'symbols')) {
+        var sizeFn = makeBubbleSizeFn(trace);
+
+        sel.attr('d', function(d) {
+            var r;
+
+            // handle multi-trace graph edit case
+            if(d.ms === 'various' || marker.size === 'various') r = 3;
+            else r = subTypes.isBubble(trace) ?
+                        sizeFn(d.ms) : (marker.size || 6) / 2;
+
+            // store the calculated size so hover can use it
+            d.mrc = r;
+
+            // turn the symbol into a sanitized number
+            var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
+                xBase = x % 100;
+
+            // save if this marker is open
+            // because that impacts how to handle colors
+            d.om = x % 200 >= 100;
+
+            return drawing.symbolFuncs[xBase](r) +
+                (x >= 200 ? DOTPATH : '');
+        })
+        .style('opacity', function(d) {
+            return (d.mo + 1 || marker.opacity + 1) - 1;
+        });
+    }
 
     // 'so' is suspected outliers, for box plots
     var fillColor,
@@ -254,41 +285,9 @@ drawing.singlePointStyle = function(d, sel, trace) {
 drawing.pointStyle = function(s, trace) {
     if(!s.size()) return;
 
-    var marker = trace.marker;
-
-    // only scatter & box plots get marker path and opacity
-    // bars, histograms don't
-    if(Registry.traceIs(trace, 'symbols')) {
-        var sizeFn = makeBubbleSizeFn(trace);
-
-        s.attr('d', function(d) {
-            var r;
-
-            // handle multi-trace graph edit case
-            if(d.ms === 'various' || marker.size === 'various') r = 3;
-            else r = subTypes.isBubble(trace) ?
-                        sizeFn(d.ms) : (marker.size || 6) / 2;
-
-            // store the calculated size so hover can use it
-            d.mrc = r;
-
-            // turn the symbol into a sanitized number
-            var x = drawing.symbolNumber(d.mx || marker.symbol) || 0,
-                xBase = x % 100;
-
-            // save if this marker is open
-            // because that impacts how to handle colors
-            d.om = x % 200 >= 100;
-
-            return drawing.symbolFuncs[xBase](r) +
-                (x >= 200 ? DOTPATH : '');
-        })
-        .style('opacity', function(d) {
-            return (d.mo + 1 || marker.opacity + 1) - 1;
-        });
-    }
     // allow array marker and marker line colors to be
     // scaled by given max and min to colorscales
+    var marker = trace.marker;
     var markerIn = (trace._input || {}).marker || {},
         markerScale = drawing.tryColorscale(marker, markerIn, ''),
         lineScale = drawing.tryColorscale(marker, markerIn, 'line.');
