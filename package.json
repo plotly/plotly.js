@@ -68,6 +68,7 @@
     "gl-plot3d": "^1.5.0",
     "gl-scatter2d": "^1.0.5",
     "gl-scatter2d-fancy": "^1.1.1",
+    "gl-pointcloud2d": "gl-vis/gl-pointcloud2d",
     "gl-scatter3d": "^1.0.4",
     "gl-select-box": "^1.0.1",
     "gl-spikes2d": "^1.0.1",
