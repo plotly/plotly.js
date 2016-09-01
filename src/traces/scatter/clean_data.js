@@ -14,9 +14,11 @@
 module.exports = function cleanData(fullData) {
     for(var i = 0; i < fullData.length; i++) {
         var tracei = fullData[i];
-        var filli = tracei.fill;
+        if(tracei.type !== 'scatter') continue;
 
-        if((filli === 'none') || (tracei.type !== 'scatter')) continue;
+        var filli = tracei.fill;
+        if(filli === 'none' || filli === 'toself') continue;
+
         tracei.opacity = undefined;
 
         if(filli === 'tonexty' || filli === 'tonextx') {
