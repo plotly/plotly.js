@@ -2654,7 +2654,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
         var frameList = [];
         var allFrames = frameOrGroupNameOrFrameList === undefined || frameOrGroupNameOrFrameList === null;
         var isFrameArray = Array.isArray(frameOrGroupNameOrFrameList);
-        var isSingleFrame = !allFrames && !isFrameArray && typeof frameOrGroupNameOrFrameList === 'object';
+        var isSingleFrame = !allFrames && !isFrameArray && Lib.isPlainObject(frameOrGroupNameOrFrameList);
 
         if(isSingleFrame) {
             frameList.push(setTransitionConfig({
