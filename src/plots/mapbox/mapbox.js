@@ -125,7 +125,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     });
 
     // keep track of pan / zoom in user layout and emit relayout event
-    map.on('moveend', function() {
+    map.on('moveend', function(eventData) {
         var view = self.getView();
 
         opts._input.center = opts.center = view.center;
@@ -133,9 +133,19 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         opts._input.bearing = opts.bearing = view.bearing;
         opts._input.pitch = opts.pitch = view.pitch;
 
-        var update = {};
-        update[self.id] = Lib.extendFlat({}, view);
-        gd.emit('plotly_relayout', update);
+        // 'moveend' gets triggered by map.setCenter, map.setZoom,
+        // map.setBearing and map.setPitch.
+        //
+        // Here, we make sure that 'plotly_relayout' is
+        // triggered here only when the 'moveend' originates from a
+        // mouse target (filtering out API calls) to not
+        // duplicate 'plotly_relayout' events.
+
+        if(eventData.originalEvent) {
+            var update = {};
+            update[self.id] = Lib.extendFlat({}, view);
+            gd.emit('plotly_relayout', update);
+        }
     });
 
     map.on('mousemove', function(evt) {
