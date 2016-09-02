@@ -34,7 +34,6 @@ plots.fontWeight = 'normal';
 var subplotsRegistry = plots.subplotsRegistry;
 var transformsRegistry = plots.transformsRegistry;
 
-
 var ErrorBars = require('../components/errorbars');
 
 /**
@@ -1387,6 +1386,22 @@ plots.transition = function(gd, data, layout, traceIndices, frameOpts, transitio
             // Finally apply the update (without copying arrays, of course):
             Lib.extendDeepNoArrays(gd.data[traceIndices[i]], update);
         }
+
+        // Follow the same procedure. Clone it so we don't mangle the input, then
+        // expand any object paths so we can merge deep into gd.layout:
+        var layoutUpdate = Lib.expandObjectPaths(Lib.extendDeepNoArrays({}, layout));
+
+        // Before merging though, we need to modify the incoming layout. We only
+        // know how to *transition* layout ranges, so it's imperative that a new
+        // range not be sent to the layout before the transition has started. So
+        // we must remove the things we can transition:
+        var axisAttrRe = /^[xy]axis[0-9]*$/;
+        for(var attr in layoutUpdate) {
+            if(!axisAttrRe.test(attr)) continue;
+            delete layoutUpdate[attr].range;
+        }
+
+        Lib.extendDeepNoArrays(gd.layout, layoutUpdate);
 
         // Supply defaults after applying the incoming properties. Note that any attempt
         // to simplify this step and reduce the amount of work resulted in the reconstruction
