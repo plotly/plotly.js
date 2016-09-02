@@ -212,7 +212,7 @@ proto.updateData = function(calcData) {
         traceObj = traceHash[trace.uid];
 
         if(traceObj) traceObj.update(calcTrace);
-        else {
+        else if(trace._module) {
             traceHash[trace.uid] = trace._module.plot(this, calcTrace);
         }
     }
