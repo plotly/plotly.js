@@ -21,15 +21,15 @@ var linePoints = require('./line_points');
 var linkTraces = require('./link_traces');
 var polygonTester = require('../../lib/polygon').tester;
 
-module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOnCompleteCallback) {
+module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCompleteCallback) {
     var i, uids, selection, join, onComplete;
 
     var scatterlayer = plotinfo.plot.select('g.scatterlayer');
 
     // If transition config is provided, then it is only a partial replot and traces not
     // updated are removed.
-    var isFullReplot = !transitionConfig;
-    var hasTransition = !!transitionConfig && transitionConfig.transitionduration > 0;
+    var isFullReplot = !transitionOpts;
+    var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
 
     selection = scatterlayer.selectAll('g.trace');
 
@@ -71,8 +71,8 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOn
         }
 
         var transition = d3.transition()
-            .duration(transitionConfig.transitionduration)
-            .ease(transitionConfig.ease)
+            .duration(transitionOpts.duration)
+            .ease(transitionOpts.easing)
             .each('end', function() {
                 onComplete && onComplete();
             })
@@ -84,12 +84,12 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionConfig, makeOn
             // Must run the selection again since otherwise enters/updates get grouped together
             // and these get executed out of order. Except we need them in order!
             scatterlayer.selectAll('g.trace').each(function(d, i) {
-                plotOne(gd, i, plotinfo, d, cdscatter, this, transitionConfig);
+                plotOne(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
             });
         });
     } else {
         scatterlayer.selectAll('g.trace').each(function(d, i) {
-            plotOne(gd, i, plotinfo, d, cdscatter, this, transitionConfig);
+            plotOne(gd, i, plotinfo, d, cdscatter, this, transitionOpts);
         });
     }
 
@@ -142,7 +142,7 @@ function createFills(gd, scatterlayer) {
     });
 }
 
-function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionConfig) {
+function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transitionOpts) {
     var join, i;
 
     // Since this has been reorganized and we're executing this on individual traces,
@@ -150,7 +150,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
     // since it does an internal n^2 loop over comparisons with other traces:
     selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll);
 
-    var hasTransition = !!transitionConfig && transitionConfig.transitionduration > 0;
+    var hasTransition = !!transitionOpts && transitionOpts.duration > 0;
 
     function transition(selection) {
         return hasTransition ? selection.transition() : selection;
@@ -165,7 +165,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
     // (so error bars can find them along with bars)
     // error bars are at the bottom
-    tr.call(ErrorBars.plot, plotinfo, transitionConfig);
+    tr.call(ErrorBars.plot, plotinfo, transitionOpts);
 
     if(trace.visible !== true) return;
 

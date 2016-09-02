@@ -17,7 +17,6 @@ var Registry = require('../registry');
 var Lib = require('../lib');
 var Color = require('../components/color');
 var plots = module.exports = {};
-var transitionAttrs = require('./transition_attributes');
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
 
@@ -616,6 +615,8 @@ plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
 };
 
 plots.supplyAnimationDefaults = function(opts) {
+    opts = opts || {};
+    var i;
     var optsOut = {};
 
     function coerce(attr, dflt) {
@@ -624,20 +625,49 @@ plots.supplyAnimationDefaults = function(opts) {
 
     coerce('immediate');
 
+    if(Array.isArray(opts.frame)) {
+        optsOut.frame = [];
+        for(i = 0; i < opts.frame.length; i++) {
+            optsOut.frame[i] = plots.supplyAnimationFrameDefaults(opts.frame[i] || {});
+        }
+    } else {
+        optsOut.frame = plots.supplyAnimationFrameDefaults(opts.frame || {});
+    }
+
+    if(Array.isArray(opts.transition)) {
+        optsOut.transition = [];
+        for(i = 0; i < opts.transition.length; i++) {
+            optsOut.transition[i] = plots.supplyAnimationTransitionDefaults(opts.transition[i] || {});
+        }
+    } else {
+        optsOut.transition = plots.supplyAnimationTransitionDefaults(opts.transition || {});
+    }
+
     return optsOut;
 };
 
-plots.supplyTransitionDefaults = function(opts) {
+plots.supplyAnimationFrameDefaults = function(opts) {
     var optsOut = {};
 
     function coerce(attr, dflt) {
-        return Lib.coerce(opts || {}, optsOut, transitionAttrs, attr, dflt);
+        return Lib.coerce(opts || {}, optsOut, animationAttrs.frame, attr, dflt);
     }
 
-    coerce('frameduration');
-    coerce('transitionduration');
-    coerce('ease');
+    coerce('duration');
     coerce('redraw');
+
+    return optsOut;
+};
+
+plots.supplyAnimationTransitionDefaults = function(opts) {
+    var optsOut = {};
+
+    function coerce(attr, dflt) {
+        return Lib.coerce(opts || {}, optsOut, animationAttrs.transition, attr, dflt);
+    }
+
+    coerce('duration');
+    coerce('easing');
 
     return optsOut;
 };
@@ -1316,11 +1346,8 @@ plots.computeFrame = function(gd, frameName) {
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  */
-plots.transition = function(gd, data, layout, traceIndices, transitionOpts) {
+plots.transition = function(gd, data, layout, traceIndices, frameOpts, transitionOpts) {
     var i, traceIdx;
-    var fullLayout = gd._fullLayout;
-
-    transitionOpts = plots.supplyTransitionDefaults(transitionOpts);
 
     var dataLength = Array.isArray(data) ? data.length : 0;
 
@@ -1371,10 +1398,14 @@ plots.transition = function(gd, data, layout, traceIndices, transitionOpts) {
         // This step fies the .xaxis and .yaxis references that otherwise
         // aren't updated by the supplyDefaults step:
         var subplots = Plotly.Axes.getSubplots(gd);
-        for(i = 0; i < subplots.length; i++) {
-            plotinfo = gd._fullLayout._plots[subplots[i]];
-            plotinfo.xaxis = plotinfo.x();
-            plotinfo.yaxis = plotinfo.y();
+
+        // Polar does not have _plots:
+        if(gd._fullLayout._plots) {
+            for(i = 0; i < subplots.length; i++) {
+                plotinfo = gd._fullLayout._plots[subplots[i]];
+                plotinfo.xaxis = plotinfo.x();
+                plotinfo.yaxis = plotinfo.y();
+            }
         }
 
         plots.doCalcdata(gd);
@@ -1410,7 +1441,7 @@ plots.transition = function(gd, data, layout, traceIndices, transitionOpts) {
             // When instantaneous updates are coming through quickly, it's too much to simply disable
             // all interaction, so store this flag so we can disambiguate whether mouse interactions
             // should be fully disabled or not:
-            if(transitionOpts.transitionduration > 0) {
+            if(transitionOpts.duration > 0) {
                 gd._transitioningWithDuration = true;
             }
 
@@ -1435,7 +1466,7 @@ plots.transition = function(gd, data, layout, traceIndices, transitionOpts) {
 
             var traceTransitionOpts;
             var j;
-            var basePlotModules = fullLayout._basePlotModules;
+            var basePlotModules = gd._fullLayout._basePlotModules;
             var hasAxisTransition = false;
 
             if(layout) {
@@ -1452,7 +1483,7 @@ plots.transition = function(gd, data, layout, traceIndices, transitionOpts) {
             // to instantaneous.
             if(hasAxisTransition) {
                 traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
-                traceTransitionOpts.transitionduration = 0;
+                traceTransitionOpts.duration = 0;
             } else {
                 traceTransitionOpts = transitionOpts;
             }
@@ -1475,7 +1506,7 @@ plots.transition = function(gd, data, layout, traceIndices, transitionOpts) {
         flushCallbacks(gd._transitionData._interruptCallbacks);
 
         return Promise.resolve().then(function() {
-            if(transitionOpts.redraw) {
+            if(frameOpts.redraw) {
                 return Plotly.redraw(gd);
             }
         }).then(function() {

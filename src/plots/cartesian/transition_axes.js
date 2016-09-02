@@ -17,7 +17,7 @@ var Lib = require('../../lib');
 var Axes = require('./axes');
 var axisRegex = /((x|y)([2-9]|[1-9][0-9]+)?)axis$/;
 
-module.exports = function transitionAxes(gd, newLayout, transitionConfig, makeOnCompleteCallback) {
+module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCompleteCallback) {
     var fullLayout = gd._fullLayout;
     var axes = [];
 
@@ -277,7 +277,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig, makeOn
     }
 
     var t1, t2, raf;
-    var easeFn = d3.ease(transitionConfig.ease);
+    var easeFn = d3.ease(transitionOpts.easing);
 
     gd._transitionData._interruptCallbacks.push(function() {
         cancelAnimationFrame(raf);
@@ -288,14 +288,14 @@ module.exports = function transitionAxes(gd, newLayout, transitionConfig, makeOn
     function doFrame() {
         t2 = Date.now();
 
-        var tInterp = Math.min(1, (t2 - t1) / transitionConfig.transitionduration);
+        var tInterp = Math.min(1, (t2 - t1) / transitionOpts.duration);
         var progress = easeFn(tInterp);
 
         for(var i = 0; i < affectedSubplots.length; i++) {
             updateSubplot(affectedSubplots[i], progress);
         }
 
-        if(t2 - t1 > transitionConfig.transitionduration) {
+        if(t2 - t1 > transitionOpts.duration) {
             transitionComplete();
             raf = cancelAnimationFrame(doFrame);
         } else {

@@ -9,32 +9,46 @@ var delay = require('../assets/delay');
 var mock = require('@mocks/animation');
 
 
-describe('Plots.supplyTransitionDefaults', function() {
+describe('Plots.supplyAnimationTransitionDefaults', function() {
     'use strict';
 
     it('supplies transition defaults', function() {
-        expect(Plots.supplyTransitionDefaults({})).toEqual({
-            frameduration: 500,
-            transitionduration: 500,
-            ease: 'cubic-in-out',
-            redraw: true
+        expect(Plots.supplyAnimationDefaults({})).toEqual({
+            immediate: false,
+            transition: {
+                duration: 500,
+                easing: 'cubic-in-out'
+            },
+            frame: {
+                duration: 500,
+                redraw: true
+            }
         });
     });
 
     it('uses provided values', function() {
-        expect(Plots.supplyTransitionDefaults({
-            frameduration: 200,
-            transitionduration: 100,
-            ease: 'quad-in-out',
-            redraw: false
+        expect(Plots.supplyAnimationDefaults({
+            immediate: true,
+            transition: {
+                duration: 600,
+                easing: 'elastic-in-out'
+            },
+            frame: {
+                duration: 700,
+                redraw: false
+            }
         })).toEqual({
-            frameduration: 200,
-            transitionduration: 100,
-            ease: 'quad-in-out',
-            redraw: false
+            immediate: true,
+            transition: {
+                duration: 600,
+                easing: 'elastic-in-out'
+            },
+            frame: {
+                duration: 700,
+                redraw: false
+            }
         });
     });
-
 });
 
 function runTests(transitionDuration) {
@@ -59,7 +73,7 @@ function runTests(transitionDuration) {
         it('resolves only once the transition has completed', function(done) {
             var t1 = Date.now();
 
-            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {transitionduration: transitionDuration})
+            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'})
                 .then(delay(20))
                 .then(function() {
                     expect(Date.now() - t1).toBeGreaterThan(transitionDuration);
@@ -70,7 +84,7 @@ function runTests(transitionDuration) {
             var beginTransitionCnt = 0;
             gd.on('plotly_transitioning', function() { beginTransitionCnt++; });
 
-            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {transitionduration: transitionDuration})
+            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'})
                 .then(delay(20))
                 .then(function() {
                     expect(beginTransitionCnt).toBe(1);
@@ -81,7 +95,7 @@ function runTests(transitionDuration) {
             var trEndCnt = 0;
             gd.on('plotly_transitioned', function() { trEndCnt++; });
 
-            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {transitionduration: transitionDuration})
+            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'})
                 .then(delay(20))
                 .then(function() {
                     expect(trEndCnt).toEqual(1);
@@ -99,7 +113,7 @@ function runTests(transitionDuration) {
             gd.on('plotly_transitioned', function() { currentlyRunning--; endCnt++; });
 
             function doTransition() {
-                return Plots.transition(gd, [{x: [1, 2]}], null, null, {transitionduration: transitionDuration});
+                return Plots.transition(gd, [{x: [1, 2]}], null, null, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'});
             }
 
             function checkNoneRunning() {

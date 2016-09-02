@@ -14,12 +14,12 @@ var isNumeric = require('fast-isnumeric');
 
 var subTypes = require('../../traces/scatter/subtypes');
 
-module.exports = function plot(traces, plotinfo, transitionConfig) {
+module.exports = function plot(traces, plotinfo, transitionOpts) {
     var isNew;
     var xa = plotinfo.x(),
         ya = plotinfo.y();
 
-    var hasAnimation = transitionConfig && transitionConfig.transitionduration > 0;
+    var hasAnimation = transitionOpts && transitionOpts.duration > 0;
 
     traces.each(function(d) {
         var trace = d[0].trace,
@@ -55,7 +55,7 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
 
         if(hasAnimation) {
             enter.style('opacity', 0).transition()
-                .duration(transitionConfig.transitionduration)
+                .duration(transitionOpts.duration)
                 .style('opacity', 1);
         }
 
@@ -89,8 +89,8 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
                 } else if(hasAnimation) {
                     yerror = yerror
                         .transition()
-                            .duration(transitionConfig.transitionduration)
-                            .ease(transitionConfig.ease);
+                            .duration(transitionOpts.duration)
+                            .ease(transitionOpts.easing);
                 }
 
                 yerror.attr('d', path);
@@ -117,8 +117,8 @@ module.exports = function plot(traces, plotinfo, transitionConfig) {
                 } else if(hasAnimation) {
                     xerror = xerror
                         .transition()
-                            .duration(transitionConfig.transitionduration)
-                            .ease(transitionConfig.ease);
+                            .duration(transitionOpts.duration)
+                            .ease(transitionOpts.easing);
                 }
 
                 xerror.attr('d', path);
