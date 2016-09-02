@@ -16,7 +16,6 @@ var Plotly = require('../plotly');
 var Registry = require('../registry');
 var Lib = require('../lib');
 var Color = require('../components/color');
-
 var plots = module.exports = {};
 var transitionAttrs = require('./transition_attributes');
 var animationAttrs = require('./animation_attributes');
@@ -36,6 +35,8 @@ plots.fontWeight = 'normal';
 var subplotsRegistry = plots.subplotsRegistry;
 var transformsRegistry = plots.transformsRegistry;
 
+
+var ErrorBars = require('../components/errorbars');
 
 /**
  * Find subplot ids in data.
@@ -1307,4 +1308,295 @@ plots.computeFrame = function(gd, frameName) {
     }
 
     return result;
+};
+
+/**
+ * Transition to a set of new data and layout properties
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ */
+plots.transition = function(gd, data, layout, traceIndices, transitionOpts) {
+    var i, traceIdx;
+    var fullLayout = gd._fullLayout;
+
+    transitionOpts = plots.supplyTransitionDefaults(transitionOpts);
+
+    var dataLength = Array.isArray(data) ? data.length : 0;
+
+    // Select which traces will be updated:
+    if(isNumeric(traceIndices)) traceIndices = [traceIndices];
+    else if(!Array.isArray(traceIndices) || !traceIndices.length) {
+        traceIndices = gd.data.map(function(v, i) { return i; });
+    }
+
+    if(traceIndices.length > dataLength) {
+        traceIndices = traceIndices.slice(0, dataLength);
+    }
+
+    var transitionedTraces = [];
+
+    function prepareTransitions() {
+        var plotinfo, i;
+        for(i = 0; i < traceIndices.length; i++) {
+            var traceIdx = traceIndices[i];
+            var trace = gd._fullData[traceIdx];
+            var module = trace._module;
+
+            if(!module || !module.animatable) {
+                continue;
+            }
+
+            transitionedTraces.push(traceIdx);
+
+            // This is a multi-step process. First clone w/o arrays so that
+            // we're not modifying the original:
+            var update = Lib.extendDeepNoArrays({}, data[i]);
+
+            // Then expand object paths since we don't obey object-overwrite
+            // semantics here:
+            update = Lib.expandObjectPaths(update);
+
+            // Finally apply the update (without copying arrays, of course):
+            Lib.extendDeepNoArrays(gd.data[traceIndices[i]], update);
+        }
+
+        // Supply defaults after applying the incoming properties. Note that any attempt
+        // to simplify this step and reduce the amount of work resulted in the reconstruction
+        // of essentially the whole supplyDefaults step, so that it seems sensible to just use
+        // supplyDefaults even though it's heavier than would otherwise be desired for
+        // transitions:
+        plots.supplyDefaults(gd);
+
+        // This step fies the .xaxis and .yaxis references that otherwise
+        // aren't updated by the supplyDefaults step:
+        var subplots = Plotly.Axes.getSubplots(gd);
+        for(i = 0; i < subplots.length; i++) {
+            plotinfo = gd._fullLayout._plots[subplots[i]];
+            plotinfo.xaxis = plotinfo.x();
+            plotinfo.yaxis = plotinfo.y();
+        }
+
+        plots.doCalcdata(gd);
+
+        ErrorBars.calc(gd);
+
+        return Promise.resolve();
+    }
+
+    function executeCallbacks(list) {
+        var p = Promise.resolve();
+        if(!list) return p;
+        while(list.length) {
+            p = p.then((list.shift()));
+        }
+        return p;
+    }
+
+    function flushCallbacks(list) {
+        if(!list) return;
+        while(list.length) {
+            list.shift();
+        }
+    }
+
+    var aborted = false;
+
+    function executeTransitions() {
+        return new Promise(function(resolve) {
+            // This flag is used to disabled things like autorange:
+            gd._transitioning = true;
+
+            // When instantaneous updates are coming through quickly, it's too much to simply disable
+            // all interaction, so store this flag so we can disambiguate whether mouse interactions
+            // should be fully disabled or not:
+            if(transitionOpts.transitionduration > 0) {
+                gd._transitioningWithDuration = true;
+            }
+
+            gd._transitionData._interruptCallbacks.push(function() {
+                aborted = true;
+            });
+
+            // Construct callbacks that are executed on transition end. This ensures the d3 transitions
+            // are *complete* before anything else is done.
+            var numCallbacks = 0;
+            var numCompleted = 0;
+            function makeCallback() {
+                numCallbacks++;
+                return function() {
+                    numCompleted++;
+                    // When all are complete, perform a redraw:
+                    if(!aborted && numCompleted === numCallbacks) {
+                        completeTransition(resolve);
+                    }
+                };
+            }
+
+            var traceTransitionOpts;
+            var j;
+            var basePlotModules = fullLayout._basePlotModules;
+            var hasAxisTransition = false;
+
+            if(layout) {
+                for(j = 0; j < basePlotModules.length; j++) {
+                    if(basePlotModules[j].transitionAxes) {
+                        var newLayout = Lib.expandObjectPaths(layout);
+                        hasAxisTransition = basePlotModules[j].transitionAxes(gd, newLayout, transitionOpts, makeCallback) || hasAxisTransition;
+                    }
+                }
+            }
+
+            // Here handle the exception that we refuse to animate scales and axes at the same
+            // time. In other words, if there's an axis transition, then set the data transition
+            // to instantaneous.
+            if(hasAxisTransition) {
+                traceTransitionOpts = Lib.extendFlat({}, transitionOpts);
+                traceTransitionOpts.transitionduration = 0;
+            } else {
+                traceTransitionOpts = transitionOpts;
+            }
+
+            for(j = 0; j < basePlotModules.length; j++) {
+                // Note that we pass a callback to *create* the callback that must be invoked on completion.
+                // This is since not all traces know about transitions, so it greatly simplifies matters if
+                // the trace is responsible for creating a callback, if needed, and then executing it when
+                // the time is right.
+                basePlotModules[j].plot(gd, transitionedTraces, traceTransitionOpts, makeCallback);
+            }
+
+            // If nothing else creates a callback, then this will trigger the completion in the next tick:
+            setTimeout(makeCallback());
+
+        });
+    }
+
+    function completeTransition(callback) {
+        flushCallbacks(gd._transitionData._interruptCallbacks);
+
+        return Promise.resolve().then(function() {
+            if(transitionOpts.redraw) {
+                return Plotly.redraw(gd);
+            }
+        }).then(function() {
+            // Set transitioning false again once the redraw has occurred. This is used, for example,
+            // to prevent the trailing redraw from autoranging:
+            gd._transitioning = false;
+            gd._transitioningWithDuration = false;
+
+            gd.emit('plotly_transitioned', []);
+        }).then(callback);
+    }
+
+    function interruptPreviousTransitions() {
+        gd.emit('plotly_transitioninterrupted', []);
+
+        // If a transition is interrupted, set this to false. At the moment, the only thing that would
+        // interrupt a transition is another transition, so that it will momentarily be set to true
+        // again, but this determines whether autorange or dragbox work, so it's for the sake of
+        // cleanliness:
+        gd._transitioning = false;
+        gd._transtionWithDuration = false;
+
+        return executeCallbacks(gd._transitionData._interruptCallbacks);
+    }
+
+    for(i = 0; i < traceIndices.length; i++) {
+        traceIdx = traceIndices[i];
+        var contFull = gd._fullData[traceIdx];
+        var module = contFull._module;
+
+        if(!module) continue;
+
+        if(!module.animatable) {
+            var thisUpdate = {};
+
+            for(var ai in data[i]) {
+                thisUpdate[ai] = [data[i][ai]];
+            }
+        }
+    }
+
+    var seq = [plots.previousPromises, interruptPreviousTransitions, prepareTransitions, executeTransitions];
+
+
+    var transitionStarting = Lib.syncOrAsync(seq, gd);
+
+    if(!transitionStarting || !transitionStarting.then) transitionStarting = Promise.resolve();
+
+    return transitionStarting.then(function() {
+        gd.emit('plotly_transitioning', []);
+        return gd;
+    });
+};
+
+plots.doCalcdata = function(gd, traces) {
+    var axList = Plotly.Axes.list(gd),
+        fullData = gd._fullData,
+        fullLayout = gd._fullLayout,
+        i;
+
+    // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
+    // *all* needing doCalcdata:
+    var calcdata = new Array(fullData.length);
+    var oldCalcdata = (gd.calcdata || []).slice(0);
+    gd.calcdata = calcdata;
+
+    // extra helper variables
+    // firstscatter: fill-to-next on the first trace goes to zero
+    gd.firstscatter = true;
+
+    // how many box plots do we have (in case they're grouped)
+    gd.numboxes = 0;
+
+    // for calculating avg luminosity of heatmaps
+    gd._hmpixcount = 0;
+    gd._hmlumcount = 0;
+
+    // for sharing colors across pies (and for legend)
+    fullLayout._piecolormap = {};
+    fullLayout._piedefaultcolorcount = 0;
+
+    // initialize the category list, if there is one, so we start over
+    // to be filled in later by ax.d2c
+    for(i = 0; i < axList.length; i++) {
+        axList[i]._categories = axList[i]._initialCategories.slice();
+    }
+
+    for(i = 0; i < fullData.length; i++) {
+        // If traces were specified and this trace was not included, then transfer it over from
+        // the old calcdata:
+        if(Array.isArray(traces) && traces.indexOf(i) === -1) {
+            calcdata[i] = oldCalcdata[i];
+            continue;
+        }
+
+        var trace = fullData[i],
+            _module = trace._module,
+            cd = [];
+
+        // If traces were specified and this trace was not included, then transfer it over from
+        // the old calcdata:
+        if(Array.isArray(traces) && traces.indexOf(i) === -1) {
+            calcdata[i] = oldCalcdata[i];
+            continue;
+        }
+
+        if(_module && trace.visible === true) {
+            if(_module.calc) cd = _module.calc(gd, trace);
+        }
+
+        // make sure there is a first point
+        // this ensures there is a calcdata item for every trace,
+        // even if cartesian logic doesn't handle it
+        if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+
+        // add the trace-wide properties to the first point,
+        // per point properties to every point
+        // t is the holder for trace-wide properties
+        if(!cd[0].t) cd[0].t = {};
+        cd[0].trace = trace;
+
+        calcdata[i] = cd;
+    }
 };
