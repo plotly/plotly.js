@@ -50,13 +50,13 @@ proto.handlePick = function(pickResult) {
 
     var index = this.idToIndex[pickResult.pointId];
 
+    // prefer the readout from XY, if present
     return {
         trace: this,
         dataCoord: pickResult.dataCoord,
-        traceCoord: [
-            this.pickXData[index],
-            this.pickYData[index]
-        ],
+        traceCoord: this.pickXYData ?
+            [this.pickXYData[index * 2], this.pickXYData[index * 2 + 1]] :
+            [this.pickXData[index], this.pickYData[index]],
         textLabel: Array.isArray(this.textLabels) ?
             this.textLabels[index] :
             this.textLabels,
@@ -81,9 +81,9 @@ proto.update = function(options) {
 proto.updateFast = function(options) {
     var x = this.xData = this.pickXData = options.x;
     var y = this.yData = this.pickYData = options.y;
+    var xy = this.pickXYData = options.xy;
 
-    var xy = options.xy;
-    var userBounds = options.xbounds && options.ybounds
+    var userBounds = options.xbounds && options.ybounds;
     var index = options.indices;
 
     var len,
@@ -188,8 +188,8 @@ proto.updateFast = function(options) {
     this.expandAxesFast(bounds, markerSizeMax / 2); // avoid axis reexpand just because of the adaptive point size
 };
 
-proto.expandAxesFast = function(bounds, markerSizeMin) {
-    var pad = markerSizeMin || 0.5;
+proto.expandAxesFast = function(bounds, markerSize) {
+    var pad = markerSize || 0.5;
     var ax, min, max;
 
     for(var i = 0; i < 2; i++) {
