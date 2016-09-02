@@ -20,7 +20,9 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
 
     coerce('x');
     coerce('y');
-    coerce('bounds');
+
+    coerce('xbounds');
+    coerce('ybounds');
 
     if(traceIn.xy && traceIn.xy instanceof Float32Array) {
         traceOut.xy = traceIn.xy;

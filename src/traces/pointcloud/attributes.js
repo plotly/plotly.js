@@ -25,17 +25,25 @@ module.exports = {
         valType: 'data_array',
         description: [
             'A sequential value, 0..n, supply it to avoid creating this array inside plotting.',
+            'If specified, it must be a typed `Int32Array` array.',
             'Its length must be equal to or greater than the number of points.',
             'For the best performance and memory use, create one large `indices` typed array',
             'that is guaranteed to be at least as long as the largest number of points during',
             'use, and reuse it on each `Plotly.restyle()` call.'
         ].join(' ')
     },
-    bounds: {
+    xbounds: {
         valType: 'data_array',
         description: [
-            'Specify `bounds` in the shape of `[xMin, yMin, xMax, yMax] to avoid looping through',
-            'the `xy` typed array.'
+            'Specify `xbounds` in the shape of `[xMin, xMax] to avoid looping through',
+            'the `xy` typed array. Use it in conjunction with `xy` and `ybounds` for the performance benefits.'
+        ].join(' ')
+    },
+    ybounds: {
+        valType: 'data_array',
+        description: [
+            'Specify `ybounds` in the shape of `[yMin, yMax] to avoid looping through',
+            'the `xy` typed array. Use it in conjunction with `xy` and `xbounds` for the performance benefits.'
         ].join(' ')
     },
     text: scatterglAttrs.text,
