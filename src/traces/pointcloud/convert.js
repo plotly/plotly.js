@@ -8,7 +8,7 @@
 
 'use strict';
 
-var createpointcloud = require('gl-pointcloud2d');
+var createPointCloudRenderer = require('gl-pointcloud2d');
 
 var str2RGBArray = require('../../lib/str2rgbarray');
 var getTraceColor = require('../scatter/get_trace_color');
@@ -40,7 +40,7 @@ function Pointcloud(scene, uid) {
         areaRatio: 1,
         borderColor: [0, 0, 0, 1]
     };
-    this.pointcloud = createpointcloud(scene.glplot, this.pointcloudOptions);
+    this.pointcloud = createPointCloudRenderer(scene.glplot, this.pointcloudOptions);
     this.pointcloud._trace = this; // scene2d requires this prop
 }
 
