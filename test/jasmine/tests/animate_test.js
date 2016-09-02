@@ -1,6 +1,6 @@
 var Plotly = require('@lib/index');
-var PlotlyInternal = require('@src/plotly');
 var Lib = require('@src/lib');
+var Plots = Plotly.Plots;
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -19,7 +19,7 @@ describe('Test animate API', function() {
     }
 
     function verifyFrameTransitionOrder(gd, expectedFrames) {
-        var calls = PlotlyInternal.transition.calls;
+        var calls = Plots.transition.calls;
 
         expect(calls.count()).toEqual(expectedFrames.length);
 
@@ -35,7 +35,7 @@ describe('Test animate API', function() {
 
         mockCopy = Lib.extendDeep({}, mock);
 
-        spyOn(PlotlyInternal, 'transition').and.callFake(function() {
+        spyOn(Plots, 'transition').and.callFake(function() {
             // Transition's fake behaviro is to resolve after a short period of time:
             return Promise.resolve().then(delay(5));
         });
@@ -61,9 +61,9 @@ describe('Test animate API', function() {
 
         it('animates to a frame', function(done) {
             Plotly.animate(gd, ['frame0'], {transitionduration: 1.2345}).then(function() {
-                expect(PlotlyInternal.transition).toHaveBeenCalled();
+                expect(Plots.transition).toHaveBeenCalled();
 
-                var args = PlotlyInternal.transition.calls.mostRecent().args;
+                var args = Plots.transition.calls.mostRecent().args;
 
                 // was called with gd, data, layout, traceIndices, transitionConfig:
                 expect(args.length).toEqual(5);
@@ -92,7 +92,7 @@ describe('Test animate API', function() {
         it('treats objects as frames', function(done) {
             var frame = {data: [{x: [1, 2, 3]}]};
             Plotly.animate(gd, frame, transOpts).then(function() {
-                expect(PlotlyInternal.transition.calls.count()).toEqual(1);
+                expect(Plots.transition.calls.count()).toEqual(1);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
@@ -101,15 +101,15 @@ describe('Test animate API', function() {
             var frame1 = {data: [{x: [1, 2, 3]}], traces: [0], layout: {foo: 'bar'}};
             var frame2 = {data: [{x: [3, 4, 5]}], traces: [1], layout: {foo: 'baz'}};
             Plotly.animate(gd, [frame1, frame2], transOpts).then(function() {
-                expect(PlotlyInternal.transition.calls.argsFor(0)[1]).toEqual(frame1.data);
-                expect(PlotlyInternal.transition.calls.argsFor(0)[2]).toEqual(frame1.layout);
-                expect(PlotlyInternal.transition.calls.argsFor(0)[3]).toEqual(frame1.traces);
+                expect(Plots.transition.calls.argsFor(0)[1]).toEqual(frame1.data);
+                expect(Plots.transition.calls.argsFor(0)[2]).toEqual(frame1.layout);
+                expect(Plots.transition.calls.argsFor(0)[3]).toEqual(frame1.traces);
 
-                expect(PlotlyInternal.transition.calls.argsFor(1)[1]).toEqual(frame2.data);
-                expect(PlotlyInternal.transition.calls.argsFor(1)[2]).toEqual(frame2.layout);
-                expect(PlotlyInternal.transition.calls.argsFor(1)[3]).toEqual(frame2.traces);
+                expect(Plots.transition.calls.argsFor(1)[1]).toEqual(frame2.data);
+                expect(Plots.transition.calls.argsFor(1)[2]).toEqual(frame2.layout);
+                expect(Plots.transition.calls.argsFor(1)[3]).toEqual(frame2.traces);
 
-                expect(PlotlyInternal.transition.calls.count()).toEqual(2);
+                expect(Plots.transition.calls.count()).toEqual(2);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
@@ -130,28 +130,28 @@ describe('Test animate API', function() {
 
         it('animates to a single frame', function(done) {
             Plotly.animate(gd, ['frame0'], transOpts).then(function() {
-                expect(PlotlyInternal.transition.calls.count()).toEqual(1);
+                expect(Plots.transition.calls.count()).toEqual(1);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
 
         it('animates to an empty list', function(done) {
             Plotly.animate(gd, [], transOpts).then(function() {
-                expect(PlotlyInternal.transition.calls.count()).toEqual(0);
+                expect(Plots.transition.calls.count()).toEqual(0);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
 
         it('animates to a list of frames', function(done) {
             Plotly.animate(gd, ['frame0', 'frame1'], transOpts).then(function() {
-                expect(PlotlyInternal.transition.calls.count()).toEqual(2);
+                expect(Plots.transition.calls.count()).toEqual(2);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
 
         it('animates frames by group', function(done) {
             Plotly.animate(gd, 'even-frames', transOpts).then(function() {
-                expect(PlotlyInternal.transition.calls.count()).toEqual(2);
+                expect(Plots.transition.calls.count()).toEqual(2);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
@@ -165,7 +165,7 @@ describe('Test animate API', function() {
 
         it('accepts a single transitionOpts', function(done) {
             Plotly.animate(gd, ['frame0', 'frame1'], {transitionduration: 1.12345}).then(function() {
-                var calls = PlotlyInternal.transition.calls;
+                var calls = Plots.transition.calls;
                 expect(calls.argsFor(0)[4].transitionduration).toEqual(1.12345);
                 expect(calls.argsFor(1)[4].transitionduration).toEqual(1.12345);
             }).catch(fail).then(done);
@@ -173,7 +173,7 @@ describe('Test animate API', function() {
 
         it('accepts an array of transitionOpts', function(done) {
             Plotly.animate(gd, ['frame0', 'frame1'], [{transitionduration: 1.123}, {transitionduration: 1.456}]).then(function() {
-                var calls = PlotlyInternal.transition.calls;
+                var calls = Plots.transition.calls;
                 expect(calls.argsFor(0)[4].transitionduration).toEqual(1.123);
                 expect(calls.argsFor(1)[4].transitionduration).toEqual(1.456);
             }).catch(fail).then(done);
@@ -181,7 +181,7 @@ describe('Test animate API', function() {
 
         it('falls back to transitionOpts[0] if not enough supplied in array', function(done) {
             Plotly.animate(gd, ['frame0', 'frame1'], [{transitionduration: 1.123}]).then(function() {
-                var calls = PlotlyInternal.transition.calls;
+                var calls = Plots.transition.calls;
                 expect(calls.argsFor(0)[4].transitionduration).toEqual(1.123);
                 expect(calls.argsFor(1)[4].transitionduration).toEqual(1.123);
             }).catch(fail).then(done);
@@ -273,7 +273,7 @@ describe('Test animate API', function() {
                 starts++;
             }).on('plotly_animated', function() {
                 ends++;
-                expect(PlotlyInternal.transition.calls.count()).toEqual(4);
+                expect(Plots.transition.calls.count()).toEqual(4);
                 expect(starts).toEqual(1);
             });
 
@@ -287,7 +287,7 @@ describe('Test animate API', function() {
         it('an empty list with immediate dumps previous frames', function(done) {
             Plotly.animate(gd, ['frame0', 'frame1'], {frameduration: 50});
             Plotly.animate(gd, [], null, {immediate: true}).then(function() {
-                expect(PlotlyInternal.transition.calls.count()).toEqual(1);
+                expect(Plots.transition.calls.count()).toEqual(1);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
@@ -343,7 +343,7 @@ describe('Test animate API', function() {
         Plotly.animate(gd, ['frame0', 'frame1'], {transitionduration: 200, frameduration: 20}).then(function() {
             expect(starts).toEqual(1);
             expect(ends).toEqual(1);
-            expect(PlotlyInternal.transition.calls.count()).toEqual(2);
+            expect(Plots.transition.calls.count()).toEqual(2);
             verifyQueueEmpty(gd);
         }).catch(fail).then(done);
     });
