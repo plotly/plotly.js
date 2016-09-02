@@ -21,12 +21,12 @@ module.exports = {
             'represents points such that `xy[i * 2] = x[i]` and `xy[i * 2 + 1] = y[i]`'
         ].join(' ')
     },
-    indexid: {
+    indices: {
         valType: 'data_array',
         description: [
             'A sequential value, 0..n, supply it to avoid creating this array inside plotting.',
             'Its length must be equal to or greater than the number of points.',
-            'For the best performance and memory use, create one large `indexid` typed array',
+            'For the best performance and memory use, create one large `indices` typed array',
             'that is guaranteed to be at least as long as the largest number of points during',
             'use, and reuse it on each `Plotly.restyle()` call.'
         ].join(' ')

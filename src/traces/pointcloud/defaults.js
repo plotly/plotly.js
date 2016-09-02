@@ -26,8 +26,8 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
         traceOut.xy = traceIn.xy;
     }
 
-    if(traceIn.indexid && traceIn.indexid instanceof Int32Array) {
-        traceOut.indexid = traceIn.indexid;
+    if(traceIn.indices && traceIn.indices instanceof Int32Array) {
+        traceOut.indices = traceIn.indices;
     }
 
     coerce('text');

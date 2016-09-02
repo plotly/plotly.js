@@ -84,7 +84,7 @@ proto.updateFast = function(options) {
 
     var xy = options.xy;
     var userBounds = options.bounds;
-    var index = options.indexid;
+    var index = options.indices;
 
     var len = x.length,
         idToIndex,
