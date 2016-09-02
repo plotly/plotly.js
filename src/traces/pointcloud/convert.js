@@ -83,10 +83,10 @@ proto.updateFast = function(options) {
     var y = this.yData = this.pickYData = options.y;
 
     var xy = options.xy;
-    var userBounds = options.bounds;
+    var userBounds = options.xbounds && options.ybounds
     var index = options.indices;
 
-    var len = x.length,
+    var len,
         idToIndex,
         positions,
         bounds = this.bounds;
@@ -96,13 +96,14 @@ proto.updateFast = function(options) {
     if(xy) {
 
         positions = xy;
+        len = xy.length >>> 1;
 
         if(userBounds) {
 
-            bounds[0] = userBounds[0];
-            bounds[1] = userBounds[1];
-            bounds[2] = userBounds[2];
-            bounds[3] = userBounds[3];
+            bounds[0] = options.xbounds[0];
+            bounds[2] = options.xbounds[1];
+            bounds[1] = options.ybounds[0];
+            bounds[3] = options.ybounds[1];
 
         } else {
 
@@ -136,6 +137,8 @@ proto.updateFast = function(options) {
         }
 
     } else {
+
+        len = x.length;
 
         positions = new Float32Array(2 * len);
         idToIndex = new Int32Array(len);
