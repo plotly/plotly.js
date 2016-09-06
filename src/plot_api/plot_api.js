@@ -1115,21 +1115,23 @@ Plotly.moveTraces = function moveTraces(gd, currentIndices, newIndices) {
  * Can be called two ways.
  *
  * Signature 1:
- * @param {string id or DOM element} gd
+ * @param {String | HTMLDivElement} gd
  *  the id or DOM element of the graph container div
- * @param {string} astr
+ * @param {String} astr
  *  attribute string (like `'marker.symbol'`) to update
- * @param {any} val
+ * @param {*} val
  *  value to give this attribute
- * @param {number or array} traces (optional)
+ * @param {Number[] | Number} [traces]
  *  integer or array of integers for the traces to alter (all if omitted)
  *
  * Signature 2:
- * @param {string id or DOM element} gd (as in signature 1)
- * @param {object} aobj
+ * @param {String | HTMLDivElement} gd
+ *  (as in signature 1)
+ * @param {Object} aobj
  *  attribute object `{astr1: val1, astr2: val2 ...}`
  *  allows setting multiple attributes simultaneously
- * @param {number or array} traces (optional, as in signature 1)
+ * @param {Number[] | Number} [traces]
+ *  (as in signature 1)
  *
  * `val` (or `val1`, `val2` ... in the object form) can be an array,
  * to apply different values to each trace.
@@ -1142,11 +1144,11 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     helpers.clearPromiseQueue(gd);
 
     var aobj = {};
-
     if(typeof astr === 'string') aobj[astr] = val;
     else if(Lib.isPlainObject(astr)) {
+        // the 3-arg form
         aobj = astr;
-        if(traces === undefined) traces = val; // the 3-arg form
+        if(traces === undefined) traces = val;
     }
     else {
         Lib.warn('Restyle fail.', astr, val, traces);
@@ -1632,17 +1634,17 @@ function _restyle(gd, aobj, traces) {
  * Can be called two ways:
  *
  * Signature 1:
- * @param {string id or dom element} gd
+ * @param {String | HTMLDivElement} gd
  *  the id or dom element of the graph container div
- * @param {string} astr
+ * @param {String} astr
  *  attribute string (like `'xaxis.range[0]'`) to update
- * @param {any} val
+ * @param {*} val
  *  value to give this attribute
  *
  * Signature 2:
- * @param {string id or DOM element} gd (as in signature 1)
- *  the id or DOM element of the graph container div
- * @param {object} aobj
+ * @param {String | HTMLDivElement} gd
+ *  (as in signature 1)
+ * @param {Object} aobj
  *  attribute object `{astr1: val1, astr2: val2 ...}`
  *  allows setting multiple attributes simultaneously
  */
@@ -2021,15 +2023,15 @@ function _relayout(gd, aobj) {
 /**
  * update: update trace and layout attributes of an existing plot
  *
- * @param {string id or DOM element} gd
+ * @param {String | HTMLDivElement} gd
  *  the id or DOM element of the graph container div
- * @param {object} traceUpdate
+ * @param {Object} traceUpdate
  *  attribute object `{astr1: val1, astr2: val2 ...}`
  *  corresponding to updates in the plot's traces
- * @param {object} layoutUpdate
+ * @param {Object} layoutUpdate
  *  attribute object `{astr1: val1, astr2: val2 ...}`
  *  corresponding to updates in the plot's layout
- * @param {number or array} traces (optional)
+ * @param {Number[] | Number} [traces]
  *  integer or array of integers for the traces to alter (all if omitted)
  *
  */
