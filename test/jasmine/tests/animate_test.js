@@ -52,10 +52,7 @@ describe('Test animate API', function() {
         destroyGraphDiv();
     });
 
-    for(var i = 0; i < 2; i++) {
-        // Run tests for 0ms and 30ms duration:
-        runTests(30 * i);
-    }
+    runTests(30);
 
     function runTests(duration) {
         describe('With duration = ' + duration, function() {

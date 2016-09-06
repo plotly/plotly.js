@@ -901,7 +901,7 @@ plots.purge = function(gd) {
     if(fullLayout._modeBar) fullLayout._modeBar.destroy();
 
     if(gd._transitionData && gd._transitionData._animationRaf) {
-        cancelAnimationFrame(gd._transitionData._animationRaf);
+        window.cancelAnimationFrame(gd._transitionData._animationRaf);
     }
 
     // data and layout

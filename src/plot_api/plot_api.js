@@ -2576,7 +2576,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
 
             if(newFrame) {
                 trans._lastFrameAt = Date.now();
-                trans._timetonext = newFrame.frameOpts.duration;
+                trans._timeToNext = newFrame.frameOpts.duration;
 
                 Plots.transition(gd,
                     newFrame.frame.data,
@@ -2605,13 +2605,13 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
 
             // If no timer is running, then set last frame = long ago:
             trans._lastFrameAt = -Infinity;
-            trans._timetonext = 0;
+            trans._timeToNext = 0;
             trans._runningTransitions = 0;
             trans._currentFrame = null;
 
             var doFrame = function() {
                 // Check if we need to pop a frame:
-                if(Date.now() - trans._lastFrameAt > trans._timetonext) {
+                if(Date.now() - trans._lastFrameAt > trans._timeToNext) {
                     nextFrame();
                 }
 
