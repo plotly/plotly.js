@@ -280,7 +280,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     var easeFn = d3.ease(transitionOpts.easing);
 
     gd._transitionData._interruptCallbacks.push(function() {
-        cancelAnimationFrame(raf);
+        window.cancelAnimationFrame(raf);
         raf = null;
         return transitionInterrupt();
     });
@@ -297,14 +297,14 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
 
         if(t2 - t1 > transitionOpts.duration) {
             transitionComplete();
-            raf = cancelAnimationFrame(doFrame);
+            raf = window.cancelAnimationFrame(doFrame);
         } else {
-            raf = requestAnimationFrame(doFrame);
+            raf = window.requestAnimationFrame(doFrame);
         }
     }
 
     t1 = Date.now();
-    raf = requestAnimationFrame(doFrame);
+    raf = window.requestAnimationFrame(doFrame);
 
     return Promise.resolve();
 };
