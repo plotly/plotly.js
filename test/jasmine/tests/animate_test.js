@@ -52,6 +52,7 @@ describe('Test animate API', function() {
         destroyGraphDiv();
     });
 
+    runTests(0);
     runTests(30);
 
     function runTests(duration) {
@@ -214,7 +215,9 @@ describe('Test animate API', function() {
 
             it('emits plotly_animated before the promise is resolved', function(done) {
                 var animated = false;
-                gd.on('plotly_animated', function() { animated = true; });
+                gd.on('plotly_animated', function() {
+                    animated = true;
+                });
 
                 Plotly.animate(gd, ['frame0'], animOpts).then(function() {
                     expect(animated).toBe(true);
