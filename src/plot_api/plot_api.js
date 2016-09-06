@@ -1192,17 +1192,13 @@ Plotly.restyle = function restyle(gd, astr, val, traces) {
     });
 };
 
-function _restyle(gd, aobj, traces) {
+function _restyle(gd, aobj, _traces) {
     var fullLayout = gd._fullLayout,
         fullData = gd._fullData,
         data = gd.data,
         i;
 
-    // fill up traces
-    if(isNumeric(traces)) traces = [traces];
-    else if(!Array.isArray(traces) || !traces.length) {
-        traces = data.map(function(_, i) { return i; });
-    }
+    var traces = helpers.coerceTraceIndices(gd, _traces);
 
     // initialize flags
     var flags = {
@@ -2035,7 +2031,7 @@ function _relayout(gd, aobj) {
  *  integer or array of integers for the traces to alter (all if omitted)
  *
  */
-Plotly.update = function update(gd, traceUpdate, layoutUpdate, indices) {
+Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
     gd = helpers.getGraphDiv(gd);
     helpers.clearPromiseQueue(gd);
 
@@ -2049,7 +2045,7 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, indices) {
     if(Object.keys(traceUpdate).length) gd.changed = true;
     if(Object.keys(layoutUpdate).length) gd.changed = true;
 
-    var restyleSpecs = _restyle(gd, traceUpdate, indices),
+    var restyleSpecs = _restyle(gd, traceUpdate, traces),
         restyleFlags = restyleSpecs.flags;
 
     var relayoutSpecs = _relayout(gd, layoutUpdate),
@@ -2286,7 +2282,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                 Plots.transition(gd,
                     newFrame.frame.data,
                     newFrame.frame.layout,
-                    newFrame.frame.traces,
+                    helpers.coerceTraceIndices(gd, newFrame.frame.traces),
                     newFrame.frameOpts,
                     newFrame.transitionOpts
                 );

@@ -9,6 +9,7 @@
 
 'use strict';
 
+var isNumeric = require('fast-isnumeric');
 var m4FromQuat = require('gl-mat4/fromQuat');
 
 var Registry = require('../registry');
@@ -398,4 +399,16 @@ exports.swapXYData = function(trace) {
         }
         trace.hoverinfo = hoverInfoParts.join('+');
     }
+};
+
+// coerce traceIndices input to array of trace indices
+exports.coerceTraceIndices = function(gd, traceIndices) {
+    if(isNumeric(traceIndices)) {
+        return [traceIndices];
+    }
+    else if(!Array.isArray(traceIndices) || !traceIndices.length) {
+        return gd.data.map(function(_, i) { return i; });
+    }
+
+    return traceIndices;
 };
