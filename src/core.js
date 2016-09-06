@@ -45,7 +45,6 @@ exports.downloadImage = require('./snapshot/download');
 exports.validate = require('./plot_api/validate');
 exports.addFrames = Plotly.addFrames;
 exports.deleteFrames = Plotly.deleteFrames;
-exports.transition = Plotly.transition;
 exports.animate = Plotly.animate;
 
 // scatter is the only trace included by default
