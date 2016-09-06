@@ -8,49 +8,6 @@ var fail = require('../assets/fail_test');
 var delay = require('../assets/delay');
 var mock = require('@mocks/animation');
 
-
-describe('Plots.supplyAnimationTransitionDefaults', function() {
-    'use strict';
-
-    it('supplies transition defaults', function() {
-        expect(Plots.supplyAnimationDefaults({})).toEqual({
-            mode: 'afterall',
-            transition: {
-                duration: 500,
-                easing: 'cubic-in-out'
-            },
-            frame: {
-                duration: 500,
-                redraw: true
-            }
-        });
-    });
-
-    it('uses provided values', function() {
-        expect(Plots.supplyAnimationDefaults({
-            mode: 'next',
-            transition: {
-                duration: 600,
-                easing: 'elastic-in-out'
-            },
-            frame: {
-                duration: 700,
-                redraw: false
-            }
-        })).toEqual({
-            mode: 'next',
-            transition: {
-                duration: 600,
-                easing: 'elastic-in-out'
-            },
-            frame: {
-                duration: 700,
-                redraw: false
-            }
-        });
-    });
-});
-
 function runTests(transitionDuration) {
     describe('Plots.transition (duration = ' + transitionDuration + ')', function() {
         'use strict';

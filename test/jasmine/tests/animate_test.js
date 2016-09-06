@@ -9,6 +9,48 @@ var delay = require('../assets/delay');
 
 var mock = require('@mocks/animation');
 
+describe('Plots.supplyAnimationDefaults', function() {
+    'use strict';
+
+    it('supplies transition defaults', function() {
+        expect(Plots.supplyAnimationDefaults({})).toEqual({
+            mode: 'afterall',
+            transition: {
+                duration: 500,
+                easing: 'cubic-in-out'
+            },
+            frame: {
+                duration: 500,
+                redraw: true
+            }
+        });
+    });
+
+    it('uses provided values', function() {
+        expect(Plots.supplyAnimationDefaults({
+            mode: 'next',
+            transition: {
+                duration: 600,
+                easing: 'elastic-in-out'
+            },
+            frame: {
+                duration: 700,
+                redraw: false
+            }
+        })).toEqual({
+            mode: 'next',
+            transition: {
+                duration: 600,
+                easing: 'elastic-in-out'
+            },
+            frame: {
+                duration: 700,
+                redraw: false
+            }
+        });
+    });
+});
+
 describe('Test animate API', function() {
     'use strict';
 
@@ -348,6 +390,38 @@ describe('Test animate API', function() {
                 expect(interrupted).toBe(true);
                 verifyFrameTransitionOrder(gd, ['frame0', 'frame2']);
                 verifyQueueEmpty(gd);
+            }).catch(fail).then(done);
+        });
+    });
+
+    describe('frame vs. transition timing', function() {
+        it('limits the transition duration to <= frame duration', function(done) {
+            Plotly.animate(gd, ['frame0'], {
+                transition: {duration: 100000},
+                frame: {duration: 50}
+            }).then(function() {
+                // Frame timing:
+                expect(Plots.transition.calls.argsFor(0)[4].duration).toEqual(50);
+
+                // Transition timing:
+                expect(Plots.transition.calls.argsFor(0)[5].duration).toEqual(50);
+
+            }).catch(fail).then(done);
+        });
+
+        it('limits the transition duration to <= frame duration (matching per-config)', function(done) {
+            Plotly.animate(gd, ['frame0', 'frame1'], {
+                transition: [{duration: 100000}, {duration: 123456}],
+                frame: [{duration: 50}, {duration: 40}]
+            }).then(function() {
+                // Frame timing:
+                expect(Plots.transition.calls.argsFor(0)[4].duration).toEqual(50);
+                expect(Plots.transition.calls.argsFor(1)[4].duration).toEqual(40);
+
+                // Transition timing:
+                expect(Plots.transition.calls.argsFor(0)[5].duration).toEqual(50);
+                expect(Plots.transition.calls.argsFor(1)[5].duration).toEqual(40);
+
             }).catch(fail).then(done);
         });
     });

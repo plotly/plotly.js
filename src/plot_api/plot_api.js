@@ -2540,11 +2540,18 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     computedFrame = frameList[i].frame;
                 }
 
+                var frameOpts = getFrameOpts(i);
+                var transitionOpts = getTransitionOpts(i);
+
+                // It doesn't make much sense for the transition duration to be greater than
+                // the frame duration, so limit it:
+                transitionOpts.duration = Math.min(transitionOpts.duration, frameOpts.duration);
+
                 var nextFrame = {
                     frame: computedFrame,
                     name: frameList[i].name,
-                    frameOpts: getFrameOpts(i),
-                    transitionOpts: getTransitionOpts(i)
+                    frameOpts: frameOpts,
+                    transitionOpts: transitionOpts,
                 };
 
                 if(i === frameList.length - 1) {
