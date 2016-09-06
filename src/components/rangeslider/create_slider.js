@@ -221,16 +221,9 @@ module.exports = function createSlider(gd) {
     }
 
     function setDataRange(dataMin, dataMax) {
-
-        if(window.requestAnimationFrame) {
-            window.requestAnimationFrame(function() {
-                Plotly.relayout(gd, 'xaxis.range', [dataMin, dataMax]);
-            });
-        } else {
-            setTimeout(function() {
-                Plotly.relayout(gd, 'xaxis.range', [dataMin, dataMax]);
-            }, 16);
-        }
+        window.requestAnimationFrame(function() {
+            Plotly.relayout(gd, 'xaxis.range', [dataMin, dataMax]);
+        });
     }
 
 
