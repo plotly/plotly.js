@@ -2130,7 +2130,7 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, indices) {
  *      configuration for the animation
  */
 Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
-    gd = getGraphDiv(gd);
+    gd = helpers.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
@@ -2413,7 +2413,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
  *      will be overwritten.
  */
 Plotly.addFrames = function(gd, frameList, indices) {
-    gd = getGraphDiv(gd);
+    gd = helpers.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
@@ -2500,7 +2500,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
  *      list of integer indices of frames to be deleted
  */
 Plotly.deleteFrames = function(gd, frameList) {
-    gd = getGraphDiv(gd);
+    gd = helpers.getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
