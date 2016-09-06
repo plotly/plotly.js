@@ -28,7 +28,10 @@ module.exports = {
             role: 'info',
             min: 0,
             dflt: 500,
-            description: 'The duration in milliseconds of each frame.'
+            description: [
+                'The duration in milliseconds of each frame. If greater than the frame',
+                'duration, it will be limited to the frame duration.'
+            ].join(' ')
         },
         redraw: {
             valType: 'boolean',

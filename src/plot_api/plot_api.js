@@ -2456,12 +2456,31 @@ Plotly.relayout = function relayout(gd, astr, val) {
 };
 
 /**
- * Animate to a keyframe
+ * Animate to a frame, sequence of frame, frame group, or frame definition
  *
- * @param {string} name
- *      name of the keyframe to create
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ *
+ * @param {string or object or array of strings or array of objects} frameOrGroupNameOrFrameList
+ *      a single frame, array of frames, or group to which to animate. The intent is
+ *      inferred by the type of the input. Valid inputs are:
+ *
+ *      - string, e.g. 'groupname': animate all frames of a given `group` in the order
+ *            in which they are defined via `Plotly.addFrames`.
+ *
+ *      - array of strings, e.g. ['frame1', frame2']: a list of frames by name to which
+ *            to animate in sequence
+ *
+ *      - object: {data: ...}: a frame definition to which to animate. The frame is not
+ *            and does not need to be added via `Plotly.addFrames`. It may contain any of
+ *            the properties of a frame, including `data`, `layout`, and `traces`. The
+ *            frame is used as provided and does not use the `baseframe` property.
+ *
+ *      - array of objects, e.g. [{data: ...}, {data: ...}]: a list of frame objects,
+ *            each following the same rules as a single `object`.
+ *
  * @param {object} animationOpts
- *      configuration for animation
+ *      configuration for the animation
  */
 Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = getGraphDiv(gd);
@@ -2664,13 +2683,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             return frame;
         }
 
-        // Disambiguate what's been received. The possibilities are:
-        //
-        //  - group: 'groupname': select frames by group name
-        //  - frames ['frame1', frame2']: a list of frames
-        //  - object: {data: ...}: a single frame itself
-        //  - frames [{data: ...}, {data: ...}]: a list of frames
-        //
+        // Disambiguate what's sort of frames have been received
         var i, frame;
         var frameList = [];
         var allFrames = frameOrGroupNameOrFrameList === undefined || frameOrGroupNameOrFrameList === null;
@@ -2729,15 +2742,23 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
 };
 
 /**
- * Create new keyframes
+ * Register new frames
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
  *
  * @param {array of objects} frameList
  *      list of frame definitions, in which each object includes any of:
- *      - name: {string} name of keyframe to add
+ *      - name: {string} name of frame to add
  *      - data: {array of objects} trace data
  *      - layout {object} layout definition
  *      - traces {array} trace indices
- *      - baseframe {string} name of keyframe from which this keyframe gets defaults
+ *      - baseframe {string} name of frame from which this frame gets defaults
+ *
+ *  @param {array of integers) indices
+ *      an array of integer indices matching the respective frames in `frameList`. If not
+ *      provided, an index will be provided in serial order. If already used, the frame
+ *      will be overwritten.
  */
 Plotly.addFrames = function(gd, frameList, indices) {
     gd = getGraphDiv(gd);
@@ -2815,7 +2836,10 @@ Plotly.addFrames = function(gd, frameList, indices) {
 };
 
 /**
- * Delete keyframes
+ * Delete frame
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
  *
  * @param {array of integers} frameList
  *      list of integer indices of frames to be deleted
