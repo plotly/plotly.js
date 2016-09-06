@@ -823,8 +823,7 @@ Plotly.redraw = function(gd) {
     gd = getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
-        Lib.warn('This element is not a Plotly plot.', gd);
-        return;
+        throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
     gd.calcdata = undefined;
