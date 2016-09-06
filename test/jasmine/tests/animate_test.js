@@ -36,8 +36,9 @@ describe('Test animate API', function() {
         mockCopy = Lib.extendDeep({}, mock);
 
         spyOn(Plots, 'transition').and.callFake(function() {
-            // Transition's fake behaviro is to resolve after a short period of time:
-            return Promise.resolve().then(delay(5));
+            // Transition's fake behavior is just to delay by the duration
+            // and resolve:
+            return Promise.resolve().then(delay(arguments[5].duration));
         });
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
@@ -280,7 +281,7 @@ describe('Test animate API', function() {
 
             Plotly.animate(gd, ['frame0', 'frame1'], animOpts);
 
-            Plotly.animate(gd, ['frame2'], Lib.extendFlat(animOpts, {immediate: true})).then(function() {
+            Plotly.animate(gd, ['frame2'], Lib.extendFlat(animOpts, {mode: 'immediate'})).then(function() {
                 expect(interrupted).toBe(true);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
@@ -307,7 +308,7 @@ describe('Test animate API', function() {
 
         it('an empty list with immediate dumps previous frames', function(done) {
             Plotly.animate(gd, ['frame0', 'frame1'], {frame: {duration: 50}});
-            Plotly.animate(gd, [], {immediate: true}).then(function() {
+            Plotly.animate(gd, [], {mode: 'immediate'}).then(function() {
                 expect(Plots.transition.calls.count()).toEqual(1);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
@@ -323,7 +324,7 @@ describe('Test animate API', function() {
 
         it('drops queued frames when immediate = true', function(done) {
             Plotly.animate(gd, 'even-frames', animOpts);
-            Plotly.animate(gd, 'odd-frames', Lib.extendFlat(animOpts, {immediate: true})).then(function() {
+            Plotly.animate(gd, 'odd-frames', Lib.extendFlat(animOpts, {mode: 'immediate'})).then(function() {
                 verifyFrameTransitionOrder(gd, ['frame0', 'frame1', 'frame3']);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
@@ -343,29 +344,11 @@ describe('Test animate API', function() {
                 interrupted = true;
             });
 
-            Plotly.animate(gd, ['frame2'], Lib.extendFlat(animOpts, {immediate: true})).then(function() {
+            Plotly.animate(gd, ['frame2'], Lib.extendFlat(animOpts, {mode: 'immediate'})).then(function() {
                 expect(interrupted).toBe(true);
                 verifyFrameTransitionOrder(gd, ['frame0', 'frame2']);
                 verifyQueueEmpty(gd);
             }).catch(fail).then(done);
         });
-    });
-
-    it('animates reasonably even when transition duration >> frame duration', function(done) {
-        var starts = 0;
-        var ends = 0;
-
-        gd.on('plotly_animating', function() {
-            starts++;
-        }).on('plotly_animated', function() {
-            ends++;
-        });
-
-        Plotly.animate(gd, ['frame0', 'frame1'], {transition: {duration: 200}, frame: {duration: 20}}).then(function() {
-            expect(starts).toEqual(1);
-            expect(ends).toEqual(1);
-            expect(Plots.transition.calls.count()).toEqual(2);
-            verifyQueueEmpty(gd);
-        }).catch(fail).then(done);
     });
 });

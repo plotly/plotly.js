@@ -622,7 +622,7 @@ plots.supplyAnimationDefaults = function(opts) {
         return Lib.coerce(opts || {}, optsOut, animationAttrs, attr, dflt);
     }
 
-    coerce('immediate');
+    coerce('mode');
 
     if(Array.isArray(opts.frame)) {
         optsOut.frame = [];

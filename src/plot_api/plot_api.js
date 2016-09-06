@@ -2593,22 +2593,11 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
 
             if(trans._frameQueue.length === 0) {
                 stopAnimationLoop();
-                return;
             }
         }
 
         function beginAnimationLoop() {
             gd.emit('plotly_animating');
-
-            var canAnimateSynchronously = !trans._animationRaf && trans._frameQueue.length === 1;
-
-            if(canAnimateSynchronously) {
-                // If there is no animation running and only one frame has been received, then
-                // simply transition this frame synchonously and avoid starting and stopping the
-                // timing loop.
-                nextFrame();
-                return;
-            }
 
             // If no timer is running, then set last frame = long ago:
             trans._lastframeat = 0;
@@ -2690,7 +2679,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             }
         }
 
-        if(animationOpts.immediate) {
+        if(['next', 'immediate'].indexOf(animationOpts.mode) !== -1) {
             discardExistingFrames();
         }
 

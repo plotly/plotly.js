@@ -14,7 +14,7 @@ describe('Plots.supplyAnimationTransitionDefaults', function() {
 
     it('supplies transition defaults', function() {
         expect(Plots.supplyAnimationDefaults({})).toEqual({
-            immediate: false,
+            immediate: 'afterall',
             transition: {
                 duration: 500,
                 easing: 'cubic-in-out'
@@ -28,7 +28,7 @@ describe('Plots.supplyAnimationTransitionDefaults', function() {
 
     it('uses provided values', function() {
         expect(Plots.supplyAnimationDefaults({
-            immediate: true,
+            immediate: 'next',
             transition: {
                 duration: 600,
                 easing: 'elastic-in-out'
@@ -38,7 +38,7 @@ describe('Plots.supplyAnimationTransitionDefaults', function() {
                 redraw: false
             }
         })).toEqual({
-            immediate: true,
+            immediate: 'next',
             transition: {
                 duration: 600,
                 easing: 'elastic-in-out'

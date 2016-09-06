@@ -9,14 +9,17 @@
 'use strict';
 
 module.exports = {
-    immediate: {
-        valType: 'boolean',
-        role: 'info',
-        dflt: false,
+    mode: {
+        valType: 'enumerated',
+        dflt: 'afterall',
+        values: ['immediate', 'next', 'afterall'],
         description: [
-            'If true, exisitng queued animation frames are discarded before beginning',
-            'the next animation sequence. Promises for exising `Plotly.animate` calls',
-            'are rejected and a `plotly_animateinterrupt` event is emitted.'
+            'Describes how a new animate call interacts with currently-running',
+            'animations. If `immediate`, current animations are interrupted and',
+            'the new animation is started. If `next`, the current frame is allowed',
+            'to complete, after which the new animation is started. If `afterall`',
+            'all existing frames are animated to completion before the new animation',
+            'is started.'
         ].join(' ')
     },
     frame: {
