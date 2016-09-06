@@ -2484,6 +2484,12 @@ Plotly.relayout = function relayout(gd, astr, val) {
  */
 Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = getGraphDiv(gd);
+
+    if(!Lib.isPlotDiv(gd)) {
+        Lib.warn('This element is not a Plotly plot.', gd);
+        return Promise.reject();
+    }
+
     var trans = gd._transitionData;
 
     // This is the queue of frames that will be animated as soon as possible. They
@@ -2763,6 +2769,11 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
 Plotly.addFrames = function(gd, frameList, indices) {
     gd = getGraphDiv(gd);
 
+    if(!Lib.isPlotDiv(gd)) {
+        Lib.warn('This element is not a Plotly plot.', gd);
+        return Promise.reject();
+    }
+
     var i, frame, j, idx;
     var _frames = gd._transitionData._frames;
     var _hash = gd._transitionData._frameHash;
@@ -2846,6 +2857,11 @@ Plotly.addFrames = function(gd, frameList, indices) {
  */
 Plotly.deleteFrames = function(gd, frameList) {
     gd = getGraphDiv(gd);
+
+    if(!Lib.isPlotDiv(gd)) {
+        Lib.warn('This element is not a Plotly plot.', gd);
+        return Promise.reject();
+    }
 
     var i, idx;
     var _frames = gd._transitionData._frames;

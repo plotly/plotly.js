@@ -1342,8 +1342,18 @@ plots.computeFrame = function(gd, frameName) {
 /**
  * Transition to a set of new data and layout properties
  *
- * @param {string id or DOM element} gd
- *      the id or DOM element of the graph container div
+ * @param {DOM element} gd
+ *      the DOM element of the graph container div
+ * @param {Object[]} data
+ *      an array of data objects following the normal Plotly data definition format
+ * @param {Object} layout
+ *      a layout object, following normal Plotly layout format
+ * @param {Number[]} traceIndices
+ *      indices of the corresponding traces specified in `data`
+ * @param {Object} frameOpts
+ *      options for the frame (i.e. whether to redraw post-transition)
+ * @param {Object} transitionOpts
+ *      options for the transition
  */
 plots.transition = function(gd, data, layout, traceIndices, frameOpts, transitionOpts) {
     var i, traceIdx;

@@ -94,6 +94,13 @@ describe('Test animate API', function() {
         destroyGraphDiv();
     });
 
+    it('throws an error if the div is not a plot', function(done) {
+        var gd2 = createGraphDiv(gd);
+
+        // Then = fail, rejection = success
+        Plotly.animate(gd2).then(fail).catch(done);
+    });
+
     runTests(0);
     runTests(30);
 
