@@ -17,7 +17,7 @@ var buttonsAttrs = {
 
     method: {
         valType: 'enumerated',
-        values: ['restyle', 'relayout'],
+        values: ['restyle', 'relayout', 'animate'],
         dflt: 'restyle',
         role: 'info',
         description: [

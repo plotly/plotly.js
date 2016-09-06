@@ -9,6 +9,7 @@
 
 'use strict';
 
+
 var d3 = require('d3');
 var m4FromQuat = require('gl-mat4/fromQuat');
 var isNumeric = require('fast-isnumeric');
@@ -106,7 +107,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     // if the user is trying to drag the axes, allow new data and layout
     // to come in but don't allow a replot.
-    if(gd._dragging) {
+    if(gd._dragging && !gd._transitioning) {
         // signal to drag handler that after everything else is done
         // we need to replot, because something has changed
         gd._replotPending = true;
@@ -157,7 +158,7 @@ Plotly.plot = function(gd, data, layout, config) {
     // generate calcdata, if we need to
     // to force redoing calcdata, just delete it before calling Plotly.plot
     var recalc = !gd.calcdata || gd.calcdata.length !== (gd.data || []).length;
-    if(recalc) doCalcdata(gd);
+    if(recalc) Plots.doCalcdata(gd);
 
     // in case it has changed, attach fullData traces to calcdata
     for(var i = 0; i < gd.calcdata.length; i++) {
@@ -234,6 +235,7 @@ Plotly.plot = function(gd, data, layout, config) {
     }
 
     function doAutoRange() {
+        if(gd._transitioning) return;
         var axList = Plotly.Axes.list(gd, '', true);
         for(var i = 0; i < axList.length; i++) {
             Plotly.Axes.doAutoRange(axList[i]);
@@ -850,59 +852,6 @@ Plotly.newPlot = function(gd, data, layout, config) {
     Plots.purge(gd);
     return Plotly.plot(gd, data, layout, config);
 };
-
-function doCalcdata(gd) {
-    var axList = Plotly.Axes.list(gd),
-        fullData = gd._fullData,
-        fullLayout = gd._fullLayout,
-        i;
-
-    var calcdata = gd.calcdata = new Array(fullData.length);
-
-    // extra helper variables
-    // firstscatter: fill-to-next on the first trace goes to zero
-    gd.firstscatter = true;
-
-    // how many box plots do we have (in case they're grouped)
-    gd.numboxes = 0;
-
-    // for calculating avg luminosity of heatmaps
-    gd._hmpixcount = 0;
-    gd._hmlumcount = 0;
-
-    // for sharing colors across pies (and for legend)
-    fullLayout._piecolormap = {};
-    fullLayout._piedefaultcolorcount = 0;
-
-    // initialize the category list, if there is one, so we start over
-    // to be filled in later by ax.d2c
-    for(i = 0; i < axList.length; i++) {
-        axList[i]._categories = axList[i]._initialCategories.slice();
-    }
-
-    for(i = 0; i < fullData.length; i++) {
-        var trace = fullData[i],
-            _module = trace._module,
-            cd = [];
-
-        if(_module && trace.visible === true) {
-            if(_module.calc) cd = _module.calc(gd, trace);
-        }
-
-        // make sure there is a first point
-        // this ensures there is a calcdata item for every trace,
-        // even if cartesian logic doesn't handle it
-        if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
-
-        // add the trace-wide properties to the first point,
-        // per point properties to every point
-        // t is the holder for trace-wide properties
-        if(!cd[0].t) cd[0].t = {};
-        cd[0].trace = trace;
-
-        calcdata[i] = cd;
-    }
-}
 
 /**
  * Wrap negative indicies to their positive counterparts.
@@ -2504,6 +2453,434 @@ Plotly.relayout = function relayout(gd, astr, val) {
 
         return gd;
     });
+};
+
+/**
+ * Animate to a frame, sequence of frame, frame group, or frame definition
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ *
+ * @param {string or object or array of strings or array of objects} frameOrGroupNameOrFrameList
+ *      a single frame, array of frames, or group to which to animate. The intent is
+ *      inferred by the type of the input. Valid inputs are:
+ *
+ *      - string, e.g. 'groupname': animate all frames of a given `group` in the order
+ *            in which they are defined via `Plotly.addFrames`.
+ *
+ *      - array of strings, e.g. ['frame1', frame2']: a list of frames by name to which
+ *            to animate in sequence
+ *
+ *      - object: {data: ...}: a frame definition to which to animate. The frame is not
+ *            and does not need to be added via `Plotly.addFrames`. It may contain any of
+ *            the properties of a frame, including `data`, `layout`, and `traces`. The
+ *            frame is used as provided and does not use the `baseframe` property.
+ *
+ *      - array of objects, e.g. [{data: ...}, {data: ...}]: a list of frame objects,
+ *            each following the same rules as a single `object`.
+ *
+ * @param {object} animationOpts
+ *      configuration for the animation
+ */
+Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
+    gd = getGraphDiv(gd);
+
+    if(!Lib.isPlotDiv(gd)) {
+        throw new Error('This element is not a Plotly plot: ' + gd);
+    }
+
+    var trans = gd._transitionData;
+
+    // This is the queue of frames that will be animated as soon as possible. They
+    // are popped immediately upon the *start* of a transition:
+    if(!trans._frameQueue) {
+        trans._frameQueue = [];
+    }
+
+    animationOpts = Plots.supplyAnimationDefaults(animationOpts);
+    var transitionOpts = animationOpts.transition;
+    var frameOpts = animationOpts.frame;
+
+    // Since frames are popped immediately, an empty queue only means all frames have
+    // *started* to transition, not that the animation is complete. To solve that,
+    // track a separate counter that increments at the same time as frames are added
+    // to the queue, but decrements only when the transition is complete.
+    if(trans._frameWaitingCnt === undefined) {
+        trans._frameWaitingCnt = 0;
+    }
+
+    function getTransitionOpts(i) {
+        if(Array.isArray(transitionOpts)) {
+            if(i >= transitionOpts.length) {
+                return transitionOpts[0];
+            } else {
+                return transitionOpts[i];
+            }
+        } else {
+            return transitionOpts;
+        }
+    }
+
+    function getFrameOpts(i) {
+        if(Array.isArray(frameOpts)) {
+            if(i >= frameOpts.length) {
+                return frameOpts[0];
+            } else {
+                return frameOpts[i];
+            }
+        } else {
+            return frameOpts;
+        }
+    }
+
+    return new Promise(function(resolve, reject) {
+        function discardExistingFrames() {
+            if(trans._frameQueue.length === 0) {
+                return;
+            }
+
+            while(trans._frameQueue.length) {
+                var next = trans._frameQueue.pop();
+                if(next.onInterrupt) {
+                    next.onInterrupt();
+                }
+            }
+
+            gd.emit('plotly_animationinterrupted', []);
+        }
+
+        function queueFrames(frameList) {
+            if(frameList.length === 0) return;
+
+            for(var i = 0; i < frameList.length; i++) {
+                var computedFrame;
+
+                if(frameList[i].name) {
+                    // If it's a named frame, compute it:
+                    computedFrame = Plots.computeFrame(gd, frameList[i].name);
+                } else {
+                    // Otherwise we must have been given a simple object, so treat
+                    // the input itself as the computed frame.
+                    computedFrame = frameList[i].frame;
+                }
+
+                var frameOpts = getFrameOpts(i);
+                var transitionOpts = getTransitionOpts(i);
+
+                // It doesn't make much sense for the transition duration to be greater than
+                // the frame duration, so limit it:
+                transitionOpts.duration = Math.min(transitionOpts.duration, frameOpts.duration);
+
+                var nextFrame = {
+                    frame: computedFrame,
+                    name: frameList[i].name,
+                    frameOpts: frameOpts,
+                    transitionOpts: transitionOpts,
+                };
+
+                if(i === frameList.length - 1) {
+                    // The last frame in this .animate call stores the promise resolve
+                    // and reject callbacks. This is how we ensure that the animation
+                    // loop (which may exist as a result of a *different* .animate call)
+                    // still resolves or rejecdts this .animate call's promise. once it's
+                    // complete.
+                    nextFrame.onComplete = resolve;
+                    nextFrame.onInterrupt = reject;
+                }
+
+                trans._frameQueue.push(nextFrame);
+            }
+
+            // Set it as never having transitioned to a frame. This will cause the animation
+            // loop to immediately transition to the next frame (which, for immediate mode,
+            // is the first frame in the list since all others would have been discarded
+            // below)
+            if(animationOpts.mode === 'immediate') {
+                trans._lastFrameAt = -Infinity;
+            }
+
+            // Only it's not already running, start a RAF loop. This could be avoided in the
+            // case that there's only one frame, but it significantly complicated the logic
+            // and only sped things up by about 5% or so for a lorenz attractor simulation.
+            // It would be a fine thing to implement, but the benefit of that optimization
+            // doesn't seem worth the extra complexity.
+            if(!trans._animationRaf) {
+                beginAnimationLoop();
+            }
+        }
+
+        function stopAnimationLoop() {
+            gd.emit('plotly_animated');
+
+            // Be sure to unset also since it's how we know whether a loop is already running:
+            window.cancelAnimationFrame(trans._animationRaf);
+            trans._animationRaf = null;
+        }
+
+        function nextFrame() {
+            if(trans._currentFrame && trans._currentFrame.onComplete) {
+                // Execute the callback and unset it to ensure it doesn't
+                // accidentally get called twice
+                trans._currentFrame.onComplete();
+                trans._currentFrame.onComplete = null;
+            }
+
+            var newFrame = trans._currentFrame = trans._frameQueue.shift();
+
+            if(newFrame) {
+                trans._lastFrameAt = Date.now();
+                trans._timeToNext = newFrame.frameOpts.duration;
+
+                // This is simply called and it's left to .transition to decide how to manage
+                // interrupting current transitions. That means we don't need to worry about
+                // how it resolves or what happens after this:
+                Plots.transition(gd,
+                    newFrame.frame.data,
+                    newFrame.frame.layout,
+                    newFrame.frame.traces,
+                    newFrame.frameOpts,
+                    newFrame.transitionOpts
+                );
+            } else {
+                // If there are no more frames, then stop the RAF loop:
+                stopAnimationLoop();
+            }
+        }
+
+        function beginAnimationLoop() {
+            gd.emit('plotly_animating');
+
+            // If no timer is running, then set last frame = long ago so that the next
+            // frame is immediately transitioned:
+            trans._lastFrameAt = -Infinity;
+            trans._timeToNext = 0;
+            trans._runningTransitions = 0;
+            trans._currentFrame = null;
+
+            var doFrame = function() {
+                // This *must* be requested before nextFrame since nextFrame may decide
+                // to cancel it if there's nothing more to animated:
+                trans._animationRaf = window.requestAnimationFrame(doFrame);
+
+                // Check if we're ready for a new frame:
+                if(Date.now() - trans._lastFrameAt > trans._timeToNext) {
+                    nextFrame();
+                }
+            };
+
+            doFrame();
+        }
+
+        // This is an animate-local counter that helps match up option input list
+        // items with the particular frame.
+        var configCounter = 0;
+        function setTransitionConfig(frame) {
+            if(Array.isArray(transitionOpts)) {
+                if(configCounter >= transitionOpts.length) {
+                    frame.transitionOpts = transitionOpts[configCounter];
+                } else {
+                    frame.transitionOpts = transitionOpts[0];
+                }
+            } else {
+                frame.transitionOpts = transitionOpts;
+            }
+            configCounter++;
+            return frame;
+        }
+
+        // Disambiguate what's sort of frames have been received
+        var i, frame;
+        var frameList = [];
+        var allFrames = frameOrGroupNameOrFrameList === undefined || frameOrGroupNameOrFrameList === null;
+        var isFrameArray = Array.isArray(frameOrGroupNameOrFrameList);
+        var isSingleFrame = !allFrames && !isFrameArray && Lib.isPlainObject(frameOrGroupNameOrFrameList);
+
+        if(isSingleFrame) {
+            frameList.push(setTransitionConfig({
+                frame: Lib.extendFlat({}, frameOrGroupNameOrFrameList)
+            }));
+        } else if(allFrames || typeof frameOrGroupNameOrFrameList === 'string') {
+            for(i = 0; i < trans._frames.length; i++) {
+                frame = trans._frames[i];
+
+                if(allFrames || frame.group === frameOrGroupNameOrFrameList) {
+                    frameList.push(setTransitionConfig({name: frame.name}));
+                }
+            }
+        } else if(isFrameArray) {
+            for(i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
+                var frameOrName = frameOrGroupNameOrFrameList[i];
+                if(typeof frameOrName === 'string') {
+                    frameList.push(setTransitionConfig({name: frameOrName}));
+                } else {
+                    frameList.push(setTransitionConfig({
+                        frame: Lib.extendFlat({}, frameOrName)
+                    }));
+                }
+            }
+        }
+
+        // Verify that all of these frames actually exist; return and reject if not:
+        for(i = 0; i < frameList.length; i++) {
+            if(frameList[i].name && !trans._frameHash[frameList[i].name]) {
+                Lib.warn('animate failure: frame not found: "' + frameList[i].name + '"');
+                reject();
+                return;
+            }
+        }
+
+        // If the mode is either next or immediate, then all currently queued frames must
+        // be dumped and the corresponding .animate promises rejected.
+        if(['next', 'immediate'].indexOf(animationOpts.mode) !== -1) {
+            discardExistingFrames();
+        }
+
+        if(frameList.length > 0) {
+            queueFrames(frameList);
+        } else {
+            // This is the case where there were simply no frames. It's a little strange
+            // since there's not much to do:
+            gd.emit('plotly_animated');
+            resolve();
+        }
+    });
+};
+
+/**
+ * Register new frames
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ *
+ * @param {array of objects} frameList
+ *      list of frame definitions, in which each object includes any of:
+ *      - name: {string} name of frame to add
+ *      - data: {array of objects} trace data
+ *      - layout {object} layout definition
+ *      - traces {array} trace indices
+ *      - baseframe {string} name of frame from which this frame gets defaults
+ *
+ *  @param {array of integers) indices
+ *      an array of integer indices matching the respective frames in `frameList`. If not
+ *      provided, an index will be provided in serial order. If already used, the frame
+ *      will be overwritten.
+ */
+Plotly.addFrames = function(gd, frameList, indices) {
+    gd = getGraphDiv(gd);
+
+    if(!Lib.isPlotDiv(gd)) {
+        throw new Error('This element is not a Plotly plot: ' + gd);
+    }
+
+    var i, frame, j, idx;
+    var _frames = gd._transitionData._frames;
+    var _hash = gd._transitionData._frameHash;
+
+
+    if(!Array.isArray(frameList)) {
+        throw new Error('addFrames failure: frameList must be an Array of frame definitions' + frameList);
+    }
+
+    // Create a sorted list of insertions since we run into lots of problems if these
+    // aren't in ascending order of index:
+    //
+    // Strictly for sorting. Make sure this is guaranteed to never collide with any
+    // already-exisisting indices:
+    var bigIndex = _frames.length + frameList.length * 2;
+
+    var insertions = [];
+    for(i = frameList.length - 1; i >= 0; i--) {
+        insertions.push({
+            frame: Plots.supplyFrameDefaults(frameList[i]),
+            index: (indices && indices[i] !== undefined && indices[i] !== null) ? indices[i] : bigIndex + i
+        });
+    }
+
+    // Sort this, taking note that undefined insertions end up at the end:
+    insertions.sort(function(a, b) {
+        if(a.index > b.index) return -1;
+        if(a.index < b.index) return 1;
+        return 0;
+    });
+
+    var ops = [];
+    var revops = [];
+    var frameCount = _frames.length;
+
+    for(i = insertions.length - 1; i >= 0; i--) {
+        frame = insertions[i].frame;
+
+        if(!frame.name) {
+            // Repeatedly assign a default name, incrementing the counter each time until
+            // we get a name that's not in the hashed lookup table:
+            while(_hash[(frame.name = 'frame ' + gd._transitionData._counter++)]);
+        }
+
+        if(_hash[frame.name]) {
+            // If frame is present, overwrite its definition:
+            for(j = 0; j < _frames.length; j++) {
+                if(_frames[j].name === frame.name) break;
+            }
+            ops.push({type: 'replace', index: j, value: frame});
+            revops.unshift({type: 'replace', index: j, value: _frames[j]});
+        } else {
+            // Otherwise insert it at the end of the list:
+            idx = Math.max(0, Math.min(insertions[i].index, frameCount));
+
+            ops.push({type: 'insert', index: idx, value: frame});
+            revops.unshift({type: 'delete', index: idx});
+            frameCount++;
+        }
+    }
+
+    var undoFunc = Plots.modifyFrames,
+        redoFunc = Plots.modifyFrames,
+        undoArgs = [gd, revops],
+        redoArgs = [gd, ops];
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Plots.modifyFrames(gd, ops);
+};
+
+/**
+ * Delete frame
+ *
+ * @param {string id or DOM element} gd
+ *      the id or DOM element of the graph container div
+ *
+ * @param {array of integers} frameList
+ *      list of integer indices of frames to be deleted
+ */
+Plotly.deleteFrames = function(gd, frameList) {
+    gd = getGraphDiv(gd);
+
+    if(!Lib.isPlotDiv(gd)) {
+        throw new Error('This element is not a Plotly plot: ' + gd);
+    }
+
+    var i, idx;
+    var _frames = gd._transitionData._frames;
+    var ops = [];
+    var revops = [];
+
+    frameList = frameList.slice(0);
+    frameList.sort();
+
+    for(i = frameList.length - 1; i >= 0; i--) {
+        idx = frameList[i];
+        ops.push({type: 'delete', index: idx});
+        revops.unshift({type: 'insert', index: idx, value: _frames[idx]});
+    }
+
+    var undoFunc = Plots.modifyFrames,
+        redoFunc = Plots.modifyFrames,
+        undoArgs = [gd, revops],
+        redoArgs = [gd, ops];
+
+    if(Queue) Queue.add(gd, undoFunc, undoArgs, redoFunc, redoArgs);
+
+    return Plots.modifyFrames(gd, ops);
 };
 
 /**

@@ -43,6 +43,9 @@ exports.register = require('./plot_api/register');
 exports.toImage = require('./plot_api/to_image');
 exports.downloadImage = require('./snapshot/download');
 exports.validate = require('./plot_api/validate');
+exports.addFrames = Plotly.addFrames;
+exports.deleteFrames = Plotly.deleteFrames;
+exports.animate = Plotly.animate;
 
 // scatter is the only trace included by default
 exports.register(require('./traces/scatter'));
