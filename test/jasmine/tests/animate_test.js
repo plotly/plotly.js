@@ -94,11 +94,16 @@ describe('Test animate API', function() {
         destroyGraphDiv();
     });
 
-    it('throws an error if the div is not a plot', function(done) {
-        var gd2 = createGraphDiv(gd);
+    it('throws an error if gd is not a graph', function() {
+        var gd2 = document.createElement('div');
+        gd2.id = 'invalidgd';
+        document.body.appendChild(gd2);
 
-        // Then = fail, rejection = success
-        Plotly.animate(gd2).then(fail).catch(done);
+        expect(function() {
+            Plotly.addFrames(gd2, [{}]);
+        }).toThrow(new Error('This element is not a Plotly plot: [object HTMLDivElement]'));
+
+        document.body.removeChild(gd);
     });
 
     runTests(0);

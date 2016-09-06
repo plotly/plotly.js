@@ -2486,8 +2486,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
     gd = getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
-        Lib.warn('This element is not a Plotly plot.', gd);
-        return Promise.reject();
+        throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
     var trans = gd._transitionData;
@@ -2770,8 +2769,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
     gd = getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
-        Lib.warn('This element is not a Plotly plot.', gd);
-        return Promise.reject();
+        throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
     var i, frame, j, idx;
@@ -2780,8 +2778,7 @@ Plotly.addFrames = function(gd, frameList, indices) {
 
 
     if(!Array.isArray(frameList)) {
-        Lib.warn('addFrames failure: frameList must be an Array of frame definitions', frameList);
-        return Promise.reject();
+        throw new Error('addFrames failure: frameList must be an Array of frame definitions' + frameList);
     }
 
     // Create a sorted list of insertions since we run into lots of problems if these
@@ -2859,8 +2856,7 @@ Plotly.deleteFrames = function(gd, frameList) {
     gd = getGraphDiv(gd);
 
     if(!Lib.isPlotDiv(gd)) {
-        Lib.warn('This element is not a Plotly plot.', gd);
-        return Promise.reject();
+        throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
     var i, idx;
