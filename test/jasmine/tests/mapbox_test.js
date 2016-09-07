@@ -295,6 +295,12 @@ describe('mapbox plots', function() {
         }).then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
+            mock.data[0].visible = false;
+
+            return Plotly.newPlot(gd, mock.data, mock.layout);
+        }).then(function() {
+            expect(countVisibleTraces(gd, modes)).toEqual(1);
+
             done();
         });
     });

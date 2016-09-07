@@ -331,6 +331,8 @@ describe('Test Plots', function() {
             expect(gd.numboxes).toBeUndefined();
             expect(gd._hoverTimer).toBeUndefined();
             expect(gd._lastHoverTime).toBeUndefined();
+            expect(gd._transitionData).toBeUndefined();
+            expect(gd._transitioning).toBeUndefined();
         });
     });
 });

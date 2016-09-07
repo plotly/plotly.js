@@ -64,7 +64,7 @@ module.exports = function setConvert(ax) {
     ax.p2d = function(v) { return ax.l2d(ax.p2l(v)); };
 
     // set scaling to pixels
-    ax.setScale = function() {
+    ax.setScale = function(usePrivateRange) {
         var gs = ax._gd._fullLayout._size,
             i;
 
@@ -78,23 +78,29 @@ module.exports = function setConvert(ax) {
             ax.domain = ax2.domain;
         }
 
+        // While transitions are occuring, occurring, we get a double-transform
+        // issue if we transform the drawn layer *and* use the new axis range to
+        // draw the data. This allows us to construct setConvert using the pre-
+        // interaction values of the range:
+        var range = (usePrivateRange && ax._r) ? ax._r : ax.range;
+
         // make sure we have a range (linearized data values)
         // and that it stays away from the limits of javascript numbers
-        if(!ax.range || ax.range.length !== 2 || ax.range[0] === ax.range[1]) {
-            ax.range = [-1, 1];
+        if(!range || range.length !== 2 || range[0] === range[1]) {
+            range = [-1, 1];
         }
         for(i = 0; i < 2; i++) {
-            if(!isNumeric(ax.range[i])) {
-                ax.range[i] = isNumeric(ax.range[1 - i]) ?
-                    (ax.range[1 - i] * (i ? 10 : 0.1)) :
+            if(!isNumeric(range[i])) {
+                range[i] = isNumeric(range[1 - i]) ?
+                    (range[1 - i] * (i ? 10 : 0.1)) :
                     (i ? 1 : -1);
             }
 
-            if(ax.range[i] < -(Number.MAX_VALUE / 2)) {
-                ax.range[i] = -(Number.MAX_VALUE / 2);
+            if(range[i] < -(Number.MAX_VALUE / 2)) {
+                range[i] = -(Number.MAX_VALUE / 2);
             }
-            else if(ax.range[i] > Number.MAX_VALUE / 2) {
-                ax.range[i] = Number.MAX_VALUE / 2;
+            else if(range[i] > Number.MAX_VALUE / 2) {
+                range[i] = Number.MAX_VALUE / 2;
             }
 
         }
@@ -102,14 +108,14 @@ module.exports = function setConvert(ax) {
         if(ax._id.charAt(0) === 'y') {
             ax._offset = gs.t + (1 - ax.domain[1]) * gs.h;
             ax._length = gs.h * (ax.domain[1] - ax.domain[0]);
-            ax._m = ax._length / (ax.range[0] - ax.range[1]);
-            ax._b = -ax._m * ax.range[1];
+            ax._m = ax._length / (range[0] - range[1]);
+            ax._b = -ax._m * range[1];
         }
         else {
             ax._offset = gs.l + ax.domain[0] * gs.w;
             ax._length = gs.w * (ax.domain[1] - ax.domain[0]);
-            ax._m = ax._length / (ax.range[1] - ax.range[0]);
-            ax._b = -ax._m * ax.range[0];
+            ax._m = ax._length / (range[1] - range[0]);
+            ax._b = -ax._m * range[0];
         }
 
         if(!isFinite(ax._m) || !isFinite(ax._b)) {
