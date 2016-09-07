@@ -18,6 +18,7 @@ var AXES = ['xaxis', 'yaxis'];
 function Pointcloud(scene, uid) {
     this.scene = scene;
     this.uid = uid;
+    this.type = 'pointcloud';
 
     this.pickXData = [];
     this.pickYData = [];
