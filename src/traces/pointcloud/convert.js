@@ -96,6 +96,8 @@ proto.updateFast = function(options) {
     if(xy) {
 
         positions = xy;
+
+        // dividing xy.length by 2 and truncating to integer if xy.length was not even
         len = xy.length >>> 1;
 
         if(userBounds) {
