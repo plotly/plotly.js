@@ -132,7 +132,9 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                 .data(function(d) {
                     var pts = (trace.boxpoints === 'all') ? d.val :
                             d.val.filter(function(v) { return (v < d.lf || v > d.uf); }),
-                        spreadLimit = (d.q3 - d.q1) * JITTERSPREAD,
+                        // normally use IQR, but if this is 0 or too small, use max-min
+                        typicalSpread = Math.max((d.max - d.min) / 10, d.q3 - d.q1),
+                        spreadLimit = typicalSpread * JITTERSPREAD,
                         jitterFactors = [],
                         maxJitterFactor = 0,
                         i,
@@ -155,7 +157,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
                                 else pmin = Math.max(pmin, d.uf);
                             }
 
-                            jitterFactor = Math.sqrt(spreadLimit * (i1 - i0) / (pmax - pmin)) || 0;
+                            jitterFactor = Math.sqrt(spreadLimit * (i1 - i0) / (pmax - pmin + 1e-9)) || 0;
                             jitterFactor = Lib.constrain(Math.abs(jitterFactor), 0, 1);
 
                             jitterFactors.push(jitterFactor);
