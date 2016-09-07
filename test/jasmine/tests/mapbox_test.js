@@ -295,9 +295,10 @@ describe('mapbox plots', function() {
         }).then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
-            mock.data[0].visible = false;
+            var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].visible = false;
 
-            return Plotly.newPlot(gd, mock.data, mock.layout);
+            return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
         }).then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(1);
 
