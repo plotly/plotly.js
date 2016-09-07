@@ -1,6 +1,7 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 var Plots = Plotly.Plots;
+var plotApiHelpers = require('@src/plot_api/helpers');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -29,8 +30,9 @@ function runTests(transitionDuration) {
 
         it('resolves only once the transition has completed', function(done) {
             var t1 = Date.now();
+            var traces = plotApiHelpers.coerceTraceIndices(gd, null);
 
-            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'})
+            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, traces, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'})
                 .then(delay(20))
                 .then(function() {
                     expect(Date.now() - t1).toBeGreaterThan(transitionDuration);
@@ -39,9 +41,11 @@ function runTests(transitionDuration) {
 
         it('emits plotly_transitioning on transition start', function(done) {
             var beginTransitionCnt = 0;
+            var traces = plotApiHelpers.coerceTraceIndices(gd, null);
+
             gd.on('plotly_transitioning', function() { beginTransitionCnt++; });
 
-            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'})
+            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, traces, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'})
                 .then(delay(20))
                 .then(function() {
                     expect(beginTransitionCnt).toBe(1);
@@ -50,9 +54,11 @@ function runTests(transitionDuration) {
 
         it('emits plotly_transitioned on transition end', function(done) {
             var trEndCnt = 0;
+            var traces = plotApiHelpers.coerceTraceIndices(gd, null);
+
             gd.on('plotly_transitioned', function() { trEndCnt++; });
 
-            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, null, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'})
+            Plots.transition(gd, null, {'xaxis.range': [0.2, 0.3]}, traces, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'})
                 .then(delay(20))
                 .then(function() {
                     expect(trEndCnt).toEqual(1);
@@ -70,7 +76,8 @@ function runTests(transitionDuration) {
             gd.on('plotly_transitioned', function() { currentlyRunning--; endCnt++; });
 
             function doTransition() {
-                return Plots.transition(gd, [{x: [1, 2]}], null, null, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'});
+                var traces = plotApiHelpers.coerceTraceIndices(gd, null);
+                return Plots.transition(gd, [{x: [1, 2]}], null, traces, {redraw: true}, {duration: transitionDuration, easing: 'cubic-in-out'});
             }
 
             function checkNoneRunning() {

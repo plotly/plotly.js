@@ -1348,27 +1348,18 @@ plots.computeFrame = function(gd, frameName) {
  *      an array of data objects following the normal Plotly data definition format
  * @param {Object} layout
  *      a layout object, following normal Plotly layout format
- * @param {Number[]} traceIndices
+ * @param {Number[]} traces
  *      indices of the corresponding traces specified in `data`
  * @param {Object} frameOpts
  *      options for the frame (i.e. whether to redraw post-transition)
  * @param {Object} transitionOpts
  *      options for the transition
  */
-plots.transition = function(gd, data, layout, traceIndices, frameOpts, transitionOpts) {
+plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts) {
     var i, traceIdx;
 
     var dataLength = Array.isArray(data) ? data.length : 0;
-
-    // Select which traces will be updated:
-    if(isNumeric(traceIndices)) traceIndices = [traceIndices];
-    else if(!Array.isArray(traceIndices) || !traceIndices.length) {
-        traceIndices = gd.data.map(function(v, i) { return i; });
-    }
-
-    if(traceIndices.length > dataLength) {
-        traceIndices = traceIndices.slice(0, dataLength);
-    }
+    var traceIndices = traces.slice(0, dataLength);
 
     var transitionedTraces = [];
 
