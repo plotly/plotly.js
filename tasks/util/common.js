@@ -1,10 +1,13 @@
 var fs = require('fs');
 var exec = require('child_process').exec;
 
-exports.execCmd = function(cmd, cb) {
+exports.execCmd = function(cmd, cb, errorCb) {
+    cb = cb ? cb : function() {};
+    errorCb = errorCb ? errorCb : function(err) { if(err) throw err; };
+
     exec(cmd, function(err) {
-        if(err) throw err;
-        if(cb) cb();
+        errorCb(err);
+        cb();
     })
     .stdout.pipe(process.stdout);
 };
