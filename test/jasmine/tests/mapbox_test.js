@@ -245,6 +245,32 @@ describe('mapbox credentials', function() {
             done();
         });
     });
+
+    it('should bypass access token in mapbox layout options when config points to an Atlas server', function(done) {
+        var cnt = 0;
+        var msg = [
+            'An API access token is required to use Mapbox GL.',
+            'See https://www.mapbox.com/developers/api/#access-tokens'
+        ].join(' ');
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30]
+        }], {
+            mapbox: {
+                accesstoken: MAPBOX_ACCESS_TOKEN
+            }
+        }, {
+            mapboxAccessToken: ''
+        }).catch(function(err) {
+            cnt++;
+            expect(err).toEqual(new Error(msg));
+        }).then(function() {
+            expect(cnt).toEqual(1);
+            done();
+        });
+    });
 });
 
 describe('mapbox plots', function() {
