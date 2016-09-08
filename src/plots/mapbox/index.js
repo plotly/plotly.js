@@ -135,6 +135,9 @@ function findAccessToken(gd, mapboxIds) {
     var fullLayout = gd._fullLayout,
         context = gd._context;
 
+    // special case for Mapbox Atlas users
+    if(context.mapboxAccessToken === '') return '';
+
     // first look for access token in context
     var accessToken = context.mapboxAccessToken;
 
