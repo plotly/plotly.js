@@ -105,6 +105,11 @@ describe('restyle', function() {
 
                 // The second has been recreated so is different:
                 expect(firstToNext).not.toBe(secondToNext);
+
+                return Plotly.restyle(gd, 'visible', false);
+            }).then(function() {
+                expect(d3.selectAll('g.trace.scatter').size()).toEqual(0);
+
             }).then(done);
         });
 
