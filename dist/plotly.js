@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.16.3
+* plotly.js v1.16.4
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38278,6 +38278,7 @@ var GLError                = require("./lib/GLError")
 //Shader object
 function Shader(gl) {
   this.gl         = gl
+  this.gl.lastAttribCount = 0  // fixme where else should we store info, safe but not nice on the gl object
 
   //Default initialize these to null
   this._vref      =
@@ -38297,10 +38298,38 @@ proto.bind = function() {
   if(!this.program) {
     this._relink()
   }
+
+  // ensuring that we have the right number of enabled vertex attributes
+  var i
+  var newAttribCount = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES) // more robust approach
+  //var newAttribCount = Object.keys(this.attributes).length // avoids the probably immaterial introspection slowdown
+  var oldAttribCount = this.gl.lastAttribCount
+  if(newAttribCount > oldAttribCount) {
+    for(i = oldAttribCount; i < newAttribCount; i++) {
+      this.gl.enableVertexAttribArray(i)
+    }
+  } else if(oldAttribCount > newAttribCount) {
+    for(i = newAttribCount; i < oldAttribCount; i++) {
+      this.gl.disableVertexAttribArray(i)
+    }
+  }
+
+  this.gl.lastAttribCount = newAttribCount
+
   this.gl.useProgram(this.program)
 }
 
 proto.dispose = function() {
+
+  // disabling vertex attributes so new shader starts with zero
+  // and it's also useful if all shaders are disposed but the
+  // gl context is reused for subsequent replotting
+  var oldAttribCount = this.gl.lastAttribCount
+  for (var i = 0; i < oldAttribCount; i++) {
+    this.gl.disableVertexAttribArray(i)
+  }
+  this.gl.lastAttribCount = 0
+
   if(this._fref) {
     this._fref.dispose()
   }
@@ -38387,7 +38416,8 @@ proto.update = function(
   var attributeUnpacked  = []
   var attributeNames     = []
   var attributeLocations = []
-  for(var i=0; i<attributes.length; ++i) {
+  var i
+  for(i=0; i<attributes.length; ++i) {
     var attr = attributes[i]
     if(attr.type.indexOf('mat') >= 0) {
       var size = attr.type.charAt(attr.type.length-1)|0
@@ -38427,7 +38457,7 @@ proto.update = function(
 
   //For all unspecified attributes, assign them lexicographically min attribute
   var curLocation = 0
-  for(var i=0; i<attributeLocations.length; ++i) {
+  for(i=0; i<attributeLocations.length; ++i) {
     if(attributeLocations[i] < 0) {
       while(attributeLocations.indexOf(curLocation) >= 0) {
         curLocation += 1
@@ -92802,7 +92832,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.16.3';
+exports.version = '1.16.4';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -99696,6 +99726,8 @@ module.exports = {
     topojsonURL: 'https://cdn.plot.ly/',
 
     // Mapbox access token (required to plot mapbox trace types)
+    // If using an Mapbox Atlas server, set this option to '',
+    // so that plotly.js won't attempt to authenticate to the public Mapbox server.
     mapboxAccessToken: null,
 
     // Turn all console logging on or off (errors will be thrown)
@@ -112466,6 +112498,9 @@ function findAccessToken(gd, mapboxIds) {
     var fullLayout = gd._fullLayout,
         context = gd._context;
 
+    // special case for Mapbox Atlas users
+    if(context.mapboxAccessToken === '') return '';
+
     // first look for access token in context
     var accessToken = context.mapboxAccessToken;
 
@@ -113138,7 +113173,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     });
 
     // keep track of pan / zoom in user layout and emit relayout event
-    map.on('move', function() {
+    map.on('moveend', function(eventData) {
         var view = self.getView();
 
         opts._input.center = opts.center = view.center;
@@ -113146,9 +113181,19 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         opts._input.bearing = opts.bearing = view.bearing;
         opts._input.pitch = opts.pitch = view.pitch;
 
-        var update = {};
-        update[self.id] = Lib.extendFlat({}, view);
-        gd.emit('plotly_relayout', update);
+        // 'moveend' gets triggered by map.setCenter, map.setZoom,
+        // map.setBearing and map.setPitch.
+        //
+        // Here, we make sure that 'plotly_relayout' is
+        // triggered here only when the 'moveend' originates from a
+        // mouse target (filtering out API calls) to not
+        // duplicate 'plotly_relayout' events.
+
+        if(eventData.originalEvent) {
+            var update = {};
+            update[self.id] = Lib.extendFlat({}, view);
+            gd.emit('plotly_relayout', update);
+        }
     });
 
     map.on('mousemove', function(evt) {
@@ -113225,7 +113270,7 @@ proto.updateData = function(calcData) {
         traceObj = traceHash[trace.uid];
 
         if(traceObj) traceObj.update(calcTrace);
-        else {
+        else if(trace._module) {
             traceHash[trace.uid] = trace._module.plot(this, calcTrace);
         }
     }

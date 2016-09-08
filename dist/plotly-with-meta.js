@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.16.3
+* plotly.js v1.16.4
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -38121,7 +38121,7 @@ var ndarray   = require('ndarray')
 
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_55_arg0_||255>_inline_55_arg1_||255>_inline_55_arg2_||255>_inline_55_arg3_){var _inline_55_l=_inline_55_arg4_-_inline_55_arg6_[0],_inline_55_a=_inline_55_arg5_-_inline_55_arg6_[1],_inline_55_f=_inline_55_l*_inline_55_l+_inline_55_a*_inline_55_a;_inline_55_f<this_closestD2&&(this_closestD2=_inline_55_f,this_closestX=_inline_55_arg6_[0],this_closestY=_inline_55_arg6_[1])}}","args":[{"name":"_inline_55_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_55_a","_inline_55_f","_inline_55_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_49_arg0_||255>_inline_49_arg1_||255>_inline_49_arg2_||255>_inline_49_arg3_){var _inline_49_l=_inline_49_arg4_-_inline_49_arg6_[0],_inline_49_a=_inline_49_arg5_-_inline_49_arg6_[1],_inline_49_f=_inline_49_l*_inline_49_l+_inline_49_a*_inline_49_a;_inline_49_f<this_closestD2&&(this_closestD2=_inline_49_f,this_closestX=_inline_49_arg6_[0],this_closestY=_inline_49_arg6_[1])}}","args":[{"name":"_inline_49_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_49_a","_inline_49_f","_inline_49_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -38278,6 +38278,7 @@ var GLError                = require("./lib/GLError")
 //Shader object
 function Shader(gl) {
   this.gl         = gl
+  this.gl.lastAttribCount = 0  // fixme where else should we store info, safe but not nice on the gl object
 
   //Default initialize these to null
   this._vref      =
@@ -38297,10 +38298,38 @@ proto.bind = function() {
   if(!this.program) {
     this._relink()
   }
+
+  // ensuring that we have the right number of enabled vertex attributes
+  var i
+  var newAttribCount = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES) // more robust approach
+  //var newAttribCount = Object.keys(this.attributes).length // avoids the probably immaterial introspection slowdown
+  var oldAttribCount = this.gl.lastAttribCount
+  if(newAttribCount > oldAttribCount) {
+    for(i = oldAttribCount; i < newAttribCount; i++) {
+      this.gl.enableVertexAttribArray(i)
+    }
+  } else if(oldAttribCount > newAttribCount) {
+    for(i = newAttribCount; i < oldAttribCount; i++) {
+      this.gl.disableVertexAttribArray(i)
+    }
+  }
+
+  this.gl.lastAttribCount = newAttribCount
+
   this.gl.useProgram(this.program)
 }
 
 proto.dispose = function() {
+
+  // disabling vertex attributes so new shader starts with zero
+  // and it's also useful if all shaders are disposed but the
+  // gl context is reused for subsequent replotting
+  var oldAttribCount = this.gl.lastAttribCount
+  for (var i = 0; i < oldAttribCount; i++) {
+    this.gl.disableVertexAttribArray(i)
+  }
+  this.gl.lastAttribCount = 0
+
   if(this._fref) {
     this._fref.dispose()
   }
@@ -38387,7 +38416,8 @@ proto.update = function(
   var attributeUnpacked  = []
   var attributeNames     = []
   var attributeLocations = []
-  for(var i=0; i<attributes.length; ++i) {
+  var i
+  for(i=0; i<attributes.length; ++i) {
     var attr = attributes[i]
     if(attr.type.indexOf('mat') >= 0) {
       var size = attr.type.charAt(attr.type.length-1)|0
@@ -38427,7 +38457,7 @@ proto.update = function(
 
   //For all unspecified attributes, assign them lexicographically min attribute
   var curLocation = 0
-  for(var i=0; i<attributeLocations.length; ++i) {
+  for(i=0; i<attributeLocations.length; ++i) {
     if(attributeLocations[i] < 0) {
       while(attributeLocations.indexOf(curLocation) >= 0) {
         curLocation += 1
@@ -73931,7 +73961,7 @@ function mouseWheelListen(element, callback, noScroll) {
 
 
 
-var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_7_arg1_=_inline_7_arg2_.apply(void 0,_inline_7_arg0_)}","args":[{"name":"_inline_7_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_7_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_4_arg1_=_inline_4_arg2_.apply(void 0,_inline_4_arg0_)}","args":[{"name":"_inline_4_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_4_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_4_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 module.exports = function(array, f) {
   fill(array, f)
@@ -74115,13 +74145,13 @@ module.exports.d3 = interp3d
 var interp  = require('ndarray-linear-interpolate')
 
 
-var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_33_arg4_)}","args":[{"name":"_inline_33_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_34_arg2_(this_warped,_inline_34_arg0_),_inline_34_arg1_=_inline_34_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_34_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_34_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
+var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_21_arg4_)}","args":[{"name":"_inline_21_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_22_arg2_(this_warped,_inline_22_arg0_),_inline_22_arg1_=_inline_22_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_22_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_22_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
 
-var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_37_arg2_(this_warped,_inline_37_arg0_),_inline_37_arg1_=_inline_37_arg3_(_inline_37_arg4_,this_warped[0])}","args":[{"name":"_inline_37_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_37_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
+var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_25_arg2_(this_warped,_inline_25_arg0_),_inline_25_arg1_=_inline_25_arg3_(_inline_25_arg4_,this_warped[0])}","args":[{"name":"_inline_25_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_25_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
 
-var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_40_arg2_(this_warped,_inline_40_arg0_),_inline_40_arg1_=_inline_40_arg3_(_inline_40_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_40_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_40_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
+var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_28_arg2_(this_warped,_inline_28_arg0_),_inline_28_arg1_=_inline_28_arg3_(_inline_28_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_28_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_28_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
 
-var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_43_arg2_(this_warped,_inline_43_arg0_),_inline_43_arg1_=_inline_43_arg3_(_inline_43_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_43_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_43_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
+var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_31_arg2_(this_warped,_inline_31_arg0_),_inline_31_arg1_=_inline_31_arg3_(_inline_31_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_31_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_31_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
 
 module.exports = function warp(dest, src, func) {
   switch(src.shape.length) {
@@ -93244,7 +93274,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.16.3';
+exports.version = '1.16.4';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -100187,6 +100217,8 @@ module.exports = {
     topojsonURL: 'https://cdn.plot.ly/',
 
     // Mapbox access token (required to plot mapbox trace types)
+    // If using an Mapbox Atlas server, set this option to '',
+    // so that plotly.js won't attempt to authenticate to the public Mapbox server.
     mapboxAccessToken: null,
 
     // Turn all console logging on or off (errors will be thrown)
@@ -113313,6 +113345,9 @@ function findAccessToken(gd, mapboxIds) {
     var fullLayout = gd._fullLayout,
         context = gd._context;
 
+    // special case for Mapbox Atlas users
+    if(context.mapboxAccessToken === '') return '';
+
     // first look for access token in context
     var accessToken = context.mapboxAccessToken;
 
@@ -114049,7 +114084,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     });
 
     // keep track of pan / zoom in user layout and emit relayout event
-    map.on('move', function() {
+    map.on('moveend', function(eventData) {
         var view = self.getView();
 
         opts._input.center = opts.center = view.center;
@@ -114057,9 +114092,19 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         opts._input.bearing = opts.bearing = view.bearing;
         opts._input.pitch = opts.pitch = view.pitch;
 
-        var update = {};
-        update[self.id] = Lib.extendFlat({}, view);
-        gd.emit('plotly_relayout', update);
+        // 'moveend' gets triggered by map.setCenter, map.setZoom,
+        // map.setBearing and map.setPitch.
+        //
+        // Here, we make sure that 'plotly_relayout' is
+        // triggered here only when the 'moveend' originates from a
+        // mouse target (filtering out API calls) to not
+        // duplicate 'plotly_relayout' events.
+
+        if(eventData.originalEvent) {
+            var update = {};
+            update[self.id] = Lib.extendFlat({}, view);
+            gd.emit('plotly_relayout', update);
+        }
     });
 
     map.on('mousemove', function(evt) {
@@ -114136,7 +114181,7 @@ proto.updateData = function(calcData) {
         traceObj = traceHash[trace.uid];
 
         if(traceObj) traceObj.update(calcTrace);
-        else {
+        else if(trace._module) {
             traceHash[trace.uid] = trace._module.plot(this, calcTrace);
         }
     }

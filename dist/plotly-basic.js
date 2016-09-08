@@ -1,5 +1,5 @@
 /**
-* plotly.js (basic) v1.16.3
+* plotly.js (basic) v1.16.4
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -23237,7 +23237,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.16.3';
+exports.version = '1.16.4';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -29776,6 +29776,8 @@ module.exports = {
     topojsonURL: 'https://cdn.plot.ly/',
 
     // Mapbox access token (required to plot mapbox trace types)
+    // If using an Mapbox Atlas server, set this option to '',
+    // so that plotly.js won't attempt to authenticate to the public Mapbox server.
     mapboxAccessToken: null,
 
     // Turn all console logging on or off (errors will be thrown)

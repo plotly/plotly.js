@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.16.3
+* plotly.js (mapbox) v1.16.4
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -54988,7 +54988,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.16.3';
+exports.version = '1.16.4';
 
 // plot api
 exports.plot = Plotly.plot;
@@ -61527,6 +61527,8 @@ module.exports = {
     topojsonURL: 'https://cdn.plot.ly/',
 
     // Mapbox access token (required to plot mapbox trace types)
+    // If using an Mapbox Atlas server, set this option to '',
+    // so that plotly.js won't attempt to authenticate to the public Mapbox server.
     mapboxAccessToken: null,
 
     // Turn all console logging on or off (errors will be thrown)
@@ -69011,6 +69013,9 @@ function findAccessToken(gd, mapboxIds) {
     var fullLayout = gd._fullLayout,
         context = gd._context;
 
+    // special case for Mapbox Atlas users
+    if(context.mapboxAccessToken === '') return '';
+
     // first look for access token in context
     var accessToken = context.mapboxAccessToken;
 
@@ -69683,7 +69688,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     });
 
     // keep track of pan / zoom in user layout and emit relayout event
-    map.on('move', function() {
+    map.on('moveend', function(eventData) {
         var view = self.getView();
 
         opts._input.center = opts.center = view.center;
@@ -69691,9 +69696,19 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         opts._input.bearing = opts.bearing = view.bearing;
         opts._input.pitch = opts.pitch = view.pitch;
 
-        var update = {};
-        update[self.id] = Lib.extendFlat({}, view);
-        gd.emit('plotly_relayout', update);
+        // 'moveend' gets triggered by map.setCenter, map.setZoom,
+        // map.setBearing and map.setPitch.
+        //
+        // Here, we make sure that 'plotly_relayout' is
+        // triggered here only when the 'moveend' originates from a
+        // mouse target (filtering out API calls) to not
+        // duplicate 'plotly_relayout' events.
+
+        if(eventData.originalEvent) {
+            var update = {};
+            update[self.id] = Lib.extendFlat({}, view);
+            gd.emit('plotly_relayout', update);
+        }
     });
 
     map.on('mousemove', function(evt) {
@@ -69770,7 +69785,7 @@ proto.updateData = function(calcData) {
         traceObj = traceHash[trace.uid];
 
         if(traceObj) traceObj.update(calcTrace);
-        else {
+        else if(trace._module) {
             traceHash[trace.uid] = trace._module.plot(this, calcTrace);
         }
     }
