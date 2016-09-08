@@ -537,6 +537,14 @@ describe('legend relayout update', function() {
         }).then(function() {
             assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 10);
 
+            return Plotly.relayout(gd, 'legend.bgcolor', null);
+        }).then(function() {
+            assertLegendStyle('rgb(255, 255, 255)', 'rgb(255, 0, 0)', 10);
+
+            return Plotly.relayout(gd, 'paper_bgcolor', 'blue');
+        }).then(function() {
+            assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 10);
+
             done();
         });
     });
