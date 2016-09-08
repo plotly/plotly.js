@@ -15,12 +15,16 @@ var mergeArray = require('../../lib').mergeArray;
 // arrayOk attributes, merge them into calcdata array
 module.exports = function arraysToCalcdata(cd) {
     var trace = cd[0].trace,
-        marker = trace.marker,
-        markerLine = marker.line;
+        marker = trace.marker;
 
     mergeArray(trace.text, cd, 'tx');
-    mergeArray(marker.opacity, cd, 'mo');
-    mergeArray(marker.color, cd, 'mc');
-    mergeArray(markerLine.color, cd, 'mlc');
-    mergeArray(markerLine.width, cd, 'mlw');
+
+    if(marker && marker.line) {
+        var markerLine = marker.line;
+
+        mergeArray(marker.opacity, cd, 'mo');
+        mergeArray(marker.color, cd, 'mc');
+        mergeArray(markerLine.color, cd, 'mlc');
+        mergeArray(markerLine.width, cd, 'mlw');
+    }
 };

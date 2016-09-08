@@ -7,6 +7,7 @@
     "Promise": true,
     "Float32Array": true,
     "Uint8Array": true,
+    "Int32Array": true,
     "ArrayBuffer": true
   },
   "rules": {

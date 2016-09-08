@@ -84,7 +84,7 @@ function createMocksList(files) {
             return acc;
         }, []);
 
-        var filename = file.name.split('/').pop();
+        var filename = file.name.split(path.sep).pop();
 
         return {
             name: filename.slice(0, -5),

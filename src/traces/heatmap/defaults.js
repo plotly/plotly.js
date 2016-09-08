@@ -29,7 +29,14 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 
     coerce('text');
-    coerce('zsmooth');
+
+    var zsmooth = coerce('zsmooth');
+    if(zsmooth === false) {
+        // ensure that xgap and ygap are coerced only when zsmooth allows them to have an effect.
+        coerce('xgap');
+        coerce('ygap');
+    }
+
     coerce('connectgaps', hasColumns(traceOut) && (traceOut.zsmooth !== false));
 
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});

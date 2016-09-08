@@ -65,6 +65,10 @@ module.exports = {
             'See `y0` for more info.'
         ].join(' ')
     },
+    ids: {
+        valType: 'data_array',
+        description: 'A list of keys for object constancy of data points during animation'
+    },
     text: {
         valType: 'string',
         role: 'info',
@@ -151,6 +155,16 @@ module.exports = {
             description: [
                 'Sets the style of the lines. Set to a dash string type',
                 'or a dash length in px.'
+            ].join(' ')
+        },
+        simplify: {
+            valType: 'boolean',
+            dflt: true,
+            role: 'info',
+            description: [
+                'Simplifies lines by removing nearly-collinear points. When transitioning',
+                'lines, it may be desirable to disable this so that the number of points',
+                'along the resulting SVG path is unaffected.'
             ].join(' ')
         }
     },

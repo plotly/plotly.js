@@ -147,9 +147,21 @@ function makeBlankGeoJSON() {
 }
 
 function makeFillGeoJSON(_, coords) {
+    if(coords.length === 1) {
+        return {
+            type: 'Polygon',
+            coordinates: coords
+        };
+    }
+
+    var _coords = new Array(coords.length);
+    for(var i = 0; i < coords.length; i++) {
+        _coords[i] = [coords[i]];
+    }
+
     return {
-        type: 'Polygon',
-        coordinates: coords
+        type: 'MultiPolygon',
+        coordinates: _coords
     };
 }
 

@@ -429,7 +429,6 @@ function setupTraceToggle(g, gd) {
 
 function computeTextDimensions(g, gd) {
     var legendItem = g.data()[0][0],
-        bg = g.selectAll('.legendtoggle'),
         mathjaxGroup = g.select('g[class*=math-group]'),
         opts = gd._fullLayout.legend,
         lineHeight = opts.font.size * 1.3,
@@ -465,8 +464,6 @@ function computeTextDimensions(g, gd) {
     }
 
     height = Math.max(height, 16) + 3;
-
-    bg.attr({x: 0, y: -height / 2, height: height});
 
     legendItem.height = height;
     legendItem.width = width;
@@ -508,12 +505,21 @@ function computeLegendDimensions(gd, groups, traces) {
             opts.height += (opts._lgroupsLength - 1) * opts.tracegroupgap;
         }
 
-        traces.selectAll('.legendtoggle')
-            .attr('width', (gd._context.editable ? 0 : opts.width) + 40);
-
         // make sure we're only getting full pixels
         opts.width = Math.ceil(opts.width);
         opts.height = Math.ceil(opts.height);
+
+        traces.each(function(d) {
+            var legendItem = d[0],
+                bg = d3.select(this).select('.legendtoggle');
+
+            bg.call(Drawing.setRect,
+                0,
+                -legendItem.height / 2,
+                (gd._context.editable ? 0 : opts.width) + 40,
+                legendItem.height
+            );
+        });
     }
     else if(isGrouped) {
         opts.width = 0;
@@ -564,8 +570,17 @@ function computeLegendDimensions(gd, groups, traces) {
         opts.width = Math.ceil(opts.width);
         opts.height = Math.ceil(opts.height);
 
-        traces.selectAll('.legendtoggle')
-            .attr('width', (gd._context.editable ? 0 : opts.width));
+        traces.each(function(d) {
+            var legendItem = d[0],
+                bg = d3.select(this).select('.legendtoggle');
+
+            bg.call(Drawing.setRect,
+                0,
+                -legendItem.height / 2,
+                (gd._context.editable ? 0 : opts.width),
+                legendItem.height
+            );
+        });
     }
     else {
         opts.width = 0;
@@ -581,7 +596,6 @@ function computeLegendDimensions(gd, groups, traces) {
         });
 
         traces.each(function(d) {
-
             var legendItem = d[0],
                 traceWidth = maxTraceWidth,
                 traceGap = opts.tracegroupgap || 5;
@@ -613,8 +627,17 @@ function computeLegendDimensions(gd, groups, traces) {
         opts.width = Math.ceil(opts.width);
         opts.height = Math.ceil(opts.height);
 
-        traces.selectAll('.legendtoggle')
-            .attr('width', (gd._context.editable ? 0 : opts.width));
+        traces.each(function(d) {
+            var legendItem = d[0],
+                bg = d3.select(this).select('.legendtoggle');
+
+            bg.call(Drawing.setRect,
+                0,
+                -legendItem.height / 2,
+                (gd._context.editable ? 0 : opts.width),
+                legendItem.height
+            );
+        });
     }
 }
 
