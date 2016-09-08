@@ -105,6 +105,7 @@
     "karma-coverage": "^1.0.0",
     "karma-firefox-launcher": "^1.0.0",
     "karma-jasmine": "^1.0.2",
+    "madge": "^0.6.0",
     "node-sass": "^3.4.1",
     "npm-link-check": "^1.1.0",
     "open": "0.0.5",
