@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.17.0
+* plotly.js (mapbox) v1.17.1
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -55363,7 +55363,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.17.0';
+exports.version = '1.17.1';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -61145,6 +61145,7 @@ function _relayout(gd, aobj) {
             if(p.parts[0].indexOf('scene') === 0) flags.doplot = true;
             else if(p.parts[0].indexOf('geo') === 0) flags.doplot = true;
             else if(p.parts[0].indexOf('ternary') === 0) flags.doplot = true;
+            else if(ai === 'paper_bgcolor') flags.doplot = true;
             else if(fullLayout._has('gl2d') &&
                 (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
             ) flags.doplot = true;
@@ -62222,6 +62223,8 @@ module.exports = {
     topojsonURL: 'https://cdn.plot.ly/',
 
     // Mapbox access token (required to plot mapbox trace types)
+    // If using an Mapbox Atlas server, set this option to '',
+    // so that plotly.js won't attempt to authenticate to the public Mapbox server.
     mapboxAccessToken: null,
 
     // Turn all console logging on or off (errors will be thrown)
@@ -68557,6 +68560,42 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
     }
 };
 
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldModules = oldFullLayout._modules || [],
+        newModules = newFullLayout._modules || [];
+
+    var hadScatter, hasScatter, i;
+
+    for(i = 0; i < oldModules.length; i++) {
+        if(oldModules[i].name === 'scatter') {
+            hadScatter = true;
+            break;
+        }
+    }
+
+    for(i = 0; i < newModules.length; i++) {
+        if(newModules[i].name === 'scatter') {
+            hasScatter = true;
+            break;
+        }
+    }
+
+    if(hadScatter && !hasScatter) {
+        var oldPlots = oldFullLayout._plots,
+            ids = Object.keys(oldPlots || {});
+
+        for(i = 0; i < ids.length; i++) {
+            var subplotInfo = oldPlots[ids[i]];
+
+            if(subplotInfo.plot) {
+                subplotInfo.plot.select('g.scatterlayer')
+                    .selectAll('g.trace')
+                    .remove();
+            }
+        }
+    }
+};
+
 },{"../plots":363,"./attributes":333,"./constants":339,"./transition_axes":352}],343:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
@@ -70617,6 +70656,9 @@ function findAccessToken(gd, mapboxIds) {
     var fullLayout = gd._fullLayout,
         context = gd._context;
 
+    // special case for Mapbox Atlas users
+    if(context.mapboxAccessToken === '') return '';
+
     // first look for access token in context
     var accessToken = context.mapboxAccessToken;
 
@@ -72327,6 +72369,7 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
 
     coerce('type');
     coerce('uid');
+    coerce('name', 'trace ' + traceIndex);
 
     // coerce subplot attributes of all registered subplot types
     var subplotTypes = Object.keys(subplotsRegistry);
@@ -72352,8 +72395,6 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
         // TODO add per-base-plot-module trace defaults step
 
         if(_module) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-
-        coerce('name', 'trace ' + traceIndex);
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 
