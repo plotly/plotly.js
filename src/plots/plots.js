@@ -707,6 +707,7 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
 
     coerce('type');
     coerce('uid');
+    coerce('name', 'trace ' + traceIndex);
 
     // coerce subplot attributes of all registered subplot types
     var subplotTypes = Object.keys(subplotsRegistry);
@@ -732,8 +733,6 @@ plots.supplyTraceDefaults = function(traceIn, traceIndex, layout) {
         // TODO add per-base-plot-module trace defaults step
 
         if(_module) _module.supplyDefaults(traceIn, traceOut, defaultColor, layout);
-
-        coerce('name', 'trace ' + traceIndex);
 
         if(!plots.traceIs(traceOut, 'noOpacity')) coerce('opacity');
 

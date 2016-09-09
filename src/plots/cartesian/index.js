@@ -110,3 +110,39 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         }
     }
 };
+
+exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldModules = oldFullLayout._modules || [],
+        newModules = newFullLayout._modules || [];
+
+    var hadScatter, hasScatter, i;
+
+    for(i = 0; i < oldModules.length; i++) {
+        if(oldModules[i].name === 'scatter') {
+            hadScatter = true;
+            break;
+        }
+    }
+
+    for(i = 0; i < newModules.length; i++) {
+        if(newModules[i].name === 'scatter') {
+            hasScatter = true;
+            break;
+        }
+    }
+
+    if(hadScatter && !hasScatter) {
+        var oldPlots = oldFullLayout._plots,
+            ids = Object.keys(oldPlots || {});
+
+        for(i = 0; i < ids.length; i++) {
+            var subplotInfo = oldPlots[ids[i]];
+
+            if(subplotInfo.plot) {
+                subplotInfo.plot.select('g.scatterlayer')
+                    .selectAll('g.trace')
+                    .remove();
+            }
+        }
+    }
+};
