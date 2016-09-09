@@ -46,7 +46,7 @@
     "dot-location": [2, "property"],
     "operator-linebreak": [2, "after"],
     "eqeqeq": [2],
-    "new-cap": [0],
+    "new-cap": [2, { "capIsNewExceptionPattern": "^MathJax\\.." }],
     "no-redeclare": [2, {"builtinGlobals": true}],
     "no-shadow": [0, {"builtinGlobals": true}],
     "block-scoped-var": [2],
