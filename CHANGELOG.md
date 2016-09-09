@@ -10,6 +10,17 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.17.1] -- 2016-09-09
+
+### Fixed
+- Restyling `visible` to `false` on all scatter traces present on a graph
+  is now working again (bug introduced in 1.17.0) [#920]
+- Relayouting `paper_bgcolor` now properly propagate to legend
+  and updatemenu `bgcolor [#921]
+- Mapbox plot routine no longer make request to public Mapbox server
+  when linked to a Mapbox Atlas instance [#919]
+
+
 ## [1.17.0] -- 2016-09-07
 
 ### Added
