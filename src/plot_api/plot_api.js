@@ -1948,6 +1948,7 @@ function _relayout(gd, aobj) {
             if(p.parts[0].indexOf('scene') === 0) flags.doplot = true;
             else if(p.parts[0].indexOf('geo') === 0) flags.doplot = true;
             else if(p.parts[0].indexOf('ternary') === 0) flags.doplot = true;
+            else if(ai === 'paper_bgcolor') flags.doplot = true;
             else if(fullLayout._has('gl2d') &&
                 (ai.indexOf('axis') !== -1 || p.parts[0] === 'plot_bgcolor')
             ) flags.doplot = true;

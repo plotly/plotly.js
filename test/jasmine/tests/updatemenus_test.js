@@ -348,6 +348,14 @@ describe('update menus interactions', function() {
             // fold up buttons whenever new menus are added
             assertMenus([0, 0]);
 
+            return Plotly.relayout(gd, {
+                'updatemenus[0].bgcolor': null,
+                'paper_bgcolor': 'black'
+            });
+        }).then(function() {
+            assertItemColor(selectHeader(0), 'rgb(0, 0, 0)');
+            assertItemColor(selectHeader(1), 'rgb(0, 0, 0)');
+
             done();
         });
     });
