@@ -204,8 +204,10 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 
             // handle multi-trace graph edit case
             if(d.ms === 'various' || marker.size === 'various') r = 3;
-            else r = subTypes.isBubble(trace) ?
+            else {
+                r = subTypes.isBubble(trace) ?
                         sizeFn(d.ms) : (marker.size || 6) / 2;
+            }
 
             // store the calculated size so hover can use it
             d.mrc = r;
