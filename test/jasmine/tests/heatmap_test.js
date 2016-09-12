@@ -193,7 +193,7 @@ describe('heatmap convertColumnXYZ', function() {
     });
 
     it('should convert x/y/z columns to z(x,y) with out-of-order data', function() {
-        /*eslint no-sparse-arrays: 0*/
+        /* eslint no-sparse-arrays: 0*/
 
         trace = {
             x: [

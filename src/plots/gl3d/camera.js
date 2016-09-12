@@ -112,7 +112,7 @@ function createCamera(element, options) {
                 var curCenter = view.computedCenter.slice();
                 view.setMode(mode);
                 if(mode === 'turntable') {
-                    //Hacky time warping stuff to generate smooth animation
+                    // Hacky time warping stuff to generate smooth animation
                     var t0 = now();
                     view._active.lookAt(t0, curEye, curCenter, curUp);
                     view._active.lookAt(t0 + 500, curEye, curCenter, [0, 0, 1]);
@@ -204,17 +204,17 @@ function createCamera(element, options) {
         var drot = Math.PI * camera.rotateSpeed;
 
         if((rotate && left && !ctrl && !alt && !shift) || (left && !ctrl && !alt && shift)) {
-            //Rotate
+            // Rotate
             view.rotate(t, flipX * drot * dx, -flipY * drot * dy, 0);
         }
 
         if((pan && left && !ctrl && !alt && !shift) || right || (left && ctrl && !alt && !shift)) {
-            //Pan
+            // Pan
             view.pan(t, -camera.translateSpeed * dx * distance, camera.translateSpeed * dy * distance, 0);
         }
 
         if((zoom && left && !ctrl && !alt && !shift) || middle || (left && !ctrl && alt && !shift)) {
-            //Zoom
+            // Zoom
             var kzoom = -camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100;
             view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1));
         }

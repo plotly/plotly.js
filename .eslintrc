@@ -35,6 +35,7 @@
     "space-in-parens": [2, "never"],
     "space-before-function-paren": [2, "never"],
     "space-before-blocks": [2],
+    "spaced-comment": [2, "always"],
     "no-tabs": [2],
     "no-multi-spaces": [2],
     "no-whitespace-before-property": [2],

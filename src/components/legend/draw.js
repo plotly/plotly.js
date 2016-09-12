@@ -590,7 +590,7 @@ function computeLegendDimensions(gd, groups, traces) {
             maxTraceWidth = 0,
             offsetX = 0;
 
-        //calculate largest width for traces and use for width of all legend items
+        // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
             maxTraceWidth = Math.max(40 + d[0].width, maxTraceWidth);
         });
@@ -604,7 +604,7 @@ function computeLegendDimensions(gd, groups, traces) {
                 offsetX = 0;
                 rowHeight = rowHeight + maxTraceHeight;
                 opts.height = opts.height + maxTraceHeight;
-                //reset for next row
+                // reset for next row
                 maxTraceHeight = 0;
             }
 
@@ -615,7 +615,7 @@ function computeLegendDimensions(gd, groups, traces) {
             opts.width += traceGap + traceWidth;
             opts.height = Math.max(opts.height, legendItem.height);
 
-            //keep track of tallest trace in group
+            // keep track of tallest trace in group
             offsetX += traceGap + traceWidth;
             maxTraceHeight = Math.max(legendItem.height, maxTraceHeight);
         });

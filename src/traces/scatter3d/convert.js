@@ -125,7 +125,7 @@ function calculateErrorParams(errors) {
 }
 
 function calculateTextOffset(tp) {
-    //Read out text properties
+    // Read out text properties
     var textOffset = [0, 0];
     if(Array.isArray(tp)) return [0, -1];
     if(tp.indexOf('bottom') >= 0) textOffset[1] += 1;
@@ -179,7 +179,7 @@ function convertPlotlyOptions(scene, data) {
         len = x.length,
         text;
 
-    //Convert points
+    // Convert points
     for(i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
         xc = xaxis.d2l(x[i]) * scaleFactor[0];
@@ -196,7 +196,7 @@ function convertPlotlyOptions(scene, data) {
         for(i = 0; i < len; i++) text[i] = data.text;
     }
 
-    //Build object parameters
+    // Build object parameters
     params = {
         position: points,
         mode: data.mode,
@@ -275,10 +275,10 @@ proto.update = function(data) {
         textOptions,
         dashPattern = DASH_PATTERNS.solid;
 
-    //Save data
+    // Save data
     this.data = data;
 
-    //Run data conversion
+    // Run data conversion
     var options = convertPlotlyOptions(this.scene, data);
 
     if('mode' in options) {
@@ -293,7 +293,7 @@ proto.update = function(data) {
     this.color = arrayToColor(options.scatterColor) ||
                  arrayToColor(options.lineColor);
 
-    //Save data points
+    // Save data points
     this.dataPoints = options.position;
 
     lineOptions = {
