@@ -1,5 +1,5 @@
 /**
-* plotly.js (cartesian) v1.17.1
+* plotly.js (cartesian) v1.17.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -13390,16 +13390,16 @@ function drawOne(gd, index, opt, value) {
         // and the annotation center are visible
         if(options.showarrow) {
             if(options.axref === options.xref) {
-                //we don't want to constrain if the tail is absolute
-                //or the slope (which is meaningful) will change.
+                // we don't want to constrain if the tail is absolute
+                // or the slope (which is meaningful) will change.
                 arrowX = annPosPx.x;
             } else {
                 arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
             }
 
             if(options.ayref === options.yref) {
-                //we don't want to constrain if the tail is absolute
-                //or the slope (which is meaningful) will change.
+                // we don't want to constrain if the tail is absolute
+                // or the slope (which is meaningful) will change.
                 arrowY = annPosPx.y;
             } else {
                 arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
@@ -14840,7 +14840,7 @@ module.exports = function draw(gd, id) {
             container.attr('transform',
                 'translate(' + (gs.l - xoffset) + ',' + gs.t + ')');
 
-            //auto margin adjustment
+            // auto margin adjustment
             Plots.autoMargin(gd, id, {
                 x: opts.x,
                 y: opts.y,
@@ -16122,8 +16122,10 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 
             // handle multi-trace graph edit case
             if(d.ms === 'various' || marker.size === 'various') r = 3;
-            else r = subTypes.isBubble(trace) ?
+            else {
+                r = subTypes.isBubble(trace) ?
                         sizeFn(d.ms) : (marker.size || 6) / 2;
+            }
 
             // store the calculated size so hover can use it
             d.mrc = r;
@@ -18809,7 +18811,7 @@ function computeLegendDimensions(gd, groups, traces) {
             maxTraceWidth = 0,
             offsetX = 0;
 
-        //calculate largest width for traces and use for width of all legend items
+        // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
             maxTraceWidth = Math.max(40 + d[0].width, maxTraceWidth);
         });
@@ -18823,7 +18825,7 @@ function computeLegendDimensions(gd, groups, traces) {
                 offsetX = 0;
                 rowHeight = rowHeight + maxTraceHeight;
                 opts.height = opts.height + maxTraceHeight;
-                //reset for next row
+                // reset for next row
                 maxTraceHeight = 0;
             }
 
@@ -18834,7 +18836,7 @@ function computeLegendDimensions(gd, groups, traces) {
             opts.width += traceGap + traceWidth;
             opts.height = Math.max(opts.height, legendItem.height);
 
-            //keep track of tallest trace in group
+            // keep track of tallest trace in group
             offsetX += traceGap + traceWidth;
             maxTraceHeight = Math.max(legendItem.height, maxTraceHeight);
         });
@@ -23696,7 +23698,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.17.1';
+exports.version = '1.17.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -25579,7 +25581,7 @@ exports.apply2DTransform = function(transform) {
         var args = arguments;
         if(args.length === 3) {
             args = args[0];
-        }//from map
+        }// from map
         var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
         return exports.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
     };
@@ -27909,7 +27911,7 @@ function setPlotContext(gd, config) {
         }
     }
 
-    //staticPlot forces a bunch of others:
+    // staticPlot forces a bunch of others:
     if(context.staticPlot) {
         context.editable = false;
         context.autosizable = false;
@@ -27972,8 +27974,8 @@ function plotPolar(gd, data, layout) {
 
     var titleLayout = function() {
         this.call(svgTextUtils.convertToTspans);
-        //TODO: html/mathjax
-        //TODO: center title
+        // TODO: html/mathjax
+        // TODO: center title
     };
 
     var title = polarPlotSVG.select('.title-group text')
@@ -29044,7 +29046,7 @@ function _restyle(gd, aobj, _traces) {
                 } else if(Registry.traceIs(cont, 'cartesian')) {
                     Lib.nestedProperty(cont, 'marker.colors')
                         .set(Lib.nestedProperty(cont, 'marker.color').get());
-                    //look for axes that are no longer in use and delete them
+                    // look for axes that are no longer in use and delete them
                     flagAxForDelete[cont.xaxis || 'x'] = true;
                     flagAxForDelete[cont.yaxis || 'y'] = true;
                 }
@@ -32179,7 +32181,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, axLetter, dflt) {
     return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
-//todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
+// todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
 // find the list of possible axes to reference with an axref or ayref attribute
 // and coerce it to that list
 axes.coerceARef = function(containerIn, containerOut, gd, axLetter, dflt) {
@@ -32813,7 +32815,7 @@ axes.autoTicks = function(ax, roughDTick) {
             ax.dtick = roundDTick(roughDTick, 1000, roundBase60);
         }
         else {
-            //milliseconds
+            // milliseconds
             base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
@@ -32821,7 +32823,7 @@ axes.autoTicks = function(ax, roughDTick) {
     else if(ax.type === 'log') {
         ax.tick0 = 0;
 
-        //only show powers of 10
+        // only show powers of 10
         if(roughDTick > 0.7) ax.dtick = Math.ceil(roughDTick);
         else if(Math.abs(ax.range[1] - ax.range[0]) < 1) {
             // span is less than one power of 10
@@ -36667,7 +36669,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
                 p1 = g1[0];
             topOverlap = p0.pos + p0.dp + p0.size - p1.pos - p1.dp + p1.size;
 
-            //Only group points that lie on the same axes
+            // Only group points that lie on the same axes
             if(topOverlap > 0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
                 // push the new point(s) added to this group out of the way
                 for(j = g1.length - 1; j >= 0; j--) g1[j].dp += topOverlap;
@@ -37277,7 +37279,7 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'trace', 'category ascending', 'category descending', 'array'
-            /*, 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
+            /* , 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
         ],
         dflt: 'trace',
         
@@ -39994,7 +39996,7 @@ plots.modifyFrames = function(gd, operations) {
 
         switch(op.type) {
             // No reason this couldn't exist, but is currently unused/untested:
-            /*case 'rename':
+            /* case 'rename':
                 frame = _frames[op.index];
                 delete _hash[frame.name];
                 _hash[op.name] = frame;
@@ -42009,6 +42011,7 @@ var µ = module.exports = { version: '0.2.2' };
 * LICENSE file in the root directory of this source tree.
 */
 
+/* eslint-disable new-cap */
 
 'use strict';
 
@@ -42096,8 +42099,8 @@ manager.fillLayout = function(_gd) {
 
 'use strict';
 
-//Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager
-//Copyright (c) 2010-2013 Arthur Clemens, arthur@visiblearea.com
+// Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager
+// Copyright (c) 2010-2013 Arthur Clemens, arthur@visiblearea.com
 module.exports = function UndoManager() {
     var undoCommands = [],
         index = -1,
@@ -42843,7 +42846,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
         _axislayer: _this.layers.aaxis,
         _gridlayer: _this.layers.agrid,
-        _pos: 0, //_this.xaxis.domain[0] * graphSize.w,
+        _pos: 0, // _this.xaxis.domain[0] * graphSize.w,
         _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
@@ -42861,7 +42864,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.baxis,
         _gridlayer: _this.layers.bgrid,
         _counteraxis: _this.aaxis,
-        _pos: 0, //(1 - yDomain0) * graphSize.h,
+        _pos: 0, // (1 - yDomain0) * graphSize.h,
         _gd: _this.graphDiv,
         _id: 'x',
         _length: w,
@@ -42881,7 +42884,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.caxis,
         _gridlayer: _this.layers.cgrid,
         _counteraxis: _this.baxis,
-        _pos: 0, //_this.xaxis.domain[1] * graphSize.w,
+        _pos: 0, // _this.xaxis.domain[1] * graphSize.w,
         _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
@@ -46868,7 +46871,7 @@ function joinAllPaths(pi, perimeter) {
         endpt = pi.edgepaths[i][pi.edgepaths[i].length - 1];
         nexti = -1;
 
-        //now loop through sides, moving our endpoint until we find a new start
+        // now loop through sides, moving our endpoint until we find a new start
         for(cnt = 0; cnt < 4; cnt++) { // just to prevent infinite loops
             if(!endpt) {
                 Lib.log('Missing end?', i, pi);
@@ -50152,7 +50155,7 @@ module.exports = function plot(gd, cdpie) {
         var pieGroup = d3.select(this),
             cd0 = cd[0],
             trace = cd0.trace,
-            tiltRads = 0, //trace.tilt * Math.PI / 180,
+            tiltRads = 0, // trace.tilt * Math.PI / 180,
             depthLength = (trace.depth||0) * cd0.r * Math.sin(tiltRads) / 2,
             tiltAxis = trace.tiltaxis || 0,
             tiltAxisRads = tiltAxis * Math.PI / 180,
@@ -51286,7 +51289,7 @@ module.exports = function calc(gd, trace) {
     }
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if(typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
+    if(typeof s !== 'undefined') Lib.mergeArray(s, cd, 'ms');
 
     gd.firstscatter = false;
     return cd;
@@ -53086,7 +53089,7 @@ module.exports = function calc(gd, trace) {
     calcColorscale(trace);
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if(typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
+    if(typeof s !== 'undefined') Lib.mergeArray(s, cd, 'ms');
 
     return cd;
 };

@@ -1,5 +1,5 @@
 /**
-* plotly.js v1.17.1
+* plotly.js v1.17.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -68,7 +68,7 @@ for(var selector in rules) {
     Lib.addStyleRule(fullSelector, rules[selector]);
 }
 
-},{"../src/lib":607}],2:[function(require,module,exports){
+},{"../src/lib":633}],2:[function(require,module,exports){
 'use strict';
 
 module.exports = {
@@ -199,7 +199,7 @@ module.exports = {
 
 module.exports = require('../src/traces/bar');
 
-},{"../src/traces/bar":723}],4:[function(require,module,exports){
+},{"../src/traces/bar":749}],4:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -210,7 +210,7 @@ module.exports = require('../src/traces/bar');
 
 module.exports = require('../src/traces/box');
 
-},{"../src/traces/box":734}],5:[function(require,module,exports){
+},{"../src/traces/box":760}],5:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -221,7 +221,7 @@ module.exports = require('../src/traces/box');
 
 module.exports = require('../src/traces/choropleth');
 
-},{"../src/traces/choropleth":743}],6:[function(require,module,exports){
+},{"../src/traces/choropleth":769}],6:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -232,7 +232,7 @@ module.exports = require('../src/traces/choropleth');
 
 module.exports = require('../src/traces/contour');
 
-},{"../src/traces/contour":750}],7:[function(require,module,exports){
+},{"../src/traces/contour":776}],7:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -243,7 +243,7 @@ module.exports = require('../src/traces/contour');
 
 module.exports = require('../src/core');
 
-},{"../src/core":595}],8:[function(require,module,exports){
+},{"../src/core":621}],8:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -254,7 +254,7 @@ module.exports = require('../src/core');
 
 module.exports = require('../src/traces/heatmap');
 
-},{"../src/traces/heatmap":762}],9:[function(require,module,exports){
+},{"../src/traces/heatmap":788}],9:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -265,7 +265,7 @@ module.exports = require('../src/traces/heatmap');
 
 module.exports = require('../src/traces/histogram');
 
-},{"../src/traces/histogram":773}],10:[function(require,module,exports){
+},{"../src/traces/histogram":799}],10:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -276,7 +276,7 @@ module.exports = require('../src/traces/histogram');
 
 module.exports = require('../src/traces/histogram2d');
 
-},{"../src/traces/histogram2d":778}],11:[function(require,module,exports){
+},{"../src/traces/histogram2d":804}],11:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -287,7 +287,7 @@ module.exports = require('../src/traces/histogram2d');
 
 module.exports = require('../src/traces/histogram2dcontour');
 
-},{"../src/traces/histogram2dcontour":782}],12:[function(require,module,exports){
+},{"../src/traces/histogram2dcontour":808}],12:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -333,7 +333,7 @@ module.exports = Plotly;
 
 module.exports = require('../src/traces/mesh3d');
 
-},{"../src/traces/mesh3d":786}],14:[function(require,module,exports){
+},{"../src/traces/mesh3d":812}],14:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -344,7 +344,7 @@ module.exports = require('../src/traces/mesh3d');
 
 module.exports = require('../src/traces/pie');
 
-},{"../src/traces/pie":792}],15:[function(require,module,exports){
+},{"../src/traces/pie":818}],15:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -355,7 +355,7 @@ module.exports = require('../src/traces/pie');
 
 module.exports = require('../src/traces/pointcloud');
 
-},{"../src/traces/pointcloud":801}],16:[function(require,module,exports){
+},{"../src/traces/pointcloud":827}],16:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -366,7 +366,7 @@ module.exports = require('../src/traces/pointcloud');
 
 module.exports = require('../src/traces/scatter3d');
 
-},{"../src/traces/scatter3d":831}],17:[function(require,module,exports){
+},{"../src/traces/scatter3d":857}],17:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -377,7 +377,7 @@ module.exports = require('../src/traces/scatter3d');
 
 module.exports = require('../src/traces/scattergeo');
 
-},{"../src/traces/scattergeo":835}],18:[function(require,module,exports){
+},{"../src/traces/scattergeo":861}],18:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -388,7 +388,7 @@ module.exports = require('../src/traces/scattergeo');
 
 module.exports = require('../src/traces/scattergl');
 
-},{"../src/traces/scattergl":840}],19:[function(require,module,exports){
+},{"../src/traces/scattergl":866}],19:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -399,7 +399,7 @@ module.exports = require('../src/traces/scattergl');
 
 module.exports = require('../src/traces/scattermapbox');
 
-},{"../src/traces/scattermapbox":846}],20:[function(require,module,exports){
+},{"../src/traces/scattermapbox":872}],20:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -410,7 +410,7 @@ module.exports = require('../src/traces/scattermapbox');
 
 module.exports = require('../src/traces/scatterternary');
 
-},{"../src/traces/scatterternary":852}],21:[function(require,module,exports){
+},{"../src/traces/scatterternary":878}],21:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -421,7 +421,7 @@ module.exports = require('../src/traces/scatterternary');
 
 module.exports = require('../src/traces/surface');
 
-},{"../src/traces/surface":861}],22:[function(require,module,exports){
+},{"../src/traces/surface":887}],22:[function(require,module,exports){
 'use strict'
 
 module.exports = createFilteredVector
@@ -2713,7 +2713,7 @@ function circumcenter(points) {
 
 circumcenter.barycenetric = barycentricCircumcenter
 module.exports = circumcenter
-},{"dup":127,"robust-linear-solve":462}],46:[function(require,module,exports){
+},{"dup":127,"robust-linear-solve":488}],46:[function(require,module,exports){
 'use strict'
 
 module.exports = boundary
@@ -8168,7 +8168,7 @@ function monotoneTriangulate(points, edges) {
   return cells
 }
 
-},{"binary-search-bounds":74,"robust-orientation":465}],73:[function(require,module,exports){
+},{"binary-search-bounds":74,"robust-orientation":491}],73:[function(require,module,exports){
 'use strict'
 
 var bsearch = require('binary-search-bounds')
@@ -8496,7 +8496,7 @@ function generateInSphereTest() {
 }
 
 generateInSphereTest()
-},{"robust-scale":466,"robust-subtract":467,"robust-sum":468,"two-product":482}],76:[function(require,module,exports){
+},{"robust-scale":492,"robust-subtract":493,"robust-sum":494,"two-product":508}],76:[function(require,module,exports){
 'use strict'
 
 module.exports = cleanPSLG
@@ -11670,7 +11670,7 @@ function boxIntersectWrapper(arg0, arg1, arg2) {
       throw new Error('box-intersect: Invalid arguments')
   }
 }
-},{"./lib/intersect":97,"./lib/sweep":101,"typedarray-pool":484}],96:[function(require,module,exports){
+},{"./lib/intersect":97,"./lib/sweep":101,"typedarray-pool":510}],96:[function(require,module,exports){
 'use strict'
 
 var DIMENSION   = 'd'
@@ -12310,7 +12310,7 @@ function boxIntersectIter(
     }
   }
 }
-},{"./brute":96,"./median":98,"./partition":99,"./sweep":101,"bit-twiddle":52,"typedarray-pool":484}],98:[function(require,module,exports){
+},{"./brute":96,"./median":98,"./partition":99,"./sweep":101,"bit-twiddle":52,"typedarray-pool":510}],98:[function(require,module,exports){
 'use strict'
 
 module.exports = findMedian
@@ -13146,7 +13146,7 @@ red_loop:
     }
   }
 }
-},{"./sort":100,"bit-twiddle":52,"typedarray-pool":484}],102:[function(require,module,exports){
+},{"./sort":100,"bit-twiddle":52,"typedarray-pool":510}],102:[function(require,module,exports){
 (function (Buffer){
 var hasTypedArrays = false
 if(typeof Float64Array !== "undefined") {
@@ -13406,7 +13406,7 @@ function segmentsIntersect(a0, a1, b0, b1) {
 
   return true
 }
-},{"robust-orientation":465}],109:[function(require,module,exports){
+},{"robust-orientation":491}],109:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -13962,7 +13962,7 @@ function convexHullnD(points, d) {
     return invPermute(nhull, ah)
   }
 }
-},{"affine-hull":118,"incremental-convex-hull":249}],118:[function(require,module,exports){
+},{"affine-hull":118,"incremental-convex-hull":275}],118:[function(require,module,exports){
 'use strict'
 
 module.exports = affineHull
@@ -14014,7 +14014,7 @@ function affineHull(points) {
   }
   return index
 }
-},{"robust-orientation":465}],119:[function(require,module,exports){
+},{"robust-orientation":491}],119:[function(require,module,exports){
 'use strict'
 
 module.exports = monotoneConvexHull2D
@@ -14096,7 +14096,7 @@ function monotoneConvexHull2D(points) {
   //Return result
   return result
 }
-},{"robust-orientation":465}],120:[function(require,module,exports){
+},{"robust-orientation":491}],120:[function(require,module,exports){
 module.exports = {
   AFG: "afghan",
   ALA: "\\b\\wland",
@@ -14822,7 +14822,7 @@ function generateCWiseOp(proc, typesig) {
 }
 module.exports = generateCWiseOp
 
-},{"uniq":485}],123:[function(require,module,exports){
+},{"uniq":511}],123:[function(require,module,exports){
 "use strict"
 
 // The function below is called when constructing a cwise function object, and does the following:
@@ -24627,7 +24627,7 @@ function triangulate(points, includePointAtInfinity) {
 
   return hull
 }
-},{"incremental-convex-hull":249,"uniq":485}],127:[function(require,module,exports){
+},{"incremental-convex-hull":275,"uniq":511}],127:[function(require,module,exports){
 "use strict"
 
 function dupe_array(count, value, i) {
@@ -25846,7 +25846,7 @@ function createBuffer(gl, data, type, usage) {
 
 module.exports = createBuffer
 
-},{"ndarray":459,"ndarray-ops":458,"typedarray-pool":484}],131:[function(require,module,exports){
+},{"ndarray":485,"ndarray-ops":484,"typedarray-pool":510}],131:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -26096,7 +26096,7 @@ function createError2D (plot, options) {
   return errorbars
 }
 
-},{"./lib/shaders":132,"gl-buffer":130,"gl-shader":211,"typedarray-pool":484}],132:[function(require,module,exports){
+},{"./lib/shaders":132,"gl-buffer":130,"gl-shader":237,"typedarray-pool":510}],132:[function(require,module,exports){
 
 
 module.exports = {
@@ -26341,7 +26341,7 @@ function createErrorBars(options) {
   return result
 }
 
-},{"./shaders/index":134,"gl-buffer":130,"gl-vao":240}],134:[function(require,module,exports){
+},{"./shaders/index":134,"gl-buffer":130,"gl-vao":266}],134:[function(require,module,exports){
 'use strict'
 
 
@@ -26358,7 +26358,7 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":211}],135:[function(require,module,exports){
+},{"gl-shader":237}],135:[function(require,module,exports){
 'use strict'
 
 var createTexture = require('gl-texture2d')
@@ -26825,7 +26825,7 @@ function createFBO(gl, width, height, options) {
     WEBGL_draw_buffers)
 }
 
-},{"gl-texture2d":236}],136:[function(require,module,exports){
+},{"gl-texture2d":262}],136:[function(require,module,exports){
 
 
 exports.lineVertex    = "precision mediump float;\n#define GLSLIFY 1\n\nfloat inverse_1_0(float m) {\n  return 1.0 / m;\n}\n\nmat2 inverse_1_0(mat2 m) {\n  return mat2(m[1][1],-m[0][1],\n             -m[1][0], m[0][0]) / (m[0][0]*m[1][1] - m[0][1]*m[1][0]);\n}\n\nmat3 inverse_1_0(mat3 m) {\n  float a00 = m[0][0], a01 = m[0][1], a02 = m[0][2];\n  float a10 = m[1][0], a11 = m[1][1], a12 = m[1][2];\n  float a20 = m[2][0], a21 = m[2][1], a22 = m[2][2];\n\n  float b01 = a22 * a11 - a12 * a21;\n  float b11 = -a22 * a10 + a12 * a20;\n  float b21 = a21 * a10 - a11 * a20;\n\n  float det = a00 * b01 + a01 * b11 + a02 * b21;\n\n  return mat3(b01, (-a22 * a01 + a02 * a21), (a12 * a01 - a02 * a11),\n              b11, (a22 * a00 - a02 * a20), (-a12 * a00 + a02 * a10),\n              b21, (-a21 * a00 + a01 * a20), (a11 * a00 - a01 * a10)) / det;\n}\n\nmat4 inverse_1_0(mat4 m) {\n  float\n      a00 = m[0][0], a01 = m[0][1], a02 = m[0][2], a03 = m[0][3],\n      a10 = m[1][0], a11 = m[1][1], a12 = m[1][2], a13 = m[1][3],\n      a20 = m[2][0], a21 = m[2][1], a22 = m[2][2], a23 = m[2][3],\n      a30 = m[3][0], a31 = m[3][1], a32 = m[3][2], a33 = m[3][3],\n\n      b00 = a00 * a11 - a01 * a10,\n      b01 = a00 * a12 - a02 * a10,\n      b02 = a00 * a13 - a03 * a10,\n      b03 = a01 * a12 - a02 * a11,\n      b04 = a01 * a13 - a03 * a11,\n      b05 = a02 * a13 - a03 * a12,\n      b06 = a20 * a31 - a21 * a30,\n      b07 = a20 * a32 - a22 * a30,\n      b08 = a20 * a33 - a23 * a30,\n      b09 = a21 * a32 - a22 * a31,\n      b10 = a21 * a33 - a23 * a31,\n      b11 = a22 * a33 - a23 * a32,\n\n      det = b00 * b11 - b01 * b10 + b02 * b09 + b03 * b08 - b04 * b07 + b05 * b06;\n\n  return mat4(\n      a11 * b11 - a12 * b10 + a13 * b09,\n      a02 * b10 - a01 * b11 - a03 * b09,\n      a31 * b05 - a32 * b04 + a33 * b03,\n      a22 * b04 - a21 * b05 - a23 * b03,\n      a12 * b08 - a10 * b11 - a13 * b07,\n      a00 * b11 - a02 * b08 + a03 * b07,\n      a32 * b02 - a30 * b05 - a33 * b01,\n      a20 * b05 - a22 * b02 + a23 * b01,\n      a10 * b10 - a11 * b08 + a13 * b06,\n      a01 * b08 - a00 * b10 - a03 * b06,\n      a30 * b04 - a31 * b02 + a33 * b00,\n      a21 * b02 - a20 * b04 - a23 * b00,\n      a11 * b07 - a10 * b09 - a12 * b06,\n      a00 * b09 - a01 * b07 + a02 * b06,\n      a31 * b01 - a30 * b03 - a32 * b00,\n      a20 * b03 - a21 * b01 + a22 * b00) / det;\n}\n\n\n\nattribute vec2 a, d;\n\nuniform mat3 matrix;\nuniform vec2 screenShape;\nuniform float width;\n\nvarying vec2 direction;\n\nvoid main() {\n  vec2 dir = (matrix * vec3(d, 0)).xy;\n  vec3 base = matrix * vec3(a, 1);\n  vec2 n = 0.5 * width *\n    normalize(screenShape.yx * vec2(dir.y, -dir.x)) / screenShape.xy;\n  vec2 tangent = normalize(screenShape.xy * dir);\n  if(dir.x < 0.0 || (dir.x == 0.0 && dir.y < 0.0)) {\n    direction = -tangent;\n  } else {\n    direction = tangent;\n  }\n  gl_Position = vec4(base.xy/base.z + n, 0, 1);\n}\n"
@@ -27310,7 +27310,7 @@ function createLinePlot(plot, options) {
   return linePlot
 }
 
-},{"./lib/shaders":136,"gl-buffer":130,"gl-shader":211,"gl-texture2d":236,"ndarray":459,"typedarray-pool":484}],138:[function(require,module,exports){
+},{"./lib/shaders":136,"gl-buffer":130,"gl-shader":237,"gl-texture2d":262,"ndarray":485,"typedarray-pool":510}],138:[function(require,module,exports){
 
 var createShader  = require('gl-shader')
 
@@ -27334,7 +27334,7 @@ exports.createPickShader = function(gl) {
   return createShader(gl, vertSrc, pickFrag, null, ATTRIBUTES)
 }
 
-},{"gl-shader":211}],139:[function(require,module,exports){
+},{"gl-shader":237}],139:[function(require,module,exports){
 'use strict'
 
 module.exports = createLinePlot
@@ -27704,7 +27704,7 @@ function createLinePlot (options) {
   return linePlot
 }
 
-},{"./lib/shaders":138,"binary-search-bounds":140,"gl-buffer":130,"gl-texture2d":236,"gl-vao":240,"glsl-read-float":141,"ndarray":459}],140:[function(require,module,exports){
+},{"./lib/shaders":138,"binary-search-bounds":140,"gl-buffer":130,"gl-texture2d":262,"gl-vao":266,"glsl-read-float":141,"ndarray":485}],140:[function(require,module,exports){
 arguments[4][23][0].apply(exports,arguments)
 },{"dup":23}],141:[function(require,module,exports){
 module.exports = decodeFloat
@@ -29704,7 +29704,7 @@ function createSimplicialMesh(params) {
 
 module.exports = createSimplicialMesh
 
-},{"./lib/closest-point":160,"./lib/shaders":161,"colormap":112,"gl-buffer":130,"gl-mat4/invert":149,"gl-mat4/multiply":151,"gl-shader":211,"gl-texture2d":236,"gl-vao":240,"ndarray":459,"normals":164,"simplicial-complex-contour":166,"typedarray-pool":484}],163:[function(require,module,exports){
+},{"./lib/closest-point":160,"./lib/shaders":161,"colormap":112,"gl-buffer":130,"gl-mat4/invert":149,"gl-mat4/multiply":151,"gl-shader":237,"gl-texture2d":262,"gl-vao":266,"ndarray":485,"normals":164,"simplicial-complex-contour":166,"typedarray-pool":510}],163:[function(require,module,exports){
 'use strict'
 
 module.exports = barycentric
@@ -29752,7 +29752,7 @@ function barycentric(simplex, point) {
   }
   return y
 }
-},{"robust-linear-solve":462}],164:[function(require,module,exports){
+},{"robust-linear-solve":488}],164:[function(require,module,exports){
 var DEFAULT_NORMALS_EPSILON = 1e-6;
 var DEFAULT_FACE_EPSILON = 1e-6;
 
@@ -30238,7 +30238,7 @@ function extractContour(cells, values, level, d) {
     vertexWeights: uweights
   }
 }
-},{"./lib/codegen":167,"ndarray":459,"ndarray-sort":170,"typedarray-pool":484}],167:[function(require,module,exports){
+},{"./lib/codegen":167,"ndarray":485,"ndarray-sort":170,"typedarray-pool":510}],167:[function(require,module,exports){
 'use strict'
 
 module.exports = getPolygonizer
@@ -30335,7 +30335,7 @@ function getPolygonizer(d) {
   }
   return alg
 }
-},{"marching-simplex-table":168,"typedarray-pool":484}],168:[function(require,module,exports){
+},{"marching-simplex-table":168,"typedarray-pool":510}],168:[function(require,module,exports){
 'use strict'
 
 module.exports = createTable
@@ -31130,7 +31130,7 @@ function compileSort(order, dtype) {
 }
 
 module.exports = compileSort
-},{"typedarray-pool":484}],170:[function(require,module,exports){
+},{"typedarray-pool":510}],170:[function(require,module,exports){
 "use strict"
 
 var compile = require("./lib/compile_sort.js")
@@ -31213,7 +31213,7 @@ function createBoxes(plot) {
   return new Boxes(plot, vbo, shader)
 }
 
-},{"./shaders":174,"gl-buffer":130,"gl-shader":211}],172:[function(require,module,exports){
+},{"./shaders":174,"gl-buffer":130,"gl-shader":237}],172:[function(require,module,exports){
 'use strict'
 
 module.exports = createGrid
@@ -31460,7 +31460,7 @@ function createGrid(plot) {
   return grid
 }
 
-},{"./shaders":174,"binary-search-bounds":176,"gl-buffer":130,"gl-shader":211}],173:[function(require,module,exports){
+},{"./shaders":174,"binary-search-bounds":176,"gl-buffer":130,"gl-shader":237}],173:[function(require,module,exports){
 'use strict'
 
 module.exports = createLines
@@ -31525,7 +31525,7 @@ function createLines(plot) {
   return lines
 }
 
-},{"./shaders":174,"gl-buffer":130,"gl-shader":211}],174:[function(require,module,exports){
+},{"./shaders":174,"gl-buffer":130,"gl-shader":237}],174:[function(require,module,exports){
 'use strict'
 
 
@@ -31818,7 +31818,7 @@ function createTextElements(plot) {
   return text
 }
 
-},{"./shaders":174,"binary-search-bounds":176,"gl-buffer":130,"gl-shader":211,"text-cache":479}],176:[function(require,module,exports){
+},{"./shaders":174,"binary-search-bounds":176,"gl-buffer":130,"gl-shader":237,"text-cache":505}],176:[function(require,module,exports){
 arguments[4][74][0].apply(exports,arguments)
 },{"dup":74}],177:[function(require,module,exports){
 'use strict'
@@ -32393,7 +32393,7 @@ function createGLPlot2D(options) {
   return plot
 }
 
-},{"./lib/box":171,"./lib/grid":172,"./lib/line":173,"./lib/text":175,"gl-select-static":210}],178:[function(require,module,exports){
+},{"./lib/box":171,"./lib/grid":172,"./lib/line":173,"./lib/text":175,"gl-select-static":236}],178:[function(require,module,exports){
 
 var createShader = require('gl-shader')
 
@@ -32404,7 +32404,7 @@ module.exports = function(gl) {
   return createShader(gl, vertSrc, fragSrc, null, [ { name: 'position', type: 'vec2'}])
 }
 
-},{"gl-shader":211}],179:[function(require,module,exports){
+},{"gl-shader":237}],179:[function(require,module,exports){
 'use strict'
 
 module.exports = createCamera
@@ -32613,7 +32613,7 @@ function createCamera(element, options) {
 
   return camera
 }
-},{"3d-view":41,"mouse-change":447,"mouse-wheel":451,"right-now":461}],180:[function(require,module,exports){
+},{"3d-view":41,"mouse-change":473,"mouse-wheel":477,"right-now":487}],180:[function(require,module,exports){
 // Copyright (C) 2011 Google Inc.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
@@ -33330,7 +33330,7 @@ function createABigTriangle(gl) {
 
 module.exports = createABigTriangle
 
-},{"gl-buffer":130,"gl-vao":240,"weak-map":180}],182:[function(require,module,exports){
+},{"gl-buffer":130,"gl-vao":266,"weak-map":180}],182:[function(require,module,exports){
 'use strict'
 
 module.exports = createAxes
@@ -33965,7 +33965,7 @@ function createBackgroundCube(gl) {
   return new BackgroundCube(gl, buffer, vao, shader)
 }
 
-},{"./shaders":186,"gl-buffer":130,"gl-vao":240}],184:[function(require,module,exports){
+},{"./shaders":186,"gl-buffer":130,"gl-vao":266}],184:[function(require,module,exports){
 "use strict"
 
 module.exports = getCubeEdges
@@ -34206,7 +34206,7 @@ function getCubeEdges(model, view, projection, bounds) {
   //Return result
   return CUBE_RESULT
 }
-},{"bit-twiddle":52,"gl-mat4/invert":149,"gl-mat4/multiply":151,"robust-orientation":465,"split-polygon":190}],185:[function(require,module,exports){
+},{"bit-twiddle":52,"gl-mat4/invert":149,"gl-mat4/multiply":151,"robust-orientation":491,"split-polygon":190}],185:[function(require,module,exports){
 'use strict'
 
 module.exports    = createLines
@@ -34412,7 +34412,7 @@ function createLines(gl, bounds, ticks) {
   return new Lines(gl, vertBuf, vao, shader, tickCount, tickOffset, gridCount, gridOffset)
 }
 
-},{"./shaders":186,"gl-buffer":130,"gl-vao":240}],186:[function(require,module,exports){
+},{"./shaders":186,"gl-buffer":130,"gl-vao":266}],186:[function(require,module,exports){
 'use strict'
 
 
@@ -34443,7 +34443,7 @@ exports.bg = function(gl) {
   ])
 }
 
-},{"gl-shader":211}],187:[function(require,module,exports){
+},{"gl-shader":237}],187:[function(require,module,exports){
 (function (process){
 "use strict"
 
@@ -34645,7 +34645,7 @@ function createTextSprites(
 }
 
 }).call(this,require('_process'))
-},{"./shaders":186,"_process":60,"gl-buffer":130,"gl-vao":240,"vectorize-text":486}],188:[function(require,module,exports){
+},{"./shaders":186,"_process":60,"gl-buffer":130,"gl-vao":266,"vectorize-text":512}],188:[function(require,module,exports){
 'use strict'
 
 exports.create   = defaultTicks
@@ -34827,7 +34827,7 @@ function negative(points, plane) {
   }
   return neg
 }
-},{"robust-dot-product":191,"robust-sum":468}],191:[function(require,module,exports){
+},{"robust-dot-product":191,"robust-sum":494}],191:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -34842,7 +34842,7 @@ function robustDotProduct(a, b) {
   }
   return r
 }
-},{"robust-sum":468,"two-product":482}],192:[function(require,module,exports){
+},{"robust-sum":494,"two-product":508}],192:[function(require,module,exports){
 "use strict"
 
 module.exports = axesProperties
@@ -34984,7 +34984,7 @@ i_loop:
   return ranges
 }
 
-},{"./lib/cube.js":184,"extract-frustum-planes":189,"gl-mat4/multiply":151,"gl-mat4/transpose":159,"gl-vec4/transformMat4":241,"split-polygon":190}],193:[function(require,module,exports){
+},{"./lib/cube.js":184,"extract-frustum-planes":189,"gl-mat4/multiply":151,"gl-mat4/transpose":159,"gl-vec4/transformMat4":267,"split-polygon":190}],193:[function(require,module,exports){
 'use strict'
 
 
@@ -35001,7 +35001,7 @@ module.exports = function(gl) {
   ])
 }
 
-},{"gl-shader":211}],194:[function(require,module,exports){
+},{"gl-shader":237}],194:[function(require,module,exports){
 'use strict'
 
 var createBuffer = require('gl-buffer')
@@ -35197,7 +35197,7 @@ function createSpikes(gl, options) {
   return spikes
 }
 
-},{"./shaders/index":193,"gl-buffer":130,"gl-vao":240}],195:[function(require,module,exports){
+},{"./shaders/index":193,"gl-buffer":130,"gl-vao":266}],195:[function(require,module,exports){
 'use strict'
 
 module.exports = createScene
@@ -35962,7 +35962,7 @@ function createScene(options) {
   return scene
 }
 
-},{"./lib/shader":178,"3d-view-controls":179,"a-big-triangle":181,"gl-axes3d":182,"gl-axes3d/properties":192,"gl-fbo":135,"gl-mat4/perspective":152,"gl-select-static":210,"gl-spikes3d":194,"mouse-change":447}],196:[function(require,module,exports){
+},{"./lib/shader":178,"3d-view-controls":179,"a-big-triangle":181,"gl-axes3d":182,"gl-axes3d/properties":192,"gl-fbo":135,"gl-mat4/perspective":152,"gl-select-static":236,"gl-spikes3d":194,"mouse-change":473}],196:[function(require,module,exports){
 
 
 exports.pointVertex       = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform float pointCloud;\n\nhighp float rand(vec2 co) {\n  highp float a = 12.9898;\n  highp float b = 78.233;\n  highp float c = 43758.5453;\n  highp float d = dot(co.xy, vec2(a, b));\n  highp float e = mod(d, 3.14);\n  return fract(sin(e) * c);\n}\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n    // if we don't jitter the point size a bit, overall point cloud\n    // saturation 'jumps' on zooming, which is disturbing and confusing\n  gl_PointSize = pointSize * ((19.5 + rand(position)) / 20.0);\n  if(pointCloud != 0.0) { // pointCloud is truthy\n    // get the same square surface as circle would be\n    gl_PointSize *= 0.886;\n  }\n}"
@@ -35971,6 +35971,2632 @@ exports.pickVertex        = "precision mediump float;\n#define GLSLIFY 1\n\nattr
 exports.pickFragment      = "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0 * gl_PointCoord.xy - 1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"
 
 },{}],197:[function(require,module,exports){
+'use strict'
+
+var createUniformWrapper   = require('./lib/create-uniforms')
+var createAttributeWrapper = require('./lib/create-attributes')
+var makeReflect            = require('./lib/reflect')
+var shaderCache            = require('./lib/shader-cache')
+var runtime                = require('./lib/runtime-reflect')
+var GLError                = require("./lib/GLError")
+
+//Shader object
+function Shader(gl) {
+  this.gl         = gl
+  this.gl.lastAttribCount = 0  // fixme where else should we store info, safe but not nice on the gl object
+
+  //Default initialize these to null
+  this._vref      =
+  this._fref      =
+  this._relink    =
+  this.vertShader =
+  this.fragShader =
+  this.program    =
+  this.attributes =
+  this.uniforms   =
+  this.types      = null
+}
+
+var proto = Shader.prototype
+
+proto.bind = function() {
+  if(!this.program) {
+    this._relink()
+  }
+
+  // ensuring that we have the right number of enabled vertex attributes
+  var i
+  var newAttribCount = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES) // more robust approach
+  //var newAttribCount = Object.keys(this.attributes).length // avoids the probably immaterial introspection slowdown
+  var oldAttribCount = this.gl.lastAttribCount
+  if(newAttribCount > oldAttribCount) {
+    for(i = oldAttribCount; i < newAttribCount; i++) {
+      this.gl.enableVertexAttribArray(i)
+    }
+  } else if(oldAttribCount > newAttribCount) {
+    for(i = newAttribCount; i < oldAttribCount; i++) {
+      this.gl.disableVertexAttribArray(i)
+    }
+  }
+
+  this.gl.lastAttribCount = newAttribCount
+
+  this.gl.useProgram(this.program)
+}
+
+proto.dispose = function() {
+
+  // disabling vertex attributes so new shader starts with zero
+  // and it's also useful if all shaders are disposed but the
+  // gl context is reused for subsequent replotting
+  var oldAttribCount = this.gl.lastAttribCount
+  for (var i = 0; i < oldAttribCount; i++) {
+    this.gl.disableVertexAttribArray(i)
+  }
+  this.gl.lastAttribCount = 0
+
+  if(this._fref) {
+    this._fref.dispose()
+  }
+  if(this._vref) {
+    this._vref.dispose()
+  }
+  this.attributes =
+  this.types      =
+  this.vertShader =
+  this.fragShader =
+  this.program    =
+  this._relink    =
+  this._fref      =
+  this._vref      = null
+}
+
+function compareAttributes(a, b) {
+  if(a.name < b.name) {
+    return -1
+  }
+  return 1
+}
+
+//Update export hook for glslify-live
+proto.update = function(
+    vertSource
+  , fragSource
+  , uniforms
+  , attributes) {
+
+  //If only one object passed, assume glslify style output
+  if(!fragSource || arguments.length === 1) {
+    var obj = vertSource
+    vertSource = obj.vertex
+    fragSource = obj.fragment
+    uniforms   = obj.uniforms
+    attributes = obj.attributes
+  }
+
+  var wrapper = this
+  var gl      = wrapper.gl
+
+  //Compile vertex and fragment shaders
+  var pvref = wrapper._vref
+  wrapper._vref = shaderCache.shader(gl, gl.VERTEX_SHADER, vertSource)
+  if(pvref) {
+    pvref.dispose()
+  }
+  wrapper.vertShader = wrapper._vref.shader
+  var pfref = this._fref
+  wrapper._fref = shaderCache.shader(gl, gl.FRAGMENT_SHADER, fragSource)
+  if(pfref) {
+    pfref.dispose()
+  }
+  wrapper.fragShader = wrapper._fref.shader
+
+  //If uniforms/attributes is not specified, use RT reflection
+  if(!uniforms || !attributes) {
+
+    //Create initial test program
+    var testProgram = gl.createProgram()
+    gl.attachShader(testProgram, wrapper.fragShader)
+    gl.attachShader(testProgram, wrapper.vertShader)
+    gl.linkProgram(testProgram)
+    if(!gl.getProgramParameter(testProgram, gl.LINK_STATUS)) {
+      var errLog = gl.getProgramInfoLog(testProgram)
+      throw new GLError(errLog, 'Error linking program:' + errLog)
+    }
+
+    //Load data from runtime
+    uniforms   = uniforms   || runtime.uniforms(gl, testProgram)
+    attributes = attributes || runtime.attributes(gl, testProgram)
+
+    //Release test program
+    gl.deleteProgram(testProgram)
+  }
+
+  //Sort attributes lexicographically
+  // overrides undefined WebGL behavior for attribute locations
+  attributes = attributes.slice()
+  attributes.sort(compareAttributes)
+
+  //Convert attribute types, read out locations
+  var attributeUnpacked  = []
+  var attributeNames     = []
+  var attributeLocations = []
+  var i
+  for(i=0; i<attributes.length; ++i) {
+    var attr = attributes[i]
+    if(attr.type.indexOf('mat') >= 0) {
+      var size = attr.type.charAt(attr.type.length-1)|0
+      var locVector = new Array(size)
+      for(var j=0; j<size; ++j) {
+        locVector[j] = attributeLocations.length
+        attributeNames.push(attr.name + '[' + j + ']')
+        if(typeof attr.location === 'number') {
+          attributeLocations.push(attr.location + j)
+        } else if(Array.isArray(attr.location) &&
+                  attr.location.length === size &&
+                  typeof attr.location[j] === 'number') {
+          attributeLocations.push(attr.location[j]|0)
+        } else {
+          attributeLocations.push(-1)
+        }
+      }
+      attributeUnpacked.push({
+        name: attr.name,
+        type: attr.type,
+        locations: locVector
+      })
+    } else {
+      attributeUnpacked.push({
+        name: attr.name,
+        type: attr.type,
+        locations: [ attributeLocations.length ]
+      })
+      attributeNames.push(attr.name)
+      if(typeof attr.location === 'number') {
+        attributeLocations.push(attr.location|0)
+      } else {
+        attributeLocations.push(-1)
+      }
+    }
+  }
+
+  //For all unspecified attributes, assign them lexicographically min attribute
+  var curLocation = 0
+  for(i=0; i<attributeLocations.length; ++i) {
+    if(attributeLocations[i] < 0) {
+      while(attributeLocations.indexOf(curLocation) >= 0) {
+        curLocation += 1
+      }
+      attributeLocations[i] = curLocation
+    }
+  }
+
+  //Rebuild program and recompute all uniform locations
+  var uniformLocations = new Array(uniforms.length)
+  function relink() {
+    wrapper.program = shaderCache.program(
+        gl
+      , wrapper._vref
+      , wrapper._fref
+      , attributeNames
+      , attributeLocations)
+
+    for(var i=0; i<uniforms.length; ++i) {
+      uniformLocations[i] = gl.getUniformLocation(
+          wrapper.program
+        , uniforms[i].name)
+    }
+  }
+
+  //Perform initial linking, reuse program used for reflection
+  relink()
+
+  //Save relinking procedure, defer until runtime
+  wrapper._relink = relink
+
+  //Generate type info
+  wrapper.types = {
+    uniforms:   makeReflect(uniforms),
+    attributes: makeReflect(attributes)
+  }
+
+  //Generate attribute wrappers
+  wrapper.attributes = createAttributeWrapper(
+      gl
+    , wrapper
+    , attributeUnpacked
+    , attributeLocations)
+
+  //Generate uniform wrappers
+  Object.defineProperty(wrapper, 'uniforms', createUniformWrapper(
+      gl
+    , wrapper
+    , uniforms
+    , uniformLocations))
+}
+
+//Compiles and links a shader program with the given attribute and vertex list
+function createShader(
+    gl
+  , vertSource
+  , fragSource
+  , uniforms
+  , attributes) {
+
+  var shader = new Shader(gl)
+
+  shader.update(
+      vertSource
+    , fragSource
+    , uniforms
+    , attributes)
+
+  return shader
+}
+
+module.exports = createShader
+
+},{"./lib/GLError":198,"./lib/create-attributes":199,"./lib/create-uniforms":200,"./lib/reflect":201,"./lib/runtime-reflect":202,"./lib/shader-cache":203}],198:[function(require,module,exports){
+function GLError (rawError, shortMessage, longMessage) {
+    this.shortMessage = shortMessage || ''
+    this.longMessage = longMessage || ''
+    this.rawError = rawError || ''
+    this.message =
+      'gl-shader: ' + (shortMessage || rawError || '') +
+      (longMessage ? '\n'+longMessage : '')
+    this.stack = (new Error()).stack
+}
+GLError.prototype = new Error
+GLError.prototype.name = 'GLError'
+GLError.prototype.constructor = GLError
+module.exports = GLError
+
+},{}],199:[function(require,module,exports){
+'use strict'
+
+module.exports = createAttributeWrapper
+
+var GLError = require("./GLError")
+
+function ShaderAttribute(
+    gl
+  , wrapper
+  , index
+  , locations
+  , dimension
+  , constFunc) {
+  this._gl        = gl
+  this._wrapper   = wrapper
+  this._index     = index
+  this._locations = locations
+  this._dimension = dimension
+  this._constFunc = constFunc
+}
+
+var proto = ShaderAttribute.prototype
+
+proto.pointer = function setAttribPointer(
+    type
+  , normalized
+  , stride
+  , offset) {
+
+  var self      = this
+  var gl        = self._gl
+  var location  = self._locations[self._index]
+
+  gl.vertexAttribPointer(
+      location
+    , self._dimension
+    , type || gl.FLOAT
+    , !!normalized
+    , stride || 0
+    , offset || 0)
+  gl.enableVertexAttribArray(location)
+}
+
+proto.set = function(x0, x1, x2, x3) {
+  return this._constFunc(this._locations[this._index], x0, x1, x2, x3)
+}
+
+Object.defineProperty(proto, 'location', {
+  get: function() {
+    return this._locations[this._index]
+  }
+  , set: function(v) {
+    if(v !== this._locations[this._index]) {
+      this._locations[this._index] = v|0
+      this._wrapper.program = null
+    }
+    return v|0
+  }
+})
+
+//Adds a vector attribute to obj
+function addVectorAttribute(
+    gl
+  , wrapper
+  , index
+  , locations
+  , dimension
+  , obj
+  , name) {
+
+  //Construct constant function
+  var constFuncArgs = [ 'gl', 'v' ]
+  var varNames = []
+  for(var i=0; i<dimension; ++i) {
+    constFuncArgs.push('x'+i)
+    varNames.push('x'+i)
+  }
+  constFuncArgs.push(
+    'if(x0.length===void 0){return gl.vertexAttrib' +
+    dimension + 'f(v,' +
+    varNames.join() +
+    ')}else{return gl.vertexAttrib' +
+    dimension +
+    'fv(v,x0)}')
+  var constFunc = Function.apply(null, constFuncArgs)
+
+  //Create attribute wrapper
+  var attr = new ShaderAttribute(
+      gl
+    , wrapper
+    , index
+    , locations
+    , dimension
+    , constFunc)
+
+  //Create accessor
+  Object.defineProperty(obj, name, {
+    set: function(x) {
+      gl.disableVertexAttribArray(locations[index])
+      constFunc(gl, locations[index], x)
+      return x
+    }
+    , get: function() {
+      return attr
+    }
+    , enumerable: true
+  })
+}
+
+function addMatrixAttribute(
+    gl
+  , wrapper
+  , index
+  , locations
+  , dimension
+  , obj
+  , name) {
+
+  var parts = new Array(dimension)
+  var attrs = new Array(dimension)
+  for(var i=0; i<dimension; ++i) {
+    addVectorAttribute(
+        gl
+      , wrapper
+      , index[i]
+      , locations
+      , dimension
+      , parts
+      , i)
+    attrs[i] = parts[i]
+  }
+
+  Object.defineProperty(parts, 'location', {
+    set: function(v) {
+      if(Array.isArray(v)) {
+        for(var i=0; i<dimension; ++i) {
+          attrs[i].location = v[i]
+        }
+      } else {
+        for(var i=0; i<dimension; ++i) {
+          attrs[i].location = v + i
+        }
+      }
+      return v
+    }
+    , get: function() {
+      var result = new Array(dimension)
+      for(var i=0; i<dimension; ++i) {
+        result[i] = locations[index[i]]
+      }
+      return result
+    }
+    , enumerable: true
+  })
+
+  parts.pointer = function(type, normalized, stride, offset) {
+    type       = type || gl.FLOAT
+    normalized = !!normalized
+    stride     = stride || (dimension * dimension)
+    offset     = offset || 0
+    for(var i=0; i<dimension; ++i) {
+      var location = locations[index[i]]
+      gl.vertexAttribPointer(
+            location
+          , dimension
+          , type
+          , normalized
+          , stride
+          , offset + i * dimension)
+      gl.enableVertexAttribArray(location)
+    }
+  }
+
+  var scratch = new Array(dimension)
+  var vertexAttrib = gl['vertexAttrib' + dimension + 'fv']
+
+  Object.defineProperty(obj, name, {
+    set: function(x) {
+      for(var i=0; i<dimension; ++i) {
+        var loc = locations[index[i]]
+        gl.disableVertexAttribArray(loc)
+        if(Array.isArray(x[0])) {
+          vertexAttrib.call(gl, loc, x[i])
+        } else {
+          for(var j=0; j<dimension; ++j) {
+            scratch[j] = x[dimension*i + j]
+          }
+          vertexAttrib.call(gl, loc, scratch)
+        }
+      }
+      return x
+    }
+    , get: function() {
+      return parts
+    }
+    , enumerable: true
+  })
+}
+
+//Create shims for attributes
+function createAttributeWrapper(
+    gl
+  , wrapper
+  , attributes
+  , locations) {
+
+  var obj = {}
+  for(var i=0, n=attributes.length; i<n; ++i) {
+
+    var a = attributes[i]
+    var name = a.name
+    var type = a.type
+    var locs = a.locations
+
+    switch(type) {
+      case 'bool':
+      case 'int':
+      case 'float':
+        addVectorAttribute(
+            gl
+          , wrapper
+          , locs[0]
+          , locations
+          , 1
+          , obj
+          , name)
+      break
+
+      default:
+        if(type.indexOf('vec') >= 0) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid data type for attribute ' + name + ': ' + type)
+          }
+          addVectorAttribute(
+              gl
+            , wrapper
+            , locs[0]
+            , locations
+            , d
+            , obj
+            , name)
+        } else if(type.indexOf('mat') >= 0) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid data type for attribute ' + name + ': ' + type)
+          }
+          addMatrixAttribute(
+              gl
+            , wrapper
+            , locs
+            , locations
+            , d
+            , obj
+            , name)
+        } else {
+          throw new GLError('', 'Unknown data type for attribute ' + name + ': ' + type)
+        }
+      break
+    }
+  }
+  return obj
+}
+
+},{"./GLError":198}],200:[function(require,module,exports){
+'use strict'
+
+var coallesceUniforms = require('./reflect')
+var GLError = require("./GLError")
+
+module.exports = createUniformWrapper
+
+//Binds a function and returns a value
+function identity(x) {
+  var c = new Function('y', 'return function(){return y}')
+  return c(x)
+}
+
+function makeVector(length, fill) {
+  var result = new Array(length)
+  for(var i=0; i<length; ++i) {
+    result[i] = fill
+  }
+  return result
+}
+
+//Create shims for uniforms
+function createUniformWrapper(gl, wrapper, uniforms, locations) {
+
+  function makeGetter(index) {
+    var proc = new Function(
+        'gl'
+      , 'wrapper'
+      , 'locations'
+      , 'return function(){return gl.getUniform(wrapper.program,locations[' + index + '])}')
+    return proc(gl, wrapper, locations)
+  }
+
+  function makePropSetter(path, index, type) {
+    switch(type) {
+      case 'bool':
+      case 'int':
+      case 'sampler2D':
+      case 'samplerCube':
+        return 'gl.uniform1i(locations[' + index + '],obj' + path + ')'
+      case 'float':
+        return 'gl.uniform1f(locations[' + index + '],obj' + path + ')'
+      default:
+        var vidx = type.indexOf('vec')
+        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid data type')
+          }
+          switch(type.charAt(0)) {
+            case 'b':
+            case 'i':
+              return 'gl.uniform' + d + 'iv(locations[' + index + '],obj' + path + ')'
+            case 'v':
+              return 'gl.uniform' + d + 'fv(locations[' + index + '],obj' + path + ')'
+            default:
+              throw new GLError('', 'Unrecognized data type for vector ' + name + ': ' + type)
+          }
+        } else if(type.indexOf('mat') === 0 && type.length === 4) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + type)
+          }
+          return 'gl.uniformMatrix' + d + 'fv(locations[' + index + '],false,obj' + path + ')'
+        } else {
+          throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
+        }
+      break
+    }
+  }
+
+  function enumerateIndices(prefix, type) {
+    if(typeof type !== 'object') {
+      return [ [prefix, type] ]
+    }
+    var indices = []
+    for(var id in type) {
+      var prop = type[id]
+      var tprefix = prefix
+      if(parseInt(id) + '' === id) {
+        tprefix += '[' + id + ']'
+      } else {
+        tprefix += '.' + id
+      }
+      if(typeof prop === 'object') {
+        indices.push.apply(indices, enumerateIndices(tprefix, prop))
+      } else {
+        indices.push([tprefix, prop])
+      }
+    }
+    return indices
+  }
+
+  function makeSetter(type) {
+    var code = [ 'return function updateProperty(obj){' ]
+    var indices = enumerateIndices('', type)
+    for(var i=0; i<indices.length; ++i) {
+      var item = indices[i]
+      var path = item[0]
+      var idx  = item[1]
+      if(locations[idx]) {
+        code.push(makePropSetter(path, idx, uniforms[idx].type))
+      }
+    }
+    code.push('return obj}')
+    var proc = new Function('gl', 'locations', code.join('\n'))
+    return proc(gl, locations)
+  }
+
+  function defaultValue(type) {
+    switch(type) {
+      case 'bool':
+        return false
+      case 'int':
+      case 'sampler2D':
+      case 'samplerCube':
+        return 0
+      case 'float':
+        return 0.0
+      default:
+        var vidx = type.indexOf('vec')
+        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid data type')
+          }
+          if(type.charAt(0) === 'b') {
+            return makeVector(d, false)
+          }
+          return makeVector(d, 0)
+        } else if(type.indexOf('mat') === 0 && type.length === 4) {
+          var d = type.charCodeAt(type.length-1) - 48
+          if(d < 2 || d > 4) {
+            throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + type)
+          }
+          return makeVector(d*d, 0)
+        } else {
+          throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
+        }
+      break
+    }
+  }
+
+  function storeProperty(obj, prop, type) {
+    if(typeof type === 'object') {
+      var child = processObject(type)
+      Object.defineProperty(obj, prop, {
+        get: identity(child),
+        set: makeSetter(type),
+        enumerable: true,
+        configurable: false
+      })
+    } else {
+      if(locations[type]) {
+        Object.defineProperty(obj, prop, {
+          get: makeGetter(type),
+          set: makeSetter(type),
+          enumerable: true,
+          configurable: false
+        })
+      } else {
+        obj[prop] = defaultValue(uniforms[type].type)
+      }
+    }
+  }
+
+  function processObject(obj) {
+    var result
+    if(Array.isArray(obj)) {
+      result = new Array(obj.length)
+      for(var i=0; i<obj.length; ++i) {
+        storeProperty(result, i, obj[i])
+      }
+    } else {
+      result = {}
+      for(var id in obj) {
+        storeProperty(result, id, obj[id])
+      }
+    }
+    return result
+  }
+
+  //Return data
+  var coallesced = coallesceUniforms(uniforms, true)
+  return {
+    get: identity(processObject(coallesced)),
+    set: makeSetter(coallesced),
+    enumerable: true,
+    configurable: true
+  }
+}
+
+},{"./GLError":198,"./reflect":201}],201:[function(require,module,exports){
+'use strict'
+
+module.exports = makeReflectTypes
+
+//Construct type info for reflection.
+//
+// This iterates over the flattened list of uniform type values and smashes them into a JSON object.
+//
+// The leaves of the resulting object are either indices or type strings representing primitive glslify types
+function makeReflectTypes(uniforms, useIndex) {
+  var obj = {}
+  for(var i=0; i<uniforms.length; ++i) {
+    var n = uniforms[i].name
+    var parts = n.split(".")
+    var o = obj
+    for(var j=0; j<parts.length; ++j) {
+      var x = parts[j].split("[")
+      if(x.length > 1) {
+        if(!(x[0] in o)) {
+          o[x[0]] = []
+        }
+        o = o[x[0]]
+        for(var k=1; k<x.length; ++k) {
+          var y = parseInt(x[k])
+          if(k<x.length-1 || j<parts.length-1) {
+            if(!(y in o)) {
+              if(k < x.length-1) {
+                o[y] = []
+              } else {
+                o[y] = {}
+              }
+            }
+            o = o[y]
+          } else {
+            if(useIndex) {
+              o[y] = i
+            } else {
+              o[y] = uniforms[i].type
+            }
+          }
+        }
+      } else if(j < parts.length-1) {
+        if(!(x[0] in o)) {
+          o[x[0]] = {}
+        }
+        o = o[x[0]]
+      } else {
+        if(useIndex) {
+          o[x[0]] = i
+        } else {
+          o[x[0]] = uniforms[i].type
+        }
+      }
+    }
+  }
+  return obj
+}
+},{}],202:[function(require,module,exports){
+'use strict'
+
+exports.uniforms    = runtimeUniforms
+exports.attributes  = runtimeAttributes
+
+var GL_TO_GLSL_TYPES = {
+  'FLOAT':       'float',
+  'FLOAT_VEC2':  'vec2',
+  'FLOAT_VEC3':  'vec3',
+  'FLOAT_VEC4':  'vec4',
+  'INT':         'int',
+  'INT_VEC2':    'ivec2',
+  'INT_VEC3':    'ivec3',
+  'INT_VEC4':    'ivec4',
+  'BOOL':        'bool',
+  'BOOL_VEC2':   'bvec2',
+  'BOOL_VEC3':   'bvec3',
+  'BOOL_VEC4':   'bvec4',
+  'FLOAT_MAT2':  'mat2',
+  'FLOAT_MAT3':  'mat3',
+  'FLOAT_MAT4':  'mat4',
+  'SAMPLER_2D':  'sampler2D',
+  'SAMPLER_CUBE':'samplerCube'
+}
+
+var GL_TABLE = null
+
+function getType(gl, type) {
+  if(!GL_TABLE) {
+    var typeNames = Object.keys(GL_TO_GLSL_TYPES)
+    GL_TABLE = {}
+    for(var i=0; i<typeNames.length; ++i) {
+      var tn = typeNames[i]
+      GL_TABLE[gl[tn]] = GL_TO_GLSL_TYPES[tn]
+    }
+  }
+  return GL_TABLE[type]
+}
+
+function runtimeUniforms(gl, program) {
+  var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
+  var result = []
+  for(var i=0; i<numUniforms; ++i) {
+    var info = gl.getActiveUniform(program, i)
+    if(info) {
+      var type = getType(gl, info.type)
+      if(info.size > 1) {
+        for(var j=0; j<info.size; ++j) {
+          result.push({
+            name: info.name.replace('[0]', '[' + j + ']'),
+            type: type
+          })
+        }
+      } else {
+        result.push({
+          name: info.name,
+          type: type
+        })
+      }
+    }
+  }
+  return result
+}
+
+function runtimeAttributes(gl, program) {
+  var numAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES)
+  var result = []
+  for(var i=0; i<numAttributes; ++i) {
+    var info = gl.getActiveAttrib(program, i)
+    if(info) {
+      result.push({
+        name: info.name,
+        type: getType(gl, info.type)
+      })
+    }
+  }
+  return result
+}
+
+},{}],203:[function(require,module,exports){
+'use strict'
+
+exports.shader   = getShaderReference
+exports.program  = createProgram
+
+var GLError = require("./GLError")
+var formatCompilerError = require('gl-format-compiler-error');
+
+var weakMap = typeof WeakMap === 'undefined' ? require('weakmap-shim') : WeakMap
+var CACHE = new weakMap()
+
+var SHADER_COUNTER = 0
+
+function ShaderReference(id, src, type, shader, programs, count, cache) {
+  this.id       = id
+  this.src      = src
+  this.type     = type
+  this.shader   = shader
+  this.count    = count
+  this.programs = []
+  this.cache    = cache
+}
+
+ShaderReference.prototype.dispose = function() {
+  if(--this.count === 0) {
+    var cache    = this.cache
+    var gl       = cache.gl
+
+    //Remove program references
+    var programs = this.programs
+    for(var i=0, n=programs.length; i<n; ++i) {
+      var p = cache.programs[programs[i]]
+      if(p) {
+        delete cache.programs[i]
+        gl.deleteProgram(p)
+      }
+    }
+
+    //Remove shader reference
+    gl.deleteShader(this.shader)
+    delete cache.shaders[(this.type === gl.FRAGMENT_SHADER)|0][this.src]
+  }
+}
+
+function ContextCache(gl) {
+  this.gl       = gl
+  this.shaders  = [{}, {}]
+  this.programs = {}
+}
+
+var proto = ContextCache.prototype
+
+function compileShader(gl, type, src) {
+  var shader = gl.createShader(type)
+  gl.shaderSource(shader, src)
+  gl.compileShader(shader)
+  if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+    var errLog = gl.getShaderInfoLog(shader)
+    try {
+        var fmt = formatCompilerError(errLog, src, type);
+    } catch (e){
+        console.warn('Failed to format compiler error: ' + e);
+        throw new GLError(errLog, 'Error compiling shader:\n' + errLog)
+    }
+    throw new GLError(errLog, fmt.short, fmt.long)
+  }
+  return shader
+}
+
+proto.getShaderReference = function(type, src) {
+  var gl      = this.gl
+  var shaders = this.shaders[(type === gl.FRAGMENT_SHADER)|0]
+  var shader  = shaders[src]
+  if(!shader || !gl.isShader(shader.shader)) {
+    var shaderObj = compileShader(gl, type, src)
+    shader = shaders[src] = new ShaderReference(
+      SHADER_COUNTER++,
+      src,
+      type,
+      shaderObj,
+      [],
+      1,
+      this)
+  } else {
+    shader.count += 1
+  }
+  return shader
+}
+
+function linkProgram(gl, vshader, fshader, attribs, locations) {
+  var program = gl.createProgram()
+  gl.attachShader(program, vshader)
+  gl.attachShader(program, fshader)
+  for(var i=0; i<attribs.length; ++i) {
+    gl.bindAttribLocation(program, locations[i], attribs[i])
+  }
+  gl.linkProgram(program)
+  if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+    var errLog = gl.getProgramInfoLog(program)
+    throw new GLError(errLog, 'Error linking program: ' + errLog)
+  }
+  return program
+}
+
+proto.getProgram = function(vref, fref, attribs, locations) {
+  var token = [vref.id, fref.id, attribs.join(':'), locations.join(':')].join('@')
+  var prog  = this.programs[token]
+  if(!prog || !this.gl.isProgram(prog)) {
+    this.programs[token] = prog = linkProgram(
+      this.gl,
+      vref.shader,
+      fref.shader,
+      attribs,
+      locations)
+    vref.programs.push(token)
+    fref.programs.push(token)
+  }
+  return prog
+}
+
+function getCache(gl) {
+  var ctxCache = CACHE.get(gl)
+  if(!ctxCache) {
+    ctxCache = new ContextCache(gl)
+    CACHE.set(gl, ctxCache)
+  }
+  return ctxCache
+}
+
+function getShaderReference(gl, type, src) {
+  return getCache(gl).getShaderReference(type, src)
+}
+
+function createProgram(gl, vref, fref, attribs, locations) {
+  return getCache(gl).getProgram(vref, fref, attribs, locations)
+}
+
+},{"./GLError":198,"gl-format-compiler-error":204,"weakmap-shim":222}],204:[function(require,module,exports){
+
+var sprintf = require('sprintf-js').sprintf;
+var glConstants = require('gl-constants/lookup');
+var shaderName = require('glsl-shader-name');
+var addLineNumbers = require('add-line-numbers');
+
+module.exports = formatCompilerError;
+
+function formatCompilerError(errLog, src, type) {
+    "use strict";
+
+    var name = shaderName(src) || 'of unknown name (see npm glsl-shader-name)';
+
+    var typeName = 'unknown type';
+    if (type !== undefined) {
+        typeName = type === glConstants.FRAGMENT_SHADER ? 'fragment' : 'vertex'
+    }
+
+    var longForm = sprintf('Error compiling %s shader %s:\n', typeName, name);
+    var shortForm = sprintf("%s%s", longForm, errLog);
+
+    var errorStrings = errLog.split('\n');
+    var errors = {};
+
+    for (var i = 0; i < errorStrings.length; i++) {
+        var errorString = errorStrings[i];
+        if (errorString === '') continue;
+        var lineNo = parseInt(errorString.split(':')[2]);
+        if (isNaN(lineNo)) {
+            throw new Error(sprintf('Could not parse error: %s', errorString));
+        }
+        errors[lineNo] = errorString;
+    }
+
+    var lines = addLineNumbers(src).split('\n');
+
+    for (var i = 0; i < lines.length; i++) {
+        if (!errors[i+3] && !errors[i+2] && !errors[i+1]) continue;
+        var line = lines[i];
+        longForm += line + '\n';
+        if (errors[i+1]) {
+            var e = errors[i+1];
+            e = e.substr(e.split(':', 3).join(':').length + 1).trim();
+            longForm += sprintf('^^^ %s\n\n', e);
+        }
+    }
+
+    return {
+        long: longForm.trim(),
+        short: shortForm.trim()
+    };
+}
+
+
+},{"add-line-numbers":205,"gl-constants/lookup":209,"glsl-shader-name":210,"sprintf-js":219}],205:[function(require,module,exports){
+var padLeft = require('pad-left')
+
+module.exports = addLineNumbers
+function addLineNumbers (string, start, delim) {
+  start = typeof start === 'number' ? start : 1
+  delim = delim || ': '
+
+  var lines = string.split(/\r?\n/)
+  var totalDigits = String(lines.length + start - 1).length
+  return lines.map(function (line, i) {
+    var c = i + start
+    var digits = String(c).length
+    var prefix = padLeft(c, totalDigits - digits)
+    return prefix + delim + line
+  }).join('\n')
+}
+
+},{"pad-left":206}],206:[function(require,module,exports){
+/*!
+ * pad-left <https://github.com/jonschlinkert/pad-left>
+ *
+ * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Licensed under the MIT license.
+ */
+
+'use strict';
+
+var repeat = require('repeat-string');
+
+module.exports = function padLeft(str, num, ch) {
+  ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
+  return repeat(ch, num) + str;
+};
+},{"repeat-string":207}],207:[function(require,module,exports){
+/*!
+ * repeat-string <https://github.com/jonschlinkert/repeat-string>
+ *
+ * Copyright (c) 2014-2015, Jon Schlinkert.
+ * Licensed under the MIT License.
+ */
+
+'use strict';
+
+/**
+ * Results cache
+ */
+
+var res = '';
+var cache;
+
+/**
+ * Expose `repeat`
+ */
+
+module.exports = repeat;
+
+/**
+ * Repeat the given `string` the specified `number`
+ * of times.
+ *
+ * **Example:**
+ *
+ * ```js
+ * var repeat = require('repeat-string');
+ * repeat('A', 5);
+ * //=> AAAAA
+ * ```
+ *
+ * @param {String} `string` The string to repeat
+ * @param {Number} `number` The number of times to repeat the string
+ * @return {String} Repeated string
+ * @api public
+ */
+
+function repeat(str, num) {
+  if (typeof str !== 'string') {
+    throw new TypeError('repeat-string expects a string.');
+  }
+
+  // cover common, quick use cases
+  if (num === 1) return str;
+  if (num === 2) return str + str;
+
+  var max = str.length * num;
+  if (cache !== str || typeof cache === 'undefined') {
+    cache = str;
+    res = '';
+  }
+
+  while (max > res.length && num > 0) {
+    if (num & 1) {
+      res += str;
+    }
+
+    num >>= 1;
+    if (!num) break;
+    str += str;
+  }
+
+  return res.substr(0, max);
+}
+
+
+},{}],208:[function(require,module,exports){
+module.exports = {
+  0: 'NONE',
+  1: 'ONE',
+  2: 'LINE_LOOP',
+  3: 'LINE_STRIP',
+  4: 'TRIANGLES',
+  5: 'TRIANGLE_STRIP',
+  6: 'TRIANGLE_FAN',
+  256: 'DEPTH_BUFFER_BIT',
+  512: 'NEVER',
+  513: 'LESS',
+  514: 'EQUAL',
+  515: 'LEQUAL',
+  516: 'GREATER',
+  517: 'NOTEQUAL',
+  518: 'GEQUAL',
+  519: 'ALWAYS',
+  768: 'SRC_COLOR',
+  769: 'ONE_MINUS_SRC_COLOR',
+  770: 'SRC_ALPHA',
+  771: 'ONE_MINUS_SRC_ALPHA',
+  772: 'DST_ALPHA',
+  773: 'ONE_MINUS_DST_ALPHA',
+  774: 'DST_COLOR',
+  775: 'ONE_MINUS_DST_COLOR',
+  776: 'SRC_ALPHA_SATURATE',
+  1024: 'STENCIL_BUFFER_BIT',
+  1028: 'FRONT',
+  1029: 'BACK',
+  1032: 'FRONT_AND_BACK',
+  1280: 'INVALID_ENUM',
+  1281: 'INVALID_VALUE',
+  1282: 'INVALID_OPERATION',
+  1285: 'OUT_OF_MEMORY',
+  1286: 'INVALID_FRAMEBUFFER_OPERATION',
+  2304: 'CW',
+  2305: 'CCW',
+  2849: 'LINE_WIDTH',
+  2884: 'CULL_FACE',
+  2885: 'CULL_FACE_MODE',
+  2886: 'FRONT_FACE',
+  2928: 'DEPTH_RANGE',
+  2929: 'DEPTH_TEST',
+  2930: 'DEPTH_WRITEMASK',
+  2931: 'DEPTH_CLEAR_VALUE',
+  2932: 'DEPTH_FUNC',
+  2960: 'STENCIL_TEST',
+  2961: 'STENCIL_CLEAR_VALUE',
+  2962: 'STENCIL_FUNC',
+  2963: 'STENCIL_VALUE_MASK',
+  2964: 'STENCIL_FAIL',
+  2965: 'STENCIL_PASS_DEPTH_FAIL',
+  2966: 'STENCIL_PASS_DEPTH_PASS',
+  2967: 'STENCIL_REF',
+  2968: 'STENCIL_WRITEMASK',
+  2978: 'VIEWPORT',
+  3024: 'DITHER',
+  3042: 'BLEND',
+  3088: 'SCISSOR_BOX',
+  3089: 'SCISSOR_TEST',
+  3106: 'COLOR_CLEAR_VALUE',
+  3107: 'COLOR_WRITEMASK',
+  3317: 'UNPACK_ALIGNMENT',
+  3333: 'PACK_ALIGNMENT',
+  3379: 'MAX_TEXTURE_SIZE',
+  3386: 'MAX_VIEWPORT_DIMS',
+  3408: 'SUBPIXEL_BITS',
+  3410: 'RED_BITS',
+  3411: 'GREEN_BITS',
+  3412: 'BLUE_BITS',
+  3413: 'ALPHA_BITS',
+  3414: 'DEPTH_BITS',
+  3415: 'STENCIL_BITS',
+  3553: 'TEXTURE_2D',
+  4352: 'DONT_CARE',
+  4353: 'FASTEST',
+  4354: 'NICEST',
+  5120: 'BYTE',
+  5121: 'UNSIGNED_BYTE',
+  5122: 'SHORT',
+  5123: 'UNSIGNED_SHORT',
+  5124: 'INT',
+  5125: 'UNSIGNED_INT',
+  5126: 'FLOAT',
+  5386: 'INVERT',
+  5890: 'TEXTURE',
+  6401: 'STENCIL_INDEX',
+  6402: 'DEPTH_COMPONENT',
+  6406: 'ALPHA',
+  6407: 'RGB',
+  6408: 'RGBA',
+  6409: 'LUMINANCE',
+  6410: 'LUMINANCE_ALPHA',
+  7680: 'KEEP',
+  7681: 'REPLACE',
+  7682: 'INCR',
+  7683: 'DECR',
+  7936: 'VENDOR',
+  7937: 'RENDERER',
+  7938: 'VERSION',
+  9728: 'NEAREST',
+  9729: 'LINEAR',
+  9984: 'NEAREST_MIPMAP_NEAREST',
+  9985: 'LINEAR_MIPMAP_NEAREST',
+  9986: 'NEAREST_MIPMAP_LINEAR',
+  9987: 'LINEAR_MIPMAP_LINEAR',
+  10240: 'TEXTURE_MAG_FILTER',
+  10241: 'TEXTURE_MIN_FILTER',
+  10242: 'TEXTURE_WRAP_S',
+  10243: 'TEXTURE_WRAP_T',
+  10497: 'REPEAT',
+  10752: 'POLYGON_OFFSET_UNITS',
+  16384: 'COLOR_BUFFER_BIT',
+  32769: 'CONSTANT_COLOR',
+  32770: 'ONE_MINUS_CONSTANT_COLOR',
+  32771: 'CONSTANT_ALPHA',
+  32772: 'ONE_MINUS_CONSTANT_ALPHA',
+  32773: 'BLEND_COLOR',
+  32774: 'FUNC_ADD',
+  32777: 'BLEND_EQUATION_RGB',
+  32778: 'FUNC_SUBTRACT',
+  32779: 'FUNC_REVERSE_SUBTRACT',
+  32819: 'UNSIGNED_SHORT_4_4_4_4',
+  32820: 'UNSIGNED_SHORT_5_5_5_1',
+  32823: 'POLYGON_OFFSET_FILL',
+  32824: 'POLYGON_OFFSET_FACTOR',
+  32854: 'RGBA4',
+  32855: 'RGB5_A1',
+  32873: 'TEXTURE_BINDING_2D',
+  32926: 'SAMPLE_ALPHA_TO_COVERAGE',
+  32928: 'SAMPLE_COVERAGE',
+  32936: 'SAMPLE_BUFFERS',
+  32937: 'SAMPLES',
+  32938: 'SAMPLE_COVERAGE_VALUE',
+  32939: 'SAMPLE_COVERAGE_INVERT',
+  32968: 'BLEND_DST_RGB',
+  32969: 'BLEND_SRC_RGB',
+  32970: 'BLEND_DST_ALPHA',
+  32971: 'BLEND_SRC_ALPHA',
+  33071: 'CLAMP_TO_EDGE',
+  33170: 'GENERATE_MIPMAP_HINT',
+  33189: 'DEPTH_COMPONENT16',
+  33306: 'DEPTH_STENCIL_ATTACHMENT',
+  33635: 'UNSIGNED_SHORT_5_6_5',
+  33648: 'MIRRORED_REPEAT',
+  33901: 'ALIASED_POINT_SIZE_RANGE',
+  33902: 'ALIASED_LINE_WIDTH_RANGE',
+  33984: 'TEXTURE0',
+  33985: 'TEXTURE1',
+  33986: 'TEXTURE2',
+  33987: 'TEXTURE3',
+  33988: 'TEXTURE4',
+  33989: 'TEXTURE5',
+  33990: 'TEXTURE6',
+  33991: 'TEXTURE7',
+  33992: 'TEXTURE8',
+  33993: 'TEXTURE9',
+  33994: 'TEXTURE10',
+  33995: 'TEXTURE11',
+  33996: 'TEXTURE12',
+  33997: 'TEXTURE13',
+  33998: 'TEXTURE14',
+  33999: 'TEXTURE15',
+  34000: 'TEXTURE16',
+  34001: 'TEXTURE17',
+  34002: 'TEXTURE18',
+  34003: 'TEXTURE19',
+  34004: 'TEXTURE20',
+  34005: 'TEXTURE21',
+  34006: 'TEXTURE22',
+  34007: 'TEXTURE23',
+  34008: 'TEXTURE24',
+  34009: 'TEXTURE25',
+  34010: 'TEXTURE26',
+  34011: 'TEXTURE27',
+  34012: 'TEXTURE28',
+  34013: 'TEXTURE29',
+  34014: 'TEXTURE30',
+  34015: 'TEXTURE31',
+  34016: 'ACTIVE_TEXTURE',
+  34024: 'MAX_RENDERBUFFER_SIZE',
+  34041: 'DEPTH_STENCIL',
+  34055: 'INCR_WRAP',
+  34056: 'DECR_WRAP',
+  34067: 'TEXTURE_CUBE_MAP',
+  34068: 'TEXTURE_BINDING_CUBE_MAP',
+  34069: 'TEXTURE_CUBE_MAP_POSITIVE_X',
+  34070: 'TEXTURE_CUBE_MAP_NEGATIVE_X',
+  34071: 'TEXTURE_CUBE_MAP_POSITIVE_Y',
+  34072: 'TEXTURE_CUBE_MAP_NEGATIVE_Y',
+  34073: 'TEXTURE_CUBE_MAP_POSITIVE_Z',
+  34074: 'TEXTURE_CUBE_MAP_NEGATIVE_Z',
+  34076: 'MAX_CUBE_MAP_TEXTURE_SIZE',
+  34338: 'VERTEX_ATTRIB_ARRAY_ENABLED',
+  34339: 'VERTEX_ATTRIB_ARRAY_SIZE',
+  34340: 'VERTEX_ATTRIB_ARRAY_STRIDE',
+  34341: 'VERTEX_ATTRIB_ARRAY_TYPE',
+  34342: 'CURRENT_VERTEX_ATTRIB',
+  34373: 'VERTEX_ATTRIB_ARRAY_POINTER',
+  34466: 'NUM_COMPRESSED_TEXTURE_FORMATS',
+  34467: 'COMPRESSED_TEXTURE_FORMATS',
+  34660: 'BUFFER_SIZE',
+  34661: 'BUFFER_USAGE',
+  34816: 'STENCIL_BACK_FUNC',
+  34817: 'STENCIL_BACK_FAIL',
+  34818: 'STENCIL_BACK_PASS_DEPTH_FAIL',
+  34819: 'STENCIL_BACK_PASS_DEPTH_PASS',
+  34877: 'BLEND_EQUATION_ALPHA',
+  34921: 'MAX_VERTEX_ATTRIBS',
+  34922: 'VERTEX_ATTRIB_ARRAY_NORMALIZED',
+  34930: 'MAX_TEXTURE_IMAGE_UNITS',
+  34962: 'ARRAY_BUFFER',
+  34963: 'ELEMENT_ARRAY_BUFFER',
+  34964: 'ARRAY_BUFFER_BINDING',
+  34965: 'ELEMENT_ARRAY_BUFFER_BINDING',
+  34975: 'VERTEX_ATTRIB_ARRAY_BUFFER_BINDING',
+  35040: 'STREAM_DRAW',
+  35044: 'STATIC_DRAW',
+  35048: 'DYNAMIC_DRAW',
+  35632: 'FRAGMENT_SHADER',
+  35633: 'VERTEX_SHADER',
+  35660: 'MAX_VERTEX_TEXTURE_IMAGE_UNITS',
+  35661: 'MAX_COMBINED_TEXTURE_IMAGE_UNITS',
+  35663: 'SHADER_TYPE',
+  35664: 'FLOAT_VEC2',
+  35665: 'FLOAT_VEC3',
+  35666: 'FLOAT_VEC4',
+  35667: 'INT_VEC2',
+  35668: 'INT_VEC3',
+  35669: 'INT_VEC4',
+  35670: 'BOOL',
+  35671: 'BOOL_VEC2',
+  35672: 'BOOL_VEC3',
+  35673: 'BOOL_VEC4',
+  35674: 'FLOAT_MAT2',
+  35675: 'FLOAT_MAT3',
+  35676: 'FLOAT_MAT4',
+  35678: 'SAMPLER_2D',
+  35680: 'SAMPLER_CUBE',
+  35712: 'DELETE_STATUS',
+  35713: 'COMPILE_STATUS',
+  35714: 'LINK_STATUS',
+  35715: 'VALIDATE_STATUS',
+  35716: 'INFO_LOG_LENGTH',
+  35717: 'ATTACHED_SHADERS',
+  35718: 'ACTIVE_UNIFORMS',
+  35719: 'ACTIVE_UNIFORM_MAX_LENGTH',
+  35720: 'SHADER_SOURCE_LENGTH',
+  35721: 'ACTIVE_ATTRIBUTES',
+  35722: 'ACTIVE_ATTRIBUTE_MAX_LENGTH',
+  35724: 'SHADING_LANGUAGE_VERSION',
+  35725: 'CURRENT_PROGRAM',
+  36003: 'STENCIL_BACK_REF',
+  36004: 'STENCIL_BACK_VALUE_MASK',
+  36005: 'STENCIL_BACK_WRITEMASK',
+  36006: 'FRAMEBUFFER_BINDING',
+  36007: 'RENDERBUFFER_BINDING',
+  36048: 'FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE',
+  36049: 'FRAMEBUFFER_ATTACHMENT_OBJECT_NAME',
+  36050: 'FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL',
+  36051: 'FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE',
+  36053: 'FRAMEBUFFER_COMPLETE',
+  36054: 'FRAMEBUFFER_INCOMPLETE_ATTACHMENT',
+  36055: 'FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT',
+  36057: 'FRAMEBUFFER_INCOMPLETE_DIMENSIONS',
+  36061: 'FRAMEBUFFER_UNSUPPORTED',
+  36064: 'COLOR_ATTACHMENT0',
+  36096: 'DEPTH_ATTACHMENT',
+  36128: 'STENCIL_ATTACHMENT',
+  36160: 'FRAMEBUFFER',
+  36161: 'RENDERBUFFER',
+  36162: 'RENDERBUFFER_WIDTH',
+  36163: 'RENDERBUFFER_HEIGHT',
+  36164: 'RENDERBUFFER_INTERNAL_FORMAT',
+  36168: 'STENCIL_INDEX8',
+  36176: 'RENDERBUFFER_RED_SIZE',
+  36177: 'RENDERBUFFER_GREEN_SIZE',
+  36178: 'RENDERBUFFER_BLUE_SIZE',
+  36179: 'RENDERBUFFER_ALPHA_SIZE',
+  36180: 'RENDERBUFFER_DEPTH_SIZE',
+  36181: 'RENDERBUFFER_STENCIL_SIZE',
+  36194: 'RGB565',
+  36336: 'LOW_FLOAT',
+  36337: 'MEDIUM_FLOAT',
+  36338: 'HIGH_FLOAT',
+  36339: 'LOW_INT',
+  36340: 'MEDIUM_INT',
+  36341: 'HIGH_INT',
+  36346: 'SHADER_COMPILER',
+  36347: 'MAX_VERTEX_UNIFORM_VECTORS',
+  36348: 'MAX_VARYING_VECTORS',
+  36349: 'MAX_FRAGMENT_UNIFORM_VECTORS',
+  37440: 'UNPACK_FLIP_Y_WEBGL',
+  37441: 'UNPACK_PREMULTIPLY_ALPHA_WEBGL',
+  37442: 'CONTEXT_LOST_WEBGL',
+  37443: 'UNPACK_COLORSPACE_CONVERSION_WEBGL',
+  37444: 'BROWSER_DEFAULT_WEBGL'
+}
+
+},{}],209:[function(require,module,exports){
+var gl10 = require('./1.0/numbers')
+
+module.exports = function lookupConstant (number) {
+  return gl10[number]
+}
+
+},{"./1.0/numbers":208}],210:[function(require,module,exports){
+var tokenize = require('glsl-tokenizer')
+var atob     = require('atob-lite')
+
+module.exports = getName
+
+function getName(src) {
+  var tokens = Array.isArray(src)
+    ? src
+    : tokenize(src)
+
+  for (var i = 0; i < tokens.length; i++) {
+    var token = tokens[i]
+    if (token.type !== 'preprocessor') continue
+    var match = token.data.match(/\#define\s+SHADER_NAME(_B64)?\s+(.+)$/)
+    if (!match) continue
+    if (!match[2]) continue
+
+    var b64  = match[1]
+    var name = match[2]
+
+    return (b64 ? atob(name) : name).trim()
+  }
+}
+
+},{"atob-lite":211,"glsl-tokenizer":218}],211:[function(require,module,exports){
+module.exports = function _atob(str) {
+  return atob(str)
+}
+
+},{}],212:[function(require,module,exports){
+module.exports = tokenize
+
+var literals100 = require('./lib/literals')
+  , operators = require('./lib/operators')
+  , builtins100 = require('./lib/builtins')
+  , literals300es = require('./lib/literals-300es')
+  , builtins300es = require('./lib/builtins-300es')
+
+var NORMAL = 999          // <-- never emitted
+  , TOKEN = 9999          // <-- never emitted
+  , BLOCK_COMMENT = 0
+  , LINE_COMMENT = 1
+  , PREPROCESSOR = 2
+  , OPERATOR = 3
+  , INTEGER = 4
+  , FLOAT = 5
+  , IDENT = 6
+  , BUILTIN = 7
+  , KEYWORD = 8
+  , WHITESPACE = 9
+  , EOF = 10
+  , HEX = 11
+
+var map = [
+    'block-comment'
+  , 'line-comment'
+  , 'preprocessor'
+  , 'operator'
+  , 'integer'
+  , 'float'
+  , 'ident'
+  , 'builtin'
+  , 'keyword'
+  , 'whitespace'
+  , 'eof'
+  , 'integer'
+]
+
+function tokenize(opt) {
+  var i = 0
+    , total = 0
+    , mode = NORMAL
+    , c
+    , last
+    , content = []
+    , tokens = []
+    , token_idx = 0
+    , token_offs = 0
+    , line = 1
+    , col = 0
+    , start = 0
+    , isnum = false
+    , isoperator = false
+    , input = ''
+    , len
+
+  opt = opt || {}
+  var allBuiltins = builtins100
+  var allLiterals = literals100
+  if (opt.version === '300 es') {
+    allBuiltins = builtins300es
+    allLiterals = literals300es
+  }
+
+  return function(data) {
+    tokens = []
+    if (data !== null) return write(data.replace ? data.replace(/\r\n/g, '\n') : data)
+    return end()
+  }
+
+  function token(data) {
+    if (data.length) {
+      tokens.push({
+        type: map[mode]
+      , data: data
+      , position: start
+      , line: line
+      , column: col
+      })
+    }
+  }
+
+  function write(chunk) {
+    i = 0
+    input += chunk
+    len = input.length
+
+    var last
+
+    while(c = input[i], i < len) {
+      last = i
+
+      switch(mode) {
+        case BLOCK_COMMENT: i = block_comment(); break
+        case LINE_COMMENT: i = line_comment(); break
+        case PREPROCESSOR: i = preprocessor(); break
+        case OPERATOR: i = operator(); break
+        case INTEGER: i = integer(); break
+        case HEX: i = hex(); break
+        case FLOAT: i = decimal(); break
+        case TOKEN: i = readtoken(); break
+        case WHITESPACE: i = whitespace(); break
+        case NORMAL: i = normal(); break
+      }
+
+      if(last !== i) {
+        switch(input[last]) {
+          case '\n': col = 0; ++line; break
+          default: ++col; break
+        }
+      }
+    }
+
+    total += i
+    input = input.slice(i)
+    return tokens
+  }
+
+  function end(chunk) {
+    if(content.length) {
+      token(content.join(''))
+    }
+
+    mode = EOF
+    token('(eof)')
+    return tokens
+  }
+
+  function normal() {
+    content = content.length ? [] : content
+
+    if(last === '/' && c === '*') {
+      start = total + i - 1
+      mode = BLOCK_COMMENT
+      last = c
+      return i + 1
+    }
+
+    if(last === '/' && c === '/') {
+      start = total + i - 1
+      mode = LINE_COMMENT
+      last = c
+      return i + 1
+    }
+
+    if(c === '#') {
+      mode = PREPROCESSOR
+      start = total + i
+      return i
+    }
+
+    if(/\s/.test(c)) {
+      mode = WHITESPACE
+      start = total + i
+      return i
+    }
+
+    isnum = /\d/.test(c)
+    isoperator = /[^\w_]/.test(c)
+
+    start = total + i
+    mode = isnum ? INTEGER : isoperator ? OPERATOR : TOKEN
+    return i
+  }
+
+  function whitespace() {
+    if(/[^\s]/g.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function preprocessor() {
+    if((c === '\r' || c === '\n') && last !== '\\') {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function line_comment() {
+    return preprocessor()
+  }
+
+  function block_comment() {
+    if(c === '/' && last === '*') {
+      content.push(c)
+      token(content.join(''))
+      mode = NORMAL
+      return i + 1
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function operator() {
+    if(last === '.' && /\d/.test(c)) {
+      mode = FLOAT
+      return i
+    }
+
+    if(last === '/' && c === '*') {
+      mode = BLOCK_COMMENT
+      return i
+    }
+
+    if(last === '/' && c === '/') {
+      mode = LINE_COMMENT
+      return i
+    }
+
+    if(c === '.' && content.length) {
+      while(determine_operator(content));
+
+      mode = FLOAT
+      return i
+    }
+
+    if(c === ';' || c === ')' || c === '(') {
+      if(content.length) while(determine_operator(content));
+      token(c)
+      mode = NORMAL
+      return i + 1
+    }
+
+    var is_composite_operator = content.length === 2 && c !== '='
+    if(/[\w_\d\s]/.test(c) || is_composite_operator) {
+      while(determine_operator(content));
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function determine_operator(buf) {
+    var j = 0
+      , idx
+      , res
+
+    do {
+      idx = operators.indexOf(buf.slice(0, buf.length + j).join(''))
+      res = operators[idx]
+
+      if(idx === -1) {
+        if(j-- + buf.length > 0) continue
+        res = buf.slice(0, 1).join('')
+      }
+
+      token(res)
+
+      start += res.length
+      content = content.slice(res.length)
+      return content.length
+    } while(1)
+  }
+
+  function hex() {
+    if(/[^a-fA-F0-9]/.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function integer() {
+    if(c === '.') {
+      content.push(c)
+      mode = FLOAT
+      last = c
+      return i + 1
+    }
+
+    if(/[eE]/.test(c)) {
+      content.push(c)
+      mode = FLOAT
+      last = c
+      return i + 1
+    }
+
+    if(c === 'x' && content.length === 1 && content[0] === '0') {
+      mode = HEX
+      content.push(c)
+      last = c
+      return i + 1
+    }
+
+    if(/[^\d]/.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function decimal() {
+    if(c === 'f') {
+      content.push(c)
+      last = c
+      i += 1
+    }
+
+    if(/[eE]/.test(c)) {
+      content.push(c)
+      last = c
+      return i + 1
+    }
+
+    if (c === '-' && /[eE]/.test(last)) {
+      content.push(c)
+      last = c
+      return i + 1
+    }
+
+    if(/[^\d]/.test(c)) {
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+
+    content.push(c)
+    last = c
+    return i + 1
+  }
+
+  function readtoken() {
+    if(/[^\d\w_]/.test(c)) {
+      var contentstr = content.join('')
+      if(allLiterals.indexOf(contentstr) > -1) {
+        mode = KEYWORD
+      } else if(allBuiltins.indexOf(contentstr) > -1) {
+        mode = BUILTIN
+      } else {
+        mode = IDENT
+      }
+      token(content.join(''))
+      mode = NORMAL
+      return i
+    }
+    content.push(c)
+    last = c
+    return i + 1
+  }
+}
+
+},{"./lib/builtins":214,"./lib/builtins-300es":213,"./lib/literals":216,"./lib/literals-300es":215,"./lib/operators":217}],213:[function(require,module,exports){
+// 300es builtins/reserved words that were previously valid in v100
+var v100 = require('./builtins')
+
+// The texture2D|Cube functions have been removed
+// And the gl_ features are updated
+v100 = v100.slice().filter(function (b) {
+  return !/^(gl\_|texture)/.test(b)
+})
+
+module.exports = v100.concat([
+  // the updated gl_ constants
+    'gl_VertexID'
+  , 'gl_InstanceID'
+  , 'gl_Position'
+  , 'gl_PointSize'
+  , 'gl_FragCoord'
+  , 'gl_FrontFacing'
+  , 'gl_FragDepth'
+  , 'gl_PointCoord'
+  , 'gl_MaxVertexAttribs'
+  , 'gl_MaxVertexUniformVectors'
+  , 'gl_MaxVertexOutputVectors'
+  , 'gl_MaxFragmentInputVectors'
+  , 'gl_MaxVertexTextureImageUnits'
+  , 'gl_MaxCombinedTextureImageUnits'
+  , 'gl_MaxTextureImageUnits'
+  , 'gl_MaxFragmentUniformVectors'
+  , 'gl_MaxDrawBuffers'
+  , 'gl_MinProgramTexelOffset'
+  , 'gl_MaxProgramTexelOffset'
+  , 'gl_DepthRangeParameters'
+  , 'gl_DepthRange'
+
+  // other builtins
+  , 'trunc'
+  , 'round'
+  , 'roundEven'
+  , 'isnan'
+  , 'isinf'
+  , 'floatBitsToInt'
+  , 'floatBitsToUint'
+  , 'intBitsToFloat'
+  , 'uintBitsToFloat'
+  , 'packSnorm2x16'
+  , 'unpackSnorm2x16'
+  , 'packUnorm2x16'
+  , 'unpackUnorm2x16'
+  , 'packHalf2x16'
+  , 'unpackHalf2x16'
+  , 'outerProduct'
+  , 'transpose'
+  , 'determinant'
+  , 'inverse'
+  , 'texture'
+  , 'textureSize'
+  , 'textureProj'
+  , 'textureLod'
+  , 'textureOffset'
+  , 'texelFetch'
+  , 'texelFetchOffset'
+  , 'textureProjOffset'
+  , 'textureLodOffset'
+  , 'textureProjLod'
+  , 'textureProjLodOffset'
+  , 'textureGrad'
+  , 'textureGradOffset'
+  , 'textureProjGrad'
+  , 'textureProjGradOffset'
+])
+
+},{"./builtins":214}],214:[function(require,module,exports){
+module.exports = [
+  // Keep this list sorted
+  'abs'
+  , 'acos'
+  , 'all'
+  , 'any'
+  , 'asin'
+  , 'atan'
+  , 'ceil'
+  , 'clamp'
+  , 'cos'
+  , 'cross'
+  , 'dFdx'
+  , 'dFdy'
+  , 'degrees'
+  , 'distance'
+  , 'dot'
+  , 'equal'
+  , 'exp'
+  , 'exp2'
+  , 'faceforward'
+  , 'floor'
+  , 'fract'
+  , 'gl_BackColor'
+  , 'gl_BackLightModelProduct'
+  , 'gl_BackLightProduct'
+  , 'gl_BackMaterial'
+  , 'gl_BackSecondaryColor'
+  , 'gl_ClipPlane'
+  , 'gl_ClipVertex'
+  , 'gl_Color'
+  , 'gl_DepthRange'
+  , 'gl_DepthRangeParameters'
+  , 'gl_EyePlaneQ'
+  , 'gl_EyePlaneR'
+  , 'gl_EyePlaneS'
+  , 'gl_EyePlaneT'
+  , 'gl_Fog'
+  , 'gl_FogCoord'
+  , 'gl_FogFragCoord'
+  , 'gl_FogParameters'
+  , 'gl_FragColor'
+  , 'gl_FragCoord'
+  , 'gl_FragData'
+  , 'gl_FragDepth'
+  , 'gl_FragDepthEXT'
+  , 'gl_FrontColor'
+  , 'gl_FrontFacing'
+  , 'gl_FrontLightModelProduct'
+  , 'gl_FrontLightProduct'
+  , 'gl_FrontMaterial'
+  , 'gl_FrontSecondaryColor'
+  , 'gl_LightModel'
+  , 'gl_LightModelParameters'
+  , 'gl_LightModelProducts'
+  , 'gl_LightProducts'
+  , 'gl_LightSource'
+  , 'gl_LightSourceParameters'
+  , 'gl_MaterialParameters'
+  , 'gl_MaxClipPlanes'
+  , 'gl_MaxCombinedTextureImageUnits'
+  , 'gl_MaxDrawBuffers'
+  , 'gl_MaxFragmentUniformComponents'
+  , 'gl_MaxLights'
+  , 'gl_MaxTextureCoords'
+  , 'gl_MaxTextureImageUnits'
+  , 'gl_MaxTextureUnits'
+  , 'gl_MaxVaryingFloats'
+  , 'gl_MaxVertexAttribs'
+  , 'gl_MaxVertexTextureImageUnits'
+  , 'gl_MaxVertexUniformComponents'
+  , 'gl_ModelViewMatrix'
+  , 'gl_ModelViewMatrixInverse'
+  , 'gl_ModelViewMatrixInverseTranspose'
+  , 'gl_ModelViewMatrixTranspose'
+  , 'gl_ModelViewProjectionMatrix'
+  , 'gl_ModelViewProjectionMatrixInverse'
+  , 'gl_ModelViewProjectionMatrixInverseTranspose'
+  , 'gl_ModelViewProjectionMatrixTranspose'
+  , 'gl_MultiTexCoord0'
+  , 'gl_MultiTexCoord1'
+  , 'gl_MultiTexCoord2'
+  , 'gl_MultiTexCoord3'
+  , 'gl_MultiTexCoord4'
+  , 'gl_MultiTexCoord5'
+  , 'gl_MultiTexCoord6'
+  , 'gl_MultiTexCoord7'
+  , 'gl_Normal'
+  , 'gl_NormalMatrix'
+  , 'gl_NormalScale'
+  , 'gl_ObjectPlaneQ'
+  , 'gl_ObjectPlaneR'
+  , 'gl_ObjectPlaneS'
+  , 'gl_ObjectPlaneT'
+  , 'gl_Point'
+  , 'gl_PointCoord'
+  , 'gl_PointParameters'
+  , 'gl_PointSize'
+  , 'gl_Position'
+  , 'gl_ProjectionMatrix'
+  , 'gl_ProjectionMatrixInverse'
+  , 'gl_ProjectionMatrixInverseTranspose'
+  , 'gl_ProjectionMatrixTranspose'
+  , 'gl_SecondaryColor'
+  , 'gl_TexCoord'
+  , 'gl_TextureEnvColor'
+  , 'gl_TextureMatrix'
+  , 'gl_TextureMatrixInverse'
+  , 'gl_TextureMatrixInverseTranspose'
+  , 'gl_TextureMatrixTranspose'
+  , 'gl_Vertex'
+  , 'greaterThan'
+  , 'greaterThanEqual'
+  , 'inversesqrt'
+  , 'length'
+  , 'lessThan'
+  , 'lessThanEqual'
+  , 'log'
+  , 'log2'
+  , 'matrixCompMult'
+  , 'max'
+  , 'min'
+  , 'mix'
+  , 'mod'
+  , 'normalize'
+  , 'not'
+  , 'notEqual'
+  , 'pow'
+  , 'radians'
+  , 'reflect'
+  , 'refract'
+  , 'sign'
+  , 'sin'
+  , 'smoothstep'
+  , 'sqrt'
+  , 'step'
+  , 'tan'
+  , 'texture2D'
+  , 'texture2DLod'
+  , 'texture2DProj'
+  , 'texture2DProjLod'
+  , 'textureCube'
+  , 'textureCubeLod'
+  , 'texture2DLodEXT'
+  , 'texture2DProjLodEXT'
+  , 'textureCubeLodEXT'
+  , 'texture2DGradEXT'
+  , 'texture2DProjGradEXT'
+  , 'textureCubeGradEXT'
+]
+
+},{}],215:[function(require,module,exports){
+var v100 = require('./literals')
+
+module.exports = v100.slice().concat([
+   'layout'
+  , 'centroid'
+  , 'smooth'
+  , 'case'
+  , 'mat2x2'
+  , 'mat2x3'
+  , 'mat2x4'
+  , 'mat3x2'
+  , 'mat3x3'
+  , 'mat3x4'
+  , 'mat4x2'
+  , 'mat4x3'
+  , 'mat4x4'
+  , 'uint'
+  , 'uvec2'
+  , 'uvec3'
+  , 'uvec4'
+  , 'samplerCubeShadow'
+  , 'sampler2DArray'
+  , 'sampler2DArrayShadow'
+  , 'isampler2D'
+  , 'isampler3D'
+  , 'isamplerCube'
+  , 'isampler2DArray'
+  , 'usampler2D'
+  , 'usampler3D'
+  , 'usamplerCube'
+  , 'usampler2DArray'
+  , 'coherent'
+  , 'restrict'
+  , 'readonly'
+  , 'writeonly'
+  , 'resource'
+  , 'atomic_uint'
+  , 'noperspective'
+  , 'patch'
+  , 'sample'
+  , 'subroutine'
+  , 'common'
+  , 'partition'
+  , 'active'
+  , 'filter'
+  , 'image1D'
+  , 'image2D'
+  , 'image3D'
+  , 'imageCube'
+  , 'iimage1D'
+  , 'iimage2D'
+  , 'iimage3D'
+  , 'iimageCube'
+  , 'uimage1D'
+  , 'uimage2D'
+  , 'uimage3D'
+  , 'uimageCube'
+  , 'image1DArray'
+  , 'image2DArray'
+  , 'iimage1DArray'
+  , 'iimage2DArray'
+  , 'uimage1DArray'
+  , 'uimage2DArray'
+  , 'image1DShadow'
+  , 'image2DShadow'
+  , 'image1DArrayShadow'
+  , 'image2DArrayShadow'
+  , 'imageBuffer'
+  , 'iimageBuffer'
+  , 'uimageBuffer'
+  , 'sampler1DArray'
+  , 'sampler1DArrayShadow'
+  , 'isampler1D'
+  , 'isampler1DArray'
+  , 'usampler1D'
+  , 'usampler1DArray'
+  , 'isampler2DRect'
+  , 'usampler2DRect'
+  , 'samplerBuffer'
+  , 'isamplerBuffer'
+  , 'usamplerBuffer'
+  , 'sampler2DMS'
+  , 'isampler2DMS'
+  , 'usampler2DMS'
+  , 'sampler2DMSArray'
+  , 'isampler2DMSArray'
+  , 'usampler2DMSArray'
+])
+
+},{"./literals":216}],216:[function(require,module,exports){
+module.exports = [
+  // current
+    'precision'
+  , 'highp'
+  , 'mediump'
+  , 'lowp'
+  , 'attribute'
+  , 'const'
+  , 'uniform'
+  , 'varying'
+  , 'break'
+  , 'continue'
+  , 'do'
+  , 'for'
+  , 'while'
+  , 'if'
+  , 'else'
+  , 'in'
+  , 'out'
+  , 'inout'
+  , 'float'
+  , 'int'
+  , 'void'
+  , 'bool'
+  , 'true'
+  , 'false'
+  , 'discard'
+  , 'return'
+  , 'mat2'
+  , 'mat3'
+  , 'mat4'
+  , 'vec2'
+  , 'vec3'
+  , 'vec4'
+  , 'ivec2'
+  , 'ivec3'
+  , 'ivec4'
+  , 'bvec2'
+  , 'bvec3'
+  , 'bvec4'
+  , 'sampler1D'
+  , 'sampler2D'
+  , 'sampler3D'
+  , 'samplerCube'
+  , 'sampler1DShadow'
+  , 'sampler2DShadow'
+  , 'struct'
+
+  // future
+  , 'asm'
+  , 'class'
+  , 'union'
+  , 'enum'
+  , 'typedef'
+  , 'template'
+  , 'this'
+  , 'packed'
+  , 'goto'
+  , 'switch'
+  , 'default'
+  , 'inline'
+  , 'noinline'
+  , 'volatile'
+  , 'public'
+  , 'static'
+  , 'extern'
+  , 'external'
+  , 'interface'
+  , 'long'
+  , 'short'
+  , 'double'
+  , 'half'
+  , 'fixed'
+  , 'unsigned'
+  , 'input'
+  , 'output'
+  , 'hvec2'
+  , 'hvec3'
+  , 'hvec4'
+  , 'dvec2'
+  , 'dvec3'
+  , 'dvec4'
+  , 'fvec2'
+  , 'fvec3'
+  , 'fvec4'
+  , 'sampler2DRect'
+  , 'sampler3DRect'
+  , 'sampler2DRectShadow'
+  , 'sizeof'
+  , 'cast'
+  , 'namespace'
+  , 'using'
+]
+
+},{}],217:[function(require,module,exports){
+module.exports = [
+    '<<='
+  , '>>='
+  , '++'
+  , '--'
+  , '<<'
+  , '>>'
+  , '<='
+  , '>='
+  , '=='
+  , '!='
+  , '&&'
+  , '||'
+  , '+='
+  , '-='
+  , '*='
+  , '/='
+  , '%='
+  , '&='
+  , '^^'
+  , '^='
+  , '|='
+  , '('
+  , ')'
+  , '['
+  , ']'
+  , '.'
+  , '!'
+  , '~'
+  , '*'
+  , '/'
+  , '%'
+  , '+'
+  , '-'
+  , '<'
+  , '>'
+  , '&'
+  , '^'
+  , '|'
+  , '?'
+  , ':'
+  , '='
+  , ','
+  , ';'
+  , '{'
+  , '}'
+]
+
+},{}],218:[function(require,module,exports){
+var tokenize = require('./index')
+
+module.exports = tokenizeString
+
+function tokenizeString(str, opt) {
+  var generator = tokenize(opt)
+  var tokens = []
+
+  tokens = tokens.concat(generator(str))
+  tokens = tokens.concat(generator(null))
+
+  return tokens
+}
+
+},{"./index":212}],219:[function(require,module,exports){
+(function(window) {
+    var re = {
+        not_string: /[^s]/,
+        number: /[diefg]/,
+        json: /[j]/,
+        not_json: /[^j]/,
+        text: /^[^\x25]+/,
+        modulo: /^\x25{2}/,
+        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/,
+        key: /^([a-z_][a-z_\d]*)/i,
+        key_access: /^\.([a-z_][a-z_\d]*)/i,
+        index_access: /^\[(\d+)\]/,
+        sign: /^[\+\-]/
+    }
+
+    function sprintf() {
+        var key = arguments[0], cache = sprintf.cache
+        if (!(cache[key] && cache.hasOwnProperty(key))) {
+            cache[key] = sprintf.parse(key)
+        }
+        return sprintf.format.call(null, cache[key], arguments)
+    }
+
+    sprintf.format = function(parse_tree, argv) {
+        var cursor = 1, tree_length = parse_tree.length, node_type = "", arg, output = [], i, k, match, pad, pad_character, pad_length, is_positive = true, sign = ""
+        for (i = 0; i < tree_length; i++) {
+            node_type = get_type(parse_tree[i])
+            if (node_type === "string") {
+                output[output.length] = parse_tree[i]
+            }
+            else if (node_type === "array") {
+                match = parse_tree[i] // convenience purposes only
+                if (match[2]) { // keyword argument
+                    arg = argv[cursor]
+                    for (k = 0; k < match[2].length; k++) {
+                        if (!arg.hasOwnProperty(match[2][k])) {
+                            throw new Error(sprintf("[sprintf] property '%s' does not exist", match[2][k]))
+                        }
+                        arg = arg[match[2][k]]
+                    }
+                }
+                else if (match[1]) { // positional argument (explicit)
+                    arg = argv[match[1]]
+                }
+                else { // positional argument (implicit)
+                    arg = argv[cursor++]
+                }
+
+                if (get_type(arg) == "function") {
+                    arg = arg()
+                }
+
+                if (re.not_string.test(match[8]) && re.not_json.test(match[8]) && (get_type(arg) != "number" && isNaN(arg))) {
+                    throw new TypeError(sprintf("[sprintf] expecting number but found %s", get_type(arg)))
+                }
+
+                if (re.number.test(match[8])) {
+                    is_positive = arg >= 0
+                }
+
+                switch (match[8]) {
+                    case "b":
+                        arg = arg.toString(2)
+                    break
+                    case "c":
+                        arg = String.fromCharCode(arg)
+                    break
+                    case "d":
+                    case "i":
+                        arg = parseInt(arg, 10)
+                    break
+                    case "j":
+                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
+                    break
+                    case "e":
+                        arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential()
+                    break
+                    case "f":
+                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
+                    break
+                    case "g":
+                        arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg)
+                    break
+                    case "o":
+                        arg = arg.toString(8)
+                    break
+                    case "s":
+                        arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg)
+                    break
+                    case "u":
+                        arg = arg >>> 0
+                    break
+                    case "x":
+                        arg = arg.toString(16)
+                    break
+                    case "X":
+                        arg = arg.toString(16).toUpperCase()
+                    break
+                }
+                if (re.json.test(match[8])) {
+                    output[output.length] = arg
+                }
+                else {
+                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
+                        sign = is_positive ? "+" : "-"
+                        arg = arg.toString().replace(re.sign, "")
+                    }
+                    else {
+                        sign = ""
+                    }
+                    pad_character = match[4] ? match[4] === "0" ? "0" : match[4].charAt(1) : " "
+                    pad_length = match[6] - (sign + arg).length
+                    pad = match[6] ? (pad_length > 0 ? str_repeat(pad_character, pad_length) : "") : ""
+                    output[output.length] = match[5] ? sign + arg + pad : (pad_character === "0" ? sign + pad + arg : pad + sign + arg)
+                }
+            }
+        }
+        return output.join("")
+    }
+
+    sprintf.cache = {}
+
+    sprintf.parse = function(fmt) {
+        var _fmt = fmt, match = [], parse_tree = [], arg_names = 0
+        while (_fmt) {
+            if ((match = re.text.exec(_fmt)) !== null) {
+                parse_tree[parse_tree.length] = match[0]
+            }
+            else if ((match = re.modulo.exec(_fmt)) !== null) {
+                parse_tree[parse_tree.length] = "%"
+            }
+            else if ((match = re.placeholder.exec(_fmt)) !== null) {
+                if (match[2]) {
+                    arg_names |= 1
+                    var field_list = [], replacement_field = match[2], field_match = []
+                    if ((field_match = re.key.exec(replacement_field)) !== null) {
+                        field_list[field_list.length] = field_match[1]
+                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== "") {
+                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
+                                field_list[field_list.length] = field_match[1]
+                            }
+                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
+                                field_list[field_list.length] = field_match[1]
+                            }
+                            else {
+                                throw new SyntaxError("[sprintf] failed to parse named argument key")
+                            }
+                        }
+                    }
+                    else {
+                        throw new SyntaxError("[sprintf] failed to parse named argument key")
+                    }
+                    match[2] = field_list
+                }
+                else {
+                    arg_names |= 2
+                }
+                if (arg_names === 3) {
+                    throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported")
+                }
+                parse_tree[parse_tree.length] = match
+            }
+            else {
+                throw new SyntaxError("[sprintf] unexpected placeholder")
+            }
+            _fmt = _fmt.substring(match[0].length)
+        }
+        return parse_tree
+    }
+
+    var vsprintf = function(fmt, argv, _argv) {
+        _argv = (argv || []).slice(0)
+        _argv.splice(0, 0, fmt)
+        return sprintf.apply(null, _argv)
+    }
+
+    /**
+     * helpers
+     */
+    function get_type(variable) {
+        return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase()
+    }
+
+    function str_repeat(input, multiplier) {
+        return Array(multiplier + 1).join(input)
+    }
+
+    /**
+     * export to either browser or node.js
+     */
+    if (typeof exports !== "undefined") {
+        exports.sprintf = sprintf
+        exports.vsprintf = vsprintf
+    }
+    else {
+        window.sprintf = sprintf
+        window.vsprintf = vsprintf
+
+        if (typeof define === "function" && define.amd) {
+            define(function() {
+                return {
+                    sprintf: sprintf,
+                    vsprintf: vsprintf
+                }
+            })
+        }
+    }
+})(typeof window === "undefined" ? this : window);
+
+},{}],220:[function(require,module,exports){
+var hiddenStore = require('./hidden-store.js');
+
+module.exports = createStore;
+
+function createStore() {
+    var key = {};
+
+    return function (obj) {
+        if ((typeof obj !== 'object' || obj === null) &&
+            typeof obj !== 'function'
+        ) {
+            throw new Error('Weakmap-shim: Key must be object')
+        }
+
+        var store = obj.valueOf(key);
+        return store && store.identity === key ?
+            store : hiddenStore(obj, key);
+    };
+}
+
+},{"./hidden-store.js":221}],221:[function(require,module,exports){
+module.exports = hiddenStore;
+
+function hiddenStore(obj, key) {
+    var store = { identity: key };
+    var valueOf = obj.valueOf;
+
+    Object.defineProperty(obj, "valueOf", {
+        value: function (value) {
+            return value !== key ?
+                valueOf.apply(this, arguments) : store;
+        },
+        writable: true
+    });
+
+    return store;
+}
+
+},{}],222:[function(require,module,exports){
+// Original - @Gozola. 
+// https://gist.github.com/Gozala/1269991
+// This is a reimplemented version (with a few bug fixes).
+
+var createStore = require('./create-store.js');
+
+module.exports = weakMap;
+
+function weakMap() {
+    var privates = createStore();
+
+    return {
+        'get': function (key, fallback) {
+            var store = privates(key)
+            return store.hasOwnProperty('value') ?
+                store.value : fallback
+        },
+        'set': function (key, value) {
+            privates(key).value = value;
+        },
+        'has': function(key) {
+            return 'value' in privates(key);
+        },
+        'delete': function (key) {
+            return delete privates(key).value;
+        }
+    }
+}
+
+},{"./create-store.js":220}],223:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -36190,7 +38816,7 @@ function createPointcloud2D(plot, options) {
   return result
 }
 
-},{"./lib/shader":196,"gl-buffer":130,"gl-shader":211,"typedarray-pool":484}],198:[function(require,module,exports){
+},{"./lib/shader":196,"gl-buffer":130,"gl-shader":197,"typedarray-pool":510}],224:[function(require,module,exports){
 'use strict'
 
 
@@ -36202,7 +38828,7 @@ module.exports = {
   pickFragment: "precision lowp float;\n#define GLSLIFY 1\nvarying vec4 fragColor;\nvoid main() {\n  gl_FragColor = fragColor;\n}\n"
 }
 
-},{}],199:[function(require,module,exports){
+},{}],225:[function(require,module,exports){
 'use strict'
 
 module.exports = createFancyScatter2D
@@ -36589,7 +39215,7 @@ function createFancyScatter2D(plot, options) {
   return scatter
 }
 
-},{"./lib/shaders":198,"gl-buffer":130,"gl-shader":211,"text-cache":479,"typedarray-pool":484,"vectorize-text":486}],200:[function(require,module,exports){
+},{"./lib/shaders":224,"gl-buffer":130,"gl-shader":237,"text-cache":505,"typedarray-pool":510,"vectorize-text":512}],226:[function(require,module,exports){
 
 
 exports.pointVertex       = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute float weight;\n\nuniform mat3 matrix;\nuniform float pointSize, useWeight;\n\nvarying float fragWeight;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n  fragWeight = mix(1.0, weight, useWeight);\n}\n"
@@ -36597,9 +39223,9 @@ exports.pointFragment     = "precision mediump float;\n#define GLSLIFY 1\n\nunif
 exports.pickVertex        = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 position;\nattribute vec4 pickId;\n\nuniform mat3 matrix;\nuniform float pointSize;\nuniform vec4 pickOffset;\n\nvarying vec4 fragId;\n\nvoid main() {\n  vec3 hgPosition = matrix * vec3(position, 1);\n  gl_Position  = vec4(hgPosition.xy, 0, hgPosition.z);\n  gl_PointSize = pointSize;\n\n  vec4 id = pickId + pickOffset;\n  id.y += floor(id.x / 256.0);\n  id.x -= floor(id.x / 256.0) * 256.0;\n\n  id.z += floor(id.y / 256.0);\n  id.y -= floor(id.y / 256.0) * 256.0;\n\n  id.w += floor(id.z / 256.0);\n  id.z -= floor(id.z / 256.0) * 256.0;\n\n  fragId = id;\n}\n"
 exports.pickFragment      = "precision mediump float;\n#define GLSLIFY 1\n\nvarying vec4 fragId;\n\nvoid main() {\n  float radius = length(2.0*gl_PointCoord.xy-1.0);\n  if(radius > 1.0) {\n    discard;\n  }\n  gl_FragColor = fragId / 255.0;\n}\n"
 
-},{}],201:[function(require,module,exports){
+},{}],227:[function(require,module,exports){
 arguments[4][74][0].apply(exports,arguments)
-},{"dup":74}],202:[function(require,module,exports){
+},{"dup":74}],228:[function(require,module,exports){
 'use strict'
 
 module.exports = sortLevels
@@ -36897,7 +39523,7 @@ function quickSort(left, right, data_levels, data_points, data_ids, data_weights
   }
 }
 
-},{}],203:[function(require,module,exports){
+},{}],229:[function(require,module,exports){
 'use strict'
 
 var pool = require('typedarray-pool')
@@ -37037,7 +39663,7 @@ function snapPoints(points, ids, weights, bounds) {
   return lod
 }
 
-},{"./lib/sort":202,"typedarray-pool":484}],204:[function(require,module,exports){
+},{"./lib/sort":228,"typedarray-pool":510}],230:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -37333,7 +39959,7 @@ function createScatter2D(plot, options) {
   return result
 }
 
-},{"./lib/shader":200,"binary-search-bounds":201,"gl-buffer":130,"gl-shader":211,"snap-points-2d":203,"typedarray-pool":484}],205:[function(require,module,exports){
+},{"./lib/shader":226,"binary-search-bounds":227,"gl-buffer":130,"gl-shader":237,"snap-points-2d":229,"typedarray-pool":510}],231:[function(require,module,exports){
 "use strict"
 
 var vectorizeText = require("vectorize-text")
@@ -37379,7 +40005,7 @@ function getGlyph(symbol, font) {
   //Save cached symbol
   return fontCache[symbol] = [triSymbol, lineSymbol, bounds]
 }
-},{"vectorize-text":486}],206:[function(require,module,exports){
+},{"vectorize-text":512}],232:[function(require,module,exports){
 var createShaderWrapper = require('gl-shader')
 
 
@@ -37456,7 +40082,7 @@ exports.createPickProject = function(gl) {
   return createShader(gl, pickProject)
 }
 
-},{"gl-shader":211}],207:[function(require,module,exports){
+},{"gl-shader":237}],233:[function(require,module,exports){
 'use strict'
 
 var createBuffer  = require('gl-buffer')
@@ -38216,7 +40842,7 @@ function createPointCloud(options) {
   return pointCloud
 }
 
-},{"./lib/glyphs":205,"./lib/shaders":206,"gl-buffer":130,"gl-mat4/multiply":151,"gl-vao":240,"typedarray-pool":484}],208:[function(require,module,exports){
+},{"./lib/glyphs":231,"./lib/shaders":232,"gl-buffer":130,"gl-mat4/multiply":151,"gl-vao":266,"typedarray-pool":510}],234:[function(require,module,exports){
 'use strict'
 
 
@@ -38224,7 +40850,7 @@ function createPointCloud(options) {
 exports.boxVertex = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec2 vertex;\n\nuniform vec2 cornerA, cornerB;\n\nvoid main() {\n  gl_Position = vec4(mix(cornerA, cornerB, vertex), 0, 1);\n}\n"
 exports.boxFragment = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec4 color;\n\nvoid main() {\n  gl_FragColor = color;\n}\n"
 
-},{}],209:[function(require,module,exports){
+},{}],235:[function(require,module,exports){
 'use strict'
 
 var createShader = require('gl-shader')
@@ -38350,7 +40976,7 @@ function createSelectBox(plot, options) {
   return selectBox
 }
 
-},{"./lib/shaders":208,"gl-buffer":130,"gl-shader":211}],210:[function(require,module,exports){
+},{"./lib/shaders":234,"gl-buffer":130,"gl-shader":237}],236:[function(require,module,exports){
 'use strict'
 
 module.exports = createSelectBuffer
@@ -38361,7 +40987,7 @@ var ndarray   = require('ndarray')
 
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_46_arg0_||255>_inline_46_arg1_||255>_inline_46_arg2_||255>_inline_46_arg3_){var _inline_46_l=_inline_46_arg4_-_inline_46_arg6_[0],_inline_46_a=_inline_46_arg5_-_inline_46_arg6_[1],_inline_46_f=_inline_46_l*_inline_46_l+_inline_46_a*_inline_46_a;_inline_46_f<this_closestD2&&(this_closestD2=_inline_46_f,this_closestX=_inline_46_arg6_[0],this_closestY=_inline_46_arg6_[1])}}","args":[{"name":"_inline_46_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_46_a","_inline_46_f","_inline_46_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_55_arg0_||255>_inline_55_arg1_||255>_inline_55_arg2_||255>_inline_55_arg3_){var _inline_55_l=_inline_55_arg4_-_inline_55_arg6_[0],_inline_55_a=_inline_55_arg5_-_inline_55_arg6_[1],_inline_55_f=_inline_55_l*_inline_55_l+_inline_55_a*_inline_55_a;_inline_55_f<this_closestD2&&(this_closestD2=_inline_55_f,this_closestX=_inline_55_arg6_[0],this_closestY=_inline_55_arg6_[1])}}","args":[{"name":"_inline_55_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_55_a","_inline_55_f","_inline_55_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -38505,7 +41131,7 @@ function createSelectBuffer(gl, shape) {
   return new SelectBuffer(gl, fbo, buffer)
 }
 
-},{"bit-twiddle":52,"cwise/lib/wrapper":124,"gl-fbo":135,"ndarray":459,"typedarray-pool":484}],211:[function(require,module,exports){
+},{"bit-twiddle":52,"cwise/lib/wrapper":124,"gl-fbo":135,"ndarray":485,"typedarray-pool":510}],237:[function(require,module,exports){
 'use strict'
 
 var createUniformWrapper   = require('./lib/create-uniforms')
@@ -38518,7 +41144,6 @@ var GLError                = require("./lib/GLError")
 //Shader object
 function Shader(gl) {
   this.gl         = gl
-  this.gl.lastAttribCount = 0  // fixme where else should we store info, safe but not nice on the gl object
 
   //Default initialize these to null
   this._vref      =
@@ -38538,38 +41163,10 @@ proto.bind = function() {
   if(!this.program) {
     this._relink()
   }
-
-  // ensuring that we have the right number of enabled vertex attributes
-  var i
-  var newAttribCount = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES) // more robust approach
-  //var newAttribCount = Object.keys(this.attributes).length // avoids the probably immaterial introspection slowdown
-  var oldAttribCount = this.gl.lastAttribCount
-  if(newAttribCount > oldAttribCount) {
-    for(i = oldAttribCount; i < newAttribCount; i++) {
-      this.gl.enableVertexAttribArray(i)
-    }
-  } else if(oldAttribCount > newAttribCount) {
-    for(i = newAttribCount; i < oldAttribCount; i++) {
-      this.gl.disableVertexAttribArray(i)
-    }
-  }
-
-  this.gl.lastAttribCount = newAttribCount
-
   this.gl.useProgram(this.program)
 }
 
 proto.dispose = function() {
-
-  // disabling vertex attributes so new shader starts with zero
-  // and it's also useful if all shaders are disposed but the
-  // gl context is reused for subsequent replotting
-  var oldAttribCount = this.gl.lastAttribCount
-  for (var i = 0; i < oldAttribCount; i++) {
-    this.gl.disableVertexAttribArray(i)
-  }
-  this.gl.lastAttribCount = 0
-
   if(this._fref) {
     this._fref.dispose()
   }
@@ -38656,8 +41253,7 @@ proto.update = function(
   var attributeUnpacked  = []
   var attributeNames     = []
   var attributeLocations = []
-  var i
-  for(i=0; i<attributes.length; ++i) {
+  for(var i=0; i<attributes.length; ++i) {
     var attr = attributes[i]
     if(attr.type.indexOf('mat') >= 0) {
       var size = attr.type.charAt(attr.type.length-1)|0
@@ -38697,7 +41293,7 @@ proto.update = function(
 
   //For all unspecified attributes, assign them lexicographically min attribute
   var curLocation = 0
-  for(i=0; i<attributeLocations.length; ++i) {
+  for(var i=0; i<attributeLocations.length; ++i) {
     if(attributeLocations[i] < 0) {
       while(attributeLocations.indexOf(curLocation) >= 0) {
         curLocation += 1
@@ -38771,1461 +41367,41 @@ function createShader(
 
 module.exports = createShader
 
-},{"./lib/GLError":212,"./lib/create-attributes":213,"./lib/create-uniforms":214,"./lib/reflect":215,"./lib/runtime-reflect":216,"./lib/shader-cache":217}],212:[function(require,module,exports){
-function GLError (rawError, shortMessage, longMessage) {
-    this.shortMessage = shortMessage || ''
-    this.longMessage = longMessage || ''
-    this.rawError = rawError || ''
-    this.message =
-      'gl-shader: ' + (shortMessage || rawError || '') +
-      (longMessage ? '\n'+longMessage : '')
-    this.stack = (new Error()).stack
-}
-GLError.prototype = new Error
-GLError.prototype.name = 'GLError'
-GLError.prototype.constructor = GLError
-module.exports = GLError
-
-},{}],213:[function(require,module,exports){
-'use strict'
-
-module.exports = createAttributeWrapper
-
-var GLError = require("./GLError")
-
-function ShaderAttribute(
-    gl
-  , wrapper
-  , index
-  , locations
-  , dimension
-  , constFunc) {
-  this._gl        = gl
-  this._wrapper   = wrapper
-  this._index     = index
-  this._locations = locations
-  this._dimension = dimension
-  this._constFunc = constFunc
-}
-
-var proto = ShaderAttribute.prototype
-
-proto.pointer = function setAttribPointer(
-    type
-  , normalized
-  , stride
-  , offset) {
-
-  var self      = this
-  var gl        = self._gl
-  var location  = self._locations[self._index]
-
-  gl.vertexAttribPointer(
-      location
-    , self._dimension
-    , type || gl.FLOAT
-    , !!normalized
-    , stride || 0
-    , offset || 0)
-  gl.enableVertexAttribArray(location)
-}
-
-proto.set = function(x0, x1, x2, x3) {
-  return this._constFunc(this._locations[this._index], x0, x1, x2, x3)
-}
-
-Object.defineProperty(proto, 'location', {
-  get: function() {
-    return this._locations[this._index]
-  }
-  , set: function(v) {
-    if(v !== this._locations[this._index]) {
-      this._locations[this._index] = v|0
-      this._wrapper.program = null
-    }
-    return v|0
-  }
-})
-
-//Adds a vector attribute to obj
-function addVectorAttribute(
-    gl
-  , wrapper
-  , index
-  , locations
-  , dimension
-  , obj
-  , name) {
-
-  //Construct constant function
-  var constFuncArgs = [ 'gl', 'v' ]
-  var varNames = []
-  for(var i=0; i<dimension; ++i) {
-    constFuncArgs.push('x'+i)
-    varNames.push('x'+i)
-  }
-  constFuncArgs.push(
-    'if(x0.length===void 0){return gl.vertexAttrib' +
-    dimension + 'f(v,' +
-    varNames.join() +
-    ')}else{return gl.vertexAttrib' +
-    dimension +
-    'fv(v,x0)}')
-  var constFunc = Function.apply(null, constFuncArgs)
-
-  //Create attribute wrapper
-  var attr = new ShaderAttribute(
-      gl
-    , wrapper
-    , index
-    , locations
-    , dimension
-    , constFunc)
-
-  //Create accessor
-  Object.defineProperty(obj, name, {
-    set: function(x) {
-      gl.disableVertexAttribArray(locations[index])
-      constFunc(gl, locations[index], x)
-      return x
-    }
-    , get: function() {
-      return attr
-    }
-    , enumerable: true
-  })
-}
-
-function addMatrixAttribute(
-    gl
-  , wrapper
-  , index
-  , locations
-  , dimension
-  , obj
-  , name) {
-
-  var parts = new Array(dimension)
-  var attrs = new Array(dimension)
-  for(var i=0; i<dimension; ++i) {
-    addVectorAttribute(
-        gl
-      , wrapper
-      , index[i]
-      , locations
-      , dimension
-      , parts
-      , i)
-    attrs[i] = parts[i]
-  }
-
-  Object.defineProperty(parts, 'location', {
-    set: function(v) {
-      if(Array.isArray(v)) {
-        for(var i=0; i<dimension; ++i) {
-          attrs[i].location = v[i]
-        }
-      } else {
-        for(var i=0; i<dimension; ++i) {
-          attrs[i].location = v + i
-        }
-      }
-      return v
-    }
-    , get: function() {
-      var result = new Array(dimension)
-      for(var i=0; i<dimension; ++i) {
-        result[i] = locations[index[i]]
-      }
-      return result
-    }
-    , enumerable: true
-  })
-
-  parts.pointer = function(type, normalized, stride, offset) {
-    type       = type || gl.FLOAT
-    normalized = !!normalized
-    stride     = stride || (dimension * dimension)
-    offset     = offset || 0
-    for(var i=0; i<dimension; ++i) {
-      var location = locations[index[i]]
-      gl.vertexAttribPointer(
-            location
-          , dimension
-          , type
-          , normalized
-          , stride
-          , offset + i * dimension)
-      gl.enableVertexAttribArray(location)
-    }
-  }
-
-  var scratch = new Array(dimension)
-  var vertexAttrib = gl['vertexAttrib' + dimension + 'fv']
-
-  Object.defineProperty(obj, name, {
-    set: function(x) {
-      for(var i=0; i<dimension; ++i) {
-        var loc = locations[index[i]]
-        gl.disableVertexAttribArray(loc)
-        if(Array.isArray(x[0])) {
-          vertexAttrib.call(gl, loc, x[i])
-        } else {
-          for(var j=0; j<dimension; ++j) {
-            scratch[j] = x[dimension*i + j]
-          }
-          vertexAttrib.call(gl, loc, scratch)
-        }
-      }
-      return x
-    }
-    , get: function() {
-      return parts
-    }
-    , enumerable: true
-  })
-}
-
-//Create shims for attributes
-function createAttributeWrapper(
-    gl
-  , wrapper
-  , attributes
-  , locations) {
-
-  var obj = {}
-  for(var i=0, n=attributes.length; i<n; ++i) {
-
-    var a = attributes[i]
-    var name = a.name
-    var type = a.type
-    var locs = a.locations
-
-    switch(type) {
-      case 'bool':
-      case 'int':
-      case 'float':
-        addVectorAttribute(
-            gl
-          , wrapper
-          , locs[0]
-          , locations
-          , 1
-          , obj
-          , name)
-      break
-
-      default:
-        if(type.indexOf('vec') >= 0) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid data type for attribute ' + name + ': ' + type)
-          }
-          addVectorAttribute(
-              gl
-            , wrapper
-            , locs[0]
-            , locations
-            , d
-            , obj
-            , name)
-        } else if(type.indexOf('mat') >= 0) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid data type for attribute ' + name + ': ' + type)
-          }
-          addMatrixAttribute(
-              gl
-            , wrapper
-            , locs
-            , locations
-            , d
-            , obj
-            , name)
-        } else {
-          throw new GLError('', 'Unknown data type for attribute ' + name + ': ' + type)
-        }
-      break
-    }
-  }
-  return obj
-}
-
-},{"./GLError":212}],214:[function(require,module,exports){
-'use strict'
-
-var coallesceUniforms = require('./reflect')
-var GLError = require("./GLError")
-
-module.exports = createUniformWrapper
-
-//Binds a function and returns a value
-function identity(x) {
-  var c = new Function('y', 'return function(){return y}')
-  return c(x)
-}
-
-function makeVector(length, fill) {
-  var result = new Array(length)
-  for(var i=0; i<length; ++i) {
-    result[i] = fill
-  }
-  return result
-}
-
-//Create shims for uniforms
-function createUniformWrapper(gl, wrapper, uniforms, locations) {
-
-  function makeGetter(index) {
-    var proc = new Function(
-        'gl'
-      , 'wrapper'
-      , 'locations'
-      , 'return function(){return gl.getUniform(wrapper.program,locations[' + index + '])}')
-    return proc(gl, wrapper, locations)
-  }
-
-  function makePropSetter(path, index, type) {
-    switch(type) {
-      case 'bool':
-      case 'int':
-      case 'sampler2D':
-      case 'samplerCube':
-        return 'gl.uniform1i(locations[' + index + '],obj' + path + ')'
-      case 'float':
-        return 'gl.uniform1f(locations[' + index + '],obj' + path + ')'
-      default:
-        var vidx = type.indexOf('vec')
-        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid data type')
-          }
-          switch(type.charAt(0)) {
-            case 'b':
-            case 'i':
-              return 'gl.uniform' + d + 'iv(locations[' + index + '],obj' + path + ')'
-            case 'v':
-              return 'gl.uniform' + d + 'fv(locations[' + index + '],obj' + path + ')'
-            default:
-              throw new GLError('', 'Unrecognized data type for vector ' + name + ': ' + type)
-          }
-        } else if(type.indexOf('mat') === 0 && type.length === 4) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + type)
-          }
-          return 'gl.uniformMatrix' + d + 'fv(locations[' + index + '],false,obj' + path + ')'
-        } else {
-          throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
-        }
-      break
-    }
-  }
-
-  function enumerateIndices(prefix, type) {
-    if(typeof type !== 'object') {
-      return [ [prefix, type] ]
-    }
-    var indices = []
-    for(var id in type) {
-      var prop = type[id]
-      var tprefix = prefix
-      if(parseInt(id) + '' === id) {
-        tprefix += '[' + id + ']'
-      } else {
-        tprefix += '.' + id
-      }
-      if(typeof prop === 'object') {
-        indices.push.apply(indices, enumerateIndices(tprefix, prop))
-      } else {
-        indices.push([tprefix, prop])
-      }
-    }
-    return indices
-  }
-
-  function makeSetter(type) {
-    var code = [ 'return function updateProperty(obj){' ]
-    var indices = enumerateIndices('', type)
-    for(var i=0; i<indices.length; ++i) {
-      var item = indices[i]
-      var path = item[0]
-      var idx  = item[1]
-      if(locations[idx]) {
-        code.push(makePropSetter(path, idx, uniforms[idx].type))
-      }
-    }
-    code.push('return obj}')
-    var proc = new Function('gl', 'locations', code.join('\n'))
-    return proc(gl, locations)
-  }
-
-  function defaultValue(type) {
-    switch(type) {
-      case 'bool':
-        return false
-      case 'int':
-      case 'sampler2D':
-      case 'samplerCube':
-        return 0
-      case 'float':
-        return 0.0
-      default:
-        var vidx = type.indexOf('vec')
-        if(0 <= vidx && vidx <= 1 && type.length === 4 + vidx) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid data type')
-          }
-          if(type.charAt(0) === 'b') {
-            return makeVector(d, false)
-          }
-          return makeVector(d, 0)
-        } else if(type.indexOf('mat') === 0 && type.length === 4) {
-          var d = type.charCodeAt(type.length-1) - 48
-          if(d < 2 || d > 4) {
-            throw new GLError('', 'Invalid uniform dimension type for matrix ' + name + ': ' + type)
-          }
-          return makeVector(d*d, 0)
-        } else {
-          throw new GLError('', 'Unknown uniform data type for ' + name + ': ' + type)
-        }
-      break
-    }
-  }
-
-  function storeProperty(obj, prop, type) {
-    if(typeof type === 'object') {
-      var child = processObject(type)
-      Object.defineProperty(obj, prop, {
-        get: identity(child),
-        set: makeSetter(type),
-        enumerable: true,
-        configurable: false
-      })
-    } else {
-      if(locations[type]) {
-        Object.defineProperty(obj, prop, {
-          get: makeGetter(type),
-          set: makeSetter(type),
-          enumerable: true,
-          configurable: false
-        })
-      } else {
-        obj[prop] = defaultValue(uniforms[type].type)
-      }
-    }
-  }
-
-  function processObject(obj) {
-    var result
-    if(Array.isArray(obj)) {
-      result = new Array(obj.length)
-      for(var i=0; i<obj.length; ++i) {
-        storeProperty(result, i, obj[i])
-      }
-    } else {
-      result = {}
-      for(var id in obj) {
-        storeProperty(result, id, obj[id])
-      }
-    }
-    return result
-  }
-
-  //Return data
-  var coallesced = coallesceUniforms(uniforms, true)
-  return {
-    get: identity(processObject(coallesced)),
-    set: makeSetter(coallesced),
-    enumerable: true,
-    configurable: true
-  }
-}
-
-},{"./GLError":212,"./reflect":215}],215:[function(require,module,exports){
-'use strict'
-
-module.exports = makeReflectTypes
-
-//Construct type info for reflection.
-//
-// This iterates over the flattened list of uniform type values and smashes them into a JSON object.
-//
-// The leaves of the resulting object are either indices or type strings representing primitive glslify types
-function makeReflectTypes(uniforms, useIndex) {
-  var obj = {}
-  for(var i=0; i<uniforms.length; ++i) {
-    var n = uniforms[i].name
-    var parts = n.split(".")
-    var o = obj
-    for(var j=0; j<parts.length; ++j) {
-      var x = parts[j].split("[")
-      if(x.length > 1) {
-        if(!(x[0] in o)) {
-          o[x[0]] = []
-        }
-        o = o[x[0]]
-        for(var k=1; k<x.length; ++k) {
-          var y = parseInt(x[k])
-          if(k<x.length-1 || j<parts.length-1) {
-            if(!(y in o)) {
-              if(k < x.length-1) {
-                o[y] = []
-              } else {
-                o[y] = {}
-              }
-            }
-            o = o[y]
-          } else {
-            if(useIndex) {
-              o[y] = i
-            } else {
-              o[y] = uniforms[i].type
-            }
-          }
-        }
-      } else if(j < parts.length-1) {
-        if(!(x[0] in o)) {
-          o[x[0]] = {}
-        }
-        o = o[x[0]]
-      } else {
-        if(useIndex) {
-          o[x[0]] = i
-        } else {
-          o[x[0]] = uniforms[i].type
-        }
-      }
-    }
-  }
-  return obj
-}
-},{}],216:[function(require,module,exports){
-'use strict'
-
-exports.uniforms    = runtimeUniforms
-exports.attributes  = runtimeAttributes
-
-var GL_TO_GLSL_TYPES = {
-  'FLOAT':       'float',
-  'FLOAT_VEC2':  'vec2',
-  'FLOAT_VEC3':  'vec3',
-  'FLOAT_VEC4':  'vec4',
-  'INT':         'int',
-  'INT_VEC2':    'ivec2',
-  'INT_VEC3':    'ivec3',
-  'INT_VEC4':    'ivec4',
-  'BOOL':        'bool',
-  'BOOL_VEC2':   'bvec2',
-  'BOOL_VEC3':   'bvec3',
-  'BOOL_VEC4':   'bvec4',
-  'FLOAT_MAT2':  'mat2',
-  'FLOAT_MAT3':  'mat3',
-  'FLOAT_MAT4':  'mat4',
-  'SAMPLER_2D':  'sampler2D',
-  'SAMPLER_CUBE':'samplerCube'
-}
-
-var GL_TABLE = null
-
-function getType(gl, type) {
-  if(!GL_TABLE) {
-    var typeNames = Object.keys(GL_TO_GLSL_TYPES)
-    GL_TABLE = {}
-    for(var i=0; i<typeNames.length; ++i) {
-      var tn = typeNames[i]
-      GL_TABLE[gl[tn]] = GL_TO_GLSL_TYPES[tn]
-    }
-  }
-  return GL_TABLE[type]
-}
-
-function runtimeUniforms(gl, program) {
-  var numUniforms = gl.getProgramParameter(program, gl.ACTIVE_UNIFORMS)
-  var result = []
-  for(var i=0; i<numUniforms; ++i) {
-    var info = gl.getActiveUniform(program, i)
-    if(info) {
-      var type = getType(gl, info.type)
-      if(info.size > 1) {
-        for(var j=0; j<info.size; ++j) {
-          result.push({
-            name: info.name.replace('[0]', '[' + j + ']'),
-            type: type
-          })
-        }
-      } else {
-        result.push({
-          name: info.name,
-          type: type
-        })
-      }
-    }
-  }
-  return result
-}
-
-function runtimeAttributes(gl, program) {
-  var numAttributes = gl.getProgramParameter(program, gl.ACTIVE_ATTRIBUTES)
-  var result = []
-  for(var i=0; i<numAttributes; ++i) {
-    var info = gl.getActiveAttrib(program, i)
-    if(info) {
-      result.push({
-        name: info.name,
-        type: getType(gl, info.type)
-      })
-    }
-  }
-  return result
-}
-
-},{}],217:[function(require,module,exports){
-'use strict'
-
-exports.shader   = getShaderReference
-exports.program  = createProgram
-
-var GLError = require("./GLError")
-var formatCompilerError = require('gl-format-compiler-error');
-
-var weakMap = typeof WeakMap === 'undefined' ? require('weakmap-shim') : WeakMap
-var CACHE = new weakMap()
-
-var SHADER_COUNTER = 0
-
-function ShaderReference(id, src, type, shader, programs, count, cache) {
-  this.id       = id
-  this.src      = src
-  this.type     = type
-  this.shader   = shader
-  this.count    = count
-  this.programs = []
-  this.cache    = cache
-}
-
-ShaderReference.prototype.dispose = function() {
-  if(--this.count === 0) {
-    var cache    = this.cache
-    var gl       = cache.gl
-
-    //Remove program references
-    var programs = this.programs
-    for(var i=0, n=programs.length; i<n; ++i) {
-      var p = cache.programs[programs[i]]
-      if(p) {
-        delete cache.programs[i]
-        gl.deleteProgram(p)
-      }
-    }
-
-    //Remove shader reference
-    gl.deleteShader(this.shader)
-    delete cache.shaders[(this.type === gl.FRAGMENT_SHADER)|0][this.src]
-  }
-}
-
-function ContextCache(gl) {
-  this.gl       = gl
-  this.shaders  = [{}, {}]
-  this.programs = {}
-}
-
-var proto = ContextCache.prototype
-
-function compileShader(gl, type, src) {
-  var shader = gl.createShader(type)
-  gl.shaderSource(shader, src)
-  gl.compileShader(shader)
-  if(!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-    var errLog = gl.getShaderInfoLog(shader)
-    try {
-        var fmt = formatCompilerError(errLog, src, type);
-    } catch (e){
-        console.warn('Failed to format compiler error: ' + e);
-        throw new GLError(errLog, 'Error compiling shader:\n' + errLog)
-    }
-    throw new GLError(errLog, fmt.short, fmt.long)
-  }
-  return shader
-}
-
-proto.getShaderReference = function(type, src) {
-  var gl      = this.gl
-  var shaders = this.shaders[(type === gl.FRAGMENT_SHADER)|0]
-  var shader  = shaders[src]
-  if(!shader || !gl.isShader(shader.shader)) {
-    var shaderObj = compileShader(gl, type, src)
-    shader = shaders[src] = new ShaderReference(
-      SHADER_COUNTER++,
-      src,
-      type,
-      shaderObj,
-      [],
-      1,
-      this)
-  } else {
-    shader.count += 1
-  }
-  return shader
-}
-
-function linkProgram(gl, vshader, fshader, attribs, locations) {
-  var program = gl.createProgram()
-  gl.attachShader(program, vshader)
-  gl.attachShader(program, fshader)
-  for(var i=0; i<attribs.length; ++i) {
-    gl.bindAttribLocation(program, locations[i], attribs[i])
-  }
-  gl.linkProgram(program)
-  if(!gl.getProgramParameter(program, gl.LINK_STATUS)) {
-    var errLog = gl.getProgramInfoLog(program)
-    throw new GLError(errLog, 'Error linking program: ' + errLog)
-  }
-  return program
-}
-
-proto.getProgram = function(vref, fref, attribs, locations) {
-  var token = [vref.id, fref.id, attribs.join(':'), locations.join(':')].join('@')
-  var prog  = this.programs[token]
-  if(!prog || !this.gl.isProgram(prog)) {
-    this.programs[token] = prog = linkProgram(
-      this.gl,
-      vref.shader,
-      fref.shader,
-      attribs,
-      locations)
-    vref.programs.push(token)
-    fref.programs.push(token)
-  }
-  return prog
-}
-
-function getCache(gl) {
-  var ctxCache = CACHE.get(gl)
-  if(!ctxCache) {
-    ctxCache = new ContextCache(gl)
-    CACHE.set(gl, ctxCache)
-  }
-  return ctxCache
-}
-
-function getShaderReference(gl, type, src) {
-  return getCache(gl).getShaderReference(type, src)
-}
-
-function createProgram(gl, vref, fref, attribs, locations) {
-  return getCache(gl).getProgram(vref, fref, attribs, locations)
-}
-
-},{"./GLError":212,"gl-format-compiler-error":218,"weakmap-shim":228}],218:[function(require,module,exports){
-
-var sprintf = require('sprintf-js').sprintf;
-var glConstants = require('gl-constants/lookup');
-var shaderName = require('glsl-shader-name');
-var addLineNumbers = require('add-line-numbers');
-
-module.exports = formatCompilerError;
-
-function formatCompilerError(errLog, src, type) {
-    "use strict";
-
-    var name = shaderName(src) || 'of unknown name (see npm glsl-shader-name)';
-
-    var typeName = 'unknown type';
-    if (type !== undefined) {
-        typeName = type === glConstants.FRAGMENT_SHADER ? 'fragment' : 'vertex'
-    }
-
-    var longForm = sprintf('Error compiling %s shader %s:\n', typeName, name);
-    var shortForm = sprintf("%s%s", longForm, errLog);
-
-    var errorStrings = errLog.split('\n');
-    var errors = {};
-
-    for (var i = 0; i < errorStrings.length; i++) {
-        var errorString = errorStrings[i];
-        if (errorString === '') continue;
-        var lineNo = parseInt(errorString.split(':')[2]);
-        if (isNaN(lineNo)) {
-            throw new Error(sprintf('Could not parse error: %s', errorString));
-        }
-        errors[lineNo] = errorString;
-    }
-
-    var lines = addLineNumbers(src).split('\n');
-
-    for (var i = 0; i < lines.length; i++) {
-        if (!errors[i+3] && !errors[i+2] && !errors[i+1]) continue;
-        var line = lines[i];
-        longForm += line + '\n';
-        if (errors[i+1]) {
-            var e = errors[i+1];
-            e = e.substr(e.split(':', 3).join(':').length + 1).trim();
-            longForm += sprintf('^^^ %s\n\n', e);
-        }
-    }
-
-    return {
-        long: longForm.trim(),
-        short: shortForm.trim()
-    };
-}
-
-
-},{"add-line-numbers":219,"gl-constants/lookup":222,"glsl-shader-name":223,"sprintf-js":225}],219:[function(require,module,exports){
-var padLeft = require('pad-left')
-
-module.exports = addLineNumbers
-function addLineNumbers (string, start, delim) {
-  start = typeof start === 'number' ? start : 1
-  delim = delim || ': '
-
-  var lines = string.split(/\r?\n/)
-  var totalDigits = String(lines.length + start - 1).length
-  return lines.map(function (line, i) {
-    var c = i + start
-    var digits = String(c).length
-    var prefix = padLeft(c, totalDigits - digits)
-    return prefix + delim + line
-  }).join('\n')
-}
-
-},{"pad-left":220}],220:[function(require,module,exports){
-/*!
- * pad-left <https://github.com/jonschlinkert/pad-left>
- *
- * Copyright (c) 2014-2015, Jon Schlinkert.
- * Licensed under the MIT license.
- */
-
-'use strict';
-
-var repeat = require('repeat-string');
-
-module.exports = function padLeft(str, num, ch) {
-  ch = typeof ch !== 'undefined' ? (ch + '') : ' ';
-  return repeat(ch, num) + str;
-};
-},{"repeat-string":460}],221:[function(require,module,exports){
-module.exports = {
-  0: 'NONE',
-  1: 'ONE',
-  2: 'LINE_LOOP',
-  3: 'LINE_STRIP',
-  4: 'TRIANGLES',
-  5: 'TRIANGLE_STRIP',
-  6: 'TRIANGLE_FAN',
-  256: 'DEPTH_BUFFER_BIT',
-  512: 'NEVER',
-  513: 'LESS',
-  514: 'EQUAL',
-  515: 'LEQUAL',
-  516: 'GREATER',
-  517: 'NOTEQUAL',
-  518: 'GEQUAL',
-  519: 'ALWAYS',
-  768: 'SRC_COLOR',
-  769: 'ONE_MINUS_SRC_COLOR',
-  770: 'SRC_ALPHA',
-  771: 'ONE_MINUS_SRC_ALPHA',
-  772: 'DST_ALPHA',
-  773: 'ONE_MINUS_DST_ALPHA',
-  774: 'DST_COLOR',
-  775: 'ONE_MINUS_DST_COLOR',
-  776: 'SRC_ALPHA_SATURATE',
-  1024: 'STENCIL_BUFFER_BIT',
-  1028: 'FRONT',
-  1029: 'BACK',
-  1032: 'FRONT_AND_BACK',
-  1280: 'INVALID_ENUM',
-  1281: 'INVALID_VALUE',
-  1282: 'INVALID_OPERATION',
-  1285: 'OUT_OF_MEMORY',
-  1286: 'INVALID_FRAMEBUFFER_OPERATION',
-  2304: 'CW',
-  2305: 'CCW',
-  2849: 'LINE_WIDTH',
-  2884: 'CULL_FACE',
-  2885: 'CULL_FACE_MODE',
-  2886: 'FRONT_FACE',
-  2928: 'DEPTH_RANGE',
-  2929: 'DEPTH_TEST',
-  2930: 'DEPTH_WRITEMASK',
-  2931: 'DEPTH_CLEAR_VALUE',
-  2932: 'DEPTH_FUNC',
-  2960: 'STENCIL_TEST',
-  2961: 'STENCIL_CLEAR_VALUE',
-  2962: 'STENCIL_FUNC',
-  2963: 'STENCIL_VALUE_MASK',
-  2964: 'STENCIL_FAIL',
-  2965: 'STENCIL_PASS_DEPTH_FAIL',
-  2966: 'STENCIL_PASS_DEPTH_PASS',
-  2967: 'STENCIL_REF',
-  2968: 'STENCIL_WRITEMASK',
-  2978: 'VIEWPORT',
-  3024: 'DITHER',
-  3042: 'BLEND',
-  3088: 'SCISSOR_BOX',
-  3089: 'SCISSOR_TEST',
-  3106: 'COLOR_CLEAR_VALUE',
-  3107: 'COLOR_WRITEMASK',
-  3317: 'UNPACK_ALIGNMENT',
-  3333: 'PACK_ALIGNMENT',
-  3379: 'MAX_TEXTURE_SIZE',
-  3386: 'MAX_VIEWPORT_DIMS',
-  3408: 'SUBPIXEL_BITS',
-  3410: 'RED_BITS',
-  3411: 'GREEN_BITS',
-  3412: 'BLUE_BITS',
-  3413: 'ALPHA_BITS',
-  3414: 'DEPTH_BITS',
-  3415: 'STENCIL_BITS',
-  3553: 'TEXTURE_2D',
-  4352: 'DONT_CARE',
-  4353: 'FASTEST',
-  4354: 'NICEST',
-  5120: 'BYTE',
-  5121: 'UNSIGNED_BYTE',
-  5122: 'SHORT',
-  5123: 'UNSIGNED_SHORT',
-  5124: 'INT',
-  5125: 'UNSIGNED_INT',
-  5126: 'FLOAT',
-  5386: 'INVERT',
-  5890: 'TEXTURE',
-  6401: 'STENCIL_INDEX',
-  6402: 'DEPTH_COMPONENT',
-  6406: 'ALPHA',
-  6407: 'RGB',
-  6408: 'RGBA',
-  6409: 'LUMINANCE',
-  6410: 'LUMINANCE_ALPHA',
-  7680: 'KEEP',
-  7681: 'REPLACE',
-  7682: 'INCR',
-  7683: 'DECR',
-  7936: 'VENDOR',
-  7937: 'RENDERER',
-  7938: 'VERSION',
-  9728: 'NEAREST',
-  9729: 'LINEAR',
-  9984: 'NEAREST_MIPMAP_NEAREST',
-  9985: 'LINEAR_MIPMAP_NEAREST',
-  9986: 'NEAREST_MIPMAP_LINEAR',
-  9987: 'LINEAR_MIPMAP_LINEAR',
-  10240: 'TEXTURE_MAG_FILTER',
-  10241: 'TEXTURE_MIN_FILTER',
-  10242: 'TEXTURE_WRAP_S',
-  10243: 'TEXTURE_WRAP_T',
-  10497: 'REPEAT',
-  10752: 'POLYGON_OFFSET_UNITS',
-  16384: 'COLOR_BUFFER_BIT',
-  32769: 'CONSTANT_COLOR',
-  32770: 'ONE_MINUS_CONSTANT_COLOR',
-  32771: 'CONSTANT_ALPHA',
-  32772: 'ONE_MINUS_CONSTANT_ALPHA',
-  32773: 'BLEND_COLOR',
-  32774: 'FUNC_ADD',
-  32777: 'BLEND_EQUATION_RGB',
-  32778: 'FUNC_SUBTRACT',
-  32779: 'FUNC_REVERSE_SUBTRACT',
-  32819: 'UNSIGNED_SHORT_4_4_4_4',
-  32820: 'UNSIGNED_SHORT_5_5_5_1',
-  32823: 'POLYGON_OFFSET_FILL',
-  32824: 'POLYGON_OFFSET_FACTOR',
-  32854: 'RGBA4',
-  32855: 'RGB5_A1',
-  32873: 'TEXTURE_BINDING_2D',
-  32926: 'SAMPLE_ALPHA_TO_COVERAGE',
-  32928: 'SAMPLE_COVERAGE',
-  32936: 'SAMPLE_BUFFERS',
-  32937: 'SAMPLES',
-  32938: 'SAMPLE_COVERAGE_VALUE',
-  32939: 'SAMPLE_COVERAGE_INVERT',
-  32968: 'BLEND_DST_RGB',
-  32969: 'BLEND_SRC_RGB',
-  32970: 'BLEND_DST_ALPHA',
-  32971: 'BLEND_SRC_ALPHA',
-  33071: 'CLAMP_TO_EDGE',
-  33170: 'GENERATE_MIPMAP_HINT',
-  33189: 'DEPTH_COMPONENT16',
-  33306: 'DEPTH_STENCIL_ATTACHMENT',
-  33635: 'UNSIGNED_SHORT_5_6_5',
-  33648: 'MIRRORED_REPEAT',
-  33901: 'ALIASED_POINT_SIZE_RANGE',
-  33902: 'ALIASED_LINE_WIDTH_RANGE',
-  33984: 'TEXTURE0',
-  33985: 'TEXTURE1',
-  33986: 'TEXTURE2',
-  33987: 'TEXTURE3',
-  33988: 'TEXTURE4',
-  33989: 'TEXTURE5',
-  33990: 'TEXTURE6',
-  33991: 'TEXTURE7',
-  33992: 'TEXTURE8',
-  33993: 'TEXTURE9',
-  33994: 'TEXTURE10',
-  33995: 'TEXTURE11',
-  33996: 'TEXTURE12',
-  33997: 'TEXTURE13',
-  33998: 'TEXTURE14',
-  33999: 'TEXTURE15',
-  34000: 'TEXTURE16',
-  34001: 'TEXTURE17',
-  34002: 'TEXTURE18',
-  34003: 'TEXTURE19',
-  34004: 'TEXTURE20',
-  34005: 'TEXTURE21',
-  34006: 'TEXTURE22',
-  34007: 'TEXTURE23',
-  34008: 'TEXTURE24',
-  34009: 'TEXTURE25',
-  34010: 'TEXTURE26',
-  34011: 'TEXTURE27',
-  34012: 'TEXTURE28',
-  34013: 'TEXTURE29',
-  34014: 'TEXTURE30',
-  34015: 'TEXTURE31',
-  34016: 'ACTIVE_TEXTURE',
-  34024: 'MAX_RENDERBUFFER_SIZE',
-  34041: 'DEPTH_STENCIL',
-  34055: 'INCR_WRAP',
-  34056: 'DECR_WRAP',
-  34067: 'TEXTURE_CUBE_MAP',
-  34068: 'TEXTURE_BINDING_CUBE_MAP',
-  34069: 'TEXTURE_CUBE_MAP_POSITIVE_X',
-  34070: 'TEXTURE_CUBE_MAP_NEGATIVE_X',
-  34071: 'TEXTURE_CUBE_MAP_POSITIVE_Y',
-  34072: 'TEXTURE_CUBE_MAP_NEGATIVE_Y',
-  34073: 'TEXTURE_CUBE_MAP_POSITIVE_Z',
-  34074: 'TEXTURE_CUBE_MAP_NEGATIVE_Z',
-  34076: 'MAX_CUBE_MAP_TEXTURE_SIZE',
-  34338: 'VERTEX_ATTRIB_ARRAY_ENABLED',
-  34339: 'VERTEX_ATTRIB_ARRAY_SIZE',
-  34340: 'VERTEX_ATTRIB_ARRAY_STRIDE',
-  34341: 'VERTEX_ATTRIB_ARRAY_TYPE',
-  34342: 'CURRENT_VERTEX_ATTRIB',
-  34373: 'VERTEX_ATTRIB_ARRAY_POINTER',
-  34466: 'NUM_COMPRESSED_TEXTURE_FORMATS',
-  34467: 'COMPRESSED_TEXTURE_FORMATS',
-  34660: 'BUFFER_SIZE',
-  34661: 'BUFFER_USAGE',
-  34816: 'STENCIL_BACK_FUNC',
-  34817: 'STENCIL_BACK_FAIL',
-  34818: 'STENCIL_BACK_PASS_DEPTH_FAIL',
-  34819: 'STENCIL_BACK_PASS_DEPTH_PASS',
-  34877: 'BLEND_EQUATION_ALPHA',
-  34921: 'MAX_VERTEX_ATTRIBS',
-  34922: 'VERTEX_ATTRIB_ARRAY_NORMALIZED',
-  34930: 'MAX_TEXTURE_IMAGE_UNITS',
-  34962: 'ARRAY_BUFFER',
-  34963: 'ELEMENT_ARRAY_BUFFER',
-  34964: 'ARRAY_BUFFER_BINDING',
-  34965: 'ELEMENT_ARRAY_BUFFER_BINDING',
-  34975: 'VERTEX_ATTRIB_ARRAY_BUFFER_BINDING',
-  35040: 'STREAM_DRAW',
-  35044: 'STATIC_DRAW',
-  35048: 'DYNAMIC_DRAW',
-  35632: 'FRAGMENT_SHADER',
-  35633: 'VERTEX_SHADER',
-  35660: 'MAX_VERTEX_TEXTURE_IMAGE_UNITS',
-  35661: 'MAX_COMBINED_TEXTURE_IMAGE_UNITS',
-  35663: 'SHADER_TYPE',
-  35664: 'FLOAT_VEC2',
-  35665: 'FLOAT_VEC3',
-  35666: 'FLOAT_VEC4',
-  35667: 'INT_VEC2',
-  35668: 'INT_VEC3',
-  35669: 'INT_VEC4',
-  35670: 'BOOL',
-  35671: 'BOOL_VEC2',
-  35672: 'BOOL_VEC3',
-  35673: 'BOOL_VEC4',
-  35674: 'FLOAT_MAT2',
-  35675: 'FLOAT_MAT3',
-  35676: 'FLOAT_MAT4',
-  35678: 'SAMPLER_2D',
-  35680: 'SAMPLER_CUBE',
-  35712: 'DELETE_STATUS',
-  35713: 'COMPILE_STATUS',
-  35714: 'LINK_STATUS',
-  35715: 'VALIDATE_STATUS',
-  35716: 'INFO_LOG_LENGTH',
-  35717: 'ATTACHED_SHADERS',
-  35718: 'ACTIVE_UNIFORMS',
-  35719: 'ACTIVE_UNIFORM_MAX_LENGTH',
-  35720: 'SHADER_SOURCE_LENGTH',
-  35721: 'ACTIVE_ATTRIBUTES',
-  35722: 'ACTIVE_ATTRIBUTE_MAX_LENGTH',
-  35724: 'SHADING_LANGUAGE_VERSION',
-  35725: 'CURRENT_PROGRAM',
-  36003: 'STENCIL_BACK_REF',
-  36004: 'STENCIL_BACK_VALUE_MASK',
-  36005: 'STENCIL_BACK_WRITEMASK',
-  36006: 'FRAMEBUFFER_BINDING',
-  36007: 'RENDERBUFFER_BINDING',
-  36048: 'FRAMEBUFFER_ATTACHMENT_OBJECT_TYPE',
-  36049: 'FRAMEBUFFER_ATTACHMENT_OBJECT_NAME',
-  36050: 'FRAMEBUFFER_ATTACHMENT_TEXTURE_LEVEL',
-  36051: 'FRAMEBUFFER_ATTACHMENT_TEXTURE_CUBE_MAP_FACE',
-  36053: 'FRAMEBUFFER_COMPLETE',
-  36054: 'FRAMEBUFFER_INCOMPLETE_ATTACHMENT',
-  36055: 'FRAMEBUFFER_INCOMPLETE_MISSING_ATTACHMENT',
-  36057: 'FRAMEBUFFER_INCOMPLETE_DIMENSIONS',
-  36061: 'FRAMEBUFFER_UNSUPPORTED',
-  36064: 'COLOR_ATTACHMENT0',
-  36096: 'DEPTH_ATTACHMENT',
-  36128: 'STENCIL_ATTACHMENT',
-  36160: 'FRAMEBUFFER',
-  36161: 'RENDERBUFFER',
-  36162: 'RENDERBUFFER_WIDTH',
-  36163: 'RENDERBUFFER_HEIGHT',
-  36164: 'RENDERBUFFER_INTERNAL_FORMAT',
-  36168: 'STENCIL_INDEX8',
-  36176: 'RENDERBUFFER_RED_SIZE',
-  36177: 'RENDERBUFFER_GREEN_SIZE',
-  36178: 'RENDERBUFFER_BLUE_SIZE',
-  36179: 'RENDERBUFFER_ALPHA_SIZE',
-  36180: 'RENDERBUFFER_DEPTH_SIZE',
-  36181: 'RENDERBUFFER_STENCIL_SIZE',
-  36194: 'RGB565',
-  36336: 'LOW_FLOAT',
-  36337: 'MEDIUM_FLOAT',
-  36338: 'HIGH_FLOAT',
-  36339: 'LOW_INT',
-  36340: 'MEDIUM_INT',
-  36341: 'HIGH_INT',
-  36346: 'SHADER_COMPILER',
-  36347: 'MAX_VERTEX_UNIFORM_VECTORS',
-  36348: 'MAX_VARYING_VECTORS',
-  36349: 'MAX_FRAGMENT_UNIFORM_VECTORS',
-  37440: 'UNPACK_FLIP_Y_WEBGL',
-  37441: 'UNPACK_PREMULTIPLY_ALPHA_WEBGL',
-  37442: 'CONTEXT_LOST_WEBGL',
-  37443: 'UNPACK_COLORSPACE_CONVERSION_WEBGL',
-  37444: 'BROWSER_DEFAULT_WEBGL'
-}
-
-},{}],222:[function(require,module,exports){
-var gl10 = require('./1.0/numbers')
-
-module.exports = function lookupConstant (number) {
-  return gl10[number]
-}
-
-},{"./1.0/numbers":221}],223:[function(require,module,exports){
-var tokenize = require('glsl-tokenizer')
-var atob     = require('atob-lite')
-
-module.exports = getName
-
-function getName(src) {
-  var tokens = Array.isArray(src)
-    ? src
-    : tokenize(src)
-
-  for (var i = 0; i < tokens.length; i++) {
-    var token = tokens[i]
-    if (token.type !== 'preprocessor') continue
-    var match = token.data.match(/\#define\s+SHADER_NAME(_B64)?\s+(.+)$/)
-    if (!match) continue
-    if (!match[2]) continue
-
-    var b64  = match[1]
-    var name = match[2]
-
-    return (b64 ? atob(name) : name).trim()
-  }
-}
-
-},{"atob-lite":224,"glsl-tokenizer":248}],224:[function(require,module,exports){
-module.exports = function _atob(str) {
-  return atob(str)
-}
-
-},{}],225:[function(require,module,exports){
-(function(window) {
-    var re = {
-        not_string: /[^s]/,
-        number: /[diefg]/,
-        json: /[j]/,
-        not_json: /[^j]/,
-        text: /^[^\x25]+/,
-        modulo: /^\x25{2}/,
-        placeholder: /^\x25(?:([1-9]\d*)\$|\(([^\)]+)\))?(\+)?(0|'[^$])?(-)?(\d+)?(?:\.(\d+))?([b-gijosuxX])/,
-        key: /^([a-z_][a-z_\d]*)/i,
-        key_access: /^\.([a-z_][a-z_\d]*)/i,
-        index_access: /^\[(\d+)\]/,
-        sign: /^[\+\-]/
-    }
-
-    function sprintf() {
-        var key = arguments[0], cache = sprintf.cache
-        if (!(cache[key] && cache.hasOwnProperty(key))) {
-            cache[key] = sprintf.parse(key)
-        }
-        return sprintf.format.call(null, cache[key], arguments)
-    }
-
-    sprintf.format = function(parse_tree, argv) {
-        var cursor = 1, tree_length = parse_tree.length, node_type = "", arg, output = [], i, k, match, pad, pad_character, pad_length, is_positive = true, sign = ""
-        for (i = 0; i < tree_length; i++) {
-            node_type = get_type(parse_tree[i])
-            if (node_type === "string") {
-                output[output.length] = parse_tree[i]
-            }
-            else if (node_type === "array") {
-                match = parse_tree[i] // convenience purposes only
-                if (match[2]) { // keyword argument
-                    arg = argv[cursor]
-                    for (k = 0; k < match[2].length; k++) {
-                        if (!arg.hasOwnProperty(match[2][k])) {
-                            throw new Error(sprintf("[sprintf] property '%s' does not exist", match[2][k]))
-                        }
-                        arg = arg[match[2][k]]
-                    }
-                }
-                else if (match[1]) { // positional argument (explicit)
-                    arg = argv[match[1]]
-                }
-                else { // positional argument (implicit)
-                    arg = argv[cursor++]
-                }
-
-                if (get_type(arg) == "function") {
-                    arg = arg()
-                }
-
-                if (re.not_string.test(match[8]) && re.not_json.test(match[8]) && (get_type(arg) != "number" && isNaN(arg))) {
-                    throw new TypeError(sprintf("[sprintf] expecting number but found %s", get_type(arg)))
-                }
-
-                if (re.number.test(match[8])) {
-                    is_positive = arg >= 0
-                }
-
-                switch (match[8]) {
-                    case "b":
-                        arg = arg.toString(2)
-                    break
-                    case "c":
-                        arg = String.fromCharCode(arg)
-                    break
-                    case "d":
-                    case "i":
-                        arg = parseInt(arg, 10)
-                    break
-                    case "j":
-                        arg = JSON.stringify(arg, null, match[6] ? parseInt(match[6]) : 0)
-                    break
-                    case "e":
-                        arg = match[7] ? arg.toExponential(match[7]) : arg.toExponential()
-                    break
-                    case "f":
-                        arg = match[7] ? parseFloat(arg).toFixed(match[7]) : parseFloat(arg)
-                    break
-                    case "g":
-                        arg = match[7] ? parseFloat(arg).toPrecision(match[7]) : parseFloat(arg)
-                    break
-                    case "o":
-                        arg = arg.toString(8)
-                    break
-                    case "s":
-                        arg = ((arg = String(arg)) && match[7] ? arg.substring(0, match[7]) : arg)
-                    break
-                    case "u":
-                        arg = arg >>> 0
-                    break
-                    case "x":
-                        arg = arg.toString(16)
-                    break
-                    case "X":
-                        arg = arg.toString(16).toUpperCase()
-                    break
-                }
-                if (re.json.test(match[8])) {
-                    output[output.length] = arg
-                }
-                else {
-                    if (re.number.test(match[8]) && (!is_positive || match[3])) {
-                        sign = is_positive ? "+" : "-"
-                        arg = arg.toString().replace(re.sign, "")
-                    }
-                    else {
-                        sign = ""
-                    }
-                    pad_character = match[4] ? match[4] === "0" ? "0" : match[4].charAt(1) : " "
-                    pad_length = match[6] - (sign + arg).length
-                    pad = match[6] ? (pad_length > 0 ? str_repeat(pad_character, pad_length) : "") : ""
-                    output[output.length] = match[5] ? sign + arg + pad : (pad_character === "0" ? sign + pad + arg : pad + sign + arg)
-                }
-            }
-        }
-        return output.join("")
-    }
-
-    sprintf.cache = {}
-
-    sprintf.parse = function(fmt) {
-        var _fmt = fmt, match = [], parse_tree = [], arg_names = 0
-        while (_fmt) {
-            if ((match = re.text.exec(_fmt)) !== null) {
-                parse_tree[parse_tree.length] = match[0]
-            }
-            else if ((match = re.modulo.exec(_fmt)) !== null) {
-                parse_tree[parse_tree.length] = "%"
-            }
-            else if ((match = re.placeholder.exec(_fmt)) !== null) {
-                if (match[2]) {
-                    arg_names |= 1
-                    var field_list = [], replacement_field = match[2], field_match = []
-                    if ((field_match = re.key.exec(replacement_field)) !== null) {
-                        field_list[field_list.length] = field_match[1]
-                        while ((replacement_field = replacement_field.substring(field_match[0].length)) !== "") {
-                            if ((field_match = re.key_access.exec(replacement_field)) !== null) {
-                                field_list[field_list.length] = field_match[1]
-                            }
-                            else if ((field_match = re.index_access.exec(replacement_field)) !== null) {
-                                field_list[field_list.length] = field_match[1]
-                            }
-                            else {
-                                throw new SyntaxError("[sprintf] failed to parse named argument key")
-                            }
-                        }
-                    }
-                    else {
-                        throw new SyntaxError("[sprintf] failed to parse named argument key")
-                    }
-                    match[2] = field_list
-                }
-                else {
-                    arg_names |= 2
-                }
-                if (arg_names === 3) {
-                    throw new Error("[sprintf] mixing positional and named placeholders is not (yet) supported")
-                }
-                parse_tree[parse_tree.length] = match
-            }
-            else {
-                throw new SyntaxError("[sprintf] unexpected placeholder")
-            }
-            _fmt = _fmt.substring(match[0].length)
-        }
-        return parse_tree
-    }
-
-    var vsprintf = function(fmt, argv, _argv) {
-        _argv = (argv || []).slice(0)
-        _argv.splice(0, 0, fmt)
-        return sprintf.apply(null, _argv)
-    }
-
-    /**
-     * helpers
-     */
-    function get_type(variable) {
-        return Object.prototype.toString.call(variable).slice(8, -1).toLowerCase()
-    }
-
-    function str_repeat(input, multiplier) {
-        return Array(multiplier + 1).join(input)
-    }
-
-    /**
-     * export to either browser or node.js
-     */
-    if (typeof exports !== "undefined") {
-        exports.sprintf = sprintf
-        exports.vsprintf = vsprintf
-    }
-    else {
-        window.sprintf = sprintf
-        window.vsprintf = vsprintf
-
-        if (typeof define === "function" && define.amd) {
-            define(function() {
-                return {
-                    sprintf: sprintf,
-                    vsprintf: vsprintf
-                }
-            })
-        }
-    }
-})(typeof window === "undefined" ? this : window);
-
-},{}],226:[function(require,module,exports){
-var hiddenStore = require('./hidden-store.js');
-
-module.exports = createStore;
-
-function createStore() {
-    var key = {};
-
-    return function (obj) {
-        if ((typeof obj !== 'object' || obj === null) &&
-            typeof obj !== 'function'
-        ) {
-            throw new Error('Weakmap-shim: Key must be object')
-        }
-
-        var store = obj.valueOf(key);
-        return store && store.identity === key ?
-            store : hiddenStore(obj, key);
-    };
-}
-
-},{"./hidden-store.js":227}],227:[function(require,module,exports){
-module.exports = hiddenStore;
-
-function hiddenStore(obj, key) {
-    var store = { identity: key };
-    var valueOf = obj.valueOf;
-
-    Object.defineProperty(obj, "valueOf", {
-        value: function (value) {
-            return value !== key ?
-                valueOf.apply(this, arguments) : store;
-        },
-        writable: true
-    });
-
-    return store;
-}
-
-},{}],228:[function(require,module,exports){
-// Original - @Gozola. 
-// https://gist.github.com/Gozala/1269991
-// This is a reimplemented version (with a few bug fixes).
-
-var createStore = require('./create-store.js');
-
-module.exports = weakMap;
-
-function weakMap() {
-    var privates = createStore();
-
-    return {
-        'get': function (key, fallback) {
-            var store = privates(key)
-            return store.hasOwnProperty('value') ?
-                store.value : fallback
-        },
-        'set': function (key, value) {
-            privates(key).value = value;
-        },
-        'has': function(key) {
-            return 'value' in privates(key);
-        },
-        'delete': function (key) {
-            return delete privates(key).value;
-        }
-    }
-}
-
-},{"./create-store.js":226}],229:[function(require,module,exports){
+},{"./lib/GLError":238,"./lib/create-attributes":239,"./lib/create-uniforms":240,"./lib/reflect":241,"./lib/runtime-reflect":242,"./lib/shader-cache":243}],238:[function(require,module,exports){
+arguments[4][198][0].apply(exports,arguments)
+},{"dup":198}],239:[function(require,module,exports){
+arguments[4][199][0].apply(exports,arguments)
+},{"./GLError":238,"dup":199}],240:[function(require,module,exports){
+arguments[4][200][0].apply(exports,arguments)
+},{"./GLError":238,"./reflect":241,"dup":200}],241:[function(require,module,exports){
+arguments[4][201][0].apply(exports,arguments)
+},{"dup":201}],242:[function(require,module,exports){
+arguments[4][202][0].apply(exports,arguments)
+},{"dup":202}],243:[function(require,module,exports){
+arguments[4][203][0].apply(exports,arguments)
+},{"./GLError":238,"dup":203,"gl-format-compiler-error":244,"weakmap-shim":254}],244:[function(require,module,exports){
+arguments[4][204][0].apply(exports,arguments)
+},{"add-line-numbers":245,"dup":204,"gl-constants/lookup":248,"glsl-shader-name":249,"sprintf-js":251}],245:[function(require,module,exports){
+arguments[4][205][0].apply(exports,arguments)
+},{"dup":205,"pad-left":246}],246:[function(require,module,exports){
+arguments[4][206][0].apply(exports,arguments)
+},{"dup":206,"repeat-string":486}],247:[function(require,module,exports){
+arguments[4][208][0].apply(exports,arguments)
+},{"dup":208}],248:[function(require,module,exports){
+arguments[4][209][0].apply(exports,arguments)
+},{"./1.0/numbers":247,"dup":209}],249:[function(require,module,exports){
+arguments[4][210][0].apply(exports,arguments)
+},{"atob-lite":250,"dup":210,"glsl-tokenizer":274}],250:[function(require,module,exports){
+arguments[4][211][0].apply(exports,arguments)
+},{"dup":211}],251:[function(require,module,exports){
+arguments[4][219][0].apply(exports,arguments)
+},{"dup":219}],252:[function(require,module,exports){
+arguments[4][220][0].apply(exports,arguments)
+},{"./hidden-store.js":253,"dup":220}],253:[function(require,module,exports){
+arguments[4][221][0].apply(exports,arguments)
+},{"dup":221}],254:[function(require,module,exports){
+arguments[4][222][0].apply(exports,arguments)
+},{"./create-store.js":252,"dup":222}],255:[function(require,module,exports){
 'use strict'
 
 module.exports = createSpikes2D
@@ -40313,7 +41489,7 @@ function createSpikes2D(plot, options) {
   return spikes
 }
 
-},{}],230:[function(require,module,exports){
+},{}],256:[function(require,module,exports){
 var createShader = require('gl-shader')
 
 
@@ -40363,9 +41539,9 @@ exports.createPickContourShader = function (gl) {
   return shader
 }
 
-},{"gl-shader":211}],231:[function(require,module,exports){
+},{"gl-shader":237}],257:[function(require,module,exports){
 arguments[4][23][0].apply(exports,arguments)
-},{"dup":23}],232:[function(require,module,exports){
+},{"dup":23}],258:[function(require,module,exports){
 'use strict'
 
 module.exports      = gradient
@@ -40663,7 +41839,7 @@ function gradient(out, inp, bc) {
   var cached = generateGradient(bc)
   return cached(out, inp)
 }
-},{"cwise-compiler":121,"dup":127}],233:[function(require,module,exports){
+},{"cwise-compiler":121,"dup":127}],259:[function(require,module,exports){
 "use strict"
 
 var ndarray = require("ndarray")
@@ -40686,10 +41862,10 @@ module.exports = function convert(arr, result) {
   return result
 }
 
-},{"./doConvert.js":234,"ndarray":459}],234:[function(require,module,exports){
+},{"./doConvert.js":260,"ndarray":485}],260:[function(require,module,exports){
 module.exports=require('cwise-compiler')({"args":["array","scalar","index"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{\nvar _inline_1_v=_inline_1_arg1_,_inline_1_i\nfor(_inline_1_i=0;_inline_1_i<_inline_1_arg2_.length-1;++_inline_1_i) {\n_inline_1_v=_inline_1_v[_inline_1_arg2_[_inline_1_i]]\n}\n_inline_1_arg0_=_inline_1_v[_inline_1_arg2_[_inline_1_arg2_.length-1]]\n}","args":[{"name":"_inline_1_arg0_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":4}],"thisVars":[],"localVars":["_inline_1_i","_inline_1_v"]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"funcName":"convert","blockSize":64})
 
-},{"cwise-compiler":121}],235:[function(require,module,exports){
+},{"cwise-compiler":121}],261:[function(require,module,exports){
 'use strict'
 
 module.exports = createSurfacePlot
@@ -42006,7 +43182,7 @@ function createSurfacePlot (params) {
   return surface
 }
 
-},{"./lib/shaders":230,"binary-search-bounds":231,"bit-twiddle":52,"colormap":112,"gl-buffer":130,"gl-mat4/invert":149,"gl-mat4/multiply":151,"gl-texture2d":236,"gl-vao":240,"ndarray":459,"ndarray-gradient":232,"ndarray-ops":458,"ndarray-pack":233,"surface-nets":478,"typedarray-pool":484}],236:[function(require,module,exports){
+},{"./lib/shaders":256,"binary-search-bounds":257,"bit-twiddle":52,"colormap":112,"gl-buffer":130,"gl-mat4/invert":149,"gl-mat4/multiply":151,"gl-texture2d":262,"gl-vao":266,"ndarray":485,"ndarray-gradient":258,"ndarray-ops":484,"ndarray-pack":259,"surface-nets":504,"typedarray-pool":510}],262:[function(require,module,exports){
 'use strict'
 
 var ndarray = require('ndarray')
@@ -42565,7 +43741,7 @@ function createTexture2D(gl) {
   throw new Error('gl-texture2d: Invalid arguments for texture2d constructor')
 }
 
-},{"ndarray":459,"ndarray-ops":458,"typedarray-pool":484}],237:[function(require,module,exports){
+},{"ndarray":485,"ndarray-ops":484,"typedarray-pool":510}],263:[function(require,module,exports){
 "use strict"
 
 function doBind(gl, elements, attributes) {
@@ -42620,7 +43796,7 @@ function doBind(gl, elements, attributes) {
 }
 
 module.exports = doBind
-},{}],238:[function(require,module,exports){
+},{}],264:[function(require,module,exports){
 "use strict"
 
 var bindAttribs = require("./do-bind.js")
@@ -42660,7 +43836,7 @@ function createVAOEmulated(gl) {
 }
 
 module.exports = createVAOEmulated
-},{"./do-bind.js":237}],239:[function(require,module,exports){
+},{"./do-bind.js":263}],265:[function(require,module,exports){
 "use strict"
 
 var bindAttribs = require("./do-bind.js")
@@ -42748,7 +43924,7 @@ function createVAONative(gl, ext) {
 }
 
 module.exports = createVAONative
-},{"./do-bind.js":237}],240:[function(require,module,exports){
+},{"./do-bind.js":263}],266:[function(require,module,exports){
 "use strict"
 
 var createVAONative = require("./lib/vao-native.js")
@@ -42768,7 +43944,7 @@ function createVAO(gl, attributes, elements, elementsType) {
 
 module.exports = createVAO
 
-},{"./lib/vao-emulated.js":238,"./lib/vao-native.js":239}],241:[function(require,module,exports){
+},{"./lib/vao-emulated.js":264,"./lib/vao-native.js":265}],267:[function(require,module,exports){
 module.exports = transformMat4
 
 /**
@@ -42788,7 +43964,7 @@ function transformMat4 (out, a, m) {
   return out
 }
 
-},{}],242:[function(require,module,exports){
+},{}],268:[function(require,module,exports){
 module.exports = tokenize
 
 var literals100 = require('./lib/literals')
@@ -43152,479 +44328,19 @@ function tokenize(opt) {
   }
 }
 
-},{"./lib/builtins":244,"./lib/builtins-300es":243,"./lib/literals":246,"./lib/literals-300es":245,"./lib/operators":247}],243:[function(require,module,exports){
-// 300es builtins/reserved words that were previously valid in v100
-var v100 = require('./builtins')
-
-// The texture2D|Cube functions have been removed
-// And the gl_ features are updated
-v100 = v100.slice().filter(function (b) {
-  return !/^(gl\_|texture)/.test(b)
-})
-
-module.exports = v100.concat([
-  // the updated gl_ constants
-    'gl_VertexID'
-  , 'gl_InstanceID'
-  , 'gl_Position'
-  , 'gl_PointSize'
-  , 'gl_FragCoord'
-  , 'gl_FrontFacing'
-  , 'gl_FragDepth'
-  , 'gl_PointCoord'
-  , 'gl_MaxVertexAttribs'
-  , 'gl_MaxVertexUniformVectors'
-  , 'gl_MaxVertexOutputVectors'
-  , 'gl_MaxFragmentInputVectors'
-  , 'gl_MaxVertexTextureImageUnits'
-  , 'gl_MaxCombinedTextureImageUnits'
-  , 'gl_MaxTextureImageUnits'
-  , 'gl_MaxFragmentUniformVectors'
-  , 'gl_MaxDrawBuffers'
-  , 'gl_MinProgramTexelOffset'
-  , 'gl_MaxProgramTexelOffset'
-  , 'gl_DepthRangeParameters'
-  , 'gl_DepthRange'
-
-  // other builtins
-  , 'trunc'
-  , 'round'
-  , 'roundEven'
-  , 'isnan'
-  , 'isinf'
-  , 'floatBitsToInt'
-  , 'floatBitsToUint'
-  , 'intBitsToFloat'
-  , 'uintBitsToFloat'
-  , 'packSnorm2x16'
-  , 'unpackSnorm2x16'
-  , 'packUnorm2x16'
-  , 'unpackUnorm2x16'
-  , 'packHalf2x16'
-  , 'unpackHalf2x16'
-  , 'outerProduct'
-  , 'transpose'
-  , 'determinant'
-  , 'inverse'
-  , 'texture'
-  , 'textureSize'
-  , 'textureProj'
-  , 'textureLod'
-  , 'textureOffset'
-  , 'texelFetch'
-  , 'texelFetchOffset'
-  , 'textureProjOffset'
-  , 'textureLodOffset'
-  , 'textureProjLod'
-  , 'textureProjLodOffset'
-  , 'textureGrad'
-  , 'textureGradOffset'
-  , 'textureProjGrad'
-  , 'textureProjGradOffset'
-])
-
-},{"./builtins":244}],244:[function(require,module,exports){
-module.exports = [
-  // Keep this list sorted
-  'abs'
-  , 'acos'
-  , 'all'
-  , 'any'
-  , 'asin'
-  , 'atan'
-  , 'ceil'
-  , 'clamp'
-  , 'cos'
-  , 'cross'
-  , 'dFdx'
-  , 'dFdy'
-  , 'degrees'
-  , 'distance'
-  , 'dot'
-  , 'equal'
-  , 'exp'
-  , 'exp2'
-  , 'faceforward'
-  , 'floor'
-  , 'fract'
-  , 'gl_BackColor'
-  , 'gl_BackLightModelProduct'
-  , 'gl_BackLightProduct'
-  , 'gl_BackMaterial'
-  , 'gl_BackSecondaryColor'
-  , 'gl_ClipPlane'
-  , 'gl_ClipVertex'
-  , 'gl_Color'
-  , 'gl_DepthRange'
-  , 'gl_DepthRangeParameters'
-  , 'gl_EyePlaneQ'
-  , 'gl_EyePlaneR'
-  , 'gl_EyePlaneS'
-  , 'gl_EyePlaneT'
-  , 'gl_Fog'
-  , 'gl_FogCoord'
-  , 'gl_FogFragCoord'
-  , 'gl_FogParameters'
-  , 'gl_FragColor'
-  , 'gl_FragCoord'
-  , 'gl_FragData'
-  , 'gl_FragDepth'
-  , 'gl_FragDepthEXT'
-  , 'gl_FrontColor'
-  , 'gl_FrontFacing'
-  , 'gl_FrontLightModelProduct'
-  , 'gl_FrontLightProduct'
-  , 'gl_FrontMaterial'
-  , 'gl_FrontSecondaryColor'
-  , 'gl_LightModel'
-  , 'gl_LightModelParameters'
-  , 'gl_LightModelProducts'
-  , 'gl_LightProducts'
-  , 'gl_LightSource'
-  , 'gl_LightSourceParameters'
-  , 'gl_MaterialParameters'
-  , 'gl_MaxClipPlanes'
-  , 'gl_MaxCombinedTextureImageUnits'
-  , 'gl_MaxDrawBuffers'
-  , 'gl_MaxFragmentUniformComponents'
-  , 'gl_MaxLights'
-  , 'gl_MaxTextureCoords'
-  , 'gl_MaxTextureImageUnits'
-  , 'gl_MaxTextureUnits'
-  , 'gl_MaxVaryingFloats'
-  , 'gl_MaxVertexAttribs'
-  , 'gl_MaxVertexTextureImageUnits'
-  , 'gl_MaxVertexUniformComponents'
-  , 'gl_ModelViewMatrix'
-  , 'gl_ModelViewMatrixInverse'
-  , 'gl_ModelViewMatrixInverseTranspose'
-  , 'gl_ModelViewMatrixTranspose'
-  , 'gl_ModelViewProjectionMatrix'
-  , 'gl_ModelViewProjectionMatrixInverse'
-  , 'gl_ModelViewProjectionMatrixInverseTranspose'
-  , 'gl_ModelViewProjectionMatrixTranspose'
-  , 'gl_MultiTexCoord0'
-  , 'gl_MultiTexCoord1'
-  , 'gl_MultiTexCoord2'
-  , 'gl_MultiTexCoord3'
-  , 'gl_MultiTexCoord4'
-  , 'gl_MultiTexCoord5'
-  , 'gl_MultiTexCoord6'
-  , 'gl_MultiTexCoord7'
-  , 'gl_Normal'
-  , 'gl_NormalMatrix'
-  , 'gl_NormalScale'
-  , 'gl_ObjectPlaneQ'
-  , 'gl_ObjectPlaneR'
-  , 'gl_ObjectPlaneS'
-  , 'gl_ObjectPlaneT'
-  , 'gl_Point'
-  , 'gl_PointCoord'
-  , 'gl_PointParameters'
-  , 'gl_PointSize'
-  , 'gl_Position'
-  , 'gl_ProjectionMatrix'
-  , 'gl_ProjectionMatrixInverse'
-  , 'gl_ProjectionMatrixInverseTranspose'
-  , 'gl_ProjectionMatrixTranspose'
-  , 'gl_SecondaryColor'
-  , 'gl_TexCoord'
-  , 'gl_TextureEnvColor'
-  , 'gl_TextureMatrix'
-  , 'gl_TextureMatrixInverse'
-  , 'gl_TextureMatrixInverseTranspose'
-  , 'gl_TextureMatrixTranspose'
-  , 'gl_Vertex'
-  , 'greaterThan'
-  , 'greaterThanEqual'
-  , 'inversesqrt'
-  , 'length'
-  , 'lessThan'
-  , 'lessThanEqual'
-  , 'log'
-  , 'log2'
-  , 'matrixCompMult'
-  , 'max'
-  , 'min'
-  , 'mix'
-  , 'mod'
-  , 'normalize'
-  , 'not'
-  , 'notEqual'
-  , 'pow'
-  , 'radians'
-  , 'reflect'
-  , 'refract'
-  , 'sign'
-  , 'sin'
-  , 'smoothstep'
-  , 'sqrt'
-  , 'step'
-  , 'tan'
-  , 'texture2D'
-  , 'texture2DLod'
-  , 'texture2DProj'
-  , 'texture2DProjLod'
-  , 'textureCube'
-  , 'textureCubeLod'
-  , 'texture2DLodEXT'
-  , 'texture2DProjLodEXT'
-  , 'textureCubeLodEXT'
-  , 'texture2DGradEXT'
-  , 'texture2DProjGradEXT'
-  , 'textureCubeGradEXT'
-]
-
-},{}],245:[function(require,module,exports){
-var v100 = require('./literals')
-
-module.exports = v100.slice().concat([
-   'layout'
-  , 'centroid'
-  , 'smooth'
-  , 'case'
-  , 'mat2x2'
-  , 'mat2x3'
-  , 'mat2x4'
-  , 'mat3x2'
-  , 'mat3x3'
-  , 'mat3x4'
-  , 'mat4x2'
-  , 'mat4x3'
-  , 'mat4x4'
-  , 'uint'
-  , 'uvec2'
-  , 'uvec3'
-  , 'uvec4'
-  , 'samplerCubeShadow'
-  , 'sampler2DArray'
-  , 'sampler2DArrayShadow'
-  , 'isampler2D'
-  , 'isampler3D'
-  , 'isamplerCube'
-  , 'isampler2DArray'
-  , 'usampler2D'
-  , 'usampler3D'
-  , 'usamplerCube'
-  , 'usampler2DArray'
-  , 'coherent'
-  , 'restrict'
-  , 'readonly'
-  , 'writeonly'
-  , 'resource'
-  , 'atomic_uint'
-  , 'noperspective'
-  , 'patch'
-  , 'sample'
-  , 'subroutine'
-  , 'common'
-  , 'partition'
-  , 'active'
-  , 'filter'
-  , 'image1D'
-  , 'image2D'
-  , 'image3D'
-  , 'imageCube'
-  , 'iimage1D'
-  , 'iimage2D'
-  , 'iimage3D'
-  , 'iimageCube'
-  , 'uimage1D'
-  , 'uimage2D'
-  , 'uimage3D'
-  , 'uimageCube'
-  , 'image1DArray'
-  , 'image2DArray'
-  , 'iimage1DArray'
-  , 'iimage2DArray'
-  , 'uimage1DArray'
-  , 'uimage2DArray'
-  , 'image1DShadow'
-  , 'image2DShadow'
-  , 'image1DArrayShadow'
-  , 'image2DArrayShadow'
-  , 'imageBuffer'
-  , 'iimageBuffer'
-  , 'uimageBuffer'
-  , 'sampler1DArray'
-  , 'sampler1DArrayShadow'
-  , 'isampler1D'
-  , 'isampler1DArray'
-  , 'usampler1D'
-  , 'usampler1DArray'
-  , 'isampler2DRect'
-  , 'usampler2DRect'
-  , 'samplerBuffer'
-  , 'isamplerBuffer'
-  , 'usamplerBuffer'
-  , 'sampler2DMS'
-  , 'isampler2DMS'
-  , 'usampler2DMS'
-  , 'sampler2DMSArray'
-  , 'isampler2DMSArray'
-  , 'usampler2DMSArray'
-])
-
-},{"./literals":246}],246:[function(require,module,exports){
-module.exports = [
-  // current
-    'precision'
-  , 'highp'
-  , 'mediump'
-  , 'lowp'
-  , 'attribute'
-  , 'const'
-  , 'uniform'
-  , 'varying'
-  , 'break'
-  , 'continue'
-  , 'do'
-  , 'for'
-  , 'while'
-  , 'if'
-  , 'else'
-  , 'in'
-  , 'out'
-  , 'inout'
-  , 'float'
-  , 'int'
-  , 'void'
-  , 'bool'
-  , 'true'
-  , 'false'
-  , 'discard'
-  , 'return'
-  , 'mat2'
-  , 'mat3'
-  , 'mat4'
-  , 'vec2'
-  , 'vec3'
-  , 'vec4'
-  , 'ivec2'
-  , 'ivec3'
-  , 'ivec4'
-  , 'bvec2'
-  , 'bvec3'
-  , 'bvec4'
-  , 'sampler1D'
-  , 'sampler2D'
-  , 'sampler3D'
-  , 'samplerCube'
-  , 'sampler1DShadow'
-  , 'sampler2DShadow'
-  , 'struct'
-
-  // future
-  , 'asm'
-  , 'class'
-  , 'union'
-  , 'enum'
-  , 'typedef'
-  , 'template'
-  , 'this'
-  , 'packed'
-  , 'goto'
-  , 'switch'
-  , 'default'
-  , 'inline'
-  , 'noinline'
-  , 'volatile'
-  , 'public'
-  , 'static'
-  , 'extern'
-  , 'external'
-  , 'interface'
-  , 'long'
-  , 'short'
-  , 'double'
-  , 'half'
-  , 'fixed'
-  , 'unsigned'
-  , 'input'
-  , 'output'
-  , 'hvec2'
-  , 'hvec3'
-  , 'hvec4'
-  , 'dvec2'
-  , 'dvec3'
-  , 'dvec4'
-  , 'fvec2'
-  , 'fvec3'
-  , 'fvec4'
-  , 'sampler2DRect'
-  , 'sampler3DRect'
-  , 'sampler2DRectShadow'
-  , 'sizeof'
-  , 'cast'
-  , 'namespace'
-  , 'using'
-]
-
-},{}],247:[function(require,module,exports){
-module.exports = [
-    '<<='
-  , '>>='
-  , '++'
-  , '--'
-  , '<<'
-  , '>>'
-  , '<='
-  , '>='
-  , '=='
-  , '!='
-  , '&&'
-  , '||'
-  , '+='
-  , '-='
-  , '*='
-  , '/='
-  , '%='
-  , '&='
-  , '^^'
-  , '^='
-  , '|='
-  , '('
-  , ')'
-  , '['
-  , ']'
-  , '.'
-  , '!'
-  , '~'
-  , '*'
-  , '/'
-  , '%'
-  , '+'
-  , '-'
-  , '<'
-  , '>'
-  , '&'
-  , '^'
-  , '|'
-  , '?'
-  , ':'
-  , '='
-  , ','
-  , ';'
-  , '{'
-  , '}'
-]
-
-},{}],248:[function(require,module,exports){
-var tokenize = require('./index')
-
-module.exports = tokenizeString
-
-function tokenizeString(str, opt) {
-  var generator = tokenize(opt)
-  var tokens = []
-
-  tokens = tokens.concat(generator(str))
-  tokens = tokens.concat(generator(null))
-
-  return tokens
-}
-
-},{"./index":242}],249:[function(require,module,exports){
+},{"./lib/builtins":270,"./lib/builtins-300es":269,"./lib/literals":272,"./lib/literals-300es":271,"./lib/operators":273}],269:[function(require,module,exports){
+arguments[4][213][0].apply(exports,arguments)
+},{"./builtins":270,"dup":213}],270:[function(require,module,exports){
+arguments[4][214][0].apply(exports,arguments)
+},{"dup":214}],271:[function(require,module,exports){
+arguments[4][215][0].apply(exports,arguments)
+},{"./literals":272,"dup":215}],272:[function(require,module,exports){
+arguments[4][216][0].apply(exports,arguments)
+},{"dup":216}],273:[function(require,module,exports){
+arguments[4][217][0].apply(exports,arguments)
+},{"dup":217}],274:[function(require,module,exports){
+arguments[4][218][0].apply(exports,arguments)
+},{"./index":268,"dup":218}],275:[function(require,module,exports){
 "use strict"
 
 //High level idea:
@@ -44071,11 +44787,11 @@ function incrementalConvexHull(points, randomSearch) {
   //Extract boundary cells
   return triangles.boundary()
 }
-},{"robust-orientation":465,"simplicial-complex":252}],250:[function(require,module,exports){
+},{"robust-orientation":491,"simplicial-complex":278}],276:[function(require,module,exports){
 arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],251:[function(require,module,exports){
+},{"dup":52}],277:[function(require,module,exports){
 arguments[4][109][0].apply(exports,arguments)
-},{"dup":109}],252:[function(require,module,exports){
+},{"dup":109}],278:[function(require,module,exports){
 "use strict"; "use restrict";
 
 var bits      = require("bit-twiddle")
@@ -44419,7 +45135,7 @@ function connectedComponents(cells, vertex_count) {
 }
 exports.connectedComponents = connectedComponents
 
-},{"bit-twiddle":250,"union-find":251}],253:[function(require,module,exports){
+},{"bit-twiddle":276,"union-find":277}],279:[function(require,module,exports){
 "use strict"
 
 function iota(n) {
@@ -44431,7 +45147,7 @@ function iota(n) {
 }
 
 module.exports = iota
-},{}],254:[function(require,module,exports){
+},{}],280:[function(require,module,exports){
 /**
  * Determine if an object is Buffer
  *
@@ -44450,7 +45166,7 @@ module.exports = function (obj) {
     ))
 }
 
-},{}],255:[function(require,module,exports){
+},{}],281:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 module.exports = ArrayGroup;
@@ -44508,7 +45224,7 @@ ArrayGroup.prototype.getTransferables = function (transferables) {
         transferables.push(this.paintVertexArrays[layerName].arrayBuffer);
     }
 };
-},{"../util/util":369}],256:[function(require,module,exports){
+},{"../util/util":395}],282:[function(require,module,exports){
 'use strict';
 var featureFilter = require('feature-filter');
 var ArrayGroup = require('./array_group');
@@ -44883,7 +45599,7 @@ function createGetUniform(attribute, stopOffset) {
         return [Math.max(0, Math.min(4, stopInterp - stopOffset))];
     };
 }
-},{"../util/struct_array":367,"../util/util":369,"./array_group":255,"./bucket/circle_bucket":257,"./bucket/fill_bucket":258,"./bucket/line_bucket":259,"./bucket/symbol_bucket":260,"./buffer_group":262,"feature-filter":373}],257:[function(require,module,exports){
+},{"../util/struct_array":393,"../util/util":395,"./array_group":281,"./bucket/circle_bucket":283,"./bucket/fill_bucket":284,"./bucket/line_bucket":285,"./bucket/symbol_bucket":286,"./buffer_group":288,"feature-filter":399}],283:[function(require,module,exports){
 'use strict';
 var Bucket = require('../bucket');
 var util = require('../../util/util');
@@ -44975,7 +45691,7 @@ CircleBucket.prototype.addFeature = function (feature) {
     }
     this.populatePaintArrays('circle', globalProperties, feature.properties, startGroup, startIndex);
 };
-},{"../../util/util":369,"../bucket":256,"../load_geometry":264}],258:[function(require,module,exports){
+},{"../../util/util":395,"../bucket":282,"../load_geometry":290}],284:[function(require,module,exports){
 'use strict';
 var Bucket = require('../bucket');
 var util = require('../../util/util');
@@ -45069,7 +45785,7 @@ FillBucket.prototype.addPolygon = function (polygon) {
         group.elementArray.emplaceBack(triangleIndices[i] + startIndex);
     }
 };
-},{"../../util/classify_rings":357,"../../util/util":369,"../bucket":256,"../load_geometry":264,"earcut":372}],259:[function(require,module,exports){
+},{"../../util/classify_rings":383,"../../util/util":395,"../bucket":282,"../load_geometry":290,"earcut":398}],285:[function(require,module,exports){
 'use strict';
 var Bucket = require('../bucket');
 var util = require('../../util/util');
@@ -45302,7 +46018,7 @@ LineBucket.prototype.addPieSliceVertex = function (currentVertex, distance, extr
         this.e1 = this.e3;
     }
 };
-},{"../../util/util":369,"../bucket":256,"../load_geometry":264}],260:[function(require,module,exports){
+},{"../../util/util":395,"../bucket":282,"../load_geometry":290}],286:[function(require,module,exports){
 'use strict';
 var Point = require('point-geometry');
 var Bucket = require('../bucket');
@@ -45728,7 +46444,7 @@ SymbolBucket.prototype.addSymbolInstance = function (anchor, line, shapedText, s
 SymbolBucket.prototype.addSymbolQuad = function (symbolQuad) {
     return this.symbolQuadsArray.emplaceBack(symbolQuad.anchorPoint.x, symbolQuad.anchorPoint.y, symbolQuad.tl.x, symbolQuad.tl.y, symbolQuad.tr.x, symbolQuad.tr.y, symbolQuad.bl.x, symbolQuad.bl.y, symbolQuad.br.x, symbolQuad.br.y, symbolQuad.tex.h, symbolQuad.tex.w, symbolQuad.tex.x, symbolQuad.tex.y, symbolQuad.anchorAngle, symbolQuad.glyphAngle, symbolQuad.maxScale, symbolQuad.minScale);
 };
-},{"../../symbol/anchor":318,"../../symbol/clip_line":320,"../../symbol/collision_feature":322,"../../symbol/get_anchors":324,"../../symbol/mergelines":327,"../../symbol/quads":328,"../../symbol/resolve_text":329,"../../symbol/shaping":330,"../../util/token":368,"../../util/util":369,"../bucket":256,"../load_geometry":264,"point-geometry":427}],261:[function(require,module,exports){
+},{"../../symbol/anchor":344,"../../symbol/clip_line":346,"../../symbol/collision_feature":348,"../../symbol/get_anchors":350,"../../symbol/mergelines":353,"../../symbol/quads":354,"../../symbol/resolve_text":355,"../../symbol/shaping":356,"../../util/token":394,"../../util/util":395,"../bucket":282,"../load_geometry":290,"point-geometry":453}],287:[function(require,module,exports){
 'use strict';
 module.exports = Buffer;
 function Buffer(array, arrayType, type) {
@@ -45774,7 +46490,7 @@ Buffer.BufferType = {
     VERTEX: 'ARRAY_BUFFER',
     ELEMENT: 'ELEMENT_ARRAY_BUFFER'
 };
-},{}],262:[function(require,module,exports){
+},{}],288:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var Buffer = require('./buffer');
@@ -45817,7 +46533,7 @@ BufferGroup.prototype.destroy = function (gl) {
         this.secondVaos[k].destroy(gl);
     }
 };
-},{"../render/vertex_array_object":284,"../util/util":369,"./buffer":261}],263:[function(require,module,exports){
+},{"../render/vertex_array_object":310,"../util/util":395,"./buffer":287}],289:[function(require,module,exports){
 'use strict';
 var Point = require('point-geometry');
 var loadGeometry = require('./load_geometry');
@@ -46073,7 +46789,7 @@ function offsetLine(rings, offset) {
     }
     return newRings;
 }
-},{"../util/dictionary_coder":359,"../util/intersection_tests":364,"../util/struct_array":367,"../util/util":369,"../util/vectortile_to_geojson":370,"./bucket":256,"./load_geometry":264,"feature-filter":373,"grid-index":395,"pbf":425,"point-geometry":427,"vector-tile":437}],264:[function(require,module,exports){
+},{"../util/dictionary_coder":385,"../util/intersection_tests":390,"../util/struct_array":393,"../util/util":395,"../util/vectortile_to_geojson":396,"./bucket":282,"./load_geometry":290,"feature-filter":399,"grid-index":421,"pbf":451,"point-geometry":453,"vector-tile":463}],290:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var EXTENT = require('./bucket').EXTENT;
@@ -46104,7 +46820,7 @@ module.exports = function loadGeometry(feature, bits) {
     }
     return geometry;
 };
-},{"../util/util":369,"./bucket":256}],265:[function(require,module,exports){
+},{"../util/util":395,"./bucket":282}],291:[function(require,module,exports){
 'use strict';
 module.exports = Coordinate;
 function Coordinate(column, row, zoom) {
@@ -46136,7 +46852,7 @@ Coordinate.prototype = {
         return this;
     }
 };
-},{}],266:[function(require,module,exports){
+},{}],292:[function(require,module,exports){
 'use strict';
 module.exports = LngLat;
 var wrap = require('../util/util').wrap;
@@ -46171,7 +46887,7 @@ LngLat.convert = function (input) {
     }
     return input;
 };
-},{"../util/util":369}],267:[function(require,module,exports){
+},{"../util/util":395}],293:[function(require,module,exports){
 'use strict';
 module.exports = LngLatBounds;
 var LngLat = require('./lng_lat');
@@ -46259,7 +46975,7 @@ LngLatBounds.convert = function (input) {
         return input;
     return new LngLatBounds(input);
 };
-},{"./lng_lat":266}],268:[function(require,module,exports){
+},{"./lng_lat":292}],294:[function(require,module,exports){
 'use strict';
 var LngLat = require('./lng_lat'), Point = require('point-geometry'), Coordinate = require('./coordinate'), wrap = require('../util/util').wrap, interp = require('../util/interpolate'), TileCoord = require('../source/tile_coord'), EXTENT = require('../data/bucket').EXTENT, glmatrix = require('gl-matrix');
 var vec4 = glmatrix.vec4, mat4 = glmatrix.mat4, mat2 = glmatrix.mat2;
@@ -46612,7 +47328,7 @@ Transform.prototype = {
         this.pixelMatrixInverse = m;
     }
 };
-},{"../data/bucket":256,"../source/tile_coord":296,"../util/interpolate":363,"../util/util":369,"./coordinate":265,"./lng_lat":266,"gl-matrix":385,"point-geometry":427}],269:[function(require,module,exports){
+},{"../data/bucket":282,"../source/tile_coord":322,"../util/interpolate":389,"../util/util":395,"./coordinate":291,"./lng_lat":292,"gl-matrix":411,"point-geometry":453}],295:[function(require,module,exports){
 'use strict';
 var simplexFont = {
     ' ': [
@@ -49505,7 +50221,7 @@ module.exports = function textVertices(text, left, baseline, scale) {
     }
     return strokes;
 };
-},{}],270:[function(require,module,exports){
+},{}],296:[function(require,module,exports){
 'use strict';
 var mapboxgl = module.exports = {};
 mapboxgl.version = require('../package.json').version;
@@ -49536,7 +50252,7 @@ Object.defineProperty(mapboxgl, 'accessToken', {
         config.ACCESS_TOKEN = token;
     }
 });
-},{"../package.json":446,"./geo/lng_lat":266,"./geo/lng_lat_bounds":267,"./style/style":305,"./ui/control/attribution":336,"./ui/control/control":337,"./ui/control/geolocate":338,"./ui/control/navigation":339,"./ui/map":348,"./ui/marker":349,"./ui/popup":350,"./util/ajax":352,"./util/browser":353,"./util/config":358,"./util/evented":361,"./util/util":369,"point-geometry":427}],271:[function(require,module,exports){
+},{"../package.json":472,"./geo/lng_lat":292,"./geo/lng_lat_bounds":293,"./style/style":331,"./ui/control/attribution":362,"./ui/control/control":363,"./ui/control/geolocate":364,"./ui/control/navigation":365,"./ui/map":374,"./ui/marker":375,"./ui/popup":376,"./util/ajax":378,"./util/browser":379,"./util/config":384,"./util/evented":387,"./util/util":395,"point-geometry":453}],297:[function(require,module,exports){
 'use strict';
 module.exports = function (uniforms) {
     var pragmas = {
@@ -49551,7 +50267,7 @@ module.exports = function (uniforms) {
     }
     return pragmas;
 };
-},{}],272:[function(require,module,exports){
+},{}],298:[function(require,module,exports){
 'use strict';
 var pixelsToTileUnits = require('../source/pixels_to_tile_units');
 var createUniformPragmas = require('./create_uniform_pragmas');
@@ -49625,7 +50341,7 @@ function drawBackground(painter, source, layer) {
     gl.stencilMask(0);
     gl.stencilFunc(gl.EQUAL, 128, 128);
 }
-},{"../source/pixels_to_tile_units":290,"./create_uniform_pragmas":271}],273:[function(require,module,exports){
+},{"../source/pixels_to_tile_units":316,"./create_uniform_pragmas":297}],299:[function(require,module,exports){
 'use strict';
 var browser = require('../util/browser');
 module.exports = drawCircles;
@@ -49664,7 +50380,7 @@ function drawCircles(painter, source, layer, coords) {
         }
     }
 }
-},{"../util/browser":353}],274:[function(require,module,exports){
+},{"../util/browser":379}],300:[function(require,module,exports){
 'use strict';
 module.exports = drawCollisionDebug;
 function drawCollisionDebug(painter, source, layer, coords) {
@@ -49693,7 +50409,7 @@ function drawCollisionDebug(painter, source, layer, coords) {
         gl.drawArrays(gl.LINES, 0, group.layoutVertexBuffer.length);
     }
 }
-},{}],275:[function(require,module,exports){
+},{}],301:[function(require,module,exports){
 'use strict';
 var textVertices = require('../lib/debugtext');
 var browser = require('../util/browser');
@@ -49763,7 +50479,7 @@ function drawDebugTile(painter, source, coord) {
     gl.uniformMatrix4fv(program.u_matrix, false, posMatrix);
     gl.drawArrays(gl.LINES, 0, debugTextBuffer.length);
 }
-},{"../data/bucket":256,"../data/buffer":261,"../lib/debugtext":269,"../util/browser":353,"./vertex_array_object":284,"gl-matrix":385}],276:[function(require,module,exports){
+},{"../data/bucket":282,"../data/buffer":287,"../lib/debugtext":295,"../util/browser":379,"./vertex_array_object":310,"gl-matrix":411}],302:[function(require,module,exports){
 'use strict';
 var pixelsToTileUnits = require('../source/pixels_to_tile_units');
 module.exports = draw;
@@ -49887,7 +50603,7 @@ function setPattern(image, opacity, tile, coord, painter, program) {
     gl.activeTexture(gl.TEXTURE0);
     painter.spriteAtlas.bind(gl, true);
 }
-},{"../source/pixels_to_tile_units":290}],277:[function(require,module,exports){
+},{"../source/pixels_to_tile_units":316}],303:[function(require,module,exports){
 'use strict';
 var browser = require('../util/browser');
 var mat2 = require('gl-matrix').mat2;
@@ -50019,7 +50735,7 @@ module.exports = function drawLine(painter, source, layer, coords) {
         }
     }
 };
-},{"../source/pixels_to_tile_units":290,"../util/browser":353,"gl-matrix":385}],278:[function(require,module,exports){
+},{"../source/pixels_to_tile_units":316,"../util/browser":379,"gl-matrix":411}],304:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var StructArrayType = require('../util/struct_array');
@@ -50137,7 +50853,7 @@ function getOpacities(tile, parentTile, layer, transform) {
     opacity[1] *= op;
     return opacity;
 }
-},{"../util/struct_array":367,"../util/util":369}],279:[function(require,module,exports){
+},{"../util/struct_array":393,"../util/util":395}],305:[function(require,module,exports){
 'use strict';
 var browser = require('../util/browser');
 var drawCollisionDebug = require('./draw_collision_debug');
@@ -50265,7 +50981,7 @@ function drawSymbol(painter, layer, posMatrix, tile, bucket, bufferGroups, isTex
         }
     }
 }
-},{"../source/pixels_to_tile_units":290,"../util/browser":353,"./draw_collision_debug":274}],280:[function(require,module,exports){
+},{"../source/pixels_to_tile_units":316,"../util/browser":379,"./draw_collision_debug":300}],306:[function(require,module,exports){
 'use strict';
 module.exports = FrameHistory;
 function FrameHistory() {
@@ -50325,7 +51041,7 @@ FrameHistory.prototype.bind = function (gl) {
         }
     }
 };
-},{}],281:[function(require,module,exports){
+},{}],307:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 module.exports = LineAtlas;
@@ -50422,7 +51138,7 @@ LineAtlas.prototype.bind = function (gl) {
         }
     }
 };
-},{"../util/util":369}],282:[function(require,module,exports){
+},{"../util/util":395}],308:[function(require,module,exports){
 'use strict';
 var browser = require('../util/browser');
 var mat4 = require('gl-matrix').mat4;
@@ -50693,7 +51409,7 @@ Painter.prototype.showOverdrawInspector = function (enabled) {
         gl.blendFunc(gl.ONE, gl.ONE_MINUS_SRC_ALPHA);
     }
 };
-},{"../data/bucket":256,"../data/buffer":261,"../source/pixels_to_tile_units":290,"../source/source_cache":294,"../util/browser":353,"../util/struct_array":367,"../util/util":369,"./create_uniform_pragmas":271,"./draw_background":272,"./draw_circle":273,"./draw_debug":275,"./draw_fill":276,"./draw_line":277,"./draw_raster":278,"./draw_symbol":279,"./frame_history":280,"./painter/use_program":283,"./vertex_array_object":284,"gl-matrix":385}],283:[function(require,module,exports){
+},{"../data/bucket":282,"../data/buffer":287,"../source/pixels_to_tile_units":316,"../source/source_cache":320,"../util/browser":379,"../util/struct_array":393,"../util/util":395,"./create_uniform_pragmas":297,"./draw_background":298,"./draw_circle":299,"./draw_debug":301,"./draw_fill":302,"./draw_line":303,"./draw_raster":304,"./draw_symbol":305,"./frame_history":306,"./painter/use_program":309,"./vertex_array_object":310,"gl-matrix":411}],309:[function(require,module,exports){
 'use strict';
 var util = require('../../util/util');
 var shaders = require('mapbox-gl-shaders');
@@ -50766,7 +51482,7 @@ function applyPragmas(source, pragmas) {
         return pragmas[operation][name].replace(/{type}/g, type).replace(/{precision}/g, precision);
     });
 }
-},{"../../util/util":369,"mapbox-gl-shaders":397}],284:[function(require,module,exports){
+},{"../../util/util":395,"mapbox-gl-shaders":423}],310:[function(require,module,exports){
 'use strict';
 module.exports = VertexArrayObject;
 function VertexArrayObject() {
@@ -50833,7 +51549,7 @@ VertexArrayObject.prototype.destroy = function (gl) {
         this.vao = null;
     }
 };
-},{}],285:[function(require,module,exports){
+},{}],311:[function(require,module,exports){
 'use strict';
 var Evented = require('../util/evented');
 var util = require('../util/util');
@@ -50955,7 +51671,7 @@ GeoJSONSource.prototype = util.inherit(Evented, {
         };
     }
 });
-},{"../data/bucket":256,"../util/evented":361,"../util/util":369,"resolve-url":429}],286:[function(require,module,exports){
+},{"../data/bucket":282,"../util/evented":387,"../util/util":395,"resolve-url":455}],312:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var ajax = require('../util/ajax');
@@ -51037,7 +51753,7 @@ GeoJSONWorkerSource.prototype = util.inherit(VectorTileWorkerSource, {
         }
     }
 });
-},{"../util/ajax":352,"../util/util":369,"./geojson_wrapper":287,"./vector_tile_worker_source":298,"geojson-rewind":374,"geojson-vt":380,"supercluster":431,"vt-pbf":441}],287:[function(require,module,exports){
+},{"../util/ajax":378,"../util/util":395,"./geojson_wrapper":313,"./vector_tile_worker_source":324,"geojson-rewind":400,"geojson-vt":406,"supercluster":457,"vt-pbf":467}],313:[function(require,module,exports){
 'use strict';
 var Point = require('point-geometry');
 var VectorTileFeature = require('vector-tile').VectorTileFeature;
@@ -51098,7 +51814,7 @@ FeatureWrapper.prototype.bbox = function () {
     ];
 };
 FeatureWrapper.prototype.toGeoJSON = VectorTileFeature.prototype.toGeoJSON;
-},{"../data/bucket":256,"point-geometry":427,"vector-tile":437}],288:[function(require,module,exports){
+},{"../data/bucket":282,"point-geometry":453,"vector-tile":463}],314:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var TileCoord = require('./tile_coord');
@@ -51209,7 +51925,7 @@ ImageSource.prototype = util.inherit(Evented, {
         };
     }
 });
-},{"../data/bucket":256,"../data/buffer":261,"../geo/lng_lat":266,"../render/draw_raster":278,"../render/vertex_array_object":284,"../util/ajax":352,"../util/evented":361,"../util/util":369,"./tile_coord":296,"point-geometry":427}],289:[function(require,module,exports){
+},{"../data/bucket":282,"../data/buffer":287,"../geo/lng_lat":292,"../render/draw_raster":304,"../render/vertex_array_object":310,"../util/ajax":378,"../util/evented":387,"../util/util":395,"./tile_coord":322,"point-geometry":453}],315:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var ajax = require('../util/ajax');
@@ -51240,13 +51956,13 @@ module.exports = function (options, callback) {
         browser.frame(loaded.bind(null, null, options));
     }
 };
-},{"../util/ajax":352,"../util/browser":353,"../util/mapbox":366,"../util/util":369}],290:[function(require,module,exports){
+},{"../util/ajax":378,"../util/browser":379,"../util/mapbox":392,"../util/util":395}],316:[function(require,module,exports){
 'use strict';
 var Bucket = require('../data/bucket');
 module.exports = function (tile, pixelValue, z) {
     return pixelValue * (Bucket.EXTENT / (tile.tileSize * Math.pow(2, z - tile.coord.z)));
 };
-},{"../data/bucket":256}],291:[function(require,module,exports){
+},{"../data/bucket":282}],317:[function(require,module,exports){
 'use strict';
 var TileCoord = require('./tile_coord');
 exports.rendered = function (sourceCache, styleLayers, queryGeometry, params, zoom, bearing) {
@@ -51306,7 +52022,7 @@ function mergeRenderedFeatureLayers(tiles) {
     }
     return result;
 }
-},{"./tile_coord":296}],292:[function(require,module,exports){
+},{"./tile_coord":322}],318:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var ajax = require('../util/ajax');
@@ -51390,7 +52106,7 @@ RasterTileSource.prototype = util.inherit(Evented, {
             this.map.painter.saveTexture(tile.texture);
     }
 });
-},{"../util/ajax":352,"../util/evented":361,"../util/mapbox":366,"../util/util":369,"./load_tilejson":289}],293:[function(require,module,exports){
+},{"../util/ajax":378,"../util/evented":387,"../util/mapbox":392,"../util/util":395,"./load_tilejson":315}],319:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var sourceTypes = {
@@ -51420,7 +52136,7 @@ exports.getType = function (name) {
 exports.setType = function (name, type) {
     sourceTypes[name] = type;
 };
-},{"../source/geojson_source":285,"../source/image_source":288,"../source/raster_tile_source":292,"../source/vector_tile_source":297,"../source/video_source":299,"../util/util":369}],294:[function(require,module,exports){
+},{"../source/geojson_source":311,"../source/image_source":314,"../source/raster_tile_source":318,"../source/vector_tile_source":323,"../source/video_source":325,"../util/util":395}],320:[function(require,module,exports){
 'use strict';
 var Source = require('./source');
 var Tile = require('./tile');
@@ -51762,7 +52478,7 @@ function coordinateToTilePoint(tileCoord, sourceMaxZoom, coord) {
 function compareKeyZoom(a, b) {
     return a % 32 - b % 32;
 }
-},{"../data/bucket":256,"../geo/coordinate":265,"../util/evented":361,"../util/lru_cache":365,"../util/util":369,"./source":293,"./tile":295,"./tile_coord":296}],295:[function(require,module,exports){
+},{"../data/bucket":282,"../geo/coordinate":291,"../util/evented":387,"../util/lru_cache":391,"../util/util":395,"./source":319,"./tile":321,"./tile_coord":322}],321:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var Bucket = require('../data/bucket');
@@ -51898,7 +52614,7 @@ function unserializeBuckets(input, style) {
     }
     return output;
 }
-},{"../data/bucket":256,"../data/feature_index":263,"../symbol/collision_box":321,"../symbol/collision_tile":323,"../symbol/symbol_instances":332,"../symbol/symbol_quads":333,"../util/util":369,"../util/vectortile_to_geojson":370,"feature-filter":373,"pbf":425,"vector-tile":437}],296:[function(require,module,exports){
+},{"../data/bucket":282,"../data/feature_index":289,"../symbol/collision_box":347,"../symbol/collision_tile":349,"../symbol/symbol_instances":358,"../symbol/symbol_quads":359,"../util/util":395,"../util/vectortile_to_geojson":396,"feature-filter":399,"pbf":451,"vector-tile":463}],322:[function(require,module,exports){
 'use strict';
 var WhooTS = require('whoots-js');
 var Coordinate = require('../geo/coordinate');
@@ -52050,7 +52766,7 @@ TileCoord.cover = function (z, bounds, actualZ) {
         return t[id];
     });
 };
-},{"../geo/coordinate":265,"whoots-js":445}],297:[function(require,module,exports){
+},{"../geo/coordinate":291,"whoots-js":471}],323:[function(require,module,exports){
 'use strict';
 var Evented = require('../util/evented');
 var util = require('../util/util');
@@ -52147,7 +52863,7 @@ VectorTileSource.prototype = util.inherit(Evented, {
         }, null, tile.workerID);
     }
 });
-},{"../util/evented":361,"../util/mapbox":366,"../util/util":369,"./load_tilejson":289}],298:[function(require,module,exports){
+},{"../util/evented":387,"../util/mapbox":392,"../util/util":395,"./load_tilejson":315}],324:[function(require,module,exports){
 'use strict';
 var ajax = require('../util/ajax');
 var vt = require('vector-tile');
@@ -52231,7 +52947,7 @@ VectorTileWorkerSource.prototype = {
         }
     }
 };
-},{"../util/ajax":352,"./worker_tile":301,"pbf":425,"vector-tile":437}],299:[function(require,module,exports){
+},{"../util/ajax":378,"./worker_tile":327,"pbf":451,"vector-tile":463}],325:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var TileCoord = require('./tile_coord');
@@ -52355,7 +53071,7 @@ VideoSource.prototype = util.inherit(Evented, {
         };
     }
 });
-},{"../data/bucket":256,"../data/buffer":261,"../geo/lng_lat":266,"../render/draw_raster":278,"../render/vertex_array_object":284,"../util/ajax":352,"../util/evented":361,"../util/util":369,"./tile_coord":296,"point-geometry":427}],300:[function(require,module,exports){
+},{"../data/bucket":282,"../data/buffer":287,"../geo/lng_lat":292,"../render/draw_raster":304,"../render/vertex_array_object":310,"../util/ajax":378,"../util/evented":387,"../util/util":395,"./tile_coord":322,"point-geometry":453}],326:[function(require,module,exports){
 'use strict';
 var Actor = require('../util/actor');
 var StyleLayer = require('../style/style_layer');
@@ -52483,7 +53199,7 @@ function createLayerFamilies(layers) {
     }
     return families;
 }
-},{"../style/style_layer":308,"../util/actor":351,"../util/util":369,"./geojson_worker_source":286,"./vector_tile_worker_source":298}],301:[function(require,module,exports){
+},{"../style/style_layer":334,"../util/actor":377,"../util/util":395,"./geojson_worker_source":312,"./vector_tile_worker_source":324}],327:[function(require,module,exports){
 'use strict';
 var FeatureIndex = require('../data/feature_index');
 var CollisionTile = require('../symbol/collision_tile');
@@ -52707,7 +53423,7 @@ function getTransferables(buckets) {
 function getLayerId(layer) {
     return layer.id;
 }
-},{"../data/bucket":256,"../data/feature_index":263,"../symbol/collision_box":321,"../symbol/collision_tile":323,"../symbol/symbol_instances":332,"../symbol/symbol_quads":333,"../util/dictionary_coder":359,"../util/util":369}],302:[function(require,module,exports){
+},{"../data/bucket":282,"../data/feature_index":289,"../symbol/collision_box":347,"../symbol/collision_tile":349,"../symbol/symbol_instances":358,"../symbol/symbol_quads":359,"../util/dictionary_coder":385,"../util/util":395}],328:[function(require,module,exports){
 'use strict';
 module.exports = AnimationLoop;
 function AnimationLoop() {
@@ -52732,7 +53448,7 @@ AnimationLoop.prototype.cancel = function (n) {
         return t.id !== n;
     });
 };
-},{}],303:[function(require,module,exports){
+},{}],329:[function(require,module,exports){
 'use strict';
 var Evented = require('../util/evented');
 var ajax = require('../util/ajax');
@@ -52806,7 +53522,7 @@ ImageSprite.prototype.getSpritePosition = function (name) {
         return pos;
     return new SpritePosition();
 };
-},{"../util/ajax":352,"../util/browser":353,"../util/evented":361,"../util/mapbox":366}],304:[function(require,module,exports){
+},{"../util/ajax":378,"../util/browser":379,"../util/evented":387,"../util/mapbox":392}],330:[function(require,module,exports){
 'use strict';
 var parseColorString = require('csscolorparser').parseCSSColor;
 var util = require('../util/util');
@@ -52840,7 +53556,7 @@ module.exports = function parseColor(input) {
         throw new Error('Invalid color ' + input);
     }
 };
-},{"../util/util":369,"./style_function":307,"csscolorparser":371}],305:[function(require,module,exports){
+},{"../util/util":395,"./style_function":333,"csscolorparser":397}],331:[function(require,module,exports){
 'use strict';
 var Evented = require('../util/evented');
 var StyleLayer = require('./style_layer');
@@ -53427,7 +54143,7 @@ Style.prototype = util.inherit(Evented, {
         }
     }
 });
-},{"../render/line_atlas":281,"../source/query_features":291,"../source/source":293,"../source/source_cache":294,"../symbol/glyph_source":326,"../symbol/sprite_atlas":331,"../util/ajax":352,"../util/browser":353,"../util/dispatcher":360,"../util/evented":361,"../util/mapbox":366,"../util/util":369,"./animation_loop":302,"./image_sprite":303,"./style_function":307,"./style_layer":308,"./style_spec":315,"./validate_style":317}],306:[function(require,module,exports){
+},{"../render/line_atlas":307,"../source/query_features":317,"../source/source":319,"../source/source_cache":320,"../symbol/glyph_source":352,"../symbol/sprite_atlas":357,"../util/ajax":378,"../util/browser":379,"../util/dispatcher":386,"../util/evented":387,"../util/mapbox":392,"../util/util":395,"./animation_loop":328,"./image_sprite":329,"./style_function":333,"./style_layer":334,"./style_spec":341,"./validate_style":343}],332:[function(require,module,exports){
 'use strict';
 var MapboxGLFunction = require('./style_function');
 var parseColor = require('./parse_color');
@@ -53498,7 +54214,7 @@ function transitioned(calculate) {
         }
     };
 }
-},{"../util/util":369,"./parse_color":304,"./style_function":307}],307:[function(require,module,exports){
+},{"../util/util":395,"./parse_color":330,"./style_function":333}],333:[function(require,module,exports){
 'use strict';
 var MapboxGLFunction = require('mapbox-gl-function');
 exports.interpolated = function (parameters) {
@@ -53520,7 +54236,7 @@ exports['piecewise-constant'] = function (parameters) {
     return outer;
 };
 exports.isFunctionDefinition = MapboxGLFunction.isFunctionDefinition;
-},{"mapbox-gl-function":396}],308:[function(require,module,exports){
+},{"mapbox-gl-function":422}],334:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var StyleTransition = require('./style_transition');
@@ -53813,7 +54529,7 @@ StyleLayer.prototype = util.inherit(Evented, {
 function getDeclarationValue(declaration) {
     return declaration.value;
 }
-},{"../util/evented":361,"../util/util":369,"./parse_color":304,"./style_declaration":306,"./style_layer/background_style_layer":309,"./style_layer/circle_style_layer":310,"./style_layer/fill_style_layer":311,"./style_layer/line_style_layer":312,"./style_layer/raster_style_layer":313,"./style_layer/symbol_style_layer":314,"./style_spec":315,"./style_transition":316,"./validate_style":317}],309:[function(require,module,exports){
+},{"../util/evented":387,"../util/util":395,"./parse_color":330,"./style_declaration":332,"./style_layer/background_style_layer":335,"./style_layer/circle_style_layer":336,"./style_layer/fill_style_layer":337,"./style_layer/line_style_layer":338,"./style_layer/raster_style_layer":339,"./style_layer/symbol_style_layer":340,"./style_spec":341,"./style_transition":342,"./validate_style":343}],335:[function(require,module,exports){
 'use strict';
 var util = require('../../util/util');
 var StyleLayer = require('../style_layer');
@@ -53822,7 +54538,7 @@ function BackgroundStyleLayer() {
 }
 module.exports = BackgroundStyleLayer;
 BackgroundStyleLayer.prototype = util.inherit(StyleLayer, {});
-},{"../../util/util":369,"../style_layer":308}],310:[function(require,module,exports){
+},{"../../util/util":395,"../style_layer":334}],336:[function(require,module,exports){
 'use strict';
 var util = require('../../util/util');
 var StyleLayer = require('../style_layer');
@@ -53831,7 +54547,7 @@ function CircleStyleLayer() {
 }
 module.exports = CircleStyleLayer;
 CircleStyleLayer.prototype = util.inherit(StyleLayer, {});
-},{"../../util/util":369,"../style_layer":308}],311:[function(require,module,exports){
+},{"../../util/util":395,"../style_layer":334}],337:[function(require,module,exports){
 'use strict';
 var util = require('../../util/util');
 var StyleLayer = require('../style_layer');
@@ -53876,7 +54592,7 @@ FillStyleLayer.prototype = util.inherit(StyleLayer, {
     }
 });
 module.exports = FillStyleLayer;
-},{"../../util/util":369,"../style_layer":308}],312:[function(require,module,exports){
+},{"../../util/util":395,"../style_layer":334}],338:[function(require,module,exports){
 'use strict';
 var util = require('../../util/util');
 var StyleLayer = require('../style_layer');
@@ -53899,7 +54615,7 @@ LineStyleLayer.prototype = util.inherit(StyleLayer, {
         return value;
     }
 });
-},{"../../util/util":369,"../style_layer":308}],313:[function(require,module,exports){
+},{"../../util/util":395,"../style_layer":334}],339:[function(require,module,exports){
 'use strict';
 var util = require('../../util/util');
 var StyleLayer = require('../style_layer');
@@ -53908,7 +54624,7 @@ function RasterStyleLayer() {
 }
 module.exports = RasterStyleLayer;
 RasterStyleLayer.prototype = util.inherit(StyleLayer, {});
-},{"../../util/util":369,"../style_layer":308}],314:[function(require,module,exports){
+},{"../../util/util":395,"../style_layer":334}],340:[function(require,module,exports){
 'use strict';
 var util = require('../../util/util');
 var StyleLayer = require('../style_layer');
@@ -53938,10 +54654,10 @@ SymbolStyleLayer.prototype = util.inherit(StyleLayer, {
         }
     }
 });
-},{"../../util/util":369,"../style_layer":308}],315:[function(require,module,exports){
+},{"../../util/util":395,"../style_layer":334}],341:[function(require,module,exports){
 'use strict';
 module.exports = require('mapbox-gl-style-spec/reference/latest');
-},{"mapbox-gl-style-spec/reference/latest":419}],316:[function(require,module,exports){
+},{"mapbox-gl-style-spec/reference/latest":445}],342:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var interpolate = require('../util/interpolate');
@@ -53993,7 +54709,7 @@ function interpZoomTransitioned(from, to, t) {
         };
     }
 }
-},{"../util/interpolate":363,"../util/util":369}],317:[function(require,module,exports){
+},{"../util/interpolate":389,"../util/util":395}],343:[function(require,module,exports){
 'use strict';
 module.exports = require('mapbox-gl-style-spec/lib/validate_style.min');
 module.exports.emitErrors = function throwErrors(emitter, errors) {
@@ -54013,7 +54729,7 @@ module.exports.throwErrors = function throwErrors(emitter, errors) {
         }
     }
 };
-},{"mapbox-gl-style-spec/lib/validate_style.min":418}],318:[function(require,module,exports){
+},{"mapbox-gl-style-spec/lib/validate_style.min":444}],344:[function(require,module,exports){
 'use strict';
 var Point = require('point-geometry');
 module.exports = Anchor;
@@ -54029,7 +54745,7 @@ Anchor.prototype = Object.create(Point.prototype);
 Anchor.prototype.clone = function () {
     return new Anchor(this.x, this.y, this.angle, this.segment);
 };
-},{"point-geometry":427}],319:[function(require,module,exports){
+},{"point-geometry":453}],345:[function(require,module,exports){
 'use strict';
 module.exports = checkMaxAngle;
 function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
@@ -54072,7 +54788,7 @@ function checkMaxAngle(line, anchor, labelLength, windowSize, maxAngle) {
     }
     return true;
 }
-},{}],320:[function(require,module,exports){
+},{}],346:[function(require,module,exports){
 'use strict';
 var Point = require('point-geometry');
 module.exports = clipLine;
@@ -54121,7 +54837,7 @@ function clipLine(lines, x1, y1, x2, y2) {
     }
     return clippedLines;
 }
-},{"point-geometry":427}],321:[function(require,module,exports){
+},{"point-geometry":453}],347:[function(require,module,exports){
 'use strict';
 var StructArrayType = require('../util/struct_array');
 var util = require('../util/util');
@@ -54195,7 +54911,7 @@ util.extendAll(CollisionBoxArray.prototype.StructType.prototype, {
         return new Point(this.anchorPointX, this.anchorPointY);
     }
 });
-},{"../util/struct_array":367,"../util/util":369,"point-geometry":427}],322:[function(require,module,exports){
+},{"../util/struct_array":393,"../util/util":395,"point-geometry":453}],348:[function(require,module,exports){
 'use strict';
 module.exports = CollisionFeature;
 function CollisionFeature(collisionBoxArray, line, anchor, featureIndex, sourceLayerIndex, bucketIndex, shaped, boxScale, padding, alignLine, straight) {
@@ -54260,7 +54976,7 @@ CollisionFeature.prototype._addLineCollisionBoxes = function (collisionBoxArray,
     }
     return bboxes;
 };
-},{}],323:[function(require,module,exports){
+},{}],349:[function(require,module,exports){
 'use strict';
 var Point = require('point-geometry');
 var EXTENT = require('../data/bucket').EXTENT;
@@ -54468,7 +55184,7 @@ CollisionTile.prototype.insertCollisionFeature = function (collisionFeature, min
         }
     }
 };
-},{"../data/bucket":256,"grid-index":395,"point-geometry":427}],324:[function(require,module,exports){
+},{"../data/bucket":282,"grid-index":421,"point-geometry":453}],350:[function(require,module,exports){
 'use strict';
 var interpolate = require('../util/interpolate');
 var Anchor = require('../symbol/anchor');
@@ -54513,7 +55229,7 @@ function resample(line, offset, spacing, angleWindowSize, maxAngle, labelLength,
     }
     return anchors;
 }
-},{"../symbol/anchor":318,"../util/interpolate":363,"./check_max_angle":319}],325:[function(require,module,exports){
+},{"../symbol/anchor":344,"../util/interpolate":389,"./check_max_angle":345}],351:[function(require,module,exports){
 'use strict';
 var ShelfPack = require('shelf-pack');
 var util = require('../util/util');
@@ -54639,7 +55355,7 @@ GlyphAtlas.prototype.updateTexture = function (gl) {
         this.dirty = false;
     }
 };
-},{"../util/util":369,"shelf-pack":430}],326:[function(require,module,exports){
+},{"../util/util":395,"shelf-pack":456}],352:[function(require,module,exports){
 'use strict';
 var normalizeURL = require('../util/mapbox').normalizeGlyphsURL;
 var getArrayBuffer = require('../util/ajax').getArrayBuffer;
@@ -54740,7 +55456,7 @@ function glyphUrl(fontstack, range, url, subdomains) {
     subdomains = subdomains || 'abc';
     return url.replace('{s}', subdomains[fontstack.length % subdomains.length]).replace('{fontstack}', fontstack).replace('{range}', range);
 }
-},{"../symbol/glyph_atlas":325,"../util/ajax":352,"../util/glyphs":362,"../util/mapbox":366,"pbf":425}],327:[function(require,module,exports){
+},{"../symbol/glyph_atlas":351,"../util/ajax":378,"../util/glyphs":388,"../util/mapbox":392,"pbf":451}],353:[function(require,module,exports){
 'use strict';
 module.exports = function (features, textFeatures, geometries) {
     var leftIndex = {}, rightIndex = {}, mergedFeatures = [], mergedGeom = [], mergedTexts = [], mergedIndex = 0, k;
@@ -54800,7 +55516,7 @@ module.exports = function (features, textFeatures, geometries) {
         geometries: mergedGeom
     };
 };
-},{}],328:[function(require,module,exports){
+},{}],354:[function(require,module,exports){
 'use strict';
 var Point = require('point-geometry');
 module.exports = {
@@ -54958,7 +55674,7 @@ function getSegmentGlyphs(glyphs, anchor, offset, line, segment, forward) {
     }
     return placementScale;
 }
-},{"point-geometry":427}],329:[function(require,module,exports){
+},{"point-geometry":453}],355:[function(require,module,exports){
 'use strict';
 var resolveTokens = require('../util/token');
 module.exports = resolveText;
@@ -54984,7 +55700,7 @@ function resolveText(features, layoutProperties, codepoints) {
     }
     return textFeatures;
 }
-},{"../util/token":368}],330:[function(require,module,exports){
+},{"../util/token":394}],356:[function(require,module,exports){
 'use strict';
 module.exports = {
     shapeText: shapeText,
@@ -55119,7 +55835,7 @@ function PositionedIcon(image, top, bottom, left, right) {
     this.left = left;
     this.right = right;
 }
-},{}],331:[function(require,module,exports){
+},{}],357:[function(require,module,exports){
 'use strict';
 var ShelfPack = require('shelf-pack');
 var browser = require('../util/browser');
@@ -55282,7 +55998,7 @@ function AtlasImage(rect, width, height, sdf, pixelRatio) {
     this.sdf = sdf;
     this.pixelRatio = pixelRatio;
 }
-},{"../util/browser":353,"../util/util":369,"shelf-pack":430}],332:[function(require,module,exports){
+},{"../util/browser":379,"../util/util":395,"shelf-pack":456}],358:[function(require,module,exports){
 'use strict';
 var StructArrayType = require('../util/struct_array');
 var util = require('../util/util');
@@ -55340,7 +56056,7 @@ util.extendAll(SymbolInstancesArray.prototype.StructType.prototype, {
         return new Point(this.anchorPointX, this.anchorPointY);
     }
 });
-},{"../util/struct_array":367,"../util/util":369,"point-geometry":427}],333:[function(require,module,exports){
+},{"../util/struct_array":393,"../util/util":395,"point-geometry":453}],359:[function(require,module,exports){
 'use strict';
 var StructArrayType = require('../util/struct_array');
 var util = require('../util/util');
@@ -55437,7 +56153,7 @@ util.extendAll(SymbolQuadsArray.prototype.StructType.prototype, {
         }, this.anchorAngle, this.glyphAngle, this.minScale, this.maxScale);
     }
 });
-},{"../util/struct_array":367,"../util/util":369,"./quads":328,"point-geometry":427}],334:[function(require,module,exports){
+},{"../util/struct_array":393,"../util/util":395,"./quads":354,"point-geometry":453}],360:[function(require,module,exports){
 'use strict';
 var DOM = require('../util/dom');
 var Point = require('point-geometry');
@@ -55563,7 +56279,7 @@ module.exports = function bindHandlers(map, options) {
         });
     }
 };
-},{"../util/dom":355,"./handler/box_zoom":340,"./handler/dblclick_zoom":341,"./handler/drag_pan":342,"./handler/drag_rotate":343,"./handler/keyboard":344,"./handler/scroll_zoom":345,"./handler/touch_zoom_rotate":346,"point-geometry":427}],335:[function(require,module,exports){
+},{"../util/dom":381,"./handler/box_zoom":366,"./handler/dblclick_zoom":367,"./handler/drag_pan":368,"./handler/drag_rotate":369,"./handler/keyboard":370,"./handler/scroll_zoom":371,"./handler/touch_zoom_rotate":372,"point-geometry":453}],361:[function(require,module,exports){
 'use strict';
 var util = require('../util/util');
 var interpolate = require('../util/interpolate');
@@ -55905,7 +56621,7 @@ util.extend(Camera.prototype, {
         return easing;
     }
 });
-},{"../geo/lng_lat":266,"../geo/lng_lat_bounds":267,"../util/browser":353,"../util/interpolate":363,"../util/util":369,"point-geometry":427}],336:[function(require,module,exports){
+},{"../geo/lng_lat":292,"../geo/lng_lat_bounds":293,"../util/browser":379,"../util/interpolate":389,"../util/util":395,"point-geometry":453}],362:[function(require,module,exports){
 'use strict';
 var Control = require('./control');
 var DOM = require('../../util/dom');
@@ -55960,7 +56676,7 @@ Attribution.prototype = util.inherit(Control, {
         }
     }
 });
-},{"../../util/dom":355,"../../util/util":369,"./control":337}],337:[function(require,module,exports){
+},{"../../util/dom":381,"../../util/util":395,"./control":363}],363:[function(require,module,exports){
 'use strict';
 var util = require('../../util/util');
 var Evented = require('../../util/evented');
@@ -55992,7 +56708,7 @@ Control.prototype = {
     }
 };
 util.extend(Control.prototype, Evented);
-},{"../../util/evented":361,"../../util/util":369}],338:[function(require,module,exports){
+},{"../../util/evented":387,"../../util/util":395}],364:[function(require,module,exports){
 'use strict';
 var Control = require('./control');
 var browser = require('../../util/browser');
@@ -56050,7 +56766,7 @@ Geolocate.prototype = util.inherit(Control, {
         this._timeoutId = undefined;
     }
 });
-},{"../../util/browser":353,"../../util/dom":355,"../../util/util":369,"./control":337}],339:[function(require,module,exports){
+},{"../../util/browser":379,"../../util/dom":381,"../../util/util":395,"./control":363}],365:[function(require,module,exports){
 'use strict';
 var Control = require('./control');
 var DOM = require('../../util/dom');
@@ -56137,7 +56853,7 @@ function copyMouseEvent(e) {
         metaKey: e.metaKey
     });
 }
-},{"../../util/dom":355,"../../util/util":369,"./control":337}],340:[function(require,module,exports){
+},{"../../util/dom":381,"../../util/util":395,"./control":363}],366:[function(require,module,exports){
 'use strict';
 var DOM = require('../../util/dom'), LngLatBounds = require('../../geo/lng_lat_bounds'), util = require('../../util/util');
 module.exports = BoxZoomHandler;
@@ -56226,7 +56942,7 @@ BoxZoomHandler.prototype = {
         return this._map.fire(type, { originalEvent: e });
     }
 };
-},{"../../geo/lng_lat_bounds":267,"../../util/dom":355,"../../util/util":369}],341:[function(require,module,exports){
+},{"../../geo/lng_lat_bounds":293,"../../util/dom":381,"../../util/util":395}],367:[function(require,module,exports){
 'use strict';
 module.exports = DoubleClickZoomHandler;
 function DoubleClickZoomHandler(map) {
@@ -56254,7 +56970,7 @@ DoubleClickZoomHandler.prototype = {
         this._map.zoomTo(this._map.getZoom() + (e.originalEvent.shiftKey ? -1 : 1), { around: e.lngLat }, e);
     }
 };
-},{}],342:[function(require,module,exports){
+},{}],368:[function(require,module,exports){
 'use strict';
 var DOM = require('../../util/dom'), util = require('../../util/util');
 module.exports = DragPanHandler;
@@ -56396,7 +57112,7 @@ DragPanHandler.prototype = {
             inertia.shift();
     }
 };
-},{"../../util/dom":355,"../../util/util":369}],343:[function(require,module,exports){
+},{"../../util/dom":381,"../../util/util":395}],369:[function(require,module,exports){
 'use strict';
 var DOM = require('../../util/dom'), Point = require('point-geometry'), util = require('../../util/util');
 module.exports = DragRotateHandler;
@@ -56533,7 +57249,7 @@ DragRotateHandler.prototype = {
             inertia.shift();
     }
 };
-},{"../../util/dom":355,"../../util/util":369,"point-geometry":427}],344:[function(require,module,exports){
+},{"../../util/dom":381,"../../util/util":395,"point-geometry":453}],370:[function(require,module,exports){
 'use strict';
 module.exports = KeyboardHandler;
 var panDelta = 80, rotateDelta = 2, pitchDelta = 5;
@@ -56624,7 +57340,7 @@ KeyboardHandler.prototype = {
         }
     }
 };
-},{}],345:[function(require,module,exports){
+},{}],371:[function(require,module,exports){
 'use strict';
 var DOM = require('../../util/dom'), browser = require('../../util/browser'), util = require('../../util/util');
 module.exports = ScrollZoomHandler;
@@ -56711,7 +57427,7 @@ ScrollZoomHandler.prototype = {
         }, { originalEvent: e });
     }
 };
-},{"../../util/browser":353,"../../util/dom":355,"../../util/util":369}],346:[function(require,module,exports){
+},{"../../util/browser":379,"../../util/dom":381,"../../util/util":395}],372:[function(require,module,exports){
 'use strict';
 var DOM = require('../../util/dom'), util = require('../../util/util');
 module.exports = TouchZoomRotateHandler;
@@ -56833,7 +57549,7 @@ TouchZoomRotateHandler.prototype = {
             inertia.shift();
     }
 };
-},{"../../util/dom":355,"../../util/util":369}],347:[function(require,module,exports){
+},{"../../util/dom":381,"../../util/util":395}],373:[function(require,module,exports){
 'use strict';
 module.exports = Hash;
 var util = require('../util/util');
@@ -56876,7 +57592,7 @@ Hash.prototype = {
         window.history.replaceState('', '', hash);
     }
 };
-},{"../util/util":369}],348:[function(require,module,exports){
+},{"../util/util":395}],374:[function(require,module,exports){
 'use strict';
 var Canvas = require('../util/canvas');
 var util = require('../util/util');
@@ -57468,7 +58184,7 @@ function removeNode(node) {
         node.parentNode.removeChild(node);
     }
 }
-},{"../geo/lng_lat":266,"../geo/lng_lat_bounds":267,"../geo/transform":268,"../render/painter":282,"../style/animation_loop":302,"../style/style":305,"../util/browser":353,"../util/canvas":354,"../util/dom":355,"../util/evented":361,"../util/util":369,"./bind_handlers":334,"./camera":335,"./control/attribution":336,"./hash":347,"point-geometry":427}],349:[function(require,module,exports){
+},{"../geo/lng_lat":292,"../geo/lng_lat_bounds":293,"../geo/transform":294,"../render/painter":308,"../style/animation_loop":328,"../style/style":331,"../util/browser":379,"../util/canvas":380,"../util/dom":381,"../util/evented":387,"../util/util":395,"./bind_handlers":360,"./camera":361,"./control/attribution":362,"./hash":373,"point-geometry":453}],375:[function(require,module,exports){
 'use strict';
 module.exports = Marker;
 var DOM = require('../util/dom');
@@ -57523,7 +58239,7 @@ Marker.prototype = {
         DOM.setTransform(this._el, 'translate(' + pos.x + 'px,' + pos.y + 'px)');
     }
 };
-},{"../geo/lng_lat":266,"../util/dom":355,"point-geometry":427}],350:[function(require,module,exports){
+},{"../geo/lng_lat":292,"../util/dom":381,"point-geometry":453}],376:[function(require,module,exports){
 'use strict';
 module.exports = Popup;
 var util = require('../util/util');
@@ -57659,7 +58375,7 @@ Popup.prototype = util.inherit(Evented, {
         this.remove();
     }
 });
-},{"../geo/lng_lat":266,"../util/dom":355,"../util/evented":361,"../util/util":369}],351:[function(require,module,exports){
+},{"../geo/lng_lat":292,"../util/dom":381,"../util/evented":387,"../util/util":395}],377:[function(require,module,exports){
 'use strict';
 module.exports = Actor;
 function Actor(target, parent) {
@@ -57707,7 +58423,7 @@ Actor.prototype.send = function (type, data, callback, buffers) {
 Actor.prototype.postMessage = function (message, transferList) {
     this.target.postMessage(message, transferList);
 };
-},{}],352:[function(require,module,exports){
+},{}],378:[function(require,module,exports){
 'use strict';
 exports.getJSON = function (url, callback) {
     var xhr = new XMLHttpRequest();
@@ -57794,7 +58510,7 @@ exports.getVideo = function (urls, callback) {
     };
     return video;
 };
-},{}],353:[function(require,module,exports){
+},{}],379:[function(require,module,exports){
 'use strict';
 exports.window = window;
 module.exports.now = function () {
@@ -57848,7 +58564,7 @@ webpImgTest.onload = function () {
 };
 webpImgTest.src = 'data:image/webp;base64,UklGRh4AAABXRUJQVlA4TBEAAAAvAQAAAAfQ//73v/+BiOh/AAA=';
 exports.supportsGeolocation = !!navigator.geolocation;
-},{"mapbox-gl-supported":423}],354:[function(require,module,exports){
+},{"mapbox-gl-supported":449}],380:[function(require,module,exports){
 'use strict';
 var util = require('../util');
 var isSupported = require('mapbox-gl-supported');
@@ -57878,7 +58594,7 @@ Canvas.prototype.getWebGLContext = function (attributes) {
 Canvas.prototype.getElement = function () {
     return this.canvas;
 };
-},{"../util":369,"mapbox-gl-supported":423}],355:[function(require,module,exports){
+},{"../util":395,"mapbox-gl-supported":449}],381:[function(require,module,exports){
 'use strict';
 var Point = require('point-geometry');
 exports.create = function (tagName, className, container) {
@@ -57944,13 +58660,13 @@ exports.touchPos = function (el, e) {
     }
     return points;
 };
-},{"point-geometry":427}],356:[function(require,module,exports){
+},{"point-geometry":453}],382:[function(require,module,exports){
 'use strict';
 var WebWorkify = require('webworkify');
 module.exports = function () {
     return new WebWorkify(require('../../source/worker'));
 };
-},{"../../source/worker":300,"webworkify":444}],357:[function(require,module,exports){
+},{"../../source/worker":326,"webworkify":470}],383:[function(require,module,exports){
 'use strict';
 var quickselect = require('quickselect');
 module.exports = function classifyRings(rings, maxRings) {
@@ -57997,13 +58713,13 @@ function calculateSignedArea(ring) {
     }
     return sum;
 }
-},{"quickselect":428}],358:[function(require,module,exports){
+},{"quickselect":454}],384:[function(require,module,exports){
 'use strict';
 module.exports = {
     API_URL: 'https://api.mapbox.com',
     REQUIRE_ACCESS_TOKEN: true
 };
-},{}],359:[function(require,module,exports){
+},{}],385:[function(require,module,exports){
 'use strict';
 module.exports = DictionaryCoder;
 function DictionaryCoder(strings) {
@@ -58021,7 +58737,7 @@ DictionaryCoder.prototype.encode = function (string) {
 DictionaryCoder.prototype.decode = function (n) {
     return this._numberToString[n];
 };
-},{}],360:[function(require,module,exports){
+},{}],386:[function(require,module,exports){
 'use strict';
 var util = require('./util');
 var Actor = require('./actor');
@@ -58059,7 +58775,7 @@ Dispatcher.prototype = {
         this.actors = [];
     }
 };
-},{"./actor":351,"./util":369,"./web_worker":356}],361:[function(require,module,exports){
+},{"./actor":377,"./util":395,"./web_worker":382}],387:[function(require,module,exports){
 'use strict';
 var util = require('./util');
 var Evented = {
@@ -58120,7 +58836,7 @@ var Evented = {
     }
 };
 module.exports = Evented;
-},{"./util":369}],362:[function(require,module,exports){
+},{"./util":395}],388:[function(require,module,exports){
 'use strict';
 module.exports = Glyphs;
 function Glyphs(pbf, end) {
@@ -58158,7 +58874,7 @@ function readGlyph(tag, glyph, pbf) {
     else if (tag === 7)
         glyph.advance = pbf.readVarint();
 }
-},{}],363:[function(require,module,exports){
+},{}],389:[function(require,module,exports){
 'use strict';
 module.exports = interpolate;
 function interpolate(a, b, t) {
@@ -58184,7 +58900,7 @@ interpolate.array = function (from, to, t) {
         return interpolate(d, to[i], t);
     });
 };
-},{}],364:[function(require,module,exports){
+},{}],390:[function(require,module,exports){
 'use strict';
 module.exports = {
     multiPolygonIntersectsBufferedMultiPoint: multiPolygonIntersectsBufferedMultiPoint,
@@ -58329,7 +59045,7 @@ function polygonContainsPoint(ring, p) {
     }
     return c;
 }
-},{}],365:[function(require,module,exports){
+},{}],391:[function(require,module,exports){
 'use strict';
 module.exports = LRUCache;
 function LRUCache(max, onRemove) {
@@ -58385,7 +59101,7 @@ LRUCache.prototype.setMaxSize = function (max) {
     }
     return this;
 };
-},{}],366:[function(require,module,exports){
+},{}],392:[function(require,module,exports){
 'use strict';
 var config = require('./config');
 var browser = require('./browser');
@@ -58466,7 +59182,7 @@ function replaceTempAccessToken(query) {
         return query;
     }
 }
-},{"./browser":353,"./config":358,"./util":369,"url":65}],367:[function(require,module,exports){
+},{"./browser":379,"./config":384,"./util":395,"url":65}],393:[function(require,module,exports){
 'use strict';
 module.exports = StructArrayType;
 var viewTypes = {
@@ -58641,7 +59357,7 @@ StructArray.prototype.toArray = function (startIndex, endIndex) {
     }
     return array;
 };
-},{}],368:[function(require,module,exports){
+},{}],394:[function(require,module,exports){
 'use strict';
 module.exports = resolveTokens;
 function resolveTokens(properties, text) {
@@ -58649,7 +59365,7 @@ function resolveTokens(properties, text) {
         return key in properties ? properties[key] : '';
     });
 }
-},{}],369:[function(require,module,exports){
+},{}],395:[function(require,module,exports){
 'use strict';
 var UnitBezier = require('unitbezier');
 var Coordinate = require('../geo/coordinate');
@@ -58863,7 +59579,7 @@ exports.warnOnce = function (message) {
         warnOnceHistory[message] = true;
     }
 };
-},{"../geo/coordinate":265,"unitbezier":436}],370:[function(require,module,exports){
+},{"../geo/coordinate":291,"unitbezier":462}],396:[function(require,module,exports){
 'use strict';
 module.exports = Feature;
 function Feature(vectorTileFeature, z, x, y) {
@@ -58897,7 +59613,7 @@ Feature.prototype = {
         return json;
     }
 };
-},{}],371:[function(require,module,exports){
+},{}],397:[function(require,module,exports){
 // (c) Dean McNamee <dean@gmail.com>, 2012.
 //
 // https://github.com/deanm/css-color-parser-js
@@ -59099,7 +59815,7 @@ function parseCSSColor(css_str) {
 
 try { exports.parseCSSColor = parseCSSColor } catch(e) { }
 
-},{}],372:[function(require,module,exports){
+},{}],398:[function(require,module,exports){
 'use strict';
 
 module.exports = earcut;
@@ -59745,7 +60461,7 @@ earcut.flatten = function (data) {
     return result;
 };
 
-},{}],373:[function(require,module,exports){
+},{}],399:[function(require,module,exports){
 'use strict';
 
 module.exports = createFilter;
@@ -59829,7 +60545,7 @@ function compare(a, b) {
     return a < b ? -1 : a > b ? 1 : 0;
 }
 
-},{}],374:[function(require,module,exports){
+},{}],400:[function(require,module,exports){
 var geojsonArea = require('geojson-area');
 
 module.exports = rewind;
@@ -59880,7 +60596,7 @@ function cw(_) {
     return geojsonArea.ring(_) >= 0;
 }
 
-},{"geojson-area":375}],375:[function(require,module,exports){
+},{"geojson-area":401}],401:[function(require,module,exports){
 var wgs84 = require('wgs84');
 
 module.exports.geometry = geometry;
@@ -59946,12 +60662,12 @@ function rad(_) {
     return _ * Math.PI / 180;
 }
 
-},{"wgs84":376}],376:[function(require,module,exports){
+},{"wgs84":402}],402:[function(require,module,exports){
 module.exports.RADIUS = 6378137;
 module.exports.FLATTENING = 1/298.257223563;
 module.exports.POLAR_RADIUS = 6356752.3142;
 
-},{}],377:[function(require,module,exports){
+},{}],403:[function(require,module,exports){
 'use strict';
 
 module.exports = clip;
@@ -60102,7 +60818,7 @@ function newSlice(slices, slice, area, dist, outer) {
     return [];
 }
 
-},{"./feature":379}],378:[function(require,module,exports){
+},{"./feature":405}],404:[function(require,module,exports){
 'use strict';
 
 module.exports = convert;
@@ -60225,7 +60941,7 @@ function calcSize(points) {
     points.dist = dist;
 }
 
-},{"./feature":379,"./simplify":381}],379:[function(require,module,exports){
+},{"./feature":405,"./simplify":407}],405:[function(require,module,exports){
 'use strict';
 
 module.exports = createFeature;
@@ -60270,7 +60986,7 @@ function calcRingBBox(min, max, points) {
     }
 }
 
-},{}],380:[function(require,module,exports){
+},{}],406:[function(require,module,exports){
 'use strict';
 
 module.exports = geojsonvt;
@@ -60514,7 +61230,7 @@ function isClippedSquare(tile, extent, buffer) {
     return true;
 }
 
-},{"./clip":377,"./convert":378,"./tile":382,"./transform":383,"./wrap":384}],381:[function(require,module,exports){
+},{"./clip":403,"./convert":404,"./tile":408,"./transform":409,"./wrap":410}],407:[function(require,module,exports){
 'use strict';
 
 module.exports = simplify;
@@ -60590,7 +61306,7 @@ function getSqSegDist(p, a, b) {
     return dx * dx + dy * dy;
 }
 
-},{}],382:[function(require,module,exports){
+},{}],408:[function(require,module,exports){
 'use strict';
 
 module.exports = createTile;
@@ -60698,7 +61414,7 @@ function signedArea(ring) {
     return sum;
 }
 
-},{}],383:[function(require,module,exports){
+},{}],409:[function(require,module,exports){
 'use strict';
 
 exports.tile = transformTile;
@@ -60741,7 +61457,7 @@ function transformPoint(p, extent, z2, tx, ty) {
     return [x, y];
 }
 
-},{}],384:[function(require,module,exports){
+},{}],410:[function(require,module,exports){
 'use strict';
 
 var clip = require('./clip');
@@ -60799,7 +61515,7 @@ function shiftCoords(points, offset) {
     return newPoints;
 }
 
-},{"./clip":377,"./feature":379}],385:[function(require,module,exports){
+},{"./clip":403,"./feature":405}],411:[function(require,module,exports){
 /**
  * @fileoverview gl-matrix - High performance matrix and vector operations
  * @author Brandon Jones
@@ -60837,7 +61553,7 @@ exports.quat = require("./gl-matrix/quat.js");
 exports.vec2 = require("./gl-matrix/vec2.js");
 exports.vec3 = require("./gl-matrix/vec3.js");
 exports.vec4 = require("./gl-matrix/vec4.js");
-},{"./gl-matrix/common.js":386,"./gl-matrix/mat2.js":387,"./gl-matrix/mat2d.js":388,"./gl-matrix/mat3.js":389,"./gl-matrix/mat4.js":390,"./gl-matrix/quat.js":391,"./gl-matrix/vec2.js":392,"./gl-matrix/vec3.js":393,"./gl-matrix/vec4.js":394}],386:[function(require,module,exports){
+},{"./gl-matrix/common.js":412,"./gl-matrix/mat2.js":413,"./gl-matrix/mat2d.js":414,"./gl-matrix/mat3.js":415,"./gl-matrix/mat4.js":416,"./gl-matrix/quat.js":417,"./gl-matrix/vec2.js":418,"./gl-matrix/vec3.js":419,"./gl-matrix/vec4.js":420}],412:[function(require,module,exports){
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -60909,7 +61625,7 @@ glMatrix.equals = function(a, b) {
 
 module.exports = glMatrix;
 
-},{}],387:[function(require,module,exports){
+},{}],413:[function(require,module,exports){
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -61347,7 +62063,7 @@ mat2.multiplyScalarAndAdd = function(out, a, b, scale) {
 
 module.exports = mat2;
 
-},{"./common.js":386}],388:[function(require,module,exports){
+},{"./common.js":412}],414:[function(require,module,exports){
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -61818,7 +62534,7 @@ mat2d.equals = function (a, b) {
 
 module.exports = mat2d;
 
-},{"./common.js":386}],389:[function(require,module,exports){
+},{"./common.js":412}],415:[function(require,module,exports){
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -62566,7 +63282,7 @@ mat3.equals = function (a, b) {
 
 module.exports = mat3;
 
-},{"./common.js":386}],390:[function(require,module,exports){
+},{"./common.js":412}],416:[function(require,module,exports){
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -64704,7 +65420,7 @@ mat4.equals = function (a, b) {
 
 module.exports = mat4;
 
-},{"./common.js":386}],391:[function(require,module,exports){
+},{"./common.js":412}],417:[function(require,module,exports){
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -65306,7 +66022,7 @@ quat.equals = vec4.equals;
 
 module.exports = quat;
 
-},{"./common.js":386,"./mat3.js":389,"./vec3.js":393,"./vec4.js":394}],392:[function(require,module,exports){
+},{"./common.js":412,"./mat3.js":415,"./vec3.js":419,"./vec4.js":420}],418:[function(require,module,exports){
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -65895,7 +66611,7 @@ vec2.equals = function (a, b) {
 
 module.exports = vec2;
 
-},{"./common.js":386}],393:[function(require,module,exports){
+},{"./common.js":412}],419:[function(require,module,exports){
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -66674,7 +67390,7 @@ vec3.equals = function (a, b) {
 
 module.exports = vec3;
 
-},{"./common.js":386}],394:[function(require,module,exports){
+},{"./common.js":412}],420:[function(require,module,exports){
 /* Copyright (c) 2015, Brandon Jones, Colin MacKenzie IV.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -67285,7 +68001,7 @@ vec4.equals = function (a, b) {
 
 module.exports = vec4;
 
-},{"./common.js":386}],395:[function(require,module,exports){
+},{"./common.js":412}],421:[function(require,module,exports){
 'use strict';
 
 module.exports = GridIndex;
@@ -67447,7 +68163,7 @@ GridIndex.prototype.toArrayBuffer = function() {
     return array.buffer;
 };
 
-},{}],396:[function(require,module,exports){
+},{}],422:[function(require,module,exports){
 'use strict';
 
 function createFunction(parameters, defaultType) {
@@ -67614,7 +68330,7 @@ module.exports['piecewise-constant'] = function(parameters) {
     return createFunction(parameters, 'interval');
 };
 
-},{}],397:[function(require,module,exports){
+},{}],423:[function(require,module,exports){
 
 var path = require('path');
 
@@ -67676,7 +68392,7 @@ module.exports = {
 
 module.exports.util = "float evaluate_zoom_function_1(const vec4 values, const float t) {\n    if (t < 1.0) {\n        return mix(values[0], values[1], t);\n    } else if (t < 2.0) {\n        return mix(values[1], values[2], t - 1.0);\n    } else {\n        return mix(values[2], values[3], t - 2.0);\n    }\n}\nvec4 evaluate_zoom_function_4(const vec4 value0, const vec4 value1, const vec4 value2, const vec4 value3, const float t) {\n    if (t < 1.0) {\n        return mix(value0, value1, t);\n    } else if (t < 2.0) {\n        return mix(value1, value2, t - 1.0);\n    } else {\n        return mix(value2, value3, t - 2.0);\n    }\n}\n";
 
-},{"path":59}],398:[function(require,module,exports){
+},{"path":59}],424:[function(require,module,exports){
 'use strict';
 
 var format = require('util').format;
@@ -67694,7 +68410,7 @@ function ValidationError(key, value /*, message, ...*/) {
 
 module.exports = ValidationError;
 
-},{"util":68}],399:[function(require,module,exports){
+},{"util":68}],425:[function(require,module,exports){
 'use strict';
 
 module.exports = function (output) {
@@ -67707,7 +68423,7 @@ module.exports = function (output) {
     return output;
 };
 
-},{}],400:[function(require,module,exports){
+},{}],426:[function(require,module,exports){
 'use strict';
 
 module.exports = function getType(val) {
@@ -67726,7 +68442,7 @@ module.exports = function getType(val) {
     }
 };
 
-},{}],401:[function(require,module,exports){
+},{}],427:[function(require,module,exports){
 'use strict';
 
 // Turn jsonlint-lines-primitives objects into primitive objects
@@ -67738,7 +68454,7 @@ module.exports = function unbundle(value) {
     }
 };
 
-},{}],402:[function(require,module,exports){
+},{}],428:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -67805,7 +68521,7 @@ module.exports = function validate(options) {
     }
 };
 
-},{"../error/validation_error":398,"../util/extend":399,"../util/get_type":400,"./validate_array":403,"./validate_boolean":404,"./validate_color":405,"./validate_constants":406,"./validate_enum":407,"./validate_filter":408,"./validate_function":409,"./validate_layer":411,"./validate_number":413,"./validate_object":414,"./validate_source":416,"./validate_string":417}],403:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/extend":425,"../util/get_type":426,"./validate_array":429,"./validate_boolean":430,"./validate_color":431,"./validate_constants":432,"./validate_enum":433,"./validate_filter":434,"./validate_function":435,"./validate_layer":437,"./validate_number":439,"./validate_object":440,"./validate_source":442,"./validate_string":443}],429:[function(require,module,exports){
 'use strict';
 
 var getType = require('../util/get_type');
@@ -67859,7 +68575,7 @@ module.exports = function validateArray(options) {
     return errors;
 };
 
-},{"../error/validation_error":398,"../util/get_type":400,"./validate":402}],404:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/get_type":426,"./validate":428}],430:[function(require,module,exports){
 'use strict';
 
 var getType = require('../util/get_type');
@@ -67877,7 +68593,7 @@ module.exports = function validateBoolean(options) {
     return [];
 };
 
-},{"../error/validation_error":398,"../util/get_type":400}],405:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/get_type":426}],431:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -67900,7 +68616,7 @@ module.exports = function validateColor(options) {
     return [];
 };
 
-},{"../error/validation_error":398,"../util/get_type":400,"csscolorparser":371}],406:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/get_type":426,"csscolorparser":397}],432:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -67934,7 +68650,7 @@ module.exports = function validateConstants(options) {
 
 };
 
-},{"../error/validation_error":398,"../util/get_type":400}],407:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/get_type":426}],433:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -67952,7 +68668,7 @@ module.exports = function validateEnum(options) {
     return errors;
 };
 
-},{"../error/validation_error":398,"../util/unbundle_jsonlint":401}],408:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/unbundle_jsonlint":427}],434:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -68057,7 +68773,7 @@ module.exports = function validateFilter(options) {
     return errors;
 };
 
-},{"../error/validation_error":398,"../util/get_type":400,"../util/unbundle_jsonlint":401,"./validate_enum":407}],409:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/get_type":426,"../util/unbundle_jsonlint":427,"./validate_enum":433}],435:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -68191,7 +68907,7 @@ module.exports = function validateFunction(options) {
 
 };
 
-},{"../error/validation_error":398,"../util/get_type":400,"./validate":402,"./validate_array":403,"./validate_number":413,"./validate_object":414}],410:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/get_type":426,"./validate":428,"./validate_array":429,"./validate_number":439,"./validate_object":440}],436:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -68215,7 +68931,7 @@ module.exports = function(options) {
     return errors;
 };
 
-},{"../error/validation_error":398,"./validate_string":417}],411:[function(require,module,exports){
+},{"../error/validation_error":424,"./validate_string":443}],437:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -68328,7 +69044,7 @@ module.exports = function validateLayer(options) {
     return errors;
 };
 
-},{"../error/validation_error":398,"../util/extend":399,"../util/unbundle_jsonlint":401,"./validate_filter":408,"./validate_layout_property":412,"./validate_object":414,"./validate_paint_property":415}],412:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/extend":425,"../util/unbundle_jsonlint":427,"./validate_filter":434,"./validate_layout_property":438,"./validate_object":440,"./validate_paint_property":441}],438:[function(require,module,exports){
 'use strict';
 
 var validate = require('./validate');
@@ -68367,7 +69083,7 @@ module.exports = function validateLayoutProperty(options) {
 
 };
 
-},{"../error/validation_error":398,"./validate":402}],413:[function(require,module,exports){
+},{"../error/validation_error":424,"./validate":428}],439:[function(require,module,exports){
 'use strict';
 
 var getType = require('../util/get_type');
@@ -68394,7 +69110,7 @@ module.exports = function validateNumber(options) {
     return [];
 };
 
-},{"../error/validation_error":398,"../util/get_type":400}],414:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/get_type":426}],440:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -68447,7 +69163,7 @@ module.exports = function validateObject(options) {
     return errors;
 };
 
-},{"../error/validation_error":398,"../util/get_type":400,"./validate":402}],415:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/get_type":426,"./validate":428}],441:[function(require,module,exports){
 'use strict';
 
 var validate = require('./validate');
@@ -68487,7 +69203,7 @@ module.exports = function validatePaintProperty(options) {
 
 };
 
-},{"../error/validation_error":398,"./validate":402}],416:[function(require,module,exports){
+},{"../error/validation_error":424,"./validate":428}],442:[function(require,module,exports){
 'use strict';
 
 var ValidationError = require('../error/validation_error');
@@ -68564,7 +69280,7 @@ module.exports = function validateSource(options) {
     }
 };
 
-},{"../error/validation_error":398,"../util/unbundle_jsonlint":401,"./validate_enum":407,"./validate_object":414}],417:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/unbundle_jsonlint":427,"./validate_enum":433,"./validate_object":440}],443:[function(require,module,exports){
 'use strict';
 
 var getType = require('../util/get_type');
@@ -68582,7 +69298,7 @@ module.exports = function validateString(options) {
     return [];
 };
 
-},{"../error/validation_error":398,"../util/get_type":400}],418:[function(require,module,exports){
+},{"../error/validation_error":424,"../util/get_type":426}],444:[function(require,module,exports){
 'use strict';
 
 var validateConstants = require('./validate/validate_constants');
@@ -68652,13 +69368,13 @@ function wrapCleanErrors(inner) {
 
 module.exports = validateStyleMin;
 
-},{"../reference/latest.min":420,"./validate/validate":402,"./validate/validate_constants":406,"./validate/validate_filter":408,"./validate/validate_glyphs_url":410,"./validate/validate_layer":411,"./validate/validate_layout_property":412,"./validate/validate_paint_property":415,"./validate/validate_source":416}],419:[function(require,module,exports){
+},{"../reference/latest.min":446,"./validate/validate":428,"./validate/validate_constants":432,"./validate/validate_filter":434,"./validate/validate_glyphs_url":436,"./validate/validate_layer":437,"./validate/validate_layout_property":438,"./validate/validate_paint_property":441,"./validate/validate_source":442}],445:[function(require,module,exports){
 module.exports = require('./v8.json');
 
-},{"./v8.json":421}],420:[function(require,module,exports){
+},{"./v8.json":447}],446:[function(require,module,exports){
 module.exports = require('./v8.min.json');
 
-},{"./v8.min.json":422}],421:[function(require,module,exports){
+},{"./v8.min.json":448}],447:[function(require,module,exports){
 module.exports={
   "$version": 8,
   "$root": {
@@ -70932,9 +71648,9 @@ module.exports={
   }
 }
 
-},{}],422:[function(require,module,exports){
+},{}],448:[function(require,module,exports){
 module.exports={"$version":8,"$root":{"version":{"required":true,"type":"enum","values":[8]},"name":{"type":"string"},"metadata":{"type":"*"},"center":{"type":"array","value":"number"},"zoom":{"type":"number"},"bearing":{"type":"number","default":0,"period":360,"units":"degrees"},"pitch":{"type":"number","default":0,"units":"degrees"},"sources":{"required":true,"type":"sources"},"sprite":{"type":"string"},"glyphs":{"type":"string"},"transition":{"type":"transition"},"layers":{"required":true,"type":"array","value":"layer"}},"sources":{"*":{"type":"source"}},"source":["source_tile","source_geojson","source_video","source_image"],"source_tile":{"type":{"required":true,"type":"enum","values":["vector","raster"]},"url":{"type":"string"},"tiles":{"type":"array","value":"string"},"minzoom":{"type":"number","default":0},"maxzoom":{"type":"number","default":22},"tileSize":{"type":"number","default":512,"units":"pixels"},"*":{"type":"*"}},"source_geojson":{"type":{"required":true,"type":"enum","values":["geojson"]},"data":{"type":"*"},"maxzoom":{"type":"number","default":14},"buffer":{"type":"number","default":64},"tolerance":{"type":"number","default":3},"cluster":{"type":"boolean","default":false},"clusterRadius":{"type":"number","default":400},"clusterMaxZoom":{"type":"number"}},"source_video":{"type":{"required":true,"type":"enum","values":["video"]},"urls":{"required":true,"type":"array","value":"string"},"coordinates":{"required":true,"type":"array","length":4,"value":{"type":"array","length":2,"value":"number"}}},"source_image":{"type":{"required":true,"type":"enum","values":["image"]},"url":{"required":true,"type":"string"},"coordinates":{"required":true,"type":"array","length":4,"value":{"type":"array","length":2,"value":"number"}}},"layer":{"id":{"type":"string","required":true},"type":{"type":"enum","values":["fill","line","symbol","circle","raster","background"]},"metadata":{"type":"*"},"ref":{"type":"string"},"source":{"type":"string"},"source-layer":{"type":"string"},"minzoom":{"type":"number","minimum":0,"maximum":22},"maxzoom":{"type":"number","minimum":0,"maximum":22},"interactive":{"type":"boolean","default":false},"filter":{"type":"filter"},"layout":{"type":"layout"},"paint":{"type":"paint"},"paint.*":{"type":"paint"}},"layout":["layout_fill","layout_line","layout_circle","layout_symbol","layout_raster","layout_background"],"layout_background":{"visibility":{"type":"enum","function":"piecewise-constant","zoom-function":true,"values":["visible","none"],"default":"visible"}},"layout_fill":{"visibility":{"type":"enum","function":"piecewise-constant","zoom-function":true,"values":["visible","none"],"default":"visible"}},"layout_circle":{"visibility":{"type":"enum","function":"piecewise-constant","zoom-function":true,"values":["visible","none"],"default":"visible"}},"layout_line":{"line-cap":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["butt","round","square"],"default":"butt"},"line-join":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["bevel","round","miter"],"default":"miter"},"line-miter-limit":{"type":"number","default":2,"function":"interpolated","zoom-function":true,"property-function":true,"requires":[{"line-join":"miter"}]},"line-round-limit":{"type":"number","default":1.05,"function":"interpolated","zoom-function":true,"property-function":true,"requires":[{"line-join":"round"}]},"visibility":{"type":"enum","function":"piecewise-constant","zoom-function":true,"values":["visible","none"],"default":"visible"}},"layout_symbol":{"symbol-placement":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["point","line"],"default":"point"},"symbol-spacing":{"type":"number","default":250,"minimum":1,"function":"interpolated","zoom-function":true,"property-function":true,"units":"pixels","requires":[{"symbol-placement":"line"}]},"symbol-avoid-edges":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":false},"icon-allow-overlap":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":false,"requires":["icon-image"]},"icon-ignore-placement":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":false,"requires":["icon-image"]},"icon-optional":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":false,"requires":["icon-image","text-field"]},"icon-rotation-alignment":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["map","viewport"],"default":"viewport","requires":["icon-image"]},"icon-size":{"type":"number","default":1,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"requires":["icon-image"]},"icon-text-fit":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":false,"values":["none","both","width","height"],"default":"none","requires":["icon-image","text-field"]},"icon-text-fit-padding":{"type":"array","value":"number","length":4,"default":[0,0,0,0],"units":"pixels","function":"interpolated","zoom-function":true,"property-function":true,"requires":["icon-image","icon-text-fit","text-field"]},"icon-image":{"type":"string","function":"piecewise-constant","zoom-function":true,"property-function":true,"tokens":true},"icon-rotate":{"type":"number","default":0,"period":360,"function":"interpolated","zoom-function":true,"property-function":true,"units":"degrees","requires":["icon-image"]},"icon-padding":{"type":"number","default":2,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"units":"pixels","requires":["icon-image"]},"icon-keep-upright":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":false,"requires":["icon-image",{"icon-rotation-alignment":"map"},{"symbol-placement":"line"}]},"icon-offset":{"type":"array","value":"number","length":2,"default":[0,0],"function":"interpolated","zoom-function":true,"property-function":true,"requires":["icon-image"]},"text-pitch-alignment":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["map","viewport"],"requires":["text-field"]},"text-rotation-alignment":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["map","viewport"],"default":"viewport","requires":["text-field"]},"text-field":{"type":"string","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":"","tokens":true},"text-font":{"type":"array","value":"string","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":["Open Sans Regular","Arial Unicode MS Regular"],"requires":["text-field"]},"text-size":{"type":"number","default":16,"minimum":0,"units":"pixels","function":"interpolated","zoom-function":true,"property-function":true,"requires":["text-field"]},"text-max-width":{"type":"number","default":10,"minimum":0,"units":"em","function":"interpolated","zoom-function":true,"property-function":true,"requires":["text-field"]},"text-line-height":{"type":"number","default":1.2,"units":"em","function":"interpolated","zoom-function":true,"property-function":true,"requires":["text-field"]},"text-letter-spacing":{"type":"number","default":0,"units":"em","function":"interpolated","zoom-function":true,"property-function":true,"requires":["text-field"]},"text-justify":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["left","center","right"],"default":"center","requires":["text-field"]},"text-anchor":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["center","left","right","top","bottom","top-left","top-right","bottom-left","bottom-right"],"default":"center","requires":["text-field"]},"text-max-angle":{"type":"number","default":45,"units":"degrees","function":"interpolated","zoom-function":true,"property-function":true,"requires":["text-field",{"symbol-placement":"line"}]},"text-rotate":{"type":"number","default":0,"period":360,"units":"degrees","function":"interpolated","zoom-function":true,"property-function":true,"requires":["text-field"]},"text-padding":{"type":"number","default":2,"minimum":0,"units":"pixels","function":"interpolated","zoom-function":true,"property-function":true,"requires":["text-field"]},"text-keep-upright":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":true,"requires":["text-field",{"text-rotation-alignment":"map"},{"symbol-placement":"line"}]},"text-transform":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["none","uppercase","lowercase"],"default":"none","requires":["text-field"]},"text-offset":{"type":"array","value":"number","units":"ems","function":"interpolated","zoom-function":true,"property-function":true,"length":2,"default":[0,0],"requires":["text-field"]},"text-allow-overlap":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":false,"requires":["text-field"]},"text-ignore-placement":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":false,"requires":["text-field"]},"text-optional":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":false,"requires":["text-field","icon-image"]},"visibility":{"type":"enum","function":"piecewise-constant","zoom-function":true,"values":["visible","none"],"default":"visible"}},"layout_raster":{"visibility":{"type":"enum","function":"piecewise-constant","zoom-function":true,"values":["visible","none"],"default":"visible"}},"filter":{"type":"array","value":"*"},"filter_operator":{"type":"enum","values":["==","!=",">",">=","<","<=","in","!in","all","any","none","has","!has"]},"geometry_type":{"type":"enum","values":["Point","LineString","Polygon"]},"color_operation":{"type":"enum","values":["lighten","saturate","spin","fade","mix"]},"function":{"stops":{"type":"array","required":true,"value":"function_stop"},"base":{"type":"number","default":1,"minimum":0},"property":{"type":"string","default":"$zoom"},"type":{"type":"enum","values":["exponential","interval","categorical"],"default":"exponential"}},"function_stop":{"type":"array","minimum":0,"maximum":22,"value":["number","color"],"length":2},"paint":["paint_fill","paint_line","paint_circle","paint_symbol","paint_raster","paint_background"],"paint_fill":{"fill-antialias":{"type":"boolean","function":"piecewise-constant","zoom-function":true,"property-function":true,"default":true},"fill-opacity":{"type":"number","function":"interpolated","zoom-function":true,"property-function":true,"default":1,"minimum":0,"maximum":1,"transition":true},"fill-color":{"type":"color","default":"#000000","function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"requires":[{"!":"fill-pattern"}]},"fill-outline-color":{"type":"color","function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"requires":[{"!":"fill-pattern"},{"fill-antialias":true}]},"fill-translate":{"type":"array","value":"number","length":2,"default":[0,0],"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels"},"fill-translate-anchor":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["map","viewport"],"default":"map","requires":["fill-translate"]},"fill-pattern":{"type":"string","function":"piecewise-constant","zoom-function":true,"property-function":true,"transition":true}},"paint_line":{"line-opacity":{"type":"number","function":"interpolated","zoom-function":true,"property-function":true,"default":1,"minimum":0,"maximum":1,"transition":true},"line-color":{"type":"color","default":"#000000","function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"requires":[{"!":"line-pattern"}]},"line-translate":{"type":"array","value":"number","length":2,"default":[0,0],"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels"},"line-translate-anchor":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["map","viewport"],"default":"map","requires":["line-translate"]},"line-width":{"type":"number","default":1,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels"},"line-gap-width":{"type":"number","default":0,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels"},"line-offset":{"type":"number","default":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels"},"line-blur":{"type":"number","default":0,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels"},"line-dasharray":{"type":"array","value":"number","function":"piecewise-constant","zoom-function":true,"property-function":true,"minimum":0,"transition":true,"units":"line widths","requires":[{"!":"line-pattern"}]},"line-pattern":{"type":"string","function":"piecewise-constant","zoom-function":true,"property-function":true,"transition":true}},"paint_circle":{"circle-radius":{"type":"number","default":5,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels"},"circle-color":{"type":"color","default":"#000000","function":"interpolated","zoom-function":true,"property-function":true,"transition":true},"circle-blur":{"type":"number","default":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true},"circle-opacity":{"type":"number","default":1,"minimum":0,"maximum":1,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true},"circle-translate":{"type":"array","value":"number","length":2,"default":[0,0],"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels"},"circle-translate-anchor":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["map","viewport"],"default":"map","requires":["circle-translate"]},"circle-pitch-scale":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["map","viewport"],"default":"map"}},"paint_symbol":{"icon-opacity":{"type":"number","default":1,"minimum":0,"maximum":1,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"requires":["icon-image"]},"icon-color":{"type":"color","default":"#000000","function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"requires":["icon-image"]},"icon-halo-color":{"type":"color","default":"rgba(0, 0, 0, 0)","function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"requires":["icon-image"]},"icon-halo-width":{"type":"number","default":0,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels","requires":["icon-image"]},"icon-halo-blur":{"type":"number","default":0,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels","requires":["icon-image"]},"icon-translate":{"type":"array","value":"number","length":2,"default":[0,0],"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels","requires":["icon-image"]},"icon-translate-anchor":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["map","viewport"],"default":"map","requires":["icon-image","icon-translate"]},"text-opacity":{"type":"number","default":1,"minimum":0,"maximum":1,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"requires":["text-field"]},"text-color":{"type":"color","default":"#000000","function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"requires":["text-field"]},"text-halo-color":{"type":"color","default":"rgba(0, 0, 0, 0)","function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"requires":["text-field"]},"text-halo-width":{"type":"number","default":0,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels","requires":["text-field"]},"text-halo-blur":{"type":"number","default":0,"minimum":0,"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels","requires":["text-field"]},"text-translate":{"type":"array","value":"number","length":2,"default":[0,0],"function":"interpolated","zoom-function":true,"property-function":true,"transition":true,"units":"pixels","requires":["text-field"]},"text-translate-anchor":{"type":"enum","function":"piecewise-constant","zoom-function":true,"property-function":true,"values":["map","viewport"],"default":"map","requires":["text-field","text-translate"]}},"paint_raster":{"raster-opacity":{"type":"number","default":1,"minimum":0,"maximum":1,"function":"interpolated","zoom-function":true,"transition":true},"raster-hue-rotate":{"type":"number","default":0,"period":360,"function":"interpolated","zoom-function":true,"transition":true,"units":"degrees"},"raster-brightness-min":{"type":"number","function":"interpolated","zoom-function":true,"default":0,"minimum":0,"maximum":1,"transition":true},"raster-brightness-max":{"type":"number","function":"interpolated","zoom-function":true,"default":1,"minimum":0,"maximum":1,"transition":true},"raster-saturation":{"type":"number","default":0,"minimum":-1,"maximum":1,"function":"interpolated","zoom-function":true,"transition":true},"raster-contrast":{"type":"number","default":0,"minimum":-1,"maximum":1,"function":"interpolated","zoom-function":true,"transition":true},"raster-fade-duration":{"type":"number","default":300,"minimum":0,"function":"interpolated","zoom-function":true,"transition":true,"units":"milliseconds"}},"paint_background":{"background-color":{"type":"color","default":"#000000","function":"interpolated","zoom-function":true,"transition":true,"requires":[{"!":"background-pattern"}]},"background-pattern":{"type":"string","function":"piecewise-constant","zoom-function":true,"transition":true},"background-opacity":{"type":"number","default":1,"minimum":0,"maximum":1,"function":"interpolated","zoom-function":true,"transition":true}},"transition":{"duration":{"type":"number","default":300,"minimum":0,"units":"milliseconds"},"delay":{"type":"number","default":0,"minimum":0,"units":"milliseconds"}}}
-},{}],423:[function(require,module,exports){
+},{}],449:[function(require,module,exports){
 'use strict';
 
 if (typeof module !== 'undefined' && module.exports) {
@@ -71065,7 +71781,7 @@ function isWebGLSupported(failIfMajorPerformanceCaveat) {
     }
 }
 
-},{}],424:[function(require,module,exports){
+},{}],450:[function(require,module,exports){
 'use strict';
 
 // lightweight Buffer shim for pbf browser build
@@ -71226,7 +71942,7 @@ function encodeString(str) {
     return bytes;
 }
 
-},{"ieee754":426}],425:[function(require,module,exports){
+},{"ieee754":452}],451:[function(require,module,exports){
 (function (global){
 'use strict';
 
@@ -71652,9 +72368,9 @@ function writePackedFixed64(arr, pbf)  { for (var i = 0; i < arr.length; i++) pb
 function writePackedSFixed64(arr, pbf) { for (var i = 0; i < arr.length; i++) pbf.writeSFixed64(arr[i]); }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{"./buffer":424}],426:[function(require,module,exports){
+},{"./buffer":450}],452:[function(require,module,exports){
 arguments[4][55][0].apply(exports,arguments)
-},{"dup":55}],427:[function(require,module,exports){
+},{"dup":55}],453:[function(require,module,exports){
 'use strict';
 
 module.exports = Point;
@@ -71787,7 +72503,7 @@ Point.convert = function (a) {
     return a;
 };
 
-},{}],428:[function(require,module,exports){
+},{}],454:[function(require,module,exports){
 'use strict';
 
 module.exports = partialSort;
@@ -71849,7 +72565,7 @@ function defaultCompare(a, b) {
     return a < b ? -1 : a > b ? 1 : 0;
 }
 
-},{}],429:[function(require,module,exports){
+},{}],455:[function(require,module,exports){
 // Copyright 2014 Simon Lydell
 // X11 (“MIT”) Licensed. (See LICENSE.)
 
@@ -71898,7 +72614,7 @@ void (function(root, factory) {
 
 }));
 
-},{}],430:[function(require,module,exports){
+},{}],456:[function(require,module,exports){
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
     typeof define === 'function' && define.amd ? define(factory) :
@@ -72153,7 +72869,7 @@ Shelf.prototype.resize = function(w) {
 return ShelfPack;
 
 }));
-},{}],431:[function(require,module,exports){
+},{}],457:[function(require,module,exports){
 'use strict';
 
 var kdbush = require('kdbush');
@@ -72368,7 +73084,7 @@ function getY(p) {
     return p.y;
 }
 
-},{"kdbush":432}],432:[function(require,module,exports){
+},{"kdbush":458}],458:[function(require,module,exports){
 'use strict';
 
 var sort = require('./sort');
@@ -72414,7 +73130,7 @@ KDBush.prototype = {
 function defaultGetX(p) { return p[0]; }
 function defaultGetY(p) { return p[1]; }
 
-},{"./range":433,"./sort":434,"./within":435}],433:[function(require,module,exports){
+},{"./range":459,"./sort":460,"./within":461}],459:[function(require,module,exports){
 'use strict';
 
 module.exports = range;
@@ -72462,7 +73178,7 @@ function range(ids, coords, minX, minY, maxX, maxY, nodeSize) {
     return result;
 }
 
-},{}],434:[function(require,module,exports){
+},{}],460:[function(require,module,exports){
 'use strict';
 
 module.exports = sortKD;
@@ -72530,7 +73246,7 @@ function swap(arr, i, j) {
     arr[j] = tmp;
 }
 
-},{}],435:[function(require,module,exports){
+},{}],461:[function(require,module,exports){
 'use strict';
 
 module.exports = within;
@@ -72582,7 +73298,7 @@ function sqDist(ax, ay, bx, by) {
     return dx * dx + dy * dy;
 }
 
-},{}],436:[function(require,module,exports){
+},{}],462:[function(require,module,exports){
 /*
  * Copyright (C) 2008 Apple Inc. All Rights Reserved.
  *
@@ -72689,12 +73405,12 @@ UnitBezier.prototype.solve = function(x, epsilon) {
     return this.sampleCurveY(this.solveCurveX(x, epsilon));
 };
 
-},{}],437:[function(require,module,exports){
+},{}],463:[function(require,module,exports){
 module.exports.VectorTile = require('./lib/vectortile.js');
 module.exports.VectorTileFeature = require('./lib/vectortilefeature.js');
 module.exports.VectorTileLayer = require('./lib/vectortilelayer.js');
 
-},{"./lib/vectortile.js":438,"./lib/vectortilefeature.js":439,"./lib/vectortilelayer.js":440}],438:[function(require,module,exports){
+},{"./lib/vectortile.js":464,"./lib/vectortilefeature.js":465,"./lib/vectortilelayer.js":466}],464:[function(require,module,exports){
 'use strict';
 
 var VectorTileLayer = require('./vectortilelayer');
@@ -72713,7 +73429,7 @@ function readTile(tag, layers, pbf) {
 }
 
 
-},{"./vectortilelayer":440}],439:[function(require,module,exports){
+},{"./vectortilelayer":466}],465:[function(require,module,exports){
 'use strict';
 
 var Point = require('point-geometry');
@@ -72948,7 +73664,7 @@ function signedArea(ring) {
     return sum;
 }
 
-},{"point-geometry":427}],440:[function(require,module,exports){
+},{"point-geometry":453}],466:[function(require,module,exports){
 'use strict';
 
 var VectorTileFeature = require('./vectortilefeature.js');
@@ -73011,7 +73727,7 @@ VectorTileLayer.prototype.feature = function(i) {
     return new VectorTileFeature(this._pbf, end, this.extent, this._keys, this._values);
 };
 
-},{"./vectortilefeature.js":439}],441:[function(require,module,exports){
+},{"./vectortilefeature.js":465}],467:[function(require,module,exports){
 var Pbf = require('pbf')
 var vtpb = require('./vector-tile-pb')
 var GeoJSONWrapper = require('./lib/geojson_wrapper')
@@ -73167,7 +73883,7 @@ function wrapValue (value) {
   return result
 }
 
-},{"./lib/geojson_wrapper":442,"./vector-tile-pb":443,"pbf":425}],442:[function(require,module,exports){
+},{"./lib/geojson_wrapper":468,"./vector-tile-pb":469,"pbf":451}],468:[function(require,module,exports){
 'use strict'
 
 var Point = require('point-geometry')
@@ -73235,7 +73951,7 @@ FeatureWrapper.prototype.bbox = function () {
 
 FeatureWrapper.prototype.toGeoJSON = VectorTileFeature.prototype.toGeoJSON
 
-},{"point-geometry":427,"vector-tile":437}],443:[function(require,module,exports){
+},{"point-geometry":453,"vector-tile":463}],469:[function(require,module,exports){
 'use strict';
 
 // tile ========================================
@@ -73341,7 +74057,7 @@ function writeLayer(layer, pbf) {
     if (layer.extent !== undefined) pbf.writeVarintField(5, layer.extent);
 }
 
-},{}],444:[function(require,module,exports){
+},{}],470:[function(require,module,exports){
 var bundleFn = arguments[3];
 var sources = arguments[4];
 var cache = arguments[5];
@@ -73410,7 +74126,7 @@ module.exports = function (fn, options) {
     return worker;
 };
 
-},{}],445:[function(require,module,exports){
+},{}],471:[function(require,module,exports){
 (function (global, factory) {
     typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
     typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -73500,7 +74216,7 @@ exports.getMercCoords = getMercCoords;
 Object.defineProperty(exports, '__esModule', { value: true });
 
 }));
-},{}],446:[function(require,module,exports){
+},{}],472:[function(require,module,exports){
 module.exports={
   "name": "mapbox-gl",
   "description": "A WebGL interactive maps library",
@@ -73811,7 +74527,7 @@ module.exports={
   "_resolved": "https://registry.npmjs.org/mapbox-gl/-/mapbox-gl-0.22.0.tgz"
 }
 
-},{}],447:[function(require,module,exports){
+},{}],473:[function(require,module,exports){
 'use strict'
 
 module.exports = mouseListen
@@ -74020,7 +74736,7 @@ function mouseListen(element, callback) {
   return result
 }
 
-},{"mouse-event":448}],448:[function(require,module,exports){
+},{"mouse-event":474}],474:[function(require,module,exports){
 'use strict'
 
 function mouseButtons(ev) {
@@ -74082,7 +74798,7 @@ function mouseRelativeY(ev) {
 }
 exports.y = mouseRelativeY
 
-},{}],449:[function(require,module,exports){
+},{}],475:[function(require,module,exports){
 module.exports = function parseUnit(str, out) {
     if (!out)
         out = [ 0, '' ]
@@ -74093,7 +74809,7 @@ module.exports = function parseUnit(str, out) {
     out[1] = str.match(/[\d.\-\+]*\s*(.*)/)[1] || ''
     return out
 }
-},{}],450:[function(require,module,exports){
+},{}],476:[function(require,module,exports){
 'use strict'
 
 var parseUnit = require('parse-unit')
@@ -74154,7 +74870,7 @@ function toPX(str, element) {
   }
   return 1
 }
-},{"parse-unit":449}],451:[function(require,module,exports){
+},{"parse-unit":475}],477:[function(require,module,exports){
 'use strict'
 
 var toPX = require('to-px')
@@ -74196,19 +74912,19 @@ function mouseWheelListen(element, callback, noScroll) {
   return listener
 }
 
-},{"to-px":450}],452:[function(require,module,exports){
+},{"to-px":476}],478:[function(require,module,exports){
 "use strict"
 
 
 
-var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_1_arg1_=_inline_1_arg2_.apply(void 0,_inline_1_arg0_)}","args":[{"name":"_inline_1_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_1_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_1_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_7_arg1_=_inline_7_arg2_.apply(void 0,_inline_7_arg0_)}","args":[{"name":"_inline_7_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_7_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 module.exports = function(array, f) {
   fill(array, f)
   return array
 }
 
-},{"cwise/lib/wrapper":124}],453:[function(require,module,exports){
+},{"cwise/lib/wrapper":124}],479:[function(require,module,exports){
 'use strict'
 
 module.exports = invert
@@ -74239,7 +74955,7 @@ function invert(out, M) {
   }
   return out
 }
-},{"gl-mat2/invert":454,"gl-mat3/invert":142,"gl-mat4/invert":149}],454:[function(require,module,exports){
+},{"gl-mat2/invert":480,"gl-mat3/invert":142,"gl-mat4/invert":149}],480:[function(require,module,exports){
 module.exports = invert
 
 /**
@@ -74268,7 +74984,7 @@ function invert(out, a) {
   return out
 }
 
-},{}],455:[function(require,module,exports){
+},{}],481:[function(require,module,exports){
 "use strict"
 
 function interp1d(arr, x) {
@@ -74379,19 +75095,19 @@ module.exports.d1 = interp1d
 module.exports.d2 = interp2d
 module.exports.d3 = interp3d
 
-},{}],456:[function(require,module,exports){
+},{}],482:[function(require,module,exports){
 'use strict'
 
 var interp  = require('ndarray-linear-interpolate')
 
 
-var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_9_arg4_)}","args":[{"name":"_inline_9_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_9_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_9_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_9_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_9_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_10_arg2_(this_warped,_inline_10_arg0_),_inline_10_arg1_=_inline_10_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_10_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_10_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_10_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
+var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_33_arg4_)}","args":[{"name":"_inline_33_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_34_arg2_(this_warped,_inline_34_arg0_),_inline_34_arg1_=_inline_34_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_34_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_34_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
 
-var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_13_arg2_(this_warped,_inline_13_arg0_),_inline_13_arg1_=_inline_13_arg3_(_inline_13_arg4_,this_warped[0])}","args":[{"name":"_inline_13_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_13_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_13_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_13_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_13_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
+var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_37_arg2_(this_warped,_inline_37_arg0_),_inline_37_arg1_=_inline_37_arg3_(_inline_37_arg4_,this_warped[0])}","args":[{"name":"_inline_37_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_37_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
 
-var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_16_arg2_(this_warped,_inline_16_arg0_),_inline_16_arg1_=_inline_16_arg3_(_inline_16_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_16_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_16_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_16_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_16_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_16_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
+var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_40_arg2_(this_warped,_inline_40_arg0_),_inline_40_arg1_=_inline_40_arg3_(_inline_40_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_40_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_40_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
 
-var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_19_arg2_(this_warped,_inline_19_arg0_),_inline_19_arg1_=_inline_19_arg3_(_inline_19_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_19_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_19_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_19_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_19_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_19_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
+var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_43_arg2_(this_warped,_inline_43_arg0_),_inline_43_arg1_=_inline_43_arg3_(_inline_43_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_43_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_43_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
 
 module.exports = function warp(dest, src, func) {
   switch(src.shape.length) {
@@ -74411,7 +75127,7 @@ module.exports = function warp(dest, src, func) {
   return dest
 }
 
-},{"cwise/lib/wrapper":124,"ndarray-linear-interpolate":455}],457:[function(require,module,exports){
+},{"cwise/lib/wrapper":124,"ndarray-linear-interpolate":481}],483:[function(require,module,exports){
 'use strict'
 
 var warp = require('ndarray-warp')
@@ -74441,7 +75157,7 @@ function applyHomography(dest, src, Xi) {
   })
   return dest
 }
-},{"gl-matrix-invert":453,"ndarray-warp":456}],458:[function(require,module,exports){
+},{"gl-matrix-invert":479,"ndarray-warp":482}],484:[function(require,module,exports){
 "use strict"
 
 var compile = require("cwise-compiler")
@@ -74904,7 +75620,7 @@ exports.equals = compile({
 
 
 
-},{"cwise-compiler":121}],459:[function(require,module,exports){
+},{"cwise-compiler":121}],485:[function(require,module,exports){
 var iota = require("iota-array")
 var isBuffer = require("is-buffer")
 
@@ -75249,77 +75965,9 @@ function wrappedNDArrayCtor(data, shape, stride, offset) {
 
 module.exports = wrappedNDArrayCtor
 
-},{"iota-array":253,"is-buffer":254}],460:[function(require,module,exports){
-/*!
- * repeat-string <https://github.com/jonschlinkert/repeat-string>
- *
- * Copyright (c) 2014-2015, Jon Schlinkert.
- * Licensed under the MIT License.
- */
-
-'use strict';
-
-/**
- * Results cache
- */
-
-var res = '';
-var cache;
-
-/**
- * Expose `repeat`
- */
-
-module.exports = repeat;
-
-/**
- * Repeat the given `string` the specified `number`
- * of times.
- *
- * **Example:**
- *
- * ```js
- * var repeat = require('repeat-string');
- * repeat('A', 5);
- * //=> AAAAA
- * ```
- *
- * @param {String} `string` The string to repeat
- * @param {Number} `number` The number of times to repeat the string
- * @return {String} Repeated string
- * @api public
- */
-
-function repeat(str, num) {
-  if (typeof str !== 'string') {
-    throw new TypeError('repeat-string expects a string.');
-  }
-
-  // cover common, quick use cases
-  if (num === 1) return str;
-  if (num === 2) return str + str;
-
-  var max = str.length * num;
-  if (cache !== str || typeof cache === 'undefined') {
-    cache = str;
-    res = '';
-  }
-
-  while (max > res.length && num > 0) {
-    if (num & 1) {
-      res += str;
-    }
-
-    num >>= 1;
-    if (!num) break;
-    str += str;
-  }
-
-  return res.substr(0, max);
-}
-
-
-},{}],461:[function(require,module,exports){
+},{"iota-array":279,"is-buffer":280}],486:[function(require,module,exports){
+arguments[4][207][0].apply(exports,arguments)
+},{"dup":207}],487:[function(require,module,exports){
 (function (global){
 module.exports =
   global.performance &&
@@ -75330,7 +75978,7 @@ module.exports =
   }
 
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {})
-},{}],462:[function(require,module,exports){
+},{}],488:[function(require,module,exports){
 "use strict"
 
 var determinant = require("robust-determinant")
@@ -75402,7 +76050,7 @@ function generateDispatch() {
 }
 
 generateDispatch()
-},{"robust-determinant":464}],463:[function(require,module,exports){
+},{"robust-determinant":490}],489:[function(require,module,exports){
 "use strict"
 
 module.exports = compressExpansion
@@ -75437,7 +76085,7 @@ function compressExpansion(e) {
   e.length = top
   return e
 }
-},{}],464:[function(require,module,exports){
+},{}],490:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -75541,7 +76189,7 @@ return robustDeterminant")
 }
 
 generateDispatch()
-},{"robust-compress":463,"robust-scale":466,"robust-sum":468,"two-product":482}],465:[function(require,module,exports){
+},{"robust-compress":489,"robust-scale":492,"robust-sum":494,"two-product":508}],491:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -75732,7 +76380,7 @@ function generateOrientationProc() {
 }
 
 generateOrientationProc()
-},{"robust-scale":466,"robust-subtract":467,"robust-sum":468,"two-product":482}],466:[function(require,module,exports){
+},{"robust-scale":492,"robust-subtract":493,"robust-sum":494,"two-product":508}],492:[function(require,module,exports){
 "use strict"
 
 var twoProduct = require("two-product")
@@ -75783,7 +76431,7 @@ function scaleLinearExpansion(e, scale) {
   g.length = count
   return g
 }
-},{"two-product":482,"two-sum":483}],467:[function(require,module,exports){
+},{"two-product":508,"two-sum":509}],493:[function(require,module,exports){
 "use strict"
 
 module.exports = robustSubtract
@@ -75940,7 +76588,7 @@ function robustSubtract(e, f) {
   g.length = count
   return g
 }
-},{}],468:[function(require,module,exports){
+},{}],494:[function(require,module,exports){
 "use strict"
 
 module.exports = linearExpansionSum
@@ -76097,7 +76745,7 @@ function linearExpansionSum(e, f) {
   g.length = count
   return g
 }
-},{}],469:[function(require,module,exports){
+},{}],495:[function(require,module,exports){
 'use strict'
 
 module.exports = toSuperScript
@@ -76152,7 +76800,7 @@ function toSuperScript(x) {
   }).join('')
 }
 
-},{}],470:[function(require,module,exports){
+},{}],496:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -76568,7 +77216,7 @@ function createSurfaceExtractor(args) {
     order,
     typesig)
 }
-},{"typedarray-pool":484}],471:[function(require,module,exports){
+},{"typedarray-pool":510}],497:[function(require,module,exports){
 // transliterated from the python snippet here:
 // http://en.wikipedia.org/wiki/Lanczos_approximation
 
@@ -76637,7 +77285,7 @@ module.exports = function gamma (z) {
 
 module.exports.log = lngamma;
 
-},{}],472:[function(require,module,exports){
+},{}],498:[function(require,module,exports){
 "use strict"
 
 module.exports = permutationSign
@@ -76689,7 +77337,7 @@ function permutationSign(p) {
     return sgn
   }
 }
-},{"typedarray-pool":484}],473:[function(require,module,exports){
+},{"typedarray-pool":510}],499:[function(require,module,exports){
 "use strict"
 
 var pool = require("typedarray-pool")
@@ -76776,7 +77424,7 @@ function unrank(n, r, p) {
 exports.rank = rank
 exports.unrank = unrank
 
-},{"invert-permutation":474,"typedarray-pool":484}],474:[function(require,module,exports){
+},{"invert-permutation":500,"typedarray-pool":510}],500:[function(require,module,exports){
 "use strict"
 
 function invertPermutation(pi, result) {
@@ -76788,7 +77436,7 @@ function invertPermutation(pi, result) {
 }
 
 module.exports = invertPermutation
-},{}],475:[function(require,module,exports){
+},{}],501:[function(require,module,exports){
 "use strict"
 
 module.exports = triangulateCube
@@ -76822,7 +77470,7 @@ function triangulateCube(dimension) {
   }
   return result
 }
-},{"gamma":471,"permutation-parity":472,"permutation-rank":473}],476:[function(require,module,exports){
+},{"gamma":497,"permutation-parity":498,"permutation-rank":499}],502:[function(require,module,exports){
 module.exports = require('cwise-compiler')({
     args: ['array', {
         offset: [1],
@@ -76874,7 +77522,7 @@ module.exports = require('cwise-compiler')({
     funcName: 'zeroCrossings'
 })
 
-},{"cwise-compiler":121}],477:[function(require,module,exports){
+},{"cwise-compiler":121}],503:[function(require,module,exports){
 "use strict"
 
 module.exports = findZeroCrossings
@@ -76887,7 +77535,7 @@ function findZeroCrossings(array, level) {
   core(array.hi(array.shape[0]-1), cross, level)
   return cross
 }
-},{"./lib/zc-core":476}],478:[function(require,module,exports){
+},{"./lib/zc-core":502}],504:[function(require,module,exports){
 "use strict"
 
 module.exports = surfaceNets
@@ -77095,7 +77743,7 @@ function surfaceNets(array,level) {
   }
   return proc(array,level)
 }
-},{"ndarray-extract-contour":470,"triangulate-hypercube":475,"zero-crossings":477}],479:[function(require,module,exports){
+},{"ndarray-extract-contour":496,"triangulate-hypercube":501,"zero-crossings":503}],505:[function(require,module,exports){
 (function (process){
 'use strict'
 
@@ -77184,7 +77832,7 @@ function textGet(font, text) {
 }
 
 }).call(this,require('_process'))
-},{"_process":60,"vectorize-text":486}],480:[function(require,module,exports){
+},{"_process":60,"vectorize-text":512}],506:[function(require,module,exports){
 // TinyColor v1.3.0
 // https://github.com/bgrins/TinyColor
 // Brian Grinstead, MIT License
@@ -78352,7 +79000,7 @@ else {
 
 })();
 
-},{}],481:[function(require,module,exports){
+},{}],507:[function(require,module,exports){
 (function (global, factory) {
   typeof exports === 'object' && typeof module !== 'undefined' ? factory(exports) :
   typeof define === 'function' && define.amd ? define(['exports'], factory) :
@@ -78901,7 +79549,7 @@ else {
   exports.presimplify = presimplify;
 
 }));
-},{}],482:[function(require,module,exports){
+},{}],508:[function(require,module,exports){
 "use strict"
 
 module.exports = twoProduct
@@ -78935,7 +79583,7 @@ function twoProduct(a, b, result) {
 
   return [ y, x ]
 }
-},{}],483:[function(require,module,exports){
+},{}],509:[function(require,module,exports){
 "use strict"
 
 module.exports = fastTwoSum
@@ -78953,7 +79601,7 @@ function fastTwoSum(a, b, result) {
 	}
 	return [ar+br, x]
 }
-},{}],484:[function(require,module,exports){
+},{}],510:[function(require,module,exports){
 (function (global,Buffer){
 'use strict'
 
@@ -79170,7 +79818,7 @@ exports.clearCache = function clearCache() {
   }
 }
 }).call(this,typeof global !== "undefined" ? global : typeof self !== "undefined" ? self : typeof window !== "undefined" ? window : {},require("buffer").Buffer)
-},{"bit-twiddle":52,"buffer":53,"dup":127}],485:[function(require,module,exports){
+},{"bit-twiddle":52,"buffer":53,"dup":127}],511:[function(require,module,exports){
 "use strict"
 
 function unique_pred(list, compare) {
@@ -79229,7 +79877,7 @@ function unique(list, compare, sorted) {
 
 module.exports = unique
 
-},{}],486:[function(require,module,exports){
+},{}],512:[function(require,module,exports){
 "use strict"
 
 module.exports = createText
@@ -79256,7 +79904,7 @@ function createText(str, options) {
     options)
 }
 
-},{"./lib/vtext":487}],487:[function(require,module,exports){
+},{"./lib/vtext":513}],513:[function(require,module,exports){
 "use strict"
 
 module.exports = vectorizeText
@@ -79462,7 +80110,7 @@ function vectorizeText(str, canvas, context, options) {
   return processPixels(pixels, options, size)
 }
 
-},{"cdt2d":69,"clean-pslg":76,"ndarray":459,"planar-graph-to-polyline":500,"simplify-planar-graph":504,"surface-nets":478}],488:[function(require,module,exports){
+},{"cdt2d":69,"clean-pslg":76,"ndarray":485,"planar-graph-to-polyline":526,"simplify-planar-graph":530,"surface-nets":504}],514:[function(require,module,exports){
 'use strict'
 
 module.exports = trimLeaves
@@ -79518,7 +80166,7 @@ function trimLeaves(edges, positions) {
   
   return [ nedges, npositions ]
 }
-},{"edges-to-adjacency-list":489}],489:[function(require,module,exports){
+},{"edges-to-adjacency-list":515}],515:[function(require,module,exports){
 "use strict"
 
 module.exports = edgeToAdjacency
@@ -79552,7 +80200,7 @@ function edgeToAdjacency(edges, numVertices) {
   }
   return adj
 }
-},{"uniq":485}],490:[function(require,module,exports){
+},{"uniq":511}],516:[function(require,module,exports){
 "use strict"
 
 module.exports = planarDual
@@ -79683,7 +80331,7 @@ function planarDual(cells, positions) {
   //Combine paths and loops together
   return cycles
 }
-},{"compare-angle":491}],491:[function(require,module,exports){
+},{"compare-angle":517}],517:[function(require,module,exports){
 "use strict"
 
 module.exports = compareAngle
@@ -79769,7 +80417,7 @@ function compareAngle(a, b, c, d) {
     }
   }
 }
-},{"robust-orientation":465,"robust-product":492,"robust-sum":468,"signum":493,"two-sum":483}],492:[function(require,module,exports){
+},{"robust-orientation":491,"robust-product":518,"robust-sum":494,"signum":519,"two-sum":509}],518:[function(require,module,exports){
 "use strict"
 
 var robustSum = require("robust-sum")
@@ -79799,7 +80447,7 @@ function robustProduct(a, b) {
   }
   return r
 }
-},{"robust-scale":466,"robust-sum":468}],493:[function(require,module,exports){
+},{"robust-scale":492,"robust-sum":494}],519:[function(require,module,exports){
 "use strict"
 
 module.exports = function signum(x) {
@@ -79807,9 +80455,9 @@ module.exports = function signum(x) {
   if(x > 0) { return 1 }
   return 0.0
 }
-},{}],494:[function(require,module,exports){
+},{}],520:[function(require,module,exports){
 arguments[4][23][0].apply(exports,arguments)
-},{"dup":23}],495:[function(require,module,exports){
+},{"dup":23}],521:[function(require,module,exports){
 "use strict"
 
 var bounds = require("binary-search-bounds")
@@ -80176,7 +80824,7 @@ function createWrapper(intervals) {
   return new IntervalTree(createIntervalTree(intervals))
 }
 
-},{"binary-search-bounds":494}],496:[function(require,module,exports){
+},{"binary-search-bounds":520}],522:[function(require,module,exports){
 "use strict"
 
 module.exports = orderSegments
@@ -80272,7 +80920,7 @@ function orderSegments(b, a) {
   }
   return ar[0] - br[0]
 }
-},{"robust-orientation":465}],497:[function(require,module,exports){
+},{"robust-orientation":491}],523:[function(require,module,exports){
 "use strict"
 
 module.exports = createRBTree
@@ -81269,7 +81917,7 @@ function defaultCompare(a, b) {
 function createRBTree(compare) {
   return new RedBlackTree(compare || defaultCompare, null)
 }
-},{}],498:[function(require,module,exports){
+},{}],524:[function(require,module,exports){
 "use strict"
 
 module.exports = createSlabDecomposition
@@ -81500,7 +82148,7 @@ function createSlabDecomposition(segments) {
   }
   return new SlabDecomposition(slabs, lines, horizontal)
 }
-},{"./lib/order-segments":496,"binary-search-bounds":494,"functional-red-black-tree":497,"robust-orientation":465}],499:[function(require,module,exports){
+},{"./lib/order-segments":522,"binary-search-bounds":520,"functional-red-black-tree":523,"robust-orientation":491}],525:[function(require,module,exports){
 module.exports = preprocessPolygon
 
 var orient = require('robust-orientation')[3]
@@ -81652,7 +82300,7 @@ function preprocessPolygon(loops) {
       testSlab)
   }
 }
-},{"binary-search-bounds":494,"interval-tree-1d":495,"robust-orientation":465,"slab-decomposition":498}],500:[function(require,module,exports){
+},{"binary-search-bounds":520,"interval-tree-1d":521,"robust-orientation":491,"slab-decomposition":524}],526:[function(require,module,exports){
 'use strict'
 
 module.exports = planarGraphToPolyline
@@ -81857,9 +82505,9 @@ function planarGraphToPolyline(edges, positions) {
 
   return result
 }
-},{"./lib/trim-leaves":488,"edges-to-adjacency-list":489,"planar-dual":490,"point-in-big-polygon":499,"robust-sum":468,"two-product":482,"uniq":485}],501:[function(require,module,exports){
+},{"./lib/trim-leaves":514,"edges-to-adjacency-list":515,"planar-dual":516,"point-in-big-polygon":525,"robust-sum":494,"two-product":508,"uniq":511}],527:[function(require,module,exports){
 arguments[4][52][0].apply(exports,arguments)
-},{"dup":52}],502:[function(require,module,exports){
+},{"dup":52}],528:[function(require,module,exports){
 "use strict"; "use restrict";
 
 module.exports = UnionFind;
@@ -81916,9 +82564,9 @@ UnionFind.prototype.link = function(x, y) {
 }
 
 
-},{}],503:[function(require,module,exports){
-arguments[4][252][0].apply(exports,arguments)
-},{"bit-twiddle":501,"dup":252,"union-find":502}],504:[function(require,module,exports){
+},{}],529:[function(require,module,exports){
+arguments[4][278][0].apply(exports,arguments)
+},{"bit-twiddle":527,"dup":278,"union-find":528}],530:[function(require,module,exports){
 "use strict"
 
 module.exports = simplifyPolygon
@@ -82190,7 +82838,7 @@ function simplifyPolygon(cells, positions, minArea) {
     edges: ncells
   }
 }
-},{"robust-orientation":465,"simplicial-complex":503}],505:[function(require,module,exports){
+},{"robust-orientation":491,"simplicial-complex":529}],531:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82295,7 +82943,7 @@ module.exports = function handleAnnotationDefaults(annIn, fullLayout) {
     return annOut;
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"../color":514,"./attributes":507}],506:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"../color":540,"./attributes":533}],532:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82357,7 +83005,7 @@ module.exports = [
     }
 ];
 
-},{}],507:[function(require,module,exports){
+},{}],533:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82550,7 +83198,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":601,"../../plots/cartesian/constants":641,"../../plots/font_attributes":655,"./arrow_paths":506}],508:[function(require,module,exports){
+},{"../../lib/extend":627,"../../plots/cartesian/constants":667,"../../plots/font_attributes":681,"./arrow_paths":532}],534:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82637,7 +83285,7 @@ function annAutorange(gd) {
     });
 }
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"./draw":510}],509:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"./draw":536}],535:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -82664,7 +83312,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 };
 
-},{"./annotation_defaults":505}],510:[function(require,module,exports){
+},{"./annotation_defaults":531}],536:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83076,16 +83724,16 @@ function drawOne(gd, index, opt, value) {
         // and the annotation center are visible
         if(options.showarrow) {
             if(options.axref === options.xref) {
-                //we don't want to constrain if the tail is absolute
-                //or the slope (which is meaningful) will change.
+                // we don't want to constrain if the tail is absolute
+                // or the slope (which is meaningful) will change.
                 arrowX = annPosPx.x;
             } else {
                 arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
             }
 
             if(options.ayref === options.yref) {
-                //we don't want to constrain if the tail is absolute
-                //or the slope (which is meaningful) will change.
+                // we don't want to constrain if the tail is absolute
+                // or the slope (which is meaningful) will change.
                 arrowY = annPosPx.y;
             } else {
                 arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
@@ -83419,7 +84067,7 @@ function lineIntersect(x1, y1, x2, y2, x3, y3, x4, y4) {
     return {x: x1 + a * t, y: y1 + d * t};
 }
 
-},{"../../lib":607,"../../lib/setcursor":617,"../../lib/svg_text_utils":621,"../../plotly":632,"../../plots/cartesian/axes":636,"../../plots/plots":694,"../color":514,"../dragelement":535,"../drawing":537,"./annotation_defaults":505,"./defaults":509,"./draw_arrow_head":511,"d3":125,"fast-isnumeric":129}],511:[function(require,module,exports){
+},{"../../lib":633,"../../lib/setcursor":643,"../../lib/svg_text_utils":647,"../../plotly":658,"../../plots/cartesian/axes":662,"../../plots/plots":720,"../color":540,"../dragelement":561,"../drawing":563,"./annotation_defaults":531,"./defaults":535,"./draw_arrow_head":537,"d3":125,"fast-isnumeric":129}],537:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83538,7 +84186,7 @@ module.exports = function drawArrowHead(el3, style, ends, mag) {
     if(doEnd) drawhead(end, endRot);
 };
 
-},{"../color":514,"../drawing":537,"./arrow_paths":506,"d3":125,"fast-isnumeric":129}],512:[function(require,module,exports){
+},{"../color":540,"../drawing":563,"./arrow_paths":532,"d3":125,"fast-isnumeric":129}],538:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83576,7 +84224,7 @@ exports.add = function(gd) {
     Plotly.relayout(gd, 'annotations[' + nextAnn + ']', 'add');
 };
 
-},{"../../plotly":632,"./arrow_paths":506,"./attributes":507,"./calc_autorange":508,"./defaults":509,"./draw":510,"./draw_arrow_head":511}],513:[function(require,module,exports){
+},{"../../plotly":658,"./arrow_paths":532,"./attributes":533,"./calc_autorange":534,"./defaults":535,"./draw":536,"./draw_arrow_head":537}],539:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83616,7 +84264,7 @@ exports.borderLine = '#BEC8D9';
 // gives back exactly lightLine if the other colors are defaults.
 exports.lightFraction = 100 * (0xe - 0x4) / (0xf - 0x4);
 
-},{}],514:[function(require,module,exports){
+},{}],540:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83773,7 +84421,7 @@ function cleanOne(val) {
     return 'rgb(' + rgbStr + ')';
 }
 
-},{"./attributes":513,"fast-isnumeric":129,"tinycolor2":480}],515:[function(require,module,exports){
+},{"./attributes":539,"fast-isnumeric":129,"tinycolor2":506}],541:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83929,7 +84577,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":601,"../../plots/cartesian/layout_attributes":645,"../../plots/font_attributes":655}],516:[function(require,module,exports){
+},{"../../lib/extend":627,"../../plots/cartesian/layout_attributes":671,"../../plots/font_attributes":681}],542:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -83996,7 +84644,7 @@ module.exports = function colorbarDefaults(containerIn, containerOut, layout) {
     coerce('titleside');
 };
 
-},{"../../lib":607,"../../plots/cartesian/tick_label_defaults":651,"../../plots/cartesian/tick_mark_defaults":652,"../../plots/cartesian/tick_value_defaults":653,"./attributes":515}],517:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/tick_label_defaults":677,"../../plots/cartesian/tick_mark_defaults":678,"../../plots/cartesian/tick_value_defaults":679,"./attributes":541}],543:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84526,7 +85174,7 @@ module.exports = function draw(gd, id) {
             container.attr('transform',
                 'translate(' + (gs.l - xoffset) + ',' + gs.t + ')');
 
-            //auto margin adjustment
+            // auto margin adjustment
             Plots.autoMargin(gd, id, {
                 x: opts.x,
                 y: opts.y,
@@ -84628,7 +85276,7 @@ module.exports = function draw(gd, id) {
     return component;
 };
 
-},{"../../lib":607,"../../lib/extend":601,"../../lib/setcursor":617,"../../plotly":632,"../../plots/cartesian/axes":636,"../../plots/cartesian/axis_defaults":637,"../../plots/cartesian/layout_attributes":645,"../../plots/cartesian/position_defaults":648,"../../plots/plots":694,"../../registry":709,"../color":514,"../dragelement":535,"../drawing":537,"../titles":584,"./attributes":515,"d3":125,"tinycolor2":480}],518:[function(require,module,exports){
+},{"../../lib":633,"../../lib/extend":627,"../../lib/setcursor":643,"../../plotly":658,"../../plots/cartesian/axes":662,"../../plots/cartesian/axis_defaults":663,"../../plots/cartesian/layout_attributes":671,"../../plots/cartesian/position_defaults":674,"../../plots/plots":720,"../../registry":735,"../color":540,"../dragelement":561,"../drawing":563,"../titles":610,"./attributes":541,"d3":125,"tinycolor2":506}],544:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84647,7 +85295,7 @@ module.exports = function hasColorbar(container) {
     return Lib.isPlainObject(container.colorbar);
 };
 
-},{"../../lib":607}],519:[function(require,module,exports){
+},{"../../lib":633}],545:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84668,7 +85316,7 @@ exports.draw = require('./draw');
 
 exports.hasColorbar = require('./has_colorbar');
 
-},{"./attributes":515,"./defaults":516,"./draw":517,"./has_colorbar":518}],520:[function(require,module,exports){
+},{"./attributes":541,"./defaults":542,"./draw":543,"./has_colorbar":544}],546:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84723,7 +85371,7 @@ module.exports = {
     }
 };
 
-},{}],521:[function(require,module,exports){
+},{}],547:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84789,7 +85437,7 @@ module.exports = function calc(trace, vals, containerStr, cLetter) {
     }
 };
 
-},{"../../lib":607,"./flip_scale":525,"./scales":532}],522:[function(require,module,exports){
+},{"../../lib":633,"./flip_scale":551,"./scales":558}],548:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84833,7 +85481,7 @@ module.exports = function makeColorScaleAttributes(context) {
     };
 };
 
-},{"../../lib/extend":601,"./attributes":520,"./scales.js":532}],523:[function(require,module,exports){
+},{"../../lib/extend":627,"./attributes":546,"./scales.js":558}],549:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84849,7 +85497,7 @@ var scales = require('./scales');
 
 module.exports = scales.RdBu;
 
-},{"./scales":532}],524:[function(require,module,exports){
+},{"./scales":558}],550:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84913,7 +85561,7 @@ module.exports = function colorScaleDefaults(traceIn, traceOut, layout, coerce, 
     if(showScale) colorbarDefaults(containerIn, containerOut, layout);
 };
 
-},{"../../lib":607,"../colorbar/defaults":516,"../colorbar/has_colorbar":518,"./flip_scale":525,"./is_valid_scale":529,"fast-isnumeric":129}],525:[function(require,module,exports){
+},{"../../lib":633,"../colorbar/defaults":542,"../colorbar/has_colorbar":544,"./flip_scale":551,"./is_valid_scale":555,"fast-isnumeric":129}],551:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84938,7 +85586,7 @@ module.exports = function flipScale(scl) {
     return sclNew;
 };
 
-},{}],526:[function(require,module,exports){
+},{}],552:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -84978,7 +85626,7 @@ module.exports = function getScale(scl, dflt) {
     return scl;
 };
 
-},{"./default_scale":523,"./is_valid_scale_array":530,"./scales":532}],527:[function(require,module,exports){
+},{"./default_scale":549,"./is_valid_scale_array":556,"./scales":558}],553:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85024,7 +85672,7 @@ module.exports = function hasColorscale(trace, containerStr) {
     );
 };
 
-},{"../../lib":607,"./is_valid_scale":529,"fast-isnumeric":129}],528:[function(require,module,exports){
+},{"../../lib":633,"./is_valid_scale":555,"fast-isnumeric":129}],554:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85056,7 +85704,7 @@ exports.flipScale = require('./flip_scale');
 
 exports.makeScaleFunction = require('./make_scale_function');
 
-},{"./attributes":520,"./calc":521,"./default_scale":523,"./defaults":524,"./flip_scale":525,"./get_scale":526,"./has_colorscale":527,"./is_valid_scale":529,"./make_scale_function":531,"./scales":532}],529:[function(require,module,exports){
+},{"./attributes":546,"./calc":547,"./default_scale":549,"./defaults":550,"./flip_scale":551,"./get_scale":552,"./has_colorscale":553,"./is_valid_scale":555,"./make_scale_function":557,"./scales":558}],555:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85077,7 +85725,7 @@ module.exports = function isValidScale(scl) {
     else return isValidScaleArray(scl);
 };
 
-},{"./is_valid_scale_array":530,"./scales":532}],530:[function(require,module,exports){
+},{"./is_valid_scale_array":556,"./scales":558}],556:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85114,7 +85762,7 @@ module.exports = function isValidScaleArray(scl) {
     return true;
 };
 
-},{"tinycolor2":480}],531:[function(require,module,exports){
+},{"tinycolor2":506}],557:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85163,7 +85811,7 @@ module.exports = function makeScaleFunction(scl, cmin, cmax) {
     };
 };
 
-},{"../../lib":607,"../color":514,"d3":125,"fast-isnumeric":129,"tinycolor2":480}],532:[function(require,module,exports){
+},{"../../lib":633,"../color":540,"d3":125,"fast-isnumeric":129,"tinycolor2":506}],558:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85294,7 +85942,7 @@ module.exports = {
     ]
 };
 
-},{}],533:[function(require,module,exports){
+},{}],559:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85327,7 +85975,7 @@ module.exports = function align(v, dv, v0, v1, anchor) {
     return vc;
 };
 
-},{}],534:[function(require,module,exports){
+},{}],560:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85365,7 +86013,7 @@ module.exports = function getCursor(x, y, xanchor, yanchor) {
     return cursorset[y][x];
 };
 
-},{"../../lib":607}],535:[function(require,module,exports){
+},{"../../lib":633}],561:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85550,7 +86198,7 @@ function finishDrag(gd) {
     if(gd._replotPending) Plotly.plot(gd);
 }
 
-},{"../../lib":607,"../../plotly":632,"../../plots/cartesian/constants":641,"./align":533,"./cursor":534,"./unhover":536}],536:[function(require,module,exports){
+},{"../../lib":633,"../../plotly":658,"../../plots/cartesian/constants":667,"./align":559,"./cursor":560,"./unhover":562}],562:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85601,7 +86249,7 @@ unhover.raw = function unhoverRaw(gd, evt) {
     gd._hoverdata = undefined;
 };
 
-},{"../../lib/events":600}],537:[function(require,module,exports){
+},{"../../lib/events":626}],563:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -85808,8 +86456,10 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 
             // handle multi-trace graph edit case
             if(d.ms === 'various' || marker.size === 'various') r = 3;
-            else r = subTypes.isBubble(trace) ?
+            else {
+                r = subTypes.isBubble(trace) ?
                         sizeFn(d.ms) : (marker.size || 6) / 2;
+            }
 
             // store the calculated size so hover can use it
             d.mrc = r;
@@ -86199,7 +86849,7 @@ drawing.setClipUrl = function(s, localId) {
     s.attr('clip-path', 'url(' + url + ')');
 };
 
-},{"../../constants/xmlns_namespaces":594,"../../lib":607,"../../lib/svg_text_utils":621,"../../registry":709,"../../traces/scatter/make_bubble_size_func":818,"../../traces/scatter/subtypes":823,"../color":514,"../colorscale":528,"./symbol_defs":538,"d3":125,"fast-isnumeric":129}],538:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":620,"../../lib":633,"../../lib/svg_text_utils":647,"../../registry":735,"../../traces/scatter/make_bubble_size_func":844,"../../traces/scatter/subtypes":849,"../color":540,"../colorscale":554,"./symbol_defs":564,"d3":125,"fast-isnumeric":129}],564:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86675,7 +87325,7 @@ module.exports = {
     }
 };
 
-},{"d3":125}],539:[function(require,module,exports){
+},{"d3":125}],565:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86774,7 +87424,7 @@ module.exports = {
     }
 };
 
-},{}],540:[function(require,module,exports){
+},{}],566:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86837,7 +87487,7 @@ function calcOneAxis(calcTrace, trace, axis, coord) {
     Axes.expand(axis, vals, {padded: true});
 }
 
-},{"../../plots/cartesian/axes":636,"../../registry":709,"./compute_error":541,"fast-isnumeric":129}],541:[function(require,module,exports){
+},{"../../plots/cartesian/axes":662,"../../registry":735,"./compute_error":567,"fast-isnumeric":129}],567:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -86933,7 +87583,7 @@ function makeComputeErrorValue(type, value) {
     }
 }
 
-},{}],542:[function(require,module,exports){
+},{}],568:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87010,7 +87660,7 @@ module.exports = function(traceIn, traceOut, defaultColor, opts) {
     }
 };
 
-},{"../../lib":607,"../../registry":709,"./attributes":539,"fast-isnumeric":129}],543:[function(require,module,exports){
+},{"../../lib":633,"../../registry":735,"./attributes":565,"fast-isnumeric":129}],569:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87069,7 +87719,7 @@ errorBars.hoverInfo = function(calcPoint, trace, hoverPoint) {
     }
 };
 
-},{"./attributes":539,"./calc":540,"./defaults":542,"./plot":544,"./style":545}],544:[function(require,module,exports){
+},{"./attributes":565,"./calc":566,"./defaults":568,"./plot":570,"./style":571}],570:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87232,7 +87882,7 @@ function errorCoords(d, xa, ya) {
     return out;
 }
 
-},{"../../traces/scatter/subtypes":823,"d3":125,"fast-isnumeric":129}],545:[function(require,module,exports){
+},{"../../traces/scatter/subtypes":849,"d3":125,"fast-isnumeric":129}],571:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87269,7 +87919,7 @@ module.exports = function style(traces) {
     });
 };
 
-},{"../color":514,"d3":125}],546:[function(require,module,exports){
+},{"../color":540,"d3":125}],572:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87384,7 +88034,7 @@ module.exports = {
     }
 };
 
-},{"../../plots/cartesian/constants":641}],547:[function(require,module,exports){
+},{"../../plots/cartesian/constants":667}],573:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87450,7 +88100,7 @@ function imageDefaults(imageIn, imageOut, fullLayout) {
     return imageOut;
 }
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"./attributes":546}],548:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"./attributes":572}],574:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87626,7 +88276,7 @@ module.exports = function draw(gd) {
     imagesAbove.each(applyAttributes);
 };
 
-},{"../../constants/xmlns_namespaces":594,"../../plots/cartesian/axes":636,"../drawing":537,"d3":125}],549:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":620,"../../plots/cartesian/axes":662,"../drawing":563,"d3":125}],575:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87651,7 +88301,7 @@ module.exports = {
     supplyLayoutDefaults: supplyLayoutDefaults
 };
 
-},{"./attributes":546,"./defaults":547,"./draw":548}],550:[function(require,module,exports){
+},{"./attributes":572,"./defaults":573,"./draw":574}],576:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87700,7 +88350,7 @@ exports.isMiddleAnchor = function isMiddleAnchor(opts) {
     );
 };
 
-},{}],551:[function(require,module,exports){
+},{}],577:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87791,7 +88441,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":601,"../../plots/font_attributes":655,"../color/attributes":513}],552:[function(require,module,exports){
+},{"../../lib/extend":627,"../../plots/font_attributes":681,"../color/attributes":539}],578:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87809,7 +88459,7 @@ module.exports = {
     scrollBarMargin: 4
 };
 
-},{}],553:[function(require,module,exports){
+},{}],579:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -87902,7 +88552,7 @@ module.exports = function legendDefaults(layoutIn, layoutOut, fullData) {
     Lib.noneOrAll(containerIn, containerOut, ['x', 'y']);
 };
 
-},{"../../lib":607,"../../plots/layout_attributes":686,"../../registry":709,"./attributes":551,"./helpers":556}],554:[function(require,module,exports){
+},{"../../lib":633,"../../plots/layout_attributes":712,"../../registry":735,"./attributes":577,"./helpers":582}],580:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88495,7 +89145,7 @@ function computeLegendDimensions(gd, groups, traces) {
             maxTraceWidth = 0,
             offsetX = 0;
 
-        //calculate largest width for traces and use for width of all legend items
+        // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
             maxTraceWidth = Math.max(40 + d[0].width, maxTraceWidth);
         });
@@ -88509,7 +89159,7 @@ function computeLegendDimensions(gd, groups, traces) {
                 offsetX = 0;
                 rowHeight = rowHeight + maxTraceHeight;
                 opts.height = opts.height + maxTraceHeight;
-                //reset for next row
+                // reset for next row
                 maxTraceHeight = 0;
             }
 
@@ -88520,7 +89170,7 @@ function computeLegendDimensions(gd, groups, traces) {
             opts.width += traceGap + traceWidth;
             opts.height = Math.max(opts.height, legendItem.height);
 
-            //keep track of tallest trace in group
+            // keep track of tallest trace in group
             offsetX += traceGap + traceWidth;
             maxTraceHeight = Math.max(legendItem.height, maxTraceHeight);
         });
@@ -88600,7 +89250,7 @@ function expandHorizontalMargin(gd) {
     });
 }
 
-},{"../../lib":607,"../../lib/svg_text_utils":621,"../../plotly":632,"../../plots/plots":694,"../../registry":709,"../color":514,"../dragelement":535,"../drawing":537,"./anchor_utils":550,"./constants":552,"./get_legend_data":555,"./helpers":556,"./style":558,"d3":125}],555:[function(require,module,exports){
+},{"../../lib":633,"../../lib/svg_text_utils":647,"../../plotly":658,"../../plots/plots":720,"../../registry":735,"../color":540,"../dragelement":561,"../drawing":563,"./anchor_utils":576,"./constants":578,"./get_legend_data":581,"./helpers":582,"./style":584,"d3":125}],581:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88705,7 +89355,7 @@ module.exports = function getLegendData(calcdata, opts) {
     return legendData;
 };
 
-},{"../../registry":709,"./helpers":556}],556:[function(require,module,exports){
+},{"../../registry":735,"./helpers":582}],582:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88736,7 +89386,7 @@ exports.isReversed = function isReversed(legendLayout) {
     return (legendLayout.traceorder || '').indexOf('reversed') !== -1;
 };
 
-},{"../../registry":709}],557:[function(require,module,exports){
+},{"../../registry":735}],583:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88764,7 +89414,7 @@ legend.draw = require('./draw');
 
 legend.style = require('./style');
 
-},{"./attributes":551,"./defaults":553,"./draw":554,"./style":558}],558:[function(require,module,exports){
+},{"./attributes":577,"./defaults":579,"./draw":580,"./style":584}],584:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -88986,7 +89636,7 @@ function stylePies(d) {
     if(pts.size()) pts.call(stylePie, d[0], trace);
 }
 
-},{"../../lib":607,"../../registry":709,"../../traces/pie/style_one":797,"../../traces/scatter/subtypes":823,"../color":514,"../drawing":537,"d3":125}],559:[function(require,module,exports){
+},{"../../lib":633,"../../registry":735,"../../traces/pie/style_one":823,"../../traces/scatter/subtypes":849,"../color":540,"../drawing":563,"d3":125}],585:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89496,7 +90146,7 @@ modeBarButtons.resetViews = {
     }
 };
 
-},{"../../../build/ploticon":2,"../../lib":607,"../../plotly":632,"../../plots/cartesian/axes":636,"../../plots/plots":694,"../../snapshot/download":711}],560:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":633,"../../plotly":658,"../../plots/cartesian/axes":662,"../../plots/plots":720,"../../snapshot/download":737}],586:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89510,7 +90160,7 @@ modeBarButtons.resetViews = {
 
 exports.manage = require('./manage');
 
-},{"./manage":561}],561:[function(require,module,exports){
+},{"./manage":587}],587:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -89738,7 +90388,7 @@ function fillCustomButton(customButtons) {
     return customButtons;
 }
 
-},{"../../plots/cartesian/axes":636,"../../traces/scatter/subtypes":823,"./buttons":559,"./modebar":562}],562:[function(require,module,exports){
+},{"../../plots/cartesian/axes":662,"../../traces/scatter/subtypes":849,"./buttons":585,"./modebar":588}],588:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90028,7 +90678,7 @@ function createModeBar(gd, buttons) {
 
 module.exports = createModeBar;
 
-},{"../../../build/ploticon":2,"../../lib":607,"d3":125}],563:[function(require,module,exports){
+},{"../../../build/ploticon":2,"../../lib":633,"d3":125}],589:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90117,7 +90767,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":601,"../../plots/font_attributes":655,"../color/attributes":513,"./button_attributes":564}],564:[function(require,module,exports){
+},{"../../lib/extend":627,"../../plots/font_attributes":681,"../color/attributes":539,"./button_attributes":590}],590:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90158,7 +90808,7 @@ module.exports = {
     }
 };
 
-},{}],565:[function(require,module,exports){
+},{}],591:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90187,7 +90837,7 @@ module.exports = {
     darkAmount: 10
 };
 
-},{}],566:[function(require,module,exports){
+},{}],592:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90280,7 +90930,7 @@ function getPosDflt(containerOut, layout, counterAxes) {
     return [containerOut.domain[0], posY + constants.yPad];
 }
 
-},{"../../lib":607,"../color":514,"./attributes":563,"./button_attributes":564,"./constants":565}],567:[function(require,module,exports){
+},{"../../lib":633,"../color":540,"./attributes":589,"./button_attributes":590,"./constants":591}],593:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90555,7 +91205,7 @@ function reposition(gd, buttons, opts, axName) {
     });
 }
 
-},{"../../lib/svg_text_utils":621,"../../plotly":632,"../../plots/cartesian/axis_ids":638,"../../plots/plots":694,"../color":514,"../drawing":537,"../legend/anchor_utils":550,"./constants":565,"./get_update_object":568,"d3":125}],568:[function(require,module,exports){
+},{"../../lib/svg_text_utils":647,"../../plotly":658,"../../plots/cartesian/axis_ids":664,"../../plots/plots":720,"../color":540,"../drawing":563,"../legend/anchor_utils":576,"./constants":591,"./get_update_object":594,"d3":125}],594:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90613,7 +91263,7 @@ function getXRange(axisLayout, buttonLayout) {
     return [range0, range1];
 }
 
-},{"d3":125}],569:[function(require,module,exports){
+},{"d3":125}],595:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90635,7 +91285,7 @@ exports.handleDefaults = require('./defaults');
 
 exports.draw = require('./draw');
 
-},{"./attributes":563,"./defaults":566,"./draw":567}],570:[function(require,module,exports){
+},{"./attributes":589,"./defaults":592,"./draw":593}],596:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90693,7 +91343,7 @@ module.exports = {
     }
 };
 
-},{"../color/attributes":513}],571:[function(require,module,exports){
+},{"../color/attributes":539}],597:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -90982,7 +91632,7 @@ module.exports = function createSlider(gd) {
         });
 };
 
-},{"../../constants/xmlns_namespaces":594,"../../lib":607,"../../plotly":632,"../../plots/cartesian/axes":636,"./helpers":573,"./range_plot":575}],572:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":620,"../../lib":633,"../../plotly":658,"../../plots/cartesian/axes":662,"./helpers":599,"./range_plot":601}],598:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -91035,7 +91685,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName, counterAxe
     }
 };
 
-},{"../../lib":607,"./attributes":570}],573:[function(require,module,exports){
+},{"../../lib":633,"./attributes":596}],599:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -91061,7 +91711,7 @@ exports.appendChildren = function appendChildren(el, children) {
     }
 };
 
-},{}],574:[function(require,module,exports){
+},{}],600:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -91122,7 +91772,7 @@ function draw(gd) {
     });
 }
 
-},{"../../plots/plots":694,"./attributes":570,"./create_slider":571,"./defaults":572}],575:[function(require,module,exports){
+},{"../../plots/plots":720,"./attributes":596,"./create_slider":597,"./defaults":598}],601:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -91303,7 +91953,7 @@ function makeScatter(trace, pointPairs, w, h) {
     return [line, markers, fill];
 }
 
-},{"../../constants/xmlns_namespaces":594,"../../lib":607,"../drawing":537,"../drawing/symbol_defs":538,"./helpers":573,"d3":125}],576:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":620,"../../lib":633,"../drawing":563,"../drawing/symbol_defs":564,"./helpers":599,"d3":125}],602:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -91394,7 +92044,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":601,"../../traces/scatter/attributes":803,"../annotations/attributes":507}],577:[function(require,module,exports){
+},{"../../lib/extend":627,"../../traces/scatter/attributes":829,"../annotations/attributes":533}],603:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -91470,7 +92120,7 @@ function shapeBounds(ax, v0, v1, path, paramsToUse) {
     if(max >= min) return [min, max];
 }
 
-},{"../../plots/cartesian/axes":636,"./constants":578,"./helpers":581}],578:[function(require,module,exports){
+},{"../../plots/cartesian/axes":662,"./constants":604,"./helpers":607}],604:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -91534,7 +92184,7 @@ module.exports = {
     }
 };
 
-},{}],579:[function(require,module,exports){
+},{}],605:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -91561,7 +92211,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     }
 };
 
-},{"./shape_defaults":583}],580:[function(require,module,exports){
+},{"./shape_defaults":609}],606:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -92124,7 +92774,7 @@ function movePath(pathIn, moveX, moveY) {
     });
 }
 
-},{"../../lib":607,"../../lib/setcursor":617,"../../plotly":632,"../../plots/cartesian/axes":636,"../color":514,"../dragelement":535,"../drawing":537,"./constants":578,"./defaults":579,"./helpers":581,"./shape_defaults":583,"fast-isnumeric":129}],581:[function(require,module,exports){
+},{"../../lib":633,"../../lib/setcursor":643,"../../plotly":658,"../../plots/cartesian/axes":662,"../color":540,"../dragelement":561,"../drawing":563,"./constants":604,"./defaults":605,"./helpers":607,"./shape_defaults":609,"fast-isnumeric":129}],607:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -92205,7 +92855,7 @@ exports.getPixelToData = function(gd, axis, isVertical) {
     return pixelToData;
 };
 
-},{}],582:[function(require,module,exports){
+},{}],608:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -92231,7 +92881,7 @@ var drawModule = require('./draw');
 exports.draw = drawModule.draw;
 exports.drawOne = drawModule.drawOne;
 
-},{"./attributes":576,"./calc_autorange":577,"./defaults":579,"./draw":580}],583:[function(require,module,exports){
+},{"./attributes":602,"./calc_autorange":603,"./defaults":605,"./draw":606}],609:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -92302,7 +92952,7 @@ module.exports = function handleShapeDefaults(shapeIn, fullLayout) {
     return shapeOut;
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"./attributes":576,"./helpers":581}],584:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"./attributes":602,"./helpers":607}],610:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -92532,7 +93182,7 @@ Titles.draw = function(gd, titleClass, options) {
     el.classed('js-placeholder', isplaceholder);
 };
 
-},{"../../lib":607,"../../lib/svg_text_utils":621,"../../plotly":632,"../../plots/plots":694,"../color":514,"../drawing":537,"d3":125,"fast-isnumeric":129}],585:[function(require,module,exports){
+},{"../../lib":633,"../../lib/svg_text_utils":647,"../../plotly":658,"../../plots/plots":720,"../color":540,"../drawing":563,"d3":125,"fast-isnumeric":129}],611:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -92650,7 +93300,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":601,"../../plots/font_attributes":655,"../color/attributes":513}],586:[function(require,module,exports){
+},{"../../lib/extend":627,"../../plots/font_attributes":681,"../color/attributes":539}],612:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -92725,7 +93375,7 @@ module.exports = {
     hoverColor: '#F4FAFF'
 };
 
-},{}],587:[function(require,module,exports){
+},{}],613:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -92821,7 +93471,7 @@ function buttonsDefaults(menuIn, menuOut) {
     return buttonsOut;
 }
 
-},{"../../lib":607,"./attributes":585,"./constants":586}],588:[function(require,module,exports){
+},{"../../lib":633,"./attributes":611,"./constants":612}],614:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93280,7 +93930,7 @@ function clearPushMargins(gd) {
     }
 }
 
-},{"../../lib":607,"../../lib/svg_text_utils":621,"../../plotly":632,"../../plots/plots":694,"../color":514,"../drawing":537,"../legend/anchor_utils":550,"./constants":586,"d3":125}],589:[function(require,module,exports){
+},{"../../lib":633,"../../lib/svg_text_utils":647,"../../plotly":658,"../../plots/plots":720,"../color":540,"../drawing":563,"../legend/anchor_utils":576,"./constants":612,"d3":125}],615:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93302,7 +93952,7 @@ exports.supplyLayoutDefaults = require('./defaults');
 
 exports.draw = require('./draw');
 
-},{"./attributes":585,"./defaults":587,"./draw":588}],590:[function(require,module,exports){
+},{"./attributes":611,"./defaults":613,"./draw":614}],616:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93323,7 +93973,7 @@ module.exports = {
     longdashdot: [8, 1, 1, 1]
 };
 
-},{}],591:[function(require,module,exports){
+},{}],617:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93344,7 +93994,7 @@ module.exports = {
     longdashdot: [[0.5, 0.7, 0.8, 1], 10]
 };
 
-},{}],592:[function(require,module,exports){
+},{}],618:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93367,7 +94017,7 @@ module.exports = {
     x: '❌'
 };
 
-},{}],593:[function(require,module,exports){
+},{}],619:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93405,7 +94055,7 @@ module.exports = {
 
 };
 
-},{}],594:[function(require,module,exports){
+},{}],620:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93429,7 +94079,7 @@ exports.svgAttrs = {
     'xmlns:xlink': exports.xlink
 };
 
-},{}],595:[function(require,module,exports){
+},{}],621:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93447,7 +94097,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.17.1';
+exports.version = '1.17.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -93507,7 +94157,7 @@ exports.Queue = require('./lib/queue');
 // export d3 used in the bundle
 exports.d3 = require('d3');
 
-},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":512,"./components/images":549,"./components/legend":557,"./components/rangeselector":569,"./components/rangeslider":574,"./components/shapes":582,"./components/updatemenus":589,"./fonts/mathjax_config":596,"./lib/queue":615,"./plot_api/plot_schema":626,"./plot_api/register":627,"./plot_api/set_plot_config":628,"./plot_api/to_image":630,"./plot_api/validate":631,"./plotly":632,"./snapshot":714,"./snapshot/download":711,"./traces/scatter":813,"d3":125,"es6-promise":128}],596:[function(require,module,exports){
+},{"../build/plotcss":1,"../build/ploticon":2,"./components/annotations":538,"./components/images":575,"./components/legend":583,"./components/rangeselector":595,"./components/rangeslider":600,"./components/shapes":608,"./components/updatemenus":615,"./fonts/mathjax_config":622,"./lib/queue":641,"./plot_api/plot_schema":652,"./plot_api/register":653,"./plot_api/set_plot_config":654,"./plot_api/to_image":656,"./plot_api/validate":657,"./plotly":658,"./snapshot":740,"./snapshot/download":737,"./traces/scatter":839,"d3":125,"es6-promise":128}],622:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93540,7 +94190,7 @@ if(typeof MathJax !== 'undefined') {
     exports.MathJax = false;
 }
 
-},{}],597:[function(require,module,exports){
+},{}],623:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93557,7 +94207,7 @@ module.exports = function arrayToCalcItem(traceAttr, calcItem, calcAttr, i) {
     if(Array.isArray(traceAttr)) calcItem[calcAttr] = traceAttr[i];
 };
 
-},{}],598:[function(require,module,exports){
+},{}],624:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -93867,7 +94517,7 @@ exports.validate = function(value, opts) {
     return out !== failed;
 };
 
-},{"../components/colorscale/get_scale":526,"../components/colorscale/scales":532,"./nested_property":612,"fast-isnumeric":129,"tinycolor2":480}],599:[function(require,module,exports){
+},{"../components/colorscale/get_scale":552,"../components/colorscale/scales":558,"./nested_property":638,"fast-isnumeric":129,"tinycolor2":506}],625:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -94201,7 +94851,7 @@ exports.parseDate = function(v) {
     return out;
 };
 
-},{"d3":125,"fast-isnumeric":129}],600:[function(require,module,exports){
+},{"d3":125,"fast-isnumeric":129}],626:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -94335,7 +94985,7 @@ var Events = {
 
 module.exports = Events;
 
-},{"events":57}],601:[function(require,module,exports){
+},{"events":57}],627:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -94449,7 +95099,7 @@ function _extend(inputs, isDeep, keepAllKeys, noArrayCopies) {
     return target;
 }
 
-},{"./is_plain_object.js":609}],602:[function(require,module,exports){
+},{"./is_plain_object.js":635}],628:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -94473,7 +95123,7 @@ module.exports = function filterVisible(dataIn) {
     return dataOut;
 };
 
-},{}],603:[function(require,module,exports){
+},{}],629:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -94496,7 +95146,7 @@ module.exports = function truncate(float32ArrayIn, len) {
     return float32ArrayOut;
 };
 
-},{}],604:[function(require,module,exports){
+},{}],630:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -94555,7 +95205,7 @@ function countryNameToISO3(countryName) {
     Lib.warn('Unrecognized country name: ' + countryName + '.');
 }
 
-},{"../lib":607,"country-regex":120}],605:[function(require,module,exports){
+},{"../lib":633,"country-regex":120}],631:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -94634,7 +95284,7 @@ function formatColor(containerIn, opacityIn, len) {
 
 module.exports = formatColor;
 
-},{"../components/color/attributes":513,"../components/colorscale/make_scale_function":531,"./str2rgbarray":620,"fast-isnumeric":129,"tinycolor2":480}],606:[function(require,module,exports){
+},{"../components/color/attributes":539,"../components/colorscale/make_scale_function":557,"./str2rgbarray":646,"fast-isnumeric":129,"tinycolor2":506}],632:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -94703,7 +95353,7 @@ function convertHTMLToUnicode(html) {
 
 module.exports = convertHTMLToUnicode;
 
-},{"../constants/string_mappings":593,"superscript-text":469}],607:[function(require,module,exports){
+},{"../constants/string_mappings":619,"superscript-text":495}],633:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -95367,7 +96017,7 @@ lib.numSeparate = function(value, separators, separatethousands) {
     return x1 + x2;
 };
 
-},{"./coerce":598,"./dates":599,"./extend":601,"./is_array":608,"./is_plain_object":609,"./loggers":610,"./matrix":611,"./nested_property":612,"./notifier":613,"./search":616,"./stats":619,"d3":125}],608:[function(require,module,exports){
+},{"./coerce":624,"./dates":625,"./extend":627,"./is_array":634,"./is_plain_object":635,"./loggers":636,"./matrix":637,"./nested_property":638,"./notifier":639,"./search":642,"./stats":645,"d3":125}],634:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -95385,7 +96035,7 @@ module.exports = function isArray(a) {
     return Array.isArray(a) || ArrayBuffer.isView(a);
 };
 
-},{}],609:[function(require,module,exports){
+},{}],635:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -95414,7 +96064,7 @@ module.exports = function isPlainObject(obj) {
     );
 };
 
-},{}],610:[function(require,module,exports){
+},{}],636:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -95481,7 +96131,7 @@ loggers.error = function() {
     }
 };
 
-},{"../plot_api/plot_config":625}],611:[function(require,module,exports){
+},{"../plot_api/plot_config":651}],637:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -95577,7 +96227,7 @@ exports.apply2DTransform = function(transform) {
         var args = arguments;
         if(args.length === 3) {
             args = args[0];
-        }//from map
+        }// from map
         var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
         return exports.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
     };
@@ -95591,7 +96241,7 @@ exports.apply2DTransform2 = function(transform) {
     };
 };
 
-},{}],612:[function(require,module,exports){
+},{}],638:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -95848,7 +96498,7 @@ function badContainer(container, propStr, propParts) {
     };
 }
 
-},{"./is_array":608,"fast-isnumeric":129}],613:[function(require,module,exports){
+},{"./is_array":634,"fast-isnumeric":129}],639:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -95925,7 +96575,7 @@ module.exports = function(text, displayLength) {
         });
 };
 
-},{"d3":125,"fast-isnumeric":129}],614:[function(require,module,exports){
+},{"d3":125,"fast-isnumeric":129}],640:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -96165,7 +96815,7 @@ polygon.filter = function filter(pts, tolerance) {
     };
 };
 
-},{"./matrix":611}],615:[function(require,module,exports){
+},{"./matrix":637}],641:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -96376,7 +97026,7 @@ queue.plotDo = function(gd, func, args) {
 
 module.exports = queue;
 
-},{"../lib":607,"../plot_api/plot_config":625}],616:[function(require,module,exports){
+},{"../lib":633,"../plot_api/plot_config":651}],642:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -96487,7 +97137,7 @@ exports.roundUp = function(val, arrayIn, reverse) {
     return arrayIn[low];
 };
 
-},{"./loggers":610,"fast-isnumeric":129}],617:[function(require,module,exports){
+},{"./loggers":636,"fast-isnumeric":129}],643:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -96510,7 +97160,7 @@ module.exports = function setCursor(el3, csr) {
     if(csr) el3.classed('cursor-' + csr, true);
 };
 
-},{}],618:[function(require,module,exports){
+},{}],644:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -96559,7 +97209,7 @@ module.exports = function showWebGlMsg(scene) {
     return false;
 };
 
-},{"../components/color":514}],619:[function(require,module,exports){
+},{"../components/color":540}],645:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -96655,7 +97305,7 @@ exports.interp = function(arr, n) {
     return frac * arr[Math.ceil(n)] + (1 - frac) * arr[Math.floor(n)];
 };
 
-},{"fast-isnumeric":129}],620:[function(require,module,exports){
+},{"fast-isnumeric":129}],646:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -96677,7 +97327,7 @@ function str2RgbaArray(color) {
 
 module.exports = str2RgbaArray;
 
-},{"arraytools":51,"tinycolor2":480}],621:[function(require,module,exports){
+},{"arraytools":51,"tinycolor2":506}],647:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -97204,7 +97854,7 @@ exports.makeEditable = function(context, _delegate, options) {
     return d3.rebind(this, dispatch, 'on');
 };
 
-},{"../constants/string_mappings":593,"../constants/xmlns_namespaces":594,"../lib":607,"d3":125}],622:[function(require,module,exports){
+},{"../constants/string_mappings":619,"../constants/xmlns_namespaces":620,"../lib":633,"d3":125}],648:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -97240,7 +97890,7 @@ topojsonUtils.getTopojsonFeatures = function(trace, topojson) {
     return topojsonFeature(topojson, obj).features;
 };
 
-},{"../plots/geo/constants":657,"topojson":481}],623:[function(require,module,exports){
+},{"../plots/geo/constants":683,"topojson":507}],649:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -97656,7 +98306,7 @@ exports.coerceTraceIndices = function(gd, traceIndices) {
     return traceIndices;
 };
 
-},{"../components/color":514,"../lib":607,"../plots/cartesian/axes":636,"../plots/plots":694,"../registry":709,"fast-isnumeric":129,"gl-mat4/fromQuat":146}],624:[function(require,module,exports){
+},{"../components/color":540,"../lib":633,"../plots/cartesian/axes":662,"../plots/plots":720,"../registry":735,"fast-isnumeric":129,"gl-mat4/fromQuat":146}],650:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -98014,7 +98664,7 @@ function setPlotContext(gd, config) {
         }
     }
 
-    //staticPlot forces a bunch of others:
+    // staticPlot forces a bunch of others:
     if(context.staticPlot) {
         context.editable = false;
         context.autosizable = false;
@@ -98077,8 +98727,8 @@ function plotPolar(gd, data, layout) {
 
     var titleLayout = function() {
         this.call(svgTextUtils.convertToTspans);
-        //TODO: html/mathjax
-        //TODO: center title
+        // TODO: html/mathjax
+        // TODO: center title
     };
 
     var title = polarPlotSVG.select('.title-group text')
@@ -99149,7 +99799,7 @@ function _restyle(gd, aobj, _traces) {
                 } else if(Registry.traceIs(cont, 'cartesian')) {
                     Lib.nestedProperty(cont, 'marker.colors')
                         .set(Lib.nestedProperty(cont, 'marker.color').get());
-                    //look for axes that are no longer in use and delete them
+                    // look for axes that are no longer in use and delete them
                     flagAxForDelete[cont.xaxis || 'x'] = true;
                     flagAxForDelete[cont.yaxis || 'y'] = true;
                 }
@@ -100592,7 +101242,7 @@ function makeCartesianPlotFramwork(gd, subplots) {
     });
 }
 
-},{"../components/drawing":537,"../components/errorbars":543,"../constants/xmlns_namespaces":594,"../lib":607,"../lib/events":600,"../lib/queue":615,"../lib/svg_text_utils":621,"../plotly":632,"../plots/cartesian/graph_interact":643,"../plots/plots":694,"../plots/polar":697,"../registry":709,"./helpers":623,"./subroutines":629,"d3":125,"fast-isnumeric":129}],625:[function(require,module,exports){
+},{"../components/drawing":563,"../components/errorbars":569,"../constants/xmlns_namespaces":620,"../lib":633,"../lib/events":626,"../lib/queue":641,"../lib/svg_text_utils":647,"../plotly":658,"../plots/cartesian/graph_interact":669,"../plots/plots":720,"../plots/polar":723,"../registry":735,"./helpers":649,"./subroutines":655,"d3":125,"fast-isnumeric":129}],651:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -100711,7 +101361,7 @@ function defaultSetBackground(gd, bgColor) {
     }
 }
 
-},{}],626:[function(require,module,exports){
+},{}],652:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -101057,7 +101707,7 @@ function handleLinkedToArray(layoutAttributes) {
     PlotSchema.crawl(layoutAttributes, callback);
 }
 
-},{"../lib":607,"../plotly":632,"../plots/plots":694,"../plots/polar/area_attributes":695,"../plots/polar/axis_attributes":696,"../registry":709}],627:[function(require,module,exports){
+},{"../lib":633,"../plotly":658,"../plots/plots":720,"../plots/polar/area_attributes":721,"../plots/polar/axis_attributes":722,"../registry":735}],653:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -101138,7 +101788,7 @@ function registerComponentModule(newModule) {
     Registry.componentsRegistry[newModule.name] = newModule;
 }
 
-},{"../lib":607,"../registry":709}],628:[function(require,module,exports){
+},{"../lib":633,"../registry":735}],654:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -101164,7 +101814,7 @@ module.exports = function setPlotConfig(configObj) {
     return Lib.extendFlat(Plotly.defaultConfig, configObj);
 };
 
-},{"../lib":607,"../plotly":632}],629:[function(require,module,exports){
+},{"../lib":633,"../plotly":658}],655:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -101505,7 +102155,7 @@ exports.setRangeSliderRange = function(gd, changes) {
     }
 };
 
-},{"../components/color":514,"../components/drawing":537,"../components/modebar":560,"../components/titles":584,"../lib":607,"../plotly":632,"../plots/plots":694,"../registry":709}],630:[function(require,module,exports){
+},{"../components/color":540,"../components/drawing":563,"../components/modebar":586,"../components/titles":610,"../lib":633,"../plotly":658,"../plots/plots":720,"../registry":735}],656:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -101615,7 +102265,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":607,"../plotly":632,"../snapshot/cloneplot":710,"../snapshot/helpers":713,"../snapshot/svgtoimg":715,"../snapshot/tosvg":717,"fast-isnumeric":129}],631:[function(require,module,exports){
+},{"../lib":633,"../plotly":658,"../snapshot/cloneplot":736,"../snapshot/helpers":739,"../snapshot/svgtoimg":741,"../snapshot/tosvg":743,"fast-isnumeric":129}],657:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -101985,7 +102635,7 @@ function convertPathToAttributeString(path) {
     return astr;
 }
 
-},{"../lib":607,"../plots/plots":694,"./plot_schema":626}],632:[function(require,module,exports){
+},{"../lib":633,"../plots/plots":720,"./plot_schema":652}],658:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -102030,7 +102680,7 @@ exports.ModeBar = require('./components/modebar');
 // plot api
 require('./plot_api/plot_api');
 
-},{"./components/annotations":512,"./components/color":514,"./components/colorbar":519,"./components/colorscale":528,"./components/drawing":537,"./components/errorbars":543,"./components/images":549,"./components/legend":557,"./components/modebar":560,"./components/shapes":582,"./components/updatemenus":589,"./plot_api/plot_api":624,"./plot_api/plot_config":625,"./plots/cartesian/axes":636,"./plots/cartesian/graph_interact":643,"./plots/plots":694}],633:[function(require,module,exports){
+},{"./components/annotations":538,"./components/color":540,"./components/colorbar":545,"./components/colorscale":554,"./components/drawing":563,"./components/errorbars":569,"./components/images":575,"./components/legend":583,"./components/modebar":586,"./components/shapes":608,"./components/updatemenus":615,"./plot_api/plot_api":650,"./plot_api/plot_config":651,"./plots/cartesian/axes":662,"./plots/cartesian/graph_interact":669,"./plots/plots":720}],659:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -102118,7 +102768,7 @@ module.exports = {
     }
 };
 
-},{}],634:[function(require,module,exports){
+},{}],660:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -102199,7 +102849,7 @@ module.exports = {
     }
 };
 
-},{}],635:[function(require,module,exports){
+},{}],661:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -102226,7 +102876,7 @@ module.exports = {
     }
 };
 
-},{}],636:[function(require,module,exports){
+},{}],662:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -102284,7 +102934,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, axLetter, dflt) {
     return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
-//todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
+// todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
 // find the list of possible axes to reference with an axref or ayref attribute
 // and coerce it to that list
 axes.coerceARef = function(containerIn, containerOut, gd, axLetter, dflt) {
@@ -102918,7 +103568,7 @@ axes.autoTicks = function(ax, roughDTick) {
             ax.dtick = roundDTick(roughDTick, 1000, roundBase60);
         }
         else {
-            //milliseconds
+            // milliseconds
             base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
@@ -102926,7 +103576,7 @@ axes.autoTicks = function(ax, roughDTick) {
     else if(ax.type === 'log') {
         ax.tick0 = 0;
 
-        //only show powers of 10
+        // only show powers of 10
         if(roughDTick > 0.7) ax.dtick = Math.ceil(roughDTick);
         else if(Math.abs(ax.range[1] - ax.range[0]) < 1) {
             // span is less than one power of 10
@@ -104250,7 +104900,7 @@ function swapAxisAttrs(layout, key, xFullAxes, yFullAxes) {
 // rather than built-in % which gives a negative value for negative v
 function mod(v, d) { return ((v % d) + d) % d; }
 
-},{"../../components/color":514,"../../components/drawing":537,"../../components/titles":584,"../../lib":607,"../../lib/svg_text_utils":621,"../../registry":709,"./axis_ids":638,"./layout_attributes":645,"./layout_defaults":646,"./set_convert":650,"d3":125,"fast-isnumeric":129}],637:[function(require,module,exports){
+},{"../../components/color":540,"../../components/drawing":563,"../../components/titles":610,"../../lib":633,"../../lib/svg_text_utils":647,"../../registry":735,"./axis_ids":664,"./layout_attributes":671,"./layout_defaults":672,"./set_convert":676,"d3":125,"fast-isnumeric":129}],663:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -104533,7 +105183,7 @@ function category(a) {
     return curvecats > curvenums * 2;
 }
 
-},{"../../components/color/attributes":513,"../../lib":607,"../../registry":709,"./axis_ids":638,"./category_order_defaults":639,"./clean_datum":640,"./layout_attributes":645,"./ordered_categories":647,"./set_convert":650,"./tick_label_defaults":651,"./tick_mark_defaults":652,"./tick_value_defaults":653,"fast-isnumeric":129,"tinycolor2":480}],638:[function(require,module,exports){
+},{"../../components/color/attributes":539,"../../lib":633,"../../registry":735,"./axis_ids":664,"./category_order_defaults":665,"./clean_datum":666,"./layout_attributes":671,"./ordered_categories":673,"./set_convert":676,"./tick_label_defaults":677,"./tick_mark_defaults":678,"./tick_value_defaults":679,"fast-isnumeric":129,"tinycolor2":506}],664:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -104655,7 +105305,7 @@ exports.getFromTrace = function(gd, fullTrace, type) {
     return ax;
 };
 
-},{"../../lib":607,"../../registry":709,"../plots":694,"./constants":641}],639:[function(require,module,exports){
+},{"../../lib":633,"../../registry":735,"../plots":720,"./constants":667}],665:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -104689,7 +105339,7 @@ module.exports = function handleCategoryOrderDefaults(containerIn, containerOut,
     }
 };
 
-},{}],640:[function(require,module,exports){
+},{}],666:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -104728,7 +105378,7 @@ module.exports = function cleanDatum(c) {
     return c;
 };
 
-},{"../../lib":607,"fast-isnumeric":129}],641:[function(require,module,exports){
+},{"../../lib":633,"fast-isnumeric":129}],667:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -104806,7 +105456,7 @@ module.exports = {
     REDRAWDELAY: 50
 };
 
-},{}],642:[function(require,module,exports){
+},{}],668:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -105564,7 +106214,7 @@ function isSelectOrLasso(dragmode) {
     return modes.indexOf(dragmode) !== -1;
 }
 
-},{"../../components/color":514,"../../components/dragelement":535,"../../components/drawing":537,"../../lib":607,"../../lib/setcursor":617,"../../lib/svg_text_utils":621,"../../plotly":632,"../../registry":709,"./axes":636,"./constants":641,"./select":649,"d3":125,"tinycolor2":480}],643:[function(require,module,exports){
+},{"../../components/color":540,"../../components/dragelement":561,"../../components/drawing":563,"../../lib":633,"../../lib/setcursor":643,"../../lib/svg_text_utils":647,"../../plotly":658,"../../registry":735,"./axes":662,"./constants":667,"./select":675,"d3":125,"tinycolor2":506}],669:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -106772,7 +107422,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
                 p1 = g1[0];
             topOverlap = p0.pos + p0.dp + p0.size - p1.pos - p1.dp + p1.size;
 
-            //Only group points that lie on the same axes
+            // Only group points that lie on the same axes
             if(topOverlap > 0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
                 // push the new point(s) added to this group out of the way
                 for(j = g1.length - 1; j >= 0; j--) g1[j].dp += topOverlap;
@@ -106908,7 +107558,7 @@ fx.inbox = function(v0, v1) {
     return Infinity;
 };
 
-},{"../../components/color":514,"../../components/dragelement":535,"../../components/drawing":537,"../../lib":607,"../../lib/events":600,"../../lib/svg_text_utils":621,"./axes":636,"./constants":641,"./dragbox":642,"d3":125,"fast-isnumeric":129,"tinycolor2":480}],644:[function(require,module,exports){
+},{"../../components/color":540,"../../components/dragelement":561,"../../components/drawing":563,"../../lib":633,"../../lib/events":626,"../../lib/svg_text_utils":647,"./axes":662,"./constants":667,"./dragbox":668,"d3":125,"fast-isnumeric":129,"tinycolor2":506}],670:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -107058,7 +107708,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 };
 
-},{"../plots":694,"./attributes":635,"./constants":641,"./transition_axes":654}],645:[function(require,module,exports){
+},{"../plots":720,"./attributes":661,"./constants":667,"./transition_axes":680}],671:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -107382,7 +108032,7 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'trace', 'category ascending', 'category descending', 'array'
-            /*, 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
+            /* , 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
         ],
         dflt: 'trace',
         
@@ -107408,7 +108058,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":513,"../../lib/extend":601,"../font_attributes":655,"./constants":641}],646:[function(require,module,exports){
+},{"../../components/color/attributes":539,"../../lib/extend":627,"../font_attributes":681,"./constants":667}],672:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -107582,7 +108232,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     });
 };
 
-},{"../../components/color":514,"../../lib":607,"../../registry":709,"../layout_attributes":686,"./axis_defaults":637,"./axis_ids":638,"./constants":641,"./layout_attributes":645,"./position_defaults":648}],647:[function(require,module,exports){
+},{"../../components/color":540,"../../lib":633,"../../registry":735,"../layout_attributes":712,"./axis_defaults":663,"./axis_ids":664,"./constants":667,"./layout_attributes":671,"./position_defaults":674}],673:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -107661,7 +108311,7 @@ module.exports = function orderedCategories(axisLetter, categoryorder, categorya
     }
 };
 
-},{"d3":125}],648:[function(require,module,exports){
+},{"d3":125}],674:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -107726,7 +108376,7 @@ module.exports = function handlePositionDefaults(containerIn, containerOut, coer
     return containerOut;
 };
 
-},{"../../lib":607,"fast-isnumeric":129}],649:[function(require,module,exports){
+},{"../../lib":633,"fast-isnumeric":129}],675:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -107926,7 +108576,7 @@ module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     };
 };
 
-},{"../../components/color":514,"../../lib/polygon":614,"./axes":636,"./constants":641}],650:[function(require,module,exports){
+},{"../../components/color":540,"../../lib/polygon":640,"./axes":662,"./constants":667}],676:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -108176,7 +108826,7 @@ module.exports = function setConvert(ax) {
     ax._forceTick0 = null;
 };
 
-},{"../../lib":607,"./axis_ids":638,"./clean_datum":640,"./constants":641,"d3":125,"fast-isnumeric":129}],651:[function(require,module,exports){
+},{"../../lib":633,"./axis_ids":664,"./clean_datum":666,"./constants":667,"d3":125,"fast-isnumeric":129}],677:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -108260,7 +108910,7 @@ function getShowAttrDflt(containerIn) {
     }
 }
 
-},{"../../lib":607}],652:[function(require,module,exports){
+},{"../../lib":633}],678:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -108293,7 +108943,7 @@ module.exports = function handleTickDefaults(containerIn, containerOut, coerce, 
     }
 };
 
-},{"../../lib":607,"./layout_attributes":645}],653:[function(require,module,exports){
+},{"../../lib":633,"./layout_attributes":671}],679:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -108334,7 +108984,7 @@ module.exports = function handleTickValueDefaults(containerIn, containerOut, coe
     }
 };
 
-},{"fast-isnumeric":129}],654:[function(require,module,exports){
+},{"fast-isnumeric":129}],680:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -108646,7 +109296,7 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     return Promise.resolve();
 };
 
-},{"../../lib":607,"../../plotly":632,"../../registry":709,"./axes":636,"d3":125}],655:[function(require,module,exports){
+},{"../../lib":633,"../../plotly":658,"../../registry":735,"./axes":662,"d3":125}],681:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -108677,7 +109327,7 @@ module.exports = {
     }
 };
 
-},{}],656:[function(require,module,exports){
+},{}],682:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -108718,7 +109368,7 @@ module.exports = {
     }
 };
 
-},{}],657:[function(require,module,exports){
+},{}],683:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -108876,7 +109526,7 @@ params.layerNameToAdjective = {
 // base layers drawn over choropleth
 params.baseLayersOverChoropleth = ['rivers', 'lakes'];
 
-},{}],658:[function(require,module,exports){
+},{}],684:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -109370,7 +110020,7 @@ function createMockAxis(fullLayout) {
     return mockAxis;
 }
 
-},{"../../components/color":514,"../../components/drawing":537,"../../constants/xmlns_namespaces":594,"../../lib/filter_visible":602,"../../lib/topojson_utils":622,"../../plots/cartesian/axes":636,"./constants":657,"./projections":665,"./set_scale":666,"./zoom":667,"./zoom_reset":668,"d3":125,"topojson":481}],659:[function(require,module,exports){
+},{"../../components/color":540,"../../components/drawing":563,"../../constants/xmlns_namespaces":620,"../../lib/filter_visible":628,"../../lib/topojson_utils":648,"../../plots/cartesian/axes":662,"./constants":683,"./projections":691,"./set_scale":692,"./zoom":693,"./zoom_reset":694,"d3":125,"topojson":507}],685:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -109476,7 +110126,7 @@ exports.toSVG = function(gd) {
     }
 };
 
-},{"../../plots/plots":694,"./geo":658,"./layout/attributes":660,"./layout/defaults":663,"./layout/layout_attributes":664}],660:[function(require,module,exports){
+},{"../../plots/plots":720,"./geo":684,"./layout/attributes":686,"./layout/defaults":689,"./layout/layout_attributes":690}],686:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -109497,7 +110147,7 @@ module.exports = {
     }
 };
 
-},{}],661:[function(require,module,exports){
+},{}],687:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -109552,7 +110202,7 @@ module.exports = {
     }
 };
 
-},{"../../../components/color/attributes":513}],662:[function(require,module,exports){
+},{"../../../components/color/attributes":539}],688:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -109626,7 +110276,7 @@ module.exports = function supplyGeoAxisLayoutDefaults(geoLayoutIn, geoLayoutOut)
     }
 };
 
-},{"../../../lib":607,"../constants":657,"./axis_attributes":661}],663:[function(require,module,exports){
+},{"../../../lib":633,"../constants":683,"./axis_attributes":687}],689:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -109745,7 +110395,7 @@ function handleGeoDefaults(geoLayoutIn, geoLayoutOut, coerce) {
     ];
 }
 
-},{"../../subplot_defaults":701,"../constants":657,"./axis_defaults":662,"./layout_attributes":664}],664:[function(require,module,exports){
+},{"../../subplot_defaults":727,"../constants":683,"./axis_defaults":688,"./layout_attributes":690}],690:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -109978,7 +110628,7 @@ module.exports = {
     lataxis: geoAxesAttrs
 };
 
-},{"../../../components/color/attributes":513,"../constants":657,"./axis_attributes":661}],665:[function(require,module,exports){
+},{"../../../components/color/attributes":539,"../constants":683,"./axis_attributes":687}],691:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -110424,7 +111074,7 @@ function addProjectionsToD3(d3) {
 
 module.exports = addProjectionsToD3;
 
-},{}],666:[function(require,module,exports){
+},{}],692:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -110575,7 +111225,7 @@ function getBounds(projection, rangeBox) {
     return d3.geo.path().projection(projection).bounds(rangeBox);
 }
 
-},{"./constants":657,"d3":125}],667:[function(require,module,exports){
+},{"./constants":683,"d3":125}],693:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -111002,7 +111652,7 @@ function d3_eventDispatch(target) {
     return dispatch;
 }
 
-},{"d3":125}],668:[function(require,module,exports){
+},{"d3":125}],694:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -111037,7 +111687,7 @@ function createGeoZoomReset(geo, geoLayout) {
 
 module.exports = createGeoZoomReset;
 
-},{"../cartesian/graph_interact":643}],669:[function(require,module,exports){
+},{"../cartesian/graph_interact":669}],695:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -111198,7 +111848,7 @@ function createCamera(scene) {
     return result;
 }
 
-},{"mouse-change":447,"mouse-wheel":451}],670:[function(require,module,exports){
+},{"mouse-change":473,"mouse-wheel":477}],696:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -111442,7 +112092,7 @@ function createAxes2D(scene) {
 
 module.exports = createAxes2D;
 
-},{"../../lib/html2unicode":606,"../../lib/str2rgbarray":620,"../cartesian/axes":636,"../plots":694}],671:[function(require,module,exports){
+},{"../../lib/html2unicode":632,"../../lib/str2rgbarray":646,"../cartesian/axes":662,"../plots":720}],697:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -111554,7 +112204,7 @@ exports.toSVG = function(gd) {
     }
 };
 
-},{"../../constants/xmlns_namespaces":594,"../cartesian/attributes":635,"../plots":694,"./scene2d":672}],672:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":620,"../cartesian/attributes":661,"../plots":720,"./scene2d":698}],698:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -112115,7 +112765,7 @@ proto.hoverFormatter = function(axisName, val) {
     return Axes.tickText(axis, axis.c2l(val), 'hover').text;
 };
 
-},{"../../lib/html2unicode":606,"../../lib/show_no_webgl_msg":618,"../../plots/cartesian/axes":636,"../../plots/cartesian/graph_interact":643,"./camera":669,"./convert":670,"gl-plot2d":177,"gl-select-box":209,"gl-spikes2d":229}],673:[function(require,module,exports){
+},{"../../lib/html2unicode":632,"../../lib/show_no_webgl_msg":644,"../../plots/cartesian/axes":662,"../../plots/cartesian/graph_interact":669,"./camera":695,"./convert":696,"gl-plot2d":177,"gl-select-box":235,"gl-spikes2d":255}],699:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -112230,7 +112880,7 @@ function createCamera(element, options) {
                 var curCenter = view.computedCenter.slice();
                 view.setMode(mode);
                 if(mode === 'turntable') {
-                    //Hacky time warping stuff to generate smooth animation
+                    // Hacky time warping stuff to generate smooth animation
                     var t0 = now();
                     view._active.lookAt(t0, curEye, curCenter, curUp);
                     view._active.lookAt(t0 + 500, curEye, curCenter, [0, 0, 1]);
@@ -112322,17 +112972,17 @@ function createCamera(element, options) {
         var drot = Math.PI * camera.rotateSpeed;
 
         if((rotate && left && !ctrl && !alt && !shift) || (left && !ctrl && !alt && shift)) {
-            //Rotate
+            // Rotate
             view.rotate(t, flipX * drot * dx, -flipY * drot * dy, 0);
         }
 
         if((pan && left && !ctrl && !alt && !shift) || right || (left && ctrl && !alt && !shift)) {
-            //Pan
+            // Pan
             view.pan(t, -camera.translateSpeed * dx * distance, camera.translateSpeed * dy * distance, 0);
         }
 
         if((zoom && left && !ctrl && !alt && !shift) || middle || (left && !ctrl && alt && !shift)) {
-            //Zoom
+            // Zoom
             var kzoom = -camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100;
             view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1));
         }
@@ -112358,7 +113008,7 @@ function createCamera(element, options) {
     return camera;
 }
 
-},{"3d-view":41,"mouse-change":447,"mouse-wheel":451,"right-now":461}],674:[function(require,module,exports){
+},{"3d-view":41,"mouse-change":473,"mouse-wheel":477,"right-now":487}],700:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -112492,7 +113142,7 @@ function initAxes(gd, sceneLayout) {
     }
 }
 
-},{"../../constants/xmlns_namespaces":594,"../plots":694,"./layout/attributes":675,"./layout/defaults":679,"./layout/layout_attributes":680,"./scene":684,"./set_convert":685}],675:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":620,"../plots":720,"./layout/attributes":701,"./layout/defaults":705,"./layout/layout_attributes":706,"./scene":710,"./set_convert":711}],701:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -112513,7 +113163,7 @@ module.exports = {
     }
 };
 
-},{}],676:[function(require,module,exports){
+},{}],702:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -112620,7 +113270,7 @@ module.exports = {
     zerolinewidth: axesAttrs.zerolinewidth
 };
 
-},{"../../../components/color":514,"../../../lib/extend":601,"../../cartesian/layout_attributes":645}],677:[function(require,module,exports){
+},{"../../../components/color":540,"../../../lib/extend":627,"../../cartesian/layout_attributes":671}],703:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -112688,7 +113338,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, options) {
     }
 };
 
-},{"../../../lib":607,"../../cartesian/axis_defaults":637,"./axis_attributes":676,"tinycolor2":480}],678:[function(require,module,exports){
+},{"../../../lib":633,"../../cartesian/axis_defaults":663,"./axis_attributes":702,"tinycolor2":506}],704:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -112767,7 +113417,7 @@ proto.merge = function(sceneLayout) {
     for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
-        /////// Axes labels //
+        // Axes labels
         opts.labels[i] = convertHTMLToUnicode(axes.title);
         if('titlefont' in axes) {
             if(axes.titlefont.color) opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
@@ -112775,7 +113425,7 @@ proto.merge = function(sceneLayout) {
             if(axes.titlefont.size) opts.labelSize[i] = axes.titlefont.size;
         }
 
-        /////// LINES ////////
+        // Lines
         if('showline' in axes) opts.lineEnable[i] = axes.showline;
         if('linecolor' in axes) opts.lineColor[i] = str2RgbaArray(axes.linecolor);
         if('linewidth' in axes) opts.lineWidth[i] = axes.linewidth;
@@ -112791,8 +113441,7 @@ proto.merge = function(sceneLayout) {
         if('zerolinecolor' in axes) opts.zeroLineColor[i] = str2RgbaArray(axes.zerolinecolor);
         if('zerolinewidth' in axes) opts.zeroLineWidth[i] = axes.zerolinewidth;
 
-        //////// TICKS /////////
-        /// tick lines
+        // tick lines
         if('ticks' in axes && !!axes.ticks) opts.lineTickEnable[i] = true;
         else opts.lineTickEnable[i] = false;
 
@@ -112844,7 +113493,7 @@ function createAxesOptions(plotlyOptions) {
 
 module.exports = createAxesOptions;
 
-},{"../../../lib/html2unicode":606,"../../../lib/str2rgbarray":620,"arraytools":51}],679:[function(require,module,exports){
+},{"../../../lib/html2unicode":632,"../../../lib/str2rgbarray":646,"arraytools":51}],705:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -112951,7 +113600,7 @@ function handleGl3dDefaults(sceneLayoutIn, sceneLayoutOut, coerce, opts) {
     coerce('hovermode', opts.getDfltFromLayout('hovermode'));
 }
 
-},{"../../../components/color":514,"../../subplot_defaults":701,"./axis_defaults":677,"./layout_attributes":680}],680:[function(require,module,exports){
+},{"../../../components/color":540,"../../subplot_defaults":727,"./axis_defaults":703,"./layout_attributes":706}],706:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -113079,7 +113728,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":601,"./axis_attributes":676}],681:[function(require,module,exports){
+},{"../../../lib/extend":627,"./axis_attributes":702}],707:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -113125,7 +113774,7 @@ function createSpikeOptions(layout) {
 
 module.exports = createSpikeOptions;
 
-},{"../../../lib/str2rgbarray":620}],682:[function(require,module,exports){
+},{"../../../lib/str2rgbarray":646}],708:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -113134,8 +113783,8 @@ module.exports = createSpikeOptions;
 * LICENSE file in the root directory of this source tree.
 */
 
-/*eslint block-scoped-var: 0*/
-/*eslint no-redeclare: 0*/
+/* eslint block-scoped-var: 0*/
+/* eslint no-redeclare: 0*/
 
 'use strict';
 
@@ -113210,7 +113859,7 @@ function computeTickMarks(scene) {
 
     axesOptions.ticks = ticks;
 
-    //Calculate tick lengths dynamically
+    // Calculate tick lengths dynamically
     for(var i = 0; i < 3; ++i) {
         centerPoint[i] = 0.5 * (scene.glplot.bounds[0][i] + scene.glplot.bounds[1][i]);
         for(var j = 0; j < 2; ++j) {
@@ -113221,7 +113870,7 @@ function computeTickMarks(scene) {
     scene.contourLevels = contourLevelsFromTicks(ticks);
 }
 
-},{"../../../lib":607,"../../../lib/html2unicode":606,"../../cartesian/axes":636}],683:[function(require,module,exports){
+},{"../../../lib":633,"../../../lib/html2unicode":632,"../../cartesian/axes":662}],709:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -113255,7 +113904,7 @@ function project(camera, v) {
 
 module.exports = project;
 
-},{}],684:[function(require,module,exports){
+},{}],710:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -113467,7 +114116,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
     scene.glplot.onrender = render.bind(null, scene);
 
-    //List of scene objects
+    // List of scene objects
     scene.traces = {};
 
     return true;
@@ -113505,7 +114154,7 @@ function Scene(options, fullLayout) {
     this.id = options.id || 'scene';
     this.fullSceneLayout = fullLayout[this.id];
 
-    //Saved from last call to plot()
+    // Saved from last call to plot()
     this.plotArgs = [ [], {}, {} ];
 
     /*
@@ -113517,7 +114166,7 @@ function Scene(options, fullLayout) {
     this.staticMode = !!options.staticPlot;
     this.pixelRatio = options.plotGlPixelRatio || 2;
 
-    //Coordinate rescaling
+    // Coordinate rescaling
     this.dataScale = [1, 1, 1];
 
     this.contourLevels = [ [], [], [] ];
@@ -113579,7 +114228,7 @@ function computeTraceBounds(scene, trace, bounds) {
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
-    //Save parameters
+    // Save parameters
     this.plotArgs = [sceneData, fullLayout, layout];
 
     if(this.glplot.contextLost) return;
@@ -113594,7 +114243,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
     this.glplot.snapToData = true;
 
-    //Update layout
+    // Update layout
     this.fullSceneLayout = fullSceneLayout;
 
     this.glplotLayout = fullSceneLayout;
@@ -113604,7 +114253,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Update camera mode
     this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
 
-    //Update scene
+    // Update scene
     this.glplot.update({});
 
     // Update axes functions BEFORE updating traces
@@ -113613,11 +114262,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
         setConvert(axis);
     }
 
-    //Convert scene data
+    // Convert scene data
     if(!sceneData) sceneData = [];
     else if(!Array.isArray(sceneData)) sceneData = [sceneData];
 
-    //Compute trace bounding box
+    // Compute trace bounding box
     var dataBounds = [
         [Infinity, Infinity, Infinity],
         [-Infinity, -Infinity, -Infinity]
@@ -113643,10 +114292,10 @@ proto.plot = function(sceneData, fullLayout, layout) {
         }
     }
 
-    //Save scale
+    // Save scale
     this.dataScale = dataScale;
 
-    //Update traces
+    // Update traces
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
         if(data.visible !== true) {
@@ -113662,7 +114311,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
         trace.name = data.name;
     }
 
-    //Remove empty traces
+    // Remove empty traces
     var traceIds = Object.keys(this.traces);
 
     trace_id_loop:
@@ -113677,7 +114326,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
         delete this.traces[traceIds[i]];
     }
 
-    //Update ranges (needs to be called *after* objects are added due to updates)
+    // Update ranges (needs to be called *after* objects are added due to updates)
     var sceneBounds = [[0, 0, 0], [0, 0, 0]],
         axisDataRange = [],
         axisTypeRatios = {};
@@ -113730,14 +114379,14 @@ proto.plot = function(sceneData, fullLayout, layout) {
         }
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
 
-        //Update plot bounds
+        // Update plot bounds
         this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i];
         this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i];
     }
 
     var axesScaleRatio = [1, 1, 1];
 
-    //Compute axis scale per category
+    // Compute axis scale per category
     for(i = 0; i < 3; ++i) {
         axis = fullSceneLayout[axisProperties[i]];
         axisType = axis.type;
@@ -113797,7 +114446,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.glplot.aspect = aspectRatio;
 
 
-    //Update frame position for multi plots
+    // Update frame position for multi plots
     var domain = fullSceneLayout.domain || null,
         size = fullLayout._size || null;
 
@@ -113818,7 +114467,7 @@ proto.destroy = function() {
     this.glplot.dispose();
     this.container.parentNode.removeChild(this.container);
 
-    //Remove reference to glplot
+    // Remove reference to glplot
     this.glplot = null;
 };
 
@@ -113931,10 +114580,10 @@ proto.toImage = function(format) {
 
     if(this.staticMode) this.container.appendChild(STATIC_CANVAS);
 
-    //Force redraw
+    // Force redraw
     this.glplot.redraw();
 
-    //Grab context and yank out pixels
+    // Grab context and yank out pixels
     var gl = this.glplot.gl;
     var w = gl.drawingBufferWidth;
     var h = gl.drawingBufferHeight;
@@ -113944,7 +114593,7 @@ proto.toImage = function(format) {
     var pixels = new Uint8Array(w * h * 4);
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-    //Flip pixels
+    // Flip pixels
     for(var j = 0, k = h - 1; j < k; ++j, --k) {
         for(var i = 0; i < w; ++i) {
             for(var l = 0; l < 4; ++l) {
@@ -113983,7 +114632,7 @@ proto.toImage = function(format) {
 
 module.exports = Scene;
 
-},{"../../lib":607,"../../lib/show_no_webgl_msg":618,"../../lib/str2rgbarray":620,"../../plots/cartesian/axes":636,"../../plots/cartesian/graph_interact":643,"./camera":673,"./layout/convert":678,"./layout/spikes":681,"./layout/tick_marks":682,"./project":683,"./set_convert":685,"gl-plot3d":195}],685:[function(require,module,exports){
+},{"../../lib":633,"../../lib/show_no_webgl_msg":644,"../../lib/str2rgbarray":646,"../../plots/cartesian/axes":662,"../../plots/cartesian/graph_interact":669,"./camera":699,"./layout/convert":704,"./layout/spikes":707,"./layout/tick_marks":708,"./project":709,"./set_convert":711,"gl-plot3d":195}],711:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -114004,7 +114653,7 @@ module.exports = function setConvert(containerOut) {
     containerOut.setScale = Lib.noop;
 };
 
-},{"../../lib":607,"../cartesian/axes":636}],686:[function(require,module,exports){
+},{"../../lib":633,"../cartesian/axes":662}],712:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -114167,7 +114816,7 @@ module.exports = {
     }
 };
 
-},{"../components/color/attributes":513,"../lib":607,"./font_attributes":655}],687:[function(require,module,exports){
+},{"../components/color/attributes":539,"../lib":633,"./font_attributes":681}],713:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -114197,7 +114846,7 @@ module.exports = {
     mapOnErrorMsg: 'Mapbox error.'
 };
 
-},{}],688:[function(require,module,exports){
+},{}],714:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -114271,7 +114920,7 @@ module.exports = function convertTextOpts(textposition, iconSize) {
     return { anchor: anchor, offset: offset };
 };
 
-},{"../../lib":607}],689:[function(require,module,exports){
+},{"../../lib":633}],715:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -114427,7 +115076,7 @@ function findAccessToken(gd, mapboxIds) {
     return accessToken;
 }
 
-},{"../../constants/xmlns_namespaces":594,"../plots":694,"./constants":687,"./layout_attributes":691,"./layout_defaults":692,"./mapbox":693,"mapbox-gl":270}],690:[function(require,module,exports){
+},{"../../constants/xmlns_namespaces":620,"../plots":720,"./constants":713,"./layout_attributes":717,"./layout_defaults":718,"./mapbox":719,"mapbox-gl":296}],716:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -114613,7 +115262,7 @@ function convertOpts(opts) {
                 'text-offset': textOpts.offset
 
                 // TODO font family
-                //'text-font': symbol.textfont.family.split(', '),
+                // 'text-font': symbol.textfont.family.split(', '),
             });
 
             Lib.extendFlat(paint, {
@@ -114652,7 +115301,7 @@ module.exports = function createMapboxLayer(mapbox, index, opts) {
     return mapboxLayer;
 };
 
-},{"../../lib":607,"./convert_text_opts":688}],691:[function(require,module,exports){
+},{"../../lib":633,"./convert_text_opts":714}],717:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -114855,7 +115504,7 @@ module.exports = {
 
 };
 
-},{"../../components/color":514,"../../lib":607,"../../traces/scatter/attributes":803,"../font_attributes":655}],692:[function(require,module,exports){
+},{"../../components/color":540,"../../lib":633,"../../traces/scatter/attributes":829,"../font_attributes":681}],718:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -114951,7 +115600,7 @@ function handleLayerDefaults(containerIn, containerOut) {
     }
 }
 
-},{"../../lib":607,"../subplot_defaults":701,"./layout_attributes":691}],693:[function(require,module,exports){
+},{"../../lib":633,"../subplot_defaults":727,"./layout_attributes":717}],719:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -115407,7 +116056,7 @@ function convertCenter(center) {
     return [center.lon, center.lat];
 }
 
-},{"../../lib":607,"../cartesian/graph_interact":643,"./constants":687,"./layers":690,"./layout_attributes":691,"mapbox-gl":270}],694:[function(require,module,exports){
+},{"../../lib":633,"../cartesian/graph_interact":669,"./constants":713,"./layers":716,"./layout_attributes":717,"mapbox-gl":296}],720:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -116625,7 +117274,7 @@ plots.modifyFrames = function(gd, operations) {
 
         switch(op.type) {
             // No reason this couldn't exist, but is currently unused/untested:
-            /*case 'rename':
+            /* case 'rename':
                 frame = _frames[op.index];
                 delete _hash[frame.name];
                 _hash[op.name] = frame;
@@ -117057,7 +117706,7 @@ plots.doCalcdata = function(gd, traces) {
     }
 };
 
-},{"../components/color":514,"../components/errorbars":543,"../lib":607,"../plotly":632,"../registry":709,"./animation_attributes":633,"./attributes":634,"./font_attributes":655,"./frame_attributes":656,"./layout_attributes":686,"d3":125,"fast-isnumeric":129}],695:[function(require,module,exports){
+},{"../components/color":540,"../components/errorbars":569,"../lib":633,"../plotly":658,"../registry":735,"./animation_attributes":659,"./attributes":660,"./font_attributes":681,"./frame_attributes":682,"./layout_attributes":712,"d3":125,"fast-isnumeric":129}],721:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -117082,7 +117731,7 @@ module.exports = {
     }
 };
 
-},{"../../traces/scatter/attributes":803}],696:[function(require,module,exports){
+},{"../../traces/scatter/attributes":829}],722:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -117197,7 +117846,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":601,"../cartesian/layout_attributes":645}],697:[function(require,module,exports){
+},{"../../lib/extend":627,"../cartesian/layout_attributes":671}],723:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -117212,7 +117861,7 @@ var Polar = module.exports = require('./micropolar');
 
 Polar.manager = require('./micropolar_manager');
 
-},{"./micropolar":698,"./micropolar_manager":699}],698:[function(require,module,exports){
+},{"./micropolar":724,"./micropolar_manager":725}],724:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -118631,7 +119280,7 @@ var µ = module.exports = { version: '0.2.2' };
     return exports;
 };
 
-},{"../../lib":607,"d3":125}],699:[function(require,module,exports){
+},{"../../lib":633,"d3":125}],725:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -118640,6 +119289,7 @@ var µ = module.exports = { version: '0.2.2' };
 * LICENSE file in the root directory of this source tree.
 */
 
+/* eslint-disable new-cap */
 
 'use strict';
 
@@ -118716,7 +119366,7 @@ manager.fillLayout = function(_gd) {
     _gd._fullLayout = extendDeepAll(dflts, _gd.layout);
 };
 
-},{"../../components/color":514,"../../lib":607,"./micropolar":698,"./undo_manager":700,"d3":125}],700:[function(require,module,exports){
+},{"../../components/color":540,"../../lib":633,"./micropolar":724,"./undo_manager":726,"d3":125}],726:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -118727,8 +119377,8 @@ manager.fillLayout = function(_gd) {
 
 'use strict';
 
-//Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager
-//Copyright (c) 2010-2013 Arthur Clemens, arthur@visiblearea.com
+// Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager
+// Copyright (c) 2010-2013 Arthur Clemens, arthur@visiblearea.com
 module.exports = function UndoManager() {
     var undoCommands = [],
         index = -1,
@@ -118782,7 +119432,7 @@ module.exports = function UndoManager() {
     };
 };
 
-},{}],701:[function(require,module,exports){
+},{}],727:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -118857,7 +119507,7 @@ module.exports = function handleSubplotDefaults(layoutIn, layoutOut, fullData, o
     }
 };
 
-},{"../lib":607,"./plots":694}],702:[function(require,module,exports){
+},{"../lib":633,"./plots":720}],728:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -118931,7 +119581,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 };
 
-},{"../../plots/plots":694,"./layout/attributes":703,"./layout/defaults":706,"./layout/layout_attributes":707,"./ternary":708}],703:[function(require,module,exports){
+},{"../../plots/plots":720,"./layout/attributes":729,"./layout/defaults":732,"./layout/layout_attributes":733,"./ternary":734}],729:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -118952,7 +119602,7 @@ module.exports = {
     }
 };
 
-},{}],704:[function(require,module,exports){
+},{}],730:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -119012,7 +119662,7 @@ module.exports = {
     }
 };
 
-},{"../../../lib/extend":601,"../../cartesian/layout_attributes":645}],705:[function(require,module,exports){
+},{"../../../lib/extend":627,"../../cartesian/layout_attributes":671}],731:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -119096,7 +119746,7 @@ module.exports = function supplyLayoutDefaults(containerIn, containerOut, option
     }
 };
 
-},{"../../../lib":607,"../../cartesian/tick_label_defaults":651,"../../cartesian/tick_mark_defaults":652,"../../cartesian/tick_value_defaults":653,"./axis_attributes":704,"tinycolor2":480}],706:[function(require,module,exports){
+},{"../../../lib":633,"../../cartesian/tick_label_defaults":677,"../../cartesian/tick_mark_defaults":678,"../../cartesian/tick_value_defaults":679,"./axis_attributes":730,"tinycolor2":506}],732:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -119159,7 +119809,7 @@ function handleTernaryDefaults(ternaryLayoutIn, ternaryLayoutOut, coerce, option
     }
 }
 
-},{"../../../components/color":514,"../../subplot_defaults":701,"./axis_defaults":705,"./layout_attributes":707}],707:[function(require,module,exports){
+},{"../../../components/color":540,"../../subplot_defaults":727,"./axis_defaults":731,"./layout_attributes":733}],733:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -119215,7 +119865,7 @@ module.exports = {
     caxis: ternaryAxesAttrs
 };
 
-},{"../../../components/color/attributes":513,"./axis_attributes":704}],708:[function(require,module,exports){
+},{"../../../components/color/attributes":539,"./axis_attributes":730}],734:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -119474,7 +120124,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         domain: [yDomain0, yDomain0 + yDomainFinal * w_over_h],
         _axislayer: _this.layers.aaxis,
         _gridlayer: _this.layers.agrid,
-        _pos: 0, //_this.xaxis.domain[0] * graphSize.w,
+        _pos: 0, // _this.xaxis.domain[0] * graphSize.w,
         _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
@@ -119492,7 +120142,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.baxis,
         _gridlayer: _this.layers.bgrid,
         _counteraxis: _this.aaxis,
-        _pos: 0, //(1 - yDomain0) * graphSize.h,
+        _pos: 0, // (1 - yDomain0) * graphSize.h,
         _gd: _this.graphDiv,
         _id: 'x',
         _length: w,
@@ -119512,7 +120162,7 @@ proto.adjustLayout = function(ternaryLayout, graphSize) {
         _axislayer: _this.layers.caxis,
         _gridlayer: _this.layers.cgrid,
         _counteraxis: _this.baxis,
-        _pos: 0, //_this.xaxis.domain[1] * graphSize.w,
+        _pos: 0, // _this.xaxis.domain[1] * graphSize.w,
         _gd: _this.graphDiv,
         _id: 'y',
         _length: w,
@@ -119905,7 +120555,7 @@ function removeZoombox(gd) {
         .remove();
 }
 
-},{"../../components/color":514,"../../components/dragelement":535,"../../components/drawing":537,"../../components/titles":584,"../../lib":607,"../../lib/extend":601,"../../lib/filter_visible":602,"../../plotly":632,"../cartesian/axes":636,"../cartesian/constants":641,"../cartesian/graph_interact":643,"../cartesian/select":649,"../cartesian/set_convert":650,"d3":125,"tinycolor2":480}],709:[function(require,module,exports){
+},{"../../components/color":540,"../../components/dragelement":561,"../../components/drawing":563,"../../components/titles":610,"../../lib":633,"../../lib/extend":627,"../../lib/filter_visible":628,"../../plotly":658,"../cartesian/axes":662,"../cartesian/constants":667,"../cartesian/graph_interact":669,"../cartesian/select":675,"../cartesian/set_convert":676,"d3":125,"tinycolor2":506}],735:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120062,7 +120712,7 @@ function getTraceType(traceType) {
     return traceType;
 }
 
-},{"./lib":607,"./plots/attributes":634}],710:[function(require,module,exports){
+},{"./lib":633,"./plots/attributes":660}],736:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120219,7 +120869,7 @@ module.exports = function clonePlot(graphObj, options) {
     return plotTile;
 };
 
-},{"../lib":607,"../plots/plots":694}],711:[function(require,module,exports){
+},{"../lib":633,"../plots/plots":720}],737:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120285,7 +120935,7 @@ function downloadImage(gd, opts) {
 
 module.exports = downloadImage;
 
-},{"../lib":607,"../plot_api/to_image":630,"./filesaver":712}],712:[function(require,module,exports){
+},{"../lib":633,"../plot_api/to_image":656,"./filesaver":738}],738:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120353,7 +121003,7 @@ var fileSaver = function(url, name) {
 
 module.exports = fileSaver;
 
-},{}],713:[function(require,module,exports){
+},{}],739:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120386,7 +121036,7 @@ exports.getRedrawFunc = function(gd) {
     };
 };
 
-},{}],714:[function(require,module,exports){
+},{}],740:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120412,7 +121062,7 @@ var Snapshot = {
 
 module.exports = Snapshot;
 
-},{"./cloneplot":710,"./download":711,"./helpers":713,"./svgtoimg":715,"./toimage":716,"./tosvg":717}],715:[function(require,module,exports){
+},{"./cloneplot":736,"./download":737,"./helpers":739,"./svgtoimg":741,"./toimage":742,"./tosvg":743}],741:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120543,7 +121193,7 @@ function svgToImg(opts) {
 
 module.exports = svgToImg;
 
-},{"../lib":607,"events":57}],716:[function(require,module,exports){
+},{"../lib":633,"events":57}],742:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120623,7 +121273,7 @@ function toImage(gd, opts) {
 
 module.exports = toImage;
 
-},{"../lib":607,"../plotly":632,"./cloneplot":710,"./helpers":713,"./svgtoimg":715,"./tosvg":717,"events":57}],717:[function(require,module,exports){
+},{"../lib":633,"../plotly":658,"./cloneplot":736,"./helpers":739,"./svgtoimg":741,"./tosvg":743,"events":57}],743:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120735,7 +121385,7 @@ module.exports = function toSVG(gd, format) {
     return s;
 };
 
-},{"../components/color":514,"../components/drawing":537,"../constants/xmlns_namespaces":594,"../lib/svg_text_utils":621,"d3":125}],718:[function(require,module,exports){
+},{"../components/color":540,"../components/drawing":563,"../constants/xmlns_namespaces":620,"../lib/svg_text_utils":647,"d3":125}],744:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120767,7 +121417,7 @@ module.exports = function arraysToCalcdata(cd) {
     }
 };
 
-},{"../../lib":607}],719:[function(require,module,exports){
+},{"../../lib":633}],745:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120835,7 +121485,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/color_attributes":522,"../../lib/extend":601,"../scatter/attributes":803}],720:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":548,"../../lib/extend":627,"../scatter/attributes":829}],746:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120900,7 +121550,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../components/colorscale/calc":521,"../../components/colorscale/has_colorscale":527,"../../plots/cartesian/axes":636,"fast-isnumeric":129}],721:[function(require,module,exports){
+},{"../../components/colorscale/calc":547,"../../components/colorscale/has_colorscale":553,"../../plots/cartesian/axes":662,"fast-isnumeric":129}],747:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -120942,7 +121592,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":514,"../../components/errorbars/defaults":542,"../../lib":607,"../bar/style_defaults":729,"../scatter/xy_defaults":825,"./attributes":719}],722:[function(require,module,exports){
+},{"../../components/color":540,"../../components/errorbars/defaults":568,"../../lib":633,"../bar/style_defaults":755,"../scatter/xy_defaults":851,"./attributes":745}],748:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121033,7 +121683,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return [pointData];
 };
 
-},{"../../components/color":514,"../../components/errorbars":543,"../../plots/cartesian/graph_interact":643}],723:[function(require,module,exports){
+},{"../../components/color":540,"../../components/errorbars":569,"../../plots/cartesian/graph_interact":669}],749:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121069,7 +121719,7 @@ Bar.meta = {
 
 module.exports = Bar;
 
-},{"../../plots/cartesian":644,"../scatter/colorbar":806,"./arrays_to_calcdata":718,"./attributes":719,"./calc":720,"./defaults":721,"./hover":722,"./layout_attributes":724,"./layout_defaults":725,"./plot":726,"./set_positions":727,"./style":728}],724:[function(require,module,exports){
+},{"../../plots/cartesian":670,"../scatter/colorbar":832,"./arrays_to_calcdata":744,"./attributes":745,"./calc":746,"./defaults":747,"./hover":748,"./layout_attributes":750,"./layout_defaults":751,"./plot":752,"./set_positions":753,"./style":754}],750:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121113,7 +121763,7 @@ module.exports = {
     }
 };
 
-},{}],725:[function(require,module,exports){
+},{}],751:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121171,7 +121821,7 @@ module.exports = function(layoutIn, layoutOut, fullData) {
     coerce('bargroupgap');
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"../../registry":709,"./layout_attributes":724}],726:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"../../registry":735,"./layout_attributes":750}],752:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121283,7 +121933,7 @@ module.exports = function plot(gd, plotinfo, cdbar) {
 
 };
 
-},{"../../components/color":514,"../../components/errorbars":543,"../../lib":607,"./arrays_to_calcdata":718,"d3":125,"fast-isnumeric":129}],727:[function(require,module,exports){
+},{"../../components/color":540,"../../components/errorbars":569,"../../lib":633,"./arrays_to_calcdata":744,"d3":125,"fast-isnumeric":129}],753:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121514,7 +122164,7 @@ module.exports = function setPositions(gd, plotinfo) {
     });
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"../../registry":709,"fast-isnumeric":129}],728:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"../../registry":735,"fast-isnumeric":129}],754:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121593,7 +122243,7 @@ module.exports = function style(gd) {
     s.call(ErrorBars.style);
 };
 
-},{"../../components/color":514,"../../components/drawing":537,"../../components/errorbars":543,"d3":125}],729:[function(require,module,exports){
+},{"../../components/color":540,"../../components/drawing":563,"../../components/errorbars":569,"d3":125}],755:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121630,7 +122280,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, default
     coerce('marker.line.width');
 };
 
-},{"../../components/color":514,"../../components/colorscale/defaults":524,"../../components/colorscale/has_colorscale":527}],730:[function(require,module,exports){
+},{"../../components/color":540,"../../components/colorscale/defaults":550,"../../components/colorscale/has_colorscale":553}],756:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121761,7 +122411,7 @@ module.exports = {
     fillcolor: scatterAttrs.fillcolor
 };
 
-},{"../../components/color/attributes":513,"../../lib/extend":601,"../scatter/attributes":803}],731:[function(require,module,exports){
+},{"../../components/color/attributes":539,"../../lib/extend":627,"../scatter/attributes":829}],757:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121910,7 +122560,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"fast-isnumeric":129}],732:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"fast-isnumeric":129}],758:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -121979,7 +122629,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     }
 };
 
-},{"../../components/color":514,"../../lib":607,"./attributes":730}],733:[function(require,module,exports){
+},{"../../components/color":540,"../../lib":633,"./attributes":756}],759:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122088,7 +122738,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return closeData;
 };
 
-},{"../../components/color":514,"../../lib":607,"../../plots/cartesian/axes":636,"../../plots/cartesian/graph_interact":643}],734:[function(require,module,exports){
+},{"../../components/color":540,"../../lib":633,"../../plots/cartesian/axes":662,"../../plots/cartesian/graph_interact":669}],760:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122121,7 +122771,7 @@ Box.meta = {
 
 module.exports = Box;
 
-},{"../../plots/cartesian":644,"./attributes":730,"./calc":731,"./defaults":732,"./hover":733,"./layout_attributes":735,"./layout_defaults":736,"./plot":737,"./set_positions":738,"./style":739}],735:[function(require,module,exports){
+},{"../../plots/cartesian":670,"./attributes":756,"./calc":757,"./defaults":758,"./hover":759,"./layout_attributes":761,"./layout_defaults":762,"./plot":763,"./set_positions":764,"./style":765}],761:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122159,7 +122809,7 @@ module.exports = {
     }
 };
 
-},{}],736:[function(require,module,exports){
+},{}],762:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122193,7 +122843,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut, fullData) {
     coerce('boxgroupgap');
 };
 
-},{"../../lib":607,"../../registry":709,"./layout_attributes":735}],737:[function(require,module,exports){
+},{"../../lib":633,"../../registry":735,"./layout_attributes":761}],763:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122433,7 +123083,7 @@ module.exports = function plot(gd, plotinfo, cdbox) {
     });
 };
 
-},{"../../components/drawing":537,"../../lib":607,"d3":125}],738:[function(require,module,exports){
+},{"../../components/drawing":563,"../../lib":633,"d3":125}],764:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122526,7 +123176,7 @@ module.exports = function setPositions(gd, plotinfo) {
     }
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"../../registry":709}],739:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"../../registry":735}],765:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122565,7 +123215,7 @@ module.exports = function style(gd) {
         });
 };
 
-},{"../../components/color":514,"../../components/drawing":537,"d3":125}],740:[function(require,module,exports){
+},{"../../components/color":540,"../../components/drawing":563,"d3":125}],766:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122613,7 +123263,7 @@ module.exports = extendFlat({}, {
     colorscaleAttrs
 );
 
-},{"../../components/colorscale/attributes":520,"../../lib/extend":601,"../../plots/attributes":634,"../scattergeo/attributes":832}],741:[function(require,module,exports){
+},{"../../components/colorscale/attributes":546,"../../lib/extend":627,"../../plots/attributes":660,"../scattergeo/attributes":858}],767:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122632,7 +123282,7 @@ module.exports = function calc(gd, trace) {
     colorscaleCalc(trace, trace.z, '', 'z');
 };
 
-},{"../../components/colorscale/calc":521}],742:[function(require,module,exports){
+},{"../../components/colorscale/calc":547}],768:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122687,7 +123337,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hoverinfo', (layout._dataLength === 1) ? 'location+z+text' : undefined);
 };
 
-},{"../../components/colorscale/defaults":524,"../../lib":607,"./attributes":740}],743:[function(require,module,exports){
+},{"../../components/colorscale/defaults":550,"../../lib":633,"./attributes":766}],769:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122717,7 +123367,7 @@ Choropleth.meta = {
 
 module.exports = Choropleth;
 
-},{"../../plots/geo":659,"../heatmap/colorbar":757,"./attributes":740,"./calc":741,"./defaults":742,"./plot":744}],744:[function(require,module,exports){
+},{"../../plots/geo":685,"../heatmap/colorbar":783,"./attributes":766,"./calc":767,"./defaults":768,"./plot":770}],770:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -122938,7 +123588,7 @@ function makeEventDataFunc(trace) {
     };
 }
 
-},{"../../components/color":514,"../../components/colorscale/get_scale":526,"../../components/colorscale/make_scale_function":531,"../../components/drawing":537,"../../lib/array_to_calc_item":597,"../../lib/geo_location_utils":604,"../../lib/topojson_utils":622,"../../plots/cartesian/axes":636,"../../plots/cartesian/graph_interact":643,"../../plots/geo/constants":657,"./attributes":740,"d3":125}],745:[function(require,module,exports){
+},{"../../components/color":540,"../../components/colorscale/get_scale":552,"../../components/colorscale/make_scale_function":557,"../../components/drawing":563,"../../lib/array_to_calc_item":623,"../../lib/geo_location_utils":630,"../../lib/topojson_utils":648,"../../plots/cartesian/axes":662,"../../plots/cartesian/graph_interact":669,"../../plots/geo/constants":683,"./attributes":766,"d3":125}],771:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -123038,7 +123688,7 @@ module.exports = extendFlat({},
     {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
 );
 
-},{"../../components/colorscale/attributes":520,"../../lib/extend":601,"../heatmap/attributes":755,"../scatter/attributes":803}],746:[function(require,module,exports){
+},{"../../components/colorscale/attributes":546,"../../lib/extend":627,"../heatmap/attributes":781,"../scatter/attributes":829}],772:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -123091,7 +123741,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../plots/cartesian/axes":636,"../heatmap/calc":756}],747:[function(require,module,exports){
+},{"../../plots/cartesian/axes":662,"../heatmap/calc":782}],773:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -123152,7 +123802,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":517,"../../plots/plots":694,"./make_color_map":751}],748:[function(require,module,exports){
+},{"../../components/colorbar/draw":543,"../../plots/plots":720,"./make_color_map":777}],774:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -123196,7 +123846,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":607,"../contour/style_defaults":754,"../heatmap/has_columns":760,"../heatmap/xyz_defaults":766,"./attributes":745}],749:[function(require,module,exports){
+},{"../../lib":633,"../contour/style_defaults":780,"../heatmap/has_columns":786,"../heatmap/xyz_defaults":792,"./attributes":771}],775:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -123215,7 +123865,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return heatmapHoverPoints(pointData, xval, yval, hovermode, true);
 };
 
-},{"../heatmap/hover":761}],750:[function(require,module,exports){
+},{"../heatmap/hover":787}],776:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -123247,7 +123897,7 @@ Contour.meta = {
 
 module.exports = Contour;
 
-},{"../../plots/cartesian":644,"./attributes":745,"./calc":746,"./colorbar":747,"./defaults":748,"./hover":749,"./plot":752,"./style":753}],751:[function(require,module,exports){
+},{"../../plots/cartesian":670,"./attributes":771,"./calc":772,"./colorbar":773,"./defaults":774,"./hover":775,"./plot":778,"./style":779}],777:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -123327,7 +123977,7 @@ module.exports = function makeColorMap(trace) {
     return colorMap;
 };
 
-},{"../../components/colorscale/get_scale":526,"d3":125}],752:[function(require,module,exports){
+},{"../../components/colorscale/get_scale":552,"d3":125}],778:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -123872,7 +124522,7 @@ function joinAllPaths(pi, perimeter) {
         endpt = pi.edgepaths[i][pi.edgepaths[i].length - 1];
         nexti = -1;
 
-        //now loop through sides, moving our endpoint until we find a new start
+        // now loop through sides, moving our endpoint until we find a new start
         for(cnt = 0; cnt < 4; cnt++) { // just to prevent infinite loops
             if(!endpt) {
                 Lib.log('Missing end?', i, pi);
@@ -124037,7 +124687,7 @@ function makeClipMask(cd0) {
     return z;
 }
 
-},{"../../components/drawing":537,"../../lib":607,"../heatmap/plot":764,"d3":125}],753:[function(require,module,exports){
+},{"../../components/drawing":563,"../../lib":633,"../heatmap/plot":790,"d3":125}],779:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124094,7 +124744,7 @@ module.exports = function style(gd) {
     heatmapStyle(gd);
 };
 
-},{"../../components/drawing":537,"../heatmap/style":765,"./make_color_map":751,"d3":125}],754:[function(require,module,exports){
+},{"../../components/drawing":563,"../heatmap/style":791,"./make_color_map":777,"d3":125}],780:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124130,7 +124780,7 @@ module.exports = function handleStyleDefaults(traceIn, traceOut, coerce, layout)
     }
 };
 
-},{"../../components/colorscale/defaults":524}],755:[function(require,module,exports){
+},{"../../components/colorscale/defaults":550}],781:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124215,7 +124865,7 @@ module.exports = extendFlat({},
     {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
 );
 
-},{"../../components/colorscale/attributes":520,"../../lib/extend":601,"../scatter/attributes":803}],756:[function(require,module,exports){
+},{"../../components/colorscale/attributes":546,"../../lib/extend":627,"../scatter/attributes":829}],782:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124665,7 +125315,7 @@ function iterateInterp2d(z, emptyPoints, overshoot) {
     return maxFractionalChange;
 }
 
-},{"../../components/colorscale/calc":521,"../../lib":607,"../../plots/cartesian/axes":636,"../../registry":709,"../histogram2d/calc":776,"./convert_column_xyz":758,"./has_columns":760,"./max_row_length":763,"fast-isnumeric":129}],757:[function(require,module,exports){
+},{"../../components/colorscale/calc":547,"../../lib":633,"../../plots/cartesian/axes":662,"../../registry":735,"../histogram2d/calc":802,"./convert_column_xyz":784,"./has_columns":786,"./max_row_length":789,"fast-isnumeric":129}],783:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124711,7 +125361,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":517,"../../components/colorscale/get_scale":526,"../../lib":607,"../../plots/plots":694,"d3":125,"fast-isnumeric":129}],758:[function(require,module,exports){
+},{"../../components/colorbar/draw":543,"../../components/colorscale/get_scale":552,"../../lib":633,"../../plots/plots":720,"d3":125,"fast-isnumeric":129}],784:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124768,7 +125418,7 @@ module.exports = function convertColumnXYZ(trace, xa, ya) {
     if(hasColumnText) trace.text = text;
 };
 
-},{"../../lib":607}],759:[function(require,module,exports){
+},{"../../lib":633}],785:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124813,7 +125463,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     colorscaleDefaults(traceIn, traceOut, layout, coerce, {prefix: '', cLetter: 'z'});
 };
 
-},{"../../components/colorscale/defaults":524,"../../lib":607,"./attributes":755,"./has_columns":760,"./xyz_defaults":766}],760:[function(require,module,exports){
+},{"../../components/colorscale/defaults":550,"../../lib":633,"./attributes":781,"./has_columns":786,"./xyz_defaults":792}],786:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124829,7 +125479,7 @@ module.exports = function(trace) {
     return !Array.isArray(trace.z[0]);
 };
 
-},{}],761:[function(require,module,exports){
+},{}],787:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124947,7 +125597,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode, contour)
     })];
 };
 
-},{"../../lib":607,"../../plots/cartesian/constants":641,"../../plots/cartesian/graph_interact":643}],762:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/constants":667,"../../plots/cartesian/graph_interact":669}],788:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -124979,7 +125629,7 @@ Heatmap.meta = {
 
 module.exports = Heatmap;
 
-},{"../../plots/cartesian":644,"./attributes":755,"./calc":756,"./colorbar":757,"./defaults":759,"./hover":761,"./plot":764,"./style":765}],763:[function(require,module,exports){
+},{"../../plots/cartesian":670,"./attributes":781,"./calc":782,"./colorbar":783,"./defaults":785,"./hover":787,"./plot":790,"./style":791}],789:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125001,7 +125651,7 @@ module.exports = function maxRowLength(z) {
     return len;
 };
 
-},{}],764:[function(require,module,exports){
+},{}],790:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125456,7 +126106,7 @@ function plotOne(gd, plotinfo, cd) {
     image3.exit().remove();
 }
 
-},{"../../components/colorscale/get_scale":526,"../../constants/xmlns_namespaces":594,"../../lib":607,"../../registry":709,"./max_row_length":763,"d3":125,"tinycolor2":480}],765:[function(require,module,exports){
+},{"../../components/colorscale/get_scale":552,"../../constants/xmlns_namespaces":620,"../../lib":633,"../../registry":735,"./max_row_length":789,"d3":125,"tinycolor2":506}],791:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125477,7 +126127,7 @@ module.exports = function style(gd) {
         });
 };
 
-},{"d3":125}],766:[function(require,module,exports){
+},{"d3":125}],792:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125566,7 +126216,7 @@ function isValidZ(z) {
     return (allRowsAreArrays && oneRowIsFilled && hasOneNumber);
 }
 
-},{"./has_columns":760,"fast-isnumeric":129}],767:[function(require,module,exports){
+},{"./has_columns":786,"fast-isnumeric":129}],793:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125674,7 +126324,7 @@ function makeBinsAttr(axLetter) {
     };
 }
 
-},{"../bar/attributes":719}],768:[function(require,module,exports){
+},{"../bar/attributes":745}],794:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125700,7 +126350,7 @@ module.exports = function doAvg(size, counts) {
     return total;
 };
 
-},{}],769:[function(require,module,exports){
+},{}],795:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125730,7 +126380,7 @@ module.exports = function handleBinDefaults(traceIn, traceOut, coerce, binDirect
     return traceOut;
 };
 
-},{}],770:[function(require,module,exports){
+},{}],796:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125804,7 +126454,7 @@ module.exports = {
     }
 };
 
-},{"fast-isnumeric":129}],771:[function(require,module,exports){
+},{"fast-isnumeric":129}],797:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125934,7 +126584,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"./average":768,"./bin_functions":770,"./norm_functions":774,"fast-isnumeric":129}],772:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"./average":794,"./bin_functions":796,"./norm_functions":800,"fast-isnumeric":129}],798:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -125986,7 +126636,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, Color.defaultLine, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/color":514,"../../components/errorbars/defaults":542,"../../lib":607,"../bar/style_defaults":729,"./attributes":767,"./bin_defaults":769}],773:[function(require,module,exports){
+},{"../../components/color":540,"../../components/errorbars/defaults":568,"../../lib":633,"../bar/style_defaults":755,"./attributes":793,"./bin_defaults":795}],799:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126035,7 +126685,7 @@ Histogram.meta = {
 
 module.exports = Histogram;
 
-},{"../../plots/cartesian":644,"../bar/hover":722,"../bar/layout_attributes":724,"../bar/layout_defaults":725,"../bar/plot":726,"../bar/set_positions":727,"../bar/style":728,"../scatter/colorbar":806,"./attributes":767,"./calc":771,"./defaults":772}],774:[function(require,module,exports){
+},{"../../plots/cartesian":670,"../bar/hover":748,"../bar/layout_attributes":750,"../bar/layout_defaults":751,"../bar/plot":752,"../bar/set_positions":753,"../bar/style":754,"../scatter/colorbar":832,"./attributes":793,"./calc":797,"./defaults":798}],800:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126070,7 +126720,7 @@ module.exports = {
     }
 };
 
-},{}],775:[function(require,module,exports){
+},{}],801:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126124,7 +126774,7 @@ module.exports = extendFlat({},
     {autocolorscale: extendFlat({}, colorscaleAttrs.autocolorscale, {dflt: false})}
 );
 
-},{"../../components/colorscale/attributes":520,"../../lib/extend":601,"../heatmap/attributes":755,"../histogram/attributes":767}],776:[function(require,module,exports){
+},{"../../components/colorscale/attributes":546,"../../lib/extend":627,"../heatmap/attributes":781,"../histogram/attributes":793}],802:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126290,7 +126940,7 @@ module.exports = function calc(gd, trace) {
     };
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"../histogram/average":768,"../histogram/bin_functions":770,"../histogram/norm_functions":774}],777:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"../histogram/average":794,"../histogram/bin_functions":796,"../histogram/norm_functions":800}],803:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126328,7 +126978,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, layout) {
     );
 };
 
-},{"../../components/colorscale/defaults":524,"../../lib":607,"./attributes":775,"./sample_defaults":779}],778:[function(require,module,exports){
+},{"../../components/colorscale/defaults":550,"../../lib":633,"./attributes":801,"./sample_defaults":805}],804:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126361,7 +127011,7 @@ Histogram2D.meta = {
 
 module.exports = Histogram2D;
 
-},{"../../plots/cartesian":644,"../heatmap/calc":756,"../heatmap/colorbar":757,"../heatmap/hover":761,"../heatmap/plot":764,"../heatmap/style":765,"./attributes":775,"./defaults":777}],779:[function(require,module,exports){
+},{"../../plots/cartesian":670,"../heatmap/calc":782,"../heatmap/colorbar":783,"../heatmap/hover":787,"../heatmap/plot":790,"../heatmap/style":791,"./attributes":801,"./defaults":803}],805:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126397,7 +127047,7 @@ module.exports = function handleSampleDefaults(traceIn, traceOut, coerce) {
     handleBinDefaults(traceIn, traceOut, coerce, binDirections);
 };
 
-},{"../histogram/bin_defaults":769}],780:[function(require,module,exports){
+},{"../histogram/bin_defaults":795}],806:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126441,7 +127091,7 @@ module.exports = extendFlat({}, {
     colorscaleAttrs
 );
 
-},{"../../components/colorscale/attributes":520,"../../lib/extend":601,"../contour/attributes":745,"../histogram2d/attributes":775}],781:[function(require,module,exports){
+},{"../../components/colorscale/attributes":546,"../../lib/extend":627,"../contour/attributes":771,"../histogram2d/attributes":801}],807:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126477,7 +127127,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     handleStyleDefaults(traceIn, traceOut, coerce, layout);
 };
 
-},{"../../lib":607,"../contour/style_defaults":754,"../histogram2d/sample_defaults":779,"./attributes":780}],782:[function(require,module,exports){
+},{"../../lib":633,"../contour/style_defaults":780,"../histogram2d/sample_defaults":805,"./attributes":806}],808:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126510,7 +127160,7 @@ Histogram2dContour.meta = {
 
 module.exports = Histogram2dContour;
 
-},{"../../plots/cartesian":644,"../contour/calc":746,"../contour/colorbar":747,"../contour/hover":749,"../contour/plot":752,"../contour/style":753,"./attributes":780,"./defaults":781}],783:[function(require,module,exports){
+},{"../../plots/cartesian":670,"../contour/calc":772,"../contour/colorbar":773,"../contour/hover":775,"../contour/plot":778,"../contour/style":779,"./attributes":806,"./defaults":807}],809:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126575,7 +127225,7 @@ module.exports = {
         
     },
 
-    //Color field
+    // Color field
     color: {
         valType: 'color',
         
@@ -126592,10 +127242,10 @@ module.exports = {
         
     },
 
-    //Opacity
+    // Opacity
     opacity: extendFlat({}, surfaceAtts.opacity),
 
-    //Flat shaded mode
+    // Flat shaded mode
     flatshading: {
         valType: 'boolean',
         
@@ -126644,7 +127294,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/attributes":520,"../../lib/extend":601,"../surface/attributes":856}],784:[function(require,module,exports){
+},{"../../components/colorscale/attributes":546,"../../lib/extend":627,"../surface/attributes":882}],810:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126721,7 +127371,7 @@ proto.update = function(data) {
 
     this.data = data;
 
-    //Unpack position data
+    // Unpack position data
     function toDataCoords(axis, coord, scale) {
         return coord.map(function(x) {
             return axis.d2l(x) * scale;
@@ -126786,7 +127436,7 @@ proto.update = function(data) {
         config.meshColor = str2RgbaArray(data.color);
     }
 
-    //Update mesh
+    // Update mesh
     this.mesh.update(config);
 };
 
@@ -126806,7 +127456,7 @@ function createMesh3DTrace(scene, data) {
 
 module.exports = createMesh3DTrace;
 
-},{"../../lib/str2rgbarray":620,"alpha-shape":42,"convex-hull":114,"delaunay-triangulate":126,"gl-mesh3d":162,"tinycolor2":480}],785:[function(require,module,exports){
+},{"../../lib/str2rgbarray":646,"alpha-shape":42,"convex-hull":114,"delaunay-triangulate":126,"gl-mesh3d":162,"tinycolor2":506}],811:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126857,7 +127507,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         });
     }
 
-    //Coerce remaining properties
+    // Coerce remaining properties
     [
         'lighting.ambient',
         'lighting.diffuse',
@@ -126903,7 +127553,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/colorbar/defaults":516,"../../lib":607,"./attributes":783}],786:[function(require,module,exports){
+},{"../../components/colorbar/defaults":542,"../../lib":633,"./attributes":809}],812:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -126932,7 +127582,7 @@ Mesh3D.meta = {
 
 module.exports = Mesh3D;
 
-},{"../../plots/gl3d":674,"../heatmap/colorbar":757,"./attributes":783,"./convert":784,"./defaults":785}],787:[function(require,module,exports){
+},{"../../plots/gl3d":700,"../heatmap/colorbar":783,"./attributes":809,"./convert":810,"./defaults":811}],813:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -127152,7 +127802,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color/attributes":513,"../../lib/extend":601,"../../plots/attributes":634,"../../plots/font_attributes":655}],788:[function(require,module,exports){
+},{"../../components/color/attributes":539,"../../lib/extend":627,"../../plots/attributes":660,"../../plots/font_attributes":681}],814:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -127199,7 +127849,7 @@ function getCdModule(calcdata, _module) {
     return cdModule;
 }
 
-},{"../../registry":709}],789:[function(require,module,exports){
+},{"../../registry":735}],815:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -127351,7 +128001,7 @@ function nextDefaultColor(index) {
     return pieDefaultColors[index % pieDefaultColors.length];
 }
 
-},{"../../components/color":514,"./helpers":791,"fast-isnumeric":129,"tinycolor2":480}],790:[function(require,module,exports){
+},{"../../components/color":540,"./helpers":817,"fast-isnumeric":129,"tinycolor2":506}],816:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -127435,7 +128085,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('pull');
 };
 
-},{"../../lib":607,"./attributes":787}],791:[function(require,module,exports){
+},{"../../lib":633,"./attributes":813}],817:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -127464,7 +128114,7 @@ exports.formatPieValue = function formatPieValue(v, separators) {
     return Lib.numSeparate(vRounded, separators);
 };
 
-},{"../../lib":607}],792:[function(require,module,exports){
+},{"../../lib":633}],818:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -127496,7 +128146,7 @@ Pie.meta = {
 
 module.exports = Pie;
 
-},{"./attributes":787,"./base_plot":788,"./calc":789,"./defaults":790,"./layout_attributes":793,"./layout_defaults":794,"./plot":795,"./style":796,"./style_one":797}],793:[function(require,module,exports){
+},{"./attributes":813,"./base_plot":814,"./calc":815,"./defaults":816,"./layout_attributes":819,"./layout_defaults":820,"./plot":821,"./style":822,"./style_one":823}],819:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -127516,7 +128166,7 @@ module.exports = {
     hiddenlabels: {valType: 'data_array'}
 };
 
-},{}],794:[function(require,module,exports){
+},{}],820:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -127538,7 +128188,7 @@ module.exports = function supplyLayoutDefaults(layoutIn, layoutOut) {
     coerce('hiddenlabels');
 };
 
-},{"../../lib":607,"./layout_attributes":793}],795:[function(require,module,exports){
+},{"../../lib":633,"./layout_attributes":819}],821:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -127578,7 +128228,7 @@ module.exports = function plot(gd, cdpie) {
         var pieGroup = d3.select(this),
             cd0 = cd[0],
             trace = cd0.trace,
-            tiltRads = 0, //trace.tilt * Math.PI / 180,
+            tiltRads = 0, // trace.tilt * Math.PI / 180,
             depthLength = (trace.depth||0) * cd0.r * Math.sin(tiltRads) / 2,
             tiltAxis = trace.tiltaxis || 0,
             tiltAxisRads = tiltAxis * Math.PI / 180,
@@ -128233,7 +128883,7 @@ function maxExtent(tilt, tiltAxisFraction, depth) {
         2 * Math.sqrt(1 - sinTilt * sinTilt * tiltAxisFraction * tiltAxisFraction));
 }
 
-},{"../../components/color":514,"../../components/drawing":537,"../../lib/svg_text_utils":621,"../../plots/cartesian/graph_interact":643,"./helpers":791,"d3":125}],796:[function(require,module,exports){
+},{"../../components/color":540,"../../components/drawing":563,"../../lib/svg_text_utils":647,"../../plots/cartesian/graph_interact":669,"./helpers":817,"d3":125}],822:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -128262,7 +128912,7 @@ module.exports = function style(gd) {
     });
 };
 
-},{"./style_one":797,"d3":125}],797:[function(require,module,exports){
+},{"./style_one":823,"d3":125}],823:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -128289,7 +128939,7 @@ module.exports = function styleOne(s, pt, trace) {
     .call(Color.stroke, lineColor);
 };
 
-},{"../../components/color":514}],798:[function(require,module,exports){
+},{"../../components/color":540}],824:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -128378,7 +129028,7 @@ module.exports = {
     }
 };
 
-},{"../scattergl/attributes":837}],799:[function(require,module,exports){
+},{"../scattergl/attributes":863}],825:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -128601,7 +129251,7 @@ function createPointcloud(scene, data) {
 
 module.exports = createPointcloud;
 
-},{"../../lib/str2rgbarray":620,"../scatter/get_trace_color":811,"gl-pointcloud2d":197}],800:[function(require,module,exports){
+},{"../../lib/str2rgbarray":646,"../scatter/get_trace_color":837,"gl-pointcloud2d":223}],826:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -128646,7 +129296,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor) {
     coerce('marker.border.arearatio');
 };
 
-},{"../../lib":607,"./attributes":798}],801:[function(require,module,exports){
+},{"../../lib":633,"./attributes":824}],827:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -128676,7 +129326,7 @@ pointcloud.meta = {
 
 module.exports = pointcloud;
 
-},{"../../plots/gl2d":671,"../scatter3d/calc":827,"./attributes":798,"./convert":799,"./defaults":800}],802:[function(require,module,exports){
+},{"../../plots/gl2d":697,"../scatter3d/calc":853,"./attributes":824,"./convert":825,"./defaults":826}],828:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -128714,7 +129364,7 @@ module.exports = function arraysToCalcdata(cd) {
     }
 };
 
-},{"../../lib":607}],803:[function(require,module,exports){
+},{"../../lib":633}],829:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -128974,7 +129624,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/color_attributes":522,"../../components/drawing":537,"../../lib/extend":601,"./constants":808}],804:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":548,"../../components/drawing":563,"../../lib/extend":627,"./constants":834}],830:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129099,13 +129749,13 @@ module.exports = function calc(gd, trace) {
     }
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if(typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
+    if(typeof s !== 'undefined') Lib.mergeArray(s, cd, 'ms');
 
     gd.firstscatter = false;
     return cd;
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"./colorscale_calc":807,"./subtypes":823,"fast-isnumeric":129}],805:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"./colorscale_calc":833,"./subtypes":849,"fast-isnumeric":129}],831:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129144,7 +129794,7 @@ module.exports = function cleanData(fullData) {
     }
 };
 
-},{}],806:[function(require,module,exports){
+},{}],832:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129197,7 +129847,7 @@ module.exports = function colorbar(gd, cd) {
         .options(marker.colorbar)();
 };
 
-},{"../../components/colorbar/draw":517,"../../components/colorscale/get_scale":526,"../../lib":607,"../../plots/plots":694,"d3":125,"fast-isnumeric":129}],807:[function(require,module,exports){
+},{"../../components/colorbar/draw":543,"../../components/colorscale/get_scale":552,"../../lib":633,"../../plots/plots":720,"d3":125,"fast-isnumeric":129}],833:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129230,7 +129880,7 @@ module.exports = function calcMarkerColorscale(trace) {
     }
 };
 
-},{"../../components/colorscale/calc":521,"../../components/colorscale/has_colorscale":527,"./subtypes":823}],808:[function(require,module,exports){
+},{"../../components/colorscale/calc":547,"../../components/colorscale/has_colorscale":553,"./subtypes":849}],834:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129246,7 +129896,7 @@ module.exports = {
     PTS_LINESONLY: 20
 };
 
-},{}],809:[function(require,module,exports){
+},{}],835:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129326,7 +129976,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/errorbars/defaults":542,"../../lib":607,"./attributes":803,"./constants":808,"./fillcolor_defaults":810,"./line_defaults":814,"./line_shape_defaults":816,"./marker_defaults":819,"./subtypes":823,"./text_defaults":824,"./xy_defaults":825}],810:[function(require,module,exports){
+},{"../../components/errorbars/defaults":568,"../../lib":633,"./attributes":829,"./constants":834,"./fillcolor_defaults":836,"./line_defaults":840,"./line_shape_defaults":842,"./marker_defaults":845,"./subtypes":849,"./text_defaults":850,"./xy_defaults":851}],836:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129365,7 +130015,7 @@ module.exports = function fillColorDefaults(traceIn, traceOut, defaultColor, coe
     ));
 };
 
-},{"../../components/color":514}],811:[function(require,module,exports){
+},{"../../components/color":540}],837:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129418,7 +130068,7 @@ module.exports = function getTraceColor(trace, di) {
     }
 };
 
-},{"../../components/color":514,"./subtypes":823}],812:[function(require,module,exports){
+},{"../../components/color":540,"./subtypes":849}],838:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129587,7 +130237,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     }
 };
 
-},{"../../components/color":514,"../../components/errorbars":543,"../../lib":607,"../../plots/cartesian/constants":641,"../../plots/cartesian/graph_interact":643,"./get_trace_color":811}],813:[function(require,module,exports){
+},{"../../components/color":540,"../../components/errorbars":569,"../../lib":633,"../../plots/cartesian/constants":667,"../../plots/cartesian/graph_interact":669,"./get_trace_color":837}],839:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129631,7 +130281,7 @@ Scatter.meta = {
 
 module.exports = Scatter;
 
-},{"../../plots/cartesian":644,"./arrays_to_calcdata":802,"./attributes":803,"./calc":804,"./clean_data":805,"./colorbar":806,"./defaults":809,"./hover":812,"./plot":820,"./select":821,"./style":822,"./subtypes":823}],814:[function(require,module,exports){
+},{"../../plots/cartesian":670,"./arrays_to_calcdata":828,"./attributes":829,"./calc":830,"./clean_data":831,"./colorbar":832,"./defaults":835,"./hover":838,"./plot":846,"./select":847,"./style":848,"./subtypes":849}],840:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129664,7 +130314,7 @@ module.exports = function lineDefaults(traceIn, traceOut, defaultColor, layout, 
     coerce('line.dash');
 };
 
-},{"../../components/colorscale/defaults":524,"../../components/colorscale/has_colorscale":527}],815:[function(require,module,exports){
+},{"../../components/colorscale/defaults":550,"../../components/colorscale/has_colorscale":553}],841:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129838,7 +130488,7 @@ module.exports = function linePoints(d, opts) {
     return segments;
 };
 
-},{"../../plots/cartesian/axes":636}],816:[function(require,module,exports){
+},{"../../plots/cartesian/axes":662}],842:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129857,7 +130507,7 @@ module.exports = function handleLineShapeDefaults(traceIn, traceOut, coerce) {
     if(shape === 'spline') coerce('line.smoothing');
 };
 
-},{}],817:[function(require,module,exports){
+},{}],843:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129898,7 +130548,7 @@ module.exports = function linkTraces(gd, plotinfo, cdscatter) {
     }
 };
 
-},{}],818:[function(require,module,exports){
+},{}],844:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -129940,7 +130590,7 @@ module.exports = function makeBubbleSizeFn(trace) {
     };
 };
 
-},{"fast-isnumeric":129}],819:[function(require,module,exports){
+},{"fast-isnumeric":129}],845:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130000,7 +130650,7 @@ module.exports = function markerDefaults(traceIn, traceOut, defaultColor, layout
     }
 };
 
-},{"../../components/color":514,"../../components/colorscale/defaults":524,"../../components/colorscale/has_colorscale":527,"./subtypes":823}],820:[function(require,module,exports){
+},{"../../components/color":540,"../../components/colorscale/defaults":550,"../../components/colorscale/has_colorscale":553,"./subtypes":849}],846:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130503,7 +131153,7 @@ function selectMarkers(gd, idx, plotinfo, cdscatter, cdscatterAll) {
     });
 }
 
-},{"../../components/drawing":537,"../../components/errorbars":543,"../../lib":607,"../../lib/polygon":614,"./arrays_to_calcdata":802,"./line_points":815,"./link_traces":817,"./subtypes":823,"d3":125}],821:[function(require,module,exports){
+},{"../../components/drawing":563,"../../components/errorbars":569,"../../lib":633,"../../lib/polygon":640,"./arrays_to_calcdata":828,"./line_points":841,"./link_traces":843,"./subtypes":849,"d3":125}],847:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130575,7 +131225,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     return selection;
 };
 
-},{"./subtypes":823}],822:[function(require,module,exports){
+},{"./subtypes":849}],848:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130617,7 +131267,7 @@ module.exports = function style(gd) {
     s.call(ErrorBars.style);
 };
 
-},{"../../components/drawing":537,"../../components/errorbars":543,"d3":125}],823:[function(require,module,exports){
+},{"../../components/drawing":563,"../../components/errorbars":569,"d3":125}],849:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130653,7 +131303,7 @@ module.exports = {
     }
 };
 
-},{"../../lib":607}],824:[function(require,module,exports){
+},{"../../lib":633}],850:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130674,7 +131324,7 @@ module.exports = function(traceIn, traceOut, layout, coerce) {
     Lib.coerceFont(coerce, 'textfont', layout.font);
 };
 
-},{"../../lib":607}],825:[function(require,module,exports){
+},{"../../lib":633}],851:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130719,7 +131369,7 @@ module.exports = function handleXYDefaults(traceIn, traceOut, coerce) {
     return len;
 };
 
-},{}],826:[function(require,module,exports){
+},{}],852:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130850,7 +131500,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/color_attributes":522,"../../constants/gl_markers":592,"../../lib/extend":601,"../scatter/attributes":803}],827:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":548,"../../constants/gl_markers":618,"../../lib/extend":627,"../scatter/attributes":829}],853:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130879,7 +131529,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/arrays_to_calcdata":802,"../scatter/colorscale_calc":807}],828:[function(require,module,exports){
+},{"../scatter/arrays_to_calcdata":828,"../scatter/colorscale_calc":833}],854:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -130950,7 +131600,7 @@ function calculateErrors(data, scaleFactor) {
 
 module.exports = calculateErrors;
 
-},{"../../components/errorbars/compute_error":541}],829:[function(require,module,exports){
+},{"../../components/errorbars/compute_error":567}],855:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -131078,7 +131728,7 @@ function calculateErrorParams(errors) {
 }
 
 function calculateTextOffset(tp) {
-    //Read out text properties
+    // Read out text properties
     var textOffset = [0, 0];
     if(Array.isArray(tp)) return [0, -1];
     if(tp.indexOf('bottom') >= 0) textOffset[1] += 1;
@@ -131132,7 +131782,7 @@ function convertPlotlyOptions(scene, data) {
         len = x.length,
         text;
 
-    //Convert points
+    // Convert points
     for(i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
         xc = xaxis.d2l(x[i]) * scaleFactor[0];
@@ -131149,7 +131799,7 @@ function convertPlotlyOptions(scene, data) {
         for(i = 0; i < len; i++) text[i] = data.text;
     }
 
-    //Build object parameters
+    // Build object parameters
     params = {
         position: points,
         mode: data.mode,
@@ -131228,10 +131878,10 @@ proto.update = function(data) {
         textOptions,
         dashPattern = DASH_PATTERNS.solid;
 
-    //Save data
+    // Save data
     this.data = data;
 
-    //Run data conversion
+    // Run data conversion
     var options = convertPlotlyOptions(this.scene, data);
 
     if('mode' in options) {
@@ -131246,7 +131896,7 @@ proto.update = function(data) {
     this.color = arrayToColor(options.scatterColor) ||
                  arrayToColor(options.lineColor);
 
-    //Save data points
+    // Save data points
     this.dataPoints = options.position;
 
     lineOptions = {
@@ -131409,7 +132059,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../constants/gl3d_dashes":591,"../../constants/gl_markers":592,"../../lib":607,"../../lib/gl_format_color":605,"../../lib/str2rgbarray":620,"../scatter/make_bubble_size_func":818,"./calc_errors":828,"delaunay-triangulate":126,"gl-error3d":133,"gl-line3d":139,"gl-mesh3d":162,"gl-scatter3d":207}],830:[function(require,module,exports){
+},{"../../constants/gl3d_dashes":617,"../../constants/gl_markers":618,"../../lib":633,"../../lib/gl_format_color":631,"../../lib/str2rgbarray":646,"../scatter/make_bubble_size_func":844,"./calc_errors":854,"delaunay-triangulate":126,"gl-error3d":133,"gl-line3d":139,"gl-mesh3d":162,"gl-scatter3d":233}],856:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -131494,7 +132144,7 @@ function handleXYZDefaults(traceIn, traceOut, coerce) {
     return len;
 }
 
-},{"../../components/errorbars/defaults":542,"../../lib":607,"../scatter/line_defaults":814,"../scatter/marker_defaults":819,"../scatter/subtypes":823,"../scatter/text_defaults":824,"./attributes":826}],831:[function(require,module,exports){
+},{"../../components/errorbars/defaults":568,"../../lib":633,"../scatter/line_defaults":840,"../scatter/marker_defaults":845,"../scatter/subtypes":849,"../scatter/text_defaults":850,"./attributes":852}],857:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -131525,7 +132175,7 @@ Scatter3D.meta = {
 
 module.exports = Scatter3D;
 
-},{"../../constants/gl_markers":592,"../../plots/gl3d":674,"../scatter/colorbar":806,"./attributes":826,"./calc":827,"./convert":829,"./defaults":830}],832:[function(require,module,exports){
+},{"../../constants/gl_markers":618,"../../plots/gl3d":700,"../scatter/colorbar":832,"./attributes":852,"./calc":853,"./convert":855,"./defaults":856}],858:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -131600,7 +132250,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/color_attributes":522,"../../lib/extend":601,"../../plots/attributes":634,"../scatter/attributes":803}],833:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":548,"../../lib/extend":627,"../../plots/attributes":660,"../scatter/attributes":829}],859:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -131623,7 +132273,7 @@ module.exports = function calc(gd, trace) {
     return cd;
 };
 
-},{"../scatter/colorscale_calc":807}],834:[function(require,module,exports){
+},{"../scatter/colorscale_calc":833}],860:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -131696,7 +132346,7 @@ function handleLonLatLocDefaults(traceIn, traceOut, coerce) {
     return len;
 }
 
-},{"../../lib":607,"../scatter/line_defaults":814,"../scatter/marker_defaults":819,"../scatter/subtypes":823,"../scatter/text_defaults":824,"./attributes":832}],835:[function(require,module,exports){
+},{"../../lib":633,"../scatter/line_defaults":840,"../scatter/marker_defaults":845,"../scatter/subtypes":849,"../scatter/text_defaults":850,"./attributes":858}],861:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -131727,7 +132377,7 @@ ScatterGeo.meta = {
 
 module.exports = ScatterGeo;
 
-},{"../../plots/geo":659,"../scatter/colorbar":806,"./attributes":832,"./calc":833,"./defaults":834,"./plot":836}],836:[function(require,module,exports){
+},{"../../plots/geo":685,"../scatter/colorbar":832,"./attributes":858,"./calc":859,"./defaults":860,"./plot":862}],862:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -132027,7 +132677,7 @@ function makeEventDataFunc(trace) {
     };
 }
 
-},{"../../components/color":514,"../../components/drawing":537,"../../lib/array_to_calc_item":597,"../../lib/geo_location_utils":604,"../../lib/topojson_utils":622,"../../plots/cartesian/axes":636,"../../plots/cartesian/graph_interact":643,"../scatter/subtypes":823,"./attributes":832,"d3":125}],837:[function(require,module,exports){
+},{"../../components/color":540,"../../components/drawing":563,"../../lib/array_to_calc_item":623,"../../lib/geo_location_utils":630,"../../lib/topojson_utils":648,"../../plots/cartesian/axes":662,"../../plots/cartesian/graph_interact":669,"../scatter/subtypes":849,"./attributes":858,"d3":125}],863:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -132109,7 +132759,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/color_attributes":522,"../../constants/gl2d_dashes":590,"../../constants/gl_markers":592,"../../lib/extend":601,"../scatter/attributes":803}],838:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":548,"../../constants/gl2d_dashes":616,"../../constants/gl_markers":618,"../../lib/extend":627,"../scatter/attributes":829}],864:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -132689,7 +133339,7 @@ function createLineWithMarkers(scene, data) {
 
 module.exports = createLineWithMarkers;
 
-},{"../../components/errorbars":543,"../../constants/gl2d_dashes":590,"../../constants/gl_markers":592,"../../lib":607,"../../lib/float32_truncate":603,"../../lib/gl_format_color":605,"../../lib/str2rgbarray":620,"../../plots/cartesian/axes":636,"../scatter/get_trace_color":811,"../scatter/make_bubble_size_func":818,"../scatter/subtypes":823,"fast-isnumeric":129,"gl-error2d":131,"gl-line2d":137,"gl-scatter2d":204,"gl-scatter2d-fancy":199}],839:[function(require,module,exports){
+},{"../../components/errorbars":569,"../../constants/gl2d_dashes":616,"../../constants/gl_markers":618,"../../lib":633,"../../lib/float32_truncate":629,"../../lib/gl_format_color":631,"../../lib/str2rgbarray":646,"../../plots/cartesian/axes":662,"../scatter/get_trace_color":837,"../scatter/make_bubble_size_func":844,"../scatter/subtypes":849,"fast-isnumeric":129,"gl-error2d":131,"gl-line2d":137,"gl-scatter2d":230,"gl-scatter2d-fancy":225}],865:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -132746,7 +133396,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     errorBarsSupplyDefaults(traceIn, traceOut, defaultColor, {axis: 'x', inherit: 'y'});
 };
 
-},{"../../components/errorbars/defaults":542,"../../lib":607,"../scatter/constants":808,"../scatter/fillcolor_defaults":810,"../scatter/line_defaults":814,"../scatter/marker_defaults":819,"../scatter/subtypes":823,"../scatter/xy_defaults":825,"./attributes":837}],840:[function(require,module,exports){
+},{"../../components/errorbars/defaults":568,"../../lib":633,"../scatter/constants":834,"../scatter/fillcolor_defaults":836,"../scatter/line_defaults":840,"../scatter/marker_defaults":845,"../scatter/subtypes":849,"../scatter/xy_defaults":851,"./attributes":863}],866:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -132777,7 +133427,7 @@ ScatterGl.meta = {
 
 module.exports = ScatterGl;
 
-},{"../../plots/gl2d":671,"../scatter/colorbar":806,"../scatter3d/calc":827,"./attributes":837,"./convert":838,"./defaults":839}],841:[function(require,module,exports){
+},{"../../plots/gl2d":697,"../scatter/colorbar":832,"../scatter3d/calc":853,"./attributes":863,"./convert":864,"./defaults":865}],867:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -132876,7 +133526,7 @@ module.exports = {
     }
 };
 
-},{"../../lib/extend":601,"../../plots/attributes":634,"../../plots/mapbox/layout_attributes":691,"../scatter/attributes":803,"../scattergeo/attributes":832}],842:[function(require,module,exports){
+},{"../../lib/extend":627,"../../plots/attributes":660,"../../plots/mapbox/layout_attributes":717,"../scatter/attributes":829,"../scattergeo/attributes":858}],868:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -132973,7 +133623,7 @@ module.exports = function calc(gd, trace) {
     return calcTrace;
 };
 
-},{"../../components/colorscale/has_colorscale":527,"../../components/colorscale/make_scale_function":531,"../../lib":607,"../scatter/colorscale_calc":807,"../scatter/make_bubble_size_func":818,"../scatter/subtypes":823,"fast-isnumeric":129}],843:[function(require,module,exports){
+},{"../../components/colorscale/has_colorscale":553,"../../components/colorscale/make_scale_function":557,"../../lib":633,"../scatter/colorscale_calc":833,"../scatter/make_bubble_size_func":844,"../scatter/subtypes":849,"fast-isnumeric":129}],869:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -133094,7 +133744,7 @@ module.exports = function convert(calcTrace) {
                 'text-offset': textOpts.offset
 
                 // TODO font family
-                //'text-font': symbol.textfont.family.split(', '),
+                // 'text-font': symbol.textfont.family.split(', '),
             });
 
             Lib.extendFlat(symbol.paint, {
@@ -133336,7 +133986,7 @@ function getFillFunc(attr) {
 
 function blankFillFunc() { return ''; }
 
-},{"../../lib":607,"../../plots/mapbox/convert_text_opts":688,"../scatter/subtypes":823}],844:[function(require,module,exports){
+},{"../../lib":633,"../../plots/mapbox/convert_text_opts":714,"../scatter/subtypes":849}],870:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -133424,7 +134074,7 @@ function handleLonLatDefaults(traceIn, traceOut, coerce) {
     return len;
 }
 
-},{"../../lib":607,"../scatter/attributes":803,"../scatter/fillcolor_defaults":810,"../scatter/line_defaults":814,"../scatter/marker_defaults":819,"../scatter/subtypes":823,"../scatter/text_defaults":824,"./attributes":841}],845:[function(require,module,exports){
+},{"../../lib":633,"../scatter/attributes":829,"../scatter/fillcolor_defaults":836,"../scatter/line_defaults":840,"../scatter/marker_defaults":845,"../scatter/subtypes":849,"../scatter/text_defaults":850,"./attributes":867}],871:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -133517,7 +134167,7 @@ function getExtraText(trace, di) {
     return text.join('<br>');
 }
 
-},{"../../plots/cartesian/graph_interact":643,"../scatter/get_trace_color":811}],846:[function(require,module,exports){
+},{"../../plots/cartesian/graph_interact":669,"../scatter/get_trace_color":837}],872:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -133549,7 +134199,7 @@ ScatterMapbox.meta = {
 
 module.exports = ScatterMapbox;
 
-},{"../../plots/mapbox":689,"../scatter/colorbar":806,"./attributes":841,"./calc":842,"./defaults":844,"./hover":845,"./plot":847}],847:[function(require,module,exports){
+},{"../../plots/mapbox":715,"../scatter/colorbar":832,"./attributes":867,"./calc":868,"./defaults":870,"./hover":871,"./plot":873}],873:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -133673,7 +134323,7 @@ module.exports = function createScatterMapbox(mapbox, calcTrace) {
     return scatterMapbox;
 };
 
-},{"./convert":843}],848:[function(require,module,exports){
+},{"./convert":869}],874:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -133759,7 +134409,7 @@ module.exports = {
     }
 };
 
-},{"../../components/colorscale/color_attributes":522,"../../lib/extend":601,"../../plots/attributes":634,"../scatter/attributes":803}],849:[function(require,module,exports){
+},{"../../components/colorscale/color_attributes":548,"../../lib/extend":627,"../../plots/attributes":660,"../scatter/attributes":829}],875:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -133853,12 +134503,12 @@ module.exports = function calc(gd, trace) {
     calcColorscale(trace);
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if(typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
+    if(typeof s !== 'undefined') Lib.mergeArray(s, cd, 'ms');
 
     return cd;
 };
 
-},{"../../lib":607,"../../plots/cartesian/axes":636,"../scatter/colorscale_calc":807,"../scatter/subtypes":823,"fast-isnumeric":129}],850:[function(require,module,exports){
+},{"../../lib":633,"../../plots/cartesian/axes":662,"../scatter/colorscale_calc":833,"../scatter/subtypes":849,"fast-isnumeric":129}],876:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -133963,7 +134613,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
     coerce('hoveron', dfltHoverOn.join('+') || 'points');
 };
 
-},{"../../lib":607,"../scatter/constants":808,"../scatter/fillcolor_defaults":810,"../scatter/line_defaults":814,"../scatter/line_shape_defaults":816,"../scatter/marker_defaults":819,"../scatter/subtypes":823,"../scatter/text_defaults":824,"./attributes":848}],851:[function(require,module,exports){
+},{"../../lib":633,"../scatter/constants":834,"../scatter/fillcolor_defaults":836,"../scatter/line_defaults":840,"../scatter/line_shape_defaults":842,"../scatter/marker_defaults":845,"../scatter/subtypes":849,"../scatter/text_defaults":850,"./attributes":874}],877:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134034,7 +134684,7 @@ module.exports = function hoverPoints(pointData, xval, yval, hovermode) {
     return scatterPointData;
 };
 
-},{"../../plots/cartesian/axes":636,"../scatter/hover":812}],852:[function(require,module,exports){
+},{"../../plots/cartesian/axes":662,"../scatter/hover":838}],878:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134067,7 +134717,7 @@ ScatterTernary.meta = {
 
 module.exports = ScatterTernary;
 
-},{"../../plots/ternary":702,"../scatter/colorbar":806,"./attributes":848,"./calc":849,"./defaults":850,"./hover":851,"./plot":853,"./select":854,"./style":855}],853:[function(require,module,exports){
+},{"../../plots/ternary":728,"../scatter/colorbar":832,"./attributes":874,"./calc":875,"./defaults":876,"./hover":877,"./plot":879,"./select":880,"./style":881}],879:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134113,7 +134763,7 @@ module.exports = function plot(ternary, data) {
     scatterPlot(ternary.graphDiv, plotinfo, calcdata);
 };
 
-},{"../scatter/plot":820}],854:[function(require,module,exports){
+},{"../scatter/plot":846}],880:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134148,7 +134798,7 @@ module.exports = function selectPoints(searchInfo, polygon) {
     return selection;
 };
 
-},{"../scatter/select":821}],855:[function(require,module,exports){
+},{"../scatter/select":847}],881:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134177,7 +134827,7 @@ module.exports = function style(gd) {
     scatterStyle(gd);
 };
 
-},{"../scatter/style":822}],856:[function(require,module,exports){
+},{"../scatter/style":848}],882:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134397,7 +135047,7 @@ module.exports = {
     }
 };
 
-},{"../../components/color":514,"../../components/colorscale/attributes":520,"../../lib/extend":601}],857:[function(require,module,exports){
+},{"../../components/color":540,"../../components/colorscale/attributes":546,"../../lib/extend":627}],883:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134421,7 +135071,7 @@ module.exports = function calc(gd, trace) {
     }
 };
 
-},{"../../components/colorscale/calc":521}],858:[function(require,module,exports){
+},{"../../components/colorscale/calc":547}],884:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134468,7 +135118,7 @@ module.exports = function colorbar(gd, cd) {
         .options(trace.colorbar)();
 };
 
-},{"../../components/colorbar/draw":517,"../../components/colorscale/get_scale":526,"../../lib":607,"../../plots/plots":694,"d3":125,"fast-isnumeric":129}],859:[function(require,module,exports){
+},{"../../components/colorbar/draw":543,"../../components/colorscale/get_scale":552,"../../lib":633,"../../plots/plots":720,"d3":125,"fast-isnumeric":129}],885:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134662,7 +135312,7 @@ proto.update = function(data) {
         yc = coords[1],
         contourLevels = scene.contourLevels;
 
-    //Save data
+    // Save data
     this.data = data;
 
     /*
@@ -134721,7 +135371,7 @@ proto.update = function(data) {
 
     params.intensityBounds = [data.cmin, data.cmax];
 
-    //Refine if necessary
+    // Refine if necessary
     if(data.surfacecolor) {
         var intensity = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]);
 
@@ -134831,7 +135481,7 @@ function createSurfaceTrace(scene, data) {
 
 module.exports = createSurfaceTrace;
 
-},{"../../lib/str2rgbarray":620,"gl-surface3d":235,"ndarray":459,"ndarray-fill":452,"ndarray-homography":457,"ndarray-ops":458,"tinycolor2":480}],860:[function(require,module,exports){
+},{"../../lib/str2rgbarray":646,"gl-surface3d":261,"ndarray":485,"ndarray-fill":478,"ndarray-homography":483,"ndarray-ops":484,"tinycolor2":506}],886:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134884,7 +135534,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    //Coerce remaining properties
+    // Coerce remaining properties
     [
         'lighting.ambient',
         'lighting.diffuse',
@@ -134948,7 +135598,7 @@ function mapLegacy(traceIn, oldAttr, newAttr) {
     }
 }
 
-},{"../../components/colorscale/defaults":524,"../../lib":607,"./attributes":856}],861:[function(require,module,exports){
+},{"../../components/colorscale/defaults":550,"../../lib":633,"./attributes":882}],887:[function(require,module,exports){
 /**
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
@@ -134978,5 +135628,5 @@ Surface.meta = {
 
 module.exports = Surface;
 
-},{"../../plots/gl3d":674,"./attributes":856,"./calc":857,"./colorbar":858,"./convert":859,"./defaults":860}]},{},[12])(12)
+},{"../../plots/gl3d":700,"./attributes":882,"./calc":883,"./colorbar":884,"./convert":885,"./defaults":886}]},{},[12])(12)
 });

@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.17.1
+* plotly.js (gl3d) v1.17.2
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -32125,7 +32125,7 @@ var ndarray   = require('ndarray')
 
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_55_arg0_||255>_inline_55_arg1_||255>_inline_55_arg2_||255>_inline_55_arg3_){var _inline_55_l=_inline_55_arg4_-_inline_55_arg6_[0],_inline_55_a=_inline_55_arg5_-_inline_55_arg6_[1],_inline_55_f=_inline_55_l*_inline_55_l+_inline_55_a*_inline_55_a;_inline_55_f<this_closestD2&&(this_closestD2=_inline_55_f,this_closestX=_inline_55_arg6_[0],this_closestY=_inline_55_arg6_[1])}}","args":[{"name":"_inline_55_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_55_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_55_a","_inline_55_f","_inline_55_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_52_arg0_||255>_inline_52_arg1_||255>_inline_52_arg2_||255>_inline_52_arg3_){var _inline_52_l=_inline_52_arg4_-_inline_52_arg6_[0],_inline_52_a=_inline_52_arg5_-_inline_52_arg6_[1],_inline_52_f=_inline_52_l*_inline_52_l+_inline_52_a*_inline_52_a;_inline_52_f<this_closestD2&&(this_closestD2=_inline_52_f,this_closestX=_inline_52_arg6_[0],this_closestY=_inline_52_arg6_[1])}}","args":[{"name":"_inline_52_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_52_a","_inline_52_f","_inline_52_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -32282,7 +32282,6 @@ var GLError                = require("./lib/GLError")
 //Shader object
 function Shader(gl) {
   this.gl         = gl
-  this.gl.lastAttribCount = 0  // fixme where else should we store info, safe but not nice on the gl object
 
   //Default initialize these to null
   this._vref      =
@@ -32302,38 +32301,10 @@ proto.bind = function() {
   if(!this.program) {
     this._relink()
   }
-
-  // ensuring that we have the right number of enabled vertex attributes
-  var i
-  var newAttribCount = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES) // more robust approach
-  //var newAttribCount = Object.keys(this.attributes).length // avoids the probably immaterial introspection slowdown
-  var oldAttribCount = this.gl.lastAttribCount
-  if(newAttribCount > oldAttribCount) {
-    for(i = oldAttribCount; i < newAttribCount; i++) {
-      this.gl.enableVertexAttribArray(i)
-    }
-  } else if(oldAttribCount > newAttribCount) {
-    for(i = newAttribCount; i < oldAttribCount; i++) {
-      this.gl.disableVertexAttribArray(i)
-    }
-  }
-
-  this.gl.lastAttribCount = newAttribCount
-
   this.gl.useProgram(this.program)
 }
 
 proto.dispose = function() {
-
-  // disabling vertex attributes so new shader starts with zero
-  // and it's also useful if all shaders are disposed but the
-  // gl context is reused for subsequent replotting
-  var oldAttribCount = this.gl.lastAttribCount
-  for (var i = 0; i < oldAttribCount; i++) {
-    this.gl.disableVertexAttribArray(i)
-  }
-  this.gl.lastAttribCount = 0
-
   if(this._fref) {
     this._fref.dispose()
   }
@@ -32420,8 +32391,7 @@ proto.update = function(
   var attributeUnpacked  = []
   var attributeNames     = []
   var attributeLocations = []
-  var i
-  for(i=0; i<attributes.length; ++i) {
+  for(var i=0; i<attributes.length; ++i) {
     var attr = attributes[i]
     if(attr.type.indexOf('mat') >= 0) {
       var size = attr.type.charAt(attr.type.length-1)|0
@@ -32461,7 +32431,7 @@ proto.update = function(
 
   //For all unspecified attributes, assign them lexicographically min attribute
   var curLocation = 0
-  for(i=0; i<attributeLocations.length; ++i) {
+  for(var i=0; i<attributeLocations.length; ++i) {
     if(attributeLocations[i] < 0) {
       while(attributeLocations.indexOf(curLocation) >= 0) {
         curLocation += 1
@@ -38516,7 +38486,7 @@ function mouseWheelListen(element, callback, noScroll) {
 
 
 
-var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_7_arg1_=_inline_7_arg2_.apply(void 0,_inline_7_arg0_)}","args":[{"name":"_inline_7_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_7_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_7_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var fill = require('cwise/lib/wrapper')({"args":["index","array","scalar"],"pre":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"body":{"body":"{_inline_4_arg1_=_inline_4_arg2_.apply(void 0,_inline_4_arg0_)}","args":[{"name":"_inline_4_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_4_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_4_arg2_","lvalue":false,"rvalue":true,"count":1}],"thisVars":[],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 module.exports = function(array, f) {
   fill(array, f)
@@ -38700,13 +38670,13 @@ module.exports.d3 = interp3d
 var interp  = require('ndarray-linear-interpolate')
 
 
-var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_33_arg4_)}","args":[{"name":"_inline_33_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_33_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_34_arg2_(this_warped,_inline_34_arg0_),_inline_34_arg1_=_inline_34_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_34_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_34_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_34_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
+var do_warp = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=new Array(_inline_21_arg4_)}","args":[{"name":"_inline_21_arg0_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg1_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg2_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg3_","lvalue":false,"rvalue":false,"count":0},{"name":"_inline_21_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_22_arg2_(this_warped,_inline_22_arg0_),_inline_22_arg1_=_inline_22_arg3_.apply(void 0,this_warped)}","args":[{"name":"_inline_22_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_22_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_22_arg4_","lvalue":false,"rvalue":false,"count":0}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warpND","blockSize":64})
 
-var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_37_arg2_(this_warped,_inline_37_arg0_),_inline_37_arg1_=_inline_37_arg3_(_inline_37_arg4_,this_warped[0])}","args":[{"name":"_inline_37_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_37_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_37_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
+var do_warp_1 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_25_arg2_(this_warped,_inline_25_arg0_),_inline_25_arg1_=_inline_25_arg3_(_inline_25_arg4_,this_warped[0])}","args":[{"name":"_inline_25_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_25_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_25_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp1D","blockSize":64})
 
-var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_40_arg2_(this_warped,_inline_40_arg0_),_inline_40_arg1_=_inline_40_arg3_(_inline_40_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_40_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_40_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_40_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
+var do_warp_2 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_28_arg2_(this_warped,_inline_28_arg0_),_inline_28_arg1_=_inline_28_arg3_(_inline_28_arg4_,this_warped[0],this_warped[1])}","args":[{"name":"_inline_28_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_28_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_28_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp2D","blockSize":64})
 
-var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_43_arg2_(this_warped,_inline_43_arg0_),_inline_43_arg1_=_inline_43_arg3_(_inline_43_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_43_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_43_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_43_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
+var do_warp_3 = require('cwise/lib/wrapper')({"args":["index","array","scalar","scalar","scalar"],"pre":{"body":"{this_warped=[0,0,0]}","args":[],"thisVars":["this_warped"],"localVars":[]},"body":{"body":"{_inline_31_arg2_(this_warped,_inline_31_arg0_),_inline_31_arg1_=_inline_31_arg3_(_inline_31_arg4_,this_warped[0],this_warped[1],this_warped[2])}","args":[{"name":"_inline_31_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg1_","lvalue":true,"rvalue":false,"count":1},{"name":"_inline_31_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_31_arg4_","lvalue":false,"rvalue":true,"count":1}],"thisVars":["this_warped"],"localVars":[]},"post":{"body":"{}","args":[],"thisVars":[],"localVars":[]},"debug":false,"funcName":"warp3D","blockSize":64})
 
 module.exports = function warp(dest, src, func) {
   switch(src.shape.length) {
@@ -46753,16 +46723,16 @@ function drawOne(gd, index, opt, value) {
         // and the annotation center are visible
         if(options.showarrow) {
             if(options.axref === options.xref) {
-                //we don't want to constrain if the tail is absolute
-                //or the slope (which is meaningful) will change.
+                // we don't want to constrain if the tail is absolute
+                // or the slope (which is meaningful) will change.
                 arrowX = annPosPx.x;
             } else {
                 arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
             }
 
             if(options.ayref === options.yref) {
-                //we don't want to constrain if the tail is absolute
-                //or the slope (which is meaningful) will change.
+                // we don't want to constrain if the tail is absolute
+                // or the slope (which is meaningful) will change.
                 arrowY = annPosPx.y;
             } else {
                 arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);
@@ -48203,7 +48173,7 @@ module.exports = function draw(gd, id) {
             container.attr('transform',
                 'translate(' + (gs.l - xoffset) + ',' + gs.t + ')');
 
-            //auto margin adjustment
+            // auto margin adjustment
             Plots.autoMargin(gd, id, {
                 x: opts.x,
                 y: opts.y,
@@ -49485,8 +49455,10 @@ function singlePointStyle(d, sel, trace, markerScale, lineScale, marker, markerL
 
             // handle multi-trace graph edit case
             if(d.ms === 'various' || marker.size === 'various') r = 3;
-            else r = subTypes.isBubble(trace) ?
+            else {
+                r = subTypes.isBubble(trace) ?
                         sizeFn(d.ms) : (marker.size || 6) / 2;
+            }
 
             // store the calculated size so hover can use it
             d.mrc = r;
@@ -52172,7 +52144,7 @@ function computeLegendDimensions(gd, groups, traces) {
             maxTraceWidth = 0,
             offsetX = 0;
 
-        //calculate largest width for traces and use for width of all legend items
+        // calculate largest width for traces and use for width of all legend items
         traces.each(function(d) {
             maxTraceWidth = Math.max(40 + d[0].width, maxTraceWidth);
         });
@@ -52186,7 +52158,7 @@ function computeLegendDimensions(gd, groups, traces) {
                 offsetX = 0;
                 rowHeight = rowHeight + maxTraceHeight;
                 opts.height = opts.height + maxTraceHeight;
-                //reset for next row
+                // reset for next row
                 maxTraceHeight = 0;
             }
 
@@ -52197,7 +52169,7 @@ function computeLegendDimensions(gd, groups, traces) {
             opts.width += traceGap + traceWidth;
             opts.height = Math.max(opts.height, legendItem.height);
 
-            //keep track of tallest trace in group
+            // keep track of tallest trace in group
             offsetX += traceGap + traceWidth;
             maxTraceHeight = Math.max(legendItem.height, maxTraceHeight);
         });
@@ -57103,7 +57075,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.17.1';
+exports.version = '1.17.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -59110,7 +59082,7 @@ exports.apply2DTransform = function(transform) {
         var args = arguments;
         if(args.length === 3) {
             args = args[0];
-        }//from map
+        }// from map
         var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
         return exports.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
     };
@@ -61511,7 +61483,7 @@ function setPlotContext(gd, config) {
         }
     }
 
-    //staticPlot forces a bunch of others:
+    // staticPlot forces a bunch of others:
     if(context.staticPlot) {
         context.editable = false;
         context.autosizable = false;
@@ -61574,8 +61546,8 @@ function plotPolar(gd, data, layout) {
 
     var titleLayout = function() {
         this.call(svgTextUtils.convertToTspans);
-        //TODO: html/mathjax
-        //TODO: center title
+        // TODO: html/mathjax
+        // TODO: center title
     };
 
     var title = polarPlotSVG.select('.title-group text')
@@ -62646,7 +62618,7 @@ function _restyle(gd, aobj, _traces) {
                 } else if(Registry.traceIs(cont, 'cartesian')) {
                     Lib.nestedProperty(cont, 'marker.colors')
                         .set(Lib.nestedProperty(cont, 'marker.color').get());
-                    //look for axes that are no longer in use and delete them
+                    // look for axes that are no longer in use and delete them
                     flagAxForDelete[cont.xaxis || 'x'] = true;
                     flagAxForDelete[cont.yaxis || 'y'] = true;
                 }
@@ -65781,7 +65753,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, axLetter, dflt) {
     return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
-//todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
+// todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
 // find the list of possible axes to reference with an axref or ayref attribute
 // and coerce it to that list
 axes.coerceARef = function(containerIn, containerOut, gd, axLetter, dflt) {
@@ -66415,7 +66387,7 @@ axes.autoTicks = function(ax, roughDTick) {
             ax.dtick = roundDTick(roughDTick, 1000, roundBase60);
         }
         else {
-            //milliseconds
+            // milliseconds
             base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
@@ -66423,7 +66395,7 @@ axes.autoTicks = function(ax, roughDTick) {
     else if(ax.type === 'log') {
         ax.tick0 = 0;
 
-        //only show powers of 10
+        // only show powers of 10
         if(roughDTick > 0.7) ax.dtick = Math.ceil(roughDTick);
         else if(Math.abs(ax.range[1] - ax.range[0]) < 1) {
             // span is less than one power of 10
@@ -70269,7 +70241,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
                 p1 = g1[0];
             topOverlap = p0.pos + p0.dp + p0.size - p1.pos - p1.dp + p1.size;
 
-            //Only group points that lie on the same axes
+            // Only group points that lie on the same axes
             if(topOverlap > 0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
                 // push the new point(s) added to this group out of the way
                 for(j = g1.length - 1; j >= 0; j--) g1[j].dp += topOverlap;
@@ -70879,7 +70851,7 @@ module.exports = {
         valType: 'enumerated',
         values: [
             'trace', 'category ascending', 'category descending', 'array'
-            /*, 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
+            /* , 'value ascending', 'value descending'*/ // value ascending / descending to be implemented later
         ],
         dflt: 'trace',
         
@@ -72330,7 +72302,7 @@ function createCamera(element, options) {
                 var curCenter = view.computedCenter.slice();
                 view.setMode(mode);
                 if(mode === 'turntable') {
-                    //Hacky time warping stuff to generate smooth animation
+                    // Hacky time warping stuff to generate smooth animation
                     var t0 = now();
                     view._active.lookAt(t0, curEye, curCenter, curUp);
                     view._active.lookAt(t0 + 500, curEye, curCenter, [0, 0, 1]);
@@ -72422,17 +72394,17 @@ function createCamera(element, options) {
         var drot = Math.PI * camera.rotateSpeed;
 
         if((rotate && left && !ctrl && !alt && !shift) || (left && !ctrl && !alt && shift)) {
-            //Rotate
+            // Rotate
             view.rotate(t, flipX * drot * dx, -flipY * drot * dy, 0);
         }
 
         if((pan && left && !ctrl && !alt && !shift) || right || (left && ctrl && !alt && !shift)) {
-            //Pan
+            // Pan
             view.pan(t, -camera.translateSpeed * dx * distance, camera.translateSpeed * dy * distance, 0);
         }
 
         if((zoom && left && !ctrl && !alt && !shift) || middle || (left && !ctrl && alt && !shift)) {
-            //Zoom
+            // Zoom
             var kzoom = -camera.zoomSpeed * dy / window.innerHeight * (t - view.lastT()) * 100;
             view.pan(t, 0, 0, distance * (Math.exp(kzoom) - 1));
         }
@@ -72867,7 +72839,7 @@ proto.merge = function(sceneLayout) {
     for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
-        /////// Axes labels //
+        // Axes labels
         opts.labels[i] = convertHTMLToUnicode(axes.title);
         if('titlefont' in axes) {
             if(axes.titlefont.color) opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
@@ -72875,7 +72847,7 @@ proto.merge = function(sceneLayout) {
             if(axes.titlefont.size) opts.labelSize[i] = axes.titlefont.size;
         }
 
-        /////// LINES ////////
+        // Lines
         if('showline' in axes) opts.lineEnable[i] = axes.showline;
         if('linecolor' in axes) opts.lineColor[i] = str2RgbaArray(axes.linecolor);
         if('linewidth' in axes) opts.lineWidth[i] = axes.linewidth;
@@ -72891,8 +72863,7 @@ proto.merge = function(sceneLayout) {
         if('zerolinecolor' in axes) opts.zeroLineColor[i] = str2RgbaArray(axes.zerolinecolor);
         if('zerolinewidth' in axes) opts.zeroLineWidth[i] = axes.zerolinewidth;
 
-        //////// TICKS /////////
-        /// tick lines
+        // tick lines
         if('ticks' in axes && !!axes.ticks) opts.lineTickEnable[i] = true;
         else opts.lineTickEnable[i] = false;
 
@@ -73234,8 +73205,8 @@ module.exports = createSpikeOptions;
 * LICENSE file in the root directory of this source tree.
 */
 
-/*eslint block-scoped-var: 0*/
-/*eslint no-redeclare: 0*/
+/* eslint block-scoped-var: 0*/
+/* eslint no-redeclare: 0*/
 
 'use strict';
 
@@ -73310,7 +73281,7 @@ function computeTickMarks(scene) {
 
     axesOptions.ticks = ticks;
 
-    //Calculate tick lengths dynamically
+    // Calculate tick lengths dynamically
     for(var i = 0; i < 3; ++i) {
         centerPoint[i] = 0.5 * (scene.glplot.bounds[0][i] + scene.glplot.bounds[1][i]);
         for(var j = 0; j < 2; ++j) {
@@ -73567,7 +73538,7 @@ function initializeGLPlot(scene, fullLayout, canvas, gl) {
 
     scene.glplot.onrender = render.bind(null, scene);
 
-    //List of scene objects
+    // List of scene objects
     scene.traces = {};
 
     return true;
@@ -73605,7 +73576,7 @@ function Scene(options, fullLayout) {
     this.id = options.id || 'scene';
     this.fullSceneLayout = fullLayout[this.id];
 
-    //Saved from last call to plot()
+    // Saved from last call to plot()
     this.plotArgs = [ [], {}, {} ];
 
     /*
@@ -73617,7 +73588,7 @@ function Scene(options, fullLayout) {
     this.staticMode = !!options.staticPlot;
     this.pixelRatio = options.plotGlPixelRatio || 2;
 
-    //Coordinate rescaling
+    // Coordinate rescaling
     this.dataScale = [1, 1, 1];
 
     this.contourLevels = [ [], [], [] ];
@@ -73679,7 +73650,7 @@ function computeTraceBounds(scene, trace, bounds) {
 }
 
 proto.plot = function(sceneData, fullLayout, layout) {
-    //Save parameters
+    // Save parameters
     this.plotArgs = [sceneData, fullLayout, layout];
 
     if(this.glplot.contextLost) return;
@@ -73694,7 +73665,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
 
     this.glplot.snapToData = true;
 
-    //Update layout
+    // Update layout
     this.fullSceneLayout = fullSceneLayout;
 
     this.glplotLayout = fullSceneLayout;
@@ -73704,7 +73675,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     // Update camera mode
     this.updateFx(fullSceneLayout.dragmode, fullSceneLayout.hovermode);
 
-    //Update scene
+    // Update scene
     this.glplot.update({});
 
     // Update axes functions BEFORE updating traces
@@ -73713,11 +73684,11 @@ proto.plot = function(sceneData, fullLayout, layout) {
         setConvert(axis);
     }
 
-    //Convert scene data
+    // Convert scene data
     if(!sceneData) sceneData = [];
     else if(!Array.isArray(sceneData)) sceneData = [sceneData];
 
-    //Compute trace bounding box
+    // Compute trace bounding box
     var dataBounds = [
         [Infinity, Infinity, Infinity],
         [-Infinity, -Infinity, -Infinity]
@@ -73743,10 +73714,10 @@ proto.plot = function(sceneData, fullLayout, layout) {
         }
     }
 
-    //Save scale
+    // Save scale
     this.dataScale = dataScale;
 
-    //Update traces
+    // Update traces
     for(i = 0; i < sceneData.length; ++i) {
         data = sceneData[i];
         if(data.visible !== true) {
@@ -73762,7 +73733,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
         trace.name = data.name;
     }
 
-    //Remove empty traces
+    // Remove empty traces
     var traceIds = Object.keys(this.traces);
 
     trace_id_loop:
@@ -73777,7 +73748,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
         delete this.traces[traceIds[i]];
     }
 
-    //Update ranges (needs to be called *after* objects are added due to updates)
+    // Update ranges (needs to be called *after* objects are added due to updates)
     var sceneBounds = [[0, 0, 0], [0, 0, 0]],
         axisDataRange = [],
         axisTypeRatios = {};
@@ -73830,14 +73801,14 @@ proto.plot = function(sceneData, fullLayout, layout) {
         }
         axisDataRange[i] = sceneBounds[1][i] - sceneBounds[0][i];
 
-        //Update plot bounds
+        // Update plot bounds
         this.glplot.bounds[0][i] = sceneBounds[0][i] * dataScale[i];
         this.glplot.bounds[1][i] = sceneBounds[1][i] * dataScale[i];
     }
 
     var axesScaleRatio = [1, 1, 1];
 
-    //Compute axis scale per category
+    // Compute axis scale per category
     for(i = 0; i < 3; ++i) {
         axis = fullSceneLayout[axisProperties[i]];
         axisType = axis.type;
@@ -73897,7 +73868,7 @@ proto.plot = function(sceneData, fullLayout, layout) {
     this.glplot.aspect = aspectRatio;
 
 
-    //Update frame position for multi plots
+    // Update frame position for multi plots
     var domain = fullSceneLayout.domain || null,
         size = fullLayout._size || null;
 
@@ -73918,7 +73889,7 @@ proto.destroy = function() {
     this.glplot.dispose();
     this.container.parentNode.removeChild(this.container);
 
-    //Remove reference to glplot
+    // Remove reference to glplot
     this.glplot = null;
 };
 
@@ -74031,10 +74002,10 @@ proto.toImage = function(format) {
 
     if(this.staticMode) this.container.appendChild(STATIC_CANVAS);
 
-    //Force redraw
+    // Force redraw
     this.glplot.redraw();
 
-    //Grab context and yank out pixels
+    // Grab context and yank out pixels
     var gl = this.glplot.gl;
     var w = gl.drawingBufferWidth;
     var h = gl.drawingBufferHeight;
@@ -74044,7 +74015,7 @@ proto.toImage = function(format) {
     var pixels = new Uint8Array(w * h * 4);
     gl.readPixels(0, 0, w, h, gl.RGBA, gl.UNSIGNED_BYTE, pixels);
 
-    //Flip pixels
+    // Flip pixels
     for(var j = 0, k = h - 1; j < k; ++j, --k) {
         for(var i = 0; i < w; ++i) {
             for(var l = 0; l < 4; ++l) {
@@ -75485,7 +75456,7 @@ plots.modifyFrames = function(gd, operations) {
 
         switch(op.type) {
             // No reason this couldn't exist, but is currently unused/untested:
-            /*case 'rename':
+            /* case 'rename':
                 frame = _frames[op.index];
                 delete _hash[frame.name];
                 _hash[op.name] = frame;
@@ -77500,6 +77471,7 @@ var µ = module.exports = { version: '0.2.2' };
 * LICENSE file in the root directory of this source tree.
 */
 
+/* eslint-disable new-cap */
 
 'use strict';
 
@@ -77587,8 +77559,8 @@ manager.fillLayout = function(_gd) {
 
 'use strict';
 
-//Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager
-//Copyright (c) 2010-2013 Arthur Clemens, arthur@visiblearea.com
+// Modified from https://github.com/ArthurClemens/Javascript-Undo-Manager
+// Copyright (c) 2010-2013 Arthur Clemens, arthur@visiblearea.com
 module.exports = function UndoManager() {
     var undoCommands = [],
         index = -1,
@@ -78658,7 +78630,7 @@ module.exports = {
         
     },
 
-    //Color field
+    // Color field
     color: {
         valType: 'color',
         
@@ -78675,10 +78647,10 @@ module.exports = {
         
     },
 
-    //Opacity
+    // Opacity
     opacity: extendFlat({}, surfaceAtts.opacity),
 
-    //Flat shaded mode
+    // Flat shaded mode
     flatshading: {
         valType: 'boolean',
         
@@ -78804,7 +78776,7 @@ proto.update = function(data) {
 
     this.data = data;
 
-    //Unpack position data
+    // Unpack position data
     function toDataCoords(axis, coord, scale) {
         return coord.map(function(x) {
             return axis.d2l(x) * scale;
@@ -78869,7 +78841,7 @@ proto.update = function(data) {
         config.meshColor = str2RgbaArray(data.color);
     }
 
-    //Update mesh
+    // Update mesh
     this.mesh.update(config);
 };
 
@@ -78940,7 +78912,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         });
     }
 
-    //Coerce remaining properties
+    // Coerce remaining properties
     [
         'lighting.ambient',
         'lighting.diffuse',
@@ -79465,7 +79437,7 @@ module.exports = function calc(gd, trace) {
     }
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if(typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
+    if(typeof s !== 'undefined') Lib.mergeArray(s, cd, 'ms');
 
     gd.firstscatter = false;
     return cd;
@@ -81444,7 +81416,7 @@ function calculateErrorParams(errors) {
 }
 
 function calculateTextOffset(tp) {
-    //Read out text properties
+    // Read out text properties
     var textOffset = [0, 0];
     if(Array.isArray(tp)) return [0, -1];
     if(tp.indexOf('bottom') >= 0) textOffset[1] += 1;
@@ -81498,7 +81470,7 @@ function convertPlotlyOptions(scene, data) {
         len = x.length,
         text;
 
-    //Convert points
+    // Convert points
     for(i = 0; i < len; i++) {
         // sanitize numbers and apply transforms based on axes.type
         xc = xaxis.d2l(x[i]) * scaleFactor[0];
@@ -81515,7 +81487,7 @@ function convertPlotlyOptions(scene, data) {
         for(i = 0; i < len; i++) text[i] = data.text;
     }
 
-    //Build object parameters
+    // Build object parameters
     params = {
         position: points,
         mode: data.mode,
@@ -81594,10 +81566,10 @@ proto.update = function(data) {
         textOptions,
         dashPattern = DASH_PATTERNS.solid;
 
-    //Save data
+    // Save data
     this.data = data;
 
-    //Run data conversion
+    // Run data conversion
     var options = convertPlotlyOptions(this.scene, data);
 
     if('mode' in options) {
@@ -81612,7 +81584,7 @@ proto.update = function(data) {
     this.color = arrayToColor(options.scatterColor) ||
                  arrayToColor(options.lineColor);
 
-    //Save data points
+    // Save data points
     this.dataPoints = options.position;
 
     lineOptions = {
@@ -82376,7 +82348,7 @@ proto.update = function(data) {
         yc = coords[1],
         contourLevels = scene.contourLevels;
 
-    //Save data
+    // Save data
     this.data = data;
 
     /*
@@ -82435,7 +82407,7 @@ proto.update = function(data) {
 
     params.intensityBounds = [data.cmin, data.cmax];
 
-    //Refine if necessary
+    // Refine if necessary
     if(data.surfacecolor) {
         var intensity = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]);
 
@@ -82598,7 +82570,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    //Coerce remaining properties
+    // Coerce remaining properties
     [
         'lighting.ambient',
         'lighting.diffuse',
