@@ -93,7 +93,7 @@ exports.apply2DTransform = function(transform) {
         var args = arguments;
         if(args.length === 3) {
             args = args[0];
-        }//from map
+        }// from map
         var xy = arguments.length === 1 ? args[0] : [args[0], args[1]];
         return exports.dot(transform, [xy[0], xy[1], 1]).slice(0, 2);
     };

@@ -6,8 +6,8 @@
 * LICENSE file in the root directory of this source tree.
 */
 
-/*eslint block-scoped-var: 0*/
-/*eslint no-redeclare: 0*/
+/* eslint block-scoped-var: 0*/
+/* eslint no-redeclare: 0*/
 
 'use strict';
 
@@ -82,7 +82,7 @@ function computeTickMarks(scene) {
 
     axesOptions.ticks = ticks;
 
-    //Calculate tick lengths dynamically
+    // Calculate tick lengths dynamically
     for(var i = 0; i < 3; ++i) {
         centerPoint[i] = 0.5 * (scene.glplot.bounds[0][i] + scene.glplot.bounds[1][i]);
         for(var j = 0; j < 2; ++j) {

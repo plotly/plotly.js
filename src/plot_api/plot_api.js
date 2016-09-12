@@ -355,7 +355,7 @@ function setPlotContext(gd, config) {
         }
     }
 
-    //staticPlot forces a bunch of others:
+    // staticPlot forces a bunch of others:
     if(context.staticPlot) {
         context.editable = false;
         context.autosizable = false;
@@ -418,8 +418,8 @@ function plotPolar(gd, data, layout) {
 
     var titleLayout = function() {
         this.call(svgTextUtils.convertToTspans);
-        //TODO: html/mathjax
-        //TODO: center title
+        // TODO: html/mathjax
+        // TODO: center title
     };
 
     var title = polarPlotSVG.select('.title-group text')
@@ -1490,7 +1490,7 @@ function _restyle(gd, aobj, _traces) {
                 } else if(Registry.traceIs(cont, 'cartesian')) {
                     Lib.nestedProperty(cont, 'marker.colors')
                         .set(Lib.nestedProperty(cont, 'marker.color').get());
-                    //look for axes that are no longer in use and delete them
+                    // look for axes that are no longer in use and delete them
                     flagAxForDelete[cont.xaxis || 'x'] = true;
                     flagAxForDelete[cont.yaxis || 'y'] = true;
                 }

@@ -1215,7 +1215,7 @@ plots.modifyFrames = function(gd, operations) {
 
         switch(op.type) {
             // No reason this couldn't exist, but is currently unused/untested:
-            /*case 'rename':
+            /* case 'rename':
                 frame = _frames[op.index];
                 delete _hash[frame.name];
                 _hash[op.name] = frame;

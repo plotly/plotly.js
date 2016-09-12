@@ -527,7 +527,7 @@ module.exports = function draw(gd, id) {
             container.attr('transform',
                 'translate(' + (gs.l - xoffset) + ',' + gs.t + ')');
 
-            //auto margin adjustment
+            // auto margin adjustment
             Plots.autoMargin(gd, id, {
                 x: opts.x,
                 y: opts.y,

@@ -69,10 +69,10 @@ describe('Plotly.downloadImage', function() {
 
 
 function downloadTest(gd, format, done) {
-    //use MutationObserver to monitor the DOM
-    //for changes
-    //code modeled after
-    //https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
+    // use MutationObserver to monitor the DOM
+    // for changes
+    // code modeled after
+    // https://developer.mozilla.org/en-US/docs/Web/API/MutationObserver
     // select the target node
     var target = document.body;
     var domchanges = [];

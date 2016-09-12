@@ -118,7 +118,7 @@ module.exports = function convert(calcTrace) {
                 'text-offset': textOpts.offset
 
                 // TODO font family
-                //'text-font': symbol.textfont.family.split(', '),
+                // 'text-font': symbol.textfont.family.split(', '),
             });
 
             Lib.extendFlat(symbol.paint, {

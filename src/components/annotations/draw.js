@@ -409,16 +409,16 @@ function drawOne(gd, index, opt, value) {
         // and the annotation center are visible
         if(options.showarrow) {
             if(options.axref === options.xref) {
-                //we don't want to constrain if the tail is absolute
-                //or the slope (which is meaningful) will change.
+                // we don't want to constrain if the tail is absolute
+                // or the slope (which is meaningful) will change.
                 arrowX = annPosPx.x;
             } else {
                 arrowX = Lib.constrain(annPosPx.x - options.ax, 1, fullLayout.width - 1);
             }
 
             if(options.ayref === options.yref) {
-                //we don't want to constrain if the tail is absolute
-                //or the slope (which is meaningful) will change.
+                // we don't want to constrain if the tail is absolute
+                // or the slope (which is meaningful) will change.
                 arrowY = annPosPx.y;
             } else {
                 arrowY = Lib.constrain(annPosPx.y - options.ay, 1, fullLayout.height - 1);

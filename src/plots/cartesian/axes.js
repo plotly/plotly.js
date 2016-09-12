@@ -55,7 +55,7 @@ axes.coerceRef = function(containerIn, containerOut, gd, axLetter, dflt) {
     return Lib.coerce(containerIn, containerOut, attrDef, refAttr);
 };
 
-//todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
+// todo: duplicated per github PR 610. Should be consolidated with axes.coerceRef.
 // find the list of possible axes to reference with an axref or ayref attribute
 // and coerce it to that list
 axes.coerceARef = function(containerIn, containerOut, gd, axLetter, dflt) {
@@ -689,7 +689,7 @@ axes.autoTicks = function(ax, roughDTick) {
             ax.dtick = roundDTick(roughDTick, 1000, roundBase60);
         }
         else {
-            //milliseconds
+            // milliseconds
             base = Math.pow(10, Math.floor(Math.log(roughDTick) / Math.LN10));
             ax.dtick = roundDTick(roughDTick, base, roundBase10);
         }
@@ -697,7 +697,7 @@ axes.autoTicks = function(ax, roughDTick) {
     else if(ax.type === 'log') {
         ax.tick0 = 0;
 
-        //only show powers of 10
+        // only show powers of 10
         if(roughDTick > 0.7) ax.dtick = Math.ceil(roughDTick);
         else if(Math.abs(ax.range[1] - ax.range[0]) < 1) {
             // span is less than one power of 10

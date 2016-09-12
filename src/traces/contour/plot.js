@@ -542,7 +542,7 @@ function joinAllPaths(pi, perimeter) {
         endpt = pi.edgepaths[i][pi.edgepaths[i].length - 1];
         nexti = -1;
 
-        //now loop through sides, moving our endpoint until we find a new start
+        // now loop through sides, moving our endpoint until we find a new start
         for(cnt = 0; cnt < 4; cnt++) { // just to prevent infinite loops
             if(!endpt) {
                 Lib.log('Missing end?', i, pi);

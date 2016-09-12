@@ -1210,7 +1210,7 @@ function hoverAvoidOverlaps(hoverData, ax) {
                 p1 = g1[0];
             topOverlap = p0.pos + p0.dp + p0.size - p1.pos - p1.dp + p1.size;
 
-            //Only group points that lie on the same axes
+            // Only group points that lie on the same axes
             if(topOverlap > 0.01 && (p0.pmin === p1.pmin) && (p0.pmax === p1.pmax)) {
                 // push the new point(s) added to this group out of the way
                 for(j = g1.length - 1; j >= 0; j--) g1[j].dp += topOverlap;
