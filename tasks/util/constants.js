@@ -75,6 +75,7 @@ module.exports = {
     pathToCredentials: path.join(pathToBuild, 'credentials.json'),
     pathToSetPlotConfig: path.join(pathToBuild, 'set_plot_config.js'),
 
+    testContainerImage: 'plotly/testbed:latest',
     testContainerName: process.env.PLOTLYJS_TEST_CONTAINER_NAME || 'imagetest',
     testContainerPort: '9010',
     testContainerUrl: 'http://localhost:9010/',

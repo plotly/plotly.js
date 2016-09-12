@@ -8,7 +8,6 @@ test
 dist/extras
 
 circle.yml
-docker-compose.yml
 bower.json
 
 .ackrc

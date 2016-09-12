@@ -30,6 +30,7 @@
     "watch": "node tasks/watch.js",
     "lint": "eslint --version && eslint . || true",
     "lint-fix": "eslint . --fix",
+    "docker": "node tasks/docker.js",
     "pretest": "node tasks/pretest.js",
     "test-jasmine": "karma start test/jasmine/karma.conf.js",
     "citest-jasmine": "karma start test/jasmine/karma.ciconf.js",
