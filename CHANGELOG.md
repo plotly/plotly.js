@@ -10,6 +10,13 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.17.2] -- 2016-09-12
+
+### Fixed
+- 3D colored axis backgrounds and axis labels are rendered again (bug introduced
+  in 1.17.0) [#931]
+
+
 ## [1.17.1] -- 2016-09-09
 
 ### Fixed
