@@ -24,6 +24,7 @@ var Events = {
         if(plotObj._ev instanceof EventEmitter) return plotObj;
 
         var ev = new EventEmitter();
+        var internalEv = new EventEmitter();
 
         /*
          * Assign to plot._ev while we still live in a land
@@ -31,6 +32,16 @@ var Events = {
          * In the future we can make plot the event emitter itself.
          */
         plotObj._ev = ev;
+
+        /*
+         * Create a second event handler that will manage events *internally*.
+         * This allows parts of plotly to respond to thing like relayout without
+         * having to use the user-facing event handler. They cannot peacefully
+         * coexist on the same handler because a user invoking
+         * plotObj.removeAllListeners() would detach internal events, breaking
+         * plotly.
+         */
+        plotObj._internalEv = internalEv;
 
         /*
          * Assign bound methods from the ev to the plot object. These methods
@@ -47,6 +58,15 @@ var Events = {
         plotObj.removeAllListeners = ev.removeAllListeners.bind(ev);
 
         /*
+         * Create funtions for managing internal events. These are *only* triggered
+         * by the mirroring of external events via the emit function.
+         */
+        plotObj._internalOn = internalEv.on.bind(internalEv);
+        plotObj._internalOnce = internalEv.once.bind(internalEv);
+        plotObj._removeInternalListener = internalEv.removeListener.bind(internalEv);
+        plotObj._removeAllInternalListeners = internalEv.removeAllListeners.bind(internalEv);
+
+        /*
          * We must wrap emit to continue to support JQuery events. The idea
          * is to check to see if the user is using JQuery events, if they are
          * we emit JQuery events to trigger user handlers as well as the EventEmitter
@@ -58,6 +78,7 @@ var Events = {
             }
 
             ev.emit(event, data);
+            internalEv.emit(event, data);
         };
 
         return plotObj;
@@ -70,6 +91,7 @@ var Events = {
      * triggerHandler for backwards compatibility.
      */
     triggerHandler: function(plotObj, event, data) {
+        var i;
         var jQueryHandlerValue;
         var nodeEventHandlerValue;
         /*
@@ -98,8 +120,22 @@ var Events = {
         /*
          * Call all the handlers except the last one.
          */
-        for(var i = 0; i < handlers.length; i++) {
+        for(i = 0; i < handlers.length; i++) {
             handlers[i](data);
+        }
+
+        /* Do the same as for external-facing events, except trigger the same
+         * events on the internal handlers. This does *not* affect the return
+         * value. It simply mirrors triggers internally so that there's no
+         * conflict with external user-defined events when plotly manages
+         * events internally.
+         */
+        var internalHandlers = plotObj._internalEv._events[event];
+        if (internalHandlers) {
+            if(typeof internalHandlers === 'function') internalHandlers = [internalHandlers];
+            for(i = 0; i < internalHandlers.length; i++) {
+                internalHandlers[i](data);
+            }
         }
 
         /*
@@ -123,6 +159,13 @@ var Events = {
         delete plotObj.removeListener;
         delete plotObj.removeAllListeners;
         delete plotObj.emit;
+
+        delete plotObj._ev;
+        delete plotObj._internalEv;
+        delete plotObj._internalOn;
+        delete plotObj._internalOnce;
+        delete plotObj._removeInternalListener;
+        delete plotObj._removeAllInternalListeners;;
 
         return plotObj;
     }
