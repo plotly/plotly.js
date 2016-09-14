@@ -6,6 +6,11 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
+Plotly.register([
+    require('@src/transforms/filter'),
+    require('@src/transforms/groupby')
+]);
+
 describe('one-to-one transforms:', function() {
     'use strict';
 
@@ -764,7 +769,6 @@ describe('one-to-one transforms:', function() {
 
 });
 
-/*
 describe('one-to-many transforms:', function() {
     'use strict';
 
@@ -1317,7 +1321,7 @@ describe('multiple traces with transforms:', function() {
     });
 
 });
-*/
+
 function assertDims(dims) {
     var traces = d3.selectAll('.trace');
 
