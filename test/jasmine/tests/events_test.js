@@ -113,7 +113,7 @@ describe('Events', function() {
             expect(result).toBe('pong');
         });
 
-        it('mirrors events on the internal handler', function() {
+        it('does *not* mirror triggerHandler events on the internal handler', function() {
             var eventBaton = 0;
             var internalEventBaton = 0;
 
@@ -137,7 +137,7 @@ describe('Events', function() {
             var result = Events.triggerHandler(plotDiv, 'ping');
 
             expect(eventBaton).toBe(2);
-            expect(internalEventBaton).toBe(1);
+            expect(internalEventBaton).toBe(0);
             expect(result).toBe('pong');
         });
 

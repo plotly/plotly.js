@@ -89,9 +89,12 @@ var Events = {
      * all handlers for a particular event and returns the return value
      * of the LAST handler. This function also triggers jQuery's
      * triggerHandler for backwards compatibility.
+     *
+     * Note: triggerHandler has been recommended for deprecation in v2.0.0,
+     * so the additional behavior of triggerHandler triggering internal events
+     * is deliberate excluded in order to avoid reinforcing more usage.
      */
     triggerHandler: function(plotObj, event, data) {
-        var i;
         var jQueryHandlerValue;
         var nodeEventHandlerValue;
         /*
@@ -120,22 +123,8 @@ var Events = {
         /*
          * Call all the handlers except the last one.
          */
-        for(i = 0; i < handlers.length; i++) {
+        for(var i = 0; i < handlers.length; i++) {
             handlers[i](data);
-        }
-
-        /* Do the same as for external-facing events, except trigger the same
-         * events on the internal handlers. This does *not* affect the return
-         * value. It simply mirrors triggers internally so that there's no
-         * conflict with external user-defined events when plotly manages
-         * events internally.
-         */
-        var internalHandlers = plotObj._internalEv._events[event];
-        if(internalHandlers) {
-            if(typeof internalHandlers === 'function') internalHandlers = [internalHandlers];
-            for(i = 0; i < internalHandlers.length; i++) {
-                internalHandlers[i](data);
-            }
         }
 
         /*
