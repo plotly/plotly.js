@@ -131,7 +131,7 @@ var Events = {
          * events internally.
          */
         var internalHandlers = plotObj._internalEv._events[event];
-        if (internalHandlers) {
+        if(internalHandlers) {
             if(typeof internalHandlers === 'function') internalHandlers = [internalHandlers];
             for(i = 0; i < internalHandlers.length; i++) {
                 internalHandlers[i](data);
@@ -165,7 +165,7 @@ var Events = {
         delete plotObj._internalOn;
         delete plotObj._internalOnce;
         delete plotObj._removeInternalListener;
-        delete plotObj._removeAllInternalListeners;;
+        delete plotObj._removeAllInternalListeners;
 
         return plotObj;
     }

@@ -301,9 +301,10 @@ describe('Test Plots', function() {
 
         it('should unset everything in the gd except _context', function() {
             var expectedKeys = [
-                '_ev', 'on', 'once', 'removeListener', 'removeAllListeners',
-                'emit', '_context', '_replotPending', '_mouseDownTime',
-                '_hmpixcount', '_hmlumcount'
+                '_ev', '_internalEv', 'on', 'once', 'removeListener', 'removeAllListeners',
+                '_internalOn', '_internalOnce', '_removeInternalListener',
+                '_removeAllInternalListeners', 'emit', '_context', '_replotPending',
+                '_mouseDownTime', '_hmpixcount', '_hmlumcount'
             ];
 
             Plots.purge(gd);
