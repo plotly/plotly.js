@@ -6,13 +6,6 @@ var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
-Plotly.register([
-    //register filter in build
-    //require('@src/transforms/filter'),
-    require('@src/transforms/groupby')
-]);
-
-
 describe('one-to-one transforms:', function() {
     'use strict';
 

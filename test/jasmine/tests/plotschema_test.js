@@ -1,11 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-Plotly.register([
-    // until they become official
-    require('../assets/transforms/filter')
-]);
-
 describe('plot schema', function() {
     'use strict';
 
