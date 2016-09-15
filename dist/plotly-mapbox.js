@@ -1,5 +1,5 @@
 /**
-* plotly.js (mapbox) v1.16.4
+* plotly.js (mapbox) v1.16.5
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -54988,7 +54988,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.16.4';
+exports.version = '1.16.5';
 
 // plot api
 exports.plot = Plotly.plot;

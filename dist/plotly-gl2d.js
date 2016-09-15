@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl2d) v1.16.4
+* plotly.js (gl2d) v1.16.5
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -24519,7 +24519,7 @@ var ndarray   = require('ndarray')
 
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_52_arg0_||255>_inline_52_arg1_||255>_inline_52_arg2_||255>_inline_52_arg3_){var _inline_52_l=_inline_52_arg4_-_inline_52_arg6_[0],_inline_52_a=_inline_52_arg5_-_inline_52_arg6_[1],_inline_52_f=_inline_52_l*_inline_52_l+_inline_52_a*_inline_52_a;_inline_52_f<this_closestD2&&(this_closestD2=_inline_52_f,this_closestX=_inline_52_arg6_[0],this_closestY=_inline_52_arg6_[1])}}","args":[{"name":"_inline_52_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_52_a","_inline_52_f","_inline_52_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_46_arg0_||255>_inline_46_arg1_||255>_inline_46_arg2_||255>_inline_46_arg3_){var _inline_46_l=_inline_46_arg4_-_inline_46_arg6_[0],_inline_46_a=_inline_46_arg5_-_inline_46_arg6_[1],_inline_46_f=_inline_46_l*_inline_46_l+_inline_46_a*_inline_46_a;_inline_46_f<this_closestD2&&(this_closestD2=_inline_46_f,this_closestX=_inline_46_arg6_[0],this_closestY=_inline_46_arg6_[1])}}","args":[{"name":"_inline_46_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_46_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_46_a","_inline_46_f","_inline_46_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -24676,7 +24676,6 @@ var GLError                = require("./lib/GLError")
 //Shader object
 function Shader(gl) {
   this.gl         = gl
-  this.gl.lastAttribCount = 0  // fixme where else should we store info, safe but not nice on the gl object
 
   //Default initialize these to null
   this._vref      =
@@ -24696,38 +24695,10 @@ proto.bind = function() {
   if(!this.program) {
     this._relink()
   }
-
-  // ensuring that we have the right number of enabled vertex attributes
-  var i
-  var newAttribCount = this.gl.getProgramParameter(this.program, this.gl.ACTIVE_ATTRIBUTES) // more robust approach
-  //var newAttribCount = Object.keys(this.attributes).length // avoids the probably immaterial introspection slowdown
-  var oldAttribCount = this.gl.lastAttribCount
-  if(newAttribCount > oldAttribCount) {
-    for(i = oldAttribCount; i < newAttribCount; i++) {
-      this.gl.enableVertexAttribArray(i)
-    }
-  } else if(oldAttribCount > newAttribCount) {
-    for(i = newAttribCount; i < oldAttribCount; i++) {
-      this.gl.disableVertexAttribArray(i)
-    }
-  }
-
-  this.gl.lastAttribCount = newAttribCount
-
   this.gl.useProgram(this.program)
 }
 
 proto.dispose = function() {
-
-  // disabling vertex attributes so new shader starts with zero
-  // and it's also useful if all shaders are disposed but the
-  // gl context is reused for subsequent replotting
-  var oldAttribCount = this.gl.lastAttribCount
-  for (var i = 0; i < oldAttribCount; i++) {
-    this.gl.disableVertexAttribArray(i)
-  }
-  this.gl.lastAttribCount = 0
-
   if(this._fref) {
     this._fref.dispose()
   }
@@ -24814,8 +24785,7 @@ proto.update = function(
   var attributeUnpacked  = []
   var attributeNames     = []
   var attributeLocations = []
-  var i
-  for(i=0; i<attributes.length; ++i) {
+  for(var i=0; i<attributes.length; ++i) {
     var attr = attributes[i]
     if(attr.type.indexOf('mat') >= 0) {
       var size = attr.type.charAt(attr.type.length-1)|0
@@ -24855,7 +24825,7 @@ proto.update = function(
 
   //For all unspecified attributes, assign them lexicographically min attribute
   var curLocation = 0
-  for(i=0; i<attributeLocations.length; ++i) {
+  for(var i=0; i<attributeLocations.length; ++i) {
     if(attributeLocations[i] < 0) {
       while(attributeLocations.indexOf(curLocation) >= 0) {
         curLocation += 1
@@ -46523,7 +46493,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.16.4';
+exports.version = '1.16.5';
 
 // plot api
 exports.plot = Plotly.plot;
