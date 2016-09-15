@@ -121,28 +121,15 @@ Plotly.plot = function(gd, data, layout, config) {
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
     gd._replotting = true;
-    var hasData = gd._fullData.length > 0;
 
-    var subplots = Plotly.Axes.getSubplots(gd).join(''),
-        oldSubplots = Object.keys(gd._fullLayout._plots || {}).join(''),
-        hasSameSubplots = (oldSubplots === subplots);
+    // make or remake the framework if we need to
+    if(graphWasEmpty) makePlotFramework(gd);
 
-    // Make or remake the framework (ie container and axes) if we need to
-    // note: if they container already exists and has data,
-    //  the new layout gets ignored (as it should)
-    //  but if there's no data there yet, it's just a placeholder...
-    //  then it should destroy and remake the plot
-    if(hasData) {
-        if(gd.framework !== makePlotFramework || graphWasEmpty || !hasSameSubplots) {
-            gd.framework = makePlotFramework;
-            makePlotFramework(gd);
-        }
-    }
-    else if(!hasSameSubplots) {
+    // polar need a different framework
+    if(gd.framework !== makePlotFramework) {
         gd.framework = makePlotFramework;
         makePlotFramework(gd);
     }
-    else if(graphWasEmpty) makePlotFramework(gd);
 
     // save initial axis range once per graph
     if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
