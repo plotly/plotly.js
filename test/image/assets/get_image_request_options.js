@@ -23,6 +23,9 @@ module.exports = function getRequestOpts(specs) {
         scale: specs.scale || DEFAULT_SCALE
     };
 
+    if(specs.width) body.width = specs.width;
+    if(specs.height) body.height = specs.height;
+
     return {
         method: 'POST',
         url: constants.testContainerUrl,
