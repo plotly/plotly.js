@@ -9,7 +9,9 @@
 
 'use strict';
 
+var d3 = require('d3');
 var Plots = require('../plots');
+var Axes = require('./axes');
 
 var constants = require('./constants');
 
@@ -34,6 +36,8 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
         calcdata = gd.calcdata,
         modules = fullLayout._modules;
+
+    updateSubplots(gd);
 
     if(!Array.isArray(traces)) {
       // If traces is not provided, then it's a complete replot and missing
@@ -146,3 +150,185 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
         }
     }
 };
+
+function updateSubplots(gd) {
+    var fullLayout = gd._fullLayout,
+        subplotData = makeSubplotData(gd);
+
+    var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
+        .data(subplotData, String);
+
+    subplotLayers.enter().append('g')
+        .classed('subplot', true);
+
+    subplotLayers.order();
+
+    subplotLayers.each(function(subplot) {
+        var plotgroup = d3.select(this),
+            plotinfo = fullLayout._plots[subplot];
+
+        // references to any subplots overlaid on this one,
+        // filled in makeSubplotLayer
+        plotinfo.overlays = [];
+
+        plotgroup.call(makeSubplotLayer, gd, subplot);
+
+        // make separate drag layers for each subplot,
+        // but append them to paper rather than the plot groups,
+        // so they end up on top of the rest
+        plotinfo.draglayer = joinLayer(fullLayout._draggers, 'g', subplot);
+    });
+
+    // keep reference to shape layers in subplots
+    var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
+    fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
+    fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
+}
+
+function makeSubplotData(gd) {
+    var fullLayout = gd._fullLayout,
+        subplots = Axes.getSubplots(gd);
+
+    var subplotData = [],
+        overlays = [];
+
+    for(var i = 0; i < subplots.length; i++) {
+        var subplot = subplots[i],
+            plotinfo = fullLayout._plots[subplot];
+
+        var xa = plotinfo.xaxis,
+            ya = plotinfo.yaxis;
+
+        // is this subplot overlaid on another?
+        // ax.overlaying is the id of another axis of the same
+        // dimension that this one overlays to be an overlaid subplot,
+        // the main plot must exist make sure we're not trying to
+        // overlay on an axis that's already overlaying another
+        var xa2 = Axes.getFromId(gd, xa.overlaying) || xa;
+        if(xa2 !== xa && xa2.overlaying) {
+            xa2 = xa;
+            xa.overlaying = false;
+        }
+
+        var ya2 = Axes.getFromId(gd, ya.overlaying) || ya;
+        if(ya2 !== ya && ya2.overlaying) {
+            ya2 = ya;
+            ya.overlaying = false;
+        }
+
+        var mainplot = xa2._id + ya2._id;
+        if(mainplot !== subplot && subplots.indexOf(mainplot) !== -1) {
+            plotinfo.mainplot = mainplot;
+            overlays.push(subplot);
+
+            // for now force overlays to overlay completely... so they
+            // can drag together correctly and share backgrounds.
+            // Later perhaps we make separate axis domain and
+            // tick/line domain or something, so they can still share
+            // the (possibly larger) dragger and background but don't
+            // have to both be drawn over that whole domain
+            xa.domain = xa2.domain.slice();
+            ya.domain = ya2.domain.slice();
+        }
+        else {
+            subplotData.push(subplot);
+        }
+    }
+
+    // main subplots before overlays
+    subplotData = subplotData.concat(overlays);
+
+    return subplotData;
+}
+
+function makeSubplotLayer(plotgroup, gd, subplot) {
+    var fullLayout = gd._fullLayout,
+        plotinfo = fullLayout._plots[subplot];
+
+    // keep reference to plotgroup in _plots object
+    plotinfo.plotgroup = plotgroup;
+
+    // add class corresponding to the subplot id
+    plotgroup.classed(subplot, true);
+
+    // Layers to keep plot types in the right order.
+    // from back to front:
+    // 1. heatmaps, 2D histos and contour maps
+    // 2. bars / 1D histos
+    // 3. errorbars for bars and scatter
+    // 4. scatter
+    // 5. box plots
+    function plotLayers(parent) {
+        joinLayer(parent, 'g', 'imagelayer');
+        joinLayer(parent, 'g', 'maplayer');
+        joinLayer(parent, 'g', 'barlayer');
+        joinLayer(parent, 'g', 'boxlayer');
+        joinLayer(parent, 'g', 'scatterlayer');
+    }
+
+    if(!plotinfo.mainplot) {
+        plotinfo.bg = joinLayer(plotgroup, 'rect', 'bg');
+        plotinfo.bg.style('stroke-width', 0);
+
+        var backLayer = joinLayer(plotgroup, 'g', 'layer-subplot');
+        plotinfo.shapelayer = joinLayer(backLayer, 'g', 'shapelayer');
+        plotinfo.imagelayer = joinLayer(backLayer, 'g', 'imagelayer');
+
+        plotinfo.gridlayer = joinLayer(plotgroup, 'g', 'gridlayer');
+        plotinfo.overgrid = joinLayer(plotgroup, 'g', 'overgrid');
+
+        plotinfo.zerolinelayer = joinLayer(plotgroup, 'g', 'zerolinelayer');
+        plotinfo.overzero = joinLayer(plotgroup, 'g', 'overzero');
+
+        plotinfo.plot = joinLayer(plotgroup, 'g', 'plot');
+        plotinfo.overplot = joinLayer(plotgroup, 'g', 'overplot');
+
+        plotinfo.xlines = joinLayer(plotgroup, 'path', 'xlines');
+        plotinfo.ylines = joinLayer(plotgroup, 'path', 'ylines');
+        plotinfo.overlines = joinLayer(plotgroup, 'g', 'overlines');
+
+        plotinfo.xaxislayer = joinLayer(plotgroup, 'g', 'xaxislayer');
+        plotinfo.yaxislayer = joinLayer(plotgroup, 'g', 'yaxislayer');
+        plotinfo.overaxes = joinLayer(plotgroup, 'g', 'overaxes');
+    }
+    else {
+
+        // now make the components of overlaid subplots
+        // overlays don't have backgrounds, and append all
+        // their other components to the corresponding
+        // extra groups of their main plots.
+
+        var mainplot = fullLayout._plots[plotinfo.mainplot];
+        mainplot.overlays.push(plotinfo);
+
+        plotinfo.gridlayer = joinLayer(mainplot.overgrid, 'g', subplot);
+        plotinfo.zerolinelayer = joinLayer(mainplot.overzero, 'g', subplot);
+
+        plotinfo.plot = joinLayer(mainplot.overplot, 'g', subplot);
+        plotinfo.xlines = joinLayer(mainplot.overlines, 'path', subplot);
+        plotinfo.ylines = joinLayer(mainplot.overlines, 'path', subplot);
+        plotinfo.xaxislayer = joinLayer(mainplot.overaxes, 'g', subplot);
+        plotinfo.yaxislayer = joinLayer(mainplot.overaxes, 'g', subplot);
+    }
+
+    // common attributes for all subplots, overlays or not
+    plotinfo.plot.call(plotLayers);
+
+    plotinfo.xlines
+        .style('fill', 'none')
+        .classed('crisp', true);
+
+    plotinfo.ylines
+        .style('fill', 'none')
+        .classed('crisp', true);
+}
+
+function joinLayer(parent, nodeType, className) {
+    var layer = parent.selectAll('.' + className)
+        .data([0]);
+
+    layer.enter().append(nodeType)
+        .classed(className, true);
+
+    return layer;
+}
