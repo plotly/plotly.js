@@ -178,11 +178,6 @@ function updateSubplots(gd) {
         // so they end up on top of the rest
         plotinfo.draglayer = joinLayer(fullLayout._draggers, 'g', subplot);
     });
-
-    // keep reference to shape layers in subplots
-    var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
-    fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
-    fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
 }
 
 function makeSubplotData(gd) {

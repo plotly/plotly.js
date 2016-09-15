@@ -258,6 +258,11 @@ Plotly.plot = function(gd, data, layout, config) {
             basePlotModules[i].plot(gd);
         }
 
+        // keep reference to shape layers in subplots
+        var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
+        fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
+        fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
+
         // styling separate from drawing
         Plots.style(gd);
 
