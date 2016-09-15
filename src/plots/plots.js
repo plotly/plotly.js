@@ -414,6 +414,9 @@ plots.supplyDefaults = function(gd) {
         ax.setScale();
     }
 
+    // relink / initialize subplot axis objects
+    plots.linkSubplots(newFullData, newFullLayout, oldFullData, oldFullLayout);
+
     // update object references in calcdata
     if((gd.calcdata || []).length === newFullData.length) {
         for(i = 0; i < newFullData.length; i++) {
@@ -558,6 +561,41 @@ function relinkPrivateKeys(toContainer, fromContainer) {
         }
     }
 }
+
+plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
+    var oldSubplots = oldFullLayout._plots || {},
+        newSubplots = newFullLayout._plots = {};
+
+    var mockGd = {
+        data: newFullData,
+        _fullLayout: newFullLayout
+    };
+
+    var ids = Plotly.Axes.getSubplots(mockGd);
+
+    function getAxisFunc(subplot, axLetter) {
+        return function() { return Plotly.Axes.getFromId(mockGd, subplot, axLetter); };
+    }
+
+    for(var i = 0; i < ids.length; i++) {
+        var id = ids[i],
+            oldSubplot = oldSubplots[id],
+            plotinfo;
+
+        if(oldSubplot) {
+            plotinfo = newSubplots[id] = oldSubplot;
+        }
+        else {
+            plotinfo = newSubplots[id] = {};
+            plotinfo.id = id;
+        }
+
+        plotinfo.x = getAxisFunc(id, 'x');
+        plotinfo.y = getAxisFunc(id, 'y');
+        plotinfo.xaxis = plotinfo.x();
+        plotinfo.yaxis = plotinfo.y();
+    }
+};
 
 plots.supplyDataDefaults = function(dataIn, dataOut, layout) {
     var modules = layout._modules = [],
@@ -1363,7 +1401,8 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
     var transitionedTraces = [];
 
     function prepareTransitions() {
-        var plotinfo, i;
+        var i;
+
         for(i = 0; i < traceIndices.length; i++) {
             var traceIdx = traceIndices[i];
             var trace = gd._fullData[traceIdx];
@@ -1409,19 +1448,6 @@ plots.transition = function(gd, data, layout, traces, frameOpts, transitionOpts)
         // supplyDefaults even though it's heavier than would otherwise be desired for
         // transitions:
         plots.supplyDefaults(gd);
-
-        // This step fies the .xaxis and .yaxis references that otherwise
-        // aren't updated by the supplyDefaults step:
-        var subplots = Plotly.Axes.getSubplots(gd);
-
-        // Polar does not have _plots:
-        if(gd._fullLayout._plots) {
-            for(i = 0; i < subplots.length; i++) {
-                plotinfo = gd._fullLayout._plots[subplots[i]];
-                plotinfo.xaxis = plotinfo.x();
-                plotinfo.yaxis = plotinfo.y();
-            }
-        }
 
         plots.doCalcdata(gd);
 
