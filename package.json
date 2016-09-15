@@ -100,6 +100,7 @@
     "fuse.js": "^2.2.0",
     "glob": "^7.0.0",
     "gzip-size": "^3.0.0",
+    "image-size": "^0.5.0",
     "jasmine-core": "^2.4.1",
     "karma": "^1.1.0",
     "karma-browserify": "^5.0.1",
