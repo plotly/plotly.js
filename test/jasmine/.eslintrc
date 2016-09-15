@@ -3,12 +3,5 @@
   "env": {
     "browser": true,
     "jasmine": true
-  },
-  "globals": {
-    "Promise": true,
-    "Float32Array": true,
-    "Float64Array": true,
-    "Int16Array": true,
-    "Int32Array": true
   }
 }
