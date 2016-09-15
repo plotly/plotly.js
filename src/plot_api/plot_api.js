@@ -180,8 +180,10 @@ Plotly.plot = function(gd, data, layout, config) {
     function marginPushersAgain() {
         // in case the margins changed, draw margin pushers again
         var seq = JSON.stringify(fullLayout._size) === oldmargins ?
-            [] : [marginPushers, subroutines.layoutStyles];
-        return Lib.syncOrAsync(seq.concat(Fx.init), gd);
+            [] :
+            [marginPushers, subroutines.layoutStyles];
+
+        return Lib.syncOrAsync(seq, gd);
     }
 
     function positionAndAutorange() {
@@ -205,7 +207,6 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-
         // calc and autorange for errorbars
         ErrorBars.calc(gd);
 
@@ -219,15 +220,11 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function doAutoRange() {
         if(gd._transitioning) return;
+
         var axList = Plotly.Axes.list(gd, '', true);
         for(var i = 0; i < axList.length; i++) {
             Plotly.Axes.doAutoRange(axList[i]);
         }
-    }
-
-    function drawAxes() {
-        // draw ticks, titles, and calculate axis scaling (._b, ._m)
-        return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
     // Now plot the data
@@ -277,6 +274,15 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plots.previousPromises(gd);
     }
 
+    // draw ticks, titles, and calculate axis scaling (._b, ._m)
+    function drawAxes() {
+        Lib.syncOrAsync([
+            subroutines.layoutStyles,
+            function() { return Plotly.Axes.doTicks(gd, 'redraw'); },
+            Fx.init,
+        ], gd);
+    }
+
     // An initial paint must be completed before these components can be
     // correctly sized and the whole plot re-margined. gd._replotting must
     // be set to false before these will work properly.
@@ -302,8 +308,8 @@ Plotly.plot = function(gd, data, layout, config) {
         marginPushersAgain,
         positionAndAutorange,
         subroutines.layoutStyles,
-        drawAxes,
         drawData,
+        drawAxes,
         finalDraw
     ], gd, cleanUp);
 
@@ -2736,16 +2742,5 @@ function makePlotFramework(gd) {
 
     gd.emit('plotly_framework');
 
-    // position and style the containers, make main title
-    var frameWorkDone = Lib.syncOrAsync([
-        subroutines.layoutStyles,
-        function goAxes() { return Plotly.Axes.doTicks(gd, 'redraw'); },
-        Fx.init
-    ], gd);
-
-    if(frameWorkDone && frameWorkDone.then) {
-        gd._promises.push(frameWorkDone);
-    }
-
-    return frameWorkDone;
+    return 'FRAMEWORK';
 }
