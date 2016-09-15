@@ -9,8 +9,11 @@ var request = require('request');
 var test = require('tape');
 
 // image formats to test
+//
 // N.B. 'png' is tested in `npm run test-image, no need to duplicate here
-// TODO figure why 'jpeg' and 'webp' lead to errors
+//
+// N.B. 'jpeg' and 'webp' lead to errors because of the image server code
+//      is looking for Plotly.Color which isn't exposed anymore
 var FORMATS = ['svg', 'pdf', 'eps'];
 
 // non-exhaustive list of mocks to test
