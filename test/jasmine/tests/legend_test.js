@@ -413,6 +413,15 @@ describe('legend helpers:', function() {
             expect(isReversed({ traceorder: 'reversed' })).toBe(true);
         });
     });
+
+    describe('isHorizontalColumn', function() {
+        var isHorizontalColumn = helpers.isHorizontalColumn;
+
+        it('should return true when option horizontalspacing is "column"', function() {
+            expect(isHorizontalColumn({ horizontalspacing: 'column'})).toBe(true);
+            expect(isHorizontalColumn({ horizontalspacing: 'wrapped'})).toBe(false);
+        });
+    });
 });
 
 describe('legend anchor utils:', function() {

@@ -42,6 +42,13 @@ module.exports = {
         role: 'info',
         description: 'Sets the orientation of the legend.'
     },
+    horizontalspacing: {
+        valType: 'enumerated',
+        values: ['column', 'wrapped'],
+        dflt: ['column'],
+        role: 'style',
+        description: 'Sets whether the spacing for a horizontal legend is into columns or wrapping'
+    },
     traceorder: {
         valType: 'flaglist',
         flags: ['reversed', 'grouped'],

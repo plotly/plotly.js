@@ -473,7 +473,8 @@ function computeLegendDimensions(gd, groups, traces) {
     var fullLayout = gd._fullLayout,
         opts = fullLayout.legend,
         borderwidth = opts.borderwidth,
-        isGrouped = helpers.isGrouped(opts);
+        isGrouped = helpers.isGrouped(opts),
+        isHorizontalColumn = helpers.isHorizontalColumn(opts);
 
     if(helpers.isVertical(opts)) {
         if(isGrouped) {
@@ -597,7 +598,7 @@ function computeLegendDimensions(gd, groups, traces) {
 
         traces.each(function(d) {
             var legendItem = d[0],
-                traceWidth = maxTraceWidth,
+                traceWidth = isHorizontalColumn ? maxTraceWidth : 40 + d[0].width,
                 traceGap = opts.tracegroupgap || 5;
 
             if((borderwidth + offsetX + traceGap + traceWidth) > (fullLayout.width - (fullLayout.margin.r + fullLayout.margin.l))) {
