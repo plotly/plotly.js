@@ -70,6 +70,7 @@
     "gl-scatter2d-fancy": "^1.1.1",
     "gl-scatter3d": "^1.0.4",
     "gl-select-box": "^1.0.1",
+    "gl-shader": "4.2.0",
     "gl-spikes2d": "^1.0.1",
     "gl-surface3d": "^1.2.3",
     "mapbox-gl": "^0.22.0",
