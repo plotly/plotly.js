@@ -459,10 +459,33 @@ describe('groupby', function() {
             }]
         }];
 
+        var mockData4 = [{
+            mode: 'markers+lines',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [0, 1, 2, 3, 5, 4, 6],
+            transforms: [{
+                type: 'groupby',
+                groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                style: {/* can be empty, or of partial group id coverage */}
+            }]
+        }];
+
+        var mockData5 = [{
+            mode: 'markers+lines',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [0, 1, 2, 3, 5, 4, 6],
+            transforms: [{
+                type: 'groupby',
+                groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a']
+            }]
+        }];
+
         // this passes OK as expected
         it('`data` preserves user supplied input but `gd._fullData` reflects the grouping', test(mockData1));
         it('passes with lots of attributes and heterogenous attrib presence', test(mockData2));
         it('passes with group styles partially overriding top level aesthetics', test(mockData3));
+        it('passes with no explicit styling for the individual group', test(mockData4));
+        it('passes with no explicit styling in the group transform at all', test(mockData5));
 
     });
 
