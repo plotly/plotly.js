@@ -37,8 +37,6 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
         calcdata = gd.calcdata,
         modules = fullLayout._modules;
 
-    updateSubplots(gd);
-
     if(!Array.isArray(traces)) {
       // If traces is not provided, then it's a complete replot and missing
       // traces are removed
@@ -151,7 +149,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
     }
 };
 
-function updateSubplots(gd) {
+exports.drawFramework = function(gd) {
     var fullLayout = gd._fullLayout,
         subplotData = makeSubplotData(gd);
 
@@ -178,7 +176,7 @@ function updateSubplots(gd) {
         // so they end up on top of the rest
         plotinfo.draglayer = joinLayer(fullLayout._draggers, 'g', subplot);
     });
-}
+};
 
 function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout,

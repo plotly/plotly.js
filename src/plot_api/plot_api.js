@@ -154,6 +154,24 @@ Plotly.plot = function(gd, data, layout, config) {
 
     var oldmargins = JSON.stringify(fullLayout._size);
 
+    // draw framework first so that margin-pushing
+    // components can position themselves correctly
+    function drawFramework() {
+        var basePlotModules = fullLayout._basePlotModules;
+
+        for(var i = 0; i < basePlotModules.length; i++) {
+            if(basePlotModules[i].drawFramework) {
+                basePlotModules[i].drawFramework(gd);
+            }
+        }
+
+        return Lib.syncOrAsync([
+            subroutines.layoutStyles,
+            drawAxes,
+            Fx.init
+        ], gd);
+    }
+
     // draw anything that can affect margins.
     // currently this is legend and colorbars
     function marginPushers() {
@@ -227,6 +245,11 @@ Plotly.plot = function(gd, data, layout, config) {
         }
     }
 
+    // draw ticks, titles, and calculate axis scaling (._b, ._m)
+    function drawAxes() {
+        return Plotly.Axes.doTicks(gd, 'redraw');
+    }
+
     // Now plot the data
     function drawData() {
         var calcdata = gd.calcdata,
@@ -279,15 +302,6 @@ Plotly.plot = function(gd, data, layout, config) {
         return Plots.previousPromises(gd);
     }
 
-    // draw ticks, titles, and calculate axis scaling (._b, ._m)
-    function drawAxes() {
-        Lib.syncOrAsync([
-            subroutines.layoutStyles,
-            function() { return Plotly.Axes.doTicks(gd, 'redraw'); },
-            Fx.init,
-        ], gd);
-    }
-
     // An initial paint must be completed before these components can be
     // correctly sized and the whole plot re-margined. gd._replotting must
     // be set to false before these will work properly.
@@ -309,12 +323,13 @@ Plotly.plot = function(gd, data, layout, config) {
 
     Lib.syncOrAsync([
         Plots.previousPromises,
+        drawFramework,
         marginPushers,
         marginPushersAgain,
         positionAndAutorange,
         subroutines.layoutStyles,
-        drawData,
         drawAxes,
+        drawData,
         finalDraw
     ], gd, cleanUp);
 
