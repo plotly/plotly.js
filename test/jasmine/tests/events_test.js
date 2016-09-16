@@ -70,6 +70,19 @@ describe('Events', function() {
                 $(plotDiv).trigger('ping', 'pong');
             });
         });
+
+        it('mirrors events on an internal handler', function(done) {
+            Events.init(plotDiv);
+
+            plotDiv._internalOn('ping', function(data) {
+                expect(data).toBe('pong');
+                done();
+            });
+
+            setTimeout(function() {
+                plotDiv.emit('ping', 'pong');
+            });
+        });
     });
 
     describe('triggerHandler', function() {
@@ -97,6 +110,34 @@ describe('Events', function() {
             var result = Events.triggerHandler(plotDiv, 'ping');
 
             expect(eventBaton).toBe(3);
+            expect(result).toBe('pong');
+        });
+
+        it('does *not* mirror triggerHandler events on the internal handler', function() {
+            var eventBaton = 0;
+            var internalEventBaton = 0;
+
+            Events.init(plotDiv);
+
+            plotDiv.on('ping', function() {
+                eventBaton++;
+                return 'ping';
+            });
+
+            plotDiv._internalOn('ping', function() {
+                internalEventBaton++;
+                return 'foo';
+            });
+
+            plotDiv.on('ping', function() {
+                eventBaton++;
+                return 'pong';
+            });
+
+            var result = Events.triggerHandler(plotDiv, 'ping');
+
+            expect(eventBaton).toBe(2);
+            expect(internalEventBaton).toBe(0);
             expect(result).toBe('pong');
         });
 
