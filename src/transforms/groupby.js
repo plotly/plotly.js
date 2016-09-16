@@ -30,7 +30,7 @@ exports.attributes = {
         valType: 'data_array',
         dflt: []
     },
-    styles: {
+    style: {
         valType: 'any',
         dflt: {}
     }
@@ -61,7 +61,7 @@ exports.supplyDefaults = function(transformIn, fullData, layout) {
     if(!active) return transformOut;
 
     coerce('groups');
-    coerce('styles');
+    coerce('style');
 
     // or some more complex logic using fullData and layout
 
@@ -126,7 +126,7 @@ function transformOne(trace, state) {
         }
 
         newTrace.name = groupName;
-        newTrace = Lib.extendDeep(newTrace, opts.styles[groupName]);
+        newTrace = Lib.extendDeep(newTrace, opts.style[groupName]);
     }
 
     return newData;
