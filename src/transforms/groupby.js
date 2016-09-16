@@ -108,6 +108,8 @@ function transformOne(trace, state) {
     var newData = new Array(groupNames.length);
     var len = Math.min(trace.x.length, trace.y.length, groups.length);
 
+    var style = opts.style || {};
+
     for(var i = 0; i < groupNames.length; i++) {
         var groupName = groupNames[i];
 
@@ -126,7 +128,7 @@ function transformOne(trace, state) {
         }
 
         newTrace.name = groupName;
-        newTrace = Lib.extendDeep(newTrace, opts.style[groupName]);
+        newTrace = Lib.extendDeep(newTrace, style[groupName] || {});
     }
 
     return newData;
