@@ -695,7 +695,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
             var plotDx = xa2._offset - fracDx,
                 plotDy = ya2._offset - fracDy;
 
-
             fullLayout._defs.selectAll('#' + subplot.clipId)
                 .call(Lib.setTranslate, clipDx, clipDy)
                 .call(Lib.setScale, 1 / xScaleFactor, 1 / yScaleFactor);

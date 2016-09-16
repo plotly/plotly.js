@@ -48,6 +48,7 @@ exports.lsInner = function(gd) {
         var plotinfo = fullLayout._plots[subplot],
             xa = Plotly.Axes.getFromId(gd, subplot, 'x'),
             ya = Plotly.Axes.getFromId(gd, subplot, 'y');
+
         xa.setScale(); // this may already be done... not sure
         ya.setScale();
 
@@ -58,7 +59,6 @@ exports.lsInner = function(gd) {
                     xa._length + 2 * gs.p, ya._length + 2 * gs.p)
                 .call(Color.fill, fullLayout.plot_bgcolor);
         }
-
 
         // Clip so that data only shows up on the plot area.
         plotinfo.clipId = 'clip' + fullLayout._uid + subplot + 'plot';

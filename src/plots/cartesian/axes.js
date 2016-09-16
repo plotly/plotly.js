@@ -1302,10 +1302,10 @@ axes.findSubplotsWithAxis = function(subplots, ax) {
 
 // makeClipPaths: prepare clipPaths for all single axes and all possible xy pairings
 axes.makeClipPaths = function(gd) {
-    var layout = gd._fullLayout,
-        defs = layout._defs,
-        fullWidth = {_offset: 0, _length: layout.width, _id: ''},
-        fullHeight = {_offset: 0, _length: layout.height, _id: ''},
+    var fullLayout = gd._fullLayout,
+        defs = fullLayout._defs,
+        fullWidth = {_offset: 0, _length: fullLayout.width, _id: ''},
+        fullHeight = {_offset: 0, _length: fullLayout.height, _id: ''},
         xaList = axes.list(gd, 'x', true),
         yaList = axes.list(gd, 'y', true),
         clipList = [],
@@ -1322,6 +1322,7 @@ axes.makeClipPaths = function(gd) {
 
     var defGroup = defs.selectAll('g.clips')
         .data([0]);
+
     defGroup.enter().append('g')
         .classed('clips', true);
 
@@ -1330,11 +1331,14 @@ axes.makeClipPaths = function(gd) {
     // https://groups.google.com/forum/#!topic/d3-js/6EpAzQ2gU9I
     var axClips = defGroup.selectAll('.axesclip')
         .data(clipList, function(d) { return d.x._id + d.y._id; });
+
     axClips.enter().append('clipPath')
         .classed('axesclip', true)
-        .attr('id', function(d) { return 'clip' + layout._uid + d.x._id + d.y._id; })
+        .attr('id', function(d) { return 'clip' + fullLayout._uid + d.x._id + d.y._id; })
       .append('rect');
+
     axClips.exit().remove();
+
     axClips.each(function(d) {
         d3.select(this).select('rect').attr({
             x: d.x._offset || 0,
