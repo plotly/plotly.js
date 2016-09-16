@@ -351,4 +351,119 @@ describe('groupby', function() {
         });
     });
 
+    describe('grouping with basic, heterogenous and overridden attributes', function() {
+        'use strict';
+
+        afterEach(destroyGraphDiv);
+
+        function test(mockData) {
+
+            return function(done) {
+                var data = Lib.extendDeep([], mockData);
+
+                var gd = createGraphDiv();
+
+                Plotly.plot(gd, data).then(function() {
+
+                    expect(gd.data.length).toEqual(1);
+                    expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                    expect(gd.data[0].y).toEqual([0, 1, 2, 3, 5, 4, 6]);
+
+                    expect(gd._fullData.length).toEqual(2);
+                    expect(gd._fullData[0].x).toEqual([1, -1, 0, 3]);
+                    expect(gd._fullData[0].y).toEqual([0, 1, 3, 6]);
+                    expect(gd._fullData[1].x).toEqual([-2, 1, 2]);
+                    expect(gd._fullData[1].y).toEqual([2, 5, 4]);
+
+                    assertDims([4, 3]);
+
+                    done();
+                });
+            };
+        }
+
+        // basic test
+        var mockData1 = [{
+            mode: 'markers',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [0, 1, 2, 3, 5, 4, 6],
+            transforms: [{
+                type: 'groupby',
+                groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            }]
+        }];
+
+        // heterogenously present attributes
+        var mockData2 = [{
+            mode: 'markers',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [0, 1, 2, 3, 5, 4, 6],
+            transforms: [{
+                type: 'groupby',
+                groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                style: {
+                    a: {
+                        marker: {
+                            color: 'orange',
+                            size: 20,
+                            line: {
+                                color: 'red',
+                                width: 1
+                            }
+                        }
+                    },
+                    b: {
+                        mode: 'markers+lines', // heterogeonos attributes are OK: group "a" doesn't need to define this
+                        marker: {
+                            color: 'cyan',
+                            size: 15,
+                            line: {
+                                color: 'purple',
+                                width: 4
+                            },
+                            opacity: 0.5,
+                            symbol: 'triangle-up'
+                        },
+                        line: {
+                            width: 1,
+                            color: 'purple'
+                        }
+                    }
+                }
+            }]
+        }];
+
+        // attributes set at top level and partially overridden in the group item level
+        var mockData3 = [{
+            mode: 'markers+lines',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [0, 1, 2, 3, 5, 4, 6],
+            marker: {
+                color: 'darkred', // general "default" color
+                line: {
+                    width: 8,
+                    // a general, not overridden array will be interpreted per group
+                    color: ['orange', 'red', 'green', 'cyan']
+                }
+            },
+            line: {color: 'red'},
+            transforms: [{
+                type: 'groupby',
+                groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                style: {
+                    a: {marker: {size: 30}},
+                    // override general color:
+                    b: {marker: {size: 15, color: 'lightblue'}, line: {color: 'purple'}}
+                }
+            }]
+        }];
+
+        // this passes OK as expected
+        it('`data` preserves user supplied input but `gd._fullData` reflects the grouping', test(mockData1));
+        it('passes with lots of attributes and heterogenous attrib presence', test(mockData2));
+        it('passes with group styles partially overriding top level aesthetics', test(mockData3));
+
+    });
+
 });
