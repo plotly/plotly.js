@@ -182,4 +182,173 @@ describe('groupby', function() {
 
     });
 
+    // these tests can be shortened, once the meaning of edge cases gets clarified
+    describe('symmetry/degeneracy testing of one-to-many transforms on arbitrary arrays where there is no grouping (implicit 1):', function() {
+        'use strict';
+
+        var mockData = [{
+            mode: 'markers',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [1, 2, 3, 1, 2, 3, 1],
+
+            // everything is present:
+            transforms: [{
+                type: 'groupby',
+                groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            }]
+        }];
+
+        var mockData0 = [{
+            mode: 'markers',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [1, 2, 3, 1, 2, 3, 1],
+
+            // groups, styles not present
+            transforms: [{
+                type: 'groupby'
+                // groups not present
+                // styles not present
+            }]
+        }];
+
+        // transform attribute with empty list
+        var mockData1 = [{
+            mode: 'markers',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [1, 2, 3, 1, 2, 3, 1],
+
+            // transforms is present but there are no items in it
+            transforms: [ /* list is empty */ ]
+        }];
+
+        // transform attribute with null value
+        var mockData2 = [{
+            mode: 'markers',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [1, 2, 3, 1, 2, 3, 1],
+            transforms: null
+        }];
+
+        // no transform is present at all
+        var mockData3 = [{
+            mode: 'markers',
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [1, 2, 3, 1, 2, 3, 1]
+        }];
+
+        afterEach(destroyGraphDiv);
+
+        it('Plotly.plot should plot the transform traces', function(done) {
+            var data = Lib.extendDeep([], mockData);
+
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, data).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+
+                expect(gd._fullData.length).toEqual(2); // two groups
+                expect(gd._fullData[0].x).toEqual([1, -1, 0, 3]);
+                expect(gd._fullData[0].y).toEqual([1, 2, 1, 1]);
+                expect(gd._fullData[1].x).toEqual([-2, 1, 2]);
+                expect(gd._fullData[1].y).toEqual([3, 2, 3]);
+
+                assertDims([4, 3]);
+
+                done();
+            });
+        });
+
+        // passes; maybe not for the good reasons (see fixme comments)
+        it('Plotly.plot should plot the transform traces', function(done) {
+            var data = Lib.extendDeep([], mockData0);
+
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, data).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+
+                expect(gd._fullData.length).toEqual(0); // fixme: it passes with 0; shouldn't it be 1? (one implied group)
+
+                /* since the array is of zero length, the below items are obv. meaningless to test
+                 expect(gd._fullData[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+                 */
+
+                assertDims([]); // fixme: same thing, looks like zero dimensionality
+
+                done();
+            });
+        });
+
+        // passes; looks OK
+        it('Plotly.plot should plot the transform traces', function(done) {
+            var data = Lib.extendDeep([], mockData1);
+
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, data).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+
+                expect(gd._fullData.length).toEqual(1); // fixme not: good, okay it's 1 here (one implied group / thing)
+                expect(gd._fullData[0].x).toEqual([ 1, -1, -2, 0, 1, 2, 3 ]);
+                expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+
+                assertDims([7]);
+
+                done();
+            });
+        });
+
+        // passes OK; see todo comments
+        it('Plotly.plot should plot the transform traces', function(done) {
+            var data = Lib.extendDeep([], mockData2);
+
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, data).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+
+                expect(gd._fullData.length).toEqual(1); // todo: confirm this result is OK
+
+                expect(gd._fullData[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+
+                assertDims([7]); // todo: confirm this result is OK
+
+                done();
+            });
+        });
+
+        // passes OK; see todo comments
+        it('Plotly.plot should plot the transform traces', function(done) {
+            var data = Lib.extendDeep([], mockData3);
+
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, data).then(function() {
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+
+                expect(gd._fullData.length).toEqual(1); // todo: confirm this result is OK
+
+                expect(gd._fullData[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
+
+                assertDims([7]); // todo: confirm this result is OK
+
+                done();
+            });
+        });
+    });
+
 });
