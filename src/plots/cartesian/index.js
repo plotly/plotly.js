@@ -10,9 +10,9 @@
 'use strict';
 
 var d3 = require('d3');
+var Lib = require('../../lib');
 var Plots = require('../plots');
 var Axes = require('./axes');
-
 var constants = require('./constants');
 
 exports.name = 'cartesian';
@@ -147,6 +147,16 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
             }
         }
     }
+
+    var hadCartesian = (oldFullLayout._has && oldFullLayout._has('cartesian'));
+    var hasCartesian = (newFullLayout._has && newFullLayout._has('cartesian'));
+
+    if(hadCartesian && !hasCartesian) {
+        var subplotLayers = oldFullLayout._cartesianlayer.selectAll('.subplot');
+
+        subplotLayers.call(purgeSubplotLayers, oldFullLayout);
+        oldFullLayout._defs.selectAll('.axesclip').remove();
+    }
 };
 
 exports.drawFramework = function(gd) {
@@ -154,12 +164,15 @@ exports.drawFramework = function(gd) {
         subplotData = makeSubplotData(gd);
 
     var subplotLayers = fullLayout._cartesianlayer.selectAll('.subplot')
-        .data(subplotData, String);
+        .data(subplotData, Lib.identity);
 
     subplotLayers.enter().append('g')
         .classed('subplot', true);
 
     subplotLayers.order();
+
+    subplotLayers.exit()
+        .call(purgeSubplotLayers, fullLayout);
 
     subplotLayers.each(function(subplot) {
         var plotgroup = d3.select(this),
@@ -315,6 +328,23 @@ function makeSubplotLayer(plotgroup, gd, subplot) {
         .style('fill', 'none')
         .classed('crisp', true);
 }
+
+function purgeSubplotLayers(layers, fullLayout) {
+    if(!layers) return;
+
+    layers.each(function(subplot) {
+        var plotgroup = d3.select(this),
+            clipId = 'clip' + fullLayout._uid + subplot + 'plot';
+
+        plotgroup.remove();
+        fullLayout._draggers.selectAll('g.' + subplot).remove();
+        fullLayout._defs.select('#' + clipId).remove();
+
+        // do not remove individual axis <clipPath>s here
+        // as other subplots may need them
+    });
+}
+
 
 function joinLayer(parent, nodeType, className) {
     var layer = parent.selectAll('.' + className)
