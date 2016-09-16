@@ -35,7 +35,11 @@ exports.attributes = {
     filtersrc: {
         valType: 'enumerated',
         values: ['x', 'y'],
-        dflt: 'x'
+        dflt: 'x',
+        ids: {
+            valType: 'data_array',
+            description: 'A list of keys for object constancy of data points during animation'
+        }
     }
 };
 
