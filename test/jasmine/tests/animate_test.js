@@ -409,8 +409,11 @@ describe('Test animate API', function() {
     describe('frame events', function() {
         it('emits an event when a frame is transitioned to', function(done) {
             var frames = [];
-            gd.on('plotly_animatingframe', function(name) {
-                frames.push(name);
+            gd.on('plotly_animatingframe', function(data) {
+                frames.push(data.name);
+                expect(data.frame).not.toBe(undefined);
+                expect(data.animation.frame).not.toBe(undefined);
+                expect(data.animation.transition).not.toBe(undefined);
             });
 
             Plotly.animate(gd, ['frame0', 'frame1', {name: 'test'}, {data: []}], {
