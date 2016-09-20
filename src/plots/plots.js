@@ -1286,7 +1286,7 @@ plots.computeFrame = function(gd, frameName) {
     }
 
     // A new object for the merged result:
-    var result = {};
+    var result = {name: frameName};
 
     // Merge, starting with the last and ending with the desired frame:
     while((framePtr = frameStack.pop())) {
