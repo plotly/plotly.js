@@ -53,8 +53,8 @@ drawing.translatePoint = function(d, sel, xa, ya) {
 
     if(isNumeric(x) && isNumeric(y)) {
         // for multiline text this works better
-        if(this.nodeName === 'text') {
-            sel.node().attr('x', x).attr('y', y);
+        if(sel.node().nodeName === 'text') {
+            sel.attr('x', x).attr('y', y);
         } else {
             sel.attr('transform', 'translate(' + x + ',' + y + ')');
         }
