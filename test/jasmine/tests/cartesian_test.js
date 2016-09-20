@@ -150,6 +150,52 @@ describe('restyle', function() {
                 expect(firstLine2).toBe(secondLine2);
             }).then(done);
         });
+
+        it('can change scatter mode', function(done) {
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_basic.json'));
+
+            function assertScatterModeSizes(lineSize, pointSize, textSize) {
+                var gd3 = d3.select(gd),
+                    lines = gd3.selectAll('g.scatter.trace .js-line'),
+                    points = gd3.selectAll('g.scatter.trace path.point'),
+                    texts = gd3.selectAll('g.scatter.trace text');
+
+                expect(lines.size()).toEqual(lineSize);
+                expect(points.size()).toEqual(pointSize);
+                expect(texts.size()).toEqual(textSize);
+            }
+
+            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+                assertScatterModeSizes(2, 6, 9);
+
+                return Plotly.restyle(gd, 'mode', 'lines');
+            })
+            .then(function() {
+                assertScatterModeSizes(3, 0, 0);
+
+                return Plotly.restyle(gd, 'mode', 'markers');
+            })
+            .then(function() {
+                assertScatterModeSizes(0, 9, 0);
+
+                return Plotly.restyle(gd, 'mode', 'markers+text');
+            })
+            .then(function() {
+                assertScatterModeSizes(0, 9, 9);
+
+                return Plotly.restyle(gd, 'mode', 'text');
+            })
+            .then(function() {
+                assertScatterModeSizes(0, 0, 9);
+
+                return Plotly.restyle(gd, 'mode', 'markers+text+lines');
+            })
+            .then(function() {
+                assertScatterModeSizes(3, 9, 9);
+            })
+            .then(done);
+
+        });
     });
 });
 
