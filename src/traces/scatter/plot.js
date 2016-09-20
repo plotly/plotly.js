@@ -387,64 +387,74 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
     }
 
+    function hideFilter() {
+        return false;
+    }
+
     function makePoints(d) {
         var join, selection;
+
         var trace = d[0].trace,
             s = d3.select(this),
             showMarkers = subTypes.hasMarkers(trace),
             showText = subTypes.hasText(trace);
 
-        if((!showMarkers && !showText) || trace.visible !== true) s.remove();
-        else {
-            if(showMarkers) {
-                selection = s.selectAll('path.point');
+        var keyFunc = getKeyFunc(trace),
+            markerFilter = hideFilter,
+            textFilter = hideFilter;
 
-                join = selection
-                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace));
-
-                var enter = join.enter().append('path')
-                    .classed('point', true);
-
-                enter.call(Drawing.pointStyle, trace)
-                    .call(Drawing.translatePoints, xa, ya, trace);
-
-                if(hasTransition) {
-                    enter.style('opacity', 0).transition()
-                        .style('opacity', 1);
-                }
-
-                join.each(function(d) {
-                    var sel = transition(d3.select(this));
-                    Drawing.translatePoint(d, sel, xa, ya);
-                    Drawing.singlePointStyle(d, sel, trace);
-                });
-
-                if(hasTransition) {
-                    join.exit().transition()
-                        .style('opacity', 0)
-                        .remove();
-                } else {
-                    join.exit().remove();
-                }
-            }
-            if(showText) {
-                selection = s.selectAll('g');
-
-                join = selection
-                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity);
-
-                    // each text needs to go in its own 'g' in case
-                    // it gets converted to mathjax
-                join.enter().append('g')
-                    .append('text')
-                    .call(Drawing.translatePoints, xa, ya);
-
-                selection
-                    .call(Drawing.translatePoints, xa, ya);
-
-                join.exit().remove();
-            }
+        if(showMarkers) {
+            markerFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
         }
+
+        if(showText) {
+            textFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
+        }
+
+        // marker points
+
+        selection = s.selectAll('path.point');
+
+        join = selection.data(markerFilter, keyFunc);
+
+        var enter = join.enter().append('path')
+            .classed('point', true);
+
+        enter.call(Drawing.pointStyle, trace)
+            .call(Drawing.translatePoints, xa, ya, trace);
+
+        if(hasTransition) {
+            enter.style('opacity', 0).transition()
+                .style('opacity', 1);
+        }
+
+        join.each(function(d) {
+            var sel = transition(d3.select(this));
+            Drawing.translatePoint(d, sel, xa, ya);
+            Drawing.singlePointStyle(d, sel, trace);
+        });
+
+        if(hasTransition) {
+            join.exit().transition()
+                .style('opacity', 0)
+                .remove();
+        } else {
+            join.exit().remove();
+        }
+
+        // text points
+
+        selection = s.selectAll('g');
+
+        join = selection.data(textFilter, keyFunc);
+
+        // each text needs to go in its own 'g' in case
+        // it gets converted to mathjax
+        join.enter().append('g')
+            .append('text')
+            .call(Drawing.translatePoints, xa, ya);
+
+        join.exit().remove();
     }
 
     // NB: selectAll is evaluated on instantiation:
