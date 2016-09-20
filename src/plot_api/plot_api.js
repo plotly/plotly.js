@@ -2203,7 +2203,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
 
                 if(frameList[i].type === 'byname') {
                     // If it's a named frame, compute it:
-                    computedFrame = Plots.computeFrame(gd, frameList[i].data.name);
+                    computedFrame = Plots.computeFrame(gd, frameList[i].name);
                 } else {
                     // Otherwise we must have been given a simple object, so treat
                     // the input itself as the computed frame.
@@ -2219,7 +2219,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
 
                 var nextFrame = {
                     frame: computedFrame,
-                    name: computedFrame.name,
+                    name: frameList[i].name,
                     frameOpts: frameOpts,
                     transitionOpts: transitionOpts,
                 };
@@ -2365,6 +2365,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                 if(allFrames || frame.group === frameOrGroupNameOrFrameList) {
                     frameList.push({
                         type: 'byname',
+                        name: frame.name,
                         data: setTransitionConfig({name: frame.name})
                     });
                 }
@@ -2376,6 +2377,7 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
                     // In this case, there's an array and this frame is a string name:
                     frameList.push({
                         type: 'byname',
+                        name: frameOrName,
                         data: setTransitionConfig({name: frameOrName})
                     });
                 } else {
