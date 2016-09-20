@@ -406,6 +406,23 @@ describe('Test animate API', function() {
         });
     });
 
+    describe('frame events', function() {
+        it('emits an event when a frame is transitioned to', function(done) {
+            var frames = [];
+            gd.on('plotly_animatingframe', function(name) {
+                frames.push(name);
+            });
+
+            Plotly.animate(gd, ['frame0', 'frame1', {name: 'test'}, {data: []}], {
+                transition: {duration: 1},
+                frame: {duration: 1}
+            }).then(function() {
+                expect(frames).toEqual(['frame0', 'frame1', 'test', undefined]);
+            }).catch(fail).then(done);
+
+        });
+    });
+
     describe('frame vs. transition timing', function() {
         it('limits the transition duration to <= frame duration', function(done) {
             Plotly.animate(gd, ['frame0'], {
