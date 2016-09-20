@@ -451,8 +451,12 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // each text needs to go in its own 'g' in case
         // it gets converted to mathjax
         join.enter().append('g')
-            .append('text')
-            .call(Drawing.translatePoints, xa, ya);
+            .append('text');
+
+        join.each(function(d) {
+            var sel = d3.select(this).select('text');
+            Drawing.translatePoint(d, sel, xa, ya);
+        });
 
         join.exit().remove();
     }
