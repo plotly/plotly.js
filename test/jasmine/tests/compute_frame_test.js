@@ -61,7 +61,7 @@ describe('Test mergeFrames', function() {
 
         it('computes a single frame', function() {
             var computed = computeFrame(gd, 'frame1');
-            var expected = {data: [{x: [1, 2, 3], marker: {size: 8, color: 'red'}}], traces: [0]};
+            var expected = {name: 'frame1', data: [{x: [1, 2, 3], marker: {size: 8, color: 'red'}}], traces: [0]};
             expect(computed).toEqual(expected);
         });
 
@@ -82,9 +82,9 @@ describe('Test mergeFrames', function() {
             ];
 
             results = [
-                {traces: [0], data: [{marker: {size: 0}}]},
-                {traces: [0], data: [{marker: {size: 1}}]},
-                {traces: [0], data: [{marker: {size: 2}}]}
+                {name: 'frame0', traces: [0], data: [{marker: {size: 0}}]},
+                {name: 'frame1', traces: [0], data: [{marker: {size: 1}}]},
+                {name: 'frame2', traces: [0], data: [{marker: {size: 2}}]}
             ];
 
             Plotly.addFrames(gd, frames).then(done);
@@ -140,6 +140,7 @@ describe('Test mergeFrames', function() {
             Plotly.addFrames(gd, frames.map(clone));
 
             expect(computeFrame(gd, 'frame0')).toEqual({
+                name: 'frame0',
                 traces: [8, 2],
                 data: [
                     {marker: {size: 1}},
@@ -158,6 +159,7 @@ describe('Test mergeFrames', function() {
             Plotly.addFrames(gd, frames.map(clone));
 
             expect(computeFrame(gd, 'frame0')).toEqual({
+                name: 'frame0',
                 traces: [2],
                 data: [{marker: {size: 0}}]
             });
@@ -173,6 +175,7 @@ describe('Test mergeFrames', function() {
             Plotly.addFrames(gd, frames.map(clone));
 
             expect(computeFrame(gd, 'frame0')).toEqual({
+                name: 'frame0',
                 traces: [2, 8],
                 data: [
                     {marker: {size: 0}},
@@ -189,6 +192,7 @@ describe('Test mergeFrames', function() {
             Plotly.addFrames(gd, frames.map(clone));
 
             expect(computeFrame(gd, 'frame4')).toEqual({
+                name: 'frame4',
                 traces: [2, 8, 0, 1],
                 data: [
                     {marker: {size: 7}},
@@ -224,6 +228,7 @@ describe('Test mergeFrames', function() {
             var result = computeFrame(gd, 'frame0');
 
             expect(result).toEqual({
+                name: 'frame0',
                 layout: {margin: {l: 40}}
             });
         });
