@@ -249,6 +249,59 @@ describe('relayout', function() {
                 done();
             });
         });
+
+    });
+
+    describe('axis ranges', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should translate points and text element', function(done) {
+            var mockData = [{
+                x: [1],
+                y: [1],
+                text: ['A'],
+                mode: 'markers+text'
+            }];
+
+            function assertPointTranslate(pointT, textT) {
+                var TOLERANCE = 10;
+
+                var gd3 = d3.select(gd),
+                    points = gd3.selectAll('g.scatter.trace path.point'),
+                    texts = gd3.selectAll('g.scatter.trace text');
+
+                expect(points.size()).toEqual(1);
+                expect(texts.size()).toEqual(1);
+
+                expect(points.attr('x')).toBe(null);
+                expect(points.attr('y')).toBe(null);
+                expect(texts.attr('transform')).toBe(null);
+
+                var translate = Lib.getTranslate(points);
+                expect(Math.abs(translate.x - pointT[0])).toBeLessThan(TOLERANCE);
+                expect(Math.abs(translate.y - pointT[1])).toBeLessThan(TOLERANCE);
+
+                expect(Math.abs(texts.attr('x') - textT[0])).toBeLessThan(TOLERANCE);
+                expect(Math.abs(texts.attr('y') - textT[1])).toBeLessThan(TOLERANCE);
+            }
+
+            Plotly.plot(gd, mockData).then(function() {
+                assertPointTranslate([270, 135], [270, 135]);
+
+                return Plotly.relayout(gd, 'xaxis.range', [2, 3]);
+            })
+            .then(function() {
+                assertPointTranslate([0, 540], [-540, 135]);
+            })
+            .then(done);
+        });
+
     });
 
 });
