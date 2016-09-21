@@ -366,14 +366,22 @@ describe('groupby', function() {
                 Plotly.plot(gd, data).then(function() {
 
                     expect(gd.data.length).toEqual(1);
+                    expect(gd.data[0].ids).toEqual(['q', 'w', 'r', 't', 'y', 'u', 'i']);
                     expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                     expect(gd.data[0].y).toEqual([0, 1, 2, 3, 5, 4, 6]);
+                    expect(gd.data[0].marker.line.width).toEqual([4, 2, 4, 2, 2, 3, 3]);
 
                     expect(gd._fullData.length).toEqual(2);
+
+                    expect(gd._fullData[0].ids).toEqual(['q', 'w', 't', 'i']);
                     expect(gd._fullData[0].x).toEqual([1, -1, 0, 3]);
                     expect(gd._fullData[0].y).toEqual([0, 1, 3, 6]);
+                    expect(gd._fullData[0].marker.line.width).toEqual([4, 2, 2, 3]);
+
+                    expect(gd._fullData[1].ids).toEqual(['r', 'y', 'u']);
                     expect(gd._fullData[1].x).toEqual([-2, 1, 2]);
                     expect(gd._fullData[1].y).toEqual([2, 5, 4]);
+                    expect(gd._fullData[1].marker.line.width).toEqual([4, 2, 3]);
 
                     assertDims([4, 3]);
 
@@ -385,8 +393,10 @@ describe('groupby', function() {
         // basic test
         var mockData1 = [{
             mode: 'markers',
+            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
             x: [1, -1, -2, 0, 1, 2, 3],
             y: [0, 1, 2, 3, 5, 4, 6],
+            marker: {line: {width: [4, 2, 4, 2, 2, 3, 3]}},
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
@@ -397,8 +407,10 @@ describe('groupby', function() {
         // heterogenously present attributes
         var mockData2 = [{
             mode: 'markers',
+            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
             x: [1, -1, -2, 0, 1, 2, 3],
             y: [0, 1, 2, 3, 5, 4, 6],
+            marker: {line: {width: [4, 2, 4, 2, 2, 3, 3]}},
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
@@ -408,25 +420,22 @@ describe('groupby', function() {
                             color: 'orange',
                             size: 20,
                             line: {
-                                color: 'red',
-                                width: 1
+                                color: 'red'
                             }
                         }
                     },
                     b: {
-                        mode: 'markers+lines', // heterogeonos attributes are OK: group "a" doesn't need to define this
+                        mode: 'markers+lines', // heterogeonos attributes are OK: group 'a' doesn't need to define this
                         marker: {
                             color: 'cyan',
                             size: 15,
                             line: {
-                                color: 'purple',
-                                width: 4
+                                color: 'purple'
                             },
                             opacity: 0.5,
                             symbol: 'triangle-up'
                         },
                         line: {
-                            width: 1,
                             color: 'purple'
                         }
                     }
@@ -437,12 +446,13 @@ describe('groupby', function() {
         // attributes set at top level and partially overridden in the group item level
         var mockData3 = [{
             mode: 'markers+lines',
+            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
             x: [1, -1, -2, 0, 1, 2, 3],
             y: [0, 1, 2, 3, 5, 4, 6],
             marker: {
-                color: 'darkred', // general "default" color
+                color: 'darkred', // general 'default' color
                 line: {
-                    width: 8,
+                    width: [4, 2, 4, 2, 2, 3, 3],
                     // a general, not overridden array will be interpreted per group
                     color: ['orange', 'red', 'green', 'cyan']
                 }
@@ -461,8 +471,10 @@ describe('groupby', function() {
 
         var mockData4 = [{
             mode: 'markers+lines',
+            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
             x: [1, -1, -2, 0, 1, 2, 3],
             y: [0, 1, 2, 3, 5, 4, 6],
+            marker: {line: {width: [4, 2, 4, 2, 2, 3, 3]}},
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
@@ -472,20 +484,39 @@ describe('groupby', function() {
 
         var mockData5 = [{
             mode: 'markers+lines',
+            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
             x: [1, -1, -2, 0, 1, 2, 3],
             y: [0, 1, 2, 3, 5, 4, 6],
+            marker: {
+                line: {width: [4, 2, 4, 2, 2, 3, 3]},
+                size: 10,
+                color: ['red', '#eee', 'lightgreen', 'blue', 'red', '#eee', 'lightgreen']
+            },
             transforms: [{
                 type: 'groupby',
                 groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a']
             }]
         }];
 
-        // this passes OK as expected
+        var mockData6 = [{
+            mode: 'markers+lines',
+            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [0, 1, 2, 3, 5, 4, 6],
+            marker: {line: {width: [4, 2, 4, 2, 2, 3, 3]}},
+            transforms: [{
+                type: 'groupby',
+                groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            }]
+        }];
+
         it('`data` preserves user supplied input but `gd._fullData` reflects the grouping', test(mockData1));
         it('passes with lots of attributes and heterogenous attrib presence', test(mockData2));
         it('passes with group styles partially overriding top level aesthetics', test(mockData3));
         it('passes with no explicit styling for the individual group', test(mockData4));
         it('passes with no explicit styling in the group transform at all', test(mockData5));
+        it('passes with no explicit styling in the group transform at all', test(mockData6));
 
     });
 

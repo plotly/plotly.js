@@ -91,13 +91,20 @@ exports.transform = function(data, state) {
     var newData = [];
 
     data.forEach(function(trace) {
-        newData = newData.concat(transformOne(trace, state));
+
+        var splittingAttributes = [];
+
+        var attributes = trace._module.attributes;
+        crawl(attributes, splittingAttributes);
+
+        newData = newData.concat(transformOne(trace, state, splittingAttributes));
     });
 
     return newData;
 };
 
-function transformOne(trace, state) {
+function transformOne(trace, state, splittingAttributes) {
+
     var opts = state.transform;
     var groups = opts.groups;
 
@@ -106,10 +113,22 @@ function transformOne(trace, state) {
     });
 
     var newData = new Array(groupNames.length);
-    var len = Math.min(trace.x.length, trace.y.length, groups.length);
+    var len = groups.length;
 
     var style = opts.style || {};
 
+    var topLevelAttributes = splittingAttributes
+        .filter(function(array) {return Array.isArray(getDeepProp(trace, array));});
+
+    var initializeArray = function(newTrace, a) {
+        setDeepProp(newTrace, a, []);
+    };
+
+    var pasteArray = function(newTrace, trace, j, a) {
+        getDeepProp(newTrace, a).push(getDeepProp(trace, a)[j]);
+    };
+
+    // fixme the O(n**3) complexity
     for(var i = 0; i < groupNames.length; i++) {
         var groupName = groupNames[i];
 
@@ -117,19 +136,77 @@ function transformOne(trace, state) {
         // maybe we could abstract this out
         var newTrace = newData[i] = Lib.extendDeep({}, trace);
 
-        newTrace.x = [];
-        newTrace.y = [];
+        topLevelAttributes.forEach(initializeArray.bind(null, newTrace));
 
         for(var j = 0; j < len; j++) {
             if(groups[j] !== groupName) continue;
 
-            newTrace.x.push(trace.x[j]);
-            newTrace.y.push(trace.y[j]);
+            topLevelAttributes.forEach(pasteArray.bind(0, newTrace, trace, j));
         }
 
         newTrace.name = groupName;
+
+        //  there's no need to coerce style[groupName] here
+        // as another round of supplyDefaults is done on the transformed traces
         newTrace = Lib.extendDeep(newTrace, style[groupName] || {});
     }
 
     return newData;
+}
+
+function getDeepProp(thing, propArray) {
+    var result = thing;
+    var i;
+    for(i = 0; i < propArray.length; i++) {
+        result = result[propArray[i]];
+        if(result === void(0)) {
+            return result;
+        }
+    }
+    return result;
+}
+
+function setDeepProp(thing, propArray, value) {
+    var current = thing;
+    var i;
+    for(i = 0; i < propArray.length - 1; i++) {
+        if(current[propArray[i]] === void(0)) {
+            current[propArray[i]] = {};
+        }
+        current = current[propArray[i]];
+    }
+    current[propArray[propArray.length - 1]] = value;
+}
+
+// fixme check if similar functions in plot_schema.js can be reused
+function crawl(attrs, list, path) {
+    path = path || [];
+
+    Object.keys(attrs).forEach(function(attrName) {
+        var attr = attrs[attrName];
+        var _path = path.slice();
+        _path.push(attrName);
+
+        if(attrName.charAt(0) === '_') return;
+
+        callback(attr, list, _path);
+
+        if(isValObject(attr)) return;
+        if(isPlainObject(attr)) crawl(attr, list, _path);
+    });
+}
+
+function isValObject(obj) {
+    return obj && obj.valType !== undefined;
+}
+
+function callback(attr, list, path) {
+    // see schema.defs for complete list of 'val types'
+    if(attr.valType === 'data_array' || attr.arrayOk === true) {
+        list.push(path);
+    }
+}
+
+function isPlainObject(obj) {
+    return Object.prototype.toString.call(obj) === '[object Object]';
 }
