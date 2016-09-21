@@ -10,6 +10,18 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.17.3] -- 2016-09-21
+
+### Fixed
+- Fix scatter text node translations on range relayout [#956]
+- Fix `Plotly.restyle` for scatter trace `mode` [#956]
+- Fix color mapping discontinuity in `surface` trace with circular colorscale
+  [#959]
+- Fix `Plotly.redraw` when scatter traces are added to the graph [#947]
+- Fix double click side-effects in gl2d plots [#958]
+- Emit event animatingframe frame during animations [#953]
+
+
 ## [1.17.2] -- 2016-09-12
 
 ### Fixed
