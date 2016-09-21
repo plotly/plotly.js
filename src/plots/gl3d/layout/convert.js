@@ -76,7 +76,7 @@ proto.merge = function(sceneLayout) {
     for(var i = 0; i < 3; ++i) {
         var axes = sceneLayout[AXES_NAMES[i]];
 
-        /////// Axes labels //
+        // Axes labels
         opts.labels[i] = convertHTMLToUnicode(axes.title);
         if('titlefont' in axes) {
             if(axes.titlefont.color) opts.labelColor[i] = str2RgbaArray(axes.titlefont.color);
@@ -84,7 +84,7 @@ proto.merge = function(sceneLayout) {
             if(axes.titlefont.size) opts.labelSize[i] = axes.titlefont.size;
         }
 
-        /////// LINES ////////
+        // Lines
         if('showline' in axes) opts.lineEnable[i] = axes.showline;
         if('linecolor' in axes) opts.lineColor[i] = str2RgbaArray(axes.linecolor);
         if('linewidth' in axes) opts.lineWidth[i] = axes.linewidth;
@@ -100,8 +100,7 @@ proto.merge = function(sceneLayout) {
         if('zerolinecolor' in axes) opts.zeroLineColor[i] = str2RgbaArray(axes.zerolinecolor);
         if('zerolinewidth' in axes) opts.zeroLineWidth[i] = axes.zerolinewidth;
 
-        //////// TICKS /////////
-        /// tick lines
+        // tick lines
         if('ticks' in axes && !!axes.ticks) opts.lineTickEnable[i] = true;
         else opts.lineTickEnable[i] = false;
 

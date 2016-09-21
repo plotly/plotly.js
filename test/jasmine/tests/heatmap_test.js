@@ -89,6 +89,42 @@ describe('heatmap supplyDefaults', function() {
         expect(traceOut.visible).toBe(false);
     });
 
+    it('should set paddings to 0 when not defined', function() {
+        traceIn = {
+            type: 'heatmap',
+            z: [[1, 2], [3, 4]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.xgap).toBe(0);
+        expect(traceOut.ygap).toBe(0);
+    });
+
+    it('should not step on defined paddings', function() {
+        traceIn = {
+            xgap: 10,
+            type: 'heatmap',
+            z: [[1, 2], [3, 4]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.xgap).toBe(10);
+        expect(traceOut.ygap).toBe(0);
+    });
+
+    it('should not coerce gap if zsmooth is set', function() {
+        traceIn = {
+            xgap: 10,
+            zsmooth: 'best',
+            type: 'heatmap',
+            z: [[1, 2], [3, 4]]
+        };
+
+        supplyDefaults(traceIn, traceOut, defaultColor, layout);
+        expect(traceOut.xgap).toBe(undefined);
+        expect(traceOut.ygap).toBe(undefined);
+    });
+
 });
 
 describe('heatmap convertColumnXYZ', function() {
@@ -157,7 +193,7 @@ describe('heatmap convertColumnXYZ', function() {
     });
 
     it('should convert x/y/z columns to z(x,y) with out-of-order data', function() {
-        /*eslint no-sparse-arrays: 0*/
+        /* eslint no-sparse-arrays: 0*/
 
         trace = {
             x: [
@@ -381,7 +417,80 @@ describe('heatmap plot', function() {
 
             done();
         });
+    });
 
+    it('draws canvas with correct margins', function(done) {
+        var mockWithPadding = require('@mocks/heatmap_brick_padding.json'),
+            mockWithoutPadding = Lib.extendDeep({}, mockWithPadding),
+            gd = createGraphDiv(),
+            getContextStub = {
+                fillRect: jasmine.createSpy()
+            },
+            originalCreateElement = document.createElement;
+
+        mockWithoutPadding.data[0].xgap = 0;
+        mockWithoutPadding.data[0].ygap = 0;
+
+        spyOn(document, 'createElement').and.callFake(function(elementType) {
+            var element = originalCreateElement.call(document, elementType);
+            if(elementType === 'canvas') {
+                spyOn(element, 'getContext').and.returnValue(getContextStub);
+            }
+            return element;
+        });
+
+        var argumentsWithoutPadding = [],
+            argumentsWithPadding = [];
+        Plotly.plot(gd, mockWithoutPadding.data, mockWithoutPadding.layout).then(function() {
+            argumentsWithoutPadding = getContextStub.fillRect.calls.allArgs().slice(0);
+            return Plotly.plot(gd, mockWithPadding.data, mockWithPadding.layout);
+        }).then(function() {
+            var centerXGap = mockWithPadding.data[0].xgap / 3;
+            var centerYGap = mockWithPadding.data[0].ygap / 3;
+            var edgeXGap = mockWithPadding.data[0].xgap * 2 / 3;
+            var edgeYGap = mockWithPadding.data[0].ygap * 2 / 3;
+
+            argumentsWithPadding = getContextStub.fillRect.calls.allArgs().slice(getContextStub.fillRect.calls.allArgs().length - 9);
+            expect(argumentsWithPadding).toEqual([
+              [argumentsWithoutPadding[0][0],
+               argumentsWithoutPadding[0][1] + edgeYGap,
+               argumentsWithoutPadding[0][2] - edgeXGap,
+               argumentsWithoutPadding[0][3] - edgeYGap],
+              [argumentsWithoutPadding[1][0] + centerXGap,
+               argumentsWithoutPadding[1][1] + edgeYGap,
+               argumentsWithoutPadding[1][2] - edgeXGap,
+               argumentsWithoutPadding[1][3] - edgeYGap],
+              [argumentsWithoutPadding[2][0] + edgeXGap,
+               argumentsWithoutPadding[2][1] + edgeYGap,
+               argumentsWithoutPadding[2][2] - edgeXGap,
+               argumentsWithoutPadding[2][3] - edgeYGap],
+              [argumentsWithoutPadding[3][0],
+               argumentsWithoutPadding[3][1] + centerYGap,
+               argumentsWithoutPadding[3][2] - edgeXGap,
+               argumentsWithoutPadding[3][3] - edgeYGap],
+              [argumentsWithoutPadding[4][0] + centerXGap,
+               argumentsWithoutPadding[4][1] + centerYGap,
+               argumentsWithoutPadding[4][2] - edgeXGap,
+               argumentsWithoutPadding[4][3] - edgeYGap],
+              [argumentsWithoutPadding[5][0] + edgeXGap,
+               argumentsWithoutPadding[5][1] + centerYGap,
+               argumentsWithoutPadding[5][2] - edgeXGap,
+               argumentsWithoutPadding[5][3] - edgeYGap],
+              [argumentsWithoutPadding[6][0],
+               argumentsWithoutPadding[6][1],
+               argumentsWithoutPadding[6][2] - edgeXGap,
+               argumentsWithoutPadding[6][3] - edgeYGap],
+              [argumentsWithoutPadding[7][0] + centerXGap,
+               argumentsWithoutPadding[7][1],
+               argumentsWithoutPadding[7][2] - edgeXGap,
+               argumentsWithoutPadding[7][3] - edgeYGap],
+              [argumentsWithoutPadding[8][0] + edgeXGap,
+               argumentsWithoutPadding[8][1],
+               argumentsWithoutPadding[8][2] - edgeXGap,
+               argumentsWithoutPadding[8][3] - edgeYGap
+             ]]);
+            done();
+        });
     });
 });
 

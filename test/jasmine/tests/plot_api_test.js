@@ -6,6 +6,7 @@ var Scatter = require('@src/traces/scatter');
 var Bar = require('@src/traces/bar');
 var Legend = require('@src/components/legend');
 var pkg = require('../../../package.json');
+var subroutines = require('@src/plot_api/subroutines');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -86,7 +87,7 @@ describe('Test plot api', function() {
 
     describe('Plotly.restyle', function() {
         beforeEach(function() {
-            spyOn(Plotly, 'plot');
+            spyOn(PlotlyInternal, 'plot');
             spyOn(Plots, 'previousPromises');
             spyOn(Scatter, 'arraysToCalcdata');
             spyOn(Bar, 'arraysToCalcdata');
@@ -111,7 +112,7 @@ describe('Test plot api', function() {
             expect(Scatter.arraysToCalcdata).toHaveBeenCalled();
             expect(Bar.arraysToCalcdata).not.toHaveBeenCalled();
             expect(Plots.style).toHaveBeenCalled();
-            expect(Plotly.plot).not.toHaveBeenCalled();
+            expect(PlotlyInternal.plot).not.toHaveBeenCalled();
             // "docalc" deletes gd.calcdata - make sure this didn't happen
             expect(gd.calcdata).toBeDefined();
         });
@@ -126,8 +127,22 @@ describe('Test plot api', function() {
             expect(Scatter.arraysToCalcdata).not.toHaveBeenCalled();
             expect(Bar.arraysToCalcdata).toHaveBeenCalled();
             expect(Plots.style).toHaveBeenCalled();
-            expect(Plotly.plot).not.toHaveBeenCalled();
+            expect(PlotlyInternal.plot).not.toHaveBeenCalled();
             expect(gd.calcdata).toBeDefined();
+        });
+
+        it('calls plot on xgap and ygap styling', function() {
+            var gd = {
+                data: [{z: [[1, 2, 3], [4, 5, 6], [7, 8, 9]], showscale: false, type: 'heatmap'}],
+                layout: {}
+            };
+
+            mockDefaultsAndCalc(gd);
+            Plotly.restyle(gd, {'xgap': 2});
+            expect(PlotlyInternal.plot).toHaveBeenCalled();
+
+            Plotly.restyle(gd, {'ygap': 2});
+            expect(PlotlyInternal.plot.calls.count()).toEqual(2);
         });
 
         it('ignores undefined values', function() {
@@ -877,6 +892,82 @@ describe('Test plot api', function() {
             expect(contours.z.highlightwidth).toEqual('red');
 
             expect(gd.data[1].contours).toBeUndefined();
+        });
+    });
+
+    describe('Plotly.update should', function() {
+        var gd, calcdata;
+
+        beforeAll(function() {
+            Object.keys(subroutines).forEach(function(k) {
+                spyOn(subroutines, k).and.callThrough();
+            });
+        });
+
+        beforeEach(function(done) {
+            gd = createGraphDiv();
+            Plotly.plot(gd, [{ y: [2, 1, 2] }]).then(function() {
+                calcdata = gd.calcdata;
+                done();
+            });
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('call doTraceStyle on trace style updates', function(done) {
+            expect(subroutines.doTraceStyle).not.toHaveBeenCalled();
+
+            Plotly.update(gd, { 'marker.color': 'blue' }).then(function() {
+                expect(subroutines.doTraceStyle).toHaveBeenCalledTimes(1);
+                expect(calcdata).toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('clear calcdata on data updates', function(done) {
+            Plotly.update(gd, { x: [[3, 1, 3]] }).then(function() {
+                expect(calcdata).not.toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('call doLegend on legend updates', function(done) {
+            expect(subroutines.doLegend).not.toHaveBeenCalled();
+
+            Plotly.update(gd, {}, { 'showlegend': true }).then(function() {
+                expect(subroutines.doLegend).toHaveBeenCalledTimes(1);
+                expect(calcdata).toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('call layoutReplot when adding update menu', function(done) {
+            expect(subroutines.layoutReplot).not.toHaveBeenCalled();
+
+            var layoutUpdate = {
+                updatemenus: [{
+                    buttons: [{
+                        method: 'relayout',
+                        args: ['title', 'Hello World']
+                    }]
+                }]
+            };
+
+            Plotly.update(gd, {}, layoutUpdate).then(function() {
+                expect(subroutines.doLegend).toHaveBeenCalledTimes(1);
+                expect(calcdata).toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('call doModeBar when updating \'dragmode\'', function(done) {
+            expect(subroutines.doModeBar).not.toHaveBeenCalled();
+
+            Plotly.update(gd, {}, { 'dragmode': 'pan' }).then(function() {
+                expect(subroutines.doModeBar).toHaveBeenCalledTimes(1);
+                expect(calcdata).toBe(gd.calcdata);
+                done();
+            });
         });
     });
 });

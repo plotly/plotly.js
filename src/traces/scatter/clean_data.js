@@ -10,23 +10,21 @@
 'use strict';
 
 
+// remove opacity for any trace that has a fill or is filled to
 module.exports = function cleanData(fullData) {
-    var i,
-        tracei,
-        filli,
-        j,
-        tracej;
+    for(var i = 0; i < fullData.length; i++) {
+        var tracei = fullData[i];
+        if(tracei.type !== 'scatter') continue;
 
-    // remove opacity for any trace that has a fill or is filled to
-    for(i = 0; i < fullData.length; i++) {
-        tracei = fullData[i];
-        filli = tracei.fill;
-        if((filli === 'none') || (tracei.type !== 'scatter')) continue;
+        var filli = tracei.fill;
+        if(filli === 'none' || filli === 'toself') continue;
+
         tracei.opacity = undefined;
 
         if(filli === 'tonexty' || filli === 'tonextx') {
-            for(j = i - 1; j >= 0; j--) {
-                tracej = fullData[j];
+            for(var j = i - 1; j >= 0; j--) {
+                var tracej = fullData[j];
+
                 if((tracej.type === 'scatter') &&
                         (tracej.xaxis === tracei.xaxis) &&
                         (tracej.yaxis === tracei.yaxis)) {

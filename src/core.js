@@ -15,7 +15,7 @@
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.16.2';
+exports.version = '1.17.2';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -32,6 +32,7 @@ exports.newPlot = Plotly.newPlot;
 exports.restyle = Plotly.restyle;
 exports.relayout = Plotly.relayout;
 exports.redraw = Plotly.redraw;
+exports.update = Plotly.update;
 exports.extendTraces = Plotly.extendTraces;
 exports.prependTraces = Plotly.prependTraces;
 exports.addTraces = Plotly.addTraces;
@@ -43,6 +44,9 @@ exports.register = require('./plot_api/register');
 exports.toImage = require('./plot_api/to_image');
 exports.downloadImage = require('./snapshot/download');
 exports.validate = require('./plot_api/validate');
+exports.addFrames = Plotly.addFrames;
+exports.deleteFrames = Plotly.deleteFrames;
+exports.animate = Plotly.animate;
 
 // scatter is the only trace included by default
 exports.register(require('./traces/scatter'));

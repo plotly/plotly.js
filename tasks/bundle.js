@@ -7,6 +7,7 @@ var UglifyJS = require('uglify-js');
 var constants = require('./util/constants');
 var common = require('./util/common');
 var compressAttributes = require('./util/compress_attributes');
+var patchMinified = require('./util/patch_minified');
 var doesFileExist = common.doesFileExist;
 
 /*
@@ -83,6 +84,7 @@ function _bundle(pathToIndex, pathToBundle, opts) {
 
         if(outputMinified) {
             var minifiedCode = UglifyJS.minify(buf.toString(), constants.uglifyOptions).code;
+            minifiedCode = patchMinified(minifiedCode);
 
             fs.writeFile(pathToMinBundle, minifiedCode, function(err) {
                 if(err) throw err;

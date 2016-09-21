@@ -238,12 +238,54 @@ function plotOne(gd, plotinfo, cd) {
         rcount = 0,
         gcount = 0,
         bcount = 0,
+        brickWithPadding,
         xb,
         j,
         xi,
         v,
         row,
         c;
+
+    function applyBrickPadding(trace, x0, x1, y0, y1, xIndex, xLength, yIndex, yLength) {
+        var padding = {
+                x0: x0,
+                x1: x1,
+                y0: y0,
+                y1: y1
+            },
+            xEdgeGap = trace.xgap * 2 / 3,
+            yEdgeGap = trace.ygap * 2 / 3,
+            xCenterGap = trace.xgap / 3,
+            yCenterGap = trace.ygap / 3;
+
+        if(yIndex === yLength - 1) { // top edge brick
+            padding.y1 = y1 - yEdgeGap;
+        }
+
+        if(xIndex === xLength - 1) { // right edge brick
+            padding.x0 = x0 + xEdgeGap;
+        }
+
+        if(yIndex === 0) { // bottom edge brick
+            padding.y0 = y0 + yEdgeGap;
+        }
+
+        if(xIndex === 0) { // left edge brick
+            padding.x1 = x1 - xEdgeGap;
+        }
+
+        if(xIndex > 0 && xIndex < xLength - 1) { // brick in the center along x
+            padding.x0 = x0 + xCenterGap;
+            padding.x1 = x1 - xCenterGap;
+        }
+
+        if(yIndex > 0 && yIndex < yLength - 1) { // brick in the center along y
+            padding.y0 = y0 + yCenterGap;
+            padding.y1 = y1 - yCenterGap;
+        }
+
+        return padding;
+    }
 
     function setColor(v, pixsize) {
         if(v !== undefined) {
@@ -364,7 +406,21 @@ function plotOne(gd, plotinfo, cd) {
                 v = row[i];
                 c = setColor(v, (xb[1] - xb[0]) * (yb[1] - yb[0]));
                 context.fillStyle = 'rgba(' + c.join(',') + ')';
-                context.fillRect(xb[0], yb[0], (xb[1] - xb[0]), (yb[1] - yb[0]));
+
+                brickWithPadding = applyBrickPadding(trace,
+                                                     xb[0],
+                                                     xb[1],
+                                                     yb[0],
+                                                     yb[1],
+                                                     i,
+                                                     n,
+                                                     j,
+                                                     m);
+
+                context.fillRect(brickWithPadding.x0,
+                                 brickWithPadding.y0,
+                                (brickWithPadding.x1 - brickWithPadding.x0),
+                                (brickWithPadding.y1 - brickWithPadding.y0));
             }
         }
     }

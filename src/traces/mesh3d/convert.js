@@ -74,7 +74,7 @@ proto.update = function(data) {
 
     this.data = data;
 
-    //Unpack position data
+    // Unpack position data
     function toDataCoords(axis, coord, scale) {
         return coord.map(function(x) {
             return axis.d2l(x) * scale;
@@ -139,7 +139,7 @@ proto.update = function(data) {
         config.meshColor = str2RgbaArray(data.color);
     }
 
-    //Update mesh
+    // Update mesh
     this.mesh.update(config);
 };
 

@@ -161,7 +161,7 @@ describe('range selector defaults:', function() {
             },
             yaxis2: {
                 anchor: 'x',
-                domain: [0.3, 0.55]
+                overlaying: 'y'
             },
             yaxis3: {
                 anchor: 'x',

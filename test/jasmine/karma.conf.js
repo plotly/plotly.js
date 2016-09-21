@@ -1,4 +1,4 @@
-/*eslint-env node*/
+/* eslint-env node*/
 
 // Karma configuration
 
@@ -13,10 +13,13 @@
  *
  */
 
+var constants = require('../../tasks/util/constants');
+
 var arg = process.argv[4];
 
 var testFileGlob = arg ? arg : 'tests/*_test.js';
 var isSingleSuiteRun = (arg && arg.indexOf('bundle_tests/') === -1);
+var isRequireJSTest = (arg && arg.indexOf('bundle_tests/requirejs') !== -1);
 
 var pathToMain = '../../lib/index.js';
 var pathToJQuery = 'assets/jquery-1.8.3.min.js';
@@ -112,6 +115,13 @@ if(isSingleSuiteRun) {
 
     func.defaultConfig.preprocessors[pathToMain] = ['browserify'];
     func.defaultConfig.preprocessors[testFileGlob] = ['browserify'];
+}
+else if(isRequireJSTest) {
+    func.defaultConfig.files = [
+        constants.pathToRequireJS,
+        constants.pathToRequireJSFixture,
+        testFileGlob
+    ];
 }
 else {
     func.defaultConfig.files = [

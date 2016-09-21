@@ -17,7 +17,7 @@ var buttonsAttrs = {
 
     method: {
         valType: 'enumerated',
-        values: ['restyle', 'relayout'],
+        values: ['restyle', 'relayout', 'animate'],
         dflt: 'restyle',
         role: 'info',
         description: [
@@ -100,7 +100,7 @@ module.exports = {
     yanchor: {
         valType: 'enumerated',
         values: ['auto', 'top', 'middle', 'bottom'],
-        dflt: 'bottom',
+        dflt: 'top',
         role: 'info',
         description: [
             'Sets the update menu\'s vertical position anchor',

@@ -191,7 +191,7 @@ proto.update = function(data) {
         yc = coords[1],
         contourLevels = scene.contourLevels;
 
-    //Save data
+    // Save data
     this.data = data;
 
     /*
@@ -250,7 +250,7 @@ proto.update = function(data) {
 
     params.intensityBounds = [data.cmin, data.cmax];
 
-    //Refine if necessary
+    // Refine if necessary
     if(data.surfacecolor) {
         var intensity = ndarray(new Float32Array(xlen * ylen), [xlen, ylen]);
 

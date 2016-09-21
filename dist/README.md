@@ -18,6 +18,7 @@ To support IE9, put:
 
 ```html
 <script>if(typeof window.Int16Array !== 'function')document.write("<scri"+"pt src='extras/typedarray.min.js'></scr"+"ipt>");</script>
+<script>document.write("<scri"+"pt src='extras/request_animation_frame.js'></scr"+"ipt>");</script>
 ```
 
 before the plotly.js script tag.
@@ -36,11 +37,11 @@ The main plotly.js bundle includes all the official (non-beta) trace modules.
 
 It be can imported as minified javascript
 - using dist file `dist/plotly.min.js`
-- using CDN URL https://cdn.plot.ly/plotly-plotly-latest.min.js OR https://cdn.plot.ly/plotly-plotly-1.16.2.min.js
+- using CDN URL https://cdn.plot.ly/plotly-plotly-latest.min.js OR https://cdn.plot.ly/plotly-plotly-1.17.2.min.js
 
 or as raw javascript:
 - using dist file `dist/plotly.js`
-- using CDN URL https://cdn.plot.ly/plotly-plotly-latest.js OR https://cdn.plot.ly/plotly-plotly-1.16.2.js
+- using CDN URL https://cdn.plot.ly/plotly-plotly-latest.js OR https://cdn.plot.ly/plotly-plotly-1.17.2.js
 - using CommonJS with `require('plotly.js')`
 
 If you would like to have access to the attribute meta information (including attribute descriptions as on the [schema reference page](https://plot.ly/javascript/reference/)), use dist file `dist/plotly-with-meta.js`
@@ -49,7 +50,7 @@ The main plotly.js bundle weights in at:
 
 | plotly.js | plotly.min.js | plotly.min.js + gzip | plotly-with-meta.js |
 |-----------|---------------|----------------------|---------------------|
-| 3.8 MB | 1.6 MB | 488.9 kB | 3.9 MB |
+| 4 MB | 1.7 MB | 515.2 kB | 4.1 MB |
 
 ## Partial bundles
 
@@ -72,13 +73,13 @@ The `basic` partial bundle contains the `scatter`, `bar` and `pie` trace modules
 | dist bundle (minified) | `dist/plotly-basic.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-basic-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-basic-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-basic-1.16.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-basic-1.16.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-basic-1.17.2.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-basic-1.17.2.min.js |
 | CommonJS | `require('plotly.js/lib/index-basic')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.4 MB | 549 kB | 180.6 kB |
+| 1.5 MB | 575.4 kB | 188 kB |
 
 ### plotly.js cartesian
 
@@ -90,13 +91,13 @@ The `cartesian` partial bundle contains the `scatter`, `bar`, `box`, `heatmap`, 
 | dist bundle (minified) | `dist/plotly-cartesian.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-cartesian-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-cartesian-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-cartesian-1.16.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-cartesian-1.16.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-cartesian-1.17.2.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-cartesian-1.17.2.min.js |
 | CommonJS | `require('plotly.js/lib/index-cartesian')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.6 MB | 618.2 kB | 201.3 kB |
+| 1.7 MB | 645.1 kB | 209.1 kB |
 
 ### plotly.js geo
 
@@ -108,13 +109,13 @@ The `geo` partial bundle contains the `scatter`, `scattergeo` and `choropleth` t
 | dist bundle (minified) | `dist/plotly-geo.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-geo-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-geo-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-geo-1.16.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-geo-1.16.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-geo-1.17.2.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-geo-1.17.2.min.js |
 | CommonJS | `require('plotly.js/lib/index-geo')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 1.5 MB | 578.6 kB | 191.5 kB |
+| 1.5 MB | 604.8 kB | 199 kB |
 
 ### plotly.js gl3d
 
@@ -126,17 +127,17 @@ The `gl3d` partial bundle contains the `scatter`, `scatter3d`, `surface` and `me
 | dist bundle (minified) | `dist/plotly-gl3d.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-gl3d-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-gl3d-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-gl3d-1.16.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-gl3d-1.16.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-gl3d-1.17.2.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-gl3d-1.17.2.min.js |
 | CommonJS | `require('plotly.js/lib/index-gl3d')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.3 MB | 985.1 kB | 310.6 kB |
+| 2.3 MB | 1011.4 kB | 318 kB |
 
 ### plotly.js gl2d
 
-The `gl2d` partial bundle contains the `scatter`, `scattergl`, `heatmapgl` and `contourgl` trace modules.
+The `gl2d` partial bundle contains the `scatter`, `scattergl`, `pointcloud`, `heatmapgl` and `contourgl` trace modules.
 
 | Way to import | Location |
 |---------------|----------|
@@ -144,13 +145,13 @@ The `gl2d` partial bundle contains the `scatter`, `scattergl`, `heatmapgl` and `
 | dist bundle (minified) | `dist/plotly-gl2d.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-gl2d-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-gl2d-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-gl2d-1.16.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-gl2d-1.16.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-gl2d-1.17.2.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-gl2d-1.17.2.min.js |
 | CommonJS | `require('plotly.js/lib/index-gl2d')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2 MB | 854.8 kB | 271 kB |
+| 2.1 MB | 898.9 kB | 283.5 kB |
 
 ### plotly.js mapbox
 
@@ -162,13 +163,13 @@ The `mapbox` partial bundle contains the `scatter` and `scattermapbox` trace mod
 | dist bundle (minified) | `dist/plotly-mapbox.min.js` |
 | CDN URL (latest) | https://cdn.plot.ly/plotly-mapbox-latest.js |
 | CDN URL (latest minified) | https://cdn.plot.ly/plotly-mapbox-latest.min.js |
-| CDN URL (tagged) | https://cdn.plot.ly/plotly-mapbox-1.16.2.js |
-| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-mapbox-1.16.2.min.js |
+| CDN URL (tagged) | https://cdn.plot.ly/plotly-mapbox-1.17.2.js |
+| CDN URL (tagged minified) | https://cdn.plot.ly/plotly-mapbox-1.17.2.min.js |
 | CommonJS | `require('plotly.js/lib/index-mapbox')` |
 
 | Raw size | Minified size | Minified + gzip size |
 |------|-----------------|------------------------|
-| 2.3 MB | 957.9 kB | 285.1 kB |
+| 2.5 MB | 1 MB | 306.3 kB |
 
 ----------------
 

@@ -3,6 +3,7 @@ var fs = require('fs');
 
 var falafel = require('falafel');
 var glob = require('glob');
+var madge = require('madge');
 
 var constants = require('./util/constants');
 var srcGlob = path.join(constants.pathToSrc, '**/*.js');
@@ -14,6 +15,7 @@ var bundleTestGlob = path.join(constants.pathToJasmineBundleTests, '**/*.js');
 assertJasmineSuites();
 assertHeaders();
 assertFileNames();
+assertCircularDeps();
 
 
 // check for for focus and exclude jasmine blocks
@@ -38,7 +40,7 @@ function assertJasmineSuites() {
 
         });
 
-        log(logs);
+        log('no jasmine suites focus/exclude blocks', logs);
     });
 }
 
@@ -68,7 +70,7 @@ function assertHeaders() {
             }
         });
 
-        log(logs);
+        log('correct headers in lib/ and src/', logs);
     });
 }
 
@@ -89,17 +91,38 @@ function assertFileNames() {
             }
         });
 
-        log(logs);
+        log('lower case only file names', logs);
     });
 
+}
+
+// check circular dependencies
+function assertCircularDeps() {
+    var dependencyObject = madge(constants.pathToSrc);
+    var circularDeps = dependencyObject.circular().getArray();
+    var logs = [];
+
+    // as of v1.17.0 - 2016/09/08
+    // see https://github.com/plotly/plotly.js/milestone/9
+    // for more details
+    var MAX_ALLOWED_CIRCULAR_DEPS = 33;
+
+    if(circularDeps.length > MAX_ALLOWED_CIRCULAR_DEPS) {
+        logs.push('some new circular dependencies were added to src/');
+    }
+
+    log('circular dependencies', logs);
 }
 
 function combineGlobs(arr) {
     return '{' + arr.join(',') + '}';
 }
 
-function log(logs) {
+function log(name, logs) {
     if(logs.length) {
+        console.error('test-syntax error [' + name + ']\n');
         throw new Error('\n' + logs.join('\n') + '\n');
     }
+
+    console.log('ok ' + name);
 }

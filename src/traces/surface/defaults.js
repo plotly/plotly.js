@@ -50,7 +50,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
         }
     }
 
-    //Coerce remaining properties
+    // Coerce remaining properties
     [
         'lighting.ambient',
         'lighting.diffuse',

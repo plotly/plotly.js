@@ -3,7 +3,7 @@
 // var Lib = require('@src/lib');
 var Lib = require('../../../../src/lib');
 
-/*eslint no-unused-vars: 0*/
+/* eslint no-unused-vars: 0*/
 
 
 // so that Plotly.register knows what to do with it

@@ -12,13 +12,14 @@
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
-var Lib = require('../../lib');
 var subTypes = require('../../traces/scatter/subtypes');
 
-
-module.exports = function plot(traces, plotinfo) {
+module.exports = function plot(traces, plotinfo, transitionOpts) {
+    var isNew;
     var xa = plotinfo.x(),
         ya = plotinfo.y();
+
+    var hasAnimation = transitionOpts && transitionOpts.duration > 0;
 
     traces.each(function(d) {
         var trace = d[0].trace,
@@ -29,6 +30,12 @@ module.exports = function plot(traces, plotinfo) {
             xObj = trace.error_x || {},
             yObj = trace.error_y || {};
 
+        var keyFunc;
+
+        if(trace.ids) {
+            keyFunc = function(d) {return d.id;};
+        }
+
         var sparse = (
             subTypes.hasMarkers(trace) &&
             trace.marker.maxdisplayed > 0
@@ -37,10 +44,20 @@ module.exports = function plot(traces, plotinfo) {
         if(!yObj.visible && !xObj.visible) return;
 
         var errorbars = d3.select(this).selectAll('g.errorbar')
-            .data(Lib.identity);
+            .data(d, keyFunc);
 
-        errorbars.enter().append('g')
+        errorbars.exit().remove();
+
+        errorbars.style('opacity', 1);
+
+        var enter = errorbars.enter().append('g')
             .classed('errorbar', true);
+
+        if(hasAnimation) {
+            enter.style('opacity', 0).transition()
+                .duration(transitionOpts.duration)
+                .style('opacity', 1);
+        }
 
         errorbars.each(function(d) {
             var errorbar = d3.select(this);
@@ -59,11 +76,24 @@ module.exports = function plot(traces, plotinfo) {
                     coords.yh + 'h' + (2 * yw) + // hat
                     'm-' + yw + ',0V' + coords.ys; // bar
 
+
                 if(!coords.noYS) path += 'm-' + yw + ',0h' + (2 * yw); // shoe
 
-                errorbar.append('path')
-                    .classed('yerror', true)
-                    .attr('d', path);
+                var yerror = errorbar.select('path.yerror');
+
+                isNew = !yerror.size();
+
+                if(isNew) {
+                    yerror = errorbar.append('path')
+                        .classed('yerror', true);
+                } else if(hasAnimation) {
+                    yerror = yerror
+                        .transition()
+                            .duration(transitionOpts.duration)
+                            .ease(transitionOpts.easing);
+                }
+
+                yerror.attr('d', path);
             }
 
             if(xObj.visible && isNumeric(coords.y) &&
@@ -77,9 +107,21 @@ module.exports = function plot(traces, plotinfo) {
 
                 if(!coords.noXS) path += 'm0,-' + xw + 'v' + (2 * xw); // shoe
 
-                errorbar.append('path')
-                    .classed('xerror', true)
-                    .attr('d', path);
+                var xerror = errorbar.select('path.xerror');
+
+                isNew = !xerror.size();
+
+                if(isNew) {
+                    xerror = errorbar.append('path')
+                        .classed('xerror', true);
+                } else if(hasAnimation) {
+                    xerror = xerror
+                        .transition()
+                            .duration(transitionOpts.duration)
+                            .ease(transitionOpts.easing);
+                }
+
+                xerror.attr('d', path);
             }
         });
     });

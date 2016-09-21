@@ -125,7 +125,7 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
     });
 
     // keep track of pan / zoom in user layout and emit relayout event
-    map.on('move', function() {
+    map.on('moveend', function(eventData) {
         var view = self.getView();
 
         opts._input.center = opts.center = view.center;
@@ -133,9 +133,19 @@ proto.createMap = function(calcData, fullLayout, resolve, reject) {
         opts._input.bearing = opts.bearing = view.bearing;
         opts._input.pitch = opts.pitch = view.pitch;
 
-        var update = {};
-        update[self.id] = Lib.extendFlat({}, view);
-        gd.emit('plotly_relayout', update);
+        // 'moveend' gets triggered by map.setCenter, map.setZoom,
+        // map.setBearing and map.setPitch.
+        //
+        // Here, we make sure that 'plotly_relayout' is
+        // triggered here only when the 'moveend' originates from a
+        // mouse target (filtering out API calls) to not
+        // duplicate 'plotly_relayout' events.
+
+        if(eventData.originalEvent) {
+            var update = {};
+            update[self.id] = Lib.extendFlat({}, view);
+            gd.emit('plotly_relayout', update);
+        }
     });
 
     map.on('mousemove', function(evt) {
@@ -212,7 +222,7 @@ proto.updateData = function(calcData) {
         traceObj = traceHash[trace.uid];
 
         if(traceObj) traceObj.update(calcTrace);
-        else {
+        else if(trace._module) {
             traceHash[trace.uid] = trace._module.plot(this, calcTrace);
         }
     }
@@ -358,16 +368,24 @@ proto.toImage = function() {
 
 // convenience wrapper to create blank GeoJSON sources
 // and avoid 'invalid GeoJSON' errors
-proto.createGeoJSONSource = function() {
+proto.initSource = function(idSource) {
     var blank = {
-        type: 'Feature',
-        geometry: {
-            type: 'Point',
-            coordinates: []
+        type: 'geojson',
+        data: {
+            type: 'Feature',
+            geometry: {
+                type: 'Point',
+                coordinates: []
+            }
         }
     };
 
-    return new mapboxgl.GeoJSONSource({data: blank});
+    return this.map.addSource(idSource, blank);
+};
+
+// convenience wrapper to set data of GeoJSON sources
+proto.setSourceData = function(idSource, data) {
+    this.map.getSource(idSource).setData(data);
 };
 
 // convenience wrapper to create set multiple layer

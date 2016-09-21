@@ -171,7 +171,7 @@ describe('The legend', function() {
             Plotly.relayout(gd, 'height', gd._fullLayout.height / 2).then(function() {
                 var legendHeight = getLegendHeight();
 
-                //legend still exists and not duplicated
+                // legend still exists and not duplicated
                 expect(countLegendGroups(gd)).toBe(1);
                 expect(countLegendClipPaths(gd)).toBe(1);
 

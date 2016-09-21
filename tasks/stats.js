@@ -52,6 +52,7 @@ function getInfoContent() {
         '',
         '```html',
         '<script>if(typeof window.Int16Array !== \'function\')document.write("<scri"+"pt src=\'extras/typedarray.min.js\'></scr"+"ipt>");</script>',
+        '<script>document.write("<scri"+"pt src=\'extras/request_animation_frame.js\'></scr"+"ipt>");</script>',
         '```',
         '',
         'before the plotly.js script tag.',

@@ -10,6 +10,72 @@ https://github.com/plotly/plotly.js/compare/vX.Y.Z...master
 where X.Y.Z is the semver of most recent plotly.js release.
 
 
+## [1.17.2] -- 2016-09-12
+
+### Fixed
+- 3D colored axis backgrounds and axis labels are rendered again (bug introduced
+  in 1.17.0) [#931]
+
+
+## [1.17.1] -- 2016-09-09
+
+### Fixed
+- Restyling `visible` to `false` on all scatter traces present on a graph
+  is now working again (bug introduced in 1.17.0) [#920]
+- Relayouting `paper_bgcolor` now properly propagate to legend
+  and updatemenu `bgcolor [#921]
+- Mapbox plot routine no longer make request to public Mapbox server
+  when linked to a Mapbox Atlas instance [#919]
+
+
+## [1.17.0] -- 2016-09-07
+
+### Added
+- Add support for animations for scatter trace [#802]
+- Add frames and animate API -> `Plotly.animate`, `Plotly.addFrames` and
+  `Plotly.deleteFrames` [#802]
+- Add `Plotly.update` method which can perform data and layout update in one
+  call [#875]
+- Add `pointcloud` gl2d trace type [#850, #869]
+- Add `xgap` and `ygap` to heatmap traces to define space between heatmap bricks
+  [#868]
+- Add `separatethousands` axis attribute which determines whether four-digit
+  numbers are separated or not [#848]
+- Add `'skip'` value to trace `hoverinfo` corresponding to traces transparent to
+  the hover picking routine [#851]
+- Add support for trace opacity in `toself` filled trace [#896]
+- Add global transform config option [#852]
+- Add `requestAnimationFrame` to `dist/`[#904]
+
+### Changed
+- Explicitly skip undefined props on `restyle` and `relayout` [#844]
+- Removed a few circular dependency patterns [#833, #837, #845, #878]
+
+### Fixed
+- Fix legend trace toggle background attributes on restyle [#909]
+- Make 'yanchor' default be its intended value of `'top'` [#894]
+- Fix box plot jitter algorithm when IQR = 0 [#915]
+- Fix box plot jitter algorithm when data range is 0 [#915]
+- Fix mapbox event firing duplicates [#901]
+- Fix mapbox visible false traces handling on first draw [#900]
+- Avoid draw buffer to display buffer copy in gl2d plots [#843]
+- Do not extend data array on event emission [#842, #866]
+- Make `Plotly.redraw` throw an error when called on non plotly graph div [#907]
+- Make `plotly.min.js` work when injected in Require.js environment [#914]
+
+
+## [1.16.3] -- 2016-08-23
+
+### Fixed
+- Fix SVG exports for graphs with layout images [#846]
+- Properly handles duplicate categories in non-default `categoryorder` [#863]
+- Fix range selector position logic for overlaying axes [#873]
+- Autorange is now properly computed for heatmapgl and contourgl traces [#855,
+  #874]
+- Trace toggling via legend preserves axis ranges in gl2d plots [#855, #874]
+- Bump `mapbox-gl` dependency to 0.22.0 [#867]
+
+
 ## [1.16.2] -- 2016-08-09
 
 ### Fixed

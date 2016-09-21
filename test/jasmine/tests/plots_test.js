@@ -301,9 +301,10 @@ describe('Test Plots', function() {
 
         it('should unset everything in the gd except _context', function() {
             var expectedKeys = [
-                '_ev', 'on', 'once', 'removeListener', 'removeAllListeners',
-                'emit', '_context', '_replotPending', '_mouseDownTime',
-                '_hmpixcount', '_hmlumcount'
+                '_ev', '_internalEv', 'on', 'once', 'removeListener', 'removeAllListeners',
+                '_internalOn', '_internalOnce', '_removeInternalListener',
+                '_removeAllInternalListeners', 'emit', '_context', '_replotPending',
+                '_mouseDownTime', '_hmpixcount', '_hmlumcount'
             ];
 
             Plots.purge(gd);
@@ -331,6 +332,8 @@ describe('Test Plots', function() {
             expect(gd.numboxes).toBeUndefined();
             expect(gd._hoverTimer).toBeUndefined();
             expect(gd._lastHoverTime).toBeUndefined();
+            expect(gd._transitionData).toBeUndefined();
+            expect(gd._transitioning).toBeUndefined();
         });
     });
 });

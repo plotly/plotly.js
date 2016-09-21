@@ -245,6 +245,32 @@ describe('mapbox credentials', function() {
             done();
         });
     });
+
+    it('should bypass access token in mapbox layout options when config points to an Atlas server', function(done) {
+        var cnt = 0;
+        var msg = [
+            'An API access token is required to use Mapbox GL.',
+            'See https://www.mapbox.com/developers/api/#access-tokens'
+        ].join(' ');
+
+        Plotly.plot(gd, [{
+            type: 'scattermapbox',
+            lon: [10, 20, 30],
+            lat: [10, 20, 30]
+        }], {
+            mapbox: {
+                accesstoken: MAPBOX_ACCESS_TOKEN
+            }
+        }, {
+            mapboxAccessToken: ''
+        }).catch(function(err) {
+            cnt++;
+            expect(err).toEqual(new Error(msg));
+        }).then(function() {
+            expect(cnt).toEqual(1);
+            done();
+        });
+    });
 });
 
 describe('mapbox plots', function() {
@@ -295,6 +321,13 @@ describe('mapbox plots', function() {
         }).then(function() {
             expect(countVisibleTraces(gd, modes)).toEqual(2);
 
+            var mockCopy = Lib.extendDeep({}, mock);
+            mockCopy.data[0].visible = false;
+
+            return Plotly.newPlot(gd, mockCopy.data, mockCopy.layout);
+        }).then(function() {
+            expect(countVisibleTraces(gd, modes)).toEqual(1);
+
             done();
         });
     });
@@ -338,6 +371,17 @@ describe('mapbox plots', function() {
     });
 
     it('should be able to restyle', function(done) {
+        var restyleCnt = 0,
+            relayoutCnt = 0;
+
+        gd.on('plotly_restyle', function() {
+            restyleCnt++;
+        });
+
+        gd.on('plotly_relayout', function() {
+            relayoutCnt++;
+        });
+
         function assertMarkerColor(expectations) {
             return new Promise(function(resolve) {
                 setTimeout(function() {
@@ -360,6 +404,9 @@ describe('mapbox plots', function() {
             return Plotly.restyle(gd, 'marker.color', 'green');
         })
         .then(function() {
+            expect(restyleCnt).toEqual(1);
+            expect(relayoutCnt).toEqual(0);
+
             return assertMarkerColor([
                 [0, 0.5019, 0, 1],
                 [0, 0.5019, 0, 1]
@@ -369,6 +416,9 @@ describe('mapbox plots', function() {
             return Plotly.restyle(gd, 'marker.color', 'red', [1]);
         })
         .then(function() {
+            expect(restyleCnt).toEqual(2);
+            expect(relayoutCnt).toEqual(0);
+
             return assertMarkerColor([
                 [0, 0.5019, 0, 1],
                 [1, 0, 0, 1]
@@ -378,6 +428,17 @@ describe('mapbox plots', function() {
     });
 
     it('should be able to relayout', function(done) {
+        var restyleCnt = 0,
+            relayoutCnt = 0;
+
+        gd.on('plotly_restyle', function() {
+            restyleCnt++;
+        });
+
+        gd.on('plotly_relayout', function() {
+            relayoutCnt++;
+        });
+
         function assertLayout(style, center, zoom, dims) {
             var mapInfo = getMapInfo(gd);
 
@@ -397,22 +458,37 @@ describe('mapbox plots', function() {
         assertLayout('Mapbox Dark', [-4.710, 19.475], 1.234, [80, 100, 908, 270]);
 
         Plotly.relayout(gd, 'mapbox.center', { lon: 0, lat: 0 }).then(function() {
+            expect(restyleCnt).toEqual(0);
+            expect(relayoutCnt).toEqual(1);
+
             assertLayout('Mapbox Dark', [0, 0], 1.234, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.zoom', '6');
         }).then(function() {
+            expect(restyleCnt).toEqual(0);
+            expect(relayoutCnt).toEqual(2);
+
             assertLayout('Mapbox Dark', [0, 0], 6, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.style', 'light');
         }).then(function() {
+            expect(restyleCnt).toEqual(0);
+            expect(relayoutCnt).toEqual(3);
+
             assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 908, 270]);
 
             return Plotly.relayout(gd, 'mapbox.domain.x', [0, 0.5]);
         }).then(function() {
+            expect(restyleCnt).toEqual(0);
+            expect(relayoutCnt).toEqual(4);
+
             assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 454, 270]);
 
             return Plotly.relayout(gd, 'mapbox.domain.y[0]', 0.5);
         }).then(function() {
+            expect(restyleCnt).toEqual(0);
+            expect(relayoutCnt).toEqual(5);
+
             assertLayout('Mapbox Light', [0, 0], 6, [80, 100, 454, 135]);
 
             done();
@@ -646,9 +722,11 @@ describe('mapbox plots', function() {
     });
 
     it('should respond drag / scroll interactions', function(done) {
-        var updateData;
+        var relayoutCnt = 0,
+            updateData;
 
         gd.on('plotly_relayout', function(eventData) {
+            relayoutCnt++;
             updateData = eventData;
         });
 
@@ -656,6 +734,9 @@ describe('mapbox plots', function() {
             var promise = _mouseEvent('mousemove', p0, noop).then(function() {
                 return _mouseEvent('mousedown', p0, noop);
             }).then(function() {
+                return _mouseEvent('mousemove', p1, noop);
+            }).then(function() {
+                // repeat mousemove to simulate long dragging motion
                 return _mouseEvent('mousemove', p1, noop);
             }).then(function() {
                 return _mouseEvent('mouseup', p1, noop);
@@ -689,6 +770,7 @@ describe('mapbox plots', function() {
         var p1 = [pointPos[0] + 50, pointPos[1] - 20];
 
         _drag(pointPos, p1, function() {
+            expect(relayoutCnt).toEqual(1);
             assertLayout([-19.651, 13.751], 1.234, { withUpdateData: true });
 
         })

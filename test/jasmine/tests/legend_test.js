@@ -10,6 +10,7 @@ var anchorUtils = require('@src/components/legend/anchor_utils');
 var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
+var customMatchers = require('../assets/custom_matchers');
 
 
 describe('legend defaults', function() {
@@ -536,6 +537,14 @@ describe('legend relayout update', function() {
         }).then(function() {
             assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 10);
 
+            return Plotly.relayout(gd, 'legend.bgcolor', null);
+        }).then(function() {
+            assertLegendStyle('rgb(255, 255, 255)', 'rgb(255, 0, 0)', 10);
+
+            return Plotly.relayout(gd, 'paper_bgcolor', 'blue');
+        }).then(function() {
+            assertLegendStyle('rgb(0, 0, 255)', 'rgb(255, 0, 0)', 10);
+
             done();
         });
     });
@@ -559,6 +568,62 @@ describe('legend orientation change:', function() {
             return Plotly.relayout(gd, 'legend.bgcolor', initialLegendBGColor);
         }).then(function() {
             expect(gd._fullLayout.legend.bgcolor).toBe(initialLegendBGColor);
+            done();
+        });
+    });
+});
+
+describe('legend restyle update', function() {
+    'use strict';
+
+    beforeAll(function() {
+        jasmine.addMatchers(customMatchers);
+    });
+
+    afterEach(destroyGraphDiv);
+
+    it('should update trace toggle background rectangle', function(done) {
+        var mock = require('@mocks/0.json'),
+            mockCopy = Lib.extendDeep({}, mock),
+            gd = createGraphDiv();
+
+        mockCopy.data[0].visible = false;
+        mockCopy.data[0].showlegend = false;
+        mockCopy.data[1].visible = false;
+        mockCopy.data[1].showlegend = false;
+
+        function countLegendItems() {
+            return d3.select(gd).selectAll('rect.legendtoggle').size();
+        }
+
+        function assertTraceToggleRect() {
+            var nodes = d3.selectAll('rect.legendtoggle');
+
+            nodes.each(function() {
+                var node = d3.select(this);
+
+                expect(node.attr('x')).toEqual('0');
+                expect(node.attr('y')).toEqual('-9.5');
+                expect(node.attr('height')).toEqual('19');
+
+                var w = +node.attr('width');
+                expect(Math.abs(w - 160)).toBeLessThan(10);
+            });
+        }
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
+            expect(countLegendItems()).toEqual(1);
+            assertTraceToggleRect();
+
+            return Plotly.restyle(gd, 'visible', [true, false, false]);
+        }).then(function() {
+            expect(countLegendItems()).toEqual(0);
+
+            return Plotly.restyle(gd, 'showlegend', [true, false, false]);
+        }).then(function() {
+            expect(countLegendItems()).toEqual(1);
+            assertTraceToggleRect();
+
             done();
         });
     });

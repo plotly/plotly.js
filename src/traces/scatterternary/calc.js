@@ -91,7 +91,7 @@ module.exports = function calc(gd, trace) {
     calcColorscale(trace);
 
     // this has migrated up from arraysToCalcdata as we have a reference to 's' here
-    if(typeof s !== undefined) Lib.mergeArray(s, cd, 'ms');
+    if(typeof s !== 'undefined') Lib.mergeArray(s, cd, 'ms');
 
     return cd;
 };

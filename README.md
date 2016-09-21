@@ -22,11 +22,6 @@ chart types, including 3D charts, statistical graphs, and SVG maps.
 
 ## Quick start options
 
-**It is important to note that logging is turned off by default in v1.13.0 onwards.**
-To turn logging on for development, you will want to run
-`Plotly.setPlotConfig({ logging: 2 })` before any plotting.
-See [this file](https://github.com/plotly/plotly.js/blob/master/src/lib/loggers.js) for more details.
-
 #### Download the latest release
 [Latest Release on Github](https://github.com/plotly/plotly.js/releases/)
 
@@ -48,7 +43,7 @@ npm install plotly.js
 
 and require plotly.js using CommonJS as `var Plotly = require('plotly.js');` or use the plotly.js `dist` file(s).
 
-#### Use the plotly.js CDN hosted by Fastly:
+#### Use the plotly.js CDN hosted by Fastly
 ```html
 <!-- Latest compiled and minified plotly.js JavaScript -->
 <script type="text/javascript" src="https://cdn.plot.ly/plotly-latest.min.js"></script>
