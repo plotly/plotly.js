@@ -1,10 +1,14 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
+
 var RangeSlider = require('@src/components/rangeslider');
+var constants = require('@src/components/rangeslider/constants');
+
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mock = require('../../image/mocks/range_slider.json');
 var mouseEvent = require('../assets/mouse_event');
+
 
 describe('the range slider', function() {
 
@@ -14,6 +18,12 @@ describe('the range slider', function() {
 
     var sliderY = 393;
 
+    function getRangeSlider() {
+        var className = constants.containerClassName;
+        return document.getElementsByClassName(className)[0];
+    }
+
+
     describe('when specified as visible', function() {
 
         beforeEach(function(done) {
@@ -22,8 +32,9 @@ describe('the range slider', function() {
             var mockCopy = Lib.extendDeep({}, mock);
 
             Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(function() {
-                rangeSlider = document.getElementsByClassName('range-slider')[0];
+                rangeSlider = getRangeSlider();
                 children = rangeSlider.children;
+
                 done();
             });
         });
@@ -65,14 +76,14 @@ describe('the range slider', function() {
 
                 expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
                 expect(maskMin.getAttribute('width')).toEqual(String(diff));
-                expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 3) + ')');
+                expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 3) + ',0)');
             }).then(done);
         });
 
         function testTranslate1D(node, val) {
             var transformParts = node.getAttribute('transform').split('(');
             expect(transformParts[0]).toEqual('translate');
-            expect(+transformParts[1].split(')')[0]).toBeCloseTo(val, 0);
+            expect(+transformParts[1].split(',0)')[0]).toBeCloseTo(val, 0);
         }
 
         it('should react to resizing the maximum handle', function(done) {
@@ -177,7 +188,7 @@ describe('the range slider', function() {
         it('should not add the slider to the DOM by default', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() {
-                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    var rangeSlider = getRangeSlider();
                     expect(rangeSlider).not.toBeDefined();
                 })
                 .then(done);
@@ -187,7 +198,7 @@ describe('the range slider', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider', 'exists'); })
                 .then(function() {
-                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    var rangeSlider = getRangeSlider();
                     expect(rangeSlider).toBeDefined();
                 })
                 .then(done);
@@ -197,7 +208,7 @@ describe('the range slider', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], {})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', true); })
                 .then(function() {
-                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    var rangeSlider = getRangeSlider();
                     expect(rangeSlider).toBeDefined();
                 })
                 .then(done);
@@ -207,7 +218,7 @@ describe('the range slider', function() {
             Plotly.plot(gd, [{ x: [1, 2, 3], y: [2, 3, 4] }], { xaxis: { rangeslider: { visible: true }}})
                 .then(function() { Plotly.relayout(gd, 'xaxis.rangeslider.visible', false); })
                 .then(function() {
-                    var rangeSlider = document.getElementsByClassName('range-slider')[0];
+                    var rangeSlider = getRangeSlider();
                     expect(rangeSlider).not.toBeDefined();
                 })
                 .then(done);
@@ -252,13 +263,14 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: layoutIn.xaxis.rangeslider
                         },
                         _needsExpand: true
                     },
                     yaxis: {
                         fixedrange: true
-                    }
+                    },
                 };
 
             RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
@@ -278,7 +290,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: layoutIn.xaxis.rangeslider
                         },
                         _needsExpand: true
                     },
@@ -310,7 +323,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: layoutIn.xaxis.rangeslider
                         },
                         _needsExpand: true
                     },
@@ -336,7 +350,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: {}
                         },
                         _needsExpand: true
                     },
@@ -362,7 +377,8 @@ describe('the range slider', function() {
                             bgcolor: '#fff',
                             borderwidth: 0,
                             bordercolor: '#444',
-                            range: [1, 10]
+                            range: [1, 10],
+                            _input: layoutIn.xaxis.rangeslider
                         },
                         range: [1, 10]
                     },
@@ -386,7 +402,8 @@ describe('the range slider', function() {
                             thickness: 0.15,
                             bgcolor: '#fff',
                             borderwidth: 0,
-                            bordercolor: '#444'
+                            bordercolor: '#444',
+                            _input: {}
                         },
                         range: [2, 40],
                         _needsExpand: true
@@ -411,9 +428,9 @@ describe('the range slider', function() {
         it('should plot when only x data is provided', function(done) {
             Plotly.plot(gd, [{ x: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
                 .then(function() {
-                    var rangeslider = document.getElementsByClassName('range-slider');
+                    var rangeSlider = getRangeSlider();
 
-                    expect(rangeslider.length).toBe(1);
+                    expect(rangeSlider).toBeDefined();
                 })
                 .then(done);
         });
@@ -421,9 +438,9 @@ describe('the range slider', function() {
         it('should plot when only y data is provided', function(done) {
             Plotly.plot(gd, [{ y: [1, 2, 3] }], { xaxis: { rangeslider: {} }})
                 .then(function() {
-                    var rangeslider = document.getElementsByClassName('range-slider');
+                    var rangeSlider = getRangeSlider();
 
-                    expect(rangeslider.length).toBe(1);
+                    expect(rangeSlider).toBeDefined();
                 })
                 .then(done);
         });
