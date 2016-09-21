@@ -33,7 +33,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
 
     selection = scatterlayer.selectAll('g.trace');
 
-    join = selection.data(cdscatter, function(d) {return d[0].trace.uid;});
+    join = selection.data(cdscatter, function(d) { return d[0].trace.uid; });
 
     // Append new traces:
     join.enter().append('g')
@@ -197,11 +197,19 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // revpath is fullpath reversed, for fill-to-next
         revpath = '',
         // functions for converting a point array to a path
-        pathfn, revpathbase, revpathfn;
+        pathfn, revpathbase, revpathfn,
+        // variables used before and after the data join
+        pt0, lastSegment, pt1, thisPolygons;
+
+    // initialize line join data / method
+    var segments = [],
+        lineSegments = [],
+        makeUpdate = Lib.noop;
 
     ownFillEl3 = trace._ownFill;
 
     if(subTypes.hasLines(trace) || trace.fill !== 'none') {
+
         if(tonext) {
             // This tells .style which trace to use for fill information:
             tonext.datum(cdscatter);
@@ -237,7 +245,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             return revpathbase(pts.reverse());
         };
 
-        var segments = linePoints(cdscatter, {
+        segments = linePoints(cdscatter, {
             xaxis: xa,
             yaxis: ya,
             connectGaps: trace.connectgaps,
@@ -250,12 +258,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // polygons for hover on fill
         // TODO: can we skip this if hoveron!=fills? That would mean we
         // need to redraw when you change hoveron...
-        var thisPolygons = trace._polygons = new Array(segments.length);
+        thisPolygons = trace._polygons = new Array(segments.length);
         for(i = 0; i < segments.length; i++) {
             trace._polygons[i] = polygonTester(segments[i]);
         }
-
-        var pt0, lastSegment, pt1;
 
         if(segments.length) {
             pt0 = segments[0][0];
@@ -263,11 +269,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             pt1 = lastSegment[lastSegment.length - 1];
         }
 
-        var lineSegments = segments.filter(function(s) {
+        lineSegments = segments.filter(function(s) {
             return s.length > 1;
         });
 
-        var makeUpdate = function(isEnter) {
+        makeUpdate = function(isEnter) {
             return function(pts) {
                 thispath = pathfn(pts);
                 thisrevpath = revpathfn(pts);
@@ -303,66 +309,66 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 }
             };
         };
+    }
 
-        var lineJoin = tr.selectAll('.js-line').data(lineSegments);
+    var lineJoin = tr.selectAll('.js-line').data(lineSegments);
 
-        transition(lineJoin.exit())
-            .style('opacity', 0)
-            .remove();
+    transition(lineJoin.exit())
+        .style('opacity', 0)
+        .remove();
 
-        lineJoin.each(makeUpdate(false));
+    lineJoin.each(makeUpdate(false));
 
-        lineJoin.enter().append('path')
-            .classed('js-line', true)
-            .style('vector-effect', 'non-scaling-stroke')
-            .call(Drawing.lineGroupStyle)
-            .each(makeUpdate(true));
+    lineJoin.enter().append('path')
+        .classed('js-line', true)
+        .style('vector-effect', 'non-scaling-stroke')
+        .call(Drawing.lineGroupStyle)
+        .each(makeUpdate(true));
 
-        if(segments.length) {
-            if(ownFillEl3) {
-                if(pt0 && pt1) {
-                    if(ownFillDir) {
-                        if(ownFillDir === 'y') {
-                            pt0[1] = pt1[1] = ya.c2p(0, true);
-                        }
-                        else if(ownFillDir === 'x') {
-                            pt0[0] = pt1[0] = xa.c2p(0, true);
-                        }
-
-                        // fill to zero: full trace path, plus extension of
-                        // the endpoints to the appropriate axis
-                        // For the sake of animations, wrap the points around so that
-                        // the points on the axes are the first two points. Otherwise
-                        // animations get a little crazy if the number of points changes.
-                        transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1));
-                    } else {
-                        // fill to self: just join the path to itself
-                        transition(ownFillEl3).attr('d', fullpath + 'Z');
+    if(segments.length) {
+        if(ownFillEl3) {
+            if(pt0 && pt1) {
+                if(ownFillDir) {
+                    if(ownFillDir === 'y') {
+                        pt0[1] = pt1[1] = ya.c2p(0, true);
                     }
+                    else if(ownFillDir === 'x') {
+                        pt0[0] = pt1[0] = xa.c2p(0, true);
+                    }
+
+                    // fill to zero: full trace path, plus extension of
+                    // the endpoints to the appropriate axis
+                    // For the sake of animations, wrap the points around so that
+                    // the points on the axes are the first two points. Otherwise
+                    // animations get a little crazy if the number of points changes.
+                    transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1));
+                } else {
+                    // fill to self: just join the path to itself
+                    transition(ownFillEl3).attr('d', fullpath + 'Z');
                 }
             }
-            else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
-                // fill to next: full trace path, plus the previous path reversed
-                if(trace.fill === 'tonext') {
-                    // tonext: for use by concentric shapes, like manually constructed
-                    // contours, we just add the two paths closed on themselves.
-                    // This makes strange results if one path is *not* entirely
-                    // inside the other, but then that is a strange usage.
-                    transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z');
-                }
-                else {
-                    // tonextx/y: for now just connect endpoints with lines. This is
-                    // the correct behavior if the endpoints are at the same value of
-                    // y/x, but if they *aren't*, we should ideally do more complicated
-                    // things depending on whether the new endpoint projects onto the
-                    // existing curve or off the end of it
-                    transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z');
-                }
-                trace._polygons = trace._polygons.concat(prevPolygons);
-            }
-            trace._prevRevpath = revpath;
-            trace._prevPolygons = thisPolygons;
         }
+        else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
+            // fill to next: full trace path, plus the previous path reversed
+            if(trace.fill === 'tonext') {
+                // tonext: for use by concentric shapes, like manually constructed
+                // contours, we just add the two paths closed on themselves.
+                // This makes strange results if one path is *not* entirely
+                // inside the other, but then that is a strange usage.
+                transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z');
+            }
+            else {
+                // tonextx/y: for now just connect endpoints with lines. This is
+                // the correct behavior if the endpoints are at the same value of
+                // y/x, but if they *aren't*, we should ideally do more complicated
+                // things depending on whether the new endpoint projects onto the
+                // existing curve or off the end of it
+                transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z');
+            }
+            trace._polygons = trace._polygons.concat(prevPolygons);
+        }
+        trace._prevRevpath = revpath;
+        trace._prevPolygons = thisPolygons;
     }
 
 
@@ -381,64 +387,78 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
     }
 
+    function hideFilter() {
+        return false;
+    }
+
     function makePoints(d) {
         var join, selection;
+
         var trace = d[0].trace,
             s = d3.select(this),
             showMarkers = subTypes.hasMarkers(trace),
             showText = subTypes.hasText(trace);
 
-        if((!showMarkers && !showText) || trace.visible !== true) s.remove();
-        else {
-            if(showMarkers) {
-                selection = s.selectAll('path.point');
+        var keyFunc = getKeyFunc(trace),
+            markerFilter = hideFilter,
+            textFilter = hideFilter;
 
-                join = selection
-                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace));
-
-                var enter = join.enter().append('path')
-                    .classed('point', true);
-
-                enter.call(Drawing.pointStyle, trace)
-                    .call(Drawing.translatePoints, xa, ya, trace);
-
-                if(hasTransition) {
-                    enter.style('opacity', 0).transition()
-                        .style('opacity', 1);
-                }
-
-                join.each(function(d) {
-                    var sel = transition(d3.select(this));
-                    Drawing.translatePoint(d, sel, xa, ya);
-                    Drawing.singlePointStyle(d, sel, trace);
-                });
-
-                if(hasTransition) {
-                    join.exit().transition()
-                        .style('opacity', 0)
-                        .remove();
-                } else {
-                    join.exit().remove();
-                }
-            }
-            if(showText) {
-                selection = s.selectAll('g');
-
-                join = selection
-                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity);
-
-                    // each text needs to go in its own 'g' in case
-                    // it gets converted to mathjax
-                join.enter().append('g')
-                    .append('text')
-                    .call(Drawing.translatePoints, xa, ya);
-
-                selection
-                    .call(Drawing.translatePoints, xa, ya);
-
-                join.exit().remove();
-            }
+        if(showMarkers) {
+            markerFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
         }
+
+        if(showText) {
+            textFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
+        }
+
+        // marker points
+
+        selection = s.selectAll('path.point');
+
+        join = selection.data(markerFilter, keyFunc);
+
+        var enter = join.enter().append('path')
+            .classed('point', true);
+
+        enter.call(Drawing.pointStyle, trace)
+            .call(Drawing.translatePoints, xa, ya, trace);
+
+        if(hasTransition) {
+            enter.style('opacity', 0).transition()
+                .style('opacity', 1);
+        }
+
+        join.each(function(d) {
+            var sel = transition(d3.select(this));
+            Drawing.translatePoint(d, sel, xa, ya);
+            Drawing.singlePointStyle(d, sel, trace);
+        });
+
+        if(hasTransition) {
+            join.exit().transition()
+                .style('opacity', 0)
+                .remove();
+        } else {
+            join.exit().remove();
+        }
+
+        // text points
+
+        selection = s.selectAll('g');
+
+        join = selection.data(textFilter, keyFunc);
+
+        // each text needs to go in its own 'g' in case
+        // it gets converted to mathjax
+        join.enter().append('g')
+            .append('text');
+
+        join.each(function(d) {
+            var sel = d3.select(this).select('text');
+            Drawing.translatePoint(d, sel, xa, ya);
+        });
+
+        join.exit().remove();
     }
 
     // NB: selectAll is evaluated on instantiation:
