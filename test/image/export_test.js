@@ -1,4 +1,5 @@
 var fs = require('fs');
+var sizeOf = require('image-size');
 
 var getMockList = require('./assets/get_mock_list');
 var getRequestOpts = require('./assets/get_image_request_options');
@@ -9,14 +10,21 @@ var request = require('request');
 var test = require('tape');
 
 // image formats to test
+//
 // N.B. 'png' is tested in `npm run test-image, no need to duplicate here
-// TODO figure why 'jpeg' and 'webp' lead to errors
+//
+// N.B. 'jpeg' and 'webp' lead to errors because of the image server code
+//      is looking for Plotly.Color which isn't exposed anymore
 var FORMATS = ['svg', 'pdf', 'eps'];
 
 // non-exhaustive list of mocks to test
 var DEFAULT_LIST = ['0', 'geo_first', 'gl3d_z-range', 'text_export', 'layout_image'];
 
-// minimum satisfactory file size
+// return dimensions [in px]
+var WIDTH = 700;
+var HEIGHT = 500;
+
+// minimum satisfactory file size [in bytes]
 var MIN_SIZE = 100;
 
 /**
@@ -69,18 +77,32 @@ function runInBatch(mockList) {
 // The tests below determine whether the images are properly
 // exported by (only) checking the file size of the generated images.
 function testExport(mockName, format, t) {
-    var requestOpts = getRequestOpts({ mockName: mockName, format: format }),
+    var specs = {
+        mockName: mockName,
+        format: format,
+        width: WIDTH,
+        height: HEIGHT
+    };
+
+    var requestOpts = getRequestOpts(specs),
         imagePaths = getImagePaths(mockName, format),
         saveImageStream = fs.createWriteStream(imagePaths.test);
 
     function checkExport(err) {
         if(err) throw err;
 
-        fs.stat(imagePaths.test, function(err, stats) {
-            var didExport = stats.size > MIN_SIZE;
+        var didExport;
 
-            t.ok(didExport, mockName + ' should be properly exported as a ' + format);
-        });
+        if(format === 'svg') {
+            var dims = sizeOf(imagePaths.test);
+            didExport = (dims.width === WIDTH) && (dims.height === HEIGHT);
+        }
+        else {
+            var stats = fs.statSync(imagePaths.test);
+            didExport = stats.size > MIN_SIZE;
+        }
+
+        t.ok(didExport, mockName + ' should be properly exported as a ' + format);
     }
 
     request(requestOpts)
