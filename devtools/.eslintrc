@@ -3,8 +3,5 @@
   "env": {
     "node": true,
     "browser": true
-  },
-  "globals": {
-    "Promise": true
   }
 }
