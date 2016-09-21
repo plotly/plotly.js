@@ -1696,7 +1696,6 @@ Plotly.relayout = function relayout(gd, astr, val) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
-        subroutines.setRangeSliderRange(gd, specs.eventData);
         gd.emit('plotly_relayout', specs.eventData);
         return gd;
     });
@@ -2093,8 +2092,6 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
     if(!plotDone || !plotDone.then) plotDone = Promise.resolve(gd);
 
     return plotDone.then(function() {
-        subroutines.setRangeSliderRange(gd, relayoutSpecs.eventData);
-
         gd.emit('plotly_update', {
             data: restyleSpecs.eventData,
             layout: relayoutSpecs.eventData
