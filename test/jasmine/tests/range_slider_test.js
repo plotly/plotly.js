@@ -197,6 +197,78 @@ describe('the range slider', function() {
             .then(done);
         });
 
+        it('should relayout with style options', function(done) {
+            var bg = children[0],
+                maskMin = children[2],
+                maskMax = children[3];
+
+            var maskMinWidth, maskMaxWidth;
+
+            Plotly.relayout(gd, 'xaxis.range', [5, 10]).then(function() {
+                maskMinWidth = +maskMin.getAttribute('width'),
+                maskMaxWidth = +maskMax.getAttribute('width');
+
+                return Plotly.relayout(gd, 'xaxis.rangeslider.bgcolor', 'red');
+            })
+            .then(function() {
+                expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
+                expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
+
+                expect(bg.getAttribute('fill')).toBe('red');
+                expect(bg.getAttribute('stroke')).toBe('black');
+                expect(bg.getAttribute('stroke-width')).toBe('2');
+
+                return Plotly.relayout(gd, 'xaxis.rangeslider.bordercolor', 'blue');
+            })
+            .then(function() {
+                expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
+                expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
+
+                expect(bg.getAttribute('fill')).toBe('red');
+                expect(bg.getAttribute('stroke')).toBe('blue');
+                expect(bg.getAttribute('stroke-width')).toBe('2');
+
+                return Plotly.relayout(gd, 'xaxis.rangeslider.borderwidth', 3);
+            })
+            .then(function() {
+                expect(+maskMin.getAttribute('width')).toEqual(maskMinWidth);
+                expect(+maskMax.getAttribute('width')).toEqual(maskMaxWidth);
+
+                expect(bg.getAttribute('fill')).toBe('red');
+                expect(bg.getAttribute('stroke')).toBe('blue');
+                expect(bg.getAttribute('stroke-width')).toBe('3');
+            })
+            .then(done);
+        });
+
+        it('should relayout on size / domain udpate', function(done) {
+            var maskMin = children[2],
+                maskMax = children[3];
+
+            Plotly.relayout(gd, 'xaxis.range', [5, 10]).then(function() {
+                expect(+maskMin.getAttribute('width')).toBeCloseTo(63.16, 0);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(492.67, 0);
+
+                return Plotly.relayout(gd, 'xaxis.domain', [0.3, 0.7]);
+            })
+            .then(function() {
+                var maskMin = children[2],
+                    maskMax = children[3];
+
+                expect(+maskMin.getAttribute('width')).toBeCloseTo(25.26, 0);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(197.06, 0);
+
+                return Plotly.relayout(gd, 'width', 400);
+            })
+            .then(function() {
+                var maskMin = children[2],
+                    maskMax = children[3];
+
+                expect(+maskMin.getAttribute('width')).toBeCloseTo(9.22, 0);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(71.95, 0);
+
+            })
+            .then(done);
         });
     });
 
