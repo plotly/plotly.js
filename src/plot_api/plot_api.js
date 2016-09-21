@@ -473,6 +473,9 @@ Plotly.redraw = function(gd) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
+    helpers.cleanData(gd.data, gd.data);
+    helpers.cleanLayout(gd.layout);
+
     gd.calcdata = undefined;
     return Plotly.plot(gd).then(function() {
         gd.emit('plotly_redraw');
