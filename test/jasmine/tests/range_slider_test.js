@@ -3,11 +3,12 @@ var Lib = require('@src/lib');
 
 var RangeSlider = require('@src/components/rangeslider');
 var constants = require('@src/components/rangeslider/constants');
+var mock = require('../../image/mocks/range_slider.json');
 
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
-var mock = require('../../image/mocks/range_slider.json');
 var mouseEvent = require('../assets/mouse_event');
+var customMatchers = require('../assets/custom_matchers');
 
 
 describe('the range slider', function() {
@@ -23,8 +24,17 @@ describe('the range slider', function() {
         return document.getElementsByClassName(className)[0];
     }
 
+    function testTranslate1D(node, val) {
+        var transformParts = node.getAttribute('transform').split('(');
+        expect(transformParts[0]).toEqual('translate');
+        expect(+transformParts[1].split(',0)')[0]).toBeCloseTo(val, 0);
+    }
 
     describe('when specified as visible', function() {
+
+        beforeAll(function() {
+            jasmine.addMatchers(customMatchers);
+        });
 
         beforeEach(function(done) {
             gd = createGraphDiv();
@@ -67,73 +77,73 @@ describe('the range slider', function() {
         it('should react to resizing the minimum handle', function(done) {
             var start = 85,
                 end = 140,
-                dataMinStart = rangeSlider.getAttribute('data-min'),
                 diff = end - start;
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
 
             slide(start, sliderY, end, sliderY).then(function() {
                 var maskMin = children[2],
                     handleMin = children[5];
 
-                expect(rangeSlider.getAttribute('data-min')).toEqual(String(+dataMinStart + diff));
+                expect(gd.layout.xaxis.range).toBeCloseToArray([4.35, 49]);
                 expect(maskMin.getAttribute('width')).toEqual(String(diff));
                 expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 3) + ',0)');
             }).then(done);
         });
 
-        function testTranslate1D(node, val) {
-            var transformParts = node.getAttribute('transform').split('(');
-            expect(transformParts[0]).toEqual('translate');
-            expect(+transformParts[1].split(',0)')[0]).toBeCloseTo(val, 0);
-        }
-
         it('should react to resizing the maximum handle', function(done) {
             var start = 695,
                 end = 490,
-                dataMaxStart = rangeSlider.getAttribute('data-max'),
+                dataMaxStart = gd._fullLayout.xaxis.rangeslider.d2p(49),
                 diff = end - start;
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
 
             slide(start, sliderY, end, sliderY).then(function() {
                 var maskMax = children[3],
                     handleMax = children[6];
 
-                expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(+dataMaxStart + diff, 0);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 32.77]);
                 expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
-                testTranslate1D(handleMax, +dataMaxStart + diff);
+
+                testTranslate1D(handleMax, dataMaxStart + diff);
             }).then(done);
         });
 
         it('should react to moving the slidebox left to right', function(done) {
             var start = 250,
                 end = 300,
-                dataMinStart = rangeSlider.getAttribute('data-min'),
+                dataMinStart = gd._fullLayout.xaxis.rangeslider.d2p(0),
                 diff = end - start;
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
 
             slide(start, sliderY, end, sliderY).then(function() {
                 var maskMin = children[2],
                     handleMin = children[5];
 
-                expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(String(+dataMinStart + diff));
+                expect(gd.layout.xaxis.range).toBeCloseToArray([3.96, 49]);
                 expect(+maskMin.getAttribute('width')).toBeCloseTo(String(diff));
-                testTranslate1D(handleMin, +dataMinStart + diff - 3);
+                testTranslate1D(handleMin, dataMinStart + diff - 3);
             }).then(done);
         });
 
         it('should react to moving the slidebox right to left', function(done) {
             var start = 300,
                 end = 250,
-                dataMaxStart = rangeSlider.getAttribute('data-max'),
+                dataMaxStart = gd._fullLayout.xaxis.rangeslider.d2p(49),
                 diff = end - start;
+
+            expect(gd.layout.xaxis.range).toBeCloseToArray([0, 49]);
 
             slide(start, sliderY, end, sliderY).then(function() {
                 var maskMax = children[3],
                     handleMax = children[6];
 
-                expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(+dataMaxStart + diff);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04]);
                 expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
-                testTranslate1D(handleMax, +dataMaxStart + diff);
+                testTranslate1D(handleMax, dataMaxStart + diff);
             }).then(done);
-
-
         });
 
         it('should resize the main plot when rangeslider has moved', function(done) {
@@ -158,22 +168,35 @@ describe('the range slider', function() {
         });
 
         it('should relayout with relayout "array syntax"', function(done) {
-            Plotly.relayout(gd, 'xaxis.range', [10, 20])
-                .then(function() {
-                    expect(gd._fullLayout.xaxis.range).toEqual([10, 20]);
-                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(124.69, -1);
-                    expect(+rangeSlider.getAttribute('data-max')).toBeCloseTo(249.39, -1);
-                })
-                .then(done);
+            Plotly.relayout(gd, 'xaxis.range', [10, 20]).then(function() {
+                var maskMin = children[2],
+                    maskMax = children[3],
+                    handleMin = children[5],
+                    handleMax = children[6];
+
+                expect(+maskMin.getAttribute('width')).toBeCloseTo(126.32, 0);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(366.34, 0);
+                testTranslate1D(handleMin, 123.32);
+                testTranslate1D(handleMax, 252.65);
+            })
+            .then(done);
         });
 
         it('should relayout with relayout "element syntax"', function(done) {
-            Plotly.relayout(gd, 'xaxis.range[0]', 10)
-                .then(function() {
-                    expect(gd._fullLayout.xaxis.range[0]).toEqual(10);
-                    expect(+rangeSlider.getAttribute('data-min')).toBeCloseTo(124.69, -1);
-                })
-                .then(done);
+            Plotly.relayout(gd, 'xaxis.range[0]', 10).then(function() {
+                var maskMin = children[2],
+                    maskMax = children[3],
+                    handleMin = children[5],
+                    handleMax = children[6];
+
+                expect(+maskMin.getAttribute('width')).toBeCloseTo(126.32, 0);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(0);
+                testTranslate1D(handleMin, 123.32);
+                testTranslate1D(handleMax, 619);
+            })
+            .then(done);
+        });
+
         });
     });
 
