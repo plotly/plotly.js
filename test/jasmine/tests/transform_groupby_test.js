@@ -261,7 +261,6 @@ describe('groupby', function() {
             });
         });
 
-        // passes; maybe not for the good reasons (see fixme comments)
         it('Plotly.plot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData0);
 
@@ -285,7 +284,6 @@ describe('groupby', function() {
             });
         });
 
-        // passes; looks OK
         it('Plotly.plot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData1);
 
@@ -306,7 +304,6 @@ describe('groupby', function() {
             });
         });
 
-        // passes OK; see todo comments
         it('Plotly.plot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData2);
 
@@ -317,18 +314,17 @@ describe('groupby', function() {
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
-                expect(gd._fullData.length).toEqual(1); // todo: confirm this result is OK
+                expect(gd._fullData.length).toEqual(1);
 
                 expect(gd._fullData[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
-                assertDims([7]); // todo: confirm this result is OK
+                assertDims([7]);
 
                 done();
             });
         });
 
-        // passes OK; see todo comments
         it('Plotly.plot should plot the transform traces', function(done) {
             var data = Lib.extendDeep([], mockData3);
 
@@ -339,12 +335,12 @@ describe('groupby', function() {
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
-                expect(gd._fullData.length).toEqual(1); // todo: confirm this result is OK
+                expect(gd._fullData.length).toEqual(1);
 
                 expect(gd._fullData[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
-                assertDims([7]); // todo: confirm this result is OK
+                assertDims([7]);
 
                 done();
             });
@@ -354,7 +350,7 @@ describe('groupby', function() {
     describe('grouping with basic, heterogenous and overridden attributes', function() {
         'use strict';
 
-        afterEach(destroyGraphDiv);
+        //afterEach(destroyGraphDiv);
 
         function test(mockData) {
 
@@ -453,8 +449,7 @@ describe('groupby', function() {
                 color: 'darkred', // general 'default' color
                 line: {
                     width: [4, 2, 4, 2, 2, 3, 3],
-                    // a general, not overridden array will be interpreted per group
-                    color: ['orange', 'red', 'green', 'cyan']
+                    color: ['orange', 'red', 'green', 'cyan', 'magenta', 'blue', 'pink']
                 }
             },
             line: {color: 'red'},
@@ -464,7 +459,7 @@ describe('groupby', function() {
                 style: {
                     a: {marker: {size: 30}},
                     // override general color:
-                    b: {marker: {size: 15, color: 'lightblue'}, line: {color: 'purple'}}
+                    b: {marker: {size: 15, line: {color: 'yellow'}}, line: {color: 'purple'}}
                 }
             }]
         }];
@@ -512,10 +507,17 @@ describe('groupby', function() {
         }];
 
         it('`data` preserves user supplied input but `gd._fullData` reflects the grouping', test(mockData1));
+
         it('passes with lots of attributes and heterogenous attrib presence', test(mockData2));
+
         it('passes with group styles partially overriding top level aesthetics', test(mockData3));
+        expect(gd._fullData[0].marker.line.color).toEqual(['orange', 'red', 'cyan', 'pink']);
+        expect(gd._fullData[1].marker.line.color).toEqual('yellow');
+
         it('passes with no explicit styling for the individual group', test(mockData4));
+
         it('passes with no explicit styling in the group transform at all', test(mockData5));
+
         it('passes with no explicit styling in the group transform at all', test(mockData6));
 
     });
