@@ -9,7 +9,7 @@
 
 'use strict';
 
-var PlotSchema = require('./../plot_api/plot_schema')
+var crawler = require('./../plot_api/crawler');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
@@ -797,13 +797,13 @@ function applyTransforms(fullTrace, fullData, layout) {
 
             stack = stack.slice(0, level).concat([attrName]);
 
-            var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true
+            var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true;
             if(splittableAttr) {
                 arraySplitAttributes.push(stack.slice());
             }
         }
 
-        PlotSchema.crawl(trace._module.attributes, callback);
+        crawler.crawl(trace._module.attributes, callback);
 
         return arraySplitAttributes;
     });

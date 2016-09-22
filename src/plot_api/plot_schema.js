@@ -13,6 +13,7 @@ var Plotly = require('../plotly');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
 var Lib = require('../lib');
+var crawler = require('./crawler');
 
 // FIXME polar attribute are not part of Plotly yet
 var polarAreaAttrs = require('../plots/polar/area_attributes');
@@ -23,13 +24,7 @@ var extendDeep = Lib.extendDeep;
 var extendDeepAll = Lib.extendDeepAll;
 
 var NESTED_MODULE = '_nestedModules',
-    COMPOSED_MODULE = '_composedModules',
-    IS_SUBPLOT_OBJ = '_isSubplotObj',
-    IS_LINKED_TO_ARRAY = '_isLinkedToArray',
-    DEPRECATED = '_deprecated';
-
-// list of underscore attributes to keep in schema as is
-var UNDERSCORE_ATTRS = [IS_SUBPLOT_OBJ, IS_LINKED_TO_ARRAY, DEPRECATED];
+    COMPOSED_MODULE = '_composedModules';
 
 var plotSchema = {
     traces: {},
@@ -56,23 +51,9 @@ PlotSchema.get = function() {
     return plotSchema;
 };
 
-PlotSchema.crawl = function (attrs, callback, specifiedLevel) {
-    var level = specifiedLevel || 0;
-    Object.keys(attrs).forEach(function(attrName) {
-        var attr = attrs[attrName];
+PlotSchema.crawl = crawler.crawl;
 
-        if(UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
-
-        callback(attr, attrName, attrs, level);
-
-        if(PlotSchema.isValObject(attr)) return;
-        if(Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback, level + 1);
-    });
-};
-
-PlotSchema.isValObject = function(obj) {
-    return obj && obj.valType !== undefined;
-};
+PlotSchema.isValObject = Lib.isValObject;
 
 function getTraceAttributes(type) {
     var globalAttributes = Plots.attributes,
@@ -132,13 +113,13 @@ function getLayoutAttributes() {
     // FIXME polar layout attributes
     layoutAttributes = assignPolarLayoutAttrs(layoutAttributes);
 
-    // add IS_SUBPLOT_OBJ attribute
+    // add crawler.IS_SUBPLOT_OBJ attribute
     layoutAttributes = handleSubplotObjs(layoutAttributes);
 
     layoutAttributes = removeUnderscoreAttrs(layoutAttributes);
     mergeValTypeAndRole(layoutAttributes);
 
-    // generate IS_LINKED_TO_ARRAY structure
+    // generate crawler.IS_LINKED_TO_ARRAY structure
     handleLinkedToArray(layoutAttributes);
 
     plotSchema.layout = { layoutAttributes: layoutAttributes };
@@ -159,7 +140,7 @@ function getTransformAttributes(name) {
 function getDefs() {
     plotSchema.defs = {
         valObjects: Lib.valObjects,
-        metaKeys: UNDERSCORE_ATTRS.concat(['description', 'role'])
+        metaKeys: crawler.UNDERSCORE_ATTRS.concat(['description', 'role'])
     };
 }
 
@@ -242,7 +223,7 @@ function mergeValTypeAndRole(attrs) {
         }
     }
 
-    PlotSchema.crawl(attrs, callback);
+    crawler.crawl(attrs, callback);
 }
 
 // helper methods
@@ -268,7 +249,7 @@ function getModule(arg) {
 function removeUnderscoreAttrs(attributes) {
     Object.keys(attributes).forEach(function(k) {
         if(k.charAt(0) === '_' &&
-            UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
+            crawler.UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
     });
     return attributes;
 }
@@ -322,7 +303,7 @@ function handleSubplotObjs(layoutAttributes) {
                 isSubplotObj = subplotRegistry.attrRegex.test(k);
             }
 
-            if(isSubplotObj) layoutAttributes[k][IS_SUBPLOT_OBJ] = true;
+            if(isSubplotObj) layoutAttributes[k][crawler.IS_SUBPLOT_OBJ] = true;
         });
     });
 
@@ -332,17 +313,17 @@ function handleSubplotObjs(layoutAttributes) {
 function handleLinkedToArray(layoutAttributes) {
 
     function callback(attr, attrName, attrs) {
-        if(attr[IS_LINKED_TO_ARRAY] !== true) return;
+        if(attr[crawler.IS_LINKED_TO_ARRAY] !== true) return;
 
         // TODO more robust logic
         var itemName = attrName.substr(0, attrName.length - 1);
 
-        delete attr[IS_LINKED_TO_ARRAY];
+        delete attr[crawler.IS_LINKED_TO_ARRAY];
 
         attrs[attrName] = { items: {} };
         attrs[attrName].items[itemName] = attr;
         attrs[attrName].role = 'object';
     }
 
-    PlotSchema.crawl(layoutAttributes, callback);
+    crawler.crawl(layoutAttributes, callback);
 }
