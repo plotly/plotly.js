@@ -57,6 +57,37 @@ module.exports = {
         ].join(' ')
     },
 
+    openreverse: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: false,
+        description: [
+            'For dropdown menus, opens the menu in the reverse direction'
+        ]
+    },
+
+    type: {
+        valType: 'enumerated',
+        values: ['dropdown', 'buttons'],
+        dflt: 'dropdown',
+        role: 'info',
+        description: [
+            'Determines whether the buttons are accessible via a dropdown menu',
+            'or whether the buttons are stacked horizontally or vertically'
+        ].join(' ')
+    },
+
+    orientation: {
+        valType: 'enumerated',
+        values: ['h', 'v'],
+        dflt: 'v',
+        role: 'info',
+        description: [
+            'Determines whether the menu and buttons are laid out vertically',
+            'or horizontally'
+        ]
+    },
+
     active: {
         valType: 'integer',
         role: 'info',

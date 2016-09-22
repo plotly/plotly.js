@@ -49,6 +49,9 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
     if(!visible) return;
 
     coerce('active');
+    coerce('orientation');
+    coerce('type');
+    coerce('openreverse');
 
     coerce('x');
     coerce('y');

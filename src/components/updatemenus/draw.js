@@ -43,12 +43,12 @@ module.exports = function draw(gd) {
      *         <g item header />
      *         <text item header-arrow />
      *     <g header-group />
-     *         <g item header />
+     *
      *         <text item header-arrow />
      *     ...
      *
      *     <g button-group />
-     *         <g item button />
+     *
      *         <g item button />
      *         ...
      */
@@ -77,12 +77,12 @@ module.exports = function draw(gd) {
     headerGroups.enter().append('g')
         .classed(constants.headerGroupClassName, true);
 
-    // draw button container
-    var gButton = menus.selectAll('g.' + constants.buttonGroupClassName)
+    // draw dropdown button container
+    var gButton = menus.selectAll('g.' + constants.dropdownButtonGroupClassName)
         .data([0]);
 
     gButton.enter().append('g')
-        .classed(constants.buttonGroupClassName, true)
+        .classed(constants.dropdownButtonGroupClassName, true)
         .style('pointer-events', 'all');
 
     // whenever we add new menu, attach 'state' variable to node
@@ -114,12 +114,18 @@ module.exports = function draw(gd) {
     // draw headers!
     headerGroups.each(function(menuOpts) {
         var gHeader = d3.select(this);
-        drawHeader(gd, gHeader, gButton, menuOpts);
 
-        // update buttons if they are dropped
-        if(areMenuButtonsDropped(gButton, menuOpts)) {
-            drawButtons(gd, gHeader, gButton, menuOpts);
+        if(menuOpts.type === 'dropdown') {
+            drawHeader(gd, gHeader, gButton, menuOpts);
+
+            // update buttons if they are dropped
+            if(areMenuButtonsDropped(gButton, menuOpts)) {
+                drawButtons(gd, gHeader, gButton, menuOpts);
+            }
+        } else {
+            drawButtons(gd, gHeader, null, menuOpts);
         }
+
     });
 };
 
@@ -163,11 +169,15 @@ function drawHeader(gd, gHeader, gButton, menuOpts) {
 
     var active = menuOpts.active,
         headerOpts = menuOpts.buttons[active] || constants.blankHeaderOpts,
-        posOpts = { y: 0, yPad: 0 };
+        posOpts = { y: 0, yPad: 0, x: 0, xPad: 0, index: 0 },
+        positionOverrides = {
+            width: menuOpts.headerWidth,
+            height: menuOpts.headerHeight
+        };
 
     header
         .call(drawItem, menuOpts, headerOpts)
-        .call(setItemPosition, menuOpts, posOpts);
+        .call(setItemPosition, menuOpts, posOpts, positionOverrides);
 
     // draw drop arrow at the right edge
     var arrow = gHeader.selectAll('text.' + constants.headerArrowClassName)
@@ -181,8 +191,8 @@ function drawHeader(gd, gHeader, gButton, menuOpts) {
         .text('▼');
 
     arrow.attr({
-        x: menuOpts.width - constants.arrowOffsetX,
-        y: menuOpts.height1 / 2 + constants.textOffsetY
+        x: menuOpts.headerWidth - constants.arrowOffsetX,
+        y: menuOpts.headerHeight / 2 + constants.textOffsetY
     });
 
     header.on('click', function() {
@@ -211,27 +221,63 @@ function drawHeader(gd, gHeader, gButton, menuOpts) {
 }
 
 function drawButtons(gd, gHeader, gButton, menuOpts) {
-    var buttonData = gButton.attr(constants.menuIndexAttrName) !== '-1' ?
+    if(!gButton) {
+        gButton = gHeader;
+        gButton.attr('pointer-events', 'all');
+    }
+
+    var buttonData = (gButton.attr(constants.menuIndexAttrName) !== '-1' || menuOpts.type === 'buttons') ?
         menuOpts.buttons :
         [];
 
-    var buttons = gButton.selectAll('g.' + constants.buttonClassName)
+    var klass = menuOpts.type === 'dropdown' ? constants.dropdownButtonClassName : constants.buttonClassName;
+
+    var buttons = gButton.selectAll('g.' + klass)
         .data(buttonData);
 
-    buttons.enter().append('g')
-        .classed(constants.buttonClassName, true)
-        .attr('opacity', '0')
-        .transition()
-        .attr('opacity', '1');
+    var enter = buttons.enter().append('g')
+        .classed(klass, true);
 
-    buttons.exit()
-        .transition()
-        .attr('opacity', '0')
-        .remove();
+    var exit = buttons.exit();
+
+    if(menuOpts.type === 'dropdown') {
+        enter.attr('opacity', '0')
+            .transition()
+            .attr('opacity', '1');
+
+        exit.transition()
+            .attr('opacity', '0')
+            .remove();
+    } else {
+        exit.remove();
+    }
+
+
+    var x0 = 0;
+    var y0 = 0;
+
+    if(menuOpts.type === 'dropdown') {
+        if(menuOpts.orientation === 'v') {
+            y0 = menuOpts.headerHeight + constants.gapButtonHeader;
+        } else {
+            x0 = menuOpts.headerWidth + constants.gapButtonHeader;
+        }
+    }
+
+    if(menuOpts.type === 'dropdown' && menuOpts.openreverse) {
+        if(menuOpts.orientation === 'v') {
+            y0 = -2 * constants.gapButtonHeader - constants.gapButton - menuOpts.totalHeight;
+        } else {
+            x0 = -2 * constants.gapButtonHeader - constants.gapButton - menuOpts.totalWidth;
+        }
+    }
 
     var posOpts = {
-        y: menuOpts.height1 + constants.gapButtonHeader,
-        yPad: constants.gapButton
+        x: x0,
+        y: y0,
+        yPad: constants.gapButton,
+        xPad: constants.gapButton,
+        index: 0,
     };
 
     buttons.each(function(buttonOpts, buttonIndex) {
@@ -247,7 +293,11 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
 
             // fold up buttons and redraw header
             gButton.attr(constants.menuIndexAttrName, '-1');
-            drawHeader(gd, gHeader, gButton, menuOpts);
+
+            if(menuOpts.type === 'dropdown') {
+                drawHeader(gd, gHeader, gButton, menuOpts);
+            }
+
             drawButtons(gd, gHeader, gButton, menuOpts);
 
             // call button method
@@ -332,20 +382,27 @@ function styleOnMouseOut(item, menuOpts) {
 
 // find item dimensions (this mutates menuOpts)
 function findDimenstions(gd, menuOpts) {
+    var i;
+
     menuOpts.width = 0;
+    menuOpts.width1 = 0;
     menuOpts.height = 0;
     menuOpts.height1 = 0;
+    menuOpts.heights = [];
+    menuOpts.widths = [];
+    menuOpts.totalWidth = 0;
+    menuOpts.totalHeight = 0;
     menuOpts.lx = 0;
     menuOpts.ly = 0;
 
-    var fakeButtons = gd._tester.selectAll('g.' + constants.buttonClassName)
+    var fakeButtons = gd._tester.selectAll('g.' + constants.dropdownButtonClassName)
         .data(menuOpts.buttons);
 
     fakeButtons.enter().append('g')
-        .classed(constants.buttonClassName, true);
+        .classed(constants.dropdownButtonClassName, true);
 
     // loop over fake buttons to find width / height
-    fakeButtons.each(function(buttonOpts) {
+    fakeButtons.each(function(buttonOpts, i) {
         var button = d3.select(this);
 
         button.call(drawItem, menuOpts, buttonOpts);
@@ -362,10 +419,48 @@ function findDimenstions(gd, menuOpts) {
             tLines = tspans[0].length || 1,
             hEff = Math.max(tHeight * tLines, constants.minHeight) + constants.textOffsetY;
 
-        menuOpts.width = Math.max(menuOpts.width, wEff);
+        // Store per-item sizes since a row of horizontal buttons, for example,
+        // don't all need to be the same width:
+        menuOpts.widths[i] = wEff;
+        menuOpts.heights[i] = hEff;
+
+        if(menuOpts.orientation === 'v' | menuOpts.type === 'dropdown') {
+            menuOpts.width = Math.max(menuOpts.width, wEff);
+        } else {
+            menuOpts.width += wEff;
+        }
+        // Height and width of individual element:
         menuOpts.height1 = Math.max(menuOpts.height1, hEff);
-        menuOpts.height += menuOpts.height1;
+        menuOpts.width1 = Math.max(menuOpts.width1, wEff);
+
+        if(menuOpts.orientation === 'v') {
+            menuOpts.totalWidth = Math.max(menuOpts.totalWidth, wEff);
+            menuOpts.totalHeight += hEff;
+        } else {
+            menuOpts.totalWidth += wEff;
+            menuOpts.totalHeight += Math.max(menuOpts.totalWidth, hEff);
+        }
     });
+
+    menuOpts.headerWidth = menuOpts.width1 + constants.arrowPadX;
+    menuOpts.headerHeight = menuOpts.height1;
+
+    if(menuOpts.orientation === 'v') {
+        menuOpts.width = menuOpts.width1;
+
+        if(menuOpts.type === 'dropdown') {
+            menuOpts.width1 += constants.arrowPadX;
+        }
+
+        for(i = 0; i < menuOpts.heights; i++) {
+            menuOpts.height += menuOpts.heights[i];
+        }
+    } else {
+        menuOpts.height = menuOpts.height1;
+        for(i = 0; i < menuOpts.heights; i++) {
+            menuOpts.width += menuOpts.width[i];
+        }
+    }
 
     fakeButtons.remove();
 
@@ -409,19 +504,21 @@ function findDimenstions(gd, menuOpts) {
 }
 
 // set item positions (mutates posOpts)
-function setItemPosition(item, menuOpts, posOpts) {
+function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
+    overrideOpts = overrideOpts || {};
     var rect = item.select('.' + constants.itemRectClassName),
         text = item.select('.' + constants.itemTextClassName),
         tspans = text.selectAll('tspan'),
-        borderWidth = menuOpts.borderwidth;
+        borderWidth = menuOpts.borderwidth,
+        index = posOpts.index;
 
-    Lib.setTranslate(item, borderWidth, borderWidth + posOpts.y);
+    Lib.setTranslate(item, borderWidth + posOpts.x, borderWidth + posOpts.y);
 
     rect.attr({
         x: 0,
         y: 0,
-        width: menuOpts.width,
-        height: menuOpts.height1
+        width: overrideOpts.width || (menuOpts.orientation === 'v' ? menuOpts.width1 : menuOpts.widths[index]),
+        height: overrideOpts.height || (menuOpts.orientation === 'v' ? menuOpts.heights[index] : menuOpts.height1)
     });
 
     var tHeight = menuOpts.font.size * constants.fontSizeToHeight,
@@ -430,17 +527,23 @@ function setItemPosition(item, menuOpts, posOpts) {
 
     var textAttrs = {
         x: constants.textOffsetX,
-        y: menuOpts.height1 / 2 - spanOffset + constants.textOffsetY
+        y: menuOpts.heights[index] / 2 - spanOffset + constants.textOffsetY
     };
 
     text.attr(textAttrs);
     tspans.attr(textAttrs);
 
-    posOpts.y += menuOpts.height1 + posOpts.yPad;
+    if(menuOpts.orientation === 'v') {
+        posOpts.y += menuOpts.heights[index] + posOpts.yPad;
+    } else {
+        posOpts.x += menuOpts.widths[index] + posOpts.xPad;
+    }
+
+    posOpts.index++;
 }
 
 function removeAllButtons(gButton) {
-    gButton.selectAll('g.' + constants.buttonClassName).remove();
+    gButton.selectAll('g.' + constants.dropdownButtonClassName).remove();
 }
 
 function clearPushMargins(gd) {
