@@ -101,7 +101,7 @@ exports.transform = function(data, state) {
 function transformOne(trace, state, attributeSet) {
 
     var opts = state.transform;
-    var groups = opts.groups;
+    var groups = trace.transforms[state.transformIndex].groups;
 
     var groupNames = groups.filter(function(g, i, self) {
         return self.indexOf(g) === i;

@@ -819,7 +819,8 @@ function applyTransforms(fullTrace, fullData, layout) {
                 fullTrace: fullTrace,
                 fullData: fullData,
                 attributeSets: attributeSets,
-                layout: layout
+                layout: layout,
+                transformIndex: i
             });
         }
     }

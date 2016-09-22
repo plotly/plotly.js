@@ -71,7 +71,7 @@ describe('multiple transforms:', function() {
     it('Plotly.plot should plot the transform traces (reverse case)', function(done) {
         var data = Lib.extendDeep([], mockData0);
 
-        data[0].transforms.reverse();
+        data[0].transforms.slice().reverse();
 
         var gd = createGraphDiv();
 
@@ -81,12 +81,12 @@ describe('multiple transforms:', function() {
             expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
             expect(gd._fullData.length).toEqual(2);
-            expect(gd._fullData[0].x).toEqual([1, 1, 3]);
-            expect(gd._fullData[0].y).toEqual([1, 2, 1]);
-            expect(gd._fullData[1].x).toEqual([2]);
-            expect(gd._fullData[1].y).toEqual([3]);
+            expect(gd._fullData[0].x).toEqual([1, 3]);
+            expect(gd._fullData[0].y).toEqual([1, 1]);
+            expect(gd._fullData[1].x).toEqual([1, 2]);
+            expect(gd._fullData[1].y).toEqual([2, 3]);
 
-            assertDims([3, 1]);
+            assertDims([2, 2]);
 
             done();
         });

@@ -34,7 +34,7 @@ exports.attributes = {
     },
     filtersrc: {
         valType: 'enumerated',
-        values: ['x', 'y'],
+        values: ['x', 'y', 'ids'],
         dflt: 'x',
         ids: {
             valType: 'data_array',
