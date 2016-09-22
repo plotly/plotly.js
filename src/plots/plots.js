@@ -9,6 +9,7 @@
 
 'use strict';
 
+var PlotSchema = require('./../plot_api/plot_schema')
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
@@ -786,6 +787,27 @@ function applyTransforms(fullTrace, fullData, layout) {
     var container = fullTrace.transforms,
         dataOut = [fullTrace];
 
+    var attributeSets = dataOut.map(function(trace) {
+
+        var arraySplitAttributes = [];
+
+        var stack = [];
+
+        function callback(attr, attrName, attrs, level) {
+
+            stack = stack.slice(0, level).concat([attrName]);
+
+            var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true
+            if(splittableAttr) {
+                arraySplitAttributes.push(stack.slice());
+            }
+        }
+
+        PlotSchema.crawl(trace._module.attributes, callback);
+
+        return arraySplitAttributes;
+    });
+
     for(var i = 0; i < container.length; i++) {
         var transform = container[i],
             type = transform.type,
@@ -796,6 +818,7 @@ function applyTransforms(fullTrace, fullData, layout) {
                 transform: transform,
                 fullTrace: fullTrace,
                 fullData: fullData,
+                attributeSets: attributeSets,
                 layout: layout
             });
         }

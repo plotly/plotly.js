@@ -90,20 +90,15 @@ exports.transform = function(data, state) {
 
     var newData = [];
 
-    data.forEach(function(trace) {
+    data.forEach(function(trace, i) {
 
-        var splittingAttributes = [];
-
-        var attributes = trace._module.attributes;
-        crawl(attributes, splittingAttributes);
-
-        newData = newData.concat(transformOne(trace, state, splittingAttributes));
+        newData = newData.concat(transformOne(trace, state, state.attributeSets[i]));
     });
 
     return newData;
 };
 
-function transformOne(trace, state, splittingAttributes) {
+function transformOne(trace, state, attributeSet) {
 
     var opts = state.transform;
     var groups = opts.groups;
@@ -117,7 +112,7 @@ function transformOne(trace, state, splittingAttributes) {
 
     var style = opts.style || {};
 
-    var topLevelAttributes = splittingAttributes
+    var topLevelAttributes = attributeSet
         .filter(function(array) {return Array.isArray(getDeepProp(trace, array));});
 
     var initializeArray = function(newTrace, a) {
@@ -176,37 +171,4 @@ function setDeepProp(thing, propArray, value) {
         current = current[propArray[i]];
     }
     current[propArray[propArray.length - 1]] = value;
-}
-
-// fixme check if similar functions in plot_schema.js can be reused
-function crawl(attrs, list, path) {
-    path = path || [];
-
-    Object.keys(attrs).forEach(function(attrName) {
-        var attr = attrs[attrName];
-        var _path = path.slice();
-        _path.push(attrName);
-
-        if(attrName.charAt(0) === '_') return;
-
-        callback(attr, list, _path);
-
-        if(isValObject(attr)) return;
-        if(isPlainObject(attr)) crawl(attr, list, _path);
-    });
-}
-
-function isValObject(obj) {
-    return obj && obj.valType !== undefined;
-}
-
-function callback(attr, list, path) {
-    // see schema.defs for complete list of 'val types'
-    if(attr.valType === 'data_array' || attr.arrayOk === true) {
-        list.push(path);
-    }
-}
-
-function isPlainObject(obj) {
-    return Object.prototype.toString.call(obj) === '[object Object]';
 }

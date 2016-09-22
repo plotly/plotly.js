@@ -56,16 +56,17 @@ PlotSchema.get = function() {
     return plotSchema;
 };
 
-PlotSchema.crawl = function(attrs, callback) {
+PlotSchema.crawl = function (attrs, callback, specifiedLevel) {
+    var level = specifiedLevel || 0;
     Object.keys(attrs).forEach(function(attrName) {
         var attr = attrs[attrName];
 
         if(UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
 
-        callback(attr, attrName, attrs);
+        callback(attr, attrName, attrs, level);
 
         if(PlotSchema.isValObject(attr)) return;
-        if(Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback);
+        if(Lib.isPlainObject(attr)) PlotSchema.crawl(attr, callback, level + 1);
     });
 };
 
