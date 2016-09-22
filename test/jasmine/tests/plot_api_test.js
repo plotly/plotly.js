@@ -973,6 +973,26 @@ describe('Test plot api', function() {
             });
         });
 
+        it('clear calcdata on data + axis updates w/o extending current gd.data', function(done) {
+            var traceUpdate = {
+                x: [[3, 1, 3]]
+            };
+
+            var layoutUpdate = {
+                xaxis: {title: 'A', type: '-'}
+            };
+
+            Plotly.update(gd, traceUpdate, layoutUpdate).then(function() {
+                expect(data).toBe(gd.data);
+                expect(layout).toBe(gd.layout);
+                expect(calcdata).not.toBe(gd.calcdata);
+
+                expect(gd.data.length).toEqual(1);
+
+                done();
+            });
+        });
+
         it('call doLegend on legend updates', function(done) {
             expect(subroutines.doLegend).not.toHaveBeenCalled();
 

@@ -2062,9 +2062,15 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
     var seq = [];
 
     if(restyleFlags.fullReplot && relayoutFlags.layoutReplot) {
-        var layout = gd.layout;
+        var data = gd.data,
+            layout = gd.layout;
+
+        // clear existing data/layout on gd
+        // so that Plotly.plot doesn't try to extend them
+        gd.data = undefined;
         gd.layout = undefined;
-        seq.push(function() { return Plotly.plot(gd, gd.data, layout); });
+
+        seq.push(function() { return Plotly.plot(gd, data, layout); });
     }
     else if(restyleFlags.fullReplot) {
         seq.push(Plotly.plot);
