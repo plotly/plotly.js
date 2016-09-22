@@ -1,0 +1,32 @@
+{
+  "data": [
+    {
+      "lon": [
+        -50,
+        -50,
+        null,
+        50,
+        50
+      ],
+      "lat": [
+        -50,
+        50,
+        null,
+        -50,
+        50
+      ],
+      "connectgaps": true,
+      "type": "scattergeo",
+      "mode": "lines+markers",
+      "line": {
+        "color": "rgba(31,119,180,1)"
+      }
+    }
+  ],
+  "layout": {
+    "geo": {},
+    "height": 450,
+    "width": 1100,
+    "autosize": true
+  }
+}
