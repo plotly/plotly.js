@@ -27,7 +27,7 @@ describe('the range slider', function() {
     function testTranslate1D(node, val) {
         var transformParts = node.getAttribute('transform').split('(');
         expect(transformParts[0]).toEqual('translate');
-        expect(+transformParts[1].split(',0)')[0]).toBeCloseTo(val, 0);
+        expect(+transformParts[1].split(',0)')[0]).toBeCloseTo(val, -1);
     }
 
     describe('when specified as visible', function() {
@@ -85,7 +85,7 @@ describe('the range slider', function() {
                 var maskMin = children[2],
                     handleMin = children[5];
 
-                expect(gd.layout.xaxis.range).toBeCloseToArray([4.35, 49]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([4, 49], -0.5);
                 expect(maskMin.getAttribute('width')).toEqual(String(diff));
                 expect(handleMin.getAttribute('transform')).toBe('translate(' + (diff - 3) + ',0)');
             }).then(done);
@@ -103,7 +103,7 @@ describe('the range slider', function() {
                 var maskMax = children[3],
                     handleMax = children[6];
 
-                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 32.77]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 32.77], -0.5);
                 expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
 
                 testTranslate1D(handleMax, dataMaxStart + diff);
@@ -122,7 +122,7 @@ describe('the range slider', function() {
                 var maskMin = children[2],
                     handleMin = children[5];
 
-                expect(gd.layout.xaxis.range).toBeCloseToArray([3.96, 49]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([3.96, 49], -0.5);
                 expect(+maskMin.getAttribute('width')).toBeCloseTo(String(diff));
                 testTranslate1D(handleMin, dataMinStart + diff - 3);
             }).then(done);
@@ -140,7 +140,7 @@ describe('the range slider', function() {
                 var maskMax = children[3],
                     handleMax = children[6];
 
-                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04]);
+                expect(gd.layout.xaxis.range).toBeCloseToArray([0, 45.04], -0.5);
                 expect(+maskMax.getAttribute('width')).toBeCloseTo(-diff);
                 testTranslate1D(handleMax, dataMaxStart + diff);
             }).then(done);
@@ -174,8 +174,8 @@ describe('the range slider', function() {
                     handleMin = children[5],
                     handleMax = children[6];
 
-                expect(+maskMin.getAttribute('width')).toBeCloseTo(126.32, 0);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(366.34, 0);
+                expect(+maskMin.getAttribute('width')).toBeCloseTo(126.32, -0.5);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(366.34, -0.5);
                 testTranslate1D(handleMin, 123.32);
                 testTranslate1D(handleMax, 252.65);
             })
@@ -247,7 +247,7 @@ describe('the range slider', function() {
 
             Plotly.relayout(gd, 'xaxis.range', [5, 10]).then(function() {
                 expect(+maskMin.getAttribute('width')).toBeCloseTo(63.16, 0);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(492.67, 0);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(492.67, -1);
 
                 return Plotly.relayout(gd, 'xaxis.domain', [0.3, 0.7]);
             })
@@ -256,7 +256,7 @@ describe('the range slider', function() {
                     maskMax = children[3];
 
                 expect(+maskMin.getAttribute('width')).toBeCloseTo(25.26, 0);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(197.06, 0);
+                expect(+maskMax.getAttribute('width')).toBeCloseTo(197.06, -1);
 
                 return Plotly.relayout(gd, 'width', 400);
             })
