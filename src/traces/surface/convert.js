@@ -97,6 +97,18 @@ function parseColorScale(colorscale, alpha) {
     });
 }
 
+function isColormapCircular(colormap) {
+    var first = colormap[0].rgb,
+        last = colormap[colormap.length - 1].rgb;
+
+    return (
+        first[0] === last[0] &&
+        first[1] === last[1] &&
+        first[2] === last[2] &&
+        first[3] === last[3]
+    );
+}
+
 // Pad coords by +1
 function padField(field) {
     var shape = field.shape;
@@ -317,6 +329,11 @@ proto.update = function(data) {
         }
     }
 
+    // see https://github.com/plotly/plotly.js/issues/940
+    if(isColormapCircular(colormap)) {
+        params.vertexColor = true;
+    }
+
     params.coords = coords;
 
     surface.update(params);
@@ -342,7 +359,6 @@ proto.update = function(data) {
         surface.supportsTransparency = true;
     }
 };
-
 
 proto.dispose = function() {
     this.scene.glplot.remove(this.surface);
