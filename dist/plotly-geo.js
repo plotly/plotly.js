@@ -1,5 +1,5 @@
 /**
-* plotly.js (geo) v1.17.2
+* plotly.js (geo) v1.17.3
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -197,6 +197,8 @@ module.exports = {
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
 module.exports = require('../src/traces/choropleth');
 
 },{"../src/traces/choropleth":193}],4:[function(require,module,exports){
@@ -207,6 +209,8 @@ module.exports = require('../src/traces/choropleth');
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+
+'use strict';
 
 module.exports = require('../src/core');
 
@@ -238,6 +242,8 @@ module.exports = Plotly;
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+
+'use strict';
 
 module.exports = require('../src/traces/scattergeo');
 
@@ -16695,8 +16701,8 @@ drawing.translatePoint = function(d, sel, xa, ya) {
 
     if(isNumeric(x) && isNumeric(y)) {
         // for multiline text this works better
-        if(this.nodeName === 'text') {
-            sel.node().attr('x', x).attr('y', y);
+        if(sel.node().nodeName === 'text') {
+            sel.attr('x', x).attr('y', y);
         } else {
             sel.attr('transform', 'translate(' + x + ',' + y + ')');
         }
@@ -24422,7 +24428,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.17.2';
+exports.version = '1.17.3';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -25203,6 +25209,7 @@ var Events = {
         if(plotObj._ev instanceof EventEmitter) return plotObj;
 
         var ev = new EventEmitter();
+        var internalEv = new EventEmitter();
 
         /*
          * Assign to plot._ev while we still live in a land
@@ -25210,6 +25217,16 @@ var Events = {
          * In the future we can make plot the event emitter itself.
          */
         plotObj._ev = ev;
+
+        /*
+         * Create a second event handler that will manage events *internally*.
+         * This allows parts of plotly to respond to thing like relayout without
+         * having to use the user-facing event handler. They cannot peacefully
+         * coexist on the same handler because a user invoking
+         * plotObj.removeAllListeners() would detach internal events, breaking
+         * plotly.
+         */
+        plotObj._internalEv = internalEv;
 
         /*
          * Assign bound methods from the ev to the plot object. These methods
@@ -25226,6 +25243,15 @@ var Events = {
         plotObj.removeAllListeners = ev.removeAllListeners.bind(ev);
 
         /*
+         * Create funtions for managing internal events. These are *only* triggered
+         * by the mirroring of external events via the emit function.
+         */
+        plotObj._internalOn = internalEv.on.bind(internalEv);
+        plotObj._internalOnce = internalEv.once.bind(internalEv);
+        plotObj._removeInternalListener = internalEv.removeListener.bind(internalEv);
+        plotObj._removeAllInternalListeners = internalEv.removeAllListeners.bind(internalEv);
+
+        /*
          * We must wrap emit to continue to support JQuery events. The idea
          * is to check to see if the user is using JQuery events, if they are
          * we emit JQuery events to trigger user handlers as well as the EventEmitter
@@ -25237,6 +25263,7 @@ var Events = {
             }
 
             ev.emit(event, data);
+            internalEv.emit(event, data);
         };
 
         return plotObj;
@@ -25247,6 +25274,10 @@ var Events = {
      * all handlers for a particular event and returns the return value
      * of the LAST handler. This function also triggers jQuery's
      * triggerHandler for backwards compatibility.
+     *
+     * Note: triggerHandler has been recommended for deprecation in v2.0.0,
+     * so the additional behavior of triggerHandler triggering internal events
+     * is deliberate excluded in order to avoid reinforcing more usage.
      */
     triggerHandler: function(plotObj, event, data) {
         var jQueryHandlerValue;
@@ -25302,6 +25333,13 @@ var Events = {
         delete plotObj.removeListener;
         delete plotObj.removeAllListeners;
         delete plotObj.emit;
+
+        delete plotObj._ev;
+        delete plotObj._internalEv;
+        delete plotObj._internalOn;
+        delete plotObj._internalOnce;
+        delete plotObj._removeInternalListener;
+        delete plotObj._removeAllInternalListeners;
 
         return plotObj;
     }
@@ -28865,6 +28903,9 @@ Plotly.redraw = function(gd) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
+    helpers.cleanData(gd.data, gd.data);
+    helpers.cleanLayout(gd.layout);
+
     gd.calcdata = undefined;
     return Plotly.plot(gd).then(function() {
         gd.emit('plotly_redraw');
@@ -30593,13 +30634,13 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             for(var i = 0; i < frameList.length; i++) {
                 var computedFrame;
 
-                if(frameList[i].name) {
+                if(frameList[i].type === 'byname') {
                     // If it's a named frame, compute it:
                     computedFrame = Plots.computeFrame(gd, frameList[i].name);
                 } else {
                     // Otherwise we must have been given a simple object, so treat
                     // the input itself as the computed frame.
-                    computedFrame = frameList[i].frame;
+                    computedFrame = frameList[i].data;
                 }
 
                 var frameOpts = getFrameOpts(i);
@@ -30666,6 +30707,15 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             var newFrame = trans._currentFrame = trans._frameQueue.shift();
 
             if(newFrame) {
+                gd.emit('plotly_animatingframe', {
+                    name: newFrame.name,
+                    frame: newFrame.frame,
+                    animation: {
+                        frame: newFrame.frameOpts,
+                        transition: newFrame.transitionOpts,
+                    }
+                });
+
                 trans._lastFrameAt = Date.now();
                 trans._timeToNext = newFrame.frameOpts.duration;
 
@@ -30734,34 +30784,49 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
         var isSingleFrame = !allFrames && !isFrameArray && Lib.isPlainObject(frameOrGroupNameOrFrameList);
 
         if(isSingleFrame) {
-            frameList.push(setTransitionConfig({
-                frame: Lib.extendFlat({}, frameOrGroupNameOrFrameList)
-            }));
+            // In this case, a simple object has been passed to animate.
+            frameList.push({
+                type: 'object',
+                data: setTransitionConfig(Lib.extendFlat({}, frameOrGroupNameOrFrameList))
+            });
         } else if(allFrames || typeof frameOrGroupNameOrFrameList === 'string') {
+            // In this case, null or undefined has been passed so that we want to
+            // animate *all* currently defined frames
             for(i = 0; i < trans._frames.length; i++) {
                 frame = trans._frames[i];
 
                 if(allFrames || frame.group === frameOrGroupNameOrFrameList) {
-                    frameList.push(setTransitionConfig({name: frame.name}));
+                    frameList.push({
+                        type: 'byname',
+                        name: frame.name,
+                        data: setTransitionConfig({name: frame.name})
+                    });
                 }
             }
         } else if(isFrameArray) {
             for(i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
                 var frameOrName = frameOrGroupNameOrFrameList[i];
                 if(typeof frameOrName === 'string') {
-                    frameList.push(setTransitionConfig({name: frameOrName}));
+                    // In this case, there's an array and this frame is a string name:
+                    frameList.push({
+                        type: 'byname',
+                        name: frameOrName,
+                        data: setTransitionConfig({name: frameOrName})
+                    });
                 } else {
-                    frameList.push(setTransitionConfig({
-                        frame: Lib.extendFlat({}, frameOrName)
-                    }));
+                    frameList.push({
+                        type: 'object',
+                        data: setTransitionConfig(Lib.extendFlat({}, frameOrName))
+                    });
                 }
             }
         }
 
         // Verify that all of these frames actually exist; return and reject if not:
         for(i = 0; i < frameList.length; i++) {
-            if(frameList[i].name && !trans._frameHash[frameList[i].name]) {
-                Lib.warn('animate failure: frame not found: "' + frameList[i].name + '"');
+            frame = frameList[i];
+            if(frame.type === 'byname' && !trans._frameHash[frame.data.name]) {
+                Lib.warn('animate failure: frame not found: "' + frame.data.name + '"');
                 reject();
                 return;
             }
@@ -48020,7 +48085,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
 
     selection = scatterlayer.selectAll('g.trace');
 
-    join = selection.data(cdscatter, function(d) {return d[0].trace.uid;});
+    join = selection.data(cdscatter, function(d) { return d[0].trace.uid; });
 
     // Append new traces:
     join.enter().append('g')
@@ -48184,11 +48249,19 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // revpath is fullpath reversed, for fill-to-next
         revpath = '',
         // functions for converting a point array to a path
-        pathfn, revpathbase, revpathfn;
+        pathfn, revpathbase, revpathfn,
+        // variables used before and after the data join
+        pt0, lastSegment, pt1, thisPolygons;
+
+    // initialize line join data / method
+    var segments = [],
+        lineSegments = [],
+        makeUpdate = Lib.noop;
 
     ownFillEl3 = trace._ownFill;
 
     if(subTypes.hasLines(trace) || trace.fill !== 'none') {
+
         if(tonext) {
             // This tells .style which trace to use for fill information:
             tonext.datum(cdscatter);
@@ -48224,7 +48297,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             return revpathbase(pts.reverse());
         };
 
-        var segments = linePoints(cdscatter, {
+        segments = linePoints(cdscatter, {
             xaxis: xa,
             yaxis: ya,
             connectGaps: trace.connectgaps,
@@ -48237,12 +48310,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // polygons for hover on fill
         // TODO: can we skip this if hoveron!=fills? That would mean we
         // need to redraw when you change hoveron...
-        var thisPolygons = trace._polygons = new Array(segments.length);
+        thisPolygons = trace._polygons = new Array(segments.length);
         for(i = 0; i < segments.length; i++) {
             trace._polygons[i] = polygonTester(segments[i]);
         }
-
-        var pt0, lastSegment, pt1;
 
         if(segments.length) {
             pt0 = segments[0][0];
@@ -48250,11 +48321,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             pt1 = lastSegment[lastSegment.length - 1];
         }
 
-        var lineSegments = segments.filter(function(s) {
+        lineSegments = segments.filter(function(s) {
             return s.length > 1;
         });
 
-        var makeUpdate = function(isEnter) {
+        makeUpdate = function(isEnter) {
             return function(pts) {
                 thispath = pathfn(pts);
                 thisrevpath = revpathfn(pts);
@@ -48290,66 +48361,66 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 }
             };
         };
+    }
 
-        var lineJoin = tr.selectAll('.js-line').data(lineSegments);
+    var lineJoin = tr.selectAll('.js-line').data(lineSegments);
 
-        transition(lineJoin.exit())
-            .style('opacity', 0)
-            .remove();
+    transition(lineJoin.exit())
+        .style('opacity', 0)
+        .remove();
 
-        lineJoin.each(makeUpdate(false));
+    lineJoin.each(makeUpdate(false));
 
-        lineJoin.enter().append('path')
-            .classed('js-line', true)
-            .style('vector-effect', 'non-scaling-stroke')
-            .call(Drawing.lineGroupStyle)
-            .each(makeUpdate(true));
+    lineJoin.enter().append('path')
+        .classed('js-line', true)
+        .style('vector-effect', 'non-scaling-stroke')
+        .call(Drawing.lineGroupStyle)
+        .each(makeUpdate(true));
 
-        if(segments.length) {
-            if(ownFillEl3) {
-                if(pt0 && pt1) {
-                    if(ownFillDir) {
-                        if(ownFillDir === 'y') {
-                            pt0[1] = pt1[1] = ya.c2p(0, true);
-                        }
-                        else if(ownFillDir === 'x') {
-                            pt0[0] = pt1[0] = xa.c2p(0, true);
-                        }
-
-                        // fill to zero: full trace path, plus extension of
-                        // the endpoints to the appropriate axis
-                        // For the sake of animations, wrap the points around so that
-                        // the points on the axes are the first two points. Otherwise
-                        // animations get a little crazy if the number of points changes.
-                        transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1));
-                    } else {
-                        // fill to self: just join the path to itself
-                        transition(ownFillEl3).attr('d', fullpath + 'Z');
+    if(segments.length) {
+        if(ownFillEl3) {
+            if(pt0 && pt1) {
+                if(ownFillDir) {
+                    if(ownFillDir === 'y') {
+                        pt0[1] = pt1[1] = ya.c2p(0, true);
                     }
+                    else if(ownFillDir === 'x') {
+                        pt0[0] = pt1[0] = xa.c2p(0, true);
+                    }
+
+                    // fill to zero: full trace path, plus extension of
+                    // the endpoints to the appropriate axis
+                    // For the sake of animations, wrap the points around so that
+                    // the points on the axes are the first two points. Otherwise
+                    // animations get a little crazy if the number of points changes.
+                    transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1));
+                } else {
+                    // fill to self: just join the path to itself
+                    transition(ownFillEl3).attr('d', fullpath + 'Z');
                 }
             }
-            else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
-                // fill to next: full trace path, plus the previous path reversed
-                if(trace.fill === 'tonext') {
-                    // tonext: for use by concentric shapes, like manually constructed
-                    // contours, we just add the two paths closed on themselves.
-                    // This makes strange results if one path is *not* entirely
-                    // inside the other, but then that is a strange usage.
-                    transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z');
-                }
-                else {
-                    // tonextx/y: for now just connect endpoints with lines. This is
-                    // the correct behavior if the endpoints are at the same value of
-                    // y/x, but if they *aren't*, we should ideally do more complicated
-                    // things depending on whether the new endpoint projects onto the
-                    // existing curve or off the end of it
-                    transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z');
-                }
-                trace._polygons = trace._polygons.concat(prevPolygons);
-            }
-            trace._prevRevpath = revpath;
-            trace._prevPolygons = thisPolygons;
         }
+        else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
+            // fill to next: full trace path, plus the previous path reversed
+            if(trace.fill === 'tonext') {
+                // tonext: for use by concentric shapes, like manually constructed
+                // contours, we just add the two paths closed on themselves.
+                // This makes strange results if one path is *not* entirely
+                // inside the other, but then that is a strange usage.
+                transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z');
+            }
+            else {
+                // tonextx/y: for now just connect endpoints with lines. This is
+                // the correct behavior if the endpoints are at the same value of
+                // y/x, but if they *aren't*, we should ideally do more complicated
+                // things depending on whether the new endpoint projects onto the
+                // existing curve or off the end of it
+                transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z');
+            }
+            trace._polygons = trace._polygons.concat(prevPolygons);
+        }
+        trace._prevRevpath = revpath;
+        trace._prevPolygons = thisPolygons;
     }
 
 
@@ -48368,64 +48439,78 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
     }
 
+    function hideFilter() {
+        return false;
+    }
+
     function makePoints(d) {
         var join, selection;
+
         var trace = d[0].trace,
             s = d3.select(this),
             showMarkers = subTypes.hasMarkers(trace),
             showText = subTypes.hasText(trace);
 
-        if((!showMarkers && !showText) || trace.visible !== true) s.remove();
-        else {
-            if(showMarkers) {
-                selection = s.selectAll('path.point');
+        var keyFunc = getKeyFunc(trace),
+            markerFilter = hideFilter,
+            textFilter = hideFilter;
 
-                join = selection
-                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace));
-
-                var enter = join.enter().append('path')
-                    .classed('point', true);
-
-                enter.call(Drawing.pointStyle, trace)
-                    .call(Drawing.translatePoints, xa, ya, trace);
-
-                if(hasTransition) {
-                    enter.style('opacity', 0).transition()
-                        .style('opacity', 1);
-                }
-
-                join.each(function(d) {
-                    var sel = transition(d3.select(this));
-                    Drawing.translatePoint(d, sel, xa, ya);
-                    Drawing.singlePointStyle(d, sel, trace);
-                });
-
-                if(hasTransition) {
-                    join.exit().transition()
-                        .style('opacity', 0)
-                        .remove();
-                } else {
-                    join.exit().remove();
-                }
-            }
-            if(showText) {
-                selection = s.selectAll('g');
-
-                join = selection
-                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity);
-
-                    // each text needs to go in its own 'g' in case
-                    // it gets converted to mathjax
-                join.enter().append('g')
-                    .append('text')
-                    .call(Drawing.translatePoints, xa, ya);
-
-                selection
-                    .call(Drawing.translatePoints, xa, ya);
-
-                join.exit().remove();
-            }
+        if(showMarkers) {
+            markerFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
         }
+
+        if(showText) {
+            textFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
+        }
+
+        // marker points
+
+        selection = s.selectAll('path.point');
+
+        join = selection.data(markerFilter, keyFunc);
+
+        var enter = join.enter().append('path')
+            .classed('point', true);
+
+        enter.call(Drawing.pointStyle, trace)
+            .call(Drawing.translatePoints, xa, ya, trace);
+
+        if(hasTransition) {
+            enter.style('opacity', 0).transition()
+                .style('opacity', 1);
+        }
+
+        join.each(function(d) {
+            var sel = transition(d3.select(this));
+            Drawing.translatePoint(d, sel, xa, ya);
+            Drawing.singlePointStyle(d, sel, trace);
+        });
+
+        if(hasTransition) {
+            join.exit().transition()
+                .style('opacity', 0)
+                .remove();
+        } else {
+            join.exit().remove();
+        }
+
+        // text points
+
+        selection = s.selectAll('g');
+
+        join = selection.data(textFilter, keyFunc);
+
+        // each text needs to go in its own 'g' in case
+        // it gets converted to mathjax
+        join.enter().append('g')
+            .append('text');
+
+        join.each(function(d) {
+            var sel = d3.select(this).select('text');
+            Drawing.translatePoint(d, sel, xa, ya);
+        });
+
+        join.exit().remove();
     }
 
     // NB: selectAll is evaluated on instantiation:
