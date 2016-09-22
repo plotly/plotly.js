@@ -934,7 +934,7 @@ describe('Test plot api', function() {
     });
 
     describe('Plotly.update should', function() {
-        var gd, calcdata;
+        var gd, data, layout, calcdata;
 
         beforeAll(function() {
             Object.keys(subroutines).forEach(function(k) {
@@ -945,6 +945,8 @@ describe('Test plot api', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
             Plotly.plot(gd, [{ y: [2, 1, 2] }]).then(function() {
+                data = gd.data;
+                layout = gd.layout;
                 calcdata = gd.calcdata;
                 done();
             });
@@ -964,7 +966,29 @@ describe('Test plot api', function() {
 
         it('clear calcdata on data updates', function(done) {
             Plotly.update(gd, { x: [[3, 1, 3]] }).then(function() {
+                expect(data).toBe(gd.data);
+                expect(layout).toBe(gd.layout);
                 expect(calcdata).not.toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('clear calcdata on data + axis updates w/o extending current gd.data', function(done) {
+            var traceUpdate = {
+                x: [[3, 1, 3]]
+            };
+
+            var layoutUpdate = {
+                xaxis: {title: 'A', type: '-'}
+            };
+
+            Plotly.update(gd, traceUpdate, layoutUpdate).then(function() {
+                expect(data).toBe(gd.data);
+                expect(layout).toBe(gd.layout);
+                expect(calcdata).not.toBe(gd.calcdata);
+
+                expect(gd.data.length).toEqual(1);
+
                 done();
             });
         });
