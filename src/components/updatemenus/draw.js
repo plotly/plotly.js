@@ -459,6 +459,7 @@ function findDimenstions(gd, menuOpts) {
         } else {
             menuOpts.totalWidth = menuOpts.width1;
         }
+        menuOpts.totalWidth += constants.arrowPadX;
     }
 
     fakeButtons.remove();
