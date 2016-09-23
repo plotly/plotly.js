@@ -158,14 +158,14 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].type).toEqual('dropdown');
     });
 
-    it('should default \'orientation\' to \'v\'', function() {
+    it('should default \'direction\' to \'down\'', function() {
         layoutIn.updatemenus = [{
             buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
         }];
 
         supply(layoutIn, layoutOut);
 
-        expect(layoutOut.updatemenus[0].orientation).toEqual('v');
+        expect(layoutOut.updatemenus[0].direction).toEqual('down');
     });
 
     it('should default \'showactive\' to true', function() {
@@ -176,16 +176,6 @@ describe('update menus defaults', function() {
         supply(layoutIn, layoutOut);
 
         expect(layoutOut.updatemenus[0].showactive).toEqual(true);
-    });
-
-    it('should default \'openreverse\' to false', function() {
-        layoutIn.updatemenus = [{
-            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
-        }];
-
-        supply(layoutIn, layoutOut);
-
-        expect(layoutOut.updatemenus[0].openreverse).toEqual(false);
     });
 });
 

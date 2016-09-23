@@ -256,20 +256,22 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
     var x0 = 0;
     var y0 = 0;
 
+    var isVertical = ['up', 'down'].indexOf(menuOpts.direction) !== -1;
+
     if(menuOpts.type === 'dropdown') {
-        if(menuOpts.orientation === 'v') {
+        if(isVertical) {
             y0 = menuOpts.headerHeight + constants.gapButtonHeader;
         } else {
             x0 = menuOpts.headerWidth + constants.gapButtonHeader;
         }
     }
 
-    if(menuOpts.type === 'dropdown' && menuOpts.openreverse) {
-        if(menuOpts.orientation === 'v') {
-            y0 = -constants.gapButtonHeader + constants.gapButton - menuOpts.openHeight;
-        } else {
-            x0 = -constants.gapButtonHeader + constants.gapButton - menuOpts.openWidth;
-        }
+    if(menuOpts.type === 'dropdown' && menuOpts.direction === 'up') {
+        y0 = -constants.gapButtonHeader + constants.gapButton - menuOpts.openHeight;
+    }
+
+    if(menuOpts.type === 'dropdown' && menuOpts.direction === 'left') {
+        x0 = -constants.gapButtonHeader + constants.gapButton - menuOpts.openWidth;
     }
 
     var posOpts = {
@@ -399,6 +401,8 @@ function findDimenstions(gd, menuOpts) {
     fakeButtons.enter().append('g')
         .classed(constants.dropdownButtonClassName, true);
 
+    var isVertical = ['up', 'down'].indexOf(menuOpts.direction) !== -1;
+
     // loop over fake buttons to find width / height
     fakeButtons.each(function(buttonOpts, i) {
         var button = d3.select(this);
@@ -429,7 +433,7 @@ function findDimenstions(gd, menuOpts) {
         menuOpts.height1 = Math.max(menuOpts.height1, hEff);
         menuOpts.width1 = Math.max(menuOpts.width1, wEff);
 
-        if(menuOpts.orientation === 'v') {
+        if(isVertical) {
             menuOpts.totalWidth = Math.max(menuOpts.totalWidth, wEff);
             menuOpts.openWidth = menuOpts.totalWidth;
             menuOpts.totalHeight += hEff + constants.gapButton;
@@ -442,7 +446,7 @@ function findDimenstions(gd, menuOpts) {
         }
     });
 
-    if(menuOpts.orientation === 'v') {
+    if(isVertical) {
         menuOpts.totalHeight -= constants.gapButton;
     } else {
         menuOpts.totalWidth -= constants.gapButton;
@@ -453,7 +457,7 @@ function findDimenstions(gd, menuOpts) {
     menuOpts.headerHeight = menuOpts.height1;
 
     if(menuOpts.type === 'dropdown') {
-        if(menuOpts.orientation === 'v') {
+        if(isVertical) {
             menuOpts.width1 += constants.arrowPadX;
             menuOpts.totalHeight = menuOpts.height1;
         } else {
@@ -514,11 +518,13 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
 
     Lib.setTranslate(item, borderWidth + posOpts.x, borderWidth + posOpts.y);
 
+    var isVertical = ['up', 'down'].indexOf(menuOpts.direction) !== -1;
+
     rect.attr({
         x: 0,
         y: 0,
-        width: overrideOpts.width || (menuOpts.orientation === 'v' ? menuOpts.width1 : menuOpts.widths[index]),
-        height: overrideOpts.height || (menuOpts.orientation === 'v' ? menuOpts.heights[index] : menuOpts.height1)
+        width: overrideOpts.width || (isVertical ? menuOpts.width1 : menuOpts.widths[index]),
+        height: overrideOpts.height || (isVertical ? menuOpts.heights[index] : menuOpts.height1)
     });
 
     var tHeight = menuOpts.font.size * constants.fontSizeToHeight,
@@ -533,7 +539,7 @@ function setItemPosition(item, menuOpts, posOpts, overrideOpts) {
     text.attr(textAttrs);
     tspans.attr(textAttrs);
 
-    if(menuOpts.orientation === 'v') {
+    if(isVertical) {
         posOpts.y += menuOpts.heights[index] + posOpts.yPad;
     } else {
         posOpts.x += menuOpts.widths[index] + posOpts.xPad;
