@@ -43,12 +43,12 @@ module.exports = function draw(gd) {
      *         <g item header />
      *         <text item header-arrow />
      *     <g header-group />
-     *
+     *         <g item header />
      *         <text item header-arrow />
      *     ...
      *
      *     <g button-group />
-     *
+     *         <g item button />
      *         <g item button />
      *         ...
      */
