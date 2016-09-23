@@ -10,7 +10,7 @@ Plotly.register([
     require('@src/transforms/groupby')
 ]);
 
-fdescribe('groupby', function() {
+describe('groupby', function() {
 
     describe('one-to-many transforms:', function() {
         'use strict';
@@ -511,7 +511,7 @@ fdescribe('groupby', function() {
         it('passes with lots of attributes and heterogenous attrib presence', test(mockData2));
 
         it('passes with group styles partially overriding top level aesthetics', test(mockData3));
-        it('passes extended tests with group styles partially overriding top level aesthetics', function (done) {
+        it('passes extended tests with group styles partially overriding top level aesthetics', function(done) {
             var data = Lib.extendDeep([], mockData3);
             var gd = createGraphDiv();
             Plotly.plot(gd, data).then(function() {
@@ -519,7 +519,7 @@ fdescribe('groupby', function() {
                 expect(gd._fullData[1].marker.line.color).toEqual('yellow');
                 done();
             });
-        }        );
+        });
 
         it('passes with no explicit styling for the individual group', test(mockData4));
 
@@ -542,12 +542,12 @@ fdescribe('groupby', function() {
             marker: {size: 20, line: {width: [4, 2, 4, 2, 2, 3, 3]}},
             transforms: [{
                 type: 'groupby',
-                //groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                // groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
                 style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
             }]
         }];
 
-        it("passes", function(done) {
+        it('passes', function(done) {
             var data = Lib.extendDeep([], mockData);
 
             var gd = createGraphDiv();

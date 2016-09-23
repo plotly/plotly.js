@@ -9,7 +9,6 @@
 
 'use strict';
 
-var crawler = require('./../plot_api/crawler');
 var d3 = require('d3');
 var isNumeric = require('fast-isnumeric');
 
@@ -815,7 +814,7 @@ function applyTransforms(fullTrace, fullData, layout) {
             }
         }
 
-        crawler.crawl(trace._module.attributes, callback);
+        Lib.crawl(trace._module.attributes, callback);
 
         return arraySplitAttributes;
     });

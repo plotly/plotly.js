@@ -13,7 +13,6 @@ var Plotly = require('../plotly');
 var Registry = require('../registry');
 var Plots = require('../plots/plots');
 var Lib = require('../lib');
-var crawler = require('./crawler');
 
 // FIXME polar attribute are not part of Plotly yet
 var polarAreaAttrs = require('../plots/polar/area_attributes');
@@ -51,7 +50,7 @@ PlotSchema.get = function() {
     return plotSchema;
 };
 
-PlotSchema.crawl = crawler.crawl;
+PlotSchema.crawl = Lib.crawl;
 
 PlotSchema.isValObject = Lib.isValObject;
 
@@ -140,7 +139,7 @@ function getTransformAttributes(name) {
 function getDefs() {
     plotSchema.defs = {
         valObjects: Lib.valObjects,
-        metaKeys: crawler.UNDERSCORE_ATTRS.concat(['description', 'role'])
+        metaKeys: Lib.UNDERSCORE_ATTRS.concat(['description', 'role'])
     };
 }
 
@@ -223,7 +222,7 @@ function mergeValTypeAndRole(attrs) {
         }
     }
 
-    crawler.crawl(attrs, callback);
+    Lib.crawl(attrs, callback);
 }
 
 // helper methods
@@ -249,7 +248,7 @@ function getModule(arg) {
 function removeUnderscoreAttrs(attributes) {
     Object.keys(attributes).forEach(function(k) {
         if(k.charAt(0) === '_' &&
-            crawler.UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
+            Lib.UNDERSCORE_ATTRS.indexOf(k) === -1) delete attributes[k];
     });
     return attributes;
 }
@@ -303,7 +302,7 @@ function handleSubplotObjs(layoutAttributes) {
                 isSubplotObj = subplotRegistry.attrRegex.test(k);
             }
 
-            if(isSubplotObj) layoutAttributes[k][crawler.IS_SUBPLOT_OBJ] = true;
+            if(isSubplotObj) layoutAttributes[k][Lib.IS_SUBPLOT_OBJ] = true;
         });
     });
 
@@ -313,17 +312,17 @@ function handleSubplotObjs(layoutAttributes) {
 function handleLinkedToArray(layoutAttributes) {
 
     function callback(attr, attrName, attrs) {
-        if(attr[crawler.IS_LINKED_TO_ARRAY] !== true) return;
+        if(attr[Lib.IS_LINKED_TO_ARRAY] !== true) return;
 
         // TODO more robust logic
         var itemName = attrName.substr(0, attrName.length - 1);
 
-        delete attr[crawler.IS_LINKED_TO_ARRAY];
+        delete attr[Lib.IS_LINKED_TO_ARRAY];
 
         attrs[attrName] = { items: {} };
         attrs[attrName].items[itemName] = attr;
         attrs[attrName].role = 'object';
     }
 
-    crawler.crawl(layoutAttributes, callback);
+    Lib.crawl(layoutAttributes, callback);
 }
