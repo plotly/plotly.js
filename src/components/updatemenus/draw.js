@@ -266,9 +266,9 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
 
     if(menuOpts.type === 'dropdown' && menuOpts.openreverse) {
         if(menuOpts.orientation === 'v') {
-            y0 = -2 * constants.gapButtonHeader - constants.gapButton - menuOpts.totalHeight;
+            y0 = -2 * constants.gapButtonHeader - constants.gapButton - menuOpts.openHeight;
         } else {
-            x0 = -2 * constants.gapButtonHeader - constants.gapButton - menuOpts.totalWidth;
+            x0 = -2 * constants.gapButtonHeader - constants.gapButton - menuOpts.openWidth;
         }
     }
 
@@ -384,14 +384,14 @@ function styleOnMouseOut(item, menuOpts) {
 function findDimenstions(gd, menuOpts) {
     var i;
 
-    menuOpts.width = 0;
     menuOpts.width1 = 0;
-    menuOpts.height = 0;
     menuOpts.height1 = 0;
     menuOpts.heights = [];
     menuOpts.widths = [];
     menuOpts.totalWidth = 0;
     menuOpts.totalHeight = 0;
+    menuOpts.openWidth = 0;
+    menuOpts.openHeight = 0;
     menuOpts.lx = 0;
     menuOpts.ly = 0;
 
@@ -424,41 +424,32 @@ function findDimenstions(gd, menuOpts) {
         menuOpts.widths[i] = wEff;
         menuOpts.heights[i] = hEff;
 
-        if(menuOpts.orientation === 'v' | menuOpts.type === 'dropdown') {
-            menuOpts.width = Math.max(menuOpts.width, wEff);
-        } else {
-            menuOpts.width += wEff;
-        }
         // Height and width of individual element:
         menuOpts.height1 = Math.max(menuOpts.height1, hEff);
         menuOpts.width1 = Math.max(menuOpts.width1, wEff);
 
         if(menuOpts.orientation === 'v') {
             menuOpts.totalWidth = Math.max(menuOpts.totalWidth, wEff);
+            menuOpts.openWidth = menuOpts.totalWidth;
             menuOpts.totalHeight += hEff;
+            menuOpts.openHeight += hEff;
         } else {
             menuOpts.totalWidth += wEff;
-            menuOpts.totalHeight += Math.max(menuOpts.totalWidth, hEff);
+            menuOpts.openWidth += wEff;
+            menuOpts.totalHeight = Math.max(menuOpts.totalHeight, hEff);
+            menuOpts.openHeight = menuOpts.totalHeight;
         }
     });
 
     menuOpts.headerWidth = menuOpts.width1 + constants.arrowPadX;
     menuOpts.headerHeight = menuOpts.height1;
 
-    if(menuOpts.orientation === 'v') {
-        menuOpts.width = menuOpts.width1;
-
-        if(menuOpts.type === 'dropdown') {
+    if(menuOpts.type === 'dropdown') {
+        if(menuOpts.orientation === 'v') {
             menuOpts.width1 += constants.arrowPadX;
-        }
-
-        for(i = 0; i < menuOpts.heights; i++) {
-            menuOpts.height += menuOpts.heights[i];
-        }
-    } else {
-        menuOpts.height = menuOpts.height1;
-        for(i = 0; i < menuOpts.heights; i++) {
-            menuOpts.width += menuOpts.width[i];
+            menuOpts.totalHeight = menuOpts.height1;
+        } else {
+            menuOpts.totalWidth = menuOpts.width1;
         }
     }
 
@@ -470,37 +461,39 @@ function findDimenstions(gd, menuOpts) {
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(menuOpts)) {
-        menuOpts.lx -= menuOpts.width;
+        menuOpts.lx -= menuOpts.totalWidth;
         xanchor = 'right';
     }
     if(anchorUtils.isCenterAnchor(menuOpts)) {
-        menuOpts.lx -= menuOpts.width / 2;
+        menuOpts.lx -= menuOpts.totalWidth / 2;
         xanchor = 'center';
     }
 
     var yanchor = 'top';
     if(anchorUtils.isBottomAnchor(menuOpts)) {
-        menuOpts.ly -= menuOpts.height;
+        menuOpts.ly -= menuOpts.totalHeight;
         yanchor = 'bottom';
     }
     if(anchorUtils.isMiddleAnchor(menuOpts)) {
-        menuOpts.ly -= menuOpts.height / 2;
+        menuOpts.ly -= menuOpts.totalHeight / 2;
         yanchor = 'middle';
     }
 
-    menuOpts.width = Math.ceil(menuOpts.width);
-    menuOpts.height = Math.ceil(menuOpts.height);
+    menuOpts.totalWidth = Math.ceil(menuOpts.totalWidth);
+    menuOpts.totalHeight = Math.ceil(menuOpts.totalHeight);
     menuOpts.lx = Math.round(menuOpts.lx);
     menuOpts.ly = Math.round(menuOpts.ly);
 
     Plots.autoMargin(gd, constants.autoMarginIdRoot + menuOpts._index, {
         x: menuOpts.x,
         y: menuOpts.y,
-        l: menuOpts.width * ({right: 1, center: 0.5}[xanchor] || 0),
-        r: menuOpts.width * ({left: 1, center: 0.5}[xanchor] || 0),
-        b: menuOpts.height * ({top: 1, middle: 0.5}[yanchor] || 0),
-        t: menuOpts.height * ({bottom: 1, middle: 0.5}[yanchor] || 0)
+        l: menuOpts.totalWidth * ({right: 1, center: 0.5}[xanchor] || 0),
+        r: menuOpts.totalWidth * ({left: 1, center: 0.5}[xanchor] || 0),
+        b: menuOpts.totalHeight * ({top: 1, middle: 0.5}[yanchor] || 0),
+        t: menuOpts.totalHeight * ({bottom: 1, middle: 0.5}[yanchor] || 0)
     });
+
+    console.log('menuOpts:', menuOpts);
 }
 
 // set item positions (mutates posOpts)
