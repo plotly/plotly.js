@@ -816,7 +816,9 @@ function applyTransforms(fullTrace, fullData, layout) {
 
         Lib.crawl(trace._module.attributes, callback);
 
-        return arraySplitAttributes;
+        return arraySplitAttributes.map(function(path) {
+            return path.join('.');
+        });
     });
 
     for(var i = 0; i < container.length; i++) {

@@ -98,36 +98,16 @@ exports.transform = function(data, state) {
     return newData;
 };
 
-function getDeepProp(thing, propArray) {
-    var result = thing;
-    var i;
-    for(i = 0; i < propArray.length; i++) {
-        result = result[propArray[i]];
-        if(result === void(0)) {
-            return result;
-        }
-    }
-    return result;
-}
-
-function setDeepProp(thing, propArray, value) {
-    var current = thing;
-    var i;
-    for(i = 0; i < propArray.length - 1; i++) {
-        if(current[propArray[i]] === void(0)) {
-            current[propArray[i]] = {};
-        }
-        current = current[propArray[i]];
-    }
-    current[propArray[propArray.length - 1]] = value;
-}
-
 function initializeArray(newTrace, a) {
-    setDeepProp(newTrace, a, []);
+    Lib.nestedProperty(newTrace, a).set([]);
 }
 
 function pasteArray(newTrace, trace, j, a) {
-    getDeepProp(newTrace, a).push(getDeepProp(trace, a)[j]);
+    Lib.nestedProperty(newTrace, a).set(
+        Lib.nestedProperty(newTrace, a).get().concat([
+            Lib.nestedProperty(trace, a).get()[j]
+        ])
+    );
 }
 
 function transformOne(trace, state, attributeSet) {
@@ -149,7 +129,7 @@ function transformOne(trace, state, attributeSet) {
     var style = opts.style || {};
 
     var arrayAttributes = attributeSet
-        .filter(function(array) {return Array.isArray(getDeepProp(trace, array));});
+        .filter(function(array) {return Array.isArray(Lib.nestedProperty(trace, array).get());});
 
     // fixme the O(n**3) complexity
     for(var i = 0; i < groupNames.length; i++) {
