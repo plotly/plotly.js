@@ -522,4 +522,56 @@ describe('groupby', function() {
 
     });
 
+    describe('passes with no `groups`', function() {
+        'use strict';
+
+        afterEach(destroyGraphDiv);
+
+        var mockData = [{
+            mode: 'markers+lines',
+            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [0, 1, 2, 3, 5, 4, 6],
+            marker: {size: 20, line: {width: [4, 2, 4, 2, 2, 3, 3]}},
+            transforms: [{
+                type: 'groupby',
+                //groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
+                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            }]
+        }];
+
+        it("passes", function(done) {
+            var data = Lib.extendDeep([], mockData);
+
+            var gd = createGraphDiv();
+
+            Plotly.plot(gd, data).then(function() {
+
+/*
+                expect(gd.data.length).toEqual(1);
+                expect(gd.data[0].ids).toEqual(['q', 'w', 'r', 't', 'y', 'u', 'i']);
+                expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                expect(gd.data[0].y).toEqual([0, 1, 2, 3, 5, 4, 6]);
+                expect(gd.data[0].marker.line.width).toEqual([4, 2, 4, 2, 2, 3, 3]);
+
+                expect(gd._fullData.length).toEqual(2);
+
+                expect(gd._fullData[0].ids).toEqual(['q', 'w', 't', 'i']);
+                expect(gd._fullData[0].x).toEqual([1, -1, 0, 3]);
+                expect(gd._fullData[0].y).toEqual([0, 1, 3, 6]);
+                expect(gd._fullData[0].marker.line.width).toEqual([4, 2, 2, 3]);
+
+                expect(gd._fullData[1].ids).toEqual(['r', 'y', 'u']);
+                expect(gd._fullData[1].x).toEqual([-2, 1, 2]);
+                expect(gd._fullData[1].y).toEqual([2, 5, 4]);
+                expect(gd._fullData[1].marker.line.width).toEqual([4, 2, 3]);
+
+                assertDims([4, 3]);
+*/
+
+                done();
+            });
+        });
+
+    });
 });
