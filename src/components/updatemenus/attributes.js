@@ -63,7 +63,7 @@ module.exports = {
         dflt: false,
         description: [
             'For dropdown menus, opens the menu in the reverse direction'
-        ]
+        ].join(' ')
     },
 
     type: {
@@ -85,7 +85,7 @@ module.exports = {
         description: [
             'Determines whether the menu and buttons are laid out vertically',
             'or horizontally'
-        ]
+        ].join(' ')
     },
 
     active: {
