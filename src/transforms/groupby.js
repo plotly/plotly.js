@@ -112,7 +112,7 @@ function transformOne(trace, state, attributeSet) {
 
     var style = opts.style || {};
 
-    var topLevelAttributes = attributeSet
+    var arrayAttributes = attributeSet
         .filter(function(array) {return Array.isArray(getDeepProp(trace, array));});
 
     var initializeArray = function(newTrace, a) {
@@ -131,12 +131,12 @@ function transformOne(trace, state, attributeSet) {
         // maybe we could abstract this out
         var newTrace = newData[i] = Lib.extendDeep({}, trace);
 
-        topLevelAttributes.forEach(initializeArray.bind(null, newTrace));
+        arrayAttributes.forEach(initializeArray.bind(null, newTrace));
 
         for(var j = 0; j < len; j++) {
             if(groups[j] !== groupName) continue;
 
-            topLevelAttributes.forEach(pasteArray.bind(0, newTrace, trace, j));
+            arrayAttributes.forEach(pasteArray.bind(0, newTrace, trace, j));
         }
 
         newTrace.name = groupName;

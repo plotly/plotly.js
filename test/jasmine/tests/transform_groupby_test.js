@@ -532,7 +532,7 @@ describe('groupby', function() {
     describe('passes with no `groups`', function() {
         'use strict';
 
-        afterEach(destroyGraphDiv);
+        //afterEach(destroyGraphDiv);
 
         var mockData = [{
             mode: 'markers+lines',
@@ -547,7 +547,7 @@ describe('groupby', function() {
             }]
         }];
 
-        it('passes', function(done) {
+        fit('passes', function(done) {
             var data = Lib.extendDeep([], mockData);
 
             var gd = createGraphDiv();
