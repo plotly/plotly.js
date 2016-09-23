@@ -17,8 +17,6 @@ var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Axes = require('../../plots/cartesian/axes');
 
-var filterVisible = require('../../lib/filter_visible');
-
 var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');
 var createGeoZoom = require('./zoom');
@@ -29,6 +27,9 @@ var xmlnsNamespaces = require('../../constants/xmlns_namespaces');
 var topojsonUtils = require('../../lib/topojson_utils');
 var topojsonFeature = require('topojson').feature;
 
+// add a few projection types to d3.geo
+addProjectionsToD3(d3);
+
 
 function Geo(options, fullLayout) {
 
@@ -36,9 +37,6 @@ function Geo(options, fullLayout) {
     this.graphDiv = options.graphDiv;
     this.container = options.container;
     this.topojsonURL = options.topojsonURL;
-
-    // add a few projection types to d3.geo
-    addProjectionsToD3(d3);
 
     this.hoverContainer = null;
 
@@ -65,7 +63,7 @@ module.exports = Geo;
 
 var proto = Geo.prototype;
 
-proto.plot = function(geoData, fullLayout, promises) {
+proto.plot = function(geoCalcData, fullLayout, promises) {
     var _this = this,
         geoLayout = fullLayout[_this.id],
         graphSize = fullLayout._size;
@@ -97,7 +95,7 @@ proto.plot = function(geoData, fullLayout, promises) {
 
         if(PlotlyGeoAssets.topojson[_this.topojsonName] !== undefined) {
             _this.topojson = PlotlyGeoAssets.topojson[_this.topojsonName];
-            _this.onceTopojsonIsLoaded(geoData, geoLayout);
+            _this.onceTopojsonIsLoaded(geoCalcData, geoLayout);
         }
         else {
             topojsonPath = topojsonUtils.getTopojsonPath(
@@ -128,19 +126,19 @@ proto.plot = function(geoData, fullLayout, promises) {
                     _this.topojson = topojson;
                     PlotlyGeoAssets.topojson[_this.topojsonName] = topojson;
 
-                    _this.onceTopojsonIsLoaded(geoData, geoLayout);
+                    _this.onceTopojsonIsLoaded(geoCalcData, geoLayout);
                     resolve();
                 });
             }));
         }
     }
-    else _this.onceTopojsonIsLoaded(geoData, geoLayout);
+    else _this.onceTopojsonIsLoaded(geoCalcData, geoLayout);
 
     // TODO handle topojson-is-loading case
     // to avoid making multiple request while streaming
 };
 
-proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
+proto.onceTopojsonIsLoaded = function(geoCalcData, geoLayout) {
     var i;
 
     this.drawLayout(geoLayout);
@@ -148,11 +146,12 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
     var traceHashOld = this.traceHash;
     var traceHash = {};
 
-    for(i = 0; i < geoData.length; i++) {
-        var trace = geoData[i];
+    for(i = 0; i < geoCalcData.length; i++) {
+        var calcData = geoCalcData[i],
+            trace = calcData[0].trace;
 
         traceHash[trace.type] = traceHash[trace.type] || [];
-        traceHash[trace.type].push(trace);
+        traceHash[trace.type].push(calcData);
     }
 
     var moduleNamesOld = Object.keys(traceHashOld);
@@ -165,25 +164,40 @@ proto.onceTopojsonIsLoaded = function(geoData, geoLayout) {
         var moduleName = moduleNamesOld[i];
 
         if(moduleNames.indexOf(moduleName) === -1) {
-            var fakeModule = traceHashOld[moduleName][0];
-            fakeModule.visible = false;
-            traceHash[moduleName] = [fakeModule];
+            var fakeCalcTrace = traceHashOld[moduleName][0],
+                fakeTrace = fakeCalcTrace[0].trace;
+
+            fakeTrace.visible = false;
+            traceHash[moduleName] = [fakeCalcTrace];
         }
     }
 
     moduleNames = Object.keys(traceHash);
 
     for(i = 0; i < moduleNames.length; i++) {
-        var moduleData = traceHash[moduleNames[i]];
-        var _module = moduleData[0]._module;
+        var moduleCalcData = traceHash[moduleNames[i]],
+            _module = moduleCalcData[0][0].trace._module;
 
-        _module.plot(this, filterVisible(moduleData), geoLayout);
+        _module.plot(this, filterVisible(moduleCalcData), geoLayout);
     }
 
     this.traceHash = traceHash;
 
     this.render();
 };
+
+function filterVisible(calcDataIn) {
+    var calcDataOut = [];
+
+    for(var i = 0; i < calcDataIn.length; i++) {
+        var calcTrace = calcDataIn[i],
+            trace = calcTrace[0].trace;
+
+        if(trace.visible === true) calcDataOut.push(calcTrace);
+    }
+
+    return calcDataOut;
+}
 
 proto.updateFx = function(hovermode) {
     this.showHover = (hovermode !== false);

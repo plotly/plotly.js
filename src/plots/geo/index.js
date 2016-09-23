@@ -32,7 +32,7 @@ exports.supplyLayoutDefaults = require('./layout/defaults');
 
 exports.plot = function plotGeo(gd) {
     var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
+        calcData = gd.calcdata,
         geoIds = Plots.getSubplotIds(fullLayout, 'geo');
 
     /**
@@ -45,7 +45,7 @@ exports.plot = function plotGeo(gd) {
 
     for(var i = 0; i < geoIds.length; i++) {
         var geoId = geoIds[i],
-            fullGeoData = Plots.getSubplotData(fullData, 'geo', geoId),
+            geoCalcData = getSubplotCalcData(calcData, geoId),
             geo = fullLayout[geoId]._geo;
 
         // If geo is not instantiated, create one!
@@ -62,7 +62,7 @@ exports.plot = function plotGeo(gd) {
             fullLayout[geoId]._geo = geo;
         }
 
-        geo.plot(fullGeoData, fullLayout, gd._promises);
+        geo.plot(geoCalcData, fullLayout, gd._promises);
     }
 };
 
@@ -102,3 +102,16 @@ exports.toSVG = function(gd) {
             .appendChild(geoFramework.node());
     }
 };
+
+function getSubplotCalcData(calcData, id) {
+    var subplotCalcData = [];
+
+    for(var i = 0; i < calcData.length; i++) {
+        var calcTrace = calcData[i],
+            trace = calcTrace[0].trace;
+
+        if(trace.geo === id) subplotCalcData.push(calcTrace);
+    }
+
+    return subplotCalcData;
+}
