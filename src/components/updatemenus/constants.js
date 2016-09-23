@@ -21,7 +21,7 @@ module.exports = {
     headerGroupClassName: 'updatemenu-header-group',
     headerClassName: 'updatemenu-header',
     headerArrowClassName: 'updatemenu-header-arrow',
-    dropdownButtonGroupClassName: 'updatemenu-button-group',
+    dropdownButtonGroupClassName: 'updatemenu-dropdown-button-group',
     dropdownButtonClassName: 'updatemenu-dropdown-button',
     buttonClassName: 'updatemenu-button',
     itemRectClassName: 'updatemenu-item-rect',

@@ -147,6 +147,91 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].bgcolor).toEqual('blue');
         expect(layoutOut.updatemenus[1].bgcolor).toEqual('red');
     });
+
+    it('should default \'type\' to \'dropdown\'', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].type).toEqual('dropdown');
+    });
+
+    it('should default \'orientation\' to \'v\'', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].orientation).toEqual('v');
+    });
+
+    it('should default \'showactive\' to true', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].showactive).toEqual(true);
+    });
+
+    it('should default \'openreverse\' to false', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].openreverse).toEqual(false);
+    });
+});
+
+describe('update menus buttons', function() {
+    var mock = require('@mocks/updatemenus_positioning.json');
+    var gd;
+    var allMenus, buttonMenus, dropdownMenus;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        // move update menu #2 to click on them separately
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.updatemenus[1].x = 1;
+
+        allMenus = mockCopy.layout.updatemenus;
+        buttonMenus = allMenus.filter(function(opts) {return opts.type === 'buttons';});
+        dropdownMenus = allMenus.filter(function(opts) {return opts.type !== 'buttons';});
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('creates button menus', function(done) {
+        assertNodeCount('.' + constants.containerClassName, 1);
+
+        // 12 menus, but button menus don't have headers, so there are only six headers:
+        assertNodeCount('.' + constants.headerClassName, dropdownMenus.length);
+
+        // Count the *total* number of buttons we expect for this mock:
+        var buttonCount = 0;
+        buttonMenus.forEach(function(menu) {buttonCount += menu.buttons.length;});
+
+        assertNodeCount('.' + constants.buttonClassName, buttonCount);
+
+        done();
+
+    });
+
+    function assertNodeCount(query, cnt) {
+        expect(d3.selectAll(query).size()).toEqual(cnt);
+    }
 });
 
 describe('update menus interactions', function() {
