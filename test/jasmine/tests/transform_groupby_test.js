@@ -271,14 +271,8 @@ describe('groupby', function() {
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
-                expect(gd._fullData.length).toEqual(0); // fixme: it passes with 0; shouldn't it be 1? (one implied group)
-
-                /* since the array is of zero length, the below items are obv. meaningless to test
-                 expect(gd._fullData[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
-                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
-                 */
-
-                assertDims([]); // fixme: same thing, looks like zero dimensionality
+                expect(gd._fullData.length).toEqual(1);
+                assertDims([7]);
 
                 done();
             });
@@ -493,19 +487,6 @@ describe('groupby', function() {
             }]
         }];
 
-        var mockData6 = [{
-            mode: 'markers+lines',
-            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
-            x: [1, -1, -2, 0, 1, 2, 3],
-            y: [0, 1, 2, 3, 5, 4, 6],
-            marker: {line: {width: [4, 2, 4, 2, 2, 3, 3]}},
-            transforms: [{
-                type: 'groupby',
-                groups: ['a', 'a', 'b', 'a', 'b', 'b', 'a'],
-                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
-            }]
-        }];
-
         it('`data` preserves user supplied input but `gd._fullData` reflects the grouping', test(mockData1));
 
         it('passes with lots of attributes and heterogenous attrib presence', test(mockData2));
@@ -525,16 +506,43 @@ describe('groupby', function() {
 
         it('passes with no explicit styling in the group transform at all', test(mockData5));
 
-        it('passes with no explicit styling in the group transform at all', test(mockData6));
-
     });
 
     describe('passes with no `groups`', function() {
         'use strict';
 
-        //afterEach(destroyGraphDiv);
+        afterEach(destroyGraphDiv);
 
-        var mockData = [{
+        function test(mockData) {
+
+            return function(done) {
+                var data = Lib.extendDeep([], mockData);
+
+                var gd = createGraphDiv();
+
+                Plotly.plot(gd, data).then(function() {
+
+                    expect(gd.data.length).toEqual(1);
+                    expect(gd.data[0].ids).toEqual(['q', 'w', 'r', 't', 'y', 'u', 'i']);
+                    expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                    expect(gd.data[0].y).toEqual([0, 1, 2, 3, 5, 4, 6]);
+                    expect(gd.data[0].marker.line.width).toEqual([4, 2, 4, 2, 2, 3, 3]);
+
+                    expect(gd._fullData.length).toEqual(1);
+
+                    expect(gd._fullData[0].ids).toEqual(['q', 'w', 'r', 't', 'y', 'u', 'i']);
+                    expect(gd._fullData[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
+                    expect(gd._fullData[0].y).toEqual([0, 1, 2, 3, 5, 4, 6]);
+                    expect(gd._fullData[0].marker.line.width).toEqual([4, 2, 4, 2, 2, 3, 3]);
+
+                    assertDims([7]);
+
+                    done();
+                });
+            };
+        }
+
+        var mockData0 = [{
             mode: 'markers+lines',
             ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
             x: [1, -1, -2, 0, 1, 2, 3],
@@ -547,38 +555,35 @@ describe('groupby', function() {
             }]
         }];
 
-        fit('passes', function(done) {
-            var data = Lib.extendDeep([], mockData);
+        var mockData1 = [{
+            mode: 'markers+lines',
+            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [0, 1, 2, 3, 5, 4, 6],
+            marker: {size: 20, line: {width: [4, 2, 4, 2, 2, 3, 3]}},
+            transforms: [{
+                type: 'groupby',
+                groups: [],
+                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            }]
+        }];
 
-            var gd = createGraphDiv();
+        var mockData2 = [{
+            mode: 'markers+lines',
+            ids: ['q', 'w', 'r', 't', 'y', 'u', 'i'],
+            x: [1, -1, -2, 0, 1, 2, 3],
+            y: [0, 1, 2, 3, 5, 4, 6],
+            marker: {size: 20, line: {width: [4, 2, 4, 2, 2, 3, 3]}},
+            transforms: [{
+                type: 'groupby',
+                groups: null,
+                style: { a: {marker: {color: 'red'}}, b: {marker: {color: 'blue'}} }
+            }]
+        }];
 
-            Plotly.plot(gd, data).then(function() {
-
-/*
-                expect(gd.data.length).toEqual(1);
-                expect(gd.data[0].ids).toEqual(['q', 'w', 'r', 't', 'y', 'u', 'i']);
-                expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
-                expect(gd.data[0].y).toEqual([0, 1, 2, 3, 5, 4, 6]);
-                expect(gd.data[0].marker.line.width).toEqual([4, 2, 4, 2, 2, 3, 3]);
-
-                expect(gd._fullData.length).toEqual(2);
-
-                expect(gd._fullData[0].ids).toEqual(['q', 'w', 't', 'i']);
-                expect(gd._fullData[0].x).toEqual([1, -1, 0, 3]);
-                expect(gd._fullData[0].y).toEqual([0, 1, 3, 6]);
-                expect(gd._fullData[0].marker.line.width).toEqual([4, 2, 2, 3]);
-
-                expect(gd._fullData[1].ids).toEqual(['r', 'y', 'u']);
-                expect(gd._fullData[1].x).toEqual([-2, 1, 2]);
-                expect(gd._fullData[1].y).toEqual([2, 5, 4]);
-                expect(gd._fullData[1].marker.line.width).toEqual([4, 2, 3]);
-
-                assertDims([4, 3]);
-*/
-
-                done();
-            });
-        });
+        it('passes with no groups', test(mockData0));
+        it('passes with empty groups', test(mockData1));
+        it('passes with falsey groups', test(mockData2));
 
     });
 });

@@ -98,6 +98,38 @@ exports.transform = function(data, state) {
     return newData;
 };
 
+function getDeepProp(thing, propArray) {
+    var result = thing;
+    var i;
+    for(i = 0; i < propArray.length; i++) {
+        result = result[propArray[i]];
+        if(result === void(0)) {
+            return result;
+        }
+    }
+    return result;
+}
+
+function setDeepProp(thing, propArray, value) {
+    var current = thing;
+    var i;
+    for(i = 0; i < propArray.length - 1; i++) {
+        if(current[propArray[i]] === void(0)) {
+            current[propArray[i]] = {};
+        }
+        current = current[propArray[i]];
+    }
+    current[propArray[propArray.length - 1]] = value;
+}
+
+function initializeArray(newTrace, a) {
+    setDeepProp(newTrace, a, []);
+}
+
+function pasteArray(newTrace, trace, j, a) {
+    getDeepProp(newTrace, a).push(getDeepProp(trace, a)[j]);
+}
+
 function transformOne(trace, state, attributeSet) {
 
     var opts = state.transform;
@@ -107,6 +139,10 @@ function transformOne(trace, state, attributeSet) {
         return self.indexOf(g) === i;
     });
 
+    if(!(Array.isArray(groups)) || groups.length === 0) {
+        return trace;
+    }
+
     var newData = new Array(groupNames.length);
     var len = groups.length;
 
@@ -114,14 +150,6 @@ function transformOne(trace, state, attributeSet) {
 
     var arrayAttributes = attributeSet
         .filter(function(array) {return Array.isArray(getDeepProp(trace, array));});
-
-    var initializeArray = function(newTrace, a) {
-        setDeepProp(newTrace, a, []);
-    };
-
-    var pasteArray = function(newTrace, trace, j, a) {
-        getDeepProp(newTrace, a).push(getDeepProp(trace, a)[j]);
-    };
 
     // fixme the O(n**3) complexity
     for(var i = 0; i < groupNames.length; i++) {
@@ -147,28 +175,4 @@ function transformOne(trace, state, attributeSet) {
     }
 
     return newData;
-}
-
-function getDeepProp(thing, propArray) {
-    var result = thing;
-    var i;
-    for(i = 0; i < propArray.length; i++) {
-        result = result[propArray[i]];
-        if(result === void(0)) {
-            return result;
-        }
-    }
-    return result;
-}
-
-function setDeepProp(thing, propArray, value) {
-    var current = thing;
-    var i;
-    for(i = 0; i < propArray.length - 1; i++) {
-        if(current[propArray[i]] === void(0)) {
-            current[propArray[i]] = {};
-        }
-        current = current[propArray[i]];
-    }
-    current[propArray[propArray.length - 1]] = value;
 }
