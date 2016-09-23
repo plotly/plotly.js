@@ -339,7 +339,7 @@ describe('update menus interactions', function() {
 
             return Plotly.relayout(gd, 'updatemenus[1].buttons[1].label', 'a looooooooooooong<br>label');
         }).then(function() {
-            assertItemDims(selectHeader(1), 179, 34.2);
+            assertItemDims(selectHeader(1), 179, 35);
 
             return click(selectHeader(1));
         }).then(function() {
@@ -381,21 +381,21 @@ describe('update menus interactions', function() {
         assertNodeCount('.' + constants.containerClassName, 1);
         assertNodeCount('.' + constants.headerClassName, expectedMenus.length);
 
-        var gButton = d3.select('.' + constants.buttonGroupClassName),
+        var gButton = d3.select('.' + constants.dropdownButtonGroupClassName),
             actualActiveIndex = +gButton.attr(constants.menuIndexAttrName),
             hasActive = false;
 
         expectedMenus.forEach(function(expected, i) {
             if(expected) {
                 expect(actualActiveIndex).toEqual(i);
-                assertNodeCount('.' + constants.buttonClassName, expected);
+                assertNodeCount('.' + constants.dropdownButtonClassName, expected);
                 hasActive = true;
             }
         });
 
         if(!hasActive) {
             expect(actualActiveIndex).toEqual(-1);
-            assertNodeCount('.' + constants.buttonClassName, 0);
+            assertNodeCount('.' + constants.dropdownButtonClassName, 0);
         }
     }
 
@@ -448,7 +448,7 @@ describe('update menus interactions', function() {
     }
 
     function selectButton(buttonIndex) {
-        var buttons = d3.selectAll('.' + constants.buttonClassName),
+        var buttons = d3.selectAll('.' + constants.dropdownButtonClassName),
             button = d3.select(buttons[0][buttonIndex]);
         return button;
     }
