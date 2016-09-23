@@ -363,7 +363,7 @@ function styleButtons(buttons, menuOpts) {
     buttons.each(function(buttonOpts, i) {
         var button = d3.select(this);
 
-        if(i === active) {
+        if(i === active && menuOpts.showactive) {
             button.select('rect.' + constants.itemRectClassName)
                 .call(Color.fill, constants.activeColor);
         }
@@ -416,6 +416,9 @@ function findDimenstions(gd, menuOpts) {
         var tHeight = menuOpts.font.size * constants.fontSizeToHeight,
             tLines = tspans[0].length || 1,
             hEff = Math.max(tHeight * tLines, constants.minHeight) + constants.textOffsetY;
+
+        hEff = Math.ceil(hEff);
+        wEff = Math.ceil(wEff);
 
         // Store per-item sizes since a row of horizontal buttons, for example,
         // don't all need to be the same width:

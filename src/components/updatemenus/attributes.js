@@ -99,6 +99,13 @@ module.exports = {
         ].join(' ')
     },
 
+    showactive: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: 'Highlights active dropdown item or active button if true.'
+    },
+
     buttons: buttonsAttrs,
 
     x: {
