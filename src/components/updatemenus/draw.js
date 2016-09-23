@@ -266,9 +266,9 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
 
     if(menuOpts.type === 'dropdown' && menuOpts.openreverse) {
         if(menuOpts.orientation === 'v') {
-            y0 = -2 * constants.gapButtonHeader - constants.gapButton - menuOpts.openHeight;
+            y0 = -constants.gapButtonHeader + constants.gapButton - menuOpts.openHeight;
         } else {
-            x0 = -2 * constants.gapButtonHeader - constants.gapButton - menuOpts.openWidth;
+            x0 = -constants.gapButtonHeader + constants.gapButton - menuOpts.openWidth;
         }
     }
 
@@ -382,8 +382,6 @@ function styleOnMouseOut(item, menuOpts) {
 
 // find item dimensions (this mutates menuOpts)
 function findDimenstions(gd, menuOpts) {
-    var i;
-
     menuOpts.width1 = 0;
     menuOpts.height1 = 0;
     menuOpts.heights = [];
@@ -499,8 +497,6 @@ function findDimenstions(gd, menuOpts) {
         b: menuOpts.totalHeight * ({top: 1, middle: 0.5}[yanchor] || 0),
         t: menuOpts.totalHeight * ({bottom: 1, middle: 0.5}[yanchor] || 0)
     });
-
-    console.log('menuOpts:', menuOpts);
 }
 
 // set item positions (mutates posOpts)
