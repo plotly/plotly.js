@@ -355,3 +355,10 @@ exports.validate = function(value, opts) {
     valObject.coerceFunction(value, propMock, failed, opts);
     return out !== failed;
 };
+
+/*
+ * returns true for a valid value object and false for tree nodes in the attribute hierarchy
+ */
+exports.isValObject = function(obj) {
+    return obj && obj.valType !== undefined;
+};

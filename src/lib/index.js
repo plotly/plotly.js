@@ -15,7 +15,6 @@ var lib = module.exports = {};
 
 lib.nestedProperty = require('./nested_property');
 lib.isPlainObject = require('./is_plain_object');
-lib.isValObject = require('./is_val_object');
 lib.isArray = require('./is_array');
 
 var coerceModule = require('./coerce');
@@ -24,6 +23,7 @@ lib.coerce = coerceModule.coerce;
 lib.coerce2 = coerceModule.coerce2;
 lib.coerceFont = coerceModule.coerceFont;
 lib.validate = coerceModule.validate;
+lib.isValObject = coerceModule.isValObject;
 
 var datesModule = require('./dates');
 lib.dateTime2ms = datesModule.dateTime2ms;

@@ -10,7 +10,7 @@ Plotly.register([
     require('@src/transforms/groupby')
 ]);
 
-describe('groupby', function() {
+fdescribe('groupby', function() {
 
     describe('one-to-many transforms:', function() {
         'use strict';
@@ -350,7 +350,7 @@ describe('groupby', function() {
     describe('grouping with basic, heterogenous and overridden attributes', function() {
         'use strict';
 
-        //afterEach(destroyGraphDiv);
+        afterEach(destroyGraphDiv);
 
         function test(mockData) {
 
@@ -511,8 +511,15 @@ describe('groupby', function() {
         it('passes with lots of attributes and heterogenous attrib presence', test(mockData2));
 
         it('passes with group styles partially overriding top level aesthetics', test(mockData3));
-        expect(gd._fullData[0].marker.line.color).toEqual(['orange', 'red', 'cyan', 'pink']);
-        expect(gd._fullData[1].marker.line.color).toEqual('yellow');
+        it('passes extended tests with group styles partially overriding top level aesthetics', function (done) {
+            var data = Lib.extendDeep([], mockData3);
+            var gd = createGraphDiv();
+            Plotly.plot(gd, data).then(function() {
+                expect(gd._fullData[0].marker.line.color).toEqual(['orange', 'red', 'cyan', 'pink']);
+                expect(gd._fullData[1].marker.line.color).toEqual('yellow');
+                done();
+            });
+        }        );
 
         it('passes with no explicit styling for the individual group', test(mockData4));
 
