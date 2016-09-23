@@ -431,15 +431,22 @@ function findDimenstions(gd, menuOpts) {
         if(menuOpts.orientation === 'v') {
             menuOpts.totalWidth = Math.max(menuOpts.totalWidth, wEff);
             menuOpts.openWidth = menuOpts.totalWidth;
-            menuOpts.totalHeight += hEff;
-            menuOpts.openHeight += hEff;
+            menuOpts.totalHeight += hEff + constants.gapButton;
+            menuOpts.openHeight += hEff + constants.gapButton;
         } else {
-            menuOpts.totalWidth += wEff;
-            menuOpts.openWidth += wEff;
+            menuOpts.totalWidth += wEff + constants.gapButton;
+            menuOpts.openWidth += wEff + constants.gapButton;
             menuOpts.totalHeight = Math.max(menuOpts.totalHeight, hEff);
             menuOpts.openHeight = menuOpts.totalHeight;
         }
     });
+
+    if(menuOpts.orientation === 'v') {
+        menuOpts.totalHeight -= constants.gapButton;
+    } else {
+        menuOpts.totalWidth -= constants.gapButton;
+    }
+
 
     menuOpts.headerWidth = menuOpts.width1 + constants.arrowPadX;
     menuOpts.headerHeight = menuOpts.height1;
