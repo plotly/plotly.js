@@ -25,6 +25,12 @@ describe('update menus defaults', function() {
             buttons: [{
                 method: 'relayout',
                 args: ['title', 'Hello World']
+            }, {
+                method: 'update',
+                args: [ { 'marker.size': 20 }, { 'xaxis.range': [0, 10] }, [0, 1] ]
+            }, {
+                method: 'animate',
+                args: [ 'frame1', { transition: { duration: 500, ease: 'cubic-in-out' }}]
             }]
         }, {
             bgcolor: 'red'
@@ -40,8 +46,13 @@ describe('update menus defaults', function() {
 
         expect(layoutOut.updatemenus[0].visible).toBe(true);
         expect(layoutOut.updatemenus[0].active).toEqual(0);
+        expect(layoutOut.updatemenus[0].buttons[0].args.length).toEqual(2);
+        expect(layoutOut.updatemenus[0].buttons[1].args.length).toEqual(3);
+        expect(layoutOut.updatemenus[0].buttons[2].args.length).toEqual(2);
+
         expect(layoutOut.updatemenus[1].visible).toBe(false);
         expect(layoutOut.updatemenus[1].active).toBeUndefined();
+
         expect(layoutOut.updatemenus[2].visible).toBe(false);
         expect(layoutOut.updatemenus[2].active).toBeUndefined();
     });
