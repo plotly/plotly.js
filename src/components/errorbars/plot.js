@@ -16,8 +16,9 @@ var subTypes = require('../../traces/scatter/subtypes');
 
 module.exports = function plot(traces, plotinfo, transitionOpts) {
     var isNew;
-    var xa = plotinfo.x(),
-        ya = plotinfo.y();
+
+    var xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis;
 
     var hasAnimation = transitionOpts && transitionOpts.duration > 0;
 

@@ -573,10 +573,6 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
 
     var ids = Plotly.Axes.getSubplots(mockGd);
 
-    function getAxisFunc(subplot, axLetter) {
-        return function() { return Plotly.Axes.getFromId(mockGd, subplot, axLetter); };
-    }
-
     for(var i = 0; i < ids.length; i++) {
         var id = ids[i],
             oldSubplot = oldSubplots[id],
@@ -590,10 +586,8 @@ plots.linkSubplots = function(newFullData, newFullLayout, oldFullData, oldFullLa
             plotinfo.id = id;
         }
 
-        plotinfo.x = getAxisFunc(id, 'x');
-        plotinfo.y = getAxisFunc(id, 'y');
-        plotinfo.xaxis = plotinfo.x();
-        plotinfo.yaxis = plotinfo.y();
+        plotinfo.xaxis = Plotly.Axes.getFromId(mockGd, id, 'x');
+        plotinfo.yaxis = Plotly.Axes.getFromId(mockGd, id, 'y');
     }
 };
 

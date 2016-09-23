@@ -1373,8 +1373,8 @@ axes.doTicks = function(gd, axid, skipTitle) {
         if(axid === 'redraw') {
             fullLayout._paper.selectAll('g.subplot').each(function(subplot) {
                 var plotinfo = fullLayout._plots[subplot],
-                    xa = plotinfo.x(),
-                    ya = plotinfo.y();
+                    xa = plotinfo.xaxis,
+                    ya = plotinfo.yaxis;
 
                 plotinfo.xaxislayer
                     .selectAll('.' + xa._id + 'tick').remove();
@@ -1837,7 +1837,7 @@ axes.doTicks = function(gd, axid, skipTitle) {
 
                 // [bottom or left, top or right, free, main]
                 linepositions = ax._linepositions[subplot] || [],
-                counteraxis = plotinfo[counterLetter](),
+                counteraxis = plotinfo[counterLetter + 'axis'],
                 mainSubplot = counteraxis._id === ax.anchor,
                 ticksides = [false, false, false],
                 tickpath = '';

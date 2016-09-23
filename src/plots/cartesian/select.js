@@ -24,8 +24,8 @@ function getAxId(ax) { return ax._id; }
 module.exports = function prepSelect(e, startX, startY, dragOptions, mode) {
     var plot = dragOptions.gd._fullLayout._zoomlayer,
         dragBBox = dragOptions.element.getBoundingClientRect(),
-        xs = dragOptions.plotinfo.x()._offset,
-        ys = dragOptions.plotinfo.y()._offset,
+        xs = dragOptions.plotinfo.xaxis._offset,
+        ys = dragOptions.plotinfo.yaxis._offset,
         x0 = startX - dragBBox.left,
         y0 = startY - dragBBox.top,
         x1 = x0,

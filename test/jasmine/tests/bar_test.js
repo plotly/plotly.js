@@ -93,8 +93,8 @@ describe('heatmap calc / setPositions', function() {
         });
 
         var plotinfo = {
-            x: function() { return gd._fullLayout.xaxis; },
-            y: function() { return gd._fullLayout.yaxis; }
+            xaxis: gd._fullLayout.xaxis,
+            yaxis: gd._fullLayout.yaxis
         };
 
         Bar.setPositions(gd, plotinfo);

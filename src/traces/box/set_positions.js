@@ -15,8 +15,8 @@ var Lib = require('../../lib');
 
 module.exports = function setPositions(gd, plotinfo) {
     var fullLayout = gd._fullLayout,
-        xa = plotinfo.x(),
-        ya = plotinfo.y(),
+        xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis,
         orientations = ['v', 'h'];
     var posAxis, i, j, k;
 
