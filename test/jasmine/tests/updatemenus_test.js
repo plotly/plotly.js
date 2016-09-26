@@ -147,6 +147,81 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].bgcolor).toEqual('blue');
         expect(layoutOut.updatemenus[1].bgcolor).toEqual('red');
     });
+
+    it('should default \'type\' to \'dropdown\'', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].type).toEqual('dropdown');
+    });
+
+    it('should default \'direction\' to \'down\'', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].direction).toEqual('down');
+    });
+
+    it('should default \'showactive\' to true', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].showactive).toEqual(true);
+    });
+});
+
+describe('update menus buttons', function() {
+    var mock = require('@mocks/updatemenus_positioning.json');
+    var gd;
+    var allMenus, buttonMenus, dropdownMenus;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        // move update menu #2 to click on them separately
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.updatemenus[1].x = 1;
+
+        allMenus = mockCopy.layout.updatemenus;
+        buttonMenus = allMenus.filter(function(opts) {return opts.type === 'buttons';});
+        dropdownMenus = allMenus.filter(function(opts) {return opts.type !== 'buttons';});
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('creates button menus', function(done) {
+        assertNodeCount('.' + constants.containerClassName, 1);
+
+        // 12 menus, but button menus don't have headers, so there are only six headers:
+        assertNodeCount('.' + constants.headerClassName, dropdownMenus.length);
+
+        // Count the *total* number of buttons we expect for this mock:
+        var buttonCount = 0;
+        buttonMenus.forEach(function(menu) {buttonCount += menu.buttons.length;});
+
+        assertNodeCount('.' + constants.buttonClassName, buttonCount);
+
+        done();
+
+    });
+
+    function assertNodeCount(query, cnt) {
+        expect(d3.selectAll(query).size()).toEqual(cnt);
+    }
 });
 
 describe('update menus interactions', function() {
@@ -339,7 +414,7 @@ describe('update menus interactions', function() {
 
             return Plotly.relayout(gd, 'updatemenus[1].buttons[1].label', 'a looooooooooooong<br>label');
         }).then(function() {
-            assertItemDims(selectHeader(1), 179, 34.2);
+            assertItemDims(selectHeader(1), 179, 35);
 
             return click(selectHeader(1));
         }).then(function() {
@@ -381,21 +456,21 @@ describe('update menus interactions', function() {
         assertNodeCount('.' + constants.containerClassName, 1);
         assertNodeCount('.' + constants.headerClassName, expectedMenus.length);
 
-        var gButton = d3.select('.' + constants.buttonGroupClassName),
+        var gButton = d3.select('.' + constants.dropdownButtonGroupClassName),
             actualActiveIndex = +gButton.attr(constants.menuIndexAttrName),
             hasActive = false;
 
         expectedMenus.forEach(function(expected, i) {
             if(expected) {
                 expect(actualActiveIndex).toEqual(i);
-                assertNodeCount('.' + constants.buttonClassName, expected);
+                assertNodeCount('.' + constants.dropdownButtonClassName, expected);
                 hasActive = true;
             }
         });
 
         if(!hasActive) {
             expect(actualActiveIndex).toEqual(-1);
-            assertNodeCount('.' + constants.buttonClassName, 0);
+            assertNodeCount('.' + constants.dropdownButtonClassName, 0);
         }
     }
 
@@ -448,7 +523,7 @@ describe('update menus interactions', function() {
     }
 
     function selectButton(buttonIndex) {
-        var buttons = d3.selectAll('.' + constants.buttonClassName),
+        var buttons = d3.selectAll('.' + constants.dropdownButtonClassName),
             button = d3.select(buttons[0][buttonIndex]);
         return button;
     }

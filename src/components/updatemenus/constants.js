@@ -21,7 +21,8 @@ module.exports = {
     headerGroupClassName: 'updatemenu-header-group',
     headerClassName: 'updatemenu-header',
     headerArrowClassName: 'updatemenu-header-arrow',
-    buttonGroupClassName: 'updatemenu-button-group',
+    dropdownButtonGroupClassName: 'updatemenu-dropdown-button-group',
+    dropdownButtonClassName: 'updatemenu-dropdown-button',
     buttonClassName: 'updatemenu-button',
     itemRectClassName: 'updatemenu-item-rect',
     itemTextClassName: 'updatemenu-item-text',
@@ -41,7 +42,8 @@ module.exports = {
     minHeight: 30,
 
     // padding around item text
-    textPadX: 40,
+    textPadX: 24,
+    arrowPadX: 16,
 
     // font size to height scale
     fontSizeToHeight: 1.3,

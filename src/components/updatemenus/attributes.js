@@ -57,6 +57,30 @@ module.exports = {
         ].join(' ')
     },
 
+    type: {
+        valType: 'enumerated',
+        values: ['dropdown', 'buttons'],
+        dflt: 'dropdown',
+        role: 'info',
+        description: [
+            'Determines whether the buttons are accessible via a dropdown menu',
+            'or whether the buttons are stacked horizontally or vertically'
+        ].join(' ')
+    },
+
+    direction: {
+        valType: 'enumerated',
+        values: ['left', 'right', 'up', 'down'],
+        dflt: 'down',
+        role: 'info',
+        description: [
+            'Determines the direction in which the buttons are laid out, whether',
+            'in a dropdown menu or a row/column of buttons. For `left` and `up`,',
+            'the buttons will still appear in left-to-right or top-to-bottom order',
+            'respectively.'
+        ].join(' ')
+    },
+
     active: {
         valType: 'integer',
         role: 'info',
@@ -66,6 +90,13 @@ module.exports = {
             'Determines which button (by index starting from 0) is',
             'considered active.'
         ].join(' ')
+    },
+
+    showactive: {
+        valType: 'boolean',
+        role: 'info',
+        dflt: true,
+        description: 'Highlights active dropdown item or active button if true.'
     },
 
     buttons: buttonsAttrs,
