@@ -2,10 +2,9 @@ var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
 Plotly.register([
-    // until they become official
-    require('../assets/transforms/filter')
+    require('@src/transforms/filter'),
+    require('@src/transforms/groupby')
 ]);
-
 
 describe('Plotly.validate', function() {
 

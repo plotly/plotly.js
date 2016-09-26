@@ -1,7 +1,15 @@
+/**
+* Copyright 2012-2016, Plotly, Inc.
+* All rights reserved.
+*
+* This source code is licensed under the MIT license found in the
+* LICENSE file in the root directory of this source tree.
+*/
+
 'use strict';
 
 // var Lib = require('@src/lib');
-var Lib = require('../../../../src/lib');
+var Lib = require('../lib');
 
 /* eslint no-unused-vars: 0*/
 
@@ -22,7 +30,7 @@ exports.attributes = {
         valType: 'data_array',
         dflt: []
     },
-    groupColors: {
+    style: {
         valType: 'any',
         dflt: {}
     }
@@ -53,7 +61,7 @@ exports.supplyDefaults = function(transformIn, fullData, layout) {
     if(!active) return transformOut;
 
     coerce('groups');
-    coerce('groupColors');
+    coerce('style');
 
     // or some more complex logic using fullData and layout
 
@@ -82,23 +90,46 @@ exports.transform = function(data, state) {
 
     var newData = [];
 
-    data.forEach(function(trace) {
-        newData = newData.concat(transformOne(trace, state));
+    data.forEach(function(trace, i) {
+
+        newData = newData.concat(transformOne(trace, state, state.attributeSets[i]));
     });
 
     return newData;
 };
 
-function transformOne(trace, state) {
+function initializeArray(newTrace, a) {
+    Lib.nestedProperty(newTrace, a).set([]);
+}
+
+function pasteArray(newTrace, trace, j, a) {
+    Lib.nestedProperty(newTrace, a).set(
+        Lib.nestedProperty(newTrace, a).get().concat([
+            Lib.nestedProperty(trace, a).get()[j]
+        ])
+    );
+}
+
+function transformOne(trace, state, attributeSet) {
+
     var opts = state.transform;
-    var groups = opts.groups;
+    var groups = trace.transforms[state.transformIndex].groups;
 
     var groupNames = groups.filter(function(g, i, self) {
         return self.indexOf(g) === i;
     });
 
+    if(!(Array.isArray(groups)) || groups.length === 0) {
+        return trace;
+    }
+
     var newData = new Array(groupNames.length);
-    var len = Math.min(trace.x.length, trace.y.length, groups.length);
+    var len = groups.length;
+
+    var style = opts.style || {};
+
+    var arrayAttributes = attributeSet
+        .filter(function(array) {return Array.isArray(Lib.nestedProperty(trace, array).get());});
 
     for(var i = 0; i < groupNames.length; i++) {
         var groupName = groupNames[i];
@@ -107,18 +138,19 @@ function transformOne(trace, state) {
         // maybe we could abstract this out
         var newTrace = newData[i] = Lib.extendDeep({}, trace);
 
-        newTrace.x = [];
-        newTrace.y = [];
+        arrayAttributes.forEach(initializeArray.bind(null, newTrace));
 
         for(var j = 0; j < len; j++) {
             if(groups[j] !== groupName) continue;
 
-            newTrace.x.push(trace.x[j]);
-            newTrace.y.push(trace.y[j]);
+            arrayAttributes.forEach(pasteArray.bind(0, newTrace, trace, j));
         }
 
         newTrace.name = groupName;
-        newTrace.marker.color = opts.groupColors[groupName];
+
+        //  there's no need to coerce style[groupName] here
+        // as another round of supplyDefaults is done on the transformed traces
+        newTrace = Lib.extendDeep(newTrace, style[groupName] || {});
     }
 
     return newData;

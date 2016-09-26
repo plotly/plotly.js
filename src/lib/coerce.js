@@ -12,11 +12,16 @@
 var isNumeric = require('fast-isnumeric');
 var tinycolor = require('tinycolor2');
 var nestedProperty = require('./nested_property');
+var isPlainObject = require('./is_plain_object');
 
 var getColorscale = require('../components/colorscale/get_scale');
 var colorscaleNames = Object.keys(require('../components/colorscale/scales'));
 
 var idRegex = /^([2-9]|[1-9][0-9]+)$/;
+
+function isValObject(obj) {
+    return obj && obj.valType !== undefined;
+}
 
 exports.valObjects = {
     data_array: {
@@ -354,4 +359,53 @@ exports.validate = function(value, opts) {
 
     valObject.coerceFunction(value, propMock, failed, opts);
     return out !== failed;
+};
+
+/*
+ * returns true for a valid value object and false for tree nodes in the attribute hierarchy
+ */
+exports.isValObject = isValObject;
+
+exports.IS_SUBPLOT_OBJ = '_isSubplotObj';
+exports.IS_LINKED_TO_ARRAY = '_isLinkedToArray';
+exports.DEPRECATED = '_deprecated';
+
+// list of underscore attributes to keep in schema as is
+exports.UNDERSCORE_ATTRS = [exports.IS_SUBPLOT_OBJ, exports.IS_LINKED_TO_ARRAY, exports.DEPRECATED];
+
+/**
+ * Crawl the attribute tree, recursively calling a callback function
+ *
+ * @param {object} attrs
+ *  The node of the attribute tree (e.g. the root) from which recursion originates
+ * @param {Function} callback
+ *  A callback function with the signature:
+ *          @callback callback
+ *          @param {object} attr an attribute
+ *          @param {String} attrName name string
+ *          @param {object[]} attrs all the attributes
+ *          @param {Number} level the recursion level, 0 at the root
+ * @param {Number} [specifiedLevel]
+ *  The level in the tree, in order to let the callback function detect descend or backtrack,
+ *  typically unsupplied (implied 0), just used by the self-recursive call.
+ *  The necessity arises because the tree traversal is not controlled by callback return values.
+ *  The decision to not use callback return values for controlling tree pruning arose from
+ *  the goal of keeping the crawler backwards compatible. Observe that one of the pruning conditions
+ *  precedes the callback call.
+ *
+ * @return {object} transformOut
+ *  copy of transformIn that contains attribute defaults
+ */
+exports.crawl = function(attrs, callback, specifiedLevel) {
+    var level = specifiedLevel || 0;
+    Object.keys(attrs).forEach(function(attrName) {
+        var attr = attrs[attrName];
+
+        if(exports.UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
+
+        callback(attr, attrName, attrs, level);
+
+        if(isValObject(attr)) return;
+        if(isPlainObject(attr)) exports.crawl(attr, callback, level + 1);
+    });
 };
