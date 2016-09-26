@@ -2,11 +2,6 @@
 
 var Plotly = require('@lib/index');
 
-// pointcloud is not part of the dist plotly.js bundle initially
-Plotly.register([
-    require('@lib/pointcloud')
-]);
-
 // Test utilities
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');

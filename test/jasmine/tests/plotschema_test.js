@@ -1,11 +1,6 @@
 var Plotly = require('@lib/index');
 var Lib = require('@src/lib');
 
-Plotly.register([
-    require('@src/transforms/filter'),
-    require('@src/transforms/groupby')
-]);
-
 describe('plot schema', function() {
     'use strict';
 

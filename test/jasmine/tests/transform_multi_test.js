@@ -7,11 +7,6 @@ var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
 
 
-Plotly.register([
-    require('@src/transforms/filter'),
-    require('@src/transforms/groupby')
-]);
-
 describe('multiple transforms:', function() {
     'use strict';
 

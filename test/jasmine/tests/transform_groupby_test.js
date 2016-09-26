@@ -6,9 +6,6 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
 
-Plotly.register([
-    require('@src/transforms/groupby')
-]);
 
 describe('groupby', function() {
 
