@@ -288,7 +288,7 @@ describe('groupby', function() {
                 expect(gd.data[0].x).toEqual([1, -1, -2, 0, 1, 2, 3]);
                 expect(gd.data[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 
-                expect(gd._fullData.length).toEqual(1); // fixme not: good, okay it's 1 here (one implied group / thing)
+                expect(gd._fullData.length).toEqual(1);
                 expect(gd._fullData[0].x).toEqual([ 1, -1, -2, 0, 1, 2, 3 ]);
                 expect(gd._fullData[0].y).toEqual([1, 2, 3, 1, 2, 3, 1]);
 

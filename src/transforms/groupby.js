@@ -131,7 +131,6 @@ function transformOne(trace, state, attributeSet) {
     var arrayAttributes = attributeSet
         .filter(function(array) {return Array.isArray(Lib.nestedProperty(trace, array).get());});
 
-    // fixme the O(n**3) complexity
     for(var i = 0; i < groupNames.length; i++) {
         var groupName = groupNames[i];
 
