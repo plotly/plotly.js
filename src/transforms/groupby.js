@@ -8,19 +8,12 @@
 
 'use strict';
 
-// var Lib = require('@src/lib');
 var Lib = require('../lib');
 
-/* eslint no-unused-vars: 0*/
-
-
-// so that Plotly.register knows what to do with it
 exports.moduleType = 'transform';
 
-// determines to link between transform type and transform module
 exports.name = 'groupby';
 
-// ... as trace attributes
 exports.attributes = {
     active: {
         valType: 'boolean',
@@ -49,7 +42,7 @@ exports.attributes = {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.supplyDefaults = function(transformIn, fullData, layout) {
+exports.supplyDefaults = function(transformIn) {
     var transformOut = {};
 
     function coerce(attr, dflt) {

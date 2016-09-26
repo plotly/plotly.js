@@ -10,18 +10,12 @@
 
 var isNumeric = require('fast-isnumeric');
 
-// var Lib = require('@src/lib');
 var Lib = require('../lib');
 
-/* eslint no-unused-vars: 0*/
-
-// so that Plotly.register knows what to do with it
 exports.moduleType = 'transform';
 
-// determines to link between transform type and transform module
 exports.name = 'filter';
 
-// ... as trace attributes
 exports.attributes = {
     operation: {
         valType: 'enumerated',
@@ -35,11 +29,7 @@ exports.attributes = {
     filtersrc: {
         valType: 'enumerated',
         values: ['x', 'y', 'ids'],
-        dflt: 'x',
-        ids: {
-            valType: 'data_array',
-            description: 'A list of keys for object constancy of data points during animation'
-        }
+        dflt: 'x'
     }
 };
 
@@ -56,7 +46,7 @@ exports.attributes = {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.supplyDefaults = function(transformIn, fullData, layout) {
+exports.supplyDefaults = function(transformIn) {
     var transformOut = {};
 
     function coerce(attr, dflt) {
