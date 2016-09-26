@@ -1,4 +1,5 @@
 var Plotly = require('@lib/index');
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -6,6 +7,50 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
 
+
+describe('user-defined transforms:', function() {
+    'use strict';
+
+    it('should pass correctly arguments to transform methods', function() {
+        var transformIn = { type: 'fake' };
+        var transformOut = {};
+
+        var dataIn = [{
+            transforms: [transformIn]
+        }];
+
+        var layout = {};
+
+        function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
+            expect(_transformIn).toBe(transformIn);
+            expect(_layout).toBe(layout);
+
+            return transformOut;
+        }
+
+        function assertTransformArgs(dataOut, opts) {
+            expect(dataOut[0]._input).toBe(dataIn[0]);
+            expect(opts.transform).toBe(transformOut);
+            expect(opts.fullTrace._input).toBe(dataIn[0]);
+            expect(opts.layout).toBe(layout);
+
+            return dataOut;
+        }
+
+        var fakeTransformModule = {
+            moduleType: 'transform',
+            name: 'fake',
+            attributes: {},
+            supplyDefaults: assertSupplyDefaultsArgs,
+            transform: assertTransformArgs
+        };
+
+        Plotly.register(fakeTransformModule);
+        Plots.supplyDataDefaults(dataIn, [], layout);
+        delete Plots.transformsRegistry.fake;
+    });
+
+});
 
 describe('multiple transforms:', function() {
     'use strict';
