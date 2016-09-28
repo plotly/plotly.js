@@ -108,7 +108,7 @@ module.exports = function draw(gd) {
     // find dimensions before plotting anything (this mutates menuOpts)
     for(var i = 0; i < menuData.length; i++) {
         var menuOpts = menuData[i];
-        findDimenstions(gd, menuOpts);
+        findDimensions(gd, menuOpts);
     }
 
     // draw headers!
@@ -221,6 +221,9 @@ function drawHeader(gd, gHeader, gButton, menuOpts) {
 }
 
 function drawButtons(gd, gHeader, gButton, menuOpts) {
+    // If this is a set of buttons, set pointer events = all since we play
+    // some minor games with which container is which in order to simplify
+    // the drawing of *either* buttons or menus
     if(!gButton) {
         gButton = gHeader;
         gButton.attr('pointer-events', 'all');
@@ -383,7 +386,7 @@ function styleOnMouseOut(item, menuOpts) {
 }
 
 // find item dimensions (this mutates menuOpts)
-function findDimenstions(gd, menuOpts) {
+function findDimensions(gd, menuOpts) {
     menuOpts.width1 = 0;
     menuOpts.height1 = 0;
     menuOpts.heights = [];
