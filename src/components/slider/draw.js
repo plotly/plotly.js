@@ -258,8 +258,8 @@ function drawGrip(sliderGroup, gd, sliderOpts) {
         .style('pointer-events', 'all');
 
     grip.attr({
-        width: constants.gripHeight,
-        height: constants.gripWidth,
+        width: constants.gripWidth,
+        height: constants.gripHeight,
         rx: constants.gripRadius,
         ry: constants.gripRadius,
     })
