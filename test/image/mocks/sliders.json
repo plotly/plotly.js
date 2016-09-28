@@ -45,8 +45,10 @@
         "easing": "cubic-in-out"
       },
 
-      "xpad": 20,
-      "ypad": 30,
+      "pad": {
+        "r": 20,
+        "t": 20
+      },
 
       "font": {}
     }, {
@@ -88,8 +90,10 @@
         "easing": "cubic-in-out"
       },
 
-      "xpad": 20,
-      "ypad": 30,
+      "pad": {
+        "l": 20,
+        "t": 20
+      },
 
       "font": {}
     }],

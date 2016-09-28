@@ -230,6 +230,11 @@ function attachListeners(gd, sliderGroup, sliderOpts) {
                 value = Lib.nestedProperty(data, updatevalue).get();
             }
 
+            // If it's *currently* invoking a command an event is received,
+            // then we'll ignore the event in order to avoid complicated
+            // invinite loops.
+            if(sliderOpts._invokingCommand) return;
+
             setActiveByLabel(gd, sliderGroup, sliderOpts, value, false, true);
         };
     }
@@ -338,17 +343,38 @@ function setActiveByLabel(gd, sliderGroup, sliderOpts, label, doCallback, doTran
 function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition) {
     sliderOpts._input.active = sliderOpts.active = index;
 
-    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), doTransition);
-
     var step = sliderOpts.steps[sliderOpts.active];
 
+    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), doTransition);
+
     if(step && step.method && doCallback) {
-        var args = step.args;
-        Plotly[step.method](gd, args[0], args[1], args[2]).catch(function() {
-            // This is not a disaster. Some methods like `animate` reject if interrupted
-            // and *should* nicely log a warning.
-            Lib.warn('Warning: Plotly.' + step.method + ' was called and rejected.');
-        });
+        if(sliderGroup._nextMethod) {
+            // If we've already queued up an update, just overwrite it with the most recent:
+            sliderGroup._nextMethod.step = step;
+            sliderGroup._nextMethod.doCallback = doCallback;
+            sliderGroup._nextMethod.doTransition = doTransition;
+        } else {
+            sliderGroup._nextMethod = {step: step, doCallback: doCallback, doTransition: doTransition};
+            sliderGroup._nextMethodRaf = window.requestAnimationFrame(function() {
+                var _step = sliderGroup._nextMethod.step;
+                var args = _step.args;
+                if(!_step.method) return;
+
+                sliderOpts._invokingCommand = true;
+                Plotly[_step.method](gd, args[0], args[1], args[2]).then(function() {
+                    sliderOpts._invokingCommand = false;
+                }, function() {
+                    sliderOpts._invokingCommand = false;
+
+                    // This is not a disaster. Some methods like `animate` reject if interrupted
+                    // and *should* nicely log a warning.
+                    Lib.warn('Warning: Plotly.' + _step.method + ' was called and rejected.');
+                });
+
+                sliderGroup._nextMethod = null;
+                sliderGroup._nextMethodRaf = null;
+            });
+        }
     }
 }
 
@@ -428,7 +454,7 @@ function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
     var x = normalizedValueToPosition(sliderOpts, position);
 
     var el = grip;
-    if(doTransition && sliderOpts.transition.duration > 0) {
+    if(doTransition && sliderOpts.transition.duration > 0 && !sliderOpts._invokingCommand) {
         el = el.transition()
             .duration(sliderOpts.transition.duration)
             .ease(sliderOpts.transition.easing);
