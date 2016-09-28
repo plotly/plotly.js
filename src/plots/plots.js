@@ -16,7 +16,9 @@ var Plotly = require('../plotly');
 var Registry = require('../registry');
 var Lib = require('../lib');
 var Color = require('../components/color');
+
 var plots = module.exports = {};
+
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
 
@@ -788,8 +790,7 @@ function applyTransforms(fullTrace, fullData, layout) {
 
     for(var i = 0; i < container.length; i++) {
         var transform = container[i],
-            type = transform.type,
-            _module = transformsRegistry[type];
+            _module = transformsRegistry[transform.type];
 
         if(_module) {
             dataOut = _module.transform(dataOut, {
