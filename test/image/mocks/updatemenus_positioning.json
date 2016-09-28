@@ -24,11 +24,11 @@
     "updatemenus": [
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]},
-          {"label": "green", "method": "restyle", "args": ["marker.color", "green"]},
-          {"label": "yellow", "method": "restyle", "args": ["marker.color", "yellow"]},
-          {"label": "orange", "method": "restyle", "args": ["marker.color", "orange"]}
+          {"label": "A0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "A1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "A2", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "A3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "A4", "method": "restyle", "args": ["marker.color", "orange"]}
         ],
         "x": 0.3,
         "y": 1.0,
@@ -37,11 +37,11 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]},
-          {"label": "green", "method": "restyle", "args": ["marker.color", "green"]},
-          {"label": "yellow", "method": "restyle", "args": ["marker.color", "yellow"]},
-          {"label": "orange", "method": "restyle", "args": ["marker.color", "orange"]}
+          {"label": "B1", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "B2", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "B3", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "B4", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "B5", "method": "restyle", "args": ["marker.color", "orange"]}
         ],
         "x": 0.3,
         "y": 0.66,
@@ -51,11 +51,11 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]},
-          {"label": "green", "method": "restyle", "args": ["marker.color", "green"]},
-          {"label": "yellow", "method": "restyle", "args": ["marker.color", "yellow"]},
-          {"label": "orange", "method": "restyle", "args": ["marker.color", "orange"]}
+          {"label": "C0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "C1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "C2", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "C3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "C4", "method": "restyle", "args": ["marker.color", "orange"]}
         ],
         "x": 0.3,
         "y": 0.33,
@@ -65,25 +65,28 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]},
-          {"label": "green", "method": "restyle", "args": ["marker.color", "green"]},
-          {"label": "yellow", "method": "restyle", "args": ["marker.color", "yellow"]},
-          {"label": "orange", "method": "restyle", "args": ["marker.color", "orange"]}
+          {"label": "D0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "D1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "D2", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "D3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "D4", "method": "restyle", "args": ["marker.color", "orange"]}
         ],
         "x": 0.3,
         "y": 0.0,
         "yanchor": "top",
         "xanchor": "left",
-        "direction": "up"
+        "direction": "up",
+        "pad": {
+          "t": 40
+        }
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]},
-          {"label": "green", "method": "restyle", "args": ["marker.color", "green"]},
-          {"label": "yellow", "method": "restyle", "args": ["marker.color", "yellow"]},
-          {"label": "orange", "method": "restyle", "args": ["marker.color", "orange"]}
+          {"label": "E0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "E1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "E2longgg", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "E3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "E4", "method": "restyle", "args": ["marker.color", "orange"]}
         ],
         "type": "buttons",
         "x": -0.12,
@@ -94,11 +97,11 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]},
-          {"label": "green", "method": "restyle", "args": ["marker.color", "green"]},
-          {"label": "yellow", "method": "restyle", "args": ["marker.color", "yellow"]},
-          {"label": "orange", "method": "restyle", "args": ["marker.color", "orange"]}
+          {"label": "F0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "F1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "F2longgg", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "F3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "F4", "method": "restyle", "args": ["marker.color", "orange"]}
         ],
         "type": "buttons",
         "x": -0.12,
@@ -110,8 +113,8 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]}
+          {"label": "G0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "G1", "method": "restyle", "args": ["marker.color", "blue"]}
         ],
         "type": "buttons",
         "x": 1,
@@ -121,8 +124,8 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]}
+          {"label": "H0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "H1", "method": "restyle", "args": ["marker.color", "blue"]}
         ],
         "type": "buttons",
         "x": 1,
@@ -133,11 +136,11 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]},
-          {"label": "green", "method": "restyle", "args": ["marker.color", "green"]},
-          {"label": "yellow", "method": "restyle", "args": ["marker.color", "yellow"]},
-          {"label": "orange", "method": "restyle", "args": ["marker.color", "orange"]}
+          {"label": "I0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "I1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "I2", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "I3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "I4", "method": "restyle", "args": ["marker.color", "orange"]}
         ],
         "x": 0.6,
         "y": 0.9,
@@ -146,11 +149,11 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]},
-          {"label": "green", "method": "restyle", "args": ["marker.color", "green"]},
-          {"label": "yellow", "method": "restyle", "args": ["marker.color", "yellow"]},
-          {"label": "orange", "method": "restyle", "args": ["marker.color", "orange"]}
+          {"label": "J0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "J1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "J2", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "J3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "J4", "method": "restyle", "args": ["marker.color", "orange"]}
         ],
         "x": 0.6,
         "y": 0.9,
@@ -159,8 +162,42 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]}
+          {"label": "N0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "N1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "N2", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "N3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "N4", "method": "restyle", "args": ["marker.color", "orange"]}
+        ],
+        "x": 0.6,
+        "y": 0.9,
+        "yanchor": "bottom",
+        "xanchor": "right",
+        "pad": {
+          "b": 10,
+          "r": 20
+        }
+      },
+      {
+        "buttons": [
+          {"label": "O0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "O1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "O2", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "O3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "O4", "method": "restyle", "args": ["marker.color", "orange"]}
+        ],
+        "x": 0.6,
+        "y": 0.9,
+        "yanchor": "top",
+        "xanchor": "left",
+        "pad": {
+          "t": 10,
+          "l": 20
+        }
+      },
+      {
+        "buttons": [
+          {"label": "K0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "K1", "method": "restyle", "args": ["marker.color", "blue"]}
         ],
         "x": 0.6,
         "y": 0.4,
@@ -170,14 +207,82 @@
       },
       {
         "buttons": [
-          {"label": "red", "method": "restyle", "args": ["marker.color", "red"]},
-          {"label": "blue", "method": "restyle", "args": ["marker.color", "blue"]}
+          {"label": "P0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "P1", "method": "restyle", "args": ["marker.color", "blue"]}
+        ],
+        "type": "buttons",
+        "x": 0.6,
+        "y": 0.4,
+        "yanchor": "top",
+        "xanchor": "left",
+        "pad": {
+          "r": 50,
+          "b": 80
+        }
+      },
+      {
+        "buttons": [
+          {"label": "Q0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "Q1", "method": "restyle", "args": ["marker.color", "blue"]}
+        ],
+        "type": "buttons",
+        "x": 0.6,
+        "y": 0.4,
+        "yanchor": "bottom",
+        "xanchor": "right",
+        "pad": {
+          "l": 50,
+          "t": 80
+        }
+      },
+      {
+        "buttons": [
+          {"label": "L0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "L1", "method": "restyle", "args": ["marker.color", "blue"]}
         ],
         "type": "buttons",
         "x": 0.6,
         "y": 0.4,
         "yanchor": "bottom",
         "xanchor": "left"
+      },
+      {
+        "buttons": [
+          {"label": "M0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "M1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "M2", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "M3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "M4", "method": "restyle", "args": ["marker.color", "orange"]}
+        ],
+        "x": 1.0,
+        "y": 0.5,
+        "yanchor": "middle",
+        "xanchor": "center",
+        "pad": {
+          "t": 80,
+          "r": 100,
+          "b": 80,
+          "l": 80
+        }
+      },
+      {
+        "buttons": [
+          {"label": "R0", "method": "restyle", "args": ["marker.color", "red"]},
+          {"label": "R1", "method": "restyle", "args": ["marker.color", "blue"]},
+          {"label": "R2", "method": "restyle", "args": ["marker.color", "green"]},
+          {"label": "R3", "method": "restyle", "args": ["marker.color", "yellow"]},
+          {"label": "R4", "method": "restyle", "args": ["marker.color", "orange"]}
+        ],
+        "x": 0.9,
+        "y": 0.5,
+        "yanchor": "middle",
+        "xanchor": "center",
+        "pad": {
+          "t": 2,
+          "r": 50,
+          "b": 2,
+          "l": 40
+        }
       }
     ],
     "xaxis": {

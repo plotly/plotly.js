@@ -60,6 +60,11 @@ function menuDefaults(menuIn, menuOut, layoutOut) {
     coerce('xanchor');
     coerce('yanchor');
 
+    coerce('pad.t');
+    coerce('pad.r');
+    coerce('pad.b');
+    coerce('pad.l');
+
     Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     coerce('bgcolor', layoutOut.paper_bgcolor);
