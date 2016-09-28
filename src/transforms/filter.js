@@ -8,44 +8,65 @@
 
 'use strict';
 
-var isNumeric = require('fast-isnumeric');
-
 var Lib = require('../lib');
+var axisIds = require('../plots/cartesian/axis_ids');
 
 exports.moduleType = 'transform';
 
 exports.name = 'filter';
 
 exports.attributes = {
-    operation: {
-        valType: 'enumerated',
-        values: ['=', '<', '>', 'within', 'notwithin', 'in', 'notin'],
-        dflt: '='
-    },
-    value: {
-        valType: 'any',
-        dflt: 0
+    active: {
+        valType: 'boolean',
+        dflt: true,
+        description: [
+            'Toggles whether or not the filter is active.'
+        ].join(' ')
     },
     filtersrc: {
         valType: 'enumerated',
-        values: ['x', 'y', 'ids'],
-        dflt: 'x'
+        values: ['x', 'y', 'z', 'ids'],
+        dflt: 'x',
+        description: [
+            'Sets the variable which the filter will be applied.'
+        ].join(' ')
+    },
+    operation: {
+        valType: 'enumerated',
+        values: ['=', '<', '>', 'within', 'notwithin', 'in', 'notin'],
+        dflt: '=',
+        description: [
+            'Sets the filter operation.'
+        ].join(' ')
+    },
+    value: {
+        valType: 'any',
+        dflt: 0,
+        description: [
+            'Sets the value or values by which to filter by.',
+            'Values are expected to be in the same type as the data linked',
+            'to *filtersrc*.',
+            'When `operation` is set to *within* and *notwithin*',
+            '*value* is expected to be 2-item array where the first item',
+            'is the lower bound and the second item is the upper bound.',
+            'When `operation`, is set to *in*, *notin* '
+        ].join(' ')
+    },
+    strictinterval: {
+        valType: 'boolean',
+        dflt: true,
+        arrayOk: true,
+        description: [
+            'Determines whether or not the filter operation includes data item value,',
+            'equal to *value*.',
+            'Has only an effect for `operation` *>*, *<*, *within* and *notwithin*',
+            'When `operation` is set to  *within* and *notwithin*,',
+            '`strictinterval` is expected to be a 2-item array where the first (second)',
+            'item determines strictness for the lower (second) bound.'
+        ].join(' ')
     }
 };
 
-/**
- * Supply transform attributes defaults
- *
- * @param {object} transformIn
- *  object linked to trace.transforms[i] with 'type' set to exports.name
- * @param {object} fullData
- *  the plot's full data
- * @param {object} layout
- *  the plot's (not-so-full) layout
- *
- * @return {object} transformOut
- *  copy of transformIn that contains attribute defaults
- */
 exports.supplyDefaults = function(transformIn) {
     var transformOut = {};
 
@@ -53,74 +74,59 @@ exports.supplyDefaults = function(transformIn) {
         return Lib.coerce(transformIn, transformOut, exports.attributes, attr, dflt);
     }
 
-    coerce('operation');
-    coerce('value');
-    coerce('filtersrc');
+    var active = coerce('active');
 
-    // numeric values as character should be converted to numeric
-    if(Array.isArray(transformOut.value)) {
-        transformOut.value = transformOut.value.map(function(v) {
-            if(isNumeric(v)) v = +v;
-            return v;
-        });
-    } else {
-        if(isNumeric(transformOut.value)) transformOut.value = +transformOut.value;
+    if(active) {
+        var operation = coerce('operation');
+
+        coerce('value');
+        coerce('filtersrc');
+
+        if(['=', 'in', 'notin'].indexOf(operation) === -1) {
+            coerce('strictinterval');
+        }
     }
-
-    // or some more complex logic using fullData and layout
 
     return transformOut;
 };
 
-/**
- * Apply transform !!!
- *
- * @param {array} data
- *  array of transformed traces (is [fullTrace] upon first transform)
- *
- * @param {object} state
- *  state object which includes:
- *      - transform {object} full transform attributes
- *      - fullTrace {object} full trace object which is being transformed
- *      - fullData {array} full pre-transform(s) data array
- *      - layout {object} the plot's (not-so-full) layout
- *
- * @return {object} newData
- *  array of transformed traces
- */
-exports.transform = function(data, state) {
-
-    // one-to-one case
-
-    var newData = data.map(function(trace) {
-        return transformOne(trace, state);
-    });
-
-    return newData;
+exports.transform = function(data) {
+    return data;
 };
 
-function transformOne(trace, state) {
-    var newTrace = Lib.extendDeep({}, trace);
+exports.calcTransform = function(gd, trace, opts) {
+    var filtersrc = opts.filtersrc;
 
-    var opts = state.transform;
-    var src = opts.filtersrc;
-    var filterFunc = getFilterFunc(opts);
-    var len = trace[src].length;
-    var arrayAttrs = findArrayAttributes(trace);
+    if(!opts.active || !trace[filtersrc]) return;
 
-    arrayAttrs.forEach(function(attr) {
-        Lib.nestedProperty(newTrace, attr).set([]);
-    });
+    var dataToCoord = getDataToCoordFunc(gd, filtersrc),
+        filterFunc = getFilterFunc(opts, dataToCoord);
+
+    var filterArr = trace[filtersrc],
+        len = filterArr.length;
+
+    var arrayAttrs = Lib.findArrayAttributes(trace),
+        originalArrays = {};
+
+    // copy all original array attribute values,
+    // and clear arrays in trace
+    for(var k = 0; k < arrayAttrs.length; k++) {
+        var attr = arrayAttrs[k],
+            np = Lib.nestedProperty(trace, attr);
+
+        originalArrays[attr] = Lib.extendDeep([], np.get());
+        np.set([]);
+    }
 
     function fill(attr, i) {
-        var arr = Lib.nestedProperty(trace, attr).get();
-        var newArr = Lib.nestedProperty(newTrace, attr).get();
+        var oldArr = originalArrays[attr],
+            newArr = Lib.nestedProperty(trace, attr).get();
 
-        newArr.push(arr[i]);
+        newArr.push(oldArr[i]);
     }
 
     for(var i = 0; i < len; i++) {
-        var v = trace[src][i];
+        var v = filterArr[i];
 
         if(!filterFunc(v)) continue;
 
@@ -128,81 +134,143 @@ function transformOne(trace, state) {
             fill(arrayAttrs[j], i);
         }
     }
+};
 
-    return newTrace;
+function getDataToCoordFunc(gd, filtersrc) {
+    var ax = axisIds.getFromId(gd, filtersrc);
+
+    // if 'filtersrc' has corresponding axis
+    // -> use setConvert method
+    if(ax) return ax.d2c;
+
+    // special case for 'ids'
+    // -> cast to String
+    if(filtersrc === 'ids') return function(v) { return String(v); };
+
+    // otherwise -> case to number
+    return function(v) { return +(v); };
 }
 
-function getFilterFunc(opts) {
-    var value = opts.value;
-    // if value is not array then coerce to
-    //   an array of [value,value] so the
-    //   filter function will work
-    //   but perhaps should just error out
-    var valueArr = [];
-    if(!Array.isArray(value)) {
-        valueArr = [value, value];
-    } else {
-        valueArr = value;
+function getFilterFunc(opts, d2c) {
+    var operation = opts.operation,
+        value = opts.value,
+        hasArrayValue = Array.isArray(value),
+        strict = opts.strictinterval,
+        hasArrayStrict = Array.isArray(strict);
+
+    function isOperationIn(array) {
+        return array.indexOf(operation) !== -1;
     }
 
-    switch(opts.operation) {
+    var coercedValue, coercedStrict;
+
+    if(isOperationIn(['=', '<', '>'])) {
+        coercedValue = hasArrayValue ? d2c(value[0]) : d2c(value);
+
+        if(isOperationIn(['<', '>'])) {
+            coercedStrict = hasArrayStrict ? strict[0] : strict;
+        }
+    }
+    else if(isOperationIn(['within', 'notwithin'])) {
+        coercedValue = hasArrayValue ?
+            [d2c(value[0]), d2c(value[1])] :
+            [d2c(value), d2c(value)];
+
+        coercedStrict = hasArrayStrict ?
+            [strict[0], strict[1]] :
+            [strict, strict];
+    }
+    else if(isOperationIn(['in', 'notin'])) {
+        coercedValue = hasArrayValue ? value.map(d2c) : [d2c(value)];
+    }
+
+    switch(operation) {
+
         case '=':
-            return function(v) { return v === value; };
+            return function(v) { return d2c(v) === coercedValue; };
+
         case '<':
-            return function(v) { return v < value; };
+            if(coercedStrict) {
+                return function(v) { return d2c(v) < coercedValue; };
+            }
+            else {
+                return function(v) { return d2c(v) <= coercedValue; };
+            }
+
         case '>':
-            return function(v) { return v > value; };
+            if(coercedStrict) {
+                return function(v) { return d2c(v) > coercedValue; };
+            }
+            else {
+                return function(v) { return d2c(v) >= coercedValue; };
+            }
+
         case 'within':
-            return function(v) {
-                // if character then ignore with no side effect
-                function notDateNumber(d) {
-                    return !(isNumeric(d) || Lib.isDateTime(d));
-                }
-                if(valueArr.some(notDateNumber)) {
-                    return true;
-                }
 
-                // keep the = ?
-                return v >= Math.min.apply(null, valueArr) &&
-                      v <= Math.max.apply(null, valueArr);
-            };
+            if(coercedStrict[0] && coercedStrict[1]) {
+                return function(v) {
+                    var cv = d2c(v);
+                    return cv > coercedValue[0] && cv < coercedValue[1];
+                };
+            }
+            else if(coercedStrict[0] && !coercedStrict[1]) {
+                return function(v) {
+                    var cv = d2c(v);
+                    return cv > coercedValue[0] && cv <= coercedValue[1];
+                };
+            }
+            else if(!coercedStrict[0] && coercedStrict[1]) {
+                return function(v) {
+                    var cv = d2c(v);
+                    return cv >= coercedValue[0] && cv < coercedValue[1];
+                };
+            }
+            else if(!coercedStrict[0] && !coercedStrict[1]) {
+                return function(v) {
+                    var cv = d2c(v);
+                    return cv >= coercedValue[0] && cv <= coercedValue[1];
+                };
+            }
+
+            break;
+
         case 'notwithin':
-            return function(v) {
-                // keep the = ?
-                return !(v >= Math.min.apply(null, valueArr) &&
-                      v <= Math.max.apply(null, valueArr));
-            };
+
+            if(coercedStrict[0] && coercedStrict[1]) {
+                return function(v) {
+                    var cv = d2c(v);
+                    return cv < coercedValue[0] || cv > coercedValue[1];
+                };
+            }
+            else if(coercedStrict[0] && !coercedStrict[1]) {
+                return function(v) {
+                    var cv = d2c(v);
+                    return cv < coercedValue[0] || cv >= coercedValue[1];
+                };
+            }
+            else if(!coercedStrict[0] && coercedStrict[1]) {
+                return function(v) {
+                    var cv = d2c(v);
+                    return cv <= coercedValue[0] || cv > coercedValue[1];
+                };
+            }
+            else if(!coercedStrict[0] && !coercedStrict[1]) {
+                return function(v) {
+                    var cv = d2c(v);
+                    return cv <= coercedValue[0] || cv >= coercedValue[1];
+                };
+            }
+
+            break;
+
         case 'in':
-            return function(v) { return valueArr.indexOf(v) >= 0; };
+            return function(v) {
+                return coercedValue.indexOf(d2c(v)) !== -1;
+            };
+
         case 'notin':
-            return function(v) { return valueArr.indexOf(v) === -1; };
+            return function(v) {
+                return coercedValue.indexOf(d2c(v)) === -1;
+            };
     }
-}
-
-function findArrayAttributes(obj, root) {
-    root = root || '';
-
-    var list = [];
-
-    Object.keys(obj).forEach(function(k) {
-        var val = obj[k];
-
-        if(k.charAt(0) === '_') return;
-
-        if(k === 'transforms') {
-            val.forEach(function(item, i) {
-                list = list.concat(
-                    findArrayAttributes(item, root + k + '[' + i + ']' + '.')
-                );
-            });
-        }
-        else if(Lib.isPlainObject(val)) {
-            list = list.concat(findArrayAttributes(val, root + k + '.'));
-        }
-        else if(Array.isArray(val)) {
-            list.push(root + k);
-        }
-    });
-
-    return list;
 }
