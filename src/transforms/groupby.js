@@ -17,15 +17,31 @@ exports.name = 'groupby';
 exports.attributes = {
     active: {
         valType: 'boolean',
-        dflt: true
+        dflt: true,
+        description: [
+            'Toggles whether or not the filter is active.'
+        ].join(' ')
     },
     groups: {
         valType: 'data_array',
-        dflt: []
+        dflt: [],
+        description: [
+            'Sets the groups in which the trace data will be split.',
+            'For example, with `x` set to *[1, 2, 3, 4]* and',
+            '`groups` set to *[\'a\', \'b\', \'a\', \'b\']*,',
+            'the groupby transform with split in one trace',
+            'with `x` [1, 3] and one trace with `x` [2, 4].'
+        ].join(' ')
     },
     style: {
         valType: 'any',
-        dflt: {}
+        dflt: {},
+        description: [
+            'Sets each group style.',
+            'For example, with `groups` set to *[\'a\', \'b\', \'a\', \'b\']*',
+            'and `style` set to *{ a: { marker: { color: \'red\' } }}',
+            'marker points in group *\'a\'* will be drawn in red.'
+        ].join(' ')
     }
 };
 
