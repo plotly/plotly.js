@@ -72,8 +72,6 @@ exports.supplyDefaults = function(transformIn) {
     coerce('groups');
     coerce('style');
 
-    // or some more complex logic using fullData and layout
-
     return transformOut;
 };
 
@@ -94,15 +92,11 @@ exports.supplyDefaults = function(transformIn) {
  *  array of transformed traces
  */
 exports.transform = function(data, state) {
-
-    // one-to-many case
-
     var newData = [];
 
-    data.forEach(function(trace, i) {
-
-        newData = newData.concat(transformOne(trace, state, state.attributeSets[i]));
-    });
+    for(var i = 0; i < data.length; i++) {
+        newData = newData.concat(transformOne(data[i], state));
+    }
 
     return newData;
 };
@@ -141,9 +135,7 @@ function transformOne(trace, state) {
     for(var i = 0; i < groupNames.length; i++) {
         var groupName = groupNames[i];
 
-        // TODO is this the best pattern ???
-        // maybe we could abstract this out
-        var newTrace = newData[i] = Lib.extendDeep({}, trace);
+        var newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
 
         arrayAttrs.forEach(initializeArray.bind(null, newTrace));
 
@@ -155,9 +147,9 @@ function transformOne(trace, state) {
 
         newTrace.name = groupName;
 
-        //  there's no need to coerce style[groupName] here
+        // there's no need to coerce style[groupName] here
         // as another round of supplyDefaults is done on the transformed traces
-        newTrace = Lib.extendDeep(newTrace, style[groupName] || {});
+        newTrace = Lib.extendDeepNoArrays(newTrace, style[groupName] || {});
     }
 
     return newData;
