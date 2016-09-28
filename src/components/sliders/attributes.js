@@ -9,6 +9,7 @@
 'use strict';
 
 var fontAttrs = require('../../plots/font_attributes');
+var padAttrs = require('../../plots/pad_attributes');
 var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var animationAttrs = require('../../plots/animation_attributes');
@@ -22,7 +23,7 @@ var stepsAttrs = {
         dflt: 'restyle',
         role: 'info',
         description: [
-            'Sets the Plotly method to be called on click.'
+            'Sets the Plotly method to be called when the slider value is changed.'
         ].join(' ')
     },
     args: {
@@ -95,10 +96,11 @@ module.exports = {
             'value when an event of type `updateevent` is received. If',
             'undefined, the data argument itself is used. If a string,',
             'that property is used, and if a string with dots, e.g.',
-            '`item.0.label`, then `data[\'item\'][0][\'label\']` will',
-            'be used. If an array, it is matched to the respective',
-            'updateevent item or if there is no corresponding updatevalue',
-            'for a particular updateevent, it is interpreted as `undefined` and defaults to the data property itself.'
+            '`item.0.label`, then `data[0].label` is used. If an array,',
+            'it is matched to the respective updateevent item or if there',
+            'is no corresponding updatevalue for a particular updateevent,',
+            'it is interpreted as `undefined` and defaults to the data',
+            'property itself.'
         ].join(' ')
     },
 
@@ -134,20 +136,9 @@ module.exports = {
         role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the slider.'
     },
-    xpad: {
-        valType: 'number',
-        min: 0,
-        dflt: 10,
-        role: 'style',
-        description: 'Sets the amount of padding (in px) along the x direction'
-    },
-    ypad: {
-        valType: 'number',
-        min: 0,
-        dflt: 10,
-        role: 'style',
-        description: 'Sets the amount of padding (in px) along the x direction'
-    },
+    pad: extendFlat({}, padAttrs, {
+        description: 'Set the padding of the slider component along each side.'
+    }),
     xanchor: {
         valType: 'enumerated',
         values: ['auto', 'left', 'center', 'right'],

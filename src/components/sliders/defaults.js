@@ -60,8 +60,10 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('len');
     coerce('lenmode');
 
-    coerce('xpad');
-    coerce('ypad');
+    coerce('pad.t');
+    coerce('pad.r');
+    coerce('pad.b');
+    coerce('pad.l');
 
     coerce('updateevent');
     coerce('updatevalue');
