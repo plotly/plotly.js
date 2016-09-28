@@ -103,8 +103,7 @@ function pasteArray(newTrace, trace, j, a) {
     );
 }
 
-function transformOne(trace, state, attributeSet) {
-
+function transformOne(trace, state) {
     var opts = state.transform;
     var groups = trace.transforms[state.transformIndex].groups;
 
@@ -119,10 +118,9 @@ function transformOne(trace, state, attributeSet) {
     var newData = new Array(groupNames.length);
     var len = groups.length;
 
-    var style = opts.style || {};
+    var arrayAttrs = Lib.findArrayAttributes(trace);
 
-    var arrayAttributes = attributeSet
-        .filter(function(array) {return Array.isArray(Lib.nestedProperty(trace, array).get());});
+    var style = opts.style || {};
 
     for(var i = 0; i < groupNames.length; i++) {
         var groupName = groupNames[i];
@@ -131,12 +129,12 @@ function transformOne(trace, state, attributeSet) {
         // maybe we could abstract this out
         var newTrace = newData[i] = Lib.extendDeep({}, trace);
 
-        arrayAttributes.forEach(initializeArray.bind(null, newTrace));
+        arrayAttrs.forEach(initializeArray.bind(null, newTrace));
 
         for(var j = 0; j < len; j++) {
             if(groups[j] !== groupName) continue;
 
-            arrayAttributes.forEach(pasteArray.bind(0, newTrace, trace, j));
+            arrayAttrs.forEach(pasteArray.bind(0, newTrace, trace, j));
         }
 
         newTrace.name = groupName;
