@@ -1581,7 +1581,7 @@ plots.doCalcdata = function(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout,
-        i;
+        i, j;
 
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
@@ -1619,7 +1619,6 @@ plots.doCalcdata = function(gd, traces) {
         }
 
         var trace = fullData[i],
-            _module = trace._module,
             cd = [];
 
         // If traces were specified and this trace was not included, then transfer it over from
@@ -1629,8 +1628,30 @@ plots.doCalcdata = function(gd, traces) {
             continue;
         }
 
-        if(_module && trace.visible === true) {
-            if(_module.calc) cd = _module.calc(gd, trace);
+        var _module;
+        if(trace.visible === true) {
+
+            // call calcTransform method if any
+            if(trace.transforms) {
+
+                // we need one round of of trace module calc before
+                // the calc transform to 'fill in' the categories list
+                // used for example in the data-to-coordinate method
+                _module = trace._module;
+                if(_module && _module.calc) _module.calc(gd, trace);
+
+                for(j = 0; j < trace.transforms.length; j++) {
+                    var transform = trace.transforms[j];
+
+                    _module = transformsRegistry[transform.type];
+                    if(_module && _module.calcTransform) {
+                        _module.calcTransform(gd, trace, transform);
+                    }
+                }
+            }
+
+            _module = trace._module;
+            if(_module && _module.calc) cd = _module.calc(gd, trace);
         }
 
         // make sure there is a first point
