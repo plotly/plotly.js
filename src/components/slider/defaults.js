@@ -66,6 +66,14 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('updateevent');
     coerce('updatevalue');
 
+    if(!Array.isArray(sliderOut.updateevent)) {
+        sliderOut.updateevent = [sliderOut.updateevent];
+    }
+
+    if(!Array.isArray(sliderOut.udpatevalue)) {
+        sliderOut.udpatevalue = [sliderOut.updatevalue];
+    }
+
     Lib.coerceFont(coerce, 'font', layoutOut.font);
 
     coerce('bgcolor', layoutOut.paper_bgcolor);
