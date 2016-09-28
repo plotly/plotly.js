@@ -462,10 +462,10 @@ function drawTouchRect(sliderGroup, gd, sliderOpts) {
 
     rect.attr({
         width: sliderOpts.inputAreaLength,
-        height: sliderOpts.inputAreaWidth
+        height: Math.max(sliderOpts.inputAreaWidth, constants.tickOffset + constants.tickLength + sliderOpts.labelHeight)
     })
         .call(Color.fill, constants.gripBgColor)
-        .attr('opacity', 0);
+        .attr('opacity', 0.0);
 
     Lib.setTranslate(rect, 0, 0);
 }
