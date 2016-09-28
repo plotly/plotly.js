@@ -155,7 +155,6 @@ function findDimensions(gd, sliderOpts) {
     sliderOpts.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
     sliderOpts.labelHeight = labelHeight;
 
-    // Hard-code this for now:
     sliderOpts.height = constants.tickOffset + constants.tickLength + sliderOpts.labelHeight + sliderOpts.ypad * 2;
 
     var xanchor = 'left';
@@ -205,6 +204,8 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     // Position the rectangle:
     Lib.setTranslate(sliderGroup, sliderOpts.lx + sliderOpts.xpad, sliderOpts.ly + sliderOpts.ypad);
 
+    // Every time the slider is draw from scratch, just detach and reattach the event listeners.
+    // This could perhaps be avoided.
     removeListeners(gd, sliderGroup, sliderOpts);
     attachListeners(gd, sliderGroup, sliderOpts);
 
