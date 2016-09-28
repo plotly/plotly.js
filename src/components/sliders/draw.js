@@ -146,16 +146,14 @@ function findDimensions(gd, sliderOpts) {
     // The length of the rail, *excluding* padding on either end:
     sliderOpts.inputAreaStart = 0;
     sliderOpts.inputAreaLength = Math.round(sliderOpts.outerLength - sliderOpts.pad.l - sliderOpts.pad.r);
-    sliderOpts.railInset = Math.round(Math.max(0, constants.gripWidth - constants.railWidth) * 0.5);
-    sliderOpts.stepInset = Math.round(Math.max(sliderOpts.railInset, constants.gripWidth * 0.5));
 
-    var textableInputLength = sliderOpts.inputAreaLength - 2 * sliderOpts.stepInset;
+    var textableInputLength = sliderOpts.inputAreaLength - 2 * constants.stepInset;
     var availableSpacePerLabel = textableInputLength / (sliderOpts.steps.length - 1);
     var computedSpacePerLabel = maxLabelWidth + constants.labelPadding;
     sliderOpts.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
     sliderOpts.labelHeight = labelHeight;
 
-    sliderOpts.height = constants.tickOffset + constants.tickLength + sliderOpts.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
+    sliderOpts.height = constants.tickOffset + constants.tickLength + constants.labelOffset + sliderOpts.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(sliderOpts)) {
@@ -307,7 +305,7 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
 
         Lib.setTranslate(item,
             normalizedValueToPosition(sliderOpts, d.fraction),
-            constants.tickOffset + constants.tickLength + sliderOpts.labelHeight
+            constants.tickOffset + constants.tickLength + sliderOpts.labelHeight + constants.labelOffset
         );
     });
 
@@ -405,7 +403,7 @@ function drawTicks(sliderGroup, sliderOpts) {
 
         Lib.setTranslate(item,
             normalizedValueToPosition(sliderOpts, i / (sliderOpts.steps.length - 1)) - 0.5 * constants.tickWidth,
-            constants.tickOffset
+            isMajor ? constants.tickOffset : constants.minorTickOffset
         );
     });
 
@@ -443,13 +441,13 @@ function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
 
 // Convert a number from [0-1] to a pixel position relative to the slider group container:
 function normalizedValueToPosition(sliderOpts, normalizedPosition) {
-    return sliderOpts.inputAreaStart + sliderOpts.stepInset +
-        (sliderOpts.inputAreaLength - 2 * sliderOpts.stepInset) * Math.min(1, Math.max(0, normalizedPosition));
+    return sliderOpts.inputAreaStart + constants.stepInset +
+        (sliderOpts.inputAreaLength - 2 * constants.stepInset) * Math.min(1, Math.max(0, normalizedPosition));
 }
 
 // Convert a position relative to the slider group to a nubmer in [0, 1]
 function positionToNormalizedValue(sliderOpts, position) {
-    return Math.min(1, Math.max(0, (position - sliderOpts.stepInset - sliderOpts.inputAreaStart) / (sliderOpts.inputAreaLength - 2 * sliderOpts.stepInset - 2 * sliderOpts.inputAreaStart)));
+    return Math.min(1, Math.max(0, (position - constants.stepInset - sliderOpts.inputAreaStart) / (sliderOpts.inputAreaLength - 2 * constants.stepInset - 2 * sliderOpts.inputAreaStart)));
 }
 
 function drawTouchRect(sliderGroup, gd, sliderOpts) {
@@ -466,7 +464,7 @@ function drawTouchRect(sliderGroup, gd, sliderOpts) {
         height: Math.max(sliderOpts.inputAreaWidth, constants.tickOffset + constants.tickLength + sliderOpts.labelHeight)
     })
         .call(Color.fill, constants.gripBgColor)
-        .attr('opacity', 0.0);
+        .attr('opacity', 0);
 
     Lib.setTranslate(rect, 0, 0);
 }
@@ -478,7 +476,7 @@ function drawRail(sliderGroup, sliderOpts) {
     rect.enter().append('rect')
         .classed(constants.railRectClass, true);
 
-    var computedLength = sliderOpts.inputAreaLength - sliderOpts.railInset * 2;
+    var computedLength = sliderOpts.inputAreaLength - constants.railInset * 2;
 
     rect.attr({
         width: computedLength,
@@ -491,7 +489,7 @@ function drawRail(sliderGroup, sliderOpts) {
         .call(Color.fill, constants.railBgColor)
         .style('stroke-width', '1px');
 
-    Lib.setTranslate(rect, sliderOpts.railInset, (sliderOpts.inputAreaWidth - constants.railWidth) * 0.5);
+    Lib.setTranslate(rect, constants.railInset, (sliderOpts.inputAreaWidth - constants.railWidth) * 0.5);
 }
 
 function clearPushMargins(gd) {
