@@ -66,6 +66,13 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('updateevent');
     coerce('updatevalue');
 
+    if(!sliderIn.transition) {
+        sliderIn.transition = {};
+    }
+
+    coerce('transition.duration');
+    coerce('transition.easing');
+
     if(!Array.isArray(sliderOut.updateevent)) {
         sliderOut.updateevent = [sliderOut.updateevent];
     }

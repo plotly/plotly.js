@@ -208,7 +208,7 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     removeListeners(gd, sliderGroup, sliderOpts);
     attachListeners(gd, sliderGroup, sliderOpts);
 
-    setActive(gd, sliderGroup, sliderOpts, sliderOpts.active, true);
+    setActive(gd, sliderGroup, sliderOpts, sliderOpts.active, true, false);
 }
 
 function removeListeners(gd, sliderGroup, sliderOpts) {
@@ -224,14 +224,14 @@ function attachListeners(gd, sliderGroup, sliderOpts) {
     var listeners = sliderOpts._input.listeners = [];
     var eventNames = sliderOpts._input.eventNames = [];
 
-    function makeListener(updatevalue) {
+    function makeListener(eventname, updatevalue) {
         return function(data) {
             var value = data;
             if(updatevalue) {
                 value = Lib.nestedProperty(data, updatevalue).get();
             }
 
-            setActiveByLabel(gd, sliderGroup, sliderOpts, value, false);
+            setActiveByLabel(gd, sliderGroup, sliderOpts, value, false, true);
         };
     }
 
@@ -239,7 +239,7 @@ function attachListeners(gd, sliderGroup, sliderOpts) {
         var updateEventName = sliderOpts.updateevent[i];
         var updatevalue = sliderOpts.updatevalue;
 
-        var updatelistener = makeListener(updatevalue);
+        var updatelistener = makeListener(updateEventName, updatevalue);
 
         gd._internalEv.on(updateEventName, updatelistener);
 
@@ -312,15 +312,16 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
 
 }
 
-function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition) {
+function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransition) {
     var quantizedPosition = Math.round(normalizedPosition * (sliderOpts.steps.length - 1));
 
+
     if(quantizedPosition !== sliderOpts.active) {
-        setActive(gd, sliderGroup, sliderOpts, quantizedPosition, true);
+        setActive(gd, sliderGroup, sliderOpts, quantizedPosition, true, doTransition);
     }
 }
 
-function setActiveByLabel(gd, sliderGroup, sliderOpts, label, doCallback) {
+function setActiveByLabel(gd, sliderGroup, sliderOpts, label, doCallback, doTransition) {
     var index;
     for(var i = 0; i < sliderOpts.steps.length; i++) {
         var step = sliderOpts.steps[i];
@@ -331,14 +332,14 @@ function setActiveByLabel(gd, sliderGroup, sliderOpts, label, doCallback) {
     }
 
     if(index !== undefined) {
-        setActive(gd, sliderGroup, sliderOpts, index, doCallback);
+        setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition);
     }
 }
 
-function setActive(gd, sliderGroup, sliderOpts, index, doCallback) {
+function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition) {
     sliderOpts._input.active = sliderOpts.active = index;
 
-    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1));
+    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), doTransition);
 
     var step = sliderOpts.steps[sliderOpts.active];
 
@@ -364,11 +365,11 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
         grip.call(Color.fill, constants.gripBgActiveColor);
 
         var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
-        handleInput(gd, sliderGroup, sliderOpts, normalizedPosition);
+        handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
 
         $gd.on('mousemove', function() {
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
-            handleInput(gd, sliderGroup, sliderOpts, normalizedPosition);
+            handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, false);
         });
 
         $gd.on('mouseup', function() {
@@ -422,11 +423,21 @@ function computeLabelSteps(sliderOpts) {
     }
 }
 
-function setGripPosition(sliderGroup, sliderOpts, position) {
+function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
     var grip = sliderGroup.select('rect.' + constants.gripRectClass);
 
     var x = normalizedValueToPosition(sliderOpts, position);
-    Lib.setTranslate(grip, x - constants.gripWidth * 0.5, 0);
+
+    var el = grip;
+    if(doTransition && sliderOpts.transition.duration > 0) {
+        el = el.transition()
+            .duration(sliderOpts.transition.duration)
+            .ease(sliderOpts.transition.easing);
+    }
+
+    // Lib.setTranslate doesn't work here becasue of the transition duck-typing.
+    // It's also not necessary because there are no other transitions to preserve.
+    el.attr('transform', 'translate(' + (x - constants.gripWidth * 0.5) + ',' + 0 + ')');
 }
 
 // Convert a number from [0-1] to a pixel position relative to the slider group container:

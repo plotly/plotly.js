@@ -11,6 +11,7 @@
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+var animationAttrs = require('../../plots/animation_attributes');
 
 var stepsAttrs = {
     _isLinkedToArray: true,
@@ -176,6 +177,23 @@ module.exports = {
             'This anchor binds the `y` position to the *top*, *middle*',
             'or *bottom* of the range selector.'
         ].join(' ')
+    },
+
+    transition: {
+        duration: {
+            valType: 'number',
+            role: 'info',
+            min: 0,
+            dflt: 150,
+            description: 'Sets the duration of the slider transition'
+        },
+        easing: {
+            valType: 'enumerated',
+            values: animationAttrs.transition.easing.values,
+            role: 'info',
+            dflt: 'cubic-in-out',
+            description: 'Sets the easing function of the slider transition'
+        },
     },
 
     font: extendFlat({}, fontAttrs, {
