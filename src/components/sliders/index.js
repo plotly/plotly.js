@@ -11,7 +11,7 @@
 
 exports.moduleType = 'component';
 
-exports.name = 'slider';
+exports.name = 'sliders';
 
 exports.layoutAttributes = require('./attributes');
 

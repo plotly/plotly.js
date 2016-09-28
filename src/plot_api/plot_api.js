@@ -178,7 +178,7 @@ Plotly.plot = function(gd, data, layout, config) {
         Registry.getComponentMethod('legend', 'draw')(gd);
         Registry.getComponentMethod('rangeselector', 'draw')(gd);
         Registry.getComponentMethod('updatemenus', 'draw')(gd);
-        Registry.getComponentMethod('slider', 'draw')(gd);
+        Registry.getComponentMethod('sliders', 'draw')(gd);
 
         for(i = 0; i < calcdata.length; i++) {
             cd = calcdata[i];
@@ -304,7 +304,7 @@ Plotly.plot = function(gd, data, layout, config) {
         Registry.getComponentMethod('rangeslider', 'draw')(gd);
         Registry.getComponentMethod('rangeselector', 'draw')(gd);
         Registry.getComponentMethod('updatemenus', 'draw')(gd);
-        Registry.getComponentMethod('slider', 'draw')(gd);
+        Registry.getComponentMethod('sliders', 'draw')(gd);
     }
 
     function cleanUp() {
@@ -1944,6 +1944,15 @@ function _relayout(gd, aobj) {
             diff = (p.parts[2] + 1) - menus.length;
 
             for(i = 0; i < diff; i++) menus.push({});
+            flags.doplot = true;
+        }
+        else if(p.parts[0] === 'sliders') {
+            Lib.extendDeepAll(gd.layout, Lib.objectFromPath(ai, vi));
+
+            var sliders = gd._fullLayout.sliders || [];
+            diff = (p.parts[2] + 1) - sliders.length;
+
+            for(i = 0; i < diff; i++) sliders.push({});
             flags.doplot = true;
         }
         // alter gd.layout
