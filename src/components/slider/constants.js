@@ -25,6 +25,9 @@ module.exports = {
     gripRectClass: 'slider-grip-rect',
     tickRectClass: 'slider-tick-rect',
     inputProxyClass: 'slider-input-proxy',
+    labelsClass: 'slider-labels',
+    labelGroupClass: 'slider-label-group',
+    labelClass: 'slider-label',
 
     railHeight: 5,
 
@@ -64,7 +67,6 @@ module.exports = {
     railBorderColor: '#bec8d9',
     railBgColor: '#ebedf0',
 
-
     gripRadius: 10,
     gripWidth: 20,
     gripHeight: 20,
@@ -78,8 +80,11 @@ module.exports = {
     // (which, at the moment is always vertical, but for the sake of the future...)
     widthPadding: 10,
 
+    labelPadding: 4,
     tickWidth: 1,
     tickColor: '#333',
     tickOffset: 25,
     tickLength: 7,
+    minorTickColor: '#333',
+    minorTickLength: 4,
 };

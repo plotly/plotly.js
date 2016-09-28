@@ -57,9 +57,9 @@ module.exports = {
     },
 
     active: {
-        valType: 'string',
+        valType: 'number',
         role: 'info',
-        min: -1,
+        min: -10,
         dflt: 0,
         description: [
             'Determines which button (by index starting from 0) is',

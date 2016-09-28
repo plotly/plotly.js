@@ -33,7 +33,7 @@ module.exports = function draw(gd) {
 
     sliders.enter().append('g')
         .classed(constants.containerClassName, true)
-        .style('cursor', 'pointer');
+        .style('cursor', 'ew-resize');
 
     sliders.exit().remove();
 
@@ -43,7 +43,7 @@ module.exports = function draw(gd) {
     // Return early if no menus visible:
     if(sliderData.length === 0) return;
 
-    var sliderGroups = sliders.selectAll('g.'+ constants.groupClassName)
+    var sliderGroups = sliders.selectAll('g.' + constants.groupClassName)
         .data(sliderData, keyFunction);
 
     sliderGroups.enter().append('g')
@@ -62,7 +62,7 @@ module.exports = function draw(gd) {
     }
 
     sliderGroups.each(function(sliderOpts) {
-        computeDisplayedSteps(sliderOpts);
+        computeLabelSteps(sliderOpts);
 
         drawSlider(gd, d3.select(this), sliderOpts);
 
@@ -75,8 +75,6 @@ function makeInputProxy(gd, sliderGroup, sliderOpts) {
     sliderOpts.inputProxy = gd._fullLayout._paperdiv.selectAll('input.' + constants.inputProxyClass)
         .data([0]);
 }
-
-
 
 // This really only just filters by visibility:
 function makeSliderData(fullLayout) {
@@ -98,7 +96,31 @@ function keyFunction(opts) {
 
 // Compute the dimensions (mutates sliderOpts):
 function findDimensions(gd, sliderOpts) {
-    sliderOpts._gd = gd;
+    var sliderLabels = gd._tester.selectAll('g.' + constants.labelGroupClass)
+        .data(sliderOpts.steps);
+
+    sliderLabels.enter().append('g')
+        .classed(constants.labelGroupClass, true);
+
+    // loop over fake buttons to find width / height
+    var maxLabelWidth = 0;
+    var labelHeight = 0;
+    sliderLabels.each(function(stepOpts) {
+        var labelGroup = d3.select(this);
+
+        var text = drawLabel(labelGroup, {step: stepOpts}, sliderOpts);
+
+        var tWidth = text.node() && Drawing.bBox(text.node()).width;
+
+        // This just overwrites with the last. Which is fine as long as
+        // the bounding box (probably incorrectly) measures the text *on
+        // a single line*:
+        labelHeight = text.node() && Drawing.bBox(text.node()).height;
+
+        maxLabelWidth = Math.max(maxLabelWidth, tWidth);
+    });
+
+    sliderLabels.remove();
 
     sliderOpts.inputAreaWidth = Math.max(
         constants.railWidth,
@@ -109,7 +131,7 @@ function findDimensions(gd, sliderOpts) {
     sliderOpts.lx = graphSize.l + graphSize.w * sliderOpts.x;
     sliderOpts.ly = graphSize.t + graphSize.h * (1 - sliderOpts.y);
 
-    if (sliderOpts.lenmode === 'fraction') {
+    if(sliderOpts.lenmode === 'fraction') {
         // fraction:
         sliderOpts.outerLength = Math.round(graphSize.w * sliderOpts.len);
     } else {
@@ -127,8 +149,14 @@ function findDimensions(gd, sliderOpts) {
     sliderOpts.railInset = Math.round(Math.max(0, constants.gripWidth - constants.railWidth) * 0.5);
     sliderOpts.stepInset = Math.round(Math.max(sliderOpts.railInset, constants.gripWidth * 0.5));
 
+    var textableInputLength = sliderOpts.inputAreaLength - 2 * sliderOpts.stepInset;
+    var availableSpacePerLabel = textableInputLength / (sliderOpts.steps.length - 1);
+    var computedSpacePerLabel = maxLabelWidth + constants.labelPadding;
+    sliderOpts.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
+    sliderOpts.labelHeight = labelHeight;
+
     // Hard-code this for now:
-    sliderOpts.height = 150;
+    sliderOpts.height = constants.tickOffset + constants.tickLength + sliderOpts.labelHeight + sliderOpts.ypad * 2;
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(sliderOpts)) {
@@ -165,59 +193,158 @@ function findDimensions(gd, sliderOpts) {
     });
 }
 
-function drawSlider(gd, group, sliderOpts) {
+function drawSlider(gd, sliderGroup, sliderOpts) {
     // These are carefully ordered for proper z-ordering:
-    group
+    sliderGroup
         .call(drawRail, sliderOpts)
-        .call(drawTouchRect, sliderOpts)
+        .call(drawLabelGroup, sliderOpts)
         .call(drawTicks, sliderOpts)
-        .call(drawGrip, sliderOpts)
-
-    group.call(setGripPosition, sliderOpts, 0);
-    group.call(attachFocusEvents, sliderOpts);
+        .call(drawTouchRect, gd, sliderOpts)
+        .call(drawGrip, gd, sliderOpts);
 
     // Position the rectangle:
-    Lib.setTranslate(group, sliderOpts.lx + sliderOpts.xpad, sliderOpts.ly + sliderOpts.ypad);
+    Lib.setTranslate(sliderGroup, sliderOpts.lx + sliderOpts.xpad, sliderOpts.ly + sliderOpts.ypad);
+
+    removeListeners(gd, sliderGroup, sliderOpts);
+    attachListeners(gd, sliderGroup, sliderOpts);
+
+    setActive(gd, sliderGroup, sliderOpts, sliderOpts.active, true);
 }
 
-function drawGrip(sliderGroup, sliderOpts) {
+function removeListeners(gd, sliderGroup, sliderOpts) {
+    var listeners = sliderOpts._input.listeners;
+    var eventNames = sliderOpts._input.eventNames;
+    if(!Array.isArray(listeners) || !Array.isArray(eventNames)) return;
+    while(listeners.length) {
+        gd._removeInternalListener(eventNames.pop(), listeners.pop());
+    }
+}
+
+function attachListeners(gd, sliderGroup, sliderOpts) {
+    var listeners = sliderOpts._input.listeners = [];
+    var eventNames = sliderOpts._input.eventNames = [];
+
+    function makeListener(updatevalue) {
+        return function(data) {
+            var value = data;
+            if(updatevalue) {
+                value = Lib.nestedProperty(data, updatevalue).get();
+            }
+
+            setActiveByLabel(gd, sliderGroup, sliderOpts, value, false);
+        };
+    }
+
+    for(var i = 0; i < sliderOpts.updateevent.length; i++) {
+        var updateEventName = sliderOpts.updateevent[i];
+        var updatevalue = sliderOpts.updatevalue;
+
+        var updatelistener = makeListener(updatevalue);
+
+        gd._internalEv.on(updateEventName, updatelistener);
+
+        eventNames.push(updateEventName);
+        listeners.push(updatelistener);
+    }
+}
+
+function drawGrip(sliderGroup, gd, sliderOpts) {
     var grip = sliderGroup.selectAll('rect.' + constants.gripRectClass)
         .data([0]);
 
     grip.enter().append('rect')
         .classed(constants.gripRectClass, true)
-        .call(attachGripEvents, sliderGroup, sliderOpts)
+        .call(attachGripEvents, gd, sliderGroup, sliderOpts)
         .style('pointer-events', 'all');
 
     grip.attr({
-            width: constants.gripHeight,
-            height: constants.gripWidth,
-            rx: constants.gripRadius,
-            ry: constants.gripRadius,
-        })
+        width: constants.gripHeight,
+        height: constants.gripWidth,
+        rx: constants.gripRadius,
+        ry: constants.gripRadius,
+    })
         .call(Color.stroke, constants.gripBorderColor)
         .call(Color.fill, constants.gripBgColor)
         .style('stroke-width', constants.gripBorderWidth + 'px');
 }
 
-function handleInput(sliderGroup, sliderOpts, normalizedPosition) {
+function drawLabel(item, data, sliderOpts) {
+    var text = item.selectAll('text')
+        .data([0]);
+
+    text.enter().append('text')
+        .classed(constants.labelClass, true)
+        .classed('user-select-none', true)
+        .attr('text-anchor', 'middle');
+
+    text.call(Drawing.font, sliderOpts.font)
+        .text(data.step.label)
+        .call(svgTextUtils.convertToTspans);
+
+    return text;
+}
+
+function drawLabelGroup(sliderGroup, sliderOpts) {
+    var labels = sliderGroup.selectAll('g.' + constants.labelsClass)
+        .data([0]);
+
+    labels.enter().append('g')
+        .classed(constants.labelsClass, true);
+
+    var labelItems = labels.selectAll('g.' + constants.labelGroupClass)
+        .data(sliderOpts.labelSteps);
+
+    labelItems.enter().append('g')
+        .classed(constants.labelGroupClass, true);
+
+    labelItems.exit().remove();
+
+    labelItems.each(function(d) {
+        var item = d3.select(this);
+
+        item.call(drawLabel, d, sliderOpts);
+
+        Lib.setTranslate(item,
+            normalizedValueToPosition(sliderOpts, d.fraction),
+            constants.tickOffset + constants.tickLength + sliderOpts.labelHeight
+        );
+    });
+
+}
+
+function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition) {
     var quantizedPosition = Math.round(normalizedPosition * (sliderOpts.steps.length - 1));
 
-    if (quantizedPosition !== sliderOpts._active) {
-        setActive(sliderGroup, sliderOpts, quantizedPosition);
+    if(quantizedPosition !== sliderOpts.active) {
+        setActive(gd, sliderGroup, sliderOpts, quantizedPosition, true);
     }
 }
 
-function setActive(sliderGroup, sliderOpts, active) {
-    sliderOpts._active = active;
+function setActiveByLabel(gd, sliderGroup, sliderOpts, label, doCallback) {
+    var index;
+    for(var i = 0; i < sliderOpts.steps.length; i++) {
+        var step = sliderOpts.steps[i];
+        if(step.label === label) {
+            index = i;
+            break;
+        }
+    }
 
-    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts._active / (sliderOpts.steps.length - 1));
+    if(index !== undefined) {
+        setActive(gd, sliderGroup, sliderOpts, index, doCallback);
+    }
+}
 
-    var step = sliderOpts.steps[sliderOpts._active];
+function setActive(gd, sliderGroup, sliderOpts, index, doCallback) {
+    sliderOpts._input.active = sliderOpts.active = index;
 
-    if (step && step.method) {
+    sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1));
+
+    var step = sliderOpts.steps[sliderOpts.active];
+
+    if(step && step.method && doCallback) {
         var args = step.args;
-        Plotly[step.method](gd, args[0], args[1], args[2]).catch(function(msg) {
+        Plotly[step.method](gd, args[0], args[1], args[2]).catch(function() {
             // This is not a disaster. Some methods like `animate` reject if interrupted
             // and *should* nicely log a warning.
             Lib.warn('Warning: Plotly.' + step.method + ' was called and rejected.');
@@ -225,71 +352,70 @@ function setActive(sliderGroup, sliderOpts, active) {
     }
 }
 
-function attachFocusEvents(sliderGroup, sliderOpts) {
-    sliderGroup.on('focus', function() {
-    }).on('blur', function() {
-    });
-}
-
-function attachGripEvents(item, sliderGroup, sliderOpts) {
-    var gd = d3.select(sliderOpts._gd);
+function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
     var node = sliderGroup.node();
+    var $gd = d3.select(gd);
 
-    item.on('mousedown', function(event) {
+    item.on('mousedown', function() {
         var grip = sliderGroup.select('.' + constants.gripRectClass);
 
         d3.event.stopPropagation();
         d3.event.preventDefault();
-        grip.call(Color.fill, constants.gripBgActiveColor)
+        grip.call(Color.fill, constants.gripBgActiveColor);
 
         var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
-        handleInput(sliderGroup, sliderOpts, normalizedPosition);
+        handleInput(gd, sliderGroup, sliderOpts, normalizedPosition);
 
-        gd.on('mousemove', function() {
+        $gd.on('mousemove', function() {
             var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
-            handleInput(sliderGroup, sliderOpts, normalizedPosition);
+            handleInput(gd, sliderGroup, sliderOpts, normalizedPosition);
         });
 
-        gd.on('mouseup', function() {
-            grip.call(Color.fill, constants.gripBgColor)
-            gd.on('mouseup', null);
-            gd.on('mousemove', null);
+        $gd.on('mouseup', function() {
+            grip.call(Color.fill, constants.gripBgColor);
+            $gd.on('mouseup', null);
+            $gd.on('mousemove', null);
         });
     });
 }
 
 function drawTicks(sliderGroup, sliderOpts) {
     var tick = sliderGroup.selectAll('rect.' + constants.tickRectClass)
-        .data(sliderOpts.displayedSteps);
+        .data(sliderOpts.steps);
 
     tick.enter().append('rect')
-        .classed(constants.tickRectClass, true)
+        .classed(constants.tickRectClass, true);
+
+    tick.exit().remove();
 
     tick.attr({
-            width: constants.tickWidth,
-            height: constants.tickLength,
-            'shape-rendering': 'crispEdges'
-        })
-        .call(Color.fill, constants.tickColor);
+        width: constants.tickWidth,
+        'shape-rendering': 'crispEdges'
+    });
 
-    tick.each(function (d, i) {
-        Lib.setTranslate(
-            d3.select(this),
-            normalizedValueToPosition(sliderOpts, d.fraction) - 0.5 * constants.tickWidth,
+    tick.each(function(d, i) {
+        var isMajor = i % sliderOpts.labelStride === 0;
+        var item = d3.select(this);
+
+        item
+            .attr({height: isMajor ? constants.tickLength : constants.minorTickLength})
+            .call(Color.fill, isMajor ? constants.tickColor : constants.minorTickColor);
+
+        Lib.setTranslate(item,
+            normalizedValueToPosition(sliderOpts, i / (sliderOpts.steps.length - 1)) - 0.5 * constants.tickWidth,
             constants.tickOffset
         );
     });
 
 }
 
-function computeDisplayedSteps(sliderOpts) {
-    sliderOpts.displayedSteps = [];
+function computeLabelSteps(sliderOpts) {
+    sliderOpts.labelSteps = [];
     var i0 = 0;
-    var step = 1;
     var nsteps = sliderOpts.steps.length;
 
-    for (var i = i0; i < nsteps; i += step) {
-        sliderOpts.displayedSteps.push({
+    for(var i = i0; i < nsteps; i += sliderOpts.labelStride) {
+        sliderOpts.labelSteps.push({
             fraction: i / (nsteps - 1),
             step: sliderOpts.steps[i]
         });
@@ -314,21 +440,21 @@ function positionToNormalizedValue(sliderOpts, position) {
     return Math.min(1, Math.max(0, (position - sliderOpts.stepInset - sliderOpts.inputAreaStart) / (sliderOpts.inputAreaLength - 2 * sliderOpts.stepInset - 2 * sliderOpts.inputAreaStart)));
 }
 
-function drawTouchRect(sliderGroup, sliderOpts) {
+function drawTouchRect(sliderGroup, gd, sliderOpts) {
     var rect = sliderGroup.selectAll('rect.' + constants.railTouchRectClass)
         .data([0]);
 
     rect.enter().append('rect')
         .classed(constants.railTouchRectClass, true)
-        .call(attachGripEvents, sliderGroup, sliderOpts)
+        .call(attachGripEvents, gd, sliderGroup, sliderOpts)
         .style('pointer-events', 'all');
 
     rect.attr({
-            width: sliderOpts.inputAreaLength,
-            height: sliderOpts.inputAreaWidth
-        })
+        width: sliderOpts.inputAreaLength,
+        height: sliderOpts.inputAreaWidth
+    })
         .call(Color.fill, constants.gripBgColor)
-        .attr('opacity', 0)
+        .attr('opacity', 0);
 
     Lib.setTranslate(rect, 0, 0);
 }
@@ -338,17 +464,17 @@ function drawRail(sliderGroup, sliderOpts) {
         .data([0]);
 
     rect.enter().append('rect')
-        .classed(constants.railRectClass, true)
+        .classed(constants.railRectClass, true);
 
     var computedLength = sliderOpts.inputAreaLength - sliderOpts.railInset * 2;
 
     rect.attr({
-            width: computedLength,
-            height: constants.railWidth,
-            rx: constants.railRadius,
-            ry: constants.railRadius,
-            'shape-rendering': 'crispEdges'
-        })
+        width: computedLength,
+        height: constants.railWidth,
+        rx: constants.railRadius,
+        ry: constants.railRadius,
+        'shape-rendering': 'crispEdges'
+    })
         .call(Color.stroke, constants.railBorderColor)
         .call(Color.fill, constants.railBgColor)
         .style('stroke-width', '1px');
@@ -356,3 +482,15 @@ function drawRail(sliderGroup, sliderOpts) {
     Lib.setTranslate(rect, sliderOpts.railInset, (sliderOpts.inputAreaWidth - constants.railWidth) * 0.5);
 }
 
+function clearPushMargins(gd) {
+    var pushMargins = gd._fullLayout._pushmargin || {},
+        keys = Object.keys(pushMargins);
+
+    for(var i = 0; i < keys.length; i++) {
+        var k = keys[i];
+
+        if(k.indexOf(constants.autoMarginIdRoot) !== -1) {
+            Plots.autoMargin(gd, k);
+        }
+    }
+}
