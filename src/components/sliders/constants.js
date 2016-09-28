@@ -48,16 +48,6 @@ module.exports = {
     // font size to height scale
     fontSizeToHeight: 1.3,
 
-    // item rect radii
-    rx: 2,
-    ry: 2,
-
-    // item  text x offset off left edge
-    textOffsetX: 12,
-
-    // item  text y offset (w.r.t. middle)
-    textOffsetY: 3,
-
     // arrow offset off right edge
     arrowOffsetX: 4,
 
@@ -66,6 +56,16 @@ module.exports = {
     railBorder: 4,
     railBorderColor: '#bec8d9',
     railBgColor: '#ebedf0',
+
+    // The distance of the rail from the edge of the touchable area
+    // Slightly less than the step inset because of the curved edges
+    // of the rail
+    railInset: 8,
+
+    // The distance from the extremal tick marks to the edge of the
+    // touchable area. This is basically the same as the grip radius,
+    // but for other styles it wouldn't really need to be.
+    stepInset: 10,
 
     gripRadius: 10,
     gripWidth: 20,
@@ -76,15 +76,15 @@ module.exports = {
     gripBgColor: '#ebedf0',
     gripBgActiveColor: '#dbdde0',
 
-    // Padding in the direction perpendicular to the length of the rail:
-    // (which, at the moment is always vertical, but for the sake of the future...)
-    widthPadding: 10,
+    labelPadding: 8,
+    labelOffset: 0,
 
-    labelPadding: 4,
     tickWidth: 1,
     tickColor: '#333',
     tickOffset: 25,
     tickLength: 7,
+
+    minorTickOffset: 25,
     minorTickColor: '#333',
     minorTickLength: 4,
 };
