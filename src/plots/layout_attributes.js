@@ -184,6 +184,6 @@ module.exports = {
         'shapes': 'shapes',
         'images': 'images',
         'updatemenus': 'updatemenus',
-        'slider': 'slider'
+        'sliders': 'sliders'
     }
 };
