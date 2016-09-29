@@ -84,10 +84,10 @@ describe('filter transforms calc:', function() {
         return calcTrace[0].trace;
     }
 
-    function _transform(data) {
+    function _transform(data, layout) {
         var gd = {
             data: data,
-            layout: {}
+            layout: layout || {}
         };
 
         Plots.supplyDefaults(gd);
@@ -254,6 +254,21 @@ describe('filter transforms calc:', function() {
                 [2, 2, 3, 1],
                 [0.2, 0.2, 0.3, 0.4]
             );
+        });
+
+        it('should honored set axis type', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                x: [1, 2, 3, 0, -1, -2, -3],
+                transforms: [{
+                    operation: '>',
+                    value: -1,
+                    filtersrc: 'x'
+                }]
+            })], {
+                xaxis: { type: 'category' }
+            });
+
+            _assert(out, [-2, -3], [3, 1], [0.3, 0.4]);
         });
 
     });
