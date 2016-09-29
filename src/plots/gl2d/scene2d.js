@@ -522,6 +522,21 @@ proto.draw = function() {
                             glplot.pixelRatio
                 ];
 
+                // this needs to happen before the next block that deletes traceCoord data
+                // also it's important to copy, otherwise data is lost by the time event data is read
+                this.graphDiv.emit('plotly_hover', {
+                    points: [{
+                        trace: nextSelection.trace,
+                        dataCoord: nextSelection.dataCoord.slice(),
+                        traceCoord: nextSelection.traceCoord.slice(),
+                        textLabel: nextSelection.textLabel,
+                        color: nextSelection.color,
+                        name: nextSelection.name,
+                        hoverinfo: nextSelection.hoverinfo,
+                        screenCoord: nextSelection.screenCoord.slice()
+                    }]
+                });
+
                 var hoverinfo = selection.hoverinfo;
                 if(hoverinfo !== 'all') {
                     var parts = hoverinfo.split('+');
@@ -549,6 +564,7 @@ proto.draw = function() {
         else if(!result && this.lastPickResult) {
             this.spikes.update({});
             this.lastPickResult = null;
+            this.graphDiv.emit('plotly_unhover');
             Fx.loneUnhover(this.svgContainer);
         }
     }
