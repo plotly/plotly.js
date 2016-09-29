@@ -65,12 +65,13 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('pad.b');
     coerce('pad.l');
 
+    coerce('currentvalue.visible');
+    coerce('currentvalue.xanchor');
+    coerce('currentvalue.prefix');
+    coerce('currentvalue.offset');
+
     coerce('updateevent');
     coerce('updatevalue');
-
-    if(!sliderIn.transition) {
-        sliderIn.transition = {};
-    }
 
     coerce('transition.duration');
     coerce('transition.easing');
@@ -84,6 +85,7 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     }
 
     Lib.coerceFont(coerce, 'font', layoutOut.font);
+    Lib.coerceFont(coerce, 'currentvalue.font', layoutOut.font);
 
     coerce('bgcolor', layoutOut.paper_bgcolor);
     coerce('bordercolor');

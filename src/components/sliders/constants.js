@@ -28,6 +28,7 @@ module.exports = {
     labelsClass: 'slider-labels',
     labelGroupClass: 'slider-label-group',
     labelClass: 'slider-label',
+    currentValueClass: 'slider-current-value',
 
     railHeight: 5,
 
@@ -87,4 +88,8 @@ module.exports = {
     minorTickOffset: 25,
     minorTickColor: '#333',
     minorTickLength: 4,
+
+    // Extra space below the current value label:
+    currentValuePadding: 8,
+    currentValueInset: 0,
 };

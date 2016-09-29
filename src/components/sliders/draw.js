@@ -127,6 +127,26 @@ function findDimensions(gd, sliderOpts) {
         constants.gripHeight
     );
 
+    sliderOpts.currentValueMaxWidth = 0;
+    sliderOpts.currentValueHeight = 0;
+    sliderOpts.currentValueTotalHeight = 0;
+
+    if(sliderOpts.currentvalue.visible) {
+        // Get the dimensions of the current value label:
+        var dummyGroup = gd._tester.append('g');
+
+        sliderLabels.each(function(stepOpts) {
+            var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
+            var curValSize = curValPrefix.node() && Drawing.bBox(curValPrefix.node());
+            sliderOpts.currentValueMaxWidth = Math.max(sliderOpts.currentValueMaxWidth, Math.ceil(curValSize.width));
+            sliderOpts.currentValueHeight = Math.max(sliderOpts.currentValueHeight, Math.ceil(curValSize.height));
+        });
+
+        sliderOpts.currentValueTotalHeight = sliderOpts.currentValueHeight + sliderOpts.currentvalue.offset;
+
+        dummyGroup.remove();
+    }
+
     var graphSize = gd._fullLayout._size;
     sliderOpts.lx = graphSize.l + graphSize.w * sliderOpts.x;
     sliderOpts.ly = graphSize.t + graphSize.h * (1 - sliderOpts.y);
@@ -153,7 +173,7 @@ function findDimensions(gd, sliderOpts) {
     sliderOpts.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
     sliderOpts.labelHeight = labelHeight;
 
-    sliderOpts.height = constants.tickOffset + constants.tickLength + constants.labelOffset + sliderOpts.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
+    sliderOpts.height = sliderOpts.currentValueTotalHeight + constants.tickOffset + constants.tickLength + constants.labelOffset + sliderOpts.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(sliderOpts)) {
@@ -193,6 +213,7 @@ function findDimensions(gd, sliderOpts) {
 function drawSlider(gd, sliderGroup, sliderOpts) {
     // These are carefully ordered for proper z-ordering:
     sliderGroup
+        .call(drawCurrentValue, sliderOpts)
         .call(drawRail, sliderOpts)
         .call(drawLabelGroup, sliderOpts)
         .call(drawTicks, sliderOpts)
@@ -208,6 +229,53 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     attachListeners(gd, sliderGroup, sliderOpts);
 
     setActive(gd, sliderGroup, sliderOpts, sliderOpts.active, true, false);
+}
+
+function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
+    if(!sliderOpts.currentvalue.visible) return;
+
+    var x0, textAnchor;
+    var text = sliderGroup.selectAll('text')
+        .data([0]);
+
+    switch(sliderOpts.currentvalue.xanchor) {
+        case 'right':
+        // This is anchored left and adjusted by the width of the longest label
+        // so that the prefix doesn't move. The goal of this is to emphasize
+        // what's actually changing and make the update less distracting.
+            x0 = sliderOpts.inputAreaLength - constants.currentValueInset - sliderOpts.currentValueMaxWidth;
+            textAnchor = 'left';
+            break;
+        case 'center':
+            x0 = sliderOpts.inputAreaLength * 0.5;
+            textAnchor = 'middle';
+            break;
+        default:
+            x0 = constants.currentValueInset;
+            textAnchor = 'left';
+    }
+
+    text.enter().append('text')
+        .classed(constants.labelClass, true)
+        .classed('user-select-none', true)
+        .attr('text-anchor', textAnchor);
+
+    var str = sliderOpts.currentvalue.prefix ? (sliderOpts.currentvalue.prefix + ' ') : '';
+
+    if(typeof valueOverride === 'string') {
+        str += valueOverride;
+    } else {
+        var curVal = sliderOpts.steps[sliderOpts.active].label;
+        str += curVal;
+    }
+
+    text.call(Drawing.font, sliderOpts.currentvalue.font)
+        .text(str)
+        .call(svgTextUtils.convertToTspans);
+
+    Lib.setTranslate(text, x0, sliderOpts.currentValueHeight);
+
+    return text;
 }
 
 function removeListeners(gd, sliderGroup, sliderOpts) {
@@ -310,7 +378,7 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
 
         Lib.setTranslate(item,
             normalizedValueToPosition(sliderOpts, d.fraction),
-            constants.tickOffset + constants.tickLength + sliderOpts.labelHeight + constants.labelOffset
+            constants.tickOffset + constants.tickLength + sliderOpts.labelHeight + constants.labelOffset + sliderOpts.currentValueTotalHeight
         );
     });
 
@@ -346,6 +414,7 @@ function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition)
     var step = sliderOpts.steps[sliderOpts.active];
 
     sliderGroup.call(setGripPosition, sliderOpts, sliderOpts.active / (sliderOpts.steps.length - 1), doTransition);
+    sliderGroup.call(drawCurrentValue, sliderOpts);
 
     if(step && step.method && doCallback) {
         if(sliderGroup._nextMethod) {
@@ -429,7 +498,7 @@ function drawTicks(sliderGroup, sliderOpts) {
 
         Lib.setTranslate(item,
             normalizedValueToPosition(sliderOpts, i / (sliderOpts.steps.length - 1)) - 0.5 * constants.tickWidth,
-            isMajor ? constants.tickOffset : constants.minorTickOffset
+            (isMajor ? constants.tickOffset : constants.minorTickOffset) + sliderOpts.currentValueTotalHeight
         );
     });
 
@@ -462,7 +531,7 @@ function setGripPosition(sliderGroup, sliderOpts, position, doTransition) {
 
     // Lib.setTranslate doesn't work here becasue of the transition duck-typing.
     // It's also not necessary because there are no other transitions to preserve.
-    el.attr('transform', 'translate(' + (x - constants.gripWidth * 0.5) + ',' + 0 + ')');
+    el.attr('transform', 'translate(' + (x - constants.gripWidth * 0.5) + ',' + (sliderOpts.currentValueTotalHeight) + ')');
 }
 
 // Convert a number from [0-1] to a pixel position relative to the slider group container:
@@ -492,7 +561,7 @@ function drawTouchRect(sliderGroup, gd, sliderOpts) {
         .call(Color.fill, constants.gripBgColor)
         .attr('opacity', 0);
 
-    Lib.setTranslate(rect, 0, 0);
+    Lib.setTranslate(rect, 0, sliderOpts.currentValueTotalHeight);
 }
 
 function drawRail(sliderGroup, sliderOpts) {
@@ -515,7 +584,10 @@ function drawRail(sliderGroup, sliderOpts) {
         .call(Color.fill, constants.railBgColor)
         .style('stroke-width', '1px');
 
-    Lib.setTranslate(rect, constants.railInset, (sliderOpts.inputAreaWidth - constants.railWidth) * 0.5);
+    Lib.setTranslate(rect,
+        constants.railInset,
+        (sliderOpts.inputAreaWidth - constants.railWidth) * 0.5 + sliderOpts.currentValueTotalHeight
+    );
 }
 
 function clearPushMargins(gd) {
