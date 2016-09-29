@@ -187,8 +187,50 @@ module.exports = {
         },
     },
 
+    currentvalue: {
+        visible: {
+            valType: 'boolean',
+            dflt: true,
+            description: [
+                'Shows the currently-selected value above the slider.'
+            ].join(' ')
+        },
+
+        xanchor: {
+            valType: 'enumerated',
+            values: ['left', 'center', 'right'],
+            dflt: 'left',
+            description: [
+                'The alignment of the value readout relative to the length of the slider.'
+            ].join(' ')
+        },
+
+        offset: {
+            valType: 'number',
+            dflt: 10,
+            role: 'info',
+            description: [
+                'The amount of space, in pixels, between the current value label',
+                'and the slider.'
+            ]
+        },
+
+        prefix: {
+            valType: 'string',
+            role: 'info',
+            description: [
+                'When `currentvalue.visible` is true, this sets the prefix of the lable. If provided,',
+                'it will be joined to the current value with a single space between.'
+            ].join(' ')
+        },
+
+        font: extendFlat({}, fontAttrs, {
+            description: 'Sets the font of the current value lable text.'
+        }),
+    },
+
     font: extendFlat({}, fontAttrs, {
-        description: 'Sets the font of the slider button text.'
+        description: 'Sets the font of the slider step labels.'
     }),
 
     bgcolor: {
