@@ -200,6 +200,7 @@ module.exports = {
             valType: 'enumerated',
             values: ['left', 'center', 'right'],
             dflt: 'left',
+            role: 'info',
             description: [
                 'The alignment of the value readout relative to the length of the slider.'
             ].join(' ')
@@ -219,7 +220,7 @@ module.exports = {
             valType: 'string',
             role: 'info',
             description: [
-                'When `currentvalue.visible` is true, this sets the prefix of the lable. If provided,',
+                'When currentvalue.visible is true, this sets the prefix of the lable. If provided,',
                 'it will be joined to the current value with a single space between.'
             ].join(' ')
         },
