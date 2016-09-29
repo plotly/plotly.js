@@ -56,7 +56,7 @@ module.exports = {
     railWidth: 5,
     railBorder: 4,
     railBorderColor: '#bec8d9',
-    railBgColor: '#ebedf0',
+    railBgColor: '#f8fafc',
 
     // The distance of the rail from the edge of the touchable area
     // Slightly less than the step inset because of the curved edges
@@ -68,13 +68,13 @@ module.exports = {
     // but for other styles it wouldn't really need to be.
     stepInset: 10,
 
-    gripRadius: 10,
+    gripRadius: 3,
     gripWidth: 20,
     gripHeight: 20,
     gripBorder: 20,
     gripBorderWidth: 1,
     gripBorderColor: '#bec8d9',
-    gripBgColor: '#ebedf0',
+    gripBgColor: '#f6f8fa',
     gripBgActiveColor: '#dbdde0',
 
     labelPadding: 8,
