@@ -7,6 +7,7 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var TRANSITION_DELAY = 100;
+var fail = require('../assets/fail_test');
 
 describe('update menus defaults', function() {
     'use strict';
@@ -444,6 +445,60 @@ describe('update menus interactions', function() {
 
             done();
         });
+    });
+
+    it('applies padding on all sides', function(done) {
+        var xy1, xy2;
+        var firstMenu = d3.select('.' + constants.headerGroupClassName);
+        var xpad = 80;
+        var ypad = 60;
+
+        // Position it center-anchored and in the middle of the plot:
+        Plotly.relayout(gd, {
+            'updatemenus[0].x': 0.2,
+            'updatemenus[0].y': 0.5,
+            'updatemenus[0].xanchor': 'center',
+            'updatemenus[0].yanchor': 'middle',
+        }).then(function() {
+            // Convert to xy:
+            xy1 = firstMenu.attr('transform').match(/translate\(([^,]*),\s*([^\)]*)\)/).slice(1).map(parseFloat);
+
+            // Set three of four paddings. This should move it.
+            return Plotly.relayout(gd, {
+                'updatemenus[0].pad.t': ypad,
+                'updatemenus[0].pad.r': xpad,
+                'updatemenus[0].pad.b': ypad,
+                'updatemenus[0].pad.l': xpad,
+            });
+        }).then(function() {
+            xy2 = firstMenu.attr('transform').match(/translate\(([^,]*),\s*([^\)]*)\)/).slice(1).map(parseFloat);
+
+            expect(xy1[0] - xy2[0]).toEqual(xpad);
+            expect(xy1[1] - xy2[1]).toEqual(ypad);
+        }).catch(fail).then(done);
+    });
+
+    it('appliesy padding on relayout', function(done) {
+        var x1, x2;
+        var firstMenu = d3.select('.' + constants.headerGroupClassName);
+        var padShift = 40;
+
+        // Position the menu in the center of the plot horizontal so that
+        // we can test padding updates without worrying about margin pushing.
+        Plotly.relayout(gd, {
+            'updatemenus[0].x': 0.5,
+            'updatemenus[0].pad.r': 0,
+        }).then(function() {
+            // Extract the x-component of the translation:
+            x1 = parseInt(firstMenu.attr('transform').match(/translate\(([^,]*).*/)[1]);
+
+            return Plotly.relayout(gd, 'updatemenus[0].pad.r', 40);
+        }).then(function() {
+            // Extract the x-component of the translation:
+            x2 = parseInt(firstMenu.attr('transform').match(/translate\(([^,]*).*/)[1]);
+
+            expect(x1 - x2).toBeCloseTo(padShift, 1);
+        }).catch(fail).then(done);
     });
 
     function assertNodeCount(query, cnt) {
