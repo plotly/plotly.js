@@ -145,7 +145,7 @@ function findDimensions(gd, sliderOpts) {
 
     // The length of the rail, *excluding* padding on either end:
     sliderOpts.inputAreaStart = 0;
-    sliderOpts.inputAreaLength = Math.round(sliderOpts.outerLength - sliderOpts.xpad * 2);
+    sliderOpts.inputAreaLength = Math.round(sliderOpts.outerLength - sliderOpts.pad.l - sliderOpts.pad.r);
     sliderOpts.railInset = Math.round(Math.max(0, constants.gripWidth - constants.railWidth) * 0.5);
     sliderOpts.stepInset = Math.round(Math.max(sliderOpts.railInset, constants.gripWidth * 0.5));
 
@@ -155,7 +155,7 @@ function findDimensions(gd, sliderOpts) {
     sliderOpts.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
     sliderOpts.labelHeight = labelHeight;
 
-    sliderOpts.height = constants.tickOffset + constants.tickLength + sliderOpts.labelHeight + sliderOpts.ypad * 2;
+    sliderOpts.height = constants.tickOffset + constants.tickLength + sliderOpts.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(sliderOpts)) {
@@ -202,7 +202,7 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
         .call(drawGrip, gd, sliderOpts);
 
     // Position the rectangle:
-    Lib.setTranslate(sliderGroup, sliderOpts.lx + sliderOpts.xpad, sliderOpts.ly + sliderOpts.ypad);
+    Lib.setTranslate(sliderGroup, sliderOpts.lx + sliderOpts.pad.l, sliderOpts.ly + sliderOpts.pad.t);
 
     // Every time the slider is draw from scratch, just detach and reattach the event listeners.
     // This could perhaps be avoided.
