@@ -173,18 +173,53 @@ describe('filter transforms calc:', function() {
                 }]
             })]);
 
-            _assert(
-                out,
+            _assert(out,
                 [-1, 0, 1],
                 [2, 1, 2],
                 [0.2, 0.1, 0.2]
             );
         });
 
+        it('+ *within* + with RHS open', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    operation: '[)',
+                    value: [-1, 1],
+                    filtersrc: 'x'
+                }]
+            })]);
+
+            _assert(out, [-1, 0], [2, 1], [0.2, 0.1]);
+        });
+
+        it('+ *within* + with LHS open', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    operation: '(]',
+                    value: [-1, 1],
+                    filtersrc: 'x'
+                }]
+            })]);
+
+            _assert(out, [0, 1], [1, 2], [0.1, 0.2]);
+        });
+
+        it('+ *within* + with both sides open', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    operation: '()',
+                    value: [-1, 1],
+                    filtersrc: 'x'
+                }]
+            })]);
+
+            _assert(out, [0], [1], [0.1]);
+        });
+
         it('+ *notwithin*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: '][',
+                    operation: ')(',
                     value: [-1, 1],
                     filtersrc: 'x'
                 }]
@@ -194,6 +229,54 @@ describe('filter transforms calc:', function() {
                 [-2, -2, 2, 3],
                 [1, 3, 3, 1],
                 [0.1, 0.3, 0.3, 0.4]
+            );
+        });
+
+        it('+ *notwithin* with RHS closed', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    operation: ')[',
+                    value: [-1, 1],
+                    filtersrc: 'x'
+                }]
+            })]);
+
+            _assert(out,
+                [-2, -2, 1, 2, 3],
+                [1, 3, 2, 3, 1],
+                [0.1, 0.3, 0.2, 0.3, 0.4]
+            );
+        });
+
+        it('+ *notwithin* with LHS closed', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    operation: '](',
+                    value: [-1, 1],
+                    filtersrc: 'x'
+                }]
+            })]);
+
+            _assert(out,
+                [-2, -1, -2, 2, 3],
+                [1, 2, 3, 3, 1],
+                [0.1, 0.2, 0.3, 0.3, 0.4]
+            );
+        });
+
+        it('+ *notwithin* with both sides closed', function() {
+            var out = _transform([Lib.extendDeep({}, _base, {
+                transforms: [{
+                    operation: '][',
+                    value: [-1, 1],
+                    filtersrc: 'x'
+                }]
+            })]);
+
+            _assert(out,
+                [-2, -1, -2, 1, 2, 3],
+                [1, 2, 3, 2, 3, 1],
+                [0.1, 0.2, 0.3, 0.2, 0.3, 0.4]
             );
         });
 
@@ -279,7 +362,7 @@ describe('filter transforms calc:', function() {
         it('+ *notwithin*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: '][',
+                    operation: ')(',
                     value: ['a', 'c'],
                     filtersrc: 'x'
                 }]
@@ -389,7 +472,7 @@ describe('filter transforms calc:', function() {
         it('+ *notwithin*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: '][',
+                    operation: ')(',
                     value: ['2016-08-01', '2016-10-01'],
                     filtersrc: 'x'
                 }]

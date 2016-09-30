@@ -43,26 +43,26 @@ exports.attributes = {
         description: [
             'Sets the filter operation.',
 
-            '*=* filters items equal to `value`',
+            '*=* keeps items equal to `value`',
 
-            '*<* filters items less than `value`',
-            '*<=* filters items less than or equal to `value`',
+            '*<* keeps items less than `value`',
+            '*<=* keeps items less than or equal to `value`',
 
-            '*>* filters items greater than `value`',
-            '*>=* filters items greater than or equal to `value`',
+            '*>* keeps items greater than `value`',
+            '*>=* keeps items greater than or equal to `value`',
 
-            '*[]* filters items inside `value[0]` to value[1]` including both bounds`',
-            '*()* filters items inside `value[0]` to value[1]` excluding both bounds`',
-            '*[)* filters items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
-            '*(]* filters items inside `value[0]` to value[1]` excluding `value[0]` but including `value[1]',
+            '*[]* keeps items inside `value[0]` to value[1]` including both bounds`',
+            '*()* keeps items inside `value[0]` to value[1]` excluding both bounds`',
+            '*[)* keeps items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
+            '*(]* keeps items inside `value[0]` to value[1]` excluding `value[0]` but including `value[1]',
 
-            '*][* filters items outside `value[0]` to value[1]` and not equal to both bounds`',
-            '*)(* filters items outside `value[0]` to value[1]`',
-            '*](* filters items outside `value[0]` to value[1]` and not equal to `value[0]`',
-            '*)[* filters items outside `value[0]` to value[1]` and not equal to `value[1]`',
+            '*][* keeps items outside `value[0]` to value[1]` and equal to both bounds`',
+            '*)(* keeps items outside `value[0]` to value[1]`',
+            '*](* keeps items outside `value[0]` to value[1]` and equal to `value[0]`',
+            '*)[* keeps items outside `value[0]` to value[1]` and equal to `value[1]`',
 
-            '*{}* filters items present in a set of values',
-            '*}{* filters items not present in a set of values'
+            '*{}* keeps items present in a set of values',
+            '*}{* keeps items not present in a set of values'
         ].join(' ')
     },
     value: {
@@ -237,25 +237,25 @@ function getFilterFunc(opts, d2c) {
         case '][':
             return function(v) {
                 var cv = d2c(v);
-                return cv < coercedValue[0] || cv > coercedValue[1];
+                return cv <= coercedValue[0] || cv >= coercedValue[1];
             };
 
         case ')(':
             return function(v) {
                 var cv = d2c(v);
-                return cv <= coercedValue[0] || cv >= coercedValue[1];
+                return cv < coercedValue[0] || cv > coercedValue[1];
             };
 
         case '](':
             return function(v) {
                 var cv = d2c(v);
-                return cv < coercedValue[0] || cv >= coercedValue[1];
+                return cv <= coercedValue[0] || cv > coercedValue[1];
             };
 
         case ')[':
             return function(v) {
                 var cv = d2c(v);
-                return cv <= coercedValue[0] || cv > coercedValue[1];
+                return cv < coercedValue[0] || cv >= coercedValue[1];
             };
 
         case '{}':
