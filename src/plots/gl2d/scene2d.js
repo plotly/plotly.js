@@ -169,6 +169,27 @@ proto.toImage = function(format) {
     this.stopped = true;
     if(this.staticPlot) this.container.appendChild(STATIC_CANVAS);
 
+
+
+    var glplot = this.glplot,
+        pixelRatio = this.pixelRatio;
+
+    let fullLayout = this.fullLayout;
+
+    var width = fullLayout.width,
+        height = fullLayout.height,
+        pixelWidth = Math.ceil(pixelRatio * width) |0,
+        pixelHeight = Math.ceil(pixelRatio * height) |0;
+
+    // check for resize
+    var canvas = this.canvas;
+    if(canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+        canvas.width = pixelWidth;
+        canvas.height = pixelHeight;
+    }
+
+
+
     // force redraw
     this.glplot.setDirty();
     this.glplot.draw();
