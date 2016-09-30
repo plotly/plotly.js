@@ -11,6 +11,10 @@
 var Lib = require('../lib');
 var axisIds = require('../plots/cartesian/axis_ids');
 
+var INEQUALITY_OPS = ['=', '<', '>=', '>', '<='];
+var INTERVAL_OPS = ['[]', '()', '[)', '(]', '][', ')(', '](', ')['];
+var SET_OPS = ['{}', '}{'];
+
 exports.moduleType = 'transform';
 
 exports.name = 'filter';
@@ -33,10 +37,31 @@ exports.attributes = {
     },
     operation: {
         valType: 'enumerated',
-        values: ['=', '<', '>', 'within', 'notwithin', 'in', 'notin'],
+        values: [].concat(INEQUALITY_OPS).concat(INTERVAL_OPS).concat(SET_OPS),
         dflt: '=',
         description: [
-            'Sets the filter operation.'
+            'Sets the filter operation.',
+
+            '*=* filters items equal to `value`',
+
+            '*<* filters items less than `value`',
+            '*<=* filters items less than or equal to `value`',
+
+            '*>* filters items greater than `value`',
+            '*>=* filters items greater than or equal to `value`',
+
+            '*[]* filters items inside `value[0]` to value[1]` including both bounds`',
+            '*()* filters items inside `value[0]` to value[1]` excluding both bounds`',
+            '*[)* filters items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
+            '*(]* filters items inside `value[0]` to value[1]` including both bounds`',
+
+            '*][* filters items outside `value[0]` to value[1]` and not equal to both bounds`',
+            '*)(* filters items outside `value[0]` to value[1]`',
+            '*](* filters items outside `value[0]` to value[1]` and not equal to `value[0]`',
+            '*)[* filters items outside `value[0]` to value[1]` and not equal to `value[1]`',
+
+            '*{}* filters items present in a set of values',
+            '*}{* filters items not present in a set of values'
         ].join(' ')
     },
     value: {
@@ -51,19 +76,6 @@ exports.attributes = {
             'is the lower bound and the second item is the upper bound.',
             'When `operation`, is set to *in*, *notin* '
         ].join(' ')
-    },
-    strictinterval: {
-        valType: 'boolean',
-        dflt: true,
-        arrayOk: true,
-        description: [
-            'Determines whether or not the filter operation includes data item value,',
-            'equal to *value*.',
-            'Has only an effect for `operation` *>*, *<*, *within* and *notwithin*',
-            'When `operation` is set to  *within* and *notwithin*,',
-            '`strictinterval` is expected to be a 2-item array where the first (second)',
-            'item determines strictness for the lower (second) bound.'
-        ].join(' ')
     }
 };
 
@@ -77,14 +89,9 @@ exports.supplyDefaults = function(transformIn) {
     var enabled = coerce('enabled');
 
     if(enabled) {
-        var operation = coerce('operation');
-
+        coerce('operation');
         coerce('value');
         coerce('filtersrc');
-
-        if(['=', 'in', 'notin'].indexOf(operation) === -1) {
-            coerce('strictinterval');
-        }
     }
 
     return transformOut;
@@ -154,33 +161,23 @@ function getDataToCoordFunc(gd, filtersrc) {
 function getFilterFunc(opts, d2c) {
     var operation = opts.operation,
         value = opts.value,
-        hasArrayValue = Array.isArray(value),
-        strict = opts.strictinterval,
-        hasArrayStrict = Array.isArray(strict);
+        hasArrayValue = Array.isArray(value);
 
     function isOperationIn(array) {
         return array.indexOf(operation) !== -1;
     }
 
-    var coercedValue, coercedStrict;
+    var coercedValue;
 
-    if(isOperationIn(['=', '<', '>'])) {
+    if(isOperationIn(INEQUALITY_OPS)) {
         coercedValue = hasArrayValue ? d2c(value[0]) : d2c(value);
-
-        if(isOperationIn(['<', '>'])) {
-            coercedStrict = hasArrayStrict ? strict[0] : strict;
-        }
     }
-    else if(isOperationIn(['within', 'notwithin'])) {
+    else if(isOperationIn(INTERVAL_OPS)) {
         coercedValue = hasArrayValue ?
             [d2c(value[0]), d2c(value[1])] :
             [d2c(value), d2c(value)];
-
-        coercedStrict = hasArrayStrict ?
-            [strict[0], strict[1]] :
-            [strict, strict];
     }
-    else if(isOperationIn(['in', 'notin'])) {
+    else if(isOperationIn(SET_OPS)) {
         coercedValue = hasArrayValue ? value.map(d2c) : [d2c(value)];
     }
 
@@ -190,85 +187,71 @@ function getFilterFunc(opts, d2c) {
             return function(v) { return d2c(v) === coercedValue; };
 
         case '<':
-            if(coercedStrict) {
-                return function(v) { return d2c(v) < coercedValue; };
-            }
-            else {
-                return function(v) { return d2c(v) <= coercedValue; };
-            }
+            return function(v) { return d2c(v) < coercedValue; };
+
+        case '<=':
+            return function(v) { return d2c(v) <= coercedValue; };
 
         case '>':
-            if(coercedStrict) {
-                return function(v) { return d2c(v) > coercedValue; };
-            }
-            else {
-                return function(v) { return d2c(v) >= coercedValue; };
-            }
+            return function(v) { return d2c(v) > coercedValue; };
 
-        case 'within':
+        case '>=':
+            return function(v) { return d2c(v) >= coercedValue; };
 
-            if(coercedStrict[0] && coercedStrict[1]) {
-                return function(v) {
-                    var cv = d2c(v);
-                    return cv > coercedValue[0] && cv < coercedValue[1];
-                };
-            }
-            else if(coercedStrict[0] && !coercedStrict[1]) {
-                return function(v) {
-                    var cv = d2c(v);
-                    return cv > coercedValue[0] && cv <= coercedValue[1];
-                };
-            }
-            else if(!coercedStrict[0] && coercedStrict[1]) {
-                return function(v) {
-                    var cv = d2c(v);
-                    return cv >= coercedValue[0] && cv < coercedValue[1];
-                };
-            }
-            else if(!coercedStrict[0] && !coercedStrict[1]) {
-                return function(v) {
-                    var cv = d2c(v);
-                    return cv >= coercedValue[0] && cv <= coercedValue[1];
-                };
-            }
+        case '[]':
+            return function(v) {
+                var cv = d2c(v);
+                return cv >= coercedValue[0] && cv <= coercedValue[1];
+            };
 
-            break;
+        case '()':
+            return function(v) {
+                var cv = d2c(v);
+                return cv > coercedValue[0] && cv < coercedValue[1];
+            };
 
-        case 'notwithin':
+        case '[)':
+            return function(v) {
+                var cv = d2c(v);
+                return cv >= coercedValue[0] && cv < coercedValue[1];
+            };
 
-            if(coercedStrict[0] && coercedStrict[1]) {
-                return function(v) {
-                    var cv = d2c(v);
-                    return cv < coercedValue[0] || cv > coercedValue[1];
-                };
-            }
-            else if(coercedStrict[0] && !coercedStrict[1]) {
-                return function(v) {
-                    var cv = d2c(v);
-                    return cv < coercedValue[0] || cv >= coercedValue[1];
-                };
-            }
-            else if(!coercedStrict[0] && coercedStrict[1]) {
-                return function(v) {
-                    var cv = d2c(v);
-                    return cv <= coercedValue[0] || cv > coercedValue[1];
-                };
-            }
-            else if(!coercedStrict[0] && !coercedStrict[1]) {
-                return function(v) {
-                    var cv = d2c(v);
-                    return cv <= coercedValue[0] || cv >= coercedValue[1];
-                };
-            }
+        case '(]':
+            return function(v) {
+                var cv = d2c(v);
+                return cv > coercedValue[0] && cv <= coercedValue[1];
+            };
 
-            break;
+        case '][':
+            return function(v) {
+                var cv = d2c(v);
+                return cv < coercedValue[0] || cv > coercedValue[1];
+            };
 
-        case 'in':
+        case ')(':
+            return function(v) {
+                var cv = d2c(v);
+                return cv <= coercedValue[0] || cv >= coercedValue[1];
+            };
+
+        case '](':
+            return function(v) {
+                var cv = d2c(v);
+                return cv < coercedValue[0] || cv >= coercedValue[1];
+            };
+
+        case ')[':
+            return function(v) {
+                var cv = d2c(v);
+                return cv <= coercedValue[0] || cv > coercedValue[1];
+            };
+
+        case '{}':
             return function(v) {
                 return coercedValue.indexOf(d2c(v)) !== -1;
             };
 
-        case 'notin':
+        case '}{':
             return function(v) {
                 return coercedValue.indexOf(d2c(v)) === -1;
             };

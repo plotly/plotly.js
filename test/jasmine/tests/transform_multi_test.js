@@ -72,7 +72,6 @@ describe('general transforms:', function() {
             type: 'filter',
             enabled: true,
             operation: '>',
-            strictinterval: true,
             value: 0,
             filtersrc: 'x'
         }, '- trace second');
@@ -114,7 +113,6 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            strictinterval: true,
             filtersrc: 'x'
         }, msg);
 
@@ -134,7 +132,6 @@ describe('general transforms:', function() {
             enabled: true,
             operation: '>',
             value: 0,
-            strictinterval: true,
             filtersrc: 'x'
         }], msg);
 

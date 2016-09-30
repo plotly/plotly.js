@@ -49,32 +49,6 @@ describe('filter transforms defaults:', function() {
             enabled: false,
         }]);
     });
-
-    it('supplyTraceDefaults should not coerce \'strictinterval\' when it has no meaning', function() {
-        traceIn = {
-            x: [1, 2, 3],
-            transforms: [{
-                type: 'filter',
-                value: 0,
-                operation: '=',
-            }]
-        };
-
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
-        expect(traceOut.transforms[0].strictinterval).toBeUndefined();
-
-        Lib.extendDeep(traceIn, { transforms: [{operation: 'in'}]});
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
-        expect(traceOut.transforms[0].strictinterval).toBeUndefined();
-
-        Lib.extendDeep(traceIn, { transforms: [{operation: 'notin'}]});
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
-        expect(traceOut.transforms[0].strictinterval).toBeUndefined();
-
-        Lib.extendDeep(traceIn, { transforms: [{operation: '>'}]});
-        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
-        expect(traceOut.transforms[0].strictinterval).toEqual(true);
-    });
 });
 
 describe('filter transforms calc:', function() {
@@ -193,9 +167,8 @@ describe('filter transforms calc:', function() {
         it('+ *within*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'within',
+                    operation: '[]',
                     value: [-1, 1],
-                    strictinterval: [false, false],
                     filtersrc: 'x'
                 }]
             })]);
@@ -211,7 +184,7 @@ describe('filter transforms calc:', function() {
         it('+ *notwithin*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'notwithin',
+                    operation: '][',
                     value: [-1, 1],
                     filtersrc: 'x'
                 }]
@@ -227,7 +200,7 @@ describe('filter transforms calc:', function() {
         it('+ *in*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'in',
+                    operation: '{}',
                     value: [-2, 0],
                     filtersrc: 'x'
                 }]
@@ -243,7 +216,7 @@ describe('filter transforms calc:', function() {
         it('+ *notin*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'notin',
+                    operation: '}{',
                     value: [-2, 0],
                     filtersrc: 'x'
                 }]
@@ -294,7 +267,7 @@ describe('filter transforms calc:', function() {
         it('+ *within*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'within',
+                    operation: '()',
                     value: ['a', 'c'],
                     filtersrc: 'x'
                 }]
@@ -306,7 +279,7 @@ describe('filter transforms calc:', function() {
         it('+ *notwithin*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'notwithin',
+                    operation: '][',
                     value: ['a', 'c'],
                     filtersrc: 'x'
                 }]
@@ -318,7 +291,7 @@ describe('filter transforms calc:', function() {
         it('filters should handle categories + *in*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'in',
+                    operation: '{}',
                     value: ['b', 'd'],
                     filtersrc: 'x'
                 }]
@@ -330,7 +303,7 @@ describe('filter transforms calc:', function() {
         it('filters should handle categories + *notin*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'notin',
+                    operation: '}{',
                     value: ['b', 'd'],
                     filtersrc: 'x'
                 }]
@@ -388,9 +361,8 @@ describe('filter transforms calc:', function() {
         it('+ *>*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: '>',
+                    operation: '>=',
                     value: '2016-08-01',
-                    strictinterval: false,
                     filtersrc: 'x'
                 }]
             })]);
@@ -405,9 +377,8 @@ describe('filter transforms calc:', function() {
         it('+ *within*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'within',
+                    operation: '[]',
                     value: ['2016-08-01', '2016-10-01'],
-                    strictinterval: false,
                     filtersrc: 'x'
                 }]
             })]);
@@ -418,7 +389,7 @@ describe('filter transforms calc:', function() {
         it('+ *notwithin*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'notwithin',
+                    operation: '][',
                     value: ['2016-08-01', '2016-10-01'],
                     filtersrc: 'x'
                 }]
@@ -430,7 +401,7 @@ describe('filter transforms calc:', function() {
         it('+ *in*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'in',
+                    operation: '{}',
                     value: '2015-07-20',
                     filtersrc: 'x'
                 }]
@@ -442,7 +413,7 @@ describe('filter transforms calc:', function() {
         it('+ *notin*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
-                    operation: 'notin',
+                    operation: '}{',
                     value: ['2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
                     filtersrc: 'x'
                 }]
@@ -456,7 +427,7 @@ describe('filter transforms calc:', function() {
     it('filters should handle ids', function() {
         var out = _transform([Lib.extendDeep({}, base, {
             transforms: [{
-                operation: 'in',
+                operation: '{}',
                 value: ['p1', 'p2', 'n1'],
                 filtersrc: 'ids'
             }]
