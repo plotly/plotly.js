@@ -169,7 +169,7 @@ function drawHeader(gd, gHeader, gButton, menuOpts) {
 
     var active = menuOpts.active,
         headerOpts = menuOpts.buttons[active] || constants.blankHeaderOpts,
-        posOpts = { y: 0, yPad: 0, x: 0, xPad: 0, index: 0 },
+        posOpts = { y: menuOpts.pad.t, yPad: 0, x: menuOpts.pad.l, xPad: 0, index: 0 },
         positionOverrides = {
             width: menuOpts.headerWidth,
             height: menuOpts.headerHeight
@@ -191,8 +191,8 @@ function drawHeader(gd, gHeader, gButton, menuOpts) {
         .text('▼');
 
     arrow.attr({
-        x: menuOpts.headerWidth - constants.arrowOffsetX,
-        y: menuOpts.headerHeight / 2 + constants.textOffsetY
+        x: menuOpts.headerWidth - constants.arrowOffsetX + menuOpts.pad.l,
+        y: menuOpts.headerHeight / 2 + constants.textOffsetY + menuOpts.pad.t
     });
 
     header.on('click', function() {
@@ -275,8 +275,8 @@ function drawButtons(gd, gHeader, gButton, menuOpts) {
     }
 
     var posOpts = {
-        x: x0,
-        y: y0,
+        x: x0 + menuOpts.pad.l,
+        y: y0 + menuOpts.pad.t,
         yPad: constants.gapButton,
         xPad: constants.gapButton,
         index: 0,
@@ -468,27 +468,30 @@ function findDimenstions(gd, menuOpts) {
 
     fakeButtons.remove();
 
+    var paddedWidth = menuOpts.totalWidth + menuOpts.pad.l + menuOpts.pad.r;
+    var paddedHeight = menuOpts.totalHeight + menuOpts.pad.t + menuOpts.pad.b;
+
     var graphSize = gd._fullLayout._size;
     menuOpts.lx = graphSize.l + graphSize.w * menuOpts.x;
     menuOpts.ly = graphSize.t + graphSize.h * (1 - menuOpts.y);
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(menuOpts)) {
-        menuOpts.lx -= menuOpts.totalWidth;
+        menuOpts.lx -= paddedWidth;
         xanchor = 'right';
     }
     if(anchorUtils.isCenterAnchor(menuOpts)) {
-        menuOpts.lx -= menuOpts.totalWidth / 2;
+        menuOpts.lx -= paddedWidth / 2;
         xanchor = 'center';
     }
 
     var yanchor = 'top';
     if(anchorUtils.isBottomAnchor(menuOpts)) {
-        menuOpts.ly -= menuOpts.totalHeight;
+        menuOpts.ly -= paddedHeight;
         yanchor = 'bottom';
     }
     if(anchorUtils.isMiddleAnchor(menuOpts)) {
-        menuOpts.ly -= menuOpts.totalHeight / 2;
+        menuOpts.ly -= paddedHeight / 2;
         yanchor = 'middle';
     }
 
@@ -500,10 +503,10 @@ function findDimenstions(gd, menuOpts) {
     Plots.autoMargin(gd, constants.autoMarginIdRoot + menuOpts._index, {
         x: menuOpts.x,
         y: menuOpts.y,
-        l: menuOpts.totalWidth * ({right: 1, center: 0.5}[xanchor] || 0),
-        r: menuOpts.totalWidth * ({left: 1, center: 0.5}[xanchor] || 0),
-        b: menuOpts.totalHeight * ({top: 1, middle: 0.5}[yanchor] || 0),
-        t: menuOpts.totalHeight * ({bottom: 1, middle: 0.5}[yanchor] || 0)
+        l: paddedWidth * ({right: 1, center: 0.5}[xanchor] || 0),
+        r: paddedWidth * ({left: 1, center: 0.5}[xanchor] || 0),
+        b: paddedHeight * ({top: 1, middle: 0.5}[yanchor] || 0),
+        t: paddedHeight * ({bottom: 1, middle: 0.5}[yanchor] || 0)
     });
 }
 

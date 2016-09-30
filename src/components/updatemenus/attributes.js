@@ -11,6 +11,7 @@
 var fontAttrs = require('../../plots/font_attributes');
 var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
+var padAttrs = require('../../plots/pad_attributes');
 
 var buttonsAttrs = {
     _isLinkedToArray: true,
@@ -139,6 +140,10 @@ module.exports = {
             'or *bottom* of the range selector.'
         ].join(' ')
     },
+
+    pad: extendFlat({}, padAttrs, {
+        description: 'Sets the padding around the buttons or dropdown menu.'
+    }),
 
     font: extendFlat({}, fontAttrs, {
         description: 'Sets the font of the update menu button text.'
