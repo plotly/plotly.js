@@ -23,7 +23,7 @@ describe('general transforms:', function() {
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
-            active: true,
+            enabled: true,
             operation: '=',
             value: 0,
             filtersrc: 'x'
@@ -62,7 +62,7 @@ describe('general transforms:', function() {
 
         expect(traceOut.transforms[0]).toEqual({
             type: 'filter',
-            active: true,
+            enabled: true,
             operation: '=',
             value: 0,
             filtersrc: 'x'
@@ -70,7 +70,7 @@ describe('general transforms:', function() {
 
         expect(traceOut.transforms[1]).toEqual({
             type: 'filter',
-            active: true,
+            enabled: true,
             operation: '>',
             strictinterval: true,
             value: 0,
@@ -111,7 +111,7 @@ describe('general transforms:', function() {
         msg = 'supplying the transform defaults';
         expect(dataOut[1].transforms[0]).toEqual({
             type: 'filter',
-            active: true,
+            enabled: true,
             operation: '>',
             value: 0,
             strictinterval: true,
@@ -131,7 +131,7 @@ describe('general transforms:', function() {
         msg = 'keeping refs to full transforms array';
         expect(dataOut[1]._fullInput.transforms).toEqual([{
             type: 'filter',
-            active: true,
+            enabled: true,
             operation: '>',
             value: 0,
             strictinterval: true,

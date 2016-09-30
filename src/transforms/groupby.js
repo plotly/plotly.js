@@ -15,11 +15,11 @@ exports.moduleType = 'transform';
 exports.name = 'groupby';
 
 exports.attributes = {
-    active: {
+    enabled: {
         valType: 'boolean',
         dflt: true,
         description: [
-            'Toggles whether or not the filter is active.'
+            'Determines whether this group-by transform is enabled or disabled.'
         ].join(' ')
     },
     groups: {
@@ -65,9 +65,9 @@ exports.supplyDefaults = function(transformIn) {
         return Lib.coerce(transformIn, transformOut, exports.attributes, attr, dflt);
     }
 
-    var active = coerce('active');
+    var enabled = coerce('enabled');
 
-    if(!active) return transformOut;
+    if(!enabled) return transformOut;
 
     coerce('groups');
     coerce('style');

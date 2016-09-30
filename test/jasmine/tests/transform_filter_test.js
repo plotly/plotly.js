@@ -25,18 +25,18 @@ describe('filter transforms defaults:', function() {
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
-            active: true,
+            enabled: true,
             operation: '=',
             value: 0,
             filtersrc: 'x'
         }]);
     });
 
-    it('supplyTraceDefaults should not coerce attributes if active: false', function() {
+    it('supplyTraceDefaults should not coerce attributes if enabled: false', function() {
         traceIn = {
             x: [1, 2, 3],
             transforms: [{
-                active: false,
+                enabled: false,
                 type: 'filter',
                 value: 0
             }]
@@ -46,7 +46,7 @@ describe('filter transforms defaults:', function() {
 
         expect(traceOut.transforms).toEqual([{
             type: 'filter',
-            active: false,
+            enabled: false,
         }]);
     });
 
@@ -121,11 +121,11 @@ describe('filter transforms calc:', function() {
         expect(out[0].y).toEqual(base.y);
     });
 
-    it('filters should skip if *active* is false', function() {
+    it('filters should skip if *enabled* is false', function() {
         var out = _transform([Lib.extendDeep({}, base, {
             transforms: [{
                 type: 'filter',
-                active: false,
+                enabled: false,
                 operation: '>',
                 value: 0,
                 filtersrc: 'x'
@@ -164,7 +164,7 @@ describe('filter transforms calc:', function() {
                 filtersrc: 'x'
             }, {
                 type: 'filter',
-                active: false,
+                enabled: false,
                 operation: '>',
                 value: 2,
                 filtersrc: 'y'

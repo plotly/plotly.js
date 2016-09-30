@@ -16,11 +16,11 @@ exports.moduleType = 'transform';
 exports.name = 'filter';
 
 exports.attributes = {
-    active: {
+    enabled: {
         valType: 'boolean',
         dflt: true,
         description: [
-            'Toggles whether or not the filter is active.'
+            'Determines whether this filter transform is enabled or disabled.'
         ].join(' ')
     },
     filtersrc: {
@@ -74,9 +74,9 @@ exports.supplyDefaults = function(transformIn) {
         return Lib.coerce(transformIn, transformOut, exports.attributes, attr, dflt);
     }
 
-    var active = coerce('active');
+    var enabled = coerce('enabled');
 
-    if(active) {
+    if(enabled) {
         var operation = coerce('operation');
 
         coerce('value');
@@ -97,7 +97,7 @@ exports.transform = function(data) {
 exports.calcTransform = function(gd, trace, opts) {
     var filtersrc = opts.filtersrc;
 
-    if(!opts.active || !trace[filtersrc]) return;
+    if(!opts.enabled || !trace[filtersrc]) return;
 
     var dataToCoord = getDataToCoordFunc(gd, filtersrc),
         filterFunc = getFilterFunc(opts, dataToCoord);
