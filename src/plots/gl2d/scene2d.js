@@ -172,9 +172,8 @@ proto.toImage = function(format) {
 
 
     var glplot = this.glplot,
-        pixelRatio = this.pixelRatio;
-
-    let fullLayout = this.fullLayout;
+        pixelRatio = this.pixelRatio,
+        fullLayout = this.fullLayout;
 
     var width = fullLayout.width,
         height = fullLayout.height,
