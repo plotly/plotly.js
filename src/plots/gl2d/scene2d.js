@@ -167,7 +167,7 @@ proto.toImage = function(format) {
     this.stopped = true;
     if(this.staticPlot) this.container.appendChild(STATIC_CANVAS);
 
-    //update canvas size
+    // update canvas size
     this.updateSize(this.canvas);
 
     // force redraw
@@ -223,7 +223,7 @@ proto.toImage = function(format) {
 };
 
 proto.updateSize = function(canvas) {
-    if (!canvas) canvas = this.canvas;
+    if(!canvas) canvas = this.canvas;
 
     var pixelRatio = this.pixelRatio,
         fullLayout = this.fullLayout;
@@ -240,7 +240,7 @@ proto.updateSize = function(canvas) {
     }
 
     return canvas;
-}
+};
 
 proto.computeTickMarks = function() {
     this.xaxis._length =
@@ -358,8 +358,7 @@ proto.destroy = function() {
 };
 
 proto.plot = function(fullData, calcData, fullLayout) {
-    var glplot = this.glplot,
-        pixelRatio = this.pixelRatio;
+    var glplot = this.glplot;
 
     this.fullLayout = fullLayout;
     this.updateAxes(fullLayout);
