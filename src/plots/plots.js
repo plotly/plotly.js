@@ -1635,7 +1635,7 @@ plots.doCalcdata = function(gd, traces) {
             // call calcTransform method if any
             if(trace.transforms) {
 
-                // we need one round of of trace module calc before
+                // we need one round of trace module calc before
                 // the calc transform to 'fill in' the categories list
                 // used for example in the data-to-coordinate method
                 _module = trace._module;

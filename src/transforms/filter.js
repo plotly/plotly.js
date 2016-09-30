@@ -54,7 +54,7 @@ exports.attributes = {
             '*[]* filters items inside `value[0]` to value[1]` including both bounds`',
             '*()* filters items inside `value[0]` to value[1]` excluding both bounds`',
             '*[)* filters items inside `value[0]` to value[1]` including `value[0]` but excluding `value[1]',
-            '*(]* filters items inside `value[0]` to value[1]` including both bounds`',
+            '*(]* filters items inside `value[0]` to value[1]` excluding `value[0]` but including `value[1]',
 
             '*][* filters items outside `value[0]` to value[1]` and not equal to both bounds`',
             '*)(* filters items outside `value[0]` to value[1]`',
@@ -76,7 +76,7 @@ exports.attributes = {
 
             'When `operation` is set to one of the inequality values',
             '(' + INEQUALITY_OPS + ')',
-            '*value* is expected to be number or a string.',
+            '*value* is expected to be a number or a string.',
 
             'When `operation` is set to one of the interval value',
             '(' + INTERVAL_OPS + ')',
@@ -166,8 +166,8 @@ function getDataToCoordFunc(gd, filtersrc) {
     // -> cast to String
     if(filtersrc === 'ids') return function(v) { return String(v); };
 
-    // otherwise -> case to number
-    return function(v) { return +(v); };
+    // otherwise -> cast to Number
+    return function(v) { return +v; };
 }
 
 function getFilterFunc(opts, d2c) {
