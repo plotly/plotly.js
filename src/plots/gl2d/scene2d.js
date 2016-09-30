@@ -58,6 +58,9 @@ function Scene2D(options, fullLayout) {
         outerFill: true
     });
 
+    // last button state
+    this.lastButtonState = 0;
+
     // last pick result
     this.pickResult = null;
 
@@ -463,7 +466,10 @@ proto.draw = function() {
     var glplot = this.glplot,
         camera = this.camera,
         mouseListener = camera.mouseListener,
+        mouseUp = this.lastButtonState === 1 && mouseListener.buttons === 0,
         fullLayout = this.fullLayout;
+
+    this.lastButtonState = mouseListener.buttons;
 
     this.cameraChanged();
 
@@ -494,8 +500,23 @@ proto.draw = function() {
             (y / glplot.pixelRatio) - (size.t + (1 - domainY[1]) * size.h)
         );
 
+        var nextSelection = result && result.object._trace.handlePick(result);
+
+        if(nextSelection && mouseUp) {
+            this.graphDiv.emit('plotly_click', {
+                points: [{
+                    trace: nextSelection.trace,
+                    dataCoord: nextSelection.dataCoord.slice(),
+                    traceCoord: nextSelection.traceCoord.slice(),
+                    textLabel: nextSelection.textLabel,
+                    color: nextSelection.color,
+                    name: nextSelection.name,
+                    hoverinfo: nextSelection.hoverinfo
+                }]
+            });
+        }
+
         if(result && result.object._trace.hoverinfo !== 'skip' && fullLayout.hovermode) {
-            var nextSelection = result.object._trace.handlePick(result);
 
             if(nextSelection && (
                 !this.lastPickResult ||
