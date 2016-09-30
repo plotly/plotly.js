@@ -32,7 +32,8 @@ exports.attributes = {
         values: ['x', 'y', 'z', 'ids'],
         dflt: 'x',
         description: [
-            'Sets the variable which the filter will be applied.'
+            'Sets the variable in the parent trace object',
+            'by which the filter will be applied.'
         ].join(' ')
     },
     operation: {
@@ -69,12 +70,23 @@ exports.attributes = {
         dflt: 0,
         description: [
             'Sets the value or values by which to filter by.',
+
             'Values are expected to be in the same type as the data linked',
             'to *filtersrc*.',
-            'When `operation` is set to *within* and *notwithin*',
+
+            'When `operation` is set to one of the inequality values',
+            '(' + INEQUALITY_OPS + ')',
+            '*value* is expected to be number or a string.',
+
+            'When `operation` is set to one of the interval value',
+            '(' + INTERVAL_OPS + ')',
             '*value* is expected to be 2-item array where the first item',
             'is the lower bound and the second item is the upper bound.',
-            'When `operation`, is set to *in*, *notin* '
+
+            'When `operation`, is set to one of the set value',
+            '(' + SET_OPS + ')',
+            '*value* is expected to be an array with as many items as',
+            'the desired set elements.'
         ].join(' ')
     }
 };
