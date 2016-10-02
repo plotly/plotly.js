@@ -10,6 +10,7 @@
 'use strict';
 
 var d3 = require('d3');
+var isNumeric = require('fast-isnumeric');
 
 var Fx = require('../../plots/cartesian/graph_interact');
 var Axes = require('../../plots/cartesian/axes');
@@ -40,22 +41,18 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
         getLonLat = function(trace, i) {
             var feature = locationToFeature(trace.locationmode, locations[i], features);
 
-            return (feature !== undefined) ?
-                feature.properties.ct :
-                undefined;
+            return feature ? feature.properties.ct : null;
         };
     }
     else {
         len = trace.lon.length;
-        getLonLat = function(trace, i) {
-            return [trace.lon[i], trace.lat[i]];
-        };
+        getLonLat = cleanLonLat;
     }
 
     for(var i = 0; i < len; i++) {
         var lonlat = getLonLat(trace, i);
 
-        if(!lonlat) continue;  // filter the blank points here
+        if(!lonlat) continue;
 
         var calcItem = {
             lon: lonlat[0],
@@ -72,6 +69,15 @@ plotScatterGeo.calcGeoJSON = function(trace, topojson) {
 
     return cdi;
 };
+
+function cleanLonLat(trace, i) {
+    var lon = trace.lon[i],
+        lat = trace.lat[i];
+
+    if(!isNumeric(lon) || !isNumeric(lat)) return null;
+
+    return [+lon, +lat];
+}
 
 // similar Scatter.arraysToCalcdata but inside a filter loop
 function arrayItemToCalcdata(trace, calcItem, i) {
@@ -102,10 +108,14 @@ function arrayItemToCalcdata(trace, calcItem, i) {
 
 function makeLineGeoJSON(trace) {
     var N = trace.lon.length,
-        coordinates = new Array(N);
+        coordinates = [];
 
     for(var i = 0; i < N; i++) {
-        coordinates[i] = [trace.lon[i], trace.lat[i]];
+        var lonlat = cleanLonLat(trace, i);
+
+        if(!lonlat) continue;
+
+        coordinates.push([lonlat[0], lonlat[1]]);
     }
 
     return {
