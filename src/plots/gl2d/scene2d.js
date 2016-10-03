@@ -464,6 +464,24 @@ proto.updateTraces = function(fullData, calcData) {
     }
 };
 
+proto.emitPointAction = function(nextSelection, eventType) {
+
+    var curveIndex = this._inputs[nextSelection.trace.uid];
+
+    this.graphDiv.emit(eventType, {
+        points: [{
+            x: nextSelection.traceCoord[0],
+            y: nextSelection.traceCoord[1],
+            curveNumber: curveIndex,
+            pointNumber: nextSelection.pointIndex,
+            data: this.fullData[curveIndex]._input,
+            fullData: this.fullData,
+            xaxis: this.xaxis,
+            yaxis: this.yaxis
+        }]
+    });
+};
+
 proto.draw = function() {
     if(this.stopped) return;
 
@@ -507,22 +525,9 @@ proto.draw = function() {
         );
 
         var nextSelection = result && result.object._trace.handlePick(result);
-        var curveIndex;
 
         if(nextSelection && mouseUp) {
-            curveIndex = this._inputs[nextSelection.trace.uid];
-            this.graphDiv.emit('plotly_click', {
-                points: [{
-                    x: nextSelection.traceCoord[0],
-                    y: nextSelection.traceCoord[1],
-                    curveNumber: curveIndex,
-                    pointNumber: nextSelection.pointIndex,
-                    data: this.fullData[curveIndex]._input,
-                    fullData: this.fullData,
-                    xaxis: this.xaxis,
-                    yaxis: this.yaxis
-                }]
-            });
+            this.emitPointAction(nextSelection, 'plotly_click');
         }
 
         if(result && result.object._trace.hoverinfo !== 'skip' && fullLayout.hovermode) {
@@ -554,19 +559,7 @@ proto.draw = function() {
 
                 // this needs to happen before the next block that deletes traceCoord data
                 // also it's important to copy, otherwise data is lost by the time event data is read
-                curveIndex = this._inputs[nextSelection.trace.uid];
-                this.graphDiv.emit('plotly_hover', {
-                    points: [{
-                        x: nextSelection.traceCoord[0],
-                        y: nextSelection.traceCoord[1],
-                        curveNumber: curveIndex,
-                        pointNumber: nextSelection.pointIndex,
-                        data: this.fullData[curveIndex]._input,
-                        fullData: this.fullData,
-                        xaxis: this.xaxis,
-                        yaxis: this.yaxis
-                    }]
-                });
+                this.emitPointAction(nextSelection, 'plotly_hover');
 
                 var hoverinfo = selection.hoverinfo;
                 if(hoverinfo !== 'all') {
