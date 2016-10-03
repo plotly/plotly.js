@@ -60,6 +60,8 @@
         }
     ],
     "layout": {
+        "width": 700,
+        "height": 500,
         "xaxis": {
             "domain": [
                 0,

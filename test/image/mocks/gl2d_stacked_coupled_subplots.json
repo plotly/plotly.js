@@ -43,6 +43,8 @@
         }
     ],
     "layout": {
+        "width": 700,
+        "height": 500,
         "yaxis": {
             "domain": [
                 0,
