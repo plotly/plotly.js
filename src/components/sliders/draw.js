@@ -292,6 +292,10 @@ function removeListeners(gd, sliderGroup, sliderOpts) {
 }
 
 function attachListeners(gd, sliderGroup, sliderOpts) {
+    if(!sliderOpts.updateevent || !sliderOpts.updateevent.length) {
+        return;
+    }
+
     var listeners = sliderOpts._input.listeners = [];
     var eventNames = sliderOpts._input.eventNames = [];
 
@@ -304,7 +308,7 @@ function attachListeners(gd, sliderGroup, sliderOpts) {
 
             // If it's *currently* invoking a command an event is received,
             // then we'll ignore the event in order to avoid complicated
-            // invinite loops.
+            // infinite loops.
             if(sliderOpts._invokingCommand) return;
 
             setActiveByLabel(gd, sliderGroup, sliderOpts, value, false, true);
@@ -313,7 +317,7 @@ function attachListeners(gd, sliderGroup, sliderOpts) {
 
     for(var i = 0; i < sliderOpts.updateevent.length; i++) {
         var updateEventName = sliderOpts.updateevent[i];
-        var updatevalue = sliderOpts.updatevalue;
+        var updatevalue = (sliderOpts.updatevalue || [])[i];
 
         var updatelistener = makeListener(updateEventName, updatevalue);
 
