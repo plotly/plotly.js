@@ -176,8 +176,9 @@ proto.updateFast = function(options) {
     this.pointcloudOptions.color = markerColor;
 
     var blend = options.marker.blend;
-    if (blend == null) {
-        blend = x.length < 100 || y.length < 100;
+    if(blend === undefined) {
+        var maxPoints = 100;
+        blend = x.length < maxPoints || y.length < maxPoints;
     }
     this.pointcloudOptions.blend = blend;
 
