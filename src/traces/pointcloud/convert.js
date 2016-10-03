@@ -175,6 +175,8 @@ proto.updateFast = function(options) {
     markerColor[3] *= opacity;
     this.pointcloudOptions.color = markerColor;
 
+    // detect blending from the number of points, if undefined
+    // because large data with blending hits performance
     var blend = options.marker.blend;
     if(blend === undefined) {
         var maxPoints = 100;
