@@ -120,7 +120,7 @@ exports.calcTransform = function(gd, trace, opts) {
 
     if(!opts.enabled || !filtersrcOk) return;
 
-    var dataToCoord = getDataToCoordFunc(gd, filtersrc),
+    var dataToCoord = getDataToCoordFunc(gd, trace, filtersrc),
         filterFunc = getFilterFunc(opts, dataToCoord);
 
     var filterArr = Lib.nestedProperty(trace, filtersrc).get(),
@@ -157,8 +157,8 @@ exports.calcTransform = function(gd, trace, opts) {
     }
 };
 
-function getDataToCoordFunc(gd, filtersrc) {
-    var ax = axisIds.getFromId(gd, filtersrc);
+function getDataToCoordFunc(gd, trace, filtersrc) {
+    var ax = axisIds.getFromTrace(gd, trace, filtersrc);
 
     // if 'filtersrc' has corresponding axis
     // -> use setConvert method
@@ -168,7 +168,8 @@ function getDataToCoordFunc(gd, filtersrc) {
     // -> cast to String
     if(filtersrc === 'ids') return function(v) { return String(v); };
 
-    // otherwise -> cast to Number
+    // otherwise
+    // -> cast to Number
     return function(v) { return +v; };
 }
 

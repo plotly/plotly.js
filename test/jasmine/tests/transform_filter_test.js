@@ -120,6 +120,23 @@ describe('filter transforms calc:', function() {
         expect(out[0].y).toEqual(base.y);
     });
 
+    it('filters should handle 3D *z* data', function() {
+        var out = _transform([Lib.extendDeep({}, base, {
+            type: 'scatter3d',
+            z: ['2015-07-20', '2016-08-01', '2016-09-01', '2016-10-21', '2016-12-02'],
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: '2016-10-01',
+                filtersrc: 'z'
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([0, 1]);
+        expect(out[0].y).toEqual([1, 2]);
+        expect(out[0].z).toEqual(['2016-10-21', '2016-12-02']);
+    });
+
     it('filters should handle geographical *lon* data', function() {
         var trace0 = {
             type: 'scattergeo',
