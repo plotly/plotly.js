@@ -20,6 +20,21 @@ describe('Test hover and click interactions', function() {
 
     var mockCopy, gd;
 
+    function check(pt) {
+        expect(Object.keys(pt)).toEqual([
+            'x', 'y', 'curveNumber', 'pointNumber', 'data', 'fullData', 'xaxis', 'yaxis'
+        ]);
+
+        expect(pt.x).toEqual(15.772);
+        expect(pt.y).toEqual(0.387);
+        expect(pt.curveNumber).toEqual(0);
+        expect(pt.pointNumber).toEqual(33);
+        expect(pt.fullData.length).toEqual(1);
+        expect(typeof pt.data.uid).toEqual('string');
+        expect(pt.xaxis.domain.length).toEqual(2);
+        expect(pt.yaxis.domain.length).toEqual(2);
+    }
+
     beforeAll(function() {
         jasmine.addMatchers(customMatchers);
     });
@@ -54,14 +69,7 @@ describe('Test hover and click interactions', function() {
 
                         var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
-
-                        expect(pt.x).toEqual(15.772);
-                        expect(pt.y).toEqual(0.387);
-                        expect(pt.fullData.length).toEqual(1);
-                        expect(typeof pt.data.uid).toEqual('string');
-                        expect(pt.xaxis.domain.length).toEqual(2);
-                        expect(pt.yaxis.domain.length).toEqual(2);
+                        check(pt);
 
                         done();
                     }, 250);
@@ -91,14 +99,7 @@ describe('Test hover and click interactions', function() {
 
                         var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
-
-                        expect(pt.x).toEqual(15.772);
-                        expect(pt.y).toEqual(0.387);
-                        expect(pt.fullData.length).toEqual(1);
-                        expect(typeof pt.data.uid).toEqual('string');
-                        expect(pt.xaxis.domain.length).toEqual(2);
-                        expect(pt.yaxis.domain.length).toEqual(2);
+                        check(pt);
 
                         done();
                     }, 250);
@@ -128,15 +129,7 @@ describe('Test hover and click interactions', function() {
 
                         var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
-
-                        expect(pt.x).toEqual(15.772);
-                        expect(pt.y).toEqual(0.387);
-                        expect(pt.fullData.length).toEqual(1);
-                        expect(typeof pt.data.uid).toEqual('string');
-                        expect(pt.xaxis.domain.length).toEqual(2);
-                        expect(pt.yaxis.domain.length).toEqual(2);
-
+                        check(pt);
 
                         done();
                     }, 250);
@@ -211,14 +204,7 @@ describe('Test hover and click interactions', function() {
 
                         var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
-
-                        expect(pt.x).toEqual(15.772);
-                        expect(pt.y).toEqual(0.387);
-                        expect(pt.fullData.length).toEqual(1);
-                        expect(typeof pt.data.uid).toEqual('string');
-                        expect(pt.xaxis.domain.length).toEqual(2);
-                        expect(pt.yaxis.domain.length).toEqual(2);
+                        check(pt);
 
                         done();
 
@@ -248,14 +234,7 @@ describe('Test hover and click interactions', function() {
 
                         var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
-
-                        expect(pt.x).toEqual(15.772);
-                        expect(pt.y).toEqual(0.387);
-                        expect(pt.fullData.length).toEqual(1);
-                        expect(typeof pt.data.uid).toEqual('string');
-                        expect(pt.xaxis.domain.length).toEqual(2);
-                        expect(pt.yaxis.domain.length).toEqual(2);
+                        check(pt);
 
                         done();
                     }, 250);

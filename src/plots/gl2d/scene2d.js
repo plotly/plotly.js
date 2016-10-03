@@ -452,7 +452,7 @@ proto.updateTraces = function(fullData, calcData) {
     // update / create trace objects
     for(i = 0; i < fullData.length; i++) {
         fullTrace = fullData[i];
-        this._inputs[fullTrace.uid] = fullTrace._input;
+        this._inputs[fullTrace.uid] = i;
         var calcTrace = calcData[i],
             traceObj = this.traces[fullTrace.uid];
 
@@ -507,13 +507,17 @@ proto.draw = function() {
         );
 
         var nextSelection = result && result.object._trace.handlePick(result);
+        var curveIndex;
 
         if(nextSelection && mouseUp) {
+            curveIndex = this._inputs[nextSelection.trace.uid];
             this.graphDiv.emit('plotly_click', {
                 points: [{
                     x: nextSelection.traceCoord[0],
                     y: nextSelection.traceCoord[1],
-                    data: this._inputs[nextSelection.trace.uid],
+                    curveNumber: curveIndex,
+                    pointNumber: nextSelection.pointIndex,
+                    data: this.fullData[curveIndex]._input,
                     fullData: this.fullData,
                     xaxis: this.xaxis,
                     yaxis: this.yaxis
@@ -550,11 +554,14 @@ proto.draw = function() {
 
                 // this needs to happen before the next block that deletes traceCoord data
                 // also it's important to copy, otherwise data is lost by the time event data is read
+                curveIndex = this._inputs[nextSelection.trace.uid];
                 this.graphDiv.emit('plotly_hover', {
                     points: [{
                         x: nextSelection.traceCoord[0],
                         y: nextSelection.traceCoord[1],
-                        data: this._inputs[nextSelection.trace.uid],
+                        curveNumber: curveIndex,
+                        pointNumber: nextSelection.pointIndex,
+                        data: this.fullData[curveIndex]._input,
                         fullData: this.fullData,
                         xaxis: this.xaxis,
                         yaxis: this.yaxis
