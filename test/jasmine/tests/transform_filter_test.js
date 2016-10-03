@@ -49,6 +49,31 @@ describe('filter transforms defaults:', function() {
             enabled: false,
         }]);
     });
+
+    it('supplyTraceDefaults should coerce *filtersrc* as a strict / noBlank string', function() {
+        traceIn = {
+            x: [1, 2, 3],
+            transforms: [{
+                type: 'filter',
+            }, {
+                type: 'filter',
+                filtersrc: 0
+            }, {
+                type: 'filter',
+                filtersrc: ''
+            }, {
+                type: 'filter',
+                filtersrc: 'marker.color'
+            }]
+        };
+
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+
+        expect(traceOut.transforms[0].filtersrc).toEqual('x');
+        expect(traceOut.transforms[1].filtersrc).toEqual('x');
+        expect(traceOut.transforms[2].filtersrc).toEqual('x');
+        expect(traceOut.transforms[3].filtersrc).toEqual('marker.color');
+    });
 });
 
 describe('filter transforms calc:', function() {
@@ -93,6 +118,55 @@ describe('filter transforms calc:', function() {
 
         expect(out[0].x).toEqual(base.x);
         expect(out[0].y).toEqual(base.y);
+    });
+
+    it('filters should handle geographical *lon* data', function() {
+        var trace0 = {
+            type: 'scattergeo',
+            lon: [-90, -40, 100, 120, 130],
+            lat: [-50, -40, 10, 20, 30],
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: 0,
+                filtersrc: 'lon'
+            }]
+        };
+
+        var trace1 = {
+            type: 'scattermapbox',
+            lon: [-90, -40, 100, 120, 130],
+            lat: [-50, -40, 10, 20, 30],
+            transforms: [{
+                type: 'filter',
+                operation: '<',
+                value: 0,
+                filtersrc: 'lat'
+            }]
+        };
+
+        var out = _transform([trace0, trace1]);
+
+        expect(out[0].lon).toEqual([100, 120, 130]);
+        expect(out[0].lat).toEqual([10, 20, 30]);
+
+        expect(out[1].lon).toEqual([-90, -40]);
+        expect(out[1].lat).toEqual([-50, -40]);
+    });
+
+    it('filters should handle nested attributes', function() {
+        var out = _transform([Lib.extendDeep({}, base, {
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: 0.2,
+                filtersrc: 'marker.color'
+            }]
+        })]);
+
+        expect(out[0].x).toEqual([-2, 2, 3]);
+        expect(out[0].y).toEqual([3, 3, 1]);
+        expect(out[0].marker.color).toEqual([0.3, 0.3, 0.4]);
     });
 
     it('filters should skip if *enabled* is false', function() {

@@ -28,12 +28,17 @@ exports.attributes = {
         ].join(' ')
     },
     filtersrc: {
-        valType: 'enumerated',
-        values: ['x', 'y', 'z', 'ids'],
+        valType: 'string',
+        strict: true,
+        noBlank: true,
         dflt: 'x',
         description: [
             'Sets the variable in the parent trace object',
-            'by which the filter will be applied.'
+            'by which the filter will be applied.',
+
+            'To filter about nested variables, use *.* to access them.',
+            'For example, set `filtersrc` to *marker.color* to filter',
+            'about the marker color array.'
         ].join(' ')
     },
     operation: {
@@ -110,14 +115,15 @@ exports.supplyDefaults = function(transformIn) {
 };
 
 exports.calcTransform = function(gd, trace, opts) {
-    var filtersrc = opts.filtersrc;
+    var filtersrc = opts.filtersrc,
+        filtersrcOk = filtersrc && Array.isArray(Lib.nestedProperty(trace, filtersrc).get());
 
-    if(!opts.enabled || !trace[filtersrc]) return;
+    if(!opts.enabled || !filtersrcOk) return;
 
     var dataToCoord = getDataToCoordFunc(gd, filtersrc),
         filterFunc = getFilterFunc(opts, dataToCoord);
 
-    var filterArr = trace[filtersrc],
+    var filterArr = Lib.nestedProperty(trace, filtersrc).get(),
         len = filterArr.length;
 
     var arrayAttrs = Lib.findArrayAttributes(trace),
