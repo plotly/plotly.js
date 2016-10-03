@@ -109,10 +109,6 @@ exports.supplyDefaults = function(transformIn) {
     return transformOut;
 };
 
-exports.transform = function(data) {
-    return data;
-};
-
 exports.calcTransform = function(gd, trace, opts) {
     var filtersrc = opts.filtersrc;
 

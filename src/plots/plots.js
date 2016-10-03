@@ -792,7 +792,7 @@ function applyTransforms(fullTrace, fullData, layout) {
         var transform = container[i],
             _module = transformsRegistry[transform.type];
 
-        if(_module) {
+        if(_module && _module.transform) {
             dataOut = _module.transform(dataOut, {
                 transform: transform,
                 fullTrace: fullTrace,

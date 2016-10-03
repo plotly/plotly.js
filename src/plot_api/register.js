@@ -61,8 +61,14 @@ function registerTransformModule(newModule) {
 
     var prefix = 'Transform module ' + newModule.name;
 
-    if(typeof newModule.transform !== 'function') {
-        throw new Error(prefix + ' is missing a *transform* function.');
+    var hasTransform = typeof newModule.transform === 'function',
+        hasCalcTransform = typeof newModule.calcTransform === 'function';
+
+
+    if(!hasTransform && !hasCalcTransform) {
+        throw new Error(prefix + ' is missing a *transform* or *calcTransform* method.');
+    }
+
     }
     if(!Lib.isPlainObject(newModule.attributes)) {
         Lib.log(prefix + ' registered without an *attributes* object.');
