@@ -68,7 +68,7 @@ module.exports = {
     // but for other styles it wouldn't really need to be.
     stepInset: 10,
 
-    gripRadius: 3,
+    gripRadius: 10,
     gripWidth: 20,
     gripHeight: 20,
     gripBorder: 20,

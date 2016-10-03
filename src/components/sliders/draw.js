@@ -62,19 +62,22 @@ module.exports = function draw(gd) {
     }
 
     sliderGroups.each(function(sliderOpts) {
+        // If it has fewer than two options, it's not really a slider:
+        if(sliderOpts.steps.length < 2) return;
+
         computeLabelSteps(sliderOpts);
 
         drawSlider(gd, d3.select(this), sliderOpts);
 
-        makeInputProxy(gd, d3.select(this), sliderOpts);
+        // makeInputProxy(gd, d3.select(this), sliderOpts);
 
     });
 };
 
-function makeInputProxy(gd, sliderGroup, sliderOpts) {
+/* function makeInputProxy(gd, sliderGroup, sliderOpts) {
     sliderOpts.inputProxy = gd._fullLayout._paperdiv.selectAll('input.' + constants.inputProxyClass)
         .data([0]);
-}
+}*/
 
 // This really only just filters by visibility:
 function makeSliderData(fullLayout) {
@@ -83,7 +86,8 @@ function makeSliderData(fullLayout) {
 
     for(var i = 0; i < contOpts.length; i++) {
         var item = contOpts[i];
-        if(item.visible) sliderData.push(item);
+        if(!item.visible || !item.steps.length) continue;
+        sliderData.push(item);
     }
 
     return sliderData;
@@ -228,7 +232,7 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     removeListeners(gd, sliderGroup, sliderOpts);
     attachListeners(gd, sliderGroup, sliderOpts);
 
-    setActive(gd, sliderGroup, sliderOpts, sliderOpts.active, true, false);
+    setActive(gd, sliderGroup, sliderOpts, sliderOpts.active, false, false);
 }
 
 function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {

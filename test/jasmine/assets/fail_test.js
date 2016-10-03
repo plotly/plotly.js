@@ -23,4 +23,7 @@ module.exports = function failTest(error) {
     } else {
         expect(error).toBeUndefined();
     }
+    if(error && error.stack) {
+        console.error(error.stack);
+    }
 };

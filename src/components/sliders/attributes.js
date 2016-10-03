@@ -43,8 +43,15 @@ var stepsAttrs = {
     label: {
         valType: 'string',
         role: 'info',
-        dflt: '',
         description: 'Sets the text label to appear on the slider'
+    },
+    value: {
+        valType: 'string',
+        role: 'info',
+        description: [
+            'Sets the value of the slider step, used to refer to the step programatically.',
+            'Defaults to the slider label if not provided.'
+        ].join(' ')
     }
 };
 
@@ -213,7 +220,7 @@ module.exports = {
             description: [
                 'The amount of space, in pixels, between the current value label',
                 'and the slider.'
-            ]
+            ].join(' ')
         },
 
         prefix: {

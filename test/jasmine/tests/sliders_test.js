@@ -1,11 +1,12 @@
 var Sliders = require('@src/components/sliders');
-// var constants = require('@src/components/sliders/constants');
+var constants = require('@src/components/sliders/constants');
 
-// var d3 = require('d3');
-// var Plotly = require('@lib');
-// var Lib = require('@src/lib');
-// var createGraphDiv = require('../assets/create_graph_div');
-// var destroyGraphDiv = require('../assets/destroy_graph_div');
+var d3 = require('d3');
+var Plotly = require('@lib');
+var Lib = require('@src/lib');
+var createGraphDiv = require('../assets/create_graph_div');
+var destroyGraphDiv = require('../assets/destroy_graph_div');
+var fail = require('../assets/fail_test');
 
 describe('sliders defaults', function() {
     'use strict';
@@ -56,6 +57,39 @@ describe('sliders defaults', function() {
         expect(layoutOut.sliders[2].active).toBeUndefined();
     });
 
+    it('should set the default values equal to the labels', function() {
+        layoutIn.sliders = [{
+            steps: [{
+                method: 'relayout', args: [],
+                label: 'Label #1',
+                value: 'label-1'
+            }, {
+                method: 'update', args: [],
+                label: 'Label #2'
+            }, {
+                method: 'animate', args: [],
+                value: 'lacks-label'
+            }]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.sliders[0].steps.length).toEqual(3);
+        expect(layoutOut.sliders[0].steps).toEqual([{
+            method: 'relayout', args: [],
+            label: 'Label #1',
+            value: 'label-1'
+        }, {
+            method: 'update', args: [],
+            label: 'Label #2',
+            value: 'Label #2'
+        }, {
+            method: 'animate', args: [],
+            label: 'step-2',
+            value: 'lacks-label'
+        }]);
+    });
+
     it('should skip over non-object steps', function() {
         layoutIn.sliders = [{
             steps: [
@@ -74,12 +108,12 @@ describe('sliders defaults', function() {
         expect(layoutOut.sliders[0].steps[0]).toEqual({
             method: 'relayout',
             args: ['title', 'Hello World'],
-            label: '',
-            _index: 1
+            label: 'step-1',
+            value: 'step-1',
         });
     });
 
-    it('should skip over steps with array \'args\' field', function() {
+    it('should skip over steps with non-array \'args\' field', function() {
         layoutIn.sliders = [{
             steps: [{
                 method: 'restyle',
@@ -98,8 +132,8 @@ describe('sliders defaults', function() {
         expect(layoutOut.sliders[0].steps[0]).toEqual({
             method: 'relayout',
             args: ['title', 'Hello World'],
-            label: '',
-            _index: 1
+            label: 'step-1',
+            value: 'step-1',
         });
     });
 
@@ -146,4 +180,77 @@ describe('sliders defaults', function() {
         expect(layoutOut.sliders[0].bgcolor).toEqual('blue');
         expect(layoutOut.sliders[1].bgcolor).toEqual('red');
     });
+});
+
+describe('update sliders interactions', function() {
+    'use strict';
+
+    var mock = require('@mocks/sliders.json');
+
+    var gd;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        var mockCopy = Lib.extendDeep({}, mock);
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('should draw only visible sliders', function(done) {
+        expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
+        expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
+
+        Plotly.relayout(gd, 'sliders[0].visible', false).then(function() {
+            assertNodeCount('.' + constants.groupClassName, 1);
+            expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
+            expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
+
+            return Plotly.relayout(gd, 'sliders[1]', null);
+        })
+        .then(function() {
+            assertNodeCount('.' + constants.groupClassName, 0);
+            expect(gd._fullLayout._pushmargin['slider-0']).toBeUndefined();
+            expect(gd._fullLayout._pushmargin['slider-1']).toBeUndefined();
+
+            return Plotly.relayout(gd, {
+                'sliders[0].visible': true,
+                'sliders[1].visible': true
+            });
+        }).then(function() {
+            assertNodeCount('.' + constants.groupClassName, 1);
+            expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
+            expect(gd._fullLayout._pushmargin['slider-1']).toBeUndefined();
+
+            return Plotly.relayout(gd, {
+                'sliders[1]': {
+                    steps: [{
+                        method: 'relayout',
+                        args: ['title', 'new title'],
+                        label: '1970'
+                    }, {
+                        method: 'relayout',
+                        args: ['title', 'new title'],
+                        label: '1971'
+                    }]
+                }
+            });
+        })
+        .then(function() {
+            assertNodeCount('.' + constants.groupClassName, 2);
+            expect(gd._fullLayout._pushmargin['slider-0']).toBeDefined();
+            expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
+        })
+        .catch(fail).then(done);
+    });
+
+    function assertNodeCount(query, cnt) {
+        expect(d3.selectAll(query).size()).toEqual(cnt);
+    }
+
 });

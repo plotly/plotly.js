@@ -112,9 +112,9 @@ function stepsDefaults(sliderIn, sliderOut) {
 
         coerce('method');
         coerce('args');
-        coerce('label');
+        coerce('label', 'step-' + i);
+        coerce('value', valueOut.label);
 
-        valueOut._index = i;
         valuesOut.push(valueOut);
     }
 
