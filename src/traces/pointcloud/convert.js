@@ -178,7 +178,7 @@ proto.updateFast = function(options) {
     // detect blending from the number of points, if undefined
     // because large data with blending hits performance
     var blend = options.marker.blend;
-    if(blend === undefined) {
+    if(blend === null) {
         var maxPoints = 100;
         blend = x.length < maxPoints || y.length < maxPoints;
     }
