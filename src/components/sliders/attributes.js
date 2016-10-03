@@ -197,6 +197,7 @@ module.exports = {
     currentvalue: {
         visible: {
             valType: 'boolean',
+            role: 'info',
             dflt: true,
             description: [
                 'Shows the currently-selected value above the slider.'
