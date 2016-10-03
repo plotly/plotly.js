@@ -164,7 +164,7 @@ describe('filter transforms calc:', function() {
             expect(out[0].marker.size).toEqual(20, '- marker.size style');
         }
 
-        it('+ *within*', function() {
+        it('with operation *[]*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '[]',
@@ -180,7 +180,7 @@ describe('filter transforms calc:', function() {
             );
         });
 
-        it('+ *within* + with RHS open', function() {
+        it('with operation *[)*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '[)',
@@ -192,7 +192,7 @@ describe('filter transforms calc:', function() {
             _assert(out, [-1, 0], [2, 1], [0.2, 0.1]);
         });
 
-        it('+ *within* + with LHS open', function() {
+        it('with operation *(]*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '(]',
@@ -204,7 +204,7 @@ describe('filter transforms calc:', function() {
             _assert(out, [0, 1], [1, 2], [0.1, 0.2]);
         });
 
-        it('+ *within* + with both sides open', function() {
+        it('with operation *()*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '()',
@@ -216,7 +216,7 @@ describe('filter transforms calc:', function() {
             _assert(out, [0], [1], [0.1]);
         });
 
-        it('+ *notwithin*', function() {
+        it('with operation *)(*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: ')(',
@@ -232,7 +232,7 @@ describe('filter transforms calc:', function() {
             );
         });
 
-        it('+ *notwithin* with RHS closed', function() {
+        it('with operation *)[*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: ')[',
@@ -248,7 +248,7 @@ describe('filter transforms calc:', function() {
             );
         });
 
-        it('+ *notwithin* with LHS closed', function() {
+        it('with operation *](*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '](',
@@ -264,7 +264,7 @@ describe('filter transforms calc:', function() {
             );
         });
 
-        it('+ *notwithin* with both sides closed', function() {
+        it('with operation *][*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '][',
@@ -280,7 +280,7 @@ describe('filter transforms calc:', function() {
             );
         });
 
-        it('+ *in*', function() {
+        it('with operation *{}*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '{}',
@@ -296,7 +296,7 @@ describe('filter transforms calc:', function() {
             );
         });
 
-        it('+ *notin*', function() {
+        it('with operation *}{*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '}{',
@@ -347,7 +347,7 @@ describe('filter transforms calc:', function() {
             expect(out[0].marker.color).toEqual('red', '- marker.color style');
         }
 
-        it('+ *within*', function() {
+        it('with operation *()*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '()',
@@ -359,7 +359,7 @@ describe('filter transforms calc:', function() {
             _assert(out, ['b'], [2], ['1']);
         });
 
-        it('+ *notwithin*', function() {
+        it('with operation *)(*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: ')(',
@@ -371,7 +371,7 @@ describe('filter transforms calc:', function() {
             _assert(out, ['d'], [4], ['0']);
         });
 
-        it('filters should handle categories + *in*', function() {
+        it('with operation *{}*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '{}',
@@ -383,7 +383,7 @@ describe('filter transforms calc:', function() {
             _assert(out, ['b', 'd'], [2, 4], ['1', '0']);
         });
 
-        it('filters should handle categories + *notin*', function() {
+        it('with operation *}{*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '}{',
@@ -417,7 +417,7 @@ describe('filter transforms calc:', function() {
             expect(out[0].marker.line.width).toEqual(2.5, '- marker.line.width style');
         }
 
-        it('+ *=*', function() {
+        it('with operation *=*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '=',
@@ -429,7 +429,7 @@ describe('filter transforms calc:', function() {
             _assert(out, ['2015-07-20'], [1], [0.1]);
         });
 
-        it('+ *<*', function() {
+        it('with operation *<*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '<',
@@ -441,7 +441,7 @@ describe('filter transforms calc:', function() {
             _assert(out, ['2015-07-20'], [1], [0.1]);
         });
 
-        it('+ *>*', function() {
+        it('with operation *>*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '>=',
@@ -457,7 +457,7 @@ describe('filter transforms calc:', function() {
             );
         });
 
-        it('+ *within*', function() {
+        it('with operation *[]*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '[]',
@@ -469,7 +469,7 @@ describe('filter transforms calc:', function() {
             _assert(out, ['2016-08-01', '2016-09-01'], [2, 3], [0.2, 0.3]);
         });
 
-        it('+ *notwithin*', function() {
+        it('with operation *)(*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: ')(',
@@ -481,7 +481,7 @@ describe('filter transforms calc:', function() {
             _assert(out, ['2015-07-20', '2016-10-21', '2016-12-02'], [1, 1, 5], [0.1, 0.1, 0.2]);
         });
 
-        it('+ *in*', function() {
+        it('with operation *{}*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '{}',
@@ -493,7 +493,7 @@ describe('filter transforms calc:', function() {
             _assert(out, ['2015-07-20'], [1], [0.1]);
         });
 
-        it('+ *notin*', function() {
+        it('with operation *}{*', function() {
             var out = _transform([Lib.extendDeep({}, _base, {
                 transforms: [{
                     operation: '}{',
