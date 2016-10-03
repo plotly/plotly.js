@@ -12,7 +12,7 @@ var hasWebGLSupport = require('../assets/has_webgl_support');
 var click = require('../assets/timed_click');
 var hover = require('../assets/hover');
 
-describe('Test click interactions:', function() {
+describe('Test hover and click interactions', function() {
 
     if(!hasWebGLSupport('gl2d_click_test')) return;
 
@@ -54,12 +54,14 @@ describe('Test click interactions:', function() {
 
                         var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual([
-                            'trace', 'dataCoord', 'traceCoord', 'textLabel', 'color',
-                            'name', 'hoverinfo', 'screenCoord'
-                        ]);
+                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
 
-                        expect(pt.traceCoord).toEqual([15.772, 0.387]);
+                        expect(pt.x).toEqual(15.772);
+                        expect(pt.y).toEqual(0.387);
+                        expect(pt.fullData.length).toEqual(1);
+                        expect(typeof pt.data.uid).toEqual('string');
+                        expect(pt.xaxis.domain.length).toEqual(2);
+                        expect(pt.yaxis.domain.length).toEqual(2);
 
                         done();
                     }, 250);
@@ -89,12 +91,14 @@ describe('Test click interactions:', function() {
 
                         var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual([
-                            'trace', 'dataCoord', 'traceCoord', 'textLabel', 'color',
-                            'name', 'hoverinfo', 'screenCoord'
-                        ]);
+                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
 
-                        expect(pt.traceCoord).toEqual([15.772, 0.387]);
+                        expect(pt.x).toEqual(15.772);
+                        expect(pt.y).toEqual(0.387);
+                        expect(pt.fullData.length).toEqual(1);
+                        expect(typeof pt.data.uid).toEqual('string');
+                        expect(pt.xaxis.domain.length).toEqual(2);
+                        expect(pt.yaxis.domain.length).toEqual(2);
 
                         done();
                     }, 250);
@@ -124,12 +128,15 @@ describe('Test click interactions:', function() {
 
                         var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual([
-                            'trace', 'dataCoord', 'traceCoord', 'textLabel', 'color',
-                            'name', 'hoverinfo', 'screenCoord'
-                        ]);
+                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
 
-                        expect(pt.traceCoord).toEqual([15.772, 0.387]);
+                        expect(pt.x).toEqual(15.772);
+                        expect(pt.y).toEqual(0.387);
+                        expect(pt.fullData.length).toEqual(1);
+                        expect(typeof pt.data.uid).toEqual('string');
+                        expect(pt.xaxis.domain.length).toEqual(2);
+                        expect(pt.yaxis.domain.length).toEqual(2);
+
 
                         done();
                     }, 250);
@@ -201,7 +208,17 @@ describe('Test click interactions:', function() {
                     click(654.7712871743302, 316.97670766680994);
 
                     window.setTimeout(function() {
-                        expect(futureData.points[0].traceCoord).toEqual([15.772, 0.387]);
+
+                        var pt = futureData.points[0];
+
+                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
+
+                        expect(pt.x).toEqual(15.772);
+                        expect(pt.y).toEqual(0.387);
+                        expect(pt.fullData.length).toEqual(1);
+                        expect(typeof pt.data.uid).toEqual('string');
+                        expect(pt.xaxis.domain.length).toEqual(2);
+                        expect(pt.yaxis.domain.length).toEqual(2);
 
                         done();
 
@@ -231,12 +248,14 @@ describe('Test click interactions:', function() {
 
                         var pt = futureData.points[0];
 
-                        expect(Object.keys(pt)).toEqual([
-                            'trace', 'dataCoord', 'traceCoord', 'textLabel', 'color',
-                            'name', 'hoverinfo', 'screenCoord'
-                        ]);
+                        expect(Object.keys(pt)).toEqual(['x', 'y', 'data', 'fullData', 'xaxis', 'yaxis']);
 
-                        expect(pt.traceCoord).toEqual([15.772, 0.387]);
+                        expect(pt.x).toEqual(15.772);
+                        expect(pt.y).toEqual(0.387);
+                        expect(pt.fullData.length).toEqual(1);
+                        expect(typeof pt.data.uid).toEqual('string');
+                        expect(pt.xaxis.domain.length).toEqual(2);
+                        expect(pt.yaxis.domain.length).toEqual(2);
 
                         done();
                     }, 250);

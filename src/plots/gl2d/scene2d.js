@@ -33,6 +33,7 @@ function Scene2D(options, fullLayout) {
     this.staticPlot = !!options.staticPlot;
 
     this.fullLayout = fullLayout;
+    this.fullData = null;
     this.updateAxes(fullLayout);
 
     this.makeFramework();
@@ -49,6 +50,7 @@ function Scene2D(options, fullLayout) {
 
     // trace set
     this.traces = {};
+    this._inputs = {};
 
     // create axes spikes
     this.spikes = createSpikes(this.glplot);
@@ -335,6 +337,8 @@ proto.destroy = function() {
     this.container.removeChild(this.svgContainer);
     this.container.removeChild(this.mouseContainer);
 
+    this.fullData = null;
+    this._inputs = null;
     this.glplot = null;
     this.stopped = true;
 };
@@ -425,6 +429,8 @@ proto.updateTraces = function(fullData, calcData) {
     var traceIds = Object.keys(this.traces);
     var i, j, fullTrace;
 
+    this.fullData = fullData;
+
     // remove empty traces
     trace_id_loop:
     for(i = 0; i < traceIds.length; i++) {
@@ -446,7 +452,7 @@ proto.updateTraces = function(fullData, calcData) {
     // update / create trace objects
     for(i = 0; i < fullData.length; i++) {
         fullTrace = fullData[i];
-
+        this._inputs[fullTrace.uid] = fullTrace._input;
         var calcTrace = calcData[i],
             traceObj = this.traces[fullTrace.uid];
 
@@ -505,13 +511,12 @@ proto.draw = function() {
         if(nextSelection && mouseUp) {
             this.graphDiv.emit('plotly_click', {
                 points: [{
-                    trace: nextSelection.trace,
-                    dataCoord: nextSelection.dataCoord.slice(),
-                    traceCoord: nextSelection.traceCoord.slice(),
-                    textLabel: nextSelection.textLabel,
-                    color: nextSelection.color,
-                    name: nextSelection.name,
-                    hoverinfo: nextSelection.hoverinfo
+                    x: nextSelection.traceCoord[0],
+                    y: nextSelection.traceCoord[1],
+                    data: this._inputs[nextSelection.trace.uid],
+                    fullData: this.fullData,
+                    xaxis: this.xaxis,
+                    yaxis: this.yaxis
                 }]
             });
         }
@@ -547,14 +552,12 @@ proto.draw = function() {
                 // also it's important to copy, otherwise data is lost by the time event data is read
                 this.graphDiv.emit('plotly_hover', {
                     points: [{
-                        trace: nextSelection.trace,
-                        dataCoord: nextSelection.dataCoord.slice(),
-                        traceCoord: nextSelection.traceCoord.slice(),
-                        textLabel: nextSelection.textLabel,
-                        color: nextSelection.color,
-                        name: nextSelection.name,
-                        hoverinfo: nextSelection.hoverinfo,
-                        screenCoord: nextSelection.screenCoord.slice()
+                        x: nextSelection.traceCoord[0],
+                        y: nextSelection.traceCoord[1],
+                        data: this._inputs[nextSelection.trace.uid],
+                        fullData: this.fullData,
+                        xaxis: this.xaxis,
+                        yaxis: this.yaxis
                     }]
                 });
 
