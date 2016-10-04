@@ -16,6 +16,7 @@ var d3 = require('d3');
 var Color = require('../../components/color');
 var Drawing = require('../../components/drawing');
 var Axes = require('../../plots/cartesian/axes');
+var Fx = require('../../plots/cartesian/graph_interact');
 
 var addProjectionsToD3 = require('./projections');
 var createGeoScale = require('./set_scale');
@@ -32,7 +33,6 @@ addProjectionsToD3(d3);
 
 
 function Geo(options, fullLayout) {
-
     this.id = options.id;
     this.graphDiv = options.graphDiv;
     this.container = options.container;
@@ -52,6 +52,9 @@ function Geo(options, fullLayout) {
 
     this.zoom = null;
     this.zoomReset = null;
+
+    this.xaxis = null;
+    this.yaxis = null;
 
     this.makeFramework();
     this.updateFx(fullLayout.hovermode);
@@ -87,6 +90,30 @@ proto.plot = function(geoCalcData, fullLayout, promises) {
     _this.framework
         .call(_this.zoom)
         .on('dblclick.zoom', _this.zoomReset);
+
+    _this.framework.on('mousemove', function() {
+        var mouse = d3.mouse(this),
+            lonlat = _this.projection.invert(mouse);
+
+        if(isNaN(lonlat[0]) || isNaN(lonlat[1])) return;
+
+        var evt = {
+            target: true,
+            xpx: mouse[0],
+            ypx: mouse[1]
+        };
+
+        _this.xaxis.c2p = function() { return mouse[0]; };
+        _this.xaxis.p2c = function() { return lonlat[0]; };
+        _this.yaxis.c2p = function() { return mouse[1]; };
+        _this.yaxis.p2c = function() { return lonlat[1]; };
+
+        Fx.hover(_this.graphDiv, evt, _this.id);
+    });
+
+    _this.framework.on('click', function() {
+        Fx.click(_this.graphDiv, { target: true });
+    });
 
     topojsonNameNew = topojsonUtils.getTopojsonName(geoLayout);
 
@@ -265,6 +292,8 @@ proto.makeFramework = function() {
         .attr('id', this.id)
         .style('position', 'absolute');
 
+    // only choropleth traces use this,
+    // scattergeo traces use Fx.hover and fullLayout._hoverlayer
     var hoverContainer = this.hoverContainer = geoDiv.append('svg');
     hoverContainer
         .attr(xmlnsNamespaces.svgAttrs)
@@ -294,14 +323,20 @@ proto.makeFramework = function() {
     framework.on('dblclick.zoom', null);
 
     // TODO use clip paths instead of nested SVG
+
+    this.xaxis = { _id: 'x' };
+    this.yaxis = { _id: 'y' };
 };
 
 proto.adjustLayout = function(geoLayout, graphSize) {
     var domain = geoLayout.domain;
 
+    var left = graphSize.l + graphSize.w * domain.x[0] + geoLayout._marginX,
+        top = graphSize.t + graphSize.h * (1 - domain.y[1]) + geoLayout._marginY;
+
     this.geoDiv.style({
-        left: graphSize.l + graphSize.w * domain.x[0] + geoLayout._marginX + 'px',
-        top: graphSize.t + graphSize.h * (1 - domain.y[1]) + geoLayout._marginY + 'px',
+        left: left + 'px',
+        top: top + 'px',
         width: geoLayout._width + 'px',
         height: geoLayout._height + 'px'
     });
@@ -322,6 +357,12 @@ proto.adjustLayout = function(geoLayout, graphSize) {
             height: geoLayout._height
         })
         .call(Color.fill, geoLayout.bgcolor);
+
+    this.xaxis._offset = left;
+    this.xaxis._length = geoLayout._width;
+
+    this.yaxis._offset = top;
+    this.yaxis._length = geoLayout._height;
 };
 
 proto.drawTopo = function(selection, layerName, geoLayout) {
@@ -445,27 +486,36 @@ proto.styleLayout = function(geoLayout) {
     }
 };
 
+proto.isLonLatOverEdges = function(lonlat) {
+    var clipAngle = this.clipAngle;
+
+    if(clipAngle === null) return false;
+
+    var p = this.projection.rotate(),
+        angle = d3.geo.distance(lonlat, [-p[0], -p[1]]),
+        maxAngle = clipAngle * Math.PI / 180;
+
+    return angle > maxAngle;
+};
+
 // [hot code path] (re)draw all paths which depend on the projection
 proto.render = function() {
-    var framework = this.framework,
+    var _this = this,
+        framework = _this.framework,
         gChoropleth = framework.select('g.choroplethlayer'),
         gScatterGeo = framework.select('g.scattergeolayer'),
-        projection = this.projection,
-        path = this.path,
-        clipAngle = this.clipAngle;
+        path = _this.path;
 
     function translatePoints(d) {
-        var lonlat = projection([d.lon, d.lat]);
-        if(!lonlat) return null;
-        return 'translate(' + lonlat[0] + ',' + lonlat[1] + ')';
+        var lonlatPx = _this.projection(d.lonlat);
+        if(!lonlatPx) return null;
+
+        return 'translate(' + lonlatPx[0] + ',' + lonlatPx[1] + ')';
     }
 
     // hide paths over edges of clipped projections
     function hideShowPoints(d) {
-        var p = projection.rotate(),
-            angle = d3.geo.distance([d.lon, d.lat], [-p[0], -p[1]]),
-            maxAngle = clipAngle * Math.PI / 180;
-        return (angle > maxAngle) ? '0' : '1.0';
+        return _this.isLonLatOverEdges(d.lonlat) ? '0' : '1.0';
     }
 
     framework.selectAll('path.basepath').attr('d', path);
@@ -476,7 +526,7 @@ proto.render = function() {
 
     gScatterGeo.selectAll('path.js-line').attr('d', path);
 
-    if(clipAngle !== null) {
+    if(_this.clipAngle !== null) {
         gScatterGeo.selectAll('path.point')
             .style('opacity', hideShowPoints)
             .attr('transform', translatePoints);
