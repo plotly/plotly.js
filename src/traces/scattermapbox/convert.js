@@ -42,8 +42,8 @@ module.exports = function convert(calcTrace) {
         symbol: symbol
     };
 
-    // early return is not visible
-    if(!isVisible) return opts;
+    // early return if not visible or placeholder
+    if(!isVisible || calcTrace[0].placeholder) return opts;
 
     // fill layer and line layer use the same coords
     var coords;
