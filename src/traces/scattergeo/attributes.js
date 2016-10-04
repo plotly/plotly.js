@@ -27,6 +27,7 @@ module.exports = {
         valType: 'data_array',
         description: 'Sets the latitude coordinates (in degrees North).'
     },
+
     locations: {
         valType: 'data_array',
         description: [
@@ -45,7 +46,9 @@ module.exports = {
             'to regions on the map.'
         ].join(' ')
     },
+
     mode: extendFlat({}, scatterAttrs.mode, {dflt: 'markers'}),
+
     text: extendFlat({}, scatterAttrs.text, {
         description: [
             'Sets text elements associated with each (lon,lat) pair',
@@ -56,11 +59,16 @@ module.exports = {
             'this trace\'s (lon,lat) or `locations` coordinates.'
         ].join(' ')
     }),
+    textfont: scatterAttrs.textfont,
+    textposition: scatterAttrs.textposition,
+
     line: {
         color: scatterLineAttrs.color,
         width: scatterLineAttrs.width,
         dash: scatterLineAttrs.dash
     },
+    connectgaps: scatterAttrs.connectgaps,
+
     marker: extendFlat({}, {
         symbol: scatterMarkerAttrs.symbol,
         opacity: scatterMarkerAttrs.opacity,
@@ -76,11 +84,25 @@ module.exports = {
     },
         colorAttributes('marker')
     ),
-    textfont: scatterAttrs.textfont,
-    textposition: scatterAttrs.textposition,
+
+    fill: {
+        valType: 'enumerated',
+        values: ['none', 'toself'],
+        dflt: 'none',
+        role: 'style',
+        description: [
+            'Sets the area to fill with a solid color.',
+            'Use with `fillcolor` if not *none*.',
+            '*toself* connects the endpoints of the trace (or each segment',
+            'of the trace if it has gaps) into a closed shape.'
+        ].join(' ')
+    },
+    fillcolor: scatterAttrs.fillcolor,
+
     hoverinfo: extendFlat({}, plotAttrs.hoverinfo, {
         flags: ['lon', 'lat', 'location', 'text', 'name']
     }),
+
     _nestedModules: {
         'marker.colorbar': 'Colorbar'
     }

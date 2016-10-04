@@ -15,7 +15,7 @@ ScatterGeo.attributes = require('./attributes');
 ScatterGeo.supplyDefaults = require('./defaults');
 ScatterGeo.colorbar = require('../scatter/colorbar');
 ScatterGeo.calc = require('./calc');
-ScatterGeo.plot = require('./plot').plot;
+ScatterGeo.plot = require('./plot');
 
 ScatterGeo.moduleType = 'trace';
 ScatterGeo.name = 'scattergeo';
