@@ -16,6 +16,7 @@ ScatterMapbox.supplyDefaults = require('./defaults');
 ScatterMapbox.colorbar = require('../scatter/colorbar');
 ScatterMapbox.calc = require('./calc');
 ScatterMapbox.hoverPoints = require('./hover');
+ScatterMapbox.eventData = require('./event_data');
 ScatterMapbox.plot = require('./plot');
 
 ScatterMapbox.moduleType = 'trace';
