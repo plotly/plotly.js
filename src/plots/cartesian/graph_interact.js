@@ -583,19 +583,27 @@ function hover(gd, evt, subplot) {
     // other people and send it to the event
     for(itemnum = 0; itemnum < hoverData.length; itemnum++) {
         var pt = hoverData[itemnum];
+
         var out = {
             data: pt.trace._input,
             fullData: pt.trace,
             curveNumber: pt.trace.index,
-            pointNumber: pt.index,
-            x: pt.xVal,
-            y: pt.yVal,
-            xaxis: pt.xa,
-            yaxis: pt.ya
+            pointNumber: pt.index
         };
-        if(pt.zLabelVal !== undefined) out.z = pt.zLabelVal;
+
+        if(pt.trace._module.eventData) out = pt.trace._module.eventData(out, pt);
+        else {
+            out.x = pt.xVal;
+            out.y = pt.yVal;
+            out.xaxis = pt.xa;
+            out.yaxis = pt.ya;
+
+            if(pt.zLabelVal !== undefined) out.z = pt.zLabelVal;
+        }
+
         newhoverdata.push(out);
     }
+
     gd._hoverdata = newhoverdata;
 
     if(!hoverChanged(gd, evt, oldhoverdata)) return;
