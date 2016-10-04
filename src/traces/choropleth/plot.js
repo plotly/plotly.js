@@ -59,9 +59,8 @@ plotChoropleth.calcGeoJSON = function(trace, topojson) {
 };
 
 plotChoropleth.plot = function(geo, calcData, geoLayout) {
-    function keyFunc(d) {
-        return d[0].trace.uid;
-    }
+
+    function keyFunc(d) { return d[0].trace.uid; }
 
     var framework = geo.framework,
         gChoropleth = framework.select('g.choroplethlayer'),
