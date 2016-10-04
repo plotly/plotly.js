@@ -266,9 +266,6 @@ describe('updateevent and updatevalue', function() {
 
         var mockCopy = Lib.extendDeep({}, mock);
 
-        mockCopy.layout.sliders[0].updateevent = 'plotly_someevent';
-        mockCopy.layout.sliders[0].updateevent = 'plotly_someevent';
-
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
 
