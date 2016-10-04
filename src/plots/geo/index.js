@@ -46,7 +46,7 @@ exports.plot = function plotGeo(gd) {
     for(var i = 0; i < geoIds.length; i++) {
         var geoId = geoIds[i],
             geoCalcData = getSubplotCalcData(calcData, geoId),
-            geo = fullLayout[geoId]._geo;
+            geo = fullLayout[geoId]._subplot;
 
         // If geo is not instantiated, create one!
         if(geo === undefined) {
@@ -59,7 +59,7 @@ exports.plot = function plotGeo(gd) {
                 fullLayout
             );
 
-            fullLayout[geoId]._geo = geo;
+            fullLayout[geoId]._subplot = geo;
         }
 
         geo.plot(geoCalcData, fullLayout, gd._promises);
@@ -71,7 +71,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
     for(var i = 0; i < oldGeoKeys.length; i++) {
         var oldGeoKey = oldGeoKeys[i];
-        var oldGeo = oldFullLayout[oldGeoKey]._geo;
+        var oldGeo = oldFullLayout[oldGeoKey]._subplot;
 
         if(!newFullLayout[oldGeoKey] && !!oldGeo) {
             oldGeo.geoDiv.remove();
@@ -87,7 +87,7 @@ exports.toSVG = function(gd) {
     for(var i = 0; i < geoIds.length; i++) {
         var geoLayout = fullLayout[geoIds[i]],
             domain = geoLayout.domain,
-            geoFramework = geoLayout._geo.framework;
+            geoFramework = geoLayout._subplot.framework;
 
         geoFramework.attr('style', null);
         geoFramework
