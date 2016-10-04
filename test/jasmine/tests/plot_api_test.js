@@ -8,6 +8,7 @@ var Legend = require('@src/components/legend');
 var pkg = require('../../../package.json');
 var subroutines = require('@src/plot_api/subroutines');
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -779,6 +780,43 @@ describe('Test plot api', function() {
         });
     });
 
+    describe('Plotly.redraw', function() {
+
+        afterEach(destroyGraphDiv);
+
+        it('', function(done) {
+            var gd = createGraphDiv(),
+                initialData = [],
+                layout = { title: 'Redraw' };
+
+            Plotly.newPlot(gd, initialData, layout);
+
+            var trace1 = {
+                x: [1, 2, 3, 4],
+                y: [4, 1, 5, 3],
+                name: 'First Trace'
+            };
+            var trace2 = {
+                x: [1, 2, 3, 4],
+                y: [14, 11, 15, 13],
+                name: 'Second Trace'
+            };
+            var trace3 = {
+                x: [1, 2, 3, 4],
+                y: [5, 3, 7, 1],
+                name: 'Third Trace'
+            };
+
+            var newData = [trace1, trace2, trace3];
+            gd.data = newData;
+
+            Plotly.redraw(gd).then(function() {
+                expect(d3.selectAll('g.trace.scatter').size()).toEqual(3);
+            })
+            .then(done);
+        });
+    });
+
     describe('cleanData', function() {
         var gd;
 
@@ -896,7 +934,7 @@ describe('Test plot api', function() {
     });
 
     describe('Plotly.update should', function() {
-        var gd, calcdata;
+        var gd, data, layout, calcdata;
 
         beforeAll(function() {
             Object.keys(subroutines).forEach(function(k) {
@@ -907,6 +945,8 @@ describe('Test plot api', function() {
         beforeEach(function(done) {
             gd = createGraphDiv();
             Plotly.plot(gd, [{ y: [2, 1, 2] }]).then(function() {
+                data = gd.data;
+                layout = gd.layout;
                 calcdata = gd.calcdata;
                 done();
             });
@@ -926,7 +966,29 @@ describe('Test plot api', function() {
 
         it('clear calcdata on data updates', function(done) {
             Plotly.update(gd, { x: [[3, 1, 3]] }).then(function() {
+                expect(data).toBe(gd.data);
+                expect(layout).toBe(gd.layout);
                 expect(calcdata).not.toBe(gd.calcdata);
+                done();
+            });
+        });
+
+        it('clear calcdata on data + axis updates w/o extending current gd.data', function(done) {
+            var traceUpdate = {
+                x: [[3, 1, 3]]
+            };
+
+            var layoutUpdate = {
+                xaxis: {title: 'A', type: '-'}
+            };
+
+            Plotly.update(gd, traceUpdate, layoutUpdate).then(function() {
+                expect(data).toBe(gd.data);
+                expect(layout).toBe(gd.layout);
+                expect(calcdata).not.toBe(gd.calcdata);
+
+                expect(gd.data.length).toEqual(1);
+
                 done();
             });
         });

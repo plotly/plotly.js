@@ -9,6 +9,15 @@
   "env": {
     "commonjs": true
   },
+  "globals": {
+    "Promise": true,
+    "Float32Array": true,
+    "Float64Array": true,
+    "Uint8Array": true,
+    "Int16Array": true,
+    "Int32Array": true,
+    "ArrayBuffer": true
+  },
   "rules": {
     "no-trailing-spaces": [2],
     "no-multiple-empty-lines": [2, {"max": 2, "maxEOF": 0}],

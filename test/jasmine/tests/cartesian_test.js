@@ -150,6 +150,52 @@ describe('restyle', function() {
                 expect(firstLine2).toBe(secondLine2);
             }).then(done);
         });
+
+        it('can change scatter mode', function(done) {
+            var mock = Lib.extendDeep({}, require('@mocks/text_chart_basic.json'));
+
+            function assertScatterModeSizes(lineSize, pointSize, textSize) {
+                var gd3 = d3.select(gd),
+                    lines = gd3.selectAll('g.scatter.trace .js-line'),
+                    points = gd3.selectAll('g.scatter.trace path.point'),
+                    texts = gd3.selectAll('g.scatter.trace text');
+
+                expect(lines.size()).toEqual(lineSize);
+                expect(points.size()).toEqual(pointSize);
+                expect(texts.size()).toEqual(textSize);
+            }
+
+            Plotly.plot(gd, mock.data, mock.layout).then(function() {
+                assertScatterModeSizes(2, 6, 9);
+
+                return Plotly.restyle(gd, 'mode', 'lines');
+            })
+            .then(function() {
+                assertScatterModeSizes(3, 0, 0);
+
+                return Plotly.restyle(gd, 'mode', 'markers');
+            })
+            .then(function() {
+                assertScatterModeSizes(0, 9, 0);
+
+                return Plotly.restyle(gd, 'mode', 'markers+text');
+            })
+            .then(function() {
+                assertScatterModeSizes(0, 9, 9);
+
+                return Plotly.restyle(gd, 'mode', 'text');
+            })
+            .then(function() {
+                assertScatterModeSizes(0, 0, 9);
+
+                return Plotly.restyle(gd, 'mode', 'markers+text+lines');
+            })
+            .then(function() {
+                assertScatterModeSizes(3, 9, 9);
+            })
+            .then(done);
+
+        });
     });
 });
 
@@ -203,6 +249,59 @@ describe('relayout', function() {
                 done();
             });
         });
+
+    });
+
+    describe('axis ranges', function() {
+        var gd;
+
+        beforeEach(function() {
+            gd = createGraphDiv();
+        });
+
+        afterEach(destroyGraphDiv);
+
+        it('should translate points and text element', function(done) {
+            var mockData = [{
+                x: [1],
+                y: [1],
+                text: ['A'],
+                mode: 'markers+text'
+            }];
+
+            function assertPointTranslate(pointT, textT) {
+                var TOLERANCE = 10;
+
+                var gd3 = d3.select(gd),
+                    points = gd3.selectAll('g.scatter.trace path.point'),
+                    texts = gd3.selectAll('g.scatter.trace text');
+
+                expect(points.size()).toEqual(1);
+                expect(texts.size()).toEqual(1);
+
+                expect(points.attr('x')).toBe(null);
+                expect(points.attr('y')).toBe(null);
+                expect(texts.attr('transform')).toBe(null);
+
+                var translate = Lib.getTranslate(points);
+                expect(Math.abs(translate.x - pointT[0])).toBeLessThan(TOLERANCE);
+                expect(Math.abs(translate.y - pointT[1])).toBeLessThan(TOLERANCE);
+
+                expect(Math.abs(texts.attr('x') - textT[0])).toBeLessThan(TOLERANCE);
+                expect(Math.abs(texts.attr('y') - textT[1])).toBeLessThan(TOLERANCE);
+            }
+
+            Plotly.plot(gd, mockData).then(function() {
+                assertPointTranslate([270, 135], [270, 135]);
+
+                return Plotly.relayout(gd, 'xaxis.range', [2, 3]);
+            })
+            .then(function() {
+                assertPointTranslate([0, 540], [-540, 135]);
+            })
+            .then(done);
+        });
+
     });
 
 });

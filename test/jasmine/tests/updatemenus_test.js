@@ -7,6 +7,7 @@ var Lib = require('@src/lib');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var TRANSITION_DELAY = 100;
+var fail = require('../assets/fail_test');
 
 describe('update menus defaults', function() {
     'use strict';
@@ -25,6 +26,12 @@ describe('update menus defaults', function() {
             buttons: [{
                 method: 'relayout',
                 args: ['title', 'Hello World']
+            }, {
+                method: 'update',
+                args: [ { 'marker.size': 20 }, { 'xaxis.range': [0, 10] }, [0, 1] ]
+            }, {
+                method: 'animate',
+                args: [ 'frame1', { transition: { duration: 500, ease: 'cubic-in-out' }}]
             }]
         }, {
             bgcolor: 'red'
@@ -40,8 +47,13 @@ describe('update menus defaults', function() {
 
         expect(layoutOut.updatemenus[0].visible).toBe(true);
         expect(layoutOut.updatemenus[0].active).toEqual(0);
+        expect(layoutOut.updatemenus[0].buttons[0].args.length).toEqual(2);
+        expect(layoutOut.updatemenus[0].buttons[1].args.length).toEqual(3);
+        expect(layoutOut.updatemenus[0].buttons[2].args.length).toEqual(2);
+
         expect(layoutOut.updatemenus[1].visible).toBe(false);
         expect(layoutOut.updatemenus[1].active).toBeUndefined();
+
         expect(layoutOut.updatemenus[2].visible).toBe(false);
         expect(layoutOut.updatemenus[2].active).toBeUndefined();
     });
@@ -136,6 +148,81 @@ describe('update menus defaults', function() {
         expect(layoutOut.updatemenus[0].bgcolor).toEqual('blue');
         expect(layoutOut.updatemenus[1].bgcolor).toEqual('red');
     });
+
+    it('should default \'type\' to \'dropdown\'', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].type).toEqual('dropdown');
+    });
+
+    it('should default \'direction\' to \'down\'', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].direction).toEqual('down');
+    });
+
+    it('should default \'showactive\' to true', function() {
+        layoutIn.updatemenus = [{
+            buttons: [{method: 'relayout', args: ['title', 'Hello World']}]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.updatemenus[0].showactive).toEqual(true);
+    });
+});
+
+describe('update menus buttons', function() {
+    var mock = require('@mocks/updatemenus_positioning.json');
+    var gd;
+    var allMenus, buttonMenus, dropdownMenus;
+
+    beforeEach(function(done) {
+        gd = createGraphDiv();
+
+        // move update menu #2 to click on them separately
+        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy.layout.updatemenus[1].x = 1;
+
+        allMenus = mockCopy.layout.updatemenus;
+        buttonMenus = allMenus.filter(function(opts) {return opts.type === 'buttons';});
+        dropdownMenus = allMenus.filter(function(opts) {return opts.type !== 'buttons';});
+
+        Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
+    });
+
+    afterEach(function() {
+        Plotly.purge(gd);
+        destroyGraphDiv();
+    });
+
+    it('creates button menus', function(done) {
+        assertNodeCount('.' + constants.containerClassName, 1);
+
+        // 12 menus, but button menus don't have headers, so there are only six headers:
+        assertNodeCount('.' + constants.headerClassName, dropdownMenus.length);
+
+        // Count the *total* number of buttons we expect for this mock:
+        var buttonCount = 0;
+        buttonMenus.forEach(function(menu) {buttonCount += menu.buttons.length;});
+
+        assertNodeCount('.' + constants.buttonClassName, buttonCount);
+
+        done();
+
+    });
+
+    function assertNodeCount(query, cnt) {
+        expect(d3.selectAll(query).size()).toEqual(cnt);
+    }
 });
 
 describe('update menus interactions', function() {
@@ -328,7 +415,7 @@ describe('update menus interactions', function() {
 
             return Plotly.relayout(gd, 'updatemenus[1].buttons[1].label', 'a looooooooooooong<br>label');
         }).then(function() {
-            assertItemDims(selectHeader(1), 179, 34.2);
+            assertItemDims(selectHeader(1), 179, 35);
 
             return click(selectHeader(1));
         }).then(function() {
@@ -360,6 +447,60 @@ describe('update menus interactions', function() {
         });
     });
 
+    it('applies padding on all sides', function(done) {
+        var xy1, xy2;
+        var firstMenu = d3.select('.' + constants.headerGroupClassName);
+        var xpad = 80;
+        var ypad = 60;
+
+        // Position it center-anchored and in the middle of the plot:
+        Plotly.relayout(gd, {
+            'updatemenus[0].x': 0.2,
+            'updatemenus[0].y': 0.5,
+            'updatemenus[0].xanchor': 'center',
+            'updatemenus[0].yanchor': 'middle',
+        }).then(function() {
+            // Convert to xy:
+            xy1 = firstMenu.attr('transform').match(/translate\(([^,]*),\s*([^\)]*)\)/).slice(1).map(parseFloat);
+
+            // Set three of four paddings. This should move it.
+            return Plotly.relayout(gd, {
+                'updatemenus[0].pad.t': ypad,
+                'updatemenus[0].pad.r': xpad,
+                'updatemenus[0].pad.b': ypad,
+                'updatemenus[0].pad.l': xpad,
+            });
+        }).then(function() {
+            xy2 = firstMenu.attr('transform').match(/translate\(([^,]*),\s*([^\)]*)\)/).slice(1).map(parseFloat);
+
+            expect(xy1[0] - xy2[0]).toEqual(xpad);
+            expect(xy1[1] - xy2[1]).toEqual(ypad);
+        }).catch(fail).then(done);
+    });
+
+    it('appliesy padding on relayout', function(done) {
+        var x1, x2;
+        var firstMenu = d3.select('.' + constants.headerGroupClassName);
+        var padShift = 40;
+
+        // Position the menu in the center of the plot horizontal so that
+        // we can test padding updates without worrying about margin pushing.
+        Plotly.relayout(gd, {
+            'updatemenus[0].x': 0.5,
+            'updatemenus[0].pad.r': 0,
+        }).then(function() {
+            // Extract the x-component of the translation:
+            x1 = parseInt(firstMenu.attr('transform').match(/translate\(([^,]*).*/)[1]);
+
+            return Plotly.relayout(gd, 'updatemenus[0].pad.r', 40);
+        }).then(function() {
+            // Extract the x-component of the translation:
+            x2 = parseInt(firstMenu.attr('transform').match(/translate\(([^,]*).*/)[1]);
+
+            expect(x1 - x2).toBeCloseTo(padShift, 1);
+        }).catch(fail).then(done);
+    });
+
     function assertNodeCount(query, cnt) {
         expect(d3.selectAll(query).size()).toEqual(cnt);
     }
@@ -370,21 +511,21 @@ describe('update menus interactions', function() {
         assertNodeCount('.' + constants.containerClassName, 1);
         assertNodeCount('.' + constants.headerClassName, expectedMenus.length);
 
-        var gButton = d3.select('.' + constants.buttonGroupClassName),
+        var gButton = d3.select('.' + constants.dropdownButtonGroupClassName),
             actualActiveIndex = +gButton.attr(constants.menuIndexAttrName),
             hasActive = false;
 
         expectedMenus.forEach(function(expected, i) {
             if(expected) {
                 expect(actualActiveIndex).toEqual(i);
-                assertNodeCount('.' + constants.buttonClassName, expected);
+                assertNodeCount('.' + constants.dropdownButtonClassName, expected);
                 hasActive = true;
             }
         });
 
         if(!hasActive) {
             expect(actualActiveIndex).toEqual(-1);
-            assertNodeCount('.' + constants.buttonClassName, 0);
+            assertNodeCount('.' + constants.dropdownButtonClassName, 0);
         }
     }
 
@@ -437,7 +578,7 @@ describe('update menus interactions', function() {
     }
 
     function selectButton(buttonIndex) {
-        var buttons = d3.selectAll('.' + constants.buttonClassName),
+        var buttons = d3.selectAll('.' + constants.dropdownButtonClassName),
             button = d3.select(buttons[0][buttonIndex]);
         return button;
     }

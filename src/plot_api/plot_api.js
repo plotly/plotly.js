@@ -484,6 +484,9 @@ Plotly.redraw = function(gd) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
+    helpers.cleanData(gd.data, gd.data);
+    helpers.cleanLayout(gd.layout);
+
     gd.calcdata = undefined;
     return Plotly.plot(gd).then(function() {
         gd.emit('plotly_redraw');
@@ -2070,9 +2073,15 @@ Plotly.update = function update(gd, traceUpdate, layoutUpdate, traces) {
     var seq = [];
 
     if(restyleFlags.fullReplot && relayoutFlags.layoutReplot) {
-        var layout = gd.layout;
+        var data = gd.data,
+            layout = gd.layout;
+
+        // clear existing data/layout on gd
+        // so that Plotly.plot doesn't try to extend them
+        gd.data = undefined;
         gd.layout = undefined;
-        seq.push(function() { return Plotly.plot(gd, gd.data, layout); });
+
+        seq.push(function() { return Plotly.plot(gd, data, layout); });
     }
     else if(restyleFlags.fullReplot) {
         seq.push(Plotly.plot);
@@ -2212,13 +2221,13 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             for(var i = 0; i < frameList.length; i++) {
                 var computedFrame;
 
-                if(frameList[i].name) {
+                if(frameList[i].type === 'byname') {
                     // If it's a named frame, compute it:
                     computedFrame = Plots.computeFrame(gd, frameList[i].name);
                 } else {
                     // Otherwise we must have been given a simple object, so treat
                     // the input itself as the computed frame.
-                    computedFrame = frameList[i].frame;
+                    computedFrame = frameList[i].data;
                 }
 
                 var frameOpts = getFrameOpts(i);
@@ -2285,6 +2294,15 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             var newFrame = trans._currentFrame = trans._frameQueue.shift();
 
             if(newFrame) {
+                gd.emit('plotly_animatingframe', {
+                    name: newFrame.name,
+                    frame: newFrame.frame,
+                    animation: {
+                        frame: newFrame.frameOpts,
+                        transition: newFrame.transitionOpts,
+                    }
+                });
+
                 trans._lastFrameAt = Date.now();
                 trans._timeToNext = newFrame.frameOpts.duration;
 
@@ -2353,34 +2371,49 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
         var isSingleFrame = !allFrames && !isFrameArray && Lib.isPlainObject(frameOrGroupNameOrFrameList);
 
         if(isSingleFrame) {
-            frameList.push(setTransitionConfig({
-                frame: Lib.extendFlat({}, frameOrGroupNameOrFrameList)
-            }));
+            // In this case, a simple object has been passed to animate.
+            frameList.push({
+                type: 'object',
+                data: setTransitionConfig(Lib.extendFlat({}, frameOrGroupNameOrFrameList))
+            });
         } else if(allFrames || typeof frameOrGroupNameOrFrameList === 'string') {
+            // In this case, null or undefined has been passed so that we want to
+            // animate *all* currently defined frames
             for(i = 0; i < trans._frames.length; i++) {
                 frame = trans._frames[i];
 
                 if(allFrames || frame.group === frameOrGroupNameOrFrameList) {
-                    frameList.push(setTransitionConfig({name: frame.name}));
+                    frameList.push({
+                        type: 'byname',
+                        name: frame.name,
+                        data: setTransitionConfig({name: frame.name})
+                    });
                 }
             }
         } else if(isFrameArray) {
             for(i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
                 var frameOrName = frameOrGroupNameOrFrameList[i];
                 if(typeof frameOrName === 'string') {
-                    frameList.push(setTransitionConfig({name: frameOrName}));
+                    // In this case, there's an array and this frame is a string name:
+                    frameList.push({
+                        type: 'byname',
+                        name: frameOrName,
+                        data: setTransitionConfig({name: frameOrName})
+                    });
                 } else {
-                    frameList.push(setTransitionConfig({
-                        frame: Lib.extendFlat({}, frameOrName)
-                    }));
+                    frameList.push({
+                        type: 'object',
+                        data: setTransitionConfig(Lib.extendFlat({}, frameOrName))
+                    });
                 }
             }
         }
 
         // Verify that all of these frames actually exist; return and reject if not:
         for(i = 0; i < frameList.length; i++) {
-            if(frameList[i].name && !trans._frameHash[frameList[i].name]) {
-                Lib.warn('animate failure: frame not found: "' + frameList[i].name + '"');
+            frame = frameList[i];
+            if(frame.type === 'byname' && !trans._frameHash[frame.data.name]) {
+                Lib.warn('animate failure: frame not found: "' + frame.data.name + '"');
                 reject();
                 return;
             }

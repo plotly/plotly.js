@@ -1,5 +1,5 @@
 /**
-* plotly.js (gl3d) v1.17.2
+* plotly.js (gl3d) v1.17.3
 * Copyright 2012-2016, Plotly, Inc.
 * All rights reserved.
 * Licensed under the MIT license
@@ -197,6 +197,8 @@ module.exports = {
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
 module.exports = require('../src/core');
 
 },{"../src/core":352}],4:[function(require,module,exports){
@@ -229,6 +231,8 @@ module.exports = Plotly;
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
 module.exports = require('../src/traces/mesh3d');
 
 },{"../src/traces/mesh3d":444}],6:[function(require,module,exports){
@@ -240,6 +244,8 @@ module.exports = require('../src/traces/mesh3d');
 * LICENSE file in the root directory of this source tree.
 */
 
+'use strict';
+
 module.exports = require('../src/traces/scatter3d');
 
 },{"../src/traces/scatter3d":475}],7:[function(require,module,exports){
@@ -250,6 +256,8 @@ module.exports = require('../src/traces/scatter3d');
 * This source code is licensed under the MIT license found in the
 * LICENSE file in the root directory of this source tree.
 */
+
+'use strict';
 
 module.exports = require('../src/traces/surface');
 
@@ -32125,7 +32133,7 @@ var ndarray   = require('ndarray')
 
 var nextPow2  = require('bit-twiddle').nextPow2
 
-var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_52_arg0_||255>_inline_52_arg1_||255>_inline_52_arg2_||255>_inline_52_arg3_){var _inline_52_l=_inline_52_arg4_-_inline_52_arg6_[0],_inline_52_a=_inline_52_arg5_-_inline_52_arg6_[1],_inline_52_f=_inline_52_l*_inline_52_l+_inline_52_a*_inline_52_a;_inline_52_f<this_closestD2&&(this_closestD2=_inline_52_f,this_closestX=_inline_52_arg6_[0],this_closestY=_inline_52_arg6_[1])}}","args":[{"name":"_inline_52_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_52_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_52_a","_inline_52_f","_inline_52_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
+var selectRange = require('cwise/lib/wrapper')({"args":["array",{"offset":[0,0,1],"array":0},{"offset":[0,0,2],"array":0},{"offset":[0,0,3],"array":0},"scalar","scalar","index"],"pre":{"body":"{this_closestD2=1e8,this_closestX=-1,this_closestY=-1}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"body":{"body":"{if(255>_inline_49_arg0_||255>_inline_49_arg1_||255>_inline_49_arg2_||255>_inline_49_arg3_){var _inline_49_l=_inline_49_arg4_-_inline_49_arg6_[0],_inline_49_a=_inline_49_arg5_-_inline_49_arg6_[1],_inline_49_f=_inline_49_l*_inline_49_l+_inline_49_a*_inline_49_a;_inline_49_f<this_closestD2&&(this_closestD2=_inline_49_f,this_closestX=_inline_49_arg6_[0],this_closestY=_inline_49_arg6_[1])}}","args":[{"name":"_inline_49_arg0_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg1_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg2_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg3_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg4_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg5_","lvalue":false,"rvalue":true,"count":1},{"name":"_inline_49_arg6_","lvalue":false,"rvalue":true,"count":4}],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":["_inline_49_a","_inline_49_f","_inline_49_l"]},"post":{"body":"{return[this_closestX,this_closestY,this_closestD2]}","args":[],"thisVars":["this_closestD2","this_closestX","this_closestY"],"localVars":[]},"debug":false,"funcName":"cwise","blockSize":64})
 
 function SelectResult(x, y, id, value, distance) {
   this.coord = [x, y]
@@ -33963,10 +33971,10 @@ function weakMap() {
 var createShader = require('gl-shader')
 
 
-var vertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute vec3 f;\nattribute vec3 normal;\n\nuniform mat4 model, view, projection, inverseModel;\nuniform vec3 lightPosition, eyePosition;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  worldCoordinate = vec3(uv.zw, f.x);\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\n  vec4 clipPosition = projection * view * worldPosition;\n  gl_Position = clipPosition;\n  kill = f.y;\n  value = f.z;\n  planeCoordinate = uv.xy;\n\n  //Lighting geometry parameters\n  vec4 cameraCoordinate = view * worldPosition;\n  cameraCoordinate.xyz /= cameraCoordinate.w;\n  lightDirection = lightPosition - cameraCoordinate.xyz;\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\n}\n"
-var fragSrc = "precision mediump float;\n#define GLSLIFY 1\n\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat beckmannSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution_2_0(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\n\n\nuniform vec3 lowerBound, upperBound;\nuniform float contourTint;\nuniform vec4 contourColor;\nuniform sampler2D colormap;\nuniform vec3 clipBounds[2];\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n\n  vec3 N = normalize(surfaceNormal);\n  vec3 V = normalize(eyeDirection);\n  vec3 L = normalize(lightDirection);\n\n  if(gl_FrontFacing) {\n    N = -N;\n  }\n\n  float specular = beckmannSpecular_1_1(L, V, N, roughness);\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\n\n  vec4 surfaceColor = texture2D(colormap, vec2(value, value));\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\n\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\n}\n"
-var contourVertSrc = "precision mediump float;\n#define GLSLIFY 1\n\nattribute vec4 uv;\nattribute float f;\n\nuniform mat3 permutation;\nuniform mat4 model, view, projection;\nuniform float height, zOffset;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\n\nvoid main() {\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\n  vec4 worldPosition = model * vec4(dataCoordinate, 1.0);\n\n  vec4 clipPosition = projection * view * worldPosition;\n  clipPosition.z = clipPosition.z + zOffset;\n\n  gl_Position = clipPosition;\n  value = f;\n  kill = -1.0;\n  worldCoordinate = dataCoordinate;\n  planeCoordinate = uv.zw;\n\n  //Don't do lighting for contours\n  surfaceNormal   = vec3(1,0,0);\n  eyeDirection    = vec3(0,1,0);\n  lightDirection  = vec3(0,0,1);\n}\n"
-var pickSrc = "precision mediump float;\n#define GLSLIFY 1\n\nuniform vec2 shape;\nuniform vec3 clipBounds[2];\nuniform float pickId;\n\nvarying float value, kill;\nvarying vec3 worldCoordinate;\nvarying vec2 planeCoordinate;\nvarying vec3 surfaceNormal;\n\nvec2 splitFloat(float v) {\n  float vh = 255.0 * v;\n  float upper = floor(vh);\n  float lower = fract(vh);\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\n}\n\nvoid main() {\n  if(kill > 0.0 ||\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\n    discard;\n  }\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\n}\n"
+var vertSrc = "precision mediump float;\n#define GLSLIFY 1\r\n\r\nattribute vec4 uv;\r\nattribute vec3 f;\r\nattribute vec3 normal;\r\n\r\nuniform mat4 model, view, projection, inverseModel;\r\nuniform vec3 lightPosition, eyePosition;\r\nuniform sampler2D colormap;\r\n\r\nvarying float value, kill;\r\nvarying vec3 worldCoordinate;\r\nvarying vec2 planeCoordinate;\r\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\r\nvarying vec4 vColor;\r\n\r\nvoid main() {\r\n  worldCoordinate = vec3(uv.zw, f.x);\r\n  vec4 worldPosition = model * vec4(worldCoordinate, 1.0);\r\n  vec4 clipPosition = projection * view * worldPosition;\r\n  gl_Position = clipPosition;\r\n  kill = f.y;\r\n  value = f.z;\r\n  planeCoordinate = uv.xy;\r\n\r\n  vColor = texture2D(colormap, vec2(value, value));\r\n\r\n  //Lighting geometry parameters\r\n  vec4 cameraCoordinate = view * worldPosition;\r\n  cameraCoordinate.xyz /= cameraCoordinate.w;\r\n  lightDirection = lightPosition - cameraCoordinate.xyz;\r\n  eyeDirection   = eyePosition - cameraCoordinate.xyz;\r\n  surfaceNormal  = normalize((vec4(normal,0) * inverseModel).xyz);\r\n}\r\n"
+var fragSrc = "precision mediump float;\n#define GLSLIFY 1\r\n\r\nfloat beckmannDistribution_2_0(float x, float roughness) {\n  float NdotH = max(x, 0.0001);\n  float cos2Alpha = NdotH * NdotH;\n  float tan2Alpha = (cos2Alpha - 1.0) / cos2Alpha;\n  float roughness2 = roughness * roughness;\n  float denom = 3.141592653589793 * roughness2 * cos2Alpha * cos2Alpha;\n  return exp(tan2Alpha / roughness2) / denom;\n}\n\n\n\nfloat beckmannSpecular_1_1(\n  vec3 lightDirection,\n  vec3 viewDirection,\n  vec3 surfaceNormal,\n  float roughness) {\n  return beckmannDistribution_2_0(dot(surfaceNormal, normalize(lightDirection + viewDirection)), roughness);\n}\n\n\n\r\nuniform vec3 lowerBound, upperBound;\r\nuniform float contourTint;\r\nuniform vec4 contourColor;\r\nuniform sampler2D colormap;\r\nuniform vec3 clipBounds[2];\r\nuniform float roughness, fresnel, kambient, kdiffuse, kspecular, opacity;\r\nuniform float vertexColor;\r\n\r\nvarying float value, kill;\r\nvarying vec3 worldCoordinate;\r\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\r\nvarying vec4 vColor;\r\n\r\nvoid main() {\r\n  if (kill > 0.0 ||\r\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\r\n    discard;\r\n  }\r\n\r\n  vec3 N = normalize(surfaceNormal);\r\n  vec3 V = normalize(eyeDirection);\r\n  vec3 L = normalize(lightDirection);\r\n\r\n  if(gl_FrontFacing) {\r\n    N = -N;\r\n  }\r\n\r\n  float specular = beckmannSpecular_1_1(L, V, N, roughness);\r\n  float diffuse  = min(kambient + kdiffuse * max(dot(N, L), 0.0), 1.0);\r\n\r\n  //decide how to interpolate color — in vertex or in fragment\r\n  vec4 surfaceColor = step(vertexColor, .5) * texture2D(colormap, vec2(value, value)) + step(.5, vertexColor) * vColor;\r\n\r\n  vec4 litColor = surfaceColor.a * vec4(diffuse * surfaceColor.rgb + kspecular * vec3(1,1,1) * specular,  1.0);\r\n\r\n  gl_FragColor = mix(litColor, contourColor, contourTint) * opacity;\r\n}\r\n"
+var contourVertSrc = "precision mediump float;\n#define GLSLIFY 1\r\n\r\nattribute vec4 uv;\r\nattribute float f;\r\n\r\nuniform mat3 permutation;\r\nuniform mat4 model, view, projection;\r\nuniform float height, zOffset;\r\nuniform sampler2D colormap;\r\n\r\nvarying float value, kill;\r\nvarying vec3 worldCoordinate;\r\nvarying vec2 planeCoordinate;\r\nvarying vec3 lightDirection, eyeDirection, surfaceNormal;\r\nvarying vec4 vColor;\r\n\r\nvoid main() {\r\n  vec3 dataCoordinate = permutation * vec3(uv.xy, height);\r\n  vec4 worldPosition = model * vec4(dataCoordinate, 1.0);\r\n\r\n  vec4 clipPosition = projection * view * worldPosition;\r\n  clipPosition.z = clipPosition.z + zOffset;\r\n\r\n  gl_Position = clipPosition;\r\n  value = f;\r\n  kill = -1.0;\r\n  worldCoordinate = dataCoordinate;\r\n  planeCoordinate = uv.zw;\r\n\r\n  vColor = texture2D(colormap, vec2(value, value));\r\n\r\n  //Don't do lighting for contours\r\n  surfaceNormal   = vec3(1,0,0);\r\n  eyeDirection    = vec3(0,1,0);\r\n  lightDirection  = vec3(0,0,1);\r\n}\r\n"
+var pickSrc = "precision mediump float;\n#define GLSLIFY 1\r\n\r\nuniform vec2 shape;\r\nuniform vec3 clipBounds[2];\r\nuniform float pickId;\r\n\r\nvarying float value, kill;\r\nvarying vec3 worldCoordinate;\r\nvarying vec2 planeCoordinate;\r\nvarying vec3 surfaceNormal;\r\n\r\nvec2 splitFloat(float v) {\r\n  float vh = 255.0 * v;\r\n  float upper = floor(vh);\r\n  float lower = fract(vh);\r\n  return vec2(upper / 255.0, floor(lower * 16.0) / 16.0);\r\n}\r\n\r\nvoid main() {\r\n  if(kill > 0.0 ||\r\n    any(lessThan(worldCoordinate, clipBounds[0])) || any(greaterThan(worldCoordinate, clipBounds[1]))) {\r\n    discard;\r\n  }\r\n  vec2 ux = splitFloat(planeCoordinate.x / shape.x);\r\n  vec2 uy = splitFloat(planeCoordinate.y / shape.y);\r\n  gl_FragColor = vec4(pickId, ux.x, uy.x, ux.y + (uy.y/16.0));\r\n}\r\n"
 
 exports.createShader = function (gl) {
   var shader = createShader(gl, vertSrc, fragSrc, null, [
@@ -34317,7 +34325,7 @@ var do_convert = require("./doConvert.js")
 
 module.exports = function convert(arr, result) {
   var shape = [], c = arr, sz = 1
-  while(c instanceof Array) {
+  while(Array.isArray(c)) {
     shape.push(c.length)
     sz *= c.length
     c = c[0]
@@ -34403,7 +34411,7 @@ function SurfacePickResult (position, index, uv, level, dataCoordinate) {
   this.dataCoordinate = dataCoordinate
 }
 
-var N_COLORS = 265
+var N_COLORS = 256
 
 function genColormap (name) {
   var x = pack([colormap({
@@ -34505,6 +34513,7 @@ function SurfacePlot (
   this.specularLight = 2.0
   this.roughness = 0.5
   this.fresnel = 1.5
+  this.vertexColor = 0;
 
   this.dirty = true
 }
@@ -34611,7 +34620,8 @@ var UNIFORMS = {
   eyePosition: [0, 0, 0],
   roughness: 1,
   fresnel: 1,
-  opacity: 1
+  opacity: 1,
+  vertexColor: 0
 }
 
 var MATRIX_INVERSE = IDENTITY.slice()
@@ -34652,6 +34662,8 @@ function drawCore (params, transparent) {
 
   uniforms.height = 0.0
   uniforms.permutation = DEFAULT_PERM
+
+  uniforms.vertexColor = this.vertexColor
 
   // Compute camera matrix inverse
   var invCameraMatrix = MATRIX_INVERSE
@@ -35086,6 +35098,9 @@ proto.update = function (params) {
   }
   if ('colorBounds' in params) {
     this.colorBounds = params.colorBounds
+  }
+  if ('vertexColor' in params) {
+    this.vertexColor = params.vertexColor ? 1 : 0;
   }
 
   var field = params.field || (params.coords && params.coords[2]) || null
@@ -35637,7 +35652,8 @@ function createSurfacePlot (params) {
     contourBuffer,
     contourVAO,
     dynamicBuffer,
-    dynamicVAO)
+    dynamicVAO
+  )
 
   var nparams = {
     levels: [[], [], []]
@@ -49304,8 +49320,8 @@ drawing.translatePoint = function(d, sel, xa, ya) {
 
     if(isNumeric(x) && isNumeric(y)) {
         // for multiline text this works better
-        if(this.nodeName === 'text') {
-            sel.node().attr('x', x).attr('y', y);
+        if(sel.node().nodeName === 'text') {
+            sel.attr('x', x).attr('y', y);
         } else {
             sel.attr('transform', 'translate(' + x + ',' + y + ')');
         }
@@ -57075,7 +57091,7 @@ exports.svgAttrs = {
 var Plotly = require('./plotly');
 
 // package version injected by `npm run preprocess`
-exports.version = '1.17.2';
+exports.version = '1.17.3';
 
 // inject promise polyfill
 require('es6-promise').polyfill();
@@ -57839,6 +57855,7 @@ var Events = {
         if(plotObj._ev instanceof EventEmitter) return plotObj;
 
         var ev = new EventEmitter();
+        var internalEv = new EventEmitter();
 
         /*
          * Assign to plot._ev while we still live in a land
@@ -57846,6 +57863,16 @@ var Events = {
          * In the future we can make plot the event emitter itself.
          */
         plotObj._ev = ev;
+
+        /*
+         * Create a second event handler that will manage events *internally*.
+         * This allows parts of plotly to respond to thing like relayout without
+         * having to use the user-facing event handler. They cannot peacefully
+         * coexist on the same handler because a user invoking
+         * plotObj.removeAllListeners() would detach internal events, breaking
+         * plotly.
+         */
+        plotObj._internalEv = internalEv;
 
         /*
          * Assign bound methods from the ev to the plot object. These methods
@@ -57862,6 +57889,15 @@ var Events = {
         plotObj.removeAllListeners = ev.removeAllListeners.bind(ev);
 
         /*
+         * Create funtions for managing internal events. These are *only* triggered
+         * by the mirroring of external events via the emit function.
+         */
+        plotObj._internalOn = internalEv.on.bind(internalEv);
+        plotObj._internalOnce = internalEv.once.bind(internalEv);
+        plotObj._removeInternalListener = internalEv.removeListener.bind(internalEv);
+        plotObj._removeAllInternalListeners = internalEv.removeAllListeners.bind(internalEv);
+
+        /*
          * We must wrap emit to continue to support JQuery events. The idea
          * is to check to see if the user is using JQuery events, if they are
          * we emit JQuery events to trigger user handlers as well as the EventEmitter
@@ -57873,6 +57909,7 @@ var Events = {
             }
 
             ev.emit(event, data);
+            internalEv.emit(event, data);
         };
 
         return plotObj;
@@ -57883,6 +57920,10 @@ var Events = {
      * all handlers for a particular event and returns the return value
      * of the LAST handler. This function also triggers jQuery's
      * triggerHandler for backwards compatibility.
+     *
+     * Note: triggerHandler has been recommended for deprecation in v2.0.0,
+     * so the additional behavior of triggerHandler triggering internal events
+     * is deliberate excluded in order to avoid reinforcing more usage.
      */
     triggerHandler: function(plotObj, event, data) {
         var jQueryHandlerValue;
@@ -57938,6 +57979,13 @@ var Events = {
         delete plotObj.removeListener;
         delete plotObj.removeAllListeners;
         delete plotObj.emit;
+
+        delete plotObj._ev;
+        delete plotObj._internalEv;
+        delete plotObj._internalOn;
+        delete plotObj._internalOnce;
+        delete plotObj._removeInternalListener;
+        delete plotObj._removeAllInternalListeners;
 
         return plotObj;
     }
@@ -61601,6 +61649,9 @@ Plotly.redraw = function(gd) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
 
+    helpers.cleanData(gd.data, gd.data);
+    helpers.cleanLayout(gd.layout);
+
     gd.calcdata = undefined;
     return Plotly.plot(gd).then(function() {
         gd.emit('plotly_redraw');
@@ -63329,13 +63380,13 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             for(var i = 0; i < frameList.length; i++) {
                 var computedFrame;
 
-                if(frameList[i].name) {
+                if(frameList[i].type === 'byname') {
                     // If it's a named frame, compute it:
                     computedFrame = Plots.computeFrame(gd, frameList[i].name);
                 } else {
                     // Otherwise we must have been given a simple object, so treat
                     // the input itself as the computed frame.
-                    computedFrame = frameList[i].frame;
+                    computedFrame = frameList[i].data;
                 }
 
                 var frameOpts = getFrameOpts(i);
@@ -63402,6 +63453,15 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
             var newFrame = trans._currentFrame = trans._frameQueue.shift();
 
             if(newFrame) {
+                gd.emit('plotly_animatingframe', {
+                    name: newFrame.name,
+                    frame: newFrame.frame,
+                    animation: {
+                        frame: newFrame.frameOpts,
+                        transition: newFrame.transitionOpts,
+                    }
+                });
+
                 trans._lastFrameAt = Date.now();
                 trans._timeToNext = newFrame.frameOpts.duration;
 
@@ -63470,34 +63530,49 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
         var isSingleFrame = !allFrames && !isFrameArray && Lib.isPlainObject(frameOrGroupNameOrFrameList);
 
         if(isSingleFrame) {
-            frameList.push(setTransitionConfig({
-                frame: Lib.extendFlat({}, frameOrGroupNameOrFrameList)
-            }));
+            // In this case, a simple object has been passed to animate.
+            frameList.push({
+                type: 'object',
+                data: setTransitionConfig(Lib.extendFlat({}, frameOrGroupNameOrFrameList))
+            });
         } else if(allFrames || typeof frameOrGroupNameOrFrameList === 'string') {
+            // In this case, null or undefined has been passed so that we want to
+            // animate *all* currently defined frames
             for(i = 0; i < trans._frames.length; i++) {
                 frame = trans._frames[i];
 
                 if(allFrames || frame.group === frameOrGroupNameOrFrameList) {
-                    frameList.push(setTransitionConfig({name: frame.name}));
+                    frameList.push({
+                        type: 'byname',
+                        name: frame.name,
+                        data: setTransitionConfig({name: frame.name})
+                    });
                 }
             }
         } else if(isFrameArray) {
             for(i = 0; i < frameOrGroupNameOrFrameList.length; i++) {
                 var frameOrName = frameOrGroupNameOrFrameList[i];
                 if(typeof frameOrName === 'string') {
-                    frameList.push(setTransitionConfig({name: frameOrName}));
+                    // In this case, there's an array and this frame is a string name:
+                    frameList.push({
+                        type: 'byname',
+                        name: frameOrName,
+                        data: setTransitionConfig({name: frameOrName})
+                    });
                 } else {
-                    frameList.push(setTransitionConfig({
-                        frame: Lib.extendFlat({}, frameOrName)
-                    }));
+                    frameList.push({
+                        type: 'object',
+                        data: setTransitionConfig(Lib.extendFlat({}, frameOrName))
+                    });
                 }
             }
         }
 
         // Verify that all of these frames actually exist; return and reject if not:
         for(i = 0; i < frameList.length; i++) {
-            if(frameList[i].name && !trans._frameHash[frameList[i].name]) {
-                Lib.warn('animate failure: frame not found: "' + frameList[i].name + '"');
+            frame = frameList[i];
+            if(frame.type === 'byname' && !trans._frameHash[frame.data.name]) {
+                Lib.warn('animate failure: frame not found: "' + frame.data.name + '"');
                 reject();
                 return;
             }
@@ -80374,7 +80449,7 @@ module.exports = function plot(gd, plotinfo, cdscatter, transitionOpts, makeOnCo
 
     selection = scatterlayer.selectAll('g.trace');
 
-    join = selection.data(cdscatter, function(d) {return d[0].trace.uid;});
+    join = selection.data(cdscatter, function(d) { return d[0].trace.uid; });
 
     // Append new traces:
     join.enter().append('g')
@@ -80538,11 +80613,19 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // revpath is fullpath reversed, for fill-to-next
         revpath = '',
         // functions for converting a point array to a path
-        pathfn, revpathbase, revpathfn;
+        pathfn, revpathbase, revpathfn,
+        // variables used before and after the data join
+        pt0, lastSegment, pt1, thisPolygons;
+
+    // initialize line join data / method
+    var segments = [],
+        lineSegments = [],
+        makeUpdate = Lib.noop;
 
     ownFillEl3 = trace._ownFill;
 
     if(subTypes.hasLines(trace) || trace.fill !== 'none') {
+
         if(tonext) {
             // This tells .style which trace to use for fill information:
             tonext.datum(cdscatter);
@@ -80578,7 +80661,7 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             return revpathbase(pts.reverse());
         };
 
-        var segments = linePoints(cdscatter, {
+        segments = linePoints(cdscatter, {
             xaxis: xa,
             yaxis: ya,
             connectGaps: trace.connectgaps,
@@ -80591,12 +80674,10 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         // polygons for hover on fill
         // TODO: can we skip this if hoveron!=fills? That would mean we
         // need to redraw when you change hoveron...
-        var thisPolygons = trace._polygons = new Array(segments.length);
+        thisPolygons = trace._polygons = new Array(segments.length);
         for(i = 0; i < segments.length; i++) {
             trace._polygons[i] = polygonTester(segments[i]);
         }
-
-        var pt0, lastSegment, pt1;
 
         if(segments.length) {
             pt0 = segments[0][0];
@@ -80604,11 +80685,11 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
             pt1 = lastSegment[lastSegment.length - 1];
         }
 
-        var lineSegments = segments.filter(function(s) {
+        lineSegments = segments.filter(function(s) {
             return s.length > 1;
         });
 
-        var makeUpdate = function(isEnter) {
+        makeUpdate = function(isEnter) {
             return function(pts) {
                 thispath = pathfn(pts);
                 thisrevpath = revpathfn(pts);
@@ -80644,66 +80725,66 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
                 }
             };
         };
+    }
 
-        var lineJoin = tr.selectAll('.js-line').data(lineSegments);
+    var lineJoin = tr.selectAll('.js-line').data(lineSegments);
 
-        transition(lineJoin.exit())
-            .style('opacity', 0)
-            .remove();
+    transition(lineJoin.exit())
+        .style('opacity', 0)
+        .remove();
 
-        lineJoin.each(makeUpdate(false));
+    lineJoin.each(makeUpdate(false));
 
-        lineJoin.enter().append('path')
-            .classed('js-line', true)
-            .style('vector-effect', 'non-scaling-stroke')
-            .call(Drawing.lineGroupStyle)
-            .each(makeUpdate(true));
+    lineJoin.enter().append('path')
+        .classed('js-line', true)
+        .style('vector-effect', 'non-scaling-stroke')
+        .call(Drawing.lineGroupStyle)
+        .each(makeUpdate(true));
 
-        if(segments.length) {
-            if(ownFillEl3) {
-                if(pt0 && pt1) {
-                    if(ownFillDir) {
-                        if(ownFillDir === 'y') {
-                            pt0[1] = pt1[1] = ya.c2p(0, true);
-                        }
-                        else if(ownFillDir === 'x') {
-                            pt0[0] = pt1[0] = xa.c2p(0, true);
-                        }
-
-                        // fill to zero: full trace path, plus extension of
-                        // the endpoints to the appropriate axis
-                        // For the sake of animations, wrap the points around so that
-                        // the points on the axes are the first two points. Otherwise
-                        // animations get a little crazy if the number of points changes.
-                        transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1));
-                    } else {
-                        // fill to self: just join the path to itself
-                        transition(ownFillEl3).attr('d', fullpath + 'Z');
+    if(segments.length) {
+        if(ownFillEl3) {
+            if(pt0 && pt1) {
+                if(ownFillDir) {
+                    if(ownFillDir === 'y') {
+                        pt0[1] = pt1[1] = ya.c2p(0, true);
                     }
+                    else if(ownFillDir === 'x') {
+                        pt0[0] = pt1[0] = xa.c2p(0, true);
+                    }
+
+                    // fill to zero: full trace path, plus extension of
+                    // the endpoints to the appropriate axis
+                    // For the sake of animations, wrap the points around so that
+                    // the points on the axes are the first two points. Otherwise
+                    // animations get a little crazy if the number of points changes.
+                    transition(ownFillEl3).attr('d', 'M' + pt1 + 'L' + pt0 + 'L' + fullpath.substr(1));
+                } else {
+                    // fill to self: just join the path to itself
+                    transition(ownFillEl3).attr('d', fullpath + 'Z');
                 }
             }
-            else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
-                // fill to next: full trace path, plus the previous path reversed
-                if(trace.fill === 'tonext') {
-                    // tonext: for use by concentric shapes, like manually constructed
-                    // contours, we just add the two paths closed on themselves.
-                    // This makes strange results if one path is *not* entirely
-                    // inside the other, but then that is a strange usage.
-                    transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z');
-                }
-                else {
-                    // tonextx/y: for now just connect endpoints with lines. This is
-                    // the correct behavior if the endpoints are at the same value of
-                    // y/x, but if they *aren't*, we should ideally do more complicated
-                    // things depending on whether the new endpoint projects onto the
-                    // existing curve or off the end of it
-                    transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z');
-                }
-                trace._polygons = trace._polygons.concat(prevPolygons);
-            }
-            trace._prevRevpath = revpath;
-            trace._prevPolygons = thisPolygons;
         }
+        else if(trace.fill.substr(0, 6) === 'tonext' && fullpath && prevRevpath) {
+            // fill to next: full trace path, plus the previous path reversed
+            if(trace.fill === 'tonext') {
+                // tonext: for use by concentric shapes, like manually constructed
+                // contours, we just add the two paths closed on themselves.
+                // This makes strange results if one path is *not* entirely
+                // inside the other, but then that is a strange usage.
+                transition(tonext).attr('d', fullpath + 'Z' + prevRevpath + 'Z');
+            }
+            else {
+                // tonextx/y: for now just connect endpoints with lines. This is
+                // the correct behavior if the endpoints are at the same value of
+                // y/x, but if they *aren't*, we should ideally do more complicated
+                // things depending on whether the new endpoint projects onto the
+                // existing curve or off the end of it
+                transition(tonext).attr('d', fullpath + 'L' + prevRevpath.substr(1) + 'Z');
+            }
+            trace._polygons = trace._polygons.concat(prevPolygons);
+        }
+        trace._prevRevpath = revpath;
+        trace._prevPolygons = thisPolygons;
     }
 
 
@@ -80722,64 +80803,78 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         }
     }
 
+    function hideFilter() {
+        return false;
+    }
+
     function makePoints(d) {
         var join, selection;
+
         var trace = d[0].trace,
             s = d3.select(this),
             showMarkers = subTypes.hasMarkers(trace),
             showText = subTypes.hasText(trace);
 
-        if((!showMarkers && !showText) || trace.visible !== true) s.remove();
-        else {
-            if(showMarkers) {
-                selection = s.selectAll('path.point');
+        var keyFunc = getKeyFunc(trace),
+            markerFilter = hideFilter,
+            textFilter = hideFilter;
 
-                join = selection
-                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity, getKeyFunc(trace));
-
-                var enter = join.enter().append('path')
-                    .classed('point', true);
-
-                enter.call(Drawing.pointStyle, trace)
-                    .call(Drawing.translatePoints, xa, ya, trace);
-
-                if(hasTransition) {
-                    enter.style('opacity', 0).transition()
-                        .style('opacity', 1);
-                }
-
-                join.each(function(d) {
-                    var sel = transition(d3.select(this));
-                    Drawing.translatePoint(d, sel, xa, ya);
-                    Drawing.singlePointStyle(d, sel, trace);
-                });
-
-                if(hasTransition) {
-                    join.exit().transition()
-                        .style('opacity', 0)
-                        .remove();
-                } else {
-                    join.exit().remove();
-                }
-            }
-            if(showText) {
-                selection = s.selectAll('g');
-
-                join = selection
-                    .data(trace.marker.maxdisplayed ? visFilter : Lib.identity);
-
-                    // each text needs to go in its own 'g' in case
-                    // it gets converted to mathjax
-                join.enter().append('g')
-                    .append('text')
-                    .call(Drawing.translatePoints, xa, ya);
-
-                selection
-                    .call(Drawing.translatePoints, xa, ya);
-
-                join.exit().remove();
-            }
+        if(showMarkers) {
+            markerFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
         }
+
+        if(showText) {
+            textFilter = trace.marker.maxdisplayed ? visFilter : Lib.identity;
+        }
+
+        // marker points
+
+        selection = s.selectAll('path.point');
+
+        join = selection.data(markerFilter, keyFunc);
+
+        var enter = join.enter().append('path')
+            .classed('point', true);
+
+        enter.call(Drawing.pointStyle, trace)
+            .call(Drawing.translatePoints, xa, ya, trace);
+
+        if(hasTransition) {
+            enter.style('opacity', 0).transition()
+                .style('opacity', 1);
+        }
+
+        join.each(function(d) {
+            var sel = transition(d3.select(this));
+            Drawing.translatePoint(d, sel, xa, ya);
+            Drawing.singlePointStyle(d, sel, trace);
+        });
+
+        if(hasTransition) {
+            join.exit().transition()
+                .style('opacity', 0)
+                .remove();
+        } else {
+            join.exit().remove();
+        }
+
+        // text points
+
+        selection = s.selectAll('g');
+
+        join = selection.data(textFilter, keyFunc);
+
+        // each text needs to go in its own 'g' in case
+        // it gets converted to mathjax
+        join.enter().append('g')
+            .append('text');
+
+        join.each(function(d) {
+            var sel = d3.select(this).select('text');
+            Drawing.translatePoint(d, sel, xa, ya);
+        });
+
+        join.exit().remove();
     }
 
     // NB: selectAll is evaluated on instantiation:
@@ -82254,6 +82349,18 @@ function parseColorScale(colorscale, alpha) {
     });
 }
 
+function isColormapCircular(colormap) {
+    var first = colormap[0].rgb,
+        last = colormap[colormap.length - 1].rgb;
+
+    return (
+        first[0] === last[0] &&
+        first[1] === last[1] &&
+        first[2] === last[2] &&
+        first[3] === last[3]
+    );
+}
+
 // Pad coords by +1
 function padField(field) {
     var shape = field.shape;
@@ -82474,6 +82581,11 @@ proto.update = function(data) {
         }
     }
 
+    // see https://github.com/plotly/plotly.js/issues/940
+    if(isColormapCircular(colormap)) {
+        params.vertexColor = true;
+    }
+
     params.coords = coords;
 
     surface.update(params);
@@ -82499,7 +82611,6 @@ proto.update = function(data) {
         surface.supportsTransparency = true;
     }
 };
-
 
 proto.dispose = function() {
     this.scene.glplot.remove(this.surface);
