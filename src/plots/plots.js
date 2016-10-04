@@ -1669,10 +1669,13 @@ plots.doCalcdata = function(gd, traces) {
             if(_module.calc) cd = _module.calc(gd, trace);
         }
 
-        // make sure there is a first point
-        // this ensures there is a calcdata item for every trace,
-        // even if cartesian logic doesn't handle it
-        if(!Array.isArray(cd) || !cd[0]) cd = [{x: false, y: false}];
+        // Make sure there is a first point.
+        // This ensures there is a calcdata item for every trace,
+        // even if cartesian logic doesn't handle it (for things like legends).
+        // Tag this artificial calc point with 'placeholder: true'
+        if(!Array.isArray(cd) || !cd[0]) {
+            cd = [{x: false, y: false, placeholder: true}];
+        }
 
         // add the trace-wide properties to the first point,
         // per point properties to every point
