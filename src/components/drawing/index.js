@@ -339,51 +339,57 @@ drawing.tryColorscale = function(cont, contIn, prefix) {
 // draw text at points
 var TEXTOFFSETSIGN = {start: 1, end: -1, middle: 0, bottom: 1, top: -1},
     LINEEXPAND = 1.3;
+
+drawing.singleTextPointStyle = function(d, sel, trace) {
+    var el = sel.node(),
+        text = d.tx || trace.text;
+
+    if(!text || Array.isArray(text)) {
+        // isArray test handles the case of (intentionally) missing
+        // or empty text within a text array
+        sel.remove();
+        return;
+    }
+
+    var pos = d.tp || trace.textposition,
+        v = pos.indexOf('top') !== -1 ? 'top' :
+            pos.indexOf('bottom') !== -1 ? 'bottom' : 'middle',
+        h = pos.indexOf('left') !== -1 ? 'end' :
+            pos.indexOf('right') !== -1 ? 'start' : 'middle',
+        fontSize = d.ts || trace.textfont.size,
+        // if markers are shown, offset a little more than
+        // the nominal marker size
+        // ie 2/1.6 * nominal, bcs some markers are a bit bigger
+        r = d.mrc ? (d.mrc / 0.8 + 1) : 0;
+
+    fontSize = (isNumeric(fontSize) && fontSize > 0) ? fontSize : 0;
+
+    sel.call(drawing.font,
+            d.tf || trace.textfont.family,
+            fontSize,
+            d.tc || trace.textfont.color)
+        .attr('text-anchor', h)
+        .text(text)
+        .call(svgTextUtils.convertToTspans);
+    var pgroup = d3.select(el.parentNode),
+        tspans = sel.selectAll('tspan.line'),
+        numLines = ((tspans[0].length || 1) - 1) * LINEEXPAND + 1,
+        dx = TEXTOFFSETSIGN[h] * r,
+        dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
+            (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
+
+    // fix the overall text group position
+    pgroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
+
+    // then fix multiline text
+    if(numLines > 1) {
+        tspans.attr({ x: sel.attr('x'), y: sel.attr('y') });
+    }
+};
+
 drawing.textPointStyle = function(s, trace) {
     s.each(function(d) {
-        var p = d3.select(this),
-            text = d.tx || trace.text;
-        if(!text || Array.isArray(text)) {
-            // isArray test handles the case of (intentionally) missing
-            // or empty text within a text array
-            p.remove();
-            return;
-        }
-
-        var pos = d.tp || trace.textposition,
-            v = pos.indexOf('top') !== -1 ? 'top' :
-                pos.indexOf('bottom') !== -1 ? 'bottom' : 'middle',
-            h = pos.indexOf('left') !== -1 ? 'end' :
-                pos.indexOf('right') !== -1 ? 'start' : 'middle',
-            fontSize = d.ts || trace.textfont.size,
-            // if markers are shown, offset a little more than
-            // the nominal marker size
-            // ie 2/1.6 * nominal, bcs some markers are a bit bigger
-            r = d.mrc ? (d.mrc / 0.8 + 1) : 0;
-
-        fontSize = (isNumeric(fontSize) && fontSize > 0) ? fontSize : 0;
-
-        p.call(drawing.font,
-                d.tf || trace.textfont.family,
-                fontSize,
-                d.tc || trace.textfont.color)
-            .attr('text-anchor', h)
-            .text(text)
-            .call(svgTextUtils.convertToTspans);
-        var pgroup = d3.select(this.parentNode),
-            tspans = p.selectAll('tspan.line'),
-            numLines = ((tspans[0].length || 1) - 1) * LINEEXPAND + 1,
-            dx = TEXTOFFSETSIGN[h] * r,
-            dy = fontSize * 0.75 + TEXTOFFSETSIGN[v] * r +
-                (TEXTOFFSETSIGN[v] - 1) * numLines * fontSize / 2;
-
-        // fix the overall text group position
-        pgroup.attr('transform', 'translate(' + dx + ',' + dy + ')');
-
-        // then fix multiline text
-        if(numLines > 1) {
-            tspans.attr({ x: p.attr('x'), y: p.attr('y') });
-        }
+        drawing.singleTextPointStyle(d, d3.select(this), trace);
     });
 };
 
