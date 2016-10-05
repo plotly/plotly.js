@@ -128,6 +128,7 @@ proto.handlePick = function(pickResult) {
             this.color[index] :
             this.color,
         name: this.name,
+        pointIndex: index,
         hoverinfo: this.hoverinfo
     };
 };

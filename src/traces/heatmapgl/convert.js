@@ -46,19 +46,24 @@ function Heatmap(scene, uid) {
 var proto = Heatmap.prototype;
 
 proto.handlePick = function(pickResult) {
-    var index = pickResult.pointId,
-        shape = this.options.shape;
+    var options = this.options,
+        shape = options.shape,
+        index = pickResult.pointId,
+        xIndex = index % shape[0],
+        yIndex = Math.floor(index / shape[0]),
+        zIndex = index;
 
     return {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            this.options.x[index % shape[0]],
-            this.options.y[Math.floor(index / shape[0])],
-            this.options.z[index]
+            options.x[xIndex],
+            options.y[yIndex],
+            options.z[zIndex]
         ],
         textLabel: this.textLabels[index],
         name: this.name,
+        pointIndex: [xIndex, yIndex],
         hoverinfo: this.hoverinfo
     };
 };

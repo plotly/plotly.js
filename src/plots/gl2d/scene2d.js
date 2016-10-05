@@ -33,6 +33,7 @@ function Scene2D(options, fullLayout) {
     this.staticPlot = !!options.staticPlot;
 
     this.fullLayout = fullLayout;
+    this.fullData = null;
     this.updateAxes(fullLayout);
 
     this.makeFramework();
@@ -49,6 +50,7 @@ function Scene2D(options, fullLayout) {
 
     // trace set
     this.traces = {};
+    this._inputs = {};
 
     // create axes spikes
     this.spikes = createSpikes(this.glplot);
@@ -57,6 +59,9 @@ function Scene2D(options, fullLayout) {
         innerFill: false,
         outerFill: true
     });
+
+    // last button state
+    this.lastButtonState = 0;
 
     // last pick result
     this.pickResult = null;
@@ -332,6 +337,8 @@ proto.destroy = function() {
     this.container.removeChild(this.svgContainer);
     this.container.removeChild(this.mouseContainer);
 
+    this.fullData = null;
+    this._inputs = null;
     this.glplot = null;
     this.stopped = true;
 };
@@ -422,6 +429,8 @@ proto.updateTraces = function(fullData, calcData) {
     var traceIds = Object.keys(this.traces);
     var i, j, fullTrace;
 
+    this.fullData = fullData;
+
     // remove empty traces
     trace_id_loop:
     for(i = 0; i < traceIds.length; i++) {
@@ -443,7 +452,7 @@ proto.updateTraces = function(fullData, calcData) {
     // update / create trace objects
     for(i = 0; i < fullData.length; i++) {
         fullTrace = fullData[i];
-
+        this._inputs[fullTrace.uid] = i;
         var calcTrace = calcData[i],
             traceObj = this.traces[fullTrace.uid];
 
@@ -455,6 +464,24 @@ proto.updateTraces = function(fullData, calcData) {
     }
 };
 
+proto.emitPointAction = function(nextSelection, eventType) {
+
+    var curveIndex = this._inputs[nextSelection.trace.uid];
+
+    this.graphDiv.emit(eventType, {
+        points: [{
+            x: nextSelection.traceCoord[0],
+            y: nextSelection.traceCoord[1],
+            curveNumber: curveIndex,
+            pointNumber: nextSelection.pointIndex,
+            data: this.fullData[curveIndex]._input,
+            fullData: this.fullData,
+            xaxis: this.xaxis,
+            yaxis: this.yaxis
+        }]
+    });
+};
+
 proto.draw = function() {
     if(this.stopped) return;
 
@@ -463,7 +490,10 @@ proto.draw = function() {
     var glplot = this.glplot,
         camera = this.camera,
         mouseListener = camera.mouseListener,
+        mouseUp = this.lastButtonState === 1 && mouseListener.buttons === 0,
         fullLayout = this.fullLayout;
+
+    this.lastButtonState = mouseListener.buttons;
 
     this.cameraChanged();
 
@@ -494,8 +524,13 @@ proto.draw = function() {
             (y / glplot.pixelRatio) - (size.t + (1 - domainY[1]) * size.h)
         );
 
+        var nextSelection = result && result.object._trace.handlePick(result);
+
+        if(nextSelection && mouseUp) {
+            this.emitPointAction(nextSelection, 'plotly_click');
+        }
+
         if(result && result.object._trace.hoverinfo !== 'skip' && fullLayout.hovermode) {
-            var nextSelection = result.object._trace.handlePick(result);
 
             if(nextSelection && (
                 !this.lastPickResult ||
@@ -521,6 +556,10 @@ proto.draw = function() {
                         (glplot.dataBox[3] - glplot.dataBox[1]) - glplot.viewBox[1]) /
                             glplot.pixelRatio
                 ];
+
+                // this needs to happen before the next block that deletes traceCoord data
+                // also it's important to copy, otherwise data is lost by the time event data is read
+                this.emitPointAction(nextSelection, 'plotly_hover');
 
                 var hoverinfo = selection.hoverinfo;
                 if(hoverinfo !== 'all') {
@@ -549,6 +588,7 @@ proto.draw = function() {
         else if(!result && this.lastPickResult) {
             this.spikes.update({});
             this.lastPickResult = null;
+            this.graphDiv.emit('plotly_unhover');
             Fx.loneUnhover(this.svgContainer);
         }
     }
