@@ -10,6 +10,8 @@ var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
 var customMatchers = require('../assets/custom_matchers');
 
+var TOL = 6;
+
 
 describe('the range slider', function() {
 
@@ -26,8 +28,9 @@ describe('the range slider', function() {
 
     function testTranslate1D(node, val) {
         var transformParts = node.getAttribute('transform').split('(');
+
         expect(transformParts[0]).toEqual('translate');
-        expect(+transformParts[1].split(',0)')[0]).toBeCloseTo(val, -1);
+        expect(+transformParts[1].split(',0)')[0]).toBeWithin(val, TOL);
     }
 
     describe('when specified as visible', function() {
@@ -174,8 +177,8 @@ describe('the range slider', function() {
                     handleMin = children[5],
                     handleMax = children[6];
 
-                expect(+maskMin.getAttribute('width')).toBeCloseTo(126.32, -0.5);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(366.34, -0.5);
+                expect(+maskMin.getAttribute('width')).toBeWithin(125, TOL);
+                expect(+maskMax.getAttribute('width')).toBeWithin(365, TOL);
                 testTranslate1D(handleMin, 123.32);
                 testTranslate1D(handleMax, 252.65);
             })
@@ -189,8 +192,8 @@ describe('the range slider', function() {
                     handleMin = children[5],
                     handleMax = children[6];
 
-                expect(+maskMin.getAttribute('width')).toBeCloseTo(126.32, 0);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(0);
+                expect(+maskMin.getAttribute('width')).toBeWithin(126, TOL);
+                expect(+maskMax.getAttribute('width')).toEqual(0);
                 testTranslate1D(handleMin, 123.32);
                 testTranslate1D(handleMax, 619);
             })
@@ -246,8 +249,8 @@ describe('the range slider', function() {
                 maskMax = children[3];
 
             Plotly.relayout(gd, 'xaxis.range', [5, 10]).then(function() {
-                expect(+maskMin.getAttribute('width')).toBeCloseTo(63.16, 0);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(492.67, -1);
+                expect(+maskMin.getAttribute('width')).toBeWithin(63.16, TOL);
+                expect(+maskMax.getAttribute('width')).toBeWithin(492.67, TOL);
 
                 return Plotly.relayout(gd, 'xaxis.domain', [0.3, 0.7]);
             })
@@ -255,8 +258,8 @@ describe('the range slider', function() {
                 var maskMin = children[2],
                     maskMax = children[3];
 
-                expect(+maskMin.getAttribute('width')).toBeCloseTo(25.26, 0);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(197.06, -1);
+                expect(+maskMin.getAttribute('width')).toBeWithin(25.26, TOL);
+                expect(+maskMax.getAttribute('width')).toBeWithin(197.06, TOL);
 
                 return Plotly.relayout(gd, 'width', 400);
             })
@@ -264,8 +267,8 @@ describe('the range slider', function() {
                 var maskMin = children[2],
                     maskMax = children[3];
 
-                expect(+maskMin.getAttribute('width')).toBeCloseTo(9.22, 0);
-                expect(+maskMax.getAttribute('width')).toBeCloseTo(71.95, 0);
+                expect(+maskMin.getAttribute('width')).toBeWithin(9.22, TOL);
+                expect(+maskMax.getAttribute('width')).toBeWithin(71.95, TOL);
 
             })
             .then(done);
