@@ -327,7 +327,7 @@ describe('Test hover and click interactions', function() {
                         expect(pt.x).toEqual(2);
                         expect(pt.y).toEqual(3);
                         expect(pt.curveNumber).toEqual(0);
-                        expect(pt.pointNumber).toEqual([2, 3, 17]);
+                        expect(pt.pointNumber).toEqual([2, 3]);
                         expect(pt.fullData.length).toEqual(1);
                         expect(typeof pt.data.uid).toEqual('string');
                         expect(pt.xaxis.domain.length).toEqual(2);
@@ -367,7 +367,7 @@ describe('Test hover and click interactions', function() {
                         expect(pt.x).toEqual(2);
                         expect(pt.y).toEqual(3);
                         expect(pt.curveNumber).toEqual(0);
-                        expect(pt.pointNumber).toEqual([2, 3, 17]);
+                        expect(pt.pointNumber).toEqual([2, 3]);
                         expect(pt.fullData.length).toEqual(1);
                         expect(typeof pt.data.uid).toEqual('string');
                         expect(pt.xaxis.domain.length).toEqual(2);
