@@ -456,7 +456,20 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
         });
 
         join.selectAll('text')
-            .call(Drawing.textPointStyle, trace);
+            .call(Drawing.textPointStyle, trace)
+            .each(function(d) {
+
+                // This just *has* to be totally custom becuase of SVG text positioning :(
+                // It's obviously copied from translatePoint; we just can't use that
+                //
+                // put xp and yp into d if pixel scaling is already done
+                var x = d.xp || xa.c2p(d.x),
+                    y = d.yp || ya.c2p(d.y);
+
+                d3.select(this).selectAll('tspan').each(function() {
+                    transition(d3.select(this)).attr({x: x, y: y});
+                });
+            });
 
         join.exit().remove();
     }
