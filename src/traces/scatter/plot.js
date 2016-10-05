@@ -448,19 +448,15 @@ function plotOne(gd, idx, plotinfo, cdscatter, cdscatterAll, element, transition
 
         // each text needs to go in its own 'g' in case
         // it gets converted to mathjax
-        enter = join.enter().append('g')
-            .append('text')
-            .call(Drawing.textPointStyle, trace);
+        join.enter().append('g').append('text');
 
         join.each(function(d) {
-            var node = d3.select(this).select('text');
-            // We can't transition the text itself, so call this on the node:
-            Drawing.singleTextPointStyle(d, node, trace);
-
-            // This duck-types the node to be set either as a transition or as a node:
-            var sel = transition(node);
+            var sel = transition(d3.select(this).select('text'));
             Drawing.translatePoint(d, sel, xa, ya);
         });
+
+        join.selectAll('text')
+            .call(Drawing.textPointStyle, trace);
 
         join.exit().remove();
     }
