@@ -60,11 +60,11 @@ describe('Test hover and click interactions', function() {
                     ]
                 ],
                 'colorscale': 'Jet',
-                'contours': {
+/*                'contours': {
                     'start': 2,
                     'end': 10,
                     'size': 1
-                },
+                },*/
                 'uid': 'ad5624',
                 'zmin': 0,
                 'zmax': 20
@@ -338,6 +338,44 @@ describe('Test hover and click interactions', function() {
                 }));
 
 
+        });
+
+        it('contourgl', function(done) {
+
+            var modifiedMockCopy = Lib.extendDeep({}, mock3);
+
+            Plotly.plot(gd, modifiedMockCopy.data, modifiedMockCopy.layout)
+
+                .then(new Promise(function() {
+
+                    gd.on('plotly_hover', function(data) {
+                        futureData = data;
+                    });
+
+                    hover(540, 150);
+
+                    window.setTimeout(function() {
+
+                        expect(futureData.points.length).toEqual(1);
+
+                        var pt = futureData.points[0];
+
+                        expect(Object.keys(pt)).toEqual([
+                            'x', 'y', 'curveNumber', 'pointNumber', 'data', 'fullData', 'xaxis', 'yaxis'
+                        ]);
+
+                        expect(pt.x).toEqual(2);
+                        expect(pt.y).toEqual(3);
+                        expect(pt.curveNumber).toEqual(0);
+                        expect(pt.pointNumber).toEqual([2, 3, 17]);
+                        expect(pt.fullData.length).toEqual(1);
+                        expect(typeof pt.data.uid).toEqual('string');
+                        expect(pt.xaxis.domain.length).toEqual(2);
+                        expect(pt.yaxis.domain.length).toEqual(2);
+
+                        done();
+                    }, 350);
+                }));
         });
     });
 
