@@ -33,7 +33,7 @@ module.exports = function supplyDefaults(traceIn, traceOut, defaultColor, layout
 
     var contourStart = Lib.coerce2(traceIn, traceOut, attributes, 'contours.start'),
         contourEnd = Lib.coerce2(traceIn, traceOut, attributes, 'contours.end'),
-        autocontour = coerce('autocontour', !(contourStart && contourEnd));
+        autocontour = coerce('autocontour', contourStart === false || contourEnd === false);
 
     if(autocontour) coerce('ncontours');
     else coerce('contours.size');
