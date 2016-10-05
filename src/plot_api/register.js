@@ -69,8 +69,6 @@ function registerTransformModule(newModule) {
         throw new Error(prefix + ' is missing a *transform* or *calcTransform* method.');
     }
 
-    // For more info, see:
-    // https://github.com/plotly/plotly.js/pull/978#pullrequestreview-2403353
     if(hasTransform && hasCalcTransform) {
         Lib.log([
             prefix + ' has both a *transform* and *calcTransform* methods.',
