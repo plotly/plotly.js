@@ -71,6 +71,26 @@ module.exports = {
                 };
             }
         };
+    },
+
+    toBeWithin: function() {
+        return {
+            compare: function(actual, expected, tolerance, msgExtra) {
+                var passed = Math.abs(actual - expected) < tolerance;
+
+                var message = [
+                    'Expected', actual,
+                    'to be close to', expected,
+                    'within', tolerance,
+                    msgExtra
+                ].join(' ');
+
+                return {
+                    pass: passed,
+                    message: message
+                };
+            }
+        };
     }
 };
 
