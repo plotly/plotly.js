@@ -36,6 +36,24 @@ describe('Test frame api', function() {
     });
 
     describe('#addFrames', function() {
+        it('treats an undefined list as a noop', function(done) {
+            Plotly.addFrames(gd, undefined).then(function() {
+                expect(Object.keys(h)).toEqual([]);
+            }).catch(fail).then(done);
+        });
+
+        it('treats a null list as a noop', function(done) {
+            Plotly.addFrames(gd, null).then(function() {
+                expect(Object.keys(h)).toEqual([]);
+            }).catch(fail).then(done);
+        });
+
+        it('treats an empty list as a noop', function(done) {
+            Plotly.addFrames(gd, []).then(function() {
+                expect(Object.keys(h)).toEqual([]);
+            }).catch(fail).then(done);
+        });
+
         it('names an unnamed frame', function(done) {
             Plotly.addFrames(gd, [{}]).then(function() {
                 expect(Object.keys(h)).toEqual(['frame 0']);

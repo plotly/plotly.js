@@ -2447,6 +2447,10 @@ Plotly.animate = function(gd, frameOrGroupNameOrFrameList, animationOpts) {
 Plotly.addFrames = function(gd, frameList, indices) {
     gd = helpers.getGraphDiv(gd);
 
+    if(frameList === null || frameList === undefined) {
+        return Promise.resolve();
+    }
+
     if(!Lib.isPlotDiv(gd)) {
         throw new Error('This element is not a Plotly plot: ' + gd);
     }
