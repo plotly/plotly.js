@@ -46,6 +46,9 @@ module.exports = function hoverPoints(pointData) {
             dy = Math.abs(yPx - pos[1]),
             rad = Math.max(3, d.mrc || 0);
 
+        // N.B. d.mrc is the calculated marker radius
+        // which is only set for trace with 'markers' mode.
+
         return Math.max(Math.sqrt(dx * dx + dy * dy) - rad, 1 - 3 / rad);
     }
 
