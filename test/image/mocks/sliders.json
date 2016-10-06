@@ -148,7 +148,8 @@
         "size": 15
       },
       "currentvalue": {
-        "prefix": "color:",
+        "prefix": "prefix ",
+        "suffix": " suffix",
         "xanchor": "right",
         "font": {
           "color": "orange",

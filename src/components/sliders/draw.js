@@ -259,13 +259,17 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
         .classed('user-select-none', true)
         .attr('text-anchor', textAnchor);
 
-    var str = sliderOpts.currentvalue.prefix ? (sliderOpts.currentvalue.prefix + ' ') : '';
+    var str = sliderOpts.currentvalue.prefix ? sliderOpts.currentvalue.prefix : '';
 
     if(typeof valueOverride === 'string') {
         str += valueOverride;
     } else {
         var curVal = sliderOpts.steps[sliderOpts.active].label;
         str += curVal;
+    }
+
+    if(sliderOpts.currentvalue.suffix) {
+        str += sliderOpts.currentvalue.suffix;
     }
 
     text.call(Drawing.font, sliderOpts.currentvalue.font)

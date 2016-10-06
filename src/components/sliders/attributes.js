@@ -193,14 +193,17 @@ module.exports = {
         prefix: {
             valType: 'string',
             role: 'info',
-            description: [
-                'When currentvalue.visible is true, this sets the prefix of the lable. If provided,',
-                'it will be joined to the current value with a single space between.'
-            ].join(' ')
+            description: 'When currentvalue.visible is true, this sets the prefix of the label.'
+        },
+
+        suffix: {
+            valType: 'string',
+            role: 'info',
+            description: 'When currentvalue.visible is true, this sets the suffix of the label.'
         },
 
         font: extendFlat({}, fontAttrs, {
-            description: 'Sets the font of the current value lable text.'
+            description: 'Sets the font of the current value label text.'
         }),
     },
 

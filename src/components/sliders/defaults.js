@@ -68,6 +68,7 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('currentvalue.visible');
     coerce('currentvalue.xanchor');
     coerce('currentvalue.prefix');
+    coerce('currentvalue.suffix');
     coerce('currentvalue.offset');
 
     coerce('transition.duration');
