@@ -513,6 +513,26 @@ describe('the range slider', function() {
 
             expect(layoutOut).toEqual(expected);
         });
+
+        it('should default \'bgcolor\' to layout \'plot_bgcolor\'', function() {
+            var layoutIn = {
+                xaxis: { rangeslider: true },
+                yaxis: {},
+            };
+
+            var layoutOut = {
+                xaxis: { range: [2, 40]},
+                yaxis: {},
+                plot_bgcolor: 'blue'
+            };
+
+            var axName = 'xaxis',
+                counterAxes = ['yaxis'];
+
+            RangeSlider.handleDefaults(layoutIn, layoutOut, axName, counterAxes);
+
+            expect(layoutOut.xaxis.rangeslider.bgcolor).toEqual('blue');
+        });
     });
 
     describe('in general', function() {

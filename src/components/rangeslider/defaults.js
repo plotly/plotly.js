@@ -27,7 +27,7 @@ module.exports = function handleDefaults(layoutIn, layoutOut, axName, counterAxe
         return Lib.coerce(containerIn, containerOut, attributes, attr, dflt);
     }
 
-    coerce('bgcolor');
+    coerce('bgcolor', layoutOut.plot_bgcolor);
     coerce('bordercolor');
     coerce('borderwidth');
     coerce('thickness');
