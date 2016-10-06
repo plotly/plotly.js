@@ -30,17 +30,16 @@ exports.attributes = require('./attributes');
 exports.transitionAxes = require('./transition_axes');
 
 exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
-    var cdSubplot, cd, trace, i, j, k;
-
     var fullLayout = gd._fullLayout,
         subplots = Plots.getSubplotIds(fullLayout, 'cartesian'),
         calcdata = gd.calcdata,
-        modules = fullLayout._modules;
+        i;
 
+    // If traces is not provided, then it's a complete replot and missing
+    // traces are removed
     if(!Array.isArray(traces)) {
-      // If traces is not provided, then it's a complete replot and missing
-      // traces are removed
         traces = [];
+
         for(i = 0; i < calcdata.length; i++) {
             traces.push(i);
         }
@@ -51,11 +50,12 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
             subplotInfo = fullLayout._plots[subplot];
 
         // Get all calcdata for this subplot:
-        cdSubplot = [];
+        var cdSubplot = [];
         var pcd;
-        for(j = 0; j < calcdata.length; j++) {
-            cd = calcdata[j];
-            trace = cd[0].trace;
+
+        for(var j = 0; j < calcdata.length; j++) {
+            var cd = calcdata[j],
+                trace = cd[0].trace;
 
             // Skip trace if whitelist provided and it's not whitelisted:
             // if (Array.isArray(traces) && traces.indexOf(i) === -1) continue;
@@ -81,37 +81,45 @@ exports.plot = function(gd, traces, transitionOpts, makeOnCompleteCallback) {
             }
         }
 
-        // remove old traces, then redraw everything
-        // TODO: scatterlayer is manually excluded from this since it knows how
-        // to update instead of fully removing and redrawing every time. The
-        // remaining plot traces should also be able to do this. Once implemented,
-        // we won't need this - which should sometimes be a big speedup.
-        if(subplotInfo.plot) {
-            subplotInfo.plot.selectAll('g:not(.scatterlayer)').selectAll('g.trace').remove();
-        }
-
-        // Plot all traces for each module at once:
-        for(j = 0; j < modules.length; j++) {
-            var _module = modules[j];
-
-            // skip over non-cartesian trace modules
-            if(_module.basePlotModule.name !== 'cartesian') continue;
-
-            // plot all traces of this type on this subplot at once
-            var cdModule = [];
-            for(k = 0; k < cdSubplot.length; k++) {
-                cd = cdSubplot[k];
-                trace = cd[0].trace;
-
-                if((trace._module === _module) && (trace.visible === true)) {
-                    cdModule.push(cd);
-                }
-            }
-
-            _module.plot(gd, subplotInfo, cdModule, transitionOpts, makeOnCompleteCallback);
-        }
+        plotOne(gd, subplotInfo, cdSubplot, transitionOpts, makeOnCompleteCallback);
     }
 };
+
+function plotOne(gd, plotinfo, cdSubplot, transitionOpts, makeOnCompleteCallback) {
+    var fullLayout = gd._fullLayout,
+        modules = fullLayout._modules;
+
+    // remove old traces, then redraw everything
+    //
+    // TODO: scatterlayer is manually excluded from this since it knows how
+    // to update instead of fully removing and redrawing every time. The
+    // remaining plot traces should also be able to do this. Once implemented,
+    // we won't need this - which should sometimes be a big speedup.
+    if(plotinfo.plot) {
+        plotinfo.plot.selectAll('g:not(.scatterlayer)').selectAll('g.trace').remove();
+    }
+
+    // plot all traces for each module at once
+    for(var j = 0; j < modules.length; j++) {
+        var _module = modules[j];
+
+        // skip over non-cartesian trace modules
+        if(_module.basePlotModule.name !== 'cartesian') continue;
+
+        // plot all traces of this type on this subplot at once
+        var cdModule = [];
+        for(var k = 0; k < cdSubplot.length; k++) {
+            var cd = cdSubplot[k],
+                trace = cd[0].trace;
+
+            if((trace._module === _module) && (trace.visible === true)) {
+                cdModule.push(cd);
+            }
+        }
+
+        _module.plot(gd, plotinfo, cdModule, transitionOpts, makeOnCompleteCallback);
+    }
+}
 
 exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout) {
     var oldModules = oldFullLayout._modules || [],
