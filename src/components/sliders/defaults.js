@@ -65,11 +65,18 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('pad.b');
     coerce('pad.l');
 
-    coerce('currentvalue.visible');
-    coerce('currentvalue.xanchor');
-    coerce('currentvalue.prefix');
-    coerce('currentvalue.suffix');
-    coerce('currentvalue.offset');
+    Lib.coerceFont(coerce, 'font', layoutOut.font);
+
+    var currentValueIsVisible = coerce('currentvalue.visible');
+
+    if(currentValueIsVisible) {
+        coerce('currentvalue.xanchor');
+        coerce('currentvalue.prefix');
+        coerce('currentvalue.suffix');
+        coerce('currentvalue.offset');
+
+        Lib.coerceFont(coerce, 'currentvalue.font', sliderOut.font);
+    }
 
     coerce('transition.duration');
     coerce('transition.easing');
@@ -82,9 +89,6 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('tickwidth');
     coerce('tickcolor');
     coerce('minorticklen');
-
-    Lib.coerceFont(coerce, 'font', layoutOut.font);
-    Lib.coerceFont(coerce, 'currentvalue.font', sliderOut.font);
 }
 
 function stepsDefaults(sliderIn, sliderOut) {

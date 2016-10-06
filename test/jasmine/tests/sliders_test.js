@@ -57,6 +57,23 @@ describe('sliders defaults', function() {
         expect(layoutOut.sliders[2].active).toBeUndefined();
     });
 
+    it('should not coerce currentvalue defaults unless currentvalue is visible', function() {
+        layoutIn.sliders = [{
+            currentvalue: {
+                visible: false,
+                xanchor: 'left'
+            },
+            steps: [
+                {method: 'restyle', args: [], label: 'step0'},
+                {method: 'restyle', args: [], label: 'step1'}
+            ]
+        }];
+
+        supply(layoutIn, layoutOut);
+
+        expect(layoutOut.sliders[0].currentvalue.xanchor).toBeUndefined();
+    });
+
     it('should set the default values equal to the labels', function() {
         layoutIn.sliders = [{
             steps: [{
