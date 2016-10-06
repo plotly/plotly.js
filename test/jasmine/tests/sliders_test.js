@@ -159,27 +159,6 @@ describe('sliders defaults', function() {
         expect(layoutOut.sliders[1]._input).toBe(layoutIn.sliders[1]);
         expect(layoutOut.sliders[2]._input).toBe(layoutIn.sliders[2]);
     });
-
-    it('should default \'bgcolor\' to layout \'paper_bgcolor\'', function() {
-        var steps = [{
-            method: 'relayout',
-            args: ['title', 'Hello World']
-        }];
-
-        layoutIn.sliders = [{
-            steps: steps,
-        }, {
-            bgcolor: 'red',
-            steps: steps
-        }];
-
-        layoutOut.paper_bgcolor = 'blue';
-
-        supply(layoutIn, layoutOut);
-
-        expect(layoutOut.sliders[0].bgcolor).toEqual('blue');
-        expect(layoutOut.sliders[1].bgcolor).toEqual('red');
-    });
 });
 
 describe('update sliders interactions', function() {
