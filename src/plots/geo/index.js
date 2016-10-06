@@ -32,7 +32,7 @@ exports.supplyLayoutDefaults = require('./layout/defaults');
 
 exports.plot = function plotGeo(gd) {
     var fullLayout = gd._fullLayout,
-        fullData = gd._fullData,
+        calcData = gd.calcdata,
         geoIds = Plots.getSubplotIds(fullLayout, 'geo');
 
     /**
@@ -45,8 +45,8 @@ exports.plot = function plotGeo(gd) {
 
     for(var i = 0; i < geoIds.length; i++) {
         var geoId = geoIds[i],
-            fullGeoData = Plots.getSubplotData(fullData, 'geo', geoId),
-            geo = fullLayout[geoId]._geo;
+            geoCalcData = getSubplotCalcData(calcData, geoId),
+            geo = fullLayout[geoId]._subplot;
 
         // If geo is not instantiated, create one!
         if(geo === undefined) {
@@ -59,10 +59,10 @@ exports.plot = function plotGeo(gd) {
                 fullLayout
             );
 
-            fullLayout[geoId]._geo = geo;
+            fullLayout[geoId]._subplot = geo;
         }
 
-        geo.plot(fullGeoData, fullLayout, gd._promises);
+        geo.plot(geoCalcData, fullLayout, gd._promises);
     }
 };
 
@@ -71,7 +71,7 @@ exports.clean = function(newFullData, newFullLayout, oldFullData, oldFullLayout)
 
     for(var i = 0; i < oldGeoKeys.length; i++) {
         var oldGeoKey = oldGeoKeys[i];
-        var oldGeo = oldFullLayout[oldGeoKey]._geo;
+        var oldGeo = oldFullLayout[oldGeoKey]._subplot;
 
         if(!newFullLayout[oldGeoKey] && !!oldGeo) {
             oldGeo.geoDiv.remove();
@@ -87,7 +87,7 @@ exports.toSVG = function(gd) {
     for(var i = 0; i < geoIds.length; i++) {
         var geoLayout = fullLayout[geoIds[i]],
             domain = geoLayout.domain,
-            geoFramework = geoLayout._geo.framework;
+            geoFramework = geoLayout._subplot.framework;
 
         geoFramework.attr('style', null);
         geoFramework
@@ -102,3 +102,16 @@ exports.toSVG = function(gd) {
             .appendChild(geoFramework.node());
     }
 };
+
+function getSubplotCalcData(calcData, id) {
+    var subplotCalcData = [];
+
+    for(var i = 0; i < calcData.length; i++) {
+        var calcTrace = calcData[i],
+            trace = calcTrace[0].trace;
+
+        if(trace.geo === id) subplotCalcData.push(calcTrace);
+    }
+
+    return subplotCalcData;
+}

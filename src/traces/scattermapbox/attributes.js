@@ -91,18 +91,7 @@ module.exports = {
         // line
     },
 
-    fill: {
-        valType: 'enumerated',
-        values: ['none', 'toself'],
-        dflt: 'none',
-        role: 'style',
-        description: [
-            'Sets the area to fill with a solid color.',
-            'Use with `fillcolor` if not *none*.',
-            '*toself* connects the endpoints of the trace (or each segment',
-            'of the trace if it has gaps) into a closed shape.'
-        ].join(' ')
-    },
+    fill: scatterGeoAttrs.fill,
     fillcolor: scatterAttrs.fillcolor,
 
     textfont: mapboxAttrs.layers.symbol.textfont,

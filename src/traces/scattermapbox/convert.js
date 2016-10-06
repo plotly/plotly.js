@@ -10,6 +10,8 @@
 'use strict';
 
 var Lib = require('../../lib');
+var geoJsonUtils = require('../../lib/geojson_utils');
+
 var subTypes = require('../scatter/subtypes');
 var convertTextOpts = require('../../plots/mapbox/convert_text_opts');
 
@@ -40,17 +42,17 @@ module.exports = function convert(calcTrace) {
         symbol: symbol
     };
 
-    // early return is not visible
-    if(!isVisible) return opts;
+    // early return if not visible or placeholder
+    if(!isVisible || calcTrace[0].placeholder) return opts;
 
     // fill layer and line layer use the same coords
     var coords;
     if(hasFill || hasLines) {
-        coords = getCoords(calcTrace);
+        coords = geoJsonUtils.calcTraceToLineCoords(calcTrace);
     }
 
     if(hasFill) {
-        fill.geojson = makeFillGeoJSON(calcTrace, coords);
+        fill.geojson = geoJsonUtils.makePolygon(coords);
         fill.layout.visibility = 'visible';
 
         Lib.extendFlat(fill.paint, {
@@ -59,7 +61,7 @@ module.exports = function convert(calcTrace) {
     }
 
     if(hasLines) {
-        line.geojson = makeLineGeoJSON(calcTrace, coords);
+        line.geojson = geoJsonUtils.makeLine(coords);
         line.layout.visibility = 'visible';
 
         Lib.extendFlat(line.paint, {
@@ -133,42 +135,9 @@ module.exports = function convert(calcTrace) {
 
 function initContainer() {
     return {
-        geojson: makeBlankGeoJSON(),
+        geojson: geoJsonUtils.makeBlank(),
         layout: { visibility: 'none' },
         paint: {}
-    };
-}
-
-function makeBlankGeoJSON() {
-    return {
-        type: 'Point',
-        coordinates: []
-    };
-}
-
-function makeFillGeoJSON(_, coords) {
-    if(coords.length === 1) {
-        return {
-            type: 'Polygon',
-            coordinates: coords
-        };
-    }
-
-    var _coords = new Array(coords.length);
-    for(var i = 0; i < coords.length; i++) {
-        _coords[i] = [coords[i]];
-    }
-
-    return {
-        type: 'MultiPolygon',
-        coordinates: _coords
-    };
-}
-
-function makeLineGeoJSON(_, coords) {
-    return {
-        type: 'MultiLineString',
-        coordinates: coords
     };
 }
 
@@ -321,29 +290,6 @@ function calcCircleRadius(trace, hash) {
     }
 
     return out;
-}
-
-function getCoords(calcTrace) {
-    var trace = calcTrace[0].trace,
-        connectgaps = trace.connectgaps;
-
-    var coords = [],
-        lineString = [];
-
-    for(var i = 0; i < calcTrace.length; i++) {
-        var calcPt = calcTrace[i];
-
-        lineString.push(calcPt.lonlat);
-
-        if(!connectgaps && calcPt.gapAfter && lineString.length > 0) {
-            coords.push(lineString);
-            lineString = [];
-        }
-    }
-
-    coords.push(lineString);
-
-    return coords;
 }
 
 function getFillFunc(attr) {

@@ -312,7 +312,7 @@ exports.doModeBar = function(gd) {
 
     subplotIds = Plots.getSubplotIds(fullLayout, 'geo');
     for(i = 0; i < subplotIds.length; i++) {
-        var geo = fullLayout[subplotIds[i]]._geo;
+        var geo = fullLayout[subplotIds[i]]._subplot;
         geo.updateFx(fullLayout.hovermode);
     }
 

@@ -9,13 +9,47 @@
 
 'use strict';
 
-var calcColorscale = require('../scatter/colorscale_calc');
+var isNumeric = require('fast-isnumeric');
+
+var calcMarkerColorscale = require('../scatter/colorscale_calc');
 
 
 module.exports = function calc(gd, trace) {
-    var cd = [{x: false, y: false, trace: trace, t: {}}];
+    var hasLocationData = Array.isArray(trace.locations),
+        len = hasLocationData ? trace.locations.length : trace.lon.length;
 
-    calcColorscale(trace);
+    var calcTrace = [],
+        cnt = 0;
 
-    return cd;
+    for(var i = 0; i < len; i++) {
+        var calcPt = {},
+            skip;
+
+        if(hasLocationData) {
+            var loc = trace.locations[i];
+
+            calcPt.loc = loc;
+            skip = (typeof loc !== 'string');
+        }
+        else {
+            var lon = trace.lon[i],
+                lat = trace.lat[i];
+
+            calcPt.lonlat = [+lon, +lat];
+            skip = (!isNumeric(lon) || !isNumeric(lat));
+        }
+
+        if(skip) {
+            if(cnt > 0) calcTrace[cnt - 1].gapAfter = true;
+            continue;
+        }
+
+        cnt++;
+
+        calcTrace.push(calcPt);
+    }
+
+    calcMarkerColorscale(trace);
+
+    return calcTrace;
 };

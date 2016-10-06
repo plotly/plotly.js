@@ -19,6 +19,8 @@ module.exports = function hoverPoints(pointData, xval, yval) {
         xa = pointData.xa,
         ya = pointData.ya;
 
+    if(cd[0].placeholder) return;
+
     // compute winding number about [-180, 180] globe
     var winding = (xval >= 0) ?
             Math.floor((xval + 180) / 360) :

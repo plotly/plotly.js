@@ -17,6 +17,9 @@ Choropleth.colorbar = require('../heatmap/colorbar');
 Choropleth.calc = require('./calc');
 Choropleth.plot = require('./plot').plot;
 
+// add dummy hover handler to skip Fx.hover w/o warnings
+Choropleth.hoverPoints = function() {};
+
 Choropleth.moduleType = 'trace';
 Choropleth.name = 'choropleth';
 Choropleth.basePlotModule = require('../../plots/geo');
