@@ -78,39 +78,6 @@ module.exports = {
 
     steps: stepsAttrs,
 
-    updateevent: {
-        valType: 'string',
-        arrayOk: true,
-        role: 'info',
-        description: [
-            'The name of the event to which this component subscribes',
-            'in order to trigger updates. When the event is received',
-            'the component will attempt to update the slider position',
-            'to reflect the value passed as the data property of the',
-            'event. The corresponding step\'s API method is assumed to',
-            'have been triggered externally and so is not triggered again',
-            'when the event is received. If an array is provided, multiple',
-            'events will be subscribed to for updates.'
-        ].join(' ')
-    },
-
-    updatevalue: {
-        valType: 'string',
-        arrayOk: true,
-        role: 'info',
-        description: [
-            'The property of the event data that is matched to a slider',
-            'value when an event of type `updateevent` is received. If',
-            'undefined, the data argument itself is used. If a string,',
-            'that property is used, and if a string with dots, e.g.',
-            '`item.0.label`, then `data[0].label` is used. If an array,',
-            'it is matched to the respective updateevent item or if there',
-            'is no corresponding updatevalue for a particular updateevent,',
-            'it is interpreted as `undefined` and defaults to the data',
-            'property itself.'
-        ].join(' ')
-    },
-
     lenmode: {
         valType: 'enumerated',
         values: ['fraction', 'pixels'],

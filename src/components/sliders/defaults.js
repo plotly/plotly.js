@@ -70,27 +70,8 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('currentvalue.prefix');
     coerce('currentvalue.offset');
 
-    coerce('updateevent');
-    coerce('updatevalue');
-
     coerce('transition.duration');
     coerce('transition.easing');
-
-    if(sliderOut.updateevent) {
-        if(!Array.isArray(sliderOut.updateevent)) {
-            sliderOut.updateevent = [sliderOut.updateevent];
-        }
-    } else {
-        sliderOut.updateevent = [];
-    }
-
-    if(sliderOut.updatevalue) {
-        if(!Array.isArray(sliderOut.updatevalue)) {
-            sliderOut.updatevalue = [sliderOut.updatevalue];
-        }
-    } else {
-        sliderOut.updatevalue = [];
-    }
 
     Lib.coerceFont(coerce, 'font', layoutOut.font);
     Lib.coerceFont(coerce, 'currentvalue.font', layoutOut.font);

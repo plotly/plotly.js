@@ -227,11 +227,6 @@ function drawSlider(gd, sliderGroup, sliderOpts) {
     // Position the rectangle:
     Lib.setTranslate(sliderGroup, sliderOpts.lx + sliderOpts.pad.l, sliderOpts.ly + sliderOpts.pad.t);
 
-    // Every time the slider is draw from scratch, just detach and reattach the event listeners.
-    // This could perhaps be avoided.
-    removeListeners(gd, sliderGroup, sliderOpts);
-    attachListeners(gd, sliderGroup, sliderOpts);
-
     setActive(gd, sliderGroup, sliderOpts, sliderOpts.active, false, false);
 }
 
@@ -280,52 +275,6 @@ function drawCurrentValue(sliderGroup, sliderOpts, valueOverride) {
     Lib.setTranslate(text, x0, sliderOpts.currentValueHeight);
 
     return text;
-}
-
-function removeListeners(gd, sliderGroup, sliderOpts) {
-    var listeners = sliderOpts._input.listeners;
-    var eventNames = sliderOpts._input.eventNames;
-    if(!Array.isArray(listeners) || !Array.isArray(eventNames)) return;
-    while(listeners.length) {
-        gd._removeInternalListener(eventNames.pop(), listeners.pop());
-    }
-}
-
-function attachListeners(gd, sliderGroup, sliderOpts) {
-    if(!sliderOpts.updateevent || !sliderOpts.updateevent.length) {
-        return;
-    }
-
-    var listeners = sliderOpts._input.listeners = [];
-    var eventNames = sliderOpts._input.eventNames = [];
-
-    function makeListener(eventname, updatevalue) {
-        return function(data) {
-            var value = data;
-            if(updatevalue) {
-                value = Lib.nestedProperty(data, updatevalue).get();
-            }
-
-            // If it's *currently* invoking a command an event is received,
-            // then we'll ignore the event in order to avoid complicated
-            // infinite loops.
-            if(sliderOpts._invokingCommand) return;
-
-            setActiveByLabel(gd, sliderGroup, sliderOpts, value, false, true);
-        };
-    }
-
-    for(var i = 0; i < sliderOpts.updateevent.length; i++) {
-        var updateEventName = sliderOpts.updateevent[i];
-        var updatevalue = (sliderOpts.updatevalue || [])[i];
-
-        var updatelistener = makeListener(updateEventName, updatevalue);
-
-        gd._internalEv.on(updateEventName, updatelistener);
-
-        eventNames.push(updateEventName);
-        listeners.push(updatelistener);
-    }
 }
 
 function drawGrip(sliderGroup, gd, sliderOpts) {
