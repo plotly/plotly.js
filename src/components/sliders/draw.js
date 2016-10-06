@@ -114,12 +114,12 @@ function findDimensions(gd, sliderOpts) {
 
         var text = drawLabel(labelGroup, {step: stepOpts}, sliderOpts);
 
-        var tWidth = text.node() && Drawing.bBox(text.node()).width;
+        var tWidth = (text.node() && Drawing.bBox(text.node()).width) || 0;
 
         // This just overwrites with the last. Which is fine as long as
         // the bounding box (probably incorrectly) measures the text *on
         // a single line*:
-        labelHeight = text.node() && Drawing.bBox(text.node()).height;
+        labelHeight = (text.node() && Drawing.bBox(text.node()).height) || 0;
 
         maxLabelWidth = Math.max(maxLabelWidth, tWidth);
     });
@@ -141,7 +141,7 @@ function findDimensions(gd, sliderOpts) {
 
         sliderLabels.each(function(stepOpts) {
             var curValPrefix = drawCurrentValue(dummyGroup, sliderOpts, stepOpts.label);
-            var curValSize = curValPrefix.node() && Drawing.bBox(curValPrefix.node());
+            var curValSize = (curValPrefix.node() && Drawing.bBox(curValPrefix.node())) || {width: 0, height: 0};
             sliderOpts.currentValueMaxWidth = Math.max(sliderOpts.currentValueMaxWidth, Math.ceil(curValSize.width));
             sliderOpts.currentValueHeight = Math.max(sliderOpts.currentValueHeight, Math.ceil(curValSize.height));
         });
