@@ -53,60 +53,63 @@ module.exports = function setPositions(gd, plotinfo) {
         // for stacked or grouped bars, this is all vertical or horizontal
         // bars for overlaid bars, call this individually on each trace.
         function barposition(bl1) {
-            // find the min. difference between any points
-            // in any traces in bl1
-            var pvals = [];
-            bl1.forEach(function(i) {
-                gd.calcdata[i].forEach(function(v) { pvals.push(v.p); });
-            });
-            var dv = Lib.distinctVals(pvals),
-                pv2 = dv.vals,
-                barDiff = dv.minDiff;
+            var traces = bl1.map(function(i) { return gd.calcdata[i]; });
 
-            // check if all the traces have only independent positions
-            // if so, let them have full width even if mode is group
-            var overlap = false,
-                comparelist = [];
+            var positions = [],
+                i, trace,
+                j, bar;
+            for(i = 0; i < traces.length; i++) {
+                trace = traces[i];
+                for(j = 0; j < trace.length; j++) {
+                    bar = trace[j];
+                    positions.push(bar.p);
+                }
+            }
 
+            var dv = Lib.distinctVals(positions),
+                distinctPositions = dv.vals,
+                minDiff = dv.minDiff;
+
+            // check if there are any overlapping positions;
+            // if there aren't, let them have full width even if mode is group
+            var overlap = false;
             if(fullLayout.barmode === 'group') {
-                bl1.forEach(function(i) {
-                    if(overlap) return;
-                    gd.calcdata[i].forEach(function(v) {
-                        if(overlap) return;
-                        comparelist.forEach(function(cp) {
-                            if(Math.abs(v.p - cp) < barDiff) overlap = true;
-                        });
-                    });
-                    if(overlap) return;
-                    gd.calcdata[i].forEach(function(v) {
-                        comparelist.push(v.p);
-                    });
-                });
+                overlap = (positions.length !== distinctPositions.length);
             }
 
             // check forced minimum dtick
-            Axes.minDtick(pa, barDiff, pv2[0], overlap);
+            Axes.minDtick(pa, minDiff, distinctPositions[0], overlap);
 
             // position axis autorange - always tight fitting
-            Axes.expand(pa, pv2, {vpad: barDiff / 2});
+            Axes.expand(pa, distinctPositions, {vpad: minDiff / 2});
 
-            // bar widths and position offsets
-            barDiff *= 1 - fullLayout.bargap;
-            if(overlap) barDiff /= bl.length;
+            // computer bar widths and position offsets
+            var barWidth = minDiff * (1 - fullLayout.bargap);
+            if(overlap) barWidth /= bl.length;
 
-            var barCenter;
-            function setBarCenter(v) { v[pLetter] = v.p + barCenter; }
+            var barWidthMinusGroupGap = barWidth * (1 - fullLayout.bargroupgap);
 
-            for(var i = 0; i < bl1.length; i++) {
-                var t = gd.calcdata[bl1[i]][0].t;
-                t.barwidth = barDiff * (1 - fullLayout.bargroupgap);
-                t.poffset = ((overlap ? (2 * i + 1 - bl1.length) * barDiff : 0) -
-                    t.barwidth) / 2;
-                t.dbar = dv.minDiff;
+            for(i = 0; i < traces.length; i++) {
+                trace = traces[i];
+
+                // computer bar group center and bar offset
+                var offsetFromCenter = (
+                        (overlap ? (2 * i + 1 - bl1.length) * barWidth : 0) -
+                        barWidthMinusGroupGap
+                    ) / 2,
+                    barCenter = offsetFromCenter + barWidthMinusGroupGap / 2;
+
+                // store bar width and offset for this trace
+                var t = trace[0].t;
+                t.barwidth = barWidthMinusGroupGap;
+                t.poffset = offsetFromCenter;
+                t.dbar = minDiff;
 
                 // store the bar center in each calcdata item
-                barCenter = t.poffset + t.barwidth / 2;
-                gd.calcdata[bl1[i]].forEach(setBarCenter);
+                for(j = 0; j < trace.length; j++) {
+                    bar = trace[j];
+                    bar[pLetter] = bar.p + barCenter;
+                }
             }
         }
 
