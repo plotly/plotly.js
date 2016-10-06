@@ -23,7 +23,7 @@ describe('Plots.executeAPICommand', function() {
         beforeEach(function() {
             spyOn(PlotlyInternal, 'restyle').and.callFake(function() {
                 return Promise.resolve('resolution');
-            })
+            });
         });
 
         it('calls the API method and resolves', function(done) {
@@ -43,7 +43,7 @@ describe('Plots.executeAPICommand', function() {
         beforeEach(function() {
             spyOn(PlotlyInternal, 'restyle').and.callFake(function() {
                 return Promise.reject('rejection');
-            })
+            });
         });
 
         it('calls the API method and rejects', function(done) {
@@ -68,7 +68,10 @@ describe('Plots.computeAPICommandBindings', function() {
     beforeEach(function() {
         gd = createGraphDiv();
 
-        Plotly.plot(gd, [{x: [1, 2, 3], y: [4, 5, 6]}]);
+        Plotly.plot(gd, [
+            {x: [1, 2, 3], y: [1, 2, 3]},
+            {x: [1, 2, 3], y: [4, 5, 6]},
+        ]);
     });
 
     afterEach(function() {
@@ -77,10 +80,102 @@ describe('Plots.computeAPICommandBindings', function() {
 
     describe('restyle', function() {
         describe('astr + val notation', function() {
-            it('computes the binding', function() {
-                var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', 7]);
+            describe('with a single attribute', function() {
+                it('with a scalar value', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', 7]);
+                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size']);
+                });
 
-                expect(result).toEqual(['data[0].marker.size']);
+                it('with an array value and no trace specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7]]);
+                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size']);
+                });
+
+                it('with trace specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', 7, [0]]);
+                    expect(result).toEqual(['data[0].marker.size']);
+                });
+
+                it('with a different trace specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', 7, [1]]);
+                    expect(result).toEqual(['data[1].marker.size']);
+                });
+
+                it('with an array value', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7], [0]]);
+                    expect(result).toEqual(['data[1].marker.size']);
+                });
+
+                it('with two array values and two traces specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [0, 1]]);
+                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size']);
+                });
+
+                it('with traces specified in reverse order', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [1, 0]]);
+                    expect(result).toEqual(['data[1].marker.size', 'data[0].marker.size']);
+                });
+
+                it('with two values and a single trace specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [0]]);
+                    expect(result).toEqual(['data[0].marker.size']);
+                });
+
+                it('with two values and a different trace specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [1]]);
+                    expect(result).toEqual(['data[1].marker.size']);
+                });
+            });
+        });
+
+        describe('aobj notation', function() {
+            describe('with a single attribute', function() {
+                it('with a scalar value', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': 7}]);
+                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size']);
+                });
+
+                it('with trace specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': 7}, [0]]);
+                    expect(result).toEqual(['data[0].marker.size']);
+                });
+
+                it('with a different trace specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': 7}, [1]]);
+                    expect(result).toEqual(['data[1].marker.size']);
+                });
+
+                it('with an array value', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7]}, [0]]);
+                    expect(result).toEqual(['data[1].marker.size']);
+                });
+
+                it('with two array values and two traces specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7, 5]}, [0, 1]]);
+                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size']);
+                });
+
+                it('with traces specified in reverse order', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7, 5]}, [1, 0]]);
+                    expect(result).toEqual(['data[1].marker.size', 'data[0].marker.size']);
+                });
+
+                it('with two values and a single trace specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7, 5]}, [0]]);
+                    expect(result).toEqual(['data[0].marker.size']);
+                });
+
+                it('with two values and a different trace specified', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7, 5]}, [1]]);
+                    expect(result).toEqual(['data[1].marker.size']);
+                });
+            });
+
+            describe('with multiple attributes', function() {
+                it('with a scalar value', function() {
+                    var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': 7, 'text.color': 'blue'}]);
+                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size', 'data[0].text.color', 'data[1].text.color']);
+                });
             });
         });
     });
