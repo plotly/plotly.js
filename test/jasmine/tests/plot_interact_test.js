@@ -37,6 +37,14 @@ describe('Test plot structure', function() {
             return d3.selectAll('rect.cbbg').size();
         }
 
+        function countClipPaths() {
+            return d3.selectAll('defs').selectAll('.axesclip,.plotclip').size();
+        }
+
+        function countDraggers() {
+            return d3.selectAll('g.draglayer').selectAll('g').size();
+        }
+
         describe('scatter traces', function() {
             var mock = require('@mocks/14.json');
             var gd;
@@ -52,6 +60,14 @@ describe('Test plot structure', function() {
 
             it('has one *subplot xy* node', function() {
                 expect(countSubplots()).toEqual(1);
+            });
+
+            it('has four clip paths', function() {
+                expect(countClipPaths()).toEqual(4);
+            });
+
+            it('has one dragger group', function() {
+                expect(countDraggers()).toEqual(1);
             });
 
             it('has one *scatterlayer* node', function() {
@@ -90,11 +106,15 @@ describe('Test plot structure', function() {
                 Plotly.deleteTraces(gd, [0]).then(function() {
                     expect(countScatterTraces()).toEqual(0);
                     expect(countSubplots()).toEqual(1);
+                    expect(countClipPaths()).toEqual(4);
+                    expect(countDraggers()).toEqual(1);
 
                     return Plotly.relayout(gd, {xaxis: null, yaxis: null});
                 }).then(function() {
                     expect(countScatterTraces()).toEqual(0);
                     expect(countSubplots()).toEqual(0);
+                    expect(countClipPaths()).toEqual(0);
+                    expect(countDraggers()).toEqual(0);
 
                     done();
                 });
@@ -302,6 +322,8 @@ describe('Test plot structure', function() {
 
                 it('has four *subplot* nodes', function() {
                     expect(countSubplots()).toEqual(4);
+                    expect(countClipPaths()).toEqual(12);
+                    expect(countDraggers()).toEqual(4);
                 });
 
                 it('has four heatmap image nodes', function() {
@@ -340,6 +362,8 @@ describe('Test plot structure', function() {
 
                 it('has four *subplot* nodes', function() {
                     expect(countSubplots()).toEqual(4);
+                    expect(countClipPaths()).toEqual(12);
+                    expect(countDraggers()).toEqual(4);
                 });
 
                 it('has two heatmap image nodes', function() {
@@ -376,6 +400,8 @@ describe('Test plot structure', function() {
 
                     Plotly.deleteTraces(gd, [0]).then(function() {
                         expect(countSubplots()).toEqual(4);
+                        expect(countClipPaths()).toEqual(12);
+                        expect(countDraggers()).toEqual(4);
                         assertHeatmapNodes(3);
                         assertContourNodes(2);
                         expect(countColorBars()).toEqual(0);
@@ -383,6 +409,8 @@ describe('Test plot structure', function() {
                         return Plotly.deleteTraces(gd, [0]);
                     }).then(function() {
                         expect(countSubplots()).toEqual(4);
+                        expect(countClipPaths()).toEqual(12);
+                        expect(countDraggers()).toEqual(4);
                         assertHeatmapNodes(2);
                         assertContourNodes(2);
                         expect(countColorBars()).toEqual(0);
@@ -390,6 +418,8 @@ describe('Test plot structure', function() {
                         return Plotly.deleteTraces(gd, [0]);
                     }).then(function() {
                         expect(countSubplots()).toEqual(4);
+                        expect(countClipPaths()).toEqual(12);
+                        expect(countDraggers()).toEqual(4);
                         assertHeatmapNodes(1);
                         assertContourNodes(1);
                         expect(countColorBars()).toEqual(0);
@@ -397,6 +427,24 @@ describe('Test plot structure', function() {
                         return Plotly.deleteTraces(gd, [0]);
                     }).then(function() {
                         expect(countSubplots()).toEqual(3);
+                        expect(countClipPaths()).toEqual(11);
+                        expect(countDraggers()).toEqual(3);
+                        assertHeatmapNodes(0);
+                        assertContourNodes(0);
+                        expect(countColorBars()).toEqual(0);
+
+                        var update = {
+                            xaxis: null,
+                            yaxis: null,
+                            xaxis2: null,
+                            yaxis2: null
+                        };
+
+                        return Plotly.relayout(gd, update);
+                    }).then(function() {
+                        expect(countSubplots()).toEqual(0);
+                        expect(countClipPaths()).toEqual(0);
+                        expect(countDraggers()).toEqual(0);
                         assertHeatmapNodes(0);
                         assertContourNodes(0);
                         expect(countColorBars()).toEqual(0);

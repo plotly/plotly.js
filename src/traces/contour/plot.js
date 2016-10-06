@@ -56,8 +56,8 @@ function plotOne(gd, plotinfo, cd) {
         y = cd[0].y,
         contours = trace.contours,
         uid = trace.uid,
-        xa = plotinfo.x(),
-        ya = plotinfo.y(),
+        xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis,
         fullLayout = gd._fullLayout,
         id = 'contour' + uid,
         pathinfo = emptyPathinfo(contours, plotinfo, cd[0]);
@@ -120,8 +120,8 @@ function emptyPathinfo(contours, plotinfo, cd0) {
             // all closed paths
             paths: [],
             // store axes so we can convert to px
-            xaxis: plotinfo.x(),
-            yaxis: plotinfo.y(),
+            xaxis: plotinfo.xaxis,
+            yaxis: plotinfo.yaxis,
             // full data arrays to use for interpolation
             x: cd0.x,
             y: cd0.y,
@@ -662,8 +662,8 @@ function clipGaps(plotGroup, plotinfo, cd0, perimeter) {
             starts: [],
             edgepaths: [],
             paths: [],
-            xaxis: plotinfo.x(),
-            yaxis: plotinfo.y(),
+            xaxis: plotinfo.xaxis,
+            yaxis: plotinfo.yaxis,
             x: cd0.x,
             y: cd0.y,
             // 0 = no data, 1 = data

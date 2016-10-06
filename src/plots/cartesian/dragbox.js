@@ -48,8 +48,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     var fullLayout = gd._fullLayout,
         // if we're dragging two axes at once, also drag overlays
         subplots = [plotinfo].concat((ns && ew) ? plotinfo.overlays : []),
-        xa = [plotinfo.x()],
-        ya = [plotinfo.y()],
+        xa = [plotinfo.xaxis],
+        ya = [plotinfo.yaxis],
         pw = xa[0]._length,
         ph = ya[0]._length,
         MINDRAG = constants.MINDRAG,
@@ -57,8 +57,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         isMainDrag = (ns + ew === 'nsew');
 
     for(var i = 1; i < subplots.length; i++) {
-        var subplotXa = subplots[i].x(),
-            subplotYa = subplots[i].y();
+        var subplotXa = subplots[i].xaxis,
+            subplotYa = subplots[i].yaxis;
         if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
         if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
     }
@@ -146,8 +146,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
     dragElement.init(dragOptions);
 
     var zoomlayer = gd._fullLayout._zoomlayer,
-        xs = plotinfo.x()._offset,
-        ys = plotinfo.y()._offset,
+        xs = plotinfo.xaxis._offset,
+        ys = plotinfo.yaxis._offset,
         x0,
         y0,
         box,
@@ -159,14 +159,14 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         corners;
 
     function recomputeAxisLists() {
-        xa = [plotinfo.x()];
-        ya = [plotinfo.y()];
+        xa = [plotinfo.xaxis];
+        ya = [plotinfo.yaxis];
         pw = xa[0]._length;
         ph = ya[0]._length;
 
         for(var i = 1; i < subplots.length; i++) {
-            var subplotXa = subplots[i].x(),
-                subplotYa = subplots[i].y();
+            var subplotXa = subplots[i].xaxis,
+                subplotYa = subplots[i].yaxis;
             if(xa.indexOf(subplotXa) === -1) xa.push(subplotXa);
             if(ya.indexOf(subplotYa) === -1) ya.push(subplotYa);
         }
@@ -174,8 +174,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         xActive = isDirectionActive(xa, ew);
         yActive = isDirectionActive(ya, ns);
         cursor = getDragCursor(yActive + xActive, fullLayout.dragmode);
-        xs = plotinfo.x()._offset;
-        ys = plotinfo.y()._offset;
+        xs = plotinfo.xaxis._offset;
+        ys = plotinfo.yaxis._offset;
         dragOptions.xa = xa;
         dragOptions.ya = ya;
     }
@@ -656,8 +656,8 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
         for(var i = 0; i < subplots.length; i++) {
 
             var subplot = plotinfos[subplots[i]],
-                xa2 = subplot.x(),
-                ya2 = subplot.y(),
+                xa2 = subplot.xaxis,
+                ya2 = subplot.yaxis,
                 editX = ew && !xa2.fixedrange,
                 editY = ns && !ya2.fixedrange;
 
@@ -694,7 +694,6 @@ module.exports = function dragBox(gd, plotinfo, x, y, w, h, ns, ew) {
 
             var plotDx = xa2._offset - fracDx,
                 plotDy = ya2._offset - fracDy;
-
 
             fullLayout._defs.selectAll('#' + subplot.clipId)
                 .call(Lib.setTranslate, clipDx, clipDy)

@@ -109,8 +109,8 @@ fx.init = function(gd) {
 
         if(!fullLayout._has('cartesian')) return;
 
-        var xa = plotinfo.x(),
-            ya = plotinfo.y(),
+        var xa = plotinfo.xaxis,
+            ya = plotinfo.yaxis,
 
             // the y position of the main x axis line
             y0 = (xa._linepositions[subplot] || [])[3],

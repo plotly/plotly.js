@@ -35,8 +35,6 @@ var subroutines = require('./subroutines');
 /**
  * Main plot-creation function
  *
- * Note: will call makePlotFramework if necessary to create the framework
- *
  * @param {string id or DOM element} gd
  *      the id or DOM element of the graph container div
  * @param {array of objects} data
@@ -123,28 +121,15 @@ Plotly.plot = function(gd, data, layout, config) {
     // so we don't try to re-call Plotly.plot from inside
     // legend and colorbar, if margins changed
     gd._replotting = true;
-    var hasData = gd._fullData.length > 0;
 
-    var subplots = Plotly.Axes.getSubplots(gd).join(''),
-        oldSubplots = Object.keys(gd._fullLayout._plots || {}).join(''),
-        hasSameSubplots = (oldSubplots === subplots);
+    // make or remake the framework if we need to
+    if(graphWasEmpty) makePlotFramework(gd);
 
-    // Make or remake the framework (ie container and axes) if we need to
-    // note: if they container already exists and has data,
-    //  the new layout gets ignored (as it should)
-    //  but if there's no data there yet, it's just a placeholder...
-    //  then it should destroy and remake the plot
-    if(hasData) {
-        if(gd.framework !== makePlotFramework || graphWasEmpty || !hasSameSubplots) {
-            gd.framework = makePlotFramework;
-            makePlotFramework(gd);
-        }
-    }
-    else if(!hasSameSubplots) {
+    // polar need a different framework
+    if(gd.framework !== makePlotFramework) {
         gd.framework = makePlotFramework;
         makePlotFramework(gd);
     }
-    else if(graphWasEmpty) makePlotFramework(gd);
 
     // save initial axis range once per graph
     if(graphWasEmpty) Plotly.Axes.saveRangeInitial(gd);
@@ -168,6 +153,24 @@ Plotly.plot = function(gd, data, layout, config) {
      */
 
     var oldmargins = JSON.stringify(fullLayout._size);
+
+    // draw framework first so that margin-pushing
+    // components can position themselves correctly
+    function drawFramework() {
+        var basePlotModules = fullLayout._basePlotModules;
+
+        for(var i = 0; i < basePlotModules.length; i++) {
+            if(basePlotModules[i].drawFramework) {
+                basePlotModules[i].drawFramework(gd);
+            }
+        }
+
+        return Lib.syncOrAsync([
+            subroutines.layoutStyles,
+            drawAxes,
+            Fx.init
+        ], gd);
+    }
 
     // draw anything that can affect margins.
     // currently this is legend and colorbars
@@ -195,8 +198,10 @@ Plotly.plot = function(gd, data, layout, config) {
     function marginPushersAgain() {
         // in case the margins changed, draw margin pushers again
         var seq = JSON.stringify(fullLayout._size) === oldmargins ?
-            [] : [marginPushers, subroutines.layoutStyles];
-        return Lib.syncOrAsync(seq.concat(Fx.init), gd);
+            [] :
+            [marginPushers, subroutines.layoutStyles];
+
+        return Lib.syncOrAsync(seq, gd);
     }
 
     function positionAndAutorange() {
@@ -220,7 +225,6 @@ Plotly.plot = function(gd, data, layout, config) {
             }
         }
 
-
         // calc and autorange for errorbars
         ErrorBars.calc(gd);
 
@@ -234,14 +238,15 @@ Plotly.plot = function(gd, data, layout, config) {
 
     function doAutoRange() {
         if(gd._transitioning) return;
+
         var axList = Plotly.Axes.list(gd, '', true);
         for(var i = 0; i < axList.length; i++) {
             Plotly.Axes.doAutoRange(axList[i]);
         }
     }
 
+    // draw ticks, titles, and calculate axis scaling (._b, ._m)
     function drawAxes() {
-        // draw ticks, titles, and calculate axis scaling (._b, ._m)
         return Plotly.Axes.doTicks(gd, 'redraw');
     }
 
@@ -275,6 +280,11 @@ Plotly.plot = function(gd, data, layout, config) {
         for(i = 0; i < basePlotModules.length; i++) {
             basePlotModules[i].plot(gd);
         }
+
+        // keep reference to shape layers in subplots
+        var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
+        fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
+        fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
 
         // styling separate from drawing
         Plots.style(gd);
@@ -313,6 +323,7 @@ Plotly.plot = function(gd, data, layout, config) {
 
     Lib.syncOrAsync([
         Plots.previousPromises,
+        drawFramework,
         marginPushers,
         marginPushersAgain,
         positionAndAutorange,
@@ -2757,20 +2768,11 @@ function makePlotFramework(gd) {
     fullLayout._shapeLowerLayer = layerBelow.append('g')
         .classed('shapelayer', true);
 
-    var subplots = Plotly.Axes.getSubplots(gd);
-    if(subplots.join('') !== Object.keys(gd._fullLayout._plots || {}).join('')) {
-        makeSubplots(gd, subplots);
-    }
-
-    if(fullLayout._has('cartesian')) makeCartesianPlotFramwork(gd, subplots);
+    // single cartesian layer for the whole plot
+    fullLayout._cartesianlayer = fullLayout._paper.append('g').classed('cartesianlayer', true);
 
     // single ternary layer for the whole plot
     fullLayout._ternarylayer = fullLayout._paper.append('g').classed('ternarylayer', true);
-
-    // shape layers in subplots
-    var layerSubplot = fullLayout._paper.selectAll('.layer-subplot');
-    fullLayout._imageSubplotLayer = layerSubplot.selectAll('.imagelayer');
-    fullLayout._shapeSubplotLayer = layerSubplot.selectAll('.shapelayer');
 
     // upper shape layer
     // (only for shapes to be drawn above the whole plot, including subplots)
@@ -2796,176 +2798,4 @@ function makePlotFramework(gd) {
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 
     gd.emit('plotly_framework');
-
-    // position and style the containers, make main title
-    var frameWorkDone = Lib.syncOrAsync([
-        subroutines.layoutStyles,
-        function goAxes() { return Plotly.Axes.doTicks(gd, 'redraw'); },
-        Fx.init
-    ], gd);
-
-    if(frameWorkDone && frameWorkDone.then) {
-        gd._promises.push(frameWorkDone);
-    }
-
-    return frameWorkDone;
-}
-
-// create '_plots' object grouping x/y axes into subplots
-// to be better manage subplots
-function makeSubplots(gd, subplots) {
-    var _plots = gd._fullLayout._plots = {};
-    var subplot, plotinfo;
-
-    function getAxisFunc(subplot, axLetter) {
-        return function() {
-            return Plotly.Axes.getFromId(gd, subplot, axLetter);
-        };
-    }
-
-    for(var i = 0; i < subplots.length; i++) {
-        subplot = subplots[i];
-        plotinfo = _plots[subplot] = {};
-
-        plotinfo.id = subplot;
-
-        // references to the axis objects controlling this subplot
-        plotinfo.x = getAxisFunc(subplot, 'x');
-        plotinfo.y = getAxisFunc(subplot, 'y');
-
-        // TODO investigate why replacing calls to .x and .y
-        // for .xaxis and .yaxis makes the `pseudo_html`
-        // test image fail
-        plotinfo.xaxis = plotinfo.x();
-        plotinfo.yaxis = plotinfo.y();
-    }
-}
-
-function makeCartesianPlotFramwork(gd, subplots) {
-    var fullLayout = gd._fullLayout;
-
-    // Layers to keep plot types in the right order.
-    // from back to front:
-    // 1. heatmaps, 2D histos and contour maps
-    // 2. bars / 1D histos
-    // 3. errorbars for bars and scatter
-    // 4. scatter
-    // 5. box plots
-    function plotLayers(svg) {
-        svg.append('g').classed('imagelayer', true);
-        svg.append('g').classed('maplayer', true);
-        svg.append('g').classed('barlayer', true);
-        svg.append('g').classed('boxlayer', true);
-        svg.append('g').classed('scatterlayer', true);
-    }
-
-    // create all the layers in order, so we know they'll stay in order
-    var overlays = [];
-
-    fullLayout._paper.selectAll('g.subplot').data(subplots)
-      .enter().append('g')
-        .classed('subplot', true)
-        .each(function(subplot) {
-            var plotinfo = fullLayout._plots[subplot],
-                plotgroup = plotinfo.plotgroup = d3.select(this).classed(subplot, true),
-                xa = plotinfo.xaxis,
-                ya = plotinfo.yaxis;
-
-            // references to any subplots overlaid on this one
-            plotinfo.overlays = [];
-
-            // is this subplot overlaid on another?
-            // ax.overlaying is the id of another axis of the same
-            // dimension that this one overlays to be an overlaid subplot,
-            // the main plot must exist make sure we're not trying to
-            // overlay on an axis that's already overlaying another
-            var xa2 = Plotly.Axes.getFromId(gd, xa.overlaying) || xa;
-            if(xa2 !== xa && xa2.overlaying) {
-                xa2 = xa;
-                xa.overlaying = false;
-            }
-
-            var ya2 = Plotly.Axes.getFromId(gd, ya.overlaying) || ya;
-            if(ya2 !== ya && ya2.overlaying) {
-                ya2 = ya;
-                ya.overlaying = false;
-            }
-
-            var mainplot = xa2._id + ya2._id;
-            if(mainplot !== subplot && subplots.indexOf(mainplot) !== -1) {
-                plotinfo.mainplot = mainplot;
-                overlays.push(plotinfo);
-
-                // for now force overlays to overlay completely... so they
-                // can drag together correctly and share backgrounds.
-                // Later perhaps we make separate axis domain and
-                // tick/line domain or something, so they can still share
-                // the (possibly larger) dragger and background but don't
-                // have to both be drawn over that whole domain
-                xa.domain = xa2.domain.slice();
-                ya.domain = ya2.domain.slice();
-            }
-            else {
-                // main subplot - make the components of
-                // the plot and containers for overlays
-                plotinfo.bg = plotgroup.append('rect')
-                    .style('stroke-width', 0);
-
-                // back layer for shapes and images to
-                // be drawn below a subplot
-                var backlayer = plotgroup.append('g')
-                    .classed('layer-subplot', true);
-
-                plotinfo.shapelayer = backlayer.append('g')
-                    .classed('shapelayer', true);
-                plotinfo.imagelayer = backlayer.append('g')
-                    .classed('imagelayer', true);
-                plotinfo.gridlayer = plotgroup.append('g');
-                plotinfo.overgrid = plotgroup.append('g');
-                plotinfo.zerolinelayer = plotgroup.append('g');
-                plotinfo.overzero = plotgroup.append('g');
-                plotinfo.plot = plotgroup.append('g').call(plotLayers);
-                plotinfo.overplot = plotgroup.append('g');
-                plotinfo.xlines = plotgroup.append('path');
-                plotinfo.ylines = plotgroup.append('path');
-                plotinfo.overlines = plotgroup.append('g');
-                plotinfo.xaxislayer = plotgroup.append('g');
-                plotinfo.yaxislayer = plotgroup.append('g');
-                plotinfo.overaxes = plotgroup.append('g');
-
-                // make separate drag layers for each subplot,
-                // but append them to paper rather than the plot groups,
-                // so they end up on top of the rest
-            }
-            plotinfo.draglayer = fullLayout._draggers.append('g');
-        });
-
-    // now make the components of overlaid subplots
-    // overlays don't have backgrounds, and append all
-    // their other components to the corresponding
-    // extra groups of their main Plots.
-    overlays.forEach(function(plotinfo) {
-        var mainplot = fullLayout._plots[plotinfo.mainplot];
-        mainplot.overlays.push(plotinfo);
-
-        plotinfo.gridlayer = mainplot.overgrid.append('g');
-        plotinfo.zerolinelayer = mainplot.overzero.append('g');
-        plotinfo.plot = mainplot.overplot.append('g').call(plotLayers);
-        plotinfo.xlines = mainplot.overlines.append('path');
-        plotinfo.ylines = mainplot.overlines.append('path');
-        plotinfo.xaxislayer = mainplot.overaxes.append('g');
-        plotinfo.yaxislayer = mainplot.overaxes.append('g');
-    });
-
-    // common attributes for all subplots, overlays or not
-    subplots.forEach(function(subplot) {
-        var plotinfo = fullLayout._plots[subplot];
-
-        plotinfo.xlines
-            .style('fill', 'none')
-            .classed('crisp', true);
-        plotinfo.ylines
-            .style('fill', 'none')
-            .classed('crisp', true);
-    });
 }

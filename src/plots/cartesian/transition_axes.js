@@ -134,8 +134,8 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
     }
 
     function unsetSubplotTransform(subplot) {
-        var xa2 = subplot.x();
-        var ya2 = subplot.y();
+        var xa2 = subplot.xaxis;
+        var ya2 = subplot.yaxis;
 
         fullLayout._defs.selectAll('#' + subplot.clipId)
             .call(Lib.setTranslate, 0, 0)
@@ -194,11 +194,11 @@ module.exports = function transitionAxes(gd, newLayout, transitionOpts, makeOnCo
             viewBox[3] = subplot.yaxis._length;
         }
 
-        ticksAndAnnotations(subplot.x(), subplot.y());
+        ticksAndAnnotations(subplot.xaxis, subplot.yaxis);
 
 
-        var xa2 = subplot.x();
-        var ya2 = subplot.y();
+        var xa2 = subplot.xaxis;
+        var ya2 = subplot.yaxis;
 
         var editX = !!xUpdate;
         var editY = !!yUpdate;
