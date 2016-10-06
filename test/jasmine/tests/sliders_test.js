@@ -186,13 +186,14 @@ describe('update sliders interactions', function() {
     'use strict';
 
     var mock = require('@mocks/sliders.json');
+    var mockCopy;
 
     var gd;
 
     beforeEach(function(done) {
         gd = createGraphDiv();
 
-        var mockCopy = Lib.extendDeep({}, mock);
+        mockCopy = Lib.extendDeep({}, mock);
 
         Plotly.plot(gd, mockCopy.data, mockCopy.layout).then(done);
     });
@@ -247,6 +248,46 @@ describe('update sliders interactions', function() {
             expect(gd._fullLayout._pushmargin['slider-1']).toBeDefined();
         })
         .catch(fail).then(done);
+    });
+
+    it('should respond to mouse clicks', function(done) {
+        var firstGroup = gd._fullLayout._infolayer.select('.' + constants.railTouchRectClass);
+        var firstGrip = gd._fullLayout._infolayer.select('.' + constants.gripRectClass);
+        var railNode = firstGroup.node();
+        var touchRect = railNode.getBoundingClientRect();
+
+        var originalFill = firstGrip.style('fill');
+
+        // Dispatch a click on the right side of the bar:
+        railNode.dispatchEvent(new MouseEvent('mousedown', {
+            clientY: touchRect.top + 5,
+            clientX: touchRect.left + touchRect.width - 5,
+        }));
+
+        expect(mockCopy.layout.sliders[0].active).toEqual(5);
+        var mousedownFill = firstGrip.style('fill');
+        expect(mousedownFill).not.toEqual(originalFill);
+
+        // Drag to the left side:
+        gd.dispatchEvent(new MouseEvent('mousemove', {
+            clientY: touchRect.top + 5,
+            clientX: touchRect.left + 5,
+        }));
+
+        var mousemoveFill = firstGrip.style('fill');
+        expect(mousemoveFill).toEqual(mousedownFill);
+
+        setTimeout(function() {
+            expect(mockCopy.layout.sliders[0].active).toEqual(0);
+
+            gd.dispatchEvent(new MouseEvent('mouseup'));
+
+            var mouseupFill = firstGrip.style('fill');
+            expect(mouseupFill).toEqual(originalFill);
+            expect(mockCopy.layout.sliders[0].active).toEqual(0);
+
+            done();
+        }, 100);
     });
 
     function assertNodeCount(query, cnt) {

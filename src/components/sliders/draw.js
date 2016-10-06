@@ -348,7 +348,6 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
 function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransition) {
     var quantizedPosition = Math.round(normalizedPosition * (sliderOpts.steps.length - 1));
 
-
     if(quantizedPosition !== sliderOpts.active) {
         setActive(gd, sliderGroup, sliderOpts, quantizedPosition, true, doTransition);
     }
