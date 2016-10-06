@@ -1,4 +1,5 @@
 var Plotly = require('@lib/index');
+var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
 var createGraphDiv = require('../assets/create_graph_div');
@@ -7,10 +8,187 @@ var assertDims = require('../assets/assert_dims');
 var assertStyle = require('../assets/assert_style');
 
 
-Plotly.register([
-    require('@src/transforms/filter'),
-    require('@src/transforms/groupby')
-]);
+describe('general transforms:', function() {
+    'use strict';
+
+    var traceIn, traceOut;
+
+    it('supplyTraceDefaults should supply the transform defaults', function() {
+        traceIn = {
+            y: [2, 1, 2],
+            transforms: [{ type: 'filter' }]
+        };
+
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+
+        expect(traceOut.transforms).toEqual([{
+            type: 'filter',
+            enabled: true,
+            operation: '=',
+            value: 0,
+            filtersrc: 'x'
+        }]);
+    });
+
+    it('supplyTraceDefaults should not bail if transform module is not found', function() {
+        traceIn = {
+            y: [2, 1, 2],
+            transforms: [{ type: 'invalid' }]
+        };
+
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, {});
+
+        expect(traceOut.y).toBe(traceIn.y);
+    });
+
+    it('supplyTraceDefaults should honored global transforms', function() {
+        traceIn = {
+            y: [2, 1, 2],
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: 0,
+                filtersrc: 'x'
+            }]
+        };
+
+        var layout = {
+            _globalTransforms: [{
+                type: 'filter'
+            }]
+        };
+
+        traceOut = Plots.supplyTraceDefaults(traceIn, 0, layout);
+
+        expect(traceOut.transforms[0]).toEqual({
+            type: 'filter',
+            enabled: true,
+            operation: '=',
+            value: 0,
+            filtersrc: 'x'
+        }, '- global first');
+
+        expect(traceOut.transforms[1]).toEqual({
+            type: 'filter',
+            enabled: true,
+            operation: '>',
+            value: 0,
+            filtersrc: 'x'
+        }, '- trace second');
+    });
+
+    it('supplyDataDefaults should apply the transform while', function() {
+        var dataIn = [{
+            x: [-2, -2, 1, 2, 3],
+            y: [1, 2, 2, 3, 1]
+        }, {
+            x: [-2, -1, -2, 0, 1, 2, 3],
+            y: [1, 2, 3, 1, 2, 3, 1],
+            transforms: [{
+                type: 'filter',
+                operation: '>',
+                value: 0,
+                filtersrc: 'x'
+            }]
+        }];
+
+        var dataOut = [];
+        Plots.supplyDataDefaults(dataIn, dataOut, {}, []);
+
+        var msg;
+
+        msg = 'does not mutate user data';
+        expect(dataIn[1].x).toEqual([-2, -1, -2, 0, 1, 2, 3], msg);
+        expect(dataIn[1].y).toEqual([1, 2, 3, 1, 2, 3, 1], msg);
+        expect(dataIn[1].transforms).toEqual([{
+            type: 'filter',
+            operation: '>',
+            value: 0,
+            filtersrc: 'x'
+        }], msg);
+
+        msg = 'supplying the transform defaults';
+        expect(dataOut[1].transforms[0]).toEqual({
+            type: 'filter',
+            enabled: true,
+            operation: '>',
+            value: 0,
+            filtersrc: 'x'
+        }, msg);
+
+        msg = 'keeping refs to user data';
+        expect(dataOut[1]._input.x).toEqual([-2, -1, -2, 0, 1, 2, 3], msg);
+        expect(dataOut[1]._input.y).toEqual([1, 2, 3, 1, 2, 3, 1], msg);
+        expect(dataOut[1]._input.transforms).toEqual([{
+            type: 'filter',
+            operation: '>',
+            value: 0,
+            filtersrc: 'x'
+        }], msg);
+
+        msg = 'keeping refs to full transforms array';
+        expect(dataOut[1]._fullInput.transforms).toEqual([{
+            type: 'filter',
+            enabled: true,
+            operation: '>',
+            value: 0,
+            filtersrc: 'x'
+        }], msg);
+
+        msg = 'setting index w.r.t user data';
+        expect(dataOut[0].index).toEqual(0, msg);
+        expect(dataOut[1].index).toEqual(1, msg);
+
+        msg = 'setting _expandedIndex w.r.t full data';
+        expect(dataOut[0]._expandedIndex).toEqual(0, msg);
+        expect(dataOut[1]._expandedIndex).toEqual(1, msg);
+    });
+
+});
+
+describe('user-defined transforms:', function() {
+    'use strict';
+
+    it('should pass correctly arguments to transform methods', function() {
+        var transformIn = { type: 'fake' };
+        var transformOut = {};
+
+        var dataIn = [{
+            transforms: [transformIn]
+        }];
+
+        var layout = {};
+
+        function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
+            expect(_transformIn).toBe(transformIn);
+            expect(_layout).toBe(layout);
+
+            return transformOut;
+        }
+
+        function assertTransformArgs(dataOut, opts) {
+            expect(dataOut[0]._input).toBe(dataIn[0]);
+            expect(opts.transform).toBe(transformOut);
+            expect(opts.fullTrace._input).toBe(dataIn[0]);
+            expect(opts.layout).toBe(layout);
+
+            return dataOut;
+        }
+
+        var fakeTransformModule = {
+            moduleType: 'transform',
+            name: 'fake',
+            attributes: {},
+            supplyDefaults: assertSupplyDefaultsArgs,
+            transform: assertTransformArgs
+        };
+
+        Plotly.register(fakeTransformModule);
+        Plots.supplyDataDefaults(dataIn, [], layout);
+        delete Plots.transformsRegistry.fake;
+    });
+
+});
 
 describe('multiple transforms:', function() {
     'use strict';
@@ -392,5 +570,4 @@ describe('multiple traces with transforms:', function() {
             done();
         });
     });
-
 });

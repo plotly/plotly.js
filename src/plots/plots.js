@@ -16,7 +16,9 @@ var Plotly = require('../plotly');
 var Registry = require('../registry');
 var Lib = require('../lib');
 var Color = require('../components/color');
+
 var plots = module.exports = {};
+
 var animationAttrs = require('./animation_attributes');
 var frameAttrs = require('./frame_attributes');
 
@@ -786,52 +788,15 @@ function applyTransforms(fullTrace, fullData, layout) {
     var container = fullTrace.transforms,
         dataOut = [fullTrace];
 
-    var attributeSets = dataOut.map(function(trace) {
-
-        var arraySplitAttributes = [];
-
-        var stack = [];
-
-        /**
-         * A closure that gathers attribute paths into its enclosed arraySplitAttributes
-         * Attribute paths are collected iff their leaf node is a splittable attribute
-         * @callback callback
-         * @param {object} attr an attribute
-         * @param {String} attrName name string
-         * @param {object[]} attrs all the attributes
-         * @param {Number} level the recursion level, 0 at the root
-         * @closureVariable {String[][]} arraySplitAttributes the set of gathered attributes
-         *   Example of filled closure variable (expected to be initialized to []):
-         *        [["marker","size"],["marker","line","width"],["marker","line","color"]]
-         */
-        function callback(attr, attrName, attrs, level) {
-
-            stack = stack.slice(0, level).concat([attrName]);
-
-            var splittableAttr = attr.valType === 'data_array' || attr.arrayOk === true;
-            if(splittableAttr) {
-                arraySplitAttributes.push(stack.slice());
-            }
-        }
-
-        Lib.crawl(trace._module.attributes, callback);
-
-        return arraySplitAttributes.map(function(path) {
-            return path.join('.');
-        });
-    });
-
     for(var i = 0; i < container.length; i++) {
         var transform = container[i],
-            type = transform.type,
-            _module = transformsRegistry[type];
+            _module = transformsRegistry[transform.type];
 
-        if(_module) {
+        if(_module && _module.transform) {
             dataOut = _module.transform(dataOut, {
                 transform: transform,
                 fullTrace: fullTrace,
                 fullData: fullData,
-                attributeSets: attributeSets,
                 layout: layout,
                 transformIndex: i
             });
@@ -1617,7 +1582,7 @@ plots.doCalcdata = function(gd, traces) {
     var axList = Plotly.Axes.list(gd),
         fullData = gd._fullData,
         fullLayout = gd._fullLayout,
-        i;
+        i, j;
 
     // XXX: Is this correct? Needs a closer look so that *some* traces can be recomputed without
     // *all* needing doCalcdata:
@@ -1655,7 +1620,6 @@ plots.doCalcdata = function(gd, traces) {
         }
 
         var trace = fullData[i],
-            _module = trace._module,
             cd = [];
 
         // If traces were specified and this trace was not included, then transfer it over from
@@ -1665,8 +1629,30 @@ plots.doCalcdata = function(gd, traces) {
             continue;
         }
 
-        if(_module && trace.visible === true) {
-            if(_module.calc) cd = _module.calc(gd, trace);
+        var _module;
+        if(trace.visible === true) {
+
+            // call calcTransform method if any
+            if(trace.transforms) {
+
+                // we need one round of trace module calc before
+                // the calc transform to 'fill in' the categories list
+                // used for example in the data-to-coordinate method
+                _module = trace._module;
+                if(_module && _module.calc) _module.calc(gd, trace);
+
+                for(j = 0; j < trace.transforms.length; j++) {
+                    var transform = trace.transforms[j];
+
+                    _module = transformsRegistry[transform.type];
+                    if(_module && _module.calcTransform) {
+                        _module.calcTransform(gd, trace, transform);
+                    }
+                }
+            }
+
+            _module = trace._module;
+            if(_module && _module.calc) cd = _module.calc(gd, trace);
         }
 
         // make sure there is a first point

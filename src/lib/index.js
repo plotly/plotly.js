@@ -25,6 +25,7 @@ lib.coerceFont = coerceModule.coerceFont;
 lib.validate = coerceModule.validate;
 lib.isValObject = coerceModule.isValObject;
 lib.crawl = coerceModule.crawl;
+lib.findArrayAttributes = coerceModule.findArrayAttributes;
 lib.IS_SUBPLOT_OBJ = coerceModule.IS_SUBPLOT_OBJ;
 lib.IS_LINKED_TO_ARRAY = coerceModule.IS_LINKED_TO_ARRAY;
 lib.DEPRECATED = coerceModule.DEPRECATED;

@@ -8,31 +8,40 @@
 
 'use strict';
 
-// var Lib = require('@src/lib');
 var Lib = require('../lib');
 
-/* eslint no-unused-vars: 0*/
-
-
-// so that Plotly.register knows what to do with it
 exports.moduleType = 'transform';
 
-// determines to link between transform type and transform module
 exports.name = 'groupby';
 
-// ... as trace attributes
 exports.attributes = {
-    active: {
+    enabled: {
         valType: 'boolean',
-        dflt: true
+        dflt: true,
+        description: [
+            'Determines whether this group-by transform is enabled or disabled.'
+        ].join(' ')
     },
     groups: {
         valType: 'data_array',
-        dflt: []
+        dflt: [],
+        description: [
+            'Sets the groups in which the trace data will be split.',
+            'For example, with `x` set to *[1, 2, 3, 4]* and',
+            '`groups` set to *[\'a\', \'b\', \'a\', \'b\']*,',
+            'the groupby transform with split in one trace',
+            'with `x` [1, 3] and one trace with `x` [2, 4].'
+        ].join(' ')
     },
     style: {
         valType: 'any',
-        dflt: {}
+        dflt: {},
+        description: [
+            'Sets each group style.',
+            'For example, with `groups` set to *[\'a\', \'b\', \'a\', \'b\']*',
+            'and `style` set to *{ a: { marker: { color: \'red\' } }}',
+            'marker points in group *\'a\'* will be drawn in red.'
+        ].join(' ')
     }
 };
 
@@ -49,21 +58,19 @@ exports.attributes = {
  * @return {object} transformOut
  *  copy of transformIn that contains attribute defaults
  */
-exports.supplyDefaults = function(transformIn, fullData, layout) {
+exports.supplyDefaults = function(transformIn) {
     var transformOut = {};
 
     function coerce(attr, dflt) {
         return Lib.coerce(transformIn, transformOut, exports.attributes, attr, dflt);
     }
 
-    var active = coerce('active');
+    var enabled = coerce('enabled');
 
-    if(!active) return transformOut;
+    if(!enabled) return transformOut;
 
     coerce('groups');
     coerce('style');
-
-    // or some more complex logic using fullData and layout
 
     return transformOut;
 };
@@ -85,15 +92,11 @@ exports.supplyDefaults = function(transformIn, fullData, layout) {
  *  array of transformed traces
  */
 exports.transform = function(data, state) {
-
-    // one-to-many case
-
     var newData = [];
 
-    data.forEach(function(trace, i) {
-
-        newData = newData.concat(transformOne(trace, state, state.attributeSets[i]));
-    });
+    for(var i = 0; i < data.length; i++) {
+        newData = newData.concat(transformOne(data[i], state));
+    }
 
     return newData;
 };
@@ -110,8 +113,7 @@ function pasteArray(newTrace, trace, j, a) {
     );
 }
 
-function transformOne(trace, state, attributeSet) {
-
+function transformOne(trace, state) {
     var opts = state.transform;
     var groups = trace.transforms[state.transformIndex].groups;
 
@@ -126,31 +128,28 @@ function transformOne(trace, state, attributeSet) {
     var newData = new Array(groupNames.length);
     var len = groups.length;
 
-    var style = opts.style || {};
+    var arrayAttrs = Lib.findArrayAttributes(trace);
 
-    var arrayAttributes = attributeSet
-        .filter(function(array) {return Array.isArray(Lib.nestedProperty(trace, array).get());});
+    var style = opts.style || {};
 
     for(var i = 0; i < groupNames.length; i++) {
         var groupName = groupNames[i];
 
-        // TODO is this the best pattern ???
-        // maybe we could abstract this out
-        var newTrace = newData[i] = Lib.extendDeep({}, trace);
+        var newTrace = newData[i] = Lib.extendDeepNoArrays({}, trace);
 
-        arrayAttributes.forEach(initializeArray.bind(null, newTrace));
+        arrayAttrs.forEach(initializeArray.bind(null, newTrace));
 
         for(var j = 0; j < len; j++) {
             if(groups[j] !== groupName) continue;
 
-            arrayAttributes.forEach(pasteArray.bind(0, newTrace, trace, j));
+            arrayAttrs.forEach(pasteArray.bind(0, newTrace, trace, j));
         }
 
         newTrace.name = groupName;
 
-        //  there's no need to coerce style[groupName] here
+        // there's no need to coerce style[groupName] here
         // as another round of supplyDefaults is done on the transformed traces
-        newTrace = Lib.extendDeep(newTrace, style[groupName] || {});
+        newTrace = Lib.extendDeepNoArrays(newTrace, style[groupName] || {});
     }
 
     return newData;
