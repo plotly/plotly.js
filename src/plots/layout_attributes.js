@@ -183,6 +183,7 @@ module.exports = {
         'annotations': 'annotations',
         'shapes': 'shapes',
         'images': 'images',
-        'updatemenus': 'updatemenus'
+        'updatemenus': 'updatemenus',
+        'sliders': 'sliders'
     }
 };
