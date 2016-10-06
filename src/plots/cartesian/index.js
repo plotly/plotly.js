@@ -206,6 +206,12 @@ exports.drawFramework = function(gd) {
     });
 };
 
+exports.rangePlot = function(gd, plotinfo, cdSubplot) {
+    makeSubplotLayer(plotinfo);
+    plotOne(gd, plotinfo, cdSubplot);
+    Plots.style(gd);
+};
+
 function makeSubplotData(gd) {
     var fullLayout = gd._fullLayout,
         subplots = Axes.getSubplots(gd);

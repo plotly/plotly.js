@@ -5,6 +5,7 @@ var RangeSlider = require('@src/components/rangeslider');
 var constants = require('@src/components/rangeslider/constants');
 var mock = require('../../image/mocks/range_slider.json');
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var mouseEvent = require('../assets/mouse_event');
@@ -24,6 +25,12 @@ describe('the range slider', function() {
     function getRangeSlider() {
         var className = constants.containerClassName;
         return document.getElementsByClassName(className)[0];
+    }
+
+    function countRangeSliderClipPaths() {
+        return d3.selectAll('defs').selectAll('*').filter(function() {
+            return this.id.indexOf('rangeslider') !== -1;
+        }).size();
     }
 
     function testTranslate1D(node, val) {
@@ -308,6 +315,7 @@ describe('the range slider', function() {
                 .then(function() {
                     var rangeSlider = getRangeSlider();
                     expect(rangeSlider).toBeDefined();
+                    expect(countRangeSliderClipPaths()).toEqual(1);
                 })
                 .then(done);
         });
@@ -318,6 +326,7 @@ describe('the range slider', function() {
                 .then(function() {
                     var rangeSlider = getRangeSlider();
                     expect(rangeSlider).not.toBeDefined();
+                    expect(countRangeSliderClipPaths()).toEqual(0);
                 })
                 .then(done);
         });
