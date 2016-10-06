@@ -177,6 +177,8 @@ function coverSlip() {
     return cover;
 }
 
+dragElement.coverSlip = coverSlip;
+
 function finishDrag(gd) {
     gd._dragging = false;
     if(gd._replotPending) Plotly.plot(gd);

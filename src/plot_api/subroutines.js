@@ -318,22 +318,3 @@ exports.doModeBar = function(gd) {
 
     return Plots.previousPromises(gd);
 };
-
-exports.setRangeSliderRange = function(gd, changes) {
-    var fullLayout = gd._fullLayout;
-
-    var newMin = changes['xaxis.range'] ? changes['xaxis.range'][0] : changes['xaxis.range[0]'],
-        newMax = changes['xaxis.range'] ? changes['xaxis.range'][1] : changes['xaxis.range[1]'];
-
-    var rangeSlider = fullLayout.xaxis && fullLayout.xaxis.rangeslider ?
-        fullLayout.xaxis.rangeslider : {};
-
-    if(rangeSlider.visible) {
-        if(newMin || newMax) {
-            fullLayout.xaxis.rangeslider.setRange(newMin, newMax);
-        }
-        else if(changes['xaxis.autorange']) {
-            fullLayout.xaxis.rangeslider.setRange();
-        }
-    }
-};
