@@ -177,7 +177,7 @@ function findDimensions(gd, sliderOpts) {
     sliderOpts.labelStride = Math.max(1, Math.ceil(computedSpacePerLabel / availableSpacePerLabel));
     sliderOpts.labelHeight = labelHeight;
 
-    sliderOpts.height = sliderOpts.currentValueTotalHeight + constants.tickOffset + constants.tickLength + constants.labelOffset + sliderOpts.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
+    sliderOpts.height = sliderOpts.currentValueTotalHeight + constants.tickOffset + sliderOpts.ticklen + constants.labelOffset + sliderOpts.labelHeight + sliderOpts.pad.t + sliderOpts.pad.b;
 
     var xanchor = 'left';
     if(anchorUtils.isRightAnchor(sliderOpts)) {
@@ -292,9 +292,9 @@ function drawGrip(sliderGroup, gd, sliderOpts) {
         rx: constants.gripRadius,
         ry: constants.gripRadius,
     })
-        .call(Color.stroke, constants.gripBorderColor)
-        .call(Color.fill, constants.gripBgColor)
-        .style('stroke-width', constants.gripBorderWidth + 'px');
+        .call(Color.stroke, sliderOpts.bordercolor)
+        .call(Color.fill, sliderOpts.bgcolor)
+        .style('stroke-width', sliderOpts.borderwidth + 'px');
 }
 
 function drawLabel(item, data, sliderOpts) {
@@ -335,7 +335,7 @@ function drawLabelGroup(sliderGroup, sliderOpts) {
 
         Lib.setTranslate(item,
             normalizedValueToPosition(sliderOpts, d.fraction),
-            constants.tickOffset + constants.tickLength + sliderOpts.labelHeight + constants.labelOffset + sliderOpts.currentValueTotalHeight
+            constants.tickOffset + sliderOpts.ticklen + sliderOpts.labelHeight + constants.labelOffset + sliderOpts.currentValueTotalHeight
         );
     });
 
@@ -398,7 +398,7 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
 
         d3.event.stopPropagation();
         d3.event.preventDefault();
-        grip.call(Color.fill, constants.gripBgActiveColor);
+        grip.call(Color.fill, sliderOpts.activebgcolor);
 
         var normalizedPosition = positionToNormalizedValue(sliderOpts, d3.mouse(node)[0]);
         handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, true);
@@ -409,7 +409,7 @@ function attachGripEvents(item, gd, sliderGroup, sliderOpts) {
         });
 
         $gd.on('mouseup', function() {
-            grip.call(Color.fill, constants.gripBgColor);
+            grip.call(Color.fill, sliderOpts.bgcolor);
             $gd.on('mouseup', null);
             $gd.on('mousemove', null);
         });
@@ -426,7 +426,7 @@ function drawTicks(sliderGroup, sliderOpts) {
     tick.exit().remove();
 
     tick.attr({
-        width: constants.tickWidth,
+        width: sliderOpts.tickwidth + 'px',
         'shape-rendering': 'crispEdges'
     });
 
@@ -435,11 +435,11 @@ function drawTicks(sliderGroup, sliderOpts) {
         var item = d3.select(this);
 
         item
-            .attr({height: isMajor ? constants.tickLength : constants.minorTickLength})
-            .call(Color.fill, isMajor ? constants.tickColor : constants.minorTickColor);
+            .attr({height: isMajor ? sliderOpts.ticklen : sliderOpts.minorticklen})
+            .call(Color.fill, isMajor ? sliderOpts.tickcolor : sliderOpts.tickcolor);
 
         Lib.setTranslate(item,
-            normalizedValueToPosition(sliderOpts, i / (sliderOpts.steps.length - 1)) - 0.5 * constants.tickWidth,
+            normalizedValueToPosition(sliderOpts, i / (sliderOpts.steps.length - 1)) - 0.5 * sliderOpts.tickwidth,
             (isMajor ? constants.tickOffset : constants.minorTickOffset) + sliderOpts.currentValueTotalHeight
         );
     });
@@ -498,9 +498,9 @@ function drawTouchRect(sliderGroup, gd, sliderOpts) {
 
     rect.attr({
         width: sliderOpts.inputAreaLength,
-        height: Math.max(sliderOpts.inputAreaWidth, constants.tickOffset + constants.tickLength + sliderOpts.labelHeight)
+        height: Math.max(sliderOpts.inputAreaWidth, constants.tickOffset + sliderOpts.ticklen + sliderOpts.labelHeight)
     })
-        .call(Color.fill, constants.gripBgColor)
+        .call(Color.fill, sliderOpts.bgcolor)
         .attr('opacity', 0);
 
     Lib.setTranslate(rect, 0, sliderOpts.currentValueTotalHeight);
@@ -522,9 +522,9 @@ function drawRail(sliderGroup, sliderOpts) {
         ry: constants.railRadius,
         'shape-rendering': 'crispEdges'
     })
-        .call(Color.stroke, constants.railBorderColor)
-        .call(Color.fill, constants.railBgColor)
-        .style('stroke-width', '1px');
+        .call(Color.stroke, sliderOpts.bordercolor)
+        .call(Color.fill, sliderOpts.bgcolor)
+        .style('stroke-width', sliderOpts.borderwidth + 'px');
 
     Lib.setTranslate(rect,
         constants.railInset,

@@ -55,6 +55,7 @@ module.exports = {
     railRadius: 2,
     railWidth: 5,
     railBorder: 4,
+    railBorderWidth: 1,
     railBorderColor: '#bec8d9',
     railBgColor: '#f8fafc',
 

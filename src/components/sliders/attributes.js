@@ -10,9 +10,9 @@
 
 var fontAttrs = require('../../plots/font_attributes');
 var padAttrs = require('../../plots/pad_attributes');
-var colorAttrs = require('../color/attributes');
 var extendFlat = require('../../lib/extend').extendFlat;
 var animationAttrs = require('../../plots/animation_attributes');
+var constants = require('./constants');
 
 var stepsAttrs = {
     _isLinkedToArray: true,
@@ -37,7 +37,7 @@ var stepsAttrs = {
         ],
         description: [
             'Sets the arguments values to be passed to the Plotly',
-            'method set in `method` on click.'
+            'method set in `method` on slide.'
         ].join(' ')
     },
     label: {
@@ -84,8 +84,7 @@ module.exports = {
         role: 'info',
         dflt: 'fraction',
         description: [
-            'Determines whether this color bar\'s length',
-            '(i.e. the measure in the color variation direction)',
+            'Determines whether this slider length',
             'is set in units of plot *fraction* or in *pixels.',
             'Use `len` to set the value.'
         ].join(' ')
@@ -96,9 +95,9 @@ module.exports = {
         dflt: 1,
         role: 'style',
         description: [
-            'Sets the length of the color bar',
+            'Sets the length of the slider',
             'This measure excludes the padding of both ends.',
-            'That is, the color bar length is this length minus the',
+            'That is, the slider\'s length is this length minus the',
             'padding on both ends.'
         ].join(' ')
     },
@@ -209,22 +208,59 @@ module.exports = {
         description: 'Sets the font of the slider step labels.'
     }),
 
+    activebgcolor: {
+        valType: 'color',
+        role: 'style',
+        dflt: constants.gripBgActiveColor,
+        description: [
+            'Sets the background color of the slider grip',
+            'while dragging.'
+        ].join(' ')
+    },
     bgcolor: {
         valType: 'color',
         role: 'style',
-        description: 'Sets the background color of the slider buttons.'
+        dflt: constants.railBgColor,
+        description: 'Sets the background color of the slider.'
     },
     bordercolor: {
         valType: 'color',
-        dflt: colorAttrs.borderLine,
+        dflt: constants.railBorderColor,
         role: 'style',
         description: 'Sets the color of the border enclosing the slider.'
     },
     borderwidth: {
         valType: 'number',
         min: 0,
-        dflt: 1,
+        dflt: constants.railBorderWidth,
         role: 'style',
         description: 'Sets the width (in px) of the border enclosing the slider.'
-    }
+    },
+    ticklen: {
+        valType: 'number',
+        min: 0,
+        dflt: constants.tickLength,
+        role: 'style',
+        description: 'Sets the length in pixels of step tick marks'
+    },
+    tickcolor: {
+        valType: 'color',
+        dflt: constants.tickColor,
+        role: 'style',
+        description: 'Sets the color of the border enclosing the slider.'
+    },
+    tickwidth: {
+        valType: 'number',
+        min: 0,
+        dflt: 1,
+        role: 'style',
+        description: 'Sets the tick width (in px).'
+    },
+    minorticklen: {
+        valType: 'number',
+        min: 0,
+        dflt: constants.minorTickLength,
+        role: 'style',
+        description: 'Sets the length in pixels of minor step tick marks'
+    },
 };

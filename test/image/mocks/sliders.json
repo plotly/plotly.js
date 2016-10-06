@@ -39,6 +39,9 @@
       "xanchor": "right",
       "y": -0.1,
       "yanchor": "top",
+      "currentvalue": {
+        "visible": false
+      },
 
       "transition": {
         "duration": 150,
@@ -47,7 +50,7 @@
 
       "pad": {
         "r": 20,
-        "t": 20
+        "t": 60
       },
 
       "font": {}
@@ -57,6 +60,42 @@
         "label": "red",
         "method": "restyle",
         "args": [{"marker.color": "red"}]
+      }, {
+        "label": "orange",
+        "method": "restyle",
+        "args": [{"marker.color": "orange"}]
+      }, {
+        "label": "yellow",
+        "method": "restyle",
+        "args": [{"marker.color": "yellow"}]
+      }, {
+        "label": "green",
+        "method": "restyle",
+        "args": [{"marker.color": "green"}]
+      }, {
+        "label": "orange",
+        "method": "restyle",
+        "args": [{"marker.color": "orange"}]
+      }, {
+        "label": "yellow",
+        "method": "restyle",
+        "args": [{"marker.color": "yellow"}]
+      }, {
+        "label": "green",
+        "method": "restyle",
+        "args": [{"marker.color": "green"}]
+      }, {
+        "label": "orange",
+        "method": "restyle",
+        "args": [{"marker.color": "orange"}]
+      }, {
+        "label": "yellow",
+        "method": "restyle",
+        "args": [{"marker.color": "yellow"}]
+      }, {
+        "label": "green",
+        "method": "restyle",
+        "args": [{"marker.color": "green"}]
       }, {
         "label": "orange",
         "method": "restyle",
@@ -95,7 +134,27 @@
         "t": 20
       },
 
-      "font": {}
+      "bgcolor": "red",
+      "bordercolor": "blue",
+      "borderwidth": 2,
+      "activebgcolor": "green",
+      "ticklen": 20,
+      "tickcolor": "purple",
+      "minorticklen": 10,
+      "tickwidth": 2,
+
+      "font": {
+        "color": "purple",
+        "size": 15
+      },
+      "currentvalue": {
+        "prefix": "color:",
+        "xanchor": "right",
+        "font": {
+          "color": "orange",
+          "size": 20
+        }
+      }
     }],
     "xaxis": {
       "range": [0, 2],

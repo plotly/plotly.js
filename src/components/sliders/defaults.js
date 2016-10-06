@@ -11,9 +11,9 @@
 var Lib = require('../../lib');
 
 var attributes = require('./attributes');
-var contants = require('./constants');
+var constants = require('./constants');
 
-var name = contants.name;
+var name = constants.name;
 var stepAttrs = attributes.steps;
 
 
@@ -73,12 +73,17 @@ function sliderDefaults(sliderIn, sliderOut, layoutOut) {
     coerce('transition.duration');
     coerce('transition.easing');
 
-    Lib.coerceFont(coerce, 'font', layoutOut.font);
-    Lib.coerceFont(coerce, 'currentvalue.font', layoutOut.font);
-
-    coerce('bgcolor', layoutOut.paper_bgcolor);
+    coerce('bgcolor');
+    coerce('activebgcolor');
     coerce('bordercolor');
     coerce('borderwidth');
+    coerce('ticklen');
+    coerce('tickwidth');
+    coerce('tickcolor');
+    coerce('minorticklen');
+
+    Lib.coerceFont(coerce, 'font', layoutOut.font);
+    Lib.coerceFont(coerce, 'currentvalue.font', sliderOut.font);
 }
 
 function stepsDefaults(sliderIn, sliderOut) {
