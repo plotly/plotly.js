@@ -2794,6 +2794,4 @@ function makePlotFramework(gd) {
     fullLayout._hoverlayer = fullLayout._toppaper.append('g').classed('hoverlayer', true);
 
     gd.emit('plotly_framework');
-
-    return 'FRAMEWORK';
 }
