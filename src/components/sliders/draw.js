@@ -350,21 +350,6 @@ function handleInput(gd, sliderGroup, sliderOpts, normalizedPosition, doTransiti
     }
 }
 
-function setActiveByLabel(gd, sliderGroup, sliderOpts, label, doCallback, doTransition) {
-    var index;
-    for(var i = 0; i < sliderOpts.steps.length; i++) {
-        var step = sliderOpts.steps[i];
-        if(step.label === label) {
-            index = i;
-            break;
-        }
-    }
-
-    if(index !== undefined) {
-        setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition);
-    }
-}
-
 function setActive(gd, sliderGroup, sliderOpts, index, doCallback, doTransition) {
     sliderOpts._input.active = sliderOpts.active = index;
 
