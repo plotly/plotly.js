@@ -51,7 +51,7 @@ module.exports = function(gd) {
         .selectAll('g.' + constants.containerClassName)
         .data(rangeSliderData, keyFunction);
 
-    var newRangeSliders = rangeSliders.enter().append('g')
+    rangeSliders.enter().append('g')
         .classed(constants.containerClassName, true)
         .attr('pointer-events', 'all');
 
@@ -63,21 +63,17 @@ module.exports = function(gd) {
     // return early if no range slider is visible
     if(rangeSliderData.length === 0) return;
 
-    // set new slider range using axis autorange if necessary
-    newRangeSliders.each(function(axisOpts) {
-        var opts = axisOpts[constants.name];
+    // for all present range sliders
+    rangeSliders.each(function(axisOpts) {
+        var rangeSlider = d3.select(this),
+            opts = axisOpts[constants.name];
 
+        // compute new slider range using axis autorange if necessary
         // copy back range to input range slider container to skip
         // this step in subsequent draw calls
         if(!opts.range) {
             opts._input.range = opts.range = Axes.getAutoRange(axisOpts);
         }
-    });
-
-    // for all present range slides
-    rangeSliders.each(function(axisOpts) {
-        var rangeSlider = d3.select(this),
-            opts = axisOpts[constants.name];
 
         // update range slider dimensions
 
