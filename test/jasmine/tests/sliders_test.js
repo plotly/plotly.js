@@ -72,6 +72,10 @@ describe('sliders defaults', function() {
         supply(layoutIn, layoutOut);
 
         expect(layoutOut.sliders[0].currentvalue.xanchor).toBeUndefined();
+        expect(layoutOut.sliders[0].currentvalue.prefix).toBeUndefined();
+        expect(layoutOut.sliders[0].currentvalue.suffix).toBeUndefined();
+        expect(layoutOut.sliders[0].currentvalue.offset).toBeUndefined();
+        expect(layoutOut.sliders[0].currentvalue.font).toBeUndefined();
     });
 
     it('should set the default values equal to the labels', function() {
