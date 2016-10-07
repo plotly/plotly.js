@@ -28,18 +28,6 @@ var directionAttrs = {
     color: Lib.extendFlat({}, lineAttrs.color),
     width: Lib.extendFlat({}, lineAttrs.width),
     dash: Lib.extendFlat({}, lineAttrs.dash),
-
-    tickwidth: {
-        valType: 'number',
-        min: 0,
-        max: 1,
-        dflt: 0.1,
-        role: 'style',
-        description: [
-            'Sets the width of the open/close tick marks',
-            'relative to the *t* minimal interval.'
-        ].join(' ')
-    }
 };
 
 module.exports = {
@@ -96,6 +84,18 @@ module.exports = {
             'all the data points.',
             'If an array of string, the items are mapped in order to the',
             'this trace\'s sample points.'
+        ].join(' ')
+    },
+
+    tickwidth: {
+        valType: 'number',
+        min: 0,
+        max: 0.5,
+        dflt: 0.05,
+        role: 'style',
+        description: [
+            'Sets the width of the open/close tick marks',
+            'relative to the *x* minimal interval.'
         ].join(' ')
     }
 };
