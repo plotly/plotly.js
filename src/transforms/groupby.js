@@ -117,13 +117,13 @@ function transformOne(trace, state) {
     var opts = state.transform;
     var groups = trace.transforms[state.transformIndex].groups;
 
-    var groupNames = groups.filter(function(g, i, self) {
-        return self.indexOf(g) === i;
-    });
-
     if(!(Array.isArray(groups)) || groups.length === 0) {
         return trace;
     }
+
+    var groupNames = groups.filter(function(g, i, self) {
+        return self.indexOf(g) === i;
+    });
 
     var newData = new Array(groupNames.length);
     var len = groups.length;
