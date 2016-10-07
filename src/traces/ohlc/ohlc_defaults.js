@@ -12,7 +12,7 @@
 module.exports = function handleOHLC(traceIn, traceOut, coerce) {
     var len;
 
-    var t = coerce('t'),
+    var x = coerce('x'),
         open = coerce('open'),
         high = coerce('high'),
         low = coerce('low'),
@@ -20,15 +20,15 @@ module.exports = function handleOHLC(traceIn, traceOut, coerce) {
 
     len = Math.min(open.length, high.length, low.length, close.length);
 
-    if(t) {
-        len = Math.min(len, t.length);
-        t.slice(0, len);
+    if(x) {
+        len = Math.min(len, x.length);
+        if(len < x.length) traceOut.x = x.slice(0, len);
     }
 
-    open = open.slice(0, len);
-    high = high.slice(0, len);
-    low = low.slice(0, len);
-    close = close.slice(0, len);
+    if(len < open.length) traceOut.open = open.slice(0, len);
+    if(len < high.length) traceOut.high = high.slice(0, len);
+    if(len < low.length) traceOut.low = low.slice(0, len);
+    if(len < close.length) traceOut.close = close.slice(0, len);
 
     return len;
 };

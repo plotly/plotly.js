@@ -31,7 +31,7 @@ var directionAttrs = {
 };
 
 module.exports = {
-    t: OHLCattrs.t,
+    x: OHLCattrs.x,
     open: OHLCattrs.open,
     high: OHLCattrs.high,
     low: OHLCattrs.low,

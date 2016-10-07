@@ -44,14 +44,10 @@ var directionAttrs = {
 
 module.exports = {
 
-    // or should this be 'x'
-    //
-    //
-    // should we add the option for ohlc along y-axis ??
-    t: {
+    x: {
         valType: 'data_array',
         description: [
-            'Sets the time coordinate.',
+            'Sets the x coordinates.',
             'If absent, linear coordinate will be generated.'
         ].join(' ')
     },
