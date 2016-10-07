@@ -23,42 +23,45 @@ var Lib = require('../../lib');
  */
 
 module.exports = function setPositions(gd, plotinfo) {
-    setGroupPositions(gd, plotinfo, 'v');
-    setGroupPositions(gd, plotinfo, 'h');
+    var xa = plotinfo.xaxis,
+        ya = plotinfo.yaxis;
+
+    var traces = gd._fullData,
+        tracesCalc = gd.calcdata,
+        tracesHorizontal = [],
+        tracesVertical = [],
+        i;
+    for(i = 0; i < traces.length; i++) {
+        var trace = traces[i];
+        if(
+            trace.visible === true &&
+            Registry.traceIs(trace, 'bar') &&
+            trace.xaxis === xa._id &&
+            trace.yaxis === ya._id
+        ) {
+            if(trace.orientation === 'h') tracesHorizontal.push(tracesCalc[i]);
+            else tracesVertical.push(tracesCalc[i]);
+        }
+    }
+
+    setGroupPositions(gd, xa, ya, tracesVertical);
+    setGroupPositions(gd, ya, xa, tracesHorizontal);
 };
 
-function setGroupPositions(gd, plotinfo, dir) {
+function setGroupPositions(gd, pa, sa, traces) {
+    if(!traces.length) return;
+
     var fullLayout = gd._fullLayout,
-        xa = plotinfo.xaxis,
-        ya = plotinfo.yaxis,
+        pLetter = pa._id.charAt(0),
+        sLetter = sa._id.charAt(0),
         i, j;
 
-    var bl = [],
-        pLetter = {v: 'x', h: 'y'}[dir],
-        sLetter = {v: 'y', h: 'x'}[dir],
-        pa = plotinfo[pLetter + 'axis'],
-        sa = plotinfo[sLetter + 'axis'];
-
-    gd._fullData.forEach(function(trace, i) {
-        if(trace.visible === true &&
-                Registry.traceIs(trace, 'bar') &&
-                trace.orientation === dir &&
-                trace.xaxis === xa._id &&
-                trace.yaxis === ya._id) {
-            bl.push(i);
-        }
-    });
-
-    if(!bl.length) return;
-
     // bar position offset and width calculation
-    // bl1 is a list of traces (in calcdata) to look at together
+    // traces is a list of traces (in calcdata) to look at together
     // to find the maximum size bars that won't overlap
     // for stacked or grouped bars, this is all vertical or horizontal
     // bars for overlaid bars, call this individually on each trace.
-    function barposition(bl1) {
-        var traces = bl1.map(function(i) { return gd.calcdata[i]; });
-
+    function barposition(traces) {
         var positions = [],
             i, trace,
             j, bar;
@@ -88,7 +91,7 @@ function setGroupPositions(gd, plotinfo, dir) {
 
         // computer bar widths and position offsets
         var barWidth = minDiff * (1 - fullLayout.bargap);
-        if(overlap) barWidth /= bl.length;
+        if(overlap) barWidth /= traces.length;
 
         var barWidthMinusGroupGap = barWidth * (1 - fullLayout.bargroupgap);
 
@@ -97,7 +100,7 @@ function setGroupPositions(gd, plotinfo, dir) {
 
             // computer bar group center and bar offset
             var offsetFromCenter = (
-                    (overlap ? (2 * i + 1 - bl1.length) * barWidth : 0) -
+                    (overlap ? (2 * i + 1 - traces.length) * barWidth : 0) -
                     barWidthMinusGroupGap
                 ) / 2,
                 barCenter = offsetFromCenter + barWidthMinusGroupGap / 2;
@@ -117,9 +120,9 @@ function setGroupPositions(gd, plotinfo, dir) {
     }
 
     if(fullLayout.barmode === 'overlay') {
-        bl.forEach(function(bli) { barposition([bli]); });
+        traces.forEach(function(trace) { barposition([trace]); });
     }
-    else barposition(bl);
+    else barposition(traces);
 
     var stack = (fullLayout.barmode === 'stack'),
         relative = (fullLayout.barmode === 'relative'),
@@ -138,15 +141,16 @@ function setGroupPositions(gd, plotinfo, dir) {
 
             // make sure if p is different only by rounding,
             // we still stack
-            sumround = gd.calcdata[bl[0]][0].t.barwidth / 100,
+            sumround = traces[0][0].t.barwidth / 100,
             sv = 0,
             padded = true,
             barEnd,
             ti,
             scale;
 
-        for(i = 0; i < bl.length; i++) { // trace index
-            ti = gd.calcdata[bl[i]];
+        for(i = 0; i < traces.length; i++) { // trace index
+            ti = traces[i];
+
             for(j = 0; j < ti.length; j++) {
 
                 // skip over bars with no size,
@@ -184,8 +188,8 @@ function setGroupPositions(gd, plotinfo, dir) {
             sMin = 0;
             sMax = stack ? top : 0;
 
-            for(i = 0; i < bl.length; i++) { // trace index
-                ti = gd.calcdata[bl[i]];
+            for(i = 0; i < traces.length; i++) { // trace index
+                ti = traces[i];
 
                 for(j = 0; j < ti.length; j++) {
                     relAndNegative = (relative && ti[j].s < 0);
@@ -226,9 +230,8 @@ function setGroupPositions(gd, plotinfo, dir) {
         // these bar tops in calcdata
         var fs = function(v) { v[sLetter] = v.s; return v.s; };
 
-        for(i = 0; i < bl.length; i++) {
-            Axes.expand(sa, gd.calcdata[bl[i]].map(fs),
-                {tozero: true, padded: true});
+        for(i = 0; i < traces.length; i++) {
+            Axes.expand(sa, traces[i].map(fs), {tozero: true, padded: true});
         }
     }
 }
