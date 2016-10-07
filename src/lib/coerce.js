@@ -457,5 +457,14 @@ exports.findArrayAttributes = function(trace) {
 
     exports.crawl(trace._module.attributes, callback);
 
+    // TODO add comment
+    if(trace._fullInput) {
+        exports.crawl(trace._fullInput._module.attributes, callback);
+
+        arrayAttributes = arrayAttributes.filter(function(g, i, self) {
+            return self.indexOf(g) === i;
+        });
+    }
+
     return arrayAttributes;
 };
