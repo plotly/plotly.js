@@ -135,7 +135,7 @@ proto.handlePick = function(pickResult) {
 
 // check if trace is fancy
 proto.isFancy = function(options) {
-    if(this.scene.xaxis.type !== 'linear') return true;
+    if(this.scene.xaxis.type !== 'linear' && this.scene.xaxis.type !== 'date') return true;
     if(this.scene.yaxis.type !== 'linear') return true;
 
     if(!options.x || !options.y) return true;
@@ -279,7 +279,8 @@ proto.updateFast = function(options) {
         yy = y[i];
 
         // check for isNaN is faster but doesn't skip over nulls
-        if(!isNumeric(xx) || !isNumeric(yy)) continue;
+        if(!isNumeric(yy)) continue;
+        if(!isNumeric(xx) && !(xx instanceof Date)) continue;
 
         idToIndex[pId++] = i;
 
