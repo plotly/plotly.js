@@ -27,7 +27,6 @@ var directionAttrs = {
     color: Lib.extendFlat({}, boxAttrs.line.color),
     width: Lib.extendFlat({}, boxAttrs.line.width),
     fillcolor: Lib.extendFlat({}, boxAttrs.fillcolor),
-    tickwidth: Lib.extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
 };
 
 module.exports = {
@@ -45,5 +44,6 @@ module.exports = {
         color: { dflt: 'red' }
     }),
 
-    text: OHLCattrs.text
+    text: OHLCattrs.text,
+    whiskerwidth: Lib.extendFlat({}, boxAttrs.whiskerwidth, { dflt: 0 }),
 };

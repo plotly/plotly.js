@@ -32,6 +32,7 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     }
 
     coerce('text');
+    coerce('whiskerwidth');
 
     handleDirection(traceOut, coerce, 'increasing');
     handleDirection(traceOut, coerce, 'decreasing');
@@ -44,6 +45,5 @@ function handleDirection(traceOut, coerce, direction) {
         coerce(direction + '.color');
         coerce(direction + '.width');
         coerce(direction + '.fillcolor');
-        coerce(direction + '.tickwidth');
     }
 }
