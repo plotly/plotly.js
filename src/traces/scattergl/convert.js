@@ -118,7 +118,7 @@ proto.handlePick = function(pickResult) {
         trace: this,
         dataCoord: pickResult.dataCoord,
         traceCoord: [
-            this.pickXData[index],
+            Number(this.pickXData[index]), // non-fancy scattergl has Dates
             this.pickYData[index]
         ],
         textLabel: Array.isArray(this.textLabels) ?
