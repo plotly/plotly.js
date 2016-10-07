@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Lib = require('../../lib');
 var helpers = require('./helpers');
 var axisIds = require('../../plots/cartesian/axis_ids');
 
@@ -19,7 +18,11 @@ exports.name = 'ohlc';
 
 exports.attributes = {};
 
-exports.supplyDefaults = null;
+exports.supplyDefaults = function(transformIn, traceOut) {
+    helpers.copyOHLC(transformIn, traceOut);
+
+    return transformIn;
+};
 
 exports.transform = function transform(dataIn, state) {
     var dataOut = [];
@@ -47,20 +50,7 @@ exports.transform = function transform(dataIn, state) {
 };
 
 function makeTrace(traceIn, state, direction) {
-    var directionOpts = traceIn[direction];
-
-    // We need to track which direction ('increasing' or 'decreasing')
-    // the generated correspond to for the calcTransform step.
-    //
-    // To make sure that direction reaches the calcTransform,
-    // store it in the transform opts object.
-    var _transforms = Lib.extendFlat([], traceIn.transforms);
-    _transforms[state.transformIndex] = {
-        type: 'ohlc',
-        direction: direction
-    };
-
-    return {
+    var traceOut = {
         type: 'scatter',
         mode: 'lines',
         connectgaps: false,
@@ -68,63 +58,65 @@ function makeTrace(traceIn, state, direction) {
         // TODO could do better
         name: direction,
 
-        // to make autotype catch date axes soon!!
-        x: traceIn.t || [0],
-
-        // concat low and high to get correct autorange
-        y: [].concat(traceIn.low).concat(traceIn.high),
-
-        visible: directionOpts.visible,
-
-        line: {
-            color: directionOpts.color,
-            width: directionOpts.width,
-            dash: directionOpts.dash
-        },
-
         text: traceIn.text,
         hoverinfo: traceIn.hoverinfo,
 
         opacity: traceIn.opacity,
         showlegend: traceIn.showlegend,
 
-        transforms: _transforms
+        transforms: helpers.makeTransform(traceIn, state, direction)
     };
+
+    // the rest of below may not have been coerced
+
+    var directionOpts = traceIn[direction];
+
+    if(directionOpts) {
+
+        // to make autotype catch date axes soon!!
+        traceOut.x = traceIn.x || [0];
+
+        // concat low and high to get correct autorange
+        traceOut.y = [].concat(traceIn.low).concat(traceIn.high);
+
+        traceOut.visible = directionOpts.visible;
+
+        traceOut.line = {
+            color: directionOpts.color,
+            width: directionOpts.width,
+            dash: directionOpts.dash
+        };
+    }
+
+    return traceOut;
 }
 
 exports.calcTransform = function calcTransform(gd, trace, opts) {
-    var fullInput = trace._fullInput,
-        direction = opts.direction;
-
-    var filterFn = helpers.getFilterFn(direction),
+    var direction = opts.direction,
+        filterFn = helpers.getFilterFn(direction),
         ax = axisIds.getFromTrace(gd, trace, 'x'),
-        tickWidth = convertTickWidth(fullInput.t, ax, fullInput[direction].tickwidth);
+        tickWidth = convertTickWidth(trace.x, ax, trace._fullInput.tickwidth);
 
-    // TODO tickwidth does not restyle
+    var open = trace.open,
+        high = trace.high,
+        low = trace.low,
+        close = trace.close;
 
-    var open = fullInput.open,
-        high = fullInput.high,
-        low = fullInput.low,
-        close = fullInput.close;
+    var len = open.length,
+        x = [],
+        y = [];
 
-    // sliced accordingly in supply-defaults
-    var len = open.length;
-
-    // clear generated trace x / y
-    trace.x = [];
-    trace.y = [];
-
-    var appendX = fullInput.t ?
+    var appendX = trace._fullInput.x ?
         function(i) {
-            var t = ax.d2c(fullInput.t[i]);
-            trace.x.push(t - tickWidth, t, t, t, t, t + tickWidth, null);
+            var v = ax.d2c(trace.x[i]);
+            x.push(v - tickWidth, v, v, v, v, v + tickWidth, null);
         } :
         function(i) {
-            trace.x.push(i - tickWidth, i, i, i, i, i + tickWidth, null);
+            x.push(i - tickWidth, i, i, i, i, i + tickWidth, null);
         };
 
     var appendY = function(o, h, l, c) {
-        trace.y.push(o, o, h, l, c, c, null);
+        y.push(o, o, h, l, c, c, null);
     };
 
     for(var i = 0; i < len; i++) {
@@ -133,16 +125,19 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
             appendY(open[i], high[i], low[i], close[i]);
         }
     }
+
+    trace.x = x;
+    trace.y = y;
 };
 
-function convertTickWidth(t, ax, tickWidth) {
-    if(!t) return tickWidth;
+function convertTickWidth(coords, ax, tickWidth) {
+    if(coords.length < 2) return tickWidth;
 
-    var tInData = t.map(ax.d2c),
-        minDTick = Infinity;
+    var _coords = coords.map(ax.d2c),
+        minDTick = _coords[1] - _coords[0];
 
-    for(var i = 0; i < t.length - 1; i++) {
-        minDTick = Math.min(tInData[i + 1] - tInData[i], minDTick);
+    for(var i = 1; i < _coords.length - 1; i++) {
+        minDTick = Math.min(_coords[i + 1] - _coords[i], minDTick);
     }
 
     return minDTick * tickWidth;

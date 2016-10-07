@@ -12,6 +12,7 @@
 var Lib = require('../../lib');
 var handleOHLC = require('./ohlc_defaults');
 var attributes = require('./attributes');
+var helpers = require('./helpers');
 
 module.exports = function supplyDefaults(traceIn, traceOut) {
 
@@ -19,14 +20,10 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    // TODO .. HAVE TO TEST FILTER with 't', 'high', 'open', 'low' ...
-
     var transformOpts = { type: 'ohlc' };
-    if(Array.isArray(traceOut.transforms)) traceOut.transforms.push(transformOpts);
-    else traceOut.transforms = [transformOpts];
+    helpers.prependTransformOpts(traceIn, traceOut, transformOpts);
 
     var len = handleOHLC(traceIn, traceOut, coerce);
-
     if(len === 0) {
         traceOut.visible = false;
         return;

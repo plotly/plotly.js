@@ -9,8 +9,49 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 
-exports.getFilterFn = function getFilterFn(direction) {
+// TODO add comment
+exports.prependTransformOpts = function(traceIn, traceOut, transformOpts) {
+    if(Array.isArray(traceIn.transforms)) {
+        traceIn.transforms.push(transformOpts);
+    }
+    else {
+        traceIn.transforms = [transformOpts];
+    }
+};
+
+// TODO add comment
+exports.copyOHLC = function(container, traceOut) {
+    if(container.open) traceOut.open = container.open;
+    if(container.high) traceOut.high = container.high;
+    if(container.low) traceOut.low = container.low;
+    if(container.close) traceOut.close = container.close;
+};
+
+// We need to track which direction ('increasing' or 'decreasing')
+// the generated correspond to for the calcTransform step.
+//
+// To make sure that direction reaches the calcTransform,
+// store it in the transform opts object.
+exports.makeTransform = function(traceIn, state, direction) {
+    var out = Lib.extendFlat([], traceIn.transforms);
+
+    out[state.transformIndex] = {
+        type: traceIn.type,
+        direction: direction,
+
+        // ...
+        open: traceIn.open,
+        high: traceIn.high,
+        low: traceIn.low,
+        close: traceIn.close
+    };
+
+    return out;
+};
+
+exports.getFilterFn = function(direction) {
     switch(direction) {
         case 'increasing':
             return function(o, c) { return o <= c; };
@@ -20,7 +61,7 @@ exports.getFilterFn = function getFilterFn(direction) {
     }
 };
 
-exports.addRangeSlider = function addRangeSlider(layout) {
+exports.addRangeSlider = function(layout) {
     if(!layout.xaxis) layout.xaxis = {};
     if(!layout.xaxis.rangeslider) layout.xaxis.rangeslider = {};
 };

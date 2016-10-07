@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var handleOHLC = require('../ohlc/ohlc_defaults');
+var helpers = require('../ohlc/helpers');
 var attributes = require('./attributes');
 
 module.exports = function supplyDefaults(traceIn, traceOut) {
@@ -19,13 +20,10 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
 
-    // add comment about this hack block
     var transformOpts = { type: 'candlestick' };
-    if(Array.isArray(traceOut.transforms)) traceOut.transforms.push(transformOpts);
-    else traceOut.transforms = [transformOpts];
+    helpers.prependTransformOpts(traceIn, traceOut, transformOpts);
 
     var len = handleOHLC(traceIn, traceOut, coerce);
-
     if(len === 0) {
         traceOut.visible = false;
         return;

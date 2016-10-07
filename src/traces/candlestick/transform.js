@@ -9,7 +9,6 @@
 
 'use strict';
 
-var Lib = require('../../lib');
 var helpers = require('../ohlc/helpers');
 
 exports.moduleType = 'transform';
@@ -18,7 +17,11 @@ exports.name = 'candlestick';
 
 exports.attributes = {};
 
-exports.supplyDefaults = null;
+exports.supplyDefaults = function(transformIn, traceOut) {
+    helpers.copyOHLC(transformIn, traceOut);
+
+    return transformIn;
+};
 
 exports.transform = function transform(dataIn, state) {
     var dataOut = [];
@@ -45,42 +48,15 @@ exports.transform = function transform(dataIn, state) {
 };
 
 function makeTrace(traceIn, state, direction) {
-    var directionOpts = traceIn[direction];
-
-    // We need to track which direction ('increasing' or 'decreasing')
-    // the generated correspond to for the calcTransform step.
-    //
-    // To make sure that direction reaches the calcTransform,
-    // store it in the transform opts object.
-    var _transforms = Lib.extendFlat([], traceIn.transforms);
-    _transforms[state.transformIndex] = {
-        type: 'candlestick',
-        direction: direction
-    };
-
-    return {
+    var traceOut = {
         type: 'box',
         boxpoints: false,
 
         // TODO could do better
         name: direction,
 
-        // to make autotype catch date axes soon!!
-        x: traceIn.t || [0],
-
-        // concat low and high to get correct autorange
-        y: [].concat(traceIn.low).concat(traceIn.high),
-
-        visible: directionOpts.visible,
-
-        line: {
-            color: directionOpts.color,
-            width: directionOpts.width
-        },
-        fillcolor: directionOpts.fillcolor,
-
         // TODO this doesn't restyle currently
-        whiskerwidth: directionOpts.tickwidth,
+        whiskerwidth: traceIn.whiskerwidth,
 
         text: traceIn.text,
         hoverinfo: traceIn.hoverinfo,
@@ -88,39 +64,58 @@ function makeTrace(traceIn, state, direction) {
         opacity: traceIn.opacity,
         showlegend: traceIn.showlegend,
 
-        transforms: _transforms
+        transforms: helpers.makeTransform(traceIn, state, direction)
     };
+
+    // the rest of below may not have been coerced
+
+    var directionOpts = traceIn[direction];
+
+    if(directionOpts) {
+
+        // to make autotype catch date axes soon!!
+        traceOut.x = traceIn.x || [0];
+
+        // concat low and high to get correct autorange
+        traceOut.y = [].concat(traceIn.low).concat(traceIn.high);
+
+        traceOut.visible = directionOpts.visible;
+
+        traceOut.line = {
+            color: directionOpts.color,
+            width: directionOpts.width
+        };
+
+        traceOut.fillcolor = directionOpts.fillcolor;
+    }
+
+    return traceOut;
 }
 
 exports.calcTransform = function calcTransform(gd, trace, opts) {
-    var fullInput = trace._fullInput,
-        direction = opts.direction;
+    var direction = opts.direction,
+        filterFn = helpers.getFilterFn(direction);
 
-    var filterFn = helpers.getFilterFn(direction);
+    var open = trace.open,
+        high = trace.high,
+        low = trace.low,
+        close = trace.close;
 
-    var open = fullInput.open,
-        high = fullInput.high,
-        low = fullInput.low,
-        close = fullInput.close;
+    var len = open.length,
+        x = [],
+        y = [];
 
-    // sliced accordingly in supply-defaults
-    var len = open.length;
-
-    // clear generated trace x / y
-    trace.x = [];
-    trace.y = [];
-
-    var appendX = fullInput.t ?
+    var appendX = trace._fullInput.x ?
         function(i) {
-            var t = fullInput.t[i];
-            trace.x.push(t, t, t, t, t, t);
+            var v = trace.x[i];
+            x.push(v, v, v, v, v, v);
         } :
         function(i) {
-            trace.x.push(i, i, i, i, i, i);
+            x.push(i, i, i, i, i, i);
         };
 
     var appendY = function(o, h, l, c) {
-        trace.y.push(l, o, c, c, c, h);
+        y.push(l, o, c, c, c, h);
     };
 
     for(var i = 0; i < len; i++) {
@@ -129,4 +124,7 @@ exports.calcTransform = function calcTransform(gd, trace, opts) {
             appendY(open[i], high[i], low[i], close[i]);
         }
     }
+
+    trace.x = x;
+    trace.y = y;
 };
