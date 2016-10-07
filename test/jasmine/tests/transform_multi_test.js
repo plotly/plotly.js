@@ -157,11 +157,12 @@ describe('user-defined transforms:', function() {
             transforms: [transformIn]
         }];
 
-        var layout = {};
+        var layout = {},
+            fullLayout = {};
 
         function assertSupplyDefaultsArgs(_transformIn, traceOut, _layout) {
             expect(_transformIn).toBe(transformIn);
-            expect(_layout).toBe(layout);
+            expect(_layout).toBe(fullLayout);
 
             return transformOut;
         }
@@ -171,6 +172,7 @@ describe('user-defined transforms:', function() {
             expect(opts.transform).toBe(transformOut);
             expect(opts.fullTrace._input).toBe(dataIn[0]);
             expect(opts.layout).toBe(layout);
+            expect(opts.fullLayout).toBe(fullLayout);
 
             return dataOut;
         }
@@ -184,7 +186,7 @@ describe('user-defined transforms:', function() {
         };
 
         Plotly.register(fakeTransformModule);
-        Plots.supplyDataDefaults(dataIn, [], layout);
+        Plots.supplyDataDefaults(dataIn, [], layout, fullLayout);
         delete Plots.transformsRegistry.fake;
     });
 
