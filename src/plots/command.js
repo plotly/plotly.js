@@ -11,7 +11,6 @@
 
 var Plotly = require('../plotly');
 var Lib = require('../lib');
-var helpers = require('../plot_api/helpers');
 
 exports.executeAPICommand = function(gd, method, args) {
     var apiMethod = Plotly[method];
@@ -37,9 +36,15 @@ exports.computeAPICommandBindings = function(gd, method, args) {
         case 'relayout':
             bindings = computeLayoutBindings(gd, args);
             break;
-        case 'animate':
+        case 'update':
             bindings = computeDataBindings(gd, [args[0], args[2]])
                 .concat(computeLayoutBindings(gd, [args[1]]));
+            break;
+        case 'animate':
+            // This case could be analyzed more in-depth, but for a start,
+            // we'll assume that the only relevant modification an animation
+            // makes that's meaningfully tracked is the frame:
+            bindings = ['layout._currentFrame'];
             break;
         default:
             // We'll elect to fail-non-fatal since this is a correct
@@ -49,7 +54,7 @@ exports.computeAPICommandBindings = function(gd, method, args) {
     return bindings;
 };
 
-function computeLayoutBindings (gd, args) {
+function computeLayoutBindings(gd, args) {
     var bindings = [];
 
     var astr = args[0];
@@ -62,15 +67,15 @@ function computeLayoutBindings (gd, args) {
         return bindings;
     }
 
-    crawl(aobj, function (path, attrName, attr) {
+    crawl(aobj, function(path) {
         bindings.push('layout' + path);
     });
 
     return bindings;
 }
 
-function computeDataBindings (gd, args) {
-    var i, traces, astr, attr, val, traces, aobj;
+function computeDataBindings(gd, args) {
+    var i, traces, astr, val, aobj;
     var bindings = [];
 
     // Logic copied from Plotly.restyle:
@@ -91,21 +96,21 @@ function computeDataBindings (gd, args) {
         return bindings;
     }
 
-    if (traces === undefined) {
+    if(traces === undefined) {
         traces = [];
-        for (i = 0; i < gd.data.length; i++) {
+        for(i = 0; i < gd.data.length; i++) {
             traces.push(i);
         }
     }
 
-    crawl(aobj, function (path, attrName, attr) {
+    crawl(aobj, function(path, attrName, attr) {
         var nAttr;
-        if (Array.isArray(attr)) {
+        if(Array.isArray(attr)) {
             nAttr = Math.min(attr.length, traces.length);
         } else {
             nAttr = traces.length;
         }
-        for (var j = 0; j < nAttr; j++) {
+        for(var j = 0; j < nAttr; j++) {
             bindings.push('data[' + traces[j] + ']' + path);
         }
     });
@@ -113,11 +118,7 @@ function computeDataBindings (gd, args) {
     return bindings;
 }
 
-function crawl(attrs, callback, path, depth) {
-    if(depth === undefined) {
-        depth = 0;
-    }
-
+function crawl(attrs, callback, path) {
     if(path === undefined) {
         path = '';
     }
@@ -130,7 +131,7 @@ function crawl(attrs, callback, path, depth) {
         var thisPath = path + '.' + attrName;
 
         if(Lib.isPlainObject(attr)) {
-            crawl(attr, callback, thisPath, depth + 1);
+            crawl(attr, callback, thisPath);
         } else {
             // Only execute the callback on leaf nodes:
             callback(thisPath, attrName, attr);

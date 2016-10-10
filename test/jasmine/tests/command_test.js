@@ -1,6 +1,5 @@
 var Plotly = require('@lib/index');
 var PlotlyInternal = require('@src/plotly');
-var Lib = require('@src/lib');
 var Plots = Plotly.Plots;
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
@@ -220,8 +219,6 @@ describe('Plots.computeAPICommandBindings', function() {
                     }
                 }, [1, 0]]);
 
-                // The results are definitely not completely intuitive, so this
-                // is based upon empirical results with a codepen example:
                 expect(result).toEqual([
                     'data[1].y',
                     'data[1].marker.size',
@@ -243,8 +240,6 @@ describe('Plots.computeAPICommandBindings', function() {
                     }
                 }, [1]]);
 
-                // The results are definitely not completely intuitive, so this
-                // is based upon empirical results with a codepen example:
                 expect(result).toEqual([
                     'data[1].y',
                     'data[1].marker.size',
@@ -264,37 +259,70 @@ describe('Plots.computeAPICommandBindings', function() {
         });
 
         describe('with aobj notation', function() {
-            it('and a single attribute', function () {
+            it('and a single attribute', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', [{height: 500}]);
                 expect(result).toEqual(['layout.height']);
             });
 
-            it('and two attributes', function () {
+            it('and two attributes', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', [{height: 500, width: 100}]);
                 expect(result).toEqual(['layout.height', 'layout.width']);
             });
         });
 
         describe('with astr + val notation', function() {
-            it('and an attribute', function () {
+            it('and an attribute', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', ['width', 100]);
                 expect(result).toEqual(['layout.width']);
             });
 
-            it('and nested atributes', function () {
+            it('and nested atributes', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', ['margin.l', 10]);
                 expect(result).toEqual(['layout.margin.l']);
             });
         });
 
         describe('with mixed notation', function() {
-            it('containing aob + astr', function () {
+            it('containing aob + astr', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', [{
                     'width': 100,
                     'margin.l': 10
                 }]);
                 expect(result).toEqual(['layout.width', 'layout.margin.l']);
             });
+        });
+    });
+
+    describe('update', function() {
+        it('computes bindings', function() {
+            var result = Plots.computeAPICommandBindings(gd, 'update', [{
+                y: [[3, 4, 5]],
+                'marker.size': [10, 20, 25],
+                'line.color': 'red',
+                line: {
+                    width: [2, 8]
+                }
+            }, {
+                'margin.l': 50,
+                width: 10
+            }, [1]]);
+
+            expect(result).toEqual([
+                'data[1].y',
+                'data[1].marker.size',
+                'data[1].line.color',
+                'data[1].line.width',
+                'layout.margin.l',
+                'layout.width'
+            ]);
+        });
+    });
+
+    describe('animate', function() {
+        it('computes bindings', function() {
+            var result = Plots.computeAPICommandBindings(gd, 'animate', [{}]);
+
+            expect(result).toEqual(['layout._currentFrame']);
         });
     });
 });
