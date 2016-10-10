@@ -29,39 +29,95 @@ exports.executeAPICommand = function(gd, method, args) {
 };
 
 exports.computeAPICommandBindings = function(gd, method, args) {
-
+    var bindings;
     switch(method) {
         case 'restyle':
-            var traces;
-
-        // Logic copied from Plotly.restyle:
-            var astr = args[0];
-            var val = args[1];
-            var traces = args[2];
-            var aobj = {};
-            if(typeof astr === 'string') aobj[astr] = val;
-            else if(Lib.isPlainObject(astr)) {
-            // the 3-arg form
-                aobj = astr;
-                if(traces === undefined) traces = val;
-            } else {
-            // This is the failure case, but it's not a concern of this method to fail
-            // on bad input. This will just return no bindings:
-                return [];
-            }
-
-            console.log('aobj:', aobj);
-
-            return ['data[0].marker.size'];
+            bindings = computeDataBindings(gd, args);
+            break;
+        case 'relayout':
+            bindings = computeLayoutBindings(gd, args);
+            break;
+        case 'animate':
+            bindings = computeDataBindings(gd, [args[0], args[2]])
+                .concat(computeLayoutBindings(gd, [args[1]]));
             break;
         default:
-        // The unknown case. We'll elect to fail-non-fatal since this is a correct
-        // answer and since this is not a validation method.
-            return [];
+            // We'll elect to fail-non-fatal since this is a correct
+            // answer and since this is not a validation method.
+            bindings = [];
     }
+    return bindings;
 };
 
-function crawl(attrs, callback, path) {
+function computeLayoutBindings (gd, args) {
+    var bindings = [];
+
+    var astr = args[0];
+    var aobj = {};
+    if(typeof astr === 'string') {
+        aobj[astr] = args[1];
+    } else if(Lib.isPlainObject(astr)) {
+        aobj = astr;
+    } else {
+        return bindings;
+    }
+
+    crawl(aobj, function (path, attrName, attr) {
+        bindings.push('layout' + path);
+    });
+
+    return bindings;
+}
+
+function computeDataBindings (gd, args) {
+    var i, traces, astr, attr, val, traces, aobj;
+    var bindings = [];
+
+    // Logic copied from Plotly.restyle:
+    astr = args[0];
+    val = args[1];
+    traces = args[2];
+    aobj = {};
+    if(typeof astr === 'string') {
+        aobj[astr] = val;
+    } else if(Lib.isPlainObject(astr)) {
+        // the 3-arg form
+        aobj = astr;
+
+        if(traces === undefined) {
+            traces = val;
+        }
+    } else {
+        return bindings;
+    }
+
+    if (traces === undefined) {
+        traces = [];
+        for (i = 0; i < gd.data.length; i++) {
+            traces.push(i);
+        }
+    }
+
+    crawl(aobj, function (path, attrName, attr) {
+        var nAttr;
+        if (Array.isArray(attr)) {
+            nAttr = Math.min(attr.length, traces.length);
+        } else {
+            nAttr = traces.length;
+        }
+        for (var j = 0; j < nAttr; j++) {
+            bindings.push('data[' + traces[j] + ']' + path);
+        }
+    });
+
+    return bindings;
+}
+
+function crawl(attrs, callback, path, depth) {
+    if(depth === undefined) {
+        depth = 0;
+    }
+
     if(path === undefined) {
         path = '';
     }
@@ -69,11 +125,15 @@ function crawl(attrs, callback, path) {
     Object.keys(attrs).forEach(function(attrName) {
         var attr = attrs[attrName];
 
-        if(exports.UNDERSCORE_ATTRS.indexOf(attrName) !== -1) return;
+        if(attrName[0] === '_') return;
 
-        callback(attr, attrName, attrs, level);
+        var thisPath = path + '.' + attrName;
 
-        if(isValObject(attr)) return;
-        if(isPlainObject(attr)) crawl(attr, callback, level + 1);
+        if(Lib.isPlainObject(attr)) {
+            crawl(attr, callback, thisPath, depth + 1);
+        } else {
+            // Only execute the callback on leaf nodes:
+            callback(thisPath, attrName, attr);
+        }
     });
 }
