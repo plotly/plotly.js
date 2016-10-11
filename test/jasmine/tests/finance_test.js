@@ -415,6 +415,18 @@ describe('finance charts updates:', function() {
         destroyGraphDiv();
     });
 
+    function countScatterTraces() {
+        return d3.select('g.cartesianlayer').selectAll('g.trace.scatter').size();
+    }
+
+    function countBoxTraces() {
+        return d3.select('g.cartesianlayer').selectAll('g.trace.boxes').size();
+    }
+
+    function countRangeSliders() {
+        return d3.select('g.rangeslider-rangeplot').size();
+    }
+
     it('Plotly.restyle should work', function(done) {
         var trace0 = Lib.extendDeep({}, mock0, { type: 'ohlc' });
 
@@ -452,10 +464,66 @@ describe('finance charts updates:', function() {
 
     });
 
+    it('should be able to toggle visibility', function(done) {
+        var data = [
+            Lib.extendDeep({}, mock0, { type: 'ohlc' }),
+            Lib.extendDeep({}, mock0, { type: 'candlestick' }),
+        ];
+
+        Plotly.plot(gd, data).then(function() {
+            expect(countScatterTraces()).toEqual(2);
+            expect(countBoxTraces()).toEqual(2);
+
+            return Plotly.restyle(gd, 'visible', false);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(0);
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', [1]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(0);
+
+            return Plotly.restyle(gd, 'visible', true, [1]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(2);
+
+            return Plotly.restyle(gd, 'visible', true, [0]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(2);
+            expect(countBoxTraces()).toEqual(2);
+
+            return Plotly.restyle(gd, 'visible', 'legendonly', [0]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(2);
+
+            return Plotly.restyle(gd, 'visible', true);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(2);
+            expect(countBoxTraces()).toEqual(2);
+
+            done();
+        });
+    });
+
     it('Plotly.relayout should work', function(done) {
         var trace0 = Lib.extendDeep({}, mock0, { type: 'ohlc' });
 
         Plotly.plot(gd, [trace0]).then(function() {
+            expect(countRangeSliders()).toEqual(1);
+
+            return Plotly.relayout(gd, 'xaxis.rangeslider.visible', false);
+        })
+        .then(function() {
+            expect(countRangeSliders()).toEqual(0);
 
             done();
         });
@@ -463,12 +531,89 @@ describe('finance charts updates:', function() {
     });
 
     it('Plotly.extendTraces should work', function(done) {
+        var data = [
+            Lib.extendDeep({}, mock0, { type: 'ohlc' }),
+            Lib.extendDeep({}, mock0, { type: 'candlestick' }),
+        ];
 
-        done();
+        // ohlc have 7 calc pts per 'x' coords
+
+        Plotly.plot(gd, data).then(function() {
+            expect(gd.calcdata[0].length).toEqual(28);
+            expect(gd.calcdata[1].length).toEqual(28);
+            expect(gd.calcdata[2].length).toEqual(4);
+            expect(gd.calcdata[3].length).toEqual(4);
+
+            return Plotly.extendTraces(gd, {
+                open: [[ 34, 35 ]],
+                high: [[ 40, 41 ]],
+                low: [[ 32, 33 ]],
+                close: [[ 38, 39 ]]
+            }, [1]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0].length).toEqual(28);
+            expect(gd.calcdata[1].length).toEqual(28);
+            expect(gd.calcdata[2].length).toEqual(6);
+            expect(gd.calcdata[3].length).toEqual(4);
+
+            return Plotly.extendTraces(gd, {
+                open: [[ 34, 35 ]],
+                high: [[ 40, 41 ]],
+                low: [[ 32, 33 ]],
+                close: [[ 38, 39 ]]
+            }, [0]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0].length).toEqual(42);
+            expect(gd.calcdata[1].length).toEqual(28);
+            expect(gd.calcdata[2].length).toEqual(6);
+            expect(gd.calcdata[3].length).toEqual(4);
+
+            done();
+        });
     });
 
-    it('Plotly.deleteTraces should work', function(done) {
-        done();
+    it('Plotly.deleteTraces / addTraces should work', function(done) {
+        var data = [
+            Lib.extendDeep({}, mock0, { type: 'ohlc' }),
+            Lib.extendDeep({}, mock0, { type: 'candlestick' }),
+        ];
+
+        Plotly.plot(gd, data).then(function() {
+            expect(countScatterTraces()).toEqual(2);
+            expect(countBoxTraces()).toEqual(2);
+
+            return Plotly.deleteTraces(gd, [1]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(2);
+            expect(countBoxTraces()).toEqual(0);
+
+            return Plotly.deleteTraces(gd, [0]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(0);
+
+            var trace = Lib.extendDeep({}, mock0, { type: 'candlestick' });
+
+            return Plotly.addTraces(gd, [trace]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(0);
+            expect(countBoxTraces()).toEqual(2);
+
+            var trace = Lib.extendDeep({}, mock0, { type: 'ohlc' });
+
+            return Plotly.addTraces(gd, [trace]);
+        })
+        .then(function() {
+            expect(countScatterTraces()).toEqual(2);
+            expect(countBoxTraces()).toEqual(2);
+
+            done();
+        });
     });
 
     it('legend *editable: true* interactions should work', function(done) {

@@ -530,7 +530,7 @@ function relinkPrivateKeys(toContainer, fromContainer) {
     var isPlainObject = Lib.isPlainObject,
         isArray = Array.isArray;
 
-    var keys = Object.keys(fromContainer);
+    var keys = Object.keys(fromContainer || {});
 
     for(var i = 0; i < keys.length; i++) {
         var k = keys[i],
