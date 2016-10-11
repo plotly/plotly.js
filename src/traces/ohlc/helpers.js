@@ -12,8 +12,23 @@
 var Lib = require('../../lib');
 
 // TODO add comment
-exports.prependTransformOpts = function(traceIn, traceOut, transformOpts) {
+exports.pushDummyTransformOpts = function(traceIn, traceOut) {
+    var transformOpts = {
+
+        // give dummy transform the same type as trace
+        type: traceOut.type,
+
+        // track ephemeral transforms in user data
+        _ephemeral: true
+    };
+
     if(Array.isArray(traceIn.transforms)) {
+        var transformsIn = traceIn.transforms;
+
+        for(var i = 0; i < transformsIn.length; i++) {
+            if(transformsIn[i]._ephemeral) transformsIn.splice(i, 1);
+        }
+
         traceIn.transforms.push(transformOpts);
     }
     else {

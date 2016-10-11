@@ -54,6 +54,26 @@ describe('finance charts defaults:', function() {
         expect(directions).toEqual(['increasing', 'decreasing', 'increasing', 'decreasing']);
     });
 
+    it('unfortunately mutates user trace', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc'
+        });
+
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick'
+        });
+
+        var out = _supply([trace0, trace1]);
+        expect(out.data[0].transforms).toEqual([{ type: 'ohlc', _ephemeral: true }]);
+        expect(out.data[1].transforms).toEqual([{ type: 'candlestick', _ephemeral: true }]);
+
+        // but at least in an idempotent way
+
+        var out2 = _supply(out.data);
+        expect(out2.data[0].transforms).toEqual([{ type: 'ohlc', _ephemeral: true }]);
+        expect(out2.data[1].transforms).toEqual([{ type: 'candlestick', _ephemeral: true }]);
+    });
+
     it('should work with transforms', function() {
         var trace0 = Lib.extendDeep({}, mock1, {
             type: 'ohlc',

@@ -15,13 +15,11 @@ var attributes = require('./attributes');
 var helpers = require('./helpers');
 
 module.exports = function supplyDefaults(traceIn, traceOut) {
+    helpers.pushDummyTransformOpts(traceIn, traceOut);
 
     function coerce(attr, dflt) {
         return Lib.coerce(traceIn, traceOut, attributes, attr, dflt);
     }
-
-    var transformOpts = { type: 'ohlc' };
-    helpers.prependTransformOpts(traceIn, traceOut, transformOpts);
 
     var len = handleOHLC(traceIn, traceOut, coerce);
     if(len === 0) {
