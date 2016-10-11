@@ -166,9 +166,11 @@ function getDataToCoordFunc(gd, trace, filtersrc) {
 
     // special case for 'ids' or 'grouping'
     // -> cast to String
-    if(['ids', 'grouping'].indexOf(filtersrc) !== -1) return function(v) {
-        return v === undefined ? undefined : String(v);
-    };
+    if(['ids', 'grouping'].indexOf(filtersrc) !== -1) {
+        return function(v) {
+            return v === undefined ? undefined : String(v);
+        };
+    }
 
     // otherwise
     // -> cast to Number
