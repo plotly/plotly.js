@@ -65,13 +65,17 @@ describe('finance charts defaults:', function() {
         });
 
         var out = _supply([trace0, trace1]);
+        expect(out.data[0].transforms.length).toEqual(1);
         expect(out.data[0].transforms).toEqual([{ type: 'ohlc', _ephemeral: true }]);
+        expect(out.data[1].transforms.length).toEqual(1);
         expect(out.data[1].transforms).toEqual([{ type: 'candlestick', _ephemeral: true }]);
 
         // but at least in an idempotent way
 
         var out2 = _supply(out.data);
+        expect(out2.data[0].transforms.length).toEqual(1);
         expect(out2.data[0].transforms).toEqual([{ type: 'ohlc', _ephemeral: true }]);
+        expect(out2.data[0].transforms.length).toEqual(1);
         expect(out2.data[1].transforms).toEqual([{ type: 'candlestick', _ephemeral: true }]);
     });
 
@@ -100,6 +104,9 @@ describe('finance charts defaults:', function() {
                 return opts.type;
             });
         });
+
+        // dummy 'ohlc' and 'candlestick' transforms are pushed at the end
+        // of the 'transforms' array container
 
         expect(transformTypes).toEqual([
             ['filter', 'ohlc'], ['filter', 'ohlc'],
@@ -156,12 +163,75 @@ describe('finance charts defaults:', function() {
         expect(visibilities).toEqual([false, false, false, false]);
     });
 
-    it('direction visibility should be inherited visibility from trace-wide visibility', function() {
+    it('direction *showlegend* should be inherited from trace-wide *showlegend*', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            showlegend: false,
+        });
 
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick',
+            showlegend: false,
+            increasing: { showlegend: true },
+            decreasing: { showlegend: true }
+        });
+
+        var out = _supply([trace0, trace1]);
+
+        var visibilities = out._fullData.map(function(fullTrace) {
+            return fullTrace.showlegend;
+        });
+
+        expect(visibilities).toEqual([false, false, false, false]);
     });
 
-    it('direction visibility should be inherited visibility from trace-wide visibility', function() {
+    it('direction *name* should be inherited from trace-wide *name*', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            name: 'Company A'
+        });
 
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick',
+            name: 'Company B',
+            increasing: { name: 'B - UP' },
+            decreasing: { name: 'B - DOWN' }
+        });
+
+        var out = _supply([trace0, trace1]);
+
+        var names = out._fullData.map(function(fullTrace) {
+            return fullTrace.name;
+        });
+
+        expect(names).toEqual([
+            'Company A - increasing',
+            'Company A - decreasing',
+            'B - UP',
+            'B - DOWN'
+        ]);
+    });
+
+    it('trace-wide *visible* should be passed to generated traces', function() {
+        var trace0 = Lib.extendDeep({}, mock0, {
+            type: 'ohlc',
+            visible: 'legendonly'
+        });
+
+        var trace1 = Lib.extendDeep({}, mock1, {
+            type: 'candlestick',
+            visible: false
+        });
+
+        var out = _supply([trace0, trace1]);
+
+        var visibilities = out._fullData.map(function(fullTrace) {
+            return fullTrace.visible;
+        });
+
+        // only three items here as visible: false traces are not transformed
+
+        expect(visibilities).toEqual(['legendonly', 'legendonly', false]);
     });
 
     it('should add a few layout settings by default', function() {
@@ -327,7 +397,7 @@ describe('finance charts calc transforms:', function() {
 
         var out = _calc([trace0]);
 
-        expect(out[0].name).toEqual('increasing');
+        expect(out[0].name).toEqual('trace 0 - increasing');
         expect(out[0].x.map(ms2DateTime)).toEqual([
             '2016-08-31 22:48', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01 01:12', null,
         ]);
@@ -335,7 +405,7 @@ describe('finance charts calc transforms:', function() {
             33.01, 33.01, 34.2, 31.7, 34.1, 34.1, null,
         ]);
 
-        expect(out[1].name).toEqual('decreasing');
+        expect(out[1].name).toEqual('trace 0 - decreasing');
         expect(out[1].x.map(ms2DateTime)).toEqual([
             '2016-09-01 22:48', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02 01:12', null,
             '2016-09-02 22:48', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03 01:12', null
@@ -345,7 +415,7 @@ describe('finance charts calc transforms:', function() {
             33.5, 33.5, 33.62, 32.87, 33.37, 33.37, null
         ]);
 
-        expect(out[2].name).toEqual('increasing');
+        expect(out[2].name).toEqual('trace 0 - increasing');
         expect(out[2].x.map(ms2DateTime)).toEqual([
             '2016-09-03 23:59:59.999', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', null
         ]);
@@ -353,7 +423,7 @@ describe('finance charts calc transforms:', function() {
             32.06, 32.06, 34.25, 31.62, 33.18, 33.18, null
         ]);
 
-        expect(out[3].name).toEqual('decreasing');
+        expect(out[3].name).toEqual('trace 0 - decreasing');
         expect(out[3].x.map(ms2DateTime)).toEqual([]);
         expect(out[3].y).toEqual([]);
     });
@@ -371,7 +441,7 @@ describe('finance charts calc transforms:', function() {
 
         var out = _calc([trace0]);
 
-        expect(out[0].name).toEqual('increasing');
+        expect(out[0].name).toEqual('trace 0 - increasing');
         expect(out[0].x).toEqual([
             '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01', '2016-09-01',
             '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04', '2016-09-04'
@@ -381,15 +451,15 @@ describe('finance charts calc transforms:', function() {
             31.62, 32.06, 33.18, 33.18, 33.18, 34.25
         ]);
 
-        expect(out[1].name).toEqual('decreasing');
+        expect(out[1].name).toEqual('trace 0 - decreasing');
         expect(out[1].x).toEqual([]);
         expect(out[1].y).toEqual([]);
 
-        expect(out[2].name).toEqual('increasing');
+        expect(out[2].name).toEqual('trace 0 - increasing');
         expect(out[2].x).toEqual([]);
         expect(out[2].y).toEqual([]);
 
-        expect(out[3].name).toEqual('decreasing');
+        expect(out[3].name).toEqual('trace 0 - decreasing');
         expect(out[3].x).toEqual([
             '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02', '2016-09-02',
             '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03', '2016-09-03'

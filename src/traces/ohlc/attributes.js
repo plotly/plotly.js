@@ -18,13 +18,22 @@ var DECREASING_COLOR = '#FF4136';
 var lineAttrs = scatterAttrs.line;
 
 var directionAttrs = {
-    visible: {
-        valType: 'enumerated',
-        values: [true, false, 'legendonly'],
+    name: {
+        valType: 'string',
+        role: 'info',
+        description: [
+            'Sets the segment name.',
+            'The segment name appear as the legend item and on hover.'
+        ].join(' ')
+    },
+
+    showlegend: {
+        valType: 'boolean',
         role: 'info',
         dflt: true,
         description: [
-
+            'Determines whether or not an item corresponding to this',
+            'segment is shown in the legend.'
         ].join(' ')
     },
 

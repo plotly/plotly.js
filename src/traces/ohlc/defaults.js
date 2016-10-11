@@ -11,6 +11,7 @@
 
 var Lib = require('../../lib');
 var handleOHLC = require('./ohlc_defaults');
+var handleDirectionDefaults = require('./direction_defaults');
 var attributes = require('./attributes');
 var helpers = require('./helpers');
 
@@ -30,16 +31,14 @@ module.exports = function supplyDefaults(traceIn, traceOut) {
     coerce('text');
     coerce('tickwidth');
 
-    handleDirection(traceOut, coerce, 'increasing');
-    handleDirection(traceOut, coerce, 'decreasing');
+    handleDirection(traceIn, traceOut, coerce, 'increasing');
+    handleDirection(traceIn, traceOut, coerce, 'decreasing');
 };
 
-function handleDirection(traceOut, coerce, direction) {
-    var dirVisible = coerce(direction + '.visible', traceOut.visible);
+function handleDirection(traceIn, traceOut, coerce, direction) {
+    handleDirectionDefaults(traceIn, traceOut, coerce, direction);
 
-    if(dirVisible) {
-        coerce(direction + '.color');
-        coerce(direction + '.width');
-        coerce(direction + '.dash');
-    }
+    coerce(direction + '.color');
+    coerce(direction + '.width');
+    coerce(direction + '.dash');
 }

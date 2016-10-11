@@ -14,15 +14,8 @@ var OHLCattrs = require('../ohlc/attributes');
 var boxAttrs = require('../box/attributes');
 
 var directionAttrs = {
-    visible: {
-        valType: 'enumerated',
-        values: [true, false, 'legendonly'],
-        role: 'info',
-        dflt: true,
-        description: [
-
-        ].join(' ')
-    },
+    name: OHLCattrs.increasing.name,
+    showlegend: OHLCattrs.increasing.showlegend,
 
     color: Lib.extendFlat({}, boxAttrs.line.color),
     width: Lib.extendFlat({}, boxAttrs.line.width),

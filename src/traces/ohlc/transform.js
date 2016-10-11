@@ -9,6 +9,7 @@
 
 'use strict';
 
+var Lib = require('../../lib');
 var helpers = require('./helpers');
 var axisIds = require('../../plots/cartesian/axis_ids');
 
@@ -55,14 +56,9 @@ function makeTrace(traceIn, state, direction) {
         mode: 'lines',
         connectgaps: false,
 
-        // TODO could do better
-        name: direction,
-
-        text: traceIn.text,
+        visible: traceIn.visible,
         hoverinfo: traceIn.hoverinfo,
-
         opacity: traceIn.opacity,
-        showlegend: traceIn.showlegend,
 
         transforms: helpers.makeTransform(traceIn, state, direction)
     };
@@ -72,20 +68,25 @@ function makeTrace(traceIn, state, direction) {
     var directionOpts = traceIn[direction];
 
     if(directionOpts) {
+        Lib.extendFlat(traceOut, {
 
-        // to make autotype catch date axes soon!!
-        traceOut.x = traceIn.x || [0];
+            // to make autotype catch date axes soon!!
+            x: traceIn.x || [0],
 
-        // concat low and high to get correct autorange
-        traceOut.y = [].concat(traceIn.low).concat(traceIn.high);
+            // concat low and high to get correct autorange
+            y: [].concat(traceIn.low).concat(traceIn.high),
 
-        traceOut.visible = directionOpts.visible;
+            text: traceIn.text,
 
-        traceOut.line = {
-            color: directionOpts.color,
-            width: directionOpts.width,
-            dash: directionOpts.dash
-        };
+            name: directionOpts.name,
+            showlegend: directionOpts.showlegend,
+
+            line: {
+                color: directionOpts.color,
+                width: directionOpts.width,
+                dash: directionOpts.dash
+            }
+        });
     }
 
     return traceOut;
