@@ -2,6 +2,7 @@ var Plotly = require('@lib/index');
 var Plots = require('@src/plots/plots');
 var Lib = require('@src/lib');
 
+var d3 = require('d3');
 var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 
@@ -417,9 +418,34 @@ describe('finance charts updates:', function() {
     it('Plotly.restyle should work', function(done) {
         var trace0 = Lib.extendDeep({}, mock0, { type: 'ohlc' });
 
-        Plotly.plot(gd, [trace0]).then(function() {
+        var path0;
 
-            // gotta test 'tickwidth' and 'whiskerwitdth'
+        Plotly.plot(gd, [trace0]).then(function() {
+            expect(gd.calcdata[0][0].x).toEqual(-0.05);
+            expect(gd.calcdata[0][0].y).toEqual(33.01);
+
+            return Plotly.restyle(gd, 'tickwidth', 0.5);
+        })
+        .then(function() {
+            expect(gd.calcdata[0][0].x).toEqual(-0.5);
+
+            return Plotly.restyle(gd, 'open', [[0, 30.75, 32.87, 31.62, 30.81, 32.75, 32.75, 32.87]]);
+        })
+        .then(function() {
+            expect(gd.calcdata[0][0].y).toEqual(0);
+
+            return Plotly.restyle(gd, {
+                type: 'candlestick',
+                open: [[33.01, 33.31, 33.50, 32.06, 34.12, 33.05, 33.31, 33.50]]
+            });
+        })
+        .then(function() {
+            path0 = d3.select('path.box').attr('d');
+
+            return Plotly.restyle(gd, 'whiskerwidth', 0.2);
+        })
+        .then(function() {
+            expect(d3.select('path.box').attr('d')).not.toEqual(path0);
 
             done();
         });
