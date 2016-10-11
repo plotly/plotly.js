@@ -21,6 +21,28 @@ var anchorUtils = require('../legend/anchor_utils');
 
 var constants = require('./constants');
 
+function computeBindings(gd, menuOpts) {
+    var bindings = [], newBindings;
+    var buttons = menuOpts.buttons;
+    for(var i = 0; i < buttons.length; i++) {
+        newBindings = Plots.computeAPICommandBindings(gd, buttons[i].method, buttons[i].args);
+
+        if(i > 0 && !Plots.bindingsAreConsistent(bindings, newBindings)) {
+            bindings = null;
+            break;
+        }
+
+        for(var j = 0; j < newBindings.length; j++) {
+            var b = newBindings[j];
+
+            if(bindings.indexOf(b) === -1) {
+                bindings.push(b);
+            }
+        }
+    }
+
+    return bindings;
+}
 
 module.exports = function draw(gd) {
     var fullLayout = gd._fullLayout,
@@ -114,6 +136,8 @@ module.exports = function draw(gd) {
     // draw headers!
     headerGroups.each(function(menuOpts) {
         var gHeader = d3.select(this);
+
+        computeBindings(gd, menuOpts);
 
         if(menuOpts.type === 'dropdown') {
             drawHeader(gd, gHeader, gButton, menuOpts);

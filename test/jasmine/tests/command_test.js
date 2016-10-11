@@ -5,6 +5,22 @@ var createGraphDiv = require('../assets/create_graph_div');
 var destroyGraphDiv = require('../assets/destroy_graph_div');
 var fail = require('../assets/fail_test');
 
+describe('Plots.evaluateAPICommandBinding', function() {
+    it('evaluates a data binding', function() {
+        var gd = {_fullData: [null, {line: {width: 7}}]};
+        var astr = 'data[1].line.width';
+
+        expect(Plots.evaluateAPICommandBinding(gd, astr)).toEqual(7);
+    });
+
+    it('evaluates a layout binding', function() {
+        var gd = {_fullLayout: {margin: {t: 100}}};
+        var astr = 'layout.margin.t';
+
+        expect(Plots.evaluateAPICommandBinding(gd, astr)).toEqual(100);
+    });
+});
+
 describe('Plots.executeAPICommand', function() {
     'use strict';
 
@@ -89,47 +105,47 @@ describe('Plots.computeAPICommandBindings', function() {
             describe('and a single attribute', function() {
                 it('with a scalar value', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', 7]);
-                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size']);
+                    expect(result).toEqual([{prop: 'marker.size', traces: null, type: 'data'}]);
                 });
 
                 it('with an array value and no trace specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7]]);
-                    expect(result).toEqual(['data[0].marker.size']);
+                    expect(result).toEqual([{prop: 'marker.size', traces: [0], type: 'data'}]);
                 });
 
                 it('with trace specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', 7, [0]]);
-                    expect(result).toEqual(['data[0].marker.size']);
+                    expect(result).toEqual([{prop: 'marker.size', traces: [0], type: 'data'}]);
                 });
 
                 it('with a different trace specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', 7, [0]]);
-                    expect(result).toEqual(['data[0].marker.size']);
+                    expect(result).toEqual([{prop: 'marker.size', traces: [0], type: 'data'}]);
                 });
 
                 it('with an array value', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7], [1]]);
-                    expect(result).toEqual(['data[1].marker.size']);
+                    expect(result).toEqual([{prop: 'marker.size', traces: [1], type: 'data'}]);
                 });
 
                 it('with two array values and two traces specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [0, 1]]);
-                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size']);
+                    expect(result).toEqual([{prop: 'marker.size', traces: [0, 1], type: 'data'}]);
                 });
 
                 it('with traces specified in reverse order', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [1, 0]]);
-                    expect(result).toEqual(['data[1].marker.size', 'data[0].marker.size']);
+                    expect(result).toEqual([{prop: 'marker.size', traces: [1, 0], type: 'data'}]);
                 });
 
                 it('with two values and a single trace specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [0]]);
-                    expect(result).toEqual(['data[0].marker.size']);
+                    expect(result).toEqual([{prop: 'marker.size', traces: [0], type: 'data'}]);
                 });
 
                 it('with two values and a different trace specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', ['marker.size', [7, 5], [1]]);
-                    expect(result).toEqual(['data[1].marker.size']);
+                    expect(result).toEqual([{prop: 'marker.size', traces: [1], type: 'data'}]);
                 });
             });
         });
@@ -138,49 +154,52 @@ describe('Plots.computeAPICommandBindings', function() {
             describe('and a single attribute', function() {
                 it('with a scalar value', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': 7}]);
-                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size']);
+                    expect(result).toEqual([{type: 'data', prop: 'marker.size', traces: null}]);
                 });
 
                 it('with trace specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': 7}, [0]]);
-                    expect(result).toEqual(['data[0].marker.size']);
+                    expect(result).toEqual([{type: 'data', prop: 'marker.size', traces: [0]}]);
                 });
 
                 it('with a different trace specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': 7}, [1]]);
-                    expect(result).toEqual(['data[1].marker.size']);
+                    expect(result).toEqual([{type: 'data', prop: 'marker.size', traces: [1]}]);
                 });
 
                 it('with an array value', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7]}, [1]]);
-                    expect(result).toEqual(['data[1].marker.size']);
+                    expect(result).toEqual([{type: 'data', prop: 'marker.size', traces: [1]}]);
                 });
 
                 it('with two array values and two traces specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7, 5]}, [0, 1]]);
-                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size']);
+                    expect(result).toEqual([{type: 'data', prop: 'marker.size', traces: [0, 1]}]);
                 });
 
                 it('with traces specified in reverse order', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7, 5]}, [1, 0]]);
-                    expect(result).toEqual(['data[1].marker.size', 'data[0].marker.size']);
+                    expect(result).toEqual([{type: 'data', prop: 'marker.size', traces: [1, 0]}]);
                 });
 
                 it('with two values and a single trace specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7, 5]}, [0]]);
-                    expect(result).toEqual(['data[0].marker.size']);
+                    expect(result).toEqual([{type: 'data', prop: 'marker.size', traces: [0]}]);
                 });
 
                 it('with two values and a different trace specified', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': [7, 5]}, [1]]);
-                    expect(result).toEqual(['data[1].marker.size']);
+                    expect(result).toEqual([{type: 'data', prop: 'marker.size', traces: [1]}]);
                 });
             });
 
             describe('and multiple attributes', function() {
                 it('with a scalar value', function() {
                     var result = Plots.computeAPICommandBindings(gd, 'restyle', [{'marker.size': 7, 'text.color': 'blue'}]);
-                    expect(result).toEqual(['data[0].marker.size', 'data[1].marker.size', 'data[0].text.color', 'data[1].text.color']);
+                    expect(result).toEqual([
+                        {type: 'data', prop: 'marker.size', traces: null},
+                        {type: 'data', prop: 'text.color', traces: null}
+                    ]);
                 });
             });
         });
@@ -199,13 +218,10 @@ describe('Plots.computeAPICommandBindings', function() {
                 // The results are definitely not completely intuitive, so this
                 // is based upon empirical results with a codepen example:
                 expect(result).toEqual([
-                    'data[0].y',
-                    'data[0].marker.size',
-                    'data[1].marker.size',
-                    'data[0].line.color',
-                    'data[1].line.color',
-                    'data[0].line.width',
-                    'data[1].line.width',
+                    {type: 'data', prop: 'y', traces: [0]},
+                    {type: 'data', prop: 'marker.size', traces: [0, 1]},
+                    {type: 'data', prop: 'line.color', traces: null},
+                    {type: 'data', prop: 'line.width', traces: [0, 1]}
                 ]);
             });
 
@@ -220,13 +236,10 @@ describe('Plots.computeAPICommandBindings', function() {
                 }, [1, 0]]);
 
                 expect(result).toEqual([
-                    'data[1].y',
-                    'data[1].marker.size',
-                    'data[0].marker.size',
-                    'data[1].line.color',
-                    'data[0].line.color',
-                    'data[1].line.width',
-                    'data[0].line.width',
+                    {type: 'data', prop: 'y', traces: [1]},
+                    {type: 'data', prop: 'marker.size', traces: [1, 0]},
+                    {type: 'data', prop: 'line.color', traces: [1, 0]},
+                    {type: 'data', prop: 'line.width', traces: [1, 0]}
                 ]);
             });
 
@@ -241,10 +254,10 @@ describe('Plots.computeAPICommandBindings', function() {
                 }, [1]]);
 
                 expect(result).toEqual([
-                    'data[1].y',
-                    'data[1].marker.size',
-                    'data[1].line.color',
-                    'data[1].line.width',
+                    {type: 'data', prop: 'y', traces: [1]},
+                    {type: 'data', prop: 'marker.size', traces: [1]},
+                    {type: 'data', prop: 'line.color', traces: [1]},
+                    {type: 'data', prop: 'line.width', traces: [1]}
                 ]);
             });
         });
@@ -261,24 +274,24 @@ describe('Plots.computeAPICommandBindings', function() {
         describe('with aobj notation', function() {
             it('and a single attribute', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', [{height: 500}]);
-                expect(result).toEqual(['layout.height']);
+                expect(result).toEqual([{type: 'layout', prop: 'height'}]);
             });
 
             it('and two attributes', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', [{height: 500, width: 100}]);
-                expect(result).toEqual(['layout.height', 'layout.width']);
+                expect(result).toEqual([{type: 'layout', prop: 'height'}, {type: 'layout', prop: 'width'}]);
             });
         });
 
         describe('with astr + val notation', function() {
             it('and an attribute', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', ['width', 100]);
-                expect(result).toEqual(['layout.width']);
+                expect(result).toEqual([{type: 'layout', prop: 'width'}]);
             });
 
             it('and nested atributes', function() {
                 var result = Plots.computeAPICommandBindings(gd, 'relayout', ['margin.l', 10]);
-                expect(result).toEqual(['layout.margin.l']);
+                expect(result).toEqual([{type: 'layout', prop: 'margin.l'}]);
             });
         });
 
@@ -288,7 +301,10 @@ describe('Plots.computeAPICommandBindings', function() {
                     'width': 100,
                     'margin.l': 10
                 }]);
-                expect(result).toEqual(['layout.width', 'layout.margin.l']);
+                expect(result).toEqual([
+                    {type: 'layout', prop: 'width'},
+                    {type: 'layout', prop: 'margin.l'}
+                ]);
             });
         });
     });
@@ -308,12 +324,12 @@ describe('Plots.computeAPICommandBindings', function() {
             }, [1]]);
 
             expect(result).toEqual([
-                'data[1].y',
-                'data[1].marker.size',
-                'data[1].line.color',
-                'data[1].line.width',
-                'layout.margin.l',
-                'layout.width'
+                {type: 'data', prop: 'y', traces: [1]},
+                {type: 'data', prop: 'marker.size', traces: [1]},
+                {type: 'data', prop: 'line.color', traces: [1]},
+                {type: 'data', prop: 'line.width', traces: [1]},
+                {type: 'layout', prop: 'margin.l'},
+                {type: 'layout', prop: 'width'}
             ]);
         });
     });
@@ -322,7 +338,7 @@ describe('Plots.computeAPICommandBindings', function() {
         it('computes bindings', function() {
             var result = Plots.computeAPICommandBindings(gd, 'animate', [{}]);
 
-            expect(result).toEqual(['layout._currentFrame']);
+            expect(result).toEqual([{type: 'layout', prop: '_currentFrame'}]);
         });
     });
 });
