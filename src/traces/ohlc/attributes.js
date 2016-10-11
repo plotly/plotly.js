@@ -12,6 +12,9 @@
 var Lib = require('../../lib');
 var scatterAttrs = require('../scatter/attributes');
 
+var INCREASING_COLOR = '#3D9970';
+var DECREASING_COLOR = '#FF4136';
+
 var lineAttrs = scatterAttrs.line;
 
 var directionAttrs = {
@@ -64,13 +67,12 @@ module.exports = {
         description: 'Sets the close values.'
     },
 
-    // TODO find better colors
     increasing: Lib.extendDeep({}, directionAttrs, {
-        color: { dflt: 'green' }
+        color: { dflt: INCREASING_COLOR }
     }),
 
     decreasing: Lib.extendDeep({}, directionAttrs, {
-        color: { dflt: 'red' }
+        color: { dflt: DECREASING_COLOR }
     }),
 
     text: {

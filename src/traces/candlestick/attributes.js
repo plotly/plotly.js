@@ -37,11 +37,11 @@ module.exports = {
     close: OHLCattrs.close,
 
     increasing: Lib.extendDeep({}, directionAttrs, {
-        color: { dflt: 'green' }
+        color: { dflt: OHLCattrs.increasing.color.dflt }
     }),
 
     decreasing: Lib.extendDeep({}, directionAttrs, {
-        color: { dflt: 'red' }
+        color: { dflt: OHLCattrs.decreasing.color.dflt }
     }),
 
     text: OHLCattrs.text,
