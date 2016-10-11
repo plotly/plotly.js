@@ -457,7 +457,12 @@ exports.findArrayAttributes = function(trace) {
 
     exports.crawl(trace._module.attributes, callback);
 
-    // TODO add comment
+    // Look into the fullInput module attributes for array attributes
+    // to make sure that 'custom' array attributes are detected.
+    //
+    // At the moment, we need this block to make sure that
+    // ohlc and candlestick 'open', 'high', 'low', 'close' can be
+    // used with filter ang groupby transforms.
     if(trace._fullInput) {
         exports.crawl(trace._fullInput._module.attributes, callback);
 

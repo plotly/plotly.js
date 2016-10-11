@@ -685,9 +685,4 @@ describe('finance charts updates:', function() {
             done();
         });
     });
-
-    it('legend *editable: true* interactions should work', function(done) {
-
-        done();
-    });
 });

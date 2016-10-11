@@ -377,6 +377,7 @@ function drawTexts(g, gd) {
                     astr;
 
                 // N.B. this block isn't super clean,
+                // is unfortunately untested at the moment,
                 // and only works for for 'ohlc' and 'candlestick',
                 // but should be generalized for other one-to-many transforms
                 if(['ohlc', 'candlestick'].indexOf(fullInput.type) !== -1) {

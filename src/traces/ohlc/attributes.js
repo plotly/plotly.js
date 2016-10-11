@@ -93,7 +93,7 @@ module.exports = {
             'Sets hover text elements associated with each sample point.',
             'If a single string, the same string appears over',
             'all the data points.',
-            'If an array of string, the items are mapped in order to the',
+            'If an array of string, the items are mapped in order to',
             'this trace\'s sample points.'
         ].join(' ')
     },
