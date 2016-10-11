@@ -105,7 +105,7 @@ module.exports = {
         valType: 'number',
         min: -2,
         max: 3,
-        dflt: -0.05,
+        dflt: 0,
         role: 'style',
         description: 'Sets the x position (in normalized coordinates) of the slider.'
     },
